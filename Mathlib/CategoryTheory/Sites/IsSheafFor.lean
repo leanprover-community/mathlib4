@@ -826,6 +826,47 @@ theorem isSheafFor_arrows_iff_bijective_toCompabible :
     subst hy
     exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
 
+lemma isSheafFor_over_map_comp_arrows_iff
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
+    {Y : I → C} (π : ∀ i, Y i ⟶ B) :
+    IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows (X := Over.mk (𝟙 B))
+      (fun i ↦ Over.mk (π i)) (fun i ↦ Over.homMk (π i))) ↔
+      IsSheafFor P (Presieve.ofArrows (X := Over.mk p) (fun i ↦ Over.mk (π i ≫ p))
+        (fun i ↦ Over.homMk (π i))) := by
+  rw [isSheafFor_arrows_iff_bijective_toCompabible,
+    isSheafFor_arrows_iff_bijective_toCompabible]
+  dsimp
+  let iso : (Over.map p).obj (Over.mk (𝟙 B)) ≅ Over.mk p := Over.isoMk (Iso.refl _)
+  let e : Subtype (Arrows.Compatible P (B := Over.mk p) (X := fun i ↦ Over.mk (π i ≫ p))
+    (π := fun i ↦ Over.homMk (π i))) ≃
+      Subtype (Arrows.Compatible ((Over.map p).op ⋙ P) (B := Over.mk (𝟙 B))
+        (X := fun i ↦ Over.mk (π i)) (π := fun i ↦ Over.homMk (π i))) :=
+    { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
+        s.property _ _ _ _ _ (by
+          ext
+          exact (Over.forget _).congr_map h)⟩
+      invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦ by
+        let φ : Z ⟶ (Over.map p).obj (Over.mk (g₁.left ≫ π i₁)) :=
+          Over.homMk (𝟙 _) (by simpa using Over.w g₁)
+        have := s.property i₁ i₂ (Over.mk (g₁.left ≫ π i₁)) (Over.homMk g₁.left)
+          (Over.homMk g₂.left ((Over.forget _).congr_map h.symm))
+            (by ext; exact (Over.forget _).congr_map h)
+        replace this := congr_arg (P.map φ.op) this
+        dsimp at this
+        simp only [← FunctorToTypes.map_comp_apply, ← op_comp] at this
+        convert this using 3 <;> cat_disch⟩
+      left_inv _ := rfl
+      right_inv _ := rfl }
+  rw [← e.bijective.of_comp_iff',
+    ← Function.Bijective.of_comp_iff _ (P.mapIso iso.op).toEquiv.bijective]
+  convert Iff.rfl
+  ext
+  dsimp [e, iso]
+  rw [← FunctorToTypes.map_comp_apply]
+  apply congr_fun
+  congr
+  cat_disch
+
 variable [(ofArrows X π).HasPairwisePullbacks]
 
 /--

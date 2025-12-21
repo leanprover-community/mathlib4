@@ -414,6 +414,7 @@ lemma subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
 
 end DescentData
 
+variable {F} in
 lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
     Function.Bijective ((F.toDescentData f).map : (M ⟶ N) → _) ↔
   Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk (𝟙 S))
@@ -424,6 +425,44 @@ lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
   convert Iff.rfl
   ext φ : 1
   apply DescentData.subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
+
+variable {F} in
+lemma bijective_toDescentData_map_iff' (M N : F.obj (.mk (op S)))
+    {T : C} (p : T ⟶ S) {U : ι → C} (f : ∀ i, U i ⟶ T) :
+    Function.Bijective ((F.toDescentData f).map :
+      ((F.map p.op.toLoc).toFunctor.obj M ⟶ (F.map p.op.toLoc).toFunctor.obj N) → _) ↔
+    Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk p)
+      (Presieve.ofArrows (Y := fun i ↦ Over.mk (f i ≫ p)) (fun i ↦ Over.homMk (f i))) := by
+  rw [bijective_toDescentData_map_iff,
+    Presieve.isSheafFor_iff_of_iso (F.overMapCompPresheafHomIso M N p).symm,
+    Presieve.isSheafFor_over_map_comp_arrows_iff]
+
+variable {J : GrothendieckTopology C}
+
+noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArrows _ f ∈ J S) :
+    (F.toDescentData f).FullyFaithful := by
+  refine Nonempty.some ((Functor.FullyFaithful.nonempty_iff_map_bijective _).2 (fun M N ↦ ?_))
+  rw [bijective_toDescentData_map_iff]
+  refine ((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J M N)).isSheafFor _ _ ?_
+  rw [GrothendieckTopology.mem_over_iff]
+  refine J.superset_covering ?_ hf
+  rw [Sieve.generate_le_iff]
+  rintro _ _ ⟨i⟩
+  exact ⟨_, Over.homMk (f i), 𝟙 _, ⟨_, 𝟙 _, _, ⟨i⟩, by simp⟩, by simp⟩
+
+variable {F} in
+lemma IsPrestack.of_fullyFaithful
+    (hF : ∀ (S : C) (R : Sieve S) (_ : R ∈ J S),
+      (F.toDescentData (fun (f : R.arrows.category) ↦ f.obj.hom)).FullyFaithful) :
+    F.IsPrestack J where
+  isSheaf {T} M N := by
+    rw [isSheaf_iff_isSheaf_of_type]
+    intro U S hS
+    obtain ⟨S, rfl⟩ := (Sieve.overEquiv _).symm.surjective S
+    rw [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply] at hS
+    rw [Sieve.overEquiv_symm_arrows]
+    exact (bijective_toDescentData_map_iff' M N U.hom
+      (fun (f : S.arrows.category) ↦ f.obj.hom)).1 ((hF _ _ hS).map_bijective _ _)
 
 end Pseudofunctor
 

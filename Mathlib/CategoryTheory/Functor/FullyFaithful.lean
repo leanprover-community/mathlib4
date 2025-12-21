@@ -219,6 +219,14 @@ def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
 
 end
 
+variable (F) in
+lemma nonempty_iff_map_bijective :
+    Nonempty F.FullyFaithful ↔ ∀ (X Y : C), Function.Bijective (F.map : (X ⟶ Y) → _) :=
+  ⟨fun ⟨hF⟩ ↦ hF.map_bijective, fun hF ↦ by
+    have : F.Faithful := ⟨fun h ↦ (hF _ _).injective h⟩
+    have : F.Full := ⟨(hF _ _).surjective⟩
+    exact ⟨.ofFullyFaithful _⟩⟩
+
 /-- If `F ⋙ G` is fully faithful and `G` is faithful, then `F` is fully faithful. -/
 def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :
     F.FullyFaithful where
