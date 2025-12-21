@@ -149,6 +149,16 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
   convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
+theorem spectralRadius_star_self_mul_self_toReal_eq_normSq (a : A) :
+    (spectralRadius ℂ (star a * a)).toReal = ‖a‖ ^ 2 := by
+  rw [IsSelfAdjoint.toReal_spectralRadius_complex_eq_norm (IsSelfAdjoint.star_mul_self a),
+    CStarRing.norm_star_mul_self, ← pow_two]
+
+theorem sqrt_spectralRadius_star_self_mul_self_eq_norm (a : A) :
+    Real.sqrt ((spectralRadius ℂ (star a * a)).toReal) = norm a :=
+  (Real.sqrt_eq_iff_eq_sq ENNReal.toReal_nonneg (norm_nonneg a)).mpr
+    (spectralRadius_star_self_mul_self_toReal_eq_normSq a)
+
 variable [StarModule ℂ A]
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
