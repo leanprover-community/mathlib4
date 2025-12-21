@@ -449,7 +449,7 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 
-theorem interpolate_formula : interpolate s v r =
+theorem interpolate_eq_sum : interpolate s v r =
     ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) * (∏ j ∈ s.erase i, (X - C (v j))) := by
   simp_rw [interpolate_apply]
   unfold Lagrange.basis basisDivisor
@@ -462,7 +462,7 @@ theorem iterate_derivative_interpolate [CommRing ι] (hvs : Set.InjOn v s) {k : 
       ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
       ∏ a ∈ t, (X - C (v a)) := by
   classical
-  simp_rw [interpolate_formula, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
+  simp_rw [interpolate_eq_sum, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
     ← mul_assoc, mul_comm (a := (k.factorial : F[X])), mul_assoc]
   congr! 2 with i hi
   have hvs' := hvs.mono (coe_subset.mpr (erase_subset i s))
@@ -482,7 +482,14 @@ theorem iterate_derivative_interpolate [CommRing ι] (hvs : Set.InjOn v s) {k : 
       ∏ a ∈ t, (X - C (v a)) := by
       sorry
 
--- later: analog of below
+theorem eval_iterate_derivative_eq_sum [CommRing ι]
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1)
+    (hk : k ≤ #s - 1) (x : ι) :
+    (derivative^[k] P).eval x = k.factorial *
+      ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, ((v i) - (v j))) *
+      ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+      ∏ a ∈ t, (x - C (v a)) := by
+  sorry
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
