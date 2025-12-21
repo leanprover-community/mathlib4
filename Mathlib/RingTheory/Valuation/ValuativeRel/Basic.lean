@@ -766,40 +766,64 @@ alias vle.trans_vlt := vlt_of_vle_of_vlt
 lemma vlt.vle (hab : a <ᵥ b) : a ≤ᵥ b :=
   le_of_lt (α := WithPreorder R) hab
 
+@[deprecated (since := "2025-12-20")] alias SRel.rel := vlt.vle
+
 lemma vlt.trans (hab : a <ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
   hab.trans_vle hbc.vle
+
+@[deprecated (since := "2025-12-20")] alias SRel.trans := vlt.trans
 
 lemma vle_mul_right_iff (hc : 0 <ᵥ c) : a * c ≤ᵥ b * c ↔ a ≤ᵥ b :=
   ⟨vle_mul_cancel hc, vle_mul_right _⟩
 
+@[deprecated (since := "2025-12-20")] alias rel_mul_right_iff := vle_mul_right_iff
+
 lemma vle_mul_left_iff (hc : 0 <ᵥ c) : c * a ≤ᵥ c * b ↔ a ≤ᵥ b := by
   simp [mul_comm c, vle_mul_right_iff hc]
+
+@[deprecated (since := "2025-12-20")] alias rel_mul_left_iff := vle_mul_left_iff
 
 lemma vlt_mul_right_iff (hc : 0 <ᵥ c) : a * c <ᵥ b * c ↔ a <ᵥ b :=
   (vle_mul_right_iff hc).not
 
+@[deprecated (since := "2025-12-20")] alias srel_mul_right_iff := vlt_mul_right_iff
+
 @[gcongr] alias ⟨_, vlt_mul_right⟩ := vlt_mul_right_iff
+
+@[deprecated (since := "2025-12-20")] alias srel_mul_right := vlt_mul_right
 
 lemma vlt_mul_left_iff (hc : 0 <ᵥ c) : c * a <ᵥ c * b ↔ a <ᵥ b :=
   (vle_mul_left_iff hc).not
 
+@[deprecated (since := "2025-12-20")] alias srel_mul_left_iff := vlt_mul_left_iff
+
 @[gcongr] alias ⟨_, vlt_mul_left⟩ := vlt_mul_left_iff
+
+@[deprecated (since := "2025-12-20")] alias srel_mul_left := vlt_mul_left
 
 lemma mul_vlt_mul_of_vlt_of_vle (hab : a <ᵥ b) (hcd : c ≤ᵥ d) (hd : 0 <ᵥ d) :
     a * c <ᵥ b * d :=
   (vle_mul_left _ hcd).trans_vlt (vlt_mul_right hd hab)
 
+@[deprecated (since := "2025-12-20")] alias mul_srel_mul_of_srel_of_rel := mul_vlt_mul_of_vlt_of_vle
+
 lemma mul_vlt_mul_of_vle_of_vlt (hab : a ≤ᵥ b) (hcd : c <ᵥ d) (ha : 0 <ᵥ a) :
     a * c <ᵥ b * d :=
   (vlt_mul_left ha hcd).trans_vle (vle_mul_right _ hab)
 
+@[deprecated (since := "2025-12-20")] alias mul_srel_mul_of_rel_of_srel := mul_vlt_mul_of_vle_of_vlt
+
 lemma mul_vlt_mul (hab : a <ᵥ b) (hcd : c <ᵥ d) : a * c <ᵥ b * d :=
   (vle_mul_left _ hcd.vle).trans_vlt (vlt_mul_right ((zero_vle c).trans_vlt hcd) hab)
+
+@[deprecated (since := "2025-12-20")] alias mul_srel_mul := mul_vlt_mul
 
 lemma pow_vle_pow (hab : a ≤ᵥ b) (n : ℕ) : a ^ n ≤ᵥ b ^ n := by
   induction n with
   | zero => simp
   | succ _ hn => simp [pow_succ, mul_vle_mul hn hab]
+
+@[deprecated (since := "2025-12-20")] alias pow_rel_pow := pow_vle_pow
 
 lemma pow_vlt_pow (hab : a <ᵥ b) {n : ℕ} (hn : n ≠ 0) : a ^ n <ᵥ b ^ n := by
   obtain (rfl | n) := n
@@ -809,13 +833,19 @@ lemma pow_vlt_pow (hab : a <ᵥ b) {n : ℕ} (hn : n ≠ 0) : a ^ n <ᵥ b ^ n :
   | zero => aesop
   | succ _ _ => simp_all [pow_succ, mul_vlt_mul]
 
+@[deprecated (since := "2025-12-20")] alias pow_srel_pow := pow_vlt_pow
+
 lemma pow_vle_pow_of_vle_one (ha : a ≤ᵥ 1) {n m : ℕ} (hnm : n ≤ m) : a ^ m ≤ᵥ a ^ n := by
   obtain ⟨m, rfl⟩ := exists_add_of_le hnm
   simpa [pow_add] using vle_mul_left (a ^ n) (pow_vle_pow ha m)
 
+@[deprecated (since := "2025-12-20")] alias pow_rel_pow_of_rel_one := pow_vle_pow_of_vle_one
+
 lemma pow_vle_pow_of_one_vle (ha : 1 ≤ᵥ a) {n m : ℕ} (hnm : n ≤ m) : a ^ n ≤ᵥ a ^ m := by
   obtain ⟨m, rfl⟩ := exists_add_of_le hnm
   simpa [pow_add] using vle_mul_left (a ^ n) (pow_vle_pow ha m)
+
+@[deprecated (since := "2025-12-20")] alias pow_rel_pow_of_one_rel := pow_vle_pow_of_one_vle
 
 end CommRing
 
@@ -827,33 +857,53 @@ variable {K : Type*} [Field K] [ValuativeRel K] {a b c x : K}
 lemma vle_zero_iff : a ≤ᵥ 0 ↔ a = 0 := by
   rw [← supp_def, Ideal.eq_bot_of_prime (supp K), Ideal.mem_bot]
 
+@[deprecated (since := "2025-12-20")] alias rel_zero_iff := vle_zero_iff
+
 @[simp]
 lemma zero_vlt_iff : 0 <ᵥ a ↔ a ≠ 0 := by
   simp [vlt]
 
+@[deprecated (since := "2025-12-20")] alias zero_srel_iff := zero_vlt_iff
+
 lemma vle_div_iff (hc : c ≠ 0) : a ≤ᵥ b / c ↔ a * c ≤ᵥ b := by
   rw [← vle_mul_right_iff (c := c) (by simpa), div_mul_cancel₀ _ (by aesop)]
+
+@[deprecated (since := "2025-12-20")] alias rel_div_iff := vle_div_iff
 
 lemma div_vle_iff (hc : c ≠ 0) : a / c ≤ᵥ b ↔ a ≤ᵥ b * c := by
   rw [← vle_mul_right_iff (c := c) (by simpa), div_mul_cancel₀ _ (by aesop)]
 
+@[deprecated (since := "2025-12-20")] alias div_rel_iff := div_vle_iff
+
 lemma one_vle_div_iff (hb : b ≠ 0) : 1 ≤ᵥ a / b ↔ b ≤ᵥ a := by
   simp [vle_div_iff hb]
+
+@[deprecated (since := "2025-12-20")] alias one_rel_div_iff := one_vle_div_iff
 
 lemma div_vle_one_iff (hb : b ≠ 0) : a / b ≤ᵥ 1 ↔ a ≤ᵥ b := by
   simp [div_vle_iff hb]
 
+@[deprecated (since := "2025-12-20")] alias div_rel_one_iff := div_vle_one_iff
+
 lemma one_vle_inv (hx : x ≠ 0) : 1 ≤ᵥ x⁻¹ ↔ x ≤ᵥ 1 := by
   simpa using one_vle_div_iff (a := 1) hx
+
+@[deprecated (since := "2025-12-20")] alias one_rel_inv := one_vle_inv
 
 lemma inv_vle_one (hx : x ≠ 0) : x⁻¹ ≤ᵥ 1 ↔ 1 ≤ᵥ x := by
   simpa using div_vle_one_iff (a := 1) hx
 
+@[deprecated (since := "2025-12-20")] alias inv_rel_one := inv_vle_one
+
 lemma inv_vlt_one (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
   (one_vle_inv hx).not
 
+@[deprecated (since := "2025-12-20")] alias inv_srel_one := inv_vlt_one
+
 lemma one_vlt_inv (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
   (one_vle_inv hx).not
+
+@[deprecated (since := "2025-12-20")] alias one_srel_inv := onv_vlt_inv
 
 end Field
 
@@ -1063,6 +1113,8 @@ variable {A B : Type*} [CommRing A] [CommRing B]
 lemma vlt_iff_vlt (a b : A) :
     algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
   rw [vlt_iff, vle_iff_vle, vlt_iff]
+
+@[deprecated (since := "2025-12-20")] alias srel_iff_srel := vlt_iff_vlt
 
 variable (A B) in
 /-- The morphism of `posSubmonoid`s associated to an algebra map.
