@@ -178,7 +178,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
   rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype,
     ← MonoidHom.range_eq_map, Subgroup.range_subtype]
   -- By Jordan's theorem, it suffices to prove that G acts primitively
-  apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem  _ hg3
+  apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem _ hg3
   · use ⟨g, hg3.mem_alternatingGroup⟩
     simpa only [SetLike.mem_coe, Subgroup.subtype_apply, and_true] using hG hg
   · let φ := (alternatingGroup α).subtype.subgroupMap G
