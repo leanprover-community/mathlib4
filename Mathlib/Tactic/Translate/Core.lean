@@ -253,7 +253,7 @@ structure Config : Type where
   relevantArg? : Option Nat := none
   /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
-  attrs : Array Syntax := #[]
+  attrs : Array Attribute := #[]
   /-- A list of positions of type variables that should not be translated. -/
   dontTranslate : List Nat := []
   /-- The `Syntax` element corresponding to the translation attribute,
@@ -270,10 +270,6 @@ structure Config : Type where
   `attribute [to_additive self] Unit`.
   If `self := true`, we should also have `existing := true`. -/
   self : Bool := false
-  deriving Repr
-
--- See https://github.com/leanprover/lean4/issues/10295
-attribute [nolint unusedArguments] instReprConfig.repr
 
 /-- Eta expands `e` at most `n` times. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
@@ -945,7 +941,7 @@ def elabArgStx (declName : Name) (argNames : Array Name) (args : Array Expr)
 TODO: Currently, we don't deduce any `dont_translate` arguments based on the type of `declName`.
 In the future we would like that the presence of `MonoidAlgebra k G` will automatically
 flag `k` as a type to not be translated. -/
-def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
+def elabAttr (declName : Name) (stx : Syntax) : CoreM Config := do
   match stx[2] with
   | `(attrArgs| $existing? $[$opts:bracketedOption]* $[$tgt]? $[$doc]?) =>
     MetaM.run' <| forallTelescope (← getConstInfo declName).type fun xs _ => do
@@ -957,7 +953,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     for opt in opts do
       match opt with
       | `(bracketedOption| (attr := $[$stxs],*)) =>
-        attrs := attrs ++ stxs
+        attrs := attrs ++ (← (elabAttrs stxs : TermElabM _).run' |>.run')
       | `(bracketedOption| (reorder := $[$[$reorders]*],*)) =>
         if reorder?.isSome then
           throwErrorAt opt "cannot specify `reorder` multiple times"
@@ -1029,7 +1025,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
 
 mutual
 /-- Apply attributes to the original and translated declarations. -/
-partial def applyAttributes (t : TranslateData) (stx : Syntax) (rawAttrs : Array Syntax)
+partial def applyAttributes (t : TranslateData) (stx : Syntax) (attrs : Array Attribute)
     (src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := withoutExporting do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
@@ -1057,13 +1053,12 @@ partial def applyAttributes (t : TranslateData) (stx : Syntax) (rawAttrs : Array
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
-  let attrs ← elabAttrs rawAttrs
   let (additiveAttrs, attrs) := attrs.partition (·.name == t.attrName)
   let nestedDecls ←
     match h : additiveAttrs.size with
     | 0 => pure #[]
     | 1 =>
-      let cfg ← elabTranslationAttr src additiveAttrs[0].stx
+      let cfg ← elabAttr src additiveAttrs[0].stx
       addTranslationAttr t tgt cfg additiveAttrs[0].kind
     | _ => throwError "cannot apply {t.attrName} multiple times."
   let allDecls := #[src, tgt] ++ nestedDecls
