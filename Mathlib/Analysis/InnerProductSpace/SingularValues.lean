@@ -237,6 +237,15 @@ public theorem pairwise_inner_rightSingularVectors_eq_zero
 public theorem pairwise_inner_leftSingularVectors_eq_zero
   : Pairwise fun (i j : ℕ) ↦ ⟪T.leftSingularVectors i, T.leftSingularVectors j⟫_𝕜 = 0 := sorry
 
+/--
+Equation 7.73 in LADR 4th edition.
+
+TODO: Is this actually true, given our definition of leftSingularVectors?
+-/
+public theorem apply_rightSingularVectors {i : ℕ} (hi : i < Module.finrank 𝕜 (range T))
+  : T (T.rightSingularVectors i) =
+    ((T.singularValues i).toReal : 𝕜) • T.leftSingularVectors i := sorry
+
 /-
 These are lemmas that don't necessarily fit into any category, but need to be established
 eventually. They will need to be moved around later.
