@@ -456,16 +456,11 @@ lemma unbotA_le_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA ≤ a ↔ x ≤ a 
 @[to_dual]
 lemma unbotA_mono [Nonempty α] (hy : x ≠ ⊥) (h : x ≤ y) : x.unbotA ≤ y.unbotA := unbotD_mono hy h
 
-@[to_dual]
-alias ⟨unbot_mono, _⟩ := unbot_le_unbot_iff
+end LE
 
-@[deprecated (since := "2025-12-05")]
-alias unbot_le_unbot := unbot_le_unbot_iff
+section LT
 
-@[to_dual untopD_le_iff]
-lemma le_unbotD_iff (hx : x ≠ ⊥) : b ≤ x.unbotD a ↔ b ≤ x := by lift x to α using hx; simp
-@[to_dual le_untopD_iff]
-lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
+variable [LT α] {x y : WithBot α}
 
 @[to_dual]
 lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
@@ -498,20 +493,6 @@ lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to �
 
 @[to_dual (reorder := hx hy)]
 lemma unbot_lt_unbot_iff (hx hy) : unbot x hx < unbot y hy ↔ x < y := by simp
-
-@[deprecated (since := "2025-12-05")]
-alias unbot_lt_unbot := unbot_lt_unbot_iff
-
-@[to_dual untopD_lt_iff]
-lemma lt_unbotD_iff (hx : x ≠ ⊥) : b < x.unbotD a ↔ b < x := by lift x to α using hx; simp
-@[to_dual lt_untopD_iff]
-lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
-
-@[to_dual untopA_lt_iff]
-lemma lt_unbotA_iff [Nonempty α] (hx : x ≠ ⊥) : a < x.unbotA ↔ a < x := lt_unbotD_iff hx
-@[to_dual lt_untopA_iff]
-lemma unbotA_lt_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA < a ↔ x < a := by
-  lift x to α using hx; simp
 
 @[deprecated (since := "2025-12-05")]
 alias unbot_lt_unbot := unbot_lt_unbot_iff
@@ -702,26 +683,16 @@ instance WithTop.distribLattice [DistribLattice α] : DistribLattice (WithTop α
 instance WithBot.decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
+@[to_dual]
 instance WithBot.decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
   | ⊥, _ => isTrue <| by simp
   | (a : α), ⊥ => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
--- @[to_dual existing]
-instance WithTop.decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
-  | _, ⊤ => isTrue <| by simp
-  | ⊤, (a : α) => isFalse <| by simp
-  | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
-
+@[to_dual]
 instance WithBot.decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | _, ⊥ => isFalse <| by simp
   | ⊥, (a : α) => isTrue <| by simp
-  | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
-
--- @[to_dual existing]
-instance WithTop.decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
-  | ⊤, _ => isFalse <| by simp
-  | (a : α), ⊤ => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
 instance WithBot.isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· ≤ ·) where
@@ -776,6 +747,38 @@ lemma WithTop.denselyOrdered_iff [LT α] [NoMaxOrder α] :
 instance WithBot.denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] :
     DenselyOrdered (WithBot α) :=
   denselyOrdered_iff.mpr inferInstance
+
+instance WithBot.trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
+    IsTrichotomous (WithBot α) (· < ·) where
+  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
+
+instance WithTop.trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
+    IsTrichotomous (WithTop α) (· < ·) where
+  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
+
+-- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedLT`, remove this.
+instance WithBot.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
+  IsWellOrder (WithBot α) (· < ·) where
+
+-- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedLT`, remove this.
+instance WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
+  IsWellOrder (WithTop α) (· < ·) where
+
+instance WithBot.trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
+    IsTrichotomous (WithBot α) (· > ·) :=
+  have : IsTrichotomous α (· < ·) := .swap _; .swap _
+
+instance WithTop.trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
+    IsTrichotomous (WithTop α) (· > ·) :=
+  have : IsTrichotomous α (· < ·) := .swap _; .swap _
+
+-- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
+instance WithBot.IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
+    IsWellOrder (WithBot α) (· > ·) where
+
+-- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
+instance WithTop.IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
+    IsWellOrder (WithTop α) (· > ·) where
 
 namespace WithBot
 
@@ -939,104 +942,6 @@ theorem strictMono_map_iff {f : α → β} : StrictMono (WithTop.map f) ↔ Stri
 alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 
 end Preorder
-
-instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
-  inf
-    -- note this is `Option.merge`, but with the right defeq when unfolding
-    | ⊤, ⊤ => ⊤
-    | (a : α), ⊤ => a
-    | ⊤, (b : α) => b
-    | (a : α), (b : α) => ↑(a ⊓ b)
-  inf_le_left x y := by cases x <;> cases y <;> simp
-  inf_le_right x y := by cases x <;> cases y <;> simp
-  le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
-
-theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) = (a : WithTop α) ⊓ b :=
-  rfl
-
-instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) where
-  sup := .map₂ (· ⊔ ·)
-  le_sup_left x y := by cases x <;> cases y <;> simp
-  le_sup_right x y := by cases x <;> cases y <;> simp
-  sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
-
-theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithTop α) = (a : WithTop α) ⊔ b :=
-  rfl
-
-instance lattice [Lattice α] : Lattice (WithTop α) :=
-  { WithTop.semilatticeSup, WithTop.semilatticeInf with }
-
-instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
-  le_sup_inf x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_inf, ← coe_sup]
-    simpa [← coe_inf, ← coe_sup] using le_sup_inf
-
-instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
-  inferInstanceAs <| DecidableEq (Option α)
-
-instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
-  | _, ⊤ => isTrue <| by simp
-  | ⊤, (a : α) => isFalse <| by simp
-  | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
-
-instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
-  | ⊤, _ => isFalse <| by simp
-  | (a : α), ⊤ => isTrue <| by simp
-  | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
-
-instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
-
-section LinearOrder
-variable [LinearOrder α] {x y : WithTop α}
-
-instance linearOrder [LinearOrder α] : LinearOrder (WithTop α) := Lattice.toLinearOrder _
-
-@[simp, norm_cast] lemma coe_min (a b : α) : ↑(min a b) = min (a : WithTop α) b := rfl
-@[simp, norm_cast] lemma coe_max (a b : α) : ↑(max a b) = max (a : WithTop α) b := rfl
-
-variable [DenselyOrdered α] [NoMaxOrder α]
-
-lemma le_of_forall_lt_iff_le : (∀ b : α, x < b → y ≤ b) ↔ y ≤ x := by
-  cases x <;> cases y <;> simp [exists_gt, forall_gt_imp_ge_iff_le_of_dense]
-
-lemma ge_of_forall_gt_iff_ge : (∀ a : α, a < x → a ≤ y) ↔ x ≤ y := by
-  cases x <;> cases y <;> simp [exists_gt, forall_lt_imp_le_iff_le_of_dense]
-
-end LinearOrder
-
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) :=
-  inferInstanceAs <| WellFoundedLT (WithBot αᵒᵈ)ᵒᵈ
-
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) :=
-  inferInstanceAs <| WellFoundedGT (WithBot αᵒᵈ)ᵒᵈ
-
-instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
-    IsTrichotomous (WithTop α) (· < ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
-
-instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] : IsWellOrder (WithTop α) (· < ·) where
-
-instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
-    IsTrichotomous (WithTop α) (· > ·) :=
-  have : IsTrichotomous α (· < ·) := .swap _; .swap _
-
-instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] : IsWellOrder (WithTop α) (· > ·) where
-
-instance _root_.WithBot.trichotomous.lt [Preorder α] [h : IsTrichotomous α (· < ·)] :
-    IsTrichotomous (WithBot α) (· < ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
-
-instance _root_.WithBot.isWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
-    IsWellOrder (WithBot α) (· < ·) where
-
-instance _root_.WithBot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (· > ·)] :
-    IsTrichotomous (WithBot α) (· > ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp; simpa using trichotomous_of (· > ·) ..
-
-instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
-    IsWellOrder (WithBot α) (· > ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp; simpa using trichotomous_of (· > ·) ..
 
 end WithTop
 
