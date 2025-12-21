@@ -431,14 +431,10 @@ def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K 
   toLinearMap := ofSupportedInLM 𝕜 K_sub_Ω
   cont := continuous_ofSupportedIn K_sub_Ω
 
-@[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
-
 @[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
-
-@[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
@@ -740,36 +736,6 @@ lemma integralAgainstBilinCLM_eq_zero {B : F₁ →L[ℝ] F₂ →L[ℝ] F₃} {
   simp [integralAgainstBilinCLM, integralAgainstBilinLM_eq_zero hφ]
 
 end Integral
-
-section postcomp
-
-variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 F']
-
--- Note: generalizing this to a semilinear setting would require a typeclass-way of saying that
--- the `RingHom` is `ℝ`-linear.
-/-- Given `T : F →L[𝕜] F'`, `postcompCLM T` is the continuous `𝕜`-linear-map sending
-`f : 𝓓^{n}(Ω, F)` to `T ∘ f` as an element of `𝓓^{n}(Ω, F')`. -/
-noncomputable def postcompCLM (T : F →L[𝕜] F') :
-    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F') :=
-  letI Φ (f : 𝓓^{n}(Ω, F)) : 𝓓^{n}(Ω, F') :=
-    ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
-      f.hasCompactSupport.comp_left (map_zero _),
-      (tsupport_comp_subset (map_zero _) f).trans f.tsupport_subset⟩
-  haveI key (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
-      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.postcompCLM T f) =
-        Φ (ofSupportedIn K_sub_Ω f) := by
-    ext; simp [Φ]
-  TestFunction.mkCLM 𝕜 Φ
-    (fun f g ↦ by ext; simp [Φ]) (fun c f ↦ by ext; simp [Φ])
-    (fun K K_sub_Ω ↦ by refine .congr ?_ (key K K_sub_Ω); fun_prop)
-
-@[simp]
-lemma postcompCLM_apply (T : F →L[𝕜] F')
-    (f : 𝓓^{n}(Ω, F)) :
-    postcompCLM T f = T ∘ f :=
-  rfl
-
-end postcomp
 
 end TestFunction
 
