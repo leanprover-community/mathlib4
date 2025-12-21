@@ -204,7 +204,8 @@ attribute [aesop unsafe 5% tactic (rule_sets := [Bound])] boundLinarith
 
 /-- Aesop configuration for `bound` -/
 def boundConfig : Aesop.Options := {
-  enableSimp := false
+  enableSimp := false,
+  terminal := true
 }
 
 end Mathlib.Tactic.Bound
@@ -258,3 +259,4 @@ We register `bound` with the `hint` tactic.
 -/
 
 register_hint 70 bound
+register_try?_tactic (priority := 70) bound

@@ -98,7 +98,7 @@ The line derivative is additive, `∂_{v} (x + y) = ∂_{v} x + ∂_{v} y` for a
 Note that `lineDeriv` on functions is not additive.
 -/
 class LineDerivAdd (V : Type u) (E : Type v) (F : outParam (Type w))
-  [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] where
+    [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] where
   lineDerivOp_add (v : V) (x y : E) : ∂_{v} (x + y) = ∂_{v} x + ∂_{v} y
 
 /--
@@ -106,14 +106,14 @@ The line derivative commutes with scalar multiplication, `∂_{v} (r • x) = r 
 `r : R` and `x : E`.
 -/
 class LineDerivSMul (R : Type*) (V : Type u) (E : Type v) (F : outParam (Type w))
-  [SMul R E] [SMul R F] [LineDeriv V E F] where
+    [SMul R E] [SMul R F] [LineDeriv V E F] where
   lineDerivOp_smul (v : V) (r : R) (x : E) : ∂_{v} (r • x) = r • ∂_{v} x
 
 /--
 The line derivative is continuous.
 -/
 class ContinuousLineDeriv (V : Type u) (E : Type v) (F : outParam (Type w))
-  [TopologicalSpace E] [TopologicalSpace F] [LineDeriv V E F] where
+    [TopologicalSpace E] [TopologicalSpace F] [LineDeriv V E F] where
   continuous_lineDerivOp (v : V) : Continuous (∂_{v} : E → F)
 
 attribute [fun_prop] ContinuousLineDeriv.continuous_lineDerivOp

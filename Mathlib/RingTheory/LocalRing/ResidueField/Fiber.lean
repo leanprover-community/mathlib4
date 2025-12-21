@@ -59,14 +59,14 @@ variable (R S) in
 `p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps]
 noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.Fiber S) where
+    comap (algebraMap R S) ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.Fiber S) where
   toFun q := ⟨RingHom.ker (Algebra.TensorProduct.lift
     (Ideal.ResidueField.mapₐ p.asIdeal q.1.asIdeal (Algebra.ofId _ _) congr($(q.2.symm).asIdeal))
       (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _).toRingHom, RingHom.ker_isPrime _⟩
-  invFun q := ⟨Algebra.TensorProduct.includeRight.toRingHom.specComap q, by
-    simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← specComap_comp_apply,
+  invFun q := ⟨q.comap Algebra.TensorProduct.includeRight.toRingHom, by
+    simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← comap_comp_apply,
       AlgHom.comp_algebraMap_of_tower]
-    exact (residueField_specComap _).le ⟨(algebraMap _ _).specComap q, rfl⟩⟩
+    exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩⟩
   left_inv q := by ext x; simp
   right_inv q := by
     ext x
@@ -75,9 +75,9 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), iff_comm,
       ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
     · simp
-    · rw [← Ideal.mem_comap, ← PrimeSpectrum.specComap_asIdeal]
+    · rw [← Ideal.mem_comap, ← PrimeSpectrum.comap_asIdeal]
       convert hr
-      exact (residueField_specComap _).le ⟨(algebraMap _ _).specComap q, rfl⟩
+      exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩
     · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
         -Ideal.ResidueField.map_algebraMap]
 
@@ -86,7 +86,7 @@ variable (R S) in
 ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
 noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃o PrimeSpectrum (p.asIdeal.Fiber S) where
+    comap (algebraMap R S) ⁻¹' {p} ≃o PrimeSpectrum (p.asIdeal.Fiber S) where
   toEquiv := preimageEquivFiber R S p
   map_rel_iff' {q₁ q₂} := by
     constructor
@@ -120,7 +120,7 @@ at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S
 @[simps!]
 noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing R]
     [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃ₜ PrimeSpectrum (p.asIdeal.Fiber S) := by
+    comap (algebraMap R S) ⁻¹' {p} ≃ₜ PrimeSpectrum (p.asIdeal.Fiber S) := by
   letI H : Topology.IsEmbedding (preimageOrderIsoFiber R S p).symm := by
     refine (Topology.IsEmbedding.of_comp_iff .subtypeVal).mp ?_
     have := PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks _ S _

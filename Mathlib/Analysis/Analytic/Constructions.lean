@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
-public import Mathlib.Tactic.ToFun
+import Mathlib.Tactic.ToFun
 
 /-!
 # Various ways to combine analytic functions
@@ -387,7 +387,7 @@ alias AnalyticAt.along_snd := AnalyticAt.curry_right
 theorem AnalyticWithinAt.curry_right
     {f : E × F → G} {s : Set (E × F)} {p : E × F} (fa : AnalyticWithinAt 𝕜 f s p) :
     AnalyticWithinAt 𝕜 (fun y ↦ f (p.1, y)) {y | (p.1, y) ∈ s} p.2 :=
-  AnalyticWithinAt.comp₂ fa  analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
+  AnalyticWithinAt.comp₂ fa analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
 theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F}
@@ -633,7 +633,8 @@ lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 @[to_fun]
-lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z) (n : ℕ) :
+lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z)
+    (n : ℕ) :
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
   induction n with
   | zero =>
@@ -680,7 +681,8 @@ lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
 @[to_fun]
-lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s) (hn : 0 ≤ n) :
+lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
+    (hn : 0 ≤ n) :
     AnalyticOn 𝕜 (f ^ n) s := by
   simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
