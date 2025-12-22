@@ -453,13 +453,13 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
         simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
         rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, ← hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by lia)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
         simp only [Odd.add_one (by simpa using h_even), ↓reduceIte]
         rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by lia)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]
 
 lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
