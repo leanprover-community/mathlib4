@@ -182,7 +182,7 @@ expected by lemmas like `HasDerivAt.cpow`. -/
 private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulRight f' +
     (f x ^ g x * log (f x)) • (1 : ℂ →L[ℂ] ℂ).smulRight g') 1 =
       g x * f x ^ (g x - 1) * f' + f x ^ g x * log (f x) * g' := by
-  simp only [Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.one_apply,
+  simp only [smul_eq_mul, one_mul, ContinuousLinearMap.one_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.add_apply, Pi.smul_apply,
     ContinuousLinearMap.coe_smul']
 
@@ -363,7 +363,7 @@ theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : WithTop ℕ
 
 theorem differentiableAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     DifferentiableAt ℝ (fun p : ℝ × ℝ => p.1 ^ p.2) p :=
-  (contDiffAt_rpow_of_ne p hp).differentiableAt le_rfl
+  (contDiffAt_rpow_of_ne p hp).differentiableAt one_ne_zero
 
 theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : HasStrictDerivAt f f' x)
     (hg : HasStrictDerivAt g g' x) (h : 0 < f x) : HasStrictDerivAt (fun x => f x ^ g x)
@@ -455,9 +455,8 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   | zero => exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
   | succ n ihn =>
     have h1 : 1 ≤ p := le_trans (by simp) h
-    rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
-    rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
-      contDiff_succ_iff_deriv, deriv_rpow_const' p]
+    rw [Nat.cast_add_one, ← le_sub_iff_add_le] at h
+    rw [Nat.cast_add_one, contDiff_succ_iff_deriv, deriv_rpow_const' p]
     simp only [WithTop.natCast_ne_top, analyticOn_univ, IsEmpty.forall_iff, true_and]
     exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 
@@ -485,7 +484,7 @@ theorem iter_deriv_rpow_const (r x : ℝ) (k : ℕ) :
 theorem hasStrictDerivAt_rpow_const {x p : ℝ} (hx : x ≠ 0 ∨ 1 ≤ p) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x :=
   ContDiffAt.hasStrictDerivAt' (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
-    (hasDerivAt_rpow_const hx) le_rfl
+    (hasDerivAt_rpow_const hx) one_ne_zero
 
 end Real
 

@@ -50,7 +50,8 @@ lemma antitoneOn_extremalNumber_div_choose_two (H : SimpleGraph W) :
     Nat.cast_choose_two, Nat.cast_add_one, add_sub_cancel_right (n : ℝ) 1,
     mul_comm _ (n-1 : ℝ), ← mul_div (n-1 : ℝ), mul_comm _ (n/2 : ℝ), mul_assoc, mul_comm (n-1 : ℝ),
     ← mul_div (n+1 : ℝ), mul_comm _ (n/2 : ℝ), mul_assoc, mul_le_mul_iff_right₀ (by positivity),
-    ← Nat.cast_pred (by positivity), ←Nat.cast_mul, ←Nat.cast_add_one, ←Nat.cast_mul, Nat.cast_le]
+    ← Nat.cast_pred (by positivity), ← Nat.cast_mul, ← Nat.cast_add_one, ← Nat.cast_mul,
+    Nat.cast_le]
   conv_rhs =>
     rw [← Fintype.card_fin (n+1), ← card_univ]
   -- double counting `(v, e) ↦ v ∉ e`

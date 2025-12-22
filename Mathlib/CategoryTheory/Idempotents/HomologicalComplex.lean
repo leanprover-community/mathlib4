@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
+variable {C : Type*} [Category* C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
 
 namespace Idempotents
 

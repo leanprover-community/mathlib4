@@ -455,9 +455,8 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wf := by
     have : WellFoundedGT (Ideal A) := inferInstance
-    convert this.wf
-    ext
-    rw [Ideal.dvdNotUnit_iff_lt]
+    convert this.wf using 3
+    exact Ideal.dvdNotUnit_iff_lt
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by

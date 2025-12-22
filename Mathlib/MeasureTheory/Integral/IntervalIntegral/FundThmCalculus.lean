@@ -104,7 +104,7 @@ a context with the stronger assumption that `f'` is continuous, one can use
 `ContinuousOn.integrableOn_uIcc`.
 
 Versions of FTC-2 under the simpler assumption that the function is `C^1` are given in the
-file `Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff`.
+file `Mathlib/MeasureTheory/Integral/IntervalIntegral/ContDiff.lean`.
 
 Applications to integration by parts are in the file
 `Mathlib.MeasureTheory.Integral.IntegrationByParts`.
@@ -555,7 +555,7 @@ In this section we prove that for a measurable function `f` integrable on `a..b`
 
 * `integral_hasStrictFDerivAt_of_tendsto_ae`: the function `(u, v) ↦ ∫ x in u..v, f x` has
   derivative `(u, v) ↦ v • cb - u • ca` at `(a, b)` in the sense of strict differentiability
-  provided that `f` tends to `ca` and `cb` almost surely as `x` tendsto to `a` and `b`,
+  provided that `f` tends to `ca` and `cb` almost surely as `x` tends to `a` and `b`,
   respectively;
 
 * `integral_hasStrictFDerivAt`: the function `(u, v) ↦ ∫ x in u..v, f x` has

@@ -247,7 +247,7 @@ attribute [local instance] Polynomial.algebra in
 theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
     aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
   induction p using Polynomial.induction_on' with
-  | add =>  aesop
+  | add => aesop
   | monomial n a =>
       simp
       induction a using Polynomial.induction_on'
@@ -305,6 +305,9 @@ lemma pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [map_nsmul]
 
+@[deprecated (since := "2025-12-09")]
+alias Polynomial.Bivariate.pderiv_zero_equivMvPolynomial := pderiv_zero_equivMvPolynomial
+
 lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
     (equivMvPolynomial R p).pderiv 1 = equivMvPolynomial R (derivative p) := by
   induction p using Polynomial.induction_on' with
@@ -315,6 +318,9 @@ lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
   | monomial m a =>
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [derivative_pow]
+
+@[deprecated (since := "2025-12-09")]
+alias Polynomial.Bivariate.pderiv_one_equivMvPolynomial := pderiv_one_equivMvPolynomial
 
 end MvPolynomial
 

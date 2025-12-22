@@ -117,7 +117,7 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
   properties in `SigmaFinite`. -/
 def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
-  Accumulate μ.toFiniteSpanningSetsIn.set i
+  accumulate μ.toFiniteSpanningSetsIn.set i
 
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
   monotone_accumulate
@@ -200,15 +200,15 @@ all members of the countable family of finite measure spanning sets has zero mea
 theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Measure α}
     [SigmaFinite μ] (s : Set α) : (∀ n, μ (s ∩ spanningSets μ n) = 0) ↔ μ s = 0 := by
   nth_rw 2 [show s = ⋃ n, s ∩ spanningSets μ n by
-      rw [← inter_iUnion, iUnion_spanningSets, inter_univ] ]
+      rw [← inter_iUnion, iUnion_spanningSets, inter_univ]]
   rw [measure_iUnion_null_iff]
 
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
 some member of the countable family of finite measure spanning sets has positive measure. -/
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
-  rw [← not_iff_not]
-  simp only [not_exists, not_lt, nonpos_iff_eq_zero]
+  contrapose!
+  simp only [nonpos_iff_eq_zero]
   exact forall_measure_inter_spanningSets_eq_zero s
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only

@@ -59,7 +59,7 @@ lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
   | zero => intro _ _ _ _; simp
   | succ k hk =>
     intro p q hpq hp
-    rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq (by cutsat)]
+    rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq (by lia)]
     dsimp [sequence]
 
 /-- Assuming we have a sequence of subsets `X n : Set (Cochain K L d)` for all `n : ℕ`,
@@ -76,7 +76,7 @@ def limitSequence (_ : ∀ (n : ℕ) (x : X n), (φ n x).val.EqUpTo x.val (p₀ 
 lemma limitSequence_eqUpTo (n : ℕ) :
     (limitSequence φ hφ x₀).EqUpTo (sequence φ x₀ n).1 (p₀ + n) := by
   intro p q hpq hp
-  exact sequence_eqUpTo φ hφ _ _ _ (by cutsat) _ _ _ (by cutsat)
+  exact sequence_eqUpTo φ hφ _ _ _ (by lia) _ _ _ (by lia)
 
 end InductionUp
 
