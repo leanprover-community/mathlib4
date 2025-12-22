@@ -136,8 +136,7 @@ theorem cardSupp_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
 
 theorem cardSupp_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x : HahnSeries Γ R) :
     x⁻¹.cardSupp ≤ max ℵ₀ x.cardSupp := by
-  obtain rfl | hx := eq_or_ne x 0
-  · simp
+  obtain rfl | hx := eq_or_ne x 0; · simp
   apply (cardSupp_single_mul_le ..).trans <| (cardSupp_hsum_powers_le ..).trans _
   gcongr
   refine (cardSupp_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| cardSupp_mono fun _ ↦ ?_
