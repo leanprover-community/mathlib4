@@ -25,61 +25,50 @@ This file defines k-edge-connectivity for simple graphs.
 
 namespace SimpleGraph
 
-variable {V : Type*} (G : SimpleGraph V)
+variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w : V}
 
+variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
 `k` edges. -/
 def IsEdgeReachable (k : ℕ) (u v : V) : Prop :=
   ∀ ⦃s : Set (Sym2 V)⦄, s.encard < k → (G.deleteEdges s).Reachable u v
 
+variable (G k) in
 /-- A graph is `k`-edge-connected if any two vertices are `k`-edge-reachable. -/
-def IsEdgeConnected (k : ℕ) : Prop :=
-  ∀ u v : V, G.IsEdgeReachable k u v
+def IsEdgeConnected (k : ℕ) : Prop := ∀ u v, G.IsEdgeReachable k u v
 
-variable {G} {k : ℕ}
-
-@[simp]
-lemma IsEdgeReachable.rfl (u : V) : G.IsEdgeReachable k u u :=
-  fun _ _ ↦ .refl _
+@[simp] lemma IsEdgeReachable.rfl (u : V) : G.IsEdgeReachable k u u := fun _ _ ↦ .rfl
 
 @[symm]
-lemma IsEdgeReachable.symm {u v : V} (h : G.IsEdgeReachable k u v) :
-    G.IsEdgeReachable k v u :=
+lemma IsEdgeReachable.symm (h : G.IsEdgeReachable k u v) : G.IsEdgeReachable k v u :=
   fun _ hk ↦ (h hk).symm
 
 @[trans]
-lemma IsEdgeReachable.trans {u v w : V} (h1 : G.IsEdgeReachable k u v)
-    (h2 : G.IsEdgeReachable k v w) : G.IsEdgeReachable k u w :=
-  fun _ hk ↦ (h1 hk).trans (h2 hk)
+lemma IsEdgeReachable.trans (h1 : G.IsEdgeReachable k u v) (h2 : G.IsEdgeReachable k v w) :
+    G.IsEdgeReachable k u w := fun _ hk ↦ (h1 hk).trans (h2 hk)
 
 @[gcongr]
-lemma IsEdgeReachable.mono {G' : SimpleGraph V} (hle : G ≤ G') {u v : V}
-    (h : G.IsEdgeReachable k u v) : G'.IsEdgeReachable k u v :=
-  fun _ hk ↦ h hk |>.mono <| deleteEdges_mono hle
+lemma IsEdgeReachable.mono (hGH : G ≤ H) (h : G.IsEdgeReachable k u v) : H.IsEdgeReachable k u v :=
+  fun _ hk ↦ h hk |>.mono <| deleteEdges_mono hGH
 
 @[gcongr]
-lemma IsEdgeReachable.anti {k l : ℕ} (hkl : k ≤ l) {u v : V}
-    (h : G.IsEdgeReachable l u v) : G.IsEdgeReachable k u v :=
-  fun _ hk ↦ h (lt_of_lt_of_le hk (Nat.cast_le.mpr hkl))
+lemma IsEdgeReachable.anti (hkl : k ≤ l) (h : G.IsEdgeReachable l u v) : G.IsEdgeReachable k u v :=
+  fun _ hk ↦ h <| by grw [← hkl]; exact hk
 
 @[simp]
-protected lemma IsEdgeReachable.zero {u v : V} : G.IsEdgeReachable 0 u v :=
-  fun _ hk ↦ absurd (zero_le _) (not_le_of_gt hk)
+protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdgeReachable]
+
+@[simp] protected lemma IsEdgeConnected.zero : G.IsEdgeConnected 0 := fun _ _ ↦ .zero
 
 @[simp]
-protected lemma IsEdgeConnected.zero : G.IsEdgeConnected 0 :=
-  fun _ _ ↦ .zero
-
-@[simp]
-lemma isEdgeReachable_one {u v : V} : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
-  refine ⟨fun h ↦ G.deleteEdges_empty ▸ h (by simp), fun h s hs ↦ ?_⟩
-  rwa [Set.encard_eq_zero.mp <| ENat.lt_one_iff_eq_zero.mp hs, deleteEdges_empty]
+lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
+  simp [IsEdgeReachable, ENat.lt_one_iff_eq_zero]
 
 @[simp]
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
   simp [IsEdgeConnected, Preconnected]
 
-lemma isEdgeReachable_succ {k : ℕ} {u v : V} :
+lemma isEdgeReachable_succ :
     G.IsEdgeReachable (k + 1) u v ↔
       G.Reachable u v ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeReachable k u v := by
   refine ⟨fun h ↦ ⟨G.deleteEdges_empty ▸ h (by simp), fun e he s hk ↦ ?_⟩, ?_⟩
