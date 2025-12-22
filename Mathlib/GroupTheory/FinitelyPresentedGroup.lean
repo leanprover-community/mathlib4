@@ -1,7 +1,7 @@
 /-
 Copyright (c) Hang Lu Su 2025 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ricardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
+Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
   Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu
 -/
 
