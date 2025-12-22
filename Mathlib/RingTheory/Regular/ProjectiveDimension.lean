@@ -39,9 +39,6 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-local instance small_of_quotient' [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
-  small_of_surjective Ideal.Quotient.mk_surjective
-
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 
 variable {R} in
