@@ -191,13 +191,17 @@ public noncomputable def leftSingularVectors : ℕ →₀ F :=
 --   : (adjoint T).leftSingularVectors = T.rightSingularVectors := by simp [leftSingularVectors]
 
 public theorem rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
-  : T.rightSingularVectors i = T.isSymmetric_adjoint_comp_self.eigenvectorBasis hn i := sorry
+  : T.rightSingularVectors i = T.isSymmetric_adjoint_comp_self.eigenvectorBasis hn i := by
+    subst hn
+    exact Finsupp.embDomain_apply_self _ _ i
 
 public theorem leftSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 F = n) (i : Fin n)
   : T.leftSingularVectors i = T.isSymmetric_self_comp_adjoint.eigenvectorBasis hn i := sorry
 
 public theorem rightSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 E ≤ i)
-  : T.rightSingularVectors i = 0 := sorry
+  : T.rightSingularVectors i = 0 := by
+  apply Finsupp.embDomain_notin_range
+  simp [hi]
 
 public theorem leftSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 F ≤ i)
   : T.leftSingularVectors i = 0 := by
