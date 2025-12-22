@@ -286,4 +286,28 @@ lemma mem_corootSpace' {x : H} :
     (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
 
+section FiniteDimensional
+
+variable {K : Type*} [Field K] [LieAlgebra K L]
+variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
+variable [LieModule.IsTriangularizable K H L]
+
+/-- The collection of roots as a `Finset`. -/
+noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
+lemma iSup_rootSpace_eq_top :
+    H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α = ⊤ := by
+  by_contra h_contra
+  apply h_contra (eq_top_iff.mpr _)
+  rw [← LieModule.iSup_genWeightSpace_eq_top']
+  simp only [iSup_le_iff]
+  intro α
+  by_cases hα : α.IsZero
+  · simp [hα]
+  · apply le_sup_of_le_right
+    apply le_iSup_of_le ⟨α, (Finset.mem_filter_univ α).mpr hα⟩
+    exact le_rfl
+
+end FiniteDimensional
+
 end LieAlgebra
