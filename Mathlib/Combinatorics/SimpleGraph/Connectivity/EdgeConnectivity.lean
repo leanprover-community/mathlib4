@@ -123,21 +123,15 @@ lemma isEdgeConnected_succ {k : ℕ} :
   grind
 
 /-- A graph is 2-edge-connected iff it is preconnected and has no bridges. -/
-lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ∀ e, ¬ G.IsBridge e := by
-  constructor
-  · intro h
-    refine ⟨isEdgeConnected_one.mp (fun u v ↦ (h u v).anti (Nat.le_succ 1)), fun e hb ↦ ?_⟩
-    induction e using Sym2.ind with | h u v =>
-    exact (isBridge_iff.mp hb).2 <| h u v (Set.encard_singleton _ ▸ Nat.one_lt_ofNat)
-  · rintro ⟨h_pre, h_bridge⟩ u v
-    rw [isEdgeReachable_succ]
-    constructor
-    · exact h_pre u v
-    · intro e he
-      rw [isEdgeReachable_one]
-      induction e using Sym2.ind with | h x y =>
-      have h_conn : G.Connected := { preconnected := h_pre, nonempty := ⟨x⟩ }
-      exact (h_conn.connected_delete_edge_of_not_isBridge (h_bridge _)).preconnected u v
+lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ¬∃ e, G.IsBridge e := by
+  refine ⟨fun h ↦ ⟨fun u v ↦ isEdgeReachable_one.mp <| .anti (Nat.le_succ 1) (h u v), ?_⟩, ?_⟩
+  · rintro ⟨⟨⟩, he_bridge⟩
+    exact he_bridge.right <| h _ _ <| Set.encard_singleton _ ▸ Nat.one_lt_ofNat
+  · refine fun ⟨h_pre, h_bridge⟩ u v ↦ isEdgeReachable_succ.mpr ⟨h_pre u v, ?_⟩
+    · rintro ⟨⟩ he
+      apply isEdgeReachable_one.mpr
+      have h_conn : G.Connected := { preconnected := h_pre, nonempty := ⟨‹_›⟩ }
+      exact h_conn.connected_delete_edge_of_not_isBridge (h_bridge ⟨_, ·⟩) |>.preconnected ..
 
 /-- An edge is a bridge iff its endpoints are adj and not 2-edge-reachable. -/
 lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
