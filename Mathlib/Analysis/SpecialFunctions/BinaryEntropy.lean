@@ -264,7 +264,7 @@ open Filter Topology Set
 
 private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[>] 0) atTop := by
-  apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
+  apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1 / 2) : ℝ)
   · have h₁ : (0 : ℝ) < 1 / 2 := by simp
     filter_upwards [Ioc_mem_nhdsGT h₁] with p hx
     gcongr
@@ -364,9 +364,9 @@ lemma deriv2_binEntropy : deriv^[2] binEntropy p = -1 / (p * (1 - p)) :=
 
 /-- Qary entropy is strictly increasing in the interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
-    StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1/q)) := by
+    StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1 / q)) := by
   intro p1 hp1 p2 hp2 p1le2
-  apply strictMonoOn_of_deriv_pos (convex_Icc 0 (1 - 1/(q : ℝ))) _ _ hp1 hp2 p1le2
+  apply strictMonoOn_of_deriv_pos (convex_Icc 0 (1 - 1 / (q : ℝ))) _ _ hp1 hp2 p1le2
   · exact qaryEntropy_continuous.continuousOn
   · intro p hp
     have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
@@ -392,9 +392,9 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
 
 /-- Qary entropy is strictly decreasing in the interval [1 - q⁻¹, 1]. -/
 lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
-    StrictAntiOn (qaryEntropy q) (Icc (1 - 1/q) 1) := by
+    StrictAntiOn (qaryEntropy q) (Icc (1 - 1 / q) 1) := by
   intro p1 hp1 p2 hp2 p1le2
-  apply strictAntiOn_of_deriv_neg (convex_Icc (1 - 1/(q : ℝ)) 1) _ _ hp1 hp2 p1le2
+  apply strictAntiOn_of_deriv_neg (convex_Icc (1 - 1 / (q : ℝ)) 1) _ _ hp1 hp2 p1le2
   · exact qaryEntropy_continuous.continuousOn
   · intro p hp
     have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
@@ -421,12 +421,12 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
 
 /-- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma binEntropy_strictMonoOn : StrictMonoOn binEntropy (Icc 0 2⁻¹) := by
-  rw [show Icc (0 : ℝ) 2⁻¹ = Icc 0 (1 - 1/2) by norm_num, ← qaryEntropy_two]
+  rw [show Icc (0 : ℝ) 2⁻¹ = Icc 0 (1 - 1 / 2) by norm_num, ← qaryEntropy_two]
   exact qaryEntropy_strictMonoOn (by rfl)
 
 /-- Binary entropy is strictly decreasing in interval [1/2, 1]. -/
 lemma binEntropy_strictAntiOn : StrictAntiOn binEntropy (Icc 2⁻¹ 1) := by
-  rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1/2) 1 by norm_num, ← qaryEntropy_two]
+  rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1 / 2) 1 by norm_num, ← qaryEntropy_two]
   convert qaryEntropy_strictAntiOn (by rfl) using 1
   norm_num
 

@@ -272,7 +272,7 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
           ?_).const_mul _).sub (HasDerivAt.fun_sum fun i hi ↦ (hasDerivAt_pow _ _).div_const _))
         |>.congr_deriv ?_
   · simp only [id_eq, div_ne_zero_iff, Pi.div_apply]; grind
-  have : (∑ i ∈ range n, (2*i+1) * y ^ (2*i) / (2*i+1)) = (∑ i ∈ range n, (y^2) ^ i) := by
+  have : (∑ i ∈ range n, (2 * i + 1) * y ^ (2 * i) / (2 * i + 1)) = (∑ i ∈ range n, (y^2) ^ i) := by
     congr with i
     simp [field, mul_comm, ← pow_mul]
   have hy₃ : y ^ 2 ≠ 1 := by simp [hy₁.ne', hy₂.ne]
