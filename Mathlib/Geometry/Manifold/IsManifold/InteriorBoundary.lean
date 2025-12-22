@@ -5,9 +5,10 @@ Authors: Michael Rothgang, Ben Eltschig
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LocalExtr.Basic
-public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+
+import Mathlib.Analysis.Calculus.LocalExtr.Basic
+import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Interior and boundary of a manifold
@@ -202,65 +203,6 @@ lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessM
 end BoundarylessManifold
 
 section ChartIndependence
-
-lemma mem_interior_iff_notMem_frontier {X : Type*} [TopologicalSpace X] {s : Set X} {x : X}
-    (hx : x ∈ s) : x ∈ interior s ↔ x ∉ frontier s := by
-  simp [← self_diff_frontier, hx]
-
-lemma mem_frontier_iff_notMem_interior {X : Type*} [TopologicalSpace X] {s : Set X} {x : X}
-    (hx : x ∈ s) : x ∈ frontier s ↔ x ∉ interior s := by
-  simp [← self_diff_frontier, hx]
-
-/-- The change of charts from `e` to `e'` in the model vector space `E`. -/
-@[simps!]
-def extCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :=
-  (e.extend I).symm.trans (e'.extend I)
-
-omit [ChartedSpace H M] in
-lemma extCoordChange_symm {e e' : OpenPartialHomeomorph M H} :
-    (I.extCoordChange e e').symm = I.extCoordChange e' e := by
-  rfl
-
-lemma contDiffOn_extCoordChange {n : WithTop ℕ∞} {e e' : OpenPartialHomeomorph M H}
-    (he : e ∈ IsManifold.maximalAtlas I n M) (he' : e' ∈ IsManifold.maximalAtlas I n M) :
-    ContDiffOn 𝕜 n (I.extCoordChange e e') (I.extCoordChange e e').source :=
-  e'.contDiffOn_extend_coord_change he' he
-
-lemma contDiffOn_extCoordChange_symm {n : WithTop ℕ∞} {e e' : OpenPartialHomeomorph M H}
-    (he : e ∈ IsManifold.maximalAtlas I n M) (he' : e' ∈ IsManifold.maximalAtlas I n M) :
-    ContDiffOn 𝕜 n (I.extCoordChange e e').symm (I.extCoordChange e e').target :=
-  e.contDiffOn_extend_coord_change he he'
-
-omit [ChartedSpace H M] in
-lemma uniqueDiffOn_extCoordChange_source {e e' : OpenPartialHomeomorph M H} :
-    UniqueDiffOn 𝕜 (I.extCoordChange e e').source := by
-  rw [extCoordChange_source, inter_assoc, inter_comm, preimage_comp, ← preimage_inter]
-  exact I.uniqueDiffOn_preimage <| e.isOpen_inter_preimage_symm e'.open_source
-
-omit [ChartedSpace H M] in
-lemma uniqueDiffOn_extCoordChange_target {e e' : OpenPartialHomeomorph M H} :
-    UniqueDiffOn 𝕜 (I.extCoordChange e e').target := by
-  rw [← extCoordChange_symm, PartialEquiv.symm_target]
-  exact uniqueDiffOn_extCoordChange_source
-
-lemma isInvertible_fderivWithin_extCoordChange {n : WithTop ℕ∞}
-    (hn : 1 ≤ n) {e e' : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I n M)
-    (he' : e' ∈ IsManifold.maximalAtlas I n M) {x : E} (hx : x ∈ (I.extCoordChange e e').source) :
-    (fderivWithin 𝕜 (I.extCoordChange e e') (I.extCoordChange e e').source x).IsInvertible := by
-  set φ := I.extCoordChange e e'
-  have hφ : ContDiffOn 𝕜 n φ φ.source := I.contDiffOn_extCoordChange he he'
-  have hφ' : ContDiffOn 𝕜 n φ.symm φ.target := I.contDiffOn_extCoordChange_symm he he'
-  refine .of_inverse (g := (fderivWithin 𝕜 φ.symm φ.target (φ x))) ?_ ?_
-  · rw [← φ.left_inv hx, φ.right_inv (φ.map_source hx), ← fderivWithin_comp _
-      (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn):)
-      ((hφ' _ (φ.map_source hx)).differentiableWithinAt hn) φ.symm_mapsTo
-      (I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx)),
-      fderivWithin_congr' φ.rightInvOn.eqOn (φ.map_source hx)]
-    exact fderivWithin_id (I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx))
-  · rw [← fderivWithin_comp _ ((hφ' _ (φ.map_source hx)).differentiableWithinAt hn)
-      ((hφ _ hx).differentiableWithinAt hn) φ.mapsTo (I.uniqueDiffOn_extCoordChange_source _ hx),
-      fderivWithin_congr' φ.leftInvOn.eqOn hx,
-      fderivWithin_id (I.uniqueDiffOn_extCoordChange_source _ hx)]
 
 /-- A point `x` in a manifold that is at least C¹ is an interior point iff it gets mapped to the
 interior of the model space by any given chart - i.e., the notion of interior points does not depend

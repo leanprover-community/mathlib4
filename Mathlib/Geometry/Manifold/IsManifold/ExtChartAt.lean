@@ -377,6 +377,60 @@ theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ max
 
 end OpenPartialHomeomorph
 
+namespace ModelWithCorners
+
+/-- The change of charts from `e` to `e'` in the model vector space `E`. -/
+@[simps!]
+def extCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :=
+  (e.extend I).symm.trans (e'.extend I)
+
+lemma extCoordChange_symm {e e' : OpenPartialHomeomorph M H} :
+    (I.extCoordChange e e').symm = I.extCoordChange e' e := by
+  rfl
+
+lemma contDiffOn_extCoordChange [ChartedSpace H M] {n : WithTop ℕ∞}
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I n M)
+    (he' : e' ∈ IsManifold.maximalAtlas I n M) :
+    ContDiffOn 𝕜 n (I.extCoordChange e e') (I.extCoordChange e e').source :=
+  e'.contDiffOn_extend_coord_change he' he
+
+lemma contDiffOn_extCoordChange_symm [ChartedSpace H M] {n : WithTop ℕ∞}
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I n M)
+    (he' : e' ∈ IsManifold.maximalAtlas I n M) :
+    ContDiffOn 𝕜 n (I.extCoordChange e e').symm (I.extCoordChange e e').target :=
+  e.contDiffOn_extend_coord_change he he'
+
+lemma uniqueDiffOn_extCoordChange_source {e e' : OpenPartialHomeomorph M H} :
+    UniqueDiffOn 𝕜 (I.extCoordChange e e').source := by
+  rw [extCoordChange_source, inter_assoc, inter_comm, preimage_comp, ← preimage_inter]
+  exact I.uniqueDiffOn_preimage <| e.isOpen_inter_preimage_symm e'.open_source
+
+lemma uniqueDiffOn_extCoordChange_target {e e' : OpenPartialHomeomorph M H} :
+    UniqueDiffOn 𝕜 (I.extCoordChange e e').target := by
+  rw [← extCoordChange_symm, PartialEquiv.symm_target]
+  exact uniqueDiffOn_extCoordChange_source
+
+lemma isInvertible_fderivWithin_extCoordChange [ChartedSpace H M] {n : WithTop ℕ∞}
+    (hn : 1 ≤ n) {e e' : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I n M)
+    (he' : e' ∈ IsManifold.maximalAtlas I n M) {x : E} (hx : x ∈ (I.extCoordChange e e').source) :
+    (fderivWithin 𝕜 (I.extCoordChange e e') (I.extCoordChange e e').source x).IsInvertible := by
+  set φ := I.extCoordChange e e'
+  have hφ : ContDiffOn 𝕜 n φ φ.source := I.contDiffOn_extCoordChange he he'
+  have hφ' : ContDiffOn 𝕜 n φ.symm φ.target := I.contDiffOn_extCoordChange_symm he he'
+  refine .of_inverse (g := (fderivWithin 𝕜 φ.symm φ.target (φ x))) ?_ ?_
+  · rw [← φ.left_inv hx, φ.right_inv (φ.map_source hx), ← fderivWithin_comp _
+      (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn):)
+      ((hφ' _ (φ.map_source hx)).differentiableWithinAt hn) φ.symm_mapsTo
+      (I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx)),
+      fderivWithin_congr' φ.rightInvOn.eqOn (φ.map_source hx)]
+    exact fderivWithin_id (I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx))
+  · rw [← fderivWithin_comp _ ((hφ' _ (φ.map_source hx)).differentiableWithinAt hn)
+      ((hφ _ hx).differentiableWithinAt hn) φ.mapsTo (I.uniqueDiffOn_extCoordChange_source _ hx),
+      fderivWithin_congr' φ.leftInvOn.eqOn hx,
+      fderivWithin_id (I.uniqueDiffOn_extCoordChange_source _ hx)]
+
+end ModelWithCorners
+
 open OpenPartialHomeomorph
 
 variable [ChartedSpace H M] [ChartedSpace H' M']
