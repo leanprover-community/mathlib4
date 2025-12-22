@@ -49,7 +49,7 @@ namespace ObjectProperty
 variable {F} (P : F.ObjectProperty)
 
 /-- Given `F : Pseudofunctor B Cat`, `P : F.ObjectProperty` and `X : B`, this is
-the fullsubcategory of `F.obj X` consisting of the objects satisfying the
+the full subcategory of `F.obj X` consisting of the objects satisfying the
 property `P`. -/
 abbrev Obj (X : B) := (P.prop X).FullSubcategory
 
