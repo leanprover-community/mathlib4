@@ -96,7 +96,7 @@ lemma dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq {p :
     ext i
     fin_cases i <;> rfl
   rw [orthogonalProjectionSpan, orthogonalProjectionSpan,
-    ← dist_orthogonalProjection_eq_iff_two_zsmul_oangle_eq ha]
+    ← dist_orthogonalProjection_line_eq_iff_two_zsmul_oangle_eq ha]
   simp only [range_faceOpposite_points]
   simp_rw [(by grind : ({i₃}ᶜ : Set (Fin 3)) = {i₁, i₂}),
     (by grind : ({i₂}ᶜ : Set (Fin 3)) = {i₁, i₃}), Set.image_insert_eq, Set.image_singleton]
