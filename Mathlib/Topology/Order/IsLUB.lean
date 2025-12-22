@@ -168,7 +168,7 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
 
 /-- The upper bounds of the image of a continuous function on a dense set is equal to the upper
 bounds of the range of the universe. -/
-theorem Dense.continuous_upperBounds {α : Type*} [TopologicalSpace α] [Preorder α]
+theorem Dense.upperBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
     (hf : Continuous f) :
     upperBounds (f '' S) = upperBounds (range f) := by
