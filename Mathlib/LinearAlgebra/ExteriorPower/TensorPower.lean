@@ -37,23 +37,23 @@ open Equiv in
 @[simp]
 lemma toTensorPower_apply_ιMulti (v : Fin n → M) :
     toTensorPower R n M (ιMulti R n v) =
-      ∑ σ : Perm (Fin n), Perm.sign σ • PiTensorProduct.tprod R (fun i => v (σ i)) := by
+      ∑ σ : Perm (Fin n), Perm.sign σ • ⨂ₜ[R] i, v (σ i) := by
   simp [toTensorPower, MultilinearMap.alternatization_apply]
 
 /-! Linear form on the exterior power induced by a family of linear forms on the module. -/
 
-open PiTensorProduct in
+open PiTensorProduct
+
 /-- A family `f` indexed by `Fin n` of linear forms on `M` defines a linear form on the `n`th
 exterior power of `M`, by composing the map `exteriorPower.toTensorPower` to the `n`th tensor
-power and then applying `(dualDistrib.compMultilinearMap (tprod R)) f`. -/
+power and then applying `dprod f`. -/
 noncomputable def linearForm (f : Fin n → Module.Dual R M) :
     Module.Dual R (⋀[R]^n M) :=
-  (dualDistrib.compMultilinearMap (tprod R)) f ∘ₗ toTensorPower R n M
+  dprod f ∘ₗ toTensorPower R n M
 
 @[simp]
 lemma linearForm_apply (f : Fin n → Module.Dual R M) (x : ⋀[R]^n M) :
-    linearForm R n f x = (PiTensorProduct.dualDistrib.compMultilinearMap
-    (PiTensorProduct.tprod R)) f (toTensorPower R n M x) :=
+    linearForm R n f x = (dprod f) (toTensorPower R n M x) :=
   rfl
 
 lemma linearForm_apply_ιMulti (f : Fin n → Module.Dual R M) (m : Fin n → M) :

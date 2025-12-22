@@ -52,6 +52,15 @@ theorem dualDistrib_apply [Fintype ι] (f : Π i, Dual R (M i)) (m : Π i, M i) 
     constantBaseRingEquiv_tprod]
   convert rfl
 
+noncomputable def dprod [Finite ι] :
+    MultilinearMap R (fun i : ι => Dual R (M i)) (Dual R (⨂[R] i, M i)) :=
+    dualDistrib.compMultilinearMap (tprod R)
+
+@[simp]
+lemma dprod_apply [Fintype ι] (f : Π i, Dual R (M i)) (m : Π i, M i) :
+    dprod f (⨂ₜ[R] i, m i) = ∏ i, (f i) (m i) := by
+  rw [dprod, LinearMap.compMultilinearMap_apply, dualDistrib_apply]
+
 end SemiRing
 
 section Ring
