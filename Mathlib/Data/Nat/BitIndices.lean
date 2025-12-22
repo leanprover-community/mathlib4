@@ -84,7 +84,7 @@ theorem bitIndices_bit_false (n : ℕ) :
   induction n using binaryRec with
   | zero => simp
   | bit b n hs =>
-    have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
+    have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x + 1) = fun i ↦ 2 * 2 ^ i := by
       ext i; simp [pow_add, mul_comm]
     cases b
     · simpa [hrw, List.sum_map_mul_left]

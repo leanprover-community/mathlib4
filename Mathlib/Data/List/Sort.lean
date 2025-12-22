@@ -330,7 +330,7 @@ variable {r : α → α → Prop} [IsAntisymm α r]
 
 /-- Variant of `Perm.eq_of_pairwise` using relation typeclasses. -/
 theorem Perm.eq_of_pairwise' {l₁ l₂ : List α} :
-    Pairwise r l₁ →  Pairwise r l₂ → (hl : l₁ ~ l₂) → l₁ = l₂ :=
+    Pairwise r l₁ → Pairwise r l₂ → (hl : l₁ ~ l₂) → l₁ = l₂ :=
   eq_of_pairwise (fun _ _ _ _ => antisymm)
 
 @[deprecated (since := "2025-10-11")]
