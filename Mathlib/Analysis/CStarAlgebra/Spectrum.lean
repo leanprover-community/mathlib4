@@ -151,9 +151,6 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
   convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
-/-- In a C⋆-algebra, the spectral radius of the adjoint of an element times itself is equal to the
-square of that element's norm.
--/
 theorem toReal_spectralRadius_star_mul_self_eq_norm_sq (a : A) :
     (spectralRadius ℂ (a⋆ * a)).toReal = ‖a‖ ^ 2 := by
   rw [(IsSelfAdjoint.star_mul_self a).toReal_spectralRadius_complex_eq_norm,
