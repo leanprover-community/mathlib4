@@ -102,9 +102,10 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
     using the triangle inequality again for `edist z y ≤ edist x z + edist x y ≤ 2 * edist x y`. -/
     calc edist (f x) (f y)
       _ ≤ edist (f z) (f x) + edist (f z) (f y) := edist_triangle_left _ _ _
-      _ ≤ (K _ z.2) * edist z.1 x + (K' _ z.2) * edist z.1 y := add_le_add
-        (hf _ z.2 ⟨mem_ball_self <| hε _ z.2, z.2⟩ ⟨hx'.2.trans <| half_lt_self <| hε _ z.2, hx⟩)
-        (hK' _ z.2 _ ⟨hy, hy'⟩)
+      _ ≤ (K _ z.2) * edist z.1 x + edist (f z) (f y) := add_le_add_left
+        (hf _ z.2 ⟨mem_ball_self <| hε _ z.2, z.2⟩ ⟨hx'.2.trans <| half_lt_self <| hε _ z.2, hx⟩) _
+      _ ≤ (K _ z.2) * edist z.1 x + (K' _ z.2) * edist z.1 y :=
+        add_le_add_right (hK' _ z.2 _ ⟨hy, hy'⟩) _
       _ ≤ (K _ z.2) * edist z.1 x + (K' _ z.2) * (edist x z.1 + edist x y) := by
         gcongr; exact edist_triangle_left z.1 y x
       _ ≤ (K _ z.2) * edist x y + (K' _ z.2) * (edist x y + edist x y) := by
