@@ -11,7 +11,7 @@ public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Order.T5
 
 /-!
