@@ -204,13 +204,8 @@ the universe. -/
 theorem Dense.ciInf {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLattice α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddBelow (range f)) :
-    ⨅ i, f i = ⨅ s : S, f s := by
-  rw [← sInf_range, ← sInf_range]
-  obtain (_ | _) := isEmpty_or_nonempty γ
-  · simp [Set.range_eq_empty]
-  refine (isGLB_csInf (range_nonempty f) h).unique ?_
-  refine (isGLB_congr (hS.continuous_lowerBounds hf)).mp (isGLB_ciInf_set ?_ hS.nonempty)
-  exact h.mono (by grind)
+    ⨅ i, f i = ⨅ s : S, f s :=
+  hS.ciSup (α := αᵒᵈ) hf h
 
 /-- This is an analogue of `Dense.continuous_sup` for functions taking values in a conditionally
 complete linear order. The assumption of `BddAbove (range f)` is not needed in this theorem. -/
