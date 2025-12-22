@@ -87,7 +87,7 @@ open TensorProduct
 variable {ι : Type*} (b : Module.Basis ι R V)
 
 theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
-  have : DecidableEq ι := Classical.typeDecidableEq ι
+  classical
   let j := TensorProduct.finsuppScalarRight' A R ι R
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Finsupp.linearCombination R b ∘ₗ j)
@@ -97,13 +97,8 @@ theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
         ← linearIndependent_iff_injective_finsuppLinearCombination,
         Module.Basis.span_eq, b.linearIndependent]
   · intro x
-    simp only [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply]
     suffices (j (1 ⊗ₜ[A] x)) = x.mapRange (algebraMap A R) (by simp) by
-      rw [this]
-      simp only [Finsupp.linearCombination_apply]
-      rw [Finsupp.sum_mapRange_index (by simp)]
-      aesop
+      simp [this, Finsupp.linearCombination_apply, Finsupp.sum_mapRange_index]
     ext i
     simp [j, TensorProduct.finsuppScalarRight', Algebra.algebraMap_eq_smul_one]
 
@@ -122,9 +117,9 @@ theorem of_fintype_basis [Fintype ι] :
         ← linearIndependent_iff_injective_fintypeLinearCombination,
         Module.Basis.span_eq, b.linearIndependent]
   · intro x
-    rw [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, Fintype.linearCombination_apply,
-      Fintype.linearCombination_apply]
+    -- simp? [Fintype.linearCombination_apply] says:
+    simp only [LinearEquiv.ofBijective_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      Function.comp_apply, Fintype.linearCombination_apply]
     congr
     ext i
     rw [TensorProduct.piScalarRight_apply, TensorProduct.piScalarRightHom_tmul]
@@ -136,9 +131,6 @@ theorem of_fintype_basis_eq [Fintype ι] {a : ι → A} {v : V} :
       algebraMap A R ∘ a = b.equivFun v := by
   rw [← LinearEquiv.symm_apply_eq]
   rw [Fintype.linearCombination_apply, b.equivFun_symm_apply]
-  refine Eq.congr ?_ rfl
-  apply Finset.sum_congr rfl
-  intro i _
   simp
 
 end IsBaseChange
