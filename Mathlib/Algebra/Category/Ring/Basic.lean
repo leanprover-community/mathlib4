@@ -53,6 +53,7 @@ lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : SemiRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
@@ -61,11 +62,15 @@ structure Hom (R S : SemiRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category SemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -201,6 +206,7 @@ lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : RingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
@@ -209,11 +215,15 @@ structure Hom (R S : RingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category RingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -361,6 +371,7 @@ lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
 @[ext]
@@ -369,11 +380,15 @@ structure Hom (R S : CommSemiRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category CommSemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -459,6 +474,8 @@ lemma forget_map {R S : CommSemiRingCat} (f : R ⟶ S) :
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
   (inferInstance : CommSemiring R.carrier)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
@@ -520,6 +537,7 @@ lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/
 @[ext]
@@ -528,11 +546,15 @@ structure Hom (R S : CommRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category CommRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
