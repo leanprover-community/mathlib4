@@ -146,7 +146,7 @@ lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : Local
 
 /-- If `f` is `C¹` on a convex compact set `s`, it is Lipschitz on `s`. -/
 theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiffOn ℝ n f s)
-    (hn : 1 ≤ n) (hs : Convex ℝ s) (hs' : IsCompact s) :
+    (hn : n ≠ 0) (hs : Convex ℝ s) (hs' : IsCompact s) :
     ∃ K, LipschitzOnWith K f s := by
   apply LocallyLipschitzOn.exists_lipschitzOnWith_of_compact hs'
   apply (hf.of_le hn).locallyLipschitzOn hs
