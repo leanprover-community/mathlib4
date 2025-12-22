@@ -39,8 +39,8 @@ noncomputable def NatTrans.monoFactorisationIsImage {F G : C ⥤ Type u} (f : F 
   lift H := {
     app X := fun ⟨x, hx⟩ ↦ H.e.app _ hx.choose
     naturality X Y g := by
-      ext ⟨⟩
-      apply show Function.Injective (H.m.app Y) by rw [← mono_iff_injective]; infer_instance
+      ext
+      apply injective_of_mono (H.m.app Y)
       simp [FunctorToTypes.naturality]
       grind }
   lift_fac H := by
