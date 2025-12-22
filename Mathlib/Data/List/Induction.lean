@@ -21,30 +21,22 @@ a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 @[elab_as_elim]
 def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : motive l :=
-  match h : reverse l with
-  | [] => cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
-      nil
-  | head :: tail =>
-    cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
-      append_singleton _ head <| reverseRecOn (reverse tail) nil append_singleton
-termination_by l.length
-decreasing_by
-  simp_wf
-  rw [← length_reverse (as := l), h, length_cons]
-  simp
+  match hxs : l.length with
+  | 0 => eq_nil_of_length_eq_zero hxs ▸ nil
+  | n + 1 => dropLast_concat_getLast (ne_nil_of_length_eq_add_one hxs) ▸
+    append_singleton _ _ (l.dropLast.reverseRecOn nil append_singleton)
+  termination_by l.length
 
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := reverseRecOn.eq_1 ..
+    reverseRecOn [] nil append_singleton = nil := by grind [reverseRecOn]
 
--- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
-@[simp, nolint unusedHavesSuffices]
+@[simp]
 theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
-      append_singleton _ _ (reverseRecOn (motive := motive) xs nil append_singleton) := by
-  grind [reverseRecOn]
+    (xs ++ [x]).reverseRecOn nil append_singleton =
+      append_singleton xs x (reverseRecOn xs nil append_singleton) := by grind [reverseRecOn]
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
@@ -67,7 +59,7 @@ termination_by l => l.length
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
+    bidirectionalRec nil singleton cons_append [] = nil := by grind [bidirectionalRec]
 
 
 @[simp]
@@ -75,7 +67,7 @@ theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α) :
     bidirectionalRec nil singleton cons_append [a] = singleton a := by
-  simp [bidirectionalRec]
+  grind [bidirectionalRec]
 
 @[simp]
 theorem bidirectionalRec_cons_append {motive : List α → Sort*}
@@ -84,8 +76,7 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
     (a : α) (l : List α) (b : α) :
     bidirectionalRec nil singleton cons_append (a :: (l ++ [b])) =
       cons_append a l b (bidirectionalRec nil singleton cons_append l) := by
-  conv_lhs => unfold bidirectionalRec
-  cases l with grind
+  grind [bidirectionalRec, cases List]
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
 @[elab_as_elim]
