@@ -84,7 +84,7 @@ def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ
 
 lemma excenterWeightsUnnorm_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
     (s.reindex e).excenterWeightsUnnorm signs =
-      s.excenterWeightsUnnorm (signs.map e.symm.toEmbedding) ∘ e.symm := by
+      s.excenterWeightsUnnorm (signs.map e.symm) ∘ e.symm := by
   ext i
   simp [excenterWeightsUnnorm]
 
@@ -116,7 +116,7 @@ def ExcenterExists (signs : Finset (Fin (n + 1))) : Prop :=
   ∑ i, s.excenterWeightsUnnorm signs i ≠ 0
 
 lemma excenterExists_reindex {e : Fin (n + 1) ≃ Fin (m + 1)} {signs : Finset (Fin (m + 1))} :
-    (s.reindex e).ExcenterExists signs ↔ s.ExcenterExists (signs.map e.symm.toEmbedding) := by
+    (s.reindex e).ExcenterExists signs ↔ s.ExcenterExists (signs.map e.symm) := by
   simp_rw [ExcenterExists, excenterWeightsUnnorm_reindex, Finset.sum_comp_equiv,
     Finset.map_univ_equiv]
 
@@ -140,7 +140,7 @@ def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
 
 lemma excenterWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
     (s.reindex e).excenterWeights signs =
-      s.excenterWeights (signs.map e.symm.toEmbedding) ∘ e.symm := by
+      s.excenterWeights (signs.map e.symm) ∘ e.symm := by
   simp_rw [excenterWeights, excenterWeightsUnnorm_reindex, Finset.sum_comp_equiv,
     Finset.map_univ_equiv]
   rfl
@@ -349,7 +349,7 @@ def exsphere (signs : Finset (Fin (n + 1))) : Sphere P where
   radius := |(∑ i, s.excenterWeightsUnnorm signs i)⁻¹|
 
 lemma exsphere_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
-    (s.reindex e).exsphere signs = s.exsphere (signs.map e.symm.toEmbedding) := by
+    (s.reindex e).exsphere signs = s.exsphere (signs.map e.symm) := by
   simp_rw [exsphere, excenterWeightsUnnorm_reindex, excenterWeights_reindex, Finset.sum_comp_equiv,
     reindex, ← Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
   simp
@@ -370,7 +370,7 @@ def excenter (signs : Finset (Fin (n + 1))) : P :=
   (s.exsphere signs).center
 
 lemma excenter_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
-    (s.reindex e).excenter signs = s.excenter (signs.map e.symm.toEmbedding) := by
+    (s.reindex e).excenter signs = s.excenter (signs.map e.symm) := by
   simp_rw [excenter, exsphere_reindex]
 
 variable {s} in
@@ -415,7 +415,7 @@ def exradius (signs : Finset (Fin (n + 1))) : ℝ :=
   (s.exsphere signs).radius
 
 lemma exradius_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1))) :
-    (s.reindex e).exradius signs = s.exradius (signs.map e.symm.toEmbedding) := by
+    (s.reindex e).exradius signs = s.exradius (signs.map e.symm) := by
   simp_rw [exradius, exsphere_reindex]
 
 @[simp] lemma exradius_map (f : P →ᵃⁱ[ℝ] P₂) :
@@ -781,7 +781,7 @@ def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
 
 lemma touchpoint_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1)))
     (i : Fin (m + 1)) :
-    (s.reindex e).touchpoint signs i = s.touchpoint (signs.map e.symm.toEmbedding) (e.symm i) :=
+    (s.reindex e).touchpoint signs i = s.touchpoint (signs.map e.symm) (e.symm i) :=
   orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex _ _) (s.excenter_reindex _ _)
 
 variable {s} in
@@ -1144,7 +1144,7 @@ variable {s} in
 lemma touchpointWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1)))
     (i : Fin (m + 1)) :
     (s.reindex e).touchpointWeights signs i =
-      s.touchpointWeights (signs.map e.symm.toEmbedding) (e.symm i) ∘ e.symm := by
+      s.touchpointWeights (signs.map e.symm) (e.symm i) ∘ e.symm := by
   rw [eq_comm, ← affineCombination_eq_touchpoint_iff]
   · rw [touchpoint_reindex, ← affineCombination_touchpointWeights, reindex]
     dsimp only
