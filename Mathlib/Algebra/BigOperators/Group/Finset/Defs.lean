@@ -44,8 +44,7 @@ See the documentation of `to_additive.attr` for more information.
 
 @[expose] public section
 
--- TODO
--- assert_not_exists AddCommMonoidWithOne
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 assert_not_exists IsOrderedMonoid
@@ -265,7 +264,7 @@ to show the domain type when the product is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (⟨i⟩, ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -296,7 +295,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return ((⟨i⟩ : Ident), ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
