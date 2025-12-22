@@ -227,9 +227,9 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 lemma Category.assoc' {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
     h ≫ g ≫ f = (h ≫ g) ≫ f := (Category.assoc h g f).symm
 
-/-- postcompose an equation between morphisms by another morphism -/
+/-- Postcompose an equation between morphisms by another morphism -/
 @[to_dual (reorder := w h) whisker_eq
-/-- precompose an equation between morphisms by another morphism -/]
+/-- Precompose an equation between morphisms by another morphism -/]
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
 
 /--
