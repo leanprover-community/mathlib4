@@ -224,27 +224,6 @@ def distincts (n : ℕ) : Finset n.Partition :=
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
-/-- If `s ≠ 0`, then `s.sup ∈ s`. -/
-private lemma sup_mem_of_ne_zero (s : Multiset ℕ) (hs : s ≠ 0) : s.sup ∈ s := by
-  classical
-  induction s using Multiset.induction_on with
-  | empty =>
-      cases hs rfl
-  | @cons a s ih =>
-      by_cases h0 : s = 0
-      · subst h0
-        simp
-      · have hmem : s.sup ∈ s := ih h0
-        cases le_total a s.sup with
-        | inl hle =>
-            have hsup : a ⊔ s.sup = s.sup := sup_eq_right.2 hle
-            have : s.sup ∈ a ::ₘ s := (Multiset.mem_cons).2 (Or.inr hmem)
-            simpa [Multiset.sup_cons, hsup] using this
-        | inr hge =>
-            have hsup : a ⊔ s.sup = a := sup_eq_left.2 hge
-            have : a ∈ a ::ₘ s := Multiset.mem_cons_self a s
-            simp [Multiset.sup_cons, hsup]
-
 /-- If `r` is a positive integer, then we have a correspondence between:
 1. Partitions of `n + r` whose largest part is `r`;
 2. Partitions of `n` whose largest part is ≤ `r`.
@@ -252,51 +231,55 @@ The correspondence is to erase `r` to go from 1 to 2, and to add `r` to go from 
 -/
 def eraseEquiv (n r : ℕ) (hr : 0 < r) :
     {π : Partition (n + r) // π.parts.sup = r} ≃
-    {π : Partition n // π.parts.sup ≤ r} := by
+    {π : Partition n // π.parts.sup ≤ r} :=
+by
   classical
-  refine
-    { toFun := ?_
-      invFun := ?_
-      left_inv := ?_
-      right_inv := ?_ }
-  · intro s
-    have hpos : 0 < n + r := Nat.add_pos_right n hr
-    have hne : s.1.parts ≠ 0 := by
-      intro h0
-      have : (0 : ℕ) = n + r := by simpa [h0] using s.1.3
-      exact (Nat.ne_of_gt hpos) this.symm
-    have hrmem : r ∈ s.1.parts := by
-      have : s.1.parts.sup ∈ s.1.parts := sup_mem_of_ne_zero s.1.parts hne
-      simpa [s.2] using this
-    have hall : ∀ x ∈ s.1.parts, x ≤ r :=
-      (Multiset.sup_le.1 (le_of_eq s.2))
-    refine
-      ⟨⟨s.1.parts.erase r, (s.1.2 <| Multiset.mem_of_mem_erase ·),
-        (add_right_inj r).1 <| by
-          rw [Multiset.sum_erase hrmem, s.1.3, add_comm]⟩,
-        ?_⟩
-    exact
-      Multiset.sup_le.mpr (fun x hx =>
-        hall x (Multiset.mem_of_mem_erase hx))
-  · intro s
-    refine
-      ⟨⟨r ::ₘ s.1.parts, by cases s.1; aesop,
-        by cases s.1; aesop (add unsafe add_comm)⟩, ?_⟩
-    simp [Multiset.sup_cons, sup_eq_left.2 s.2]
-  · rintro ⟨π, hsup⟩
-    have hpos : 0 < n + r := Nat.add_pos_right n hr
-    have hne : π.parts ≠ 0 := by
-      intro h0
-      have : (0 : ℕ) = n + r := by simpa [h0] using π.3
-      exact (Nat.ne_of_gt hpos) this.symm
-    have hrmem : r ∈ π.parts := by
-      have : π.parts.sup ∈ π.parts := sup_mem_of_ne_zero π.parts hne
-      simpa [hsup] using this
-    ext a
-    simpa using
-      congrArg (fun t => Multiset.count a t) (Multiset.cons_erase hrmem)
-  · intro s
-    aesop
+  have hpos : 0 < n + r := Nat.add_pos_right n hr
+  exact
+  { toFun := fun s => by
+      have hne : s.1.parts ≠ 0 := by
+        intro h0
+        have : (0 : ℕ) = n + r := by simpa [h0] using s.1.3
+        exact (Nat.ne_of_gt hpos) this.symm
+      have hrmem : r ∈ s.1.parts := by
+        have : s.1.parts.sup ∈ s.1.parts :=
+          Multiset.sup_mem_of_ne_zero s.1.parts hne
+        simpa [s.2] using this
+      have hall : ∀ x ∈ s.1.parts, x ≤ r :=
+        (Multiset.sup_le.1 (le_of_eq s.2))
+      refine
+        ⟨⟨s.1.parts.erase r, (s.1.2 <| Multiset.mem_of_mem_erase ·),
+          (add_right_inj r).1 <| by
+            rw [Multiset.sum_erase hrmem, s.1.3, add_comm]⟩,
+          ?_⟩
+      exact
+        Multiset.sup_le.mpr (fun x hx =>
+          hall x (Multiset.mem_of_mem_erase hx))
+
+    invFun := fun s => by
+      refine
+        ⟨⟨r ::ₘ s.1.parts, by cases s.1; aesop,
+          by cases s.1; aesop (add unsafe add_comm)⟩, ?_⟩
+      simp [Multiset.sup_cons, sup_eq_left.2 s.2]
+
+    left_inv := by
+      rintro ⟨π, hsup⟩
+      have hne : π.parts ≠ 0 := by
+        intro h0
+        have : (0 : ℕ) = n + r := by simpa [h0] using π.3
+        exact (Nat.ne_of_gt hpos) this.symm
+      have hrmem : r ∈ π.parts := by
+        have : π.parts.sup ∈ π.parts :=
+          Multiset.sup_mem_of_ne_zero π.parts hne
+        simpa [hsup] using this
+      ext a
+      simpa using
+        congrArg (fun t => Multiset.count a t) (Multiset.cons_erase hrmem)
+
+    right_inv := by
+      intro s
+      aesop
+  }
 
 /-- The number of partitions of `n` whose largest part is `r` equals the number of partitions
 of `n - r` whose largest part is ≤ `r`. This is a result of `eraseEquiv`. -/
