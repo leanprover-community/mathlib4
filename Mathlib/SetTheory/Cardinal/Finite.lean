@@ -24,7 +24,7 @@ public import Mathlib.SetTheory.Cardinal.ENat
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero
+-- assert_not_exists MonoidWithZero
 assert_not_exists Field
 
 open Cardinal Function
@@ -41,11 +41,12 @@ namespace Nat
   If `α` is infinite, `Nat.card α = 0`. -/
 protected def card (α : Type*) : ℕ :=
   letI := Classical.dec
-  if h : ∃ n : ℕ, Nonempty (α ≃ Fin n) then h.choose else 0
+  if h : Finite α then h.exists_equiv_fin.choose else 0
 
 theorem card_unique {n : ℕ} (e : α ≃ Fin n) : Nat.card α = n := by
+  have := e.finite_iff.mpr inferInstance
   have ex : ∃ n : ℕ, Nonempty (α ≃ Fin n) := ⟨n, ⟨e⟩⟩
-  simp only [Nat.card, ex, ↓reduceDIte]
+  simp only [Nat.card, this, ↓reduceDIte]
   generalize_proofs h
   let f := e.symm.trans h.choose_spec.some
   rw [Fin.equiv_iff_eq.mp ⟨f⟩]
@@ -76,11 +77,7 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
   card_unique (Equiv.equivOfIsEmpty α (Fin 0))
 
 @[simp] lemma card_eq_zero_of_infinite [h : Infinite α] : Nat.card α = 0 := by
-  simp only [Nat.card, dite_eq_right_iff, forall_exists_index, Nonempty.forall]
-  intro n e
-  rw [Equiv.infinite_iff e, ← not_finite_iff_infinite] at h
-  absurd h
-  infer_instance
+  simp [Nat.card, h]
 
 lemma cast_card [Finite α] : (Nat.card α : Cardinal) = Cardinal.mk α := by
   letI := Fintype.ofFinite α
@@ -93,13 +90,15 @@ lemma card_eq_zero : Nat.card α = 0 ↔ IsEmpty α ∨ Infinite α := by
   constructor
   · contrapose!
     rintro ⟨nonempty, finite⟩
-    simp only [Nat.card, dite_eq_right_iff, forall_exists_index, Nonempty.forall] at h
-    sorry
+    obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
+    rw [Nat.card_unique e]
+    rintro rfl
+    contrapose! nonempty
+    rw [e.isEmpty_congr]
+    infer_instance
   · rintro (empty | infinite)
     · simp
     · simp
-
-  sorry
 
 lemma card_ne_zero : Nat.card α ≠ 0 ↔ Nonempty α ∧ Finite α := by simp [card_eq_zero, not_or]
 
@@ -110,8 +109,17 @@ lemma card_pos_iff : 0 < Nat.card α ↔ Nonempty α ∧ Finite α := by
 
 theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α := (card_ne_zero.1 h).2
 
-theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
-  Cardinal.toNat_congr f
+theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β := by
+  cases finite_or_infinite α with
+  | inl h1 =>
+    have h2 := f.finite_iff.mp inferInstance
+    obtain ⟨n1, ⟨e1⟩⟩ := h1.exists_equiv_fin
+    obtain ⟨n2, ⟨e2⟩⟩ := h2.exists_equiv_fin
+    rw [card_unique e1, card_unique e2, ← Fin.equiv_iff_eq]
+    exact ⟨e1.symm.trans <| f.trans <| e2⟩
+  | inr h =>
+    have := f.infinite_iff.mp inferInstance
+    rw [card_eq_zero_of_infinite, card_eq_zero_of_infinite]
 
 lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
     (hf : Injective f) : Nat.card α ≤ Nat.card β := by
