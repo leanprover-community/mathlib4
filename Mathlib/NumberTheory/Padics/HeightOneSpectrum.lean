@@ -72,16 +72,20 @@ theorem Rat.int_algebraMap_surjective : Function.Surjective (algebraMap ℤ R) :
 
 /-- If `R` has field of fractions `ℚ` and is the integral closure of `ℤ` in `ℚ` then it is
 isomorphic to `ℤ`. -/
-noncomputable def Rat.intEquiv : R ≃+* ℤ :=
+noncomputable def Rat.IsIntegralClosure.intEquiv : R ≃+* ℤ :=
   (NumberField.RingOfIntegers.equiv R).symm.trans ringOfIntegersEquiv
 
+@[deprecated (since := "2025-12-22")] alias Rat.intEquiv := Rat.IsIntegralClosure.intEquiv
+
 @[simp]
-theorem Rat.intEquiv_apply_eq_ringOfIntegersEquiv (x : 𝓞 ℚ) :
+theorem Rat.IsIntegralClosure.intEquiv_apply_eq_ringOfIntegersEquiv (x : 𝓞 ℚ) :
     intEquiv (𝓞 ℚ) x = ringOfIntegersEquiv x := by
   simp [intEquiv, RingOfIntegers.equiv, IsIntegralClosure.equiv, IsIntegralClosure.lift,
     IsIntegralClosure.mk']
 
 namespace Rat.HeightOneSpectrum
+
+open Rat.IsIntegralClosure
 
 variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsIntegralClosure R ℤ ℚ]
 
