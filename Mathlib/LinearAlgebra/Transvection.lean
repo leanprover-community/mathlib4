@@ -9,7 +9,6 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Dual.BaseChange
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
@@ -26,6 +25,8 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 * If, moreover, `f v = 0`, then `LinearEquiv.transvection` shows that it is
  a linear equivalence.
 
+* `LinearEquiv.transvection.det` shows that it has determinant `1`.
+
 ## Note on terminology
 
 In the mathematical litterature, linear maps of the form `LinearMap.transvection f v`
@@ -34,10 +35,6 @@ called “dilations” (especially if `f v ≠ -1`).
 
 The definition is almost the same as that of `Module.preReflection f v`,
 up to a sign change, which are interesting when `f v = 2`, because they give “reflections”.
-
-* `LinearEquiv.transvection.det` shows that it has determinant `1`.
-
-temporary file
 
 -/
 
@@ -336,6 +333,7 @@ theorem exists_basis_of_pairing_eq_zero
 See `LinearMap.Transvection.det` for the general result. -/
 theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
     (LinearMap.transvection f v).det = 1 + f v := by
+  classical
   by_cases hfv : f v = 0
   · by_cases hv : v = 0
     · simp [hv]
@@ -343,7 +341,6 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
     · simp [hf]
     obtain ⟨ι, b, i, j, hi, hj⟩ := exists_basis_of_pairing_eq_zero hfv hf hv
     have : Fintype ι := FiniteDimensional.fintypeBasisIndex b
-    have : DecidableEq ι := Classical.typeDecidableEq ι
     rw [← LinearMap.det_toMatrix b]
     suffices LinearMap.toMatrix b b (LinearMap.transvection f v) = Matrix.transvection i j 1 by
       rw [this, Matrix.det_transvection_of_ne i j hi 1, hfv, add_zero]
@@ -363,7 +360,6 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
             Matrix.single_apply_of_ne (h := h)]
   · obtain ⟨ι, b, i, hv, hf⟩ := exists_basis_of_pairing_ne_zero hfv
     have : Fintype ι := FiniteDimensional.fintypeBasisIndex b
-    have : DecidableEq ι := Classical.typeDecidableEq ι
     rw [← LinearMap.det_toMatrix b]
     suffices LinearMap.toMatrix b b (LinearMap.transvection f v) =
       Matrix.diagonal (Function.update 1 i (1 + f v)) by
@@ -412,20 +408,6 @@ theorem det_ofDomain [Module.Free R V] [Module.Finite R V] [IsDomain R]
   rw [← LinearMap.transvection.baseChange, LinearMap.det_baseChange,
     ← algebraMap.coe_one (R := R) (A := K)] at this
   simpa [Algebra.algebraMap_eq_smul_one, add_smul] using this
-
--- [Mathlib.LinearAlgebra.Finsupp.LinearCombination]
-theorem span_range_eq_top_iff_surjective_finsuppLinearCombination
-    {ι : Type*} {v : ι → V} :
-    Submodule.span R (Set.range v) = ⊤ ↔
-      Function.Surjective (Finsupp.linearCombination R v) := by
-  rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
-
-theorem span_range_eq_top_iff_surjective_fintypelinearCombination
-    {ι : Type*} [Fintype ι] {v : ι → V} :
-    Submodule.span R (Set.range v) = ⊤ ↔
-      Function.Surjective (Fintype.linearCombination R v) := by
-  rw [← LinearMap.range_eq_top, Fintype.range_linearCombination]
-----
 
 open IsBaseChange
 
