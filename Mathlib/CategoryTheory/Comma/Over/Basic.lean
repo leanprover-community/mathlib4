@@ -365,7 +365,7 @@ def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
 
 /-- The natural isomorphism witnessing `Over.map` in the iterated slice is
 compatible with `Over.map` base category, mediated by the iterated slice equivalence. -/
-@[simps! hom_app inv_app]
+@[simps! hom_app_left_left inv_app_left_left]
 def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
     f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
   NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _))) (by cat_disch)
