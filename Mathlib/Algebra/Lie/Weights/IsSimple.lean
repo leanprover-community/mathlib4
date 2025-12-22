@@ -266,25 +266,15 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
 
-lemma span_coroot_eq_top : Submodule.span K (Set.range (coroot : LieModule.Weight K H L → H)) = ⊤ := by
-  have h_span_dual : Submodule.span K (Set.range (LieModule.Weight.toLinear K H L)) = ⊤ := by
-    exact?;
-  have h_span_dual : Submodule.span K (Set.range (fun α : LieModule.Weight K H L => (LieAlgebra.IsKilling.cartanEquivDual H).symm (LieModule.Weight.toLinear K H L α))) = ⊤ := by
-    have h_iso : ∀ (f : Module.Dual K H →ₗ[K] H), Function.Surjective f → Submodule.span K (Set.range (f ∘ LieModule.Weight.toLinear K H L)) = ⊤ := by
-      simp_all +decide [ Function.Surjective, Set.range_comp ];
-      exact fun f hf => LinearMap.range_eq_top.mpr fun x => by obtain ⟨ y, hy ⟩ := hf x x.2; exact ⟨ y, hy ⟩ ;
-    exact h_iso _ ( LinearEquiv.surjective _ );
-  -- Since the coroots are scalar multiples of the inverse images of the roots, and the span of the roots is the entire dual space, multiplying by non-zero scalars preserves the span.
-  have h_coroot_span : Submodule.span K (Set.range (fun α : LieModule.Weight K H L => (LieAlgebra.IsKilling.coroot α))) = Submodule.span K (Set.range (fun α : LieModule.Weight K H L => (LieAlgebra.IsKilling.cartanEquivDual H).symm (LieModule.Weight.toLinear K H L α))) := by
-    refine' le_antisymm _ _ <;> rw [ Submodule.span_le ] <;> simp +decide [ Set.range_subset_iff ];
-    · intro α; by_cases hα : α.IsNonZero <;> simp_all +decide [ LieAlgebra.IsKilling.coroot ] ;
-    · intro α; by_cases hα : α.IsNonZero <;> simp_all +decide [ LieAlgebra.IsKilling.coroot ] ;
-      · have := LieAlgebra.IsKilling.root_apply_cartanEquivDual_symm_ne_zero hα; simp_all +decide [ two_smul ] ;
-        rw [ Submodule.mem_span ] at *; aesop;
-        have := a ⟨ α, rfl ⟩ ; simp_all +decide [ ← two_smul K ] ;
-        convert p.smul_mem ( ( α ( ( LieAlgebra.IsKilling.cartanEquivDual H ).symm ( LieModule.Weight.toLinear K H L α ) ) ) / 2 ) this using 1 ; simp +decide [ div_eq_inv_mul, smul_smul ] ; ring!; aesop;
-      · convert Submodule.zero_mem _ using 1 ; aesop;
-  exact h_coroot_span.trans h_span_dual
+lemma span_coroot_eq_top :
+    Submodule.span K (Set.range (coroot : LieModule.Weight K H L → H)) = ⊤ := by
+  have h := RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H)
+  rw [eq_top_iff]
+  calc ⊤ = Submodule.span K (Set.range (rootSystem H).coroot) := h.symm
+    _ ≤ Submodule.span K (Set.range coroot) := by
+        apply Submodule.span_mono
+        rintro _ ⟨α, rfl⟩
+        exact ⟨α.1, rfl⟩
 
 lemma H_le_iSup_sl2SubmoduleOfRoot :
     H.toLieSubmodule ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := by
