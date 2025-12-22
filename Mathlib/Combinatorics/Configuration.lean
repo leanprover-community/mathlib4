@@ -155,7 +155,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       rw [hs₃]
       rw [Finset.eq_univ_iff_forall] at hs₃ ⊢
       exact fun p =>
-        Exists.elim (exists_line p)-- If `s = univ`, then show `s.bUnion t = univ`
+        Exists.elim (exists_line p) -- If `s = univ`, then show `s.bUnion t = univ`
         fun l hl => Finset.mem_biUnion.mpr ⟨l, Finset.mem_univ l, Set.mem_toFinset.mpr hl⟩
     · exact hs₂.trans (Nat.one_le_iff_ne_zero.mpr hs₃)
 
