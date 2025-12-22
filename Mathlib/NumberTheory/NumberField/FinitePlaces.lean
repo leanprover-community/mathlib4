@@ -316,10 +316,10 @@ protected
 lemma add_le (v : FinitePlace K) (x y : K) :
     v (x + y) ≤ max (v x) (v y) := by
   obtain ⟨w, hw⟩ := v.prop
-  have : v.val = RingOfIntegers.HeightOneSpectrum.adicAbv w :=
-    AbsoluteValue.ext fun x ↦ by grind only [place_apply, norm_def]
-  simp_rw [show ∀ x, v x = v.val x from fun _ ↦ rfl, this]
-  exact RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max w x y
+  have H x : v x = RingOfIntegers.HeightOneSpectrum.adicAbv w x := by
+    rw [show v x = v.val x from rfl]
+    grind only [place_apply, norm_def]
+  simpa only [H] using RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max w x y
 
 instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
   map_add_le_max v a b := FinitePlace.add_le v a b
