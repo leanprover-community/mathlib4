@@ -31,7 +31,7 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 open CategoryTheory Category ZeroObject Limits Functor
 
-variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
+variable (C D E E' : Type*) [Category* C] [Category* D] [Category* E] [Category* E']
   (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
 
 namespace CategoryTheory

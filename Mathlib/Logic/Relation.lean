@@ -287,7 +287,7 @@ end Map
 variable {r : α → α → Prop} {a b c : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
-@[mk_iff ReflTransGen.cases_tail_iff]
+@[mk_iff ReflTransGen.cases_tail_iff, grind]
 inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflTransGen r a a
   | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
@@ -295,7 +295,7 @@ inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
 attribute [refl] ReflTransGen.refl
 
 /-- `ReflGen r`: reflexive closure of `r` -/
-@[mk_iff]
+@[mk_iff, grind]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
@@ -310,7 +310,9 @@ inductive EqvGen : α → α → Prop
   | trans x y z : EqvGen x y → EqvGen y z → EqvGen x z
 
 attribute [mk_iff] TransGen
+attribute [grind] TransGen
 attribute [refl] ReflGen.refl
+attribute [grind =] reflGen_iff
 
 namespace ReflGen
 
@@ -468,6 +470,7 @@ end TransGen
 
 section reflGen
 
+@[grind =]
 lemma reflGen_eq_self (hr : Reflexive r) : ReflGen r = r := by
   ext x y
   simpa only [reflGen_iff, or_iff_right_iff_imp] using fun h ↦ h ▸ hr y
@@ -497,6 +500,7 @@ instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
 instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
   ⟨TransGen.trans_right⟩
 
+@[grind =]
 theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
   funext fun a ↦ funext fun b ↦ propext <|
     ⟨fun h ↦ by
@@ -506,6 +510,7 @@ theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
 
 theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.trans
 
+@[grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self transitive_transGen
 
@@ -550,9 +555,11 @@ section ReflTransGen
 
 open ReflTransGen
 
+@[grind =]
 theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a := by
   rw [cases_head_iff]; simp [h, eq_comm]
 
+@[grind =]
 theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ TransGen r a b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · cases h with
@@ -570,16 +577,13 @@ theorem ReflTransGen.mono {p : α → α → Prop} : (∀ a b, r a b → p a b) 
     ReflTransGen r a b → ReflTransGen p a b :=
   ReflTransGen.lift id
 
+@[grind =]
 theorem reflTransGen_eq_self (refl : Reflexive r) (trans : Transitive r) : ReflTransGen r = r :=
   funext fun a ↦ funext fun b ↦ propext <|
     ⟨fun h ↦ by
       induction h with
       | refl => apply refl
       | tail _ h₂ IH => exact trans IH h₂, single⟩
-
-lemma reflTransGen_minimal {r' : α → α → Prop} (hr₁ : Reflexive r') (hr₂ : Transitive r')
-    (h : ∀ x y, r x y → r' x y) {x y : α} (hxy : ReflTransGen r x y) : r' x y := by
-  simpa [reflTransGen_eq_self hr₁ hr₂] using ReflTransGen.mono h hxy
 
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 
@@ -597,6 +601,7 @@ instance : IsRefl α (ReflTransGen r) :=
 instance : IsTrans α (ReflTransGen r) :=
   ⟨@ReflTransGen.trans α r⟩
 
+@[grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self reflexive_reflTransGen transitive_reflTransGen
 
@@ -617,11 +622,11 @@ theorem ReflTransGen.swap (h : ReflTransGen r b a) : ReflTransGen (swap r) a b :
 theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   ⟨ReflTransGen.swap, ReflTransGen.swap⟩
 
-@[simp] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
+@[simp, grind =] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y
   simp_rw [reflTransGen_iff_eq_or_transGen, reflGen_iff]
 
-@[simp] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
+@[simp, grind =] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simpa [reflTransGen_idem]
@@ -630,16 +635,18 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
     · exact .single .refl
     · exact TransGen.mono (fun _ _ ↦ .single) h
 
-@[simp] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
+@[simp, grind =] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [← transGen_reflGen, reflGen_eq_self reflexive_reflGen]
 
-@[simp] lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
+@[simp, grind =] lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
   simp only [← reflGen_transGen, transGen_idem]
 
+@[grind =]
 lemma reflTransGen_eq_transGen (hr : Reflexive r) :
     ReflTransGen r = TransGen r := by
   rw [← transGen_reflGen, reflGen_eq_self hr]
 
+@[grind =]
 lemma reflTransGen_eq_reflGen (hr : Transitive r) :
     ReflTransGen r = ReflGen r := by
   rw [← reflGen_transGen, transGen_eq_self hr]
@@ -735,9 +742,10 @@ theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : 
 
 theorem reflTransGen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r)
     (ht : Transitive r) (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
-  induction h' with
-  | refl => exact hr _
-  | tail _ hbc ih => exact ht ih (h _ _ hbc)
+  simpa [reflTransGen_eq_self hr ht] using ReflTransGen.mono h h'
+
+@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
+  reflTransGen_of_transitive_reflexive
 
 theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
     (∀ a b, r' a b → r a b) → ReflTransGen r' a b → r a b :=

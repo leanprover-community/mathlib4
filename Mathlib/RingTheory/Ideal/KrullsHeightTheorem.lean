@@ -365,13 +365,14 @@ lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S
   obtain ⟨lp, hlp, hlenp⟩ := p.exists_ltSeries_length_eq_height
   obtain ⟨lq, hlq, hlenq⟩ :=
     (P.map (Quotient.mk (p.map (algebraMap R S)))).exists_ltSeries_length_eq_height
-  let l' : LTSeries (PrimeSpectrum S) := lq.map ((Quotient.mk (p.map (algebraMap R S))).specComap)
-    (RingHom.strictMono_specComap_of_surjective Quotient.mk_surjective)
+  let l' : LTSeries (PrimeSpectrum S) :=
+    lq.map (PrimeSpectrum.comap (Quotient.mk (p.map (algebraMap R S))))
+      (RingHom.strictMono_comap_of_surjective Quotient.mk_surjective)
   have : l'.head.asIdeal.LiesOver lp.last.asIdeal := by
     simp only [LTSeries.head_map, hlp, l']
     refine ⟨?_⟩
     refine le_antisymm ?_ ?_
-    · rw [← map_le_iff_le_comap, ← map_le_iff_le_comap]
+    · rw [← map_le_iff_le_comap, PrimeSpectrum.comap_asIdeal, ← map_le_iff_le_comap]
       simp
     · conv_rhs => rw [LiesOver.over (p := p) (P := P), under_def]
       refine comap_mono (le_trans (comap_mono (lq.head_le_last)) ?_)
