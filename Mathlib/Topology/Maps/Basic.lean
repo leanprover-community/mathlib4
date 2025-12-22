@@ -258,6 +258,15 @@ protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
   ⟨hgf.1.of_comp,
     le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
 
+theorem of_comp_of_eq_coinduced (hgf : IsQuotientMap (g ∘ f))
+    (hf : ‹TopologicalSpace Y› = ‹TopologicalSpace X›.coinduced f) : IsQuotientMap g :=
+  isQuotientMap_iff.mpr <| .intro hgf.1.of_comp fun s ↦ by
+    conv_rhs => rw [TopologicalSpace.ext_iff.mp hf, isOpen_coinduced]
+    exact (isQuotientMap_iff.mp hgf).2 s
+
+theorem of_comp_isQuotientMap (hf : IsQuotientMap f) (hgf : IsQuotientMap (g ∘ f)) :
+    IsQuotientMap g := of_comp_of_eq_coinduced hgf hf.2
+
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
     IsQuotientMap g := .of_comp hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
 
