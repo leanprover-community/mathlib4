@@ -335,12 +335,12 @@ theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P
 variable (k)
 
 /-- The `vectorSpan` of two points is the span of their difference. -/
-theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₁ -ᵥ p₂ := by
+theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ (p₁ -ᵥ p₂) := by
   simp_rw [vectorSpan_eq_span_vsub_set_left k (mem_insert p₁ _), image_pair, vsub_self,
     Submodule.span_insert_zero]
 
 /-- The `vectorSpan` of two points is the span of their difference (reversed). -/
-theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₂ -ᵥ p₁ := by
+theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ (p₂ -ᵥ p₁) := by
   rw [pair_comm, vectorSpan_pair]
 
 variable {k}
@@ -405,7 +405,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
 of any one difference between points in the two subspaces. -/
 theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s₁) (hp₂ : p₂ ∈ s₂) :
-    (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction ⊔ k ∙ p₂ -ᵥ p₁ := by
+    (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction ⊔ k ∙ (p₂ -ᵥ p₁) := by
   refine le_antisymm ?_ ?_
   · change (affineSpan k ((s₁ : Set P) ∪ s₂)).direction ≤ _
     rw [← mem_coe] at hp₁
@@ -883,6 +883,10 @@ lemma direction_affineSpan_pair_le_iff_exists_smul {p₁ q₁ p₂ q₂ : P} :
     line[k, p₁, q₁].direction ≤ line[k, p₂, q₂].direction ↔ ∃ z : k, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
   rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
     Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+
+theorem affineSpan_pair_comm {p₁ p₂ : P} :
+    line[k, p₁, p₂] = line[k, p₂, p₁] := by
+  rw [Set.pair_comm]
 
 end AffineSubspace
 

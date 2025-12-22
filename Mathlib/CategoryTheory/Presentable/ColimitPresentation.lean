@@ -25,7 +25,7 @@ namespace CategoryTheory.Limits.ColimitPresentation
 
 variable {C : Type u} [Category.{v} C]
 
-variable {J : Type*} {I : J → Type*} [Category J] [∀ j, Category (I j)]
+variable {J : Type*} {I : J → Type*} [Category* J] [∀ j, Category (I j)]
   {D : J ⥤ C} {P : ∀ j, ColimitPresentation (I j) (D.obj j)}
 
 set_option linter.unusedVariables false in
