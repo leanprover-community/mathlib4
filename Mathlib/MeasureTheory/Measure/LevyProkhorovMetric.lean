@@ -12,7 +12,6 @@ import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 
-
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
 
@@ -739,15 +738,15 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let C := {φ : WeakDual ℝ C(X, ℝ) | ∀ f: C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f}
   let Φ := A ∩ B ∩ C
   have hΦ : IsClosed Φ := by -- Note this is compact, but we only need closedness
-    · refine (hA1.isClosed.inter ?_).inter ?_
-      · have : B = (fun f ↦ f ⟨(fun x => 1), continuous_const⟩) ⁻¹' {1} := by grind
-        simpa [this] using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_singleton)
-      · have : C = ⋂ f : {g : C_c(X, ℝ) | 0 ≤ g}, {φ : WeakDual ℝ C(X, ℝ) | 0 ≤ φ f} := by
-          ext x; simp [C]
-        rw [this]
-        refine isClosed_iInter fun f ↦ ?_
-        have : {φ | 0 ≤ φ f} = (fun φ : WeakDual ℝ C(X, ℝ) ↦ φ f) ⁻¹' Set.Ici 0 := by grind
-        simpa using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_Ici)
+    refine (hA1.isClosed.inter ?_).inter ?_
+    · have : B = (fun f ↦ f ⟨(fun x => 1), continuous_const⟩) ⁻¹' {1} := by grind
+      simpa [this] using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_singleton)
+    · have : C = ⋂ f : {g : C_c(X, ℝ) | 0 ≤ g}, {φ : WeakDual ℝ C(X, ℝ) | 0 ≤ φ f} := by
+        ext x; simp [C]
+      rw [this]
+      refine isClosed_iInter fun f ↦ ?_
+      have : {φ | 0 ≤ φ f} = (fun φ : WeakDual ℝ C(X, ℝ) ↦ φ f) ⁻¹' Set.Ici 0 := by grind
+      simpa using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_Ici)
   -- Now we show Φ is sequentially compact using the sequential Banach-Alaoglu theorem
   have hsubset : StrongDual.toWeakDual ⁻¹' (Φ : Set (WeakDual ℝ C(X, ℝ))) ⊆
       Metric.closedBall (0 : StrongDual ℝ C(X, ℝ)) 1 := fun ψ hψ ↦ by simpa [A] using hψ.1.1
