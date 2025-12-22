@@ -774,6 +774,14 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
   · rintro ⟨b, c, rfl, rfl, h⟩
     rw [singleton_mul_singleton, h, singleton_one]
 
+@[to_additive] theorem nonempty_image_mulLeft_inv_inter_iff {a : α} :
+    ((a⁻¹ * ·) '' s ∩ t).Nonempty ↔ ((· * a) '' s⁻¹ ∩ t⁻¹).Nonempty := by
+  rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
+
+@[to_additive] theorem nonempty_image_mulRight_inv_inter_iff {a : α} :
+    ((· * a⁻¹) '' s ∩ t).Nonempty ↔ ((a * ·) '' s⁻¹ ∩ t⁻¹).Nonempty := by
+  rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
+
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
