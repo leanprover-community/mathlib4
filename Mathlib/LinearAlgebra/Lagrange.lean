@@ -483,13 +483,13 @@ theorem iterate_derivative_interpolate [CommRing ι]
       ∏ a ∈ t, (X - C (v a)) := by
       rw [powerset_image]
       congr 1
-      have := image_injOn_of_injOn hvs' -- useful
-      -- have := image_surjOn
+      have := image_injOn_powerset_of_injOn hvs' -- useful
+      -- have := image_surjOn_powerset
       -- use prod_nbij
       sorry
 
 omit [DecidableEq ι] in
-private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : s.card = P.degree + 1) :
+private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.degree = ↑(s.card - 1) := by
   cases h : P.degree
   case bot => simp_all
@@ -500,11 +500,11 @@ private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : s.card = P.degree 
     simp [← WithBot.coe_inj, hP]
 
 omit [DecidableEq ι] in
-private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : s.card = P.degree + 1) :
+private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some (degree_eq_of_card_eq hP)
 
 omit [DecidableEq ι] in
-private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : s.card = P.degree + 1) :
+private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.degree < s.card - 1 := by
   have := degree_eq_of_card_eq hP
   have := natDegree_eq_of_card_eq hP
@@ -512,8 +512,8 @@ private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : s.card = P.degree 
   grind [Nat.cast_lt]
 
 theorem eval_iterate_derivative_eq_sum [CommRing ι]
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1)
-    {k : ℕ} (hk : k ≤ #s - 1) (x : F) :
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1)
+    {k : ℕ} (hk : k ≤ P.degree) (x : F) :
     (derivative^[k] P).eval x = k.factorial *
       ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, ((v i) - (v j))) *
       ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
@@ -523,10 +523,11 @@ theorem eval_iterate_derivative_eq_sum [CommRing ι]
   rw [iterate_derivative_interpolate, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul, eval_finset_sum]
   · congr! 2 with i hi
     simp_rw [eval_C_mul, eval_finset_sum, eval_prod, eval_sub, eval_X, eval_C]
-  all_goals assumption
+  · assumption
+  · grind -- would this work?
 
 theorem leadingCoeff_eq_sum
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
   rw [leadingCoeff, natDegree_eq_of_card_eq hP]
   rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
