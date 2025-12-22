@@ -347,7 +347,7 @@ theorem weightedOrder_toSubring (p : MvPowerSeries σ R) (T : Subring R) (hp : �
     (p.toSubring T hp).weightedOrder w = p.weightedOrder w := by
   refine eq_of_le_of_ge ?_ ?_
   · refine le_weightedOrder w fun d hd => by
-      simp [coeff_eq_zero_of_lt_weightedOrder w hd, ←p.coeff_toSubring T hp]
+      simp [coeff_eq_zero_of_lt_weightedOrder w hd, ← p.coeff_toSubring T hp]
   · refine le_weightedOrder w fun d hd => by
       exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_eq_zero_of_lt_weightedOrder w hd)
 
@@ -500,7 +500,7 @@ theorem order_neg (f : MvPowerSeries σ R) : (-f).order = f.order := weightedOrd
 theorem order_toSubring (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T) :
     (p.toSubring T hp).order = p.order := by
   refine eq_of_le_of_ge ?_ ?_
-  · exact le_order fun d hd => by simp [coeff_of_lt_order hd, ←p.coeff_toSubring T hp]
+  · exact le_order fun d hd => by simp [coeff_of_lt_order hd, ← p.coeff_toSubring T hp]
   · exact le_order fun d hd => by exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order hd)
 
 end Ring

@@ -463,7 +463,7 @@ variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈
 @[simp]
 theorem order_toSubring : (p.toSubring T hp).order = p.order := by
   refine eq_of_le_of_ge ?_ ?_
-  · refine le_order _ _  fun d hd => by simp [coeff_of_lt_order d hd, ←coeff_toSubring p T hp]
+  · refine le_order _ _ fun d hd => by simp [coeff_of_lt_order d hd, ← coeff_toSubring p T hp]
   · exact le_order _ _ fun d hd => by
       exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order d hd)
 

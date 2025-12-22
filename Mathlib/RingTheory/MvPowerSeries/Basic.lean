@@ -914,7 +914,7 @@ theorem _root_.MvPowerSeries.monomial_eq' (e : σ →₀ ℕ) (r : R) :
 theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r : R) :
     MvPowerSeries.monomial (p • e) r
       = MvPowerSeries.C r * e.prod fun s e => ((MvPowerSeries.X s) ^ p) ^ e := by
-  rw [MvPowerSeries.monomial_eq',  Finsupp.prod_of_support_subset _ Finsupp.support_smul _
+  rw [MvPowerSeries.monomial_eq', Finsupp.prod_of_support_subset _ Finsupp.support_smul _
     (by simp), Finsupp.prod]
   simp [pow_mul]
 

@@ -872,7 +872,7 @@ theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
 @[simp]
 theorem map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
   intro x y
-  rw [← @min_le_iff _ _ (v x) (v y) (v (x+y)), ← ge_iff_le]
+  rw [← @min_le_iff _ _ (v x) (v y) (v (x + y)), ← ge_iff_le]
   apply map_add
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=

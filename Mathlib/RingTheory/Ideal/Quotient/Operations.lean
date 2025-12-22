@@ -223,7 +223,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
     · exact fun j hj ↦ eq_zero_iff_mem.mpr (he j hj)
   choose e he using key
-  use mk _ (∑ i, f i*e i)
+  use mk _ (∑ i, f i * e i)
   ext i
   rw [quotientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
   · simp [(he i).1, hf]
