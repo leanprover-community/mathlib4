@@ -46,7 +46,11 @@ initialize registerBuiltinAttribute {
       let r ← Push.pullCore .lambda type none
       if r.expr == type then
         throwError "`@[to_fun]` failed to eta-expand any part of `{.ofConstName src}`."
-      return (← r.mkCast value, levels)
+      -- Ensure that the returned `value` has type `r.expr`.
+      let value ← match r.proof? with
+        | none => mkExpectedTypeHint value r.expr
+        | some proof => mkAppOptM ``cast #[type, r.expr, proof, value]
+      return (value, levels)
   | _ => throwUnsupportedSyntax }
 
 end Mathlib.Tactic
