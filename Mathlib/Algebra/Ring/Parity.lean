@@ -50,6 +50,28 @@ end Monoid
 
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
+
+end AddMonoidWithOne
+
+section Distrib
+variable [Add α] [Mul α] {a : α}
+
+@[simp] lemma Even.mul_left [LeftDistribClass α] (ha : Even a) (b : α) : Even (b * a) := by
+  rcases ha with ⟨k, rfl⟩
+  use b * k
+  rw [mul_add]
+
+@[simp] lemma Even.mul_right [RightDistribClass α] (ha : Even a) (b : α) : Even (a * b) := by
+  rcases ha with ⟨k, rfl⟩
+  use k * b
+  rw [add_mul]
+
+end Distrib
+
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
 
@@ -69,11 +91,6 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   ext x
   simp [eq_comm, two_mul, Even]
 
-@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
-
-@[simp] lemma Even.mul_left (ha : Even a) (b) : Even (b * a) := ha.map (AddMonoidHom.mulLeft _)
-
-@[simp] lemma Even.mul_right (ha : Even a) (b) : Even (a * b) := ha.map (AddMonoidHom.mulRight _)
 
 lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
