@@ -765,7 +765,7 @@ def omega0 : Ordinal.{u} :=
   lift (typeLT ℕ)
 
 @[inherit_doc] scoped notation "ω" => Ordinal.omega0
-recommended_spelling "omega0" for "ω" in [omega0, «termω₀»]
+recommended_spelling "omega0" for "ω" in [omega0, «termω»]
 
 /-- Note that the presence of this lemma makes `simp [omega0]` form a loop. -/
 @[simp]
