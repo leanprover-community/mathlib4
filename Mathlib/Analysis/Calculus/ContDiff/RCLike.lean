@@ -149,7 +149,7 @@ theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : Co
     (hn : n ≠ 0) (hs : Convex ℝ s) (hs' : IsCompact s) :
     ∃ K, LipschitzOnWith K f s := by
   apply LocallyLipschitzOn.exists_lipschitzOnWith_of_compact hs'
-  apply (hf.of_le hn).locallyLipschitzOn hs
+  exact (hf.of_le <| ENat.one_le_iff_ne_zero_withTop.2 hn).locallyLipschitzOn hs
 
 /-- A `C^n` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
