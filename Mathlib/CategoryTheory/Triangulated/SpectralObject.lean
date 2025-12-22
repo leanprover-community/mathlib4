@@ -112,8 +112,7 @@ def precomp : SpectralObject C ι' where
       Iso.inv_hom_id, Functor.map_id, Category.comp_id] at this ⊢
     convert this using 3
     · cat_disch
-    · congr 2
-      cat_disch
+    · congr 2; cat_disch
   distinguished' D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := ComposableArrows.mk₂_surjective D
     refine isomorphic_distinguished _ (X.triangle_distinguished (F.map f) (F.map g)) _ ?_
