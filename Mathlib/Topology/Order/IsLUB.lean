@@ -209,7 +209,7 @@ theorem Dense.ciInf {α : Type*} [TopologicalSpace α]
 
 /-- This is an analogue of `Dense.continuous_sup` for functions taking values in a conditionally
 complete linear order. The assumption of `BddAbove (range f)` is not needed in this theorem. -/
-theorem Dense.continuous_sup' {α : Type*} [TopologicalSpace α]
+theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) :
     ⨆ i, f i = ⨆ s : S, f s := by
