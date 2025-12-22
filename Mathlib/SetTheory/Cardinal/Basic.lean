@@ -615,10 +615,13 @@ theorem mk_singleton {α : Type u} (x : α) : #({x} : Set α) = 1 :=
 theorem mk_vector (α : Type u) (n : ℕ) : #(List.Vector α n) = #α ^ n :=
   (mk_congr (Equiv.vectorEquivFin α n)).trans <| by simp
 
-theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
+theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n ↦ #α ^ n :=
   calc
     #(List α) = #(Σ n, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
-    _ = sum fun n : ℕ => #α ^ n := by simp
+    _ = sum fun n ↦ #α ^ n := by simp
+
+theorem sum_zero_pow : sum (fun n ↦ (0 : Cardinal) ^ n) = 1 := by
+  rw [← mk_eq_zero (α := PEmpty), ← mk_list_eq_sum_pow, mk_eq_one]
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
   mk_le_of_surjective Quot.exists_rep
