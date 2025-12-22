@@ -164,6 +164,7 @@ lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
 @[simp]
 lemma toContinuousMap_continuousMapEquiv [CompactSpace α] (f : C(α, γ)) :
     (continuousMapEquiv f).toContinuousMap = f := rfl
+
 end Basics
 
 /-! ### Algebraic structure

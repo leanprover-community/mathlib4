@@ -417,7 +417,7 @@ lemma HasFiniteIntegral_continuous_ProbabilityMeasure
   change HasFiniteIntegral f' μ
   simp_rw [mem_upperBounds, Set.mem_range, Function.comp_apply, forall_exists_index,
     forall_apply_eq_imp_iff] at hf'
-  exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
+  exact .of_bounded (C := c) <| .of_forall hf'
 
 end convergence_in_distribution
 
