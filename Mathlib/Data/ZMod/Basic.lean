@@ -998,9 +998,9 @@ theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a :=
 
 theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
     (a.cast : ZMod n).val < m := by
-  rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
+  rcases m with (⟨⟩ | ⟨m⟩); · cases NeZero.ne 0 rfl
   by_cases! h : m < n
-  · rcases n with (⟨⟩|⟨n⟩); · simp at h
+  · rcases n with (⟨⟩ | ⟨n⟩); · simp at h
     rw [← natCast_val, val_cast_of_lt]
     · apply a.val_lt
     apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
