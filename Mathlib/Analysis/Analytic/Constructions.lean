@@ -814,7 +814,7 @@ analytic at any unit. -/
 lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] (z : Aˣ) :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
-  rcases subsingleton_or_nontrivial A with hA|hA
+  rcases subsingleton_or_nontrivial A with hA | hA
   · convert analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
     let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
@@ -905,7 +905,7 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
-  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
+  · rw [(Int.eq_neg_comm.mp rfl : n = -(-n))]
     conv => arg 2; intro x; rw [zpow_neg]
     exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
 
@@ -916,7 +916,7 @@ lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt �
     AnalyticAt 𝕜 (f ^ n) z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
-  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
+  · rw [(Int.eq_neg_comm.mp rfl : n = -(-n))]
     conv => arg 2; intro x; rw [zpow_neg]
     exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
 

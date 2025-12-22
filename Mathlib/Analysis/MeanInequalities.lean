@@ -344,7 +344,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i ∈ s, w i / z i)⁻¹ ≤ ∏ i ∈ s, z i ^ w i := by
     have : ∏ i ∈ s, (1 / z) i ^ w i ≤ ∑ i ∈ s, w i * (1 / z) i :=
-      geom_mean_le_arith_mean_weighted s w (1/z) (fun i hi ↦ le_of_lt (hw i hi)) hw'
+      geom_mean_le_arith_mean_weighted s w (1 / z) (fun i hi ↦ le_of_lt (hw i hi)) hw'
       (fun i hi ↦ one_div_nonneg.2 (le_of_lt (hz i hi)))
     have p_pos : 0 < ∏ i ∈ s, (z i)⁻¹ ^ w i :=
       prod_pos fun i hi => rpow_pos_of_pos (inv_pos.2 (hz i hi)) _
@@ -369,7 +369,7 @@ theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w
   · simp only at this
     set n := ∑ i ∈ s, w i
     nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by simp), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
-    simp_rw [inv_mul_eq_div n ((w _)/(z _)), div_right_comm _ _ n]
+    simp_rw [inv_mul_eq_div n ((w _) / (z _)), div_right_comm _ _ n]
     convert this
     rw [← Real.finset_prod_rpow s _ (fun i hi ↦ Real.rpow_nonneg (le_of_lt <| hz i hi) _)]
     refine Finset.prod_congr rfl (fun i hi => ?_)
