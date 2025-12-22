@@ -467,10 +467,10 @@ private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree +
 omit [DecidableEq ι] in
 private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.degree < s.card := by
-  have := degree_eq_of_card_eq hP
-  have := natDegree_eq_of_card_eq hP
-  have s_card : s.card > 0 := by by_contra! h; simp_all
-  grind [Nat.cast_lt]
+  lift P.degree to ℕ with n hn
+  · contrapose hP
+    simp [hP]
+  simp [hP, ← WithBot.coe_one, ← WithBot.coe_add]
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
