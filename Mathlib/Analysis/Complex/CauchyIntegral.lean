@@ -3,15 +3,17 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.Real.Cardinality
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+module
+
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DiffContOnCl
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Cauchy integral formula
@@ -155,6 +157,8 @@ function is analytic on the open ball.
 
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
+
+@[expose] public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
@@ -414,7 +418,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       rw [norm_smul, norm_inv, hz, ← dist_eq_norm]
       refine mul_le_mul_of_nonneg_left (hδ _ ⟨?_, hzne⟩).le (inv_nonneg.2 hr0.le)
       rwa [mem_closedBall_iff_norm, hz]
-    _ = ε := by field_simp
+    _ = ε := by field
 
 /--
 **Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous on a

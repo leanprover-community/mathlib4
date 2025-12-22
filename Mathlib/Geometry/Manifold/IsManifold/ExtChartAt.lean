@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Extended charts in smooth manifolds
@@ -12,7 +14,7 @@ import Mathlib.Geometry.Manifold.IsManifold.Basic
 In a `C^n` manifold with corners with the model `I` on `(E, H)`, the charts take values in the
 model space `H`. However, we also need to use extended charts taking values in the model vector
 space `E`. These extended charts are not `OpenPartialHomeomorph` as the target is not open in `E`
-in general, but we can still register them as `PartialEquiv`.
+in general, but we can still register them as `PartialEquiv`s.
 
 ## Main definitions
 
@@ -27,17 +29,19 @@ in general, but we can still register them as `PartialEquiv`.
 * `contDiffOn_extend_coord_change`: if `f` and `f'` lie in the maximal atlas on `M`,
   `f.extend I ∘ (f'.extend I).symm` is continuous on its source
 
-* `contDiffOn_ext_coord_change`: for `x x : M`, the coordinate change
+* `contDiffOn_ext_coord_change`: for `x x' : M`, the coordinate change
   `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
 * `LocallyCompactSpace.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a locally compact space.
-* `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifolds must be modelled
+* `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a finite-dimensional space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -314,6 +318,9 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ hx hs]
+
+lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
+    (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
 
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 
@@ -848,7 +855,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   simp only [(extChartAt I x).right_inv h'y]
   exact interior_mono (extChartAt_target_subset_range x) hy
 
-/-- Riesz's theorem applied to manifolds: a locally compact manifolds must be modelled on a
+/-- Riesz's theorem applied to manifolds: a locally compact manifold must be modelled on a
 finite-dimensional space. This is the converse to `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold
     [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :

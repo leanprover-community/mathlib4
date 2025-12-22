@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv.Opposite
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Endomorphisms of a module
@@ -19,6 +21,8 @@ including the action of `Module.End` on the module we are considering endomorphi
 * `Module.End.instSemiring` and `Module.End.instRing`: the (semi)ring of endomorphisms formed by
   taking the additive structure above with composition as multiplication.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -116,15 +120,9 @@ theorem isUnit_apply_inv_apply_of_isUnit {f : End R M} (h : IsUnit f) (x : M) :
     f (h.unit.inv x) = x :=
   show (f * h.unit.inv) x = x by simp
 
-@[deprecated (since := "2025-04-28")]
-alias _root_.Module.End_isUnit_apply_inv_apply_of_isUnit := isUnit_apply_inv_apply_of_isUnit
-
 theorem isUnit_inv_apply_apply_of_isUnit {f : End R M} (h : IsUnit f) (x : M) :
     h.unit.inv (f x) = x :=
   (by simp : (h.unit.inv * f) x = x)
-
-@[deprecated (since := "2025-04-28")]
-alias _root_.Module.End_isUnit_inv_apply_apply_of_isUnit := isUnit_inv_apply_apply_of_isUnit
 
 theorem coe_pow (f : End R M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
@@ -171,7 +169,7 @@ theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
 
 theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by cutsat), iterate_succ, coe_comp] at h
+  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by lia), iterate_succ, coe_comp] at h
   exact h.of_comp
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
@@ -189,8 +187,8 @@ end
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
-  smul_zero := LinearMap.map_zero
-  smul_add := LinearMap.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   add_smul := LinearMap.add_apply
   zero_smul := (LinearMap.zero_apply : ∀ m, (0 : M →ₗ[R] M) m = 0)
   one_smul _ := rfl
@@ -405,9 +403,12 @@ def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M whe
     apply mul_smul
 
 @[simp]
-theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
-    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x c = f c • x :=
+theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) :
+    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x = smulRight f x :=
   rfl
+
+theorem smulRightₗ_apply_apply (f : M₂ →ₗ[R] R) (x : M) (y : M₂) :
+    smulRightₗ f x y = f y • x := rfl
 
 end CommSemiring
 

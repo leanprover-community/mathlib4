@@ -3,7 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Galois.Infinite
+module
+
+public import Mathlib.FieldTheory.Galois.Infinite
 
 /-!
 
@@ -12,6 +14,8 @@ import Mathlib.FieldTheory.Galois.Infinite
 In this file, we define the typeclass of abelian extensions and provide some basic API.
 
 -/
+
+@[expose] public section
 
 variable (K L M : Type*) [Field K] [Field L] [Algebra K L]
 variable [Field M] [Algebra K M] [Algebra L M] [IsScalarTower K L M]

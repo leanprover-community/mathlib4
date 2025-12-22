@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.PartitionOfUnity
+module
+
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
 # Whitney embedding theorem
@@ -25,6 +27,8 @@ for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.
 
 partition of unity, smooth bump function, whitney theorem
 -/
+
+@[expose] public section
 
 universe uι uE uH uM
 
@@ -84,7 +88,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
     (ContinuousLinearMap.fst ℝ E ℝ).comp
       (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance) (f.ind x hx))
   have := L.hasMFDerivAt.comp x
-    (f.embeddingPiTangent.contMDiff.mdifferentiableAt (mod_cast le_top)).hasMFDerivAt
+    (f.embeddingPiTangent.contMDiff.mdifferentiableAt (by simp)).hasMFDerivAt
   convert hasMFDerivAt_unique this _
   refine (hasMFDerivAt_extChartAt (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq ?_
   refine (f.eventuallyEq_one x hx).mono fun y hy => ?_
@@ -120,7 +124,7 @@ theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBumpCover
     eEF.toDiffeomorph.contMDiff.comp f.embeddingPiTangent.contMDiff,
     eEF.injective.comp f.embeddingPiTangent_injective, fun x => ?_⟩
   rw [mfderiv_comp _ eEF.differentiableAt.mdifferentiableAt
-      (f.embeddingPiTangent.contMDiff.mdifferentiableAt (mod_cast le_top)),
+      (f.embeddingPiTangent.contMDiff.mdifferentiableAt (by simp)),
     eEF.mfderiv_eq]
   exact eEF.injective.comp (f.embeddingPiTangent_injective_mfderiv _ trivial)
 

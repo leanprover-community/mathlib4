@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+module
+
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 /-!
 # The sheaf condition for a presieve
@@ -63,6 +65,8 @@ which can be convenient.
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
 
 -/
+
+@[expose] public section
 
 
 universe w w' v₁ v₂ u₁ u₂

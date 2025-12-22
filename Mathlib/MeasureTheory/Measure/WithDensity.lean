@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Analysis.LConvolution
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.Analysis.LConvolution
 
 /-!
 # Measure with a given density with respect to another measure
@@ -21,6 +23,8 @@ An important result about `withDensity` is the Radon-Nikodym theorem. It states 
 See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
 
 -/
+
+@[expose] public section
 
 open Set hiding restrict restrict_apply
 
@@ -738,7 +742,7 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
-    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
+    conv in (∫⁻ _, _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
   all_goals first | fun_prop | dsimp; fun_prop
 
 @[to_additive]

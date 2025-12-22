@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # The characteristic predicate of tensor product
@@ -27,6 +29,8 @@ import Mathlib.RingTheory.TensorProduct.Maps
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
 
 -/
+
+@[expose] public section
 
 
 universe u v₁ v₂ v₃ v₄
@@ -259,9 +263,11 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 
+@[simp]
 theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f m :=
   rfl
 
+@[simp]
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
 

@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
 
 /-!
 # Quasi-isomorphisms of short complexes
@@ -15,13 +16,15 @@ morphism `homologyMap φ` in homology is an isomorphism.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
+variable {C : Type _} [Category* C] [HasZeroMorphisms C]
   {S₁ S₂ S₃ S₄ : ShortComplex C}
   [S₁.HasHomology] [S₂.HasHomology] [S₃.HasHomology] [S₄.HasHomology]
 

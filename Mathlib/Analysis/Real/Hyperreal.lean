@@ -3,12 +3,16 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Order.Filter.FilterProduct
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Order.Filter.FilterProduct
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences.
 -/
+
+@[expose] public section
 
 
 open Filter Germ Topology
@@ -185,7 +189,7 @@ theorem gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 
   rw [← neg_neg r, coe_neg]; exact neg_lt_of_tendsto_zero_of_pos hf (neg_pos.mpr hr)
 
 theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
-  lt_of_tendsto_zero_of_pos tendsto_inverse_atTop_nhds_zero_nat
+  lt_of_tendsto_zero_of_pos tendsto_inv_atTop_nhds_zero_nat
 
 /-- Standard part predicate -/
 def IsSt (x : ℝ*) (r : ℝ) :=
@@ -273,7 +277,7 @@ theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ,
   ⟨sSup { y : ℝ | (y : ℝ*) < x }, isSt_sSup hni⟩
 
 theorem st_eq_sSup {x : ℝ*} : st x = sSup { y : ℝ | (y : ℝ*) < x } := by
-  rcases _root_.em (Infinite x) with (hx|hx)
+  rcases _root_.em (Infinite x) with (hx | hx)
   · rw [hx.st_eq]
     cases hx with
     | inl hx =>
@@ -581,7 +585,7 @@ theorem infinitesimal_of_tendsto_zero {f : ℕ → ℝ} (h : Tendsto f atTop (�
   isSt_of_tendsto h
 
 theorem infinitesimal_epsilon : Infinitesimal ε :=
-  infinitesimal_of_tendsto_zero tendsto_inverse_atTop_nhds_zero_nat
+  infinitesimal_of_tendsto_zero tendsto_inv_atTop_nhds_zero_nat
 
 theorem not_real_of_infinitesimal_ne_zero (x : ℝ*) : Infinitesimal x → x ≠ 0 → ∀ r : ℝ, x ≠ r :=
   fun hi hx r hr =>

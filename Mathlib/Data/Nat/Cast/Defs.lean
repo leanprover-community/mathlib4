@@ -3,10 +3,11 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Init
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.OfNat
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Tactic.SplitIfs
 
 /-!
 # Cast of natural numbers
@@ -23,6 +24,8 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `AddMonoidWithOne`: Type class for which `Nat.cast` is a canonical monoid homomorphism from `ℕ`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 
@@ -67,22 +70,6 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
-
-library_note2 «coercion into rings»
-/--
-Coercions such as `Nat.castCoe` that go from a concrete structure such as
-`ℕ` to an arbitrary ring `R` should be set up as follows:
-```lean
-instance : CoeTail ℕ R where coe := ...
-instance : CoeHTCT ℕ R where coe := ...
-```
-
-It needs to be `CoeTail` instead of `Coe` because otherwise type-class
-inference would loop when constructing the transitive coercion `ℕ → ℕ → ℕ → ...`.
-Sometimes we also need to declare the `CoeHTCT` instance
-if we need to shadow another coercion
-(e.g. `Nat.cast` should be used over `Int.ofNat`).
--/
 
 namespace Nat
 

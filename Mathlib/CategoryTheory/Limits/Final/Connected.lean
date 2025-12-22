@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Discrete.StructuredArrow
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Discrete.StructuredArrow
 
 /-!
 # Characterization of connected categories using initial/final functors
@@ -15,6 +17,8 @@ is final (or initial).
 We deduce that the projection `C × D ⥤ C` is final (or initial) if `D` is connected.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 

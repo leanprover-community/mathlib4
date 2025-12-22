@@ -3,16 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.Algebra.Group.Fin.Tuple
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Module.Prod
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Pi types of modules
@@ -31,6 +33,8 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.diag`
 
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' x' y'
@@ -607,7 +611,7 @@ def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
 end LinearEquiv
 
 lemma Pi.mem_span_range_single_inl_iff
-    [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Semiring R] {x : ι ⊕ ι' → R} :
+    [DecidableEq ι] [DecidableEq ι'] [Finite ι] [Semiring R] {x : ι ⊕ ι' → R} :
     x ∈ span R (Set.range fun i ↦ single (Sum.inl i) 1) ↔ ∀ k, x (Sum.inr k) = 0 := by
   refine ⟨fun hx k ↦ ?_, fun hx ↦ ?_⟩
   · induction hx using span_induction with
@@ -615,7 +619,8 @@ lemma Pi.mem_span_range_single_inl_iff
     | zero => simp
     | add u v _ _ hu hv => simp [hu, hv]
     | smul t u _ hu => simp [hu]
-  · suffices x = ∑ i : ι, x (Sum.inl i) • Pi.single (M := fun _ ↦ R) (Sum.inl i) (1 : R) by
+  · have := Fintype.ofFinite ι
+    suffices x = ∑ i : ι, x (Sum.inl i) • Pi.single (M := fun _ ↦ R) (Sum.inl i) (1 : R) by
       rw [this]
       exact sum_mem <| fun i _ ↦ SMulMemClass.smul_mem _ <| subset_span <| Set.mem_range_self i
     ext (i | i)
