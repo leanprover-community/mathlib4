@@ -1338,7 +1338,7 @@ protected theorem Differentiable.fderiv_two {f : E → F → G} {g : E → F}
     Differentiable 𝕜 fun x => fderiv 𝕜 (f x) (g x) :=
   ContDiff.differentiable
     (contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl 2))
-    (le_refl 1)
+    one_ne_zero
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x) (k x)` is smooth. -/
 theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
