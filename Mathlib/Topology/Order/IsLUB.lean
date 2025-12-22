@@ -225,22 +225,8 @@ complete linear order. The assumption of `BddBelow (range f)` is not needed in t
 theorem Dense.ciInf' {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) :
-    ⨅ i, f i = ⨅ s : S, f s := by
-  rw [← sInf_range, ← sInf_range]
-  obtain (_ | _) := isEmpty_or_nonempty γ
-  · simp [Set.range_eq_empty]
-  by_cases h1 : BddBelow (range f)
-  · refine (isGLB_csInf (range_nonempty f) h1).unique ?_
-    refine (isGLB_congr (hS.continuous_lowerBounds hf)).mp (isGLB_ciInf_set ?_ hS.nonempty)
-    exact h1.mono (by grind)
-  · have h2 : ¬ BddBelow (range (fun s : S => f (Subtype.val s))) := by
-      intro h
-      have := range_comp' f (Subtype.val : S → γ)
-      simp_all only [Subtype.range_coe_subtype, setOf_mem_eq]
-      have := h.closure.mono (image_closure_subset_closure_image hf)
-      simp only [hS.closure_eq, image_univ] at this
-      exact h1 this
-    simp [csInf_of_not_bddBelow h1, csInf_of_not_bddBelow h2]
+    ⨅ i, f i = ⨅ s : S, f s :=
+  hS.ciSup' (α := αᵒᵈ) hf
 
 /-- A closed interval in a conditionally complete linear order is compact.
 Also see general API on `CompactIccSpace`. -/
