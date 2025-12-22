@@ -67,6 +67,8 @@ theorem bitIndices_bit_false (n : ℕ) :
       cases b <;> simpa [sortedLT_iff_pairwise, bit_false, bit_true, List.pairwise_map]
     exact List.Pairwise.imp (by simp) hs.pairwise
 
+@[simp] theorem bitIndices_nodup {n : ℕ} : n.bitIndices.Nodup := bitIndices_sorted.pairwise.nodup
+
 @[simp] theorem bitIndices_two_pow_mul (k n : ℕ) :
     bitIndices (2^k * n) = (bitIndices n).map (· + k) := by
   induction k with
@@ -82,7 +84,7 @@ theorem bitIndices_bit_false (n : ℕ) :
   induction n using binaryRec with
   | zero => simp
   | bit b n hs =>
-    have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
+    have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x + 1) = fun i ↦ 2 * 2 ^ i := by
       ext i; simp [pow_add, mul_comm]
     cases b
     · simpa [hrw, List.sum_map_mul_left]
