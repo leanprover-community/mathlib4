@@ -417,9 +417,10 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   simp_rw [s, SetLike.coe, ConnectedComponent.supp_inj, ←ConnectedComponent.mem_supp_iff]
   grind
 
-/-- An acyclic subgraph of `G` is maximal if it has the same reachability relation as `G`. -/
-lemma maximal_isAcyclic_of_reachable_eq {F : SimpleGraph V} (hF : F ≤ G ∧ F.IsAcyclic)
-    (h : F.Reachable = G.Reachable) : Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F := by
+/-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
+theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G ∧ F.IsAcyclic) :
+    Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
+  refine ⟨reachable_eq_of_maximal_isAcyclic F, fun h => ?_⟩
   by_contra!
   obtain ⟨F', hF'⟩ := exists_gt_of_not_maximal (P := fun H => H ≤ G ∧ H.IsAcyclic) hF this
   obtain ⟨e, he⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono hF'.1
@@ -445,10 +446,6 @@ lemma maximal_isAcyclic_of_reachable_eq {F : SimpleGraph V} (hF : F ≤ G ∧ F.
     apply Adj.reachable
     simpa using he.1
 
-/-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
-theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G ∧ F.IsAcyclic) :
-    Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F ↔ F.Reachable = G.Reachable :=
-  ⟨reachable_eq_of_maximal_isAcyclic F, maximal_isAcyclic_of_reachable_eq hF⟩
 
 /-- A subgraph of a connected graph is maximal acyclic iff it is a tree. -/
 theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Connected)
