@@ -1217,34 +1217,55 @@ and one dilatransvection, then it is not exceptional.
 (This is the third part in Dieudonné's theorem) -/
 example (he : e ∈ dilatransvections K V ^ (finrank K (V ⧸ e.fixedSubmodule))) :
     ¬ IsExceptional e := by
-  intro he_exc
+  rintro ⟨he_reduce, c, hec⟩
   induction hn : finrank K (V ⧸ e.fixedSubmodule) generalizing e with
   | zero =>
-    apply he_exc.1
+    apply he_reduce
     rw [Module.finrank_zero_iff] at hn
     ext; apply Subsingleton.allEq
   | succ n hind =>
     rw [hn, pow_succ, Set.mem_mul] at he
     obtain ⟨e', he'_mem, t, ht, he⟩ := he
     have he' : e' = e * t⁻¹ := by simp [← he]
-    have corank_e' : finrank K (V ⧸ e'.fixedSubmodule) ≤ n := by
-      rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
-      exact finrank_le_add_finrank_fixedSubmodule he'_mem
+    have corank_e' : finrank K (V ⧸ e'.fixedSubmodule) = n := by
+      apply le_antisymm
+      · rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
+        exact finrank_le_add_finrank_fixedSubmodule he'_mem
+      rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank,
+        ← finrank_quotient_add_finrank e.fixedSubmodule, hn, add_assoc]
+      simp only [add_le_add_iff_left]
+      rw [he']
+      apply finrank_fixedSubmodule_mul_dilatransvection_le
+      rwa [inv_mem_dilatransvections_iff]
+    have rank_e' : finrank K e'.fixedSubmodule = finrank K e.fixedSubmodule + 1 := by
+      rw [← Nat.add_left_cancel_iff, finrank_quotient_add_finrank,
+        ← finrank_quotient_add_finrank e.fixedSubmodule,
+        add_comm _ 1, ← add_assoc]
+      simp [hn, corank_e']
+    -- I am tired of writing this kind sh*t all the time
+    have : e'.fixedSubmodule ⊓ t.fixedSubmodule = e.fixedSubmodule := by
+      apply Submodule.eq_of_le_of_finrank_le
+      · rw [← he]
+        exact inf_fixedSubmodule_le_fixedSubmodule_mul e' t
+      · rw [← Nat.add_le_add_iff_left, finrank_sup_add_finrank_inf_eq, add_comm (finrank K e'.fixedSubmodule), rank_e', add_comm _ 1, ← add_assoc]
+        simp only [add_le_add_iff_right]
+        apply le_trans (finrank_le _)
+        rw [add_comm, ← finrank_quotient_add_finrank t.fixedSubmodule]
+        simp only [add_le_add_iff_right]
+        rwa [mem_dilatransvections_iff] at ht
+    let D := LinearMap.range ((t : V →ₗ[K] V) - LinearMap.id (R := K) (M := V))
+    let H := t.fixedSubmodule
+    have (x : V) (hx : x ∈ H) : e' x - c • x ∈ e.fixedSubmodule := sorry
+    :x
+
+
+    sorry
     obtain ⟨f, v, hfv, ht⟩ := ht
     have he_apply (x : V) : e x = e' x + f x • e v := by
       rw [← he, ht]
       simp [hfv]
     have he'_apply (x : V) : e' x = e x - f x • e v := by
       rw [eq_comm, sub_eq_iff_eq_add, he_apply]
-    replace corank_e' : finrank K (V ⧸ e'.fixedSubmodule) = n := by
-      apply le_antisymm corank_e'
-      rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank,
-        ← finrank_quotient_add_finrank e.fixedSubmodule, ← hn, add_assoc]
-      simp only [add_le_add_iff_left]
-      rw [he']
-      apply finrank_fixedSubmodule_mul_transvection_le
-      rw [inv_mem_transvections, ht]
-      exact mem_transvections hfv
     have H : e.fixedSubmodule = e'.fixedSubmodule ⊓ LinearMap.ker f := by
       symm
       apply Submodule.eq_of_le_of_finrank_le
