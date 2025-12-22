@@ -184,19 +184,19 @@ theorem Dense.lowerBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
     (hf : Continuous f) :
     lowerBounds (f '' S) = lowerBounds (range f) :=
-  hS.continuous_upperBounds (α := αᵒᵈ) hf
+  hS.upperBounds_image (α := αᵒᵈ) hf
 
 /-- The supremum of a bounded above, continuous function on a dense set is equal to the supremum on
 the universe. -/
 theorem Dense.ciSup {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLattice α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddAbove (range f)) :
-    ⨆ i, f i = ⨆ s : S, f s := by
+    ⨆ s : S, f s = ⨆ i, f i := by
   rw [← sSup_range, ← sSup_range]
   obtain (_ | _) := isEmpty_or_nonempty γ
   · simp [Set.range_eq_empty]
-  refine (isLUB_csSup (range_nonempty f) h).unique ?_
-  refine (isLUB_congr (hS.continuous_upperBounds hf)).mp (isLUB_ciSup_set ?_ hS.nonempty)
+  refine ((isLUB_csSup (range_nonempty f) h).unique ?_).symm
+  refine (isLUB_congr (hS.upperBounds_image hf)).mp (isLUB_ciSup_set ?_ hS.nonempty)
   exact h.mono (by grind)
 
 /-- The infimum of a bounded below, continuous function on a dense set is equal to the infimum on
@@ -204,7 +204,7 @@ the universe. -/
 theorem Dense.ciInf {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLattice α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddBelow (range f)) :
-    ⨅ i, f i = ⨅ s : S, f s :=
+    ⨅ s : S, f s = ⨅ i, f i :=
   hS.ciSup (α := αᵒᵈ) hf h
 
 /-- This is an analogue of `Dense.continuous_sup` for functions taking values in a conditionally
@@ -212,7 +212,7 @@ complete linear order. The assumption of `BddAbove (range f)` is not needed in t
 theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) :
-    ⨆ i, f i = ⨆ s : S, f s := by
+    ⨆ s : S, f s = ⨆ i, f i := by
   by_cases h : BddAbove (range (fun x : S ↦ f x))
   · refine hS.ciSup hf <| h.closure.mono ?_
     simpa [← Function.comp_def, range_comp] using hf.range_subset_closure_image_dense hS
@@ -225,7 +225,7 @@ complete linear order. The assumption of `BddBelow (range f)` is not needed in t
 theorem Dense.ciInf' {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) :
-    ⨅ i, f i = ⨅ s : S, f s :=
+    ⨅ s : S, f s = ⨅ i, f i :=
   hS.ciSup' (α := αᵒᵈ) hf
 
 /-- A closed interval in a conditionally complete linear order is compact.
