@@ -1293,6 +1293,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
+public import Mathlib.AlgebraicGeometry.Morphisms.FlatMono
 public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
@@ -2954,6 +2955,7 @@ public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
 public import Mathlib.CategoryTheory.Quotient.Preadditive
+public import Mathlib.CategoryTheory.RegularCategory.Basic
 public import Mathlib.CategoryTheory.RepresentedBy
 public import Mathlib.CategoryTheory.Retract
 public import Mathlib.CategoryTheory.Shift.Adjunction
@@ -3091,6 +3093,13 @@ public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 public import Mathlib.CategoryTheory.Subobject.Types
 public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Subpresheaf.Basic
+public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
+public import Mathlib.CategoryTheory.Subpresheaf.Finite
+public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subpresheaf.OfSection
+public import Mathlib.CategoryTheory.Subpresheaf.Sieves
+public import Mathlib.CategoryTheory.Subpresheaf.Subobject
 public import Mathlib.CategoryTheory.Subterminal
 public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
@@ -4504,6 +4513,7 @@ public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Complex.Orientation
 public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.ConvexSpace
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Mathlib.LinearAlgebra.DFinsupp
@@ -5049,6 +5059,7 @@ public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Portmanteau
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.MeasureTheory.Measure.Prokhorov
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.Measure.Regular
@@ -5752,6 +5763,7 @@ public import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 public import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
