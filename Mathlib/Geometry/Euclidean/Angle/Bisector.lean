@@ -229,9 +229,10 @@ lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq {
       (angle_self_orthogonalProjection _ hp'₁) (angle_self_orthogonalProjection _ hp'₂)
   exact dist_orthogonalProjection_eq_of_oangle_eq hp'₁ hp'₂ hp₁ hp₂ h'
 
-/-- Auxiliary lemma for the special case of `dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq`
-where the orthogonal projection of `p` to the line `p₁ p₂` is `p₁`. -/
-private lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ {p p₁ p₂ p₃ : P}
+/-- Auxiliary lemma for the special case of
+`dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq` where the orthogonal projection of `p`
+to the line `p₁ p₂` is `p₁`. -/
+private lemma dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq_aux₁ {p p₁ p₂ p₃ : P}
     (h₂ : p₁ ≠ p₂) (h : (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃)
     (h' : orthogonalProjection line[ℝ, p₁, p₂] p = p₁) :
     dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
@@ -254,28 +255,29 @@ private lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ {p p₁
     rw [inner_smul_right, ← inner_neg_neg, inner_neg_left]
     simp [h]
 
-/-- Auxiliary lemma for the special case of `dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq`
-where the orthogonal projection of `p` to the line `p₁ p₂` or `p₁ p₃` is `p₁`. -/
-private lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₂ {p p₁ p₂ p₃ : P}
+/-- Auxiliary lemma for the special case of
+`dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq` where the orthogonal projection of `p`
+to the line `p₁ p₂` or `p₁ p₃` is `p₁`. -/
+private lemma dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq_aux₂ {p p₁ p₂ p₃ : P}
     (h₂ : p₁ ≠ p₂) (h₃ : p₁ ≠ p₃) (h : (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃)
     (h' : orthogonalProjection line[ℝ, p₁, p₂] p = p₁ ∨
       orthogonalProjection line[ℝ, p₁, p₃] p = p₁) :
     dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
       dist p (orthogonalProjection line[ℝ, p₁, p₃] p) := by
   rcases h' with h' | h'
-  · exact dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ h₂ h h'
-  · refine (dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ h₃ ?_ h').symm
+  · exact dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq_aux₁ h₂ h h'
+  · refine (dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq_aux₁ h₃ ?_ h').symm
     rw [oangle_rev, smul_neg, ← h, oangle_rev, smul_neg, neg_neg]
 
 /-- A point `p` is equidistant to two lines `p₁ p₂` and `p₁ p₃` if the oriented angles at `p₁`
 are equal modulo `π`. -/
-lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq {p p₁ p₂ p₃ : P} (h₂ : p₁ ≠ p₂)
+lemma dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq {p p₁ p₂ p₃ : P} (h₂ : p₁ ≠ p₂)
     (h₃ : p₁ ≠ p₃) (h : (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃) :
     dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
       dist p (orthogonalProjection line[ℝ, p₁, p₃] p) := by
   by_cases h' : orthogonalProjection line[ℝ, p₁, p₂] p = p₁ ∨
       orthogonalProjection line[ℝ, p₁, p₃] p = p₁
-  · exact dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₂ h₂ h₃ h h'
+  · exact dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq_aux₂ h₂ h₃ h h'
   · rw [not_or] at h'
     refine dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq
       (left_mem_affineSpan_pair _ _ _) (left_mem_affineSpan_pair _ _ _) h'.1 h'.2 ?_
@@ -286,7 +288,7 @@ lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq {p p₁ p₂ p₃ : P}
 
 /-- If a point `p` is equidistant to two different lines `p₁ p₂` and `p₁ p₃`, the oriented angles
 at `p₁` are equal modulo `π`. -/
-lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq {p p₁ p₂ p₃ : P}
+lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃ : P}
     (ha : AffineIndependent ℝ ![p₁, p₂, p₃])
     (h : dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
       dist p (orthogonalProjection line[ℝ, p₁, p₃] p)) :
@@ -342,13 +344,13 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq {p p₁ p₂ p₃ : P}
 
 /-- A point `p` is equidistant to two different lines `p₁ p₂` and `p₁ p₃` if and only if the
 oriented angles at `p₁` are equal modulo `π`. -/
-lemma dist_orthogonalProjection_eq_iff_two_zsmul_oangle_eq {p p₁ p₂ p₃ : P}
+lemma dist_orthogonalProjection_line_eq_iff_two_zsmul_oangle_eq {p p₁ p₂ p₃ : P}
     (ha : AffineIndependent ℝ ![p₁, p₂, p₃]) :
     dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
       dist p (orthogonalProjection line[ℝ, p₁, p₃] p) ↔
         (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃ := by
-  exact ⟨two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq ha,
-    dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq
+  exact ⟨two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq ha,
+    dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq
       (ha.injective.ne (by decide : (0 : Fin 3) ≠ 1))
       (ha.injective.ne (by decide : (0 : Fin 3) ≠ 2))⟩
 
