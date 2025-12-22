@@ -50,10 +50,10 @@ instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
     [IsRegularEpiCategory D] :
     IsRegularEpiCategory (C ⥤ D) where
   regularEpiOfEpi {F G} f := ⟨⟨{
-    W := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.pt
-    left := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.fst
-    right := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.snd
-    w := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.condition
+    W := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.pt
+    left := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.fst
+    right := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.snd
+    w := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.condition
     isColimit := evaluationJointlyReflectsColimits _ fun k ↦ by
       have := IsRegularEpiCategory.regularEpiOfEpi (f.app k)
       refine .equivOfNatIsoOfIso ?_ _ _ ?_ (isColimitCoforkOfEffectiveEpi (f.app k)
@@ -64,7 +64,6 @@ instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
         all_goals cat_disch
       · exact Cocones.ext (Iso.refl _) <| by rintro (_ | _ | _); all_goals cat_disch }⟩⟩
 
--- TODO: cite Borceux Handbook of Algebra for the proof
 lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
     [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D]
     (h : ∀ {F G : Sheaf J D} (f : F ⟶ G) [Epi f], ∃ (I : Cᵒᵖ ⥤ D) (p : F.val ⟶ I) (i : I ⟶ G.val),
