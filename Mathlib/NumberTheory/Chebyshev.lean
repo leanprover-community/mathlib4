@@ -313,7 +313,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     · simp [h]
   rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
     ← intervalIntegral.integral_of_le hx]
-  · --Rewrite the derivative inside the intigral
+  · -- Rewrite the derivative inside the intigral
     have int_deriv (f : ℝ → ℝ) :
       ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
       ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
@@ -325,13 +325,13 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       all_goals linarith [hu.1]
     simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
-  · --Differentiability
+  · -- Differentiability
     intro z hz
     have : z ≠ 0 := by linarith [hz.1]
     have : log z ≠ 0 := by
       apply log_ne_zero_of_pos_of_ne_one <;> linarith [hz.1]
     fun_prop (disch := assumption)
-  · --Integrability of the derivative
+  · -- Integrability of the derivative
     have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹ := by
       intro y hy
       rw [deriv_log_inv, mul_inv, ← div_eq_mul_inv, neg_div]
@@ -370,7 +370,7 @@ private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1
   rw [intervalIntegral.integral_const, smul_eq_mul, mul_one_div]
 
 /- Explicit integral bound, we expose a BigO version below since the constants and lower order term
-aren't very convenient.-/
+aren't very convenient. -/
 private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     ∫ t in 2..x, 1 / log t ^ 2 ≤ 4 * x / (log x) ^ 2 + x.sqrt / log 2 ^ 2 := by
   have two_le_sqrt : 2 ≤ x.sqrt := by
