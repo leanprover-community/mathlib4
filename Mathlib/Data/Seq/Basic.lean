@@ -157,11 +157,11 @@ theorem take_succ_cons {n : ℕ} {x : α} {s : Seq α} :
     (cons x s).take (n + 1) = x :: s.take n := by
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
     (s.take k)[n]? = if n < k then s.get? n else none
   | n, 0, s => by simp [take]
-  | n, k+1, s => by
+  | n, k + 1, s => by
     rw [take]
     cases h : destruct s with
     | none =>
@@ -172,7 +172,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [List.getElem?_cons_succ, getElem?_take]
+        | n + 1 => simp [List.getElem?_cons_succ, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = some x) : x ∈ s.take n := by
@@ -488,7 +488,7 @@ end Join
 
 section Drop
 
-@[simp]
+@[simp, grind =]
 theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) := by
   induction n generalizing m with
   | zero => simp [drop]
@@ -541,18 +541,8 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
     (s.take n).drop m = (s.drop m).take (n - m) := by
-  induction m generalizing n s with
-  | zero => simp [drop]
-  | succ k ih =>
-    cases s
-    · simp
-    cases n with
-    | zero => simp
-    | succ l =>
-      simp only [take, destruct_cons, List.drop_succ_cons, Nat.reduceSubDiff]
-      rw [ih]
-      congr 1
-      rw [drop_succ_cons]
+  ext
+  grind
 
 end Drop
 

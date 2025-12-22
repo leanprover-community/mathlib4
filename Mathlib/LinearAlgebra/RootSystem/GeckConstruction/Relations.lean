@@ -76,9 +76,9 @@ lemma lie_h_f :
     replace this := congr_arg (ω b * ·) this
     simpa [← mul_assoc, ω_mul_ω] using this
   calc ω b * ⁅h j, f i⁆ = ω b * (h j * f i - f i * h j) := by rw [Ring.lie_def]
-                      _ = - (h j * e i - e i * h j) * ω b := ?_
-                      _ = - ⁅h j, e i⁆ * ω b := by rw [Ring.lie_def]
-                      _ = - (b.cartanMatrix i j • e i) * ω b := by rw [lie_h_e]
+                      _ = -(h j * e i - e i * h j) * ω b := ?_
+                      _ = -⁅h j, e i⁆ * ω b := by rw [Ring.lie_def]
+                      _ = -(b.cartanMatrix i j • e i) * ω b := by rw [lie_h_e]
                       _ = ω b * (-b.cartanMatrix i j • f i) := ?_
   · rw [mul_sub, ← mul_assoc, ← mul_assoc, ω_mul_h, ω_mul_f, mul_assoc, mul_assoc, ω_mul_f, ω_mul_h,
       neg_sub, neg_mul, neg_mul, mul_neg, sub_mul, mul_assoc, mul_assoc]
@@ -94,7 +94,7 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
   classical
   have h_lin_ind : LinearIndependent R ![P.root i, P.root k] := by
     rw [LinearIndependent.pair_symm_iff, IsReduced.linearIndependent_iff]; aesop
-  suffices  (∑ x, if P.root k = P.root i + P.root x then
+  suffices (∑ x, if P.root k = P.root i + P.root x then
               (P.chainBotCoeff i x + 1 : R) * (P.chainTopCoeff i k + 1) else 0) -
             (∑ x, if P.root k = P.root x - P.root i then
               (P.chainTopCoeff i x + 1 : R) * (P.chainBotCoeff i k + 1) else 0) =
@@ -151,7 +151,7 @@ lemma lie_e_f_same :
       simp only [not_and]
       rintro contra rfl rfl
       simp [P.ne_zero] at contra
-    simp [e, f, h, h₁, h₂, - indexNeg_neg, ← ite_and]
+    simp [e, f, h, h₁, h₂, -indexNeg_neg, ← ite_and]
   · simp [e, f, h]
   · rcases eq_or_ne k i with rfl | hki
     · have hx (x : ι) : ¬ (P.root x = P.root i + P.root l ∧ P.root i = P.root x - P.root i) := by
@@ -177,7 +177,7 @@ lemma lie_e_f_same :
         Matrix.fromBlocks_apply₂₂, mul_ite, ite_mul, mul_zero, ← ite_and, if_neg (hx _), add_zero,
         aux, zero_sub, Matrix.diagonal_apply]
       rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
-      simp [eq_comm, apply_ite ((- ·) : R → R)]
+      simp [eq_comm, apply_ite ((-·) : R → R)]
     rcases eq_or_ne k l with rfl | hkl
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
@@ -203,10 +203,10 @@ private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
   classical
   letI := P.indexNeg
   have aux₁ : ∀ x ∈ Finset.univ, ¬ (P.root x = P.root i + P.root l ∧ k = j ∧ x = j) := by
-    rintro  x - ⟨hl, -, rfl⟩
+    rintro x - ⟨hl, -, rfl⟩
     exact b.sub_notMem_range_root i.property j.property ⟨-l, by simp [hl]⟩
   have aux₂ : ∀ x ∈ Finset.univ, ¬ (P.root x = P.root l - P.root j ∧ k = i ∧ x = -i) := by
-    rintro  x - ⟨hl, -, rfl⟩
+    rintro x - ⟨hl, -, rfl⟩
     replace hl : P.root i = P.root j - P.root l := by simpa [neg_eq_iff_eq_neg] using hl
     exact b.sub_notMem_range_root i.property j.property ⟨-l, by simp [hl]⟩
   simp [e, f, -indexNeg_neg, ← ite_and, Finset.sum_ite_of_false aux₁, Finset.sum_ite_of_false aux₂]

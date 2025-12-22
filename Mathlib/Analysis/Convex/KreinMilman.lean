@@ -65,7 +65,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     (s.extremePoints ℝ).Nonempty := by
   let S : Set (Set E) := { t | t.Nonempty ∧ IsClosed t ∧ IsExtreme ℝ s t }
   rsuffices ⟨t, ht⟩ : ∃ t, Minimal (· ∈ S) t
-  · obtain ⟨⟨x,hxt⟩, htclos, hst⟩ := ht.prop
+  · obtain ⟨⟨x, hxt⟩, htclos, hst⟩ := ht.prop
     refine ⟨x, IsExtreme.mem_extremePoints ?_⟩
     rwa [← eq_singleton_iff_unique_mem.2 ⟨hxt, fun y hyB => ?_⟩]
     by_contra hyx

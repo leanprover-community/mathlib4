@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
+Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell, Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 module
 
@@ -228,6 +228,34 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
     · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), Nat.zero_mul,
         Nat.zero_mul]
 
+theorem choose_mul_add {m n : ℕ} (hn : n ≠ 0) :
+    (m * n + n).choose n = (m + 1) * (m * n + n - 1).choose (n - 1) := by
+  rw [← Nat.mul_left_inj (Nat.mul_ne_zero (factorial_ne_zero (m * n)) (factorial_ne_zero n))]
+  set p := n - 1
+  have hp : n = p + 1 := (succ_pred_eq_of_ne_zero hn).symm
+  simp only [hp, add_succ_sub_one]
+  calc
+    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p + 1))! * (p + 1)!)
+      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p + 1))! * (p + 1)! := by lia
+    _ = (m * (p + 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
+    _ = ((m * (p + 1) + p) + 1)! := by lia
+    _ = ((m * (p + 1) + p) + 1) * (m * (p + 1) + p)! := by rw [factorial_succ]
+    _ = (m * (p + 1) + p)! * ((p + 1) * (m + 1)) := by lia
+    _ = ((m * (p + 1) + p).choose p * (m * (p + 1))! * (p)!) * ((p + 1) * (m + 1)) := by
+      rw [add_choose_mul_factorial_mul_factorial]
+    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * (((p + 1) * (p)!) * (m + 1)) := by lia
+    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
+    _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by lia
+
+theorem choose_mul_right {m n : ℕ} (hn : n ≠ 0) :
+    (m * n).choose n = m * (m * n - 1).choose (n - 1) := by
+  by_cases hm : m = 0
+  · simp only [hm, Nat.zero_mul, Nat.choose_eq_zero_iff]
+    exact Nat.pos_of_ne_zero hn
+  · set p := m - 1; have hp : m = p + 1 := (succ_pred_eq_of_ne_zero hm).symm
+    simp only [hp]
+    rw [Nat.add_mul, Nat.one_mul, choose_mul_add hn]
+
 theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :
     (n + 1).ascFactorial k = k ! * (n + k).choose k := by
   rw [Nat.mul_comm]
@@ -346,10 +374,6 @@ i.e. ways to select `k` items (up to permutation) from `n` items with replacemen
 
 Note that `multichoose` is *not* the multinomial coefficient, although it can be computed
 in terms of multinomial coefficients. For details see https://mathworld.wolfram.com/Multichoose.html
-
-TODO: Prove that `choose (-n) k = (-1)^k * multichoose n k`,
-where `choose` is the generalized binomial coefficient.
-<https://github.com/leanprover-community/mathlib/pull/15072#issuecomment-1171415738>
 
 -/
 
