@@ -45,16 +45,15 @@ is indexed by `CochainComplex C ℤ`. -/
 noncomputable def spectralObjectMappingCone :
     SpectralObject (HomotopyCategory C (ComplexShape.up ℤ)) (CochainComplex C ℤ) where
   ω₁ := composableArrowsFunctor C ⋙ HomotopyCategory.quotient _ _
-  δ' :=
-    { app D := ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
-        (CochainComplex.mappingConeCompTriangle (D.map' 0 1) (D.map' 1 2))).mor₃
-      naturality := fun D₁ D₂ φ => by
-        obtain ⟨_, _, _, f, g, rfl⟩ := ComposableArrows.mk₂_surjective D₁
-        obtain ⟨_, _, _, f', g', rfl⟩ := ComposableArrows.mk₂_surjective D₂
-        have eq := CochainComplex.mappingConeCompTriangle_mor₃_naturality f g f' g' φ
-        dsimp [ComposableArrows.Precomp.map] at eq ⊢
-        simp only [Category.assoc, ← Functor.map_comp_assoc]
-        simp [eq] }
+  δ'.app D := ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
+    (CochainComplex.mappingConeCompTriangle (D.map' 0 1) (D.map' 1 2))).mor₃
+  δ'.naturality D₁ D₂ φ := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := ComposableArrows.mk₂_surjective D₁
+    obtain ⟨_, _, _, f', g', rfl⟩ := ComposableArrows.mk₂_surjective D₂
+    have eq := CochainComplex.mappingConeCompTriangle_mor₃_naturality f g f' g' φ
+    dsimp [ComposableArrows.Precomp.map] at eq ⊢
+    simp only [Category.assoc, ← Functor.map_comp_assoc]
+    simp [eq]
   distinguished' D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := ComposableArrows.mk₂_surjective D
     exact HomotopyCategory.mappingConeCompTriangleh_distinguished f g
