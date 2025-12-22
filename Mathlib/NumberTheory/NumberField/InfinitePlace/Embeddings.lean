@@ -21,7 +21,7 @@ the field of complex numbers.
   let `A` be an algebraically closed field of char. 0. Then the images of `x` under the
   embeddings of `K` in `A` are exactly the roots in `A` of the minimal polynomial of `x` over `ℚ`.
 * `NumberField.Embeddings.pow_eq_one_of_norm_le_one`: A non-zero algebraic integer whose conjugates
-  are all inside the close unit disk is a root of unity, this is also known as Kronecker's theorem.
+  are all inside the closed unit disk is a root of unity, this is also known as Kronecker's theorem.
 * `NumberField.Embeddings.pow_eq_one_of_norm_eq_one`: an algebraic integer whose conjugates are
   all of norm one is a root of unity.
 
@@ -43,7 +43,7 @@ open Module
 variable (K : Type*) [Field K]
 variable (A : Type*) [Field A] [CharZero A]
 
-instance aa [CharZero K] [Algebra.IsAlgebraic ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
+instance [CharZero K] [Algebra.IsAlgebraic ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
   obtain ⟨f⟩ : Nonempty (K →ₐ[ℚ] A) := by
     apply IntermediateField.nonempty_algHom_of_splits
     exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits _⟩
