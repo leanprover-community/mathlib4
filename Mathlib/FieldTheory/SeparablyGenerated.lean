@@ -111,7 +111,7 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
   · refine (map_eq_zero_iff _ (rename_injective _ Subtype.val_injective)).not.mpr fun H ↦ ?_
     let e := (Equiv.optionSubtypeNe i).symm
     have : coeff _ (F₀.coeff _) = _ :=
-      optionEquivLeft_coeff_coeff _ _ (σ.equivMapDomain e) (renameEquiv k e F)
+      optionEquivLeft_coeff_some_coeff_none _ _ (σ.equivMapDomain e) (renameEquiv k e F)
     dsimp only [F₀] at this
     rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain, coeff_rename_mapDomain _
       e.injective, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_none,
