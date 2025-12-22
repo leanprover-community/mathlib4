@@ -180,7 +180,7 @@ theorem Dense.upperBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
 
 /-- The lower bounds of the image of a continuous function on a dense set is equal to the lower
 bounds of the range of the universe. -/
-theorem Dense.continuous_lowerBounds {α : Type*} [TopologicalSpace α] [Preorder α]
+theorem Dense.lowerBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
     (hf : Continuous f) :
     lowerBounds (f '' S) = lowerBounds (range f) := by
