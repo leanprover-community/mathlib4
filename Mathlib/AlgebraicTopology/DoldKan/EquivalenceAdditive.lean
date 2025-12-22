@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
 
 /-! The Dold-Kan equivalence for additive categories.
 
@@ -14,13 +16,15 @@ of categories `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Idempotents AlgebraicTopology.DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 namespace CategoryTheory
 

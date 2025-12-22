@@ -3,14 +3,18 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+module
+
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Theorems about invertible elements in a `GroupWithZero`
 
 We intentionally keep imports minimal here as this file is used by `Mathlib/Tactic/NormNum.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Ring
 
@@ -59,7 +63,7 @@ theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
   mul_inv_cancel₀ (Invertible.ne_zero a)
 
 /-- `a` is the inverse of `a⁻¹` -/
-def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
+instance invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
   ⟨a, by simp, by simp⟩
 
 @[simp]

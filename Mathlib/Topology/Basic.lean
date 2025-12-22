@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Lattice
-import Mathlib.Topology.Defs.Filter
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Topology.Defs.Filter
 
 /-!
 # Openness and closedness of a set
@@ -28,6 +30,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 
 topological space
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -184,6 +188,10 @@ theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed
 
 theorem IsClosed.not : IsClosed { a | p a } → IsOpen { a | ¬p a } :=
   isOpen_compl_iff.mpr
+
+theorem IsClosed.and :
+    IsClosed { x | p₁ x } → IsClosed { x | p₂ x } → IsClosed { x | p₁ x ∧ p₂ x } :=
+  IsClosed.inter
 
 /-!
 ### Limits of filters in topological spaces

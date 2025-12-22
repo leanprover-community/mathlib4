@@ -3,8 +3,10 @@ Copyright (c) 2025 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
 -/
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 
@@ -29,6 +31,8 @@ Generalize linear independence to:
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
 
+@[expose] public section
+
 open Module Submodule
 open scoped Function
 
@@ -50,7 +54,7 @@ namespace Sequence
 variable {R}
 
 /-- Make `S i` mean `S.elems' i`. -/
-instance coeFun [Semiring R] : CoeFun (Sequence R) (fun _ ↦  ℕ → R[X]) := ⟨Sequence.elems'⟩
+instance coeFun [Semiring R] : CoeFun (Sequence R) (fun _ ↦ ℕ → R[X]) := ⟨Sequence.elems'⟩
 
 section Semiring
 
@@ -69,10 +73,10 @@ lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_
 lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp <| by simp [S.degree_eq i]
 
 /-- `S i` has strictly monotone degree. -/
-lemma degree_strictMono : StrictMono <| degree ∘ S := fun _ _  ↦ by simp
+lemma degree_strictMono : StrictMono <| degree ∘ S := fun _ _ ↦ by simp
 
 /-- `S i` has strictly monotone natural degree. -/
-lemma natDegree_strictMono : StrictMono <| natDegree ∘ S := fun _ _  ↦ by simp
+lemma natDegree_strictMono : StrictMono <| natDegree ∘ S := fun _ _ ↦ by simp
 
 end Semiring
 
@@ -124,23 +128,15 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
       ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
     -- and that this degree is also their `natDegree`
     have head_degree_eq_natDegree : head.degree = head.natDegree := degree_eq_natDegree <| by
-      by_cases n_eq_zero : n = 0
-      · dsimp [head]
-        rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
-        rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-          smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
-          mul_one, C_eq_zero, leadingCoeff_eq_zero]
-      · apply head.ne_zero_of_degree_gt
-        rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
+      grind [degree_eq_bot]
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
-      rw [degree_eq_natDegree, head_degree_eq_natDegree] at head_degree_eq
+      rw [degree_eq_natDegree p_ne_zero, head_degree_eq_natDegree] at head_degree_eq
       nth_rw 2 [← coeff_natDegree]
       rw_mod_cast [← head_degree_eq, hp]
       dsimp [head]
       nth_rw 2 [← S.natDegree_eq n]
-      rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
+      rw [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
     -- which we can now combine to show that `P - head` must have strictly lower degree,
     -- as its leading term has been cancelled, completing our proof.
     have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
@@ -179,10 +175,10 @@ noncomputable def basis : Basis ℕ R R[X] :=
 lemma basis_eq_self (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
 /-- Basis elements have strictly monotone degree. -/
-lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
+lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _ ↦ by simp
 
 /-- Basis elements have strictly monotone natural degree. -/
-lemma basis_natDegree_strictMono : StrictMono <| natDegree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
+lemma basis_natDegree_strictMono : StrictMono <| natDegree ∘ (S.basis hCoeff) := fun _ _ ↦ by simp
 
 end NoZeroDivisors
 

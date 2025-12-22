@@ -3,14 +3,18 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Data.Int.LeastGreatest
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Data.Int.LeastGreatest
 
 /-!
 ## `ℤ` forms a conditionally complete linear order
 
 The integers form a conditionally complete linear order.
 -/
+
+@[expose] public section
 
 
 open Int
@@ -90,5 +94,5 @@ end Int
 end
 
 --  this example tests that the `Lattice ℤ` instance is computable;
--- i.e., that is is not found via the noncomputable instance in this file.
+-- i.e., that it is not found via the noncomputable instance in this file.
 example : Lattice ℤ := inferInstance

@@ -3,12 +3,14 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Ring
 
 /-!
 # Correctness of Terminating Continued Fraction Computations (`GenContFract.of`)
@@ -40,6 +42,8 @@ information about the computation process, refer to `Algebra.ContinuedFractions.
 - `GenContFract.of_correctness_of_terminatedAt` shows the equality
   `v = (GenContFract.of v).convs n` if `GenContFract.of v` terminated at position `n`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

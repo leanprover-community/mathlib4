@@ -3,15 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.Attr.Core
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Partial equivalences
 
-This files defines equivalences between subsets of given types.
+This file defines equivalences between subsets of given types.
 An element `e` of `PartialEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
 from α to β and from β to α (just like equivs), which are inverse to each other on the subsets
 `e.source` and `e.target` of respectively α and β.
@@ -66,6 +68,8 @@ If a lemma deals with the intersection of a set with either source or target of 
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 
 -/
+
+@[expose] public section
 open Lean Meta Elab Tactic
 
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
@@ -77,7 +81,7 @@ new file to become functional.
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
 @[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
-def mfld_cfg : Simps.Config where
+meta def mfld_cfg : Simps.Config where
   fullyApplied := false
 
 namespace Tactic.MfldSetTac
@@ -274,8 +278,8 @@ theorem copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β
 protected def toEquiv : e.source ≃ e.target where
   toFun x := ⟨e x, e.map_source x.mem⟩
   invFun y := ⟨e.symm y, e.map_target y.mem⟩
-  left_inv := fun ⟨_, hx⟩ => Subtype.eq <| e.left_inv hx
-  right_inv := fun ⟨_, hy⟩ => Subtype.eq <| e.right_inv hy
+  left_inv := fun ⟨_, hx⟩ => Subtype.ext <| e.left_inv hx
+  right_inv := fun ⟨_, hy⟩ => Subtype.ext <| e.right_inv hy
 
 @[simp, mfld_simps]
 theorem symm_source : e.symm.source = e.target :=
@@ -878,11 +882,9 @@ end Pi
 
 lemma surjective_of_target_eq_univ (h : e.target = univ) :
     Surjective e :=
-  surjective_iff_surjOn_univ.mpr <| e.surjOn.mono (by simp) (by simp [h])
+  surjOn_univ.mp <| e.surjOn.mono (by simp) (by simp [h])
 
-lemma injective_of_source_eq_univ (h : e.source = univ) :
-    Injective e := by
-  simpa [injective_iff_injOn_univ, h] using e.injOn
+lemma injective_of_source_eq_univ (h : e.source = univ) : Injective e := by simpa [h] using e.injOn
 
 lemma injective_symm_of_target_eq_univ (h : e.target = univ) :
     Injective e.symm :=

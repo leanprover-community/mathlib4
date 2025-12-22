@@ -3,10 +3,12 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 eigenvalue, minimal polynomial
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -50,7 +54,7 @@ theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
   · intro n a hna
     rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
-      LinearMap.map_smulₛₗ, RingHom.id_apply, mul_comm]
+      map_smulₛₗ, RingHom.id_apply, mul_comm]
 
 theorem isRoot_of_hasEigenvalue [NoZeroSMulDivisors R M] {f : End R M} {μ : R}
     (h : f.HasEigenvalue μ) : (minpoly R f).IsRoot μ := by
@@ -108,10 +112,9 @@ theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degr
   calc
     eigenspace f (-q.coeff 0 / q.leadingCoeff)
     _ = LinearMap.ker (q.leadingCoeff • f - algebraMap K (End K V) (-q.coeff 0)) := by
-          rw [eigenspace_div]
-          intro h
-          rw [leadingCoeff_eq_zero_iff_deg_eq_bot.1 h] at hq
-          cases hq
+          apply eigenspace_div
+          rw [Ne, leadingCoeff_eq_zero_iff_deg_eq_bot, hq]
+          exact WithBot.one_ne_bot
     _ = LinearMap.ker (aeval f (C q.leadingCoeff * X + C (q.coeff 0))) := by
           rw [C_mul', aeval_def]; simp [algebraMap, Algebra.algebraMap]
     _ = LinearMap.ker (aeval f q) := by rwa [← eq_X_add_C_of_degree_eq_one]

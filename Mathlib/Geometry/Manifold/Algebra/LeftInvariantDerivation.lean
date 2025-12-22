@@ -3,14 +3,16 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.RingTheory.Derivation.Lie
-import Mathlib.Geometry.Manifold.DerivationBundle
+module
+
+public import Mathlib.RingTheory.Derivation.Lie
+public import Mathlib.Geometry.Manifold.DerivationBundle
 
 /-!
 
 # Left invariant derivations
 
-In this file we define the concept of left invariant derivation for a Lie group. The concept is
+In this file we define the concept of left invariant derivations for a Lie group. The concept is
 analogous to the more classical concept of left invariant vector fields, and it holds that the
 derivation associated to a vector field is left invariant iff the field is.
 
@@ -25,6 +27,8 @@ fields, this identification is not always true, though, so the derivations point
 work in these settings. The left-invariant vector fields should
 therefore be favored to construct a theory of Lie groups in suitable generality.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -155,7 +159,8 @@ instance : AddCommGroup (LeftInvariantDerivation I G) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul, left_invariant']⟩
+  smul r X := ⟨r • X.1, fun g => by
+    simp only [LinearMap.map_smul_of_tower, map_smul]; rw [left_invariant']⟩
 
 variable (r)
 
@@ -179,7 +184,7 @@ variable {I G}
 instance : Module 𝕜 (LeftInvariantDerivation I G) :=
   coe_injective.module _ (coeFnAddMonoidHom I G) coe_smul
 
-/-- Evaluation at a point for left invariant derivation. Same thing as for generic global
+/-- Evaluation at a point for left invariant derivations. Same thing as for generic global
 derivations (`Derivation.evalAt`). -/
 def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g where
   toFun X := Derivation.evalAt g X.1

@@ -3,8 +3,10 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Interactions between (dependent) functions and multilinear maps
@@ -19,6 +21,8 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
   - `MultilinearMap.piFamily f` is a `MultilinearMap` operating on functions `x`.
   - `MultilinearMap.piFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 -/
+
+@[expose] public section
 
 universe uι uκ uS uR uM uN
 variable {ι : Type uι} {κ : ι → Type uκ}
