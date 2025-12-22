@@ -243,29 +243,21 @@ theorem sum_mul_eq_sub_integral_mul₁ (hc : c 0 = 0) (hc1 : c 1 = 0) (b : ℝ)
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 2 b, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
   by_cases! hb : b < 2
   · --Easy case, everything is 0
-    have {n : ℕ} (hn : n ∈ Icc 0 ⌊b⌋₊) : c n = 0 := by
-      have : n < 2 := by
-        exact lt_of_le_of_lt (mem_Icc.mp hn).2 <| Nat.floor_lt' (by linarith)|>.mpr (mod_cast hb)
-      lia
-    rw [sum_eq_zero, sum_eq_zero, Set.Ioc_eq_empty_of_le hb.le, Measure.restrict_empty,
-      integral_zero_measure, mul_zero, sub_self]
-    · exact fun x hx ↦ this hx
-    · intro x hx
-      rw [this hx, mul_zero]
+    have H₁ : ∀ n ∈ Icc 0 ⌊b⌋₊, c n = 0 := by grind [(Nat.floor_lt' two_ne_zero).mpr hb]
+    have H₂ : ∀ n ∈ Icc 0 ⌊b⌋₊, f n * c n = 0 := by grind
+    simp [sum_eq_zero H₁, sum_eq_zero H₂, Set.Ioc_eq_empty_of_le hb.le]
   --Split off the first two terms of the sum
-  rw [← add_sum_Ioc_eq_sum_Icc, ← Icc_succ_left_eq_Ioc, Nat.succ_eq_succ, Nat.succ_eq_add_one,
-    zero_add, ← add_sum_Ioc_eq_sum_Icc, ← Icc_succ_left_eq_Ioc, Nat.succ_eq_succ,
-    Nat.succ_eq_add_one, one_add_one_eq_two, ← add_sum_Ioc_eq_sum_Icc]
-  · --Apply Abel summation to the remainder
-    nth_rewrite 3 [show 2 = ⌊(2 : ℝ)⌋₊ by simp]
-    rw [sum_mul_eq_sub_sub_integral_mul c zero_le_two hb hf_diff hf_int]
-    simp [show Icc 0 2 = {0,1,2} by rfl, hc, hc1]
-    grind
-  · exact Nat.le_floor (mod_cast hb)
-  · apply Nat.le_floor_iff' (by linarith)|>.mpr
-    norm_cast
-    linarith
-  · exact Nat.zero_le _
+  have : 2 ≤ ⌊b⌋₊ := Nat.le_floor hb
+  have H : ∑ k ∈ Icc 0 ⌊b⌋₊, f ↑k * c k = f (2 :) * c 2 + ∑ k ∈ Ioc 2 ⌊b⌋₊, f ↑k * c k := by
+    rw [add_sum_Ioc_eq_sum_Icc (f := fun (k : ℕ) ↦ f k * c k) this,
+      show Icc 0 ⌊b⌋₊ = {0, 1} ∪ Icc 2 ⌊b⌋₊ by grind]
+    exact sum_union_eq_right fun k hk hk' ↦ by grind
+  rw [H]
+  --Apply Abel summation to the remainder
+  nth_rewrite 3 [show 2 = ⌊(2 : ℝ)⌋₊ by simp]
+  rw [sum_mul_eq_sub_sub_integral_mul c zero_le_two hb hf_diff hf_int]
+  simp [show Icc 0 2 = {0, 1, 2} by rfl, hc, hc1]
+  grind
 
 end specialversions
 
