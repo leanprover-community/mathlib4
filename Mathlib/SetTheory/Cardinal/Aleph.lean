@@ -196,11 +196,12 @@ For a version including finite ordinals, see `Ordinal.preOmega`. -/
 def omega : Ordinal ↪o Ordinal :=
   (OrderEmbedding.addLeft ω).trans preOmega
 
-@[inherit_doc]
-scoped notation "ω_ " => omega
+@[inherit_doc] scoped notation "ω_ " => omega
+recommended_spelling "omega" for "ω_" in [omega, «termω_»]
 
 /-- `ω₁` is the first uncountable ordinal. -/
 scoped notation "ω₁" => ω_ 1
+recommended_spelling "omega_one" for "ω₁" in [«termω₁»]
 
 theorem omega_eq_preOmega (o : Ordinal) : ω_ o = preOmega (ω + o) :=
   rfl
@@ -365,11 +366,12 @@ For a version including finite cardinals, see `Cardinal.preAleph`. -/
 def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans preAleph.toOrderEmbedding
 
-@[inherit_doc]
-scoped notation "ℵ_ " => aleph
+@[inherit_doc] scoped notation "ℵ_ " => aleph
+recommended_spelling "aleph" for "ℵ_" in [aleph, «termℵ_»]
 
 /-- `ℵ₁` is the first uncountable cardinal. -/
 scoped notation "ℵ₁" => ℵ_ 1
+recommended_spelling "aleph_one" for "ℵ₁" in [«termℵ₁»]
 
 theorem aleph_eq_preAleph (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
@@ -618,8 +620,8 @@ For a version which starts at zero, see `Cardinal.preBeth`. -/
 def beth (o : Ordinal.{u}) : Cardinal.{u} :=
   preBeth (ω + o)
 
-@[inherit_doc]
-scoped notation "ℶ_ " => beth
+@[inherit_doc] scoped notation "ℶ_ " => beth
+recommended_spelling "beth" for "ℶ_" in [«termℶ_»]
 
 theorem beth_eq_preBeth (o : Ordinal) : beth o = preBeth (ω + o) :=
   rfl
