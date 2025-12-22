@@ -319,6 +319,8 @@ end exchange
 
 section aesop
 
+set_option backward.privateInPublic true
+
 /-- The `aesop_mat` tactic attempts to prove a set is contained in the ground set of a matroid.
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
