@@ -5,9 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.ENat.Pow
+-- public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ULift
-public import Mathlib.Data.ZMod.Defs
+-- public import Mathlib.Data.ZMod.Defs
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 
@@ -24,6 +24,7 @@ public import Mathlib.SetTheory.Cardinal.ENat
 
 @[expose] public section
 
+assert_not_exists MonoidWithZero
 assert_not_exists Field
 
 open Cardinal Function
@@ -39,16 +40,24 @@ namespace Nat
 /-- `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`. -/
 protected def card (α : Type*) : ℕ :=
-  toNat (mk α)
+  letI := Classical.dec
+  if h : ∃ n : ℕ, Nonempty (α ≃ Fin n) then h.choose else 0
+
+theorem card_unique {n : ℕ} (e : α ≃ Fin n) : Nat.card α = n := by
+  have ex : ∃ n : ℕ, Nonempty (α ≃ Fin n) := ⟨n, ⟨e⟩⟩
+  simp only [Nat.card, ex, ↓reduceDIte]
+  generalize_proofs h
+  let f := e.symm.trans h.choose_spec.some
+  rw [Fin.equiv_iff_eq.mp ⟨f⟩]
 
 @[simp]
-theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
-  mk_toNat_eq_card
+theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α := by
+  rw [card_unique (Fintype.equivFin α)]
 
 /-- Because this theorem takes `Fintype α` as a non-instance argument, it can be used in particular
 when `Fintype.card` ends up with different instance than the one found by inference -/
 theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat.card α :=
-  mk_toNat_eq_card.symm
+  card_eq_fintype_card.symm
 
 lemma card_eq_finsetCard (s : Finset α) : Nat.card s = s.card := by
   simp only [Nat.card_eq_fintype_card, Fintype.card_coe]
@@ -63,24 +72,39 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
     Nat.card { x // p x } = Finset.card s := by
   rw [← Fintype.subtype_card s H, Fintype.card_eq_nat_card]
 
-@[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
+@[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 :=
+  card_unique (Equiv.equivOfIsEmpty α (Fin 0))
 
-@[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
+@[simp] lemma card_eq_zero_of_infinite [h : Infinite α] : Nat.card α = 0 := by
+  simp only [Nat.card, dite_eq_right_iff, forall_exists_index, Nonempty.forall]
+  intro n e
+  rw [Equiv.infinite_iff e, ← not_finite_iff_infinite] at h
+  absurd h
+  infer_instance
 
 lemma cast_card [Finite α] : (Nat.card α : Cardinal) = Cardinal.mk α := by
-  rw [Nat.card, Cardinal.cast_toNat_of_lt_aleph0]
-  exact Cardinal.lt_aleph0_of_finite _
+  letI := Fintype.ofFinite α
+  simp
 
 lemma _root_.Set.Infinite.card_eq_zero {s : Set α} (hs : s.Infinite) : Nat.card s = 0 :=
   @card_eq_zero_of_infinite _ hs.to_subtype
 
 lemma card_eq_zero : Nat.card α = 0 ↔ IsEmpty α ∨ Infinite α := by
-  simp [Nat.card, mk_eq_zero_iff, aleph0_le_mk_iff]
+  constructor
+  · contrapose!
+    rintro ⟨nonempty, finite⟩
+    simp only [Nat.card, dite_eq_right_iff, forall_exists_index, Nonempty.forall] at h
+    sorry
+  · rintro (empty | infinite)
+    · simp
+    · simp
+
+  sorry
 
 lemma card_ne_zero : Nat.card α ≠ 0 ↔ Nonempty α ∧ Finite α := by simp [card_eq_zero, not_or]
 
 lemma card_pos_iff : 0 < Nat.card α ↔ Nonempty α ∧ Finite α := by
-  simp [Nat.card, mk_eq_zero_iff, mk_lt_aleph0_iff]
+  simp [pos_iff_ne_zero, card_eq_zero]
 
 @[simp] lemma card_pos [Nonempty α] [Finite α] : 0 < Nat.card α := card_pos_iff.2 ⟨‹_›, ‹_›⟩
 
