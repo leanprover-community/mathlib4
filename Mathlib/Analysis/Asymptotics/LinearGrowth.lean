@@ -337,7 +337,7 @@ variable {u : ℕ → EReal} {v : ℕ → ℕ}
 
 lemma Real.eventually_atTop_exists_int_between {a b : ℝ} (h : a < b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℤ, a * x ≤ n ∧ n ≤ b * x := by
-  refine (eventually_ge_atTop (b-a)⁻¹).mono fun x ab_x ↦ ?_
+  refine (eventually_ge_atTop (b - a)⁻¹).mono fun x ab_x ↦ ?_
   rw [inv_le_iff_one_le_mul₀ (sub_pos_of_lt h), mul_comm, sub_mul, le_sub_iff_add_le'] at ab_x
   obtain ⟨n, n_bx, hn⟩ := (b * x).exists_floor
   refine ⟨n, ?_, n_bx⟩

@@ -113,7 +113,7 @@ lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
 
 theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
     ∃ n : ℤ, ModularGroup.T ^ (N * n) • z ∈ verticalStrip N z.im := by
-  let n := Int.floor (z.re/N)
+  let n := Int.floor (z.re / N)
   use -n
   rw [modular_T_zpow_smul z (N * -n)]
   refine ⟨?_, (by simp only [mul_neg, Int.cast_neg, Int.cast_mul, Int.cast_natCast, vadd_im,
