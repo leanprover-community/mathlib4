@@ -246,10 +246,9 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
   lift t to NNReal using ht.le
   rw [← coe_nnnorm]
   norm_cast at ⊢ ht
-  rw [(monotone_id.pow_const k).map_max (f := (· ^ k)), ← max_div_div_right (by positivity),
-    (monotone_id.pow_const 2).map_max (f := (· ^ 2))]
-  simp_rw [NNReal.coe_pow, nnnorm_pow, NNReal.nnnorm_eq, div_pow, one_pow, div_div, pow_two]
-  rw [div_self (by positivity)]
+  rw [NNReal.coe_pow, nnnorm_pow, NNReal.nnnorm_eq, (pow_left_mono k).map_max,
+    (pow_left_mono 2).map_max, ← max_div_div_right (by positivity), div_pow, one_pow]
+  field_simp
 
 local notation "𝕢" => Function.Periodic.qParam
 
@@ -278,26 +277,21 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
   let F (x : ℝ) : ℝ := ‖1 / ↑h * (1 / 𝕢 h ((x : ℂ) + 1 / n * I) ^ n
       * f ⟨(x : ℂ) + 1 / n * Complex.I, by simp [hn]⟩)‖
-  have (x : ℝ) : F x ≤ 1 / h * ((1 / Real.exp (-2 * Real.pi / ↑h))) * (C * n ^ e) := by
-    simp only [F, norm_mul, norm_mul, norm_div, norm_real, norm_one, norm_div, norm_one, norm_pow,
-      mul_assoc, Real.norm_of_nonneg hh.le]
+  have hne : ‖(n : ℝ) ^ e‖ = n ^ e := Real.norm_of_nonneg (by positivity)
+  have (x : ℝ) : F x ≤ 1 / h * (1 / Real.exp (-2 * Real.pi / ↑h)) * (C * n ^ e) := by
+    simp only [F, norm_mul, norm_div, norm_real, norm_one, norm_pow, mul_assoc]
+    rw [Real.norm_of_nonneg hh.le, Function.Periodic.norm_qParam, ← Real.exp_nat_mul]
     gcongr
-    · rw [Function.Periodic.norm_qParam, add_im, ofReal_im, zero_add, mul_I_im, ← ofReal_one,
-        ← ofReal_natCast, ← ofReal_div, ofReal_re, mul_one_div, div_right_comm, ← Real.exp_nat_mul,
-        mul_div_cancel₀ _ (mod_cast hn.ne')]
-    · refine (hn' _ ?_).trans (le_of_eq (?_)) <;>
-        simp_rw [← UpperHalfPlane.coe_im, UpperHalfPlane.coe_mk_subtype, add_im, ofReal_im,
-          zero_add, mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re]
-      · simp
-      · rw [one_div, Real.rpow_neg_eq_inv_rpow, inv_inv, Real.norm_of_nonneg (by positivity)]
+    · simp [field]
+    · grw [hn' _ (by simp [← UpperHalfPlane.coe_im])]
+      simp [← UpperHalfPlane.coe_im, Real.rpow_neg_eq_inv_rpow, hne]
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
   · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
     · simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
       fun_prop
     · exact (continuous f).comp (by fun_prop)
   · exact continuous_const.intervalIntegrable ..
-  · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
-    simp [field, Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ e by positivity)]
+  · simp [field, intervalIntegral.integral_const, hne]
 
 lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
