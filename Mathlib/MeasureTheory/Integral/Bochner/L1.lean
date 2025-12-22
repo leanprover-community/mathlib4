@@ -47,7 +47,7 @@ The Bochner integral is defined through the extension process described in the f
 We also define notations for integral on a set, which are described in the file
 `Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
 
-Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
+Note: `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
 ## Tags
 
@@ -115,7 +115,7 @@ theorem weightedSMul_union' (s t : Set α) (ht : MeasurableSet t) (hs_finite : �
     (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t := by
   ext1 x
-  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht,add_smul]
+  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht, add_smul]
 
 @[nolint unusedArguments]
 theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -183,7 +183,7 @@ section Integral
 ### The Bochner integral of simple functions
 
 Define the Bochner integral of simple functions of the type `α →ₛ β` where `β` is a normed group,
-and prove basic property of this integral.
+and prove basic properties of this integral.
 -/
 
 

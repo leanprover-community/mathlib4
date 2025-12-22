@@ -20,7 +20,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 namespace Functor
 
