@@ -161,7 +161,7 @@ theorem take_succ_cons {n : ℕ} {x : α} {s : Seq α} :
 theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
     (s.take k)[n]? = if n < k then s.get? n else none
   | n, 0, s => by simp [take]
-  | n, k+1, s => by
+  | n, k + 1, s => by
     rw [take]
     cases h : destruct s with
     | none =>
@@ -172,7 +172,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [List.getElem?_cons_succ, getElem?_take]
+        | n + 1 => simp [List.getElem?_cons_succ, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = some x) : x ∈ s.take n := by
