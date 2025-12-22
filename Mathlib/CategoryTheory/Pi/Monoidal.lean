@@ -78,7 +78,7 @@ theorem right_unitor_inv_apply {X : ∀ i, C i} {i : I} :
 theorem isoApp_right_unitor {X : ∀ i, C i} {i : I} :
     isoApp (ρ_ X) i = ρ_ (X i) := rfl
 
-/-- `Pi.monoidal C` equips the product of an indexed family of categories with
+/-- `Pi.monoidalCategory C` equips the product of an indexed family of categories with
 the pointwise monoidal structure. -/
 instance monoidalCategory : MonoidalCategory.{max w₁ v₁} (∀ i, C i) where
   tensorHom_def {A B X Y} f g := by ext i; simp [tensorHom_def, whiskerLeft]
