@@ -279,7 +279,7 @@ lemma dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq {p p₁ p₂ p₃
       orthogonalProjection line[ℝ, p₁, p₃] p = p₁
   · exact dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq_aux₂ h₂ h₃ h h'
   · rw [not_or] at h'
-    refine dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq
+    refine dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq
       (left_mem_affineSpan_pair _ _ _) (left_mem_affineSpan_pair _ _ _) h'.1 h'.2 ?_
     rw [(collinear_insert_of_mem_affineSpan_pair
           (orthogonalProjection_mem p)).two_zsmul_oangle_eq_left h'.1 h₂.symm,
