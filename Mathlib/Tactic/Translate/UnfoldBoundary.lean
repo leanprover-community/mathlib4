@@ -18,13 +18,13 @@ well typed in a setting where certain constants aren't allowed to be unfolded.
 We make use of `withCanUnfoldPred` in order to modify which constants can and cannot be unfolded.
 This way, `whnf` and `isDefEq` do not unfold these constants.
 
-So, the procedure is to check that an expression is well typed, using `isDefEq`, and whenever
-there is a type mismatch, we try to insert a cast.
+So, the procedure is to check that an expression is well typed, analogous to `Meta.check`,
+and at each type mismatch, we try to insert a cast.
 
 There are two kinds of casts:
 - Equality casts. This is for propositions and terms,
   where it is possible to prove that one is equal to the other. For example `Monotone`.
-- explicit casting functions, both for unfolding and folding. This is for Types, where we
+- Explicit casting functions, both for unfolding and folding. This is for types, where we
   cannot express their equivalence with an equality. For example `DecidableLE`.
 -/
 
@@ -46,11 +46,11 @@ structure UnfoldBoundaries where
 Set up the monadic context:
 - Set the transparency to `.all`, just like is done in `Meta.check`.
 - Use `withCanUnfoldPred` to not allow unfolding the constants for which we want to insert casts.
-- Set up the `SimpM` context so that `Simp.simp` will unfold constants fro `b.unfolds`.
+- Set up the `SimpM` context so that `Simp.simp` will unfold constants from `b.unfolds`.
 -/
 def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
   withCanUnfoldPred (fun _ i => return !b.unfolds.contains i.name && !b.casts.contains i.name) do
-  withTransparency TransparencyMode.all do
+  withTransparency .all do
   let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
   x (Simp.Methods.toMethodsRef { pre }) ctx |>.run' {}
 where
@@ -64,12 +64,9 @@ where
 partial def unfoldConsts (b : UnfoldBoundaries) (e : Expr) : SimpM Expr := do
   let eType ← inferType e
   let e ← do
-    let r ← Simp.simp eType
-    if let some pf := r.proof? then
-      trace[translate_detail] "unfoldConsts: added a cast from {eType} to {r.expr}"
-      mkAppOptM ``cast #[eType, r.expr, pf, e]
-    else
-      pure e
+    let { expr, proof? := some proof } ← Simp.simp eType | pure e
+    trace[translate_detail] "unfoldConsts: added a cast from {eType} to {expr}"
+    mkAppOptM ``cast #[eType, expr, proof, e]
   let eTypeWhnf ← whnf (← inferType e)
   if let .const c us := eTypeWhnf.getAppFn then
     if let some (cast, _) := b.casts.find? c then
@@ -87,30 +84,33 @@ partial def refoldConsts (b : UnfoldBoundaries) (e expectedType : Expr) : SimpM 
 where
   go (e : Expr) (goal : MVarId) : SimpM Unit := do
     let goal ← do
-      let r ← Simp.simp (← goal.getType)
-      if let some proof := r.proof? then
-        trace[translate_detail] "refoldConsts: added a cast from {← goal.getType} to {r.expr}"
-        goal.replaceTargetEq r.expr proof
-      else
-        pure goal
+      let { expr, proof? := some proof } ← Simp.simp (← goal.getType) | pure goal
+      trace[translate_detail] "refoldConsts: added a cast from {← goal.getType} to {expr}"
+      goal.replaceTargetEq expr proof
     forallTelescope (← goal.getType) fun xs tgt => do
       let tgt ← whnf tgt
       if let .const c us := tgt.getAppFn then
         if let some (_, cast) := b.casts.find? c then
           let cast := mkAppN (.const cast us) tgt.getAppArgs
           trace[translate_detail] "refoldConsts: created the cast {cast} to unfold {.ofConstName c}"
-          let .forallE _ α _ _ ← inferType cast | throwError s!"{cast} is not of the right form"
+          let .forallE _ α _ _ ← inferType cast | throwError "refoldConsts: not a function\n{cast}"
           let goal' ← mkFreshExprMVar α
           go (e.beta xs) goal'.mvarId!
           goal.assign <| ← mkLambdaFVars xs <| .app cast goal'
           return
-      if ← isDefEq (← goal.getType) (← inferType e) then
-        goal.assign e
-      else
+      unless ← isDefEq (← goal.getType) (← inferType e) do
         throwError "{e} : {← inferType e} does not have type {← goal.getType}."
+      goal.assign e
 
-/-- Given an expression `e` with expected type `type`, if `e` doesn't have that type,
+/-- Given an expression `e` with expected type `expectedType`, if `e` doesn't have that type,
 use a cast to turn `e` into that type. -/
+def mkCast (b : UnfoldBoundaries) (e expectedType : Expr) : SimpM Expr := do
+  if ← isDefEq (← inferType e) expectedType then
+    return e
+  let e ← unfoldConsts b e
+  refoldConsts b e expectedType
+
+/-- Create the application `.app f a`, inserting some casts if necessary. -/
 def mkAppWithCast (b : UnfoldBoundaries) (f a : Expr) : SimpM Expr :=
   try
     checkApp f a
@@ -118,39 +118,30 @@ def mkAppWithCast (b : UnfoldBoundaries) (f a : Expr) : SimpM Expr :=
   catch _ =>
     let f ← unfoldConsts b f
     let .forallE _ d _ _ ← whnf (← inferType f) | throwFunctionExpected f
-    let a ← unfoldConsts b a
-    let a ← refoldConsts b a d
-    return f.app a
-
-def mkCast (b : UnfoldBoundaries) (e expectedType : Expr) : SimpM Expr := do
-  if ← isDefEq (← inferType e) expectedType then
-    return e
-  let e ← unfoldConsts b e
-  refoldConsts b e expectedType
+    return f.app (← mkCast b a d)
 
 /-- Extensions for handling abstraction boundaries for definitions that shouldn't be unfolded. -/
 public structure UnfoldBoundaryExt where
-  /-- The `cast` attribute is used to tag declarations `foo` that should not be unfolded in
+  /-- The `insert_cast` attribute is used to tag declarations `foo` that should not be unfolded in
   a proof that is translated. Instead, a rewrite with an equality theorem is inserted.
-  This equality theorem then may be translated by the translation attribute. -/
+  This equality theorem can then be translated by the translation attribute. -/
   unfolds : NameMapExtension SimpTheorem
-  /-- The `cast_fun` attribute is used to tag types that should not be unfolded in a proof that
-  is translated. Instead, a casting function is inserted. This casting function then may be
+  /-- The `insert_cast_fun` attribute is used to tag types that should not be unfolded in a proof
+  that is translated. Instead, a casting function is inserted. This casting function then may be
   translated by the translation attribute. -/
   casts : NameMapExtension (Name × Name)
   /-- `insertionFuns` stores the functions that may end up in an expression after inserting casts
   and applying the translation. -/
   insertionFuns : NameMapExtension Unit
 
-def UnfoldBoundaryExt.toUnfoldBoundaries (b : UnfoldBoundaryExt) :
-    CoreM UnfoldBoundaries := do
+def UnfoldBoundaryExt.toUnfoldBoundaries (b : UnfoldBoundaryExt) : CoreM UnfoldBoundaries := do
   let env ← getEnv
   return {
     unfolds := b.unfolds.getState env
     casts := b.casts.getState env
     insertionFuns := b.insertionFuns.getState env }
 
-/-- Modify `e` so that it has type `expectedType`. -/
+/-- Modify `e` so that it has type `expectedType` if the constants in `b` cannot be unfolded. -/
 public def UnfoldBoundaryExt.cast (b : UnfoldBoundaryExt) (e expectedType : Expr) (attr : Name) :
     MetaM Expr := do
   let b ← b.toUnfoldBoundaries
@@ -176,7 +167,7 @@ public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr)
       throwError "@[{attr}] failed to insert a cast to make `{f}` applied to `{args.toList}` \
         well typed\n\n{ex.toMessageData}")
 
-/-- Unfold all of the auxiliary functions that were insertedy as unfold boundaries. -/
+/-- Unfold all of the auxiliary functions that were inserted as unfold boundaries. -/
 public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt) : CoreM Expr := do
   let b ← b.toUnfoldBoundaries
   Meta.deltaExpand e b.insertionFuns.contains

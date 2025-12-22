@@ -82,7 +82,17 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
- -/
+
+Some definitions are dual to something other than the dual of their value. Examples include
+- `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`
+- `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself
+- `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself
+
+To be able to translate a term involfing such constants, `to_dual` needs to insert casts,
+so that the term's correctness doesn't rely on unfolding them.
+You can instruct `to_dual` to do this using the `to_dual_insert_cast` or `to_dual_insert_cast_fun`
+commands.
+-/
 syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 
 @[inherit_doc to_dual]
@@ -264,8 +274,8 @@ definition `foo` is not definitionally equal to the translation of its value.
 It requires a proof that these two are equal, which `by grind` can usually prove.
 
 The command internally generates an unfolding theorem for `foo`, and a dual of this theorem.
-If type checking a term requires the definition `foo` to be unfolded, then before translating
-that term, a `cast` is inserted into the term using this unfolding theorem.
+When type checking a term requires the definition `foo` to be unfolded, then in order to translate
+that term, a `cast` is first inserted into the term using this unfolding theorem.
 As a result, type checking the term won't anymore require unfolding `foo`, so the term
 can be safely translated. -/
 elab "to_dual_insert_cast" declName:ident " := " valStx:term : command => do
@@ -277,11 +287,11 @@ elab "to_dual_insert_cast" declName:ident " := " valStx:term : command => do
 type `foo` is not definitionally equal to the translation of its value.
 It requires a dual of the function that unfolds `foo` and of the function that refolds `foo`.
 
-The command internally generates these unfold/refold functions for `foo`, and a duals of these.
+The command internally generates these unfold/refold functions for `foo`, and their duals.
 If type checking a term requires the definition `foo` to be unfolded, then before translating
 that term, the unfold/refold function is inserted into the term.
 As a result, type checking the term won't anymore require unfolding `foo`, so the term
-can be safely translated. At the end, the remaining unfold/refold functions are unfolded. -/
+can be safely translated. After translating, the unfold/refold functions are again unfolded. -/
 elab "to_dual_insert_cast_fun" declName:ident " := " valStx₁:term ", " valStx₂:term : command => do
   let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName
   let (name₁, dualName₁) ← elabInsertCast declName .unfoldFun valStx₁
