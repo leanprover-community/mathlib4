@@ -212,7 +212,7 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
 orthogonal projections onto the subspaces are equal. -/
-lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq {p p' : P}
+lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq {p p' : P}
     {s₁ s₂ : AffineSubspace ℝ P} (hp'₁ : p' ∈ s₁) (hp'₂ : p' ∈ s₂) :
     haveI : Nonempty s₁ := ⟨p', hp'₁⟩
     haveI : Nonempty s₂ := ⟨p', hp'₂⟩
