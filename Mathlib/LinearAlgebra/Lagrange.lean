@@ -481,12 +481,30 @@ theorem iterate_derivative_interpolate [CommRing ι]
       omega
     _ = k.factorial * ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
       ∏ a ∈ t, (X - C (v a)) := by
-      rw [powerset_image]
-      congr 1
-      have := image_injOn_powerset_of_injOn hvs' -- useful
-      -- have := image_surjOn_powerset
-      -- use prod_nbij
-      sorry
+      rw [powerset_image, sum_nbij (fun (t : Finset ι) => t.image v)]
+      case hi =>
+        intro a ha
+        rw [mem_filter, mem_powerset] at ha
+        rw [mem_filter, mem_image]
+        constructor
+        · use a; simp [ha.1]
+        · rw [card_image_of_injOn (hvs'.mono (coe_subset.mpr ha.1))]
+          exact ha.2
+      case i_inj =>
+        refine (image_injOn_powerset_of_injOn hvs').mono (coe_subset.mpr ?_)
+        simp
+      case i_surj =>
+        intro t ht
+        rw [mem_coe, mem_filter, mem_image] at ht
+        obtain ⟨a, ha⟩ := ht.1
+        simp_rw [Set.mem_image, mem_coe, mem_filter]
+        use a
+        refine ⟨⟨ha.1, ?_⟩, ha.2⟩
+        rw [← ht.2, ← ha.2, card_image_of_injOn (hvs'.mono (coe_subset.mpr (mem_powerset.mp ha.1)))]
+      case h =>
+        intro a ha
+        rw [mem_filter, mem_powerset] at ha
+        rw [prod_image (hvs'.mono (coe_subset.mpr ha.1))]
 
 omit [DecidableEq ι] in
 private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
@@ -505,7 +523,7 @@ private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree +
 
 omit [DecidableEq ι] in
 private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.degree < s.card - 1 := by
+    P.degree < s.card := by
   have := degree_eq_of_card_eq hP
   have := natDegree_eq_of_card_eq hP
   have s_card : s.card > 0 := by by_contra! h; simp_all
@@ -519,12 +537,12 @@ theorem eval_iterate_derivative_eq_sum [CommRing ι]
       ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
       ∏ a ∈ t, (x - v a) := by
   rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
-  -- why does rw iterate_derivative_interpolate hvs hk not work?
   rw [iterate_derivative_interpolate, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul, eval_finset_sum]
   · congr! 2 with i hi
     simp_rw [eval_C_mul, eval_finset_sum, eval_prod, eval_sub, eval_X, eval_C]
-  · assumption
-  · grind -- would this work?
+  · exact hvs
+  · rw [degree_eq_of_card_eq hP] at hk
+    exact WithBot.coe_le_coe.mp hk
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
