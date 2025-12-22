@@ -253,7 +253,8 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
           omega
         rw [analyticOrderAt_ne_zero] at this
         exact this.2
-      · have := Complex.analyticOrderAt_iterated_deriv f hf (n+1) (n+1) ho.symm (by omega) (by omega)
+      · have := Complex.analyticOrderAt_iterated_deriv f hf (n+1) (n+1)
+          ho.symm (by omega) (by omega)
         simp only [Function.iterate_succ, Function.comp_apply, tsub_self,
           CharP.cast_eq_zero] at this
         rw [AnalyticAt.analyticOrderAt_eq_zero] at this
