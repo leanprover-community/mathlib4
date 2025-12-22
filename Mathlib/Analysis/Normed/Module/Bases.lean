@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 @[expose] public section
 
@@ -68,7 +69,7 @@ theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
             f (∑ m ∈ ssuppnn, s m • e m) = ∑ m ∈ ssuppnn, f (s m • e m) := by rw [map_sum]
             _ = ∑ m ∈ ssuppnn, 0 := by exact Finset.sum_congr rfl fsm0
             _ = 0 := by rw [Finset.sum_const_zero]
-    have z: {n} = ssuppn := by
+    have z: {n} = ssuppn := by -- TODO use Set.setOf_eq_eq_singleton
         ext m
         rw [Finset.mem_filter, Finset.mem_singleton]
         constructor
@@ -218,13 +219,43 @@ theorem uniform_bound {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
 def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
     sInf { C : ℝ | ∀ n : ℕ, ‖CanonicalProjections h n‖ ≤ C }
 
+omit [CompleteSpace X]
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
-    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n)
+    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n + 1)
     (hcomp : ∀ m n : ℕ, P n ∘ P m = P (min n m))
-    (lim : ∀ x : X, Tendsto (fun n => P n x) atTop (𝓝 x))
-    {e : ℕ → X}(he1: e 1 ∈ range (P 1)) (hek : ∀ k : ℕ , e k ∈ range ( P k) ⊓ (ker (P (k - 1)))) :
-    SchauderBasis 𝕜 X e := by
-    sorry
+    (lim : ∀ x : X, Tendsto (fun n => P n x) atTop (𝓝 x)) :
+    ∃ e : ℕ → X, SchauderBasis 𝕜 X e := by
+        let V: ℕ → Submodule 𝕜 X := fun n => range (P (n+1)) ⊓ ker (P n)
+        let a: (n : ℕ) → V n := sorry
+        let e: ℕ → X := fun n => a n
+        use e
+
+        -- define functionals from rank one operators
+        let b: (n : ℕ) → {f: StrongDual 𝕜 X | ∀ x:X, f x • e n = (P (n+1) - P n) x}:= fun n =>
+            match n with
+            | 0 => sorry
+            | n + 1 => sorry
+        let bf: ℕ → StrongDual 𝕜 X := fun n => b n
+        use bf
+        have a: ∀ n, (bf n) (e n) = 1 ∧ ∀ (m : ℕ), m ≠ n → (bf n) (e m) = 0 := sorry
+        have b: ∀ (x : X), (Summable fun n ↦ (bf n) x • e n) ∧
+            ∑' (n : ℕ), (bf n) x • e n = x := sorry
+
+        exact ⟨ a, b ⟩
+
+
+         -- let e : {e: ℕ → X | } :=
+        --     fun n => by
+        --     match n with
+        --     -- there is some magic happening when reinterpreting v as elem in X
+        --     | 0 => let v := Classical.choose (finrank_eq_one_iff'.mp (hdim 0)); use v
+        --     | n + 1 =>
+        --         let U := range (P n)
+        --         let V := range (P (n+1))
+        --         have : U ≤ V := sorry
+        --         have : ¬U ≤ V := sorry
+        --         have : ∃ v ∈ V, v ∉ U := sorry
+        --         exact Classical.choose this
 
 end CanonicalProjections
 
