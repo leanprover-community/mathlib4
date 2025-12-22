@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+public import Mathlib.Analysis.Analytic.Order
 
 /-!
 # Cauchy integral formula
@@ -692,6 +693,89 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       intro z m
       exact (d z m).differentiableWithinAt
     exact h _ m
+
+open AnalyticAt
+
+lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀) (n : ℕ) :
+    analyticOrderAt f z₀ = n → n ≠ 0 → analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
+  intros horder hn
+  rw [analyticOrderAt_eq_natCast hf] at horder
+  obtain ⟨g, hg, ⟨hgneq0, hexp⟩⟩ := horder
+  rw [analyticOrderAt_eq_natCast]
+  · use fun z => n • g z + (z - z₀) • deriv g z
+    · constructor
+      · refine fun_add (?_) (fun_mul (fun_sub (Differentiable.analyticAt (differentiable_fun_id) z₀)
+            ( Differentiable.analyticAt (differentiable_const z₀) z₀)) (AnalyticAt.deriv hg))
+        · simp only [nsmul_eq_mul]; exact fun_const_smul hg
+      · constructor
+        · aesop
+        · rw [Filter.eventually_iff_exists_mem] at *
+          rcases hexp with ⟨Ug, hU, hUf⟩
+          obtain ⟨Ur, ⟨hgz,hgN⟩⟩ := exists_mem_nhds_analyticOnNhd hg
+          use interior (Ug ∩ Ur)
+          constructor
+          · simp only [interior_inter, Filter.inter_mem_iff, interior_mem_nhds]
+            simp_all only [ne_eq, smul_eq_mul, and_self]
+          · intros z Hz
+            have Hderiv : deriv (fun z => (z - z₀)^n • g z) z =
+            (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by
+              simp only [smul_eq_mul]
+              rw [deriv_fun_mul]
+              · have : (z - z₀) ^ n * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z =
+                (z - z₀) ^ (n - 1) * ((z - z₀)) * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z := by
+                  simp only [add_left_inj, mul_eq_mul_right_iff]
+                  left
+                  nth_rw 3 [← pow_one (z - z₀)]
+                  rw [← pow_add]
+                  grind
+                simp only [differentiableAt_fun_id, differentiableAt_const,
+                  DifferentiableAt.fun_sub, deriv_fun_pow, deriv_fun_sub, deriv_id'',
+                  deriv_const', sub_zero, mul_one]
+                simp only [this, add_comm]
+                have : ↑n * (z - z₀) ^ (n - 1) = (z - z₀) ^ (n - 1) * ↑n  := by
+                   exact Nat.cast_comm n ((z - z₀) ^ (n - 1))
+                rw [this, mul_assoc]
+                ring
+              · aesop
+              · apply differentiableAt
+                simp only [interior_inter, mem_inter_iff] at Hz
+                have : z ∈ Ur := interior_subset (Hz.2)
+                aesop
+            simp only [nsmul_eq_mul, smul_eq_mul]
+            rw [← mul_add] at Hderiv
+            rw [← Hderiv]
+            have hL : f =ᶠ[nhds z] (fun z => (fun z ↦ (z - z₀) ^ n • g z) z) := by
+              unfold Filter.EventuallyEq
+              rw [Filter.eventually_iff_exists_mem]
+              use interior (Ug ∩ Ur)
+              constructor
+              · exact isOpen_interior.mem_nhds Hz
+              · intro z Hz; exact hUf z ((interior_subset (s := Ug ∩ Ur) Hz).1)
+            have := Filter.EventuallyEq.deriv_eq hL
+            rw [this]
+  · exact AnalyticAt.deriv hf
+
+lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (k n : ℕ) :
+   n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+    revert n
+    induction k
+    · intros n Hn Hpos Hk; simp only [Function.iterate_zero, id_eq, tsub_zero, Hn]
+    · intros n Hn Hpos Hk
+      rename_i k hk
+      have : analyticOrderAt (deriv (deriv^[k] f)) z₀ = ((n - k) - 1 : ℕ) := by
+        apply analyticOrderAt_deriv_of_pos (deriv^[k] f) z₀ (iterated_deriv hf k) (n - k)
+        · apply hk
+          · assumption
+          · assumption
+          · linarith
+        · simp_all only [ENat.coe_sub]
+          grind
+      have h1 : n - (k + 1) = n - k - 1 := by grind
+      rw [h1]
+      simp only at this
+      rw [← this]
+      congr
+      rw [Function.iterate_succ', Function.comp_apply]
 
 end analyticity
 
