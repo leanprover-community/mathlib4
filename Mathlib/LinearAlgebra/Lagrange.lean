@@ -451,7 +451,7 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
 
 omit [DecidableEq ι] in
 private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.degree = ↑(s.card - 1) := by
+    P.degree = ↑(#s - 1) := by
   cases h : P.degree
   case bot => simp_all
   case coe d =>
@@ -462,11 +462,12 @@ private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1)
 
 omit [DecidableEq ι] in
 private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some (degree_eq_of_card_eq hP)
+    P.natDegree = #s
+     - 1 := natDegree_eq_of_degree_eq_some (degree_eq_of_card_eq hP)
 
 omit [DecidableEq ι] in
 private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.degree < s.card := by
+    P.degree < #s := by
   lift P.degree to ℕ with n hn
   · contrapose hP
     simp [hP]
