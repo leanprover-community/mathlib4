@@ -129,8 +129,8 @@ theorem Basis.linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] 
   rwa [lift_umax, lift_id'.{uV}] at this
 
 theorem Module.Basis.dual_rank_eq (b : Basis ι R M) :
-    Module.rank R (Dual R M) = Cardinal.lift.{uR,uM} (Module.rank R M) := by
-  classical rw [← lift_umax.{uM,uR}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM,uR}]
+    Module.rank R (Dual R M) = Cardinal.lift.{uR, uM} (Module.rank R M) := by
+  classical rw [← lift_umax.{uM, uR}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM, uR}]
 
 end Finite
 
@@ -241,7 +241,7 @@ end
 omit [Projective K V]
 
 theorem dual_rank_eq [Free K V] [Module.Finite K V] :
-    Module.rank K (Dual K V) = Cardinal.lift.{uK,uV} (Module.rank K V) :=
+    Module.rank K (Dual K V) = Cardinal.lift.{uK, uV} (Module.rank K V) :=
   (Free.chooseBasis K V).dual_rank_eq
 
 section IsReflexive
@@ -1052,6 +1052,13 @@ variable {R M N}
 theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
     dualDistrib R M N (f ⊗ₜ g) (m ⊗ₜ n) = f m * g n :=
   rfl
+
+/-- Simultaneously swapping both the ordering of the applied duals and the ordering of the
+tensor product argument preserves evaluation. -/
+lemma dualDistrib_apply_comm (w : Dual R N ⊗[R] Dual R M) (z : M ⊗[R] N) :
+    dualDistrib R N M w (TensorProduct.comm R M N z) =
+      dualDistrib R M N (TensorProduct.comm R _ _ w) z := by
+  induction w <;> induction z <;> simp_all [mul_comm]
 
 end
 
