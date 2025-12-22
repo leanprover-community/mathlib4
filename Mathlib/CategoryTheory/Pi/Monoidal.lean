@@ -33,11 +33,11 @@ variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
 
 @[simps tensorObj tensorHom whiskerLeft whiskerRight tensorUnit]
 instance monoidalCategoryStruct : MonoidalCategoryStruct (∀ i, C i) where
-  tensorObj := fun X Y i ↦ X i ⊗ Y i
-  tensorHom f g := fun i ↦ f i ⊗ₘ g i
-  whiskerLeft X _ _ f := fun i ↦ X i ◁ f i
-  whiskerRight f Y := fun i ↦ f i ▷ Y i
-  tensorUnit := fun i ↦ 𝟙_ (C i)
+  tensorObj X Y i := X i ⊗ Y i
+  tensorHom f g i := f i ⊗ₘ g i
+  whiskerLeft X _ _ f i := X i ◁ f i
+  whiskerRight f Y i := f i ▷ Y i
+  tensorUnit i := 𝟙_ (C i)
   leftUnitor X := isoMk (fun i ↦ λ_ (X i))
   rightUnitor X := isoMk (fun i ↦ ρ_ (X i))
   associator X Y Z := isoMk (fun i ↦ α_ (X i) (Y i) (Z i))
