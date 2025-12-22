@@ -105,10 +105,13 @@ open Metric
 /-- A **Delone set** consists of a set together with explicit radii
 witnessing uniform discreteness and relative denseness. -/
 structure DeloneSet (X : Type*) [MetricSpace X] where
+  /-- The underlying set. -/
   carrier : Set X
+  /-- Radius such that distinct points of `carrier` are separated by more than `r`. -/
   r : ℝ
   r_pos : 0 < r
   r_sep : IsSeparated (ENNReal.ofReal r) carrier
+  /-- Radius such that every point of the space is within `R` of `carrier`. -/
   R : ℝ
   R_pos : 0 < R
   R_cov : ∀ x, ∃ y ∈ carrier, (x, y) ∈ distLT R
