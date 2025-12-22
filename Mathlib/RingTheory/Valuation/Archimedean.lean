@@ -70,7 +70,7 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mra
     (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
-  rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs|_
+  rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs | _
   · have := bijective_algebraMap_of_subsingleton_units_mrange hv
     exact .of_surjective _ (RingEquiv.ofBijective _ this).symm.surjective
   have : IsDomain O := hv.hom_inj.isDomain

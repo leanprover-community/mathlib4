@@ -52,7 +52,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
   · simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
-      subset_adjoin,-- the rest comes from `squeeze_simp`
+      subset_adjoin, -- the rest comes from `squeeze_simp`
       Set.union_subset_iff,
       LinearMap.coe_inl, Set.mk_preimage_prod_right, Set.image_subset_iff, SetLike.mem_coe,
       Set.mk_preimage_prod_left, LinearMap.coe_inr, and_self_iff, Set.union_singleton,

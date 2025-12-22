@@ -817,7 +817,7 @@ lemma sPolynomial_def (f g : MvPolynomial σ R) :
     rw [sPolynomial, this, this, sup_comm]
   intro f g
   ext a
-  obtain (h|h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
+  obtain (h | h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
 
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
