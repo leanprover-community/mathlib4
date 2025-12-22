@@ -3,8 +3,9 @@ Copyright (c) 2025 Bingyu Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bingyu Xia
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-!
 # Renaming variables of power series
@@ -35,6 +36,8 @@ This will give rise to a monomial in `MvPowerSeries σ R`
 + `p q : MvPowerSeries σ R`
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
