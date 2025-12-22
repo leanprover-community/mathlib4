@@ -1238,8 +1238,8 @@ protected lemma LipschitzOnWith.closure [PseudoEMetricSpace β] {f : α → β} 
 
 lemma lipschitzOnWith_closure_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
     (hcont : ContinuousOn f (closure s)) :
-    LipschitzOnWith K f (closure s) ↔ LipschitzOnWith K f s := by
-  refine ⟨fun hf ↦ hf.mono subset_closure, LipschitzOnWith.closure hcont⟩
+    LipschitzOnWith K f (closure s) ↔ LipschitzOnWith K f s :=
+  ⟨fun hf ↦ hf.mono subset_closure, LipschitzOnWith.closure hcont⟩
 
 namespace Real
 
