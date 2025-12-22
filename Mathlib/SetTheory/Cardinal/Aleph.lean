@@ -196,11 +196,12 @@ For a version including finite ordinals, see `Ordinal.preOmega`. -/
 def omega : Ordinal ↪o Ordinal :=
   (OrderEmbedding.addLeft ω).trans preOmega
 
-@[inherit_doc]
-scoped notation "ω_ " => omega
+@[inherit_doc] scoped notation "ω_ " => omega
+recommended_spelling "omega" for "ω_" in [omega, «termω_»]
 
 /-- `ω₁` is the first uncountable ordinal. -/
 scoped notation "ω₁" => ω_ 1
+recommended_spelling "omega_one" for "ω₁" in [«termω₁»]
 
 theorem omega_eq_preOmega (o : Ordinal) : ω_ o = preOmega (ω + o) :=
   rfl
@@ -238,9 +239,12 @@ theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
 theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
   omega0_pos.trans_le (omega0_le_omega o)
 
-theorem omega0_lt_omega1 : ω < ω₁ := by
+theorem omega0_lt_omega_one : ω < ω₁ := by
   rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one
+
+@[deprecated (since := "2025-12-22")]
+alias omega0_lt_omega1 := omega0_lt_omega_one
 
 theorem isNormal_omega : IsNormal omega :=
   isNormal_preOmega.trans (isNormal_add_right _)
@@ -362,11 +366,12 @@ For a version including finite cardinals, see `Cardinal.preAleph`. -/
 def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans preAleph.toOrderEmbedding
 
-@[inherit_doc]
-scoped notation "ℵ_ " => aleph
+@[inherit_doc] scoped notation "ℵ_ " => aleph
+recommended_spelling "aleph" for "ℵ_" in [aleph, «termℵ_»]
 
 /-- `ℵ₁` is the first uncountable cardinal. -/
 scoped notation "ℵ₁" => ℵ_ 1
+recommended_spelling "aleph_one" for "ℵ₁" in [«termℵ₁»]
 
 theorem aleph_eq_preAleph (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
@@ -458,28 +463,46 @@ theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 
 @[simp]
-theorem aleph1_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
+theorem aleph_one_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
   simpa using lift_le (a := ℵ₁)
 
+@[deprecated (since := "2025-12-22")]
+alias aleph1_le_lift := aleph_one_le_lift
+
 @[simp]
-theorem lift_le_aleph1 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
+theorem lift_le_aleph_one {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
   simpa using lift_le (b := ℵ₁)
 
+@[deprecated (since := "2025-12-22")]
+alias lift_le_aleph1 := lift_le_aleph_one
+
 @[simp]
-theorem aleph1_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
+theorem aleph_one_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
   simpa using lift_lt (a := ℵ₁)
 
+@[deprecated (since := "2025-12-22")]
+alias aleph1_lt_lift := aleph_one_lt_lift
+
 @[simp]
-theorem lift_lt_aleph1 {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
+theorem lift_lt_aleph_one {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
   simpa using lift_lt (b := ℵ₁)
 
-@[simp]
-theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
-  simpa using lift_inj (a := ℵ₁)
+@[deprecated (since := "2025-12-22")]
+alias lift_lt_aleph1 := lift_lt_aleph_one
 
 @[simp]
-theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
+theorem aleph_one_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
+  simpa using lift_inj (a := ℵ₁)
+
+@[deprecated (since := "2025-12-22")]
+alias aleph1_eq_lift := aleph_one_eq_lift
+
+@[simp]
+theorem lift_eq_aleph_one {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
   simpa using lift_inj (b := ℵ₁)
+
+@[deprecated (since := "2025-12-22")]
+alias lift_eq_aleph1 := lift_eq_aleph_one
 
 theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := by
   rw [← (isInitial_omega o).card_lt_card, card_omega]
@@ -612,8 +635,8 @@ For a version which starts at zero, see `Cardinal.preBeth`. -/
 def beth (o : Ordinal.{u}) : Cardinal.{u} :=
   preBeth (ω + o)
 
-@[inherit_doc]
-scoped notation "ℶ_ " => beth
+@[inherit_doc] scoped notation "ℶ_ " => beth
+recommended_spelling "beth" for "ℶ_" in [«termℶ_»]
 
 theorem beth_eq_preBeth (o : Ordinal) : beth o = preBeth (ω + o) :=
   rfl
