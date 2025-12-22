@@ -290,8 +290,7 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
   refine integrableOn_mul_sum_Icc _ (by norm_num) <| ContinuousOn.integrableOn_Icc fun x hx ↦
     ContinuousAt.continuousWithinAt ?_
   have : x ≠ 0 := by linarith [hx.1]
-  have : x * log x ^ 2 ≠ 0 := by
-    apply mul_ne_zero this <| pow_ne_zero _ <| log_ne_zero_of_pos_of_ne_one _ _ <;> linarith [hx.1]
+  have : x * log x ^ 2 ≠ 0 := mul_ne_zero this <| by simp; grind
   fun_prop (disch := assumption)
 
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
