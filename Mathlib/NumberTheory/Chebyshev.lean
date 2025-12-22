@@ -302,15 +302,11 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
   push_cast
   let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ log n)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * a n
-  · apply sum_congr rfl fun n hn ↦ ?_
-    unfold a
+  · refine sum_congr rfl fun n hn ↦ ?_
     split_ifs with h
-    · simp only [Set.mem_setOf_eq, h, Set.indicator_of_mem]
-      have : log n ≠ 0 := by
-        apply log_ne_zero_of_pos_of_ne_one <;> norm_cast
-        exacts [h.pos, h.ne_one]
-      field
-    · simp [h]
+    · have : log n ≠ 0 := log_ne_zero_of_pos_of_ne_one (mod_cast h.pos) (mod_cast h.ne_one)
+      simp [a, h, field]
+    · simp [a, h]
   rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
     ← intervalIntegral.integral_of_le hx]
   · -- Rewrite the derivative inside the intigral
@@ -318,11 +314,8 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
       ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
       apply intervalIntegral.integral_congr fun u hu ↦ ?_
-      rw [Set.uIcc_of_le hx] at hu
-      simp only [mul_inv_rev, mul_neg]
-      rw [deriv_log_inv]
-      · ring
-      all_goals linarith [hu.1]
+      replace hu : 2 ≤ u := ((Set.uIcc_of_le hx) ▸ hu).1
+      simp [deriv_log_inv (by linarith) (by linarith) (by linarith), field]
     simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · -- Differentiability
@@ -332,19 +325,13 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       apply log_ne_zero_of_pos_of_ne_one <;> linarith [hz.1]
     fun_prop (disch := assumption)
   · -- Integrability of the derivative
-    have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹ := by
-      intro y hy
-      rw [deriv_log_inv, mul_inv, ← div_eq_mul_inv, neg_div]
-      all_goals linarith [hy.1]
-    apply ContinuousOn.integrableOn_Icc fun z hz ↦ ?_
-    apply ContinuousWithinAt.congr (f := fun x => - (x * log x ^ 2)⁻¹)
-    · apply ContinuousWithinAt.neg <| ContinuousAt.continuousWithinAt _
-      have : z ≠ 0 := by linarith [hz.1]
-      have : z * (log z) ^ 2 ≠ 0 := by
-        apply mul_ne_zero this <| pow_ne_zero _ <| log_ne_zero.mpr ⟨_, _, _⟩
-        all_goals linarith [hz.1]
-      fun_prop (disch := assumption)
-    all_goals simp_all
+    have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -y⁻¹ / log y ^ 2 := by
+      refine fun y hy ↦ deriv_log_inv ?_ ?_ ?_ <;> linarith [hy.1]
+    refine ContinuousOn.integrableOn_Icc fun z hz ↦ ContinuousWithinAt.congr ?_ this (this z hz)
+    have hz₀ : z ≠ 0 := by linarith [hz.1]
+    have : log z ^ 2 ≠ 0 := by 
+      refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith [hz.1]
+    exact ContinuousAt.continuousWithinAt <| by fun_prop (disch := assumption)
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
@@ -358,16 +345,11 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
 We will bound the integral on 2..x by splitting into two intervals and using this result on both. -/
 private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
     ∫ x in a..b, 1 / log x ^ 2 ≤ (b - a) / log a ^ 2 := by
-  trans ∫ x in a..b, 1 / log a ^ 2
-  · apply intervalIntegral.integral_mono_on hab
-    · apply intervalIntegrable_one_div_log_sq <;> linarith
-    · simp
-    · intro x hx
-      gcongr
-      · bound
-      · bound
-      · linarith [hx.1]
-  rw [intervalIntegral.integral_const, smul_eq_mul, mul_one_div]
+  calc
+  _ ≤ ∫ x in a..b, 1 / log a ^ 2 := by
+      refine intervalIntegral.integral_mono_on hab ?_ (by simp) fun x ⟨hx, _⟩ ↦ by gcongr <;> bound
+      apply intervalIntegrable_one_div_log_sq <;> linarith
+  _ ≤ _ := by simp [field]
 
 /- Explicit integral bound, we expose a BigO version below since the constants and lower order term
 aren't very convenient. -/
