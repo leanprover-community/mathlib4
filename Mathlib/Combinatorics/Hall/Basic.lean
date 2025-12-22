@@ -131,7 +131,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (hallMatchingsFunctor t)
       -- Interpret the resulting section of the inverse limit
       refine ⟨?_, ?_, ?_⟩
-      ·-- Build the matching function from the section
+      · -- Build the matching function from the section
         exact fun i =>
           (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
       · -- Show that it is injective
