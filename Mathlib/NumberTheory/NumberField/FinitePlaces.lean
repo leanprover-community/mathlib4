@@ -312,6 +312,18 @@ theorem mulSupport_finite {x : K} (h_x_nezero : x ≠ 0) :
   contrapose!
   simp +contextual only [ne_eq, one_ne_zero, not_false_eq_true, div_self, implies_true]
 
+protected
+lemma add_le (v : FinitePlace K) (x y : K) :
+    v (x + y) ≤ max (v x) (v y) := by
+  obtain ⟨w, hw⟩ := v.prop
+  have : v.val = RingOfIntegers.HeightOneSpectrum.adicAbv w :=
+    AbsoluteValue.ext fun x ↦ by grind only [place_apply, norm_def]
+  simp_rw [show ∀ x, v x = v.val x from fun _ ↦ rfl, this]
+  exact RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max w x y
+
+instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
+  map_add_le_max v a b := FinitePlace.add_le v a b
+
 end FinitePlace
 
 end NumberField
