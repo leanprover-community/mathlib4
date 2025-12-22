@@ -449,27 +449,34 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 
-open scoped Classical in
-theorem interpolate_poly_eq_self
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
-    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
+omit [DecidableEq ι] in
+private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
+    P.degree = ↑(s.card - 1) := by
+  cases h : P.degree
+  case bot => simp_all
+  case coe d =>
+    rw [Nat.cast_withBot] at hP ⊢
+    suffices #s = d + 1 by grind
+    rw [h] at hP
+    simp [← WithBot.coe_inj, hP]
+
+omit [DecidableEq ι] in
+private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
+    P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some (degree_eq_of_card_eq hP)
+
+omit [DecidableEq ι] in
+private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
+    P.degree < s.card := by
+  have := degree_eq_of_card_eq hP
+  have := natDegree_eq_of_card_eq hP
+  have s_card : s.card > 0 := by by_contra! h; simp_all
+  grind [Nat.cast_lt]
 
 theorem leadingCoeff_eq_sum
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
-  have P_degree : P.degree = ↑(s.card - 1) := by
-    cases h : P.degree
-    case bot => simp_all
-    case coe d =>
-      rw [Nat.cast_withBot] at hP ⊢
-      suffices #s = d + 1 by grind
-      rw [h] at hP
-      simp [← WithBot.coe_inj, hP]
-  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
-  have s_card : s.card > 0 := by by_contra! h; simp_all
-  have hP' : P.degree < s.card := by grind [Nat.cast_lt]
-  rw [leadingCoeff, P_natDegree]
-  rw (occs := [1]) [← interpolate_poly_eq_self hvs hP']
+  rw [leadingCoeff, natDegree_eq_of_card_eq hP]
+  rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
   rw [interpolate_apply, finset_sum_coeff]
   congr! with i hi
   rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
