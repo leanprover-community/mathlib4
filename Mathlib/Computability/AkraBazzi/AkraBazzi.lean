@@ -188,7 +188,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with _ hx using log_nonneg hx
   | inr hp => -- p ≠ 0
-    refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p-1))
+    refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p - 1))
       (isTheta_deriv_rpow_p_mul_one_sub_smoothingFn hp) ?_
     filter_upwards [eventually_gt_atTop 0] with _ _
     positivity
@@ -208,7 +208,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with x hx using log_nonneg hx
   | inr hp => -- p ≠ 0
-    refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p-1))
+    refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p - 1))
       (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp) ?_
     filter_upwards [eventually_gt_atTop 0] with _ _
     positivity
@@ -583,9 +583,9 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
         refine mul_nonpos_of_nonpos_of_nonneg ?_ g_pos
         rw [sub_nonpos]
         calc 1
-          _ ≤ 2 * (c₁⁻¹ * c₁) * (1/2) := by
+          _ ≤ 2 * (c₁⁻¹ * c₁) * (1 / 2) := by
             rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; norm_num
-          _ = (2 * c₁⁻¹) * c₁ * (1/2) := by ring
+          _ = (2 * c₁⁻¹) * c₁ * (1 / 2) := by ring
           _ ≤ C * c₁ * (1 - ε n) := by
             gcongr
             · rw [hC]; exact le_max_left _ _
