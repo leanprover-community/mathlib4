@@ -296,11 +296,11 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
-  --Rewrite in a form to which Abel summation can be applied
+  -- Rewrite in a form to which Abel summation can be applied
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero, sum_filter]
   push_cast
-  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n => log n)
+  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ log n)
   trans ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * a n
   · apply sum_congr rfl fun n hn ↦ ?_
     unfold a
@@ -355,9 +355,9 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
   fun_prop (disch := assumption)
 
 /- Simple bound on the integral from monotonicity.
-We will bound the integral on 2..x by splitting into two intervals and using this result on both.-/
+We will bound the integral on 2..x by splitting into two intervals and using this result on both. -/
 private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
-    ∫ x in a..b, 1 / log x  ^ 2 ≤ (b - a) / log a ^ 2 := by
+    ∫ x in a..b, 1 / log x ^ 2 ≤ (b - a) / log a ^ 2 := by
   trans ∫ x in a..b, 1 / log a ^ 2
   · apply intervalIntegral.integral_mono_on hab
     · apply intervalIntegrable_one_div_log_sq <;> linarith
