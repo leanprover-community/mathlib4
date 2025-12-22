@@ -39,7 +39,7 @@ lemma zero_iff_order_inf : ∀ (f : ℂ → ℂ) (z : ℂ) (_ : ∀ z, AnalyticA
     · exact this f z hf
 
 lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀) (n : ℕ) :
-    analyticOrderAt f z₀ = n → n > 0 → analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
+    analyticOrderAt f z₀ = n → n ≠ 0 → analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
   intros horder hn
   rw [analyticOrderAt_eq_natCast hf] at horder
   obtain ⟨g, hg, ⟨hgneq0, hexp⟩⟩ := horder
@@ -57,7 +57,7 @@ lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f
           use interior (Ug ∩ Ur)
           constructor
           · simp only [interior_inter, Filter.inter_mem_iff, interior_mem_nhds]
-            simp_all only [gt_iff_lt, ne_eq, smul_eq_mul, and_self]
+            simp_all only [ne_eq, smul_eq_mul, and_self]
           · intros z Hz
             have Hderiv : deriv (fun z => (z - z₀)^n • g z) z =
             (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by
@@ -68,7 +68,8 @@ lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f
                   simp only [add_left_inj, mul_eq_mul_right_iff]
                   left
                   nth_rw 3 [← pow_one (z - z₀)]
-                  rw [← pow_add, Nat.sub_add_cancel hn]
+                  rw [← pow_add]
+                  grind
                 simp only [differentiableAt_fun_id, differentiableAt_const,
                   DifferentiableAt.fun_sub, deriv_fun_pow, deriv_fun_sub, deriv_id'',
                   deriv_const', sub_zero, mul_one]
@@ -109,8 +110,8 @@ lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt �
           · assumption
           · assumption
           · linarith
-        · simp_all only [gt_iff_lt, ENat.coe_sub, tsub_pos_iff_lt]
-          exact Hk
+        · simp_all only [gt_iff_lt, ENat.coe_sub]
+          grind
       have h1 : (n - (k + 1))= (n - k - 1) := by grind
       rw [h1]
       simp only at this
@@ -341,7 +342,8 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
             rw [hr]
             exact this
           exact pos_of_ne_zero (analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩)
-        specialize this r0
+        have Hr : r≠ 0 := by omega
+        specialize this Hr
         rw [this]
         exact ENat.coe_ne_top (r - 1)
     · intros ho
