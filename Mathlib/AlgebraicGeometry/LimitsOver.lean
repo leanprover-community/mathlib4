@@ -58,7 +58,7 @@ instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f.left] [IsOpenImmersion g.left]
     {i j : WalkingSpan} (t : i ⟶ j) :
       IsOpenImmersion ((span f g).map t).left := by
-  obtain (a|(a|a)) := t
+  obtain (a | (a | a)) := t
   · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
     infer_instance
   · simpa
