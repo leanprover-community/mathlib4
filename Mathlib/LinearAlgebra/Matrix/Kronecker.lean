@@ -434,7 +434,7 @@ def kroneckerTMul : Matrix l m α → Matrix n p β → Matrix (l × n) (m × p)
   kroneckerMap (· ⊗ₜ ·)
 
 @[inherit_doc kroneckerTMul]
-scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (· ⊗ₜ ·)
+scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (TensorProduct.tmul _)
 
 @[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
   Matrix.kroneckerMap (TensorProduct.tmul R) x y
