@@ -66,8 +66,7 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
     (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices
-    ∀ {f g : α → α},
+  suffices ∀ {f g : α → α},
       Commute f g →
         Coprime (minimalPeriod f x) (minimalPeriod g x) →
           minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
