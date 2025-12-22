@@ -619,5 +619,4 @@ lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < 
   rw [← this, DirectSum.ofPow ]
   simp
 
-
 end ring
