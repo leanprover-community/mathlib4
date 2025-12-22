@@ -122,4 +122,9 @@ lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) :
 lemma IsEdgeConnected.preconnected (hk : k ≠ 0) (h : G.IsEdgeConnected k) : G.Preconnected :=
   fun u v ↦ (h u v).reachable hk
 
+lemma IsEdgeConnected.connected [Nonempty V] (hk : k ≠ 0) (h : G.IsEdgeConnected k) :
+    G.Connected where
+  preconnected := h.preconnected hk
+  nonempty := ‹_›
+
 end SimpleGraph
