@@ -1000,7 +1000,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
         rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩
-      rcases Nat.find_spec Z with hZ|hZ
+      rcases Nat.find_spec Z with hZ | hZ
       · exact hZ
       · exact (hZ j0 hj0).elim
   simp_rw [hv.liminf_eq_sSup_iUnion_iInter, A, B, sSup_iUnion_Iic]
