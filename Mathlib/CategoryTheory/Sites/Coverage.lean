@@ -231,7 +231,7 @@ lemma Saturate.pullback (K : Coverage C) {X Y : C} (f : Y ⟶ X) {S : Sieve X}
     (h : Saturate K X S) : Saturate K Y (S.pullback f) := by
   induction h with
   | of X S hS =>
-    obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
+    obtain ⟨R, hR1, hR2⟩ := K.pullback f S hS
     suffices Sieve.generate R ≤ (Sieve.generate S).pullback f from
       saturate_of_superset _ this (Saturate.of _ _ hR1)
     intro Z g ⟨W, i, e, h1, h2⟩

@@ -209,7 +209,7 @@ def isColimitMapCoconePushoutCoconeEquiv :
 def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk h k comm)) :
     IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = G.map g ≫ G.map k
-      from by simp only [← G.map_comp,comm] )) :=
+      from by simp only [← G.map_comp, comm])) :=
   isColimitMapCoconePushoutCoconeEquiv G comm (isColimitOfPreserves G l)
 
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
