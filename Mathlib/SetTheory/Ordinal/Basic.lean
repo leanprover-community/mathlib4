@@ -760,13 +760,12 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 
 /-! ### The first infinite ordinal ω -/
 
-
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 def omega0 : Ordinal.{u} :=
   lift (typeLT ℕ)
 
-@[inherit_doc]
-scoped notation "ω" => Ordinal.omega0
+@[inherit_doc] scoped notation "ω" => Ordinal.omega0
+recommended_spelling "omega0" for "ω" in [omega0, «termω»]
 
 /-- Note that the presence of this lemma makes `simp [omega0]` form a loop. -/
 @[simp]
