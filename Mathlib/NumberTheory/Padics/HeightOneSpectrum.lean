@@ -62,7 +62,7 @@ variable (R : Type*) [CommRing R] [Algebra R ℚ]
 theorem Rat.int_algebraMap_injective : Function.Injective (algebraMap ℤ R) :=
   .of_comp (IsScalarTower.algebraMap_eq ℤ R ℚ ▸ RingHom.injective_int (algebraMap ℤ ℚ))
 
-variable [IsFractionRing R ℚ] [IsIntegralClosure R ℤ ℚ]
+variable [IsIntegralClosure R ℤ ℚ] [IsFractionRing R ℚ]
 
 theorem Rat.int_algebraMap_surjective : Function.Surjective (algebraMap ℤ R) := by
   intro x
@@ -70,13 +70,20 @@ theorem Rat.int_algebraMap_surjective : Function.Surjective (algebraMap ℤ R) :
     IsIntegral.algebraMap (B := ℚ) (IsIntegralClosure.isIntegral ℤ ℚ x)
   exact ⟨y, IsFractionRing.injective R ℚ <| by simp only [← IsScalarTower.algebraMap_apply, hy]⟩
 
-/-- If `R : CommRing` has field of fractions `ℚ` then it is isomorphic to `ℤ`. -/
+/-- If `R` has field of fractions `ℚ` and is the integral closure of `ℤ` in `ℚ` then it is
+isomorphic to `ℤ`. -/
 noncomputable def Rat.intEquiv : R ≃+* ℤ :=
-  RingEquiv.ofBijective _ ⟨int_algebraMap_injective R, int_algebraMap_surjective R⟩ |>.symm
+  (NumberField.RingOfIntegers.equiv R).symm.trans ringOfIntegersEquiv
+
+@[simp]
+theorem Rat.intEquiv_apply_eq_ringOfIntegersEquiv (x : 𝓞 ℚ) :
+    intEquiv (𝓞 ℚ) x = ringOfIntegersEquiv x := by
+  simp [intEquiv, RingOfIntegers.equiv, IsIntegralClosure.equiv, IsIntegralClosure.lift,
+    IsIntegralClosure.mk']
 
 namespace Rat.HeightOneSpectrum
 
-variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsFractionRing R ℚ] [IsIntegralClosure R ℤ ℚ]
+variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsIntegralClosure R ℤ ℚ]
 
 /-- If `v : HeightOneSpectrum R` then `natGenerator v` is the generator in `ℕ` of the corresponding
 ideal in `ℤ`. -/
@@ -96,7 +103,7 @@ theorem prime_natGenerator (v : HeightOneSpectrum R) : Nat.Prime (natGenerator v
   Int.prime_iff_natAbs_prime.1 <| Submodule.IsPrincipal.prime_generator_of_isPrime _
     ((Ideal.map_eq_bot_iff_of_injective (intEquiv R).injective).not.2 v.ne_bot)
 
-variable [IsDedekindDomain R]
+variable [IsDedekindDomain R] [IsFractionRing R ℚ]
 
 /-- The equivalence between height-one prime ideals of `R` and primes in `ℕ`. -/
 noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
