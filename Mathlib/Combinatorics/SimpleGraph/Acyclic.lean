@@ -364,8 +364,7 @@ lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsT
 /--
 Adding an edge to an acyclic graph preserves acyclicity if the endpoints are not reachable.
 -/
-theorem isAcyclic_add_edge_iff_of_not_reachable
-    {G : SimpleGraph V} (x y : V) (hxy : ¬ G.Reachable x y) :
+theorem isAcyclic_add_edge_iff_of_not_reachable (x y : V) (hxy : ¬ G.Reachable x y) :
     (G ⊔ fromEdgeSet {s(x,y)}).IsAcyclic ↔ IsAcyclic G := by
   refine ⟨fun h ↦ h.anti le_sup_left, fun hG ↦ ?_⟩
   have x_neq_y : x ≠ y := fun c => (c ▸ hxy) (Reachable.refl y)
@@ -373,13 +372,11 @@ theorem isAcyclic_add_edge_iff_of_not_reachable
     simpa using fun h => hxy h.reachable
   have h_bridge : (G ⊔ fromEdgeSet {s(x,y)}).IsBridge s(x,y) := by
     simpa [isBridge_iff, x_neq_y, h_add_remove]
+  rw [isBridge_iff_adj_and_forall_cycle_notMem] at h_bridge
   intro u c hc
-  apply isBridge_iff_adj_and_forall_cycle_notMem.mp at h_bridge
-  let c' : G.Walk u u := Walk.transfer c G (by
-    intro e he
+  let c' : G.Walk u u := Walk.transfer c G (fun e he ↦ by
     have eneq : e ≠ s(x,y) := fun h => h_bridge.2 c hc (h ▸ he)
-    simpa [eneq] using Walk.edges_subset_edgeSet c he
-  )
+    simpa [eneq] using Walk.edges_subset_edgeSet c he)
   exact hG c' (Walk.IsCycle.transfer (qc := hc) ..)
 
 /--
@@ -412,7 +409,6 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
       · intro hc
         have : _ := ConnectedComponent.mem_supp_congr_adj (F.connectedComponentMk u) hc
         grind
-  have : DecidableEq V := Classical.decEq V
   refine (isAcyclic_add_edge_iff_of_not_reachable u' v' ?_).mpr hF.2
   intro hc
   rw [←ConnectedComponent.eq] at hc
@@ -457,18 +453,23 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G ∧
 /-- A subgraph of a connected graph is maximal acyclic iff it is a tree. -/
 theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Connected)
     (hT : T ≤ G) : Maximal (fun H => H ≤ G ∧ H.IsAcyclic) T ↔ T.IsTree := by
-  constructor
-  · intro h
-    have : Nonempty V := hG.nonempty
-    refine ⟨⟨fun u v => ?_⟩, h.1.2⟩
-    rw [G.reachable_eq_of_maximal_isAcyclic T h]
+  have : Nonempty V := hG.nonempty
+  refine ⟨fun h ↦ ⟨⟨fun u v ↦ ?_⟩, h.1.2⟩, fun hT' ↦ ?_⟩
+  · rw [G.reachable_eq_of_maximal_isAcyclic T h]
     exact hG.preconnected u v
-  · grind [IsTree, Connected, maximal_isAcyclic_of_reachable_eq, preconnected_iff_reachable_eq_top]
+  · rw [maximal_isAcyclic_iff_reachable_eq ⟨hT, hT'.IsAcyclic⟩]
+    replace hT' : T.Reachable = ⊤ := by
+      rw [← preconnected_iff_reachable_eq_top]
+      exact hT'.isConnected.preconnected
+    replace hG : G.Reachable = ⊤ := by
+      rw [← preconnected_iff_reachable_eq_top]
+      exact hG.preconnected
+    rw [hT', hG]
 
+@[simp]
 theorem maximal_isAcyclic_iff_isTree [Nonempty V] {T : SimpleGraph V} :
     Maximal IsAcyclic T ↔ T.IsTree := by
-  rw [←connected_top.maximal_le_isAcyclic_iff_isTree le_top]
-  grind [le_top, Maximal]
+  simp [← connected_top.maximal_le_isAcyclic_iff_isTree le_top]
 
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :

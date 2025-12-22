@@ -198,8 +198,7 @@ protected lemma Preconnected.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.
     G'.Preconnected := fun u v => (hG u v).mono h
 
 lemma preconnected_iff_reachable_eq_top : G.Preconnected ↔ G.Reachable = ⊤ := by
-  simp only [Top.top]
-  grind [Preconnected]
+  aesop (add simp Preconnected)
 
 lemma preconnected_bot_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
