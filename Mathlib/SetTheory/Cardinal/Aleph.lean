@@ -587,6 +587,21 @@ theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSu
     · intro h
       simpa using h.two_power_lt (preBeth_strictMono (lt_succ a))
 
+@[simp]
+theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lift.{v} o) := by
+  induction o using SuccOrder.prelimitRecOn with
+  | succ o _ IH => simp [IH]
+  | isSuccPrelimit o ho IH =>
+    rw [preBeth_limit ho, preBeth_limit (isSuccPrelimit_lift.2 ho), lift_iSup (bddAbove_of_small _)]
+    apply congrArg sSup
+    ext x
+    constructor <;> rintro ⟨⟨i, hi⟩, rfl⟩
+    · refine ⟨⟨i.lift, ?_⟩, (IH _ hi).symm⟩
+      simpa
+    · obtain ⟨i, rfl⟩ := Ordinal.mem_range_lift_of_le hi.le
+      rw [mem_Iio, Ordinal.lift_lt] at hi
+      exact ⟨⟨i, hi⟩, IH _ hi⟩
+
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
 
@@ -648,5 +663,9 @@ theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
 
 theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
   rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
+
+@[simp]
+theorem lift_beth (o : Ordinal) : lift.{v} (ℶ_ o) = ℶ_ (Ordinal.lift.{v} o) := by
+  rw [beth_eq_preBeth, beth_eq_preBeth, lift_preBeth, Ordinal.lift_add, lift_omega0]
 
 end Cardinal
