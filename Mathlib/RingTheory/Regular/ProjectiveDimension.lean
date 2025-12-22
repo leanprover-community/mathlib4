@@ -27,17 +27,6 @@ For `M` a finitely generated module over Noetherian local ring `R` and an `R`-re
 
 section ENat
 
-lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
-    a + c ≤ b + c ↔ a ≤ b := by
-  induction a with
-  | bot => simp
-  | coe a =>
-    induction b with
-    | bot => simp
-    | coe b =>
-      norm_cast
-      exact WithTop.add_le_add_iff_right (ENat.coe_ne_top c)
-
 lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
   induction a with
@@ -128,12 +117,11 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
     projectiveDimension M + 1 ≤ n := by
     match n with
     | 0 =>
-      have : projectiveDimension M + 1 ≤ 0 ↔ projectiveDimension M = ⊥ :=
-        WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M)
       rw [projectiveDimension_le_iff]
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one,
-        CharP.cast_eq_zero, this, projectiveDimension_eq_bot_iff,
-        ModuleCat.isZero_iff_subsingleton, sub, ← IsProjective.iff_projective]
+        CharP.cast_eq_zero, WithBot.add_one_le_zero_iff_eq_bot (projectiveDimension M),
+        projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton, sub,
+        ← IsProjective.iff_projective]
       refine ⟨fun h ↦ ?_, fun h ↦ Projective.of_free⟩
       have : Module.Free R (QuotSMulTop x M) := Module.free_of_flat_of_isLocalRing
       by_contra ntr
@@ -145,7 +133,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
       infer_instance
     | n + 1 =>
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
-      rw [WithBot.add_le_add_right_iff _ _ 1, projectiveDimension_le_iff,
+      rw [WithBot.add_le_add_natCast_right_iff, projectiveDimension_le_iff,
         projectiveDimension_le_iff]
       let S := M.smulShortComplex x
       have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
