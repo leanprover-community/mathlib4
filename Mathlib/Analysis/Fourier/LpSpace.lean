@@ -44,11 +44,11 @@ namespace MeasureTheory.Lp
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
 def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
-  (SchwartzMap.fourierTransformCLE ℂ (V := E) (E := F)).toLinearEquiv.extendOfIsometry
-    (SchwartzMap.toLpCLM ℂ (E := E) F 2 volume) (SchwartzMap.toLpCLM ℂ (E := E) F 2 volume)
+  (fourierTransformCLE ℂ (V := E) (E := F)).toLinearEquiv.extendOfIsometry
+    (toLpCLM ℂ (E := E) F 2 volume) (toLpCLM ℂ (E := E) F 2 volume)
     -- Not explicitly stating the measure as being the volume causes time-outs in the proofs below
-    (SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top)
-    (SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top) norm_fourier_toL2_eq
+    (denseRange_toLpCLM ENNReal.ofNat_ne_top) (denseRange_toLpCLM ENNReal.ofNat_ne_top)
+    norm_fourier_toL2_eq
 
 instance instFourierTransform : FourierTransform (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourier := fourierTransformₗᵢ E F
