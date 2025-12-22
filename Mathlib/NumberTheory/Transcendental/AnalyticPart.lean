@@ -112,7 +112,7 @@ lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt �
           · linarith
         · simp_all only [ENat.coe_sub]
           grind
-      have h1 : (n - (k + 1))= (n - k - 1) := by grind
+      have h1 : n - (k + 1) = n - k - 1 := by grind
       rw [h1]
       simp only at this
       rw [← this]
@@ -342,7 +342,7 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
             rw [hr]
             exact this
           exact pos_of_ne_zero (analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩)
-        have Hr : r≠ 0 := by omega
+        have Hr : r ≠ 0 := by omega
         specialize this Hr
         rw [this]
         exact ENat.coe_ne_top (r - 1)
