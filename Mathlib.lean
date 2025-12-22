@@ -1293,6 +1293,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
+public import Mathlib.AlgebraicGeometry.Morphisms.FlatMono
 public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
@@ -2563,6 +2564,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
@@ -3092,6 +3094,13 @@ public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 public import Mathlib.CategoryTheory.Subobject.Types
 public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Subpresheaf.Basic
+public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
+public import Mathlib.CategoryTheory.Subpresheaf.Finite
+public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subpresheaf.OfSection
+public import Mathlib.CategoryTheory.Subpresheaf.Sieves
+public import Mathlib.CategoryTheory.Subpresheaf.Subobject
 public import Mathlib.CategoryTheory.Subterminal
 public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
@@ -5051,6 +5060,7 @@ public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Portmanteau
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.MeasureTheory.Measure.Prokhorov
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.Measure.Regular
@@ -6102,6 +6112,7 @@ public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.MvPolynomial.Groebner
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.Ideal
+public import Mathlib.RingTheory.MvPolynomial.IrreducibleQuadratic
 public import Mathlib.RingTheory.MvPolynomial.Localization
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
