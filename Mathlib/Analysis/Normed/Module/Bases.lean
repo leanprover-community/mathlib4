@@ -101,6 +101,9 @@ theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
 def coeff {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) : ℕ → 𝕜 :=
     fun n => biorthogonal_functionals h n x
 
+theorem coeff_summable {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
+        Summable (fun n => coeff h x n • e n) := ((Classical.choose_spec h).2 x).1
+
 def repr {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) : X :=
     ∑' n, (coeff h x n) • e n
 
@@ -152,16 +155,48 @@ namespace CanonicalProjections
 
 theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
     Module.finrank 𝕜 (range (CanonicalProjections h n)) = n := by
-    sorry
+    have einrange: ∀ i, i < n → e i ∈ range (CanonicalProjections h n) := by
+        intro i hi
+        let bf := biorthogonal_functionals h
+        have : CanonicalProjections h n (e i) = e i := by
+            have : i ∈ Finset.range n := by sorry
+            calc
+              CanonicalProjections h n (e i) = ∑ j : Finset.range n, (bf j (e i)) • e j :=   by sorry
+              _ =  ∑ j : Finset.range n, if j = i then 1 • e j else 0 • e j := by sorry
+              _ = 1 • e i := by sorry
+              _ = e i := by rw [one_smul]
+
+        exact ⟨e i, this⟩
+    have basisofrange: range (CanonicalProjections h n) ≃ₗ[𝕜] Submodule.span 𝕜 ({ e i | i < n }) := by  sorry
+    rw [LinearEquiv.finrank_eq basisofrange]
+    have : Module.finrank 𝕜 (Submodule.span 𝕜 ({ e i | i < n })) = n := by sorry
+    exact this
 
 theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
     CanonicalProjections h n ∘ CanonicalProjections h m = CanonicalProjections h (min n m) := by
-    sorry
+    ext x
+    dsimp [CanonicalProjections]
+    have bf := biorthogonal_functionals h
+    calc
+        (CanonicalProjections h n ∘ CanonicalProjections h m) x
+            = CanonicalProjections h n (∑ i ∈ Finset.range m, (bf i x) • e i) := by sorry
+        _ = ∑ j ∈ Finset.range n, bf j (∑ i ∈ Finset.range m, (bf i x) • e i) • e j := by sorry
+        _ = ∑ j ∈ Finset.range n, (if j < m then (bf j x) else 0) • e j := by sorry
+        _ = ∑ j ∈ Finset.range (min n m), (bf j x) • e j := by sorry
+        _ = CanonicalProjections h (min n m) x := by sorry
 
 theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
     Tendsto (fun n => CanonicalProjections h n x) atTop (𝓝 x) := by
-    sorry
 
+    let bf := biorthogonal_functionals h
+    have tndto : Tendsto (fun n => (∑ i ∈ Finset.range n, coeff h x i • e i))
+        atTop (𝓝 (∑' n, bf n x • e n)) := HasSum.tendsto_sum_nat (coeff_summable h x).hasSum
+    have r: ∑' (n : ℕ), (bf n) x • e n = x := by
+        nth_rw 2 [<-repr_self h x]
+        dsimp [repr, coeff]
+    rw [r] at tndto
+    have p: ∀ n, ∑ i ∈ Finset.range n, h.coeff x i • e i = (h.CanonicalProjections n) x := by sorry
+    exact Filter.Tendsto.congr p tndto
 
 -- todo clean up proof
 theorem uniform_bound {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
@@ -192,40 +227,5 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     sorry
 
 end CanonicalProjections
-
-
-variable (𝕜 X) in
-/-- A basic sequence is a sequence (e n) such that e is a Schauder basis for
-    the closedlinear span of (e n). -/
-def BasicSequence (e : ℕ → X) : Prop :=
-    SchauderBasis 𝕜
-    (Submodule.topologicalClosure (Submodule.span 𝕜 (Set.range e)))
-    (fun n => ⟨e n, by
-        apply Submodule.closure_subset_topologicalClosure_span
-        apply subset_closure
-        exact Set.mem_range_self n⟩)
-
-namespace BasicSequence
-
-theorem grunblum_criterion {e : ℕ → X} (K : ℝ) (hC : 1 < K)
-    (h : ∀ n : ℕ, ∀ m : ℕ, m ≤ n → ∀ a : ℕ → 𝕜,
-        ‖∑ i ∈ Finset.range m, a i • e i‖ ≤ K * ‖∑ i ∈ Finset.range n, a i • e i‖) :
-    BasicSequence 𝕜 X e := by
-    sorry
-
-lemma exists_perpendicular_vector (S : Set (WeakDual 𝕜 X)) (h0w : 0 ∈ closure S)
-    (h0ns : 0 ∉ closure (WeakDual.toStrongDual '' S)) :
-     ∃ x : X, ∀ f ∈ S, f.toLinearMap x = 0 := by
-    sorry
-
-theorem basic_sequence_of_infinite_dim : ¬FiniteDimensional 𝕜 X →
-    ∃ e : ℕ → X, BasicSequence 𝕜 X e := by
-    sorry
-
-
-
-
-
-end BasicSequence
 
 end SchauderBasis
