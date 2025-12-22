@@ -125,9 +125,9 @@ on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`
 -/
 noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
     [NoZeroSMulDivisors A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
-    MulSemiringAction.compHom (FractionRing B)
-      ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
-        (MulSemiringAction.toAlgAut G A B))
+  MulSemiringAction.compHom (FractionRing B)
+    ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
+      (MulSemiringAction.toAlgAut G A B))
 
 attribute [local instance] FractionRing.liftAlgebra in
 /--
@@ -196,6 +196,9 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
+
+protected theorem finite [FiniteDimensional K L] [IsGaloisGroup G K L] : Finite G :=
+  Nat.finite_of_card_ne_zero (card_eq_finrank G K L ▸ Module.finrank_pos.ne')
 
 /-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `Gal(L/K)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* Gal(L/K) :=

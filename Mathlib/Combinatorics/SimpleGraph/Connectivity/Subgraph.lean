@@ -114,6 +114,17 @@ protected lemma Connected.sup {H K : G.Subgraph}
     (H ⊔ K).Connected :=
   Subgraph.connected_sup hH.preconnected hK.preconnected hn
 
+lemma Preconnected.degree_zero_iff {H : G.Subgraph} (h : H.Preconnected) (v : H.verts)
+    [Fintype (H.neighborSet v)] : H.degree v = 0 ↔ H.verts.Subsingleton := by
+  refine ⟨fun hv ↦ Set.not_nontrivial_iff.mp fun hn ↦ ?_, (degree_eq_zero_of_subsingleton H _ ·)⟩
+  have := hn.coe_sort
+  simpa [hv] using h.coe.degree_pos_of_nontrivial v
+
+lemma Preconnected.exists_adj_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts]
+    (h : H.Preconnected) (v : H.verts) : ∃ u, H.Adj v u := by
+  have := h.coe.exists_adj_of_nontrivial v
+  tauto
+
 /--
 This lemma establishes a condition under which a subgraph is the same as a connected component.
 Note the asymmetry in the hypothesis `h`: `v` is in `H.verts`, but `w` is not required to be.
@@ -385,7 +396,7 @@ lemma ncard_neighborSet_toSubgraph_internal_eq_two {u} {i : ℕ} {p : G.Walk u v
   have : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
     intro h
     have := hp.getVert_injOn (by rw [Set.mem_setOf_eq]; lia) (by rw [Set.mem_setOf_eq]; lia) h
-    omega
+    lia
   simp_all
 
 lemma snd_of_toSubgraph_adj {u v v'} {p : G.Walk u v} (hp : p.IsPath)
@@ -487,7 +498,7 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
   have : (p.takeUntil x hx).length + #(s.erase x) < n := by
     rw [← card_erase_add_one hxs] at hp
     have := p.length_takeUntil_le hx
-    omega
+    lia
   obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
   use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
   rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h

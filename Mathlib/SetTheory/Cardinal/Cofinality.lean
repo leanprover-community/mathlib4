@@ -366,7 +366,7 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 @[simp]
 theorem cof_zero : cof 0 = 0 := by
-  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  refine LE.le.antisymm ?_ (Cardinal.zero_le _)
   rw [← card_zero]
   exact cof_le_card 0
 
@@ -633,7 +633,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       refine le_of_forall_lt fun c h => ?_
       rcases lt_univ'.1 h with ⟨c, rfl⟩
       rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
-      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
+      rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u + 1, v, u}, Cardinal.lift_lt, ← Se]
       refine lt_of_not_ge fun h => ?_
       obtain ⟨a, e⟩ := Cardinal.mem_range_lift_of_le h
       refine Quotient.inductionOn a (fun α e => ?_) e

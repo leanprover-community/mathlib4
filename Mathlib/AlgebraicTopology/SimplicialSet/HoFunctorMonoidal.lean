@@ -234,10 +234,10 @@ def equivalence :
 @[simps]
 def iso :
     Cat.of ((X ⊗ Y).HomotopyCategory) ≅ Cat.of (X.HomotopyCategory × Y.HomotopyCategory) where
-  hom := functor X Y
-  inv := inverse X Y
-  hom_inv_id := functor_comp_inverse X Y
-  inv_hom_id := inverse_comp_functor X Y
+  hom := Cat.Hom.ofFunctor (functor X Y)
+  inv := Cat.Hom.ofFunctor (inverse X Y)
+  hom_inv_id := by ext; exact functor_comp_inverse X Y
+  inv_hom_id := by ext; exact inverse_comp_functor X Y
 
 variable {X} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
@@ -309,13 +309,13 @@ lemma inverse_comp_mapHomotopyCategory_snd :
   Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
 
 lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
-    CategoryTheory.Prod.snd _ _ = (Functor.prod (isoTerminal X).inv (𝟭 _)) ⋙
+    CategoryTheory.Prod.snd _ _ = (Functor.prod (isoTerminal X).inv.toFunctor (𝟭 _)) ⋙
       inverse X Y ⋙ mapHomotopyCategory (snd _ _) := by
   rw [inverse_comp_mapHomotopyCategory_snd]
   rfl
 
 lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
-    CategoryTheory.Prod.fst _ _ = (Functor.prod (𝟭 _) (isoTerminal Y).inv) ⋙
+    CategoryTheory.Prod.fst _ _ = (Functor.prod (𝟭 _) (isoTerminal Y).inv.toFunctor) ⋙
       inverse X Y ⋙ mapHomotopyCategory (fst _ _) := by
   rw [inverse_comp_mapHomotopyCategory_fst]
   rfl
@@ -394,11 +394,11 @@ instance : hoFunctor₂.{u}.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := (HomotopyCategory.isoTerminal _).symm
       μIso X Y := (iso X Y).symm
-      μIso_hom_natural_left _ _ := mapHomotopyCategory_prod_id_comp_inverse _ _
-      μIso_hom_natural_right _ _ := id_prod_mapHomotopyCategory_comp_inverse _ _
-      left_unitality Y := left_unitality (𝟙_ _) Y
-      right_unitality X := right_unitality X (𝟙_ _)
-      associativity _ _ _ := associativity _ _ _ }
+      μIso_hom_natural_left _ _ := by ext; apply mapHomotopyCategory_prod_id_comp_inverse
+      μIso_hom_natural_right _ _ := by ext; apply id_prod_mapHomotopyCategory_comp_inverse
+      left_unitality Y := by ext; apply left_unitality
+      right_unitality X := by ext; apply right_unitality
+      associativity _ _ _ := by ext; apply associativity }
 
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 instance hofunctor.monoidal : hoFunctor.{u}.Monoidal :=
@@ -416,7 +416,8 @@ def hoFunctor.unitHomEquiv (X : SSet.{u}) :
     (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
 
 theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
-    hoFunctor.unitHomEquiv X x = Functor.LaxMonoidal.ε hoFunctor ≫ hoFunctor.map x :=
+    hoFunctor.unitHomEquiv X x =
+      (Functor.LaxMonoidal.ε hoFunctor).toFunctor ⋙ (hoFunctor.map x).toFunctor :=
   rfl
 
 end SSet

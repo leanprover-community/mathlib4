@@ -21,7 +21,7 @@ This file proves a variant of the Hahn embedding theorem:
 
 For a linearly ordered module `M` over an Archimedean division ring `K`,
 there exists a strictly monotone linear map to lexicographically ordered
-`HahnSeries (FiniteArchimedeanClass M) R` with an archimedean `K`-module `R`,
+`R⟦FiniteArchimedeanClass M⟧` with an archimedean `K`-module `R`,
 as long as there are embeddings from a certain family of Archimedean submodules to `R`.
 
 The family of Archimedean submodules `HahnEmbedding.ArchimedeanStrata K M` is indexed by
@@ -35,7 +35,7 @@ to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedA
 ## Main theorem
 
 * `hahnEmbedding_isOrderedModule`:
-  there exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
+  there exists a strictly monotone `M →ₗ[K] Lex R⟦FiniteArchimedeanClass M⟧` that maps
   `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
   `HahnEmbedding.Seed K M R` is nonempty.
 
@@ -52,13 +52,13 @@ We start with `HahnEmbedding.ArchimedeanStrata` that gives a family of Archimede
 and a "seed" `HahnEmbedding.Seed` that specifies how to embed each
 `HahnEmbedding.ArchimedeanStrata.stratum` into `R`.
 
-From these, we create a partial map from the direct sum of all `stratum` to `HahnSeries Γ R`.
+From these, we create a partial map from the direct sum of all `stratum` to `R⟦Γ⟧`.
 If `ArchimedeanClass M` is finite, the direct sum is the entire `M` and we are done
 (though we don't handle this case separately). Otherwise, we will extend the map to `M` in the
 following steps.
 -/
 
-open ArchimedeanClass DirectSum
+open ArchimedeanClass DirectSum HahnSeries
 
 variable {K : Type*} [DivisionRing K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
@@ -237,7 +237,7 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
 /-- Combining all `HahnEmbedding.Seed.coeff` as
 a partial linear map from `HahnEmbedding.Seed.baseDomain` to `HahnSeries`. -/
 noncomputable
-def baseEmbedding : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) where
+def baseEmbedding : M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧ where
   domain := seed.baseDomain
   toFun := (toLexLinearEquiv _ _).toLinearMap ∘ₗ (HahnSeries.ofFinsuppLinearMap _) ∘ₗ
     (Finsupp.lcomapDomain _ Subtype.val_injective) ∘ₗ
@@ -268,7 +268,7 @@ transferring `ArchimedeanClass` to `HahnEmbedding.orderTop`, and being "truncati
 
 /-- A partial linear map is called a "partial Hahn embedding" if it extends
 `HahnEmbedding.Seed.baseEmbedding`, is strictly monotone, and is truncation-closed. -/
-structure IsPartial (f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)) : Prop where
+structure IsPartial (f : M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧) : Prop where
   /-- A partial Hahn embedding is strictly monotone. -/
   strictMono : StrictMono f
   /-- A partial Hahn embedding always extends `baseEmbedding`. -/
@@ -395,7 +395,7 @@ theorem isPartial_baseEmbedding [IsOrderedAddMonoid R] : IsPartial seed seed.bas
 end Seed
 
 /-- The type of all partial Hahn embeddings. -/
-abbrev Partial := {f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) // IsPartial seed f}
+abbrev Partial := {f : M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧ // IsPartial seed f}
 
 namespace Partial
 variable {seed} (f : Partial seed)
@@ -405,7 +405,7 @@ instance [IsOrderedAddMonoid R] : Inhabited (Partial seed) where
   default := ⟨seed.baseEmbedding, seed.isPartial_baseEmbedding⟩
 
 /-- `HahnEmbedding.Partial` as an `OrderedAddMonoidHom`. -/
-def toOrderAddMonoidHom : f.val.domain →+o Lex (HahnSeries (FiniteArchimedeanClass M) R) where
+def toOrderAddMonoidHom : f.val.domain →+o Lex R⟦FiniteArchimedeanClass M⟧ where
   __ := f.val.toFun
   map_zero' := by simp
   monotone' := f.prop.strictMono.monotone
@@ -586,7 +586,7 @@ theorem isWF_support_evalCoeff [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
 /-- Promote `HahnEmbedding.Partial.evalCoeff`'s output to a new `HahnSeries`. -/
 noncomputable
 def eval [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
-    Lex (HahnSeries (FiniteArchimedeanClass M) R) :=
+    Lex R⟦FiniteArchimedeanClass M⟧ :=
   toLex { coeff := f.evalCoeff x
           isPWO_support' := (f.isWF_support_evalCoeff x).isPWO }
 
@@ -772,7 +772,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
 /-- Extend `f` to a larger partial linear map by adding a new `x`. -/
 noncomputable
 def extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain) :
-    M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) :=
+    M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧ :=
   .supSpanSingleton f.val x (eval f x) hx
 
 theorem extendFun_strictMono [IsOrderedAddMonoid R] [Archimedean R] {x : M}
@@ -898,7 +898,7 @@ embeddings by adding new elements, the maximal embedding must have the maximal d
 `HahnEmbedding.Partial`. -/
 noncomputable
 def sSupFun {c : Set (Partial seed)} (hc : DirectedOn (· ≤ ·) c) :
-    M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) :=
+    M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧ :=
   LinearPMap.sSup ((·.val) '' c) (hc.mono_comp (by simp))
 
 theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (Partial seed)}
@@ -988,13 +988,13 @@ end HahnEmbedding
 
 /-- **Hahn embedding theorem for an ordered module**
 
-There exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
+There exists a strictly monotone `M →ₗ[K] Lex R⟦FiniteArchimedeanClass M⟧` that maps
 `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
 `HahnEmbedding.Seed K M R` is nonempty. The `HahnEmbedding.Partial` with maximal domain is the
 desired embedding. -/
 theorem hahnEmbedding_isOrderedModule [IsOrderedAddMonoid R] [Archimedean R]
     [h : Nonempty (HahnEmbedding.Seed K M R)] :
-    ∃ f : M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R), StrictMono f ∧
+    ∃ f : M →ₗ[K] Lex R⟦FiniteArchimedeanClass M⟧, StrictMono f ∧
       ∀ (a : M), mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
   obtain ⟨e, hdomain⟩ := HahnEmbedding.Partial.exists_domain_eq_top h.some
   obtain harch := e.orderTop_eq_archimedeanClassMk

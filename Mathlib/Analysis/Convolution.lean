@@ -956,16 +956,16 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
       (hf.aestronglyMeasurable.convolution_integrand_snd L hg.continuous.aestronglyMeasurable)
   have h2 : ∀ x, AEStronglyMeasurable (fun t => L' (f t) (fderiv 𝕜 g (x - t))) μ :=
     hf.aestronglyMeasurable.convolution_integrand_snd L'
-      (hg.continuous_fderiv le_rfl).aestronglyMeasurable
+      (hg.continuous_fderiv one_ne_zero).aestronglyMeasurable
   have h3 : ∀ x t, HasFDerivAt (fun x => g (x - t)) (fderiv 𝕜 g (x - t)) x := fun x t ↦ by
     simpa using
-      (hg.differentiable le_rfl).differentiableAt.hasFDerivAt.comp x
+      (hg.differentiable one_ne_zero).differentiableAt.hasFDerivAt.comp x
         ((hasFDerivAt_id x).sub (hasFDerivAt_const t x))
   let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
   have hK' : IsCompact K' := (hcg.fderiv 𝕜).isCompact.neg.add (isCompact_closedBall x₀ 1)
   apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
   · filter_upwards with t x hx using
-      (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv le_rfl)
+      (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv one_ne_zero)
         (ball_subset_closedBall hx)
   · rw [integrable_indicator_iff hK'.measurableSet]
     exact ((hf.integrableOn_isCompact hK').norm.const_mul _).mul_const _
@@ -998,7 +998,7 @@ theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyInteg
     (hcg : HasCompactSupport g₀) (hg : ContDiff 𝕜 1 g₀) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((f₀ ⋆[L, μ] deriv g₀) x₀) x₀ := by
   convert (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt using 1
-  rw [convolution_precompR_apply L hf (hcg.fderiv 𝕜) (hg.continuous_fderiv le_rfl)]
+  rw [convolution_precompR_apply L hf (hcg.fderiv 𝕜) (hg.continuous_fderiv one_ne_zero)]
   rfl
 
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_left [IsNegInvariant μ]
@@ -1145,7 +1145,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       apply h₀ε
       rw [Prod.dist_eq] at hx
       exact lt_of_lt_of_le (lt_of_le_of_lt (le_max_left _ _) hx) δε
-    have Z := ((hg.differentiableOn le_rfl).differentiableAt N).hasFDerivAt
+    have Z := ((hg.differentiableOn one_ne_zero).differentiableAt N).hasFDerivAt
     have Z' :
         HasFDerivAt (fun x : P × G => (x.1, x.2 - a)) (ContinuousLinearMap.id 𝕜 (P × G)) x := by
       have : (fun x : P × G => (x.1, x.2 - a)) = _root_.id - fun x => (0, a) := by
