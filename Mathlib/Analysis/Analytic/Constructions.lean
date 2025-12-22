@@ -588,7 +588,7 @@ lemma AnalyticWithinAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
   (analyticAt_smul _).comp₂_analyticWithinAt hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f • g) z :=
@@ -980,17 +980,11 @@ theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
   simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
-@[fun_prop]
-theorem AnalyticAt.fun_div {f g : E → 𝕝} {x : E}
-    (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ f x / g x) x := by
-  simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem AnalyticAt.div {f g : E → 𝕝} {x : E}
     (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (f / g) x :=
-  fa.fun_div ga g0
+    AnalyticAt 𝕜 (f / g) x := by
+  simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
