@@ -284,7 +284,7 @@ theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateG
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
     convert (2 • innerSL ℝ).hasTemperateGrowth
-  · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
+  · exact .norm_sq ℝ differentiable_id
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]
     exact le_add_of_nonneg_left (by positivity)

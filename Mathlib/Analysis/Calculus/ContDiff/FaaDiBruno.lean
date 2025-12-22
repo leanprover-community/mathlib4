@@ -1079,8 +1079,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       have J : HasFDerivWithinAt (fun x ↦ q x c.length) (q (f x) c.length.succ).curryLeft
         t (f x) := hg.fderivWithin c.length (cm.trans_lt hm) (f x) (h hx)
       have K : HasFDerivWithinAt f ((continuousMultilinearCurryFin1 𝕜 E F) (p x 1)) s x :=
-        hf.hasFDerivWithinAt (le_trans (mod_cast Nat.le_add_left 1 m)
-          (ENat.add_one_natCast_le_withTop_of_lt hm)) hx
+        hf.hasFDerivWithinAt hm.ne_bot hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
       simp only [B, Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]

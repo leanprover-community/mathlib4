@@ -127,6 +127,6 @@ theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp :
 
 theorem Differentiable.norm_rpow {f : F → E} (hf : Differentiable ℝ f) {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x ↦ ‖f x‖ ^ p) :=
-  contDiff_norm_rpow hp |>.differentiable le_rfl |>.comp hf
+  contDiff_norm_rpow hp |>.differentiable one_ne_zero |>.comp hf
 
 end ContDiffNormPow

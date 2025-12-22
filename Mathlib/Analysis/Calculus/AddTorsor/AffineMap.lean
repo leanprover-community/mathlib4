@@ -34,7 +34,7 @@ theorem contDiff {n : WithTop ℕ∞} (f : V →ᴬ[𝕜] W) : ContDiff 𝕜 n f
   exact contDiff_const
 
 theorem differentiable (f : V →ᴬ[𝕜] W) : Differentiable 𝕜 f :=
-  f.contDiff.differentiable le_rfl
+  f.contDiff.differentiable one_ne_zero
 
 theorem differentiableAt (f : V →ᴬ[𝕜] W) {x : V} : DifferentiableAt 𝕜 f x :=
   f.differentiable x

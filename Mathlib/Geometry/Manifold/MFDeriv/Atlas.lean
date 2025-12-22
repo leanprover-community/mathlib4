@@ -104,7 +104,7 @@ theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.sour
     ContDiffOn 𝕜 1 (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
       (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_rfl (I ((chartAt H x : M → H) x)) mem
+  have B := A.differentiableOn one_ne_zero (I ((chartAt H x : M → H) x)) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -125,7 +125,7 @@ theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e
     ContDiffOn 𝕜 1 (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
       (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_rfl (I x) mem
+  have B := A.differentiableOn one_ne_zero (I x) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
