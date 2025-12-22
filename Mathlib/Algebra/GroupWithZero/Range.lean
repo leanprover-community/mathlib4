@@ -87,9 +87,9 @@ lemma one_mem_valueMonoid : 1 ∈ valueMonoid f := ⟨1, map_one ..⟩
 
 lemma coe_one : (⟨(1 : Bˣ), one_mem_valueMonoid f⟩ : valueMonoid f) = 1 := rfl
 
-lemma mem_valueMonoid_iff {b : Bˣ} : b ∈ valueMonoid f ↔ b ∈ (↑)⁻¹' (range f) := Iff.rfl
+lemma mem_valueMonoid_iff {b : Bˣ} : b ∈ valueMonoid f ↔ b ∈ (↑) ⁻¹' (range f) := Iff.rfl
 
-lemma valueMonoid_eq_closure : valueMonoid f = Submonoid.closure ((↑)⁻¹' (range f)) :=
+lemma valueMonoid_eq_closure : valueMonoid f = Submonoid.closure ((↑) ⁻¹' (range f)) :=
   (valueMonoid f).closure_eq.symm
 
 /-- For a morphism of monoids with zero `f`, this is the smallest subgroup of the invertible
@@ -170,7 +170,7 @@ theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
       obtain ⟨v, hv, b, hb⟩ := hdy
       refine ⟨u * v, by simp [hu, hv], a * b, ?_⟩
       simpa [map_mul, Units.val_mul, ← hb, ← ha] using mul_mul_mul_comm ..
-    | inv c hc hcy  =>
+    | inv c hc hcy =>
       obtain ⟨u, hu, a, ha⟩ := hcy
       exact ⟨a, by simp [← ha, hu], u, by simp [← ha]⟩
   · have hv : f x ≠ 0 := by

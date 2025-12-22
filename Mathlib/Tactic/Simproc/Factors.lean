@@ -64,8 +64,8 @@ theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsH
     Nat.primeFactorsList n = l :=
   let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
   have := List.isChain_iff_pairwise.1 (@List.IsChain.tail _ _ (_ :: _) h₁)
-  (List.eq_of_perm_of_sorted
-    (Nat.primeFactorsList_unique h₃ h₂) this (Nat.primeFactorsList_sorted _)).symm
+  ((Nat.primeFactorsList_unique h₃ h₂).eq_of_pairwise'
+     this (Nat.primeFactorsList_sorted _).pairwise).symm
 
 open Lean Elab Tactic Qq
 
@@ -127,7 +127,7 @@ private partial def evalPrimeFactorsListAux
       pure ⟨q([$ea]), q($eh ▸ FactorsHelper.singleton_self $ea)⟩
     else do
       let eh_a_lt_n : Q(Nat.blt $ea $en = true) :=
-        have : a < n := by cutsat
+        have : a < n := by lia
         (q(Eq.refl true) : Expr)
       let .isNat _ lit ehn_minFac ← evalMinFac.core q($en) q(inferInstance) q($enl) ehn n | failure
       have : $lit =Q $en := ⟨⟩

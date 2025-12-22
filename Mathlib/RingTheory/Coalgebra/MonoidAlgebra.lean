@@ -35,9 +35,9 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
   {X : Type*} [Module R A] [Coalgebra R A]
 
 variable (R A X) in
-instance instCoalgebra : Coalgebra R (MonoidAlgebra A X) := Finsupp.instCoalgebra R X A
+instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
 
-instance instIsCocomm [IsCocomm R A] : IsCocomm R (MonoidAlgebra A X) := Finsupp.instIsCocomm R X A
+instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := Finsupp.instIsCocomm R X A
 
 @[simp]
 lemma counit_single (x : X) (a : A) :

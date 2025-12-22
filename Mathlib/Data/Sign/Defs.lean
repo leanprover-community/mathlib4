@@ -79,10 +79,14 @@ instance : LE SignType :=
 instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor) | exact isFalse (by rintro ⟨_⟩)
 
+set_option backward.privateInPublic true in
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
+set_option backward.privateInPublic true in
 private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
@@ -97,12 +101,16 @@ instance : CommGroupWithZero SignType where
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
 
+set_option backward.privateInPublic true in
 private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_ : b ≤ a) : a = b := by
   cases a <;> cases b <;> trivial
 
+set_option backward.privateInPublic true in
 private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_ : b ≤ c) : a ≤ c := by
   cases a <;> cases b <;> cases c <;> tauto
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : LinearOrder SignType where
   le_refl a := by cases a <;> constructor
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
@@ -202,6 +210,12 @@ theorem neg_eq_zero_iff {a : SignType} : -a = 0 ↔ a = 0 := by decide +revert
 theorem neg_one_lt_one : (-1 : SignType) < 1 :=
   bot_lt_top
 
+@[simp]
+protected theorem neg_le_neg_iff {a b : SignType} : -a ≤ -b ↔ b ≤ a := by decide +revert
+
+@[simp]
+protected theorem neg_lt_neg_iff {a b : SignType} : -a < -b ↔ b < a := by decide +revert
+
 end CaseBashing
 
 section cast
@@ -215,13 +229,13 @@ def cast : SignType → α
   | pos => 1
   | neg => -1
 
-/-- This is a `CoeTail` since the type on the right (trivially) determines the type on the left.
-
-`outParam`-wise it could be a `Coe`, but we don't want to try applying this instance for a
-coercion to any `α`.
+/--
+This can't be a `CoeTail` or `Coe` instance because we don't want it to fire when `SignType` isn't
+involved in the coercion (or `CoeHead` or `CoeOut` because of `outParam`s). The only other
+user-exposed option is `CoeDep` then, which allows us to match on both given and expected type.
 -/
-instance : CoeTail SignType α :=
-  ⟨cast⟩
+instance (s : SignType) : CoeDep SignType s α :=
+  ⟨cast s⟩
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
 lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]

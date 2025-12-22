@@ -150,7 +150,7 @@ theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
     (h_bnd : θ ∈ Set.Icc 0 π) : θ ∈ ({0, π / 3, π / 2, π * (2 / 3), π} : Set ℝ) := by
   rcases niven hθ hcos with h | h | h | h | h <;>
   -- define `h₂` appropriately for each proof branch
-  [ have h₂ := cos_pi;
+  [have h₂ := cos_pi;
     have h₂ : cos (π * (2 / 3)) = -1 / 2 := by
       have := cos_pi_sub (π / 3)
       have := cos_pi_div_three

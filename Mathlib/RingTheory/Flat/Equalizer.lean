@@ -100,6 +100,7 @@ lemma LinearMap.tensorEqLocus_coe (x : M ⊗[R] (LinearMap.eqLocus f g)) :
     (tensorEqLocus S M f g x : M ⊗[R] N) = (eqLocus f g).subtype.lTensor M x := by
   induction x <;> simp_all
 
+set_option backward.privateInPublic true in
 private def LinearMap.tensorKerInv [Module.Flat R M] :
     ker (AlgebraTensorModule.lTensor S M f) →ₗ[S] M ⊗[R] (ker f) :=
   LinearMap.codRestrictOfInjective (LinearMap.ker (AlgebraTensorModule.lTensor S M f)).subtype
@@ -114,6 +115,7 @@ private lemma LinearMap.lTensor_ker_subtype_tensorKerInv [Module.Flat R M]
   rw [← AlgebraTensorModule.coe_lTensor (A := S)]
   simp [LinearMap.tensorKerInv]
 
+set_option backward.privateInPublic true in
 private def LinearMap.tensorEqLocusInv [Module.Flat R M] :
     eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g) →ₗ[S]
       M ⊗[R] (eqLocus f g) :=
@@ -131,6 +133,8 @@ private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R 
   rw [← AlgebraTensorModule.coe_lTensor (A := S)]
   simp [LinearMap.tensorEqLocusInv]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] ker f →ₗ[R] ker (𝟙 ⊗ f)` is an isomorphism. -/
 def LinearMap.tensorKerEquiv [Module.Flat R M] :
     M ⊗[R] LinearMap.ker f ≃ₗ[S] LinearMap.ker (AlgebraTensorModule.lTensor S M f) :=
@@ -153,6 +157,8 @@ lemma LinearMap.lTensor_ker_subtype_tensorKerEquiv_symm [Module.Flat R M]
     (lTensor M (ker f).subtype) ((tensorKerEquiv S M f).symm x) = x :=
   lTensor_ker_subtype_tensorKerInv S M f x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] eq(f, g) →ₗ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an
 isomorphism. -/
 def LinearMap.tensorEqLocusEquiv [Module.Flat R M] :
@@ -186,6 +192,7 @@ variable (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
   (f g : A →ₐ[R] B)
 
+set_option backward.privateInPublic true in
 private def AlgHom.tensorEqualizerAux :
     T ⊗[R] AlgHom.equalizer f g →ₗ[S]
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
@@ -203,6 +210,7 @@ private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) 
   | tmul => rfl
   | add x y hx hy => simp [hx, hy]
 
+set_option backward.privateInPublic true in
 private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerAux S T f g (x * y) =
       AlgHom.tensorEqualizerAux S T f g x *
@@ -211,6 +219,8 @@ private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g
   rw [AlgHom.coe_tensorEqualizerAux]
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The canonical map `T ⊗[R] eq(f, g) →ₐ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)`. -/
 def AlgHom.tensorEqualizer :
     T ⊗[R] AlgHom.equalizer f g →ₐ[S]
@@ -225,6 +235,8 @@ lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x :=
   AlgHom.coe_tensorEqualizerAux S T f g x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `T` is `R`-flat, the canonical map
 `T ⊗[R] eq(f, g) →ₐ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an isomorphism. -/
 def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :

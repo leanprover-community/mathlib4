@@ -164,7 +164,7 @@ lemma η_comp_tensorDec {F G H : C ⊛⥤ V}
 @[reassoc (attr := simp)]
 lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
     (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) (x y : C) :
-   (η F G).app (x , y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
+   (η F G).app (x, y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
   Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
 open LawfulDayConvolutionMonoidalCategoryStruct
@@ -213,7 +213,7 @@ def νNatTrans :
 
 open LawfulDayConvolutionMonoidalCategoryStruct in
 instance : (𝟙_ (C ⊛⥤ V)).functor.IsLeftKanExtension (νNatTrans C V) :=
-  isPointwiseLeftKanExtensionUnitUnit C V (C ⊛⥤ V)|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionUnitUnit C V (C ⊛⥤ V) |>.isLeftKanExtension
 
 lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
     (h : ν C V ≫ α.natTrans.app (𝟙_ C) = ν C V ≫ β.natTrans.app (𝟙_ C)) :

@@ -751,6 +751,7 @@ variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 
 open Primrec
 
+set_option backward.privateInPublic true in
 private def prim : Primcodable (List β) := ⟨H⟩
 
 private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → β × List β → σ}
@@ -766,6 +767,7 @@ private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → �
       .id (encode_iff.2 hf)
   option_some_iff.1 <| this.of_eq fun a => by rcases f a with - | ⟨b, l⟩ <;> simp [encodek]
 
+set_option backward.privateInPublic true in
 private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ × β → σ}
     (hf : haveI := prim H; Primrec f) (hg : Primrec g) (hh : haveI := prim H; Primrec₂ h) :
     Primrec fun a => (f a).foldl (fun s b => h a (s, b)) (g a) := by
@@ -793,10 +795,12 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     simp only [iterate_succ, comp_apply]
     rcases l with - | ⟨b, l⟩ <;> simp [G, IH]
 
+set_option backward.privateInPublic true in
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
   encode_iff.1 (succ.comp <| Primrec₂.natPair.comp (encode_iff.2 fst) (encode_iff.2 snd))
 
+set_option backward.privateInPublic true in
 private theorem list_reverse' :
     haveI := prim H
     Primrec (@List.reverse β) :=
@@ -830,6 +834,9 @@ instance sum : Primcodable (α ⊕ β) :=
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 instance list : Primcodable (List α) :=
   ⟨letI H := Primcodable.prim (List ℕ)
     have : Primrec₂ fun (a : α) (o : Option (List ℕ)) => o.map (List.cons (encode a)) :=
@@ -1028,6 +1035,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
       | zero => rfl
       | succ n IH => simp [IH, H, List.range_succ]
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α × β) → Option β) :=
   (to₂ <| list_rec snd (const none) <|
     to₂ <|
@@ -1038,6 +1046,7 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
   induction ps with simp [List.lookup, *]
   | cons p ps ih => cases ha : a == p.1 <;> simp
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
     (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b)
@@ -1447,6 +1456,7 @@ theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
     simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
   (prec (const 0) (tail (add.comp₂ _ (tail head) head))).of_eq fun v => by
     simp; induction v.head <;> simp [*, Nat.succ_mul]; rw [add_comm]

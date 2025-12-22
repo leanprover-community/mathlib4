@@ -64,13 +64,13 @@ def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
       apply propext
       constructor
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.hom.left, by erw [Category.assoc, Over.w h.hom, w]⟩
+        exact ⟨i ≫ h.hom.hom.left, by rw [Category.assoc, Over.w h.hom.hom, w]⟩
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.inv.left, by erw [Category.assoc, Over.w h.inv, w]⟩)
+        exact ⟨i ≫ h.inv.hom.left, by rw [Category.assoc, Over.w h.inv.hom, w]⟩)
 
 @[simp]
 theorem mk_factors_iff {X Y Z : C} (f : Y ⟶ X) [Mono f] (g : Z ⟶ X) :
-    (Subobject.mk f).Factors g ↔ (MonoOver.mk' f).Factors g :=
+    (Subobject.mk f).Factors g ↔ (MonoOver.mk f).Factors g :=
   Iff.rfl
 
 theorem mk_factors_self (f : X ⟶ Y) [Mono f] : (mk f).Factors f :=
@@ -154,6 +154,16 @@ theorem factorThru_ofLE {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q
     Q.factorThru f (factors_of_le f h w) = P.factorThru f w ≫ ofLE P Q h := by
   ext
   simp
+
+theorem le_of_factors {P Q : Subobject Y} (h : Q.Factors P.arrow) : P ≤ Q :=
+  le_of_comm (Q.factorThru P.arrow h) (Q.factorThru_arrow P.arrow h)
+
+/--
+Given two subobjects `P Q : Subobject Y`, if `P` factors through `Q`, then there is a morphism of
+subobjects from `P` to `Q`.
+-/
+def homOfFactors {P Q : Subobject Y} (h : Q.Factors P.arrow) : P ⟶ Q :=
+  homOfLE <| le_of_factors h
 
 section Preadditive
 

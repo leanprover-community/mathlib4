@@ -130,7 +130,7 @@ theorem isConjRoot_algHom_iff_of_injective {x y : A} {f : A →ₐ[R] B}
   rw [isConjRoot_def, isConjRoot_def, algHom_eq f hf, algHom_eq f hf]
 
 /--
-If `y` is a conjugate root of `x` in some division ring and `f` is a `R`-algebra homomorphism, then
+If `y` is a conjugate root of `x` in some division ring and `f` is an `R`-algebra homomorphism, then
 `f y` is a conjugate root of `f x`.
 -/
 theorem isConjRoot_algHom_iff {A} [DivisionRing A] [Algebra R A]
@@ -201,7 +201,7 @@ conjugate root of `x` if and only if `x` and `y` falls in the same orbit of the 
 group.
 -/
 theorem isConjRoot_iff_orbitRel [Normal K L] {x y : L} :
-    IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y:=
+    IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y :=
   (isConjRoot_iff_exists_algEquiv)
 
 variable [IsDomain S]

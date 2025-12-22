@@ -132,22 +132,16 @@ theorem leftUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
-  ext x
-  dsimp
-  erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
-  rw [map_smul]
-  rfl
+  ext
+  simp [tensorHom, tensorObj, leftUnitor]
 
 theorem rightUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (SemimoduleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
-  ext x
-  dsimp
-  erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
-  rw [map_smul]
-  rfl
+  ext
+  simp [tensorHom, tensorObj, rightUnitor]
 
 theorem triangle (M N : SemimoduleCat.{u} R) :
     (associator M (SemimoduleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =

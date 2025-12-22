@@ -317,7 +317,7 @@ lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.edist u v :=
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
 
-lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius  :=
+lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius :=
   ENat.exists_eq_iInf G.eccent
 
 lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :

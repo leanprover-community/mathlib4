@@ -470,7 +470,7 @@ end
 
 section
 
-variable {J : Type*} [Category J]
+variable {J : Type*} [Category* J]
 
 /-- Constructor for functors to the category of triangles. -/
 @[simps]

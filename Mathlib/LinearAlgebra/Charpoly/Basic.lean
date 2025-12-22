@@ -64,7 +64,7 @@ theorem charpoly_one [StrongRankCondition R] :
   simp [charpoly, Module.finrank_eq_card_chooseBasisIndex, Matrix.charpoly_one]
 
 theorem charpoly_sub_smul (f : Module.End R M) (μ : R) :
-    (f - μ • 1).charpoly  = f.charpoly.comp (X + C μ) := by
+    (f - μ • 1).charpoly = f.charpoly.comp (X + C μ) := by
   simpa [LinearMap.charpoly, smul_eq_mul_diagonal] using Matrix.charpoly_sub_scalar ..
 
 end Basic

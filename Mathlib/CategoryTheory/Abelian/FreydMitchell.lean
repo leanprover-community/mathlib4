@@ -103,19 +103,24 @@ noncomputable instance : Ring (EmbeddingRing C) :=
     IsGrothendieckAbelian.OppositeModuleEmbedding.EmbeddingRing
       (Ind.yoneda (C := (AsSmall.{max u v} C)ᵒᵖ)).rightOp
 
+set_option backward.privateInPublic true in
 variable (C) in
 private def F : C ⥤ AsSmall.{max u v} C :=
   AsSmall.equiv.functor
 
+set_option backward.privateInPublic true in
 variable (C) in
 private noncomputable def G : AsSmall.{max u v} C ⥤ (Ind (AsSmall.{max u v} C)ᵒᵖ)ᵒᵖ :=
   Ind.yoneda.rightOp
 
+set_option backward.privateInPublic true in
 variable (C) in
 private noncomputable def H :
     (Ind (AsSmall.{max u v} C)ᵒᵖ)ᵒᵖ ⥤ ModuleCat.{max u v} (EmbeddingRing C) :=
   IsGrothendieckAbelian.OppositeModuleEmbedding.embedding (G C)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (C) in
 /-- This is the full, faithful and exact embedding `C ⥤ ModuleCat (EmbeddingRing C)`. The fact that
 such a functor exists is called the Freyd-Mitchell embedding theorem.

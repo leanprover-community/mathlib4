@@ -41,14 +41,10 @@ theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ :=
   eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
     Eventually.of_forall fun _ ↦ mem_univ _
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_univ := tangentConeAt_univ
-
 @[gcongr]
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_mono := tangentConeAt_mono
 
 /--
 Given `x ∈ s` and a field extension `𝕜 ⊆ 𝕜'`, the tangent cone of `s` at `x` with
@@ -94,19 +90,13 @@ theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
   refine (tendsto_inf.2 ⟨?_, tendsto_principal.2 ds⟩).mono_right h
   simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
-
 /-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
 theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
   Subset.antisymm (tangentConeAt_mono_nhds h.le) (tangentConeAt_mono_nhds h.ge)
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_congr := tangentConeAt_congr
-
 /-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
 theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
 
 theorem tangentConeAt_of_mem_nhds (h : s ∈ 𝓝 x) : tangentConeAt 𝕜 s x = univ := by
   rw [← univ_inter s, tangentConeAt_inter_nhds h, tangentConeAt_univ]

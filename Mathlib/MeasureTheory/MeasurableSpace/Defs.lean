@@ -253,7 +253,6 @@ section MeasurableSingletonClass
 
 variable [MeasurableSpace α] [MeasurableSingletonClass α]
 
-@[measurability]
 theorem measurableSet_eq {a : α} : MeasurableSet { x | x = a } := .singleton a
 
 @[measurability]
@@ -507,10 +506,9 @@ end MeasureTheory
 
 section MeasurableFunctions
 
-@[measurability]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
@@ -523,7 +521,7 @@ protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf
 
-@[simp, fun_prop, measurability]
+@[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 
@@ -551,7 +549,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
 @[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
+@[fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/

@@ -38,7 +38,7 @@ noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 @[simp, norm_cast]
 theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
     ((s.indicator f a : ℝ≥0) : ℝ) = s.indicator (fun x => ↑(f x)) a :=
-  (toRealHom : ℝ≥0 →+ ℝ).map_indicator _ _ _
+  map_indicator toRealHom _ _ _
 
 @[norm_cast]
 theorem coe_list_sum (l : List ℝ≥0) : ((l.sum : ℝ≥0) : ℝ) = (l.map (↑)).sum :=

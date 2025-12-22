@@ -223,10 +223,10 @@ theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) :
 
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
-  by_contra! hpq
+  by_contra! ⟨hp, hq⟩
   rcases h with ⟨_, _, h⟩
   apply_fun aeval s at h
-  simp only [map_add, map_mul, map_one, hpq.left, hpq.right, mul_zero, add_zero, zero_ne_one] at h
+  simp only [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=
@@ -265,9 +265,7 @@ theorem exists_multiset_roots [DecidableEq R] :
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
       have hdeg : degree (X - C x) ≤ degree p := by
-        rw [degree_X_sub_C, degree_eq_natDegree hp]
-        rw [degree_eq_natDegree hp] at hpd
-        exact WithBot.coe_le_coe.2 (WithBot.coe_lt_coe.1 hpd)
+        simpa using Nat.WithBot.one_le_iff_zero_lt.mpr hpd
       have hdiv0 : p /ₘ (X - C x) ≠ 0 :=
         mt (divByMonic_eq_zero_iff (monic_X_sub_C x)).1 <| not_lt.2 hdeg
       ⟨x ::ₘ t,

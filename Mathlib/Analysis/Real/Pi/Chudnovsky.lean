@@ -26,7 +26,7 @@ but at present we are a long way off.
 * Prove the sum equals `π⁻¹`, as stated using `proof_wanted` below.
 * Show that each imaginary quadratic field of class number 1 (corresponding to Heegner numbers)
   gives a Ramanujan type formula, and that this is the formula coming from 163,
-  with $$j(\frac{1+\sqrt{-163}}{2}) = -640320^3$$, and the other magic constants coming from
+  with `j ((1 + √-163) / 2) = -640320^3`, and the other magic constants coming from
   Eisenstein series.
 
 ## References

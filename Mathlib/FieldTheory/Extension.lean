@@ -158,7 +158,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     · exact (this _ _ <| (hc.total π₁.2 π₂.2).resolve_left h).symm
     refine .inl (le_iff.mpr ⟨?_, algHom_ext_of_eq_adjoin _ (eq _) ?_⟩)
     · rw [eq, eq]; exact adjoin.mono _ _ _ (Set.union_subset_union_left _ h.1)
-    rintro x (hx|hx)
+    rintro x (hx | hx)
     · change (θ π₂).emb (inclusion (ge π₂).1 <| inclusion h.1 ⟨x, hx⟩) =
         (θ π₁).emb (inclusion (ge π₁).1 ⟨x, hx⟩)
       rw [(ge π₁).2, (ge π₂).2, h.2]
@@ -211,9 +211,9 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
   let carrier := x.carrier⟮s⟯.restrictScalars F
   letI : Algebra x.carrier carrier := x.carrier⟮s⟯.toSubalgebra.algebra
   let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
-    ⟨rootOfSplits x.emb.toRingHom h2 I2, by
+    ⟨rootOfSplits h2 (by rwa [degree_map]), by
       rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
-      exact map_rootOfSplits x.emb.toRingHom h2 I2⟩)
+      exact (eval_map _ _).symm.trans (eval_rootOfSplits _ _)⟩)
   ⟨⟨carrier, (@algHomEquivSigma F x.carrier carrier K _ _ _ _ _ _ _ _
       (IsScalarTower.of_algebraMap_eq fun _ ↦ rfl)).symm ⟨x.emb, φ⟩⟩,
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,

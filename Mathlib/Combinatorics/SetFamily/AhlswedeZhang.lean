@@ -110,6 +110,7 @@ variable {α β : Type*}
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
+set_option backward.privateInPublic true in
 private lemma sup_aux [DecidableLE α] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
@@ -119,10 +120,14 @@ private lemma lower_aux [DecidableEq α] :
 
 variable [DecidableLE α] [OrderTop α]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The supremum of the elements of `s` less than `a` if there are some, otherwise `⊤`. -/
 def truncatedSup (s : Finset α) (a : α) : α :=
   if h : a ∈ lowerClosure s then {b ∈ s | a ≤ b}.sup' (sup_aux h) id else ⊤
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
     truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dif_pos h
 
@@ -185,6 +190,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
   [BoundedOrder β] [DecidableLE β] {s t : Finset α} {a : α}
 
+set_option backward.privateInPublic true in
 private lemma inf_aux [DecidableLE α] : a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
@@ -194,10 +200,14 @@ private lemma upper_aux [DecidableEq α] :
 
 variable [DecidableLE α] [BoundedOrder α]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The infimum of the elements of `s` less than `a` if there are some, otherwise `⊥`. -/
 def truncatedInf (s : Finset α) (a : α) : α :=
   if h : a ∈ upperClosure s then {b ∈ s | b ≤ a}.inf' (inf_aux h) id else ⊥
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
     truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dif_pos h
 
@@ -423,7 +433,7 @@ lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜
   cases m
   · cases h𝒜₁.card_pos.ne hm
   obtain ⟨s, 𝒜, hs, rfl, rfl⟩ := card_eq_succ.1 hm.symm
-  have h𝒜 : 𝒜.Nonempty := nonempty_iff_ne_empty.2 (by rintro rfl; simp at h𝒜₃)
+  have h𝒜 : 𝒜.Nonempty := by by_contra! rfl; simp at h𝒜₃
   rw [insert_eq, eq_sub_of_add_eq (supSum_union_add_supSum_infs _ _), singleton_infs,
     supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_cancel_right]
   · exact card_image_le.trans_lt (lt_add_one _)

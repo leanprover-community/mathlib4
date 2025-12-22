@@ -26,18 +26,17 @@ namespace MvPolynomial
 variable {σ R : Type*} [CommRing R] {P : MvPolynomial σ R}
 
 -- Subsumed by `isNilpotent_iff` below.
-private theorem isNilpotent_iff_of_fintype [Fintype σ] :
+private theorem isNilpotent_iff_of_fintype [Finite σ] :
     IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by
   classical
-  refine Fintype.induction_empty_option ?_ ?_ ?_ σ P
+  -- Note: including `Fintype.ofFinite σ` in the entire context interferes with the `rw` below.
+  refine have := Fintype.ofFinite σ; Fintype.induction_empty_option ?_ ?_ ?_ σ P
   · intro α β _ e h₁ P
     rw [← IsNilpotent.map_iff (rename_injective _ e.symm.injective), h₁,
       (Finsupp.equivCongrLeft e).forall_congr_left]
     simp [Finsupp.equivMapDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective]
-  · intro P
-    simp [Unique.forall_iff, ← IsNilpotent.map_iff (isEmptyRingEquiv R PEmpty).injective,
+  · simp [Unique.forall_iff, ← IsNilpotent.map_iff (isEmptyRingEquiv R PEmpty).injective,
       -isEmptyRingEquiv_apply, isEmptyRingEquiv_eq_coeff_zero]
-    rfl
   · intro α _ H P
     obtain ⟨P, rfl⟩ := (optionEquivLeft _ _).symm.surjective P
     simp [IsNilpotent.map_iff (optionEquivLeft _ _).symm.injective,

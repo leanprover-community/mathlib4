@@ -313,6 +313,7 @@ instance : InfSet (Subring R) :=
 theorem coe_sInf (S : Set (Subring R)) : ((sInf S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -320,7 +321,8 @@ theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x
 theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
@@ -588,6 +590,8 @@ abbrev closureCommRingOfComm {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * 
       have := closure_le_centralizer_centralizer s
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
+-- TODO: find a good way to fix the non-terminal simp
+set_option linter.flexible false in
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
   rw [mem_closure_iff] at hx
@@ -924,6 +928,19 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 `subringMap e s` is the induced equivalence between `s` and `s.map e` -/
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
+
+/-- A ring isomorphism `e : R ≃+* S` descends to subrings `s' ≃+* s` provided
+`x ∈ s' ↔ e x ∈ s`. -/
+@[simps!]
+def restrict {R : Type u} {S : Type v} [NonAssocSemiring R] [NonAssocSemiring S]
+    {σR : Type*} {σS : Type*} [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R]
+    [SubsemiringClass σS S] (e : R ≃+* S) (s' : σR) (s : σS) (h : ∀ x, x ∈ s' ↔ e x ∈ s) :
+    s' ≃+* s where
+  __ := RingHom.restrict e _ _ fun _ ↦ (h _).1
+  invFun := RingHom.restrict e.symm _ _ fun y hy ↦ by
+    obtain ⟨x, rfl⟩ := e.surjective y; simp [(h _).2 hy]
+  left_inv y := by simp [← Subtype.val_inj]
+  right_inv x := by simp [← Subtype.val_inj]
 
 end RingEquiv
 

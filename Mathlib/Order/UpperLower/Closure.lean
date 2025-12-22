@@ -350,12 +350,12 @@ end LowerSet
 namespace UpperSet
 variable [Preorder α] {s : UpperSet α} {t : Set α} {a : α}
 
-/-- The biggest upper subset of a upper set `s` disjoint from a set `t`. -/
+/-- The biggest upper subset of an upper set `s` disjoint from a set `t`. -/
 def sdiff (s : UpperSet α) (t : Set α) : UpperSet α where
   carrier := s \ lowerClosure t
   upper' := s.upper.sdiff_of_isLowerSet (lowerClosure t).lower
 
-/-- The biggest upper subset of a upper set `s` not containing an element `a`. -/
+/-- The biggest upper subset of an upper set `s` not containing an element `a`. -/
 def erase (s : UpperSet α) (a : α) : UpperSet α where
   carrier := s \ LowerSet.Iic a
   upper' := s.upper.sdiff_of_isLowerSet (LowerSet.Iic a).lower

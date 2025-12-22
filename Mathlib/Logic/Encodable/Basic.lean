@@ -41,6 +41,9 @@ to make the range of `encode` decidable even when the finiteness of `α` is not.
 
 assert_not_exists Monoid
 
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
+
 open Option List Nat Function
 
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
@@ -472,19 +475,26 @@ section FindA
 
 variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
+set_option backward.privateInPublic true in
 private def good : Option α → Prop
   | some a => p a
   | none => False
 
+set_option backward.privateInPublic true in
 private def decidable_good : DecidablePred (good p) :=
   fun n => by
     cases n <;> unfold good <;> dsimp <;> infer_instance
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 attribute [local instance] decidable_good
 
 open Encodable
 
 variable {p}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=

@@ -24,7 +24,7 @@ This file characterises the covering sieves of the coherent topology.
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [Precoherent C] {X : C}
+variable {C : Type*} [Category* C] [Precoherent C] {X : C}
 
 /--
 For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a sieve of the
@@ -33,7 +33,7 @@ Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is ne
 -/
 theorem coherentTopology.mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
-      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
+      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a))) →
         (S ∈ (coherentTopology C) X) := by
   intro ⟨α, _, Y, π, hπ⟩
   apply (coherentCoverage C).mem_toGrothendieck_sieves_of_superset (R := Presieve.ofArrows Y π)
@@ -87,7 +87,7 @@ A sieve belongs to the coherent topology if and only if it contains a finite
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
     (S ∈ (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
-        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
+        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)))  := by
   constructor
   · intro h
     induction h with
@@ -99,7 +99,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
     | top Y =>
       exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
     | transitive Y R S _ _ a b =>
-      obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
+      obtain ⟨α, w, Y₁, π, ⟨h₁, h₂⟩⟩ := a
       choose β _ Y_n π_n H using fun a => b (h₂ a)
       exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
         EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1),

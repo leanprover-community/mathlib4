@@ -364,7 +364,7 @@ instance isEquivalence_mapArrow (F : C ⥤ D) [IsEquivalence F] :
 
 end Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/

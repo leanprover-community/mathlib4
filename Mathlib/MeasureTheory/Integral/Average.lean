@@ -20,7 +20,7 @@ average w.r.t. the volume, one can omit `∂volume`.
 
 Both have a version for the Lebesgue integral rather than Bochner.
 
-We prove several version of the first moment method: An integrable function is below/above its
+We prove several versions of the first moment method: An integrable function is below/above its
 average on a set of positive measure:
 * `measure_le_setLAverage_pos` for the Lebesgue integral
 * `measure_le_setAverage_pos` for the Bochner integral
@@ -127,13 +127,9 @@ theorem measure_mul_laverage [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
 theorem setLAverage_eq (f : α → ℝ≥0∞) (s : Set α) :
     ⨍⁻ x in s, f x ∂μ = (∫⁻ x in s, f x ∂μ) / μ s := by rw [laverage_eq, restrict_apply_univ]
 
-@[deprecated (since := "2025-04-22")] alias setLaverage_eq := setLAverage_eq
-
 theorem setLAverage_eq' (f : α → ℝ≥0∞) (s : Set α) :
     ⨍⁻ x in s, f x ∂μ = ∫⁻ x, f x ∂(μ s)⁻¹ • μ.restrict s := by
   simp only [laverage_eq', restrict_apply_univ]
-
-@[deprecated (since := "2025-04-22")] alias setLaverage_eq' := setLAverage_eq'
 
 variable {μ}
 
@@ -143,8 +139,6 @@ theorem laverage_congr {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ⨍⁻ x, 
 theorem setLAverage_congr (h : s =ᵐ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in t, f x ∂μ := by
   simp only [setLAverage_eq, setLIntegral_congr h, measure_congr h]
 
-@[deprecated (since := "2025-04-22")] alias setLaverage_congr := setLAverage_congr
-
 theorem setLAverage_congr_fun_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
   simp only [laverage_eq, setLIntegral_congr_fun_ae hs h]
@@ -152,8 +146,6 @@ theorem setLAverage_congr_fun_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x �
 theorem setLAverage_congr_fun (hs : MeasurableSet s) (h : EqOn f g s) :
     ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
   simp only [laverage_eq, setLIntegral_congr_fun hs h]
-
-@[deprecated (since := "2025-04-22")] alias setLaverage_congr_fun := setLAverage_congr_fun
 
 theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ < ∞ := by
   obtain rfl | hμ := eq_or_ne μ 0
@@ -164,8 +156,6 @@ theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ
 
 theorem setLAverage_lt_top : ∫⁻ x in s, f x ∂μ ≠ ∞ → ⨍⁻ x in s, f x ∂μ < ∞ :=
   laverage_lt_top
-
-@[deprecated (since := "2025-04-22")] alias setLaverage_lt_top := setLAverage_lt_top
 
 theorem laverage_add_measure :
     ⨍⁻ x, f x ∂(μ + ν) =
@@ -183,8 +173,6 @@ theorem measure_mul_setLAverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
     μ s * ⨍⁻ x in s, f x ∂μ = ∫⁻ x in s, f x ∂μ := by
   have := Fact.mk h.lt_top
   rw [← measure_mul_laverage, restrict_apply_univ]
-
-@[deprecated (since := "2025-04-22")] alias measure_mul_setLaverage := measure_mul_setLAverage
 
 theorem laverage_union (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ) :
     ⨍⁻ x in s ∪ t, f x ∂μ =
@@ -228,15 +216,11 @@ theorem setLAverage_const (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : ℝ≥0�
   simp only [setLAverage_eq, lintegral_const, Measure.restrict_apply, MeasurableSet.univ,
     univ_inter, div_eq_mul_inv, mul_assoc, ENNReal.mul_inv_cancel hs₀ hs, mul_one]
 
-@[deprecated (since := "2025-04-22")] alias setLaverage_const := setLAverage_const
-
 theorem laverage_one [IsFiniteMeasure μ] [NeZero μ] : ⨍⁻ _x, (1 : ℝ≥0∞) ∂μ = 1 :=
   laverage_const _ _
 
 theorem setLAverage_one (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : ⨍⁻ _x in s, (1 : ℝ≥0∞) ∂μ = 1 :=
   setLAverage_const hs₀ hs _
-
-@[deprecated (since := "2025-04-22")] alias setLaverage_one := setLAverage_one
 
 @[simp]
 theorem laverage_mul_measure_univ (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
@@ -252,8 +236,6 @@ theorem lintegral_laverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → �
 theorem setLIntegral_setLAverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ _x in s, ⨍⁻ a in s, f a ∂μ ∂μ = ∫⁻ x in s, f x ∂μ :=
   lintegral_laverage _ _
-
-@[deprecated (since := "2025-04-22")] alias setLintegral_setLaverage := setLIntegral_setLAverage
 
 end ENNReal
 
@@ -481,8 +463,6 @@ theorem toReal_setLAverage {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.rest
     (⨍⁻ x in s, f x ∂μ).toReal = ⨍ x in s, (f x).toReal ∂μ := by
   simpa [laverage_eq] using toReal_laverage hf hf'
 
-@[deprecated (since := "2025-04-22")] alias toReal_setLaverage := toReal_setLAverage
-
 /-! ### First moment method -/
 
 section FirstMomentReal
@@ -645,8 +625,6 @@ theorem measure_le_setLAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   simp_rw [ae_iff, not_ne_iff]
   exact measure_eq_top_of_lintegral_ne_top hf h
 
-@[deprecated (since := "2025-04-22")] alias measure_le_setLaverage_pos := measure_le_setLAverage_pos
-
 /-- **First moment method**. A measurable function is greater than its mean on a set of positive
 measure. -/
 theorem measure_setLAverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s μ)
@@ -669,23 +647,17 @@ theorem measure_setLAverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   · simp_rw [ae_iff, not_ne_iff]
     exact measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint
 
-@[deprecated (since := "2025-04-22")] alias measure_setLaverage_le_pos := measure_setLAverage_le_pos
-
 /-- **First moment method**. The minimum of a measurable function is smaller than its mean. -/
 theorem exists_le_setLAverage (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : AEMeasurable f (μ.restrict s)) :
     ∃ x ∈ s, f x ≤ ⨍⁻ a in s, f a ∂μ :=
   let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_le_setLAverage_pos hμ hμ₁ hf).ne'
   ⟨x, hx, h⟩
 
-@[deprecated (since := "2025-04-22")] alias exists_le_setLaverage := exists_le_setLAverage
-
 /-- **First moment method**. The maximum of a measurable function is greater than its mean. -/
 theorem exists_setLAverage_le (hμ : μ s ≠ 0) (hs : NullMeasurableSet s μ)
     (hint : ∫⁻ a in s, f a ∂μ ≠ ∞) : ∃ x ∈ s, ⨍⁻ a in s, f a ∂μ ≤ f x :=
   let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_setLAverage_le_pos hμ hs hint).ne'
   ⟨x, hx, h⟩
-
-@[deprecated (since := "2025-04-22")] alias exists_setLaverage_le := exists_setLAverage_le
 
 /-- **First moment method**. A measurable function is greater than its mean on a set of positive
 measure. -/

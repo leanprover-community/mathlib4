@@ -243,6 +243,7 @@ theorem StrictMono.isMax_of_apply (hf : StrictMono f) (ha : IsMax (f a)) : IsMax
     let ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMax ha
 
+@[to_dual existing]
 theorem StrictMono.isMin_of_apply (hf : StrictMono f) (ha : IsMin (f a)) : IsMin a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMin_iff.1 h
@@ -747,6 +748,6 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     by_cases! h : ∀ n, f n ≤ c
     · exact ih h
     · obtain ⟨N, hN⟩ := h
-      replace hN : f N = c + 1 := by specialize hc N; omega
+      replace hN : f N = c + 1 := by specialize hc N; lia
       use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; cutsat
+      specialize mono_f hn; specialize hc n; lia

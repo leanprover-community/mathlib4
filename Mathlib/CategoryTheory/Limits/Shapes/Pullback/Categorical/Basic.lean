@@ -345,6 +345,8 @@ variable {J K : X ⥤ F ⊡ G}
         (associator _ _ _).inv ≫
         whiskerRight e₂.hom G := by cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
     (toCatCommSqOver F G X).mapIso (mkNatIso e₁ e₂ coh) =
@@ -352,6 +354,8 @@ lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
       (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
   cat_disch
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Comparing mkNatIso with the corresponding construction one can deduce from
 `functorEquiv`. -/
 lemma mkNatIso_eq :

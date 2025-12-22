@@ -66,6 +66,7 @@ private structure NameStruct where
   /-- A list of pieces to be joined by `toName`. -/
   components : List String
 
+set_option backward.privateInPublic true in
 /-- Join the components with `_`, or append `_def` if there is only one component. -/
 private def NameStruct.toName (n : NameStruct) : Name :=
   Name.mkStr n.parent <|
@@ -74,6 +75,8 @@ private def NameStruct.toName (n : NameStruct) : Name :=
     | [x] => s!"{x}_def"
     | e => "_".intercalate e
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Coe NameStruct Name where coe := NameStruct.toName
 
 /-- `update nm s isPrefix` adds `s` to the last component of `nm`,
@@ -511,7 +514,7 @@ This is checked by inspecting whether the first character of the remaining part 
 
 We use this variant because the latter is often a different field with an auto-generated name.
 -/
-private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring.Raw := do
+private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option String.Slice := do
   let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
   let flag := ret.toString.toList.head?.elim false Char.isDigit
@@ -543,7 +546,7 @@ partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array
   let projInfo := projs.toList.map fun p ↦ do
     ((← dropPrefixIfNotNumber? proj (p.lastComponentAsString ++ "_")).toString, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
-    throwError "Failed to find constructor {proj.dropRight 1} in structure {structName}."
+    throwError "Failed to find constructor {proj.dropEnd 1} in structure {structName}."
   let newE ← mkProjection e projName
   let newPos := pos ++ (← findProjectionIndices structName projName)
   -- we do this here instead of in a recursive call in order to not get an unnecessary eta-redex
@@ -774,7 +777,7 @@ The returned universe levels are the universe levels of the structure. For the p
 are three cases
 * If the declaration `{StructureName}.Simps.{projectionName}` has been declared, then the value
   of this declaration is used (after checking that it is definitionally equal to the actual
-  projection. If you rename the projection name, the declaration should have the *new* projection
+  projection). If you rename the projection name, the declaration should have the *new* projection
   name.
 * You can also declare a custom projection that is a composite of multiple projections.
 * Otherwise, for every class with the `notation_class` attribute, and the structure has an
@@ -1002,10 +1005,10 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
+  addTermInfo' ref (← mkConstWithLevelParams declName) (isBinder := true) |>.run'
+  if cfg.isSimp then
+    addSimpTheorem simpExtension declName true false .global <| eval_prio default
   TermElabM.run' do
-    _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams declName
-    if cfg.isSimp then
-      addSimpTheorem simpExtension declName true false .global <| eval_prio default
     let attrs ← elabAttrs cfg.attrs
     Elab.Term.applyAttributes declName attrs
 
@@ -1040,6 +1043,8 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
   headStructureEtaReduce reduct
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Derive lemmas specifying the projections of the declaration.
 `nm`: name of the lemma
 If `todo` is non-empty, it will generate exactly the names in `todo`.

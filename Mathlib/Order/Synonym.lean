@@ -18,7 +18,7 @@ This file provides three type synonyms for order theory:
 * `Lex α`: Type synonym of `α` to equip it with its lexicographic order. The precise meaning depends
   on the type we take the lex of. Examples include `Prod`, `Sigma`, `List`, `Finset`.
 * `Colex α`: Type synonym of `α` to equip it with its colexicographic order. The precise meaning
-  depends on the type we take the colex of. Examples include `Finset`.
+  depends on the type we take the colex of. Examples include `Finset`, `DFinsupp`, `Finsupp`.
 
 ## Notation
 
@@ -50,8 +50,8 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
-  h
+instance [h : Nontrivial α] : Nontrivial αᵒᵈ := h
+instance [h : Unique α] : Unique αᵒᵈ := h
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
 def toDual : α ≃ αᵒᵈ :=
@@ -74,6 +74,11 @@ theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
 @[simp]
 theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
   rfl
+
+@[simp] theorem toDual_trans_ofDual : (toDual (α := α)).trans ofDual = Equiv.refl _ := rfl
+@[simp] theorem ofDual_trans_toDual : (ofDual (α := α)).trans toDual = Equiv.refl _ := rfl
+@[simp] theorem toDual_comp_ofDual : (toDual (α := α)) ∘ ofDual = id := rfl
+@[simp] theorem ofDual_comp_toDual : (ofDual (α := α)) ∘ toDual = id := rfl
 
 theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
 

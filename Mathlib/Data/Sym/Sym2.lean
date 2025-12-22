@@ -81,7 +81,7 @@ make `Quotient` functionality work for `α × α`. -/
 def Rel.setoid (α : Type u) : Setoid (α × α) :=
   ⟨Rel α, Rel.is_equivalence⟩
 
-@[simp]
+@[simp, grind =]
 theorem rel_iff' {p q : α × α} : Rel α p q ↔ p = q ∨ p = q.swap := by
   aesop (rule_sets := [Sym2])
 
@@ -115,7 +115,7 @@ protected theorem sound {p p' : α × α} (h : Sym2.Rel α p p') : Sym2.mk p = S
 protected theorem exact {p p' : α × α} (h : Sym2.mk p = Sym2.mk p') : Sym2.Rel α p p' :=
   Quotient.exact (s := Sym2.Rel.setoid α) h
 
-@[simp]
+@[simp, grind =]
 protected theorem eq {p p' : α × α} : Sym2.mk p = Sym2.mk p' ↔ Sym2.Rel α p p' :=
   Quotient.eq' (s₁ := Sym2.Rel.setoid α)
 
@@ -141,6 +141,17 @@ protected def rec {motive : Sym2 α → Sort*}
     (h : (p q : α × α) → (h : Sym2.Rel α p q) → Eq.ndrec (f p) (Sym2.sound h) = f q)
     (z : Sym2 α) : motive z :=
   Quot.rec f h z
+
+/-- A dependent recursion principle for `Sym2` that uses heterogeneous equality. -/
+@[elab_as_elim]
+protected def hrec {motive : Sym2 α → Sort*}
+    (f : (p : α × α) → motive (Sym2.mk p))
+    (h : (a b : α) → f (a, b) ≍ f (b, a))
+    (z : Sym2 α) : motive z :=
+  Quot.hrecOn _ f <| by
+    simp only [rel_iff']
+    rintro _ _ (rfl | rfl)
+    exacts [HEq.rfl, h _ _]
 
 /-- Dependent recursion principal for `Sym2` when the target is a `Subsingleton` type.
 See `Quot.recOnSubsingleton`. -/
@@ -332,7 +343,7 @@ theorem mem_mk_left (x y : α) : x ∈ s(x, y) :=
 theorem mem_mk_right (x y : α) : y ∈ s(x, y) :=
   eq_swap ▸ mem_mk_left y x
 
-@[simp, aesop norm (rule_sets := [Sym2])]
+@[simp, aesop norm (rule_sets := [Sym2]), grind =]
 theorem mem_iff {a b c : α} : a ∈ s(b, c) ↔ a = b ∨ a = c :=
   mem_iff'
 
@@ -503,16 +514,40 @@ lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
-theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@diag α) := by
-  obtain ⟨x, y⟩ := z
-  rintro (rfl : x = y)
-  exact ⟨_, rfl⟩
+theorem isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag :=
+  z.ind Subsingleton.elim
 
+/-- The set of all `Sym2 α` elements on the diagonal. -/
+def diagSet : Set (Sym2 α) :=
+  Set.range diag
+
+@[simp]
+theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag :=
+  ⟨fun ⟨_, h⟩ ↦ h ▸ rfl, z.ind fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩⟩
+
+@[deprecated (since := "2025-11-05")] alias ⟨_, IsDiag.mem_range_diag⟩ := mem_diagSet_iff_isDiag
+
+@[deprecated mem_diagSet_iff_isDiag (since := "2025-11-05")]
 theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
-  ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
+  z.mem_diagSet_iff_isDiag.symm
+
+theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by
+  simp
+
+theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} :=
+  Set.ext mem_diagSet_iff_isDiag
+
+theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
+  congrArg _ diagSet_eq_setOf_isDiag
+
+theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ :=
+  Set.ext fun z ↦ ⟨fun _ ↦ trivial, z.ind fun a b _ ↦ Subsingleton.elim a b ▸ ⟨_, rfl⟩⟩
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
+
+instance diagSet_decidablePred (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagSet α) :=
+  diagSet_eq_setOf_isDiag ▸ IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
@@ -563,6 +598,22 @@ theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ
 
 theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
+
+lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmetric := by
+  ext z
+  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq
+
+lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
+  ext z
+  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq.not
+
+theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
+    Reflexive r ↔ diagSet ⊆ fromRel sym :=
+  ⟨fun hr _ ⟨_, hd⟩ ↦ hd ▸ hr _, fun h _ ↦ h ⟨_, rfl⟩⟩
+
+theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
+    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ :=
+  ⟨fun hr _ hz ⟨_, hd⟩ ↦ hr _ <| fromRel_prop.mp <| hd ▸ hz, fun h _ ha ↦ h ha ⟨_, rfl⟩⟩
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
@@ -668,6 +719,8 @@ section SymEquiv
 
 attribute [local instance] List.Vector.Perm.isSetoid
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private def fromVector : List.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 
@@ -683,6 +736,8 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
           rw [h₁, h₂]
           first | done | constructor }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
 def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   toFun :=
@@ -756,6 +811,8 @@ instance [DecidableEq α] : DecidableEq (Sym2 α) :=
 /-! ### The other element of an element of the symmetric square -/
 
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 A function that gives the other element of a pair given one of the elements.  Used in `Mem.other'`.
 -/
@@ -764,6 +821,8 @@ private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
   if a = z.1 then z.2 else z.1
 
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Get the other element of the unordered pair using the decidable equality.
 This is the computable version of `Mem.other`. -/
 @[aesop norm unfold (rule_sets := [Sym2])]

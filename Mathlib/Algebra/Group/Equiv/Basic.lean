@@ -40,6 +40,15 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
+@[to_additive] theorem MulEquivClass.isDedekindFiniteMonoid_iff [MulOne α] [MulOne β]
+    [MulEquivClass F α β] [OneHomClass F α β] (f : F) :
+    IsDedekindFiniteMonoid α ↔ IsDedekindFiniteMonoid β where
+  mp _ := let e := MulEquivClass.toMulEquiv f
+    let g : β →* α := ⟨⟨e.symm, e.injective <| (e.right_inv ..).trans (map_one f).symm⟩, map_mul _⟩
+    MonoidHom.isDedekindFiniteMonoid_of_injective g e.symm.injective
+  mpr _ := let g : α →* β := ⟨⟨f, map_one f⟩, map_mul f⟩
+    MonoidHom.isDedekindFiniteMonoid_of_injective g (EquivLike.injective f)
+
 namespace MulEquiv
 section Mul
 variable [Mul M] [Mul N] [Mul P]

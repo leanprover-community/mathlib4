@@ -54,19 +54,25 @@ variable [AddMonoid k]
 @[simp]
 theorem eta (f : SkewMonoidAlgebra k G) : ofFinsupp f.toFinsupp = f := rfl
 
+set_option backward.privateInPublic true in
 @[irreducible]
 private def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
+set_option backward.privateInPublic true in
 private def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
 instance : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
@@ -161,8 +167,7 @@ theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) =
 
 lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
     (p + q).support ⊆ p.support ∪ q.support := by
-  simp [support]
-  exact Finsupp.support_add
+  simpa [support] using Finsupp.support_add
 
 end Support
 
@@ -547,15 +552,12 @@ section AddGroup
 
 variable [AddGroup k]
 
-private irreducible_def neg : SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
-  | ⟨a⟩ => ⟨-a⟩
-
-instance : Neg (SkewMonoidAlgebra k G) :=
-  ⟨neg⟩
+@[no_expose] instance : Neg (SkewMonoidAlgebra k G) :=
+  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
 @[simp]
 theorem ofFinsupp_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ :=
-  show _ = neg _ by rw [neg_def]
+  (rfl)
 
 instance : AddGroup (SkewMonoidAlgebra k G) where
   zsmul := zsmulRec
@@ -931,7 +933,7 @@ theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
   classical
   have : (f.sum fun a b ↦ ite (x * a = y) (0 * x • b) 0) = 0 := by simp
   calc
-    ((single x r) *  f).coeff y =
+    ((single x r) * f).coeff y =
         sum f fun a b ↦ ite (x * a = y) (r * x • b) 0 :=
       (coeff_mul _ _ _).trans <| sum_single_index this
     _ = f.sum fun a b ↦ ite (a = z) (r * x • b) 0 := by simp [H]
@@ -1191,7 +1193,7 @@ theorem lhom_ext' {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAl
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Monoid G] [Semiring k] [MulSemiringAction G k]
 open NonUnitalAlgHom
 
-/-- A non_unital `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
+/-- A non-unital `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ := by

@@ -199,7 +199,7 @@ theorem sound {a b : List.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) =
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
-  multiplicity of `a` if a is present in the sym. -/
+  multiplicity of `a` if `a` is present in the sym. -/
 def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α n :=
   ⟨s.val.erase a, (Multiset.card_erase_of_mem h).trans <| s.property.symm ▸ n.pred_succ⟩
 

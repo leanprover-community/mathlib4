@@ -41,7 +41,7 @@ variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 
 variable {p : Ideal R} {P : Ideal S}
 
-/-- If there is an injective map `R/p → S/P` such that following diagram commutes:
+/-- If there is an injective map `R/p → S/P` such that the following diagram commutes:
 ```
 R   → S
 ↓     ↓
@@ -173,7 +173,7 @@ variable {A : Type*} [CommSemiring A] {B : Type*} [CommSemiring B] {C : Type*} [
   (𝔓 : Ideal C) (P : Ideal B) (p : Ideal A)
 
 @[simp]
-theorem under_under : (𝔓.under B).under A  = 𝔓.under A := by
+theorem under_under : (𝔓.under B).under A = 𝔓.under A := by
   simp_rw [comap_comap, ← IsScalarTower.algebraMap_eq]
 
 theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where

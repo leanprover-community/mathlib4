@@ -114,7 +114,7 @@ theorem colimitLimitToLimitColimit_injective :
             simp only [true_and, Finset.mem_univ,
               Finset.mem_image]
             refine ⟨j, ?_⟩
-            simp only ))
+            simp only))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
@@ -377,16 +377,7 @@ noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ li
 theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     colimit.ι (limit F) a ≫ (colimitLimitIso F).hom ≫ limit.π (colimit F.flip) b =
       (limit.π F b).app a ≫ (colimit.ι F.flip a).app b := by
-  dsimp [colimitLimitIso]
-  simp only [Functor.mapCone_π_app, Iso.symm_hom,
-    Limits.limit.conePointUniqueUpToIso_hom_comp_assoc, Limits.limit.cone_π,
-    Limits.colimit.ι_map_assoc, Limits.colimitFlipIsoCompColim_inv_app, assoc,
-    Limits.HasLimit.isoOfNatIso_hom_π]
-  congr 1
-  simp only [← Category.assoc, Iso.comp_inv_eq,
-    Limits.colimitObjIsoColimitCompEvaluation_ι_app_hom,
-    Limits.HasColimit.isoOfNatIso_ι_hom]
-  simp
+  simp [colimitLimitIso]
 
 end
 

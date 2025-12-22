@@ -448,7 +448,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨G, pf_y⟩ := ← Sign.div iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ / $y₂), ⟨G, q(Eq.trans (congr_arg₂ HDiv.hDiv $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.div l₁ l₂, q(NF.div_eq_eval $pf₁ $pf₂ $pf)⟩
-  /- normalize a inversion: `y⁻¹` -/
+  /- normalize an inversion: `y⁻¹` -/
   | ~q($y⁻¹) =>
     let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM y
     let pf_y ← Sign.inv iM y' g
@@ -792,3 +792,4 @@ attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
  We register `field_simp` with the `hint` tactic.
  -/
 register_hint 1000 field_simp
+register_try?_tactic (priority := 1000) field_simp

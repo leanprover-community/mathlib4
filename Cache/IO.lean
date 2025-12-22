@@ -142,7 +142,7 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
 def _root_.Lean.SearchPath.relativize (sp : SearchPath) : IO SearchPath := do
   let pwd ← IO.FS.realPath "."
   let pwd' := pwd.toString ++ System.FilePath.pathSeparator.toString
-  return sp.map fun x => ⟨if x = pwd then "." else x.toString.stripPrefix pwd'⟩
+  return sp.map fun x => ⟨if x = pwd then "." else x.toString.dropPrefix pwd' |>.copy⟩
 
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← (← getSrcSearchPath).relativize
@@ -208,8 +208,8 @@ def validateCurl : IO Bool := do
       let _ := @leOfOrd
       if version >= (7, 81) then return true
       -- TODO: support more platforms if the need arises
-      let arch ← (·.trim) <$> runCmd "uname" #["-m"] false
-      let kernel ← (·.trim) <$> runCmd "uname" #["-s"] false
+      let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
+      let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
       if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
         IO.println s!"curl is too old; downloading more recent version"
         IO.FS.createDirAll IO.CACHEDIR
@@ -249,7 +249,7 @@ def validateLeanTar : IO Unit := do
   let target ← if win then
     pure "x86_64-pc-windows-msvc"
   else
-    let mut arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+    let mut arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
     if arch = "arm64" then arch := "aarch64"
     unless arch ∈ ["x86_64", "aarch64"] do
       throw <| IO.userError s!"unsupported architecture {arch}"

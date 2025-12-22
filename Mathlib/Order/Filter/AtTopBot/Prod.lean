@@ -83,19 +83,19 @@ theorem Tendsto.prod_atTop [Preorder α] [Preorder γ] {f g : α → γ}
   rw [← prod_atTop_atTop_eq]
   exact hf.prod_map_prod_atTop hg
 
-theorem eventually_atBot_prod_self [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)]
+theorem eventually_atBot_prod_self [Nonempty α] [Preorder α] [IsCodirectedOrder α]
     {p : α × α → Prop} : (∀ᶠ x in atBot, p x) ↔ ∃ a, ∀ k l, k ≤ a → l ≤ a → p (k, l) := by
   simp [← prod_atBot_atBot_eq, (@atBot_basis α _ _).prod_self.eventually_iff]
 
-theorem eventually_atTop_prod_self [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)]
+theorem eventually_atTop_prod_self [Nonempty α] [Preorder α] [IsDirectedOrder α]
     {p : α × α → Prop} : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k l, a ≤ k → a ≤ l → p (k, l) :=
   eventually_atBot_prod_self (α := αᵒᵈ)
 
-theorem eventually_atBot_prod_self' [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)]
+theorem eventually_atBot_prod_self' [Nonempty α] [Preorder α] [IsCodirectedOrder α]
     {p : α × α → Prop} : (∀ᶠ x in atBot, p x) ↔ ∃ a, ∀ k ≤ a, ∀ l ≤ a, p (k, l) := by
   simp only [eventually_atBot_prod_self, forall_cond_comm]
 
-theorem eventually_atTop_prod_self' [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)]
+theorem eventually_atTop_prod_self' [Nonempty α] [Preorder α] [IsDirectedOrder α]
     {p : α × α → Prop} : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k ≥ a, ∀ l ≥ a, p (k, l) := by
   simp only [eventually_atTop_prod_self, forall_cond_comm]
 
