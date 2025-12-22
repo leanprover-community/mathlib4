@@ -162,7 +162,7 @@ theorem toReal_spectralRadius_star_mul_self_eq_norm_sq (a : A) :
 theorem sqrt_toReal_spectralRadius_star_mul_self_eq_norm (a : A) :
     (spectralRadius ℂ (a⋆ * a)).toReal.sqrt = ‖a‖ :=
   (Real.sqrt_eq_iff_eq_sq ENNReal.toReal_nonneg (norm_nonneg a)).mpr
-    (spectralRadius_toReal_star_self_mul_self_eq_normSq a)
+    (toReal_spectralRadius_star_mul_self_eq_norm_sq a)
 
 variable [StarModule ℂ A]
 
