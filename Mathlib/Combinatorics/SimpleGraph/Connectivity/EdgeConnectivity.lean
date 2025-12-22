@@ -15,6 +15,7 @@ public import Mathlib.Data.Set.Card
 This file defines k-edge-connectivity for simple graphs.
 
 ## Main definitions
+
 * `SimpleGraph.IsEdgeReachable`: Two vertices are `k`-edge-reachable if they remain reachable after
   removing strictly fewer than `k` edges.
 * `SimpleGraph.IsEdgeConnected`: A graph is `k`-edge-connected if any two vertices are
