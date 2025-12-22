@@ -458,6 +458,8 @@ lemma bijective_toDescentData_map_iff' (M N : F.obj (.mk (op S)))
 
 variable {J : GrothendieckTopology C}
 
+/-- If `F` is a prestack for a Grothendieck topology `J`, and `f` is a covering
+family of morphims, then the functor `F.toDescentData f` is fully faithful. -/
 noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArrows _ f ∈ J S) :
     (F.toDescentData f).FullyFaithful := by
   refine Nonempty.some ((Functor.FullyFaithful.nonempty_iff_map_bijective _).2 (fun M N ↦ ?_))
