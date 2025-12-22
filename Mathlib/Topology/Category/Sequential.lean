@@ -41,7 +41,7 @@ instance : CoeSort Sequential Type* :=
 
 attribute [instance] is_sequential
 
-instance : Category.{u, u+1} Sequential.{u} :=
+instance : Category.{u, u + 1} Sequential.{u} :=
   inferInstanceAs (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory.{u} Sequential.{u} (C(·, ·)) :=
