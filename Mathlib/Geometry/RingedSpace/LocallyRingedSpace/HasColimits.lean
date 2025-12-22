@@ -257,7 +257,7 @@ noncomputable def coequalizerCofork : Cofork f g :=
   Cofork.ofπ (P := coequalizer f g)
     (homMk (coequalizer.π f.toShHom g.toShHom)
       -- Porting note: this used to be automatic
-      (HasCoequalizer.coequalizer_π_stalk_isLocalHom  _ _))
+      (HasCoequalizer.coequalizer_π_stalk_isLocalHom _ _))
     (forgetToSheafedSpace.map_injective (coequalizer.condition f.toShHom g.toShHom))
 
 theorem isLocalHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g) (x)
