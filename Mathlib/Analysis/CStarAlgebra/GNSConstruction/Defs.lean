@@ -9,7 +9,7 @@ public import Mathlib.Analysis.CStarAlgebra.GNSConstruction.PositiveLinearFuncti
 public import Mathlib.Analysis.InnerProductSpace.Completion
 
 /-!
-# Definitions of structures for the GNS construction
+# Definitions of structures for the GNS (Gelfand-Naimark-Segal) construction
 
 In this file we do the "construction" part of the GNS construction. We define a Hilbert space
 as the completion of a quotient of A after we mod out by an appropriately constructed subspace.
@@ -42,10 +42,12 @@ refence used here.
 open scoped ComplexOrder
 --open PositiveLinearFunctional
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A]
-variable (f : A →ₚ[ℂ] ℂ)
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] (f : A →ₚ[ℂ] ℂ)
+
 namespace PositiveLinearMap
-/-- The GNS space on a non-unital C⋆-algebra with a positive linear functional. -/
+/-- The GNS space on a non-unital C⋆-algebra with a positive linear functional. This erases the norm
+on `A`, while remainaing structurally equivalent via the `LinearEquivalence`, `toGNS`.
+-/
 def GNS (_f : A →ₚ[ℂ] ℂ) := A
 
 instance : AddCommGroup (f.GNS) := inferInstanceAs (AddCommGroup A)
@@ -63,7 +65,7 @@ def ofGNS : (f.GNS) ≃ₗ[ℂ] A := (f.toGNS).symm
 variable [StarOrderedRing A]
 instance : StarOrderedRing (f.GNS) := inferInstanceAs (StarOrderedRing A)
 
-instance GNS_Submodule (f : A →ₚ[ℂ] ℂ) : Submodule ℂ (f.GNS) where
+def GNS_Submodule (f : A →ₚ[ℂ] ℂ) : Submodule ℂ (f.GNS) where
   carrier := {a : (f.GNS) | f (star a * a) = 0}
   add_mem' := by
     intro a b ha hb
@@ -86,7 +88,7 @@ theorem GNS_inner_apply (x y : (f.GNS)) :
 /--
 If `GNS_Quotient` is the quotient space that we will complete to produce a Hilbert space.
 -/
-def GNS_Quotient := (f.GNS) ⧸ (f.GNS_Submodule)
+def GNS_Quotient := f.GNS ⧸ f.GNS_Submodule
 
 instance : AddCommGroup (f.GNS_Quotient) := by unfold GNS_Quotient; infer_instance
 instance : Module ℂ (f.GNS_Quotient) := by unfold GNS_Quotient; infer_instance
@@ -128,7 +130,7 @@ theorem GNS_Quotient_inner_right_well_defined :
   rwa [sq_nonpos_iff, norm_eq_zero] at hab
 
 /--
-We deinfe `GNS_Quotient_inner` as the lifting of `f.GNS_Quotient_inner_right` from
+We define `GNS_Quotient_inner` as the lifting of `f.GNS_Quotient_inner_right` from
 `A →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ` to `f.GNS_Quotient →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ`.
 -/
 noncomputable def GNS_Quotient_inner : f.GNS_Quotient →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ :=
