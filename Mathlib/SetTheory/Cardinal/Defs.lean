@@ -474,8 +474,8 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
 def aleph0 : Cardinal.{u} :=
   lift #ℕ
 
-@[inherit_doc]
-scoped notation "ℵ₀" => Cardinal.aleph0
+@[inherit_doc] scoped notation "ℵ₀" => Cardinal.aleph0
+recommended_spelling "aleph0" for "ℵ₀" in [aleph0, «termℵ₀»]
 
 theorem mk_nat : #ℕ = ℵ₀ :=
   (lift_id _).symm
