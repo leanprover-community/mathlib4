@@ -327,14 +327,32 @@ variable {X Y Z X' Y' Z' : C} (iX : X ≅ X') (iY : Y ≅ Y') (iZ : Z ≅ Z')
 
 section
 
+/-- Constructor for natural transformations between cospans. -/
+@[simps]
+def cospanHomMk {F G : WalkingCospan ⥤ C}
+    (z : F.obj .one ⟶ G.obj .one) (l : F.obj .left ⟶ G.obj .left)
+    (r : F.obj .right ⟶ G.obj .right)
+    (hl : F.map inl ≫ z = l ≫ G.map inl := by cat_disch)
+    (hr : F.map inr ≫ z = r ≫ G.map inr := by cat_disch) : F ⟶ G where
+  app := by rintro (_ | _ | _); exacts [z, l, r]
+  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+
+/-- Constructor for natural isomorphisms between cospans. -/
+@[simps!]
+def cospanIsoMk {F G : WalkingCospan ⥤ C}
+    (z : F.obj .one ≅ G.obj .one) (l : F.obj .left ≅ G.obj .left)
+    (r : F.obj .right ≅ G.obj .right)
+    (hl : F.map inl ≫ z.hom = l.hom ≫ G.map inl := by cat_disch)
+    (hr : F.map inr ≫ z.hom = r.hom ≫ G.map inr := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (by rintro (_ | _ | _); exacts [z, l, r])
+    (by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch)
+
 variable {f : X ⟶ Z} {g : Y ⟶ Z} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
 
 /-- Construct an isomorphism of cospans from components. -/
 def cospanExt (wf : iX.hom ≫ f' = f ≫ iZ.hom) (wg : iY.hom ≫ g' = g ≫ iZ.hom) :
     cospan f g ≅ cospan f' g' :=
-  NatIso.ofComponents
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts [iZ, iX, iY])
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp [wf, wg])
+  cospanIsoMk iZ iX iY
 
 variable (wf : iX.hom ≫ f' = f ≫ iZ.hom) (wg : iY.hom ≫ g' = g ≫ iZ.hom)
 
@@ -375,13 +393,32 @@ end
 
 section
 
+/-- Constructor for natural transformations between spans. -/
+@[simps]
+def spanHomMk {F G : WalkingSpan ⥤ C}
+    (z : F.obj .zero ⟶ G.obj .zero) (l : F.obj .left ⟶ G.obj .left)
+    (r : F.obj .right ⟶ G.obj .right)
+    (hl : F.map fst ≫ l = z ≫ G.map fst := by cat_disch)
+    (hr : F.map snd ≫ r = z ≫ G.map snd := by cat_disch) : F ⟶ G where
+  app := by rintro (_ | _ | _); exacts [z, l, r]
+  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+
+/-- Constructor for natural isomorphisms between spans. -/
+@[simps!]
+def spanIsoMk {F G : WalkingSpan ⥤ C}
+    (z : F.obj .zero ≅ G.obj .zero) (l : F.obj .left ≅ G.obj .left)
+    (r : F.obj .right ≅ G.obj .right)
+    (hl : F.map fst ≫ l.hom = z.hom ≫ G.map fst := by cat_disch)
+    (hr : F.map snd ≫ r.hom = z.hom ≫ G.map snd := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (by rintro (_ | _ | _); exacts [z, l, r])
+    (by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch)
+
 variable {f : X ⟶ Y} {g : X ⟶ Z} {f' : X' ⟶ Y'} {g' : X' ⟶ Z'}
 
 /-- Construct an isomorphism of spans from components. -/
 def spanExt (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom) :
     span f g ≅ span f' g' :=
-  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts [iX, iY, iZ])
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp [wf, wg])
+  spanIsoMk iX iY iZ
 
 variable (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom)
 
