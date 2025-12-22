@@ -277,7 +277,7 @@ theorem colimitLimitToLimitColimit_surjective :
       -- then show that are coherent with respect to morphisms in the `j` direction.
       apply Limit.mk
       swap
-      ·-- We construct the elements as the images of the `y j`.
+      · -- We construct the elements as the images of the `y j`.
         exact fun j => F.map (𝟙 j ×ₘ (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j)
       · -- After which it's just a calculation, using `s` and `wf`, to see they are coherent.
         dsimp
