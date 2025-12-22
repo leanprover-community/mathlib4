@@ -19,6 +19,8 @@ public import Mathlib.MeasureTheory.Function.Holder
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
+map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
@@ -79,6 +81,47 @@ theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
   rfl
 
 end MeasureTheory.Measure
+
+namespace SchwartzMap
+
+section MeasurableSpace
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+variable (E F) in
+/-- The canonical embedding of `𝓢(E, F)` into `𝓢'(E, F)` as a continuous linear map. -/
+def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
+    𝓢(E, F) →L[ℂ] 𝓢'(E, F) where
+  toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
+    fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
+
+@[simp]
+theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, ℂ)) :
+    toTemperedDistributionCLM E F μ f g = ∫ (x : E), g x • f x ∂μ := by
+  simp [toTemperedDistributionCLM, comp_apply _]
+
+end MeasurableSpace
+
+section MeasureSpace
+
+variable [MeasureSpace E] [BorelSpace E] [SecondCountableTopology E]
+  [(volume (α := E)).HasTemperateGrowth]
+
+instance instCoeToTemperedDistribution :
+    Coe 𝓢(E, F) 𝓢'(E, F) where
+  coe := toTemperedDistributionCLM E F volume
+
+theorem coe_apply (f : 𝓢(E, F)) (g : 𝓢(E, ℂ)) :
+    (f : 𝓢'(E, F)) g = ∫ (x : E), g x • f x :=
+  toTemperedDistributionCLM_apply_apply volume f g
+
+end MeasureSpace
+
+end SchwartzMap
 
 namespace MeasureTheory.Lp
 
