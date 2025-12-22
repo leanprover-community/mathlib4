@@ -29,7 +29,6 @@ open CategoryTheory Limits Triangulated CochainComplex.mappingCone
 variable (C : Type*) [Category* C] [Preadditive C]
   [HasZeroObject C] [HasBinaryBiproducts C]
 
-
 /-- The functor `ComposableArrows (CochainComplex C ℤ) 1 ⥤ CochainComplex C ℤ` which
 sends a morphism of cochain complexes to its mapping cone. -/
 @[simps]
