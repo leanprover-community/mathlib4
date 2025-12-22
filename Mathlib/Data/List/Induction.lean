@@ -19,24 +19,41 @@ namespace List
 for `l ++ [a]` if it holds for `l`, then it holds for all lists. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 @[elab_as_elim]
-def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
+def reverseRec {motive : List α → Sort*} (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : ∀ l, motive l
+  | [] => nil
+  | a :: l => (dropLast_concat_getLast (cons_ne_nil a l)) ▸
+    append_singleton _ _ ((a :: l).dropLast.reverseRec nil append_singleton)
+  termination_by l => l.length
+
+@[simp]
+theorem reverseRec_nil {motive : List α → Sort*} (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
+    [].reverseRec nil append_singleton = nil := by grind [reverseRec]
+
+@[simp]
+theorem reverseRec_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
+    (xs ++ [x]).reverseRec nil append_singleton =
+    append_singleton xs x (xs.reverseRec nil append_singleton) := by
+  grind [reverseRec, cases List]
+
+/-- Like `reverseRec`, but with the list parameter placed first. -/
+@[elab_as_elim]
+abbrev reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : motive l :=
-  match hxs : l.length with
-  | 0 => eq_nil_of_length_eq_zero hxs ▸ nil
-  | n + 1 => dropLast_concat_getLast (ne_nil_of_length_eq_add_one hxs) ▸
-    append_singleton _ _ (l.dropLast.reverseRecOn nil append_singleton)
-  termination_by l.length
+  reverseRec nil append_singleton l
 
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := by grind [reverseRecOn]
+    reverseRecOn [] nil append_singleton = nil := reverseRec_nil _ _
 
 @[simp]
 theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
     (xs ++ [x]).reverseRecOn nil append_singleton =
-      append_singleton xs x (reverseRecOn xs nil append_singleton) := by grind [reverseRecOn]
+      append_singleton xs x (reverseRecOn xs nil append_singleton) := reverseRec_concat _ _ _ _
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
@@ -49,10 +66,9 @@ def bidirectionalRec {motive : List α → Sort*} (nil : motive []) (singleton :
   | [] => nil
   | [a] => singleton a
   | a :: b :: l =>
-    let l' := dropLast (b :: l)
-    let b' := getLast (b :: l) (cons_ne_nil _ _)
-    cast (by rw [← dropLast_append_getLast (cons_ne_nil b l)]) <|
-      cons_append a l' b' (bidirectionalRec nil singleton cons_append l')
+    (dropLast_concat_getLast (cons_ne_nil b l)) ▸
+    cons_append a ((b :: l).dropLast) ((b :: l).getLast (cons_ne_nil _ _))
+    ((b :: l).dropLast.bidirectionalRec nil singleton cons_append)
 termination_by l => l.length
 
 @[simp]
