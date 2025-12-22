@@ -229,6 +229,9 @@ theorem mk_ne_zero_iff {α : Type u} : #α ≠ 0 ↔ Nonempty α :=
 theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
   mk_ne_zero_iff.2 ‹_›
 
+theorem nonempty_out {x : Cardinal} (h : x ≠ 0) : Nonempty x.out := by
+  rwa [← mk_ne_zero_iff, mk_out]
+
 instance : One Cardinal.{u} :=
   -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 1)⟩
