@@ -145,7 +145,6 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
   exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
 
 open scoped ComplexOrder in
-attribute [local instance] PosMulReflectLE.toMulPosReflectLE in
 theorem IsPositive.isPositive_smul_iff {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (hT' : T ≠ 0) {α : 𝕜} :
     (α • T).IsPositive ↔ 0 ≤ α := by
   refine ⟨fun h ↦ ?_, hT.smul_of_nonneg⟩
