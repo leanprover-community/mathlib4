@@ -45,7 +45,7 @@ lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [Pr
     exact ⟨κ₀ ⊔ κ₁ ⊔ κ', inferInstance, hκ₀, hκ₁,
       isCardinalPresentable_of_isColimit _ hc _ (lt.of_le (by simp))⟩
   obtain ⟨P, _, ⟨_, h⟩⟩ := (IsCardinalLocallyPresentable.of_le C h₀).1
-  obtain ⟨Q, _, hQP, hPQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
+  obtain ⟨Q, _, _, hPQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
   refine ⟨(X : Shrink (Subtype Q)) × (A ⟶ R.obj ((equivShrink _).symm X).val),
     fun X ↦ ((equivShrink _).symm X.fst).val, fun X ↦ X.snd, fun X f ↦ ?_⟩
   obtain ⟨J, _, _, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩ := h X
