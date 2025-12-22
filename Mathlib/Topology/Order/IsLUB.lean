@@ -183,12 +183,8 @@ bounds of the range of the universe. -/
 theorem Dense.lowerBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
     (hf : Continuous f) :
-    lowerBounds (f '' S) = lowerBounds (range f) := by
-  refine subset_antisymm ?_ fun _ => lowerBounds_mono (Set.image_subset_range f S) le_rfl
-  refine subset_trans ?_ fun _ => lowerBounds_mono (hf.range_subset_closure_image_dense hS) le_rfl
-  intro x hx i hi
-  rw [mem_closure_iff_frequently] at hi
-  exact (hi.mono hx).mem_of_closed isClosed_Ici
+    lowerBounds (f '' S) = lowerBounds (range f) :=
+  hS.continuous_upperBounds (α := αᵒᵈ) hf
 
 /-- The supremum of a bounded above, continuous function on a dense set is equal to the supremum on
 the universe. -/
