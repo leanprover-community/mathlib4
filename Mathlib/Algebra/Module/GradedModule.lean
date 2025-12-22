@@ -126,7 +126,7 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
         (DirectSum.mulHom A) =
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
-    from-- `fun a b c ↦ a • (b • c)` as a bundled hom
+    from -- `fun a b c ↦ a • (b • c)` as a bundled hom
       DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]

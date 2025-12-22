@@ -194,7 +194,7 @@ def Pso (i : R) : Matrix (p ⊕ q) (p ⊕ q) R :=
 variable [Fintype p] [Fintype q]
 
 theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, h, one_apply]
@@ -212,7 +212,7 @@ def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
     (Pso p q R i)ᵀ * indefiniteDiagonal p q R * Pso p q R i = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, indefiniteDiagonal, h, one_apply]

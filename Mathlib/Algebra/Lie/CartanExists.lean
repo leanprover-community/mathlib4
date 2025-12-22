@@ -159,7 +159,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   let Q := L ⧸ E
   let r := finrank K E
   -- If `r = finrank K L`, then `E = L`, and the statement is trivial.
-  obtain hr|hr : r = finrank K L ∨ r < finrank K L := (Submodule.finrank_le _).eq_or_lt
+  obtain hr | hr : r = finrank K L ∨ r < finrank K L := (Submodule.finrank_le _).eq_or_lt
   · suffices engel K y ≤ engel K x from hmin Ey this
     suffices engel K x = ⊤ by simp_rw [this, le_top]
     apply LieSubalgebra.toSubmodule_injective
@@ -217,7 +217,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
     -- We consider `z = α • u + x`, and split into the cases `z = 0` and `z ≠ 0`.
     let z := α • u + x'
-    obtain hz₀|hz₀ := eq_or_ne z 0
+    obtain hz₀ | hz₀ := eq_or_ne z 0
     · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · exact Subtype.coe_ne_coe.mp hx₀
@@ -337,7 +337,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   set n := Nat.find hz' with _hn
   have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
-  obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
+  obtain hn₀ | ⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
   · simpa only [hn₀, pow_zero, Module.End.one_apply] using hn
   -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
   -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.

@@ -400,7 +400,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       rw [eq] at hi
       exact hi (Finset.min'_mem _ hs)
     rw [← ih] at hne
-    obtain hlt|hlt := lt_or_gt_of_ne hne
+    obtain hlt | hlt := lt_or_gt_of_ne hne
     · rw [mk_mul_eq_mk_left hlt]
       congr
       apply le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ (by simp))

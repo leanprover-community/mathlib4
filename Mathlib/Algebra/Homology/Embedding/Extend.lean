@@ -156,7 +156,7 @@ lemma extend_d_eq {i' j' : ι'} {i j : ι} (hi : e.f i = i') (hj : e.f j = j') :
 
 lemma extend_d_from_eq_zero (i' j' : ι') (i : ι) (hi : e.f i = i') (hi' : ¬ c.Rel i (c.next i)) :
     (K.extend e).d i' j' = 0 := by
-  obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
+  obtain hj' | ⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
   · exact extend.d_none_eq_zero' _ _ _ hj'
   · rw [extend_d_eq K e hi (e.f_eq_of_r_eq_some hj), K.shape, zero_comp, comp_zero]
     intro hij
@@ -165,7 +165,7 @@ lemma extend_d_from_eq_zero (i' j' : ι') (i : ι) (hi : e.f i = i') (hi' : ¬ c
 
 lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.Rel (c.prev j) j) :
     (K.extend e).d i' j' = 0 := by
-  obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
+  obtain hi' | ⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
   · exact extend.d_none_eq_zero _ _ _ hi'
   · rw [extend_d_eq K e (e.f_eq_of_r_eq_some hi) hj, K.shape, zero_comp, comp_zero]
     intro hij

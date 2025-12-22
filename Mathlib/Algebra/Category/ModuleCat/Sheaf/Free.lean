@@ -148,7 +148,7 @@ lemma map_ιFree_mapFree_hom :
     F.map (ιFree i) ≫ (mapFree F η I).hom = η.hom ≫ ιFree i := by
   have : η.inv ≫ η.hom ≫ ιFree i = (η.inv ≫ F.map (ιFree i)) ≫ (mapFree F η I).hom := by
     simp [← ιFree_mapFree_inv]
-  rw [←Iso.hom_inv_id_assoc η (η.hom ≫ ιFree i)]
+  rw [← Iso.hom_inv_id_assoc η (η.hom ≫ ιFree i)]
   simp [this]
 
 end

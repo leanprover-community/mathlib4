@@ -779,7 +779,7 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
 the inductive construction. -/
 def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · apply eqToIso
     dsimp [mk', mk, of, mkAux]
     rw [id_comp]
@@ -793,7 +793,7 @@ lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
 lemma mk'_d (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').d (n + 2) (n + 1) = (mk'XIso X₀ X₁ d₀ succ' n).hom ≫
       (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).2.1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · dsimp [mk'XIso, mk']
     rw [mk_d_2_1]
     apply mk'_congr_succ'_d
