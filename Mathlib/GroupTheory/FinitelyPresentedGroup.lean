@@ -17,6 +17,11 @@ class IsFinitelyPresented (G : Type*) [Group G] : Prop where
     Function.Surjective f ∧ normalClosureIsFG (MonoidHom.ker f)
 
 lemma isFinitelyPresented_iff {G : Type*} [Group G] :
+  IsFinitelyPresented G ↔ ∃ (S : Set G) (f : FreeGroup S →* G), S.Finite ∧
+  Function.Surjective f ∧ normalClosureIsFG (MonoidHom.ker f) := by
+    sorry
+
+lemma isFinitelyPresented_iff' {G : Type*} [Group G] :
   IsFinitelyPresented G ↔ ∃ (S : Finset G) (f : FreeGroup S →* G),
   Function.Surjective f ∧ normalClosureIsFG (MonoidHom.ker f) := by
     sorry
@@ -24,7 +29,7 @@ lemma isFinitelyPresented_iff {G : Type*} [Group G] :
 variable (G : Type) [Group G] (g : G)
 
 instance [h : IsFinitelyPresented G] : Group.FG G := by
-  rw [isFinitelyPresented_iff] at h
+  rw [isFinitelyPresented_iff'] at h
   rw [Group.fg_iff_exists_freeGroup_hom_surjective]
   obtain ⟨S, f, hfsurj, hkernel⟩ := h
   use S
