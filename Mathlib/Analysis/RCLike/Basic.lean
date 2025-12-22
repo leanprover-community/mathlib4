@@ -969,6 +969,10 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
 
+lemma instMulPosReflectLE : MulPosReflectLE K := PosMulReflectLE.toMulPosReflectLE
+
+scoped[ComplexOrder] attribute [instance] RCLike.instMulPosReflectLE
+
 end Order
 
 section CleanupLemmas
