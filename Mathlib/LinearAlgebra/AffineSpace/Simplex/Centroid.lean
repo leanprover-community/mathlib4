@@ -202,7 +202,7 @@ theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n
   have h : s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := centroid_notMem_affineSpan_compl s i
   exact AffineIndependent.affineIndependent_update_of_notMem_affineSpan s.independent h
 
-@[simp] theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
+theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
     [AffineSpace V₂ P₂] {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) :
     (s.map f hf).centroid = f (s.centroid) := by
@@ -211,7 +211,7 @@ theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n
   · rw [sum_centroidWeights_eq_one_of_card_ne_zero]
     simp
 
-@[simp] theorem centroid_reindex {m n : ℕ} [CharZero k] (s : Simplex k P m)
+theorem centroid_reindex {m n : ℕ} (s : Simplex k P m)
     (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).centroid = s.centroid := by
   rw [centroid, centroid]
@@ -221,7 +221,7 @@ theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n
   subst h_eq
   convert Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
 
-@[simp] theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : AffineSubspace k P)
+theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).centroid = s.centroid := by
@@ -409,7 +409,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
   rw [sum_centroidWeights_eq_one_of_card_ne_zero]
   simp
 
-theorem faceOppositeCentroid_restrict [CharZero k] (s : Simplex k P n)
+@[simp] theorem faceOppositeCentroid_restrict [CharZero k] (s : Simplex k P n)
     (S : AffineSubspace k P) (hS : affineSpan k (Set.range s.points) ≤ S) {i : Fin (n + 1)} :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).faceOppositeCentroid i = s.faceOppositeCentroid i := by
@@ -437,7 +437,7 @@ section median
 def median (s : Simplex k P n) (i : Fin (n + 1)) : AffineSubspace k P :=
   line[k, s.points i, s.faceOppositeCentroid i]
 
-theorem median_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P n)
+@[simp] theorem median_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P n)
     (e : Fin (n + 1) ≃ Fin (m + 1)) :
     (s.reindex e).median = s.median ∘ e.symm := by
   ext i
