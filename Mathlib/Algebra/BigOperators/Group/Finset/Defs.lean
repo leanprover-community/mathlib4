@@ -44,8 +44,7 @@ See the documentation of `to_additive.attr` for more information.
 
 @[expose] public section
 
--- TODO
--- assert_not_exists AddCommMonoidWithOne
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 assert_not_exists IsOrderedMonoid
