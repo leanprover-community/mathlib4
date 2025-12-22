@@ -236,6 +236,10 @@ def Homeomorph.smul (γ : G) : α ≃ₜ α where
 add_decl_doc Homeomorph.vadd
 
 @[to_additive]
+theorem isHomeomorph_smul (c : G) : IsHomeomorph fun x : α ↦ c • x :=
+  (Homeomorph.smul c).isHomeomorph
+
+@[to_additive]
 theorem isOpenMap_smul (c : G) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smul c).isOpenMap
 
@@ -345,6 +349,9 @@ theorem Homeomorph.smulOfNeZero_symm_apply {c : G₀} (hc : c ≠ 0) :
     ⇑(Homeomorph.smulOfNeZero c hc).symm = (c⁻¹ • · : α → α) :=
   rfl
 
+theorem isHomeomorph_smul₀ {c : G₀} (hc : c ≠ 0) : IsHomeomorph fun x : α ↦ c • x :=
+  (Homeomorph.smulOfNeZero c hc).isHomeomorph
+
 theorem isOpenMap_smul₀ {c : G₀} (hc : c ≠ 0) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smulOfNeZero c hc).isOpenMap
 
@@ -430,6 +437,9 @@ nonrec theorem continuous_const_smul_iff (hc : IsUnit c) :
     (Continuous fun x => c • f x) ↔ Continuous f :=
   continuous_const_smul_iff hc.unit
 
+nonrec theorem isHomeomorph_smul (hc : IsUnit c) : IsHomeomorph fun x : α ↦ c • x :=
+  isHomeomorph_smul hc.unit
+
 nonrec theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
   isOpenMap_smul hc.unit
 
@@ -439,6 +449,21 @@ nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c �
 nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
     c • s ∈ 𝓝 (c • a) ↔ s ∈ 𝓝 a :=
   smul_mem_nhds_smul_iff hc.unit
+
+theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
+    [SMul S β] (f : α →[S] β) [TopologicalSpace β] (hf : IsQuotientMap f)
+    (c : S) (hc : IsUnit (c • 1 : M)) : IsQuotientMap (c • · : β → β) :=
+  hf.of_comp_isQuotientMap <| by convert hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
+
+theorem isQuotientMap_nsmul {M β} [Semiring M] [AddCommMonoid α] [Module M α]
+    [ContinuousConstSMul M α] [AddMonoid β] (f : α →+ β) [TopologicalSpace β]
+    (hf : IsQuotientMap f) (n : ℕ) (hc : IsUnit (n : M)) : IsQuotientMap (n • · : β → β) :=
+  isQuotientMap_smul (M := M) ⟨f, map_nsmul f⟩ hf _ <| by rwa [nsmul_one]
+
+theorem isQuotientMap_zsmul {M β} [Ring M] [AddCommGroup α] [Module M α]
+    [ContinuousConstSMul M α] [AddGroup β] (f : α →+ β) [TopologicalSpace β]
+    (hf : IsQuotientMap f) (n : ℤ) (hc : IsUnit (n : M)) : IsQuotientMap (n • · : β → β) :=
+  isQuotientMap_smul (M := M) ⟨f, map_zsmul f⟩ hf _ <| by rwa [zsmul_one n]
 
 end IsUnit
 

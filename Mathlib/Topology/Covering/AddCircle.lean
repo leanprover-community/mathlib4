@@ -5,7 +5,7 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Instances.AddCircle.Defs
 
@@ -41,35 +41,38 @@ section Field
 
 open Topology
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace ℚ 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  (p : 𝕜)
-
 open DistribMulAction
 
-theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : n ≠ 0) :
-    IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker := by
-  refine IsQuotientMap.isAddQuotientCoveringMap_of_isDiscrete_ker_addMonoidHom
-    (f := toAddMonoidHom ..) ?_ (Set.Finite.isDiscrete ?_) rfl
-  · /- To show that (n • ·) on AddCircle p is a quotient map, it suffices to show
-      its composition with ℝ → AddCircle p is a quotient map. -/
-    apply IsQuotientMap.of_comp (f := ((↑) : 𝕜 → _)) continuous_quotient_mk' (continuous_zsmul n)
-    /- This composition is equal to the composition with (n • ·) on ℝ (a homeomorphism)
-      and the quotient map ℝ → AddCircle p. -/
-    convert isQuotientMap_quotient_mk'.comp (affineHomeomorph (n : 𝕜) 0 (mod_cast hn)).isQuotientMap
-    ext x
-    simp_rw [Function.comp_apply, affineHomeomorph_apply, add_zero, ← zsmul_eq_mul]
-    rfl
-  rw [AddMonoidHom.coe_ker, Set.preimage, ← n.sign_mul_natAbs]
-  simp_rw [toAddMonoidHom_apply, Set.mem_singleton_iff]
-  obtain neg | pos := hn.lt_or_gt
-  on_goal 1 => simp_rw [n.sign_eq_neg_one_of_neg neg, neg_mul, one_mul, neg_smul, neg_eq_zero]
-  on_goal 2 => rw [n.sign_eq_one_of_pos pos, one_mul]
-  all_goals simpa using finite_torsion p (n.natAbs_pos.mpr hn)
+variable {𝕜 : Type*} [TopologicalSpace 𝕜] [Ring 𝕜] [IsTopologicalRing 𝕜]
+variable (p : 𝕜) [T0Space (AddCircle p)]
+/- This instance can be supplied from:
+- `[NormedSpace ℚ 𝕜]` (with import `Mathlib.Analysis.Normed.Module.Basic`), or
+- `[LinearOrder 𝕜] [IsOrderedMonoid 𝕜] [OrderTopology 𝕜]`
+  (with import `Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete`)
+and `𝕜 := ℝ` satisfies both. -/
 
-theorem isAddQuotientCoveringMap_nsmul {n : ℕ} (hn : n ≠ 0) :
+theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : IsUnit (n : 𝕜)) :
+    IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker := by
+  refine hn.isQuotientMap_zsmul (QuotientAddGroup.mk' _) isQuotientMap_quotient_mk'
+    |>.isAddQuotientCoveringMap_of_isDiscrete_ker_addMonoidHom (f := toAddMonoidHom ..)
+    (Set.Finite.isDiscrete <| finite_torsion_of_isSMulRegular_int _ _ fun _ ↦ ?_)
+  simp_rw [zsmul_eq_mul]
+  apply hn.isSMulRegular 𝕜
+
+theorem isAddQuotientCoveringMap_nsmul {n : ℕ} (hn : IsUnit (n : 𝕜)) :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker := by
   convert isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
   all_goals ext; simp
+
+theorem isAddQuotientCoveringMap_zsmul_of_ne_zero [Algebra ℚ 𝕜] {n : ℤ} (hn : n ≠ 0) :
+    IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker :=
+  isAddQuotientCoveringMap_zsmul p (n := n) <| by
+    convert (Int.cast_ne_zero.mpr hn).isUnit.map (algebraMap ℚ 𝕜); simp
+
+theorem isAddQuotientCoveringMap_nsmul_of_ne_zero [Algebra ℚ 𝕜] {n : ℕ} (hn : n ≠ 0) :
+    IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker :=
+  isAddQuotientCoveringMap_nsmul p (n := n) <| by
+    convert (Nat.cast_ne_zero.mpr hn).isUnit.map (algebraMap ℚ 𝕜); simp
 
 end Field
 
