@@ -154,10 +154,10 @@ def closedCounit (X : ∀ i, C i) : ihom X ⋙ tensorLeft X ⟶ 𝟭 (∀ i, C i
 a pointwise closed monoidal structure. -/
 @[simps]
 instance monoidalClosed : MonoidalClosed (∀ i, C i) where
-    closed X := {
-  rightAdj := ihom X
-  adj.unit := closedUnit X
-  adj.counit := closedCounit X }
+  closed X := {
+    rightAdj := ihom X
+    adj.unit := closedUnit X
+    adj.counit := closedCounit X }
 
 end Closed
 
