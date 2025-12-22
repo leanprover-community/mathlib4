@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Basic facts about real (semi)normed spaces
@@ -158,23 +157,5 @@ theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
 @[simp]
 theorem frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
-
-lemma Metric.diam_sphere_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (sphere x r) = 2 * r := by
-  apply le_antisymm
-    (diam_mono sphere_subset_closedBall isBounded_closedBall |>.trans <| diam_closedBall hr)
-  obtain ⟨y, hy⟩ := exists_ne (0 : E)
-  calc
-    2 * r = dist (x + r • ‖y‖⁻¹ • y) (x - r • ‖y‖⁻¹ • y) := by
-      simp [dist_eq_norm, ← two_nsmul, ← smul_assoc, norm_smul, abs_of_nonneg hr, mul_assoc, hy]
-    _ ≤ diam (sphere x r) := by
-      apply dist_le_diam_of_mem isBounded_sphere <;> simp [norm_smul, hy, abs_of_nonneg hr]
-
-lemma Metric.diam_closedBall_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (closedBall x r) = 2 * r :=
-  le_antisymm (diam_closedBall hr) <|
-    diam_sphere_eq x hr |>.symm.le.trans <| diam_mono sphere_subset_closedBall isBounded_closedBall
-
-lemma Metric.diam_ball_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (ball x r) = 2 * r := by
-  if hr' : r = 0 then simp [hr'] else
-  rw [← diam_closure, closure_ball _ hr', diam_closedBall_eq _ hr]
 
 end Normed
