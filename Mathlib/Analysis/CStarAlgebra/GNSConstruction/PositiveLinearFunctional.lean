@@ -37,7 +37,7 @@ open Complex
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 variable (f : A →ₚ[ℂ] ℂ)
 
-namespace PositiveLinearFunctional
+namespace PositiveLinearMap
 
 /--
 If `f` is a positive linear functional and `a` is self-adjoint, then `f a` is a real number.
@@ -100,4 +100,4 @@ lemma maps_zero_prod_to_zero
   norm_cast at hab
   exact (_root_.sq_nonpos_iff ‖f (star a * b)‖).mp hab
 
-end PositiveLinearFunctional
+end PositiveLinearMap

@@ -20,12 +20,14 @@ but they are described below for the sake of clarity and completeness.
 
 ## Main results
 
-- `GNS f` or `f.GNS`: a type synonym of `A` that "forgets" the norm of `A` and bundles in a fixed
+- `f.GNS` : a type synonym of `A` that "forgets" the norm of `A` and bundles in a fixed
   linear functional `f` so that we can construct an inner product and inner product-induced norm.
-- `N`: the subspace of `A` defined as all elements `a : A` for which `f (star a * a) = 0`.
-- `sq` : a semi-inner product that we will use to define a proper inner product on `A / N f`.
-- `A_mod_N` : the quotient space that we will complete to produce a Hilbert space.
-- `H` : the Hilbert space that we construct, parameterized by positive linear functional, `f`.
+- `f.GNS_Submodule`: the subspace of `A` defined as all elements `a : A` for which
+  `f (star a * a) = 0`.
+- `f.GNS_Quotient` : the quotient space of `(f.GNS) ⧸ (f.GNS_Submodule)`. We complete this space
+  with respect to its inner product-induced norm to produce `f.GNS_HilbertSpace`.
+- `f.GNS_Quotient_inner` : the inner product on `f.GNS_Quotient`.
+- `f.GNS_HilbertSpace` : the Hilbert space that we construct as the completion of `f.GNS_Quotient`.
 
 ## References
 
@@ -38,7 +40,7 @@ refence used here.
 
 @[expose] public section
 open scoped ComplexOrder
-open PositiveLinearFunctional
+--open PositiveLinearFunctional
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A]
 variable (f : A →ₚ[ℂ] ℂ)
@@ -46,23 +48,23 @@ namespace PositiveLinearMap
 /-- The GNS space on a non-unital C⋆-algebra with a positive linear functional. -/
 def GNS (_f : A →ₚ[ℂ] ℂ) := A
 
-instance : AddCommGroup (GNS f) := inferInstanceAs (AddCommGroup A)
-instance : Module ℂ (GNS f) := inferInstanceAs (Module ℂ A)
-instance : NonUnitalRing (GNS f) := inferInstanceAs (NonUnitalRing A)
-instance : PartialOrder (GNS f) := inferInstanceAs (PartialOrder A)
-instance : Ring (GNS f) := inferInstanceAs (Ring A)
+instance : AddCommGroup (f.GNS) := inferInstanceAs (AddCommGroup A)
+instance : Module ℂ (f.GNS) := inferInstanceAs (Module ℂ A)
+instance : NonUnitalRing (f.GNS) := inferInstanceAs (NonUnitalRing A)
+instance : PartialOrder (f.GNS) := inferInstanceAs (PartialOrder A)
+instance : Ring (f.GNS) := inferInstanceAs (Ring A)
 
 /-- The map from the C⋆-algebra to the GNS space, as a linear equivalence. -/
-def toGNS : A ≃ₗ[ℂ] (GNS f) := LinearEquiv.refl ℂ _
+def toGNS : A ≃ₗ[ℂ] (f.GNS) := LinearEquiv.refl ℂ _
 
 /-- The map from the GNS space to the C⋆-algebra, as a linear equivalence. -/
-def ofGNS : (GNS f) ≃ₗ[ℂ] A := (toGNS f).symm
+def ofGNS : (f.GNS) ≃ₗ[ℂ] A := (f.toGNS).symm
 
 variable [StarOrderedRing A]
-instance : StarOrderedRing (GNS f) := inferInstanceAs (StarOrderedRing A)
+instance : StarOrderedRing (f.GNS) := inferInstanceAs (StarOrderedRing A)
 
-instance N (f : A →ₚ[ℂ] ℂ) : Submodule ℂ (GNS f) where
-  carrier := {a : (GNS f) | f (star a * a) = 0}
+instance GNS_Submodule (f : A →ₚ[ℂ] ℂ) : Submodule ℂ (f.GNS) where
+  carrier := {a : (f.GNS) | f (star a * a) = 0}
   add_mem' := by
     intro a b ha hb
     rw [Set.mem_setOf_eq] at *
@@ -72,84 +74,93 @@ instance N (f : A →ₚ[ℂ] ℂ) : Submodule ℂ (GNS f) where
     rw [Set.mem_setOf_eq] at hx
     simp [hx]
 
-noncomputable def sq : -- Code from Eric Wieser
-  (GNS f) →ₗ⋆[ℂ] (GNS f) →ₗ[ℂ] ℂ :=  (LinearMap.mul ℂ (GNS f)).comp
-    (starLinearEquiv ℂ (A := (GNS f)) : (GNS f) →ₗ⋆[ℂ] (GNS f))|>.compr₂ₛₗ (toLinearMap f)
+noncomputable def GNS_inner :
+  (f.GNS) →ₗ⋆[ℂ] (f.GNS) →ₗ[ℂ] ℂ :=  (LinearMap.mul ℂ (f.GNS)).comp
+    (starLinearEquiv ℂ (A := (f.GNS)) : (f.GNS) →ₗ⋆[ℂ] (f.GNS))|>.compr₂ₛₗ (f.toLinearMap)
 
 omit [StarOrderedRing A] in
 @[simp]
-theorem sq_apply (x y : (GNS f)) : -- Code from Eric Wieser
-  sq f x y = f (star x * y) := rfl
+theorem GNS_inner_apply (x y : (f.GNS)) :
+  f.GNS_inner x y = f (star x * y) := rfl
 
 /--
-If `A_mod_N` is the quotient space that we will complete to produce a Hilbert space.
+If `GNS_Quotient` is the quotient space that we will complete to produce a Hilbert space.
 -/
-def A_mod_N := (GNS f) ⧸ (N f)
+def GNS_Quotient := (f.GNS) ⧸ (f.GNS_Submodule)
 
-instance : AddCommGroup (A_mod_N f) := by unfold A_mod_N; infer_instance
-instance : Module ℂ (A_mod_N f) := by unfold A_mod_N; infer_instance
+instance : AddCommGroup (f.GNS_Quotient) := by unfold GNS_Quotient; infer_instance
+instance : Module ℂ (f.GNS_Quotient) := by unfold GNS_Quotient; infer_instance
 
 /--
-This theorem allows us to extend `sq` from `A → A → ℂ` to `A → N f → ℂ`
+This theorem allows us to extend `GNS_inner` from `f.GNS →ₗ⋆[ℂ] f.GNS →ₗ[ℂ] ℂ` to
+`A →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ`
 -/
-theorem sq_well_defined (a : (GNS f)) : N f ≤ LinearMap.ker ((sq f a)) := by
+theorem GNS_inner_well_defined (a : (f.GNS)) :
+    f.GNS_Submodule ≤ LinearMap.ker ((f.GNS_inner a)) := by
   intro b bh
-  have hab := induced_inner_norm_sq_self_le f a b
+  have hab := f.induced_inner_norm_sq_self_le a b
   rw [bh, mul_zero] at hab
   norm_cast at hab
   rwa [sq_nonpos_iff, norm_eq_zero] at hab
 
 /--
-This defines and extension of `sq` from `A → A → ℂ` to `A →ₗ⋆[ℂ] A ⧸ N f →ₗ[ℂ] ℂ`.
+This defines and extension of `GNS_inner` from `f.GNS →ₗ⋆[ℂ] f.GNS →ₗ[ℂ] ℂ`
+to `A →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ`.
 -/
-noncomputable def half_sq :
-  A →ₗ⋆[ℂ] (GNS f) ⧸ N f →ₗ[ℂ] ℂ where
-  toFun p := Submodule.liftQ (N f) (sq f p) (sq_well_defined f p)
-  map_add' a b := by simp only [map_add]; ext x; simp
-  map_smul' a b := by ext x; simp
+noncomputable def GNS_Quotient_inner_right :
+  A →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ where
+  toFun p := Submodule.liftQ (f.GNS_Submodule) (f.GNS_inner p) (f.GNS_inner_well_defined p)
+  map_add' _ _ := by simp only [GNS_Quotient, map_add]; ext; simp
+  map_smul' _ _ := by simp only [GNS_Quotient, LinearMap.map_smulₛₗ]; ext; simp
 
 /--
-This allows us to lift `half_sq` from `A →ₗ⋆[ℂ] A ⧸ N f →ₗ[ℂ] ℂ` to
-`A / N f →ₗ⋆[ℂ] A ⧸ N f →ₗ[ℂ] ℂ`.
+This allows us to lift `f.GNS_Quotient_inner_right` from `A →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ` to
+`f.GNS_Quotient →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ`.
 -/
-theorem half_sq_well_defined : N f ≤ LinearMap.ker (half_sq f) := by
+theorem GNS_Quotient_inner_right_well_defined :
+    f.GNS_Submodule ≤ LinearMap.ker (f.GNS_Quotient_inner_right) := by
   intro a ah
-  change Submodule.liftQ (N f) (sq f a) (sq_well_defined f a) = 0
+  change Submodule.liftQ (f.GNS_Submodule) (f.GNS_inner a) (f.GNS_inner_well_defined a) = 0
   ext b
-  have hab := induced_inner_norm_sq_self_le f a b
+  have hab := f.induced_inner_norm_sq_self_le a b
   rw [ah, zero_mul] at hab
   norm_cast at hab
   rwa [sq_nonpos_iff, norm_eq_zero] at hab
 
 /--
-We deinfe `inner_f` as the lifting of `half_sq` from `A →ₗ⋆[ℂ] A ⧸ N f →ₗ[ℂ] ℂ` to
-`A / N f →ₗ⋆[ℂ] A ⧸ N f →ₗ[ℂ] ℂ`.
+We deinfe `GNS_Quotient_inner` as the lifting of `f.GNS_Quotient_inner_right` from
+`A →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ` to `f.GNS_Quotient →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ`.
 -/
-noncomputable def inner_f := Submodule.liftQ (N f) (half_sq f) (half_sq_well_defined f)
+noncomputable def GNS_Quotient_inner : f.GNS_Quotient →ₗ⋆[ℂ] f.GNS_Quotient →ₗ[ℂ] ℂ :=
+  Submodule.liftQ (f.GNS_Submodule) (f.GNS_Quotient_inner_right)
+    (f.GNS_Quotient_inner_right_well_defined)
 
 /--
-When elments of `A / N f` are constructed from elements of `A`, `inner_f` simplifies to `sq`.
+When elments of `f.GNS_Quotient` are constructed from elements of `A`, `GNS_Quotient_inner`
+simplifies to `GNS_inner`.
 -/
 @[simp]
-theorem inner_f_def (a b : (GNS f)) :
-  ((inner_f f) (Submodule.Quotient.mk a)) (Submodule.Quotient.mk b) = sq f a b := by rfl
+theorem GNS_Quotient_inner_def (a b : (f.GNS)) :
+  ((f.GNS_Quotient_inner) (Submodule.Quotient.mk a)) (Submodule.Quotient.mk b) =
+    f.GNS_inner a b := by rfl
 
 /--
-`A / N f` is an inner product space with `inner_f` as its inner product.
+`f.GNS_Quotient` is an inner product space with `f.GNS_Quotient_inner` as its inner product.
 -/
-noncomputable instance A_mod_N_innerProd_space : InnerProductSpace.Core ℂ (A_mod_N f) where
-  inner a b := inner_f f a b
+noncomputable instance GNS_Quotient_InnerProductSpace :
+    InnerProductSpace.Core ℂ (f.GNS_Quotient) where
+  inner a b := f.GNS_Quotient_inner a b
   conj_inner_symm a b := by
     induction a using Submodule.Quotient.induction_on with | _ a
     induction b using Submodule.Quotient.induction_on with | _ b
-    simp only [sq_apply, inner_f_def f a b]
+    simp only [GNS_inner_apply, f.GNS_Quotient_inner_def a b]
     change star (f (star b * a)) = f (star a * b)
     rw [← map_star]
     simp
   re_inner_nonneg a := by
     induction a using Submodule.Quotient.induction_on with | _ a
-    have zeroleq : 0 ≤ f (star a * a) := PositiveLinearMap.map_nonneg f (star_mul_self_nonneg a)
-    have := re_of_self_star_self f (star a)
+    have zeroleq : 0 ≤ f (star a * a) := f.map_nonneg (star_mul_self_nonneg a)
+    have := f.re_of_self_star_self (star a)
     rw [star_star] at this
     rw [← this] at zeroleq
     simp [Complex.zero_le_real.mp zeroleq]
@@ -157,29 +168,33 @@ noncomputable instance A_mod_N_innerProd_space : InnerProductSpace.Core ℂ (A_m
   smul_left a b c := by simp
   definite a := by
     induction a using Submodule.Quotient.induction_on
-    exact (Submodule.Quotient.mk_eq_zero (N f)).mpr
+    exact (Submodule.Quotient.mk_eq_zero (f.GNS_Submodule)).mpr
 
-noncomputable instance : NormedAddCommGroup (A_mod_N f) :=
-  InnerProductSpace.Core.toNormedAddCommGroup (cd := A_mod_N_innerProd_space f)
-noncomputable instance : InnerProductSpace ℂ (A_mod_N f) :=
-  InnerProductSpace.ofCore (A_mod_N_innerProd_space f).toCore
-noncomputable instance : NormedSpace ℂ (A_mod_N f) := by infer_instance
+noncomputable instance : NormedAddCommGroup (f.GNS_Quotient) :=
+  InnerProductSpace.Core.toNormedAddCommGroup (cd := f.GNS_Quotient_InnerProductSpace)
+noncomputable instance : InnerProductSpace ℂ (f.GNS_Quotient) :=
+  InnerProductSpace.ofCore (f.GNS_Quotient_InnerProductSpace).toCore
+noncomputable instance : NormedSpace ℂ (f.GNS_Quotient) := by infer_instance
 
 /--
-The Hilbert space constructed from `f` is `H`. It is the closure under the inner product-induced
-norm of `A / N f`.
+The Hilbert space constructed from `f` is `GNS_HilbertSpace`. It is the closure under the inner
+product-induced norm of `f.GNS_Quotient`.
 -/
-def H := UniformSpace.Completion (A_mod_N f)
+def GNS_HilbertSpace := UniformSpace.Completion (f.GNS_Quotient)
 
-noncomputable instance : UniformSpace (H f) := by unfold H; infer_instance
-instance : CompleteSpace (H f) := by unfold H; infer_instance
-noncomputable instance : NormedAddCommGroup (H f) := by unfold H; infer_instance
-noncomputable instance : InnerProductSpace ℂ (H f) := by unfold H; infer_instance
-instance : HilbertSpace ℂ (H f) where
+noncomputable instance : UniformSpace (f.GNS_HilbertSpace) := by
+  unfold GNS_HilbertSpace; infer_instance
+instance : CompleteSpace (f.GNS_HilbertSpace) := by
+  unfold GNS_HilbertSpace; infer_instance
+noncomputable instance : NormedAddCommGroup (f.GNS_HilbertSpace) := by
+  unfold GNS_HilbertSpace; infer_instance
+noncomputable instance : InnerProductSpace ℂ (f.GNS_HilbertSpace) := by
+  unfold GNS_HilbertSpace; infer_instance
+instance : HilbertSpace ℂ (f.GNS_HilbertSpace) where
 
 @[simp]
-theorem inner_f_apply_on_quot_mk (a : (GNS f)) (b : (GNS f)) :
-  (A_mod_N_innerProd_space f).inner (Submodule.Quotient.mk a) (Submodule.Quotient.mk b)
+theorem GNS_Quotient_inner_apply (a : (f.GNS)) (b : (f.GNS)) :
+  f.GNS_Quotient_InnerProductSpace.inner (Submodule.Quotient.mk a) (Submodule.Quotient.mk b)
     = f (star a * b) := by rfl
 
 end PositiveLinearMap

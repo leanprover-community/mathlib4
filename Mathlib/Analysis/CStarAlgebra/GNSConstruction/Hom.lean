@@ -5,19 +5,20 @@ Authors: Gregory Wickham
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.CStarAlgebra.Hom
 
 /-!
 # The *-homomorphism of the GNS construction
 
-In this file we define the *-homomorphism from our C*-algebra `A` into the Hilbert space `GNS.H`
-that is constructed in Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs.
-
+In this file we define the unital ⋆-homomorphism from our C⋆-algebra `A` into the Hilbert space
+`f.GNS_HilbertSpace` that is constructed in Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs.
 
 ## Main results
 
-- `π f` : The unital *-homomorphism from `A` into the bounded linear operators on `GNS.H`.
+- `f.π` : The unital *-homomorphism from `A` into the bounded linear operators on
+  `f.GNS_HilbertSpace`.
 
 ## References
 
@@ -34,21 +35,21 @@ open UniformSpace
 open UniformSpace.Completion
 open Submodule
 open ContinuousLinearMap
-open PositiveLinearFunctional
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A]
 variable (f : A →ₚ[ℂ] ℂ)
 
 namespace PositiveLinearMap
 /--
-Multiplication of elements of `A` is linear. This is used to construct our desired *-homomorphism.
+Left multiplication of elements of `f.GNS` by elements of `A`  is linear. This is used to construct
+our desired *-homomorphism.
 -/
 noncomputable
-def A_GNS_mul : A →ₗ[ℂ] (GNS f) →ₗ[ℂ] (GNS f)
-  := (LinearMap.mul ℂ ((GNS f)))
+def A_mul_GNS : A →ₗ[ℂ] f.GNS →ₗ[ℂ] f.GNS
+  := (LinearMap.mul ℂ f.GNS)
 
-lemma A_GNS_mul_apply (a : A) (b : GNS f) :
-  f.A_GNS_mul a b = (f.toGNS a) * b := by rfl
+lemma A_GNS_mul_apply (a : A) (b : f.GNS) :
+  f.A_mul_GNS a b = (f.toGNS a) * b := by rfl
 
 instance : HMul A f.GNS f.GNS where
   hMul a b := (f.toGNS a) * b
@@ -56,39 +57,41 @@ instance : HMul A f.GNS f.GNS where
 instance : HMul f.GNS A f.GNS where
   hMul a b := (f.ofGNS a) * b
 
-lemma A_GNS_mul_hMul (a : A) (b : GNS f) : a * b = f.A_GNS_mul a b := by rfl
+lemma A_mul_GNS_def (a : A) (b : f.GNS) : a * b = f.A_mul_GNS a b := by rfl
 
 variable (a : A) [StarOrderedRing A]
 
 /--
 This theorem allows us to extend multiplication of elements of `A` to multiplicaton of and element
-of `A` with an element of `A / N f`.
+of `A` with an element of `f.GNS_Quotient`.
 -/
-theorem A_A_mul_well_defined_onQuot :
-  N f ≤ Submodule.comap (A_GNS_mul f a) (N f) := by
+theorem A_mul_GNS_well_defined :
+  f.GNS_Submodule ≤ Submodule.comap (f.A_mul_GNS a) (f.GNS_Submodule) := by
   intro x xh
-  have hab := induced_inner_norm_sq_self_le f ((star a) * (a * x)) x
+  have hab := f.induced_inner_norm_sq_self_le ((star a) * (a * x)) x
   rw [star_mul, star_star, xh, mul_zero] at hab
   norm_cast at hab
   apply (_root_.sq_nonpos_iff ‖f (star (a * x) * a * x)‖).mp at hab
   rwa [norm_eq_zero, mul_assoc] at hab
 
 /--
-This defines a linear operator on `A / N f` by left multiplication by a fixed element of `A`.
+This defines a linear operator on `f.GNS_Quotient` by left multiplication by a fixed element of `A`.
 -/
 noncomputable
-def π_OfA_onQuot_nonCont : (A_mod_N f) →ₗ[ℂ] (A_mod_N f) where
-  toFun := Submodule.mapQ (N f) (N f) (A_GNS_mul f a) (A_A_mul_well_defined_onQuot f a)
+def π_OfA_nonCont : (f.GNS_Quotient) →ₗ[ℂ] (f.GNS_Quotient) where
+  toFun := Submodule.mapQ f.GNS_Submodule f.GNS_Submodule (f.A_mul_GNS a)
+    (f.A_mul_GNS_well_defined a)
   map_add' := by simp
   map_smul' := by simp
 
 /--
-When the element of `A / N f` is constructed from an element of `A`, the linear operator
+When the element of `f.GNS_Quotient` is constructed from an element of `f.GNS`, the linear operator
 simplifies to multiplication.
 -/
 @[simp]
-lemma π_OfA_onQuot_apply (b : (GNS f)) :
-  (π_OfA_onQuot_nonCont f a) (Submodule.Quotient.mk b) = Submodule.Quotient.mk (a * b) := by rfl
+lemma π_OfA_apply (b : f.GNS) :
+  (f.π_OfA_nonCont a) (Submodule.Quotient.mk b) =
+    Submodule.Quotient.mk (a * b) := by rfl
 
 /--
 This positive linear functional simply helps with some of the below proofs. There should be no
@@ -106,41 +109,40 @@ def g (b : A) : A →ₚ[ℂ] ℂ where
     rw [add_comm, ← sub_eq_add_neg, ← map_sub, mul_assoc, mul_assoc,
       ← mul_sub (star b) (z * b) (y * b), ← sub_mul, ← mul_assoc,
       hq, ← mul_assoc, mul_assoc (star b * star q), ← star_mul]
-    exact PositiveLinearMap.map_nonneg f (star_mul_self_nonneg (q * b))
+    exact f.map_nonneg (star_mul_self_nonneg (q * b))
 
 @[simp]
-lemma g_apply (b : (GNS f)) (x : (GNS f)) :
-  f (star b * x * b) = (g f b) x := by rfl
-
+lemma g_apply (b : f.GNS) (x : f.GNS) :
+  f (star b * x * b) = (f.g b) x := by rfl
 
 /--
 The linear operator has a bounded unit ball.
 -/
-lemma π_OfA_onQuot_bounded_unit_ball :
-  (∀ z ∈ Metric.ball 0 1, ‖(π_OfA_onQuot_nonCont f a) z‖ ≤ ‖a‖) := by
+lemma π_OfA_bounded_unit_ball :
+  (∀ z ∈ Metric.ball 0 1, ‖(f.π_OfA_nonCont a) z‖ ≤ ‖a‖) := by
   intro b bh
   rw [Metric.mem_ball, dist_zero_right, InnerProductSpace.Core.norm_eq_sqrt_re_inner] at bh
   induction b using Submodule.Quotient.induction_on with | _ b
-  rw [inner_f_apply_on_quot_mk, RCLike.re_to_complex] at bh
+  rw [GNS_Quotient_inner_apply, RCLike.re_to_complex] at bh
   have bh' : √(f (star b * b)).re ≤ 1 := by linarith
-  have prodInR := re_of_self_star_self f (star b)
+  have prodInR := f.re_of_self_star_self (star b)
   have staraaPos := (mul_star_self_nonneg (star a : A))
-  have starbPos := PositiveLinearMap.map_nonneg f (mul_star_self_nonneg (star b : A))
-  rw [star_star, π_OfA_onQuot_apply] at *
+  have starbPos := f.map_nonneg (mul_star_self_nonneg (star b : A))
+  rw [star_star, π_OfA_apply] at *
   have bh2 : (f (star b * b)).re ≤ 1 := (Real.sqrt_le_one (x := (f (star b * b)).re)).mp bh'
   have hyp1 : f (star b * b) ≤ 1 := by rw [← prodInR]; norm_cast
-  rw [InnerProductSpace.Core.norm_eq_sqrt_re_inner, inner_f_apply_on_quot_mk, star_mul,
+  rw [InnerProductSpace.Core.norm_eq_sqrt_re_inner, GNS_Quotient_inner_apply, star_mul,
     RCLike.re_to_complex, ← mul_assoc]
   nth_rw 2 [mul_assoc]
   rw [g_apply]
-  have g_of_one : (g f b) 1 = f (star b * b) := by simp [← g_apply f b 1]
-  have g_of_star_a_a_real := re_of_self_star_self (g f b) (star a)
-  have gval_real : ((g f b) (star a * a)).re = ((g f b) (star a * a)) := by
+  have g_of_one : (f.g b) 1 = f (star b * b) := by simp [← f.g_apply b 1]
+  have g_of_star_a_a_real := re_of_self_star_self (f.g b) (star a)
+  have gval_real : ((f.g b) (star a * a)).re = ((f.g b) (star a * a)) := by
     rwa [star_star] at g_of_star_a_a_real
-  have g_pos := PositiveLinearMap.map_nonneg (g f b) (mul_star_self_nonneg (star a : A))
-  have gval_pos : 0 ≤ ((g f b) (star a * a)).re := by
+  have g_pos := PositiveLinearMap.map_nonneg (f.g b) (mul_star_self_nonneg (star a : A))
+  have gval_pos : 0 ≤ ((f.g b) (star a * a)).re := by
     rwa [star_star, ← gval_real, zero_le_real] at g_pos
-  have step2 := PositiveLinearMap.norm_apply_le_of_nonneg (g f b) (star a * a) staraaPos
+  have step2 := PositiveLinearMap.norm_apply_le_of_nonneg (f.g b) (star a * a) staraaPos
   rw [g_of_one, ← gval_real, norm_real, Real.norm_eq_abs, abs_of_nonneg gval_pos] at step2
   have step3 : ‖f (star b * b)‖ * ‖star a * a‖ ≤ 1 * ‖star a * a‖ := by
     nlinarith [norm_nonneg (star a * a), norm_nonneg (f (star b * b)),
@@ -148,43 +150,44 @@ lemma π_OfA_onQuot_bounded_unit_ball :
   norm_num at step3
   nth_rw 2 [CStarRing.norm_star_mul_self] at step3
   rw [← pow_two] at step3
-  have step4 : ((g f b) (star a * a)).re ≤ ‖a‖ ^ 2 := by linarith
+  have step4 : ((f.g b) (star a * a)).re ≤ ‖a‖ ^ 2 := by linarith
   exact (Real.sqrt_le_left (norm_nonneg a)).mpr step4
 
 /--
 The linear operator has a bound.
 -/
 lemma bound_on_π_ofA_exists :
-  ∃ C, ∀ (z : A_mod_N f), ‖(π_OfA_onQuot_nonCont f a) z‖ ≤ C * ‖z‖ :=
-  LinearMap.bound_of_ball_bound (r := 1) (Real.zero_lt_one) (norm a) (π_OfA_onQuot_nonCont f a)
-    (π_OfA_onQuot_bounded_unit_ball f a)
+  ∃ C, ∀ (z : f.GNS_Quotient), ‖(π_OfA_nonCont f a) z‖ ≤ C * ‖z‖ :=
+  LinearMap.bound_of_ball_bound (Real.zero_lt_one) (norm a) (f.π_OfA_nonCont a)
+    (f.π_OfA_bounded_unit_ball a)
 
 /--
-The linear operator is continuous (because it is bounded).
+The linear operator on `f.GNS_Quotient` is continuous (because it is bounded).
 -/
 noncomputable
-def π_ofA_onQuot : (A_mod_N f) →L[ℂ] (A_mod_N f) :=
-  LinearMap.mkContinuousOfExistsBound (π_OfA_onQuot_nonCont f a) (bound_on_π_ofA_exists f a)
+def π_ofA_onQuot : f.GNS_Quotient →L[ℂ] f.GNS_Quotient :=
+  LinearMap.mkContinuousOfExistsBound (f.π_OfA_nonCont a) (f.bound_on_π_ofA_exists a)
 
 @[simp]
-lemma π_eq_π_nonCont_on_input (b : A_mod_N f) :
-  (π_ofA_onQuot f a) b = (π_OfA_onQuot_nonCont f a) b := by dsimp [π_ofA_onQuot]
+lemma π_eq_π_nonCont_on_input (b : f.GNS_Quotient) :
+  (f.π_ofA_onQuot a) b = (f.π_OfA_nonCont a) b := by dsimp [π_ofA_onQuot]
 
 @[simp]
-lemma π_apply_on_quot (b : (GNS f)) :
-  ((π_ofA_onQuot f a) (Submodule.Quotient.mk b)) = Submodule.Quotient.mk (a * b) := by simp
+lemma π_apply_on_quot (b : f.GNS) :
+  ((f.π_ofA_onQuot a) (Submodule.Quotient.mk b)) = Submodule.Quotient.mk (a * b) := by simp
 
 @[simp]
-lemma π_completion_onQuot_equiv (b : A_mod_N f) :
+lemma π_completion_onQuot_equiv (b : f.GNS_Quotient) :
   Completion.map ⇑(π_ofA_onQuot f a) ↑b = (π_ofA_onQuot f a) b := by
-    simp [map_coe (ContinuousLinearMap.uniformContinuous (π_ofA_onQuot f a))]
+    simp [map_coe (ContinuousLinearMap.uniformContinuous (f.π_ofA_onQuot a))]
 
 /--
-We define the linear operator, which is parameterized by an `a : A`, as a continuous linear map.
+We define the linear operator on `f.GNS_HilbertSpac`, which is parameterized by an `a : A`, as a
+continuous linear map.
 -/
 noncomputable
-def π_OfA (a : (GNS f)) : H f →L[ℂ] H f where
-  toFun := Completion.map (π_ofA_onQuot f a)
+def π_OfA (a : f.GNS) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace where
+  toFun := Completion.map (f.π_ofA_onQuot a)
   map_add' x y := by
     induction x using Completion.induction_on with
     | hp => exact (isClosed_eq ((continuous_map).comp (by continuity))
@@ -207,11 +210,12 @@ def π_OfA (a : (GNS f)) : H f →L[ℂ] H f where
   cont := continuous_map
 
 /--
-We define the unital *-homomorphism from `A` into the bounded linear operators on `GNS.H`, denoted
-`H f →L[ℂ] H f`. Thus, our final *-homormorphism is `π f : A →⋆ₐ[ℂ] H f →L[ℂ] H f`.
+We define the unital *-homomorphism from `A` into the bounded linear operators on
+`f.GNS_HilbertSpace`, denoted `H f →L[ℂ] H f`. Thus, our final *-homormorphism is
+`f.π : A →⋆ₐ[ℂ] H f →L[ℂ] H f`.
 -/
 noncomputable
-def π : StarAlgHom ℂ A (H f →L[ℂ] H f) where
+def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
   toFun := π_OfA f
   map_one' := by
     ext b
@@ -224,7 +228,7 @@ def π : StarAlgHom ℂ A (H f →L[ℂ] H f) where
     ext c
     induction c using Completion.induction_on with
     | hp => exact (isClosed_eq (by continuity)
-          (ContinuousLinearMap.continuous ((π_OfA f (a)).comp (π_OfA f (b)))))
+          (ContinuousLinearMap.continuous ((f.π_OfA a).comp (f.π_OfA b))))
     | ih c
     induction c using Quotient.induction_on
     simp [π_OfA, ← mul_assoc]
@@ -243,7 +247,7 @@ def π : StarAlgHom ℂ A (H f →L[ℂ] H f) where
     | hp => exact (isClosed_eq (by continuity) (by continuity))
     | ih c
     induction c using Quotient.induction_on
-    simp [π_OfA, π_OfA_onQuot_nonCont, A_GNS_mul, Completion.coe_add]
+    simp [π_OfA, π_OfA_nonCont, A_mul_GNS, Completion.coe_add]
   commutes' r := by
     simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_OfA]
     congr
@@ -252,7 +256,7 @@ def π : StarAlgHom ℂ A (H f →L[ℂ] H f) where
     induction c using Quotient.induction_on
     simp
   map_star' a := by
-    refine (eq_adjoint_iff (π_OfA f (star a)) (π_OfA f a)).mpr ?_
+    refine (eq_adjoint_iff (f.π_OfA (star a)) (f.π_OfA a)).mpr ?_
     intro x y
     induction x using Completion.induction_on with
     | hp => exact (isClosed_eq (by continuity)
@@ -264,7 +268,12 @@ def π : StarAlgHom ℂ A (H f →L[ℂ] H f) where
     | ih y
     induction x using Quotient.induction_on
     induction y using Quotient.induction_on
-    have (a b : A_mod_N f) : inner ℂ (coe' a) (coe' b) = inner_f f a b := by rw [inner_coe]; rfl
+    have (a b : f.GNS_Quotient) : inner ℂ (coe' a) (coe' b) =
+      GNS_Quotient_inner f a b := by rw [inner_coe]; rfl
     simp [π_OfA, this, mul_assoc]
+
+theorem π_continuous : Continuous (f.π) :=
+  NonUnitalStarAlgHom.CStarAlgHom_continuous (A := A)
+    (B := (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace)) (f.π)
 
 end PositiveLinearMap

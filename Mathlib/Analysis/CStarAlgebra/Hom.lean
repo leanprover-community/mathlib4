@@ -78,4 +78,20 @@ lemma nnnorm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖₊ 
 lemma isometry (φ : F) (hφ : Function.Injective φ) : Isometry φ :=
   AddMonoidHomClass.isometry_of_norm φ (norm_map φ hφ)
 
+/--
+A non-untial star algebra homomorphism between C⋆-algebras is contractive/bounded/countinuous.
+-/
+theorem CStarAlgHom_contractive {A B : Type*} [CStarAlgebra A] [CStarAlgebra B]
+  (φ : NonUnitalStarAlgHom ℂ A B) (x : A) :
+    (‖φ x‖ ≤ ‖x‖) := by exact norm_apply_le φ x
+
+theorem CStarAlgHom_bounded {A B : Type*} [CStarAlgebra A] [CStarAlgebra B]
+  (φ : NonUnitalStarAlgHom ℂ A B) (x : A) :
+    (‖φ x‖ ≤ 1 * ‖x‖) := by simp [NonUnitalStarAlgHom.norm_apply_le]
+
+theorem CStarAlgHom_continuous {A B : Type*} [CStarAlgebra A] [CStarAlgebra B]
+  (φ : NonUnitalStarAlgHom ℂ A B) :
+    Continuous (φ : A → B) :=
+  continuous_of_linear_of_bound (φ.map_add) (φ.map_smul) (CStarAlgHom_bounded φ)
+
 end NonUnitalStarAlgHom
