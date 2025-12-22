@@ -116,7 +116,7 @@ lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
   simp only [charmatrix]
-  ext (i|i) (j|j) : 2 <;> simp [diagonal]
+  ext (i | i) (j | j) : 2 <;> simp [diagonal]
 
 -- TODO: importing block triangular here is somewhat expensive, if more lemmas about it are added
 -- to this file, it may be worth extracting things out to Charpoly/Block.lean
