@@ -651,10 +651,8 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 theorem mul_self_inj_of_nonneg {α : Type*} [CommRing α] [NoZeroDivisors α] [PartialOrder α]
     [IsStrictOrderedRing α] {a b : α} (a0 : 0 ≤ a) (b0 : 0 ≤ b) :
     a * a = b * b ↔ a = b := by
-  rw [← sq, ← sq, ← sub_eq_zero, sq_sub_sq, mul_eq_zero, sub_eq_zero, or_iff_right_iff_imp,
-    add_eq_zero_iff_eq_neg]
-  rintro rfl
-  simp [le_antisymm (neg_nonneg.mp a0) b0]
+  have := fun h ↦ le_antisymm (neg_nonneg.mp h) b0
+  grind [sq_sub_sq, mul_eq_zero, add_eq_zero_iff_eq_neg]
 
 theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b / c) = max a b / c :=
   Eq.symm <| Antitone.map_max fun _ _ => div_le_div_of_nonpos_of_le hc
