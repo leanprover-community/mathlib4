@@ -154,13 +154,13 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
 /-- In a C⋆-algebra, the spectral radius of the adjoint of an element times itself is equal to the
 square of that element's norm.
 -/
-theorem spectralRadius_toReal_star_self_mul_self_eq_normSq (a : A) :
+theorem toReal_spectralRadius_star_mul_self_eq_norm_sq (a : A) :
     (spectralRadius ℂ (a⋆ * a)).toReal = ‖a‖ ^ 2 := by
-  rw [IsSelfAdjoint.toReal_spectralRadius_complex_eq_norm (IsSelfAdjoint.star_mul_self a),
+  rw [(IsSelfAdjoint.star_mul_self a).toReal_spectralRadius_complex_eq_norm,
     CStarRing.norm_star_mul_self, ← pow_two]
 
-theorem sqrt_spectralRadius_toReal_star_self_mul_self_eq_norm (a : A) :
-    Real.sqrt ((spectralRadius ℂ (a⋆ * a)).toReal) = norm a :=
+theorem sqrt_toReal_spectralRadius_star_mul_self_eq_norm (a : A) :
+    (spectralRadius ℂ (a⋆ * a)).toReal.sqrt = ‖a‖ :=
   (Real.sqrt_eq_iff_eq_sq ENNReal.toReal_nonneg (norm_nonneg a)).mpr
     (spectralRadius_toReal_star_self_mul_self_eq_normSq a)
 
