@@ -98,7 +98,7 @@ lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f
   · exact AnalyticAt.deriv hf
 
 lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (k n : ℕ) :
-   n = analyticOrderAt f z₀ → n > 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+   n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
     revert n
     induction k
     · intros n Hn Hpos Hk; simp only [Function.iterate_zero, id_eq, tsub_zero, Hn]
@@ -110,7 +110,7 @@ lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt �
           · assumption
           · assumption
           · linarith
-        · simp_all only [gt_iff_lt, ENat.coe_sub]
+        · simp_all only [ENat.coe_sub]
           grind
       have h1 : (n - (k + 1))= (n - k - 1) := by grind
       rw [h1]
