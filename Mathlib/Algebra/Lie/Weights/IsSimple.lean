@@ -260,6 +260,18 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
 
+@[simp] lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
+    (invtSubmoduleToLieIdeal q (by exact hq) : Submodule K L) =
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
+  rfl
+
+@[simp] lemma invtSubmoduleToLieIdeal_top :
+    invtSubmoduleToLieIdeal (⊤ : Submodule K (Dual K H)) (by simp) = ⊤ := by
+  rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
+    LieSubmodule.top_toSubmodule]
+  sorry
+
 section IsSimple
 
 variable [IsSimple K L]

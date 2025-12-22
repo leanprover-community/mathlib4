@@ -716,6 +716,19 @@ lemma restrict_killingForm_eq_sum :
   replace hχ : χ.IsNonZero := by simpa [LieSubalgebra.root] using hχ
   simp [finrank_rootSpace_eq_one _ hχ]
 
+lemma iSup_rootSpace_eq_top :
+    H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α = ⊤ := by
+  by_contra h_contra
+  apply h_contra ( eq_top_iff.mpr _ )
+  rw [← iSup_genWeightSpace_eq_top']
+  simp only [iSup_le_iff]
+  intro α
+  by_cases hα : α.IsZero
+  · simp [hα]
+  · apply le_sup_of_le_right
+    apply le_iSup_of_le ⟨ α, (Finset.mem_filter_univ α).mpr hα⟩
+    exact le_rfl
+
 end CharZero
 
 end IsKilling
