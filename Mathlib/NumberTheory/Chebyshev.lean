@@ -373,12 +373,8 @@ private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1
 aren't very convenient. -/
 private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     ∫ t in 2..x, 1 / log t ^ 2 ≤ 4 * x / (log x) ^ 2 + x.sqrt / log 2 ^ 2 := by
-  have two_le_sqrt : 2 ≤ x.sqrt := by
-    apply Real.le_sqrt_of_sq_le
-    linarith
-  have sqrt_le_x : x.sqrt ≤ x := by
-    apply sqrt_le_left (by linarith) |>.mpr
-    bound
+  have two_le_sqrt : 2 ≤ x.sqrt := Real.le_sqrt_of_sq_le <| by norm_num [hx]
+  have sqrt_le_x : x.sqrt ≤ x := sqrt_le_left (by linarith) |>.mpr (by bound)
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := x.sqrt)]
   · grw [integral_1_div_log_sq_le two_le_sqrt (by linarith),
       integral_1_div_log_sq_le sqrt_le_x (by linarith)]
