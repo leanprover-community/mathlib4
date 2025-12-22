@@ -73,16 +73,15 @@ variable {f}
 /-- The first triangle identity for the counit and unit of the adjunction. -/
 @[reassoc]
 theorem ev_coev (X : Over J) :
-    (pullback f).map (pullbackAdjPushforward f |>.unit.app X) ≫
-    (pullbackAdjPushforward f |>.counit.app (pullback f |>.obj X)) =
+    (pullback f).map (coev f |>.app X) ≫ (ev f |>.app (pullback f |>.obj X)) =
     𝟙 (pullback f |>.obj X) :=
   pullbackAdjPushforward f |>.left_triangle_components X
 
 /-- The second triangle identity for the counit and unit of the adjunction. -/
 @[reassoc]
 theorem coev_ev (Y : Over I) :
-    (pullbackAdjPushforward f |>.unit.app (pushforward f |>.obj Y)) ≫
-    (pushforward f |>.map (pullbackAdjPushforward f |>.counit.app Y)) =
+    (coev f |>.app (pushforward f |>.obj Y)) ≫
+    (pushforward f |>.map (ev f |>.app Y)) =
     𝟙 (pushforward f |>.obj Y) :=
   pullbackAdjPushforward f |>.right_triangle_components Y
 
