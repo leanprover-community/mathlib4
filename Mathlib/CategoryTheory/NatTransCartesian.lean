@@ -109,14 +109,12 @@ theorem hcomp {K : Type*} [Category K] {F G : J ⥤ C} {M N : C ⥤ K} {α : F �
 
 open TwoSquare
 
-universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈
-
-variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
-  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
+variable {C₁ C₂ C₃ C₄ : Type*}
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
   {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ ⥤ C₄}
 
-variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u₈}
-  [Category.{v₅} C₅] [Category.{v₆} C₆] [Category.{v₇} C₇] [Category.{v₈} C₈]
+variable {C₅ C₆ C₇ C₈ : Type*}
+  [Category* C₅] [Category* C₆] [Category* C₇] [Category* C₈]
   {T' : C₂ ⥤ C₅} {R' : C₅ ⥤ C₆} {B' : C₄ ⥤ C₆} {L'' : C₃ ⥤ C₇} {R'' : C₄ ⥤ C₈} {B'' : C₇ ⥤ C₈}
 
 theorem vComp {w : TwoSquare T L R B} {w' : TwoSquare B L'' R'' B''}
