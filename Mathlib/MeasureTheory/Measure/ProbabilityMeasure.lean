@@ -409,8 +409,9 @@ lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F 
     Continuous fun μ : ProbabilityMeasure X ↦ ∫ x, f x ∂μ :=
   continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 
-omit [OpensMeasurableSpace Ω] in lemma HasFiniteIntegral_continuous_ProbabilityMeasure
- {μ : ProbabilityMeasure Ω} {f : C(Ω, ℝ)} : HasFiniteIntegral ⇑f μ := by
+omit [OpensMeasurableSpace Ω] in
+lemma HasFiniteIntegral_continuous_ProbabilityMeasure
+    {μ : ProbabilityMeasure Ω} {f : C(Ω, ℝ)} : HasFiniteIntegral ⇑f μ := by
   let f' := BoundedContinuousFunction.mkOfCompact f
   obtain ⟨c, hf'⟩ := BoundedContinuousFunction.bddAbove_range_norm_comp f'
   change HasFiniteIntegral f' μ

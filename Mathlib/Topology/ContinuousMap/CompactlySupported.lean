@@ -162,7 +162,7 @@ lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     exact ⟨C, by grind⟩
 
 @[simp]
-lemma Equiv_to_continuous_eq [CompactSpace α] (f : C(α, γ)) :
+lemma toContinuousMap_continuousMapEquiv [CompactSpace α] (f : C(α, γ)) :
     (continuousMapEquiv f).toContinuousMap = f := rfl
 end Basics
 
@@ -186,8 +186,8 @@ instance [Zero β] : Inhabited C_c(α, β) :=
   ⟨0⟩
 
 @[simp]
-lemma liftCompactlySupported_zero [CompactSpace α] [AddCommMonoid β] :
-  continuousMapEquiv (0 : C(α, β)) = 0 := rfl
+lemma continuousMapEquiv_zero [CompactSpace α] [AddCommMonoid β] :
+    continuousMapEquiv (0 : C(α, β)) = 0 := rfl
 
 @[simp]
 theorem coe_zero [Zero β] : ⇑(0 : C_c(α, β)) = 0 :=
@@ -248,7 +248,7 @@ instance : AddZeroClass C_c(α, β) := DFunLike.coe_injective.addZeroClass _ coe
 end AddZeroClass
 
 @[simp]
-lemma liftCompactlySupported_add [CompactSpace α] [AddCommMonoid β] [ContinuousAdd β]
+lemma continuousMapEquiv_add [CompactSpace α] [AddCommMonoid β] [ContinuousAdd β]
   (f g : C(α, β)) : continuousMapEquiv (f + g) = continuousMapEquiv f + continuousMapEquiv g := rfl
 
 /-- Coercion to a function as a `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
