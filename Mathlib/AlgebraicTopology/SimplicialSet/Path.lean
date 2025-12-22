@@ -27,14 +27,6 @@ universe v u
 
 open CategoryTheory Opposite Simplicial SimplexCategory
 
--- to be moved
-lemma CategoryTheory.SimplicialObject.δ_eq_δ {C : Type*} [Category C] (X : SimplicialObject C)
-    {n : ℕ} (i : Fin (n + 2)) : X.map (SimplexCategory.δ i).op = X.δ i := rfl
-
--- to be moved
-lemma SSet.δ_apply (X : SSet) {n : ℕ} (i : Fin (n + 2)) (x : X _⦋n + 1⦌) :
-    X.map (SimplexCategory.δ i).op x = X.δ i x := rfl
-
 namespace SSet
 namespace Truncated
 
