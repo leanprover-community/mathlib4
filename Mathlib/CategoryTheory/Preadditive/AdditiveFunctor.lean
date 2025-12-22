@@ -297,7 +297,7 @@ abbrev AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
 
 /-- Turn an exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE (exactFunctor_le_additiveFunctor C D )
+  ObjectProperty.ιOfLE (exactFunctor_le_additiveFunctor C D)
 
 end
 
