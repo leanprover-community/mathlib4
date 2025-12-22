@@ -139,7 +139,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   simp only [← mul_assoc]
   norm_cast
   congr 2
-  rw [mul_comm (k+1) _, mul_assoc, mul_assoc]
+  rw [mul_comm (k + 1) _, mul_assoc, mul_assoc]
   congr 1
   have : n + k + 1 = n + (k + 1) := by apply add_assoc
   rw [← choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
