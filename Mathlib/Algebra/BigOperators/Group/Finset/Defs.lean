@@ -106,7 +106,7 @@ open Batteries.ExtendedBinder Lean Meta
 /-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
 where `pred` is a `binderPred` like `< 2`.
 Unlike `extBinder`, `x` is a term. -/
-syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
+syntax bigOpBinder := term:max((" : "term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
 syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
 /-- A list of parenthesized binders -/
@@ -265,7 +265,7 @@ to show the domain type when the product is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (⟨i⟩, ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -296,7 +296,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return ((⟨i⟩ : Ident), ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i

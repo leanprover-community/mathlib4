@@ -221,9 +221,6 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
       apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
       simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
-@[deprecated (since := "2025-04-28")]
-alias End_algebraMap_isUnit_inv_apply_eq_iff := End.algebraMap_isUnit_inv_apply_eq_iff
-
 theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
@@ -232,9 +229,6 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     H.symm ▸ by
       apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
       simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
-
-@[deprecated (since := "2025-04-28")]
-alias End_algebraMap_isUnit_inv_apply_eq_iff' := End.algebraMap_isUnit_inv_apply_eq_iff'
 
 end
 
@@ -350,7 +344,7 @@ theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
 theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   FaithfulSMul.algebraMap_eq_zero_iff _ _
 
-@[deprecated coe_eq_zero_iff (since := "29/09/2025")]
+@[deprecated coe_eq_zero_iff (since := "2025-10-21")]
 theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   coe_eq_zero_iff _ _ _
 
