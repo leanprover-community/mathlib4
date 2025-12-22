@@ -82,41 +82,19 @@ lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
 lemma isEdgeReachable_succ {k : ℕ} {u v : V} :
     G.IsEdgeReachable (k + 1) u v ↔
       G.Reachable u v ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeReachable k u v := by
-  constructor
-  · intro h
-    refine ⟨?_, fun e he s hk ↦ ?_⟩
-    · specialize (@h ∅) (by simp)
-      rwa [deleteEdges_empty] at h
-    · rw [deleteEdges_deleteEdges, Set.union_comm]
-      apply h
-      calc (s ∪ {e}).encard
-        _ ≤ s.encard + ({e} : Set (Sym2 V)).encard := Set.encard_union_le _ _
-        _ = s.encard + 1 := by rw [Set.encard_singleton]
-        _ < k + 1 := (ENat.add_lt_add_iff_right ENat.one_ne_top).mpr hk
+  refine ⟨fun h ↦ ⟨G.deleteEdges_empty ▸ h (by simp), fun e he s hk ↦ ?_⟩, ?_⟩
+  · rw [deleteEdges_deleteEdges, Set.union_comm]
+    apply h
+    grw [Set.encard_union_le, Set.encard_singleton]
+    exact ENat.add_lt_add_iff_right ENat.one_ne_top |>.mpr hk
   · intro ⟨h_one, h_succ⟩ s hk
-    let s' := s ∩ G.edgeSet
-    have h_eq : G.deleteEdges s = G.deleteEdges s' := G.deleteEdges_eq_inter_edgeSet s
-    rw [h_eq]
-    rcases s'.eq_empty_or_nonempty with h_empty | ⟨e, he⟩
-    · rw [h_empty, deleteEdges_empty]
-      exact h_one
-    · have he_edge : e ∈ G.edgeSet := he.2
-      have h_ins : insert e (s' \ {e}) = s' := by
-        ext x
-        simp only [Set.mem_insert_iff, Set.mem_diff, Set.mem_singleton_iff]
-        constructor
-        · rintro (rfl | ⟨hx, -⟩) <;> assumption
-        · intro hx
-          by_cases h : x = e <;> simp [h, hx]
-      nth_rw 1 [← h_ins]
-      rw [Set.insert_eq, ← deleteEdges_deleteEdges]
-      apply h_succ e he_edge
-      have : s'.encard ≤ s.encard := Set.encard_mono Set.inter_subset_left
-      have hk' : s'.encard < k + 1 := this.trans_lt hk
-      have hsub : s'.encard = (s' \ {e}).encard + 1 :=
-        (Set.encard_diff_singleton_add_one (s := s') he).symm
-      rw [hsub] at hk'
-      exact (ENat.add_lt_add_iff_right ENat.one_ne_top).mp hk'
+    rw [G.deleteEdges_eq_inter_edgeSet s]
+    rcases (s ∩ G.edgeSet).eq_empty_or_nonempty with h_empty | ⟨e, he⟩
+    · simpa [h_empty]
+    · rw [← Set.insert_diff_self_of_mem he, Set.insert_eq, ← deleteEdges_deleteEdges]
+      refine h_succ e he.right <| ENat.add_lt_add_iff_right ENat.one_ne_top |>.mp ?_
+      rw [Set.encard_diff_singleton_add_one he]
+      exact Set.encard_mono Set.inter_subset_left |>.trans_lt hk
 
 lemma isEdgeConnected_succ {k : ℕ} :
     G.IsEdgeConnected (k + 1) ↔
