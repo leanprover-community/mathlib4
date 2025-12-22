@@ -36,17 +36,6 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 section ENat
 
-lemma WithBot.add_le_add_right_iff' (a b : WithBot ℕ∞) (c : ℕ) :
-    a + c ≤ b + c ↔ a ≤ b := by
-  induction a with
-  | bot => simp
-  | coe a =>
-    induction b with
-    | bot => simp
-    | coe b =>
-      norm_cast
-      exact WithTop.add_le_add_iff_right (ENat.coe_ne_top c)
-
 lemma WithBot.add_one_le_zero_iff_eq_bot' (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
   induction a with
@@ -216,7 +205,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
         intro q hqp hq
         let q : PrimeSpectrum R := ⟨q, hq⟩
         have : ringKrullDim (R ⧸ q.1) ≤ n := by
-          rw [← WithBot.add_le_add_right_iff' _ _ 1]
+          rw [← WithBot.add_le_add_natCast_right_iff]
           apply le_trans _ hp
           obtain ⟨r, hrq, hrp⟩ := Set.exists_of_ssubset hqp
           apply ringKrullDim_succ_le_of_surjective (r := Ideal.Quotient.mk p.1 r)
@@ -525,7 +514,7 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
         rw [← map_smul, Module.mem_annihilator.mp this, map_zero]
       · exact h i (Nat.one_le_iff_ne_zero.mpr eq0)
     | n + 1 =>
-      rw [← Nat.cast_one, Nat.cast_add, WithBot.add_le_add_right_iff' _ _ 1, ← Nat.cast_add,
+      rw [← Nat.cast_one, Nat.cast_add, WithBot.add_le_add_natCast_right_iff, ← Nat.cast_add,
         ← WithBot.lt_add_one_iff, ← WithBot.lt_add_one_iff, ← Nat.cast_one, ← Nat.cast_add,
         ← Nat.cast_add, injectiveDimension_lt_iff_of_finite.{v},
         injectiveDimension_lt_iff_of_finite.{v}]
