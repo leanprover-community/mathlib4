@@ -89,12 +89,20 @@ theorem image_injOn_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : 
     rw [this hx, this hy, h]
   case neg ha => tauto
 
+theorem image_surjOn {β : Type*} [DecidableEq β] {f : α → β} :
+    Set.SurjOn (fun (x : Finset α) => x.image f) s.powerset (s.image f).powerset := by
+  intro t ht
+  rw [mem_coe, mem_powerset] at ht
+  simp_rw [Set.mem_image, mem_coe, mem_powerset]
+  use { x ∈ s | f x ∈ t}
+  grind
+
 theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
     (s.image f).powerset = s.powerset.image (fun x => x.image f) := by
   ext a
   rw [mem_powerset, mem_image]
   refine ⟨fun ha => ?_, fun ha => ?_⟩
-  · use ({ x ∈ s | f x ∈ a } : Finset α)
+  · use { x ∈ s | f x ∈ a }
     grind
   · obtain ⟨b, hb₁, hb₂⟩ := ha
     rw [mem_powerset] at hb₁

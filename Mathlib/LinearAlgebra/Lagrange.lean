@@ -456,7 +456,8 @@ theorem interpolate_eq_sum : interpolate s v r =
   congr! 1 with i hi
   rw [division_def, C_mul, prod_mul_distrib, mul_assoc, ← prod_inv_distrib, map_prod]
 
-theorem iterate_derivative_interpolate [CommRing ι] (hvs : Set.InjOn v s) {k : ℕ} (hk : k ≤ #s - 1) :
+theorem iterate_derivative_interpolate [CommRing ι]
+    (hvs : Set.InjOn v s) {k : ℕ} (hk : k ≤ #s - 1) :
     derivative^[k] (interpolate s v r) = k.factorial *
       ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) *
       ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
@@ -480,28 +481,45 @@ theorem iterate_derivative_interpolate [CommRing ι] (hvs : Set.InjOn v s) {k : 
       omega
     _ = k.factorial * ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
       ∏ a ∈ t, (X - C (v a)) := by
+      rw [powerset_image]
+      congr 1
+      have := image_injOn_of_injOn hvs' -- useful
+      -- use prod_nbij
       sorry
+
+omit [DecidableEq ι] in
+private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    P.degree = ↑(s.card - 1) := by
+  cases h : P.degree
+  case bot => simp_all
+  case coe d =>
+    rw [Nat.cast_withBot] at hP ⊢
+    suffices #s = d + 1 by grind
+    rw [h] at hP
+    simp [← WithBot.coe_inj, hP]
 
 theorem eval_iterate_derivative_eq_sum [CommRing ι]
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1)
-    (hk : k ≤ #s - 1) (x : ι) :
+    {k : ℕ} (hk : k ≤ #s - 1) (x : F) :
     (derivative^[k] P).eval x = k.factorial *
       ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, ((v i) - (v j))) *
       ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
-      ∏ a ∈ t, (x - C (v a)) := by
-  sorry
+      ∏ a ∈ t, (x - v a) := by
+  have P_degree := degree_eq_of_card_eq hP
+  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
+  have s_card : s.card > 0 := by by_contra! h; simp_all
+  have hP' : P.degree < s.card := by grind [Nat.cast_lt]
+  rw (occs := [1]) [eq_interpolate hvs hP']
+  -- why does rw iterate_derivative_interpolate hvs hk not work?
+  rw [iterate_derivative_interpolate, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul, eval_finset_sum]
+  · congr! 2 with i hi
+    simp_rw [eval_C_mul, eval_finset_sum, eval_prod, eval_sub, eval_X, eval_C]
+  all_goals assumption
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
-  have P_degree : P.degree = ↑(s.card - 1) := by
-    cases h : P.degree
-    case bot => simp_all
-    case coe d =>
-      rw [Nat.cast_withBot] at hP ⊢
-      suffices #s = d + 1 by grind
-      rw [h] at hP
-      simp [← WithBot.coe_inj, hP]
+  have P_degree := degree_eq_of_card_eq hP
   have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
   have s_card : s.card > 0 := by by_contra! h; simp_all
   have hP' : P.degree < s.card := by grind [Nat.cast_lt]
