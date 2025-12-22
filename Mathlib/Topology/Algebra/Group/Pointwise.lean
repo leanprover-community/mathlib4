@@ -312,6 +312,17 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
 
+@[to_additive] lemma IsDiscrete.exists_nhds_eq_one_of_image_inter_nonempty
+    (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
+    ∃ U ∈ 𝓝 (1 : G), ∀ g ∈ S,
+      ((g * ·) '' U ∩ U).Nonempty ∨ ((· * g) '' U ∩ U).Nonempty → g = 1 := by
+  obtain ⟨V, hV⟩ := nhds_inter_eq_singleton_of_mem_discrete hS S.one_mem
+  obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_inv_eq_mul_subset hV.1
+  refine ⟨U, hU, fun g hgS ↦ ?_⟩
+  rintro (⟨_, ⟨x, hx, rfl⟩, hgx⟩ | ⟨_, ⟨x, hx, rfl⟩, hxg⟩) <;>
+    (refine hV.2.subset ⟨hUV ?_, hgS⟩; rw [← hUinv] at hx)
+  exacts [⟨_, hgx, _, hx, by simp⟩, ⟨_, hx, _, hxg, by simp⟩]
+
 end
 
 section
