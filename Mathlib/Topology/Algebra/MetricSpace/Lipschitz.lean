@@ -100,18 +100,15 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
   · /- For `y ∉ ball z (ε z hz)` this follows by using the triangle inequality, bounding
     the distances from `f z` to `f x` and `f y` using the bounds `K z hz` and `K' z hz`, and then
     using the triangle inequality again for `edist z y ≤ edist x z + edist x y ≤ 2 * edist x y`. -/
-    refine (edist_triangle_left _ _ (f z)).trans ?_
-    refine .trans ?_ <| mul_le_mul_of_nonneg_right (ENNReal.coe_le_coe.2 <| t.le_sup hz) (zero_le _)
-    refine (add_le_add (hf _ z.2 ⟨mem_ball_self <| hε _ z.2, z.2⟩ ⟨hx'.2.trans <| half_lt_self <|
-      hε _ z.2, hx⟩) <| hK' _ z.2 _ ⟨hy, hy'⟩).trans ?_
-    refine (add_le_add_right (mul_le_mul_of_nonneg_left (edist_triangle_left z.1 y x)
-      (zero_le _)) _).trans ?_
-    simp_rw [edist_dist, ENNReal.coe_nnreal_eq]
-    rw [← ENNReal.ofReal_mul, ← ENNReal.ofReal_mul, ← ENNReal.ofReal_add, ← ENNReal.ofReal_mul,
-      ← ENNReal.ofReal_add, NNReal.coe_add, NNReal.coe_mul, NNReal.coe_ofNat,
-      mul_add, ← add_assoc, dist_comm, ← add_mul]
-    · have h : dist x z ≤ dist x y := by
-        linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
-      gcongr
-      exact (add_le_add_left (mul_le_mul_of_nonneg_left h (by positivity)) _).trans (by linarith)
-    all_goals positivity
+    calc edist (f x) (f y)
+      _ ≤ edist (f z) (f x) + edist (f z) (f y) := edist_triangle_left _ _ _
+      _ ≤ (K _ z.2) * edist z.1 x + (K' _ z.2) * edist z.1 y := add_le_add
+        (hf _ z.2 ⟨mem_ball_self <| hε _ z.2, z.2⟩ ⟨hx'.2.trans <| half_lt_self <| hε _ z.2, hx⟩)
+        (hK' _ z.2 _ ⟨hy, hy'⟩)
+      _ ≤ (K _ z.2) * edist z.1 x + (K' _ z.2) * (edist x z.1 + edist x y) := by
+        gcongr; exact edist_triangle_left z.1 y x
+      _ ≤ (K _ z.2) * edist x y + (K' _ z.2) * (edist x y + edist x y) := by
+        simp_rw [edist_dist, dist_comm _ x]
+        gcongr <;> linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
+      _ = ↑(K _ z.2 + 2 * K' _ z.2) * edist x y := by push_cast; ring
+      _ ≤ _ := by gcongr; exact .trans (by rfl) (t.le_sup hz)
