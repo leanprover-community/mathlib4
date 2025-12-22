@@ -68,7 +68,7 @@ theorem isCartesian_of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : IsCarte
 
 theorem isIso_of_isCartesian_of_isIso_app_terminal {F G : J ⥤ C} (α : F ⟶ G) (hα : IsCartesian α)
     (T : J) (hT : IsTerminal T) [IsIso (α.app T)] : IsIso α :=
-  have := fun j ↦ isIso_snd_of_isIso <| hα <| hT.from j 
+  have := fun j ↦ isIso_snd_of_isIso <| hα <| hT.from j
   NatIso.isIso_of_isIso_app _
 
 theorem isCartesian_of_isPullback_isTerminal_from {F G : J ⥤ C} (α : F ⟶ G)
