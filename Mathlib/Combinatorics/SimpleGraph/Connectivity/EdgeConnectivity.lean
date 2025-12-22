@@ -6,7 +6,6 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -121,8 +120,7 @@ lemma isEdgeConnected_succ {k : ℕ} :
     G.IsEdgeConnected (k + 1) ↔
       G.IsEdgeConnected 1 ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeConnected k := by
   simp only [IsEdgeConnected, isEdgeReachable_succ, IsEdgeReachable.zero]
-  exact ⟨fun h ↦ ⟨fun u v ↦ ⟨(h u v).1, fun _ _ ↦ trivial⟩, fun e he u v ↦ (h u v).2 e he⟩,
-         fun ⟨h1, h_succ⟩ u v ↦ ⟨(h1 u v).1, fun e he ↦ h_succ e he u v⟩⟩
+  grind
 
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ∀ e, ¬ G.IsBridge e := by
   constructor
