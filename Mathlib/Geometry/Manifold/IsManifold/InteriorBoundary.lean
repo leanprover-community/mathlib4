@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang
+Authors: Michael Rothgang, Ben Eltschig
 -/
 module
 
@@ -27,6 +27,9 @@ Define the interior and boundary of a manifold.
 - `ModelWithCorners.Boundaryless.boundary_eq_empty` and `of_boundary_eq_empty`:
 `M` is boundaryless if and only if its boundary is empty
 
+- `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open and
+  and the boundary is closed. This is currently only proven for C¹ manifolds.
+
 - `ModelWithCorners.interior_open`: the interior of `u : Opens M` is the preimage of the interior
   of `M` under the inclusion
 - `ModelWithCorners.boundary_open`: the boundary of `u : Opens M` is the preimage of the boundary
@@ -49,15 +52,14 @@ of `M` and `N`.
 manifold, interior, boundary
 
 ## TODO
-- `x` is an interior point iff *any* chart around `x` maps it to `interior (range I)`;
-similarly for the boundary.
-- the interior of `M` is open, hence the boundary is closed (and nowhere dense)
-  In finite dimensions, this requires e.g. the homology of spheres.
-- the interior of `M` is a manifold without boundary
+- the interior of `M` is dense, the boundary nowhere dense
+- the interior of `M` is a boundaryless manifold
 - `boundary M` is a submanifold (possibly with boundary and corners):
-follows from the corresponding statement for the model with corners `I`;
-this requires a definition of submanifolds
+  follows from the corresponding statement for the model with corners `I`;
+  this requires a definition of submanifolds
 - if `M` is finite-dimensional, its boundary has measure zero
+- generalise lemmas about C¹ manifolds with boundary to also hold for finite-dimensional topological
+  manifolds; this will require e.g. the homology of spheres.
 
 -/
 
@@ -335,10 +337,34 @@ lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (
     mem_interior_iff_mem_nhds.1 hφx), ContinuousLinearMap.fderiv] at h
   exact DFunLike.congr_fun h
 
-lemma isOpen_interior {n : ℕ} [IsManifold I n M] (hn : 1 ≤ n) : IsOpen (I.interior M) := by
-  sorry
+/-- A point `x` in a manifold that is at least C¹ is a boundary point iff it gets mapped to the
+boundary of the model space by any given chart - i.e., the notion of boundary points does not depend
+on any choice of charts, so that talking about `ModelWithCorners.boundary` actually makes sense.
 
-lemma isClosed_boundary {n : ℕ} [IsManifold I n M] (hn : 1 ≤ n) : IsClosed (I.boundary M) := by
+Also see `ModelWithCorners.isInteriorPoint_iff_of_mem_atlas`. -/
+lemma isBoundaryPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : 1 ≤ n)
+    {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
+    I.IsBoundaryPoint x ↔ e.extend I x ∈ frontier (e.extend I).target := by
+  rw [← not_iff_not, ← I.isInteriorPoint_iff_not_isBoundaryPoint,
+    I.isInteriorPoint_iff_of_mem_atlas hn he hx, mem_interior_iff_notMem_frontier]
+  exact (e.extend I).mapsTo <| e.extend_source (I := I) ▸ hx
+
+/-- The interior of any C¹ manifold is open.
+
+This is currently only proven for C¹ manifolds, but should hold at least for finite-dimensional
+topological manifolds too; see `ModelWithCorners.isInteriorPoint_iff_of_mem_atlas`. -/
+protected lemma isOpen_interior {n : WithTop ℕ∞} [IsManifold I n M] (hn : 1 ≤ n) :
+    IsOpen (I.interior M) := by
+  refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ⟨_, ?_, isOpen_extChartAt_preimage (I := I) x
+    isOpen_interior, mem_chart_source H x, isInteriorPoint_iff.1 hx⟩
+  exact fun y hy ↦ (I.isInteriorPoint_iff_of_mem_atlas hn (chart_mem_atlas H x) hy.1).2 hy.2
+
+/-- The boundary of any C¹ manifold is closed.
+
+This is currently only proven for C¹ manifolds, but should hold at least for finite-dimensional
+topological manifolds too; see `ModelWithCorners.isInteriorPoint_iff_of_mem_atlas`. -/
+protected lemma isClosed_boundary {n : WithTop ℕ∞} [IsManifold I n M] (hn : 1 ≤ n) :
+    IsClosed (I.boundary M) := by
   rw [← I.compl_interior, isClosed_compl_iff]
   exact I.isOpen_interior hn
 
