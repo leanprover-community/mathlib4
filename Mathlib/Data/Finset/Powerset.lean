@@ -73,7 +73,7 @@ theorem powerset_empty : (∅ : Finset α).powerset = {∅} :=
 theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
   rw [← powerset_empty, powerset_inj]
 
-theorem image_injOn_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
+theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
     Set.InjOn (fun (x : Finset α) => x.image f) s.powerset := by
   intro x hx y hy h
   rw [mem_coe, mem_powerset] at hx hy
@@ -89,7 +89,7 @@ theorem image_injOn_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : 
     rw [this hx, this hy, h]
   case neg ha => tauto
 
-theorem image_surjOn {β : Type*} [DecidableEq β] {f : α → β} :
+theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
     Set.SurjOn (fun (x : Finset α) => x.image f) s.powerset (s.image f).powerset := by
   intro t ht
   rw [mem_coe, mem_powerset] at ht

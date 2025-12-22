@@ -484,6 +484,7 @@ theorem iterate_derivative_interpolate [CommRing ι]
       rw [powerset_image]
       congr 1
       have := image_injOn_of_injOn hvs' -- useful
+      -- have := image_surjOn
       -- use prod_nbij
       sorry
 
@@ -498,6 +499,18 @@ private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : s.card = P.degree 
     rw [h] at hP
     simp [← WithBot.coe_inj, hP]
 
+omit [DecidableEq ι] in
+private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some (degree_eq_of_card_eq hP)
+
+omit [DecidableEq ι] in
+private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    P.degree < s.card - 1 := by
+  have := degree_eq_of_card_eq hP
+  have := natDegree_eq_of_card_eq hP
+  have s_card : s.card > 0 := by by_contra! h; simp_all
+  grind [Nat.cast_lt]
+
 theorem eval_iterate_derivative_eq_sum [CommRing ι]
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1)
     {k : ℕ} (hk : k ≤ #s - 1) (x : F) :
@@ -505,11 +518,7 @@ theorem eval_iterate_derivative_eq_sum [CommRing ι]
       ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, ((v i) - (v j))) *
       ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
       ∏ a ∈ t, (x - v a) := by
-  have P_degree := degree_eq_of_card_eq hP
-  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
-  have s_card : s.card > 0 := by by_contra! h; simp_all
-  have hP' : P.degree < s.card := by grind [Nat.cast_lt]
-  rw (occs := [1]) [eq_interpolate hvs hP']
+  rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
   -- why does rw iterate_derivative_interpolate hvs hk not work?
   rw [iterate_derivative_interpolate, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul, eval_finset_sum]
   · congr! 2 with i hi
@@ -519,12 +528,8 @@ theorem eval_iterate_derivative_eq_sum [CommRing ι]
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
-  have P_degree := degree_eq_of_card_eq hP
-  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
-  have s_card : s.card > 0 := by by_contra! h; simp_all
-  have hP' : P.degree < s.card := by grind [Nat.cast_lt]
-  rw [leadingCoeff, P_natDegree]
-  rw (occs := [1]) [eq_interpolate hvs hP']
+  rw [leadingCoeff, natDegree_eq_of_card_eq hP]
+  rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
   rw [interpolate_apply, finset_sum_coeff]
   congr! with i hi
   rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
