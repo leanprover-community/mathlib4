@@ -476,7 +476,7 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
 of `v` in `E`.
 
-Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E`).
+Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E)`.
 In general this defeq is not canonical, but in this case (the tangent space of a vector space) it is
 canonical. -/
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :

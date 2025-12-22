@@ -191,14 +191,14 @@ theorem compression_idem (u v : α) (s : Finset α) : 𝓒 u v (𝓒 u v s) = �
   have h : {a ∈ 𝓒 u v s | compress u v a ∉ 𝓒 u v s} = ∅ :=
     filter_false_of_mem fun a ha h ↦ h <| compress_mem_compression_of_mem_compression ha
   rw [compression, filter_image, h, image_empty, ← h]
-  exact filter_union_filter_neg_eq _ (compression u v s)
+  exact filter_union_filter_not_eq _ (compression u v s)
 
 /-- Compressing a family doesn't change its size. -/
 @[simp]
 theorem card_compression (u v : α) (s : Finset α) : #(𝓒 u v s) = #s := by
   rw [compression, card_union_of_disjoint compress_disjoint, filter_image,
-    card_image_of_injOn compress_injOn, ← card_union_of_disjoint (disjoint_filter_filter_neg s _ _),
-    filter_union_filter_neg_eq]
+    card_image_of_injOn compress_injOn, ← card_union_of_disjoint (disjoint_filter_filter_not s _ _),
+    filter_union_filter_not_eq]
 
 theorem le_of_mem_compression_of_notMem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) : u ≤ a := by
   rw [mem_compression] at h

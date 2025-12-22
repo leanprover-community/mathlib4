@@ -12,9 +12,9 @@ public import Mathlib.Order.MinMax
 /-!
 # Extra lemmas about intervals
 
-This file contains lemmas about intervals that cannot be included into `Order.Interval.Set.Basic`
-because this would create an `import` cycle. Namely, lemmas in this file can use definitions
-from `Data.Set.Lattice`, including `Disjoint`.
+This file contains lemmas about intervals that cannot be included into
+`Mathlib/Order/Interval/Set/Basic.lean` because this would create an `import` cycle. Namely, lemmas
+in this file can use definitions from `Data.Set.Lattice`, including `Disjoint`.
 
 We consider various intersections and unions of half infinite intervals.
 -/
@@ -263,7 +263,7 @@ theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range
   simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
 
 theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
-  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
+  refine Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
   gcongr
   exact Iio_subset_Iic_self
 

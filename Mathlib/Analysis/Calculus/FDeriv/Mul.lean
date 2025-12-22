@@ -479,10 +479,11 @@ variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing �
   {g' : ι → E →L[𝕜] 𝔸'}
 
 @[fun_prop]
-theorem hasStrictFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸} :
+theorem hasStrictFDerivAt_list_prod' [Finite ι] {l : List ι} {x : ι → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
         proj l[i] <• ((l.drop (.succ i)).map x).prod) x := by
+  have := Fintype.ofFinite ι
   induction l with
   | nil => simp [hasStrictFDerivAt_const]
   | cons a l IH =>
@@ -508,10 +509,11 @@ theorem hasStrictFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} �
     Finset.sum_equiv (finCongr List.length_attach.symm) (by simp) (by simp)
 
 @[fun_prop]
-theorem hasFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
+theorem hasFDerivAt_list_prod' [Finite ι] {l : List ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
         proj l[i] <• ((l.drop (.succ i)).map x).prod) x :=
+  have := Fintype.ofFinite ι
   hasStrictFDerivAt_list_prod'.hasFDerivAt
 
 @[fun_prop]
@@ -535,11 +537,12 @@ Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.
 For `NormedCommRing 𝔸'`, can rewrite as `Multiset` using `Multiset.prod_coe`.
 -/
 @[fun_prop]
-theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
+theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Finite ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (l.map fun i ↦ ((l.erase i).map x).prod • proj i).sum x := by
+  have := Fintype.ofFinite ι
   refine hasStrictFDerivAt_list_prod'.congr_fderiv ?_
-  conv_rhs => arg 1; arg 2; rw [← List.finRange_map_get l]
+  conv_rhs => arg 1; arg 2; rw [← List.map_get_finRange l]
   simp only [List.map_map, ← List.sum_toFinset _ (List.nodup_finRange _), List.toFinset_finRange,
     Function.comp_def, ((List.erase_getElem _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
     List.map_append, List.prod_append, List.get_eq_getElem, Fin.getElem_fin, Nat.succ_eq_add_one]
@@ -547,24 +550,27 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} 
     ext; simp only [smul_apply, op_smul_eq_smul, smul_eq_mul]; ring
 
 @[fun_prop]
-theorem hasStrictFDerivAt_multiset_prod [DecidableEq ι] [Fintype ι] {u : Multiset ι} {x : ι → 𝔸'} :
+theorem hasStrictFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
       (u.map (fun i ↦ ((u.erase i).map x).prod • proj i)).sum x :=
+  have := Fintype.ofFinite ι
   u.inductionOn fun l ↦ by simpa using hasStrictFDerivAt_list_prod
 
 @[fun_prop]
-theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Fintype ι] {u : Multiset ι} {x : ι → 𝔸'} :
+theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (u.map x).prod)
       (Multiset.sum (u.map (fun i ↦ ((u.erase i).map x).prod • proj i))) x :=
+  have := Fintype.ofFinite ι
   hasStrictFDerivAt_multiset_prod.hasFDerivAt
 
-theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
+theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x := by
   simp only [Finset.sum_eq_multiset_sum, Finset.prod_eq_multiset_prod]
   exact hasStrictFDerivAt_multiset_prod
 
-theorem hasFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
+theorem hasFDerivAt_finset_prod [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x :=
+  have := Fintype.ofFinite ι
   hasStrictFDerivAt_finset_prod.hasFDerivAt
 
 section Comp
@@ -575,7 +581,7 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
     HasStrictFDerivAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         f' l[i] <• ((l.drop (.succ i)).map (f · x)).prod) x := by
-  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.finRange_map_get l, List.map_map]
+  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.map_get_finRange l, List.map_map]
   -- After https://github.com/leanprover-community/mathlib4/issues/19108, we have to be optimistic with `:)`s; otherwise Lean decides it need to find
   -- `NormedAddCommGroup (List 𝔸)` which is nonsense.
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
@@ -593,7 +599,7 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
     HasFDerivAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         f' l[i] <• ((l.drop (.succ i)).map (f · x)).prod) x := by
-  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.finRange_map_get l, List.map_map]
+  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.map_get_finRange l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
     (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
@@ -606,7 +612,7 @@ theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
     HasFDerivWithinAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         f' l[i] <• ((l.drop (.succ i)).map (f · x)).prod) s x := by
-  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.finRange_map_get l, List.map_map]
+  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.map_get_finRange l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
     (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
@@ -728,8 +734,6 @@ theorem hasFDerivAt_ringInverse (x : Rˣ) :
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
-@[deprecated (since := "2025-04-22")] alias hasFDerivAt_ring_inverse := hasFDerivAt_ringInverse
-
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
     DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
@@ -751,9 +755,6 @@ theorem hasStrictFDerivAt_ringInverse (x : Rˣ) :
     HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
-
-@[deprecated (since := "2025-04-22")]
-alias hasStrictFDerivAt_ring_inverse := hasStrictFDerivAt_ringInverse
 
 variable {h : E → R} {z : E} {S : Set E}
 
