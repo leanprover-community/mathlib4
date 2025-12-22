@@ -95,7 +95,7 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
 instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
-instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u+1}) :=
+instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u + 1}) :=
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
@@ -117,7 +117,7 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 /-- `Spec 0` is the initial object in the category of schemes. -/
-noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u+1}) :=
+noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u + 1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
@@ -356,7 +356,7 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
     Nonempty (IsColimit <| BinaryCofan.mk f g) := by
   let c' : Cofan fun j ↦ (WalkingPair.casesOn j X Y : Scheme.{u}) :=
     .mk S fun j ↦ WalkingPair.casesOn j f g
-  let i : BinaryCofan.mk f g ≅ c' := Cofan.ext (Iso.refl _) (by rintro (b|b) <;> rfl)
+  let i : BinaryCofan.mk f g ≅ c' := Cofan.ext (Iso.refl _) (by rintro (b | b) <;> rfl)
   refine ⟨IsColimit.ofIsoColimit (Nonempty.some ?_) i.symm⟩
   let fi (j : WalkingPair) : WalkingPair.casesOn j X Y ⟶ S := WalkingPair.casesOn j f g
   convert nonempty_isColimit_cofanMk_of fi _ _

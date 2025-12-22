@@ -300,7 +300,7 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
 def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1} (fun R =>
+  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1} (fun R =>
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
     asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 

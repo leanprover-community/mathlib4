@@ -357,7 +357,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     apply GradedMonoid.toGradedMul.mul_mem <;> mem_tac_aux
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
-    apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
+    apply GradedMonoid.toGradedMul.mul_mem (i := (j - m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
     rw [← add_smul]; congr; lia
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
