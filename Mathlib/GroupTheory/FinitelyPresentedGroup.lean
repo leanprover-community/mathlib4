@@ -9,24 +9,19 @@ import Mathlib
 
 open Subgroup
 
-def NormalFG {G : Type*} [Group G] (H : Subgroup G) : Prop :=
+def normalClosureIsFG {G : Type*} [Group G] (H : Subgroup G) : Prop :=
   ∃ S : Finset G, Subgroup.normalClosure S = H
 
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
-    Function.Surjective f ∧ NormalFG (MonoidHom.ker f)
-
-
-/- class IsFinitelyPresented (G : Type*) [Group G] : Prop where
-  out : ∃ (S: Finset G) (f : (FreeGroup (S)) →* G),
-    Function.Surjective f ∧ (MonoidHom.ker f).NormalFG
--/
-
-variable (G : Type) [Group G] (g : G)
+    Function.Surjective f ∧ normalClosureIsFG (MonoidHom.ker f)
 
 lemma isFinitelyPresented_iff {G : Type*} [Group G] :
-  IsFinitelyPresented G ↔ ∃ (S : Finset G) (f : FreeGroup S →* G), Function.Surjective f ∧ NormalFG (MonoidHom.ker f) := by
-  sorry
+  IsFinitelyPresented G ↔ ∃ (S : Finset G) (f : FreeGroup S →* G),
+  Function.Surjective f ∧ normalClosureIsFG (MonoidHom.ker f) := by
+    sorry
+
+variable (G : Type) [Group G] (g : G)
 
 instance [h : IsFinitelyPresented G] : Group.FG G := by
   rw [isFinitelyPresented_iff] at h
@@ -44,8 +39,8 @@ instance [h : IsFinitelyPresented G] : Group.FG G := by
   --constructor
   sorry -/
 
-lemma isFinitelyPresented_stupid (α : Type) [Finite α] (s : Finset (FreeGroup α)) :
+/- lemma isFinitelyPresented_stupid (α : Type) [Finite α] (s : Finset (FreeGroup α)) :
     IsFinitelyPresented ((FreeGroup α) ⧸ normalClosure s) := by
     rw [isFinitelyPresented_iff]
     constructor
-    sorry
+    sorry -/
