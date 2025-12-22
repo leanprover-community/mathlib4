@@ -21,7 +21,12 @@ variable {α ι : Type*}
 
 open SignType
 
-noncomputable instance : CompleteLinearOrder SignType := Fintype.toCompleteLinearOrder _
+noncomputable instance : CompleteLattice SignType :=
+  Fintype.toCompleteLattice _
+
+noncomputable instance : CompleteLinearOrder SignType where
+  le_total := total_of _
+  toDecidableLE := inferInstance
 
 variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 

@@ -101,6 +101,11 @@ instance : CommGroupWithZero SignType where
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
 
+instance : HasDistribNeg SignType where
+  neg_neg := by rintro ⟨_⟩ <;> rfl
+  neg_mul := by rintro ⟨_⟩ ⟨_⟩ <;> rfl
+  mul_neg := by rintro ⟨_⟩ ⟨_⟩ <;> rfl
+
 set_option backward.privateInPublic true in
 private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_ : b ≤ a) : a = b := by
   cases a <;> cases b <;> trivial
@@ -127,10 +132,25 @@ instance : BoundedOrder SignType where
     Added `by exact`, but don't understand why it was needed. -/
     by exact LE.of_neg
 
-instance : HasDistribNeg SignType where
-  neg_neg := by rintro ⟨_⟩ <;> rfl
-  neg_mul := by rintro ⟨_⟩ ⟨_⟩ <;> rfl
-  mul_neg := by rintro ⟨_⟩ ⟨_⟩ <;> rfl
+instance : BiheytingAlgebra SignType where
+  himp
+    | -1, _ => 1
+    | 0, 0 => 1
+    | _, a => a
+  le_himp_iff := by decide
+  sdiff
+    | a, 1 => -1
+    | 0, 0 => -1
+    | a, _ => a
+  sdiff_le_iff := by decide
+  compl
+    | -1 => 1
+    | _ => -1
+  himp_bot := by decide
+  hnot
+    | 1 => -1
+    | _ => 1
+  top_sdiff := by decide
 
 /-- `SignType` is equivalent to `Fin 3`. -/
 def fin3Equiv : SignType ≃* Fin 3 where
