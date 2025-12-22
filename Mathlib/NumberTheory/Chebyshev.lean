@@ -329,7 +329,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       refine fun y hy ↦ deriv_log_inv ?_ ?_ ?_ <;> linarith [hy.1]
     refine ContinuousOn.integrableOn_Icc fun z hz ↦ ContinuousWithinAt.congr ?_ this (this z hz)
     have hz₀ : z ≠ 0 := by linarith [hz.1]
-    have : log z ^ 2 ≠ 0 := by 
+    have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith [hz.1]
     exact ContinuousAt.continuousWithinAt <| by fun_prop (disch := assumption)
 
