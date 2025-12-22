@@ -5,6 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 
 /-!
@@ -196,6 +198,151 @@ lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessM
   (Boundaryless.iff_boundary_eq_empty (I := I)).mp h
 
 end BoundarylessManifold
+
+section ChartIndependence
+
+lemma mem_interior_iff_notMem_frontier {X : Type*} [TopologicalSpace X] {s : Set X} {x : X}
+    (hx : x ∈ s) : x ∈ interior s ↔ x ∉ frontier s := by
+  simp [← self_diff_frontier, hx]
+
+lemma mem_frontier_iff_notMem_interior {X : Type*} [TopologicalSpace X] {s : Set X} {x : X}
+    (hx : x ∈ s) : x ∈ frontier s ↔ x ∉ interior s := by
+  simp [← self_diff_frontier, hx]
+
+/-- The change of charts from `e` to `e'` in the model vector space `E`. -/
+@[simps!]
+def extCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :=
+  (e.extend I).symm.trans (e'.extend I)
+
+omit [ChartedSpace H M] in
+lemma extCoordChange_symm {e e' : OpenPartialHomeomorph M H} :
+    (I.extCoordChange e e').symm = I.extCoordChange e' e := by
+  rfl
+
+lemma contDiffOn_extCoordChange {n : WithTop ℕ∞} {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ IsManifold.maximalAtlas I n M) (he' : e' ∈ IsManifold.maximalAtlas I n M) :
+    ContDiffOn 𝕜 n (I.extCoordChange e e') (I.extCoordChange e e').source :=
+  e'.contDiffOn_extend_coord_change he' he
+
+lemma contDiffOn_extCoordChange_symm {n : WithTop ℕ∞} {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ IsManifold.maximalAtlas I n M) (he' : e' ∈ IsManifold.maximalAtlas I n M) :
+    ContDiffOn 𝕜 n (I.extCoordChange e e').symm (I.extCoordChange e e').target :=
+  e.contDiffOn_extend_coord_change he he'
+
+omit [ChartedSpace H M] in
+lemma uniqueDiffOn_extCoordChange_source {e e' : OpenPartialHomeomorph M H} :
+    UniqueDiffOn 𝕜 (I.extCoordChange e e').source := by
+  rw [extCoordChange_source, inter_assoc, inter_comm, preimage_comp, ← preimage_inter]
+  exact I.uniqueDiffOn_preimage <| e.isOpen_inter_preimage_symm e'.open_source
+
+omit [ChartedSpace H M] in
+lemma uniqueDiffOn_extCoordChange_target {e e' : OpenPartialHomeomorph M H} :
+    UniqueDiffOn 𝕜 (I.extCoordChange e e').target := by
+  rw [← extCoordChange_symm, PartialEquiv.symm_target]
+  exact uniqueDiffOn_extCoordChange_source
+
+lemma isInvertible_fderivWithin_extCoordChange {n : WithTop ℕ∞}
+    (hn : 1 ≤ n) {e e' : OpenPartialHomeomorph M H} (he : e ∈ IsManifold.maximalAtlas I n M)
+    (he' : e' ∈ IsManifold.maximalAtlas I n M) {x : E} (hx : x ∈ (I.extCoordChange e e').source) :
+    (fderivWithin 𝕜 (I.extCoordChange e e') (I.extCoordChange e e').source x).IsInvertible := by
+  set φ := I.extCoordChange e e'
+  have hφ : ContDiffOn 𝕜 n φ φ.source := I.contDiffOn_extCoordChange he he'
+  have hφ' : ContDiffOn 𝕜 n φ.symm φ.target := I.contDiffOn_extCoordChange_symm he he'
+  refine .of_inverse (g := (fderivWithin 𝕜 φ.symm φ.target (φ x))) ?_ ?_
+  · rw [← φ.left_inv hx, φ.right_inv (φ.map_source hx), ← fderivWithin_comp _
+      (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn):)
+      ((hφ' _ (φ.map_source hx)).differentiableWithinAt hn) φ.symm_mapsTo
+      (I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx)),
+      fderivWithin_congr' φ.rightInvOn.eqOn (φ.map_source hx)]
+    exact fderivWithin_id (I.uniqueDiffOn_extCoordChange_source _ (φ.map_source hx))
+  · rw [← fderivWithin_comp _ ((hφ' _ (φ.map_source hx)).differentiableWithinAt hn)
+      ((hφ _ hx).differentiableWithinAt hn) φ.mapsTo (I.uniqueDiffOn_extCoordChange_source _ hx),
+      fderivWithin_congr' φ.leftInvOn.eqOn hx,
+      fderivWithin_id (I.uniqueDiffOn_extCoordChange_source _ hx)]
+
+/-- A point `x` in a manifold that is at least C¹ is an interior point iff it gets mapped to the
+interior of the model space by any given chart - i.e., the notion of interior points does not depend
+on any choice of charts, so that talking about `ModelWithCorners.interior` actually makes sense.
+
+Note that in general, this is actually quite nontrivial; that is why are focusing only on C¹
+manifolds here. For merely topological finite-dimensional manifolds the proof involves singular
+homology, and for infinite-dimensional topological manifolds I don't even know if this lemma holds.
+-/
+lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : 1 ≤ n)
+    {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
+    I.IsInteriorPoint x ↔ e.extend I x ∈ interior (e.extend I).target := by
+  -- it suffices to show that if `x` is interior in one chart `e` it also is in any other chart `e'`
+  revert e
+  suffices h : ∀ e ∈ atlas H M, x ∈ e.source → ∀ e' ∈ atlas H M, x ∈ e'.source →
+      e.extend I x ∈ interior (e.extend I).target → e'.extend I x ∈ interior (e'.extend I).target by
+    rw [isInteriorPoint_iff]
+    exact fun e he hx ↦ ⟨h _ (chart_mem_atlas H x) (mem_chart_source H x) _ he hx,
+      h _ he hx _ (chart_mem_atlas H x) (mem_chart_source H x)⟩
+  intro e he hex e' he' hex' hx
+  /- Since transition maps are diffeomorphisms, it suffices to show that if `e'` were to send `x`
+  to the boundary of `range I`, the differential of the transition map `φ` from `e` to `e'` at `x`
+  could not be surjective. -/
+  let φ := (e.extend I).symm.trans (e'.extend I)
+  have hφ : ContDiffOn 𝕜 n φ φ.source := e'.contDiffOn_extend_coord_change
+    (IsManifold.subset_maximalAtlas he') (IsManifold.subset_maximalAtlas he)
+  have hφ' : ContDiffOn 𝕜 n φ.symm φ.target := e.contDiffOn_extend_coord_change
+    (IsManifold.subset_maximalAtlas he) (IsManifold.subset_maximalAtlas he')
+  suffices h : e'.extend I x ∉ interior (range I) →
+      ¬Function.Surjective (fderivWithin 𝕜 φ φ.source (e.extend I x)) by
+    rw [not_imp_not] at h
+    refine e'.mem_interior_extend_target (by simp [hex']) <| h ?_
+    refine ContinuousLinearMap.IsInvertible.surjective ?_
+    exact isInvertible_fderivWithin_extCoordChange hn (IsManifold.subset_maximalAtlas he)
+      (IsManifold.subset_maximalAtlas he') <| by simp [hex, hex']
+  intro hx'
+  /- Reduce the situation to the real case, then apply Hahn-Banach to `x` and `interior (range I)`
+  to get a functional `F` that is greater on `e'.extend I x` than on all of `interior (range I)`. -/
+  wlog _ : IsRCLikeNormedField 𝕜
+  · simp [I.range_eq_univ_of_not_isRCLikeNormedField ‹_›] at hx'
+  let _ := IsRCLikeNormedField.rclike 𝕜
+  let _ := Module.compHom E (algebraMap ℝ 𝕜)
+  have : IsScalarTower ℝ 𝕜 E := ⟨by intros; rw [Algebra.smul_def, mul_smul]; rfl⟩
+  let _ : NormedSpace ℝ E := {
+    norm_smul_le r x := (norm_smul_le (r : 𝕜) x).trans <| by simp }
+  have hφx : e.extend I x ∈ interior φ.source := by
+    simp_rw [φ, PartialEquiv.trans_source, PartialEquiv.symm_source, interior_inter, mem_inter_iff,
+      hx, true_and, e'.extend_source, mem_interior_iff_mem_nhds]
+    exact e.extend_preimage_mem_nhds hex <| e'.open_source.mem_nhds hex'
+  rw [← ContinuousLinearMap.coe_restrictScalars' (R := ℝ),
+    (hφ.differentiableOn hn _ (by simp [φ, hex, hex'])).restrictScalars_fderivWithin (𝕜 := ℝ)
+      (uniqueDiffWithinAt_of_mem_nhds <| mem_interior_iff_mem_nhds.1 hφx),
+    fderivWithin_of_mem_nhds <| mem_interior_iff_mem_nhds.1 hφx]
+  have ⟨F, hF⟩ := geometric_hahn_banach_open_point I.convex_range.interior isOpen_interior hx'
+  -- It suffices to show that `fderiv ℝ φ (e.extend I x) y` sends everything to the kernel of `F`.
+  suffices h : ∀ y, F (fderiv ℝ φ (e.extend I x) y) = 0 by
+    have ⟨y, hy⟩ := I.nonempty_interior
+    unfold Function.Surjective; push_neg
+    refine ⟨e'.extend I x - y, fun z ↦ ne_of_apply_ne F ?_⟩
+    rw [h z, F.map_sub]
+    exact (sub_pos.2 <| hF _ hy).ne
+  -- This follows from `F ∘ φ` taking on a local maximum at `e.extend I x`.
+  have hF' : ∀ y ∈ range I, F y ≤ F (e'.extend I x) := by
+    change MapsTo F _ (Iic _)
+    rw [← I.isClosed_range.closure_eq, ← closure_Iio,
+      ← I.convex_range.closure_interior_eq_closure_of_nonempty_interior I.nonempty_interior]
+    exact MapsTo.closure hF F.continuous
+  have hFφ : IsLocalMax (F ∘ φ) (e.extend I x) :=
+    Filter.eventually_of_mem (mem_interior_iff_mem_nhds.1 hφx) fun y hy ↦
+      (hF' (φ y) ((show φ.target ⊆ range I by simp [φ, inter_assoc]) (φ.mapsTo hy))).trans_eq <|
+        congr_arg F <| by simp [φ, hex]
+  have h := hFφ.fderiv_eq_zero
+  rw [fderiv_comp _ (by fun_prop) (((hφ.restrict_scalars ℝ).differentiableOn hn).differentiableAt <|
+    mem_interior_iff_mem_nhds.1 hφx), ContinuousLinearMap.fderiv] at h
+  exact DFunLike.congr_fun h
+
+lemma isOpen_interior {n : ℕ} [IsManifold I n M] (hn : 1 ≤ n) : IsOpen (I.interior M) := by
+  sorry
+
+lemma isClosed_boundary {n : ℕ} [IsManifold I n M] (hn : 1 ≤ n) : IsClosed (I.boundary M) := by
+  rw [← I.compl_interior, isClosed_compl_iff]
+  exact I.isOpen_interior hn
+
+end ChartIndependence
 
 /-! Interior and boundary of open subsets of a manifold. -/
 section opens
