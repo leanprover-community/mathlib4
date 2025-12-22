@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Theory of sieves
@@ -21,6 +23,8 @@ import Mathlib.Data.Set.BooleanAlgebra
 sieve, pullback
 -/
 
+@[expose] public section
+
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -33,7 +37,7 @@ variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A set of arrows all with codomain `X`. -/
 def Presieve (X : C) :=
-  ∀ ⦃Y⦄, Set (Y ⟶ X)-- deriving CompleteLattice
+  ∀ ⦃Y⦄, Set (Y ⟶ X) -- deriving CompleteLattice
 
 instance : CompleteLattice (Presieve X) := by
   dsimp [Presieve]
@@ -220,6 +224,40 @@ lemma exists_eq_ofArrows (R : Presieve X) :
   use ι, fun x ↦ x.1.1, fun x ↦ x.1.2
   exact le_antisymm (fun Z g hg ↦ .mk (⟨⟨_, _⟩, hg⟩ : ι)) fun Z g ⟨x⟩ ↦ x.2
 
+/-- If `g : Y ⟶ S` is in the presieve given by the indexed family `fᵢ`, this is a choice
+of index such that `g = fᵢ` modulo `eqToHom`.
+Note: This should generally not be used! If possible, use the induction principle
+for the type `Presieve.ofArrows` instead (using e.g., `rintro / obtain`). -/
+noncomputable
+def ofArrows.idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C} {g : Y ⟶ S}
+    (hf : Presieve.ofArrows X f g) : ι :=
+  (ofArrows_surj _ _ hf).choose
+
+lemma ofArrows.obj_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C} {g : Y ⟶ S}
+    (hf : ofArrows X f g) : X hf.idx = Y :=
+  (ofArrows_surj _ _ hf).choose_spec.1
+
+lemma ofArrows.eq_eqToHom_comp_hom_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C}
+    {g : Y ⟶ S} (hf : ofArrows X f g) : g = eqToHom hf.obj_idx.symm ≫ f hf.idx :=
+  (Presieve.ofArrows_surj _ _ hf).choose_spec.2
+
+lemma ofArrows.hom_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C} {g : Y ⟶ S}
+    (hf : ofArrows X f g) : f hf.idx = eqToHom hf.obj_idx ≫ g := by
+  simp [eq_eqToHom_comp_hom_idx hf]
+
+lemma ofArrows_comp_le {X : C} {ι σ : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) (a : σ → ι) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) ≤ ofArrows Y f := by
+  rintro - - ⟨i⟩
+  use a i
+
+lemma ofArrows_comp_eq_of_surjective {X : C} {ι σ : Type*} {Y : ι → C}
+    (f : ∀ i, Y i ⟶ X) {a : σ → ι} (ha : a.Surjective) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) = ofArrows Y f := by
+  refine le_antisymm (ofArrows_comp_le f a) ?_
+  rintro - - ⟨i⟩
+  obtain ⟨j, rfl⟩ := ha i
+  use j
+
 /-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
 This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
 `Presieve.bind_ofArrows_le_bindOfArrows`, but has better definitional properties. -/
@@ -334,6 +372,13 @@ lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F
 lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
   fun _ _ ⟨hu⟩ ↦ hu
 
+@[simp]
+lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
+  le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
+
+lemma map_monotone {R S : Presieve X} (h : R ≤ S) : R.map F ≤ S.map F :=
+  fun _ _ ⟨hf⟩ ↦ ⟨h _ hf⟩
+
 end
 
 end FunctorPushforward
@@ -365,7 +410,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
 
 @[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
     (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
-      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
+      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t i.2 ‹_›).uncurry := by
   ext ⟨Z, v⟩; simp only [Set.mem_iUnion, Set.mem_image]; constructor
   · rintro ⟨Y, g, f, hf, ht, hv⟩
     exact ⟨⟨_, f⟩, hf, ⟨_, g⟩, ht, Sigma.ext rfl (heq_of_eq hv)⟩
@@ -380,6 +425,11 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
   ext ⟨Z, v⟩; simp only [Set.mem_range, Sigma.mk.injEq]; constructor
   · rintro ⟨i⟩; exact ⟨_, rfl, HEq.refl _⟩
   · rintro ⟨i, rfl, h⟩; rw [← eq_of_heq h]; exact ⟨i⟩
+
+lemma ofArrows_eq_ofArrows_uncurry {ι : Type*} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) :
+    ofArrows X f = ofArrows _ (fun i : (Presieve.ofArrows X f).uncurry ↦ f i.2.idx) := by
+  refine le_antisymm (fun Z g hg ↦ ?_) fun Z g ⟨i⟩ ↦ .mk _
+  exact .mk' ⟨⟨_, _⟩, hg⟩ (by simp [ofArrows.obj_idx]) (by simp [ofArrows.hom_idx])
 
 end uncurry
 
@@ -679,7 +729,7 @@ lemma pullback_ofObjects_eq_top
     ofObjects Y X = ⊤ := by
   ext Z h
   simp only [top_apply, iff_true]
-  rw [mem_ofObjects_iff ]
+  rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`

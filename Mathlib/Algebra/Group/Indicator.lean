@@ -3,10 +3,12 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Notation.Indicator
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Notation.Indicator
 
 /-!
 # Indicator function
@@ -32,6 +34,8 @@ arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`
 ## Tags
 indicator, characteristic
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -201,6 +205,9 @@ end Group
 end Set
 
 @[to_additive]
-theorem MonoidHom.map_mulIndicator {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
+theorem map_mulIndicator {M N F : Type*} [One M] [One N] [FunLike F M N] [OneHomClass F M N] (f : F)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
   simp [Set.mulIndicator_comp_of_one]
+
+@[deprecated (since := "2025-12-08")] alias MonoidHom.map_mulIndicator := map_mulIndicator
+@[deprecated (since := "2025-12-08")] alias AddMonoidHom.map_indicator := map_indicator

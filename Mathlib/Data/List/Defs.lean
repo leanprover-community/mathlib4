@@ -3,13 +3,15 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Control.Functor
-import Mathlib.Data.SProd
-import Mathlib.Util.CompileInductive
-import Batteries.Tactic.Lint.Basic
-import Batteries.Data.List.Lemmas
-import Batteries.Logic
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Control.Functor
+public import Mathlib.Data.SProd
+public import Mathlib.Util.CompileInductive
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Data.List.Basic
+public import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -17,6 +19,8 @@ import Batteries.Logic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -223,23 +227,6 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
-section Chain
-
-instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
-    Decidable (Chain R a l) := by
-  induction l generalizing a with
-  | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
-  | cons b as ih =>
-    haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
-
-instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
-    Decidable (Chain' R l) := by
-  cases l
-  · exact inferInstanceAs (Decidable True)
-  · exact inferInstanceAs (Decidable (Chain _ _ _))
-
-end Chain
-
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
   Defined as `pwFilter (≠)`.
 
@@ -255,6 +242,7 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
   | a, h :: l => if R a h then a :: destutter' R h l else destutter' R a l
 
 -- TODO: should below be "lazily"?
+-- TODO: Remove destutter' as we have removed chain'
 /-- Greedily create a sublist of `l` such that, for every two adjacent elements `a, b ∈ l`,
 `R a b` holds. Mostly used with ≠; for example, `destutter (≠) [1, 2, 2, 1, 1] = [1, 2, 1]`,
 `destutter (≠) [1, 2, 3, 3] = [1, 2, 3]`, `destutter (<) [1, 2, 5, 2, 3, 4, 9] = [1, 2, 5, 9]`. -/

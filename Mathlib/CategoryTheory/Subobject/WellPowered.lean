@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.EssentiallySmall
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Well-powered categories
@@ -25,6 +27,8 @@ When a category is well-powered, you can obtain nonconstructive witnesses as
 and
 `equivShrink (Subobject X) : Subobject X ≃ Shrink (subobject X)`.
 -/
+
+@[expose] public section
 
 
 universe w v v₂ u₁ u₂

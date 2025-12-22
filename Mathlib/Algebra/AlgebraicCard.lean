@@ -3,8 +3,10 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Polynomial.Cardinal
-import Mathlib.RingTheory.Algebraic.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Cardinal
+public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 ### Cardinality of algebraic numbers
@@ -15,6 +17,8 @@ an R-algebra is at most `#R[X] * ℵ₀`.
 Although this can be used to prove that real or complex transcendental numbers exist, a more direct
 proof is given by `Liouville.transcendental`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -52,8 +56,7 @@ theorem cardinalMk_lift_le_mul :
 
 theorem cardinalMk_lift_le_max :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ max (Cardinal.lift.{v} #R) ℵ₀ :=
-  (cardinalMk_lift_le_mul R A).trans <|
-    (mul_le_mul_right' (lift_le.2 cardinalMk_le_max) _).trans <| by simp
+  (cardinalMk_lift_le_mul R A).trans <| by grw [lift_le.2 cardinalMk_le_max]; simp
 
 @[simp]
 theorem cardinalMk_lift_of_infinite [Infinite R] :
