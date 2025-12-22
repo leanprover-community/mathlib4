@@ -361,7 +361,7 @@ variable {f}
 @[simps! hom_app inv_app]
 def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
     iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
-  NatIso.ofComponents (fun h => Iso.refl _) (by cat_disch)
+  Iso.refl _
 
 /-- The natural isomorphism witnessing `Over.map` in the iterated slice is
 compatible with `Over.map` base category, mediated by the iterated slice equivalence. -/
@@ -454,7 +454,7 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
 @[simps! hom_app inv_app]
 def iteratedSliceForwardIsoPost (f : Over X) :
     post (Over.forget X) ≅ Over.iteratedSliceForward f :=
-  NatIso.ofComponents (fun h ↦ Iso.refl _) (by cat_disch)
+  Iso.refl _
 
 open Limits
 
