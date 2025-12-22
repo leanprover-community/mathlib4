@@ -17,16 +17,6 @@ Some auxiliary lemmata covering the analytic part of the proof of the Gelfond–
 
 open Set AnalyticAt AnalyticOnNhd
 
-universe u₁ u₂ u₃
-
-variable {𝕜 : Type u₁} {E : Type u₂} {F : Type u₃} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {f g : E → F} {s : Set E}
-
-lemma analyticOn_congr (_ : AnalyticOn 𝕜 f s) (hs : EqOn f g s) :
-     AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s :=
-  ⟨fun h => h.congr hs.symm, fun h => h.congr hs⟩
-
 lemma zero_iff_order_inf : ∀ (f : ℂ → ℂ) (z : ℂ) (_ : ∀ z, AnalyticAt ℂ f z),
   (∀ z, f z = 0) ↔ analyticOrderAt f z = ⊤ := by
   intros f z hf
