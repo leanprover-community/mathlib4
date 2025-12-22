@@ -39,20 +39,23 @@ This will give rise to a monomial in `MvPowerSeries σ R`
 
 @[expose] public section
 
+
 noncomputable section
 
-open MvPowerSeries Finset Finsupp Classical
+open MvPowerSeries Finset Finsupp
 
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 variable {f : σ → τ} (hf : f.Injective)
 
 namespace MvPowerSeries
 
-/-- The function of renaming all the variables in a multivariable power series by an injective map. -/
+open Classical in
+/-- Rename all the variables in a multivariable power series by an injective map, as a function. -/
 def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R :=
   fun x ↦ if SetLike.coe x.support ⊆ Set.range f then
     coeff (x.comapDomain f hf.injOn) p else 0
 
+open Classical in
 theorem coeff_renameFun (p : MvPowerSeries σ R) (x : τ →₀ ℕ) :
     coeff x (renameFun hf p) = if SetLike.coe x.support ⊆ Set.range f then
       coeff (x.comapDomain f hf.injOn) p else 0 := rfl
@@ -61,6 +64,7 @@ theorem renameFun_zero : renameFun hf (0 : MvPowerSeries σ R) = 0 := by
   simp [MvPowerSeries.ext_iff, coeff_renameFun]
 
 theorem renameFun_one : renameFun hf (1 : MvPowerSeries σ R) = 1 := by
+  classical
   simp only [MvPowerSeries.ext_iff, coeff_renameFun, Set.subset_def, SetLike.mem_coe,
     mem_support_iff, ne_eq, Set.mem_range, coeff_one, Finsupp.ext_iff, comapDomain_apply,
     Finsupp.coe_zero, Pi.ofNat_apply]
@@ -69,6 +73,7 @@ theorem renameFun_one : renameFun hf (1 : MvPowerSeries σ R) = 1 := by
 
 theorem renameFun_mul (p q : MvPowerSeries σ R) :
     renameFun hf (p * q) = renameFun hf p * renameFun hf q := by
+  classical
   ext x
   simp only [coeff_renameFun, coeff_mul, mul_ite, ite_mul, zero_mul, mul_zero, sum_ite,
     sum_const_zero, add_zero, filter_filter]
@@ -120,12 +125,13 @@ theorem renameFun_add (p g : MvPowerSeries σ R) : renameFun hf (p + g) =
 
 theorem renameFun_commutes (r : R) : renameFun hf ((algebraMap R (MvPowerSeries σ R)) r) =
     (algebraMap R (MvPowerSeries τ R)) r := by
+  classical
   simp only [algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply, MvPowerSeries.ext_iff,
     coeff_renameFun, Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range,
     coeff_C, Finsupp.ext_iff, comapDomain_apply, Finsupp.coe_zero, Pi.zero_apply]
   grind only
 
-/-- The `AlgHom` version of `renameFun`. -/
+/-- Rename all the variables in a multivariable power series by an injective map, as an `AlgHom`. -/
 def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
   toFun := renameFun hf
   map_one' := renameFun_one hf
@@ -138,6 +144,7 @@ def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
 theorem rename_apply {p : MvPowerSeries σ R} : rename hf p = renameFun hf p := rfl
 
 theorem rename_C (r : R) : rename hf (C r : MvPowerSeries σ R) = C r := by
+  classical
   simp only [rename_apply, MvPowerSeries.ext_iff, coeff_renameFun, Set.subset_def, SetLike.mem_coe,
     mem_support_iff, ne_eq, Set.mem_range, coeff_C, Finsupp.ext_iff, comapDomain_apply,
     Finsupp.coe_zero, Pi.zero_apply]
@@ -146,6 +153,7 @@ theorem rename_C (r : R) : rename hf (C r : MvPowerSeries σ R) = C r := by
 
 @[simp]
 theorem rename_X (i : σ) : rename hf (X i : MvPowerSeries σ R) = X (f i) := by
+  classical
   simp only [rename_apply, MvPowerSeries.ext_iff, coeff_renameFun, Set.subset_def,
     SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range, coeff_X, Finsupp.ext_iff,
     comapDomain_apply, single_apply]
@@ -162,6 +170,7 @@ theorem map_rename (F : R →+* S) (p : MvPowerSeries σ R) :
 @[simp]
 theorem rename_rename {g : τ → α} (hg : g.Injective) (p : MvPowerSeries σ R) :
     rename hg (rename hf p) = rename (hg.comp hf) p := by
+  classical
   simp only [rename_apply, MvPowerSeries.ext_iff, coeff_renameFun, Set.subset_def, SetLike.mem_coe,
     mem_support_iff, ne_eq, Set.mem_range, comapDomain_support, coe_preimage, Set.mem_preimage,
     Function.comp_apply]
@@ -187,6 +196,7 @@ lemma rename_id_apply (p : MvPowerSeries σ R) :
 
 theorem rename_monomial (d : σ →₀ ℕ) (r : R) :
     rename hf (monomial d r) = monomial (d.mapDomain f) r := by
+  classical
   simp only [rename_apply, MvPowerSeries.ext_iff, coeff_renameFun, Set.subset_def, SetLike.mem_coe,
     mem_support_iff, ne_eq, Set.mem_range, coeff_monomial, Finsupp.ext_iff, comapDomain_apply]
   intro x; split_ifs with h1 _ h2 _ h3
@@ -211,6 +221,7 @@ theorem constantCoeff_rename (p : MvPowerSeries σ R) :
   simp
 
 theorem rename_injective : Function.Injective (rename (R := R) hf) := by
+  classical
   intro _ _ h; ext x
   simp only [rename_apply, MvPowerSeries.ext_iff, coeff_renameFun] at h
   simpa [mapDomain_support_of_injective hf, comapDomain_mapDomain f hf] using h (mapDomain f x)
@@ -219,7 +230,8 @@ variable (f)
 
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
   `MvPowerSeries.killComplFun f` is the function from `R[[τ]]` to `R[[σ]]` that is left inverse to
-  `rename hf : R[[σ]] → R[[τ]]` and sends the variables in the complement of the range of `f` to `0`. -/
+  `rename hf : R[[σ]] → R[[τ]]` and sends the variables in the complement of the range of `f`
+  to `0`. -/
 def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R := fun x ↦ coeff (mapDomain f x) p
 
 theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
@@ -230,6 +242,7 @@ theorem killComplFun_zero : killComplFun f (0 : MvPowerSeries τ R) = 0 := by
 
 include hf in
 theorem killComplFun_one : killComplFun f (1 : MvPowerSeries τ R) = 1 := by
+  classical
   simp only [MvPowerSeries.ext_iff, coeff_killComplFun, coeff_one, Finsupp.ext_iff,
     Finsupp.coe_zero, Pi.zero_apply]
   intro x; split_ifs with h1 h2
@@ -246,6 +259,7 @@ theorem killComplFun_one : killComplFun f (1 : MvPowerSeries τ R) = 1 := by
 include hf in
 theorem killComplFun_mul (p q : MvPowerSeries τ R) :
     killComplFun f (p * q) = killComplFun f p * killComplFun f q := by
+  classical
   simp only [MvPowerSeries.ext_iff, coeff_killComplFun, coeff_mul]
   intro x
   let e : (σ →₀ ℕ) × (σ →₀ ℕ) → (τ →₀ ℕ) × (τ →₀ ℕ) := fun (a, b) ↦
@@ -278,6 +292,7 @@ include hf in
 theorem killComplFun_commutes (r : R) :
     killComplFun f ((algebraMap R (MvPowerSeries τ R)) r) =
       (algebraMap R (MvPowerSeries σ R)) r := by
+  classical
   simp only [algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply, MvPowerSeries.ext_iff,
     coeff_killComplFun, coeff_C, Finsupp.ext_iff, Finsupp.coe_zero, Pi.zero_apply]
   intro x; split_ifs with h1 h2
@@ -306,6 +321,7 @@ theorem killCompl_apply (p : MvPowerSeries τ R) :
     killCompl hf p = killComplFun f p := rfl
 
 theorem killCompl_C (r : R) : killCompl hf (C r) = C r := by
+  classical
   simp only [killCompl_apply, MvPowerSeries.ext_iff, coeff_killComplFun, coeff_C, Finsupp.ext_iff,
     Finsupp.coe_zero, Pi.zero_apply]
   intro x; split_ifs with h1 h2
@@ -318,6 +334,7 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := by
   rw [← ne_eq, ← mem_support_iff, mapDomain_support_of_injective hf] at ht
   grind only [= mem_image, = mem_support_iff]
 
+open Classical in
 theorem killCompl_X (t : τ) : killCompl (R := R) hf (X t) = if h : t ∈ Set.range f then
     X ((Equiv.ofInjective f hf).symm ⟨t, h⟩) else 0 := by
   simp only [killCompl_apply, Set.mem_range, MvPowerSeries.ext_iff, coeff_killComplFun, coeff_X,
@@ -331,7 +348,7 @@ theorem killCompl_X (t : τ) : killCompl (R := R) hf (X t) = if h : t ∈ Set.ra
     · grind only [h1 (f s), mapDomain_apply hf]
     specialize h1 (f s')
     rw [ite_cond_eq_false, mapDomain_apply hf] at h1
-    contradiction
+    · contradiction
     · grind only
   · replace h1 : (mapDomain f x) t ≠ 0 := by
       specialize h1 t
@@ -354,6 +371,7 @@ theorem killCompl_X (t : τ) : killCompl (R := R) hf (X t) = if h : t ∈ Set.ra
   simp
 
 theorem killCompl_comp_rename : (killCompl hf).comp (rename hf) = AlgHom.id R _ := by
+  classical
   ext p x
   simp only [AlgHom.coe_comp, Function.comp_apply, rename_apply, killCompl_apply,
     coeff_killComplFun, coeff_renameFun, Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq,
@@ -404,3 +422,5 @@ theorem coeff_rename_mapDomain (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
 theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPowerSeries σ R) (d : σ →₀ ℕ) :
     (rename f.injective φ).coeff (d.embDomain f) = φ.coeff d := by
   rw [embDomain_eq_mapDomain f, coeff_rename_mapDomain f.injective]
+
+end MvPowerSeries
