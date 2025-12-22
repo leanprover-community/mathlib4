@@ -44,16 +44,14 @@ abbrev reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : motive l :=
   reverseRec nil append_singleton l
 
-@[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := reverseRec_nil _ _
+    reverseRecOn [] nil append_singleton = nil := by simp
 
-@[simp]
 theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
     (xs ++ [x]).reverseRecOn nil append_singleton =
-      append_singleton xs x (reverseRecOn xs nil append_singleton) := reverseRec_concat _ _ _ _
+      append_singleton xs x (reverseRecOn xs nil append_singleton) := by simp
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
