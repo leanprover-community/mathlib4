@@ -1186,6 +1186,121 @@ theorem transvectionDegree_le_finrank_add_one_of_isExceptional (he : IsException
   rw [← neg_mem_iff]
   simpa using hea v
 
+/-- If an element of `SpecialLinearGroup K V` is a product of
+exactly `finrank K (V ⧸ e.fixedSubmodule)` transvections,
+then it is not exceptional. (Dieudonné's theorem) -/
+example (he : e ∈ dilatransvections K V ^ (finrank K (V ⧸ e.fixedSubmodule))) :
+    ¬ IsExceptional e := by
+  intro he_exc
+  induction hn : finrank K (V ⧸ e.fixedSubmodule) generalizing e with
+  | zero =>
+    apply he_exc.1
+    rw [Module.finrank_zero_iff] at hn
+    ext; apply Subsingleton.allEq
+  | succ n hind =>
+    rw [hn, pow_succ, Set.mem_mul] at he
+    obtain ⟨e', he'_mem, t, ht, he⟩ := he
+    have he' : e' = e * t⁻¹ := by simp [← he]
+    have corank_e' : finrank K (V ⧸ e'.fixedSubmodule) ≤ n := by
+      rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
+      exact finrank_le_add_finrank_fixedSubmodule he'_mem
+    obtain ⟨f, v, hfv, ht⟩ := ht
+    have he_apply (x : V) : e x = e' x + f x • e v := by
+      rw [← he, ht]
+      simp [hfv]
+    have he'_apply (x : V) : e' x = e x - f x • e v := by
+      rw [eq_comm, sub_eq_iff_eq_add, he_apply]
+    replace corank_e' : finrank K (V ⧸ e'.fixedSubmodule) = n := by
+      apply le_antisymm corank_e'
+      rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank,
+        ← finrank_quotient_add_finrank e.fixedSubmodule, ← hn, add_assoc]
+      simp only [add_le_add_iff_left]
+      rw [he']
+      apply finrank_fixedSubmodule_mul_transvection_le
+      rw [inv_mem_transvections, ht]
+      exact mem_transvections hfv
+    have H : e.fixedSubmodule = e'.fixedSubmodule ⊓ LinearMap.ker f := by
+      symm
+      apply Submodule.eq_of_le_of_finrank_le
+      · rintro x ⟨hx', hfx : f x = 0⟩
+        replace hx' : e' x = x := by simpa using hx'
+        rw [mem_fixedSubmodule_ifHe'f, he_apply, hx', hfx, zero_smul, add_zero]
+      · rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank,
+          ← finrank_quotient_add_finrank e'.fixedSubmodule, ← hn, corank_e',
+          add_assoc, add_le_add_iff_left]
+        rw [add_comm, ← Nat.add_le_add_iff_left, ← add_assoc,
+          finrank_sup_add_finrank_inf_eq, add_comm, add_assoc,
+          add_le_add_iff_left]
+        apply le_trans (finrank_le _)
+        rw [← Nat.add_le_add_iff_left, ← add_assoc,
+          LinearMap.finrank_range_add_finrank_ker, add_comm, add_le_add_iff_left]
+        exact le_trans (finrank_le _) (by simp)
+    have Hl : e.fixedSubmodule ≤ e'.fixedSubmodule := H ▸ inf_le_left
+    have Hr : e.fixedSubmodule ≤ LinearMap.ker f := H ▸ inf_le_right
+    obtain ⟨a, hea⟩ := he_exc.2
+    have ha1 : a ≠ 1 := fun h ↦ by
+      apply he_exc.1
+      simp [← Subtype.coe_inj, ← LinearEquiv.toLinearMap_inj, hea, h]
+    have ha1' : 1 - a ≠ 0 := by
+      rwa [ne_eq, eq_comm, ← sub_eq_zero] at ha1
+    have hea' (x : V) : e x - a • x ∈ e'.fixedSubmodule := by
+      simp only [reduce_eq_smul_id_iff] at hea
+      exact Hl (hea x)
+    have heaf (x : V) : f (e x) = a * f x := by
+      simp only [reduce_eq_smul_id_iff] at hea
+      rw [← sub_eq_zero]
+      simpa using Hr (hea x)
+    simp only at heaf hea' he_apply he'_apply
+    have He' : ¬ IsExceptional e' := hind e' corank_e'.symm he'_mem
+    simp only [IsExceptional, ne_eq, not_and_or, not_not] at He'
+    -- By induction, it remains to prove that `e'` is exceptional.
+    rcases He' with (He' | He')
+    · -- Assuming that `e'.reduce = 1`, a computation will lead to `e' = 1`.
+      simp only [reduce_eq_one, he'_apply] at He'
+      have (x : V) : (1 - a) • x + f x • e v ∈ e'.fixedSubmodule := by
+        convert sub_mem (hea' x) (He' x) using 1
+        simp only [sub_smul, one_smul, sub_sub]
+        module
+      have H'v : v ∈ e'.fixedSubmodule := by
+        specialize this v
+        rw [hfv, zero_smul, add_zero] at this
+        rw [ne_eq, eq_comm, ← sub_eq_zero] at ha1
+        rwa [← smul_mem_iff _ ha1]
+      have Hv : v ∈ e.fixedSubmodule := by
+        simp only [mem_fixedSubmodule_iff] at ⊢ H'v
+        rw [he_apply, H'v, hfv, zero_smul, add_zero]
+      have this (x : V) : e x - x ∈ e'.fixedSubmodule := by
+        rw [← sub_add_cancel (e x - x) (f x • e v), sub_right_comm]
+        apply add_mem (He' x)
+        apply smul_mem
+        simp only [mem_fixedSubmodule_iff] at Hv H'v ⊢
+        rw [Hv, H'v]
+      replace this (x : V) : x ∈ e'.fixedSubmodule := by
+        rw [← smul_mem_iff _ ha1']
+        have := sub_mem (hea' x) (this x)
+        convert this using 1
+        module
+      replace this : e' = 1 := by
+        ext x
+        simpa [mem_fixedSubmodule_iff] using this x
+      -- Now that `e' = 1`, we have `e = t`, and we conclude
+      -- using the fact that a transvection is not exceptional.
+      apply he_exc.1
+      rw [← he, this, one_mul]
+      apply reduce_eq_one_of_finrank
+      rw [← mem_transvections_iff_finrank_le_one]
+      rw [ht]
+      exact mem_transvections hfv
+    · set W := e.fixedSubmodule ⊔ K ∙ (e v) with hW
+      simp only at hW
+      have hWt : Submodule.map (t : V ≃ₗ[K] V) W = W := sorry
+      have hWe' : Submodule.map (e' : V ≃ₗ[K] V) W = W := sorry
+      let tW := mkQ W
+
+
+
+      sorry
+
 end
 
 end LinearEquiv
