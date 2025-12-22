@@ -36,7 +36,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 
 * `isOpenMap_quotient_mk'_mul` : The quotient map by a group action is open.
 * `t2Space_of_properlyDiscontinuousSMul_of_t2Space` : The quotient by a discontinuous group
-  action of a locally compact t2 space is t2.
+  action of a locally compact T₂ space is T₂.
 
 ## Tags
 
@@ -236,6 +236,10 @@ def Homeomorph.smul (γ : G) : α ≃ₜ α where
 add_decl_doc Homeomorph.vadd
 
 @[to_additive]
+theorem isHomeomorph_smul (c : G) : IsHomeomorph fun x : α ↦ c • x :=
+  (Homeomorph.smul c).isHomeomorph
+
+@[to_additive]
 theorem isOpenMap_smul (c : G) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smul c).isOpenMap
 
@@ -345,6 +349,9 @@ theorem Homeomorph.smulOfNeZero_symm_apply {c : G₀} (hc : c ≠ 0) :
     ⇑(Homeomorph.smulOfNeZero c hc).symm = (c⁻¹ • · : α → α) :=
   rfl
 
+theorem isHomeomorph_smul₀ {c : G₀} (hc : c ≠ 0) : IsHomeomorph fun x : α ↦ c • x :=
+  (Homeomorph.smulOfNeZero c hc).isHomeomorph
+
 theorem isOpenMap_smul₀ {c : G₀} (hc : c ≠ 0) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smulOfNeZero c hc).isOpenMap
 
@@ -430,6 +437,9 @@ nonrec theorem continuous_const_smul_iff (hc : IsUnit c) :
     (Continuous fun x => c • f x) ↔ Continuous f :=
   continuous_const_smul_iff hc.unit
 
+nonrec theorem isHomeomorph_smul (hc : IsUnit c) : IsHomeomorph fun x : α ↦ c • x :=
+  isHomeomorph_smul hc.unit
+
 nonrec theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
   isOpenMap_smul hc.unit
 
@@ -440,11 +450,26 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
     c • s ∈ 𝓝 (c • a) ↔ s ∈ 𝓝 a :=
   smul_mem_nhds_smul_iff hc.unit
 
+theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
+    [SMul S β] (f : α →[S] β) [TopologicalSpace β] (hf : IsQuotientMap f)
+    (c : S) (hc : IsUnit (c • 1 : M)) : IsQuotientMap (c • · : β → β) :=
+  hf.of_comp_isQuotientMap <| by convert hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
+
+theorem isQuotientMap_nsmul {M β} [Semiring M] [AddCommMonoid α] [Module M α]
+    [ContinuousConstSMul M α] [AddMonoid β] (f : α →+ β) [TopologicalSpace β]
+    (hf : IsQuotientMap f) (n : ℕ) (hc : IsUnit (n : M)) : IsQuotientMap (n • · : β → β) :=
+  isQuotientMap_smul (M := M) ⟨f, map_nsmul f⟩ hf _ <| by rwa [nsmul_one]
+
+theorem isQuotientMap_zsmul {M β} [Ring M] [AddCommGroup α] [Module M α]
+    [ContinuousConstSMul M α] [AddGroup β] (f : α →+ β) [TopologicalSpace β]
+    (hf : IsQuotientMap f) (n : ℤ) (hc : IsUnit (n : M)) : IsQuotientMap (n • · : β → β) :=
+  isQuotientMap_smul (M := M) ⟨f, map_zsmul f⟩ hf _ <| by rwa [zsmul_one n]
+
 end IsUnit
 
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
-`γ:Γ` move `K` to have nontrivial intersection with `L`.
+`γ : Γ` move `K` to have nontrivial intersection with `L`.
 -/
 class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [SMul Γ T] :
     Prop where
@@ -454,7 +479,7 @@ class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [S
 
 /-- Class `ProperlyDiscontinuousVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
-`γ:Γ` move `K` to have nontrivial intersection with `L`.
+`γ : Γ` move `K` to have nontrivial intersection with `L`.
 -/
 class ProperlyDiscontinuousVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ T] :
   Prop where
@@ -467,12 +492,49 @@ attribute [to_additive] ProperlyDiscontinuousSMul
 export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
 export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
+section
+
+variable (Γ : Type*) {T : Type*}
+variable [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer' : {γ : Γ | γ • x = x}.Finite := by
+  simp_rw [← mem_singleton_iff, ← singleton_inter_nonempty, ← image_singleton]
+  exact finite_disjoint_inter_image isCompact_singleton isCompact_singleton
+
+variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self :
+    ∃ U ∈ 𝓝 x, ∀ γ : Γ, ((γ • ·) '' U ∩ U).Nonempty → γ • x = x := by
+  obtain ⟨V, V_cpt, V_nhd⟩ := exists_compact_mem_nhds x
+  let Γ₀ := {γ : Γ | ((γ • ·) '' V ∩ V).Nonempty ∧ γ • x ≠ x}
+  have : Finite Γ₀ := (finite_disjoint_inter_image V_cpt V_cpt).subset fun _ ↦ And.left
+  choose u v hu hv u_v_disjoint using fun γ : Γ₀ ↦ t2_separation_nhds γ.2.2
+  refine ⟨V ∩ ⋂ γ : Γ₀, (γ.1 • ·) ⁻¹' u γ ∩ v γ, inter_mem V_nhd (iInter_mem.mpr fun γ ↦
+    inter_mem ((continuous_const_smul _).continuousAt <| hu γ) (hv γ)), fun γ hγ ↦ ?_⟩
+  obtain ⟨_, ⟨z, hz, rfl⟩, hγz⟩ := hγ
+  by_contra h
+  rw [mem_inter_iff, mem_iInter] at hz hγz
+  let γ : Γ₀ := ⟨γ, ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
+  exact (u_v_disjoint γ).le_bot ⟨(hz.2 γ).1, (hγz.2 γ).2⟩
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_disjoint_image :
+    ∃ U ∈ 𝓝 x, ∀ γ : Γ, γ • x ≠ x → Disjoint ((γ • ·) '' U) U := by
+  convert exists_nhds_image_smul_eq_self Γ x using 4
+  rw [← not_imp_not]
+  simp [Set.not_disjoint_iff_nonempty_inter]
+
+end
+
 variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ T]
 
 /-- A finite group action is always properly discontinuous. -/
 @[to_additive /-- A finite group action is always properly discontinuous. -/]
 instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
     ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer [ProperlyDiscontinuousSMul Γ T]
+    (x : T) : (MulAction.stabilizer Γ x : Set Γ).Finite :=
+  ProperlyDiscontinuousSMul.finite_stabilizer' Γ x
 
 /-- The quotient map by a group action is open, i.e. the quotient by a group action is an open
   quotient. -/
@@ -489,9 +551,9 @@ theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
     IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
   ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
-/-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
-@[to_additive /-- The quotient by a discontinuous group action of a locally compact t2
-space is t2. -/]
+/-- The quotient by a discontinuous group action of a locally compact T₂ space is T₂. -/
+@[to_additive /-- The quotient by a discontinuous group action of a locally compact T₂
+space is T₂. -/]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by

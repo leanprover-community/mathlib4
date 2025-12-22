@@ -59,6 +59,15 @@ namespace IsSMulRegular
 
 variable {M}
 
+@[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
+    IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
+  simp_rw [IsSMulRegular, Function.Injective]
+  conv_rhs => rw [← n.sign_mul_natAbs]
+  obtain h | h | h := n.sign_trichotomy
+  · simp [h]
+  · simp [Int.sign_eq_zero_iff_zero.mp h]
+  · simp [h, neg_zsmul]
+
 section SMul
 
 variable [SMul R M] [SMul R S] [SMul S M] [IsScalarTower R S M]
