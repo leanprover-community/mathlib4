@@ -30,12 +30,12 @@ variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w : V}
 variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
 `k` edges. -/
-def IsEdgeReachable (k : ℕ) (u v : V) : Prop :=
+def IsEdgeReachable : Prop :=
   ∀ ⦃s : Set (Sym2 V)⦄, s.encard < k → (G.deleteEdges s).Reachable u v
 
 variable (G k) in
 /-- A graph is `k`-edge-connected if any two vertices are `k`-edge-reachable. -/
-def IsEdgeConnected (k : ℕ) : Prop := ∀ u v, G.IsEdgeReachable k u v
+def IsEdgeConnected : Prop := ∀ u v, G.IsEdgeReachable k u v
 
 @[simp] lemma IsEdgeReachable.rfl (u : V) : G.IsEdgeReachable k u u := fun _ _ ↦ .rfl
 
@@ -68,7 +68,7 @@ lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
   simp [IsEdgeConnected, Preconnected]
 
-lemma isEdgeReachable_succ :
+lemma isEdgeReachable_add_one :
     G.IsEdgeReachable (k + 1) u v ↔
       G.Reachable u v ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeReachable k u v := by
   refine ⟨fun h ↦ ⟨G.deleteEdges_empty ▸ h (by simp), fun e he s hk ↦ ?_⟩, ?_⟩
@@ -88,19 +88,19 @@ lemma isEdgeReachable_succ :
 lemma isEdgeConnected_succ {k : ℕ} :
     G.IsEdgeConnected (k + 1) ↔
       G.Preconnected ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeConnected k := by
-  simp_rw [IsEdgeConnected, isEdgeReachable_succ, forall_and, Preconnected]
-  refine and_congr_right (fun _ => ⟨fun h e he u v => h u v e he, fun h u v e he => h e he u v⟩)
+  simp [IsEdgeConnected, isEdgeReachable_add_one, Preconnected]
+  grind
 
 /-- A graph is 2-edge-connected iff it is preconnected and has no bridges. -/
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ∀ e, ¬G.IsBridge e := by
   refine ⟨fun h ↦ ⟨fun u v ↦ isEdgeReachable_one.mp <| .anti (Nat.le_succ 1) (h u v), ?_⟩, ?_⟩
   · rintro ⟨⟩ he_bridge
     exact he_bridge.right <| h _ _ <| Set.encard_singleton _ ▸ Nat.one_lt_ofNat
-  · refine fun ⟨h_pre, h_bridge⟩ u v ↦ isEdgeReachable_succ.mpr ⟨h_pre u v, ?_⟩
+  · refine fun ⟨h_pre, h_bridge⟩ u v ↦ isEdgeReachable_add_one.mpr ⟨h_pre u v, ?_⟩
     · rintro ⟨⟩ he
       apply isEdgeReachable_one.mpr
       have h_conn : G.Connected := { preconnected := h_pre, nonempty := ⟨‹_›⟩ }
-      exact h_conn.connected_delete_edge_of_not_isBridge (h_bridge _ ·) |>.preconnected ..
+      exact (h_conn.connected_delete_edge_of_not_isBridge <| h_bridge _).preconnected ..
 
 /-- An edge is a bridge iff its endpoints are adjacent and not 2-edge-reachable. -/
 lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
@@ -115,5 +115,11 @@ lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
     by_cases hx : s(u, v) = x
     · exact hx ▸ hr
     exact deleteEdges_adj.mpr ⟨hadj, hx⟩ |>.reachable
+
+lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
+  isEdgeReachable_one.mp (huv.anti (Nat.one_le_iff_ne_zero.mpr hk))
+
+lemma IsEdgeConnected.preconnected (hk : k ≠ 0) (h : G.IsEdgeConnected k) : G.Preconnected :=
+  fun u v ↦ (h u v).reachable hk
 
 end SimpleGraph
