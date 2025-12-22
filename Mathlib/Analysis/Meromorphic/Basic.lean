@@ -516,28 +516,6 @@ theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [Complet
     (isDiscrete_of_codiscreteWithin _)
   simpa using eventually_codiscreteWithin_analyticAt f h
 
-/--
-The singular set of a meromorphic function is countable.
--/
-theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
-    (h : MeromorphicOn f Set.univ) :
-    {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
-  simpa using (countable_compl_analyticAt_inter h)
-
-/--
-Meromorphic functions are measurable.
--/
-theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
-    [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : MeromorphicOn f Set.univ) :
-    Measurable f := by
-  set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
-  have h₁ : sᶜ.Countable := by simpa using h.countable_compl_analyticAt_inter
-  have h₁' := h₁.to_subtype
-  have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
-  have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
-  exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
-    (by simp [-mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
-
 end MeromorphicOn
 
 /-- Meromorphy of a function on all of 𝕜. -/
@@ -575,8 +553,15 @@ lemma sub (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f - g) := fun x ↦ (hf x).sub (hg x)
 
 @[to_fun (attr := fun_prop)]
+lemma smul {f : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+    Meromorphic (f • g) := fun x ↦ (hf x).smul (hg x)
+
+@[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f * g) := fun x ↦ (hf x).mul (hg x)
+
+@[to_fun (attr := fun_prop)]
+lemma inv {f : 𝕜 → 𝕜} (hf : Meromorphic f) : Meromorphic f⁻¹ := fun x ↦ (hf x).inv
 
 @[to_fun (attr := fun_prop)]
 theorem prod (h : ∀ σ, Meromorphic (F σ)) :
@@ -599,5 +584,32 @@ protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deri
 @[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
     Meromorphic (deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
+
+/--
+The singular set of a meromorphic function is countable.
+-/
+theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
+    (h : Meromorphic f) :
+    {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
+  simpa using (h.meromorphicOn (s := univ)).countable_compl_analyticAt_inter
+
+@[deprecated (since := "2025-12-21")] alias MeromorphicOn.countable_compl_analyticAt :=
+  countable_compl_analyticAt
+
+/--
+Meromorphic functions are measurable.
+-/
+theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
+    [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : Meromorphic f) :
+    Measurable f := by
+  set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
+  have h₁ : sᶜ.Countable  := by simpa using h.countable_compl_analyticAt
+  have h₁' := h₁.to_subtype
+  have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
+  have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
+  exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
+    (by simp [- mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
+
+@[deprecated (since := "2025-12-21")] alias MeromorphicOn.measurable := measurable
 
 end Meromorphic
