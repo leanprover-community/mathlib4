@@ -32,9 +32,6 @@ open Lean Meta
 
 namespace Meta.FunProp
 
-/-- Internal definition to represent pi types as function application. -/
-private abbrev Pi {α : Sort*} (p : α → Sort*) := ∀ x, p x
-
 namespace Mor
 
 /-- Is `name` a coercion from some function space to functions? -/
@@ -138,8 +135,11 @@ where
 
       go (.app (.app c f) x) as
     | .app f a, as => go f (as.push { expr := a })
-    | .forallE x a b bi, _ => do
-      go (← mkAppM ``Pi #[.lam x a b bi]) #[]
+    | .forallE x t b bi, _ => do
+      let u := (← inferType t).sortLevel!
+      let v := (← withLocalDecl x bi t fun x => do
+        return (← inferType (b.instantiate1 x)).sortLevel!)
+      k (.const `_Forall [u, v]) #[{ expr := t }, { expr := .lam x t b bi }]
     | f, as => k f as.reverse
 
 
@@ -164,7 +164,11 @@ def getAppArgs (e : Expr) : MetaM (Array Arg) := withApp e fun _ xs => return xs
 
 /-- `mkAppN f #[a₀, ..., aₙ]` ==> `f a₀ a₁ .. aₙ` where `f` can be bundled morphism. -/
 def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
-  xs.foldl (init := f) (fun f x =>
+  let fn :=
+    if f.isConstOf `_Forall then
+      Expr.mkLambdaForall f.constLevels![0]! f.constLevels![1]!
+    else f
+  xs.foldl (init := fn) (fun f x =>
     match x with
     | ⟨x, .none⟩ => (f.app x)
     | ⟨x, some coe⟩ => (coe.app f).app x)
