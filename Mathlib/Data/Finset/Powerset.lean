@@ -73,6 +73,42 @@ theorem powerset_empty : (∅ : Finset α).powerset = {∅} :=
 theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
   rw [← powerset_empty, powerset_inj]
 
+theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
+    Set.InjOn (fun (x : Finset α) => x.image f) s.powerset := by
+  intro x hx y hy h
+  rw [mem_coe, mem_powerset] at hx hy
+  dsimp at h
+  ext a
+  by_cases a ∈ s
+  case pos ha =>
+    have {z : Finset α} (hz : z ⊆ s) : a ∈ z ↔ f a ∈ z.image f := by
+      refine ⟨fun b => mem_image_of_mem f b, fun h => ?_⟩
+      obtain ⟨b, hb₁, hb₂⟩ := mem_image.mp h
+      suffices b = a by rwa [this] at hb₁
+      exact (H.eq_iff (hz hb₁) ha).mp hb₂
+    rw [this hx, this hy, h]
+  case neg ha => tauto
+
+theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
+    Set.SurjOn (fun (x : Finset α) => x.image f) s.powerset (s.image f).powerset := by
+  intro t ht
+  rw [mem_coe, mem_powerset] at ht
+  simp_rw [Set.mem_image, mem_coe, mem_powerset]
+  use { x ∈ s | f x ∈ t}
+  grind
+
+theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
+    (s.image f).powerset = s.powerset.image (fun x => x.image f) := by
+  ext a
+  rw [mem_powerset, mem_image]
+  refine ⟨fun ha => ?_, fun ha => ?_⟩
+  · use { x ∈ s | f x ∈ a }
+    grind
+  · obtain ⟨b, hb₁, hb₂⟩ := ha
+    rw [mem_powerset] at hb₁
+    rw [← hb₂]
+    exact image_subset_image hb₁
+
 /-- **Number of Subsets of a Set** -/
 @[simp]
 theorem card_powerset (s : Finset α) : card (powerset s) = 2 ^ card s :=
