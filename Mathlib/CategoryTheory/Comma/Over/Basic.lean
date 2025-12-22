@@ -368,7 +368,7 @@ compatible with `Over.map` base category, mediated by the iterated slice equival
 @[simps! hom_app_left_left inv_app_left_left]
 def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
     f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
-  NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _))) (by cat_disch)
+  NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _)))
 
 end IteratedSlice
 
