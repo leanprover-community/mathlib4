@@ -718,9 +718,12 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
+set_option backward.privateInPublic true in
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `limSeq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
 same limit point as `f`. -/
 def limSeq : ℕ → ℚ :=
