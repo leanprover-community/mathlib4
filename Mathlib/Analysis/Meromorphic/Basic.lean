@@ -86,20 +86,15 @@ lemma add {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
 
 @[deprecated (since := "2025-05-09")] alias add' := fun_add
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.fun_smul hg using 2 with z
-  rw [Pi.smul_apply', smul_eq_mul]
+  convert hf.smul hg using 2 with z
+  simp
   module
-
-@[fun_prop]
-lemma fun_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
-    MeromorphicAt (fun z ↦ f z • g z) x :=
-  hf.smul hg
 
 @[deprecated (since := "2025-05-09")] alias smul' := fun_smul
 
@@ -434,10 +429,7 @@ include hf in
   ⟨fun h ↦ by simpa only [neg_neg] using h.neg, neg⟩
 
 include hs hf in
-lemma smul : MeromorphicOn (s • f) U := fun x hx ↦ (hs x hx).smul (hf x hx)
-
-include hs hf in
-lemma fun_smul : MeromorphicOn (fun z ↦ s z • f z) U := fun x hx ↦ (hs x hx).smul (hf x hx)
+@[to_fun] lemma smul : MeromorphicOn (s • f) U := fun x hx ↦ (hs x hx).smul (hf x hx)
 
 include hs ht in
 @[to_fun] lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)

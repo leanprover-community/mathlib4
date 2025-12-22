@@ -520,6 +520,7 @@ variable {M X α β : Type*} [MeasurableSpace X] [SMul M X]
 section MeasurableConstSMul
 variable [MeasurableConstSMul M X]
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := fun_prop)]
 lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :=
   (measurable_const_smul c).comp hg
@@ -535,6 +536,7 @@ lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Meas
 lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := fun_prop)]
 lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
   hf.fun_const_smul c
