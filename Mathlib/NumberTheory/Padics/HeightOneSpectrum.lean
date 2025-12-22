@@ -62,7 +62,7 @@ variable (R : Type*) [CommRing R] [Algebra R ℚ]
 theorem Rat.int_algebraMap_injective : Function.Injective (algebraMap ℤ R) :=
   .of_comp (IsScalarTower.algebraMap_eq ℤ R ℚ ▸ RingHom.injective_int (algebraMap ℤ ℚ))
 
-variable [IsIntegralClosure R ℤ ℚ] [IsFractionRing R ℚ]
+variable [IsFractionRing R ℚ] [IsIntegralClosure R ℤ ℚ]
 
 theorem Rat.int_algebraMap_surjective : Function.Surjective (algebraMap ℤ R) := by
   intro x
