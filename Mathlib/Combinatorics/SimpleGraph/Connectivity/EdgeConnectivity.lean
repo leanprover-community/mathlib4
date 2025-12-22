@@ -98,9 +98,9 @@ lemma isEdgeReachable_succ {k : ℕ} {u v : V} :
 
 lemma isEdgeConnected_succ {k : ℕ} :
     G.IsEdgeConnected (k + 1) ↔
-      G.IsEdgeConnected 1 ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeConnected k := by
-  simp only [IsEdgeConnected, isEdgeReachable_succ, IsEdgeReachable.zero]
-  grind
+      G.Preconnected ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeConnected k := by
+  simp_rw [IsEdgeConnected, isEdgeReachable_succ, forall_and, Preconnected]
+  refine and_congr_right (fun _ => ⟨fun h e he u v => h u v e he, fun h u v e he => h e he u v⟩)
 
 /-- A graph is 2-edge-connected iff it is preconnected and has no bridges. -/
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ∀ e, ¬G.IsBridge e := by
@@ -113,7 +113,7 @@ lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ∀ e, ¬
       have h_conn : G.Connected := { preconnected := h_pre, nonempty := ⟨‹_›⟩ }
       exact h_conn.connected_delete_edge_of_not_isBridge (h_bridge _ ·) |>.preconnected ..
 
-/-- An edge is a bridge iff its endpoints are adj and not 2-edge-reachable. -/
+/-- An edge is a bridge iff its endpoints are adjacent and not 2-edge-reachable. -/
 lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬G.IsEdgeReachable 2 u v := by
   refine ⟨fun h ↦ ⟨h.left, fun hc ↦ ?_⟩, fun ⟨hadj, hc⟩ ↦ ?_⟩
