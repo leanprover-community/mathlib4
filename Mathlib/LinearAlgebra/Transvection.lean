@@ -21,7 +21,6 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 * `LinearMap.transvection.det` shows that the determinant of
 `LinearMap.transvection f v` is equal to `1 + f v`.
 
-
 * If, moreover, `f v = 0`, then `LinearEquiv.transvection` shows that it is
  a linear equivalence.
 
