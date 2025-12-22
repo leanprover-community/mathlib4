@@ -5,6 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public import Mathlib.Tactic.InfoviewSearch.Util
 public meta import Mathlib.Tactic.NthRewrite
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Lean.GoalsLocation
@@ -155,28 +156,16 @@ def tacticSyntax (e eNew : Expr) (occ : Option Nat) (loc : Option Name) :
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
-def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp.Range)
-    (doc : FileWorker.EditableDocument) : MetaM (Option Html) := do
+def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (pasteInfo : PasteInfo) :
+    MetaM (Option Html) := do
   let results ← filteredUnfolds e
   if results.isEmpty then
     return none
-  let core ← results.mapM fun unfold => do
-    let tactic ← tacticSyntax e unfold occ loc
-    let tactic ← tacticPasteString tactic range
-    return <li> {
-      .element "p" #[] <|
-        #[<span className="font-code" style={json% { "white-space" : "pre-wrap" }}> {
-          Html.ofComponent MakeEditLink
-            (.ofReplaceRange doc.meta range tactic)
-            #[.text <| Format.pretty <| (← Meta.ppExpr unfold)] }
-        </span>]
-      } </li>
-  return <details «open»={true}>
-    <summary className="mv2 pointer">
-      {.text "Definitional rewrites:"}
-    </summary>
-    {.element "ul" #[("style", json% { "padding-left" : "30px"})] core}
-  </details>
+  return mkInsertList (.text "Definitional rewrites:") <| ←
+    results.mapM fun unfold => do
+      let tactic ← tacticSyntax e unfold occ loc
+      let tactic ← tacticPasteString tactic pasteInfo.replaceRange
+      return mkInsert tactic pasteInfo <InteractiveCode fmt={← ppExprTagged unfold}/>
 
 
 @[server_rpc_method_cancellable]
@@ -203,7 +192,7 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
           "not type correct. This usually occurs when trying to rewrite a term that appears " ++
           "as a dependent argument."
       let location ← loc.fvarId?.mapM FVarId.getUserName
-      let html ← renderUnfolds subExpr occ location props.replaceRange doc
+      let html ← renderUnfolds subExpr occ location { props with doc }
       return html.getD
         <span>
           No unfolds found for {<InteractiveCode fmt={← ppExprTagged subExpr}/>}

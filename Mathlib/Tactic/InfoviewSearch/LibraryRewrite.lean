@@ -365,7 +365,7 @@ structure RewriteInterface where
   /-- The replacement expression obtained from the rewrite -/
   replacement : Expr
   /-- The replacement expression obtained from the rewrite -/
-  replacementString : String
+  replacementCode : CodeWithInfos
   /-- The extra goals created by the rewrite -/
   extraGoals : Array CodeWithInfos
   /-- The lemma name with hover information -/
@@ -380,7 +380,7 @@ def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Na
     (loc : Option Name) (range : Lsp.Range) : MetaM RewriteInterface := do
   let tactic ← tacticSyntax rw occ loc
   let tactic ← tacticPasteString tactic range
-  let replacementString := Format.pretty (← ppExpr rw.replacement)
+  let replacementCode ← ppExprTagged rw.replacement
   let mut extraGoals := #[]
   for (mvarId, bi) in rw.extraGoals do
     if bi.isExplicit then
@@ -392,11 +392,11 @@ def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Na
       | .tag tag _ => .tag tag (.text s!"{name}")
       | code => code
     let lemmaType := (← getConstInfo name).type
-    return { rw with tactic, replacementString, extraGoals, prettyLemma, lemmaType }
+    return { rw with tactic, replacementCode, extraGoals, prettyLemma, lemmaType }
   | .inr fvarId =>
     let prettyLemma ← ppExprTagged (.fvar fvarId)
     let lemmaType ← fvarId.getType
-    return { rw with tactic, replacementString, extraGoals, prettyLemma, lemmaType }
+    return { rw with tactic, replacementCode, extraGoals, prettyLemma, lemmaType }
 
 /-- The kind of rewrite -/
 inductive Kind where
@@ -438,7 +438,7 @@ def pattern {α} (type : Expr) (symm : Bool) (k : Expr → MetaM α) : MetaM α 
 
 /-- Render the given rewrite results. -/
 def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind)) (init : Option Html)
-    (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) :
+    (pasteInfo : PasteInfo) (showNames : Bool) :
     MetaM Html := do
   let htmls ← results.filterMapM (renderSection showNames)
   let htmls := match init with
@@ -456,31 +456,18 @@ where
       | .hypothesis => " (local hypotheses)"
       | .fromFile => " (lemmas from current file)"
       | .fromCache => ""
-    return <details «open»={true}>
-      <summary className="mv2 pointer">
-        Pattern
-        {← pattern head.lemmaType head.symm (return <InteractiveCode fmt={← ppExprTagged ·}/>)}
-        {.text suffix}
-      </summary>
-      {renderSectionCore showNames sec.1}
-    </details>
+    let patt ← pattern head.lemmaType head.symm (return <InteractiveCode fmt={← ppExprTagged ·}/>)
+    return mkInsertList (<span>Pattern {patt}{.text suffix}</span>)
+      (renderSectionCore showNames sec.1)
 
   /-- Render the list of rewrite results in one section. -/
-  renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Html :=
-    .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
+  renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Array Html :=
     sec.map fun rw =>
-      <li> { .element "p" #[] <|
-        let button :=
-          <span className="font-code"> {
-            Html.ofComponent MakeEditLink
-              (.ofReplaceRange doc.meta range rw.tactic)
-              #[.text rw.replacementString] }
-          </span>
-        let extraGoals := rw.extraGoals.flatMap fun extraGoal =>
-          #[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={extraGoal}/>]
-        #[button] ++ extraGoals ++
-          if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
-      </li>
+      let extraGoals := rw.extraGoals.flatMap fun extraGoal => #[<div>
+        <strong className="goal-vdash">⊢ </strong> <InteractiveCode fmt={extraGoal}/> </div>]
+      mkInsert rw.tactic pasteInfo <| .element "div" #[] <|
+        #[<InteractiveCode fmt={rw.replacementCode}/>] ++ extraGoals ++
+          if showNames then #[<div> <InteractiveCode fmt={rw.prettyLemma}/> </div>] else #[]
 
 private def libraryRewrite (goals : Array InteractiveGoal)
     (selectedLoc : SubExpr.GoalsLocation) (replaceRange : Lsp.Range) :
@@ -506,12 +493,12 @@ private def libraryRewrite (goals : Array InteractiveGoal)
           This usually occurs when trying to rewrite a term that appears as a dependent argument."
       let location ← selectedLoc.fvarId?.mapM FVarId.getUserName
 
-      let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location replaceRange doc
+      let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location { replaceRange, doc }
 
       let (filtered, all) ←
         getRewriteInterfaces subExpr occ location selectedLoc.fvarId? replaceRange
-      let filtered ← renderRewrites subExpr filtered unfoldsHtml replaceRange doc false
-      let all      ← renderRewrites subExpr all      unfoldsHtml replaceRange doc true
+      let filtered ← renderRewrites subExpr filtered unfoldsHtml { replaceRange, doc } false
+      let all      ← renderRewrites subExpr all      unfoldsHtml { replaceRange, doc } true
       return <FilterDetails
         summary={.text "Rewrite suggestions:"}
         all={all}
