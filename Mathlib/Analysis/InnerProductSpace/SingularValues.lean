@@ -169,25 +169,32 @@ public noncomputable def rightSingularVectors : ℕ →₀ E :=
       (Set.toFinite _)
 
 public noncomputable def leftSingularVectors : ℕ →₀ F :=
-  -- This definition could be wrong and might need to be changed.
-  -- Can this be defined so that `rightSingularVectors_adjoint` and `leftSingularVectors_adjoint`
-  -- still work?
-  (adjoint T).rightSingularVectors
+  Finsupp.ofSupportFinite
+    (fun i =>
+      if h : singularValues T i = 0 then
+        0
+      else
+        ((singularValues T i : ℝ)⁻¹ : 𝕜) •
+          T (rightSingularVectors T i))
+    ((singularValues T).support.finite_toSet.subset fun i hi => by
+      contrapose! hi
+      simp [Finsupp.notMem_support_iff.1 hi])
 
-@[simp]
-public theorem rightSingularVectors_adjoint
-  : (adjoint T).rightSingularVectors = T.leftSingularVectors := (rfl)
+-- This is no longer true under our new definition
+-- @[simp]
+-- public theorem rightSingularVectors_adjoint
+--   : (adjoint T).rightSingularVectors = T.leftSingularVectors := (rfl)
 
-@[simp]
-public theorem leftSingularVectors_adjoint
-  : (adjoint T).leftSingularVectors = T.rightSingularVectors := by simp [leftSingularVectors]
+-- This is no longer true under our new definition
+-- @[simp]
+-- public theorem leftSingularVectors_adjoint
+--   : (adjoint T).leftSingularVectors = T.rightSingularVectors := by simp [leftSingularVectors]
 
 public theorem rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.rightSingularVectors i = T.isSymmetric_adjoint_comp_self.eigenvectorBasis hn i := sorry
 
 public theorem leftSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 F = n) (i : Fin n)
-  : T.leftSingularVectors i = T.isSymmetric_self_comp_adjoint.eigenvectorBasis hn i := by
-  simpa using (adjoint T).rightSingularVectors_fin hn i
+  : T.leftSingularVectors i = T.isSymmetric_self_comp_adjoint.eigenvectorBasis hn i := sorry
 
 public theorem rightSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 E ≤ i)
   : T.rightSingularVectors i = 0 := sorry
