@@ -51,24 +51,6 @@ Height, absolute value
 
 -/
 
-section aux
-
--- Some lemmas needed later
-
-private lemma le_mul_max_max_left (a b : ℝ) : b ≤ (b ⊔ 1) * (a ⊔ 1) := by
-  nth_rewrite 1 [← mul_one b]
-  gcongr <;> grind
-
-private lemma le_mul_max_max_right (a b : ℝ) : a ≤ (b ⊔ 1) * (a ⊔ 1) := by
-  rw [mul_comm]
-  exact le_mul_max_max_left b a
-
-private lemma one_le_mul_max_max (a b : ℝ) : 1 ≤ (a ⊔ 1) * (b ⊔ 1) := by
-  nth_rewrite 1 [← mul_one 1]
-  gcongr <;> exact le_max_right ..
-
-end aux
-
 @[expose] public noncomputable section
 
 namespace Height
