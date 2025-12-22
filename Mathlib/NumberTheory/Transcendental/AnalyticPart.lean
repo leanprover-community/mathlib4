@@ -19,15 +19,13 @@ open Set AnalyticAt AnalyticOnNhd
 
 universe u₁ u₂ u₃
 
-lemma analyticOn_congr {𝕜 : Type u₁} {E : Type u₂} {F : Type u₃} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type u₁} {E : Type u₂} {F : Type u₃} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-   {f g : E → F} {s : Set E} (_ : AnalyticOn 𝕜 f s) (hs : EqOn f g s) :
-     AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s := by
-  constructor
-  · intro hf
-    exact hf.congr (hs.symm)
-  · intro hg
-    exact hg.congr hs
+  {f g : E → F} {s : Set E}
+
+lemma analyticOn_congr (_ : AnalyticOn 𝕜 f s) (hs : EqOn f g s) :
+     AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s :=
+  ⟨fun h => h.congr hs.symm, fun h => h.congr hs⟩
 
 lemma zero_iff_order_inf : ∀ (f : ℂ → ℂ) (z : ℂ) (_ : ∀ z, AnalyticAt ℂ f z),
   (∀ z, f z = 0) ↔ analyticOrderAt f z = ⊤ := by
@@ -282,21 +280,15 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) (R R₁ : �
            ↑(r - k - 1) * ((z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - k).factorial * R₁ z))
             := by rw [← add_mul]; simp only [mul_assoc];congr;norm_cast; grind
           rw [H1]; clear H1;
-          simp only [one_mul, ← mul_assoc]
-          nth_rw 5 [mul_comm]
-          simp only [← add_assoc, mul_assoc]
-          rw [← mul_add]
-          simp only [← mul_assoc]
-          nth_rw 6 [mul_comm]
-          nth_rw 7 [mul_comm]
-          simp only [← mul_assoc]
+          simp only [one_mul, ← mul_assoc]; nth_rw 5 [mul_comm]
+          simp only [← add_assoc, mul_assoc]; rw [← mul_add]; simp only [← mul_assoc]
+          nth_rw 6 [mul_comm]; nth_rw 7 [mul_comm]; simp only [← mul_assoc]
           nth_rw 7 [mul_comm]
           simp only [mul_assoc, ← mul_add]
           have : (z - z₀) ^ (r - k) = (z - z₀) ^ (r - (k + 1)) * (z - z₀)^1 := by
-             rw [← pow_add]; congr; grind
+            rw [← pow_add]; congr; grind
           rw [this];clear this
-          simp only [mul_assoc, ← mul_add]
-          simp only [pow_one, mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
+          simp only [mul_assoc, ← mul_add, pow_one, mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
           left
           simp only [← mul_assoc]
           rw [← add_mul]
@@ -304,13 +296,10 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) (R R₁ : �
           rw [← add_mul]
           have : ↑(r - (k + 1) + 1)= ↑(r - k) := by grind
           norm_cast
-          rw [add_assoc]
-          simp only [mul_assoc]
-          rw [← mul_add, Nat.cast_add, Nat.cast_one]
+          rw [add_assoc]; simp only [mul_assoc]; rw [← mul_add, Nat.cast_add, Nat.cast_one]
           nth_rw 2 [add_comm]
           norm_cast
-          rw [H2]
-          rw [this]
+          rw [H2, this]
           simp only [← mul_assoc, mul_div]
           have : ((↑(r - k) *r.factorial)/↑(r - k).factorial : ℂ) =
              ↑r.factorial / ↑(r - (k + 1)).factorial := by
@@ -318,8 +307,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) (R R₁ : �
             · rw [H2]
               ring_nf
               simp only [Nat.cast_mul, _root_.mul_inv_rev]
-              nth_rw 2 [mul_comm]
-              nth_rw 3 [mul_comm]
+              nth_rw 2 [mul_comm]; nth_rw 3 [mul_comm]
               simp only [← mul_assoc, mul_eq_mul_right_iff, inv_eq_zero, Nat.cast_eq_zero]
               left
               rw [mul_assoc, mul_inv_cancel₀]
@@ -347,8 +335,7 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
       have IH' := IH (deriv f) (AnalyticAt.deriv hf) ?_
       · suffices analyticOrderAt (deriv f) z₀ = (n : ℕ) by
           refine analyticOrderAt_eq_succ_iff_deriv_order_eq_pred f z₀ hf
-            (n + 1) (hz 0 (by omega)) this ?_
-          simp
+            (n + 1) (hz 0 (by omega)) this (by simp)
         rw[← IH']
         constructor
         · intros k hk; exact hz (k + 1) (by omega)
