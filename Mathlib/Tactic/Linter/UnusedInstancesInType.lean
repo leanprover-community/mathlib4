@@ -248,7 +248,7 @@ section Fintype
 /--
 The `unusedFintypeInType` linter checks if a theorem's hypotheses include `Fintype` instances
 which are not used in the remainder of the type. If so, it suggests modifying the instances to
-`Finite _` or removing them entirely.
+`Finite _` and using `Fintype.ofFinite` in the proof, or removing them entirely.
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
 -/
