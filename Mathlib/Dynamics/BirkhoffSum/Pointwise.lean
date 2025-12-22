@@ -40,21 +40,19 @@ section BirkhoffMax
 
 variable {α : Type*}
 
-/-- The maximum of `birkhoffSum f φ i` for `i` ranging from `1` to `n + 1`. -/
-def birkhoffMax (f : α → α) (g : α → ℝ) : ℕ →o (α → ℝ) :=
-  partialSups (birkhoffSum f g ∘ .succ)
+/-- The maximum of `birkhoffSum f φ i` for `i` ranging from `0` to `n`. -/
+def birkhoffMax (f : α → α) (g : α → ℝ) : ℕ →o (α → ℝ) := partialSups (birkhoffSum f g)
 
-lemma birkhoffMax_succ {f : α → α} {g n x} :
-    birkhoffMax f g n.succ x = g x + 0 ⊔ birkhoffMax f g n (f x) := by
-  change
-    (partialSups (birkhoffSum f g ∘ Nat.succ)) n.succ x = g x + max 0 ((birkhoffMax f g) n (f x))
-  have h : birkhoffSum f g ∘ Nat.succ = fun k ↦ g + birkhoffSum f g k ∘ f := by
-    funext k _
-    simp [add_comm k 1, birkhoffSum_add f g 1, birkhoffSum_one]
-  rw [h, partialSups_const_add, Pi.add_apply, add_right_inj, show n.succ = Order.succ n by rfl,
-    partialSups_succ', Pi.sup_apply, Pi.partialSups_apply]
-  simp [Function.comp_apply, ← Pi.partialSups_apply]
-  rfl
+lemma birkhoffMax_succ {f : α → α} {g n} :
+    birkhoffMax f g (n + 1) = 0 ⊔ (g + birkhoffMax f g n ∘ f) := by
+  apply (partialSups_succ' ..).trans _
+  dsimp
+  have : birkhoffSum f g ∘ Nat.succ = fun k ↦ g + birkhoffSum f g k ∘ f := by
+    funext
+    exact birkhoffSum_succ' ..
+  rw [this, partialSups_const_add, birkhoffSum_zero']
+  funext
+  simp [birkhoffMax, partialSups]
 
 /-- The difference between the maximum of `birkhoffSum f φ i` for `i` ranging from `1` to `n + 1`
 and the maximum of the same quantity for `i` ranging from `2` to `n + 2`. -/
