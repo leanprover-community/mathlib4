@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 /-!
 # Cartesian natural transformations
 
-Defines natural transformations between functors is cartesian if all their naturality squares are
+A natural transformation between functors is cartesian if all its naturality squares are
 pullback squares.
 
 ## Main results
