@@ -387,13 +387,6 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
 
 end Field
 
-theorem Module.Free.of_det_ne_one {f : V →ₗ[R] V} (hf : f.det ≠ 1) :
-    Module.Free R V := by
-  by_cases H : ∃ s : Finset V, Nonempty (Module.Basis s R V)
-  · rcases H with ⟨s, ⟨hs⟩⟩
-    exact Module.Free.of_basis hs
-  · classical simp [LinearMap.coe_det, H] at hf
-
 /-- Determinant of a transvection, over a domain.
 
 See `LinearMap.transvection.det` for the general case. -/
