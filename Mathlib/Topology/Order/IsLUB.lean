@@ -213,21 +213,12 @@ theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) :
     ⨆ i, f i = ⨆ s : S, f s := by
-  rw [← sSup_range, ← sSup_range]
-  obtain (_ | _) := isEmpty_or_nonempty γ
-  · simp [Set.range_eq_empty]
-  by_cases h1 : BddAbove (range f)
-  · refine (isLUB_csSup (range_nonempty f) h1).unique ?_
-    refine (isLUB_congr (hS.continuous_upperBounds hf)).mp (isLUB_ciSup_set ?_ hS.nonempty)
-    exact h1.mono (by grind)
-  · have h2 : ¬ BddAbove (range (fun s : S => f (Subtype.val s))) := by
-      intro h
-      have := range_comp' f (Subtype.val : S → γ)
-      simp_all only [Subtype.range_coe_subtype, setOf_mem_eq]
-      have := h.closure.mono (image_closure_subset_closure_image hf)
-      simp only [hS.closure_eq, image_univ] at this
-      exact h1 this
-    simp [csSup_of_not_bddAbove h1, csSup_of_not_bddAbove h2]
+  by_cases h : BddAbove (range (fun x : S ↦ f x))
+  · refine hS.ciSup hf <| h.closure.mono ?_
+    simpa [← Function.comp_def, range_comp] using hf.range_subset_closure_image_dense hS
+  · suffices ¬ BddAbove (range f) by simp [ciSup_of_not_bddAbove, this, h]
+    contrapose h
+    exact h.mono fun _ ↦ by aesop
 
 /-- This is an analogue of `Dense.continuous_inf` for functions taking values in a conditionally
 complete linear order. The assumption of `BddBelow (range f)` is not needed in this theorem. -/
