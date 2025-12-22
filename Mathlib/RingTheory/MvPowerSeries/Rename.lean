@@ -48,6 +48,7 @@ variable {f : σ → τ} (hf : f.Injective)
 
 namespace MvPowerSeries
 
+/-- The function of renaming all the variables in a multivariable power series by an injective map. -/
 def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R :=
   fun x ↦ if SetLike.coe x.support ⊆ Set.range f then
     coeff (x.comapDomain f hf.injOn) p else 0
@@ -124,7 +125,7 @@ theorem renameFun_commutes (r : R) : renameFun hf ((algebraMap R (MvPowerSeries 
     coeff_C, Finsupp.ext_iff, comapDomain_apply, Finsupp.coe_zero, Pi.zero_apply]
   grind only
 
-/-- Rename all the variables in a multivariable power series by an injective map. -/
+/-- The `AlgHom` version of `renameFun`. -/
 def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
   toFun := renameFun hf
   map_one' := renameFun_one hf
@@ -216,6 +217,9 @@ theorem rename_injective : Function.Injective (rename (R := R) hf) := by
 
 variable (f)
 
+/-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
+  `MvPowerSeries.killComplFun f` is the function from `R[[τ]]` to `R[[σ]]` that is left inverse to
+  `rename hf : R[[σ]] → R[[τ]]` and sends the variables in the complement of the range of `f` to `0`. -/
 def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R := fun x ↦ coeff (mapDomain f x) p
 
 theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
@@ -288,9 +292,7 @@ theorem killComplFun_commutes (r : R) :
   grind only [= mem_image, = mem_support_iff]
 
 variable {f}
-/-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
-  `MvPowerSeries.killCompl hf` is the `AlgHom` from `R[[τ]]` to `R[[σ]]` that is left inverse to
-  `rename hf : R[[σ]] → R[[τ]]` and sends the variables in the complement of the range of `f` to `0`. -/
+/-- The `AlgHom` version of `killComplFun. -/
 def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
   toFun := killComplFun f
   map_one' := killComplFun_one f hf
