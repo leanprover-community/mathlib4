@@ -312,6 +312,10 @@ lemma continuousAt_of_not_accPt (h : ¬AccPt x (𝓟 {x}ᶜ)) : ContinuousAt f x
   rw [← continuousWithinAt_compl_self]
   exact continuousWithinAt_of_not_accPt h
 
+/-- A function is continuous at a point `x` if `x` is isolated. -/
+lemma continuousAt_of_not_accPt_top (h : ¬AccPt x ⊤) : ContinuousAt f x :=
+  continuousAt_of_not_accPt fun hh ↦ h <| AccPt.mono hh (by simp)
+
 theorem ContinuousOn.mono (hf : ContinuousOn f s) (h : t ⊆ s) :
     ContinuousOn f t := fun x hx => (hf x (h hx)).mono_left (nhdsWithin_mono _ h)
 
