@@ -409,7 +409,7 @@ Topology:
     continuous functions: 'Continuous'
     homeomorphisms: 'Homeomorph'
     compactness in terms of open covers (Borel-Lebesgue): 'isCompact_iff_finite_subcover'
-    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'UniformSpace.isCompact_iff_isSeqCompact'
+    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'isCompact_iff_isSeqCompact'
     connectedness: 'ConnectedSpace'
     connected components: 'connectedComponent'
     path connectedness: 'IsPathConnected'
