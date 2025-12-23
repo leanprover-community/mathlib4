@@ -163,13 +163,13 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
   constructor
   · intro he
     have : 1 ≤ Nat.find H := Nat.find_spec H 1 (by simpa)
-    have := Nat.find_min H (m := 1) (by omega)
+    have := Nat.find_min H (m := 1) (by lia)
     push_neg at this
     obtain ⟨k, hk, h1k⟩ := this
     exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le_iff.mpr h1k))
   · intro he
     have := Nat.find_spec H 2 he
-    omega
+    lia
 
 open IsLocalRing in
 /-- The converse is true when `S` is a Dedekind domain.
@@ -350,7 +350,7 @@ See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
 lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
-  absNorm_eq_pow_inertiaDeg P ( Nat.prime_iff_prime_int.mp hp)
+  absNorm_eq_pow_inertiaDeg P (Nat.prime_iff_prime_int.mp hp)
 
 end absNorm
 section FinrankQuotientMap

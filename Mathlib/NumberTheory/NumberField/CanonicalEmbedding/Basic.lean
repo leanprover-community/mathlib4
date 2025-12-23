@@ -61,7 +61,7 @@ theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K 
 open scoped ComplexConjugate
 
 /-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
-that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
+that `conj x_φ = x_(conj φ)` for all `φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
