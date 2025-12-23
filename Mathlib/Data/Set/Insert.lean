@@ -394,7 +394,7 @@ theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
 /-! ### Powerset -/
 
 /-- The powerset of a singleton contains only `∅` and the singleton itself. -/
-theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by grind
+theorem powerset_singleton (x : α) : 𝒫 {x} = {∅, {x}} := by grind
 
 section
 variable {α β : Type*} {a : α} {b : β}
