@@ -631,7 +631,8 @@ namespace MulOpposite
 variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
 
 -- We additivise the following lemmas to themselves to avoid `to_additive` getting confused.
--- TODO(Jovan): Remove the annotations once unnecessary again.
+-- Should not be necessary anymore after https://github.com/leanprover-community/mathlib4/pull/32939
+set_option linter.translateRedundant false
 
 @[to_additive self (dont_translate := M), simp]
 lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
