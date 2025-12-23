@@ -61,14 +61,30 @@ section
 variable {I J : C} (f : I ⟶ J) [ChosenPullbacksAlong f] [ExponentiableMorphism f]
 
 /-- The dependent evaluation natural transformation as the counit of the adjunction. -/
-abbrev ev : pushforward f ⋙ pullback f ⟶ 𝟭 _ :=
+def ev : pushforward f ⋙ pullback f ⟶ 𝟭 _ :=
   pullbackAdjPushforward f |>.counit
 
 /-- The dependent coevaluation natural transformation as the unit of the adjunction. -/
-abbrev coev : 𝟭 _ ⟶ pullback f ⋙ pushforward f :=
+def coev : 𝟭 _ ⟶ pullback f ⋙ pushforward f :=
   pullbackAdjPushforward f |>.unit
 
-variable {f}
+@[simp]
+theorem ev_def : ev f = (pullbackAdjPushforward f).counit :=
+  rfl
+
+@[simp]
+theorem coev_def : coev f = (pullbackAdjPushforward f).unit :=
+  rfl
+
+@[reassoc (attr := simp)]
+theorem ev_naturality {X Y : Over I} (g : X ⟶ Y) :
+    (pullback f).map ((pushforward f).map g) ≫ (ev f).app Y = (ev f).app X ≫ g :=
+  ev f |>.naturality g
+
+@[reassoc (attr := simp)]
+theorem coev_naturality {X Y : Over J} (g : X ⟶ Y) :
+    g ≫ (coev f).app Y = (coev f).app X ≫ (pushforward f).map ((pullback f).map g) :=
+  coev f |>.naturality g
 
 /-- The first triangle identity for the counit and unit of the adjunction. -/
 @[reassoc]
@@ -84,6 +100,8 @@ theorem coev_ev (Y : Over I) :
     (pushforward f |>.map (ev f |>.app Y)) =
     𝟙 (pushforward f |>.obj Y) :=
   pullbackAdjPushforward f |>.right_triangle_components Y
+
+variable {f}
 
 /-- The currying of `(pullback f).obj A ⟶ X` in `Over I` to a morphism `A ⟶ (pushforward f).obj X`
 in `Over J`. -/
