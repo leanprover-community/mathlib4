@@ -6,63 +6,45 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
+public import Mathlib.CategoryTheory.Functor.RegularEpi
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
 
 # The category of type-valued sheaves is a regular epi category
 
-This file proves two main results:
-* When the target category `D` is a regular epi category (i.e. every epimorphism is regular) and
-  has pushouts and kernel pairs of epimorphisms, the functor category `C ⥤ D` is a regular epi
-  category. This is an instance that applies directly when `D` is `Type*`.
-* `isRegularEpiCategory_sheaf`: Let `J` be a Grothendieck topology on `C`, and suppose that
-  `D` is a regular epi category which has pushouts and pullbacks, and that sheafification of
-  `D`-valued `J`-sheaves exists. Suppose further that the category `Sheaf J D` is balanced, and
-  that the underlying morphism of presheaves of every epimorphism in `Sheaf J D` can be factored
-  as an epimorphism followed by a monomorphism. Then `Sheaf J D` is a regular epi category.
+## Main results
 
-  Note: This is not an instance because of the factorisation requirement, but it can in principle be
-  turned into an instance whenever `D` has equalizers and `Cᵒᵖ ⥤ D` has images. This holds in
-  particular when `D` is `Type*` or any abelian category. We add it as an instance for `D := Type*`,
-  but the fact that `Sheaf J D` is a regular epi category when `D` is an abelian category
-  already follows from the sheaf category being abelian.
+`isRegularEpiCategory_sheaf`: Let `J` be a Grothendieck topology on `C`, and suppose that
+`D` is a regular epi category which has pushouts and pullbacks, and that sheafification of
+`D`-valued `J`-sheaves exists. Suppose further that the category `Sheaf J D` is balanced, and
+that the underlying morphism of presheaves of every epimorphism in `Sheaf J D` can be factored
+as an epimorphism followed by a monomorphism. Then `Sheaf J D` is a regular epi category.
+
+Note: This is not an instance because of the factorisation requirement, but it can in principle be
+turned into an instance whenever `D` has equalizers and `Cᵒᵖ ⥤ D` has images. This holds in
+particular when `D` is `Type*` or any abelian category. We add it as an instance for `D := Type*`,
+but the fact that `Sheaf J D` is a regular epi category when `D` is an abelian category
+already follows from the sheaf category being abelian.
 
 ## References
 
 We follow the proof of Proposition 3.4.13 in [borceux-vol3]
 *Handbook of Categorical Algebra: Volume 3, Sheaf Theory*, by Borceux, 1994.
+The first part of that proof, the result for presheaf categories, is proved in the file
+`Mathlib.CategoryTheory.Functor.RegularEpi`.
 -/
 
 @[expose] public section
 
-universe u v
+universe v u
 
 namespace CategoryTheory
 
-open Category Functor Limits
+open Limits
 
 variable {C D : Type*} [Category C] [Category D]
-
-instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
-    [IsRegularEpiCategory D] :
-    IsRegularEpiCategory (C ⥤ D) where
-  regularEpiOfEpi {F G} f := ⟨⟨{
-    W := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.pt
-    left := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.fst
-    right := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.snd
-    w := PullbackCone.combine f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.condition
-    isColimit := evaluationJointlyReflectsColimits _ fun k ↦ by
-      have := IsRegularEpiCategory.regularEpiOfEpi (f.app k)
-      refine .equivOfNatIsoOfIso ?_ _ _ ?_ (isColimitCoforkOfEffectiveEpi (f.app k)
-        (pullback.cone (f.app k) (f.app k))
-        (pullback.isLimit (f.app k) (f.app k)))
-      · refine NatIso.ofComponents (by rintro (_ | _); exacts [Iso.refl _, Iso.refl _]) ?_
-        rintro _ _ (_ | _)
-        all_goals cat_disch
-      · exact Cocones.ext (Iso.refl _) <| by rintro (_ | _ | _); all_goals cat_disch }⟩⟩
 
 lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
     [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D]
