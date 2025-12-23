@@ -85,14 +85,6 @@ lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
     -- The underlying presheaf of the kernel pair of `f` is a kernel pair for `p`, and since
     -- sheafification preserves colimits, `p` exhibits its target `I` as a coequalizer of this
     -- kernel pair. The result follows.
-    let c : PullbackCone p p := PullbackCone.mk
-        (W := (pullback f f).val) (pullback.fst f f).val (pullback.snd f f).val <| by
-      simp [← cancel_mono i, hpi, ← Sheaf.comp_val, pullback.condition]
-    have : IsRegularEpi p := IsRegularEpiCategory.regularEpiOfEpi _
-    let hc := isColimitOfPreserves (presheafToSheaf J D) <|
-      isColimitCoforkOfEffectiveEpi p c (PullbackCone.isLimitOfFactors f.val f.val i _ _ hpi hpi _
-        ((isLimitOfPreserves _ <| pullback.isLimit f f).equivOfNatIsoOfIso _ _ _ <|
-          PullbackCone.isoMk ((sheafToPresheaf J D).mapCone (pullback.cone f f))))
     exact ⟨⟨{
       W := (presheafToSheaf J D).obj (pullback f f).val
       left := (presheafToSheaf J D).map (pullback.fst f f).val
@@ -103,13 +95,12 @@ lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
         rw [← cancel_mono i]
         simp [hpi, ← Sheaf.comp_val, pullback.condition]
       isColimit := by
-        refine .equivOfNatIsoOfIso ?_ _ _ ?_ hc
-        · refine NatIso.ofComponents ?_ ?_
-          · rintro (_ | _); exacts [Iso.refl _, Iso.refl _]
-          · rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals simp [c]
-        · refine Cocones.ext (Iso.refl _) ?_
-          rintro (_ | _)
-          all_goals simp [c] }⟩⟩
+        have := IsRegularEpiCategory.regularEpiOfEpi p
+        exact isColimitCoforkMapOfIsColimit (presheafToSheaf J D) _
+          (isColimitCoforkOfEffectiveEpi p _
+            (PullbackCone.isLimitOfFactors f.val f.val i _ _ hpi hpi _
+              ((isLimitPullbackConeMapOfIsLimit (sheafToPresheaf _ _) _ 
+                (pullbackIsPullback f f))))) }⟩⟩
 
 instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
     IsRegularEpiCategory (Sheaf J (Type u)) := isRegularEpiCategory_sheaf J fun f hf ↦
