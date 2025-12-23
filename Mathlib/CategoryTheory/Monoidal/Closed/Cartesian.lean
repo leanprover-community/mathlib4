@@ -21,7 +21,6 @@ basic constructions for cartesian closed categories.
 
 @[expose] public section
 
-
 universe v v₂ u u₂
 
 namespace CategoryTheory
