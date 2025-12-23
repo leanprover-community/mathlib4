@@ -24,7 +24,7 @@ and proves some basic lemmas about them.
 /-! ### Unbundled classes -/
 
 /-- An empty relation does not relate any elements. -/
-@[nolint unusedArguments] def EmptyRelation {α : Sort*} := fun _ _ : α ↦ False
+@[deprecated (since := "2025-12-22")] alias EmptyRelation := emptyRelation
 
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
@@ -374,10 +374,10 @@ theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
   Subsingleton.elim x y ▸ refl x
 
 @[simp]
-theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
+theorem empty_relation_apply (a b : α) : emptyRelation a b ↔ False :=
   Iff.rfl
 
-instance : IsIrrefl α EmptyRelation :=
+instance : IsIrrefl α emptyRelation :=
   ⟨fun _ => id⟩
 
 theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=

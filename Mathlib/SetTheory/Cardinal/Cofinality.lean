@@ -391,7 +391,7 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
     rw [← (_ : #_ = 1)]
     · apply cof_type_le
       refine fun a => ⟨Sum.inr PUnit.unit, Set.mem_singleton _, ?_⟩
-      rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp [EmptyRelation]
+      rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp
     · simp
   · rw [← Cardinal.succ_zero, succ_le_iff]
     simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
@@ -412,7 +412,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
               ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ fun x y => ?_) fun x => ?_⟩⟩
       · apply Sum.rec <;> [exact Subtype.val; exact fun _ => a]
       · rcases x with (x | ⟨⟨⟨⟩⟩⟩) <;> rcases y with (y | ⟨⟨⟨⟩⟩⟩) <;>
-          simp [Subrel, Order.Preimage, EmptyRelation]
+          simp [Subrel, Order.Preimage]
         exact x.2
       · suffices r x a ∨ ∃ _ : PUnit.{u}, ↑a = x by
           convert this
