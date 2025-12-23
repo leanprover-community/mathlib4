@@ -561,6 +561,8 @@ fun {α} [Add α] a => Add.add a
 /--
 warning: `to_additive self` is redundant when none of the arguments are reordered.
 Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_additive` to translate expressions involving `test1`,
+use `to_additive_do_translate` instead
 
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
@@ -590,7 +592,7 @@ def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
 /-! Test that additive docstrings work -/
 
 /--
-warning: `to_additive` did not change the type of theorem `mulTrivial. Please remove the attribute
+warning: `to_additive` did not change the type of theorem `mulTrivial`. Please remove the attribute.
 
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
@@ -611,7 +613,7 @@ warning: String syntax for `to_additive` docstrings is deprecated: Use docstring
 Update deprecated syntax to:
   [apply] /-- (via `str` syntax) I am an additive docstring! -/
 ---
-warning: `to_additive` did not change the type of theorem `mulTrivial'. Please remove the attribute
+warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
 
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/

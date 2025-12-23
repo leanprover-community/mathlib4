@@ -81,6 +81,8 @@ theorem le_imp_le'' {α : Type} [PartialOrder α] (a b : α) : a ≤ b → a ≤
 /--
 warning: `to_dual self` is redundant when none of the arguments are reordered.
 Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `le_imp_le'''`,
+use `to_dual_do_translate` instead
 
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 ---
@@ -104,6 +106,8 @@ theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 /--
 warning: `to_dual self` is redundant when none of the arguments are reordered.
 Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `one_le_one`,
+use `to_dual_do_translate` instead
 
 Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/

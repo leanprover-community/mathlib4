@@ -657,8 +657,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
   if src == pre && srcDecl.isThm && trgDecl.type == srcDecl.type then
     Linter.logLintIf linter.translateRedundant ref m!"`{t.attrName}` did not change the type \
-      of theorem `{.ofConstName src}`. Please remove the attribute"
-
+      of theorem `{.ofConstName src}`. Please remove the attribute."
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
     | _ => throwError "Expected {tgt} to have a value."
@@ -876,7 +875,9 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   if cfg.self && reorder.isEmpty then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
-      Please remove the attribute, or provide an explicit `(reorder := ...)` argument."
+      Please remove the attribute, or provide an explicit `(reorder := ...)` argument.\n\
+      If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
+      use `{t.attrName}_do_translate` instead"
   let srcType ← reorderForall reorder srcType
   if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
