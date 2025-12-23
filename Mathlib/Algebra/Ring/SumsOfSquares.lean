@@ -207,6 +207,7 @@ theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R
     (hx : ∀ i ∈ I, IsSumSq <| x i) : IsSumSq (∏ i ∈ I, x i) := by
   simpa using prod_mem (S := Subsemiring.sumSq R) (by simpa)
 
+set_option linter.style.commandStart false in -- manual alignment is not recognised by the linter
 /--
 In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`),
 sums of squares are non-negative.
