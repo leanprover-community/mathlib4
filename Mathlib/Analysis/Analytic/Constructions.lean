@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Tactic.ToFun
 
 /-!
 # Various ways to combine analytic functions

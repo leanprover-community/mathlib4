@@ -97,6 +97,7 @@ public meta import Mathlib.Tactic.SuccessIfFailWithMsg
 public meta import Mathlib.Tactic.SudoSetOption
 public meta import Mathlib.Tactic.SwapVar
 public meta import Mathlib.Tactic.Tauto
+public meta import Mathlib.Tactic.ToFun
 public meta import Mathlib.Tactic.TermCongr
 -- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
