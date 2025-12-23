@@ -57,16 +57,11 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
       DerivedCategory.Q.map (Cocycle.equivHomShift.symm x) ≫
         inv (DerivedCategory.Q.map (R.ι'⟦(n : ℤ)⟧')) ≫
         (DerivedCategory.Q.commShiftIso (n : ℤ)).hom.app _ := by
-  simp only [Ext.hom, Ext.homEquiv, extEquivCohomologyClass, SmallShiftedHom.postcompEquiv,
-    Equiv.symm_trans_apply, Equiv.symm_symm, CohomologyClass.equivOfIsKInjective_apply,
-    Equiv.coe_fn_symm_mk, Functor.comp_obj]
-  erw [SmallShiftedHom.equiv_comp]
-  simp only [ShiftedHom.comp, CohomologyClass.equiv_toSmallShiftedHom_mk, ShiftedHom.map,
-    SmallShiftedHom.equiv_mk₀Inv, ShiftedHom.mk₀, shiftFunctorZero', eqToIso_refl, Iso.refl_trans,
-    Functor.map_comp, shiftFunctorAdd'_zero_add_inv_app, Functor.id_obj, Category.assoc]
-  rw [← Functor.map_comp, Iso.inv_hom_id_app]
-  dsimp
-  rw [Functor.map_id, Category.comp_id]
+  change (SmallShiftedHom.equiv _ _) ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
+  simp only [SmallShiftedHom.equiv_comp, ShiftedHom.comp,
+    CohomologyClass.equiv_toSmallShiftedHom_mk, ShiftedHom.map, SmallShiftedHom.equiv_mk₀Inv,
+    ShiftedHom.mk₀, shiftFunctorZero', eqToIso_refl, Iso.refl_trans,
+    shiftFunctorAdd'_zero_add_inv_app, Functor.id_obj, Category.assoc, Functor.comp_obj]
   congr 1
   simp [← Functor.map_comp]
 
