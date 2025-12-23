@@ -251,8 +251,7 @@ def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = 
     Quot.liftOn hf (fun f ↦ F.map f)
       (by
         rintro _ _ ⟨_, _, _, _, _, _, h⟩
-        simp [H _ _ _ _ h]
-        )
+        simp [H _ _ _ _ h])
   map_id a := F.map_id a.as
   map_comp := by
     rintro a b c ⟨f⟩ ⟨g⟩
