@@ -6252,6 +6252,7 @@ public import Mathlib.RingTheory.SimpleRing.Defs
 public import Mathlib.RingTheory.SimpleRing.Field
 public import Mathlib.RingTheory.SimpleRing.Matrix
 public import Mathlib.RingTheory.SimpleRing.Principal
+public import Mathlib.RingTheory.SimpleRing.TensorProduct
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.Basic
 public import Mathlib.RingTheory.Smooth.Flat
@@ -6307,6 +6308,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Instances
 public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
