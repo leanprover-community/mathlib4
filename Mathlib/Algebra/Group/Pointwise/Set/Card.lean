@@ -35,9 +35,14 @@ variable [IsCancelMul M]
 lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
   obtain h | h := (s * t).infinite_or_finite
   · simp [Set.Infinite.card_eq_zero h]
-  simp only [Nat.card, ← Cardinal.toNat_mul]
-  refine Cardinal.toNat_le_toNat Cardinal.mk_mul_le ?_
-  aesop (add simp [Cardinal.mul_lt_aleph0_iff, finite_mul])
+  rw [finite_mul] at h
+  obtain ⟨hs, ht⟩ | rfl | rfl := h
+  rotate_left
+  · simp
+  · simp
+  rw [← Nat.card_prod, Nat.card_congr (Equiv.Set.prod s t).symm, ← image2_mul,
+    ← image_uncurry_prod]
+  exact Nat.card_image_le <| Finite.prod hs ht
 
 end Mul
 

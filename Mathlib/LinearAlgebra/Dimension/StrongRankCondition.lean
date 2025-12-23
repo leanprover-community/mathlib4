@@ -445,7 +445,7 @@ theorem rank_zero_iff_of_free [Module.Free R M] :
 
 theorem finrank_eq_nat_card_basis (h : Basis ι R M) :
     finrank R M = Nat.card ι := by
-  rw [Nat.card, ← toNat_lift.{v}, h.mk_eq_rank, toNat_lift, finrank]
+  rw [Nat.card_eq_toNat_cardinalMk, ← toNat_lift.{v}, h.mk_eq_rank, toNat_lift, finrank]
 
 /-- If a vector space (or module) has a finite basis, then its dimension (or rank) is equal to the
 cardinality of the basis. -/

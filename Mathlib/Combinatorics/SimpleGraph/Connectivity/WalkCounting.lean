@@ -272,6 +272,7 @@ lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
       using (c.odd_oddComponents_ncard_subset_supp _ h).2 hc
   let f : G'.oddComponents → G.oddComponents :=
     fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.1⟩
+  rw [← Nat.card_coe_set_eq, ← Nat.card_coe_set_eq]
   refine Nat.card_le_card_of_injective f fun c c' fcc' ↦ ?_
   simp only [Subtype.mk.injEq, f] at fcc'
   exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex

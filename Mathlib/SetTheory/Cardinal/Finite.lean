@@ -177,6 +177,12 @@ theorem _root_.Function.Surjective.bijective_of_nat_card_le [Finite α] {f : α 
 lemma card_fin (n : ℕ) : Nat.card (Fin n) = n := by
   rw [Nat.card_eq_fintype_card, Fintype.card_fin]
 
+theorem card_eq_toNat_cardinalMk : Nat.card α = toNat (mk α) := by
+  by_cases! Finite α
+  · let := Fintype.ofFinite α
+    simp
+  · simp
+
 section Set
 open Set
 variable {s t : Set α}
