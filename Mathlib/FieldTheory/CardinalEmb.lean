@@ -185,8 +185,8 @@ def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē
 
 theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
-  ext; simp [succEquiv]
-  simp [embEquivOfIsAlgClosed, embEquivOfAdjoinSplits, Equiv.sigmaEquivProdOfEquiv,
+  ext
+  simp [succEquiv, embEquivOfIsAlgClosed, embEquivOfAdjoinSplits, Equiv.sigmaEquivProdOfEquiv,
     algHomEquivSigma, AlgHom.restrictDomain, Subalgebra.inclusion, Set.inclusion, equivOfEq,
     Subalgebra.equivOfEq]
 
