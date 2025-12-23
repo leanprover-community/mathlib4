@@ -578,7 +578,12 @@ theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
 
 lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
 
-@[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
+@[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := by
+  by_cases! h : Infinite s
+  · simp [ncard_def, Infinite.encard_eq, infinite_coe_iff.mp h]
+  · let := Fintype.ofFinite s
+    rw [ncard_def, encard_eq_coe_toFinset_card, ENat.toNat_coe, toFinset_card,
+      Nat.card_eq_fintype_card]
 
 @[deprecated (since := "2025-07-05")] alias Nat.card_coe_set_eq := _root_.Nat.card_coe_set_eq
 
@@ -592,7 +597,9 @@ theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
   simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
 
 lemma cast_ncard {s : Set α} (hs : s.Finite) :
-    (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
+    (s.ncard : Cardinal) = Cardinal.mk s := by
+  have := Finite.to_subtype hs
+  rw [← _root_.Nat.card_coe_set_eq, Nat.cast_card]
 
 theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ s.ncard ≤ k := by
   rw [encard_le_coe_iff, and_congr_right_iff]
@@ -619,7 +626,8 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
 
 @[deprecated (since := "2025-07-05")] alias ncard_coe_Finset := ncard_coe_finset
 
-@[simp] theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := Nat.card_univ
+@[simp] theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
+  rw [← _root_.Nat.card_coe_set_eq, Nat.card_univ]
 
 theorem ncard_le_card [Finite α] (s : Set α) : s.ncard ≤ Nat.card α :=
   ncard_univ α ▸ ncard_le_ncard s.subset_univ
