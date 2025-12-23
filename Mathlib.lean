@@ -5779,7 +5779,9 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.Resolution
 public import Mathlib.RepresentationTheory.Induced
+public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
+public import Mathlib.RepresentationTheory.Irreducible
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RepresentationTheory.Rep
 public import Mathlib.RepresentationTheory.Submodule
