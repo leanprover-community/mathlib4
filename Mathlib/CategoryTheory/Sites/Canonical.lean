@@ -289,14 +289,14 @@ instance : (J.yoneda).Full := (J.yonedaFullyFaithful).full
 instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
 
 /-- A variant of `yonedaFullyFaithful` with a raise in the universe level. -/
-def uliftYonedaFullyFaithful : (GrothendieckTopology.uliftYoneda.{w} J).FullyFaithful :=
+def fullyFaithfulUliftYoneda : (GrothendieckTopology.uliftYoneda.{w} J).FullyFaithful :=
   J.yonedaFullyFaithful.comp (fullyFaithfulSheafCompose J fullyFaithfulULiftFunctor)
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Full :=
-    (J.uliftYonedaFullyFaithful).full
+    (J.fullyFaithfulUliftYoneda).full
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Faithful :=
-    (J.uliftYonedaFullyFaithful).faithful
+    (J.fullyFaithfulUliftYoneda).faithful
 
 end GrothendieckTopology
 
