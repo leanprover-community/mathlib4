@@ -79,7 +79,7 @@ attribute [local instance] Polynomial.algebra Polynomial.isLocalization
 lemma height_eq_height_add_one (p : Ideal R)
     (P : Ideal R[X]) [P.IsMaximal] [P.LiesOver p] :
     P.height = p.height + 1 := by
-  have : p.IsPrime := by rw [Ideal.LiesOver.over (p := p) (P := P)]; infer_instance
+  have : p.IsPrime := by rw [P.over_def p]; infer_instance
   let Rₚ := Localization.AtPrime p
   set p' : Ideal Rₚ := p.map (algebraMap R Rₚ) with p'_def
   have : p'.IsMaximal := by
