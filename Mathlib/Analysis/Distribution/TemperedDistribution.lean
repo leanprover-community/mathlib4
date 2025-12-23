@@ -253,10 +253,11 @@ variable [NormedSpace ℝ E]
 
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢'(E, ℂ) :=
-  (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
+  toPointwiseConvergenceCLM _ _ _ _  <|
+    (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 
 @[simp]
-theorem delta_apply (x₀ : E) (f : 𝓢(E, ℂ)) : delta x₀ f = f x₀ :=
+theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
   rfl
 
 open MeasureTheory MeasureTheory.Measure
@@ -265,7 +266,8 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
 /-- Integrating against the Dirac measure is equal to the delta distribution. -/
 @[simp]
-theorem integralCLM_dirac_eq_delta (x : E) : integralCLM ℂ (dirac x) = delta x := by aesop
+theorem toTemperedDistribution_dirac_eq_delta (x : E) :
+  (dirac x).toTemperedDistribution = delta x := by aesop
 
 end definition
 
