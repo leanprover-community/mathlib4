@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.Compactification.OnePoint.Basic
+public import Mathlib.Topology.Order.WithTop
 
 /-!
 # One point compactifications of Weak (pseudo) extended metric spaces
@@ -104,12 +105,9 @@ private lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseud
     ∀ x y z : OnePoint α, edist x z ≤ edist x y + edist y z
   | (_ : α), (_ : α), (_ : α) => by simp [m.edist_triangle]
   | ∞, (_ : α), (_ : α) => by simp
-  | (_ : α), ∞, (_ : α) => by simp
-  | ∞, ∞, (_ : α) => by simp
-  | (_ : α), (_ : α), ∞ => by simp
-  | ∞, (_ : α), ∞ => by simp
-  | (_ : α), ∞, ∞ => by simp
-  | ∞, ∞, ∞ => by simp
+  | (_ : α), ∞, _ => by simp
+  | ∞, ∞, _ => by simp
+  | _, (_ : α), ∞ => by simp
 
 private lemma eq_of_edist_eq_zero' {α : Type u} [TopologicalSpace α] (m : WeakEMetricSpace α) :
     ∀ {x y : OnePoint α}, edist x y = 0 → x = y
@@ -180,16 +178,13 @@ instance toWeakPseudoEMetricSpace
       rw [← im_ball]
       exact image_subset_iff.mpr εt
   topology_eq_on_restrict := by
-    intro x s sO
+    intro x r
     match x with
     | (x : α) =>
-      have po : IsOpen[(pseudoEMetricSpaceOfEDist
-          m.edist_self m.edist_comm m.edist_triangle).toUniformSpace.toTopologicalSpace]
-          (OnePoint.some ⁻¹' s) := (prod_open_iff s).1 sO
-      obtain ⟨s', s'o, s's⟩ := m.topology_eq_on_restrict x po
-      use OnePoint.some '' s'
+      obtain ⟨s, so, s's⟩ := m.topology_eq_on_restrict x r
+      use OnePoint.some '' s
       constructor
-      · exact OnePoint.isOpen_image_coe.mpr s'o
+      · exact OnePoint.isOpen_image_coe.mpr so
       ext ⟨y, yh⟩
       match y with
       | ∞ => contradiction
@@ -208,6 +203,7 @@ instance toWeakPseudoEMetricSpace
       rw [ball_infty_of_pos ENNReal.zero_lt_top]
       exact Subsingleton.discreteTopology
 
+--improve this + naming
 instance toWeakEMetricSpace {α : Type u} [TopologicalSpace α] [m : WeakEMetricSpace α] :
     WeakEMetricSpace (OnePoint α) where
   edist := edist
@@ -222,4 +218,22 @@ end
 
 end OnePoint
 
+abbrev PseudoWithTop
+    {J : Type u} [LinearOrder J] [TopologicalSpace J] [OrderTopology J] [m : WeakPseudoEMetricSpace J] :
+    WeakPseudoEMetricSpace (WithTop J) where
+  edist := fun
+    | (a : J), (b : J) => m.edist a b
+    | (_ : J), ⊤ => ⊤
+    | ⊤, (_ : J) => ⊤
+    | ⊤, ⊤ => 0
+  edist_self := fun
+    | (a : J) => by simp [m.edist_self]
+    | ⊤ => rfl
+  edist_comm := ?edist_comm
+  edist_triangle := ?edist_triangle
+  topology_le := ?topology_le
+  topology_eq_on_restrict := ?topology_eq_on_restrict
+
 end WeakEMetric
+
+--edist self muss zu simp
