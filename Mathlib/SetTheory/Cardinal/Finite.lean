@@ -331,27 +331,35 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
       lift_mul, ← h fun a => f (some a)]
     simp
 
+-- /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
+-- that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
+-- @[elab_as_elim]
+-- theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
+--     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α], P α → P (Option α)) {α : Type u} [Finite α ]
+--     : P α := by
+--   cases nonempty_fintype α
+--   refine Fintype.induction_empty_option ?_ ?_ ?_ α
+--   exacts [fun α β _ => of_equiv, h_empty, @h_option]
+
+@[elab_as_elim]
+theorem induction_empty_option' {P : ∀ (α : Type u) [Fintype α], Prop}
+    (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
+    (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
+    (h_fintype : Fintype α) : P α := by
+  apply Fintype.induction_empty_option <;> assumption
 theorem card_pi {β : α → Type*} [h : Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   classical
-  -- revert β
-  -- revert h
-  -- refine Fintype.induction_empty_option ?_ ?_ ?_ α
-  haveI : Finite α := inferInstance
-  -- -- apply Finite.induction_empty_option _ _ _ α
-  induction α using Finite.induction_empty_option generalizing h with
-  | @of_equiv γ δ e h1 =>
+  induction α, h using induction_empty_option' with
+  | @of_equiv γ δ _ e h1 =>
     letI := Fintype.ofEquiv _ e.symm
-    specialize @h1 (fun b => β (e b)) _ inferInstance
+    specialize @h1 (fun b => β (e b))
     trans Nat.card ((a : γ) → β (e a))
     · rw [Nat.card_congr (Equiv.piCongrLeft β e)]
     convert h1
     convert (Equiv.prod_comp ?_ ?_).symm
   | h_empty => simp
-  | h_option ih =>
+  | h_option _ ih =>
     rw [card_congr Equiv.piOptionEquivProd, card_prod, ih, ← Fintype.prod_option (Nat.card <| β ·)]
-    · congr!
-    · infer_instance
-  sorry
 
 theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
   haveI := Fintype.ofFinite α
