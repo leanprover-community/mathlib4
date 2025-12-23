@@ -231,7 +231,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-    transformDecl ToAdditive.data { ref := ← getRef} `Test.some_def `Test.add_some_def
+  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -297,6 +297,14 @@ def IsUnit [Mul M] (a : M) : Prop := a ≠ a
 @[to_additive]
 theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
+
+@[to_additive (dont_translate := R)]
+def mulMatchAux {R A} [Mul A] (_ : R) (_ : A) : Nat := 5
+
+@[to_additive (dont_translate := R)]
+theorem mulMatchThm {R A} (r : R) (a : A) [Mul A] : True := by
+  have ⟨_, _⟩ : mulMatchAux r a = mulMatchAux r a ∧ True := ⟨rfl, trivial⟩
+  exact trivial
 
 /-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
 original declaration name as prefix. -/
@@ -786,3 +794,16 @@ in the application
 @[to_additive]
 instance : Mul (MonoidAlgebra' Nat G) where
   mul | ⟨a⟩, ⟨b⟩ => ⟨fun i => a i * b 1⟩
+
+-- Proofs in types aren't abstracted:
+@[to_additive]
+def abstractMul : Function.const _ True (id Nat.zero_lt_one) := trivial
+
+set_option pp.proofs true in
+/-- info: abstractMul : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
+#guard_msgs in
+#check abstractMul
+set_option pp.proofs true in
+/-- info: abstractAdd : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
+#guard_msgs in
+#check abstractAdd

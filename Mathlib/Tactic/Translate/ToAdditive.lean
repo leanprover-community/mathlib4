@@ -23,9 +23,6 @@ open Lean Elab Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-
 @[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
 
@@ -373,7 +370,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("function_addCommute", "Function_commute"),
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
-  ("modularCharacter", "AddModularCharacter")]
+  ("modularCharacter", "AddModularCharacter"),
+  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
