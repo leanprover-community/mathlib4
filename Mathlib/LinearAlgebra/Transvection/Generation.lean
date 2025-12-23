@@ -723,7 +723,8 @@ theorem fixedSubmodule_transvection_mul
 /-- A linear equivalence `u : V ≃ₗ[K] V` is exceptional if
   it is a nontrivial homothety modulo `u.fixedSubmodule`. -/
 abbrev IsExceptional (e : V ≃ₗ[K] V) : Prop :=
-  fixedReduce e ≠ 1 ∧ ∃ a : K, ∀ x, fixedReduce e x = a • x
+  1 < finrank K (V ⧸ e.fixedSubmodule) ∧
+    e.fixedReduce ≠ 1 ∧ ∃ a : K, ∀ x, fixedReduce e x = a • x
 
 /-- If `e : V ≃ₗ[K] V` is such that `e.fixedReduce = 1` and `e ≠ 1`,
 then `e` is the product of at most `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections
@@ -1084,7 +1085,8 @@ theorem mem_dilatransvections_pow_of_not_isExceptional
     e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V := by
   simp only [not_and_or] at he
   push_neg at he
-  rcases he with he | he
+  rcases he with he | he | he
+  · simpa [Nat.sub_eq_zero_of_le he, mem_dilatransvections_iff] using he
   · exact mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one he
   · exact mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id he
 
@@ -1143,8 +1145,8 @@ theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsEx
     suffices f x = 0 by simp [mem_fixedSubmodule_iff.mp hx, this]
     rw [← Submodule.mem_bot K, ← hfker]
     exact mem_map_of_mem (mem_sup_left hx)
-  obtain ⟨a, hea⟩ := he.2
-  have ha1 : a ≠ 1 := fun h ↦ he.1 <| by
+  obtain ⟨a, hea⟩ := he.2.2
+  have ha1 : a ≠ 1 := fun h ↦ he.2.1 <| by
     ext x; simp [hea, h]
   rw [fixedReduce_eq_smul_iff] at hea
   have ha0 : a ≠ 0 := fun ha0 ↦ by
@@ -1182,7 +1184,7 @@ theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsEx
     abel
   rw [← he', ← he'_fixed]
   apply mem_dilatransvections_pow_of_not_isExceptional
-  rintro ⟨he'1, b, he'b⟩
+  rintro ⟨_, he'1, b, he'b⟩
   apply hv
   simp only [fixedReduce_eq_smul_iff, he'_apply] at he'b
   simp only [he'_fixed] at he'b
@@ -1215,22 +1217,30 @@ exactly `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections
 and one dilatransvection, then it is not exceptional.
 
 (This is the third part in Dieudonné's theorem) -/
-example (he : e ∈ dilatransvections K V ^ (finrank K (V ⧸ e.fixedSubmodule))) :
+example (he1 : e ≠ 1) (he : e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V) :
     ¬ IsExceptional e := by
-  rintro ⟨he_reduce, c, hec⟩
+  rintro ⟨hrank, he_reduce, c, hec⟩
   induction hn : finrank K (V ⧸ e.fixedSubmodule) generalizing e with
   | zero =>
     apply he_reduce
     rw [Module.finrank_zero_iff] at hn
     ext; apply Subsingleton.allEq
   | succ n hind =>
-    rw [hn, pow_succ, Set.mem_mul] at he
+    have hn1 : 1 ≤ n := by
+      rw [← not_le] at hrank
+      rw [← not_lt, Nat.lt_one_iff]
+      contrapose hrank
+      simp [hn, hrank]
+    rw [hn, add_tsub_cancel_right, Set.mem_mul] at he
     obtain ⟨e', he'_mem, t, ht, he⟩ := he
     have he' : e' = e * t⁻¹ := by simp [← he]
     have corank_e' : finrank K (V ⧸ e'.fixedSubmodule) = n := by
       apply le_antisymm
       · rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
-        exact finrank_le_add_finrank_fixedSubmodule he'_mem
+        apply finrank_le_add_finrank_fixedSubmodule
+        refine (Set.pow_subset_pow ?_ one_mem_dilatransvections (le_refl n)) he'_mem
+        rintro _ ⟨f, v, hfv, rfl⟩
+        exact transvection_mem_dilatransvections hfv
       rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank,
         ← finrank_quotient_add_finrank e.fixedSubmodule, hn, add_assoc]
       simp only [add_le_add_iff_left]
@@ -1243,7 +1253,7 @@ example (he : e ∈ dilatransvections K V ^ (finrank K (V ⧸ e.fixedSubmodule))
         add_comm _ 1, ← add_assoc]
       simp [hn, corank_e']
     -- I am tired of writing this kind sh*t all the time
-    have : e'.fixedSubmodule ⊓ t.fixedSubmodule = e.fixedSubmodule := by
+    have he_fixed : e'.fixedSubmodule ⊓ t.fixedSubmodule = e.fixedSubmodule := by
       apply Submodule.eq_of_le_of_finrank_le
       · rw [← he]
         exact inf_fixedSubmodule_le_fixedSubmodule_mul e' t
@@ -1255,10 +1265,20 @@ example (he : e ∈ dilatransvections K V ^ (finrank K (V ⧸ e.fixedSubmodule))
         rwa [mem_dilatransvections_iff] at ht
     let D := LinearMap.range ((t : V →ₗ[K] V) - LinearMap.id (R := K) (M := V))
     let H := t.fixedSubmodule
-    have (x : V) (hx : x ∈ H) : e' x - c • x ∈ e.fixedSubmodule := sorry
-    :x
-
-
+    have H_ne_top : H ≠ ⊤ := fun hH ↦ by
+      simp only [H] at hH
+      simp only [hH, le_top, inf_of_le_left] at he_fixed
+      rw [he_fixed] at rank_e'
+      simp only [Nat.left_eq_add, one_ne_zero] at rank_e'
+    have ht1 : t ≠ 1 := by
+      contrapose H_ne_top
+      simp only [H, H_ne_top, eq_top_iff]
+      intro x _
+      simp
+    have h_rank_D : finrank K D = 1 := by
+      apply le_antisymm (mem_dilatransvections_def.mp ht)
+      rwa [← not_lt, Nat.lt_one_iff, finrank_eq_zero, LinearMap.range_eq_bot, sub_eq_zero, ← LinearEquiv.refl_toLinearMap,
+        LinearEquiv.toLinearMap_inj]
     sorry
     obtain ⟨f, v, hfv, ht⟩ := ht
     have he_apply (x : V) : e x = e' x + f x • e v := by
