@@ -154,64 +154,66 @@ theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_coe_nat k).mpr hk₂)]
     norm_cast
 
+theorem roots_T_real_nodup (n : ℕ) :
+    (Multiset.map (fun k : ℕ ↦ cos ((2 * k + 1) * π / (2 * n))) (.range n)).Nodup := by
+  wlog! hn : n ≠ 0
+  · simp [hn]
+  refine (Finset.range n).nodup_map_iff_injOn.mpr ?_
+  refine injOn_cos.comp (by aesop) fun k hk => Set.mem_Icc.mpr ⟨by positivity, ?_⟩
+  field_simp
+  norm_cast
+  grind
+
 theorem roots_T_real (n : ℕ) :
     (T ℝ n).roots =
     ((Finset.range n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))).val := by
-  by_cases n = 0
-  case pos hn => simp [hn]
-  case neg =>
-  · refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
-    · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
-      rw [← hx, T_real_cos, cos_eq_zero_iff]
-      use k
-      field_simp
-      norm_cast
-    · rw [Finset.card_image_of_injOn, Finset.card_range, degree_T, Int.natAbs_natCast]
-      apply injOn_cos.comp (by aesop)
-      intro k hk
-      apply Set.mem_Icc.mpr
-      constructor
-      · positivity
-      · field_simp
-        norm_cast
-        grind
+  wlog! hn : n ≠ 0
+  · simp [hn]
+  refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
+  · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
+    rw [← hx, T_real_cos, cos_eq_zero_iff]
+    use k
+    field_simp
+    norm_cast
+  · rw [Finset.card_image_of_injOn, Finset.card_range, degree_T, Int.natAbs_natCast]
+    exact (Finset.range n).nodup_map_iff_injOn.mp (roots_T_real_nodup n)
 
 theorem rootMultiplicity_T_real {n k : ℕ} (hk : k < n) :
     (T ℝ n).rootMultiplicity (cos ((2 * k + 1) * π / (2 * n))) = 1 := by
   rw [← count_roots, roots_T_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
 
+theorem roots_U_real_nodup (n : ℕ) :
+    (Multiset.map (fun k : ℕ ↦ cos ((k + 1) * π / (n + 1))) (.range n)).Nodup := by
+  refine (Finset.range n).nodup_map_iff_injOn.mpr ?_
+  apply injOn_cos.comp
+  · intro x hx y hy hxy
+    field_simp at hxy
+    aesop
+  · refine fun k hk => Set.mem_Icc.mpr ⟨by positivity, ?_⟩
+    field_simp
+    norm_cast
+    grind
+
 theorem roots_U_real (n : ℕ) :
     (U ℝ n).roots =
     ((Finset.range n).image (fun (k : ℕ) => cos ((k + 1) * π / (n + 1)))).val := by
-  by_cases n = 0
-  case pos hn => simp [hn]
-  case neg =>
-  · refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
-    · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
-      suffices (U ℝ n).eval x * sin ((k + 1) * π / (n + 1)) = 0 by
-        apply (mul_eq_zero_iff_right (ne_of_gt ?_)).mp this
-        apply sin_pos_of_pos_of_lt_pi (by positivity)
-        field_simp
-        norm_cast
-        grind
-      rw [← hx, U_real_cos, sin_eq_zero_iff]
-      use k + 1
+  wlog! hn : n ≠ 0
+  · simp [hn]
+  refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
+  · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
+    suffices (U ℝ n).eval x * sin ((k + 1) * π / (n + 1)) = 0 by
+      refine (mul_eq_zero_iff_right (ne_of_gt (sin_pos_of_pos_of_lt_pi (by positivity) ?_))).mp this
       field_simp
       norm_cast
-      ring
-    · rw [Finset.card_image_of_injOn, Finset.card_range, degree_U_natCast]
-      apply injOn_cos.comp
-      · intro x hx y hy hxy
-        field_simp at hxy
-        aesop
-      · intro k hk
-        apply Set.mem_Icc.mpr
-        constructor
-        · positivity
-        · field_simp
-          norm_cast
-          grind
+      grind
+    rw [← hx, U_real_cos, sin_eq_zero_iff]
+    use k + 1
+    field_simp
+    norm_cast
+    ring
+  · rw [Finset.card_image_of_injOn, Finset.card_range, degree_U_natCast]
+    exact (Finset.range n).nodup_map_iff_injOn.mp (roots_U_real_nodup n)
 
 theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
     (U ℝ n).rootMultiplicity (cos ((k + 1) * π / (n + 1))) = 1 := by
