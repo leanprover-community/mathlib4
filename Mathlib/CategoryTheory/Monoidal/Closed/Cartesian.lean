@@ -11,20 +11,11 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Cartesian closed categories
 
-We define exponentiable objects to be closed objects in a Cartesian monoidal category,
-i.e. `(X × -)` is a left adjoint.
-
-We say a category is Cartesian closed if every object is exponentiable
-(equivalently, that the category equipped with the Cartesian monoidal structure is closed monoidal).
-
-Show that exponential forms a difunctor and define the exponential comparison morphisms.
-
-## Implementation Details
-
-Cartesian closed categories require a `CartesianMonoidalCategory` instance. If one wishes to state
-that a category that `hasFiniteProducts` is Cartesian closed, they should first promote the
-`hasFiniteProducts` instance to a `CartesianMonoidalCategory` one using
-`CategoryTheory.ofChosenFiniteProducts`.
+A cartesian closed category is a category with `CartesianMonoidalCategory` and `MonoidalClosed`
+instances. There used to be a separate definition `CartesianClosed`, with its own API, but over time
+this ended up as a duplicate of the former. Now, `CartesianClosed` and the surrounding API has been
+deprecated, and the API for `MonoidalClosed` should be used instead. This file now contains a few
+basic constructions for cartesian closed categories.
 
 -/
 

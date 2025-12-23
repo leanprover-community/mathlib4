@@ -217,7 +217,7 @@ def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
     (leftUnitorNatIso C)
 
-/-- The exponential of any object with the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
+/-- The internal hom object from the unit to any object is isomorphic to that object.
 The typeclass argument is explicit: any instance can be used. -/
 def unitIsoSelf [Closed (𝟙_ C)] : ((𝟙_ C) ⟶[C] X) ≅ X :=
   (unitNatIso.app X).symm
