@@ -560,10 +560,6 @@ theorem prod (h : ∀ σ, Meromorphic (F σ)) :
     Meromorphic (∏ n ∈ s, F n) := fun x ↦ MeromorphicAt.prod (h · x)
 
 @[to_fun (attr := fun_prop)]
-lemma inv {f : 𝕜 → 𝕜} (hf : Meromorphic f) :
-    Meromorphic (f⁻¹) := fun x ↦ (hf x).inv
-
-@[to_fun (attr := fun_prop)]
 lemma div {f g : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f / g) := fun x ↦ (hf x).div (hg x)
 

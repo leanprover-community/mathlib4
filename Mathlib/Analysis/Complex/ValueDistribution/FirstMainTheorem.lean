@@ -73,7 +73,7 @@ lemma characteristic_sub_characteristic_inv_of_ne_zero
     rw [MeromorphicOn.circleAverage_log_norm hR hf.meromorphicOn]
     unfold Function.locallyFinsuppWithin.logCounting
     have : (divisor f (closedBall 0 |R|)) = (divisor f Set.univ).toClosedBall R :=
-      (divisor_restrict hf (by tauto)).symm
+      (divisor_restrict hf.meromorphicOn (by tauto)).symm
     simp [this, toClosedBall, restrictMonoidHom, restrict_apply]
 
 /--
