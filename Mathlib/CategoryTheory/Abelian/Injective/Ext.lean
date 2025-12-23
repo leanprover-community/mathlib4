@@ -42,7 +42,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
 instance : R.cochainComplex.IsKInjective := isKInjective_of_injective _ 0
 
-/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identify
+/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
 to `R.cochainComplex`. -/
 noncomputable def extEquivCohomologyClass :
