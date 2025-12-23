@@ -103,7 +103,7 @@ theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
-@[simp, grind .]
+@[simp]
 theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) :=
   (singleton_ne_empty a).symm
 
@@ -127,7 +127,7 @@ theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by
-  grind
+  grind [empty_ne_singleton, not_nonempty_iff_eq_empty]
 
 theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} :
     s.Nonempty ↔ s = {default} := by
