@@ -134,6 +134,7 @@ public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.InfoviewSearch.InteractiveUnfold
 public import Mathlib.Tactic.InfoviewSearch.LibraryRewrite
+public import Mathlib.Tactic.InfoviewSearch.Util
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
