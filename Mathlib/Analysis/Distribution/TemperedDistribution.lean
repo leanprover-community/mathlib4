@@ -243,4 +243,43 @@ instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
 
 end Fourier
 
+section DiracDelta
+
+variable [NormedAddCommGroup E]
+
+section definition
+
+variable [NormedSpace ℝ E]
+
+/-- The Dirac delta distribution -/
+def delta (x : E) : 𝓢'(E, ℂ) :=
+  (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
+
+@[simp]
+theorem delta_apply (x₀ : E) (f : 𝓢(E, ℂ)) : delta x₀ f = f x₀ :=
+  rfl
+
+open MeasureTheory MeasureTheory.Measure
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- Integrating against the Dirac measure is equal to the delta distribution. -/
+@[simp]
+theorem integralCLM_dirac_eq_delta (x : E) : integralCLM ℂ (dirac x) = delta x := by aesop
+
+end definition
+
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+open FourierTransform
+
+/-- The Fourier transform of the delta distribution is equal to the volume.
+
+Informally, this is usually represented as `𝓕 δ = 1`. -/
+theorem fourier_delta_zero : 𝓕 (delta (0 : E)) = volume.toTemperedDistribution := by
+  ext f
+  simp [SchwartzMap.fourier_coe, Real.fourier_eq]
+
+end DiracDelta
+
 end TemperedDistribution
