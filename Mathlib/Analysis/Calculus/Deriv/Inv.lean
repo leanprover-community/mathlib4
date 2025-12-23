@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Tactic.ToFun
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
@@ -99,23 +100,17 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
 
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
-theorem HasDerivWithinAt.fun_inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
-    HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
+@[to_fun]
+theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
+    HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x := by
   convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
   ring
 
-theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
-    HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x :=
-  hc.fun_inv hx
-
-theorem HasDerivAt.fun_inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
-    HasDerivAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) x := by
+@[to_fun]
+theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
+    HasDerivAt (c⁻¹) (-c' / c x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.inv hx
-
-theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
-    HasDerivAt (c⁻¹) (-c' / c x ^ 2) x :=
-  hc.fun_inv hx
 
 theorem derivWithin_fun_inv' (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 0) :
     derivWithin (fun x => (c x)⁻¹) s x = -derivWithin c s x / c x ^ 2 := by
