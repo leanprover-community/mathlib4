@@ -37,18 +37,12 @@ namespace CategoryTheory
 
 open Category Limits MonoidalCategory CartesianMonoidalCategory
 
-section
-
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {X X' Y Y' Z : C}
 
 instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
     (A : C) [Closed A] :
     (prod.functor.obj A).IsLeftAdjoint :=
   Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd A)
-
-instance (A : C) [Closed A] :
-    PreservesColimits (tensorLeft A) :=
-  (ihom.adjunction A).leftAdjoint_preservesColimits
 
 namespace CartesianClosed
 
@@ -89,9 +83,6 @@ variable {A B : C} [Closed A]
 
 open MonoidalClosed
 
--- TODO: Generalise the below to its commuted variants.
--- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
-
 /-- If an initial object `I` exists in a CCC, then `A ⨯ I ≅ I`. -/
 @[simps]
 def zeroMul {I : C} (t : IsInitial I) : A ⊗ I ≅ I where
@@ -116,6 +107,15 @@ def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [MonoidalClosed C] : I
   hom_inv_id := by
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
+
+-- TODO: Generalise the below to its commuted variants.
+-- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
+/-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
+@[deprecated "No replacement: use `asIso (coprodComparison (tensorLeft Z) _ _)` instead."
+(since := "2025-12-22")]
+noncomputable def prodCoprodDistrib [MonoidalCategory C] [HasBinaryCoproducts C]
+    [MonoidalClosed C] (X Y Z : C) : (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) :=
+  asIso (coprodComparison (tensorLeft Z) _ _)
 
 /-- If an initial object `I` exists in a CCC then it is a strict initial object,
 i.e. any morphism to `I` is an iso.
@@ -230,25 +230,5 @@ end Functor
   MonoidalClosed.pre_map
 @[deprecated (since := "2025-12-22")] alias internalHom :=
   MonoidalClosed.internalHom
-
-
-end
-
-section
-
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C] {X X' Y Y' Z : C}
-
-open MonoidalClosed
-
-/-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
-@[deprecated "No replacement: use `asIso (coprodComparison (tensorLeft Z) _ _)` instead."
-(since := "2025-12-22")]
-noncomputable def prodCoprodDistrib [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
-    (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) :=
-  asIso (coprodComparison (tensorLeft Z) _ _)
-
-open MonoidalClosed
-
-end
 
 end CategoryTheory
