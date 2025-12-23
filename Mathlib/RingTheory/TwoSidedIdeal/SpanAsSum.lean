@@ -3,9 +3,11 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
 # Span as a Sum
@@ -22,6 +24,9 @@ finite sum of the form `∑ i, rᵢ * sᵢ * tᵢ` where `rᵢ, tᵢ ∈ R, sᵢ
   finite terms are non-zero.
 
 -/
+
+@[expose] public section
+
 variable {R : Type*} [Ring R]
 
 namespace TwoSidedIdeal
