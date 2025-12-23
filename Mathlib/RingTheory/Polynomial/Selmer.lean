@@ -53,14 +53,15 @@ open IsGaloisGroup
 
 open NumberField
 
-instance tada1 {K : Type*} [Field K] [NumberField K] (m : Ideal (𝓞 K)) [m.IsMaximal] :
-    Finite (𝓞 K ⧸ m) :=
-  m.finiteQuotientOfFreeOfNeBot (m.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
-
+-- maybe in numberfield/basic?
 theorem Ideal.IsMaximal.ne_bot_of_isIntegral_int {R : Type*} [CommRing R]
-    [CharZero R] [Algebra.IsIntegral ℤ R] (I : Ideal R) [I.IsMaximal] : I ≠ ⊥ :=
-  Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField
-    (isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ R) h)
+    [CharZero R] [Algebra.IsIntegral ℤ R] (I : Ideal R) [hI : I.IsMaximal] : I ≠ ⊥ :=
+  Ring.ne_bot_of_isMaximal_of_not_isField hI <|
+    Int.not_isField ∘ isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ R)
+
+instance tada1 {K : Type*} [Field K] [NumberField K] (m : Ideal (𝓞 K)) [hm : m.IsMaximal] :
+    Finite (𝓞 K ⧸ m) :=
+  m.finiteQuotientOfFreeOfNeBot hm.ne_bot_of_isIntegral_int
 
 theorem NumberField.supr_inertia_eq_top (K : Type*) [Field K] [NumberField K]
     (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
