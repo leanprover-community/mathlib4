@@ -554,13 +554,6 @@ instance (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetPlusMinusOne] :
     GradedMonoid.GOne (ModularForm Γ) where
   one := 1
 
-open Classical in
-@[simp]
-lemma one_support (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetPlusMinusOne] :
-    (DirectSum.of (ModularForm Γ) 0 GradedMonoid.GOne.one).support = {0} := by
-  rw [DirectSum.support_of ]
-  simp [GradedMonoid.GOne.one, ModularForm.ext_iff]
-
 instance (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetPlusMinusOne] :
     GradedMonoid.GMul (ModularForm Γ) where
   mul f g := f.mul g
