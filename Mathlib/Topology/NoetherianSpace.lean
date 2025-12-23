@@ -220,7 +220,7 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
     by_cases h : a ∈ U
     · exact ⟨U, Set.mem_insert _ _, h⟩
     · rw [Set.mem_diff, Decidable.not_and_iff_not_or_not, not_not, Set.mem_iUnion] at h
-      rcases h with (h|⟨i, hi⟩)
+      rcases h with (h | ⟨i, hi⟩)
       · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
         simp only [ι, Set.mem_diff, Set.mem_singleton_iff]
         refine ⟨irreducibleComponent_mem_irreducibleComponents _, ?_⟩
