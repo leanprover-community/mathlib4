@@ -128,7 +128,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   refine ⟨u, ?_, ?_, ?_⟩
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · rw [h]
       exact isOpen_empty
     · exact T_open _ h
@@ -139,7 +139,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
     exact mem_iUnion_of_mem _ h'v
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · simp only [h, empty_inter, integrableOn_empty]
     · exact hT _ h
 
@@ -167,7 +167,7 @@ protected theorem LocallyIntegrableOn.add [ContinuousAdd ε''] {f g : X → ε''
     (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f + g) s μ := fun x hx ↦ (hf x hx).add (hg x hx)
 
--- TODO: once mathlib has a ENormedAddCommSubMonoid, generalise this lemma also
+-- TODO: once mathlib has an ENormedAddCommSubMonoid, generalise this lemma also
 protected theorem LocallyIntegrableOn.sub
     {f g : X → E} (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f - g) s μ := fun x hx ↦ (hf x hx).sub (hg x hx)

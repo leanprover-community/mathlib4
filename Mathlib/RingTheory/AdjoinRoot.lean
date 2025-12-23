@@ -776,7 +776,7 @@ variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
 open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
-If `R` is a integrally closed domain and `x` is integral, this is an isomorphism,
+If `R` is an integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftAlgHom _ (Algebra.ofId R <| adjoin R {x}) ⟨x, self_mem_adjoin_singleton R x⟩

@@ -20,18 +20,18 @@ open CategoryTheory Limits
 
 namespace SSet
 
-section
-
 variable {J : Type*} [Category J] [HasColimitsOfShape J (Type u)]
   {F : J ⥤ SSet.{u}} {c : Cocone F} (hc : IsColimit c)
+
+section
 
 include hc
 
 lemma iSup_range_eq_top_of_isColimit :
     ⨆ (j : J), Subcomplex.range (c.ι.app j) = ⊤ := by
   ext n x
-  simp only [Subpresheaf.iSup_obj, Subpresheaf.range_obj, Set.mem_iUnion, Set.mem_range,
-    Subpresheaf.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+  simp only [Subfunctor.iSup_obj, Subfunctor.range_obj, Set.mem_iUnion, Set.mem_range,
+    Subfunctor.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
   exact Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves ((evaluation _ _).obj n) hc) x
 

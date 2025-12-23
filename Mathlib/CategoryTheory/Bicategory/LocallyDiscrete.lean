@@ -5,6 +5,7 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 module
 
+public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 
@@ -114,7 +115,7 @@ namespace Bicategory
 /-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
 abbrev IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete (b ⟶ c)
 
-instance (C : Type*) [Category C] : IsLocallyDiscrete (LocallyDiscrete C) :=
+instance (C : Type*) [Category* C] : IsLocallyDiscrete (LocallyDiscrete C) :=
   fun _ _ ↦ Discrete.isDiscrete _
 
 instance (B : Type*) [Bicategory B] [IsLocallyDiscrete B] : Strict B where
@@ -155,5 +156,11 @@ end Quiver.Hom
 lemma CategoryTheory.LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
     (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
   subst h; rfl
+
+lemma CategoryTheory.CommSq.toLoc {C : Type*} [Category C] {X₁ X₂ X₃ X₄ : C}
+    {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
+    (h : CommSq t l r b) :
+    CommSq t.toLoc l.toLoc r.toLoc b.toLoc :=
+  ⟨by simp only [← Quiver.Hom.comp_toLoc, h.w]⟩
 
 end

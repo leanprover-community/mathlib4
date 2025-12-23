@@ -12,7 +12,7 @@ public import Mathlib.Data.Finite.Sigma
 /-!
 # Finite simplicial sets
 
-A simplicial set is finite (`Simplicial.Finite`) if it has finitely
+A simplicial set is finite (`SSet.Finite`) if it has finitely
 many nondegenerate simplices.
 
 -/
@@ -57,10 +57,7 @@ lemma hasDimensionLT_of_finite [X.Finite] :
   obtain ⟨d, hd⟩ : ∃ (d : ℕ), ∀ (s : ℕ) (_ : s ∈ Finset.image φ ⊤), s < d := by
     by_cases h : (Finset.image φ ⊤).Nonempty
     · obtain ⟨d, hd⟩ := Finset.max_of_nonempty h
-      refine ⟨d + 1, fun m hm ↦ ?_⟩
-      have := Finset.le_max hm
-      rw [hd, WithBot.coe_le_coe] at this
-      cutsat
+      exact ⟨d + 1, fun _ _ ↦ by grind [WithBot.coe_le_coe, → Finset.le_max]⟩
     · rw [Finset.not_nonempty_iff_eq_empty] at h
       simp only [h]
       exact ⟨0, by simp⟩
@@ -71,7 +68,7 @@ lemma hasDimensionLT_of_finite [X.Finite] :
   intro hx
   have := hd (φ (N.mk _ hx)) (by simp)
   dsimp [φ] at this
-  cutsat
+  lia
 
 instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
   obtain ⟨n⟩ := n
@@ -81,7 +78,7 @@ instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
   have hφ : Function.Surjective φ := fun x ↦ by
     obtain ⟨m, f, hf, y, rfl⟩ := X.exists_nonDegenerate x
     have := SimplexCategory.le_of_epi f
-    exact ⟨⟨⟨m, by omega⟩, f, y⟩, rfl⟩
+    exact ⟨⟨⟨m, by lia⟩, f, y⟩, rfl⟩
   exact Finite.of_surjective _ hφ
 
 instance [X.Finite] (A : X.Subcomplex) : SSet.Finite A := by
@@ -96,14 +93,9 @@ variable {X}
 lemma finite_of_mono {Y : SSet.{u}} [Y.Finite] (f : X ⟶ Y) [hf : Mono f] : X.Finite := by
   obtain ⟨d, _⟩ := Y.hasDimensionLT_of_finite
   have := hasDimensionLT_of_mono f d
-  refine finite_of_hasDimensionLT _ d (fun i hi ↦ ?_)
-  apply Finite.of_injective (f := fun a ↦ f.app _ a.1)
-  rintro ⟨x, _⟩ ⟨y, _⟩ h
-  obtain rfl : x = y := by
-    rw [NatTrans.mono_iff_mono_app] at hf
-    simp only [mono_iff_injective] at hf
-    exact hf _ h
-  rfl
+  exact finite_of_hasDimensionLT _ d
+    (fun _ _ ↦ Finite.of_injective _
+      ((injective_of_mono (f.app _)).comp Subtype.val_injective))
 
 lemma finite_of_epi {Y : SSet.{u}} [X.Finite] (f : X ⟶ Y) [hf : Epi f] : Y.Finite := by
   obtain ⟨d, _⟩ := X.hasDimensionLT_of_finite
@@ -139,7 +131,7 @@ lemma finite_iSup_iff {X : SSet.{u}} {ι : Type*} [Finite ι]
       (by simpa only [nonDegenerate_iff_of_mono] using s.nonDegenerate)) ?_
   intro s
   obtain ⟨d, ⟨⟨s, h₁⟩, h₂⟩, rfl⟩ := s.mk_surjective
-  simp only [Subpresheaf.iSup_obj, Set.mem_iUnion] at h₁
+  simp only [Subfunctor.iSup_obj, Set.mem_iUnion] at h₁
   obtain ⟨i, hi⟩ := h₁
   rw [Subcomplex.mem_nonDegenerate_iff] at h₂
   exact ⟨⟨i, N.mk ⟨s, hi⟩ (by rwa [Subcomplex.mem_nonDegenerate_iff])⟩, rfl⟩

@@ -7,9 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
+public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.CategoryTheory.EffectiveEpi.Coequalizer
-public import Mathlib.CategoryTheory.EffectiveEpi.FunctorToTypes
-public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Presentable.Limits
 
 /-!
@@ -61,7 +60,7 @@ lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
 instance (X : SSet.{u}) [X.Finite] : IsCardinalPresentable X (Cardinal.aleph0.{u}) := by
   obtain ⟨Y, _, _, p, _⟩ := exists_epi_from_isCardinalPresentable X
   obtain ⟨Z, _, _, q, _⟩ := exists_epi_from_isCardinalPresentable (pullback p p)
-  have := FunctorToTypes.effectiveEpi_of_epi p
+  have := IsRegularEpiCategory.regularEpiOfEpi p
   apply (config := { allowSynthFailures := true })
     isCardinalPresentable_of_isColimit' _
       ((EffectiveEpi.getStruct p).isColimitCoforkOfEpiOfIsPullback

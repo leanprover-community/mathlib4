@@ -47,7 +47,7 @@ This file contains basic results on dual vector spaces.
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
   * `Submodule.quotDualCoannihilatorToDual` is the nondegenerate pairing
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
-    It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
+    It is a perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
@@ -129,8 +129,8 @@ theorem Basis.linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] 
   rwa [lift_umax, lift_id'.{uV}] at this
 
 theorem Module.Basis.dual_rank_eq (b : Basis ι R M) :
-    Module.rank R (Dual R M) = Cardinal.lift.{uR,uM} (Module.rank R M) := by
-  classical rw [← lift_umax.{uM,uR}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM,uR}]
+    Module.rank R (Dual R M) = Cardinal.lift.{uR, uM} (Module.rank R M) := by
+  classical rw [← lift_umax.{uM, uR}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM, uR}]
 
 end Finite
 
@@ -196,6 +196,21 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
   rw [← eval_apply_eq_zero_iff K v, LinearMap.ext_iff]
   simp only [eval_apply, zero_apply]
 
+/-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a projective module. -/
+theorem Projective.exists_dual_ne_zero (R : Type*) [Semiring R] [Module R V]
+    [Projective R V] {x : V} (hx : x ≠ 0) : ∃ f : Dual R V, f x ≠ 0 :=
+  have ⟨M, _, _, _, ⟨i, s, his⟩⟩ := Projective.iff_split.mp ‹Projective R V›
+  let b := Free.chooseBasis R M
+  have : i x ≠ 0 := i.map_eq_zero_iff (injective_of_comp_eq_id i s his) |>.not.mpr hx
+  have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| Finsupp.ext h
+  ⟨b.coord j ∘ₗ i, hj⟩
+
+/-- This is a linear map version of `SeparatingDual.exists_eq_one` in a projective module. -/
+theorem Projective.exists_dual_eq_one (K : Type*) [Semifield K] [Module K V] [Projective K V]
+    {x : V} (hx : x ≠ 0) : ∃ f : Dual K V, f x = 1 :=
+  have ⟨f, hf⟩ := exists_dual_ne_zero K hx
+  ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
+
 @[simp]
 theorem subsingleton_dual_iff : Subsingleton (Dual K V) ↔ Subsingleton V :=
   ⟨fun _ ↦ ⟨fun _ _ ↦ eval_apply_injective K (Subsingleton.elim ..)⟩, fun _ ↦ inferInstance⟩
@@ -226,7 +241,7 @@ end
 omit [Projective K V]
 
 theorem dual_rank_eq [Free K V] [Module.Finite K V] :
-    Module.rank K (Dual K V) = Cardinal.lift.{uK,uV} (Module.rank K V) :=
+    Module.rank K (Dual K V) = Cardinal.lift.{uK, uV} (Module.rank K V) :=
   (Free.chooseBasis K V).dual_rank_eq
 
 section IsReflexive
@@ -1037,6 +1052,13 @@ variable {R M N}
 theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
     dualDistrib R M N (f ⊗ₜ g) (m ⊗ₜ n) = f m * g n :=
   rfl
+
+/-- Simultaneously swapping both the ordering of the applied duals and the ordering of the
+tensor product argument preserves evaluation. -/
+lemma dualDistrib_apply_comm (w : Dual R N ⊗[R] Dual R M) (z : M ⊗[R] N) :
+    dualDistrib R N M w (TensorProduct.comm R M N z) =
+      dualDistrib R M N (TensorProduct.comm R _ _ w) z := by
+  induction w <;> induction z <;> simp_all [mul_comm]
 
 end
 

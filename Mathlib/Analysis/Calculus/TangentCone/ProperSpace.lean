@@ -71,6 +71,3 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
   refine ⟨c ∘ φ, d ∘ φ, .of_forall fun n ↦ ?_, ?_, hφ⟩
   · simpa [d] using hvs (φ n)
   · exact c_lim.comp φ_strict.tendsto_atTop
-
-@[deprecated (since := "2025-04-27")]
-alias tangentCone_nonempty_of_properSpace := tangentConeAt_nonempty_of_properSpace
