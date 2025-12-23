@@ -26,6 +26,7 @@ open Filter Topology LinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
+-- TODO use (.) functions instead of fun => when possible
 
 variable (𝕜 X) in
 /-- A Schauder basis is a sequence (e n) such that every element x of the space can be uniquely
@@ -42,6 +43,13 @@ def biorthogonal_functionals {e : ℕ → X}
     (h : SchauderBasis 𝕜 X e) : ℕ → StrongDual 𝕜 X := Classical.choose h
 
 omit [IsRCLikeNormedField 𝕜]
+theorem biorthogonal_property {e : ℕ → X}
+    (h : SchauderBasis 𝕜 X e) :
+    ∀ n : ℕ, (biorthogonal_functionals h n (e n) = 1 ∧
+        ∀ m ≠ n, biorthogonal_functionals h n (e m) = 0) :=
+    (Classical.choose_spec h).1
+
+omit [IsRCLikeNormedField 𝕜]
 theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
   LinearIndependent 𝕜 e := by
     apply linearIndependent_iff.mpr
@@ -53,14 +61,14 @@ theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
     let n := Classical.choose hnonempty
     have : s n ≠ 0 := Finsupp.mem_support_iff.mp (Classical.choose_spec hnonempty)
     let f := biorthogonal_functionals h n
-    have fen: f (e n) = 1 := by exact ((Classical.choose_spec h).1 n).1
-    have fem: ∀ m, m ≠ n → f (e m) = 0 := fun m hm => ((Classical.choose_spec h).1 n).2 m hm
+    -- have fem: ∀ m, m ≠ n → f (e m) = 0 := fun m hm => ((Classical.choose_spec h).1 n).2 m hm
     have fsm0: ∀ m ∈ {m ∈ s.support | m ≠ n}, f (s m • e m) = 0 := by
         intro m hm
         calc
             f (s m • e m) = s m • f (e m) := by rw [ContinuousLinearMap.map_smul]
             _ = s m * f (e m) := by rw [smul_eq_mul]
-            _ = s m * 0 := by rw [fem m (by rw [Finset.mem_filter] at hm; exact hm.2)]
+            _ = s m * 0 := by rw
+                [((biorthogonal_property h) n).2 m (by rw [Finset.mem_filter] at hm; exact hm.2)]
             _ = 0 := by rw [mul_zero]
     let ssuppn := s.support.filter (fun m => m = n)
     let ssuppnn := s.support.filter (fun m => m ≠ n)
@@ -83,7 +91,7 @@ theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
     have : s n = 0 := by
         calc
             s n = s n * 1 := by rw [mul_one]
-            _ = s n * f (e n) := by rw [fen]
+            _ = s n * f (e n) := by rw [((biorthogonal_property h) n).1]
             _ = s n • f (e n) := by rw [smul_eq_mul]
             _ = f (s n • e n) := by rw [<-map_smul]
             _ = f (∑ m ∈ {n}, s m • e m) := by rw [Finset.sum_singleton]
@@ -177,15 +185,43 @@ theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
 theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
     CanonicalProjections h n ∘ CanonicalProjections h m = CanonicalProjections h (min n m) := by
     ext x
-    dsimp [CanonicalProjections]
-    have bf := biorthogonal_functionals h
+    let bf := biorthogonal_functionals h
+    have : ∀ j i : ℕ, (bf j (e i)) = (if j = i then (1 : 𝕜) else 0) := by
+        intro j i
+        by_cases hji: j = i
+        · rw [hji]
+          simp only
+          exact ((biorthogonal_property h) i).1
+        · rw [if_neg hji]; push_neg at hji
+          exact ((biorthogonal_property h) j).2 i hji.symm
     calc
         (CanonicalProjections h n ∘ CanonicalProjections h m) x
-            = CanonicalProjections h n (∑ i ∈ Finset.range m, (bf i x) • e i) := by sorry
-        _ = ∑ j ∈ Finset.range n, bf j (∑ i ∈ Finset.range m, (bf i x) • e i) • e j := by sorry
-        _ = ∑ j ∈ Finset.range n, (if j < m then (bf j x) else 0) • e j := by sorry
+            = CanonicalProjections h n (CanonicalProjections h m x) := by simp
+        _ = ∑ j ∈ Finset.range n, bf j (CanonicalProjections h m x) • e j := by
+            rw [CanonicalProjections]; simp [bf]
+        _ = ∑ j ∈ Finset.range n, bf j (∑ i ∈ Finset.range m, bf i x • e i) • e j := by
+            rw [CanonicalProjections]; simp [bf]
+        _ = ∑ j ∈ Finset.range n, (∑ i ∈ Finset.range m, (bf j (bf i x • e i))) • e j := by
+            exact Finset.sum_congr rfl (fun j hj => by apply congrArg ( · • e j ); rw [map_sum])
+        _ = ∑ j ∈ Finset.range n, (∑ i ∈ Finset.range m, (bf i x) • (bf j (e i))) • e j := by
+            exact Finset.sum_congr rfl (by
+                intro j hj
+                apply congrArg ( · • e j )
+                apply Finset.sum_congr rfl (by
+                    intro i hi
+                    rw [ContinuousLinearMap.map_smul]))
+        _ = ∑ j ∈ Finset.range n, (∑ i ∈ Finset.range m,
+            (bf i x) • (if j = i then (1 : 𝕜) else 0)) • e j := by
+            exact Finset.sum_congr rfl (by
+                intro j hj
+                apply congrArg ( · • e j )
+                apply Finset.sum_congr rfl (by
+                    intro i hi
+                    apply congrArg ( (bf i) x • ·  )
+                    exact this j i
+                    ))
         _ = ∑ j ∈ Finset.range (min n m), (bf j x) • e j := by sorry
-        _ = CanonicalProjections h (min n m) x := by sorry
+        _ = CanonicalProjections h (min n m) x := by rw [CanonicalProjections]; simp [bf]
 
 theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
     Tendsto (fun n => CanonicalProjections h n x) atTop (𝓝 x) := by
@@ -199,7 +235,6 @@ theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
     have p: ∀ n, ∑ i ∈ Finset.range n, h.coeff x i • e i = (h.CanonicalProjections n) x := by
         dsimp [CanonicalProjections, coeff]
         simp
-
     exact Filter.Tendsto.congr p tndto
 
 variable [CompleteSpace X]
