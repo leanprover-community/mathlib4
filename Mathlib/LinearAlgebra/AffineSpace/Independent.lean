@@ -542,8 +542,7 @@ private lemma AffineIndependent.vectorSpan_image_ne_of_mem_of_notMem_of_not_subs
     exact sum_congr rfl fun t ht ↦ by simp [w']
   have hs' : p i -ᵥ p j = (fs.map (Embedding.subtype _)).weightedVSub p w' := by
     rw [hs, weightedVSub_map]
-    simp only [Embedding.coe_subtype, Subtype.val_injective, extend_comp, w']
-    rfl
+    simp [w', Function.comp_def]
   let fs' : Finset ι := insert i (insert j (fs.map (Embedding.subtype _)))
   have hfsfs' : fs.map (Embedding.subtype _) ⊆ fs' := by grind
   let w'' : ι → k := Set.indicator (fs.map (Embedding.subtype _)) w'
