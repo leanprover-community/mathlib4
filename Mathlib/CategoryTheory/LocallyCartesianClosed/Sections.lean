@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # The section functor as a right adjoint to the star functor
@@ -28,21 +28,21 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory CartesianClosed CartesianMonoidalCategory
+open Category Limits MonoidalCategory CartesianMonoidalCategory MonoidalClosed
 
 section Sections
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
-variable (I : C) [Exponentiable I]
+variable (I : C) [Closed I]
 
 /-- The first leg of a cospan to define `sectionsObj` as a pullback in `C`. -/
-abbrev curryId : 𝟙_ C ⟶ (I ⟹ I) :=
+abbrev curryId : 𝟙_ C ⟶ (I ⟶[C] I) :=
   curry <| (ρ_ _).hom
 
 theorem toUnit_comp_curryId {A : C} : toUnit A ≫ curryId I = curry (fst I A) := by
   apply uncurry_injective
-  simp only [uncurry_natural_left, curryId, uncurry_curry, fst_def, toUnit]
+  simp [uncurry_natural_left, curryId, fst_def, toUnit]
 
 namespace Over
 
@@ -62,12 +62,12 @@ pullback diagram:
 ```
 -/
 abbrev sectionsObj (X : Over I) : C :=
-  pullbackObj (exp I |>.map X.hom) (curryId I)
+  pullbackObj (ihom I |>.map X.hom) (curryId I)
 
 /-- The functoriality of `sectionsObj`. -/
 abbrev sectionsMap {X X' : Over I} (u : X ⟶ X') :
     sectionsObj X ⟶ sectionsObj X' :=
-  pullbackMap _ _ _ _ (exp I |>.map u.left) (𝟙 _) (𝟙 _)
+  pullbackMap _ _ _ _ (ihom I |>.map u.left) (𝟙 _) (𝟙 _)
     (by simp [← Functor.map_comp]) (by cat_disch)
 
 @[simp]
@@ -97,31 +97,31 @@ variable [BraidedCategory C]
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
   ChosenPullbacksAlong.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
-    rw [curry_natural_right, assoc, ← Functor.map_comp, w, toOver_obj_hom, ← curry_natural_right,
-    toUnit_comp_curryId]
+    rw [curry_natural_right, Category.assoc, ← Functor.map_comp, w, toOver_obj_hom,
+    ← curry_natural_right, toUnit_comp_curryId]
     congr
     simp [braiding_hom_snd])
 
 /-- The uncurrying operation `Hom A (section X) → Hom ((star I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X := by
-  let v₂ : A ⟶ (I ⟹ X.left) := v ≫ ChosenPullbacksAlong.fst (exp I |>.map X.hom) (curryId I)
-  have comm : toUnit A ≫ (curryId I) = v₂ ≫ (exp I).map X.hom := by
+  let v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ ChosenPullbacksAlong.fst (ihom I |>.map X.hom) (curryId I)
+  have comm : toUnit A ≫ (curryId I) = v₂ ≫ (ihom I).map X.hom := by
     rw [IsTerminal.hom_ext isTerminalTensorUnit (toUnit A ) (v ≫ snd ..)]
     simp [v₂, condition]
   dsimp [curryId] at comm
-  have w' := (exp.adjunction I).homEquiv_naturality_right_square _ _ _ _ comm
+  have w' := (ihom.adjunction I).homEquiv_naturality_right_square _ _ _ _ comm
   simp only [curriedTensor_obj_obj, curriedTensor_obj_map, curry,
     Equiv.symm_apply_apply] at w'
   exact Over.homMk ((β_ A I).hom ≫ uncurry v₂) (by
-    dsimp [CartesianClosed.uncurry] at *
-    simp only [assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
+    dsimp [uncurry] at *
+    rw [Category.assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
 
 @[simp]
 theorem sections_curry_uncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
-  let v₂ : A ⟶ (I ⟹ X.left) := v ≫ ChosenPullbacksAlong.fst (exp I |>.map X.hom) (curryId I)
+  let v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ ChosenPullbacksAlong.fst (ihom I |>.map X.hom) (curryId I)
   apply ChosenPullbacksAlong.hom_ext
   · simp
   · subsingleton
@@ -150,13 +150,13 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
     simp only [toOver_map]
     rw [← Over.homMk_comp]
     congr 1
-    simp [CartesianClosed.uncurry_natural_left]
+    simp [uncurry_natural_left]
   homEquiv_naturality_right := by
     intro A X' X u g
     dsimp [sectionsCurry, sectionsUncurry, curryId]
     apply ChosenPullbacksAlong.hom_ext
-    · simp only [ChosenPullbacksAlong.lift_fst, assoc, pullbackMap_fst,
-      ChosenPullbacksAlong.lift_fst_assoc, ← curry_natural_right, assoc]
+    · simp only [ChosenPullbacksAlong.lift_fst, Category.assoc, pullbackMap_fst,
+      ChosenPullbacksAlong.lift_fst_assoc, ← curry_natural_right, Category.assoc]
     · aesop
 
 variable (I) in
