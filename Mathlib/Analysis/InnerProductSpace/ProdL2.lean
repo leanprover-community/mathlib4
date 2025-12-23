@@ -92,7 +92,7 @@ def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
   norm_map' _ := by
     rw [← sq_eq_sq₀ (by positivity) (by positivity), WithLp.prod_norm_sq_eq_of_L2,
       K.norm_sq_eq_add_norm_sq_projection]
-    simp [starProjection_eq_isCompl_projection]
+    simp [starProjection_apply_eq_isComplProjection]
 
 @[simp]
 theorem orthogonalDecomposition_apply :

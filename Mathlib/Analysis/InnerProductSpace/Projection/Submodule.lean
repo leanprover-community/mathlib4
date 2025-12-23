@@ -214,7 +214,7 @@ theorem toLinearMap_starProjection_eq_isComplProjection [K.HasOrthogonalProjecti
   toLinearMap_starProjection_eq_isComplProjection
 
 open Submodule in
-theorem starProjection_eq_isCompl_projection [K.HasOrthogonalProjection] (x : E) :
+theorem starProjection_apply_eq_isComplProjection [K.HasOrthogonalProjection] (x : E) :
     K.starProjection x = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection x :=
   congr($starProjection_coe_eq_isCompl_projection x)
 
