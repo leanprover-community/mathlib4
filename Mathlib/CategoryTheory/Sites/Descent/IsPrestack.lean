@@ -111,7 +111,7 @@ lemma pullHom_pullHom
     F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _ _ rfl (by aesop),
     F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop),
     mapComp'_inv_naturality_assoc,
-      ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id,Cat.Hom₂.id_app, Category.id_comp]
+      ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id, Cat.Hom₂.id_app, Category.id_comp]
 
 end LocallyDiscreteOpToCat
 
