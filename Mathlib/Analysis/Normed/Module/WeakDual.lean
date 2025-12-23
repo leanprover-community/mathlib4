@@ -331,7 +331,6 @@ open Metric NormedSpace Function ContinuousLinearMap Pointwise Topology
 
 open scoped BigOperators Topology
 
-/- Move the next two lemmas above, checking that hp are preserved (quite minimal here). -/
 lemma IsClosed_image_ball [CompleteSpace E] : IsClosed
     ((inclusionInDoubleDual 𝕜 E) '' closedBall 0 1) :=
   inclusionInDoubleDualLi 𝕜 (E := E).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
@@ -373,8 +372,7 @@ theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual ℝ F) (γ : I → �
       AddHom.coe_mk, β, φ]
     simp_rw [smul_eq_mul, mul_comm, ← smul_eq_mul]
     have h1 (i : I) : f i x • g ((Pi.single i 1) : I → ℝ) =
-      g ((f i) x • ((Pi.single i 1) : I → ℝ)) := by
-      simp
+      g ((f i) x • ((Pi.single i 1) : I → ℝ)) := by simp
     simp_rw [h1, ← Pi.single_smul, smul_eq_mul, mul_one, ← map_sum,
       Finset.univ_sum_single fun i ↦ (f i) x]
   have hright : α < ∑ i, β i • γ i := by
@@ -393,14 +391,11 @@ theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual ℝ F) (γ : I → �
     refine ContinuousLinearMap.opNorm_le_of_unit_norm ?_ (fun x hx ↦ ?_)
     · apply le_trans (norm_nonneg _) <| hleft 0 (mem_closedBall_self (zero_le_one))
     · apply le_trans (hleft x (mem_closedBall_zero_iff.mpr (le_of_eq hx))) (by rfl)
-  replace h : ‖∑ i, β i • f i‖ < ∑ i, β i • γ i := lt_of_le_of_lt hleft hright
-  have uff : ∑ i, β i • γ i ≤ ‖∑ i, β i • γ i‖ := by
-    exact Real.le_norm_self (∑ i, β i • γ i)
-  replace uff : _ < _ := lt_of_lt_of_le h uff
-  specialize H β
-  exact not_le_of_gt uff H
+  have h : ‖∑ i, β i • f i‖ < ∑ i, β i • γ i := lt_of_le_of_lt hleft hright
+  replace h : _ < _ := lt_of_lt_of_le h <| Real.le_norm_self (∑ i, β i • γ i)
+  exact not_le_of_gt h (H β)
 
-theorem three (I : Type*) [Fintype I] {φ : StrongDual ℝ (StrongDual ℝ F)} (hφ : ‖φ‖ ≤ 1)
+theorem Helly' (I : Type*) [Fintype I] {φ : StrongDual ℝ (StrongDual ℝ F)} (hφ : ‖φ‖ ≤ 1)
     {ε : ℝ} (hε : 0 < ε)
     (f : I → StrongDual ℝ F) : ∃ x : F, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
   apply Helly f (fun i ↦ φ (f i)) _ hε
@@ -415,7 +410,7 @@ the unit sphere of the double dual. The result below is somewhat stronger, and i
 to move the inclusion back to `Normed.Module.Dual` and to keep here the full equality.
 
 See Chapter 3.5, Lemma 3.4 in [brezis2011]. -/
--- **RENAME!!!**
+
 theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ F)) := inferInstance
     closure[𝒯] (inclusionInDoubleDual ℝ F '' closedBall 0 1)
     = closedBall (0 : StrongDual ℝ (StrongDual ℝ F)) 1 := by
@@ -437,9 +432,9 @@ theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ F
     is `h_WithSeminorms`) so that `ξ` lies in the closure can be checked on those seminorms. -/
   rintro ⟨I, ε⟩ hε
   simp only [mem_closedBall] at hξ
-  /- Using Helly's lemma **FAE : Insert right name!** we obtain from `ξ` an element `y` that
+  /- Using Helly's lemma, we obtain from `ξ` an element `y` that
     is `ε`-close to `ξ` in all seminorms defining the neighborood we're looking at. -/
-  obtain ⟨y, hy_le, hy_eq⟩ := three I hξ hε (·)
+  obtain ⟨y, hy_le, hy_eq⟩ := Helly' I hξ hε (·)
   refine ⟨inclusionInDoubleDual ℝ F y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
   simp only [Seminorm.mem_ball]
   apply Seminorm.finset_sup_apply_lt hε
