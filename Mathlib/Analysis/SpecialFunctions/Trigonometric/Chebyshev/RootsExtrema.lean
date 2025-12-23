@@ -75,13 +75,9 @@ theorem one_le_abs_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ |x|) :
 
 theorem one_lt_abs_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < |x|) :
     1 < |(T ℝ n).eval x| := by
-  cases lt_abs.mp hx with
-  | inl hx => exact one_lt_eval_T_real hn hx |> .inl |> lt_abs.mpr
-  | inr hx =>
-    have := one_lt_negOnePow_mul_eval_T_real hn (lt_neg_of_lt_neg hx)
-    have : 1 < |(-1) ^ n * (T ℝ n).eval x| := by grind
-    convert this using 1
-    simp [abs_mul, abs_zpow]
+  wlog! h : 0 ≤ x
+  · simpa [T_eval_neg, abs_mul, abs_unit_intCast] using @this n hn (-x) (by grind) (by grind)
+  · exact one_lt_eval_T_real hn (abs_of_nonneg h ▸ hx) |>.trans_le <| le_abs_self _
 
 theorem abs_eval_T_real_le_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 := by
