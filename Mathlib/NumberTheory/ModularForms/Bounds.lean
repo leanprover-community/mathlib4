@@ -173,17 +173,13 @@ lemma ModularFormClass.exists_petersson_le {k : ℤ} (hk : 0 ≤ k) (Γ : Subgro
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [ModularFormClass F Γ k] [ModularFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C * max τ.im (1 / τ.im) ^ k := by
   conv => enter [1, C, τ, 1]; rw [← norm_norm]
-  have := ModularGroup.exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO
-      (show Continuous (‖petersson k f f' ·‖) by fun_prop) (mod_cast hk : 0 ≤ (k : ℝ))
-      (fun g ↦ ?_) (fun g hg τ ↦ SlashInvariantFormClass.norm_petersson_smul hg)
-  · exact_mod_cast this
-  · simp_rw [← UpperHalfPlane.petersson_slash_SL, Real.rpow_intCast]
-    have hft := bdd_at_infty_slash f g
-    have hf't := bdd_at_infty_slash f' g
-    apply IsBigO.of_norm_left
-    simpa [petersson, norm_mul, Complex.norm_conj, norm_zpow, Complex.norm_real,
-      Real.norm_of_nonneg (_ : ℍ).im_pos.le]
-      using (hft.norm_left.mul hf't.norm_left).mul (isBigO_refl (fun τ ↦ τ.im ^ k) atImInfty)
+  refine mod_cast ModularGroup.exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO
+    (show Continuous (‖petersson k f f' ·‖) by fun_prop) (mod_cast hk : 0 ≤ (k : ℝ))
+    (fun g ↦ ?_) (fun g hg τ ↦ SlashInvariantFormClass.norm_petersson_smul hg)
+  simp_rw [← UpperHalfPlane.petersson_slash_SL, Real.rpow_intCast]
+  simpa [petersson, Real.norm_of_nonneg (_ : ℍ).im_pos.le]
+    using (bdd_at_infty_slash f g).norm_left.mul (bdd_at_infty_slash f' g).norm_left
+      |>.mul (isBigO_refl ..)
 
 open ConjAct Pointwise in
 /-- If `f` is a cusp form and `f'` a modular form, then `petersson k f f'` is bounded. -/
@@ -219,10 +215,8 @@ lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.
   specialize hC τ
   rw [← sq_le_sq₀ (by positivity) (by positivity), div_pow, Real.sq_sqrt ((norm_nonneg _).trans hC)]
   grw [← hC]
-  rw [petersson, norm_mul, norm_mul, Complex.norm_conj, norm_zpow, Complex.norm_real,
-    Real.norm_eq_abs, abs_of_pos τ.im_pos, ← Real.rpow_mul_natCast τ.im_pos.le, Nat.cast_two,
-    div_mul_cancel₀ _ two_ne_zero, Real.rpow_intCast τ.im k]
-  simp [field]
+  rw [petersson, ← Real.rpow_mul_natCast τ.im_pos.le]
+  simp [abs_of_pos τ.im_pos, field]
 
 open Real in
 /-- A weight `k` modular form is bounded in norm by a constant multiple of
@@ -246,9 +240,8 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
   lift t to NNReal using ht.le
   rw [← coe_nnnorm]
   norm_cast at ⊢ ht
-  rw [NNReal.coe_pow, nnnorm_pow, NNReal.nnnorm_eq, (pow_left_mono k).map_max,
-    (pow_left_mono 2).map_max, ← max_div_div_right (by positivity), div_pow, one_pow]
-  field_simp
+  rw [(pow_left_mono k).map_max, (pow_left_mono 2).map_max, ← max_div_div_right (by positivity)]
+  congr <;> simp [field, ht.ne']
 
 local notation "𝕢" => Function.Periodic.qParam
 
