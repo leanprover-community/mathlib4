@@ -81,9 +81,7 @@ theorem one_lt_abs_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < |x|)
 
 theorem abs_eval_T_real_le_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 := by
-  constructor
-  · intro hx; exact abs_eval_T_real_le_one n hx
-  · intro hx; contrapose! hx; exact one_lt_abs_eval_T_real hn hx
+  ⟨abs_eval_T_real_le_one n, by simpa using mt <| one_lt_abs_eval_T_real hn⟩
 
 theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     |(T ℝ n).eval x| = 1 ↔ ∃ k ≤ n, x = cos (k * π / n) := by
