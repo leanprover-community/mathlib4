@@ -1782,6 +1782,7 @@ public import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.Fourier.FourierTransformDeriv
 public import Mathlib.Analysis.Fourier.Inversion
+public import Mathlib.Analysis.Fourier.LpSpace
 public import Mathlib.Analysis.Fourier.Notation
 public import Mathlib.Analysis.Fourier.PoissonSummation
 public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
@@ -2267,6 +2268,7 @@ public import Mathlib.CategoryTheory.Bicategory.EqToHom
 public import Mathlib.CategoryTheory.Bicategory.Extension
 public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
+public import Mathlib.CategoryTheory.Bicategory.Functor.Cat.ObjectProperty
 public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
@@ -6641,6 +6643,7 @@ public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PPRoundtrip
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
+public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
@@ -7084,7 +7087,9 @@ public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.GeneratedBy
 public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
+public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
 public import Mathlib.Topology.Defs.Induced
