@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero, Riccardo Brasca, Stefano Francaviglia, Hang Lu Su,
 Francesco Milizia, Valerio Proietti, Lawrence Wu
 -/
+module
 
-import Mathlib.GroupTheory.Presentation
-import Mathlib.GroupTheory.Finiteness
+public import Mathlib.GroupTheory.Presentation
+public import Mathlib.GroupTheory.Finiteness
 
 /-!
 # Finitely presented groups
@@ -21,6 +22,8 @@ Main results:
 * `Group.finitelyPresented_congr` shows invariance under group isomorphisms.
 * `PresentedGroup.toPresentation` gives the canonical finite presentation of a presented group.
 -/
+
+@[expose] public section
 
 namespace Group
 

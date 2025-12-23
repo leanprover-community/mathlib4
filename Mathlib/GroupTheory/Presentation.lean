@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero, Riccardo Brasca, Stefano Francaviglia, Hang Lu Su,
 Francesco Milizia, Valerio Proietti, Lawrence Wu
 -/
+module
 
-import Mathlib.GroupTheory.PresentedGroup
-import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Presentation of a group
@@ -21,6 +22,8 @@ Main definitions:
 * `Group.Presentation.mapMulEquiv` transports a presentation along a group isomorphism.
 * `Group.Presentation.equivPresentedGroup` identifies `PresentedGroup P.rels` with `G`.
 -/
+
+@[expose] public section
 
 namespace Group
 
