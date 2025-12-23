@@ -322,10 +322,8 @@ lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
 /-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
 -/
 lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
-  existsi @Quotient.out _ (addConGen (PiTensorProduct.Eqv R s)).toSetoid x
-  simp only [lifts, Set.mem_setOf_eq]
-  rw [← AddCon.quot_mk_eq_coe]
-  apply Quot.out_eq
+  existsi Quot.out x
+  simp [lifts, ← AddCon.quot_mk_eq_coe]
 
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/
@@ -880,7 +878,7 @@ section tmulEquiv
 
 See `PiTensorProduct.tmulEquivDep` for the dependent version. -/
 def tmulEquiv :
-    (⨂[R] (_ : ι), M)  ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
+    (⨂[R] (_ : ι), M) ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
   tmulEquivDep R (fun _ ↦ M)
 
 @[simp]

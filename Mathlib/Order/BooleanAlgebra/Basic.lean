@@ -86,6 +86,7 @@ private theorem sdiff_le' : x \ y ≤ x :=
     x \ y ≤ x ⊓ y ⊔ x \ y := le_sup_right
     _ = x := sup_inf_sdiff x y
 
+set_option backward.privateInPublic true in
 -- Use `sdiff_sup_self`
 private theorem sdiff_sup_self' : y \ x ⊔ x = y ⊔ x :=
   calc
@@ -117,6 +118,8 @@ theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
 @[simp]
 theorem inf_sdiff_self_left : y \ x ⊓ x = ⊥ := by rw [inf_comm, inf_sdiff_self_right]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 -- see Note [lower instance priority]
 instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra :
     GeneralizedCoheytingAlgebra α where
