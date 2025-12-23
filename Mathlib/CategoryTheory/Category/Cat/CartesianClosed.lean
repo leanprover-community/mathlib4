@@ -75,7 +75,7 @@ instance closed : Closed (Cat.of C) where
       homEquiv_naturality_left_symm _ _ := rfl
       homEquiv_naturality_right _ _ := rfl }
 
-instance cartesianClosed : CartesianClosed Cat.{u, u} where
+instance cartesianClosed : MonoidalClosed Cat.{u, u} where
   closed C := closed C
 
 @[simp]
