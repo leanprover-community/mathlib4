@@ -104,7 +104,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 
 /-- `Kᗮ` can be characterized as the intersection of the kernels of the operations of
 inner product with each of the elements of `K`. -/
-theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) := by
+theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
   ext
   simpa using mem_orthogonal _ _
 
@@ -118,7 +118,7 @@ theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
   K.isClosed_orthogonal.completeSpace_coe
 
-lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map f = (K.map f)ᗮ := by
+lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map f = (K.map (f : E →ₗ[𝕜] F))ᗮ := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, LinearIsometryEquiv.inner_map_eq_flip]
   exact fun x ↦ ⟨fun ⟨y, hy⟩ z hz ↦ by simp [← hy.2, hy.1 _ hz], fun h ↦ ⟨_, h, by simp⟩⟩
