@@ -47,9 +47,8 @@ lemma eval_T_real_chebyshevNode {n i : ℕ} (hn : n ≠ 0) :
 
 lemma strictAntiOn_chebyshevNode (n : ℕ) :
     StrictAntiOn (chebyshevNode n ·) (Finset.range (n + 1)) := by
-  wlog hn : n ≠ 0
-  · push_neg at hn
-    simp [hn]
+  wlog! hn : n ≠ 0
+  · simp [hn]
   refine strictAntiOn_cos.comp_strictMonoOn ?_ (fun x hx => Set.mem_Icc.mpr ⟨by positivity, ?_⟩)
   · apply StrictMono.strictMonoOn
     exact StrictMono.mul_const
@@ -67,9 +66,8 @@ lemma chebyshevNode_lt {n i j : ℕ} (hi : i ≤ n) (hj : j ≤ n) (hij : i < j)
 lemma zero_lt_prod_chebyshevNode_sub_chebyshevNode {n i : ℕ} (hi : i ≤ n) :
     0 < (-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (chebyshevNode n i - chebyshevNode n j) :=
     by
-  wlog hn : n ≠ 0
-  · push_neg at hn
-    replace hi : i = 0 := Nat.le_zero.mp (le_of_le_of_eq hi hn)
+  wlog! hn : n ≠ 0
+  · replace hi : i = 0 := Nat.le_zero.mp (le_of_le_of_eq hi hn)
     simp [hn, hi]
   have h₁ : 0 < ∏ j ∈ Finset.range i, ((-1) * (chebyshevNode n i - chebyshevNode n j)) :=
     Finset.prod_pos (fun j hj => mul_pos_of_neg_of_neg neg_one_lt_zero <| sub_neg.mpr <|
@@ -99,9 +97,8 @@ theorem apply_le_apply_T_real {n : ℕ} {param : ℝ[X] → ℝ} {c : ℕ → �
     (hcnonneg : ∀ i ≤ n, 0 ≤ (-1) ^ i * (c i))
     {P : ℝ[X]} (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     param P ≤ param (T ℝ n) := by
-  wlog hn : n ≠ 0
-  · push_neg at hn
-    rw [hparam P hPdeg, hparam (T ℝ n) (degree_T ℝ n), hn, show Finset.Iic 0 = {0} by rfl,
+  wlog! hn : n ≠ 0
+  · rw [hparam P hPdeg, hparam (T ℝ n) (degree_T ℝ n), hn, show Finset.Iic 0 = {0} by rfl,
       Nat.cast_zero, T_zero, Finset.sum_singleton, Finset.sum_singleton, chebyshevNode_eq_one,
       eval_one]
     exact mul_le_mul_of_nonneg_right (hPbnd 1 (by simp) |> Set.mem_Icc.mp).2
@@ -127,9 +124,8 @@ theorem apply_eq_apply_T_real_iff {n : ℕ} {param : ℝ[X] → ℝ} {c : ℕ �
     {P : ℝ[X]} (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     (param P = param (T ℝ n)) ↔ P = T ℝ n := by
   refine ⟨fun h => ?_, by intro h; rw [h]⟩
-  wlog hn : n ≠ 0
-  · push_neg at hn
-    rw [hparam P hPdeg, hparam (T ℝ n) (degree_T ℝ n), hn, show Finset.Iic 0 = {0} by rfl,
+  wlog! hn : n ≠ 0
+  · rw [hparam P hPdeg, hparam (T ℝ n) (degree_T ℝ n), hn, show Finset.Iic 0 = {0} by rfl,
       Nat.cast_zero, T_zero, Finset.sum_singleton, Finset.sum_singleton, chebyshevNode_eq_one,
       eval_one, one_mul] at h
     rw [hn, Nat.cast_zero] at hPdeg
