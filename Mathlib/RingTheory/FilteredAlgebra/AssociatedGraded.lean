@@ -37,25 +37,28 @@ instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (AddSubgroup.ofCl
 
 /-- Direct summand of the associated graded abelian group to `IsFiltration F F_lt`
   with every `F i` of some `AddSubgroupClass`, defined as `F i` quotient by `F_lt i`. -/
-abbrev GradedPiece (i : ι) :=
+def GradedPiece (i : ι) :=
   (AddSubgroup.ofClass (F i)) ⧸
     (AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i))
+deriving AddCommGroup
 
 /-- Direct sum of `GradedPiece`s. -/
-abbrev AssociatedGraded := DirectSum ι (GradedPiece F F_lt)
+def AssociatedGraded :=
+  DirectSum ι (GradedPiece F F_lt)
+deriving AddCommGroup, CoeFun
 
 namespace AssociatedGraded
 
 /-- `AssociatedGraded.mk F F_lt s x` is the element of `AssociatedGraded F F_lt` that is zero
 outside `s` and has coefficient `x i` for `i` in `s`. -/
-abbrev mk [DecidableEq ι] (s : Finset ι) :
+def mk [DecidableEq ι] (s : Finset ι) :
     (∀ i : (s : Set ι), GradedPiece F F_lt i.val) →+ AssociatedGraded F F_lt :=
   DirectSum.mk (GradedPiece F F_lt) s
 
 variable {F F_lt}
 
 /-- The natural inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`. -/
-abbrev of [DecidableEq ι] {i : ι} : GradedPiece F F_lt i →+ AssociatedGraded F F_lt :=
+def of [DecidableEq ι] {i : ι} : GradedPiece F F_lt i →+ AssociatedGraded F F_lt :=
   DirectSum.of (GradedPiece F F_lt) i
 
 @[ext]
@@ -67,7 +70,7 @@ variable [DecidableEq ι]
 theorem of_eq_of_ne (i j : ι) (x : GradedPiece F F_lt i) (h : j ≠ i) : (of x) j = 0 :=
   DirectSum.of_eq_of_ne i j x h
 
-@[simp, nolint simpNF]
+@[simp]
 theorem of_eq_self (i : ι) (x : GradedPiece F F_lt i) : (of x) i = x :=
   DirectSum.of_eq_same i x
 
@@ -76,12 +79,12 @@ lemma of_apply {i : ι} (j : ι) (x : GradedPiece F F_lt i) :
   DirectSum.of_apply j x
 
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPiece F F_lt i.val}
-    {n : ι} (hn : n ∈ s) : mk F F_lt s f n = f ⟨n, hn⟩ := by
-  simp [DirectSum.mk, dif_pos hn]
+    {n : ι} (hn : n ∈ s) : mk F F_lt s f n = f ⟨n, hn⟩ :=
+  DirectSum.mk_apply_of_mem _
 
-theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPiece F F_lt i.val}
-    {n : ι} (hn : n ∉ s) : mk F F_lt s f n = 0 := by
-  simp [DirectSum.mk, dif_neg hn]
+theorem mk_apply_of_notMem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPiece F F_lt i.val}
+    {n : ι} (hn : n ∉ s) : mk F F_lt s f n = 0 :=
+  DirectSum.mk_apply_of_notMem hn
 
 section support
 
