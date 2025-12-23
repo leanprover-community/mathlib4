@@ -3,7 +3,9 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+module
+
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 
 /-!
 # Products of finite measures and probability measures
@@ -25,6 +27,8 @@ the underlying space is metrizable and separable.
 continuously on the factors.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Topology Metric Filter Set ENNReal NNReal
 

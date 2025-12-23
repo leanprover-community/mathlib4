@@ -3,11 +3,13 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Order.Disjoint
+module
+
+public import Mathlib.Algebra.Group.Commute.Hom
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Order.Disjoint
 
 /-!
 # Canonical homomorphism from a pair of monoids
@@ -31,6 +33,8 @@ There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`s.
 For a product of a family of morphisms of monoids, see `MonoidHom.noncommPiCoprod`.
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 namespace MulHom
@@ -49,7 +53,7 @@ def noncommCoprod (comm : ∀ m n, Commute (f m) (g n)) : M × N →ₙ* P where
   toFun mn := f mn.fst * g mn.snd
   map_mul' mn mn' := by simpa using (comm _ _).mul_mul_mul_comm _ _
 
-/-- Variant of `MulHom.noncommCoprod_apply` with the product written in the other direction` -/
+/-- Variant of `MulHom.noncommCoprod_apply` with the product written in the other direction. -/
 @[to_additive
   /-- Variant of `AddHom.noncommCoprod_apply`, with the sum written in the other direction -/]
 theorem noncommCoprod_apply' (comm) (mn : M × N) :
@@ -84,9 +88,9 @@ def noncommCoprod : M × N →* P where
   map_one' := by simp only [Prod.fst_one, Prod.snd_one, map_one, mul_one]
   __ := f.toMulHom.noncommCoprod g.toMulHom comm
 
-/-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction` -/
+/-- Variant of `MonoidHom.noncommCoprod_apply` with the product written in the other direction. -/
 @[to_additive
-  /-- Variant of `AddMonoidHom.noncomCoprod_apply` with the sum written in the other direction -/]
+  /-- Variant of `AddMonoidHom.noncommCoprod_apply` with the sum written in the other direction -/]
 theorem noncommCoprod_apply' (comm) (mn : M × N) :
     (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
   rw [← comm, MonoidHom.noncommCoprod_apply]

@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Day convolution monoidal structure
@@ -41,6 +43,8 @@ a monoidal structure.
 - Case `V = Type u` and its universal property.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -80,7 +84,7 @@ variable (F G : C ⥤ V)
 
 instance leftKanExtension [DayConvolution F G] :
     (F ⊛ G).IsLeftKanExtension (unit F G) :=
-  isPointwiseLeftKanExtensionUnit F G|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionUnit F G |>.isLeftKanExtension
 
 variable {F G}
 
@@ -156,7 +160,7 @@ variable (F G)
 corepresented by `F ⊛ G`. -/
 @[simps!]
 def corepresentableBy :
-    (Functor.whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G)|>.CorepresentableBy
+    (Functor.whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G) |>.CorepresentableBy
       (F ⊛ G) where
   homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
   homEquiv_comp := by aesop
@@ -198,7 +202,7 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
 def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C)) ⋙
-      coyoneda.obj (.op <| F ⊠ G ⊠ H)|>.CorepresentableBy (F ⊛ G ⊛ H) where
+      coyoneda.obj (.op <| F ⊠ G ⊠ H) |>.CorepresentableBy (F ⊛ G ⊛ H) where
   homEquiv :=
     (corepresentableBy F (G ⊛ H)).homEquiv.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
@@ -211,7 +215,7 @@ def corepresentableBy₂ :
 def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
-      coyoneda.obj (.op <| (F ⊠ G) ⊠ H)|>.CorepresentableBy ((F ⊛ G) ⊛ H) where
+      coyoneda.obj (.op <| (F ⊠ G) ⊠ H) |>.CorepresentableBy ((F ⊛ G) ⊛ H) where
   homEquiv :=
     (corepresentableBy (F ⊛ G) H).homEquiv.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitLeft (F ⊛ G) (unit F G) H) _
@@ -219,7 +223,7 @@ def corepresentableBy₂' :
 
 /-- The isomorphism of functors between
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
-`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that coresponsds to the associator
+`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that corresponds to the associator
 isomorphism for Day convolution through `corepresentableBy₂` and `corepresentableBy₂`. -/
 @[simps!]
 def associatorCorepresentingIso :
@@ -247,11 +251,11 @@ def associatorCorepresentingIso :
     _ ≅ (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C) ⋙ tensor C) ⋙
           coyoneda.obj (.op <| F ⊠ G ⊠ H) :=
       isoWhiskerLeft _ <|
-        coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _|>.symm)
+        coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _ |>.symm)
 
-/-- The asociator isomorphism for Day convolution -/
+/-- The associator isomorphism for Day convolution -/
 def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
-  corepresentableBy₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso <|
+  corepresentableBy₂' F G H |>.ofIso (associatorCorepresentingIso F G H) |>.uniqueUpToIso <|
     corepresentableBy₂ F G H
 
 /-- Characterizing the forward direction of the associator isomorphism
@@ -267,8 +271,8 @@ lemma associator_hom_unit_unit (x y z : C) :
       (F ⊛ G ⊛ H).map (α_ _ _ _).inv := by
   have := congrArg (fun t ↦ t.app ((x, y), z)) <|
       (corepresentableBy₂' F G H).homEquiv.rightInverse_symm <|
-        (corepresentableBy₂ F G H|>.ofIso
-          (associatorCorepresentingIso F G H).symm|>.homEquiv (𝟙 _))
+        (corepresentableBy₂ F G H |>.ofIso
+          (associatorCorepresentingIso F G H).symm |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
@@ -288,8 +292,8 @@ lemma associator_inv_unit_unit (x y z : C) :
       ((F ⊛ G) ⊛ H).map (α_ x y z).hom := by
   have := congrArg (fun t ↦ t.app (x, y, z)) <|
       (corepresentableBy₂ F G H).homEquiv.rightInverse_symm <|
-        (corepresentableBy₂' F G H|>.ofIso
-          (associatorCorepresentingIso F G H)|>.homEquiv (𝟙 _))
+        (corepresentableBy₂' F G H |>.ofIso
+          (associatorCorepresentingIso F G H) |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
@@ -305,7 +309,7 @@ theorem associator_naturality {F' G' H' : C ⥤ V}
       map (map f g) h ≫
         (associator F' G' H').hom =
       (associator F G H).hom ≫ map f (map g h) := by
-  apply (corepresentableBy₂' F G H)|>.homEquiv.injective
+  apply (corepresentableBy₂' F G H) |>.homEquiv.injective
   dsimp
   ext
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, Functor.prod_obj, tensor_obj,
@@ -344,7 +348,7 @@ lemma pentagon (H K : C ⥤ V)
       (extensionUnitLeft _ (unit F G) H) K) :=
     isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
       (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
-        (isPointwiseLeftKanExtensionUnit F G))|>.isLeftKanExtension
+        (isPointwiseLeftKanExtensionUnit F G)) |>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K)
   -- And then we compute...
@@ -396,7 +400,7 @@ class DayConvolutionUnit (F : C ⥤ V) where
   of `fromPUnit.{0} 𝟙_ V` along `fromPUnit.{0} 𝟙_ C`. -/
   isPointwiseLeftKanExtensionCan : Functor.LeftExtension.mk F
     ({app _ := can} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
-      Functor.fromPUnit.{0} (𝟙_ C) ⋙ F)|>.IsPointwiseLeftKanExtension
+      Functor.fromPUnit.{0} (𝟙_ C) ⋙ F) |>.IsPointwiseLeftKanExtension
 
 namespace DayConvolutionUnit
 
@@ -426,11 +430,11 @@ variable (F : C ⥤ V)
 
 instance : (F ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) F :=
   isPointwiseLeftKanExtensionExtensionUnitRight
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) F isPointwiseLeftKanExtensionCan |>.isLeftKanExtension
 
 instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
   isPointwiseLeftKanExtensionExtensionUnitLeft
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) F isPointwiseLeftKanExtensionCan |>.isLeftKanExtension
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit 𝟙_ V) ⊠ F`. -/
@@ -438,9 +442,9 @@ by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit �
 def corepresentableByLeft [DayConvolution U F] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
-      coyoneda.obj (.op <| Functor.fromPUnit.{0} (𝟙_ V) ⊠ F)|>.CorepresentableBy (U ⊛ F) where
+      coyoneda.obj (.op <| Functor.fromPUnit.{0} (𝟙_ V) ⊠ F) |>.CorepresentableBy (U ⊛ F) where
   homEquiv :=
-    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit U F) _|>.trans <|
+    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit U F) _ |>.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitLeft U (φ U) F) _
   homEquiv_comp := by aesop
 
@@ -450,9 +454,9 @@ leveraging the fact that `F ⊠ U` is a left Kan extension of `F ⊠ (fromPUnit 
 def corepresentableByRight [DayConvolution F U] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
-      coyoneda.obj (.op <| F ⊠ Functor.fromPUnit.{0} (𝟙_ V))|>.CorepresentableBy (F ⊛ U) where
+      coyoneda.obj (.op <| F ⊠ Functor.fromPUnit.{0} (𝟙_ V)) |>.CorepresentableBy (F ⊛ U) where
   homEquiv :=
-    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit F U) _|>.trans <|
+    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit F U) _ |>.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight U (φ U) F) _
   homEquiv_comp := by aesop
 
@@ -514,12 +518,12 @@ def rightUnitorCorepresentingIso :
 
 /-- The left unitor isomorphism for Day convolution. -/
 def leftUnitor [DayConvolution U F] : U ⊛ F ≅ F :=
-  corepresentableByLeft U F|>.ofIso (leftUnitorCorepresentingIso F)|>.uniqueUpToIso
+  corepresentableByLeft U F |>.ofIso (leftUnitorCorepresentingIso F) |>.uniqueUpToIso
     <| Functor.corepresentableByEquiv.symm (.refl _)
 
 /-- The right unitor isomorphism for Day convolution. -/
 def rightUnitor [DayConvolution F U] : F ⊛ U ≅ F :=
-  corepresentableByRight U F|>.ofIso (rightUnitorCorepresentingIso F)|>.uniqueUpToIso
+  corepresentableByRight U F |>.ofIso (rightUnitorCorepresentingIso F) |>.uniqueUpToIso
     <| Functor.corepresentableByEquiv.symm (.refl _)
 
 section
@@ -643,11 +647,11 @@ lemma DayConvolution.triangle (F G U : C ⥤ V) [DayConvolutionUnit U]
   apply Functor.hom_ext_of_isLeftKanExtension _ (DayConvolution.unit _ _) _
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft (F ⊛ U) (DayConvolution.unit F U) G)
-  have : (F ⊠ U) ⊠ G|>.IsLeftKanExtension
+  have : (F ⊠ U) ⊠ G |>.IsLeftKanExtension
       (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G) :=
     isPointwiseLeftKanExtensionExtensionUnitLeft (F ⊠ U) _ G
       (isPointwiseLeftKanExtensionExtensionUnitRight U (DayConvolutionUnit.φ U) F <|
-        DayConvolutionUnit.isPointwiseLeftKanExtensionCan (F := U))|>.isLeftKanExtension
+        DayConvolutionUnit.isPointwiseLeftKanExtensionCan (F := U)) |>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G)
   ext
@@ -701,7 +705,7 @@ class LawfulDayConvolutionMonoidalCategoryStruct
   isPointwiseLeftKanExtensionUnitUnit (C) (V) (D) :
     Functor.LeftExtension.mk _
       ({app _ := unitUnit} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
-        Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D))|>.IsPointwiseLeftKanExtension
+        Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D)) |>.IsPointwiseLeftKanExtension
   /-- The field `ι` interprets an element of `D` as a functor `C ⥤ V`. -/
   faithful_ι : ι.Faithful := by infer_instance
   convolutionExtensionUnit_comp_ι_map_tensorHom_app (C) (V) {d₁ d₂ d₁' d₂' : D}
@@ -718,12 +722,12 @@ class LawfulDayConvolutionMonoidalCategoryStruct
     ((ι.obj d₁).obj x ◁ (ι.map f₂).app y) ≫
       (convolutionExtensionUnit d₁ d₂').app (x, y)
   convolutionExtensionUnit_comp_ι_map_whiskerRight_app (C) (V)
-    {d₁ d₁': D} (f₁ : d₁ ⟶ d₁') (d₂ : D) (x y : C) :
+    {d₁ d₁' : D} (f₁ : d₁ ⟶ d₁') (d₂ : D) (x y : C) :
     (convolutionExtensionUnit d₁ d₂).app (x, y) ≫
       (ι.map (f₁ ▷ d₂)).app (x ⊗ y) =
     ((ι.map f₁).app x ▷ (ι.obj d₂).obj y) ≫
       (convolutionExtensionUnit d₁' d₂).app (x, y)
-  associator_hom_unit_unit (V) (d d' d'': D) (x y z : C) :
+  associator_hom_unit_unit (V) (d d' d'' : D) (x y z : C) :
     (convolutionExtensionUnit d d').app (x, y) ▷ (ι.obj d'').obj z ≫
       (convolutionExtensionUnit (d ⊗ d') d'').app (x ⊗ y, z) ≫
       (ι.map (α_ d d' d'').hom).app ((x ⊗ y) ⊗ z) =
@@ -755,7 +759,7 @@ open scoped DayConvolution
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (d ⊗ d')` is a
 Day convolution of `(ι C V).obj d` and `(ι C V).d'`. -/
 def convolution (d d' : D) :
-    DayConvolution (ι C V D|>.obj d) (ι C V D|>.obj d') where
+    DayConvolution (ι C V D |>.obj d) (ι C V D |>.obj d') where
   convolution := (ι C V D).obj (d ⊗ d')
   unit := convolutionExtensionUnit C V d d'
   isPointwiseLeftKanExtensionUnit :=
@@ -767,14 +771,14 @@ attribute [local instance] convolution
 is a (triple) Day convolution of `(ι C V).obj d`, `(ι C V).obj d'` and
 `(ι C V).obj d''`. -/
 def convolution₂ (d d' d'' : D) :
-    DayConvolution (ι C V D|>.obj d) ((ι C V D|>.obj d') ⊛ (ι C V D|>.obj d'')) :=
+    DayConvolution (ι C V D |>.obj d) ((ι C V D |>.obj d') ⊛ (ι C V D |>.obj d'')) :=
   convolution C V D _ _
 
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj ((d ⊗ d') ⊗ d'')`
 is a (triple) Day convolution of `(ι C V).obj d`, `(ι C V).obj d'` and
 `(ι C V).obj d''`. -/
 def convolution₂' (d d' d'' : D) :
-    DayConvolution ((ι C V D|>.obj d) ⊛ (ι C V D|>.obj d')) (ι C V D|>.obj d'') :=
+    DayConvolution ((ι C V D |>.obj d) ⊛ (ι C V D |>.obj d')) (ι C V D |>.obj d'') :=
   convolution C V D _ _
 
 attribute [local instance] convolution₂ convolution₂'
@@ -783,9 +787,9 @@ lemma ι_map_tensorHom_hom_eq_tensorHom
     {d₁ d₂ : D} {d₁' d₂' : D}
     (f : d₁ ⟶ d₂) (f' : d₁' ⟶ d₂') :
     (ι C V D).map (f ⊗ₘ f') =
-    DayConvolution.map (ι C V D|>.map f) (ι C V D|>.map f') := by
+    DayConvolution.map (ι C V D |>.map f) (ι C V D |>.map f') := by
   apply DayConvolution.corepresentableBy
-    (ι C V D|>.obj d₁) (ι C V D|>.obj d₁')|>.homEquiv.injective
+    (ι C V D |>.obj d₁) (ι C V D |>.obj d₁') |>.homEquiv.injective
   dsimp
   ext ⟨x, y⟩
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj,
@@ -801,9 +805,9 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
       (CostructuredArrow (tensor C) d) (tensorRight v)] :
     (ι C V D).map (α_ d d' d'').hom =
     (DayConvolution.associator
-      (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj d'')).hom := by
+      (ι C V D |>.obj d) (ι C V D |>.obj d') (ι C V D |>.obj d'')).hom := by
   apply corepresentableBy₂'
-    (ι C V D|>.obj d) (ι C V D|>.obj d') (ι C V D|>.obj d'')|>.homEquiv.injective
+    (ι C V D |>.obj d) (ι C V D |>.obj d') (ι C V D |>.obj d'') |>.homEquiv.injective
   dsimp
   ext ⟨⟨x, y⟩, z⟩
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, Functor.prod_obj,
@@ -814,8 +818,8 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
   exact associator_hom_unit_unit V _ _ _ _ _ _
 
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (𝟙_ D)`
-is a Day convolution unit`. -/
-def convolutionUnit : DayConvolutionUnit (ι C V D|>.obj <| 𝟙_ D) where
+is a Day convolution unit. -/
+def convolutionUnit : DayConvolutionUnit (ι C V D |>.obj <| 𝟙_ D) where
   can := unitUnit _ _ _
   isPointwiseLeftKanExtensionCan := isPointwiseLeftKanExtensionUnitUnit _ _ _
 
@@ -827,9 +831,9 @@ lemma ι_map_leftUnitor_hom_eq_leftUnitor_hom (d : D)
       (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorRight v)] :
     (ι C V D).map (λ_ d).hom =
     (DayConvolutionUnit.leftUnitor
-      (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by
+      (ι C V D |>.obj <| 𝟙_ D) (ι C V D |>.obj d)).hom := by
   apply corepresentableByLeft
-    (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)|>.homEquiv.injective
+    (ι C V D |>.obj <| 𝟙_ D) (ι C V D |>.obj d) |>.homEquiv.injective
   dsimp
   ext ⟨_, x⟩
   dsimp [corepresentableByLeft]
@@ -843,9 +847,9 @@ lemma ι_map_rightUnitor_hom_eq_rightUnitor_hom (d : D)
       (CostructuredArrow (Functor.fromPUnit.{0} <| 𝟙_ C) d) (tensorLeft v)] :
     (ι C V D).map (ρ_ d).hom =
     (DayConvolutionUnit.rightUnitor
-      (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)).hom := by
+      (ι C V D |>.obj <| 𝟙_ D) (ι C V D |>.obj d)).hom := by
   apply corepresentableByRight
-    (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.obj d)|>.homEquiv.injective
+    (ι C V D |>.obj <| 𝟙_ D) (ι C V D |>.obj d) |>.homEquiv.injective
   dsimp
   ext ⟨x, _⟩
   dsimp [corepresentableByRight]
@@ -886,7 +890,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id]
       apply (DayConvolution.corepresentableBy
-        (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective
+        (ι C V D |>.obj _) (ι C V D |>.obj _)).homEquiv.injective
       dsimp
       ext ⟨_, _⟩
       simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, tensor_obj,
@@ -897,14 +901,14 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
     (tensorHom_comp_tensorHom := fun _ _ _ _ => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_comp]
-      apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective
+      apply (corepresentableBy (ι C V D |>.obj _) (ι C V D |>.obj _)).homEquiv.injective
       dsimp
       ext ⟨_, _⟩
       simp)
     (id_tensorHom := fun x {y₁ y₂} f => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom]
-      apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective
+      apply (corepresentableBy (ι C V D |>.obj _) (ι C V D |>.obj _)).homEquiv.injective
       dsimp
       ext ⟨x, y⟩
       dsimp
@@ -915,7 +919,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
     (tensorHom_id := fun x {y₁ y₂} f => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom]
-      apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective
+      apply (corepresentableBy (ι C V D |>.obj _) (ι C V D |>.obj _)).homEquiv.injective
       dsimp
       ext ⟨x, y⟩
       dsimp
@@ -935,47 +939,47 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
       rw [ι_map_leftUnitor_hom_eq_leftUnitor_hom,
         ι_map_leftUnitor_hom_eq_leftUnitor_hom]
       exact DayConvolutionUnit.leftUnitor_naturality
-        (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.map f))
+        (ι C V D |>.obj <| 𝟙_ D) (ι C V D |>.map f))
     (rightUnitor_naturality := fun f => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [Functor.map_comp, ι_map_tensorHom_hom_eq_tensorHom, Functor.map_id]
       rw [ι_map_rightUnitor_hom_eq_rightUnitor_hom, ι_map_rightUnitor_hom_eq_rightUnitor_hom]
       exact DayConvolutionUnit.rightUnitor_naturality
-        (ι C V D|>.obj <| 𝟙_ D) (ι C V D|>.map f))
+        (ι C V D |>.obj <| 𝟙_ D) (ι C V D |>.map f))
     (pentagon := fun a b c d => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [Functor.map_comp, Functor.map_id, ι_map_tensorHom_hom_eq_tensorHom,
         ι_map_associator_hom_eq_associator_hom]
       -- this is a bit painful...
       letI : DayConvolution
-          (((ι C V D|>.obj a) ⊛ (ι C V D|>.obj b)) ⊛ (ι C V D|>.obj c))
-          (ι C V D|>.obj d) :=
+          (((ι C V D |>.obj a) ⊛ (ι C V D |>.obj b)) ⊛ (ι C V D |>.obj c))
+          (ι C V D |>.obj d) :=
         convolution C V D _ _
       letI : DayConvolution
-          ((ι C V D|>.obj a) ⊛ (ι C V D|>.obj b))
-          ((ι C V D|>.obj c) ⊛ (ι C V D|>.obj d)) :=
+          ((ι C V D |>.obj a) ⊛ (ι C V D |>.obj b))
+          ((ι C V D |>.obj c) ⊛ (ι C V D |>.obj d)) :=
         convolution C V D _ _
       letI : DayConvolution
-          ((ι C V D|>.obj a) ⊛ ((ι C V D|>.obj b) ⊛ (ι C V D|>.obj c)))
-          (ι C V D|>.obj d) :=
+          ((ι C V D |>.obj a) ⊛ ((ι C V D |>.obj b) ⊛ (ι C V D |>.obj c)))
+          (ι C V D |>.obj d) :=
         convolution C V D _ _
       letI : DayConvolution
-          (ι C V D|>.obj a)
-          ((ι C V D|>.obj b) ⊛ ((ι C V D|>.obj c) ⊛ (ι C V D|>.obj d))) :=
+          (ι C V D |>.obj a)
+          ((ι C V D |>.obj b) ⊛ ((ι C V D |>.obj c) ⊛ (ι C V D |>.obj d))) :=
         convolution C V D _ _
       letI : DayConvolution
-          (ι C V D|>.obj a)
-          (((ι C V D|>.obj b) ⊛ (ι C V D|>.obj c)) ⊛ (ι C V D|>.obj d)) :=
+          (ι C V D |>.obj a)
+          (((ι C V D |>.obj b) ⊛ (ι C V D |>.obj c)) ⊛ (ι C V D |>.obj d)) :=
         convolution C V D _ _
       exact DayConvolution.pentagon
-        (ι C V D|>.obj a) (ι C V D|>.obj b) (ι C V D|>.obj c) (ι C V D|>.obj d))
+        (ι C V D |>.obj a) (ι C V D |>.obj b) (ι C V D |>.obj c) (ι C V D |>.obj d))
     (triangle := fun a b => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [Functor.map_comp, Functor.map_id, ι_map_tensorHom_hom_eq_tensorHom,
         ι_map_associator_hom_eq_associator_hom, ι_map_leftUnitor_hom_eq_leftUnitor_hom,
         ι_map_rightUnitor_hom_eq_rightUnitor_hom]
       exact DayConvolution.triangle
-        (ι C V D|>.obj a) (ι C V D|>.obj b) (ι C V D|>.obj <| 𝟙_ D))
+        (ι C V D |>.obj a) (ι C V D |>.obj b) (ι C V D |>.obj <| 𝟙_ D))
 
 /-! In what follows, we give a constructor for `LawfulDayConvolutionMonoidalCategoryStruct`
 that does not assume a pre-existing `MonoidalCategoryStruct` and builds one from
@@ -984,7 +988,7 @@ as many parameters as we can. -/
 
 /-- An `InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D` bundles the
 core data needed to construct a full `LawfulDayConvolutionMonoidalCategoryStructCore`.
-We’re making this a class so that it can act as a "proxy" for inferring `DayConvolution`
+We are making this a class so that it can act as a "proxy" for inferring `DayConvolution`
 instances (which is all the more important that we are modifying the instances given in the
 constructor to get better ones defeq-wise). As this object is purely about the internals
 of definitions of Day convolutions monoidal structures, it is advised to not register

@@ -3,10 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Probability.Moments.MGFAnalytic
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+public import Mathlib.Probability.HasLaw
+public import Mathlib.Probability.Moments.MGFAnalytic
 
 /-!
 # Gaussian distributions over ℝ
@@ -32,6 +33,8 @@ We define a Gaussian measure over the reals.
 
 -/
 
+@[expose] public section
+
 open scoped ENNReal NNReal Real Complex
 
 open MeasureTheory
@@ -43,11 +46,11 @@ section GaussianPDF
 /-- Probability density function of the Gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
-  (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
+  (√(2 * π * v))⁻¹ * rexp (-(x - μ) ^ 2 / (2 * v))
 
 lemma gaussianPDFReal_def (μ : ℝ) (v : ℝ≥0) :
     gaussianPDFReal μ v =
-      fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
+      fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(x - μ) ^ 2 / (2 * v)) := rfl
 
 @[simp]
 lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
@@ -81,9 +84,9 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
   rw [gaussianPDFReal_def]
   by_cases hv : v = 0
   · simp [hv]
-  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (- x ^ 2 / (2 * v))
+  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (-x ^ 2 / (2 * v))
   have hg : Integrable g := by
-    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
+    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(2 * v)⁻¹ * x ^ 2) by
       rw [this]
       refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
@@ -94,7 +97,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
       false_or]
     rw [mul_comm]
     left
-    field_simp
+    field
   exact Integrable.comp_sub_right hg μ
 
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
@@ -140,7 +143,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
   · simp (disch := positivity) only [Real.sqrt_mul, mul_inv_rev, field]
     rw [Real.sqrt_sq_eq_abs]
   · congr 1
-    field_simp
+    field
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)
@@ -178,7 +181,7 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   simp only [Set.mem_univ, iff_true]
   exact (gaussianPDF_pos _ hv x).ne'
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
   (measurable_gaussianPDFReal _ _).ennreal_ofReal
 
@@ -344,39 +347,48 @@ lemma gaussianReal_map_const_sub (y : ℝ) :
   rw [this, ← Measure.map_map (by fun_prop) (by fun_prop), gaussianReal_map_neg,
     gaussianReal_map_const_add, add_comm]
 
-variable {Ω : Type} [MeasureSpace Ω]
+variable {Ω : Type} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → ℝ}
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
 has Gaussian law with mean `μ + y` and variance `v`. -/
-lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (y : ℝ) :
-    Measure.map (fun ω ↦ X ω + y) ℙ = gaussianReal (μ + y) v := by
-  have hXm : AEMeasurable X := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
-  change Measure.map ((fun ω ↦ ω + y) ∘ X) ℙ = gaussianReal (μ + y) v
-  rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.add_const _).aemeasurable hXm, hX,
-    gaussianReal_map_add_const y]
+lemma gaussianReal_add_const (hX : HasLaw X (gaussianReal μ v) P) (y : ℝ) :
+    HasLaw (fun ω ↦ X ω + y) (gaussianReal (μ + y) v) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_add_const y⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y + X`
 has Gaussian law with mean `μ + y` and variance `v`. -/
-lemma gaussianReal_const_add {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (y : ℝ) :
-    Measure.map (fun ω ↦ y + X ω) ℙ = gaussianReal (μ + y) v := by
-  simp_rw [add_comm y]
-  exact gaussianReal_add_const hX y
+lemma gaussianReal_const_add (hX : HasLaw X (gaussianReal μ v) P) (y : ℝ) :
+    HasLaw (fun ω ↦ y + X ω) (gaussianReal (μ + y) v) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_const_add y⟩ hX
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X - y`
+has Gaussian law with mean `μ - y` and variance `v`. -/
+lemma gaussianReal_sub_const (hX : HasLaw X (gaussianReal μ v) P) (y : ℝ) :
+    HasLaw (fun ω ↦ X ω - y) (gaussianReal (μ - y) v) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_sub_const y⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
 has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
-lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (c : ℝ) :
-    Measure.map (fun ω ↦ c * X ω) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
-  have hXm : AEMeasurable X := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
-  change Measure.map ((fun ω ↦ c * ω) ∘ X) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
-  rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.const_mul c).aemeasurable hXm, hX]
-  exact gaussianReal_map_const_mul c
+lemma gaussianReal_const_mul (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
+    HasLaw (fun ω ↦ c * X ω) (gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_const_mul c⟩ hX
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
 has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
-lemma gaussianReal_mul_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (c : ℝ) :
-    Measure.map (fun ω ↦ X ω * c) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
-  simp_rw [mul_comm _ c]
-  exact gaussianReal_const_mul hX c
+lemma gaussianReal_mul_const (hX : HasLaw X (gaussianReal μ v) P) (c : ℝ) :
+    HasLaw (fun ω ↦ X ω * c) (gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_mul_const c⟩ hX
+
+lemma gaussianReal_neg (hX : HasLaw X (gaussianReal μ v) P) :
+    HasLaw (-X) (gaussianReal (-μ) v) P := by
+  change HasLaw ((fun x ↦ - x) ∘ X) (gaussianReal (-μ) v) P
+  exact HasLaw.comp ⟨by fun_prop, gaussianReal_map_neg⟩ hX
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y - X`
+has Gaussian law with mean `y - μ` and variance `v`. -/
+lemma gaussianReal_const_sub (hX : HasLaw X (gaussianReal μ v) P) (y : ℝ) :
+    HasLaw (fun ω ↦ y - X ω) (gaussianReal (y - μ) v) P :=
+  HasLaw.comp ⟨by fun_prop, gaussianReal_map_const_sub y⟩ hX
 
 end Transformations
 
@@ -536,6 +548,17 @@ lemma memLp_id_gaussianReal' (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p (gau
   exact memLp_id_gaussianReal p
 
 end Moments
+
+/-- Two real Gaussian distributions are equal iff they have the same mean and variance. -/
+lemma gaussianReal_ext_iff {μ₁ μ₂ : ℝ} {v₁ v₂ : ℝ≥0} :
+    gaussianReal μ₁ v₁ = gaussianReal μ₂ v₂ ↔ μ₁ = μ₂ ∧ v₁ = v₂ := by
+  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
+  rw [← integral_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← integral_id_gaussianReal (μ := μ₂) (v := v₂), h]
+  simp only [integral_id_gaussianReal, true_and]
+  suffices (v₁ : ℝ) = v₂ by simpa
+  rw [← variance_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← variance_id_gaussianReal (μ := μ₂) (v := v₂), h]
 
 section LinearMap
 

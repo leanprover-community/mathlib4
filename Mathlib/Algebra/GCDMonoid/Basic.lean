@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Ring.Associated
-import Mathlib.Algebra.Ring.Regular
+module
+
+public import Mathlib.Algebra.Ring.Associated
+public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
@@ -59,6 +61,8 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra
 
 divisibility, gcd, lcm, normalize
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -125,6 +129,7 @@ theorem normalize_one : normalize (1 : α) = 1 :=
 
 theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by simp [normalize_apply]
 
+@[simp]
 theorem normalize_eq_zero {x : α} : normalize x = 0 ↔ x = 0 :=
   ⟨fun hx => (associated_zero_iff_eq_zero x).1 <| hx ▸ associated_normalize _, by
     rintro rfl; exact normalize_zero⟩
@@ -223,6 +228,13 @@ theorem mk_out (a : Associates α) : Associates.mk a.out = a :=
 
 theorem out_injective : Function.Injective (Associates.out : _ → α) :=
   Function.LeftInverse.injective mk_out
+
+@[simp]
+theorem out_eq_zero_iff {a : Associates α} : a.out = 0 ↔ a = 0 :=
+  Quotient.inductionOn a (by simp)
+
+theorem out_zero : (0 : Associates α).out = 0 := by
+  simp
 
 end Associates
 
@@ -944,7 +956,7 @@ open Associates
 
 variable [CancelCommMonoidWithZero α]
 
-private theorem map_mk_unit_aux [DecidableEq α] {f : Associates α →* α}
+private theorem map_mk_unit_aux {f : Associates α →* α}
     (hinv : Function.RightInverse f Associates.mk) (a : α) :
     a * ↑(Classical.choose (associated_map_mk hinv a)) = f (Associates.mk a) :=
   Classical.choose_spec (associated_map_mk hinv a)
@@ -965,14 +977,14 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
       apply mul_left_cancel₀ (mul_ne_zero ha hb) _
       simpa only [mul_assoc, mul_comm, mul_left_comm] using this
     rw [map_mk_unit_aux hinv a, map_mk_unit_aux hinv (a * b), map_mk_unit_aux hinv b, ←
-      MonoidHom.map_mul, Associates.mk_mul_mk]
+      map_mul, Associates.mk_mul_mk]
   normUnit_coe_units u := by
     nontriviality α
     simp_rw [if_neg (Units.ne_zero u), Units.ext_iff]
     apply mul_left_cancel₀ (Units.ne_zero u)
     rw [Units.mul_inv, map_mk_unit_aux hinv u,
       Associates.mk_eq_mk_iff_associated.2 (associated_one_iff_isUnit.2 ⟨u, rfl⟩),
-      Associates.mk_one, MonoidHom.map_one]
+      Associates.mk_one, map_one]
 
 /-- Define `GCDMonoid` on a structure just from the `gcd` and its properties. -/
 noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)

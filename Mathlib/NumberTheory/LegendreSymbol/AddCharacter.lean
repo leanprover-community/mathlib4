@@ -3,11 +3,13 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.FieldTheory.Finite.Trace
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Data.ZMod.Units
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.FieldTheory.Finite.Trace
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Additive characters of finite rings and fields
@@ -35,6 +37,8 @@ is nontrivial (and the target is a domain); see `AddChar.sum_eq_zero_of_isNontri
 
 additive character
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -291,9 +295,12 @@ section Field
 
 variable (F : Type*) [Field F] [Finite F]
 
+set_option backward.privateInPublic true in
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
   letI ch := primitiveChar F ℂ <| ringChar_ne F
