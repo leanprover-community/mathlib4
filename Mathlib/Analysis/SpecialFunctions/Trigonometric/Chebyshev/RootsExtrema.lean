@@ -29,6 +29,21 @@ public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
 @[expose] public section
 
+namespace Real
+
+lemma abs_cos_eq_one_iff {x : ℝ} :
+    |cos x| = 1 ↔ ∃ k : ℤ, k * π = x := by
+  rw [← abs_one, abs_eq_abs, cos_eq_one_iff, cos_eq_neg_one_iff]
+  constructor
+  · rintro (⟨n, h⟩ | ⟨n, h⟩)
+    · exact ⟨2 * n, by grind⟩
+    · exact ⟨1 + n * 2, by grind⟩
+  · rintro (⟨n, h⟩)
+    obtain (⟨n, rfl⟩ | ⟨n, rfl⟩) := n.even_or_odd
+    · exact .inl ⟨n, by grind⟩
+    · exact .inr ⟨n, by grind⟩
+
+end Real
 namespace Polynomial.Chebyshev
 
 open Real
@@ -89,37 +104,21 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
   · intro hTx
     have hx := (abs_eval_T_real_le_one_iff (Nat.cast_ne_zero.mpr hn) x).mpr (le_of_eq hTx)
     rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), T_real_cos,
-      Int.cast_natCast] at hTx
-    have : ∃ (k : ℤ), k * π = n * arccos x := by
-      cases (abs_eq zero_le_one).mp hTx
-      case inl h =>
-        obtain ⟨k, hk⟩ := (cos_eq_one_iff _).mp h
-        use 2 * k
-        grind
-      case inr h =>
-        obtain ⟨k, hk⟩ := cos_eq_neg_one_iff.mp h
-        use 2 * k + 1
-        grind
-    obtain ⟨k, hk⟩ := this
-    replace hk : arccos x = (k * π) / n := by aesop
-    have k_nonneg : 0 ≤ k := by
-      suffices 0 ≤ (k : ℝ) by norm_cast at this
-      have : 0 ≤ k * π / n := by grind [arccos_nonneg]
-      linear_combination (norm := field_simp) (n / π) * this
-      grind
-    have k_le_n : k ≤ n := by
-      suffices (k : ℝ) ≤ n by norm_cast at this
-      have : k * π / n ≤ π := by grind [arccos_le_pi]
-      linear_combination (norm := field_simp) (n / π) * this
-      grind
-    use k.toNat
-    refine ⟨Int.toNat_le.mpr k_le_n, ?_⟩
-    rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), hk]
-    congr
-    exact (Int.toNat_of_nonneg k_nonneg).symm
-  · rintro ⟨k, hk, hx⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hx, T_real_cos, this, cos_int_mul_pi, abs_neg_one_zpow]
+      Int.cast_natCast, abs_cos_eq_one_iff] at hTx
+    obtain ⟨k, hk⟩ := hTx
+    have hk' : k = n * (arccos x / π) := by simpa [field]
+    lift k to ℕ using (by rw [← Int.cast_nonneg_iff (R := ℝ), hk']; positivity [arccos_nonneg x])
+    simp only [Int.cast_natCast] at hk hk'
+    have hkn : (k : ℝ) ≤ n := by
+      rw [← mul_one (n : ℝ), hk']
+      gcongr
+      exact div_le_one_of_le₀ (arccos_le_pi x) (by positivity)
+    refine ⟨k, by simpa using hkn, ?_⟩
+    convert congr(cos ($hk.symm / n))
+    rw [mul_div_cancel_left₀ _ (by simpa), cos_arccos (by grind) (by grind)]
+  · rintro ⟨k, hk, rfl⟩
+    rw [T_real_cos, abs_cos_eq_one_iff]
+    exact ⟨k, by simp [field]⟩
 
 theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     (T ℝ n).eval x = 1 ↔ ∃ k ≤ n, Even k ∧ x = cos (k * π / n) := by
