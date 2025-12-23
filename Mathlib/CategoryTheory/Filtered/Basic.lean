@@ -172,8 +172,8 @@ theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' �
 
 end AllowEmpty
 
-lemma isDirected (α : Type u) [Preorder α] [IsFiltered α] :
-    IsDirected α (· ≤ ·) where
+lemma isDirectedOrder (α : Type u) [Preorder α] [IsFiltered α] :
+    IsDirectedOrder α where
   directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
 
 end IsFiltered
