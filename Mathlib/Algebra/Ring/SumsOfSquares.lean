@@ -31,6 +31,7 @@ We introduce a predicate for sums of squares in a ring.
 
 variable {R : Type*}
 
+set_option linter.style.commandStart false in -- manual alignment is not recognised by the linter
 /--
 The property of being a sum of squares is defined inductively by:
 `0 : R` is a sum of squares and if `s : R` is a sum of squares,
@@ -41,6 +42,7 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                                    : IsSumSq 0
   | sq_add (a : R) {s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
 
+set_option linter.style.commandStart false in -- manual alignment is not recognised by the linter
 /-- Alternative induction scheme for `IsSumSq` which uses `IsSquare`. -/
 theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
     {motive : (s : R) → (h : IsSumSq s) → Prop}

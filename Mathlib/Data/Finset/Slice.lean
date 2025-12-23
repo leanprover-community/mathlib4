@@ -116,6 +116,8 @@ variable {𝒜 : Finset (Finset α)} {A A₁ A₂ : Finset α} {r r₁ r₂ : �
 /-- The `r`-th slice of a set family is the subset of its elements which have cardinality `r`. -/
 def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) := {A ∈ 𝒜 | #A = r}
 
+-- Adding (priority := high) fixes the commandStart linter, but causes failures in dependent files
+-- (e.g. in `Combinatorics/SetFamily/LYM.lean`)
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
 

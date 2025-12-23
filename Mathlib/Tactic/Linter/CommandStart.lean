@@ -1516,7 +1516,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         -- TODO: temporary change, hopefully reduces no-op warning spew
         if mkWdw origAtPos != mkWdw ppAtPos mid then
           -- TODO: temporary change, hopefully reduces no-op warning spew
-          if !((mkWdw origAtPos).contains '¬' || (mkWdw origAtPos).contains '-' || (mkWdw origAtPos).startsWith "suffices " || (mkWdw origAtPos).contains '⊢' || (mkWdw origAtPos).contains "π ") then
+          if !((mkWdw origAtPos).contains '¬' || (mkWdw origAtPos).contains '-' || (mkWdw origAtPos).startsWith "suffices" || (mkWdw origAtPos).contains '⊢' || (mkWdw origAtPos).contains "π ") then
             Linter.logLint linter.style.commandStart (.ofRange rg)
               m!"{msg}\n\n\
               This part of the code\n  '{mkWdw origAtPos}'\n\
@@ -1529,7 +1529,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
         if mkWdw origAtPos != mkWdw ppAtPos mid then
           -- TODO: temporary change, hopefully reduces no-op warning spew
-          if !((mkWdw origAtPos).contains '¬' || (mkWdw origAtPos).contains '-' || (mkWdw origAtPos).startsWith "suffices " || (mkWdw origAtPos).contains '⊢' || (mkWdw origAtPos).contains "π ") then
+          if !((mkWdw origAtPos).contains '¬' || (mkWdw origAtPos).contains '-' || (mkWdw origAtPos).startsWith "suffices" || (mkWdw origAtPos).contains '⊢' || (mkWdw origAtPos).contains "π ") then
             logInfoAt (.ofRange rg)
               m!"{msg}\n\n\
               This part of the code\n  '{mkWdw origAtPos}'\n\
