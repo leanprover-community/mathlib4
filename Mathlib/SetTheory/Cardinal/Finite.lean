@@ -43,7 +43,7 @@ protected def card (α : Type*) : ℕ :=
   letI := Classical.dec
   if h : Finite α then h.exists_equiv_fin.choose else 0
 
-theorem card_unique {n : ℕ} (e : α ≃ Fin n) : Nat.card α = n := by
+theorem card_eq_of_equiv_fin {n : ℕ} (e : α ≃ Fin n) : Nat.card α = n := by
   have := e.finite_iff.mpr inferInstance
   have ex : ∃ n : ℕ, Nonempty (α ≃ Fin n) := ⟨n, ⟨e⟩⟩
   simp only [Nat.card, this, ↓reduceDIte]
@@ -51,9 +51,14 @@ theorem card_unique {n : ℕ} (e : α ≃ Fin n) : Nat.card α = n := by
   let f := e.symm.trans h.choose_spec.some
   rw [Fin.equiv_iff_eq.mp ⟨f⟩]
 
+theorem _root_.Finite.nonempty_equiv_fin_natCard [Finite α] : Nonempty (α ≃ Fin (Nat.card α)) := by
+  simp only [Nat.card, ↓reduceDIte, *]
+  generalize_proofs h
+  exact h.choose_spec
+
 @[simp]
 theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α := by
-  rw [card_unique (Fintype.equivFin α)]
+  rw [card_eq_of_equiv_fin (Fintype.equivFin α)]
 
 /-- Because this theorem takes `Fintype α` as a non-instance argument, it can be used in particular
 when `Fintype.card` ends up with different instance than the one found by inference -/
@@ -74,7 +79,7 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
   rw [← Fintype.subtype_card s H, Fintype.card_eq_nat_card]
 
 @[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 :=
-  card_unique (Equiv.equivOfIsEmpty α (Fin 0))
+  card_eq_of_equiv_fin (Equiv.equivOfIsEmpty α (Fin 0))
 
 @[simp] lemma card_eq_zero_of_infinite [h : Infinite α] : Nat.card α = 0 := by
   simp [Nat.card, h]
@@ -91,7 +96,7 @@ lemma card_eq_zero : Nat.card α = 0 ↔ IsEmpty α ∨ Infinite α := by
   · contrapose!
     rintro ⟨nonempty, finite⟩
     obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
-    rw [Nat.card_unique e]
+    rw [Nat.card_eq_of_equiv_fin e]
     rintro rfl
     contrapose! nonempty
     rw [e.isEmpty_congr]
@@ -115,7 +120,7 @@ theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β := by
     have h2 := f.finite_iff.mp inferInstance
     obtain ⟨n1, ⟨e1⟩⟩ := h1.exists_equiv_fin
     obtain ⟨n2, ⟨e2⟩⟩ := h2.exists_equiv_fin
-    rw [card_unique e1, card_unique e2, ← Fin.equiv_iff_eq]
+    rw [card_eq_of_equiv_fin e1, card_eq_of_equiv_fin e2, ← Fin.equiv_iff_eq]
     exact ⟨e1.symm.trans <| f.trans <| e2⟩
   | inr h =>
     have := f.infinite_iff.mp inferInstance
@@ -123,12 +128,17 @@ theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β := by
 
 lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
     (hf : Injective f) : Nat.card α ≤ Nat.card β := by
-  simpa using toNat_le_toNat (lift_mk_le_lift_mk_of_injective hf) (by simp)
+  have hα : Finite α := Finite.of_injective f hf
+  letI := Fintype.ofFinite α
+  letI := Fintype.ofFinite β
+  simp [Fintype.card_le_of_injective f hf]
 
 lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
     (hf : Surjective f) : Nat.card β ≤ Nat.card α := by
-  have : lift.{u} #β ≤ lift.{v} #α := mk_le_of_surjective (ULift.map_surjective.2 hf)
-  simpa using toNat_le_toNat this (by simp)
+  have hβ : Finite β := Finite.of_surjective f hf
+  letI := Fintype.ofFinite α
+  letI := Fintype.ofFinite β
+  simp [Fintype.card_le_of_surjective f hf]
 
 theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)
@@ -164,9 +174,6 @@ theorem _root_.Function.Surjective.bijective_of_nat_card_le [Finite α] {f : α 
   (Nat.bijective_iff_surjective_and_card f).mpr
     ⟨surj, hc.antisymm (card_le_card_of_surjective f surj)⟩
 
-theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
-  simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
-
 lemma card_fin (n : ℕ) : Nat.card (Fin n) = n := by
   rw [Nat.card_eq_fintype_card, Fintype.card_fin]
 
@@ -174,8 +181,9 @@ section Set
 open Set
 variable {s t : Set α}
 
-lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
-  toNat_le_toNat (mk_le_mk_of_subset h) ht.lt_aleph0
+lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t := by
+  have : Finite t := Finite.to_subtype ht
+  exact card_le_card_of_injective (inclusion h) (inclusion_injective h)
 
 lemma card_image_le {f : α → β} (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
   have := hs.to_subtype
@@ -225,22 +233,43 @@ theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   letI := Fintype.ofSubsingleton a
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 
-theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α :=
-  Cardinal.toNat_eq_one_iff_unique
-
 @[simp]
 theorem card_unique [Nonempty α] [Subsingleton α] : Nat.card α = 1 := by
-  simp [card_eq_one_iff_unique, *]
+  obtain ⟨a⟩ := ‹Nonempty α›
+  exact card_of_subsingleton a
+
+theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α := by
+  refine ⟨fun h => ?_, fun ⟨_, _⟩ => card_unique⟩
+  have : Finite α := finite_of_card_ne_zero <| by rw [h]; exact one_ne_zero
+  obtain ⟨e⟩ := this.nonempty_equiv_fin_natCard
+  rw [e.subsingleton_congr, e.nonempty_congr, h]
+  constructor <;> infer_instance
 
 theorem card_eq_one_iff_exists : Nat.card α = 1 ↔ ∃ x : α, ∀ y : α, y = x := by
   rw [card_eq_one_iff_unique]
   exact ⟨fun ⟨s, ⟨a⟩⟩ ↦ ⟨a, fun x ↦ s.elim x a⟩, fun ⟨x, h⟩ ↦ ⟨subsingleton_of_forall_eq x h, ⟨x⟩⟩⟩
 
-theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α :=
-  toNat_eq_ofNat.trans mk_eq_two_iff
+theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α := by
+  by_cases! h : Infinite α
+  · rw [Nat.card_eq_zero_of_infinite]
+    simp only [OfNat.zero_ne_ofNat, ne_eq, false_iff, not_exists, not_and]
+    intro x y hxy huniv
+    simp [← Set.infinite_univ_iff, ← huniv] at h
+  letI := Fintype.ofFinite α
+  classical
+  rw [← Nat.card_univ, card_eq_card_toFinset, Set.toFinset_univ, Finset.card_eq_two]
+  refine exists₂_congr fun x y => and_congr_right fun hxy => ?_
+  rw [eq_comm, ← Finset.coe_eq_univ, Finset.coe_pair]
 
-theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
-  toNat_eq_ofNat.trans (mk_eq_two_iff' x)
+theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x := by
+  simp_rw [card_eq_two_iff, Set.eq_univ_iff_forall, Set.mem_insert_iff, Set.mem_singleton_iff,
+    ExistsUnique]
+  constructor
+  · rintro ⟨a, b, hne, h⟩
+    rcases h x with (rfl | rfl)
+    exacts [⟨b, hne.symm, fun z => (h z).resolve_left⟩, ⟨a, hne, fun z => (h z).resolve_right⟩]
+  · rintro ⟨y, hne, hy⟩
+    exact ⟨x, y, hne.symm, (or_iff_not_imp_left.2 <| hy ·)⟩
 
 @[simp]
 theorem card_subtype_true : Nat.card {_a : α // True} = Nat.card α :=
@@ -254,7 +283,18 @@ theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + 
 
 @[simp]
 theorem card_prod (α β : Type*) : Nat.card (α × β) = Nat.card α * Nat.card β := by
-  simp only [Nat.card, mk_prod, toNat_mul, toNat_lift]
+  by_cases h : Nat.card (α × β) = 0
+  · rw [card_eq_zero, infinite_prod, isEmpty_prod] at h
+    obtain (_|_)|(⟨_, _⟩|⟨_, _⟩) := h <;> simp
+  · rw [card_eq_zero, infinite_prod, isEmpty_prod] at h
+    push_neg +distrib at h
+    obtain ⟨⟨_, _⟩, _|_, _|_⟩ := h
+    · simp
+    · let := Fintype.ofFinite α
+      let := Fintype.ofFinite β
+      simp [Nat.card_eq_fintype_card]
+    · simp
+    · simp
 
 @[simp]
 theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
@@ -276,11 +316,11 @@ theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α 
   haveI := Fintype.ofFinite α
   rw [Nat.card_pi, Finset.prod_const, Finset.card_univ, ← Nat.card_eq_fintype_card]
 
-@[simp]
-theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
-  cases n
-  · exact @Nat.card_eq_zero_of_infinite _ Int.infinite
-  · rw [Nat.card_eq_fintype_card, ZMod.card]
+-- @[simp]
+-- theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
+--   cases n
+--   · exact @Nat.card_eq_zero_of_infinite _ Int.infinite
+--   · rw [Nat.card_eq_fintype_card, ZMod.card]
 
 end Nat
 
