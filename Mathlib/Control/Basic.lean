@@ -3,14 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Control.Combinators
-import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Attr.Core
+module
+
+public import Mathlib.Control.Combinators
+public import Mathlib.Tactic.CasesM
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 Extends the theory on functors, applicatives and monads.
 -/
+
+@[expose] public section
 
 universe u v w
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
-import Mathlib.Algebra.Order.Ring.Synonym
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+public import Mathlib.Algebra.Order.Ring.Synonym
 
 /-!
 # Action instances for `OrderDual`
@@ -19,6 +21,8 @@ the `SMul` instances are already defined in `Mathlib/Algebra/Order/Group/Synonym
 * `Mathlib/Algebra/Order/Group/Action/Synonym.lean`
 * `Mathlib/Algebra/Order/GroupWithZero/Action/Synonym.lean`
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

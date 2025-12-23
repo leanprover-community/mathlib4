@@ -3,15 +3,19 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Order.Lattice
 
 /-!
 # Sorting the elements of `Sym2`
 
-This files provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
+This file provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
 `Multiset.sort`.
 -/
+
+@[expose] public section
 
 namespace Sym2
 
@@ -46,8 +50,8 @@ def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } whe
 they have the same infimum and supremum. -/
 theorem inf_eq_inf_and_sup_eq_sup [LinearOrder α] {s t : Sym2 α} :
     s.inf = t.inf ∧ s.sup = t.sup ↔ s = t := by
-  induction' s with a b
-  induction' t with c d
+  induction s with | _ a b
+  induction t with | _ c d
   obtain hab | hba := le_total a b <;> obtain hcd | hdc := le_total c d <;>
     aesop (add unsafe le_antisymm)
 

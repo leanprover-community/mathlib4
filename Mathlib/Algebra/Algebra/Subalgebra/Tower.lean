@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Subalgebras in towers of algebras
@@ -25,6 +27,8 @@ compatibility condition `(r • s) • a = r • (s • a)`.
   given that `A/S/R` is a tower
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -79,7 +83,7 @@ variable [IsScalarTower R S A] [IsScalarTower R S B]
 def restrictScalars (U : Subalgebra S A) : Subalgebra R A :=
   { U with
     algebraMap_mem' := fun x ↦ by
-      rw [algebraMap_apply R S A]
+      rw [IsScalarTower.algebraMap_apply R S A]
       exact U.algebraMap_mem _ }
 
 @[simp]

@@ -3,9 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.IsSheafFor
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Equalizers
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Sites.IsSheafFor
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # The equalizer diagram sheaf condition for a presieve
@@ -28,6 +31,8 @@ equalizer diagrams.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
 
 -/
+
+@[expose] public section
 
 
 universe t w v u
@@ -275,7 +280,7 @@ The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)`
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 @[stacks 00VM "The rightmost object of the fork diagram there."]
-def SecondObj : Type w  :=
+def SecondObj : Type w :=
   ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]

@@ -3,10 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Presentable.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Finitely Presentable Objects
@@ -15,6 +18,8 @@ We define finitely presentable objects as a synonym for `ℵ₀`-presentable obj
 and link this definition with the preservation of filtered colimits.
 
 -/
+
+@[expose] public section
 
 
 universe w v' v u' u
@@ -46,6 +51,19 @@ lemma Functor.isFinitelyAccessible_iff_preservesFilteredColimits {F : C ⥤ D} :
 abbrev IsFinitelyPresentable (X : C) : Prop :=
   IsCardinalPresentable.{w} X ℵ₀
 
+variable (C) in
+/-- `IsFinitelyPresentable` as an `ObjectProperty` on `C`. This is sometimes called "compact". -/
+def ObjectProperty.isFinitelyPresentable : ObjectProperty C := fun X ↦ IsFinitelyPresentable.{w} X
+
+lemma ObjectProperty.isFinitelyPresentable_eq_isCardinalPresentable :
+    isFinitelyPresentable.{w} C = isCardinalPresentable.{w} C ℵ₀ :=
+  rfl
+
+variable (C) in
+/-- A morphism `f : X ⟶ Y` is finitely presentable if it is so as an object of `Under X`. -/
+def MorphismProperty.isFinitelyPresentable : MorphismProperty C :=
+  fun _ _ f ↦ ObjectProperty.isFinitelyPresentable.{w} _ (CategoryTheory.Under.mk f)
+
 lemma isFinitelyPresentable_iff_preservesFilteredColimitsOfSize {X : C} :
     IsFinitelyPresentable.{w} X ↔ PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) :=
   Functor.IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize
@@ -58,6 +76,10 @@ instance (X : C) [IsFinitelyPresentable.{w} X] :
     PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) := by
   rw [← isFinitelyPresentable_iff_preservesFilteredColimitsOfSize]
   infer_instance
+
+instance (X : (ObjectProperty.isFinitelyPresentable.{w} C).FullSubcategory) :
+    IsFinitelyPresentable.{w} ((ObjectProperty.isFinitelyPresentable.{w} C).ι.obj X) :=
+  X.property
 
 lemma IsFinitelyPresentable.exists_hom_of_isColimit {J : Type w} [SmallCategory J] [IsFiltered J]
     {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c) {X : C} [IsFinitelyPresentable.{w} X]

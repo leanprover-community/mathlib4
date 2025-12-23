@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.GroupTheory.FiniteAbelian.Duality
-import Mathlib.NumberTheory.MulChar.Basic
+module
+
+public import Mathlib.GroupTheory.FiniteAbelian.Duality
+public import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Duality for multiplicative characters
@@ -18,6 +20,8 @@ where `n` is the exponent of `M`. Then the main results of this file are as foll
 * `MulChar.mulEquiv_units`: the group of multiplicative characters `M → R` is
   (noncanonically) isomorphic to `Mˣ`.
 -/
+
+@[expose] public section
 
 namespace MulChar
 

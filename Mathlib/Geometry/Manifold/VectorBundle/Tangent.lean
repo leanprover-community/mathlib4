@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-! # Tangent bundles
 
@@ -15,7 +17,7 @@ abbrev of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`.
 
 In this file, when `M` is `C^1`, we construct a vector bundle structure
 on `TangentBundle I M` using the `VectorBundleCore` construction indexed by the charts of `M`
-with fibers `E`. Given two charts `i, j : PartialHomeomorph M H`, the coordinate change
+with fibers `E`. Given two charts `i, j : OpenPartialHomeomorph M H`, the coordinate change
 between `i` and `j` at a point `x : M` is the derivative of the composite
 ```
   I.symm   i.symm    j     I
@@ -33,8 +35,10 @@ This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
   and a `C^n` manifold.
 -/
 
+@[expose] public section
 
-open Bundle Set IsManifold PartialHomeomorph ContinuousLinearMap
+
+open Bundle Set IsManifold OpenPartialHomeomorph ContinuousLinearMap
 
 open scoped Manifold Topology Bundle ContDiff
 
@@ -60,7 +64,7 @@ theorem contDiffOn_fderiv_coord_change [IsManifold I (n + 1) M]
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_rfl
     <| h hx).mono h
-  refine (PartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
+  refine (OpenPartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
     (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
 
@@ -107,9 +111,9 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas k.2)
-        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt le_rfl
+        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt one_ne_zero
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas j.2)
-        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt le_rfl
+        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt one_ne_zero
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]
@@ -161,7 +165,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
   have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
     rw [PartialEquiv.trans_source'', PartialEquiv.symm_symm, PartialEquiv.symm_target]
     exact mem_image_of_mem _ h
-  ((contDiffWithinAt_ext_coord_change y x h').differentiableWithinAt le_rfl).hasFDerivWithinAt
+  ((contDiffWithinAt_ext_coord_change y x h').differentiableWithinAt one_ne_zero).hasFDerivWithinAt
 
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by
@@ -187,8 +191,9 @@ namespace TangentBundle
 
 protected theorem chartAt (p : TM) :
     chartAt (ModelProd H E) p =
-      ((tangentBundleCore I M).toFiberBundleCore.localTriv (achart H p.1)).toPartialHomeomorph ≫ₕ
-        (chartAt H p.1).prod (PartialHomeomorph.refl E) :=
+      ((tangentBundleCore I M).toFiberBundleCore.localTriv
+        (achart H p.1)).toOpenPartialHomeomorph ≫ₕ
+        (chartAt H p.1).prod (OpenPartialHomeomorph.refl E) :=
   rfl
 
 theorem chartAt_toPartialEquiv (p : TM) :
@@ -372,13 +377,13 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
     ⇑(chartAt (ModelProd H E) p) = TotalSpace.toProd H E := by
-  rw [← PartialHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
+  rw [← OpenPartialHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
 
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
     ((chartAt (ModelProd H E) p).symm : ModelProd H E → TangentBundle I H) =
       (TotalSpace.toProd H E).symm := by
-  rw [← PartialHomeomorph.coe_coe, PartialHomeomorph.symm_toPartialEquiv,
+  rw [← OpenPartialHomeomorph.coe_coe, OpenPartialHomeomorph.symm_toPartialEquiv,
     tangentBundle_model_space_chartAt]; rfl
 
 theorem tangentBundleCore_coordChange_model_space (x x' z : H) :
@@ -479,7 +484,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s ↔
       ContDiffOn 𝕜 n V s := by
-  simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt ]
+  simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/

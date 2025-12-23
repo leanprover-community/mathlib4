@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Adjugate
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
 # Matrices associated with non-degenerate bilinear forms
@@ -16,6 +18,8 @@ import Mathlib.LinearAlgebra.Matrix.Adjugate
   is nondegenerate.
 
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -54,15 +58,7 @@ theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.
   refine nondegenerate_def.mpr fun v hv ↦ ?_
   ext i
   specialize hv (M.cramer (Pi.single i 1))
-  refine (mul_eq_zero.mp ?_).resolve_right hM
-  convert hv
-  simp only [mulVec_cramer M (Pi.single i 1), dotProduct, Pi.smul_apply, smul_eq_mul]
-  rw [Finset.sum_eq_single i, Pi.single_eq_same, mul_one]
-  · intro j _ hj
-    simp [hj]
-  · intros
-    have := Finset.mem_univ i
-    contradiction
+  simp_all
 
 theorem eq_zero_of_vecMul_eq_zero [DecidableEq m] {M : Matrix m m A} (hM : M.det ≠ 0) {v : m → A}
     (hv : v ᵥ* M = 0) : v = 0 :=

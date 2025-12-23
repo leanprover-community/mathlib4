@@ -3,11 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Setoid.Partition.Card
-import Mathlib.GroupTheory.GroupAction.Blocks
-import Mathlib.GroupTheory.GroupAction.Transitive
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Setoid.Partition.Card
+public import Mathlib.GroupTheory.GroupAction.Blocks
+public import Mathlib.GroupTheory.GroupAction.Transitive
 
 /-!
 # Primitive actions
@@ -66,6 +68,8 @@ import Mathlib.GroupTheory.GroupAction.Transitive
 
 -/
 
+@[expose] public section
+
 open Pointwise
 
 namespace MulAction
@@ -123,6 +127,13 @@ theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] 
   isTrivialBlock_of_isBlock B := by
     left
     exact Set.subsingleton_of_subsingleton
+
+theorem isTrivialBlock_of_card_le_two
+    [Finite X] (hX : Nat.card X ≤ 2) (B : Set X) :
+    IsTrivialBlock B := by
+  rw [IsTrivialBlock, ← B.ncard_le_one_iff_subsingleton, B.eq_univ_iff_ncard]
+  have := B.ncard_le_card
+  grind
 
 variable [Group G] [MulAction G X]
 
@@ -189,9 +200,6 @@ theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
   simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_notMem] at Hnt
   obtain ⟨_, ha⟩ := Hnt
   exact .of_isTrivialBlock_of_notMem_fixedPoints ha fun {B} _ ↦ H
-
-@[deprecated (since := "2025-03-03")] alias _root_.AddAction.mk' := AddAction.IsPreprimitive.mk'
-@[to_additive existing, deprecated (since := "2025-03-03")] alias mk' := IsPreprimitive.mk'
 
 section EquivariantMap
 
@@ -323,13 +331,13 @@ variable {φ : G → H} {f : X →ₑ[φ] Y}
 /-- The codomain of an equivariant map of large image is preprimitive if the domain is. -/]
 theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
     (hf' : Nat.card Y < 2 * (Set.range f).ncard) :
-    IsPreprimitive H Y :=  by
+    IsPreprimitive H Y := by
   refine ⟨fun {B} hB ↦ ?_⟩
   rcases B.eq_empty_or_nonempty with hB' | hB'; · simp [IsTrivialBlock, hB']
   rw [IsTrivialBlock, or_iff_not_imp_right]
   intro hB_ne_top
   -- we need Set.Subsingleton B ↔ Set.ncard B ≤ 1
-  suffices Set.ncard B < 2 by simpa [Nat.lt_succ] using this
+  suffices Set.ncard B < 2 by simpa [Nat.lt_succ_iff] using this
   -- We reduce to proving that (Set.range f).ncard ≤ (orbit N B).ncard
   apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (zero_le _)
   simp only [← hB.ncard_block_mul_ncard_orbit_eq hB']

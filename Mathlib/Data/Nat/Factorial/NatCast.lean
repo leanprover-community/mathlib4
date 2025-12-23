@@ -3,11 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Invertibility of factorials
@@ -16,6 +17,8 @@ This file contains lemmas providing sufficient conditions for the cast of `n!` t
 to be a unit.
 
 -/
+
+@[expose] public section
 
 namespace IsUnit
 
@@ -76,7 +79,7 @@ lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
   obtain ⟨m, hm⟩ := hp
   suffices ∃ a b : A, p ^ m * a + n * b = 1 by
     obtain ⟨a, b, h⟩ := this
-    apply isUnit_of_mul_eq_one (n : A) b
+    refine .of_mul_eq_one b ?_
     simpa [hm] using h
   refine ⟨(p ^ m).gcdA n, (p ^ m).gcdB n, ?_⟩
   norm_cast
@@ -88,9 +91,9 @@ theorem natCast_factorial_of_isNilpotent [Fact p.Prime] (h : n < p) :
   | zero => simp
   | succ n ih =>
     simp only [factorial_succ, cast_mul, IsUnit.mul_iff]
-    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by omega)⟩
+    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by lia)⟩
     rw [Nat.Prime.coprime_iff_not_dvd Fact.out]
-    exact Nat.not_dvd_of_pos_of_lt (by omega) h
+    exact Nat.not_dvd_of_pos_of_lt (by lia) h
 
 end Nilpotent
 
@@ -102,8 +105,8 @@ lemma Nat.castChoose_eq {A : Type*} [CommSemiring A] {m : ℕ} {k : ℕ × ℕ}
     (hm : IsUnit (m ! : A)) (hk : k ∈ Finset.antidiagonal m) :
     (choose m k.1 : A) = ↑m ! * inverse ↑k.1! * inverse ↑k.2! := by
   rw [Finset.mem_antidiagonal] at hk
-  rw [eq_mul_inverse_iff_mul_eq, eq_mul_inverse_iff_mul_eq,
-    ← hk, ← Nat.cast_mul, ← Nat.cast_mul, add_comm, Nat.add_choose_mul_factorial_mul_factorial] <;>
-  apply hm.natCast_factorial_of_le <;>
-  rw [← hk];
+  subst hk
+  rw [eq_mul_inverse_iff_mul_eq, eq_mul_inverse_iff_mul_eq, ← Nat.cast_mul, ← Nat.cast_mul,
+    add_comm, Nat.add_choose_mul_factorial_mul_factorial] <;>
+    apply hm.natCast_factorial_of_le
   exacts [Nat.le_add_right k.1 k.2, Nat.le_add_left k.2 k.1]

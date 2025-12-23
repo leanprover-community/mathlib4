@@ -3,10 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Order.Sublattice
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Sublattice
 
 /-!
 # The lattice of invariant submodules
@@ -18,6 +20,8 @@ lattice structure of invariant submodules.
 See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
 
 -/
+
+@[expose] public section
 
 open Submodule (span)
 

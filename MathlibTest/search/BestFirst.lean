@@ -1,4 +1,4 @@
-import Mathlib.Data.MLList.BestFirst
+import Mathlib.Deprecated.MLList.BestFirst
 import Mathlib.Data.Nat.Basic
 
 /-!
@@ -6,6 +6,8 @@ import Mathlib.Data.Nat.Basic
 
 We check that `bestFirstSearch` can find its way around a wall.
 -/
+
+set_option linter.deprecated false
 
 open Lean MLList Function
 

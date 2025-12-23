@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+module
+
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Topology.UniformSpace.Completion
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Multiplicative action on the completion of a uniform space
@@ -21,6 +23,8 @@ In later files once the additive group structure is set up, we provide
 
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
+
+@[expose] public section
 
 
 universe u v w x y
@@ -232,7 +236,6 @@ end SMul
 @[to_additive]
 noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
     MulAction M (Completion X) where
-  smul := (· • ·)
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=
     ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by

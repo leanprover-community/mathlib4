@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Cones and limits
@@ -14,6 +16,8 @@ and the type `lim Hom(F·, X)`.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory.Limits
@@ -22,7 +26,7 @@ open Functor Opposite
 
 section
 
-variable {J C : Type*} [Category J] [Category C]
+variable {J C : Type*} [Category* J] [Category* C]
 
 /-- Sections of `F ⋙ coyoneda.obj (op X)` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
