@@ -333,22 +333,25 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
 
 theorem card_pi {β : α → Type*} [h : Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   classical
-  -- convert Fintype.card_pi (ι := α) (α := β)
+  -- revert β
+  -- revert h
+  -- refine Fintype.induction_empty_option ?_ ?_ ?_ α
+  haveI : Finite α := inferInstance
+  -- -- apply Finite.induction_empty_option _ _ _ α
   induction α using Finite.induction_empty_option generalizing h with
   | @of_equiv γ δ e h1 =>
-    specialize @h1 (fun b => β (e b))
+    letI := Fintype.ofEquiv _ e.symm
+    specialize @h1 (fun b => β (e b)) _ inferInstance
     trans Nat.card ((a : γ) → β (e a))
     · rw [Nat.card_congr (Equiv.piCongrLeft β e)]
     convert h1
-    letI := Fintype.ofEquiv _ e.symm
     convert (Equiv.prod_comp ?_ ?_).symm
   | h_empty => simp
-
   | h_option ih =>
     rw [card_congr Equiv.piOptionEquivProd, card_prod, ih, ← Fintype.prod_option (Nat.card <| β ·)]
-    congr!
-  -- refine Finite.induction_empty_option ?_ ?_ ?_ α
-  infer_instance
+    · congr!
+    · infer_instance
+  sorry
 
 theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
   haveI := Fintype.ofFinite α
