@@ -5875,6 +5875,7 @@ public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.RingTheory.Extension.Presentation.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
+public import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
 public import Mathlib.RingTheory.FilteredAlgebra.Basic
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.FiniteLength
