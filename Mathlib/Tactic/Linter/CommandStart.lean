@@ -650,6 +650,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
 def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     ``«term¬_»,
+    -- notation for `upShadow`, the pretty-printer prefers `∂⁺ ` over `∂⁺` *always*
+    `FinsetFamily.«term∂⁺»,
   ]
   depth := some 2
 
