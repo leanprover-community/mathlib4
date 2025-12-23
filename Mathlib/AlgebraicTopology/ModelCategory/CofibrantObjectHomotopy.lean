@@ -42,13 +42,11 @@ def homRel : HomRel (CofibrantObject C) :=
 lemma homRel_iff_rightHomotopyRel {X Y : CofibrantObject C} {f g : X ⟶ Y} :
     homRel C f g ↔ RightHomotopyRel f.hom g.hom := Iff.rfl
 
-variable (C) in
-lemma compClosure_homRel :
-    Quotient.CompClosure (homRel C) = homRel C := by
-  ext X Y f g
-  refine ⟨?_, Quotient.CompClosure.of _ _ _⟩
-  rintro ⟨i, f', g', p, h⟩
-  exact (h.postcomp p.hom).precomp i.hom
+instance : HomRel.IsStableUnderPostcomp (homRel C) where
+  comp_right _ h := h.postcomp _
+
+instance : HomRel.IsStableUnderPrecomp (homRel C) where
+  comp_left _ _ _ h := h.precomp _
 
 variable (C) in
 /-- The homotopy category of cofibrant objects. -/
@@ -72,7 +70,7 @@ lemma toπ_map_eq_iff {X Y : CofibrantObject C} [IsFibrant Y.1] (f g : X ⟶ Y) 
     toπ.map f = toπ.map g ↔ homRel C f g := by
   dsimp [toπ]
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
-    compClosure_homRel]
+    HomRel.compClosure_eq_self]
   refine ⟨?_, .rel _ _⟩
   rw [homRel_iff_rightHomotopyRel]
   intro h
@@ -87,7 +85,6 @@ instance : (weakEquivalences (CofibrantObject C)).HasQuotient (homRel C) where
     simp only [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty]
     obtain ⟨P, ⟨h⟩⟩ := h
     apply h.weakEquivalence_iff
-  compClosure_eq_self := compClosure_homRel C
 
 instance : CategoryWithWeakEquivalences (CofibrantObject.π C) where
   weakEquivalences := (weakEquivalences _).quotient _
