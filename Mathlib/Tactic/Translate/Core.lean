@@ -138,8 +138,7 @@ register_option linter.translateReorder : Bool := {
   descr := "Linter used by translate attributes that checks if the given reorder is \
     equal to the automatically generated one" }
 
-/-- Linter used by translate attributes that checks if the given reorder is
-    equal to the automatically generated name -/
+/-- Linter used by translate attributes that checks if the attribute is redundant -/
 register_option linter.translateRedundant : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute is redundant" }
@@ -660,7 +659,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
   if src == pre && srcDecl.isThm && trgDecl.type == srcDecl.type then
     Linter.logLintIf linter.translateRedundant ref m!"`{t.attrName}` did not change the type \
-      of theorem `{.ofConstName src}. Please remove the attribute"
+      of theorem `{.ofConstName src}`. Please remove the attribute"
 
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
