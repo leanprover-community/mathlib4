@@ -187,7 +187,7 @@ variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Rin
   [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
-/-- The `κ`-bounded subring of Hahn series with cardinal less than `c`. -/
+/-- The `κ`-bounded subring of Hahn series with cardinal less than `κ`. -/
 def cardLTSubring : Subring R⟦Γ⟧ where
   one_mem' := card_one_le.trans_lt <| one_lt_aleph0.trans_le hκ.out
   mul_mem' hx hy := (card_mul_le ..).trans_lt <| mul_lt_of_lt hκ.out hx hy
@@ -203,7 +203,7 @@ section Subfield
 variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] [hκ : Fact (ℵ₀ < κ)]
 
 variable (Γ R) in
-/-- The `κ`-bounded subfield of Hahn series with cardinal less than `c`. -/
+/-- The `κ`-bounded subfield of Hahn series with cardinal less than `κ`. -/
 @[simps!]
 def cardLTSubfield : Subfield R⟦Γ⟧ where
   inv_mem' _ _ := (card_inv_le _).trans_lt <| by simpa [hκ.out]
