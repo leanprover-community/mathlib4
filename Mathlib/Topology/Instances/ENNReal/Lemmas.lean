@@ -1229,6 +1229,18 @@ theorem isClosed_setOf_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMet
     IsClosed { f : α → β | LipschitzWith K f } := by
   simp only [← lipschitzOnWith_univ, isClosed_setOf_lipschitzOnWith]
 
+protected lemma LipschitzOnWith.closure [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
+    (hcont : ContinuousOn f (closure s)) (hf : LipschitzOnWith K f s) :
+    LipschitzOnWith K f (closure s) := by
+  have := ENNReal.continuous_const_mul (ENNReal.coe_ne_top (r := K))
+  refine fun x hx ↦ le_on_closure (fun y hy ↦ le_on_closure (fun x hx ↦ hf hx hy) ?_ ?_ hx) ?_ ?_
+  all_goals fun_prop
+
+lemma lipschitzOnWith_closure_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
+    (hcont : ContinuousOn f (closure s)) :
+    LipschitzOnWith K f (closure s) ↔ LipschitzOnWith K f s :=
+  ⟨fun hf ↦ hf.mono subset_closure, LipschitzOnWith.closure hcont⟩
+
 namespace Real
 
 /-- For a bounded set `s : Set ℝ`, its `EMetric.diam` is equal to `sSup s - sInf s` reinterpreted as
