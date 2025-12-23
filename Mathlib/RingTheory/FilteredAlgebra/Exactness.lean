@@ -256,7 +256,7 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
     refine FilteredHom.IsStrict_of_Int fun {p y} hp ⟨x', hx'⟩ ↦ ?_
     rcases discrete.discrete with ⟨t₀, t₀bot⟩
     have le_zero : ∀ t ≤ t₀, (FS t : Set S) = {0} := fun t ht ↦ (Set.Nonempty.subset_singleton_iff
-      Set.Nonempty.of_subtype).mp (le_of_eq_of_le' t₀bot (monoS ht))
+      Set.Nonempty.of_subtype).mp (le_of_le_of_eq (monoS ht) t₀bot)
     have (s : ℕ) : ∃ r : FR p, y - f r ∈ (f.range : Set S) ∩ FS (p - s) := by
       let yₚ := of (GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p)))
       obtain ⟨xₚ, hxₚ⟩ := (exact yₚ).1 <| zero_of_pieces_range ⟨x', hx'⟩ comp_eq_zero
