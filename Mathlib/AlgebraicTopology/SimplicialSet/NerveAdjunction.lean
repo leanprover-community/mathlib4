@@ -160,14 +160,14 @@ lemma naturalityProperty_eq_top :
       · ext; apply hδ'₀ f₀ f₁ hδ₁ hδ₀ hY
       · ext; apply hδ'₁ f₀ f₁ hδ₁ hδ₀ H hY
       · ext; apply hδ'₂ f₀ f₁ hδ₁ hδ₀ hY
-    · cutsat
+    · lia
   · obtain _ | _ | n := n
     · fin_cases i
       ext; apply hσ
     · fin_cases i
       · ext; apply hσ'₀ f₀ f₁ hδ₁ hδ₀ hσ hY
       · ext; apply hσ'₁ f₀ f₁ hδ₁ hδ₀ hσ hY
-    · cutsat
+    · lia
 
 end liftOfStrictSegal
 
@@ -315,8 +315,8 @@ end HomotopyCategory
 and the 2-truncated nerve functor. -/
 def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
   Adjunction.mkOfHomEquiv
-    { homEquiv _ _ := HomotopyCategory.functorEquiv
-      homEquiv_naturality_left_symm _ _ := HomotopyCategory.descOfTruncation_comp _ _
+    { homEquiv _ _ := (Cat.Hom.equivFunctor _ _).trans HomotopyCategory.functorEquiv
+      homEquiv_naturality_left_symm _ _ := by ext1; exact HomotopyCategory.descOfTruncation_comp _ _
       homEquiv_naturality_right _ _ := HomotopyCategory.homToNerveMk_comp _ _ }
 
 end Truncated
@@ -345,7 +345,7 @@ def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj 
 
 lemma nerveFunctor₂_map_functorOfNerveMap
     (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
-    nerveFunctor₂.map (functorOfNerveMap φ) = φ :=
+    nerveFunctor₂.map (functorOfNerveMap φ).toCatHom = φ :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x, y, f, rfl⟩ := ComposableArrows.mk₁_surjective f
     exact (nerveMap_app_mk₁ _ _).trans ((nerve.mk₁_homEquiv_apply _).trans
@@ -353,17 +353,13 @@ lemma nerveFunctor₂_map_functorOfNerveMap
 
 lemma functorOfNerveMap_nerveFunctor₂_map (F : C ⥤ D) :
     functorOfNerveMap ((SSet.truncation 2).map (nerveMap F)) = F :=
-  Functor.ext (fun x ↦ by cat_disch)
-    (fun x y f ↦ by
-      dsimp
-      simpa only [Category.comp_id, Category.id_comp] using
-        nerve.homEquiv_edgeMk_map_nerveMap f F)
+  Functor.ext (fun x ↦ by cat_disch) (fun x y f ↦ by cat_disch)
 
 /-- The `2`-truncated nerve functor is fully faithful. -/
 def fullyFaithfulNerveFunctor₂ : nerveFunctor₂.{u, u}.FullyFaithful where
-  preimage φ := functorOfNerveMap φ
+  preimage φ := (functorOfNerveMap φ).toCatHom
   map_preimage _ := nerveFunctor₂_map_functorOfNerveMap _
-  preimage_map _ := functorOfNerveMap_nerveFunctor₂_map _
+  preimage_map _ := by ext1; exact functorOfNerveMap_nerveFunctor₂_map _
 
 instance : nerveFunctor₂.{u, u}.Faithful :=
   (fullyFaithfulNerveFunctor₂).faithful
@@ -485,7 +481,8 @@ def unitHomEquiv (X : SSet.{u}) :
     (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
 
 theorem unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
-    hoFunctor.unitHomEquiv X x = Functor.LaxMonoidal.ε hoFunctor ≫ hoFunctor.map x := by
+    hoFunctor.unitHomEquiv X x = (Functor.LaxMonoidal.ε hoFunctor).toFunctor ⋙
+      (hoFunctor.map x).toFunctor := by
   simp only [Cat.of_α, unitHomEquiv, Equiv.trans_apply,
     Functor.CoreMonoidal.toMonoidal_toLaxMonoidal]
   rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]
