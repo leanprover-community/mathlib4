@@ -740,13 +740,13 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   have hΦ : IsClosed Φ := by -- Note this is compact, but we only need closedness
     refine (hA1.isClosed.inter ?_).inter ?_
     · have : B = (fun f ↦ f ⟨(fun x => 1), continuous_const⟩) ⁻¹' {1} := by grind
-      simpa [this] using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_singleton)
+      simpa [this] using isClosed_singleton.preimage (WeakDual.eval_continuous _)
     · have : C = ⋂ f : {g : C_c(X, ℝ) | 0 ≤ g}, {φ : WeakDual ℝ C(X, ℝ) | 0 ≤ φ f} := by
         ext x; simp [C]
       rw [this]
       refine isClosed_iInter fun f ↦ ?_
       have : {φ | 0 ≤ φ f} = (fun φ : WeakDual ℝ C(X, ℝ) ↦ φ f) ⁻¹' Set.Ici 0 := by grind
-      simpa using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_Ici)
+      simpa using isClosed_Ici.preimage (WeakDual.eval_continuous _)
   -- Now we show Φ is sequentially compact using the sequential Banach-Alaoglu theorem
   have hsubset : StrongDual.toWeakDual ⁻¹' (Φ : Set (WeakDual ℝ C(X, ℝ))) ⊆
       Metric.closedBall (0 : StrongDual ℝ C(X, ℝ)) 1 := fun ψ hψ ↦ by simpa [A] using hψ.1.1
@@ -799,7 +799,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
           all_goals simpa [Integrable] using ⟨by measurability,
               HasFiniteIntegral_continuous_ProbabilityMeasure⟩
         map_smul' := by simp [L, integral_const_mul]
-        monotone' := fun _ _ hle ↦ L.monotone' <| CompactlySupportedContinuousMap.le_def.mpr hle}
+        monotone' _ _ hle := L.monotone' <| CompactlySupportedContinuousMap.le_def.mpr hle}
     let φ_weak : WeakDual ℝ (C(X, ℝ)) := ((liftL).toLinearMap.mkContinuous 1 fun f ↦ ?_)
     swap
     · simpa [-Real.norm_eq_abs,integralPositiveLinearMap_toFun, LinearMap.coe_mk,
@@ -807,7 +807,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
          (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
     have as_ball : φ_weak ∈ Φ := by
       simp only [Φ]
-      refine ⟨⟨?_,?_⟩,fun g hgpos ↦ ?_⟩ -- Show it satisfies each of the defining properties of Φ
+      refine ⟨⟨?_, ?_⟩, fun g hgpos ↦ ?_⟩ -- Show it satisfies each of the defining properties of Φ
       · simp only [mem_preimage, coe_toStrongDual, mem_closedBall, dist_zero_right, A]
         refine ContinuousLinearMap.opNorm_le_bound φ_weak (zero_le_one' ℝ) fun f ↦ ?_
         simpa using BoundedContinuousFunction.norm_integral_le_norm μprob
@@ -820,17 +820,16 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     exact ⟨φ_fin, (Equiv.symm_apply_eq
         (LevyProkhorov.toMeasureEquiv)).mpr <| Subtype.ext
         RealRMK.rieszMeasure_integralPositiveLinearMap⟩
-  rw [←this.range_eq]
+  rw [← this.range_eq]
   -- Now we show T is continuous using the universal property and RMK
-  refine IsSeqCompact.range <| Continuous.seqContinuous <| Continuous.comp
-      (LevyProkhorov.continuous_ofMeasure_probabilityMeasure) ?_ (Y := ProbabilityMeasure X)
+  refine .range ((LevyProkhorov.continuous_ofMeasure_probabilityMeasure).comp ?_).seqContinuous
   rw [ProbabilityMeasure.continuous_iff_forall_continuous_integral]
   intro BCfun
   let CCfun := CompactlySupportedContinuousMap.continuousMapEquiv BCfun.toContinuousMap
   have IntToMeas x : ∫ (x : X), BCfun x ∂RealRMK.rieszMeasure (Λ x) =
       Λ x (continuousMapEquiv BCfun.toContinuousMap) := RealRMK.integral_rieszMeasure (Λ x) CCfun
   simpa [IntToMeas, Λ] using Continuous.comp (WeakDual.eval_continuous _) continuous_subtype_val
-      (g := (fun (x : WeakDual ℝ C(X,ℝ)) ↦ x CCfun.toContinuousMap))
+      (g := (fun (x : WeakDual ℝ C(X, ℝ)) ↦ x CCfun.toContinuousMap))
 
 /-- On a separable compact Borel metric space, the space of probability measures equipped with the
 topology of weak convergence is compact. -/
