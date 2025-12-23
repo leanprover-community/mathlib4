@@ -28,11 +28,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 * `SimpleGraph.isBridge_iff_mem_and_forall_cycle_notMem` characterizes bridge edges in terms of
   there being no cycle containing them.
 
-## TODO
-
-`IsBridge` is unpractical: we shouldn't require the edge to be present.
-See https://github.com/leanprover-community/mathlib4/issues/31690.
-
 ## Tags
 trails, paths, cycles, bridge edges
 -/
