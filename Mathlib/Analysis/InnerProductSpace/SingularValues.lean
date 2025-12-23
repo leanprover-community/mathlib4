@@ -171,14 +171,23 @@ public noncomputable def rightSingularVectors : ℕ →₀ E :=
 public noncomputable def leftSingularVectors : ℕ →₀ F :=
   Finsupp.ofSupportFinite
     (fun i =>
-      if h : singularValues T i = 0 then
-        0
+      if h1 : i < Module.finrank 𝕜 (LinearMap.range T) then
+        -- Case 1: i < rank(T), we know σᵢ ≠ 0, so use (1/σᵢ) T eᵢ this will be proved below
+        ((T.singularValues i : ℝ)⁻¹ : 𝕜) • T (T.rightSingularVectors i)
+      else if h : i < Module.finrank 𝕜 F then
+        -- Case 2: rank(T) ≤ i < dim(F)
+        (stdOrthonormalBasis 𝕜 (LinearMap.range T)ᗮ) ⟨i - Module.finrank 𝕜 (LinearMap.range T), by
+        have h_1 := Submodule.finrank_add_finrank_orthogonal (LinearMap.range T)
+        omega ⟩
       else
-        ((singularValues T i : ℝ)⁻¹ : 𝕜) •
-          T (rightSingularVectors T i))
-    ((singularValues T).support.finite_toSet.subset fun i hi => by
-      contrapose! hi
-      simp [Finsupp.notMem_support_iff.1 hi])
+        -- Case 3: dim(F) ≤ i
+        0)
+    ((Set.finite_lt_nat (Module.finrank 𝕜 F)).subset fun i hi => by
+      rw [Function.mem_support] at hi
+      split_ifs at hi with h1 h2
+      · exact h1.trans_le (Submodule.finrank_le _)
+      · exact h2
+      · exact absurd rfl hi)
 
 -- This is no longer true under our new definition
 -- @[simp]
@@ -195,8 +204,10 @@ public theorem rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = 
     subst hn
     exact Finsupp.embDomain_apply_self _ _ i
 
+-- Under the current definition this is hard to prove
 public theorem leftSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 F = n) (i : Fin n)
   : T.leftSingularVectors i = T.isSymmetric_self_comp_adjoint.eigenvectorBasis hn i := sorry
+
 
 public theorem rightSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 E ≤ i)
   : T.rightSingularVectors i = 0 := by
@@ -205,11 +216,15 @@ public theorem rightSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank
 
 public theorem leftSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 F ≤ i)
   : T.leftSingularVectors i = 0 := by
-  -- As seen in `leftSingularVectors_fin`, the proofs of the corresponding left singular vector
-  -- lemmas should be very short (usually one-liners) following directly from the corresponding
-  -- right singular vector lemma.
-  -- Not if `leftSingularVectors` is changed to have a nontrivial definition, though.
-  sorry
+  simp only [leftSingularVectors]
+  rw [Finsupp.ofSupportFinite_coe]
+  split_ifs with h1 h2
+  · have : Module.finrank 𝕜 (LinearMap.range T) ≤ Module.finrank 𝕜 F := Submodule.finrank_le _
+    omega
+  · omega
+  · rfl
+
+
 
 @[simp]
 public theorem support_rightSingularVectors
