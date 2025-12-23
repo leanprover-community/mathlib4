@@ -57,7 +57,7 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
       DerivedCategory.Q.map (Cocycle.equivHomShift.symm x) ≫
         inv (DerivedCategory.Q.map (R.ι'⟦(n : ℤ)⟧')) ≫
         (DerivedCategory.Q.commShiftIso (n : ℤ)).hom.app _ := by
-  change (SmallShiftedHom.equiv _ _) ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
+  change SmallShiftedHom.equiv _ _ ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
   simp only [SmallShiftedHom.equiv_comp, ShiftedHom.comp,
     CohomologyClass.equiv_toSmallShiftedHom_mk, ShiftedHom.map, SmallShiftedHom.equiv_mk₀Inv,
     ShiftedHom.mk₀, shiftFunctorZero', eqToIso_refl, Iso.refl_trans,
