@@ -156,12 +156,12 @@ variable (Γ R) in
 /-- The `κ`-bounded submonoid of Hahn series with cardinal less than `κ`. -/
 @[simps!]
 def cardLTAddSubmonoid : AddSubmonoid R⟦Γ⟧ where
-  carrier := {x | x.card < κ}
+  carrier := {x | x.cardSupp < κ}
   zero_mem' := by simpa using aleph0_pos.trans_le hκ.out
   add_mem' hx hy := (card_add_le ..).trans_lt <| add_lt_of_lt hκ.out hx hy
 
 @[simp]
-theorem mem_cardLTAddSubmonoid {x : R⟦Γ⟧} : x ∈ cardLTAddSubmonoid Γ R κ ↔ x.card < κ :=
+theorem mem_cardLTAddSubmonoid {x : R⟦Γ⟧} : x ∈ cardLTAddSubmonoid Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end AddMonoid
@@ -177,7 +177,7 @@ def cardLTAddSubgroup : AddSubgroup R⟦Γ⟧ where
   __ := cardLTAddSubmonoid Γ R κ
 
 @[simp]
-theorem mem_cardLTAddSubgroup {x : R⟦Γ⟧} : x ∈ cardLTAddSubgroup Γ R κ ↔ x.card < κ :=
+theorem mem_cardLTAddSubgroup {x : R⟦Γ⟧} : x ∈ cardLTAddSubgroup Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end AddGroup
@@ -194,7 +194,7 @@ def cardLTSubring : Subring R⟦Γ⟧ where
   __ := cardLTAddSubgroup Γ R κ
 
 @[simp]
-theorem mem_cardLTSubring {x : R⟦Γ⟧} : x ∈ cardLTSubring Γ R κ ↔ x.card < κ :=
+theorem mem_cardLTSubring {x : R⟦Γ⟧} : x ∈ cardLTSubring Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end Subring
@@ -210,7 +210,7 @@ def cardLTSubfield : Subfield R⟦Γ⟧ where
   __ := have : Fact (ℵ₀ ≤ κ) := ⟨hκ.out.le⟩; cardLTSubring Γ R κ
 
 @[simp]
-theorem mem_cardLTSubfield {x : R⟦Γ⟧} : x ∈ cardLTSubfield Γ R κ ↔ x.card < κ :=
+theorem mem_cardLTSubfield {x : R⟦Γ⟧} : x ∈ cardLTSubfield Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end Subfield
