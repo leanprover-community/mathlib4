@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Core
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
+module
+
+public import Mathlib.CategoryTheory.Core
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
 # (2,1)-categories
@@ -24,6 +26,8 @@ through the inclusion from `Pith B` to `B` (see
 - [Kerodon, section 1.2.2](https://kerodon.net/tag/02GD).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Bicategory
 
@@ -156,8 +160,8 @@ pseudofunctor using `CategoryTheory.Pseudofunctor.mkOfLax`. -/
 noncomputable def Pseudofunctor.ofLaxFunctorToLocallyGroupoid
     {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B] (F : LaxFunctor B' B) :
     F.PseudoCore where
-  mapIdIso x := asIso (inv <| F.mapId x)
-  mapCompIso f g := asIso (inv <| F.mapComp f g)
+  mapIdIso x := (asIso (F.mapId x)).symm
+  mapCompIso f g := (asIso <| F.mapComp f g).symm
 
 /-- If `B` is a (2,1)-category, then every oplax functor `F` from a bicategory to `B` defines
 a `CategoryTheory.OplaxFunctor.PseudoCore` structure on `F` that can be used to promote `F`
