@@ -310,6 +310,20 @@ theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
 
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
+  -- induction α using Finite.induction_empty_option with
+  -- | @of_equiv γ δ e h1 =>
+  --   specialize @h1 (fun b => β (e b))
+  --   trans Nat.card ((a : γ) → β (e a))
+  --   · rw [Nat.card_congr (Equiv.piCongrLeft β e)]
+  --   convert h1
+  --   convert (Equiv.prod_comp ?_ ?_).symm
+  --   rw [← Equiv.prod_comp e]
+  --   rw [← h1 (β := _)]
+  --   sorry
+  -- | h_empty => sorry
+  -- | h_option _ => sorry
+  -- refine Finite.induction_empty_option ?_ ?_ ?_ α
+  -- #check prod_eq_of_fintype
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, map_prod]
 
 theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
@@ -344,137 +358,137 @@ lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Na
 end Set
 
 
-namespace ENat
+-- namespace ENat
 
-/-- `ENat.card α` is the cardinality of `α` as an extended natural number.
-  If `α` is infinite, `ENat.card α = ⊤`. -/
-def card (α : Type*) : ℕ∞ :=
-  toENat (mk α)
+-- /-- `ENat.card α` is the cardinality of `α` as an extended natural number.
+--   If `α` is infinite, `ENat.card α = ⊤`. -/
+-- def card (α : Type*) : ℕ∞ :=
+--   toENat (mk α)
 
-@[simp]
-theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
-  simp [card]
+-- @[simp]
+-- theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
+--   simp [card]
 
-@[simp high]
-theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
-  simp only [card, toENat_eq_top, aleph0_le_mk]
+-- @[simp high]
+-- theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
+--   simp only [card, toENat_eq_top, aleph0_le_mk]
 
-@[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [card, aleph0_le_mk_iff]
+-- @[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [card, aleph0_le_mk_iff]
 
-@[simp high] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
+-- @[simp high] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
 
-@[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [card, lt_aleph0_iff_finite]
+-- @[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [card, lt_aleph0_iff_finite]
 
-@[simp]
-theorem card_sum (α β : Type*) :
-    card (α ⊕ β) = card α + card β := by
-  simp only [card, mk_sum, map_add, toENat_lift]
+-- @[simp]
+-- theorem card_sum (α β : Type*) :
+--     card (α ⊕ β) = card α + card β := by
+--   simp only [card, mk_sum, map_add, toENat_lift]
 
-theorem card_congr {α β : Type*} (f : α ≃ β) : card α = card β :=
-  Cardinal.toENat_congr f
+-- theorem card_congr {α β : Type*} (f : α ≃ β) : card α = card β :=
+--   Cardinal.toENat_congr f
 
-@[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
+-- @[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
 
-@[simp] lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
+-- @[simp] lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
 
-theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
-    card (f '' s) = card s :=
-  card_congr (Equiv.Set.imageOfInjOn f s h).symm
+-- theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
+--     card (f '' s) = card s :=
+--   card_congr (Equiv.Set.imageOfInjOn f s h).symm
 
-theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
-    (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
+-- theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
+--     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 
-lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective f) : card α ≤ card β := by
-  rw [← card_ulift α, ← card_ulift β]
-  exact Cardinal.gciENat.gc.monotone_u <| Cardinal.lift_mk_le_lift_mk_of_injective hf
+-- lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective f) : card α ≤ card β := by
+--   rw [← card_ulift α, ← card_ulift β]
+--   exact Cardinal.gciENat.gc.monotone_u <| Cardinal.lift_mk_le_lift_mk_of_injective hf
 
-@[simp]
-theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
-    ↑n ≤ toENat c ↔ ↑n ≤ c := by
-  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+-- @[simp]
+-- theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
+--     ↑n ≤ toENat c ↔ ↑n ≤ c := by
+--   rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 
-theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
-    toENat c ≤ n ↔ c ≤ n := by simp
+-- theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
+--     toENat c ≤ n ↔ c ≤ n := by simp
 
-@[simp]
-theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
-    ↑n = toENat c ↔ ↑n = c := by
-  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast_iff,
-    Cardinal.natCast_le_toENat_iff]
+-- @[simp]
+-- theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
+--     ↑n = toENat c ↔ ↑n = c := by
+--   rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast_iff,
+--     Cardinal.natCast_le_toENat_iff]
 
-theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
-    Cardinal.toENat c = n ↔ c = n := by simp
+-- theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
+--     Cardinal.toENat c = n ↔ c = n := by simp
 
-@[simp]
-theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
-    ↑n < toENat c ↔ ↑n < c := by
-  simp only [← not_le, Cardinal.toENat_le_natCast_iff]
+-- @[simp]
+-- theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
+--     ↑n < toENat c ↔ ↑n < c := by
+--   simp only [← not_le, Cardinal.toENat_le_natCast_iff]
 
-@[simp]
-theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
-    toENat c < ↑n ↔ c < ↑n := by
-  simp only [← not_le, Cardinal.natCast_le_toENat_iff]
+-- @[simp]
+-- theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
+--     toENat c < ↑n ↔ c < ↑n := by
+--   simp only [← not_le, Cardinal.natCast_le_toENat_iff]
 
-theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
-  rw [← Cardinal.mk_eq_zero_iff]
-  simp [card]
+-- theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
+--   rw [← Cardinal.mk_eq_zero_iff]
+--   simp [card]
 
-theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
-  simp [card_eq_zero_iff_empty]
+-- theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
+--   simp [card_eq_zero_iff_empty]
 
-theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α := by
-  simp [one_le_iff_ne_zero, card_eq_zero_iff_empty]
+-- theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α := by
+--   simp [one_le_iff_ne_zero, card_eq_zero_iff_empty]
 
-@[simp] lemma card_pos [Nonempty α] : 0 < card α := by
-  simpa [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
+-- @[simp] lemma card_pos [Nonempty α] : 0 < card α := by
+--   simpa [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
 
-theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
-  rw [← le_one_iff_subsingleton]
-  simp [card]
+-- theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
+--   rw [← le_one_iff_subsingleton]
+--   simp [card]
 
-@[simp] lemma card_le_one [Subsingleton α] : card α ≤ 1 := by simpa [card_le_one_iff_subsingleton]
+-- @[simp] lemma card_le_one [Subsingleton α] : card α ≤ 1 := by simpa [card_le_one_iff_subsingleton]
 
-lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α) := by
-  rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff]
-  exact and_congr (card_le_one_iff_subsingleton α) (one_le_card_iff_nonempty α)
+-- lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α) := by
+--   rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff]
+--   exact and_congr (card_le_one_iff_subsingleton α) (one_le_card_iff_nonempty α)
 
-theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
-  rw [← Cardinal.one_lt_iff_nontrivial]
-  conv_rhs => rw [← Nat.cast_one]
-  rw [← natCast_lt_toENat_iff]
-  simp only [ENat.card, Nat.cast_one]
+-- theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
+--   rw [← Cardinal.one_lt_iff_nontrivial]
+--   conv_rhs => rw [← Nat.cast_one]
+--   rw [← natCast_lt_toENat_iff]
+--   simp only [ENat.card, Nat.cast_one]
 
-@[simp] lemma one_lt_card [Nontrivial α] : 1 < card α := by simpa [one_lt_card_iff_nontrivial]
+-- @[simp] lemma one_lt_card [Nontrivial α] : 1 < card α := by simpa [one_lt_card_iff_nontrivial]
 
-@[simp]
-theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
-  simp [ENat.card]
+-- @[simp]
+-- theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
+--   simp [ENat.card]
 
-@[simp]
-lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
-  classical
-  rcases isEmpty_or_nonempty α with α_emp | α_emp
-  · simp [(card_eq_zero_iff_empty α).2 α_emp]
-  rcases finite_or_infinite α
-  · rcases finite_or_infinite β
-    · letI := Fintype.ofFinite α
-      letI := Fintype.ofFinite β
-      simp
-    · simp only [card_eq_top_of_infinite]
-      exact (top_epow (one_le_iff_ne_zero.1 ((one_le_card_iff_nonempty α).2 α_emp))).symm
-  · rw [card_eq_top_of_infinite (α := α)]
-    rcases lt_trichotomy (card β) 1 with b_0 | b_1 | b_2
-    · rw [lt_one_iff_eq_zero, card_eq_zero_iff_empty] at b_0
-      rw [(card_eq_zero_iff_empty β).2 b_0, zero_epow_top, card_eq_zero_iff_empty]
-      simp [b_0]
-    · rw [b_1, one_epow]
-      apply le_antisymm
-      · letI := (card_le_one_iff_subsingleton β).1 b_1.le
-        exact (card_le_one_iff_subsingleton (α → β)).2 Pi.instSubsingleton
-      · letI := (one_le_card_iff_nonempty β).1 b_1.ge
-        exact (one_le_card_iff_nonempty (α → β)).2 Pi.instNonempty
-    · rw [epow_top b_2, card_eq_top]
-      rw [one_lt_card_iff_nontrivial β] at b_2
-      exact Pi.infinite_of_left
+-- @[simp]
+-- lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
+--   classical
+--   rcases isEmpty_or_nonempty α with α_emp | α_emp
+--   · simp [(card_eq_zero_iff_empty α).2 α_emp]
+--   rcases finite_or_infinite α
+--   · rcases finite_or_infinite β
+--     · letI := Fintype.ofFinite α
+--       letI := Fintype.ofFinite β
+--       simp
+--     · simp only [card_eq_top_of_infinite]
+--       exact (top_epow (one_le_iff_ne_zero.1 ((one_le_card_iff_nonempty α).2 α_emp))).symm
+--   · rw [card_eq_top_of_infinite (α := α)]
+--     rcases lt_trichotomy (card β) 1 with b_0 | b_1 | b_2
+--     · rw [lt_one_iff_eq_zero, card_eq_zero_iff_empty] at b_0
+--       rw [(card_eq_zero_iff_empty β).2 b_0, zero_epow_top, card_eq_zero_iff_empty]
+--       simp [b_0]
+--     · rw [b_1, one_epow]
+--       apply le_antisymm
+--       · letI := (card_le_one_iff_subsingleton β).1 b_1.le
+--         exact (card_le_one_iff_subsingleton (α → β)).2 Pi.instSubsingleton
+--       · letI := (one_le_card_iff_nonempty β).1 b_1.ge
+--         exact (one_le_card_iff_nonempty (α → β)).2 Pi.instNonempty
+--     · rw [epow_top b_2, card_eq_top]
+--       rw [one_lt_card_iff_nontrivial β] at b_2
+--       exact Pi.infinite_of_left
 
-end ENat
+-- end ENat
