@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Functor.RegularEpi
 
 /-!
 # The category of simplicial sets is a regular epi category
@@ -21,6 +22,7 @@ open CategoryTheory
 
 namespace SSet
 
-instance : IsRegularEpiCategory SSet.{u} := sorry
+instance : IsRegularEpiCategory SSet.{u} :=
+  inferInstanceAs (IsRegularEpiCategory (_ ⥤ _))
 
 end SSet
