@@ -3,10 +3,12 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Wanyi He, Jiedong Jiang
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.RingTheory.FilteredAlgebra.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.RingTheory.FilteredAlgebra.Basic
 /-!
 # The Associated Graded Structure
 
@@ -21,6 +23,8 @@ In this file we define `GradedPiece` for `IsFiltration F F_lt` on abelian groups
 * `AssociatedGraded` : The direct sum of `GradedPiece`s.
 
 -/
+
+@[expose] public section
 
 section GeneralGraded
 
