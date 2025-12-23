@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Tactic.ToFun
 
 /-!
 # Meromorphic functions

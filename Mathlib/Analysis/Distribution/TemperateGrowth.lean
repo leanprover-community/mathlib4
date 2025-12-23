@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Tactic.MoveAdd
-public import Mathlib.Tactic.ToFun
 
 /-! # Functions and measures of temperate growth -/
 

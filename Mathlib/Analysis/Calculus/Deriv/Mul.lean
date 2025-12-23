@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
-import Mathlib.Tactic.ToFun
 
 /-!
 # Derivative of `f x * g x`
