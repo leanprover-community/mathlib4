@@ -43,8 +43,8 @@ lemma isFinitelyPresented_iff_finite_set {G : Type*} [Group G] :
     · -- mpr
       sorry
 
-lemma isFinitelyPresented_iff_finset {G : Type*} [Group G] :
-  IsFinitelyPresented G ↔ ∃ (S : Finset G) (f : FreeGroup S →* G),
+lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
+  IsFinitelyPresented G ↔ ∃ (α : Type*) [Fintype α] (f : FreeGroup α →* G),
   Function.Surjective f ∧ IsNormalClosureOfFiniteSet (MonoidHom.ker f) := by
   sorry
 
