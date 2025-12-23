@@ -3,7 +3,9 @@ Copyright (c) 2025 HuanYu Zheng, Yi Yuan, Weichen Jiao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: HuanYu Zheng, Yi Yuan, Weichen Jiao, Nailin Guan
 -/
-import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
+module
+
+public import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
 /-!
 # The filtered ring morphisms on rings
 
@@ -32,6 +34,9 @@ The induced graded additive group morphism between associated graded additive gr
 obtained from the component-wise map `GradedPieceHom f`.
 
 -/
+
+@[expose] public section
+
 section
 
 section
