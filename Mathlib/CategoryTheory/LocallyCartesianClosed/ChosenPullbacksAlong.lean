@@ -67,7 +67,6 @@ noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong
   mapPullbackAdj := Over.mapPullbackAdj f
 
 /-- The identity morphism has a functorial choice of pullbacks. -/
-@[simps]
 def id (X : C) : ChosenPullbacksAlong (𝟙 X) where
   pullback := 𝟭 _
   mapPullbackAdj := (Adjunction.id).ofNatIsoLeft (Over.mapId _).symm
@@ -76,36 +75,26 @@ def id (X : C) : ChosenPullbacksAlong (𝟙 X) where
 functor. -/
 def pullbackId (X : C) [ChosenPullbacksAlong (𝟙 X)] :
     pullback (𝟙 X) ≅ 𝟭 (Over X) :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
+  (mapPullbackAdj (𝟙 X)).rightAdjointUniq (id X).mapPullbackAdj
 
 @[reassoc (attr := simp)]
-theorem unit_pullbackId_hom_app {X : C} [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
+theorem unit_pullbackId_hom_app (X : C) [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
   (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
     (id X).mapPullbackAdj.unit.app Y := by
   rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom_app]
 
 @[reassoc (attr := simp)]
-theorem unit_pullbackId_hom {X : C} [ChosenPullbacksAlong (𝟙 X)] :
-  (mapPullbackAdj (𝟙 X)).unit ≫  (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
+theorem unit_pullbackId_hom (X : C) [ChosenPullbacksAlong (𝟙 X)] :
+  (mapPullbackAdj (𝟙 X)).unit ≫ (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
     (id X).mapPullbackAdj.unit := by
   rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom]
 
 @[reassoc (attr := simp)]
-theorem pullbackId_hom_app_counit {X : C} [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
-  (Over.map (𝟙 X)).map ((pullbackId X).hom.app Y) ≫ (id X).mapPullbackAdj.counit.app Y =
-    (mapPullbackAdj (𝟙 X)).counit.app Y := by
-  rw [pullbackId, Adjunction.rightAdjointUniq_hom_app_counit]
-
-@[reassoc (attr := simp)]
-theorem pullbackId_hom_counit {X : C} [ChosenPullbacksAlong (𝟙 X)] :
+theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
   Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
     (mapPullbackAdj (𝟙 X)).counit := by
+  have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
   rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
-
-theorem pullbackId_inv_app {X : C} [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
-  (pullbackId X).inv.app Y = (Adjunction.rightAdjointUniq (id X).mapPullbackAdj
-    (mapPullbackAdj (𝟙 X))).hom.app Y :=
-  rfl
 
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps]
@@ -120,7 +109,6 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
 def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.inv := iso f.symm
 
 /-- The composition of morphisms with chosen pullbacks has a chosen pullback. -/
-@[simps]
 def comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] : ChosenPullbacksAlong (f ≫ g) where
   pullback := pullback g ⋙ pullback f
@@ -135,29 +123,11 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
   Adjunction.rightAdjointUniq (mapPullbackAdj (f ≫ g)) ((comp f g).mapPullbackAdj)
 
 @[reassoc (attr := simp)]
-theorem unit_pullbackComp_hom_app {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
-    (W : Over X) :
-    (mapPullbackAdj (f ≫ g)).unit.app W ≫
-      (pullbackComp f g).hom.app ((Over.map (f ≫ g)).obj W) =
-      (comp f g).mapPullbackAdj.unit.app W := by
-  rw [pullbackComp, Adjunction.unit_rightAdjointUniq_hom_app]
-
-@[reassoc (attr := simp)]
 theorem unit_pullbackComp_hom {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
     (mapPullbackAdj (f ≫ g)).unit ≫ (Over.map (f ≫ g)).whiskerLeft (pullbackComp f g).hom =
       (comp f g).mapPullbackAdj.unit := by
   rw [pullbackComp, Adjunction.unit_rightAdjointUniq_hom]
-
-@[reassoc (attr := simp)]
-theorem pullbackComp_hom_app_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
-    (W : Over Z) :
-    (Over.map (f ≫ g)).map ((pullbackComp f g).hom.app W) ≫
-      (comp f g).mapPullbackAdj.counit.app W =
-      (mapPullbackAdj (f ≫ g)).counit.app W := by
-  rw [pullbackComp, Adjunction.rightAdjointUniq_hom_app_counit]
 
 @[reassoc (attr := simp)]
 theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -166,13 +136,6 @@ theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
       (comp f g).mapPullbackAdj.counit =
       (mapPullbackAdj (f ≫ g)).counit := by
   rw [pullbackComp, Adjunction.rightAdjointUniq_hom_counit]
-
-theorem pullbackComp_inv_app {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
-    (W : Over Z) :
-    (pullbackComp f g).inv.app W = (Adjunction.rightAdjointUniq (comp f g).mapPullbackAdj
-      (mapPullbackAdj (f ≫ g))).hom.app W :=
-  rfl
 
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
 choice of pullbacks. -/
