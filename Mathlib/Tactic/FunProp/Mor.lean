@@ -112,7 +112,8 @@ def app (f : Expr) (arg : Arg) : Expr :=
 
 /-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism.
 
-`e = ∀ (x : α), p x` is represented as `Forall α fun x => p x` internally. -/
+`e = ∀ (x : α), p x` is represented as `_Forall α fun x => p x` internally where `_Forall` is a
+dummy constant. -/
 partial def withApp {α} (e : Expr) (k : Expr → Array Arg → MetaM α) : MetaM α :=
   go e #[]
 where
