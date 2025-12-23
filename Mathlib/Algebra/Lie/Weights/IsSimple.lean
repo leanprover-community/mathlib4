@@ -291,8 +291,8 @@ lemma H_le_iSup_sl2SubmoduleOfRoot :
     exact Finsupp.mem_span_range_iff_exists_finsupp.mp (h_span ⟨x, hx⟩)
   have hx_sum : x = ∑ α ∈ c.support, c α • (coroot α : L) := by
     have : (⟨x, hx⟩ : H.toLieSubmodule) = c.sum fun α r => r • coroot α := hc.symm
-    calc x = ↑(⟨x, hx⟩ : H.toLieSubmodule) := rfl
-      _ = ↑(c.sum fun α r => r • coroot α) := congrArg Subtype.val this
+    calc x = (⟨x, hx⟩ : H.toLieSubmodule) := rfl
+      _ = (c.sum fun α r => r • coroot α) := congrArg Subtype.val this
       _ = _ := by rw [Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
   rw [hx_sum]
   refine Submodule.sum_mem _ fun α hα => Submodule.smul_mem _ _ ?_
