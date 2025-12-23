@@ -352,7 +352,8 @@ def D₂ : Diagram J κ where
   hP := (D₁ _ _ _).hP
 
 omit [IsCardinalFiltered J κ] in
-lemma hD₂ (hD : ∀ {i : ι}, ¬ (D i).P m) {f : m ⟶ m} (hf : (D₂ D hι u).W f) : f = 𝟙 _ := by
+lemma eq_id_of_D₂_W (hD : ∀ {i : ι}, ¬ (D i).P m) {f : m ⟶ m} (hf : (D₂ D hι u).W f) :
+    f = 𝟙 _ := by
   simp only [D₂_W] at hf
   obtain ((hf | ⟨⟨⟩⟩) | hf) := hf
   · simp only [MorphismProperty.iSup_iff] at hf
@@ -397,7 +398,7 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
         · obtain rfl := H hj hl₁
           obtain rfl := H hj hl₂
           rfl
-        · rw [hD₂ D hι u hD hl₁, hD₂ D hι u hD hl₂]
+        · rw [eq_id_of_D₂_W D hι u hD hl₁, eq_id_of_D₂_W D hι u hD hl₂]
       · rintro j k f ((hf | ⟨⟨⟩⟩) | ⟨⟨i, j, hj⟩⟩)
         · simp only [Diagram.iSup_W, MorphismProperty.iSup_iff] at hf
           obtain ⟨i, hf⟩ := hf
