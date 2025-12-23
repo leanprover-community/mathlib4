@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
@@ -91,5 +91,27 @@ theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.to
   rw [one_mul]
   convert (norm_fourier_toL2_eq (𝓕⁻ f)).symm.le
   simp
+
+/-- The Fourier transform on `L2` coincides with the Fourier transform on `𝓢'`. -/
+theorem toTemperedDistribution_fourierTransform_eq (f : Lp (α := E) F 2) :
+    𝓕 (f : 𝓢'(E, F)) = (𝓕 f : Lp (α := E) F 2) := by
+  set p := fun f : Lp (α := E) F 2 ↦ 𝓕 (f : 𝓢'(E, F)) = (𝓕 f : Lp (α := E) F 2)
+  apply DenseRange.induction_on (p := p)
+    (SchwartzMap.denseRange_toLpCLM (F := F) (E := E) (p := 2) ENNReal.top_ne_ofNat.symm) f
+  · apply isClosed_eq
+    · exact ((TemperedDistribution.fourierTransformCLM E F) ∘L
+        (Lp.toTemperedDistributionCLM F volume 2)).cont
+    · exact (Lp.toTemperedDistributionCLM F volume 2).cont.comp
+        (Lp.fourierTransformₗᵢ E F).continuous
+  intro f
+  simp [p, TemperedDistribution.fourierTransform_toTemperedDistributionCLM_eq]
+
+variable (V) in
+theorem toTemperedDistribution_fourierTransformInv_eq (f : Lp (α := E) F 2) :
+    𝓕⁻ (f : 𝓢'(E, F)) = (𝓕⁻ f : Lp (α := E) F 2) := by
+  have := toTemperedDistribution_fourierTransform_eq (𝓕⁻ f)
+  apply_fun 𝓕⁻ at this
+  simp only [FourierPair.inv_fourier, FourierPairInv.fourier_inv] at this
+  exact this.symm
 
 end FourierTransform
