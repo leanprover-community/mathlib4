@@ -569,7 +569,7 @@ instance monoid : Monoid Ordinal.{u} where
       Quotient.sound
         ⟨⟨punitProd _, @fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
-            simp only [Prod.lex_def, EmptyRelation, false_or]
+            simp only [Prod.lex_def, emptyRelation, false_or]
             simp only [true_and]
             rfl⟩⟩
   one_mul a :=
@@ -577,7 +577,7 @@ instance monoid : Monoid Ordinal.{u} where
       Quotient.sound
         ⟨⟨prodPUnit _, @fun a b => by
             rcases a with ⟨a, ⟨⟨⟩⟩⟩; rcases b with ⟨b, ⟨⟨⟩⟩⟩
-            simp only [Prod.lex_def, EmptyRelation, and_false, or_false]
+            simp only [Prod.lex_def, emptyRelation, and_false, or_false]
             rfl⟩⟩
 
 @[simp]
