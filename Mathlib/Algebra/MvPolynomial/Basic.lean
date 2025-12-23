@@ -547,7 +547,7 @@ section Coeff
 def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
   @DFunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ p m
 
-@[simp]
+@[simp, grind =]
 theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.support ↔ p.coeff m ≠ 0 := by
   simp [support, coeff]
 
@@ -792,7 +792,7 @@ theorem _root_.IsRegular.monomial {m : σ →₀ ℕ} {a : R}
   rw [← isLeftRegular_iff_isRegular]
   intro p q h
   ext d
-  have h' := congr_arg  (coeff (m + d)) h
+  have h' := congr_arg (coeff (m + d)) h
   simp only [coeff_monomial_mul] at h'
   rw [← ha.left.eq_iff, h']
 
