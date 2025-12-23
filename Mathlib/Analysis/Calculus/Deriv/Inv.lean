@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Tactic.ToFun
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
