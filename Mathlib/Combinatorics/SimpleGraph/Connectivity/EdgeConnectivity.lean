@@ -85,7 +85,7 @@ lemma isEdgeReachable_add_one :
       rw [Set.encard_diff_singleton_add_one he]
       exact Set.encard_mono Set.inter_subset_left |>.trans_lt hk
 
-lemma isEdgeConnected_succ {k : ℕ} :
+lemma isEdgeConnected_add_one {k : ℕ} :
     G.IsEdgeConnected (k + 1) ↔
       G.Preconnected ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeConnected k := by
   simp [IsEdgeConnected, isEdgeReachable_add_one, Preconnected]
