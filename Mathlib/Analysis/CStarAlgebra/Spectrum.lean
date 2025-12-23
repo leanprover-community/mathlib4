@@ -164,14 +164,12 @@ theorem toReal_spectralRadius_self_mul_star_eq_norm_sq (a : A) :
     ← (IsSelfAdjoint.star_mul_self a⋆).toReal_spectralRadius_complex_eq_norm, star_star]
 
 theorem sqrt_toReal_spectralRadius_star_mul_self_eq_norm (a : A) :
-    (spectralRadius ℂ (a⋆ * a)).toReal.sqrt = ‖a‖ :=
-  (Real.sqrt_eq_iff_eq_sq ENNReal.toReal_nonneg (norm_nonneg a)).mpr
-    (toReal_spectralRadius_star_mul_self_eq_norm_sq a)
+    (spectralRadius ℂ (a⋆ * a)).toReal.sqrt = ‖a‖ := by
+  simp [toReal_spectralRadius_star_mul_self_eq_norm_sq]
 
 theorem sqrt_toReal_spectralRadius_self_mul_star_eq_norm (a : A) :
-    (spectralRadius ℂ (a * a⋆)).toReal.sqrt = ‖a‖ :=
-  (Real.sqrt_eq_iff_eq_sq ENNReal.toReal_nonneg (norm_nonneg a)).mpr
-    (toReal_spectralRadius_self_mul_star_eq_norm_sq a)
+    (spectralRadius ℂ (a * a⋆)).toReal.sqrt = ‖a‖ := by
+  simp [toReal_spectralRadius_self_mul_star_eq_norm_sq]
 
 end CStarAlgebra
 
