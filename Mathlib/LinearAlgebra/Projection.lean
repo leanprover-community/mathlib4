@@ -274,6 +274,12 @@ theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :
       (p.linearProjOfIsCompl q hpq x, q.linearProjOfIsCompl p hpq.symm x) :=
   Prod.ext rfl congr(($(prodComm_trans_prodEquivOfIsCompl p q hpq).symm x).1)
 
+@[simp]
+theorem toLinearMap_prodEquivOfIsCompl_symm (hpq : IsCompl p q) (x : E) :
+    (p.prodEquivOfIsCompl q hpq).symm.toLinearMap =
+      (p.linearProjOfIsCompl q hpq).prod (q.linearProjOfIsCompl p hpq.symm) :=
+  LinearMap.ext <| by simp
+
 end Submodule
 
 namespace LinearMap
