@@ -804,8 +804,7 @@ def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H
 
 /-- A continuous linear equivalence of two spaces induces an continuous equivalence of algebras of
 their endomorphisms. -/
-def conjContinuousAlgEquiv
-    (e : G ≃L[𝕜] H) : (G →L[𝕜] G) ≃A[𝕜] (H →L[𝕜] H) :=
+def conjContinuousAlgEquiv (e : G ≃L[𝕜] H) : (G →L[𝕜] G) ≃A[𝕜] (H →L[𝕜] H) :=
   { e.arrowCongr e with
     map_mul' _ _ := by ext; simp
     commutes' _ := by ext; simp }
