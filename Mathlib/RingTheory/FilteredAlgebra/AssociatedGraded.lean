@@ -3,14 +3,16 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Wanyi He, Jiedong Jiang
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.NoncommRing
-import Mathlib.RingTheory.FilteredAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.RingTheory.FilteredAlgebra.Basic
 /-!
 # The Associated Graded Ring to a Filtered Ring
 
@@ -35,6 +37,8 @@ over a ring also have a ring structure. i.e. the associated graded ring to a fil
   `AssociatedGraded` have a ring structure when given `hasGMul` and decidable on the index set.
 
 -/
+
+@[expose] public section
 
 section GeneralGraded
 

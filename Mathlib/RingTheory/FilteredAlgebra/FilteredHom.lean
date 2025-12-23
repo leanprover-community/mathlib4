@@ -3,9 +3,11 @@ Copyright (c) 2025 HuanYu Zheng, Yi Yuan, Weichen Jiao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: HuanYu Zheng, Yi Yuan, Weichen Jiao, Nailin Guan
 -/
-import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.LinearAlgebra.Quotient.Basic
+module
+
+public import Mathlib.RingTheory.FilteredAlgebra.AssociatedGraded
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.LinearAlgebra.Quotient.Basic
 /-!
 # The filtered ring morphisms on rings
 
@@ -48,6 +50,9 @@ The induced graded algebra morphism between associated graded algebras,
 obtained from the `AssociatedGradedRingHom` of a filtered algebra morphism.
 
 -/
+
+@[expose] public section
+
 section
 
 section
