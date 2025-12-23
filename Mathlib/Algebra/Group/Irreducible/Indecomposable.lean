@@ -28,7 +28,7 @@ def IsMulIndecomposable (v : ι → M) (s : Set ι) (i : ι) : Prop :=
   i ∈ s ∧ ∀ᵉ (j ∈ s) (k ∈ s), v i = v j * v k → v j = 1 ∨ v k = 1
 
 @[to_additive]
-lemma IsMulIndecomposable_id_univ [Subsingleton Mˣ] (x : M) (hx : x ≠ 1) :
+lemma isMulIndecomposable_id_univ [Subsingleton Mˣ] {x : M} (hx : x ≠ 1) :
     IsMulIndecomposable id univ x ↔ Irreducible x :=
   ⟨fun h ↦ ⟨by simpa, by simpa using h⟩, fun h ↦ by simpa using h.isUnit_or_isUnit⟩
 
