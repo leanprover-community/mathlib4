@@ -231,6 +231,7 @@ end Functor
 @[deprecated (since := "2025-12-22")] alias internalHom :=
   MonoidalClosed.internalHom
 
+
 end
 
 section
@@ -240,6 +241,8 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C] {X X' Y Y' Z : C}
 open MonoidalClosed
 
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
+@[deprecated "No replacement: use `asIso (coprodComparison (tensorLeft Z) _ _)` instead."
+(since := "2025-12-22")]
 noncomputable def prodCoprodDistrib [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
     (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) :=
   asIso (coprodComparison (tensorLeft Z) _ _)
