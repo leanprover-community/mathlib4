@@ -659,10 +659,25 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
   rintro x rfl
   exact heval _
 
+lemma eq_of_natDegree_lt_card_of_eval_eq {R} [CommRing R] [IsDomain R]
+    (p q : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
+    (heval : ∀ i : ι, eval (f i) p = eval (f i) q)
+    (hcard : max p.natDegree q.natDegree < Fintype.card ι) : p = q := by
+  rw [←sub_eq_zero]
+  apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ hf
+  · simpa [sub_eq_zero]
+  · grind [natDegree_sub_le]
+
 lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R]
     (p : R[X]) (s : Finset R) (heval : ∀ i ∈ s, p.eval i = 0) (hcard : natDegree p < #s) :
     p = 0 :=
   eq_zero_of_natDegree_lt_card_of_eval_eq_zero p Subtype.val_injective
+    (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
+
+lemma eq_of_natDegree_lt_card_of_eval_eq' {R} [CommRing R] [IsDomain R]
+    (p q : R[X]) (s : Finset R) (heval : ∀ i ∈ s, p.eval i = q.eval i)
+    (hcard : max p.natDegree q.natDegree < #s) : p = q :=
+  eq_of_natDegree_lt_card_of_eval_eq p q Subtype.val_injective
     (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
 
 open Cardinal in
