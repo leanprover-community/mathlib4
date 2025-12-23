@@ -220,8 +220,8 @@ instance (i : ι) : Algebra.IsSeparable (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
 open Field in
 theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
   rw [← Nat.cast_ofNat, ← toNat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 _) (deg_lt_aleph0 i),
-    toNat_natCast, ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable,
-    Nat.succ_le_iff]
+    toNat_natCast, ← Nat.card_eq_toNat_cardinalMk, ← finSepDegree,
+    finSepDegree_eq_finrank_of_isSeparable, Nat.succ_le_iff]
   by_contra!
   obtain ⟨x, hx⟩ := finrank_adjoin_simple_eq_one_iff.mp (this.antisymm Module.finrank_pos)
   refine (isLeast_leastExt i).1 (hx ▸ ?_)
@@ -339,7 +339,7 @@ theorem cardinal_eq_of_isSeparable [Algebra.IsSeparable F E] :
   · exact cardinal_eq_two_pow_rank h
   rw [not_le, ← IsNoetherian.iff_rank_lt_aleph0] at h
   rw [← Module.finrank_eq_rank, ← toNat_eq_iff Module.finrank_pos.ne',
-    ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable]
+    ← Nat.card_eq_toNat_cardinalMk, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable]
 
 theorem cardinal_eq_two_pow_sepDegree [Algebra.IsAlgebraic F E]
     (rank_inf : ℵ₀ ≤ sepDegree F E) : #(Field.Emb F E) = 2 ^ sepDegree F E := by
