@@ -40,8 +40,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := SeparatingDual.exists_ne_zero (R := 𝕜) hu
   obtain ⟨z, hz⟩ : ∃ z : W, ¬ f (smulRight v u) z = (0 : W →L[𝕜] W) z := by
-    rw [← not_forall, ← ContinuousLinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff,
-      ContinuousLinearMap.ext_iff]
+    rw [← not_forall, ← ContinuousLinearMap.ext_iff, map_eq_zero_iff, ContinuousLinearMap.ext_iff]
     exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
