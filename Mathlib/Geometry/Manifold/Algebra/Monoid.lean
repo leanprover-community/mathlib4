@@ -159,21 +159,21 @@ variable [ContMDiffMul I 1 G]
 
 @[to_additive]
 theorem mdifferentiable_mul_left {a : G} : MDifferentiable I I (a * ·) :=
-  contMDiff_mul_left.mdifferentiable le_rfl
+  contMDiff_mul_left.mdifferentiable one_ne_zero
 
 @[to_additive]
 theorem mdifferentiableAt_mul_left {a b : G} :
     MDifferentiableAt I I (a * ·) b :=
-  contMDiffAt_mul_left.mdifferentiableAt le_rfl
+  contMDiffAt_mul_left.mdifferentiableAt one_ne_zero
 
 @[to_additive]
 theorem mdifferentiable_mul_right {a : G} : MDifferentiable I I (· * a) :=
-  contMDiff_mul_right.mdifferentiable le_rfl
+  contMDiff_mul_right.mdifferentiable one_ne_zero
 
 @[to_additive]
 theorem mdifferentiableAt_mul_right {a b : G} :
     MDifferentiableAt I I (· * a) b :=
-  contMDiffAt_mul_right.mdifferentiableAt le_rfl
+  contMDiffAt_mul_right.mdifferentiableAt one_ne_zero
 
 end
 
