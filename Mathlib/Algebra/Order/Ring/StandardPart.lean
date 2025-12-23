@@ -92,28 +92,26 @@ theorem mk_neg {x : K} (h : 0 ≤ mk x) :
   rfl
 
 @[simp]
-theorem mk_add {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
+theorem mk_add_mk {x y : K} (hx hy) :
     .mk x hx + .mk y hy = FiniteElement.mk (x + y) ((le_min hx hy).trans <| min_le_mk_add ..) :=
   rfl
 
 @[simp]
-theorem mk_sub {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
+theorem mk_sub_mk {x y : K} (hx hy) :
     .mk x hx - .mk y hy = FiniteElement.mk (x - y) ((le_min hx hy).trans <| min_le_mk_sub ..) :=
   rfl
 
 @[simp]
-theorem mk_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
+theorem mk_mul_mk {x y : K} (hx hy) :
     .mk x hx * .mk y hy = FiniteElement.mk (x * y) (add_nonneg hx hy) :=
   rfl
 
 @[simp]
-theorem mk_le_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
-    FiniteElement.mk x hx ≤ .mk y hy ↔ x ≤ y :=
+theorem mk_le_mk {x y : K} (hx hy) : FiniteElement.mk x hx ≤ .mk y hy ↔ x ≤ y :=
   .rfl
 
 @[simp]
-theorem mk_lt_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
-    FiniteElement.mk x hx < .mk y hy ↔ x < y :=
+theorem mk_lt_mk {x y : K} (hx hy) : FiniteElement.mk x hx < .mk y hy ↔ x < y :=
   .rfl
 
 theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
@@ -122,8 +120,10 @@ theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1
 theorem isUnit_iff_mk_eq_zero {x : FiniteElement K} : IsUnit x ↔ mk x.1 = 0 := by
   rw [← not_iff_not, not_isUnit_iff_mk_pos, lt_iff_not_ge, x.2.ge_iff_eq']
 
-instance : Coe ℚ (FiniteElement K) where
-  coe q := .mk q (mk_ratCast_nonneg q)
+instance : RatCast (FiniteElement K) where
+  ratCast q := .mk q (mk_ratCast_nonneg q)
+
+@[simp] theorem mk_ratCast (q : ℚ) (h : 0 ≤ mk (q : K)) : FiniteElement.mk (q : K) h = q := rfl
 
 end FiniteElement
 
@@ -228,9 +228,10 @@ instance : Archimedean (FiniteResidueField K) where
 
 @[simp]
 theorem mk_ratCast (q : ℚ) : mk (q : FiniteElement K) = q := by
+  change mk (FiniteElement.mk ..) = _
   cases q with | div n d hd
   rw [← mul_left_inj' (c := ↑d) (mod_cast hd), ← map_natCast mk d, ← map_mul,
-    ← FiniteElement.mk_natCast (mk_natCast_nonneg d), FiniteElement.mk_mul]
+    ← FiniteElement.mk_natCast (mk_natCast_nonneg d), FiniteElement.mk_mul_mk]
   simp_all
 
 /-- An embedding from an Archimedean field into `K` induces an embedding into
@@ -308,7 +309,7 @@ theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
   unfold stdPart
   rw [dif_pos hx, dif_pos hy]
   apply OrderRingHom.monotone'
-  rwa [FiniteElement.mk_le_mk_iff]
+  rwa [FiniteElement.mk_le_mk]
 
 @[simp]
 theorem stdPart_zero : stdPart (0 : K) = 0 := by
@@ -378,8 +379,8 @@ theorem stdPart_div (hx : 0 ≤ mk x) (hy : 0 ≤ -mk y) :
 
 @[simp]
 theorem stdPart_ratCast (q : ℚ) : stdPart (q : K) = q := by
-  rw [stdPart_of_mk_nonneg default (mk_ratCast_nonneg q), FiniteResidueField.mk_ratCast,
-    map_ratCast]
+  rw [stdPart_of_mk_nonneg default (mk_ratCast_nonneg q), FiniteElement.mk_ratCast,
+    FiniteResidueField.mk_ratCast, map_ratCast]
 
 @[simp]
 theorem stdPart_intCast (n : ℤ) : stdPart (n : K) = n :=

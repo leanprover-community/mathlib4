@@ -183,6 +183,10 @@ theorem mk_intCast_nonneg (n : ℤ) : 0 ≤ mk (n : S) := by
 theorem mk_natCast {n : ℕ} : n ≠ 0 → mk (n : S) = 0 :=
   mod_cast mk_intCast (n := n)
 
+@[simp]
+theorem mk_ofNat {n : ℕ} [n.AtLeastTwo] : mk (ofNat(n) : S) = 0 :=
+  mod_cast mk_intCast (n := n) (mod_cast NeZero.ne n)
+
 theorem mk_natCast_nonneg (n : ℕ) : 0 ≤ mk (n : S) :=
   mod_cast mk_intCast_nonneg n
 
