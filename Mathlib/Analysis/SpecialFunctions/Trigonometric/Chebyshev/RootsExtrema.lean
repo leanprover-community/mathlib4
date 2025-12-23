@@ -61,7 +61,7 @@ theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
   simp
 
 theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
-    1 < (-1) ^ n * (T ℝ n).eval x := by
+    1 < n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
   convert one_lt_eval_T_real hn (lt_neg_of_lt_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
