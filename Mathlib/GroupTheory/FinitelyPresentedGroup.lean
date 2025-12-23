@@ -19,6 +19,13 @@ class IsFinitelyPresented (G : Type*) [Group G] : Prop where
 lemma isFinitelyPresented_iff {G : Type*} [Group G] :
   IsFinitelyPresented G ↔ ∃ (S : Set G) (f : FreeGroup S →* G), S.Finite ∧
   Function.Surjective f ∧ normalClosureIsFG (MonoidHom.ker f) := by
+    constructor
+    · -- mp
+      intro ⟨n, f, hfsurj, hkernel⟩
+      let S : Set G := Set.range (fun i : Fin n => f (FreeGroup.of i))
+      have hSfinite : S.Finite := Set.finite_range (fun i : Fin n => f (FreeGroup.of i))
+      sorry
+    · -- mpr
     sorry
 
 lemma isFinitelyPresented_iff' {G : Type*} [Group G] :
