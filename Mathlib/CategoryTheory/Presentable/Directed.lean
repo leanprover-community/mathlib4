@@ -415,7 +415,7 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
           simp only [D₂_P] at this
           obtain (⟨i, hi⟩ | rfl) := this
           · exfalso
-            exact (hm₀ i).false (hj.lift (by simp [D₂, D₁]) ≫ (D i).isTerminal.lift hi)
+            exact (hm₀ i).false (hj.lift (by simp) ≫ (D i).isTerminal.lift hi)
           · rfl }
     refine ⟨D₂', fun i ↦ ⟨?_, ?_⟩⟩
     · exact le_trans (le_trans (le_trans (by rfl) (le_iSup _ i)) le_sup_left) le_sup_left
