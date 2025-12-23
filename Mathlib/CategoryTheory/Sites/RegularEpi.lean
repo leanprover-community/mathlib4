@@ -99,7 +99,7 @@ lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
         exact isColimitCoforkMapOfIsColimit (presheafToSheaf J D) _
           (isColimitCoforkOfEffectiveEpi p _
             (PullbackCone.isLimitOfFactors f.val f.val i _ _ hpi hpi _
-              ((isLimitPullbackConeMapOfIsLimit (sheafToPresheaf _ _) _ 
+              ((isLimitPullbackConeMapOfIsLimit (sheafToPresheaf _ _) _
                 (pullbackIsPullback f f))))) }⟩⟩
 
 instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
