@@ -252,28 +252,16 @@ noncomputable
 def minimalCover (ε : ℝ≥0) (A : Set X) : Set X :=
   if h : coveringNumber ε A ≠ ⊤ then (exists_set_encard_eq_coveringNumber h).choose else ∅
 
-lemma minimalCover_subset : minimalCover ε A ⊆ A := by
-  by_cases h : coveringNumber ε A ≠ ⊤
-  · simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
-    exact (exists_set_encard_eq_coveringNumber h).choose_spec.1
-  · simp [minimalCover, h]
+lemma minimalCover_subset : minimalCover ε A ⊆ A := by grind [minimalCover]
 
 lemma finite_minimalCover :
-    (minimalCover ε A).Finite := by
-  by_cases h : coveringNumber ε A ≠ ⊤
-  · simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
-    exact (exists_set_encard_eq_coveringNumber h).choose_spec.2.1
-  · simp [minimalCover, h]
+    (minimalCover ε A).Finite := by grind [minimalCover]
 
 lemma isCover_minimalCover (h : coveringNumber ε A ≠ ⊤) :
-    IsCover ε A (minimalCover ε A) := by
-  simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
-  exact (exists_set_encard_eq_coveringNumber h).choose_spec.2.2.1
+    IsCover ε A (minimalCover ε A) := by grind [minimalCover]
 
 lemma encard_minimalCover (h : coveringNumber ε A ≠ ⊤) :
-    (minimalCover ε A).encard = coveringNumber ε A := by
-  simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
-  exact (exists_set_encard_eq_coveringNumber h).choose_spec.2.2.2
+    (minimalCover ε A).encard = coveringNumber ε A := by grind [minimalCover]
 
 end MinimalCover
 
@@ -303,23 +291,13 @@ noncomputable
 def maximalSeparatedSet (ε : ℝ≥0) (A : Set X) : Set X :=
   if h : packingNumber ε A ≠ ⊤ then (exists_set_encard_eq_packingNumber h).choose else ∅
 
-lemma maximalSeparatedSet_subset : maximalSeparatedSet ε A ⊆ A := by
-  by_cases h : packingNumber ε A ≠ ⊤
-  · simp only [maximalSeparatedSet, ne_eq, h, not_false_eq_true, ↓reduceDIte]
-    exact (exists_set_encard_eq_packingNumber h).choose_spec.1
-  · simp only [maximalSeparatedSet, h, dite_false, Set.empty_subset]
+lemma maximalSeparatedSet_subset : maximalSeparatedSet ε A ⊆ A := by grind [maximalSeparatedSet]
 
 lemma isSeparated_maximalSeparatedSet :
-    IsSeparated ε (maximalSeparatedSet ε A : Set X) := by
-  by_cases h : packingNumber ε A ≠ ⊤
-  · simp only [maximalSeparatedSet, ne_eq, h, not_false_eq_true, ↓reduceDIte]
-    exact (exists_set_encard_eq_packingNumber h).choose_spec.2.2.1
-  · simp only [maximalSeparatedSet, h, dite_false, IsSeparated.empty]
+    IsSeparated ε (maximalSeparatedSet ε A : Set X) := by grind [maximalSeparatedSet]
 
 lemma encard_maximalSeparatedSet (h : packingNumber ε A ≠ ⊤) :
-    (maximalSeparatedSet ε A).encard = packingNumber ε A := by
-  simp only [maximalSeparatedSet, ne_eq, h, not_false_eq_true, ↓reduceDIte]
-  exact (exists_set_encard_eq_packingNumber h).choose_spec.2.2.2
+    (maximalSeparatedSet ε A).encard = packingNumber ε A := by grind [maximalSeparatedSet]
 
 lemma encard_le_of_isSeparated (h_subset : C ⊆ A)
     (h_sep : IsSeparated ε C) (h : packingNumber ε A ≠ ⊤) :
