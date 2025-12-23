@@ -89,11 +89,11 @@ theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
      a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
   have ⟨c, hc1, hc2⟩ := nthRoot.always_exists n a
   calc a < (c + 1)^(n + 1) := hc2
-  _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
-    gcongr
-    exact nthRoot.lt_pow_go_succ_aux0 hb
-  _ ≤ ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
-    gcongr
+    _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
+      gcongr
+      exact nthRoot.lt_pow_go_succ_aux0 hb
+    _ ≤ ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
+      gcongr
 
 private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
     a < (go n a fuel guess + 1) ^ (n + 2) := by
