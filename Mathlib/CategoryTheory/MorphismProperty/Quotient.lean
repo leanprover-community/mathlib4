@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Quotient
 # Classes of morphisms induced on quotient categories
 
 Let `W : MorphismProperty C` and `homRel : HomRel C`. We assume that
-`homRel` is stable under composition. We introduce a property
+`homRel` is stable under pre- and postcomposition. We introduce a property
 `W.HasQuotient homRel` expressing that `W` induces a property of
 morphisms on the quotient category, i.e. `W f ↔ W g` when `homRel f g` holds.
 We denote `W.quotient homRel : MorphismProperty (Quotient homRel)` the
