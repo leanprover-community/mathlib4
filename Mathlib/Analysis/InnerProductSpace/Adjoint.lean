@@ -662,15 +662,10 @@ theorem norm_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
 @[simp]
 lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
     adjoint (e : H →L[𝕜] K) = e.symm :=
-  let e' := (e : H →L[𝕜] K)
   calc
-    adjoint e' = adjoint e' ∘L (e' ∘L e.symm) := by
-      convert (adjoint e').comp_id.symm
-      ext
-      simp [e']
+    _ = adjoint (e : H →L[𝕜] K) ∘L e ∘L (e.symm : K →L[𝕜] H) := by simp
     _ = e.symm := by
-      rw [← comp_assoc, norm_map_iff_adjoint_comp_self e' |>.mp e.norm_map]
-      exact (e.symm : K →L[𝕜] H).id_comp
+      rw [← comp_assoc, norm_map_iff_adjoint_comp_self _ |>.mp e.norm_map, one_def, id_comp]
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
@@ -722,14 +717,20 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
   map_mul' u v := by ext; rfl
 
 @[simp]
-lemma linearIsometryEquiv_coe_apply (u : unitary (H →L[𝕜] H)) :
+lemma coe_linearIsometryEquiv_apply (u : unitary (H →L[𝕜] H)) :
     linearIsometryEquiv u = (u : H →L[𝕜] H) :=
   rfl
 
+@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_apply :=
+  coe_linearIsometryEquiv_apply
+
 @[simp]
-lemma linearIsometryEquiv_coe_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
+lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
+
+@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
+  coe_symm_linearIsometryEquiv_apply
 
 end Unitary
 
