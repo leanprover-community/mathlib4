@@ -841,7 +841,7 @@ lemma sign_two_zsmul_eq_neg_sign_iff {θ : Angle} :
 
 theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : (2 : ℤ) • a = (2 : ℤ) • b)
   (h_sign : a.sign = -b.sign) (h_ne : b.sign ≠ 0) : a = b + π := by
-  have h1:= Real.Angle.two_zsmul_eq_iff.mp h
+  have h1 := Real.Angle.two_zsmul_eq_iff.mp h
   rcases h1 with h2 | h3
   · rw [h2] at h_sign
     simp only [SignType.self_eq_neg_iff] at h_sign
@@ -860,7 +860,7 @@ theorem sub_ne_pi_of_sign_eq_of_sign_ne_zero (a b : Real.Angle) (h_sign : a.sign
   contradiction
 
 theorem two_zsmul_eq_iff_eq {a b : Real.Angle} (ha : a.sign ≠ 0) (h : a.sign = b.sign) :
-    (2 : ℤ) • a = (2 : ℤ) • b ↔ a = b:= by
+    (2 : ℤ) • a = (2 : ℤ) • b ↔ a = b := by
   rw [Real.Angle.two_zsmul_eq_iff]
   constructor
   · intro h
@@ -940,7 +940,7 @@ lemma abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal {θ ψ : Angle} (hs
     have hsa' : (-θ + -ψ).sign ≠ 1 := by
       rwa [← hθ', ne_comm, ← neg_add, sign_neg, sign_neg, neg_injective.ne_iff]
     convert abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux hθ' hψ' hsa' using 1
-    all_goals simp [- neg_add_rev, ← neg_add, abs_toReal_neg]
+    all_goals simp [-neg_add_rev, ← neg_add, abs_toReal_neg]
   · grind [sign_eq_zero_iff, coe_pi_add_coe_pi]
   · exact abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux h (hs ▸ h) (h ▸ hsa.symm)
 
