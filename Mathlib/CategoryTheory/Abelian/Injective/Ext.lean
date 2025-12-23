@@ -60,7 +60,7 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
   simp only [Ext.hom, Ext.homEquiv, extEquivCohomologyClass, SmallShiftedHom.postcompEquiv,
     Equiv.symm_trans_apply, Equiv.symm_symm, CohomologyClass.equivOfIsKInjective_apply,
     Equiv.coe_fn_symm_mk, Functor.comp_obj]
-  refine (SmallShiftedHom.equiv_comp _ _ _ _ _).trans ?_
+  erw [SmallShiftedHom.equiv_comp]
   simp only [ShiftedHom.comp, CohomologyClass.equiv_toSmallShiftedHom_mk, ShiftedHom.map,
     SmallShiftedHom.equiv_mk₀Inv, ShiftedHom.mk₀, shiftFunctorZero', eqToIso_refl, Iso.refl_trans,
     Functor.map_comp, shiftFunctorAdd'_zero_add_inv_app, Functor.id_obj, Category.assoc]
