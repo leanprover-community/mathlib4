@@ -78,6 +78,35 @@ def pullbackId (X : C) [ChosenPullbacksAlong (𝟙 X)] :
     pullback (𝟙 X) ≅ 𝟭 (Over X) :=
   Adjunction.rightAdjointUniq (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
 
+@[reassoc (attr := simp)]
+theorem unit_pullbackId_hom_app {X : C} [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
+  (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
+    (id X).mapPullbackAdj.unit.app Y := by
+  rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom_app]
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackId_hom {X : C} [ChosenPullbacksAlong (𝟙 X)] :
+  (mapPullbackAdj (𝟙 X)).unit ≫  (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
+    (id X).mapPullbackAdj.unit := by
+  rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pullbackId_hom_app_counit {X : C} [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
+  (Over.map (𝟙 X)).map ((pullbackId X).hom.app Y) ≫ (id X).mapPullbackAdj.counit.app Y =
+    (mapPullbackAdj (𝟙 X)).counit.app Y := by
+  rw [pullbackId, Adjunction.rightAdjointUniq_hom_app_counit]
+
+@[reassoc (attr := simp)]
+theorem pullbackId_hom_counit {X : C} [ChosenPullbacksAlong (𝟙 X)] :
+  Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
+    (mapPullbackAdj (𝟙 X)).counit := by
+  rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
+
+theorem pullbackId_inv_app {X : C} [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
+  (pullbackId X).inv.app Y = (Adjunction.rightAdjointUniq (id X).mapPullbackAdj
+    (mapPullbackAdj (𝟙 X))).hom.app Y :=
+  rfl
+
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps]
 def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
