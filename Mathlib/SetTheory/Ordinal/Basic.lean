@@ -89,7 +89,7 @@ attribute [instance] WellOrder.wo
 namespace WellOrder
 
 instance inhabited : Inhabited WellOrder :=
-  ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
+  ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty emptyRelation)⟩⟩
 
 end WellOrder
 
@@ -146,13 +146,13 @@ def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
 scoped notation "typeLT " α:70 => @Ordinal.type α (· < ·) inferInstance
 
 instance zero : Zero Ordinal :=
-  ⟨type <| @EmptyRelation PEmpty⟩
+  ⟨type <| @emptyRelation PEmpty⟩
 
 instance inhabited : Inhabited Ordinal :=
   ⟨0⟩
 
 instance one : One Ordinal :=
-  ⟨type <| @EmptyRelation PUnit⟩
+  ⟨type <| @emptyRelation PUnit⟩
 
 @[simp]
 theorem type_toType (o : Ordinal) : typeLT o.ToType = o :=
@@ -181,10 +181,10 @@ theorem type_ne_zero_iff_nonempty [IsWellOrder α r] : type r ≠ 0 ↔ Nonempty
 theorem type_ne_zero_of_nonempty (r) [IsWellOrder α r] [h : Nonempty α] : type r ≠ 0 :=
   type_ne_zero_iff_nonempty.2 h
 
-theorem type_pEmpty : type (@EmptyRelation PEmpty) = 0 :=
+theorem type_pEmpty : type (@emptyRelation PEmpty) = 0 :=
   rfl
 
-theorem type_empty : type (@EmptyRelation Empty) = 0 :=
+theorem type_empty : type (@emptyRelation Empty) = 0 :=
   type_eq_zero_of_empty _
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
@@ -196,10 +196,10 @@ theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Uni
   ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
     fun ⟨_⟩ ↦ type_eq_one_of_unique r⟩
 
-theorem type_pUnit : type (@EmptyRelation PUnit) = 1 :=
+theorem type_pUnit : type (@emptyRelation PUnit) = 1 :=
   rfl
 
-theorem type_unit : type (@EmptyRelation Unit) = 1 :=
+theorem type_unit : type (@emptyRelation Unit) = 1 :=
   rfl
 
 @[simp]
