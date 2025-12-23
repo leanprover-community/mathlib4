@@ -102,6 +102,7 @@ lemma height_eq_height_add_one (p : Ideal R)
   apply height_eq_height_add_one_of_isMaximal p' P'
 
 /-- If `R` is Noetherian, `dim R[X] = dim R + 1`. -/
+@[simp]
 lemma ringKrullDim_of_isNoetherianRing : ringKrullDim R[X] = ringKrullDim R + 1 := by
   refine le_antisymm ?_ ?_
   · nontriviality R[X]
