@@ -10,6 +10,8 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Connected.Separation
+public import Mathlib.Topology.Baire.LocallyCompactRegular
 
 /-!
 # Topology on the space of complete types

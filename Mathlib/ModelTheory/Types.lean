@@ -1,14 +1,11 @@
 /-
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Anish Rajeev
+Authors: Aaron Anderson
 -/
 module
 
 public import Mathlib.ModelTheory.Satisfiability
-public import Mathlib.Topology.Separation.Profinite
-public import Mathlib.Topology.Connected.Separation
-public import Mathlib.Topology.Baire.LocallyCompactRegular
 
 /-!
 # Type Spaces
@@ -23,8 +20,6 @@ This file defines the space of complete types over a first-order theory.
 - `FirstOrder.Language.Theory.typeOf` is the type of a given tuple.
 - `FirstOrder.Language.Theory.realizedTypes`: `T.realizedTypes M α` is the set of
   types in `T.CompleteType α` that are realized in `M` - that is, the type of some tuple in `M`.
-- `FirstOrder.Language.Theory.TypeSpace.basis` is the basis of the of the stone space of types
-  over `(n : ℕ)` variables
 
 ## Main Results
 
@@ -32,8 +27,6 @@ This file defines the space of complete types over a first-order theory.
   The space `T.CompleteType α` is nonempty exactly when `T` is satisfiable.
 - `FirstOrder.Language.Theory.CompleteType.exists_modelType_is_realized_in`: Every type is realized
   in some model.
-- `FirstOrder.Language.Theory.TypeSpace.basis` describes a topology that is totally separated,
-  compact, and a Baire space
 
 ## Implementation Notes
 
@@ -51,7 +44,7 @@ This file defines the space of complete types over a first-order theory.
 
 universe u v w w'
 
-open Cardinal Set FirstOrder TopologicalSpace
+open Cardinal Set FirstOrder
 
 namespace FirstOrder
 
