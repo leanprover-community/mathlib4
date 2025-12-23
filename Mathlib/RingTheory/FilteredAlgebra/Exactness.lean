@@ -3,10 +3,12 @@ Copyright (c) 2025 Huanyu Zheng, Weichen Jiao, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.FilteredAlgebra.FilteredHom
-import Mathlib.Algebra.Ring.Subring.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.FilteredAlgebra.FilteredHom
+public import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # The property of exactness om AssociatedGradedRingHom
@@ -23,6 +25,8 @@ exact.
 * `IsExhaustiveFiltration` : For `IsFiltration F F_lt`,
   the filtration is exhaustive if `Set.univ = ⋃ F i`.
 -/
+
+@[expose] public section
 
 namespace FilteredAddGroupHom
 
