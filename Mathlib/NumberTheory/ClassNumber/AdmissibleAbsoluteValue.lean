@@ -81,7 +81,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
   intro ε hε b hb A
   let M := h.card ε
   -- By the "nicer" pigeonhole principle, we can find a collection `s`
-  -- of more than `M^n` remainders where the first components lie close together:
+  -- of more than `M ^ n` remainders where the first components lie close together:
   obtain ⟨s, s_inj, hs⟩ :
     ∃ s : Fin (M ^ n).succ → Fin (M ^ n.succ).succ,
       Function.Injective s ∧ ∀ i₀ i₁, (abv (A (s i₁) 0 % b - A (s i₀) 0 % b) : ℝ) < abv b • ε := by
