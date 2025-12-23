@@ -203,7 +203,7 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
       zero_mem' := by simp [zero_mem]
       neg_mem' := by simp }
     exact IsFiltration.is_sup S i (fun k hk z hz ↦
-      IsFiltration.is_le (add_lt_add_right hk j) (IsRingFiltration.toGradedMonoid.mul_mem hz hy)) hx
+      IsFiltration.is_le (add_lt_add_left hk j) (IsRingFiltration.toGradedMonoid.mul_mem hz hy)) hx
   mul_F_lt_mem {i j x y} hx hy := by
     let S : AddSubgroup R := {
       carrier := {z | x * z ∈ F_lt (i + j)}
@@ -211,7 +211,7 @@ lemma hasGMul_AddSubgroup (F : ι → AddSubgroup R) (F_lt : outParam <| ι → 
       zero_mem' := by simp [zero_mem]
       neg_mem' := by simp }
     exact IsFiltration.is_sup S j (fun k hk z hz ↦
-      IsFiltration.is_le (add_lt_add_left hk i) (IsRingFiltration.toGradedMonoid.mul_mem hx hz)) hy
+      IsFiltration.is_le (add_lt_add_right hk i) (IsRingFiltration.toGradedMonoid.mul_mem hx hz)) hy
 
 variable [AddMonoid ι] [PartialOrder ι] [AddSubgroupClass σ R]
 
