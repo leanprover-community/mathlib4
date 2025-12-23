@@ -241,24 +241,8 @@ open MonoidalClosed
 
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
 noncomputable def prodCoprodDistrib [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
-    (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) where
-  hom := coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
-  inv :=
-    MonoidalClosed.uncurry
-      (coprod.desc (MonoidalClosed.curry coprod.inl) (MonoidalClosed.curry coprod.inr))
-  hom_inv_id := by
-    ext
-    · rw [coprod.inl_desc_assoc, Category.comp_id, ← uncurry_natural_left, coprod.inl_desc,
-        uncurry_curry]
-    rw [coprod.inr_desc_assoc, Category.comp_id, ← uncurry_natural_left, coprod.inr_desc,
-      uncurry_curry]
-  inv_hom_id := by
-    rw [← uncurry_natural_right, ← eq_curry_iff]
-    ext
-    · rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
-        Category.comp_id]
-    rw [coprod.inr_desc_assoc, ← curry_natural_right, coprod.inr_desc, ← curry_natural_left,
-      Category.comp_id]
+    (Z ⊗ X) ⨿ Z ⊗ Y ≅ Z ⊗ (X ⨿ Y) :=
+  asIso (coprodComparison (tensorLeft Z) _ _)
 
 open MonoidalClosed
 
