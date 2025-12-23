@@ -138,6 +138,12 @@ register_option linter.translateReorder : Bool := {
   descr := "Linter used by translate attributes that checks if the given reorder is \
     equal to the automatically generated one" }
 
+/-- Linter used by translate attributes that checks if the given reorder is
+    equal to the automatically generated name -/
+register_option linter.translateRedundant : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute is redundant" }
+
 @[inherit_doc translate_change_numeral]
 initialize changeNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
@@ -522,7 +528,7 @@ def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
     trace[translate] "value after unfold:{indentExpr decl.value!}"
   return decl
 
-/-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
+/-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : List (List Nat)) (dont : List Nat) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
@@ -652,6 +658,10 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     insertTranslation t src tgt { relevantArg }
   -- now transform the source declaration
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
+  if src == pre && srcDecl.isThm && trgDecl.type == srcDecl.type then
+    Linter.logLintIf linter.translateRedundant ref m!"`{t.attrName}` did not change the type \
+      of theorem `{.ofConstName src}. Please remove the attribute"
+
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
     | _ => throwError "Expected {tgt} to have a value."
@@ -866,6 +876,10 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       pure reorder
     else
       pure reorder'
+  if cfg.self && reorder.isEmpty then
+    Linter.logLintIf linter.translateRedundant cfg.ref m!"\
+      `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
+      Please remove the attribute, or provide an explicit `(reorder := ...)` argument."
   let srcType ← reorderForall reorder srcType
   if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo

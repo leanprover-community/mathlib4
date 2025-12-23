@@ -104,7 +104,7 @@ lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_no
 @[deprecated (since := "2025-06-07")] alias LT.lt.not_le := LT.lt.not_ge
 @[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
 
-@[to_dual self] lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
+lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
 
 @[deprecated (since := "2025-06-07")] alias gt_irrefl := lt_irrefl
 

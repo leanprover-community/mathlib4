@@ -133,7 +133,7 @@ lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
 
 @[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
 
-@[simp, to_dual self]
+@[simp]
 lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
 @[to_dual ge_trans'] alias le_trans' := ge_trans
@@ -151,7 +151,7 @@ lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim
 @[to_dual ne'] alias LT.lt.ne := ne_of_lt
 @[to_dual ge] alias Eq.le := le_of_eq
 
-@[to_dual self] protected lemma LT.lt.false : a < a → False := lt_irrefl a
+protected lemma LT.lt.false : a < a → False := lt_irrefl a
 
 @[to_dual not_gt] protected lemma Eq.not_lt (hab : a = b) : ¬a < b := fun h' ↦ h'.ne hab
 
