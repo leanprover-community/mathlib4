@@ -3345,6 +3345,7 @@ public import Mathlib.Condensed.Functors
 public import Mathlib.Condensed.Light.AB
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.CartesianClosed
+public import Mathlib.Condensed.Light.EffectiveEpi
 public import Mathlib.Condensed.Light.Epi
 public import Mathlib.Condensed.Light.Explicit
 public import Mathlib.Condensed.Light.Functors
