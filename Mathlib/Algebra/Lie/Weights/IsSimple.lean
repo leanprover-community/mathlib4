@@ -276,51 +276,58 @@ lemma span_coroot_eq_top :
         rintro _ ⟨α, rfl⟩
         exact ⟨α.1, rfl⟩
 
+lemma rootSpace_le_sl2SubmoduleOfRoot (α : LieModule.Weight K H L) (hα : α.IsNonZero) :
+    LieAlgebra.rootSpace H α ≤ sl2SubmoduleOfRoot hα := by
+  rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left
+
 lemma H_le_iSup_sl2SubmoduleOfRoot :
-    H.toLieSubmodule ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := by
-      intro x hx; specialize @hx ; aesop;
-      -- Since $x \in H$, we can write $x$ as a linear combination of coroots.
-      obtain ⟨αs, hαs⟩ : ∃ αs : Finset (LieModule.Weight K H L), ∃ (c : LieModule.Weight K H L → K), x = ∑ α ∈ αs, c α • coroot α := by
-        have h_span : Submodule.span K (Set.range (coroot : LieModule.Weight K H L → H)) = ⊤ := by
-          exact?;
-        rw [ Submodule.eq_top_iff' ] at h_span;
-        have := h_span ⟨ x, hx ⟩;
-        rw [ Finsupp.mem_span_range_iff_exists_finsupp ] at this;
-        obtain ⟨ c, hc ⟩ := this; use c.support, c; simp_all +decide [ Finsupp.sum ] ;
-      aesop;
-      refine' Submodule.sum_mem _ fun α hα => _;
-      by_cases hα_zero : α.IsNonZero <;> aesop;
-      · refine' Submodule.smul_mem _ _ ( Submodule.mem_iSup_of_mem α ( Submodule.mem_iSup_of_mem hα_zero _ ) );
-        rw [ LieAlgebra.IsKilling.sl2SubmoduleOfRoot_eq_sup ];
-        exact Submodule.mem_sup_right ( Submodule.mem_map_of_mem ( LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton α ▸ Submodule.subset_span ( Set.mem_singleton _ ) ) );
-      · simp_all +decide [ LieAlgebra.IsKilling.coroot ]
+    H.toLieSubmodule ≤
+      ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := by
+  intro x hx
+  obtain ⟨c, hc⟩ : ∃ c : LieModule.Weight K H L →₀ K,
+      (c.sum fun α r => r • coroot α) = ⟨x, hx⟩ := by
+    have h_span := span_coroot_eq_top (H := H)
+    rw [Submodule.eq_top_iff'] at h_span
+    exact Finsupp.mem_span_range_iff_exists_finsupp.mp (h_span ⟨x, hx⟩)
+  have hx_sum : x = ∑ α ∈ c.support, c α • (coroot α : L) := by
+    have : (⟨x, hx⟩ : H.toLieSubmodule) = c.sum fun α r => r • coroot α := hc.symm
+    calc x = ↑(⟨x, hx⟩ : H.toLieSubmodule) := rfl
+      _ = ↑(c.sum fun α r => r • coroot α) := congrArg Subtype.val this
+      _ = _ := by rw [Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
+  rw [hx_sum]
+  refine Submodule.sum_mem _ fun α hα => Submodule.smul_mem _ _ ?_
+  by_cases hα_zero : α.IsNonZero
+  · rw [LieSubmodule.mem_toSubmodule]
+    apply LieSubmodule.mem_iSup_of_mem α
+    apply LieSubmodule.mem_iSup_of_mem hα_zero
+    rw [sl2SubmoduleOfRoot_eq_sup]
+    exact Submodule.mem_sup_right (Submodule.mem_map_of_mem
+      (coe_corootSpace_eq_span_singleton α ▸ Submodule.subset_span (Set.mem_singleton _)))
+  · simp only [LieModule.Weight.IsNonZero, not_not] at hα_zero
+    simp only [coroot_eq_zero_iff.mpr hα_zero, ZeroMemClass.coe_zero, Submodule.zero_mem]
 
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
   rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
-    LieSubmodule.top_toSubmodule, Submodule.eq_top_iff']
-  -- For any non-zero root α, the sl2 submodule of α contains the root space L_α.
-  have h_sl2_submodule_contains_root_space : ∀ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.rootSpace H α ≤ LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-    intro α hα
-    have h_sl2_submodule_contains_root_space : LieModule.genWeightSpace L α ≤ LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-      rw [ LieAlgebra.IsKilling.sl2SubmoduleOfRoot_eq_sup ];
-      exact le_sup_of_le_left ( le_sup_left );
-    exact?;
-  -- Since `⨆ α, genWeightSpace L α = ⊤` (by `LieModule.iSup_genWeightSpace_eq_top'`), we have `⨆ α, genWeightSpace L α ≤ ⨆ α, sl2SubmoduleOfRoot α`.
-  have h_sup_le_sup : ⨆ (α : LieModule.Weight K H L), LieAlgebra.rootSpace H α ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-    refine' iSup_le fun α => _;
-    by_cases hα : α.IsNonZero;
-    · exact le_iSup₂_of_le α hα ( h_sl2_submodule_contains_root_space α hα );
-    · simp_all +decide [ LieModule.Weight.IsNonZero ];
-      convert H_le_iSup_sl2SubmoduleOfRoot;
-  -- Since `⨆ α, genWeightSpace L α = ⊤` (by `LieModule.iSup_genWeightSpace_eq_top'`), we have `⨆ α, genWeightSpace L α ≤ ⨆ α, sl2SubmoduleOfRoot α` implies `⊤ ≤ ⨆ α, sl2SubmoduleOfRoot α`.
-  have h_top_le_sup : (⊤ : Submodule K L) ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-    have h_top_le_sup : (⨆ (α : LieModule.Weight K H L), LieAlgebra.rootSpace H α) = ⊤ := by
-      exact?;
-    aesop;
-  simp_all +decide [ Submodule.eq_top_iff' ];
-  convert h_top_le_sup using 1;
-  simp +decide [ Submodule.mem_iSup ]
+    LieSubmodule.top_toSubmodule]
+  -- Since each sl2SubmoduleOfRoot is a submodule of L and the union is the supremum of these submodules, the supremum should be the entire L.
+  have h_sup : ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα = ⊤ := by
+    -- Since $H$ is contained in the supremum of the $sl2SubmoduleOfRoot$'s and the supremum of the $rootSpace$'s is $L$, the supremum of the $sl2SubmoduleOfRoot$'s must be $L$.
+    have h_sup : H.toLieSubmodule ⊔ ⨆ (α : LieModule.Weight K H L), rootSpace H α ≤ ⨆ (α : LieModule.Weight K H L), ⨆ (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := by
+      refine' sup_le _ _;
+      · exact?;
+      · refine' iSup_le fun α => _;
+        by_cases hα : α.IsNonZero <;> simp_all +decide [ LieAlgebra.rootSpace ];
+        · exact le_iSup₂_of_le α hα ( by exact? );
+        · exact?;
+    simp_all +decide [ Submodule.eq_top_iff' ];
+    refine' eq_top_iff.mpr _;
+    have := iSup_rootSpace_eq_top ( L := L ) ( H := H );
+    rw [ ← this ];
+    exact sup_le h_sup.1 ( iSup_le fun α => h_sup.2 α );
+  convert h_sup.ge;
+  simp +decide [ Submodule.mem_iSup ];
+  simp +decide [ Submodule.eq_top_iff', iSup_subtype ]
 
 section IsSimple
 
