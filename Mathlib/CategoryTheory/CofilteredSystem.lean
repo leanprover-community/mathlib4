@@ -5,7 +5,6 @@ Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
 module
 
-public import Mathlib.Order.Argmin
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
