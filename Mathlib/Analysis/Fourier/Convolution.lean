@@ -18,6 +18,8 @@ Fourier transform of the functions.
 
 -/
 
+@[expose] public section
+
 variable {𝕜 E F F₁ F₂ F₃ : Type*}
 
 open MeasureTheory
@@ -84,30 +86,29 @@ variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]
 of the individual functions. -/
 theorem fourier_convolution_eq {f₁ : E → F₁} {f₂ : E → F₂} (hf₁ : Integrable f₁)
     (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) (ξ : E) :
-    𝓕 (convolution f₁ f₂ B) ξ = B (𝓕 f₁ ξ) (𝓕 f₂ ξ) :=
-  calc
-    _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) :=
-      fourier_convolution_eq' B hf₁ hf₂ hf₁' hf₂' _
-    _ = ∫ y, ∫ x, 𝐞 (-inner ℝ y ξ) • 𝐞 (-inner ℝ x ξ) • B (f₁ x) (f₂ y) := by
-      congr
-      ext y
-      congr
-      ext x
-      rw [smul_smul, ← AddChar.map_add_eq_mul, inner_add_left]
-      congr
-      grind
-    _ = ∫ y, (∫ x, B (𝐞 (-inner ℝ x ξ) • f₁ x)) (𝐞 (-inner ℝ y ξ) • f₂ y) := by
-      congr
-      ext y
-      simp_rw [Circle.smul_def, ContinuousLinearMap.map_smul, MeasureTheory.integral_smul]
-      congr
-      rw [ContinuousLinearMap.integral_apply ?_ (f₂ y)]
-      · simp
-      have : MeasureTheory.Integrable (fun x ↦ ‖B‖ * ‖f₁ x‖) MeasureTheory.volume :=
-        hf₁.norm.const_mul _
-      apply this.mono (by measurability)
-      filter_upwards with x
-      simpa [← Circle.smul_def] using ContinuousLinearMap.le_opNorm B (f₁ x)
-    _ = B (∫ x, 𝐞 (-inner ℝ x ξ) • f₁ x) (∫ y, 𝐞 (-inner ℝ y ξ) • f₂ y) := by
-      rw [← ContinuousLinearMap.integral_comp_comm _ (by simpa using hf₂),
-        ← ContinuousLinearMap.integral_comp_comm _ (by simpa using hf₁)]
+    𝓕 (convolution f₁ f₂ B) ξ = B (𝓕 f₁ ξ) (𝓕 f₂ ξ) := calc
+  _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) :=
+    fourier_convolution_eq' B hf₁ hf₂ hf₁' hf₂' _
+  _ = ∫ y, ∫ x, 𝐞 (-inner ℝ y ξ) • 𝐞 (-inner ℝ x ξ) • B (f₁ x) (f₂ y) := by
+    congr
+    ext y
+    congr
+    ext x
+    rw [smul_smul, ← AddChar.map_add_eq_mul, inner_add_left]
+    congr
+    grind
+  _ = ∫ y, (∫ x, B (𝐞 (-inner ℝ x ξ) • f₁ x)) (𝐞 (-inner ℝ y ξ) • f₂ y) := by
+    congr
+    ext y
+    simp_rw [Circle.smul_def, ContinuousLinearMap.map_smul, MeasureTheory.integral_smul]
+    congr
+    rw [ContinuousLinearMap.integral_apply ?_ (f₂ y)]
+    · simp
+    have : MeasureTheory.Integrable (fun x ↦ ‖B‖ * ‖f₁ x‖) MeasureTheory.volume :=
+      hf₁.norm.const_mul _
+    apply this.mono (by measurability)
+    filter_upwards with x
+    simpa [← Circle.smul_def] using ContinuousLinearMap.le_opNorm B (f₁ x)
+  _ = B (∫ x, 𝐞 (-inner ℝ x ξ) • f₁ x) (∫ y, 𝐞 (-inner ℝ y ξ) • f₂ y) := by
+    rw [← ContinuousLinearMap.integral_comp_comm _ (by simpa using hf₂),
+      ← ContinuousLinearMap.integral_comp_comm _ (by simpa using hf₁)]
