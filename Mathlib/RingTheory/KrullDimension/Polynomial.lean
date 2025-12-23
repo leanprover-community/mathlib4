@@ -114,6 +114,7 @@ lemma ringKrullDim_of_isNoetherianRing : ringKrullDim R[X] = ringKrullDim R + 1 
 end Polynomial
 
 /-- If `R` is Noetherian, `dim R[X₁, ..., Xₙ] = dim R + n`. -/
+@[simp]
 lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
