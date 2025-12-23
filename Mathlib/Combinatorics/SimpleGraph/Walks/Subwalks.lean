@@ -165,8 +165,11 @@ protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v
       grind [=_ concat_append, concat_dropLast, _=_ append_assoc]⟩
 
 protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
-    (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q :=
-  (isSubwalk_drop _ _).trans hpq
+    (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q := by
+  obtain ⟨r₁, r₂, rfl⟩ := hpq
+  cases h' : p
+  · grind [getVert_nil, append_nil, tail_nil, nil_isSubwalk_iff_exists]
+  · exact ⟨r₁.concat (Walk.adj_snd (by simp)), r₂, by simp [concat_append]⟩
 
 theorem take_isSubwalk_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).IsSubwalk (p.take (n + 1)) := by
