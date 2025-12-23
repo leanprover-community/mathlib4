@@ -120,6 +120,12 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [T_real_cos, abs_cos_eq_one_iff]
     exact ⟨k, by simp [field]⟩
 
+theorem eval_T_real_cos_int_mul_pi_div {k : ℕ} {n : ℕ} (hn : n ≠ 0) :
+    (T ℝ n).eval (cos (k * π / n)) = (k : ℤ).negOnePow := by
+  rw [T_real_cos, Int.cast_negOnePow]
+  convert Real.cos_int_mul_pi k using 2
+  simp [field]
+
 theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     (T ℝ n).eval x = 1 ↔ ∃ k ≤ n, Even k ∧ x = cos (k * π / n) := by
   constructor
@@ -128,13 +134,11 @@ theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       ((abs_eq_abs.mpr (.inl hx)).trans abs_one)
     use k
     refine ⟨hk₁, ?_, hk₂⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hk₂, T_real_cos, this, cos_int_mul_pi, zpow_natCast] at hx
-    exact (neg_one_pow_eq_one_iff_even (by norm_num)).mp hx
+    rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
+    exact (neg_one_pow_eq_one_iff_even (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hx, T_real_cos, this, cos_int_mul_pi]
-    exact (neg_one_pow_eq_one_iff_even (by norm_num)).mpr hk₂
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_even k ((Int.even_coe_nat k).mpr hk₂)]
+    norm_cast
 
 theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     (T ℝ n).eval x = -1 ↔ ∃ k ≤ n, Odd k ∧ x = cos (k * π / n) := by
@@ -144,13 +148,11 @@ theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       ((abs_eq_abs.mpr (.inl hx)).trans ((abs_neg 1).trans abs_one))
     use k
     refine ⟨hk₁, ?_, hk₂⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hk₂, T_real_cos, this, cos_int_mul_pi, zpow_natCast] at hx
-    exact (neg_one_pow_eq_neg_one_iff_odd (by norm_num)).mp hx
+    rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
+    exact (neg_one_pow_eq_neg_one_iff_odd (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hx, T_real_cos, this, cos_int_mul_pi]
-    exact (neg_one_pow_eq_neg_one_iff_odd (by norm_num)).mpr hk₂
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_coe_nat k).mpr hk₂)]
+    norm_cast
 
 theorem roots_T_real (n : ℕ) :
     (T ℝ n).roots =
