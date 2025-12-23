@@ -12,7 +12,7 @@ public import Mathlib.Condensed.Limits
 
 /-!
 
-# The functor from light profinite sets to light condensed sets preserves effective epimorphisms
+# The functor from compact Hausdorff spaces to condensed sets preserves effective epimorphisms
 -/
 
 @[expose] public section
