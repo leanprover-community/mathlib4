@@ -527,6 +527,12 @@ theorem apply_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (c : M₂) : e (e.symm 
 theorem symm_apply_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : e.symm (e b) = b :=
   e.1.left_inv b
 
+@[simp] theorem symm_trans_self (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.trans e = .refl R₂ M₂ :=
+  ext <| funext fun _ ↦ apply_symm_apply _ _
+
+@[simp] theorem self_trans_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.trans e.symm = .refl R₁ M₁ :=
+  ext <| funext fun _ ↦ symm_apply_apply _ _
+
 @[simp]
 theorem symm_trans_apply (e₁ : M₂ ≃SL[σ₂₁] M₁) (e₂ : M₃ ≃SL[σ₃₂] M₂) (c : M₁) :
     (e₂.trans e₁).symm c = e₂.symm (e₁.symm c) :=
@@ -1200,6 +1206,51 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
+
+namespace IsInvertible
+
+variable {f : M →L[R] M₂}
+
+@[simp]
+theorem self_comp_inverse (hf : f.IsInvertible) : f ∘L f.inverse = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘L f = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem bijective (hf : f.IsInvertible) : Function.Bijective f := by
+  rcases hf with ⟨e, rfl⟩
+  simp [ContinuousLinearEquiv.bijective]
+
+protected theorem injective (hf : f.IsInvertible) : Function.Injective f :=
+  hf.bijective.injective
+
+protected theorem surjective (hf : f.IsInvertible) : Function.Surjective f :=
+  hf.bijective.surjective
+
+protected theorem inverse (hf : f.IsInvertible) : f.inverse.IsInvertible := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+protected theorem inverse_inverse (hf : f.IsInvertible) : f.inverse.inverse = f := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsInvertible := by
+  by_contra H
+  obtain ⟨_, _⟩ : Subsingleton M₂ ∧ Subsingleton M := by simpa [inverse, H] using hf
+  simp_all [Subsingleton.elim f 0]
+
+@[simp]
+theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
+    f.inverse.IsInvertible ↔ f.IsInvertible :=
+  ⟨.of_isInvertible_inverse, .inverse⟩
+
+end IsInvertible
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :
