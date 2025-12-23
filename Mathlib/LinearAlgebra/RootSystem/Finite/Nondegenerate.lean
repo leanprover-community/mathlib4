@@ -348,6 +348,55 @@ lemma rootSpan_eq_top_iff :
   · rw [← P.finrank_corootSpan_eq', h, finrank_top, P.toPerfPair.finrank_eq,
       Subspace.dual_finrank_eq]
 
+section IsRootSystem
+
+variable [P.IsRootSystem]
+
+/-- The polarization map from weight space to coweight space as an equivalence. -/
+def PolarizationEquiv : M ≃ₗ[R] N :=
+  have : IsReflexive R M := Module.IsReflexive.of_isPerfPair P.toLinearMap
+  (P.toInvariantForm.form.toDual P.rootForm_nondegenerate).trans P.flip.toPerfPair.symm
+
+@[simp]
+lemma polarizationEquiv_toLinearMap :
+    P.PolarizationEquiv.toLinearMap = P.Polarization := by
+  simp only [PolarizationEquiv, LinearMap.BilinForm.toDual, RootPairing.toInvariantForm_form,
+    ← P.flip_comp_polarization_eq_rootForm, RootPairing.flip_toLinearMap]
+  ext m
+  let e := P.flip.toPerfPair
+  change e.symm (e _) = _
+  simp
+
+-- Not `simp` to avoid losing the information that we're applying an `Equiv`.
+lemma polarizationEquiv_apply (m : M) :
+    P.PolarizationEquiv m = P.Polarization m :=
+  congr($P.polarizationEquiv_toLinearMap m)
+
+variable [NeZero (2 : R)]
+
+private lemma linearIndepOn_coroot_iff_aux {s : Set ι} (h : LinearIndepOn R P.root s) :
+    LinearIndepOn R P.coroot s := by
+  obtain ⟨f, hf⟩ : ∃ f : s → Rˣ, ∀ i : s, P.coroot i = f i • P.PolarizationEquiv (P.root i) := by
+    use fun i ↦ Units.mk0 (2 / P.RootForm (P.root i) (P.root i))
+      (by simp [NeZero.out, RootPairing.IsAnisotropic.rootForm_root_ne_zero])
+    intro i
+    have h₀ := RootPairing.IsAnisotropic.rootForm_root_ne_zero (P := P) i
+    rw [polarizationEquiv_apply, Units.smul_mk0,
+      ← (smul_right_injective N h₀).eq_iff, P.rootForm_self_smul_coroot i, smul_smul,
+      mul_div_cancel₀ _ h₀]
+    norm_cast
+  have : (s.restrict P.coroot) = P.PolarizationEquiv.toLinearMap ∘ (f • (s.restrict P.root)) := by
+    ext; simp [hf, polarizationEquiv_apply]
+  rw [← linearIndependent_restrict_iff, this,
+    LinearMap.linearIndependent_iff_of_injOn _ P.PolarizationEquiv.injective.injOn]
+  simpa
+
+@[simp] lemma linearIndepOn_coroot_iff {s : Set ι} :
+    LinearIndepOn R P.coroot s ↔ LinearIndepOn R P.root s :=
+  ⟨P.flip.linearIndepOn_coroot_iff_aux, P.linearIndepOn_coroot_iff_aux⟩
+
+end IsRootSystem
+
 end Field
 
 section LinearOrderedCommRing
