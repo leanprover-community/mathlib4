@@ -802,8 +802,6 @@ def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H
 @[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
     (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
 
-section conjugate
-
 /-- A continuous linear equivalence of two spaces induces an continuous equivalence of algebras of
 their endomorphisms. -/
 def conjContinuousAlgEquiv
@@ -823,8 +821,6 @@ theorem conjContinuousAlgEquiv_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) :
 
 theorem symm_conjContinuousAlgEquiv (e : G ≃L[𝕜] H) :
     e.conjContinuousAlgEquiv.symm = e.symm.conjContinuousAlgEquiv := rfl
-
-end conjugate
 
 end Linear
 
