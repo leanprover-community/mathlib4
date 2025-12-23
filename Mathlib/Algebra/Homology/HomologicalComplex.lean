@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.GradedObject
-import Mathlib.Algebra.Homology.ShortComplex.Basic
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.CategoryTheory.GradedObject
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-!
 # Homological complexes.
@@ -33,6 +35,8 @@ Similarly we have `C.xPrev j`.
 Defined in terms of these we have `C.dFrom i : C.X i ⟶ C.xNext i` and
 `C.dTo j : C.xPrev j ⟶ C.X j`, which are either defined as `C.d i j`, or zero, as needed.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -775,7 +779,7 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
 the inductive construction. -/
 def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · apply eqToIso
     dsimp [mk', mk, of, mkAux]
     rw [id_comp]
@@ -789,7 +793,7 @@ lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
 lemma mk'_d (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').d (n + 2) (n + 1) = (mk'XIso X₀ X₁ d₀ succ' n).hom ≫
       (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).2.1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · dsimp [mk'XIso, mk']
     rw [mk_d_2_1]
     apply mk'_congr_succ'_d

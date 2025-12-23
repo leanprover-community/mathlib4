@@ -3,11 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Divisor
-import Mathlib.Analysis.Meromorphic.IsolatedZeros
-import Mathlib.Analysis.Meromorphic.NormalForm
-import Mathlib.Analysis.Meromorphic.TrailingCoefficient
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.Meromorphic.Divisor
+public import Mathlib.Analysis.Meromorphic.IsolatedZeros
+public import Mathlib.Analysis.Meromorphic.NormalForm
+public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Factorized Rational Functions
@@ -27,6 +29,8 @@ is finite, then evaluation of functions commutes with finprod, and the helper le
 There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` is constant one, while
 `fun x ↦ ∏ᶠ u, (x - u) ^ d u` is not continuous.
 -/
+
+@[expose] public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -195,7 +199,6 @@ open Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
 -/
-
 /-
 Low-priority TODO: Using that non-trivially normed fields contain infinitely many elements that are
 no roots of unity, it might be possible to drop assumption `h` here and in some of the theorems

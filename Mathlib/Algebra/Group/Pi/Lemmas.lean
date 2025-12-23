@@ -3,12 +3,14 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Logic.Pairwise
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Logic.Pairwise
 
 /-!
 # Extra lemmas about products of monoids and groups
@@ -16,6 +18,8 @@ import Mathlib.Logic.Pairwise
 This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` that require more
 imports.
 -/
+
+@[expose] public section
 
 assert_not_exists AddMonoidWithOne MonoidWithZero
 
@@ -308,8 +312,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hl := congr_fun h l
     have hm := congr_fun h m
     have hn := congr_fun h n
-    simp only [mul_apply, mulSingle_apply] at hk hl hm hn
-    grind [mul_one, one_mul]
+    grind [mul_one, one_mul, mul_apply]
   · aesop (add simp [mulSingle_apply])
 
 end Single

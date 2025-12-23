@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Irreducible.Lemmas
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Irreducible.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -25,6 +27,8 @@ saying that two elements of a monoid differ by a multiplication by a unit.
 Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset
 
@@ -168,3 +172,9 @@ theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUni
   (pow_injective_of_not_isUnit hq hq').eq_iff
 
 end CancelCommMonoidWithZero
+
+lemma IsRelPrime.of_map
+    {M N F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MulHomClass F M N]
+    (f : F) [IsLocalHom f] {a b : M}
+    (hab : IsRelPrime (f a) (f b)) : IsRelPrime a b :=
+  fun _ h₁ h₂ ↦ .of_map _ _ (hab (map_dvd f h₁) (map_dvd f h₂))

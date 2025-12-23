@@ -3,13 +3,17 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
-import Mathlib.CategoryTheory.Monoidal.CommGrp_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+public import Mathlib.CategoryTheory.Monoidal.CommGrp_
 
 /-!
 # Yoneda embedding of `CommGrp C`
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -43,8 +47,9 @@ def yonedaCommGrpGrpObj (G : CommGrp C) : (Grp C)ᵒᵖ ⥤ CommGrpCat where
   map {H I} f := CommGrpCat.ofHom {
     toFun := (f.unop ≫ ·)
     map_one' := by ext; simp [Mon.Hom.hom_one]
-    map_mul' g h := by ext; simpa using ((yonedaGrpObj G.X).map f.unop.1.op).hom.map_mul g.hom h.hom
-  }
+    map_mul' g h := by
+      ext
+      simpa using ((yonedaGrpObj G.X).map f.unop.hom.hom.op).hom.map_mul g.hom.hom h.hom.hom }
 
 /-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
 @[simps]
@@ -52,11 +57,10 @@ def yonedaCommGrpGrp : CommGrp C ⥤ (Grp C)ᵒᵖ ⥤ CommGrpCat where
   obj := yonedaCommGrpGrpObj
   map {X₁ X₂} ψ := {
     app Y := CommGrpCat.ofHom {
-      toFun := (· ≫ ψ)
+      toFun := (· ≫ ψ.hom)
       map_one' := by ext; simp
       map_mul' f g := by
-        ext; simpa using ((yonedaGrp.map ψ).app (op (unop Y).X)).hom.map_mul f.hom g.hom
-    }
-  }
+        ext
+        simpa using ((yonedaGrp.map ψ.hom).app (op (unop Y).X)).hom.map_mul f.hom.hom g.hom.hom } }
 
 end CategoryTheory

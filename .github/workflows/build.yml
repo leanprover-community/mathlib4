@@ -14,7 +14,6 @@ on:
       - 'staging.tmp*'
       - 'trying.tmp*'
       - 'staging*.tmp'
-      - 'nolints'
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
   merge_group:
@@ -55,7 +54,7 @@ jobs:
       lint-outcome: ${{ steps.lint.outcome }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
-      shake-outcome: ${{ steps.shake.outcome }}
+      # shake-outcome: ${{ steps.shake.outcome }}
       test-outcome: ${{ steps.test.outcome }}
     defaults: # On Hoskinson runners, landrun is already installed.
       run: # note that .pr-branch/.lake must be created in a step below before we use this
@@ -95,7 +94,7 @@ jobs:
 
       # Checkout the master branch into a subdirectory
       - name: Checkout master branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
@@ -105,7 +104,7 @@ jobs:
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: "${{ github.sha }}"
           path: pr-branch
@@ -240,7 +239,7 @@ jobs:
 
           # Extract all inputRevs from the manifest
           invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?)$' || true)
+            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?)$' || true)
 
           if [ -n "$invalid_revs" ]; then
             echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
@@ -249,10 +248,55 @@ jobs:
             echo "All inputRevs must be one of:"
             echo "  - 'main'"
             echo "  - 'master'"
-            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3 or v1.2.3-pre)"
+            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
             exit 1
           else
             echo "✅ All inputRevs in lake-manifest.json are valid"
+          fi
+
+      - name: verify ProofWidgets lean-toolchain matches on versioned releases
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          # Read the lean-toolchain file
+          TOOLCHAIN=$(cat lean-toolchain | tr -d '[:space:]')
+          echo "Lean toolchain: $TOOLCHAIN"
+
+          # Check if toolchain matches the versioned release pattern: leanprover/lean4:vX.Y.Z (with optional suffix like -rc1)
+          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
+            echo "✓ Detected versioned Lean release: $TOOLCHAIN"
+            echo "Verifying ProofWidgets lean-toolchain matches..."
+
+            # Check if ProofWidgets lean-toolchain exists
+            if [ ! -f .lake/packages/proofwidgets/lean-toolchain ]; then
+              echo "❌ Error: .lake/packages/proofwidgets/lean-toolchain does not exist"
+              echo "This file should be created by 'lake env' during dependency download."
+              exit 1
+            fi
+
+            # Read ProofWidgets lean-toolchain
+            PROOFWIDGETS_TOOLCHAIN=$(cat .lake/packages/proofwidgets/lean-toolchain | tr -d '[:space:]')
+            echo "ProofWidgets toolchain: $PROOFWIDGETS_TOOLCHAIN"
+
+            # Compare the two
+            if [ "$TOOLCHAIN" != "$PROOFWIDGETS_TOOLCHAIN" ]; then
+              echo "❌ Error: Lean toolchain mismatch!"
+              echo "  Main lean-toolchain: $TOOLCHAIN"
+              echo "  ProofWidgets lean-toolchain: $PROOFWIDGETS_TOOLCHAIN"
+              echo ""
+              echo "When using a versioned Lean release (leanprover/lean4:vX.Y.Z),"
+              echo "the ProofWidgets dependency must use the same toolchain."
+              echo "Please update the ProofWidgets dependency to use $TOOLCHAIN"
+              exit 1
+            else
+              echo "✅ ProofWidgets lean-toolchain matches: $TOOLCHAIN"
+            fi
+          else
+            echo "ℹ Lean toolchain is not a versioned release (pattern: leanprover/lean4:vX.Y.Z)"
+            echo "Skipping ProofWidgets toolchain verification."
           fi
 
       - name: get cache (1/3 - setup and initial fetch)
@@ -429,7 +473,7 @@ jobs:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
-        if: always()
+        if: ${{ always() && steps.mk_all.outcome != 'skipped' }}
         run: |
           if [[ "${{ steps.mk_all.outcome }}" != "success" ]]; then
             echo "Please run 'lake exe mk_all' to regenerate the import all files"
@@ -460,11 +504,13 @@ jobs:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: gcc
 
-      - name: check for unused imports
-        id: shake
-        run: |
-          cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
+      # With the arrival of the module system, the old `shake` is no longer functional.
+      # This will be replaced soon.
+      # - name: check for unused imports
+      #   id: shake
+      #   run: |
+      #     cd pr-branch
+      #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
@@ -522,7 +568,7 @@ jobs:
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: "${{ github.sha }}"
 
@@ -658,15 +704,6 @@ jobs:
           echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" | tee -a "$GITHUB_OUTPUT"
           echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" | tee -a "$GITHUB_OUTPUT"
 
-      - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
-        name: If `bench-after-CI` is present, add a `!bench` comment.
-        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
-        with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}
-          issue-number: ${{ steps.PR.outputs.number }}
-          body: |
-            !bench
-
       - id: remove_labels
         name: Remove "awaiting-CI"
         # we use curl rather than octokit/request-action so that the job won't fail
@@ -683,7 +720,7 @@ jobs:
         # unfortunately we cannot query only for 'auto-merge-after-CI' events
         # so we have to process this with jq in the next step
         id: get-timeline
-        uses: octokit/graphql-action@8ad880e4d437783ea2ab17010324de1075228110 # v2.3.2
+        uses: octokit/graphql-action@abaeca7ba4f0325d63b8de7ef943c2418d161b93 # v3.0.0
         with:
           query: |
             query($owner: String!, $name: String!, $number: Int!) {

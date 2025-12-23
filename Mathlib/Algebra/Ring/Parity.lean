@@ -3,11 +3,13 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Even and odd elements in rings
@@ -27,6 +29,8 @@ to `Mathlib/Algebra/Group/Even.lean`.
 `Mathlib/Algebra/Group/Even.lean` for the definition of even elements.
 -/
 
+@[expose] public section
+
 assert_not_exists DenselyOrdered IsOrderedRing
 
 open MulOpposite
@@ -44,17 +48,29 @@ lemma Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one
 
 end Monoid
 
-section DivisionMonoid
-variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
-
-lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
-  rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
-
-lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
-
-end DivisionMonoid
-
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
+
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
+
+end AddMonoidWithOne
+
+section Distrib
+variable [Add α] [Mul α] {a : α}
+
+@[simp] lemma Even.mul_left [LeftDistribClass α] (ha : Even a) (b : α) : Even (b * a) := by
+  rcases ha with ⟨k, rfl⟩
+  use b * k
+  rw [mul_add]
+
+@[simp] lemma Even.mul_right [RightDistribClass α] (ha : Even a) (b : α) : Even (a * b) := by
+  rcases ha with ⟨k, rfl⟩
+  use k * b
+  rw [add_mul]
+
+end Distrib
 
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
@@ -75,11 +91,6 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   ext x
   simp [eq_comm, two_mul, Even]
 
-@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
-
-@[simp] lemma Even.mul_left (ha : Even a) (b) : Even (b * a) := ha.map (AddMonoidHom.mulLeft _)
-
-@[simp] lemma Even.mul_right (ha : Even a) (b) : Even (a * b) := ha.map (AddMonoidHom.mulRight _)
 
 lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
@@ -214,7 +225,7 @@ variable {m n : ℕ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ ↦ by cutsat, fun h ↦ ⟨n / 2, by cutsat⟩⟩
+  ⟨fun ⟨m, hm⟩ ↦ by lia, fun h ↦ ⟨n / 2, by lia⟩⟩
 
 instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ odd_iff.symm
 
@@ -243,9 +254,9 @@ lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by grind
 
 lemma mod_two_add_add_odd_mod_two (m : ℕ) {n : ℕ} (hn : Odd n) : m % 2 + (m + n) % 2 = 1 := by grind
 
-@[simp] lemma mod_two_add_succ_mod_two (m : ℕ) : m % 2 + (m + 1) % 2 = 1 := by cutsat
+@[simp] lemma mod_two_add_succ_mod_two (m : ℕ) : m % 2 + (m + 1) % 2 = 1 := by lia
 
-@[simp] lemma succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by cutsat
+@[simp] lemma succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by lia
 
 lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by grind
 
@@ -358,6 +369,20 @@ lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
     (-1 : R) ^ n = -1 ↔ Odd n := by simp [neg_one_pow_eq_ite, h.symm]
 
 end DistribNeg
+
+section DivisionMonoid
+variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
+
+lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
+  rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
+
+lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
+
+lemma neg_one_zpow_eq_ite : (-1 : α) ^ n = if Even n then 1 else -1 := by
+  obtain ⟨n, _⟩ := n.eq_nat_or_neg
+  aesop (add safe (by rw [neg_one_pow_eq_ite]))
+
+end DivisionMonoid
 
 section CharTwo
 

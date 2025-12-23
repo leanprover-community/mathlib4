@@ -3,7 +3,9 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # The layer cake formula / Cavalieri's principle / tail probability formula
@@ -55,6 +57,8 @@ function, is given in `Mathlib/Analysis/SpecialFunctions/Pow/Integral.lean`.
 
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -450,7 +454,7 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   simp_rw [cst, ENNReal.ofReal_one, mul_one] at key
   rw [← key]
   congr with ω
-  simp only [intervalIntegral.integral_const, sub_zero, Algebra.id.smul_eq_mul, mul_one]
+  simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
 
 end Layercake
 

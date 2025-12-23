@@ -3,12 +3,16 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Order.Filter.FilterProduct
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Order.Filter.FilterProduct
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences.
 -/
+
+@[expose] public section
 
 
 open Filter Germ Topology
@@ -273,7 +277,7 @@ theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ,
   ⟨sSup { y : ℝ | (y : ℝ*) < x }, isSt_sSup hni⟩
 
 theorem st_eq_sSup {x : ℝ*} : st x = sSup { y : ℝ | (y : ℝ*) < x } := by
-  rcases _root_.em (Infinite x) with (hx|hx)
+  rcases _root_.em (Infinite x) with (hx | hx)
   · rw [hx.st_eq]
     cases hx with
     | inl hx =>

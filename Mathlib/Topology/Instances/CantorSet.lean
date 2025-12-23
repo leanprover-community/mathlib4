@@ -5,12 +5,14 @@ Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle D
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
 Filippo A. E. Nuccio
 -/
-import Mathlib.Analysis.Real.OfDigits
-import Mathlib.Data.Stream.Init
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Analysis.Real.OfDigits
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Field
 
 /-!
 # Ternary Cantor Set
@@ -30,6 +32,8 @@ This file defines the Cantor ternary set and proves a few properties.
   in the Cantor set.
 * `ofDigits_zero_two_sequence_unique`: such a representation is unique.
 -/
+
+@[expose] public section
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
 middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
@@ -205,7 +209,7 @@ theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3} (ha : ∀ n, a n
 this function rescales the interval containing `x` back to `[0, 1]`.
 Used to iteratively extract the ternary representation of `x`. -/
 noncomputable def cantorStep (x : ℝ) : ℝ :=
-  if x ∈ Set.Icc 0 (1/3) then
+  if x ∈ Set.Icc 0 (1 / 3) then
     3 * x
   else
     3 * x - 2
@@ -216,10 +220,7 @@ theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x
     rw [cantorSet_eq_union_halves] at hx
     grind
   all_goals
-    have := cantorSet_subset_unitInterval hy
-    simp only [Set.mem_Icc] at this ⊢
-    field_simp
-    grind
+    grind [cantorSet_subset_unitInterval]
 
 /-- The infinite sequence obtained by repeatedly applying `cantorStep` to `x`. -/
 noncomputable def cantorSequence (x : ℝ) : Stream' ℝ :=
@@ -239,7 +240,7 @@ This function tracks which of the two intervals in `preCantorSet (n + 1)`
 contains `x` at each step, producing the corresponding path as a stream of booleans. -/
 noncomputable def cantorToBinary (x : ℝ) : Stream' Bool :=
   (cantorSequence x).map fun x ↦
-    if x ∈ Set.Icc 0 (1/3) then
+    if x ∈ Set.Icc 0 (1 / 3) then
       false
     else
       true
@@ -254,7 +255,7 @@ theorem ofDigits_bool_to_fin_three_mem_cantorSet (f : ℕ → Bool) :
   ofDigits_zero_two_sequence_mem_cantorSet (by grind)
 
 theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n ≠ 1 := by
-  grind [cantorToTernary, Fin.isValue, Stream'.get_map]
+  grind [cantorToTernary, Stream'.get_map]
 
 theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
     (cantorSequence x).get (n + 1) =
@@ -349,3 +350,7 @@ noncomputable def cantorSetEquivNatToBool : cantorSet ≃ (ℕ → Bool) where
 noncomputable def cantorSetHomeomorphNatToBool : cantorSet ≃ₜ (ℕ → Bool) :=
   Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSetEquivNatToBool.symm)
     (Continuous.subtype_mk (Continuous.comp continuous_ofDigits (by fun_prop)) _)
+
+/-- The Cantor space is homeomorphic to a countable product of copies of itself. -/
+def cantorSpaceHomeomorphNatToCantorSpace : (ℕ → Bool) ≃ₜ (ℕ → ℕ → Bool) :=
+  (Homeomorph.piCongrLeft Nat.pairEquiv.symm).trans Homeomorph.piCurry

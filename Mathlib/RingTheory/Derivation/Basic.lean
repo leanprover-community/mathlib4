@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
 
 /-!
 # Derivations
@@ -30,6 +32,8 @@ and `RingTheory.Derivation.ToSquareZero` for
 - Generalize derivations into bimodules.
 
 -/
+
+@[expose] public section
 
 open Algebra
 
@@ -124,8 +128,7 @@ theorem map_one_eq_zero : D 1 = 0 :=
 
 @[simp]
 theorem map_algebraMap : D (algebraMap R A r) = 0 := by
-  rw [← mul_one r, RingHom.map_mul, RingHom.map_one, ← smul_def, map_smul, map_one_eq_zero,
-    smul_zero]
+  rw [← mul_one r, map_mul, map_one, ← smul_def, map_smul, map_one_eq_zero, smul_zero]
 
 @[simp]
 theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
@@ -263,15 +266,15 @@ variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
 
 /-- We can push forward derivations using linear maps, i.e., the composition of a derivation with a
 linear map is a derivation. Furthermore, this operation is linear on the spaces of derivations. -/
-def _root_.LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N where
+def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
   toFun D :=
     { toLinearMap := (f : M →ₗ[R] N).comp (D : A →ₗ[R] M)
       map_one_eq_zero' := by simp only [LinearMap.comp_apply, coeFn_coe, map_one_eq_zero, map_zero]
       leibniz' := fun a b => by
-        simp only [coeFn_coe, LinearMap.comp_apply, LinearMap.map_add, leibniz,
+        simp only [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
-  map_smul' r D := by dsimp; ext; exact LinearMap.map_smul (f : M →ₗ[R] N) _ _
+  map_smul' r D := by ext; dsimp; simp only [_root_.map_smul]
 
 @[simp]
 theorem coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
@@ -283,13 +286,13 @@ theorem coe_comp : (f.compDer D : A → N) = (f : M →ₗ[R] N).comp (D : A →
 
 /-- The composition of a derivation with a linear map as a bilinear map -/
 @[simps]
-def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A N where
+def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[A] Derivation R A N where
   toFun f := f.compDer
   map_add' f₁ f₂ := by ext; rfl
   map_smul' r D := by ext; rfl
 
 /-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
-def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
+def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[A] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer
     left_inv := fun D => by ext a; exact e.symm_apply_apply (D a)
@@ -316,6 +319,17 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   map_one_eq_zero' := by simp
   leibniz' a b := by simp
   toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
+
+variable (R A B M) in
+/-- For a tower `R → A → B → M`, the precomposition defined in `compAlgebraMap`
+is a `B`-linear map. -/
+@[simps!]
+def compAlgebraMapL [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
+    [IsScalarTower R B M] :
+    Derivation R B M →ₗ[B] Derivation R A M where
+  toFun d := d.compAlgebraMap A
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 section RestrictScalars
 
@@ -483,7 +497,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     simp only [zpow_natCast, leibniz_pow, natCast_zsmul]
     rw [← zpow_natCast]
     congr
-    cutsat
+    lia
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
       ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_zsmul K, smul_smul, smul_smul,
       smul_smul]
@@ -492,7 +506,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     rw [← zpow_sub₀ ha]
     congr 3
     · norm_cast
-    cutsat
+    lia
 
 end Field
 

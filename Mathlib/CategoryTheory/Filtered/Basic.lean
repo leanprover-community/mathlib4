@@ -3,7 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Filtered categories
@@ -50,6 +52,8 @@ This is shown in `CategoryTheory.Limits.Filtered`.
 
 -/
 
+@[expose] public section
+
 
 open Function
 
@@ -94,14 +98,14 @@ instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [
     [Nonempty α] : IsFiltered α where
 
 instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preorder α]
-    [IsDirected α (· ≤ ·)] : IsFilteredOrEmpty α where
+    [IsDirectedOrder α] : IsFilteredOrEmpty α where
   cocone_objs X Y :=
     let ⟨Z, h1, h2⟩ := exists_ge_ge X Y
     ⟨Z, homOfLE h1, homOfLE h2, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by subsingleton⟩
 
 instance (priority := 100) isFiltered_of_directed_le_nonempty (α : Type u) [Preorder α]
-    [IsDirected α (· ≤ ·)] [Nonempty α] : IsFiltered α where
+    [IsDirectedOrder α] [Nonempty α] : IsFiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by infer_instance
@@ -241,11 +245,7 @@ theorem sup_exists :
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply coeq_condition
-      · rw [@w' _ _ mX mY f']
-        grind
+      grind [coeq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -512,7 +512,7 @@ instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u)
     [Nonempty α] : IsCofiltered α where
 
 instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Preorder α]
-    [IsDirected α (· ≥ ·)] : IsCofilteredOrEmpty α where
+    [IsCodirectedOrder α] : IsCofilteredOrEmpty α where
   cone_objs X Y :=
     let ⟨Z, hX, hY⟩ := exists_le_le X Y
     ⟨Z, homOfLE hX, homOfLE hY, trivial⟩
@@ -521,7 +521,7 @@ instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Pre
     subsingleton⟩
 
 instance (priority := 100) isCofiltered_of_directed_ge_nonempty (α : Type u) [Preorder α]
-    [IsDirected α (· ≥ ·)] [Nonempty α] : IsCofiltered α where
+    [IsCodirectedOrder α] [Nonempty α] : IsCofiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by infer_instance
@@ -696,12 +696,7 @@ theorem inf_exists :
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply eq_condition
-      · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        grind
+      grind [eq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h

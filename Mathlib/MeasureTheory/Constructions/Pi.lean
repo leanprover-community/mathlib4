@@ -3,12 +3,14 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.MeasurableSpace.Pi
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Topology.Constructions
 
 /-!
 # Indexed product measures
@@ -23,7 +25,7 @@ In this file we define and prove properties about finite products of measures
 
 To apply Fubini's theorem or Tonelli's theorem along some subset, we recommend using the marginal
 construction `MeasureTheory.lmarginal` and (todo) `MeasureTheory.marginal`. This allows you to
-apply the theorems without any bookkeeping with measurable equivalences.
+apply these theorems without any bookkeeping with measurable equivalences.
 
 ## Implementation Notes
 
@@ -52,6 +54,8 @@ finitary product measure
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Function Set MeasureTheory.OuterMeasure Filter MeasurableSpace Encodable
@@ -67,7 +71,7 @@ namespace MeasureTheory
 variable [Fintype ι] {m : ∀ i, OuterMeasure (α i)}
 
 /-- An upper bound for the measure in a finite product space.
-  It is defined to by taking the image of the set under all projections, and taking the product
+  It is defined by taking the image of the set under all projections, and taking the product
   of the measures of these images.
   For measurable boxes it is equal to the correct measure. -/
 @[simp]
@@ -292,6 +296,10 @@ theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
 nonrec theorem pi_univ [∀ i, SigmaFinite (μ i)] : Measure.pi μ univ = ∏ i, μ i univ := by
   rw [← pi_univ, pi_pi μ]
 
+@[simp] lemma pi_singleton [∀ i, SigmaFinite (μ i)] (f : ∀ i, α i) :
+    Measure.pi μ {f} = ∏ i, μ i {f i} := by
+  simpa [Set.univ_pi_singleton, -pi_pi] using pi_pi μ fun i ↦ {f i}
+
 instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (Measure.pi μ) :=
   ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_lt_top (μ i) _)⟩
@@ -450,12 +458,7 @@ lemma pi_map_piCongrLeft [hι' : Fintype ι'] (e : ι ≃ ι') {β : ι' → Typ
     refine (e.forall_congr ?_).symm
     intro i
     rw [MeasurableEquiv.piCongrLeft_apply_apply e x i]
-  rw [this, pi_pi, Finset.prod_equiv e.symm]
-  · simp only [Finset.mem_univ, implies_true]
-  intro i _
-  simp only [s']
-  congr
-  all_goals rw [e.apply_symm_apply]
+  simpa [this] using Fintype.prod_equiv _ (fun _ ↦ (μ _) (s' _)) _ (congrFun rfl)
 
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :

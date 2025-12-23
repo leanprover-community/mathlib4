@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Measure.ContinuousPreimage
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
 /-!
 # Continuity of `MeasureTheory.Lp.compMeasurePreserving`
@@ -20,6 +22,8 @@ defined on `MeasureTheory.Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν
 
 Finally, we provide dot notation convenience lemmas.
 -/
+
+@[expose] public section
 
 open Filter Set MeasureTheory
 open scoped ENNReal Topology symmDiff

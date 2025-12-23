@@ -3,9 +3,11 @@ Copyright (c) 2025 Yongxi Lin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongxi Lin, Thomas Zhu
 -/
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.ContinuousMap.CompactlySupported
+module
+
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.ContinuousMap.CompactlySupported
 
 /-!
 # Integrating compactly supported continuous functions
@@ -13,6 +15,8 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 This file contains definitions and lemmas related to integrals of compactly supported continuous
 functions.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 open CompactlySupported MeasureTheory

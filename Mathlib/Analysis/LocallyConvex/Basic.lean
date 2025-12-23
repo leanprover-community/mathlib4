@@ -3,9 +3,11 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.Bornology.Absorbs
+module
+
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.Bornology.Absorbs
 /-!
 # Local convexity
 
@@ -40,6 +42,8 @@ For a module over a normed ring:
 
 absorbent, balanced, locally convex, LCTVS
 -/
+
+@[expose] public section
 
 
 open Set

@@ -3,10 +3,12 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Data.Nat.NthRoot.Defs
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Tactic.Rify
 
 /-!
 # Lemmas about `Nat.nthRoot`
@@ -19,6 +21,8 @@ Rewrite the proof of `Nat.nthRoot.lt_pow_go_succ_aux` to avoid dependencies on r
 so that we can move this file to `Mathlib/Data/Nat/NthRoot`, then to Batteries.
 -/
 
+@[expose] public section
+
 namespace Nat
 
 variable {m n a b guess fuel : ℕ}
@@ -29,11 +33,11 @@ variable {m n a b guess fuel : ℕ}
 
 @[simp]
 theorem nthRoot_zero_right (h : n ≠ 0) : nthRoot n 0 = 0 := by
-  rcases n with _|_|_ <;> grind [nthRoot, nthRoot.go]
+  rcases n with _ | _ | _ <;> grind [nthRoot, nthRoot.go]
 
 @[simp]
 theorem nthRoot_one_right : nthRoot n 1 = 1 := by
-  rcases n with _|_|_ <;> simp [nthRoot, nthRoot.go, Nat.add_comm 1]
+  rcases n with _ | _ | _ <;> simp [nthRoot, nthRoot.go, Nat.add_comm 1]
 
 private theorem nthRoot.pow_go_le (hle : guess ≤ fuel) (n a : ℕ) :
     go n a fuel guess ^ (n + 2) ≤ a := by
@@ -55,7 +59,7 @@ private theorem nthRoot.pow_go_le (hle : guess ≤ fuel) (n a : ℕ) :
 /-- `nthRoot n a ^ n ≤ a` unless both `n` and `a` are zeros. -/
 @[simp]
 theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
-  rcases n with _|_|_ <;> first | grind | simp [nthRoot, nthRoot.pow_go_le]
+  rcases n with _ | _ | _ <;> first | grind | simp [nthRoot, nthRoot.pow_go_le]
 
 alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 

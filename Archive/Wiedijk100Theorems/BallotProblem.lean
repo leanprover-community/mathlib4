@@ -114,15 +114,17 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
-          Nat.add_sub_cancel]
-      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, beq_self_eq_true,
+          if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, if_neg (by decide),
+          Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
-          Nat.add_sub_cancel]
+      · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, if_neg (by decide),
+          Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, beq_self_eq_true,
+          if_pos rfl, Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
@@ -216,7 +218,7 @@ theorem first_vote_pos :
         count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
         Nat.cast_add, Nat.cast_one, mul_comm, ← div_eq_mul_inv, ENNReal.div_eq_div_iff]
       · norm_cast
-        rw [mul_comm _ (p + 1), ← Nat.succ_eq_add_one p, Nat.succ_add, Nat.succ_mul_choose_eq,
+        rw [mul_comm _ (p + 1), add_right_comm, Nat.add_one_mul_choose_eq,
           mul_comm]
       all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le').ne']
     · simp

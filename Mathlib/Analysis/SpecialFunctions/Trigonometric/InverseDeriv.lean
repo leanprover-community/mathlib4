@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # derivatives of the inverse trigonometric functions
 
 Derivatives of `arcsin` and `arccos`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -107,8 +111,7 @@ theorem contDiffOn_arcsin {n : WithTop ℕ∞} : ContDiffOn ℝ n arcsin {-1, 1}
 
 theorem contDiffAt_arcsin_iff {x : ℝ} {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arcsin x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 :=
-  ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt <|
-      ENat.one_le_iff_ne_zero_withTop.mpr hn,
+  ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt hn,
     fun h => h.elim (fun hn => hn.symm ▸ (contDiff_zero.2 continuous_arcsin).contDiffAt) fun hx =>
       contDiffAt_arcsin hx.1 hx.2⟩
 

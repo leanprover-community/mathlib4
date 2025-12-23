@@ -3,13 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Subperm
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Quot
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.List.Perm.Subperm
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Quot
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Util.AssertExists
 
 /-!
 # Multisets
@@ -52,6 +54,8 @@ importing `Multiset.Defs`.
 * `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
   occurrences of `a` in `s` and `t`.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid OrderHom
