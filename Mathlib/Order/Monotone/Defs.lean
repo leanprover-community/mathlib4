@@ -318,17 +318,21 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
     (h : ∀ x y, x ≤ y ↔ f y ≤ f x) : StrictAnti f :=
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
 
-theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
+theorem Function.Injective.of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
   grind [Injective]
 
-theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
-    (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
-  fun _ _ hxy ↦ (h hxy.le).antisymm (h hxy.ge)
+@[deprecated (since := "2025-12-23")]
+alias injective_of_lt_imp_ne := Function.Injective.of_lt_imp_ne
 
-theorem Function.Injective.of_eq_imp_le [PartialOrder α] (f : α → β)
+theorem Function.Injective.of_eq_imp_le [PartialOrder α] {f : α → β}
     (h : ∀ {x y}, f x = f y → x ≤ y) : f.Injective :=
   fun _ _ hxy ↦ h hxy |>.antisymm <| h hxy.symm
+
+@[deprecated Injective.of_eq_imp_le (since := "2025-12-23")]
+theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
+    (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
+  .of_eq_imp_le (h ·.le)
 
 /-! ### Monotonicity under composition -/
 
