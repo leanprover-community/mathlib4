@@ -89,8 +89,9 @@ theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K
 
 @[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
+  rw [finrank, Nat.card_eq_toNat_cardinalMk]
   convert toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
-  · rw [toNat_lift, finrank]
+  · rw [toNat_lift]
   · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply Module.rank_lt_aleph0
 
 end AlgHom

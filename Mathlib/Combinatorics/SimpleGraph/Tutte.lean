@@ -145,8 +145,10 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
   have hfinj : f.Injective := fun c d hcd ↦ by
     replace hcd : g c = g d := Subtype.val_injective <| hM.1.eq_of_adj_right (hgf c) (hcd ▸ hgf d)
     exact Subtype.val_injective <| ConnectedComponent.eq_of_common_vertex (hg c) (hcd ▸ hg d)
-  simpa [IsTutteViolator] using
-    Nat.card_le_card_of_injective (fun c ↦ ⟨f c, hf c⟩) (fun c d ↦ by simp [hfinj.eq_iff])
+  simpa [IsTutteViolator, ← Nat.card_coe_set_eq] using
+    Nat.card_le_card_of_injective
+      (fun c : ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents ↦ ⟨f c, hf c⟩)
+      (fun c d ↦ by simp [hfinj.eq_iff])
 
 open scoped symmDiff
 
