@@ -363,7 +363,7 @@ theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : WithTop ℕ
 
 theorem differentiableAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     DifferentiableAt ℝ (fun p : ℝ × ℝ => p.1 ^ p.2) p :=
-  (contDiffAt_rpow_of_ne p hp).differentiableAt le_rfl
+  (contDiffAt_rpow_of_ne p hp).differentiableAt one_ne_zero
 
 theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : HasStrictDerivAt f f' x)
     (hg : HasStrictDerivAt g g' x) (h : 0 < f x) : HasStrictDerivAt (fun x => f x ^ g x)
@@ -484,7 +484,7 @@ theorem iter_deriv_rpow_const (r x : ℝ) (k : ℕ) :
 theorem hasStrictDerivAt_rpow_const {x p : ℝ} (hx : x ≠ 0 ∨ 1 ≤ p) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x :=
   ContDiffAt.hasStrictDerivAt' (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
-    (hasDerivAt_rpow_const hx) le_rfl
+    (hasDerivAt_rpow_const hx) one_ne_zero
 
 end Real
 
@@ -693,7 +693,7 @@ lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
       Asymptotics.IsTheta.const_mul_left hp Asymptotics.isTheta_rfl
 
 lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
-    deriv (fun (x : ℝ) => x ^ p) =O[atTop] fun x => x ^ (p-1) := by
+    deriv (fun (x : ℝ) => x ^ p) =O[atTop] fun x => x ^ (p - 1) := by
   rcases eq_or_ne p 0 with rfl | hp
   case inl =>
     simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
