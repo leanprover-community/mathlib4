@@ -158,7 +158,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     · exact (this _ _ <| (hc.total π₁.2 π₂.2).resolve_left h).symm
     refine .inl (le_iff.mpr ⟨?_, algHom_ext_of_eq_adjoin _ (eq _) ?_⟩)
     · rw [eq, eq]; exact adjoin.mono _ _ _ (Set.union_subset_union_left _ h.1)
-    rintro x (hx|hx)
+    rintro x (hx | hx)
     · change (θ π₂).emb (inclusion (ge π₂).1 <| inclusion h.1 ⟨x, hx⟩) =
         (θ π₁).emb (inclusion (ge π₁).1 ⟨x, hx⟩)
       rw [(ge π₁).2, (ge π₂).2, h.2]

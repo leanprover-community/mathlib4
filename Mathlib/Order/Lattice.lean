@@ -373,6 +373,8 @@ end SemilatticeSup
 /-- A lattice is a join-semilattice which is also a meet-semilattice. -/
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
+attribute [to_dual existing] Lattice.toSemilatticeInf
+
 instance OrderDual.instLattice (α) [Lattice α] : Lattice αᵒᵈ where
 
 /-- The partial orders from `SemilatticeSup_mk'` and `SemilatticeInf_mk'` agree
@@ -781,6 +783,7 @@ theorem le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β} (h : 
     f x ⊔ f y ≤ f (x ⊔ y) :=
   sup_le (h le_sup_left) (h le_sup_right)
 
+@[to_dual existing le_map_sup]
 theorem map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β} (h : Monotone f) (x y : α) :
     f (x ⊓ y) ≤ f x ⊓ f y :=
   le_inf (h inf_le_left) (h inf_le_right)
