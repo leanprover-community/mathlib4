@@ -59,7 +59,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 noncomputable section
 
-universe v u
+universe w v u
 
 open CategoryTheory
 
@@ -180,6 +180,11 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
   m := m
   e := e
   m_mono := by rw [hm]; infer_instance
+
+@[simp]
+lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
+    (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
+  simp [← types_comp_apply, ← NatTrans.comp_app]
 
 end MonoFactorisation
 
