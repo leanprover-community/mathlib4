@@ -134,6 +134,46 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   Adjunction.rightAdjointUniq (mapPullbackAdj (f ≫ g)) ((comp f g).mapPullbackAdj)
 
+@[reassoc (attr := simp)]
+theorem unit_pullbackComp_hom_app {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
+    (W : Over X) :
+    (mapPullbackAdj (f ≫ g)).unit.app W ≫
+      (pullbackComp f g).hom.app ((Over.map (f ≫ g)).obj W) =
+      (comp f g).mapPullbackAdj.unit.app W := by
+  rw [pullbackComp, Adjunction.unit_rightAdjointUniq_hom_app]
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackComp_hom {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
+    (mapPullbackAdj (f ≫ g)).unit ≫ (Over.map (f ≫ g)).whiskerLeft (pullbackComp f g).hom =
+      (comp f g).mapPullbackAdj.unit := by
+  rw [pullbackComp, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pullbackComp_hom_app_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
+    (W : Over Z) :
+    (Over.map (f ≫ g)).map ((pullbackComp f g).hom.app W) ≫
+      (comp f g).mapPullbackAdj.counit.app W =
+      (mapPullbackAdj (f ≫ g)).counit.app W := by
+  rw [pullbackComp, Adjunction.rightAdjointUniq_hom_app_counit]
+
+@[reassoc (attr := simp)]
+theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
+    Functor.whiskerRight (pullbackComp f g).hom (Over.map (f ≫ g)) ≫
+      (comp f g).mapPullbackAdj.counit =
+      (mapPullbackAdj (f ≫ g)).counit := by
+  rw [pullbackComp, Adjunction.rightAdjointUniq_hom_counit]
+
+theorem pullbackComp_inv_app {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
+    (W : Over Z) :
+    (pullbackComp f g).inv.app W = (Adjunction.rightAdjointUniq (comp f g).mapPullbackAdj
+      (mapPullbackAdj (f ≫ g))).hom.app W :=
+  rfl
+
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
 choice of pullbacks. -/
 @[simps]
