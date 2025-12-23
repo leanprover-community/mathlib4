@@ -42,6 +42,9 @@ universe u
 open CategoryTheory Nerve Simplicial SimplicialObject.Truncated
   SimplexCategory.Truncated Opposite Limits
 
+-- TODO: a bug in the linter causes lots of false positive warnings; fix them!
+set_option linter.style.commandStart false
+
 namespace SSet
 
 namespace Truncated

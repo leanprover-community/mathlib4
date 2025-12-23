@@ -30,6 +30,9 @@ open CategoryTheory Opposite Simplicial SimplexCategory
 namespace SSet
 namespace Truncated
 
+-- TODO: a bug in the linter causes lots of false positive warnings; fix them!
+set_option linter.style.commandStart false
+
 open SimplexCategory.Truncated Truncated.Hom SimplicialObject.Truncated
 
 /-- A path of length `n` in a 1-truncated simplicial set `X` is a directed path

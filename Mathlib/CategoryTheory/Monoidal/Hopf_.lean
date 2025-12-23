@@ -45,7 +45,7 @@ class HopfObj (X : C) extends BimonObj X where
 namespace HopfObj
 
 @[inherit_doc] scoped notation "𝒮" => HopfObj.antipode
-@[inherit_doc] scoped notation "𝒮["M"]" => HopfObj.antipode (X := M)
+@[inherit_doc] scoped notation "𝒮[" M "]" => HopfObj.antipode (X := M)
 
 attribute [reassoc (attr := simp)] antipode_left antipode_right
 

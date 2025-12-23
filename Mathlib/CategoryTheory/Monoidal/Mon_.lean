@@ -72,9 +72,9 @@ namespace MonObj
 variable {M X Y : C} [MonObj M]
 
 @[inherit_doc] scoped notation "μ" => MonObj.mul
-@[inherit_doc] scoped notation "μ["M"]" => MonObj.mul (X := M)
+@[inherit_doc] scoped notation "μ[" M "]" => MonObj.mul (X := M)
 @[inherit_doc] scoped notation "η" => MonObj.one
-@[inherit_doc] scoped notation "η["M"]" => MonObj.one (X := M)
+@[inherit_doc] scoped notation "η[" M "]" => MonObj.one (X := M)
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
@@ -128,6 +128,7 @@ attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   rightUnitor_tensor_hom rightUnitor_tensor_hom_assoc
   rightUnitor_tensor_inv rightUnitor_tensor_inv_assoc
 
+set_option linter.style.commandStart false -- linter false positive
 attribute [mon_tauto ←] tensorHom_id id_tensorHom
 
 @[reassoc (attr := mon_tauto)]

@@ -650,6 +650,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
 def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     ``«term¬_»,
+    -- notation for `upShadow`, the pretty-printer prefers `∂⁺ ` over `∂⁺` *always*
+    `FinsetFamily.«term∂⁺»,
   ]
   depth := some 2
 
@@ -1504,7 +1506,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
     let pp := pretty.toRawSubstring
     let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] stx pretty.toRawSubstring
-    let (reported, excluded) := corr.partition fun _ {kinds := ks,..} => !totalExclusions.contains ks
+    let (reported, excluded) := corr.partition fun _ {kinds := ks,..} =>
+      (!totalExclusions.contains ks && !ignoreSpaceAfter.contains ks)
     let fm ← getFileMap
     --dbg_trace "reported: {reported.toArray.map (fm.toPosition ·.1)}"
     --dbg_trace "excluded: {excluded.toArray.map (fm.toPosition ·.1)}"
