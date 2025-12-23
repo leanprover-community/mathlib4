@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Ideal.Quotient.Index
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Nakayama.Basic
 
 /-!
 

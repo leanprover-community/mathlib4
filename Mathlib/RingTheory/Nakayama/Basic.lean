@@ -198,4 +198,29 @@ theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
   grw [sup_comm, ← htspan]
   simp only [le_sup_right]
 
+-- TODO: this might should be placed elsewhere?
+noncomputable def quotientIdealSubmoduleEquivMap (N : Submodule R M) (I : Ideal R) :
+    (N ⧸ (I • ⊤ : Submodule R N)) ≃ₗ[R] (map (I • N).mkQ N) := by
+  refine LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩
+  · refine Submodule.liftQ _ ?_ ?_
+    · exact {
+        toFun x := by
+          rcases x with ⟨x, hx⟩
+          use ((I • N).mkQ x), x, hx
+        map_add' := by simp
+        map_smul' := by simp
+      }
+    · intro x hx
+      rw [mem_smul_top_iff] at hx
+      simp [hx]
+  · rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+    intro x hx
+    induction x using Submodule.Quotient.induction_on with | H x =>
+    simp only [mkQ_apply, liftQ_apply, LinearMap.coe_mk, AddHom.coe_mk, mk_eq_zero,
+      Quotient.mk_eq_zero] at hx
+    simp only [Quotient.mk_eq_zero, mem_smul_top_iff, hx]
+  · rintro ⟨_, ⟨x, hx, rfl⟩⟩
+    use Quotient.mk ⟨x, hx⟩
+    simp
+
 end Submodule

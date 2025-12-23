@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.LinearAlgebra.Dimension.Finite
@@ -13,7 +14,8 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Nakayama.Basic
+public import Mathlib.RingTheory.Nakayama.SpanRank
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -219,6 +221,14 @@ lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
+/-- `I ⧸ I ^ 2` as an `R`-submodule of `R ⧸ I ^ 2`. -/
+def cotangentSubmodule (I : Ideal R) : Submodule R (R ⧸ I ^ 2) :=
+  Submodule.map (I ^ 2).mkQ I
+
+noncomputable def cotangentEquivSubmodule (I : Ideal R) :
+    I.Cotangent ≃ₗ[R] (Submodule.map (I ^ 2).mkQ I) := by
+  rw [pow_two]; exact Submodule.quotientIdealSubmoduleEquivMap I I
+
 end Ideal
 
 namespace IsLocalRing
@@ -263,6 +273,15 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
     Submodule.restrictScalars_span]
   · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
   · exact Ideal.Quotient.mk_surjective
+
+/--
+The span rank of the maximal ideal of a local ring equals the dimension of the cotangent space
+if the maximal ideal is finitely generated.
+-/
+theorem rank_cotangentSpace_eq_spanrank_maximalIdeal (hm : (maximalIdeal R).FG) :
+    Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank := by
+  rw [Submodule.spanRank_eq_spanRank_quotient_ideal_quotientIdealSubmodule
+    hm (maximalIdeal_le_jacobson _), Submodule.rank_eq_spanRank_of_free]
 
 open Module
 

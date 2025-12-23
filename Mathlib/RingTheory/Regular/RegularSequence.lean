@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Nakayama.Basic
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
