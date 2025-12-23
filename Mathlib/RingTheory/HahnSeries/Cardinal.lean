@@ -112,8 +112,7 @@ theorem cardSupp_pow_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Semiri
   induction n with
   | zero => simp
   | succ n IH =>
-    simp_rw [pow_succ]
-    exact (cardSupp_mul_le ..).trans <| mul_le_mul_left IH _
+    simpa [pow_succ] using (cardSupp_mul_le ..).trans <| mul_le_mul_left IH _
 
 theorem cardSupp_hsum_le [AddCommMonoid R] (s : SummableFamily Γ R α) :
     lift s.hsum.cardSupp ≤ sum fun a ↦ (s a).cardSupp :=
@@ -127,8 +126,8 @@ variable [LinearOrder Γ]
 
 theorem cardSupp_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
     (x : R⟦Γ⟧) : (SummableFamily.powers x).hsum.cardSupp ≤ max ℵ₀ x.cardSupp := by
-  rw [← lift_uzero (cardSupp _)]
-  refine (sum_pow_le_max_aleph0 _).trans' <| (cardSupp_hsum_le _).trans <| sum_le_sum _ _ fun i ↦ ?_
+  grw [← lift_uzero (cardSupp _), ← sum_pow_le_max_aleph0, cardSupp_hsum_le, sum_le_sum]
+  intro i
   rw [SummableFamily.powers_toFun]
   split_ifs
   · exact cardSupp_pow_le ..
