@@ -44,7 +44,6 @@ theorem rotate_nil (n : ℕ) : ([] : List α).rotate n = [] := by simp [rotate]
 @[simp]
 theorem rotate_zero (l : List α) : l.rotate 0 = l := by simp [rotate]
 
-@[simp]
 theorem rotate'_nil (n : ℕ) : ([] : List α).rotate' n = [] := by simp
 
 @[simp]
@@ -197,7 +196,6 @@ theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : L
     zipWith f (x :: y :: l) ((x :: y :: l).rotate 1) = f x y :: zipWith f (y :: l) (l ++ [x]) := by
   simp
 
-@[simp]
 theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     (l.rotate n)[m]? = l[(m + n) % l.length]? := by
   rw [rotate_eq_drop_append_take_mod]
