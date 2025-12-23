@@ -28,7 +28,7 @@ characterize doubling measures. In particular, a measure on metric space is doub
 if every `α`-snowflaking (with `α < 1`) of it is bilipschitz equivalent to a subset of some
 Euclidean space (the dimension of the Euclidean space depends on `α`).
 
-One of the reasons to introduce this definition is the following.
+Another reason to introduce this definition is the following.
 In the proof of his version of the Morse-Sard theorem,
 Moreira [Moreira2001] studies maps of two variables that are Lipschitz continuous in one variable,
 but satisfy a stronger assumption `‖f (a, y) - f (a, b)‖ = O(‖y - b‖ ^ α)`
