@@ -115,7 +115,7 @@ theorem repr_self {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
     dsimp [repr, coeff]
     exact ((Classical.choose_spec h).2 x).2
 
-variable [CompleteSpace X]
+
 
 /-- A canonical projection associated to a Schauder basis. -/
 def CanonicalProjections {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℕ → X →L[𝕜] X := by
@@ -150,7 +150,8 @@ def CanonicalProjections {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℕ → 
               _ ≤ ‖(biorthogonal_functionals h i)‖ * ‖x‖ * ‖e i‖ := by
                 apply mul_le_mul_of_nonneg_right (ContinuousLinearMap.le_opNorm _ x) (norm_nonneg _)
               _ = ‖(biorthogonal_functionals h i)‖ * ‖e i‖ * ‖x‖ := by ring)
-    exact ∑ i : Finset.range n, hi i
+
+    exact (Finset.range n).sum (fun i => hi i)
 
 namespace CanonicalProjections
 
@@ -188,7 +189,6 @@ theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : �
 
 theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
     Tendsto (fun n => CanonicalProjections h n x) atTop (𝓝 x) := by
-
     let bf := biorthogonal_functionals h
     have tndto : Tendsto (fun n => (∑ i ∈ Finset.range n, coeff h x i • e i))
         atTop (𝓝 (∑' n, bf n x • e n)) := HasSum.tendsto_sum_nat (coeff_summable h x).hasSum
@@ -196,9 +196,13 @@ theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
         nth_rw 2 [<-repr_self h x]
         dsimp [repr, coeff]
     rw [r] at tndto
-    have p: ∀ n, ∑ i ∈ Finset.range n, h.coeff x i • e i = (h.CanonicalProjections n) x := by sorry
+    have p: ∀ n, ∑ i ∈ Finset.range n, h.coeff x i • e i = (h.CanonicalProjections n) x := by
+        dsimp [CanonicalProjections, coeff]
+        simp
+
     exact Filter.Tendsto.congr p tndto
 
+variable [CompleteSpace X]
 -- todo clean up proof
 theorem uniform_bound {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
     ∃ C : ℝ, ∀ n : ℕ, ‖CanonicalProjections h n‖ ≤ C := by
@@ -219,7 +223,7 @@ theorem uniform_bound {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
 def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
     sInf { C : ℝ | ∀ n : ℕ, ‖CanonicalProjections h n‖ ≤ C }
 
-omit [CompleteSpace X]
+
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n + 1)
     (hcomp : ∀ m n : ℕ, P n ∘ P m = P (min n m))
