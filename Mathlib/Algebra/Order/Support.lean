@@ -13,12 +13,11 @@ public import Mathlib.RingTheory.Ideal.Defs
 
 Let `G` be an (additive) group, and let `M` be a submonoid of `G`.
 The *support* of `M` is `M ∩ -M`, the largest subgroup of `M`.
-When `M ∪ -M = G`, the support of `M` forms an ideal.
 
 ## Main definitions
 
-* `AddSubmonoid.supportAddSubgroup`: the support of a submonoid as a subgroup.
-* `AddSubmonoid.support`: the support of a submonoid as an ideal.
+* `AddSubmonoid.support`: the support of a submonoid as a subgroup.
+* `Subsemiring.support`: the support of a subsemiring as an ideal.
 
 -/
 
@@ -35,7 +34,7 @@ the largest subgroup contained in `M`.
 @[to_additive
 /-- The support of a submonoid `M` of a group `G` is `M ∩ -M`,
 the largest subgroup contained in `M`. -/]
-def supportSubgroup : Subgroup G where
+def mulSupport : Subgroup G where
   carrier := M ∩ M⁻¹
   one_mem' := by aesop
   mul_mem' := by aesop
@@ -44,68 +43,60 @@ def supportSubgroup : Subgroup G where
 set_option backward.privateInPublic true in
 variable {M} in
 @[to_additive (attr := aesop simp)]
-theorem mem_supportSubgroup {x} : x ∈ M.supportSubgroup ↔ x ∈ M ∧ x⁻¹ ∈ M := .rfl
+theorem mem_mulSupport {x} : x ∈ M.mulSupport ↔ x ∈ M ∧ x⁻¹ ∈ M := .rfl
 
 @[to_additive]
-theorem coe_supportSubgroup : M.supportSubgroup = (M ∩ M⁻¹ : Set G) := rfl
+theorem coe_mulSupport : M.mulSupport = (M ∩ M⁻¹ : Set G) := rfl
 
 end Submonoid
 
-section Ring
+namespace Subsemiring
 
-variable {R : Type*} [Ring R]
+variable {R : Type*} [Ring R] (S : Subsemiring R)
 
-namespace AddSubmonoid
-
-variable (M : AddSubmonoid R)
-
-/-- Typeclass to track when the support of a submonoid forms an ideal. -/
+/-- Typeclass to track when the support of a subsemiring forms an ideal. -/
 class HasIdealSupport : Prop where
-  smul_mem_support (x : R) {a : R} (ha : a ∈ M.supportAddSubgroup) :
-    x * a ∈ M.supportAddSubgroup := by aesop
+  smul_mem_support (x : R) {a : R} (ha : a ∈ S.support) :
+    x * a ∈ S.support := by aesop
 
 export HasIdealSupport (smul_mem_support)
 
 variable {M} in
 theorem hasIdealSupport_iff :
-    M.HasIdealSupport ↔ ∀ x a : R, a ∈ M → -a ∈ M → x * a ∈ M ∧ -(x * a) ∈ M where
-  mp _ := have := M.smul_mem_support; by aesop
+    S.HasIdealSupport ↔ ∀ x a : R, a ∈ S → -a ∈ S → x * a ∈ S ∧ -(x * a) ∈ S where
+  mp _ := have := S.smul_mem_support; by aesop
   mpr _ := { }
 
 section HasIdealSupport
 
-variable [M.HasIdealSupport]
+variable [S.HasIdealSupport]
 
 @[aesop 80% (rule_sets := [SetLike])]
-theorem smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : x * a ∈ M := by
-  have := M.smul_mem_support
+theorem smul_mem (x : R) {a : R} (h₁a : a ∈ S) (h₂a : -a ∈ S) : x * a ∈ S := by
+  have := S.smul_mem_support
   aesop
 
 @[aesop 80% (rule_sets := [SetLike])]
-theorem neg_smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : -(x * a) ∈ M := by
-  have := M.smul_mem_support
+theorem neg_smul_mem (x : R) {a : R} (h₁a : a ∈ S) (h₂a : -a ∈ S) : -(x * a) ∈ S := by
+  have := S.smul_mem_support
   aesop
 
-/-- The support `M ∩ -M` of a submonoid `M` of a ring `R`, as an ideal. -/
+/-- The support `S ∩ -S` of a subsemiring `S` of a ring `R`, as an ideal. -/
 def support : Ideal R where
-  __ := supportAddSubgroup M
+  __ := S.toAddSubmonoid.support
   smul_mem' := by aesop
 
 set_option backward.privateInPublic true in
 variable {M} in
 @[aesop simp]
-theorem mem_support {x} : x ∈ M.support ↔ x ∈ M ∧ -x ∈ M := .rfl
+theorem mem_support {x} : x ∈ S.support ↔ x ∈ S ∧ -x ∈ S := .rfl
 
-theorem coe_support : M.support = (M : Set R) ∩ -(M : Set R) := rfl
+theorem coe_support : S.support = (S : Set R) ∩ -(S : Set R) := rfl
 
 @[simp]
-theorem supportAddSubgroup_eq : M.supportAddSubgroup = M.support.toAddSubgroup := rfl
+theorem toAddSubmonoid_support : S.toAddSubmonoid.support = S.support.toAddSubgroup := rfl
 
 end HasIdealSupport
-
-end AddSubmonoid
-
-namespace Subsemiring
 
 instance (M : Subsemiring R) [HasMemOrNegMem M] : M.HasIdealSupport where
   smul_mem_support x a ha := by
@@ -114,5 +105,3 @@ instance (M : Subsemiring R) [HasMemOrNegMem M] : M.HasIdealSupport where
     aesop (add 80% this)
 
 end Subsemiring
-
-end Ring

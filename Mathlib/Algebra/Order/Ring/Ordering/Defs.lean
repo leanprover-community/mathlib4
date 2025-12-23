@@ -121,17 +121,20 @@ theorem copy_eq : P.copy S hS = S := rfl
 end copy
 
 @[deprecated (since := "2025-12-13")] alias
-  mem_supportAddSubgroup := AddSubmonoid.mem_supportAddSubgroup
+  supportAddSubgroup := AddSubmonoid.support
 
 @[deprecated (since := "2025-12-13")] alias
-  coe_supportAddSubgroup := AddSubmonoid.mem_supportAddSubgroup
+  mem_supportAddSubgroup := AddSubmonoid.mem_support
 
 @[deprecated (since := "2025-12-13")] alias
-  hasIdealSupport_iff := AddSubmonoid.hasIdealSupport_iff
+  coe_supportAddSubgroup := AddSubmonoid.coe_support
+
+@[deprecated (since := "2025-12-13")] alias
+  hasIdealSupport_iff := Subsemiring.hasIdealSupport_iff
 
 @[deprecated (since := "2025-12-13")]
 alias instHasIdealSupportToAddSubmonoidOfHasMemOrNegMem :=
-  Subsemiring.instHasIdealSupportToAddSubmonoidOfHasMemOrNegMem
+  Subsemiring.instHasIdealSupportOfHasMemOrNegMem
 
 @[deprecated (since := "2025-12-13")] alias
   mem_support := AddSubmonoid.mem_support
@@ -140,7 +143,7 @@ alias instHasIdealSupportToAddSubmonoidOfHasMemOrNegMem :=
   coe_support := AddSubmonoid.coe_support
 
 @[deprecated (since := "2025-12-13")] alias
-  supportAddSubgroup_eq := AddSubmonoid.supportAddSubgroup_eq
+  supportAddSubgroup_eq := Subsemiring.toAddSubmonoid_support
 
 instance (P : RingPreordering R) [HasMemOrNegMem P] : HasMemOrNegMem P.toSubsemiring where
   mem_or_neg_mem := mem_or_neg_mem P

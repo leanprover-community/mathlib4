@@ -94,14 +94,14 @@ section ne_top
 
 variable (P)
 
-theorem one_notMem_supportAddSubgroup : 1 ∉ P.supportAddSubgroup :=
+theorem one_notMem_supportAddSubgroup : 1 ∉ P.toAddSubmonoid.support :=
   fun h => RingPreordering.neg_one_notMem P h.2
 
 theorem one_notMem_support [P.HasIdealSupport] : 1 ∉ P.support := by
   simpa using one_notMem_supportAddSubgroup P
 
-theorem supportAddSubgroup_ne_top : P.supportAddSubgroup ≠ ⊤ :=
-  fun h => RingPreordering.neg_one_notMem P (by simp [h] : 1 ∈ P.supportAddSubgroup).2
+theorem supportAddSubgroup_ne_top : P.toAddSubmonoid.support ≠ ⊤ :=
+  fun h => RingPreordering.neg_one_notMem P (by simp [h] : 1 ∈ P.toAddSubmonoid.support).2
 
 theorem support_ne_top [P.HasIdealSupport] : P.support ≠ ⊤ := by
   apply_fun Submodule.toAddSubgroup
@@ -116,10 +116,10 @@ theorem IsOrdering.mk' [HasMemOrNegMem P]
 end ne_top
 
 @[deprecated (since := "2025-12-15")]
-alias HasIdealSupport.smul_mem := AddSubmonoid.smul_mem
+alias HasIdealSupport.smul_mem := Subsemiring.smul_mem
 
 @[deprecated (since := "2025-12-15")]
-alias HasIdealSupport.neg_smul_mem := AddSubmonoid.neg_smul_mem
+alias HasIdealSupport.neg_smul_mem := Subsemiring.neg_smul_mem
 
 theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport where
   smul_mem_support x a _ := by
@@ -145,7 +145,7 @@ protected theorem eq_zero_of_mem_of_neg_mem {x} (h : x ∈ P) (h2 : -x ∈ P) : 
   field_simp at mem
   exact RingPreordering.neg_one_notMem P mem
 
-theorem supportAddSubgroup_eq_bot : P.supportAddSubgroup = ⊥ := by
+theorem supportAddSubgroup_eq_bot : P.toAddSubmonoid.support = ⊥ := by
   ext; aesop
 
 instance : P.HasIdealSupport where
