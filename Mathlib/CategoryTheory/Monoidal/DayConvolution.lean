@@ -988,7 +988,7 @@ as many parameters as we can. -/
 
 /-- An `InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D` bundles the
 core data needed to construct a full `LawfulDayConvolutionMonoidalCategoryStructCore`.
-We’re making this a class so that it can act as a "proxy" for inferring `DayConvolution`
+We are making this a class so that it can act as a "proxy" for inferring `DayConvolution`
 instances (which is all the more important that we are modifying the instances given in the
 constructor to get better ones defeq-wise). As this object is purely about the internals
 of definitions of Day convolutions monoidal structures, it is advised to not register
