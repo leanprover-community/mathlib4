@@ -243,8 +243,10 @@ variable {G : Type*} [CommGroup G] (s : Set G)
 lemma mul_stabilizer_self : s * stabilizer G s = s := by rw [mul_comm, stabilizer_mul_self]
 
 local notation " Q " => G ⧸ stabilizer G s
+set_option linter.style.commandStart false -- linter false positive
 local notation " q " => ((↑) : G → Q)
 
+set_option linter.style.commandStart false -- linter false positive
 @[to_additive]
 lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by
   ext a
