@@ -277,6 +277,8 @@ lemma coe_prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ}
     (f : (i : ι) → SlashInvariantForm Γ (k i)) :
     (SlashInvariantForm.prod hs m hm f).toFun = ∏ i ∈ s, (f i).1 := by rfl
 
+/-- Given `SlashInvariantForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
+function is a product of those indexed by `ι`, a `Fintype`, with weight `m = ∑ i ∈ s, k i`. -/
 def prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
      (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
      (f : (i : ι) → SlashInvariantForm Γ (k i)) : SlashInvariantForm Γ m where
