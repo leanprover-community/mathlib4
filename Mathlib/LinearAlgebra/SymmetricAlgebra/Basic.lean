@@ -21,7 +21,7 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 * `SymmetricAlgebra.ι R`: the canonical R-linear map `M →ₗ[R] SymmetricAlgebra R M`.
 * Given a morphism `ι : M →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the algebra
   homomorphism from `SymmetricAlgebra R M` to `A` lifted from `ι` is bijective.
-* Given a linear map `f : M →ₗ[R] A'` to an commutative R-algebra `A'`, and a morphism
+* Given a linear map `f : M →ₗ[R] A'` to a commutative R-algebra `A'`, and a morphism
   `ι : M →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift p f`
   is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A'`.
 
@@ -168,7 +168,7 @@ variable {f : M →ₗ[R] A} (h : IsSymmetricAlgebra f)
 
 section equiv
 
-/-- For `f : M →ₗ[R] A`, construst the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
+/-- For `f : M →ₗ[R] A`, construct the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
 from `IsSymmetricAlgebra f`. -/
 noncomputable def equiv : SymmetricAlgebra R M ≃ₐ[R] A :=
   .ofBijective (SymmetricAlgebra.lift f) h
@@ -240,9 +240,9 @@ theorem induction {motive : A → Prop}
   generalize h.equiv.invFun a = y
   change motive (SymmetricAlgebra.lift f y)
   induction y using SymmetricAlgebra.induction with
-    | algebraMap r => simpa using algebraMap r
-    | ι y => simpa using ι y
-    | mul _ _ hx hy => simpa using mul _ _ hx hy
-    | add _ _ hx hy => simpa using add _ _ hx hy
+  | algebraMap r => simpa using algebraMap r
+  | ι y => simpa using ι y
+  | mul _ _ hx hy => simpa using mul _ _ hx hy
+  | add _ _ hx hy => simpa using add _ _ hx hy
 
 end IsSymmetricAlgebra

@@ -49,7 +49,7 @@ variable {G H I M : Type*} [Group G] [Group H] [Monoid M] {N : Subgroup G}
     using ⟨fun h ↦ by ext; simpa using h _ 1, fun h ↦ by simp [h]⟩
 
 @[to_additive (attr := simp)] protected lemma subsingleton_iff : Subsingleton (G ⧸ N) ↔ N = ⊤ := by
-  simp [HasQuotient.Quotient, instHasQuotientSubgroup]
+  simp [HasQuotient.Quotient]
 
 @[to_additive (attr := simp)] protected lemma nontrivial_iff : Nontrivial (G ⧸ N) ↔ N ≠ ⊤ := by
   simp [← not_subsingleton_iff_nontrivial]

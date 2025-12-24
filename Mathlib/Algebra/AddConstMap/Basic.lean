@@ -46,7 +46,7 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
+scoped[AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
 
 /-- Typeclass for maps satisfying `f (x + a) = f x + b`.
 
@@ -67,7 +67,7 @@ namespace AddConstMapClass
 In this section we prove properties like `f (x + n • a) = f x + n • b`.
 -/
 
-scoped [AddConstMapClass] attribute [simp] map_add_const
+scoped[AddConstMapClass] attribute [simp] map_add_const
 
 variable {F G H : Type*} [FunLike F G H] {a : G} {b : H}
 
@@ -261,7 +261,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
-        _ ≤ l + (0 : ℤ) • a := by gcongr; cutsat
+        _ ≤ l + (0 : ℤ) • a := by gcongr; lia
         _ ≤ x := by simpa using hx.1
     · -- If `n = 0`, then `l < y ≤ l + a`, hence we can apply the assumption
       exact hf x (Ico_subset_Icc_self hx) y (by simpa using Ioc_subset_Icc_self hny) hxy
