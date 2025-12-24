@@ -266,16 +266,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
 
-lemma span_coroot_eq_top :
-    Submodule.span K (Set.range (coroot : LieModule.Weight K H L → H)) = ⊤ := by
-  have h := RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H)
-  rw [eq_top_iff]
-  calc ⊤ = Submodule.span K (Set.range (rootSystem H).coroot) := h.symm
-    _ ≤ Submodule.span K (Set.range coroot) := by
-        apply Submodule.span_mono
-        rintro _ ⟨α, rfl⟩
-        exact ⟨α.1, rfl⟩
-
 lemma rootSpace_le_sl2SubmoduleOfRoot (α : LieModule.Weight K H L) (hα : α.IsNonZero) :
     LieAlgebra.rootSpace H α ≤ sl2SubmoduleOfRoot hα := by
   rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left
@@ -286,9 +276,10 @@ lemma H_le_iSup_sl2SubmoduleOfRoot :
   intro x hx
   obtain ⟨c, hc⟩ : ∃ c : LieModule.Weight K H L →₀ K,
       (c.sum fun α r => r • coroot α) = ⟨x, hx⟩ := by
-    have h_span := span_coroot_eq_top (H := H)
-    rw [Submodule.eq_top_iff'] at h_span
-    exact Finsupp.mem_span_range_iff_exists_finsupp.mp (h_span ⟨x, hx⟩)
+    have h_span : Submodule.span K (Set.range (coroot : Weight K H L → H)) = ⊤ := by
+      have h := RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H)
+      refine eq_top_iff.mpr (h.symm.trans_le (Submodule.span_mono fun _ ⟨α, hα⟩ ↦ ⟨α.1, hα⟩))
+    exact Finsupp.mem_span_range_iff_exists_finsupp.mp (h_span.symm ▸ trivial)
   have hx_sum : x = ∑ α ∈ c.support, c α • (coroot α : L) := by
     have : (⟨x, hx⟩ : H.toLieSubmodule) = c.sum fun α r => r • coroot α := hc.symm
     calc x = (⟨x, hx⟩ : H.toLieSubmodule) := rfl
