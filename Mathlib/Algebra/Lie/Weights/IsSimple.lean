@@ -292,18 +292,14 @@ lemma H_le_invtSubmoduleToLieIdeal_top :
 
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
-  ext x; simp only [LieSubmodule.mem_top, iff_true]
-  have hx : x ∈ H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α := iSup_rootSpace_eq_top H ▸ trivial
-  rw [LieSubmodule.mem_sup] at hx
-  obtain ⟨y, hy, z, hz, rfl⟩ := hx
-  refine add_mem (H_le_invtSubmoduleToLieIdeal_top hy) ?_
-  induction hz using LieSubmodule.iSup_induction' with
-  | mem α z hz =>
-    simp only [coe_invtSubmoduleToLieIdeal_eq_iSup, Submodule.mem_top, true_and]
-    exact LieSubmodule.mem_iSup_of_mem ⟨α, trivial, (Finset.mem_filter_univ _).mp α.2⟩
-      ((rootSpace_le_sl2SubmoduleOfRoot α _) hz)
-  | zero => simp
-  | add _ _ ih₁ ih₂ => exact add_mem ih₁ ih₂
+  have h1 := H_le_invtSubmoduleToLieIdeal_top (H := H)
+  have h2 : ∀ α : H.root, (rootSpace H α : Submodule K L) ≤
+      invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) := by
+    rintro ⟨α, hα⟩
+    have hα' : α.IsNonZero := (Finset.mem_filter.mp hα).2
+    exact (rootSpace_le_sl2SubmoduleOfRoot α hα').trans (le_iSup_of_le ⟨α, trivial, hα'⟩ le_rfl)
+  sorry
+
 
 section IsSimple
 
