@@ -22,7 +22,7 @@ Fourier transform of the functions.
 
 variable {𝕜 E F F₁ F₂ F₃ : Type*}
 
-open MeasureTheory
+open MeasureTheory Convolution
 
 variable [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [NormedAddCommGroup F₁] [NormedAddCommGroup F₂] [NormedAddCommGroup F₃]
@@ -57,8 +57,8 @@ open FourierTransform
 /-- Calculate the Fourier transform of the convolution as a symmetric integral. -/
 theorem fourier_convolution_eq' {f₁ : E → F₁} {f₂ : E → F₂} (hf₁ : Integrable f₁)
     (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) (ξ : E) :
-    𝓕 (convolution f₁ f₂ B) ξ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) := calc
-  _ = 𝓕 (MeasureTheory.convolution f₂ f₁ B.flip) ξ := by
+    𝓕 (f₁ ⋆[B] f₂) ξ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) := calc
+  _ = 𝓕 (f₂ ⋆[B.flip] f₁) ξ := by
     rw [convolution_flip]
   _ = ∫ x, 𝐞 (-inner ℝ x ξ) • ∫ y, B (f₁ (x - y)) (f₂ y) := by rfl
   _ = ∫ x, ∫ y, 𝐞 (-inner ℝ x ξ) • B (f₁ (x - y)) (f₂ y) := by
@@ -86,7 +86,7 @@ variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]
 of the individual functions. -/
 theorem fourier_convolution_eq {f₁ : E → F₁} {f₂ : E → F₂} (hf₁ : Integrable f₁)
     (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) (ξ : E) :
-    𝓕 (convolution f₁ f₂ B) ξ = B (𝓕 f₁ ξ) (𝓕 f₂ ξ) := calc
+    𝓕 (f₁ ⋆[B] f₂) ξ = B (𝓕 f₁ ξ) (𝓕 f₂ ξ) := calc
   _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) :=
     fourier_convolution_eq' B hf₁ hf₂ hf₁' hf₂' _
   _ = ∫ y, ∫ x, 𝐞 (-inner ℝ y ξ) • 𝐞 (-inner ℝ x ξ) • B (f₁ x) (f₂ y) := by
