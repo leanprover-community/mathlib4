@@ -182,9 +182,6 @@ def comap (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : Submodule
 theorem comap_coe (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
 
-@[simp] theorem comap_coe_toLinearMap (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) :
-    comap (f : M →ₛₗ[σ₁₂] M₂) p = comap f p := rfl
-
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
     (f : A →+ A₂) (s : AddSubgroup A₂) :

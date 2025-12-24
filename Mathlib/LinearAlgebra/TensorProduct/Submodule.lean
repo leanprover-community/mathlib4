@@ -76,6 +76,12 @@ theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ
     Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
   rfl
 
+theorem coe_mulMap_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
+    mulMap (M.map (f : S →ₗ[R] T)) (N.map (f : S →ₗ[R] T)) ∘
+      TensorProduct.map ((f : S →ₗ[R] T).submoduleMap M) ((f : S →ₗ[R] T).submoduleMap N)
+        = f ∘ mulMap M N :=
+  congr(⇑($(mulMap_map_comp_eq M N f)))
+
 theorem mulMap_op :
     mulMap (equivOpposite.symm (MulOpposite.op M)) (equivOpposite.symm (MulOpposite.op N)) =
     (MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ mulMap N M ∘ₗ
