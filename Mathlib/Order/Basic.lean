@@ -564,11 +564,9 @@ instance (α : Type*) [LT α] : LT αᵒᵈ :=
 instance instOrd (α : Type*) [Ord α] : Ord αᵒᵈ where
   compare := fun (a b : α) ↦ compare b a
 
+@[to_dual]
 instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
   ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨((· ⊔ ·) : α → α → α)⟩
 
 instance instIsTransLE [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
   trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
