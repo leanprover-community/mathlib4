@@ -178,7 +178,7 @@ theorem Dense.upperBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
   rw [mem_closure_iff_frequently] at hi
   exact (hi.mono hx).mem_of_closed isClosed_Iic
 
-/-- The lower bounds of the image of a continuous function on a dense set is equal to the lower
+/-- The lower bounds of the image of a continuous function on a dense set are equal to the lower
 bounds of the range of the universe. -/
 theorem Dense.lowerBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
