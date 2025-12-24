@@ -55,6 +55,10 @@ variable (C) in
 /-- `IsFinitelyPresentable` as an `ObjectProperty` on `C`. This is sometimes called "compact". -/
 def ObjectProperty.isFinitelyPresentable : ObjectProperty C := fun X ↦ IsFinitelyPresentable.{w} X
 
+lemma ObjectProperty.isFinitelyPresentable_eq_isCardinalPresentable :
+    isFinitelyPresentable.{w} C = isCardinalPresentable.{w} C ℵ₀ :=
+  rfl
+
 variable (C) in
 /-- A morphism `f : X ⟶ Y` is finitely presentable if it is so as an object of `Under X`. -/
 def MorphismProperty.isFinitelyPresentable : MorphismProperty C :=
@@ -72,6 +76,10 @@ instance (X : C) [IsFinitelyPresentable.{w} X] :
     PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) := by
   rw [← isFinitelyPresentable_iff_preservesFilteredColimitsOfSize]
   infer_instance
+
+instance (X : (ObjectProperty.isFinitelyPresentable.{w} C).FullSubcategory) :
+    IsFinitelyPresentable.{w} ((ObjectProperty.isFinitelyPresentable.{w} C).ι.obj X) :=
+  X.property
 
 lemma IsFinitelyPresentable.exists_hom_of_isColimit {J : Type w} [SmallCategory J] [IsFiltered J]
     {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c) {X : C} [IsFinitelyPresentable.{w} X]

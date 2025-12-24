@@ -270,7 +270,7 @@ theorem ncard_primesOver_mul_ncard_primesOver (hp : p ≠ ⊥) :
     mul_ne_zero (ramificationIdxIn_ne_zero GAC hp) (inertiaDegIn_ne_zero GAC)
   rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp C GAC]
   calc
-    _ = ((p.primesOver B).ncard *  (p.ramificationIdxIn B * p.inertiaDegIn B)) *
+    _ = ((p.primesOver B).ncard * (p.ramificationIdxIn B * p.inertiaDegIn B)) *
           ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
       rw [← inertiaDegIn_mul_inertiaDegIn p P G C GAC GBC,
         ← ramificationIdxIn_mul_ramificationIdxIn P G C GAC GBC
