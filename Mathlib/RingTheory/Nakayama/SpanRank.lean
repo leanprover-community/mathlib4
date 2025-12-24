@@ -21,6 +21,13 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Submodule
 
+/--
+The span rank of an `R`-submodule `N` of `M` is equal to
+the span rank of the `R`-submodule `N / (I • N)` of `M / (I • N)`,
+provided that `N` is finitely generated and `I` is contained in the Jacobson radical of `R`.
+
+Here `N / (I • N)` is the image of `N` under the `R`-module quotient map `M → M / (I • N)`.
+-/
 theorem spanRank_eq_spanRank_map_mkQ_of_le_jacobson_bot
     {I : Ideal R} {N : Submodule R M}
     (hN : N.FG) (hIjac : I ≤ Ideal.jacobson ⊥) :
@@ -55,6 +62,13 @@ theorem spanRank_eq_spanRank_map_mkQ_of_le_jacobson_bot
         simp [hsspan]
   · exact spanRank_le_spanRank_of_map_eq (mkQ (I • N)) (by dsimp)
 
+/--
+The span rank of an `R`-submodule `N` of `M` is equal to
+the span rank of the `R`-module `N / (I • N)`,
+provided that `N` is finitely generated and `I` is contained in the Jacobson radical of `R`.
+
+Here `N / (I • N)` is obtained by directly taking the quotient of `N` by the its submodule `I • ⊤`.
+-/
 theorem spanRank_eq_spanRank_quotientIdealSubmodule
     {I : Ideal R} {N : Submodule R M}
     (hN : N.FG) (hIjac : I ≤ Ideal.jacobson ⊥) :
@@ -66,6 +80,13 @@ theorem spanRank_eq_spanRank_quotientIdealSubmodule
     (Submodule.topEquiv : _ ≃ₗ[R] (N ⧸ (I • ⊤ : Submodule R N)))
     (quotientIdealSubmoduleEquivMap N I)
 
+/--
+The span rank of an `R`-submodule `N` of `M` is equal to
+the span rank of the `R / I`-module `N / (I • N)`,
+provided that `N` is finitely generated and `I` is contained in the Jacobson radical of `R`.
+
+Here `N / (I • N)` is obtained by directly taking the quotient of `N` by the its submodule `I • ⊤`.
+-/
 theorem spanRank_eq_spanRank_quotient_ideal_quotientIdealSubmodule
     {I : Ideal R} {N : Submodule R M}
     (hN : N.FG) (hIjac : I ≤ Ideal.jacobson ⊥) :

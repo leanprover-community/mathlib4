@@ -184,8 +184,14 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   | add _ _ _ _ hx hy => exact N.add_mem hx hy
   | zero => exact N.zero_mem
 
-/-- **Nakayama's Lemma** - Statement (8) in
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV). -/
+/--
+**Nakayama's Lemma** - a slightly more general version of (8) in
+[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
+
+If `N` is a finitely generated `R`-submodule of `M`, whose image under the quotient map
+`M → M / (I • N)` is contained in the span of a set `t` of `M`,
+then `N` is contained in the span of `t`, given that `I` is contained in the Jacobson radical.
+-/
 @[stacks 00DV "(8)"]
 theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
     {I : Ideal R} {N : Submodule R M} {t : Set M}
@@ -199,8 +205,9 @@ theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
   simp only [le_sup_right]
 
 /--
-The equivalence of the two definitions of `N / I N`,
-either as a quotient of `N`, or the image of `N` in `M / I M`.
+The linear equivalence of the two definitions of `N / I • N`,
+either as a quotient of `N` by its submodule `I • ⊤`,
+or the image of `N` under the `R`-module quotient map `M → M / (I • N)`.
 -/
 noncomputable def quotientIdealSubmoduleEquivMap (N : Submodule R M) (I : Ideal R) :
     (N ⧸ (I • ⊤ : Submodule R N)) ≃ₗ[R] (map (I • N).mkQ N) := by

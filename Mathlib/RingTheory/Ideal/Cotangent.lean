@@ -221,13 +221,14 @@ lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
-/-- `I ⧸ I ^ 2` as the image of `I` in the `R`-module `R / I ^ 2`. -/
+/-- `I ⧸ I ^ 2` as the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`. -/
 def cotangentSubmodule (I : Ideal R) : Submodule R (R ⧸ I ^ 2) :=
   Submodule.map (I ^ 2).mkQ I
 
 /--
-The equivalence of the two definitions of `I / I ^ 2`,
-either as a quotient of `I` or the image of `I` in the `R`-module `R / I ^ 2`.
+The linear equivalence of the two definitions of `I / I ^ 2`,
+either as a quotient of `I` by its submodule `I • ⊤`,
+or the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`.
 -/
 noncomputable def cotangentEquivSubmodule (I : Ideal R) :
     I.Cotangent ≃ₗ[R] (Submodule.map (I ^ 2).mkQ I) := by
@@ -279,8 +280,8 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
   · exact Ideal.Quotient.mk_surjective
 
 /--
-The span rank of the maximal ideal of a local ring equals the dimension of the cotangent space
-if the maximal ideal is finitely generated.
+In a local ring, the dimension of the cotangent space is equal to
+the span rank of the maximal ideal, if the maximal ideal is finitely generated.
 -/
 theorem rank_cotangentSpace_eq_spanrank_maximalIdeal (hm : (maximalIdeal R).FG) :
     Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank := by
