@@ -153,7 +153,7 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
 set_option backward.privateInPublic true in
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
-  by_contra! hat
+  by_contra hat
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 

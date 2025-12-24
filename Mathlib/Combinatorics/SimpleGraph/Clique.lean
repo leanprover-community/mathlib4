@@ -500,7 +500,7 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
 
 lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} (h : G.CliqueFree n)
     (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
-  by_contra! hf
+  by_contra hf
   have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
   exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
 

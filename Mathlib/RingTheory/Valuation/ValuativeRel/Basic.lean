@@ -176,7 +176,7 @@ theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
 
 @[simp] lemma zero_srel_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
-  contrapose! hy
+  contrapose hy
   rw [not_srel_iff] at hy ⊢
   rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
   exact rel_mul_cancel hx hy
