@@ -29,7 +29,7 @@ namespace Pi
 open Category MonoidalCategory
 
 variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
-[∀ i, MonoidalCategory (C i)]
+  [∀ i, MonoidalCategory (C i)]
 
 @[simps tensorObj tensorHom whiskerLeft whiskerRight tensorUnit]
 instance monoidalCategoryStruct : MonoidalCategoryStruct (∀ i, C i) where
