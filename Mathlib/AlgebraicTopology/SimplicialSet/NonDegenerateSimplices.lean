@@ -132,6 +132,8 @@ lemma iSup_subcomplex_eq_top :
   le_antisymm (by simp) (by
     rw [← Subcomplex.iSup_ofSimplex_nonDegenerate_eq_top X, iSup_le_iff]
     rintro ⟨d, s, hs⟩
+    simp only [S.subcomplex]
+    -- TODO
     exact le_trans (by rfl) (le_iSup _ (N.mk _ hs)))
 
 end N
