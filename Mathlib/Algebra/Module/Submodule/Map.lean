@@ -62,10 +62,6 @@ def map (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) : Submodule R₂ M�
 theorem map_coe (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
   rfl
 
-@[deprecated "LHS is syntactically the same as RHS now" (since := "2025-12-23")]
-theorem map_coe_toLinearMap (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) : map f p = map f p :=
-  rfl
-
 theorem map_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) :=
   SetLike.coe_injective rfl
