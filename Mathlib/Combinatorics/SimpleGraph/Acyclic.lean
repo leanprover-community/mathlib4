@@ -384,7 +384,8 @@ The reachability relation of a maximal acyclic subgraph agrees with that of the 
 -/
 lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
     (h : Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F) : F.Reachable = G.Reachable := by
-  obtain ⟨⟨hF : F ≤ G, hF' : F.IsAcyclic⟩, h⟩ := by simpa [Maximal] using h
+  obtain ⟨hF : F ≤ G, hF' : F.IsAcyclic⟩ := h.prop
+  replace h : ∀ {H : SimpleGraph V}, H ≤ G ∧ H.IsAcyclic → F ≤ H → H ≤ F := h.le_of_ge
   ext u v
   refine ⟨fun h ↦ h.mono hF, ?_⟩
   contrapose! h
@@ -395,7 +396,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   obtain ⟨⟨⟨u', v'⟩, huv : G.Adj u' v'⟩, -, hu : u' ∈ s, hv : v' ∉ s⟩ :=
     p.exists_boundary_dart s hus hvs
   suffices (F ⊔ fromEdgeSet {s(u', v')}).IsAcyclic by
-    refine ⟨F ⊔ fromEdgeSet {s(u', v')}, ?_, this, le_sup_left, ?_⟩
+    refine ⟨F ⊔ fromEdgeSet {s(u', v')}, ⟨?_, this⟩, le_sup_left, ?_⟩
     · have : G.Adj v' u' := G.symm huv
       simp only [sup_le_iff, le_iff_adj, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq,
         Sym2.rel_iff'] at hF ⊢
