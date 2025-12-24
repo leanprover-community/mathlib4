@@ -213,8 +213,8 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
   simp [U, coe_auxIsometry, coe_symm_auxIsometry, smul_smul, la, ← conjContinuousAlgEquiv_apply,
     ← hy]
 
--- remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
--- this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`.
+/- Remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
+this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`. -/
 instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
     [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
     OrderIsoClass F _ _ where
