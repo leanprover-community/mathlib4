@@ -442,7 +442,6 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (h
     apply Adj.reachable
     simpa using he.1
 
-
 /-- A subgraph of a connected graph is maximal acyclic iff it is a tree. -/
 theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Connected)
     (hT : T ≤ G) : Maximal (fun H => H ≤ G ∧ H.IsAcyclic) T ↔ T.IsTree := by
