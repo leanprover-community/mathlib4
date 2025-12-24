@@ -528,6 +528,10 @@ theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
     rw [← hc, Nat.cast_le]
     exact h.card_le_of_colorable (colorable_chromaticNumber c)
 
+theorem cliqueNum_le_chromaticNumber : G.cliqueNum ≤ G.chromaticNumber := by
+  have ⟨s, hs⟩ := G.exists_isNClique_cliqueNum
+  exact hs.card_eq ▸ hs.isClique.card_le_chromaticNumber
+
 protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n < m) :
     G.CliqueFree m := by
   by_contra h
