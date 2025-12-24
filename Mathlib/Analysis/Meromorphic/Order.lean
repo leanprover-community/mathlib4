@@ -817,7 +817,7 @@ lemma MeromorphicAt.comp_analyticAt
     rw [← mul_smul (h z ^ r), mul_comm, pow_mul, ← mul_pow, ← smul_eq_mul, ← hz]
 
 /-- If `g` is analytic at `x`, `f` is meromorphic at `g x`, and `g` is not locally constant near
-`x`, the order of `f ∘ g` is the product of the orders of `f` and `g`. -/
+`x`, the order of `f ∘ g` is the product of the orders of `f` and `g · - g x`. -/
 lemma MeromorphicAt.meromorphicOrderAt_comp (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x)
     (hg_nc : ¬EventuallyConst g (𝓝 x)) :
     meromorphicOrderAt (f ∘ g) x =
