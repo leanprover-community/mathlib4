@@ -105,9 +105,9 @@ public theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) 
 public theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
   {n : ℕ} (hn : n < Module.finrank 𝕜 E)
   : Module.End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
-  -- Can use `LinearMap.IsSymmetric.hasEigenvalue_eigenvalues`, or maybe this easily is provable
-  -- from `hasEigenvector_adjoint_comp_self_rightSingularVectors`.
-  sorry
+  have hT := T.isSymmetric_adjoint_comp_self
+  convert hT.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
+  simp [← T.sq_singularValues_fin rfl ⟨n, hn⟩]
 
 public theorem singularValues_antitone : Antitone T.singularValues := by
   -- Use `LinearMap.IsSymmetric.eigenvalues_antitone`, and either
@@ -378,10 +378,11 @@ eventually. They will need to be moved around later.
 -/
 
 @[simp]
-public theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
-  -- Might be able to prove this from `singularValues_smul`.
-  sorry
-
+theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
+  apply singularValues_le_rank
+  have : Module.finrank 𝕜 (range (0 : E →ₗ[𝕜] F)) = 0 := by
+    simp [LinearMap.range_zero]
+  omega
 /--
 Use `LinearMap.singularValues_of_finrank_le` for the rest of the characterization of the singular
 values of the identity map.
