@@ -170,7 +170,7 @@ theorem leadingCoeff_eq_sum_chebyshevNode (n : ℕ) (P : ℝ[X]) (hP : P.degree 
     show Finset.range (n + 1) = Finset.Iic n by grind]
   rfl
 
-theorem leadingCoeff_eq_sum_chebyshevNode_c_pos {n i : ℕ} (hi : i ≤ n) :
+theorem leadingCoeff_eq_sum_chebyshevNode_coeff_pos {n i : ℕ} (hi : i ≤ n) :
     0 < (-1) ^ i *
     (∏ j ∈ (Finset.range (n + 1)).erase i, (chebyshevNode n i - chebyshevNode n j))⁻¹ := by
   have := inv_pos_of_pos <| zero_lt_prod_chebyshevNode_sub_chebyshevNode hi
@@ -180,14 +180,14 @@ theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.leadingCoeff ≤ 2 ^ (n - 1) := by
   convert apply_le_apply_T_real (leadingCoeff_eq_sum_chebyshevNode n)
-    (fun i hi => le_of_lt <| leadingCoeff_eq_sum_chebyshevNode_c_pos hi) hPdeg hPbnd
+    (fun i hi => le_of_lt <| leadingCoeff_eq_sum_chebyshevNode_coeff_pos hi) hPdeg hPbnd
   simp
 
 theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
   convert apply_eq_apply_T_real_iff (leadingCoeff_eq_sum_chebyshevNode n)
-    (fun i hi => leadingCoeff_eq_sum_chebyshevNode_c_pos hi) hPdeg hPbnd
+    (fun i hi => leadingCoeff_eq_sum_chebyshevNode_coeff_pos hi) hPdeg hPbnd
   simp
 
 end Polynomial.Chebyshev
