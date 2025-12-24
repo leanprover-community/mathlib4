@@ -37,6 +37,10 @@ assert_not_exists Ring
 
 open Function
 
+lemma Irreducible.coe_ne_zero {M₀ S : Type*} [MonoidWithZero M₀] [SetLike S M₀]
+    [SubmonoidClass S M₀] {s : S} {x : s} (hx : Irreducible x) : (x : M₀) ≠ 0 :=
+  fun h ↦ hx.1 <| by simpa using hx.2 (a := x) (b := x) (by ext; simp [h])
+
 section
 variable (M₀ : Type*) [MonoidWithZero M₀] {x : M₀}
 
@@ -178,18 +182,14 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
 
-set_option backward.proofsInPublic true in
-instance [IsLeftCancelMulZero M₀] :
-    LeftCancelMonoid M₀⁰ where
-  mul_left_cancel _ _ _ h :=  Subtype.ext <|
-    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+instance [IsLeftCancelMulZero M₀] : LeftCancelMonoid M₀⁰ where
+  mul_left_cancel z _ _ h := Subtype.ext <|
+    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero z) (by
       simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
-set_option backward.proofsInPublic true in
-instance [IsRightCancelMulZero M₀] :
-    RightCancelMonoid M₀⁰ where
-  mul_right_cancel _ _ _ h := Subtype.ext <|
-    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+instance [IsRightCancelMulZero M₀] : RightCancelMonoid M₀⁰ where
+  mul_right_cancel z _ _ h := Subtype.ext <|
+    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero z) (by
       simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
 end Nontrivial

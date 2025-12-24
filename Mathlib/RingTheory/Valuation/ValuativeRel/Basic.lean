@@ -221,7 +221,7 @@ theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
 @[deprecated (since := "2025-12-20")] alias rel_add_cases := vle_add_cases
 
 @[simp] lemma zero_vlt_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
-  contrapose! hy
+  contrapose hy
   rw [not_vlt] at hy ⊢
   rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
   exact vle_mul_cancel hx hy
