@@ -550,7 +550,7 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     apply (outer_le_length _ _).trans
     rw [← length_diff_botSet]
     have : botSet = {a} := subsingleton_botSet.eq_singleton_of_mem ha
-    simp [this]
+    simpa using subsingleton_botSet.eq_singleton_of_mem ha
   obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → R, StrictMono u ∧ (∀ n : ℕ, u n ∈ Ioo b a) ∧ Tendsto u atTop (𝓝 a) :=
