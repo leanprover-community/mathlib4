@@ -185,8 +185,9 @@ instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
             { a : Γ' | (VAddAntidiagonal x.isPWO_support
               ((of R).symm y).isPWO_support a).Nonempty } := by
           intro a ha
-          contrapose ha
-          simp [not_nonempty_iff_eq_empty.1 ha]
+          simp only [Set.mem_setOf_eq]
+          contrapose! ha
+          simp [ha]
         isPWO_support_vaddAntidiagonal.mono h }
 
 theorem coeff_smul (x : R⟦Γ⟧) (y : HahnModule Γ' R V) (a : Γ') :
