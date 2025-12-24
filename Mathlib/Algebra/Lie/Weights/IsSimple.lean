@@ -308,26 +308,18 @@ lemma H_le_iSup_sl2SubmoduleOfRoot :
 
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
+  have h : (⊤ : LieSubmodule K H L) ≤
+      ⨆ (α : Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := calc
+    _ = H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α := (iSup_rootSpace_eq_top H).symm
+    _ ≤ _ := sup_le H_le_iSup_sl2SubmoduleOfRoot (iSup_le fun α ↦
+        (rootSpace_le_sl2SubmoduleOfRoot α.1 ((Finset.mem_filter_univ _).mp α.2)).trans
+          (le_iSup₂ α.1 _))
   rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
-    LieSubmodule.top_toSubmodule]
-  -- Since each sl2SubmoduleOfRoot is a submodule of L and the union is the supremum of these submodules, the supremum should be the entire L.
-  have h_sup : ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα = ⊤ := by
-    -- Since $H$ is contained in the supremum of the $sl2SubmoduleOfRoot$'s and the supremum of the $rootSpace$'s is $L$, the supremum of the $sl2SubmoduleOfRoot$'s must be $L$.
-    have h_sup : H.toLieSubmodule ⊔ ⨆ (α : LieModule.Weight K H L), rootSpace H α ≤ ⨆ (α : LieModule.Weight K H L), ⨆ (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := by
-      refine' sup_le _ _;
-      · exact?;
-      · refine' iSup_le fun α => _;
-        by_cases hα : α.IsNonZero <;> simp_all +decide [ LieAlgebra.rootSpace ];
-        · exact le_iSup₂_of_le α hα ( by exact? );
-        · exact?;
-    simp_all +decide [ Submodule.eq_top_iff' ];
-    refine' eq_top_iff.mpr _;
-    have := iSup_rootSpace_eq_top ( L := L ) ( H := H );
-    rw [ ← this ];
-    exact sup_le h_sup.1 ( iSup_le fun α => h_sup.2 α );
-  convert h_sup.ge;
-  simp +decide [ Submodule.mem_iSup ];
-  simp +decide [ Submodule.eq_top_iff', iSup_subtype ]
+    LieSubmodule.top_toSubmodule, eq_top_iff, ← LieSubmodule.iSup_toSubmodule,
+    ← LieSubmodule.top_toSubmodule (R := K) (L := H) (M := L),
+    LieSubmodule.toSubmodule_le_toSubmodule]
+  simp only [Submodule.mem_top, true_and, iSup_subtype] at h ⊢
+  exact h
 
 section IsSimple
 
