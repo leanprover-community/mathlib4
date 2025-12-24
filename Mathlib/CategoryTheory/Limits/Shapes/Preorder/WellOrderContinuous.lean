@@ -97,11 +97,11 @@ instance IsWellOrderContinuous.restriction_setIci
       dsimp only [f]
       by_cases! h : j' ≤ j
       · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩
-        by_contra!
-        simp only [Set.mem_Iio, not_lt] at this
+        by_contra h'
+        simp only [Set.mem_Iio, not_lt] at h'
         apply hm.1
         rintro ⟨k, hk⟩ hkm
-        exact this.trans hk
+        exact h'.trans hk
       · exact ⟨⟨⟨j', h.le⟩, hj'⟩, by rfl⟩
     exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).2
       (F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe m hm))⟩

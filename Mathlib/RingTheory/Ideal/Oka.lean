@@ -62,7 +62,7 @@ theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPri
 Then all the ideals of `R` satisfy `P`. -/
 theorem forall_of_forall_prime (hmax : ∀ I, ¬P I → ∃ I, Maximal (¬P ·) I)
     (hprime : ∀ I, I.IsPrime → P I) (I : Ideal R) : P I := by
-  by_contra! hI
+  by_contra hI
   obtain ⟨I, hI⟩ := hmax I hI
   exact hI.prop <| hprime I (hP.isPrime_of_maximal_not hI)
 

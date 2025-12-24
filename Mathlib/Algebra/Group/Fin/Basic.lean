@@ -115,7 +115,7 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
   rcases n with - | n
   · exact a.elim0
   constructor
-  · contrapose!
+  · contrapose
     intro h
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le (Fin.not_lt.mp h)
     simpa only [Fin.not_lt, le_iff_val_le_val, sub_def, hl, ← Nat.add_assoc, Nat.add_mod_left,

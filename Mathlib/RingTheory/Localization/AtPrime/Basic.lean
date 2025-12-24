@@ -217,7 +217,7 @@ lemma AtPrime.eq_maximalIdeal_iff_comap_eq {J : Ideal (Localization.AtPrime I)} 
 theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
   ⟨fun h x hx => by
-    contrapose! hx
+    contrapose hx
     exact h hx,
    fun h _ hx hfxJ => hx (h hfxJ)⟩
 

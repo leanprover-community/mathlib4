@@ -923,7 +923,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
   by_cases ha : a.Terminates; swap
   · simp [length'_of_not_terminates ha]
   simp only [length'_of_terminates ha, length'_le_iff]
-  by_contra! hb
+  by_contra hb
   have hb_cons : b.drop (a.length ha) ≠ .nil := by
     intro hb'
     simp only [← length'_eq_zero_iff_nil, drop_length', tsub_eq_zero_iff_le, length'_le_iff] at hb'
