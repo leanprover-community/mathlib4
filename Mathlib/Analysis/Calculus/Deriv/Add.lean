@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Tactic.ToFun
 
 /-!
 # One-dimensional derivatives of sums etc
