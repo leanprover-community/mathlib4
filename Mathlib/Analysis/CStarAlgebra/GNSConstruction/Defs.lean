@@ -52,26 +52,27 @@ def toGNS : A ≃ₗ[ℂ] (f.GNS) := LinearEquiv.refl ℂ _
 /-- The map from the GNS space to the C⋆-algebra, as a linear equivalence. -/
 def ofGNS : (f.GNS) ≃ₗ[ℂ] A := (f.toGNS).symm
 
-instance preInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
-  inner a b := f (star (f.ofGNS a) * (f.ofGNS b))
-  conj_inner_symm a b := by simp [← Complex.star_def, ← map_star f]
-  re_inner_nonneg a := (RCLike.re_nonneg_of_nonneg (x := f (star (f.ofGNS a) * (f.ofGNS a)))
-      (LE.le.isSelfAdjoint (PositiveLinearMap.map_nonneg f (star_mul_self_nonneg (f.ofGNS a))))).mpr
-        (PositiveLinearMap.map_nonneg f (star_mul_self_nonneg (f.ofGNS a)))
-  add_left a b c := by rw [map_add, star_add, add_mul, map_add]
+def preInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
+  inner a b := f (star (f.ofGNS a) * f.ofGNS b)
+  conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
+  re_inner_nonneg _ := RCLike.nonneg_iff.mp (f.map_nonneg (star_mul_self_nonneg _)) |>.1
+  add_left _ _ _ := by rw [map_add, star_add, add_mul, map_add]
   smul_left := by simp
 
 noncomputable instance : SeminormedAddCommGroup f.GNS :=
   InnerProductSpace.Core.toSeminormedAddCommGroup (c := f.preInnerProdSpace)
-noncomputable instance : NormedSpace ℂ f.GNS :=
-  InnerProductSpace.Core.toNormedSpace (c := f.preInnerProdSpace)
 noncomputable instance : InnerProductSpace ℂ f.GNS :=
   InnerProductSpace.ofCore f.preInnerProdSpace
 
+lemma GNS_inner_def (a b : f.GNS) :
+    inner ℂ a b = f (star (f.ofGNS a) * f.ofGNS b) := rfl
+
+lemma GNS_norm_def (a : f.GNS) :
+    ‖a‖ = (f (star (f.ofGNS a) * f.ofGNS a)).re.sqrt := rfl
+
 abbrev GNS_Quotient := SeparationQuotient f.GNS
 
-noncomputable instance GNS_Quot_InnerProdSpace : InnerProductSpace ℂ f.GNS_Quotient := by
-  infer_instance
+noncomputable instance : InnerProductSpace ℂ f.GNS_Quotient := by infer_instance
 
 /--
 `f.GNS_Quotient` is an inner product space.
@@ -90,6 +91,6 @@ instance : HilbertSpace ℂ (f.GNS_HilbertSpace) where
 @[simp]
 theorem GNS_Quotient_inner_apply (a : (f.GNS)) (b : (f.GNS)) :
   f.GNS_Quot_InnerProdSpaceCore.inner (SeparationQuotient.mk a) (SeparationQuotient.mk b)
-    = f (star (f.ofGNS a)* (f.ofGNS b)) := by rfl
+    = f (star (f.ofGNS a)* f.ofGNS b) := by rfl
 
 end PositiveLinearMap
