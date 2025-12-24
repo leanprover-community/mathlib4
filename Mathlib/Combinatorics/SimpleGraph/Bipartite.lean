@@ -591,12 +591,7 @@ lemma even_length_iff_even_bypass_length
 
 theorem bipartite_iff_all_cycles_even :
   G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
-  constructor
-  · -- Forward direction: G is bipartite → all cycles have even length
-    intro h_bip
-    exact bipartite_implies_even_cycles G h_bip
-  · -- Assume all cycles have even length. We need to show that the graph is bipartite.
-    intro h
+  refine ⟨bipartite_implies_even_cycles G, fun h ↦ ?_⟩
     have h_colorable : G.Colorable 2 := by
       -- By the lemma, this implies that G is colorable with 2 colors. We can use the lemma `two_colorable_iff_forall_loop_even` which states that a graph is 2-colorable if and only if every closed walk has even length.
       apply (two_colorable_iff_forall_loop_even).mpr
