@@ -306,9 +306,7 @@ lemma H_le_iSup_sl2SubmoduleOfRoot :
         (rootSpace_le_sl2SubmoduleOfRoot α.1 ((Finset.mem_filter_univ _).mp α.2)).trans
           (le_iSup₂ α.1 _))
   rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
-    LieSubmodule.top_toSubmodule, eq_top_iff, ← LieSubmodule.iSup_toSubmodule,
-    ← LieSubmodule.top_toSubmodule (R := K) (L := H) (M := L),
-    LieSubmodule.toSubmodule_le_toSubmodule]
+    LieSubmodule.top_toSubmodule, eq_top_iff, ← LieSubmodule.iSup_toSubmodule]
   simp only [Submodule.mem_top, true_and, iSup_subtype] at h ⊢
   exact h
 
