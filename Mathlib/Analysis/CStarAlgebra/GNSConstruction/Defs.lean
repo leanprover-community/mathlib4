@@ -45,7 +45,6 @@ on `A`, while remainaing structurally equivalent via the `LinearEquivalence`, `t
 def GNS (_f : A →ₚ[ℂ] ℂ) := A
 instance : AddCommGroup (f.GNS) := inferInstanceAs (AddCommGroup A)
 instance : Module ℂ (f.GNS) := inferInstanceAs (Module ℂ A)
-instance : Ring (f.GNS) := inferInstanceAs (Ring A)
 
 /-- The map from the C⋆-algebra to the GNS space, as a linear equivalence. -/
 def toGNS : A ≃ₗ[ℂ] (f.GNS) := LinearEquiv.refl ℂ _
@@ -91,6 +90,6 @@ instance : HilbertSpace ℂ (f.GNS_HilbertSpace) where
 @[simp]
 theorem GNS_Quotient_inner_apply (a : (f.GNS)) (b : (f.GNS)) :
   f.GNS_Quot_InnerProdSpaceCore.inner (SeparationQuotient.mk a) (SeparationQuotient.mk b)
-    = f (star a * b) := by rfl
+    = f (star (f.ofGNS a)* (f.ofGNS b)) := by rfl
 
 end PositiveLinearMap
