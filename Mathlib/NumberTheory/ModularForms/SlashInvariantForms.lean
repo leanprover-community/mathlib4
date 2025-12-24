@@ -272,14 +272,20 @@ def prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ} (m : ℤ
     simp [hm, prod_slash_sum_weights hs, -Matrix.GeneralLinearGroup.val_det_apply,
        Subgroup.HasDetPlusMinusOne.abs_det hA, SlashInvariantForm.slash_action_eqn (f _) A hA]
 
+@[simp]
 lemma coe_prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ}
     (m : ℤ) (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (f : (i : ι) → SlashInvariantForm Γ (k i)) :
     (SlashInvariantForm.prod hs m hm f).toFun = ∏ i ∈ s, (f i).1 := by rfl
 
+def prodEqualWeights {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ℤ}
+    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (f : (i : ι) → SlashInvariantForm Γ k) : SlashInvariantForm Γ (s.card * k) :=
+  prod (k := fun i ↦ k) hs (s.card * k) (by simp) f
+
 /-- Given `SlashInvariantForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `ι`, a `Fintype`, with weight `m = ∑ i ∈ s, k i`. -/
-def prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
+def prodFintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
      (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
      (f : (i : ι) → SlashInvariantForm Γ (k i)) : SlashInvariantForm Γ m where
   toFun := ∏ i, (f i).1
@@ -287,9 +293,16 @@ def prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : �
     simp [hm, prod_fintype_sum_weights_slash, -Matrix.GeneralLinearGroup.val_det_apply,
       Subgroup.HasDetPlusMinusOne.abs_det hA, SlashInvariantForm.slash_action_eqn (f _) A hA]
 
+@[simp]
 lemma coe_prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
      (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-     (f : (i : ι) → SlashInvariantForm Γ (k i)) : prod_fintype m hm f = ∏ i, (f i).toFun := by rfl
+     (f : (i : ι) → SlashInvariantForm Γ (k i)) : prodFintype m hm f = ∏ i, (f i).toFun := by rfl
+
+def prodFintypeEqualWeights {ι : Type} [Fintype ι] [Nonempty ι] {k : ℤ}
+    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (f : (i : ι) → SlashInvariantForm Γ k) :
+    SlashInvariantForm Γ ((Fintype.card ι) * k) :=
+  prodFintype (k := fun i ↦ k) ((Fintype.card ι) * k) (by simp) f
 
 instance [Γ.HasDetPlusMinusOne] : NatCast (SlashInvariantForm Γ 0) where
   natCast n := constℝ n

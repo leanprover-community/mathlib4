@@ -604,13 +604,19 @@ def prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ} (m : ℤ
     intro i hi
     simpa [toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
 
+@[simp]
 lemma coe_prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : (prod hs m hm F).toFun = ∏ i ∈ s, (F i).toFun := by rfl
 
+def prodEqualWeights {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ℤ}
+     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
+  prod hs (s.card * k) (by simp) F
+
 /-- Given `ModularForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `ι`, a `Fintype`, with weight `m = ∑ i ∈ s, k i`. -/
-def prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
+def prodFintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
   toSlashInvariantForm := SlashInvariantForm.prod_fintype m hm (fun i ↦ (F i).1)
@@ -628,9 +634,15 @@ def prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : �
     intro i hi
     simpa [SlashInvariantForm.toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
 
+@[simp]
 lemma coe_prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (F : (i : ι) → ModularForm Γ (k i)) : (prod_fintype m hm F).toFun =  ∏ i, (F i).toFun := by rfl
+    (F : (i : ι) → ModularForm Γ (k i)) : (prodFintype m hm F).toFun =  ∏ i, (F i).toFun := by rfl
+
+def prodFintypeEqualWeights {ι : Type} [Fintype ι] [Nonempty ι] {k : ℤ}
+    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (Fintype.card ι * k) :=
+  prodFintype (k := fun i ↦ k) (Fintype.card ι * k) (by simp) F
 
 open BigOperators
 
