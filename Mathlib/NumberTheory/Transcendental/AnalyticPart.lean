@@ -92,13 +92,12 @@ lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred (f : ℂ → ℂ) z₀ (hf
         rw [this]
         exact Hn'
 
+--Might be necessary (hf : ∀ z : ℂ, AnalyticAt ℂ R z)
 lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : ℂ → ℂ}
    (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z) (hR₁ : ∀ z, R z = (z - z₀)^r * R₁ z) :
-  --(hf : ∀ z : ℂ, AnalyticAt ℂ R z) →
   ∀ k ≤ r ,
     ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧ ∀ z, deriv^[k] R z =
    (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by
-    --intros hf k hkr
       intros k hkr
       induction k
       · use 0
