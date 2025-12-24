@@ -47,7 +47,7 @@ theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sS
     let ⟨k, hks, hk⟩ := h.exists_gt n
     (hn k hks).not_gt hk
 
-theorem sSup_of_not_bdd_above {s : Set ℕ} (h : ¬BddAbove s) : sSup s = 0 :=
+theorem sSup_of_not_bddAbove {s : Set ℕ} (h : ¬BddAbove s) : sSup s = 0 :=
   Set.Infinite.Nat.sSup_eq_zero <| Set.infinite_of_not_bddAbove h
 
 @[simp]
