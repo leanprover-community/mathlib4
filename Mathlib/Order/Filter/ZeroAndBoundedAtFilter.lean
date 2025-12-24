@@ -104,6 +104,24 @@ nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α
   convert Asymptotics.isBigO_refl (E := ℝ) _ l
   simp
 
+theorem BoundedAtFilter.prod {ι : Type} (s : Finset ι) [SeminormedCommRing β]
+    {l : Filter α} {f : ι → α → β} (h : ∀ i ∈ s, BoundedAtFilter l (f i)) :
+  BoundedAtFilter l (∏ i ∈ s, (f i)) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty =>
+    simp_all only [Finset.notMem_empty, IsEmpty.forall_iff, implies_true, Finset.prod_empty]
+    simpa using const_boundedAtFilter l (1 : β)
+  | insert i t hi IH =>
+    rcases t.eq_empty_or_nonempty with rfl | ht
+    · simp only [insert_empty_eq, Finset.prod_singleton]
+      exact h i (Finset.mem_insert_self i ∅)
+    simp only [Finset.prod_insert hi]
+    refine BoundedAtFilter.mul (h i (Finset.mem_insert_self i t)) ?_
+    refine IH ?_
+    intro j hj
+    exact h j (Finset.mem_insert_of_mem hj)
+
 variable (𝕜) in
 /-- The submodule of functions that are bounded along a filter `l`. -/
 def boundedFilterSubmodule

@@ -339,32 +339,6 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
   bdd_at_cusps' hc γ hγ := by
     simpa [mul_slash] using ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
 
-
-
-/-- The modular form of weight `∑ i, k i` given by the product of `n` modular forms of
-weights `k i`. -/
-def finprod_add_weights {n : ℕ} (k : Fin n → ℤ) [Γ.HasDetPlusMinusOne]
-    (f : (i : Fin n) → ModularForm Γ (k i)) : ModularForm Γ (∑ i, k i) := by
-  induction n with
-  | zero =>
-    rw [Fin.sum_univ_zero]
-    exact 0
-  | succ n ih =>
-    rw [Fin.sum_univ_add]
-    let f' : (i : Fin n) → ModularForm Γ (k i.castSuccEmb) := fun i ↦ f i.castSuccEmb
-    simp only [Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, Finset.sum_singleton]
-    exact (ih (fun i ↦ k (Fin.castAdd 1 i)) f').mul (f (Fin.natAdd n 0))
-
-/-- The modular form of weight `n * k` given by the product of `n` modular forms of weight `k`. -/
-def finprod_equal_weights
-    {n : ℕ} {k : ℤ} [Γ.HasDetPlusMinusOne] (f : Fin n → ModularForm Γ k) :
-  ModularForm Γ (n * k) := by
-    have : ↑n * k = ∑ (i : Fin n), k  := by simp only [Finset.sum_const, Finset.card_univ,
-      Fintype.card_fin, Int.nsmul_eq_mul]
-    rw [this]
-    exact finprod_add_weights (fun i ↦ k) f
-
-
 @[deprecated (since := "2025-12-06")] alias mul_coe := coe_mul
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
@@ -612,6 +586,55 @@ instance instGAlgebra (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetOne] :
 open scoped DirectSum in
 example (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetOne] : Algebra ℂ (⨁ i, ModularForm Γ i) :=
 inferInstance
+
+open Filter SlashInvariantForm
+
+/-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
+function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
+def prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ} (m : ℤ)
+    (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
+  toSlashInvariantForm := SlashInvariantForm.prod hs m hm (fun i ↦ (F i).1)
+  holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).1)
+      (by intro (i : ι) hi; simpa using (F i).holo')
+  bdd_at_cusps' hc γ hγ := by
+    change IsBoundedAtImInfty (((∏ i ∈ s, ((F i).1 : ℍ → ℂ)) ∣[m] γ))
+    rw [hm, prod_slash_sum_weights hs, IsBoundedAtImInfty]
+    refine BoundedAtFilter.smul _ (BoundedAtFilter.prod (s := s) ?_)
+    intro i hi
+    simpa [toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
+
+lemma coe_prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ} (m : ℤ)
+    (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ (k i)) : (prod hs m hm F).toFun = ∏ i ∈ s, (F i).toFun := by rfl
+
+/-- Given `ModularForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
+function is a product of those indexed by `ι`, a `Fintype`, with weight `m = ∑ i ∈ s, k i`. -/
+def prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
+    (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
+  toSlashInvariantForm := SlashInvariantForm.prod_fintype m hm (fun i ↦ (F i).1)
+  holo' := by
+    simp only [SlashInvariantForm.prod_fintype, toFun_eq_coe]
+    apply MDifferentiable.prod
+    intro i hi
+    exact (F i).holo'
+  bdd_at_cusps' hc γ hγ := by
+    change IsBoundedAtImInfty (((∏ i, ((F i).1 : ℍ → ℂ)) ∣[m] γ))
+    rw [hm, prod_fintype_sum_weights_slash (k := k) (g := γ)
+          (f := fun i ↦ ((F i).1 : ℍ → ℂ)), IsBoundedAtImInfty]
+    refine BoundedAtFilter.smul _ (BoundedAtFilter.prod (s := (Finset.univ : Finset ι))
+      (f := fun i ↦ (((F i).1 : ℍ → ℂ) ∣[k i] γ)) (l := atImInfty) (β := ℂ) ?_)
+    intro i hi
+    simpa [SlashInvariantForm.toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
+
+lemma coe_prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
+    (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ (k i)) : (prod_fintype m hm F).toFun =  ∏ i, (F i).toFun := by rfl
+
+open BigOperators
+
+
 
 end GradedRing
 
