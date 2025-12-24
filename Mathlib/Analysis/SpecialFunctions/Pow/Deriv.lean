@@ -208,7 +208,7 @@ theorem HasStrictDerivAt.cpow_const (hf : HasStrictDerivAt f f' x)
 theorem HasDerivAt.cpow (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa only [aux] using (hf.hasFDerivAt.cpow hg h0).hasDerivAt
+  simpa [aux] using (hf.hasFDerivAt.cpow hg h0).hasDerivAt
 
 theorem HasDerivAt.const_cpow (hf : HasDerivAt f f' x) (h0 : c ≠ 0 ∨ f x ≠ 0) :
     HasDerivAt (fun x => c ^ f x) (c ^ f x * Complex.log c * f') x :=
@@ -221,7 +221,7 @@ theorem HasDerivAt.cpow_const (hf : HasDerivAt f f' x) (h0 : f x ∈ slitPlane) 
 theorem HasDerivWithinAt.cpow (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x)
     (h0 : f x ∈ slitPlane) : HasDerivWithinAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') s x := by
-  simpa only [aux] using (hf.hasFDerivWithinAt.cpow hg h0).hasDerivWithinAt
+  simpa [aux] using (hf.hasFDerivWithinAt.cpow hg h0).hasDerivWithinAt
 
 theorem HasDerivWithinAt.const_cpow (hf : HasDerivWithinAt f f' s x) (h0 : c ≠ 0 ∨ f x ≠ 0) :
     HasDerivWithinAt (fun x => c ^ f x) (c ^ f x * Complex.log c * f') s x :=

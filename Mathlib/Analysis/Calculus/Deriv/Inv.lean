@@ -30,7 +30,7 @@ universe u
 open scoped Topology
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smulRight)
+open ContinuousLinearMap (toSpanSingleton)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
@@ -78,22 +78,22 @@ theorem derivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x
   exact deriv_inv
 
 theorem hasFDerivAt_inv (x_ne_zero : x ≠ 0) :
-    HasFDerivAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
+    HasFDerivAt (fun x => x⁻¹) (toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
   hasDerivAt_inv x_ne_zero
 
 theorem hasStrictFDerivAt_inv (x_ne_zero : x ≠ 0) :
-    HasStrictFDerivAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
+    HasStrictFDerivAt (fun x => x⁻¹) (toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
   hasStrictDerivAt_inv x_ne_zero
 
 theorem hasFDerivWithinAt_inv (x_ne_zero : x ≠ 0) :
-    HasFDerivWithinAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) s x :=
+    HasFDerivWithinAt (fun x => x⁻¹) (toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) s x :=
   (hasFDerivAt_inv x_ne_zero).hasFDerivWithinAt
 
-theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
-  rw [← deriv_fderiv, deriv_inv]
+theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) := by
+  rw [← toSpanSingleton_deriv, deriv_inv]
 
 theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x => x⁻¹) s x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
+    fderivWithin 𝕜 (fun x => x⁻¹) s x = toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact fderiv_inv
 
