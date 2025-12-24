@@ -252,6 +252,33 @@ theorem LinearMap.exists_mem_center_apply_eq_smul
 
 end Center
 
+section
+
+open Pointwise
+
+variable {R : Type*} [Semiring R] {V : Type*} [AddCommMonoid V]
+  [Module R V] (e : V ≃ₗ[R] V)
+
+theorem LinearEquiv.smul_submodule_def (W : Submodule R V) :
+    e • W = map e W := rfl
+
+theorem LinearEquiv.mem_stabilizer_submodule_iff_map_eq
+    (W : Submodule R V) :
+    e ∈ stabilizer (V ≃ₗ[R] V) W ↔ map e W = W := by
+  simp [mem_stabilizer_iff, smul_submodule_def]
+
+
+theorem LinearEquiv.map_eq_of_mem_fixingSubgroup
+    (W : Submodule R V)
+    (he : e ∈ fixingSubgroup _ W.carrier) :
+    map e W = W := by
+  ext v
+  simp only [mem_fixingSubgroup_iff, carrier_eq_coe, SetLike.mem_coe, LinearEquiv.smul_def] at he
+  refine ⟨fun ⟨w, hv, hv'⟩ ↦ ?_, fun hv ↦ ?_⟩
+  · simp only [SetLike.mem_coe] at hv hv'
+    rwa [← hv', he w hv]
+  · refine ⟨v, hv, he v hv⟩
+
 open scoped Pointwise
 
 section Semiring
@@ -372,13 +399,23 @@ theorem fixedSubmodule_eq_top_iff {e : V ≃ₗ[R] V} :
     e.fixedSubmodule = ⊤ ↔ e = 1 := by
   simp [LinearEquiv.ext_iff, Submodule.ext_iff]
 
+theorem mem_stabilizer_submodule_of_le_fixedSubmodule
+    {e : V ≃ₗ[R] V} {W : Submodule R V} (hW : W ≤ e.fixedSubmodule) :
+    e ∈ stabilizer (V ≃ₗ[R] V) W := by
+  rw [mem_stabilizer_submodule_iff_map_eq]
+  apply le_antisymm
+  · rintro _ ⟨x, hx : x ∈ W, rfl⟩
+    suffices e x = x by simpa only [this]
+    rw [← mem_fixedSubmodule_iff]
+    exact hW hx
+  · intro x hx
+    refine ⟨x, hx, ?_⟩
+    rw [← mem_fixedSubmodule_iff]
+    exact hW hx
+
 theorem mem_stabilizer_fixedSubmodule (e : V ≃ₗ[R] V) :
-    e ∈ stabilizer _ e.fixedSubmodule := by
-  ext x
-  simp only [fixedSubmodule, mem_smul_pointwise_iff_exists, mem_ker, sub_apply, coe_coe, id_coe,
-    id_eq, sub_eq_zero, LinearEquiv.smul_def]
-  refine ⟨fun ⟨b, hb, hx⟩ ↦ ?_, fun h ↦ ⟨x, h, h⟩⟩
-  simp [← hx, hb]
+    e ∈ stabilizer _ e.fixedSubmodule :=
+  mem_stabilizer_submodule_of_le_fixedSubmodule (le_refl _)
 
 theorem inf_fixedSubmodule_le_fixedSubmodule_mul (e f : V ≃ₗ[R] V) :
     e.fixedSubmodule ⊓ f.fixedSubmodule ≤ (e * f).fixedSubmodule := by
@@ -1211,6 +1248,76 @@ theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsEx
   apply add_mem _ this
   rw [← neg_mem_iff]
   simpa using hea v
+
+theorem Set.mem_pow_iff_exists_fin_prod_eq
+    {α : Type*} [Monoid α] {a : α} {s : Set α} {n : ℕ} :
+    a ∈ s ^ n ↔ ∃ f : Fin n → α, Fin.prod f = a ∧ ∀ i, f i ∈ s := by
+  induction n generalizing a with
+  | zero =>
+    simp [eq_comm]
+  | succ n hind =>
+    simp only at hind
+    constructor
+    · intro hasn
+      rw [pow_succ'] at hasn
+      obtain ⟨b, hb, c, hc, rfl⟩ := hasn
+      rw [hind] at hc
+      obtain ⟨g, hgc, hg⟩ := hc
+      refine ⟨Fin.cons b g, ?_, ?_⟩
+      · simp [Fin.prod, Fin.foldr_succ, ← hgc]
+      · intro i
+        by_cases hi : i = 0
+        · simp [hi, hb]
+        · obtain ⟨j, rfl⟩ := Fin.eq_succ_of_ne_zero hi
+          simp [hg]
+    · rintro ⟨f, ha, hf⟩
+      rw [← Fin.cons_self_tail f] at ha
+      simp only [Fin.prod, Fin.foldr_succ, Fin.cons_zero, Fin.cons_succ] at ha
+      rw [← ha, pow_succ']
+      apply Set.mul_mem_mul (hf 0)
+      rw [hind]
+      refine ⟨Fin.tail f, ?_, ?_⟩
+      · simp [Fin.prod]
+      · intro i
+        simp [Fin.tail_def, hf]
+
+example (he_mem : e ∈ transvections K V) (W : Submodule K V) (hW : W ≤ e.fixedSubmodule) :
+    reduce W ⟨e, mem_stabilizer_submodule_of_le_fixedSubmodule hW⟩ ∈ transvections K (V ⧸ W) := by
+  sorry
+
+example
+    (hV : 1 ≤ finrank K (V ⧸ e.fixedSubmodule))
+    (he : e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V) :
+    e.fixedReduce ∈
+      dilatransvections K (V ⧸ e.fixedSubmodule) ^ (finrank K (V ⧸ e.fixedSubmodule)) := by
+  rw [Set.mem_mul] at he
+  obtain ⟨f, hf, g, hg, hfg⟩ := he
+  rw [Set.mem_pow_iff_exists_fin_prod_eq] at hf
+  obtain ⟨m, hfm, hfmem⟩ := hf
+  let m' := Fin.snoc m g
+  have : iInf (fun i ↦ (m' i).fixedSubmodule) ≤ e.fixedSubmodule := sorry
+  have : ∀ i, e.fixedSubmodule ≤ (m' i).fixedSubmodule := sorry
+
+
+
+
+
+sorry
+example (n : ℕ) (hn : 1 ≤ n) (hV : finrank K V = n + 1) (e : V ≃ₗ[K] V)
+    (a : K) (ha1 : a ≠ 1) (hea : ∀ x : V, e x = a • x) :
+    ¬ e ∈ transvections K V ^ n * dilatransvections K V := by
+  induction n with
+  | zero => simp at hn
+  | succ n hind =>
+  rw [pow_succ', mul_assoc]
+  rintro ⟨t, ht, f, hf, rfl⟩
+  simp only [mul_apply] at hea
+
+
+
+
+
+
 
 /-- If an element of `SpecialLinearGroup K V` is a product of
 exactly `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections
