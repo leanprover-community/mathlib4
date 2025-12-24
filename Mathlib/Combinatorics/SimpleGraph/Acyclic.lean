@@ -414,7 +414,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   grind
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
-theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G ∧ F.IsAcyclic) :
+theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (hF' : F.IsAcyclic) :
     Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
   refine ⟨reachable_eq_of_maximal_isAcyclic F, fun h => ?_⟩
   by_contra!
