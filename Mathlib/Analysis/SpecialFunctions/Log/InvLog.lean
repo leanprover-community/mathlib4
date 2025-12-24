@@ -26,7 +26,7 @@ namespace Real
 open Filter
 
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
-  simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero, 
+  simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
     inv_zero, sub_zero, smul_eq_mul, ← mul_inv, mul_comm _ (log _)]
   have H' : Tendsto (fun x ↦ log x * x) (nhdsWithin 0 (Set.Iio 0)) (nhdsWithin 0 (Set.Ioi 0)) := by
     refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
