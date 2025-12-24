@@ -29,7 +29,7 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
-* `Submodule.le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot` - Statement (8) in
+* `exists_set_equiv_eq_mkQ_span_of_span_eq_map_mkQ_of_le_jacobson_bot` - Statement (8) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
 Note that a version of Statement (1) in
@@ -185,15 +185,12 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   | zero => exact N.zero_mem
 
 /--
-**Nakayama's Lemma** - a slightly more general version of (8) in
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
-
-If `N` is a finitely generated `R`-submodule of `M`, whose image under the quotient map
-`M → M / (I • N)` is contained in the span of a set `t` of `M`,
-then `N` is contained in the span of `t`, given that `I` is contained in the Jacobson radical.
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`t` is a set of `M` whose span image under the quotient map `M → M / (I • N)`
+contains the image of `N`, then `N` is contained in the span of `t`.
 -/
-@[stacks 00DV "(8)"]
-theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
+lemma le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
     {I : Ideal R} {N : Submodule R M} {t : Set M}
     (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ N ≤ map (I • N).mkQ (span R t)) :
     N ≤ span R t := by
@@ -203,6 +200,68 @@ theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
   simp only [comap_map_mkQ] at htspan
   grw [sup_comm, ← htspan]
   simp only [le_sup_right]
+
+/--
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`t` is a set of `M` whose span image under the quotient map `M → M / (I • N)`
+is the image of `N`, then `t` spans `N`.
+-/
+lemma span_eq_of_map_mkQ_span_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} {t : Set M}
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ (span R t) = map (I • N).mkQ N) :
+    span R t = N := by
+  symm; apply le_antisymm
+  · apply le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot hN hIjac htspan.ge
+  · apply_fun comap (I • N).mkQ at htspan
+    simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at htspan
+    rw [← htspan]; apply le_sup_right
+
+/-
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`s` is a set of `M / (I • N)` that spans the quotient image of `N`,
+then any set `t` of `M` in bijection with `s` via the quotient map spans `N`.
+-/
+theorem span_eq_of_set_equiv_eq_mkQ_span_of_span_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} (s : Set (M ⧸ (I • N)))
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (hsspan : span R s = map (I • N).mkQ N) :
+    ∀ (t : Set M) (e : t ≃ s), (∀ x : t, e x = (I • N).mkQ x) → span R t = N := by
+  intro t e he
+  apply span_eq_of_map_mkQ_span_eq_map_mkQ_of_le_jacobson_bot hN hIjac
+  rw [← hsspan, map_span]
+  congr; ext y
+  constructor
+  · rintro ⟨x, hx, rfl⟩; rw [← he ⟨x, hx⟩]; simp
+  · intro hy; use (e.symm ⟨y, hy⟩).val
+    exact ⟨by simp, by rw [← he]; simp⟩
+
+/--
+**Nakayama's Lemma** - Statement (8) in
+[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
+
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`s` is a set of `M / (I • N)` that spans the quotient image of `N`,
+then there exists a spanning set `t` of `N` in bijection with `s` via the quotient map.
+-/
+@[stacks 00DV "(8)"]
+theorem exists_set_equiv_eq_mkQ_span_of_span_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} (s : Set (M ⧸ (I • N)))
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (hsspan : span R s = map (I • N).mkQ N) :
+    ∃ (t : Set M) (e : t ≃ s), (∀ x : t, e x = (I • N).mkQ x) ∧ span R t = N := by
+  let t := Quotient.out '' s
+  let e : t ≃ s := {
+    toFun := by intro ⟨x, hx⟩; use (I • N).mkQ x; rcases hx with ⟨y, hy, rfl⟩; simpa using hy
+    invFun := by intro ⟨y, hy⟩; use Quotient.out y; simpa [t] using hy
+    left_inv := by rintro ⟨x, y, hy, rfl⟩; simp
+    right_inv := by intro ⟨y, hy⟩; simp
+  }
+  use t, e
+  constructor
+  · intros; simp [e]
+  · apply span_eq_of_set_equiv_eq_mkQ_span_of_span_eq_map_mkQ_of_le_jacobson_bot
+      s hN hIjac hsspan t e (by intros; simp [e])
 
 /--
 The linear equivalence of the two definitions of `N / I • N`,
