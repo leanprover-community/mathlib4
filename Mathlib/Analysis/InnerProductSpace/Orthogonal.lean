@@ -345,19 +345,18 @@ theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U 
 
 @[simp]
 theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} :
-    U.map (f : E →ₗ[𝕜] F) ⟂ V.map (f : E →ₗ[𝕜] F) ↔ U ⟂ V :=
-  ⟨fun h => by
-    have hf : ∀ p : Submodule 𝕜 E, (p.map (f : E →ₗ[𝕜] F)).comap (f : E →ₗ[𝕜] F) = p :=
-      comap_map_eq_of_injective f.injective
-    simpa only [hf] using h.comap f.toLinearIsometry, IsOrtho.map f.toLinearIsometry⟩
+    U.map (f : E →ₗ[𝕜] F) ⟂ V.map (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
+  refine ⟨fun h ↦ ?_, IsOrtho.map f.toLinearIsometry⟩
+  have hf : ∀ p : Submodule 𝕜 E,
+      (p.map (f : E →ₗ[𝕜] F)).comap (f.toLinearIsometry : E →ₗ[𝕜] F) = p :=
+    comap_map_eq_of_injective f.injective
+  simpa only [hf] using h.comap f.toLinearIsometry
 
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} :
-    U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) ↔ U ⟂ V :=
-  ⟨fun h => by
-    have hf : ∀ p : Submodule 𝕜 F, (p.comap f).map f.toLinearIsometry = p :=
-      map_comap_eq_of_surjective f.surjective
-    simpa only [hf] using h.map f.toLinearIsometry, IsOrtho.comap f.toLinearIsometry⟩
+    U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
+  convert IsOrtho.map_iff f.symm using 2 <;>
+    exact Submodule.comap_equiv_eq_map_symm (f : E ≃ₗ[𝕜] F) _
 
 end Submodule
 
