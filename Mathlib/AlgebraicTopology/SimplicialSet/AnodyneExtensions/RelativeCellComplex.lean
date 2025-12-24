@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 public import Mathlib.CategoryTheory.Limits.Types.Limits
@@ -176,8 +177,6 @@ noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
   Limits.Sigma.map (basicCell _ _)
 
 instance (j : ι) : Mono (f.m j) :=
-  have : (MorphismProperty.monomorphisms
-    SSet.{u}).IsStableUnderCoproductsOfShape (f.Cells j) := sorry
   MorphismProperty.colimitsOfShape_le (W := .monomorphisms _) _
     (MorphismProperty.colimitsOfShape_colimMap _ (fun ⟨c⟩ ↦ by
       dsimp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app]

@@ -106,7 +106,7 @@ theorem cons_self_properDivisors (h : n ≠ 0) :
     cons n (properDivisors n) self_notMem_properDivisors = divisors n := by
   rw [cons_eq_insert, insert_self_properDivisors h]
 
-@[simp]
+@[simp, grind =]
 theorem mem_divisors {m : ℕ} : n ∈ divisors m ↔ n ∣ m ∧ m ≠ 0 := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [divisors]
   simp only [hm, Ne, not_false_iff, and_true, ← filter_dvd_eq_divisors hm, mem_filter,
@@ -554,10 +554,8 @@ theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ �
 /-- The factors of `n` are the prime divisors -/
 theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
     n.primeFactors = {p ∈ divisors n | p.Prime} := by
-  rcases n.eq_zero_or_pos with (rfl | hn)
-  · simp
-  · ext q
-    simpa [hn, hn.ne', mem_primeFactorsList] using and_comm
+  ext
+  grind
 
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
     {p ∈ n.primeFactors | p ∣ m} = m.primeFactors := by
@@ -653,7 +651,8 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    suffices (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a:ℤ) = -1 + -↑x) ↔ (n:ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
+    suffices
+      (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a : ℤ) = -1 + -↑x) ↔ (n : ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
       simpa [divisorsAntidiag, eq_comm, negSucc_eq]
     simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
     norm_cast

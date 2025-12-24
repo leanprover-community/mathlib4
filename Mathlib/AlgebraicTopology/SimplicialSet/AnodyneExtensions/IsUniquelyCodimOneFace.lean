@@ -61,6 +61,7 @@ section
 
 variable {d : ℕ} (hd : x.dim = d)
 
+set_option backward.proofsInPublic true in
 lemma cast : IsUniquelyCodimOneFace (x.cast hd) (y.cast (by rw [hxy.dim_eq, hd])) := by
   simpa only [cast_eq_self]
 
@@ -90,7 +91,7 @@ include hxy in
 lemma le : x ≤ y := by
   have := hxy.δ_index rfl
   simp only [cast_simplex_rfl] at this
-  rw [S.le_def, ← y.subcomplex_cast hxy.dim_eq, Subpresheaf.ofSection_le_iff,
+  rw [S.le_def, ← y.subcomplex_cast hxy.dim_eq, Subfunctor.ofSection_le_iff,
     ← this]
   exact ⟨(SimplexCategory.δ _).op, rfl⟩
 
