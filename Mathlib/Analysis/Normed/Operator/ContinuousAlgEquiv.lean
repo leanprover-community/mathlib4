@@ -213,15 +213,15 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
   simp [U, coe_auxIsometry, coe_symm_auxIsometry, smul_smul, la, ← conjContinuousAlgEquiv_apply,
     ← hy]
 
-instance : AddRightMono (V →L[𝕜] V) where elim _ _ := by simp_all [le_def]
-
-instance {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
-    [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _]
-    [ContinuousMapClass F _ _] : OrderHomClass F _ _ :=
-  .of_addMonoidHom fun f x h ↦ by
+-- remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
+-- this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`.
+instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
+    [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
+    OrderIsoClass F _ _ where
+  map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
       (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
     simp_rw [LinearIsometryEquiv.toContinuousLinearEquiv_symm, funext_iff,
       fun x ↦ show StarAlgEquivClass.toStarAlgEquiv f x = f x by rfl] at hU
-    simpa [hU, nonneg_iff_isPositive, ← isPositive_toLinearMap_iff] using
-      (LinearMap.isPositive_linearIsometryEquiv_conj_iff U).mpr h
+    simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, hU]
+    exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U
