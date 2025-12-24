@@ -127,7 +127,7 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {0} A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
-  (iff_adjoin_eq_top _ _ _).2  <| by simpa
+  (iff_adjoin_eq_top _ _ _).2 <| by simpa
 
 theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
@@ -205,7 +205,24 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
     rw [← adjoin_adjoin_coe_preimage, preimage_setOf_eq]
     norm_cast
 
-variable {n S}
+variable {n}
+
+/-- If there exists a primitive root of unity of order `n` in `B`, then
+`IsCyclotomicExtension S A B` implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
+theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
+    (hr : IsPrimitiveRoot r n) :
+    IsCyclotomicExtension (S ∪ {n}) A B := by
+  by_cases hn : n = 0
+  · rwa [hn, eq_self_sdiff_zero, Set.union_diff_right, ← eq_self_sdiff_zero]
+  rw [iff_adjoin_eq_top]
+  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by aesop) ?_⟩
+  · obtain hm₁ | rfl := hm₁
+    · exact exists_isPrimitiveRoot A B hm₁ hm₂
+    · use r
+  · rw [← ((iff_adjoin_eq_top _ _ _).mp hB).2]
+    exact Algebra.adjoin_mono (by aesop)
+
+variable {S}
 
 /-- If there exists a nonzero `s ∈ S` such that `n ∣ s`, then `IsCyclotomicExtension S A B`
 implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
@@ -501,7 +518,7 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
 /-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits ((cyclotomic n K).map (algebraMap K L)) := by
-  refine (splits_X_pow_sub_one K L hS).splits_of_dvd
+  refine (splits_X_pow_sub_one K L hS).of_dvd
     (map_ne_zero (X_pow_sub_C_ne_zero (NeZero.pos _) _)) ((map_dvd_map' _).mpr ?_)
   use ∏ i ∈ n.properDivisors, Polynomial.cyclotomic i K
   rw [(eq_cyclotomic_iff (NeZero.pos _) _).1 rfl]

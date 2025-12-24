@@ -1257,3 +1257,12 @@ instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [
       Ideal.submodule_span_eq]⟩
 
 end PrincipalIdeal
+
+lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
+    [∀ i, CommRing (R i)] (i : ι) :
+    RingHom.ker (Pi.evalRingHom R i) = Ideal.span {1 - Pi.single i 1} := by
+  refine le_antisymm (fun x hx ↦ ?_) (by simp [Ideal.span_le])
+  simp only [RingHom.mem_ker, Pi.evalRingHom_apply] at hx
+  rw [Ideal.mem_span_singleton]
+  use x + Pi.single i 1
+  simp [mul_add, sub_mul, one_mul, ← Pi.single_mul_left, hx]

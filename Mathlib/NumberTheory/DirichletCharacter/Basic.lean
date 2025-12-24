@@ -322,12 +322,12 @@ lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
   rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
-lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
+lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (-x) = - ψ x := by
   rw [Odd] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]
 
-lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
+lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (-x) = ψ x := by
   rw [Even] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]

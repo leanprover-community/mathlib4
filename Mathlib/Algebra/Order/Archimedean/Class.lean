@@ -395,12 +395,12 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
     have hminmem : s.min' hs ∈ (Finset.cons i s hi) :=
       Finset.mem_cons_of_mem (Finset.min'_mem _ _)
     have hne : mk (a i) ≠ mk (a (s.min' hs)) := by
-      by_contra!
-      obtain eq := hmono.injOn (by simp) hminmem this
+      by_contra h
+      obtain eq := hmono.injOn (by simp) hminmem h
       rw [eq] at hi
       exact hi (Finset.min'_mem _ hs)
     rw [← ih] at hne
-    obtain hlt|hlt := lt_or_gt_of_ne hne
+    obtain hlt | hlt := lt_or_gt_of_ne hne
     · rw [mk_mul_eq_mk_left hlt]
       congr
       apply le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ (by simp))
@@ -560,7 +560,7 @@ variable {s : UpperSet (MulArchimedeanClass M)}
 
 @[to_additive]
 theorem subsemigroup_eq_subgroup_of_ne_top (hs : s ≠ ⊤) :
-    subsemigroup s = (subgroup s : Set M)  := by
+    subsemigroup s = (subgroup s : Set M) := by
   simp [subgroup, hs]
 
 variable (M) in

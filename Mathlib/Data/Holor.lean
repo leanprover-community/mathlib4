@@ -292,10 +292,7 @@ theorem cprankMax_sum [NonUnitalNonAssocSemiring α] {β} {n : ℕ} (s : Finset 
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_notMem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]
-      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by
-        apply ih
-        intro (x : β) (h_x_in_s : x ∈ s)
-        simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
+      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by grind
       exact cprankMax_add (h_cprank x (Finset.mem_insert_self x s)) ih')
 
 theorem cprankMax_upper_bound [Semiring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankMax ds.prod x
