@@ -536,10 +536,6 @@ lemma length_dropUntil_eq_dist_sub {u v x : V} (p : G.Walk u v) (hp : p.IsPath)
   rw [← h4, ← hp_len, ← h1, SimpleGraph.Walk.length_append]
   aesop
 
-lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
-    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
-    exact SimpleGraph.two_colorable_iff_forall_loop_even
-
 lemma bypass_eq_nil_of_closed {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
     w.bypass = SimpleGraph.Walk.nil := by
       have h_nil : ∀ {u : V} {p : G.Walk u u}, p.IsPath → p = SimpleGraph.Walk.nil := by
@@ -593,10 +589,8 @@ theorem bipartite_iff_all_cycles_even :
   G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
   refine ⟨bipartite_implies_even_cycles G, fun h ↦ ?_⟩
     have h_colorable : G.Colorable 2 := by
-      -- By the lemma, this implies that G is colorable with 2 colors. We can use the lemma `two_colorable_iff_forall_loop_even` which states that a graph is 2-colorable if and only if every closed walk has even length.
       apply (two_colorable_iff_forall_loop_even).mpr
       intro u w
-      -- By `even_length_iff_even_bypass_length`, `Even w.length ↔ Even w.bypass.length`.
       have h_even_bypass : Even w.length ↔ Even w.bypass.length := by
         apply even_length_iff_even_bypass_length
         assumption
