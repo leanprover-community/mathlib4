@@ -292,23 +292,17 @@ lemma H_le_invtSubmoduleToLieIdeal_top :
 
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
-  set I := invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) with hI
+  set I := invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp)
   have h1 := H_le_invtSubmoduleToLieIdeal_top (H := H)
   have h2 : ∀ α : H.root, (rootSpace H α : Submodule K L) ≤ (I : Submodule K L) := fun ⟨α, hα⟩ =>
-    have hα' : α.IsNonZero := (Finset.mem_filter.mp hα).2
-    (rootSpace_le_sl2SubmoduleOfRoot α hα').trans (le_iSup_of_le ⟨α, trivial, hα'⟩ le_rfl)
-  have h3 : (⨆ α : H.root, (rootSpace H α : Submodule K L)) ≤ I := iSup_le h2
-  have h4 : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) ≤ I := sup_le h1 h3
-  have h5 : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) = ⊤ := by
-    have := congrArg (↑· : LieSubmodule K H L → Submodule K L) (iSup_rootSpace_eq_top H)
-    simp only [LieSubmodule.sup_toSubmodule, LieSubmodule.iSup_toSubmodule,
-      LieSubmodule.top_toSubmodule] at this
-    exact this
-  rw [h5, top_le_iff] at h4
-  rw [eq_top_iff]
-  intro x _
-  have : x ∈ (LieIdeal.toLieSubalgebra K L I).toSubmodule := h4 ▸ Submodule.mem_top
-  exact this
+    (rootSpace_le_sl2SubmoduleOfRoot α (Finset.mem_filter.mp hα).2).trans
+      (le_iSup_of_le ⟨α, trivial, (Finset.mem_filter.mp hα).2⟩ le_rfl)
+  have h3 : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) ≤ I :=
+    sup_le h1 (iSup_le h2)
+  have h4 : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) = ⊤ := by
+    simpa using congrArg (↑· : LieSubmodule K H L → Submodule K L) (iSup_rootSpace_eq_top H)
+  rw [h4, top_le_iff] at h3
+  exact eq_top_iff.mpr fun x _ => (h3 ▸ Submodule.mem_top : x ∈ (I : Submodule K L))
 
 section IsSimple
 
