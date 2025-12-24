@@ -21,8 +21,13 @@ public import Mathlib.RingTheory.Nakayama.SpanRank
 # The module `I ⧸ I ^ 2`
 
 In this file, we provide special API support for the module `I ⧸ I ^ 2`. The official
-definition is a quotient module of `I`, but the alternative definition as an ideal of `R ⧸ I ^ 2` is
-also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
+definition is a quotient module of `I`, but there are two alternative definitions:
+
+- as an ideal of `R ⧸ I ^ 2`,
+- as the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`
+
+They are shown to be `R`-linear equivalent to the official definition via
+`Ideal.cotangentEquivIdeal` and `Ideal.cotangentEquivSubmodule` respectively.
 
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
 
