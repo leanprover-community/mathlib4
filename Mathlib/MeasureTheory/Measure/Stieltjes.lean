@@ -81,28 +81,24 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
 
 set_option backward.privateInPublic true in
 open scoped Classical in
-/-- `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot. -/
-def botSet : Set R := if h : ∃ (x : R), IsBot x then {h.choose} else ∅
+/-- `botSet` is the set of all bottom elements. -/
+def botSet : Set R := {x | IsBot x}
 
 @[simp] lemma Ioc_diff_botSet (a b : R) : Ioc a b \ botSet = Ioc a b := by
-  simp only [botSet, sdiff_eq_left]
-  split_ifs with h
-  · simp only [disjoint_singleton_right, mem_Ioc, not_and_or]
-    have : h.choose ≤ a := h.choose_spec _
-    grind
-  · simp
+  rw [sdiff_eq_left, disjoint_iff_forall_ne]
+  rintro c ⟨hc, _⟩ _ hc' rfl
+  exact (hc' a).not_gt hc
 
 lemma notMem_botSet_of_lt {x y : R} (h : x < y) : y ∉ botSet := by
-  simp only [botSet]
-  split_ifs with h'
-  · simp only [mem_singleton_iff]
-    exact (lt_of_le_of_lt (h'.choose_spec x) h).ne'
-  · simp
+  contrapose! h
+  exact h x
+
+lemma subsingleton_botSet : (botSet (R := R)).Subsingleton :=
+  subsingleton_isBot _
 
 lemma measurableSet_botSet [MeasurableSpace R] [MeasurableSingletonClass R] :
-    MeasurableSet (botSet (R := R)) := by
-  simp only [botSet]
-  split_ifs <;> simp
+    MeasurableSet (botSet (R := R)) :=
+  subsingleton_botSet.measurableSet
 
 end Prerequisites
 
@@ -553,8 +549,7 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     rw [StieltjesFunction.measure]
     apply (outer_le_length _ _).trans
     rw [← length_diff_botSet]
-    have : ∃ x, IsBot x := ⟨a, ha⟩
-    have : botSet = {a} := by simpa [botSet, this] using subsingleton_isBot _ this.choose_spec ha
+    have : botSet = {a} := subsingleton_botSet.eq_singleton_of_mem ha
     simp [this]
   obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
