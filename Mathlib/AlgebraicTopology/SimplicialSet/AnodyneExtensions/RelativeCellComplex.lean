@@ -190,7 +190,9 @@ lemma Cells.ιSigmaHorn_m {j : ι} (c : f.Cells j) :
 
 @[simp]
 lemma Cells.preimage_filtration_map {j : ι} (c : f.Cells j) :
-    (f.filtration j).preimage c.map = c.horn := sorry
+    (f.filtration j).preimage c.map = c.horn := by
+  obtain ⟨x, hx⟩ := c
+  sorry
 
 def Cells.mapHorn {j : ι} (c : f.Cells j) : (c.horn : SSet) ⟶ f.filtration j :=
   Subcomplex.lift (c.horn.ι ≫ c.map) (by
@@ -242,7 +244,6 @@ lemma isPullback (j : ι) (hj : ¬ IsMax j) :
     · sorry
     )⟩
 
-#exit
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where

@@ -402,6 +402,11 @@ def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (str
 def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
 
+@[simp]
+lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
+    Set.range (Fin.succAboveOrderEmb i) = {i}ᶜ := by
+  aesop
+
 /-! ### Uniqueness of order isomorphisms -/
 
 variable {α : Type*} [Preorder α]

@@ -294,3 +294,9 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
   · unfold Function.onFun
     apply symm
     exact hf' n m h
+
+lemma Finset.univ_neq_empty (α : Type*) [Fintype α] [Nonempty α] :
+    (Finset.univ : Finset α) ≠ ∅ := by
+  intro h
+  have := Finset.mem_univ (Classical.arbitrary α)
+  simp [h] at this

@@ -185,6 +185,12 @@ lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
     face S₁ ⊓ face S₂ = face (S₁ ⊓ S₂) := by
   aesop
 
+@[simp]
+lemma face_bot (n : ℕ) :
+    face.{u} (∅ : Finset (Fin (n + 1))) = ⊥ := by
+  ext
+  simpa using Finset.univ_neq_empty _
+
 end stdSimplex
 
 lemma yonedaEquiv_comp {X Y : SSet.{u}} {n : SimplexCategory}
@@ -408,6 +414,18 @@ instance {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
   obtain ⟨f, rfl⟩ := yonedaEquiv.surjective x
   rw [← Subcomplex.range_eq_ofSimplex]
   infer_instance
+
+lemma hasDimensionLT_face {n : ℕ} (S : Finset (Fin (n + 1)))
+    (d : ℕ) (hd : S.card ≤ d) :
+    HasDimensionLT (face.{u} S) d := by
+  generalize hm : S.card = m
+  obtain _ | m := m
+  · obtain rfl : S = ∅ := by rwa [← Finset.card_eq_zero]
+    rw [face_bot]
+    infer_instance
+  · rw [← hasDimensionLT_iff_of_iso
+      (isoOfRepresentableBy (faceRepresentableBy S m (monoEquivOfFin S (by simpa))))]
+    exact hasDimensionLT_of_le _ (m + 1) _
 
 end stdSimplex
 
