@@ -1,6 +1,5 @@
 module
 
-import Mathlib.Init
 import MathlibTest.UnusedInstancesInType.Basic
 
 set_option linter.unusedDecidableInType true

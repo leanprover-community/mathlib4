@@ -1,6 +1,5 @@
 module
 
-import Mathlib.Init
 import MathlibTest.UnusedInstancesInType.Basic
 import Mathlib.Data.Fintype.Defs -- Import `Fintype`, but not interface
 
