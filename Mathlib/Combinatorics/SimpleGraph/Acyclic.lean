@@ -418,7 +418,7 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (h
     Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
   refine ⟨reachable_eq_of_maximal_isAcyclic F, fun h => ?_⟩
   by_contra!
-  obtain ⟨F', hF'⟩ := exists_gt_of_not_maximal (P := fun H => H ≤ G ∧ H.IsAcyclic) hF this
+  obtain ⟨F', hF'⟩ := exists_gt_of_not_maximal (P := fun H => H ≤ G ∧ H.IsAcyclic) ⟨hF, hF'⟩ this
   obtain ⟨e, he⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono hF'.1
   have : (F ⊔ fromEdgeSet {e}).IsAcyclic := by
     apply hF'.2.2.anti
@@ -449,7 +449,7 @@ theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Co
   refine ⟨fun h ↦ ⟨⟨fun u v ↦ ?_⟩, h.1.2⟩, fun hT' ↦ ?_⟩
   · rw [G.reachable_eq_of_maximal_isAcyclic T h]
     exact hG.preconnected u v
-  · rw [maximal_isAcyclic_iff_reachable_eq ⟨hT, hT'.IsAcyclic⟩]
+  · rw [maximal_isAcyclic_iff_reachable_eq hT hT'.IsAcyclic]
     replace hT' : T.Reachable = ⊤ := by
       rw [← preconnected_iff_reachable_eq_top]
       exact hT'.isConnected.preconnected
