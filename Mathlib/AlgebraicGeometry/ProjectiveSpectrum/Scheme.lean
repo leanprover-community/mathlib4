@@ -28,7 +28,7 @@ This file is to prove that `Proj` is a scheme.
 
 ## Implementation
 
-In `AlgebraicGeometry/ProjectiveSpectrum/StructureSheaf.lean`, we have given `Proj` a
+In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/StructureSheaf.lean`, we have given `Proj` a
 structure sheaf so that `Proj` is a locally ringed space. In this file we will prove that `Proj`
 equipped with this structure sheaf is a scheme. We achieve this by using an affine cover by basic
 open sets in `Proj`, more specifically:
@@ -357,7 +357,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     apply GradedMonoid.toGradedMul.mul_mem <;> mem_tac_aux
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
-    apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
+    apply GradedMonoid.toGradedMul.mul_mem (i := (j - m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
     rw [← add_smul]; congr; lia
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
@@ -573,7 +573,7 @@ The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
 - `ψ : Spec A⁰_f ⟶ Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
 -/
 def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
+    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f)) where
   hom := ProjIsoSpecTopComponent.toSpec 𝒜 f
   inv := ProjIsoSpecTopComponent.fromSpec f_deg hm
   hom_inv_id := ConcreteCategory.hom_ext _ _
