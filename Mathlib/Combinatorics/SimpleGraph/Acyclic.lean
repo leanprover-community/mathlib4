@@ -384,37 +384,33 @@ The reachability relation of a maximal acyclic subgraph agrees with that of the 
 -/
 lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
     (h : Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F) : F.Reachable = G.Reachable := by
-  simp only [Maximal, and_imp] at h
-  obtain ⟨hF, h⟩ := h
-  apply funext; intro u; apply funext; intro v
-  refine propext ⟨fun hr => hr.mono hF.1, ?_⟩
+  obtain ⟨⟨hF : F ≤ G, hF' : F.IsAcyclic⟩, h⟩ := by simpa [Maximal] using h
+  ext u v
+  refine ⟨fun h ↦ h.mono hF, ?_⟩
   contrapose! h
-  obtain ⟨p⟩ := h.1
+  obtain ⟨⟨p : G.Walk u v⟩, h : ¬ F.Reachable u v⟩ := h
   let s : Set V := F.connectedComponentMk u
   have hus : u ∈ s := ConnectedComponent.connectedComponentMk_mem
-  have hvs : v ∉ s := h.2 ∘ (F.connectedComponentMk u).reachable_of_mem_supp hus
-  obtain ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩ := p.exists_boundary_dart s hus hvs
-  let F' := (F ⊔ fromEdgeSet {s(u', v')})
-  suffices F'.IsAcyclic by
-    rw [le_iff_adj] at hF
-    refine ⟨F', ?_, this, le_sup_left, ?_⟩
+  have hvs : v ∉ s := h ∘ (F.connectedComponentMk u).reachable_of_mem_supp hus
+  obtain ⟨⟨⟨u', v'⟩, huv : G.Adj u' v'⟩, -, hu : u' ∈ s, hv : v' ∉ s⟩ :=
+    p.exists_boundary_dart s hus hvs
+  suffices (F ⊔ fromEdgeSet {s(u', v')}).IsAcyclic by
+    refine ⟨F ⊔ fromEdgeSet {s(u', v')}, ?_, this, le_sup_left, ?_⟩
     · have : G.Adj v' u' := G.symm huv
       simp only [sup_le_iff, le_iff_adj, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq,
-      Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, ne_eq, and_imp, F']
+        Sym2.rel_iff'] at hF ⊢
       grind
     · rw [le_iff_adj]
       push_neg
-      refine ⟨u', v', ?_, ?_⟩
-      · simpa [F'] using Or.inr huv.ne
-      · intro hc
-        have : _ := ConnectedComponent.mem_supp_congr_adj (F.connectedComponentMk u) hc
+      refine ⟨u', v', ?_, fun hc ↦ ?_⟩
+      · simpa using Or.inr huv.ne
+      · have := (F.connectedComponentMk u).mem_supp_congr_adj hc
         grind
-  refine (isAcyclic_add_edge_iff_of_not_reachable u' v' ?_).mpr hF.2
-  intro hc
-  rw [←ConnectedComponent.eq] at hc
+  suffices ¬ F.Reachable u' v' by rwa [isAcyclic_add_edge_iff_of_not_reachable u' v' this]
   suffices F.connectedComponentMk u' = s by
-    exact (hc ▸ this ▸ hv) ConnectedComponent.connectedComponentMk_mem
-  simp_rw [s, SetLike.coe, ConnectedComponent.supp_inj, ←ConnectedComponent.mem_supp_iff]
+    rw [← ConnectedComponent.eq]
+    exact fun hc ↦ (hc ▸ this ▸ hv) ConnectedComponent.connectedComponentMk_mem
+  simp_rw [s, SetLike.coe, ConnectedComponent.supp_inj, ← ConnectedComponent.mem_supp_iff]
   grind
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
