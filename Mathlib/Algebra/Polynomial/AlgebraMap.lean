@@ -23,10 +23,10 @@ We promote `eval₂` to an algebra hom in `aeval`.
 ## Main definitions
 
 - `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
-the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
+  the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
 - `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
-coefficients of a polynomial in `S[X]`.
+  coefficients of a polynomial in `S[X]`.
 
 -/
 
@@ -347,7 +347,7 @@ def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] �
     (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
 theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
-    (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟a) (- ⅟a * b) := by
+    (algEquivCMulXAddC a b).symm = algEquivCMulXAddC (⅟a) (-⅟a * b) := by
   ext p : 1
   simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
   congr
@@ -567,14 +567,14 @@ end aevalTower
 open LinearMap TensorProduct in
 lemma X_pow_smul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
     [AddCommMonoid N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
-      X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
-        (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
-    induction sn using TensorProduct.induction_on with
-    | zero => simp
-    | add x y hx hy => simp [hx, hy]
-    | tmul s n =>
-      simp only [rTensor_tmul, coe_restrictScalars, monomial_zero_left]
-      rw [smul_tmul', smul_eq_mul, mul_comm, C_mul_X_pow_eq_monomial]
+    X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
+      (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
+  induction sn using TensorProduct.induction_on with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | tmul s n =>
+    simp only [rTensor_tmul, coe_restrictScalars, monomial_zero_left]
+    rw [smul_tmul', smul_eq_mul, mul_comm, C_mul_X_pow_eq_monomial]
 
 
 end CommSemiring
@@ -642,7 +642,7 @@ variable [CommRing R] {p : R[X]} {t : R}
 
 @[simp]
 theorem aeval_neg {p : R[X]} [Ring A] [Algebra R A] (x : A) :
-    aeval x (- p) = - aeval x p := map_neg ..
+    aeval x (-p) = -aeval x p := map_neg ..
 
 @[simp]
 theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :

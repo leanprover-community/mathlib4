@@ -25,7 +25,7 @@ In this file we define and prove properties about finite products of measures
 
 To apply Fubini's theorem or Tonelli's theorem along some subset, we recommend using the marginal
 construction `MeasureTheory.lmarginal` and (todo) `MeasureTheory.marginal`. This allows you to
-apply the theorems without any bookkeeping with measurable equivalences.
+apply these theorems without any bookkeeping with measurable equivalences.
 
 ## Implementation Notes
 
@@ -71,7 +71,7 @@ namespace MeasureTheory
 variable [Fintype ι] {m : ∀ i, OuterMeasure (α i)}
 
 /-- An upper bound for the measure in a finite product space.
-  It is defined to by taking the image of the set under all projections, and taking the product
+  It is defined by taking the image of the set under all projections, and taking the product
   of the measures of these images.
   For measurable boxes it is equal to the correct measure. -/
 @[simp]
@@ -458,12 +458,7 @@ lemma pi_map_piCongrLeft [hι' : Fintype ι'] (e : ι ≃ ι') {β : ι' → Typ
     refine (e.forall_congr ?_).symm
     intro i
     rw [MeasurableEquiv.piCongrLeft_apply_apply e x i]
-  rw [this, pi_pi, Finset.prod_equiv e.symm]
-  · simp only [Finset.mem_univ, implies_true]
-  intro i _
-  simp only [s']
-  congr
-  all_goals rw [e.apply_symm_apply]
+  simpa [this] using Fintype.prod_equiv _ (fun _ ↦ (μ _) (s' _)) _ (congrFun rfl)
 
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :
