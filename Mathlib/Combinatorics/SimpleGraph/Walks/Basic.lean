@@ -269,15 +269,9 @@ theorem snd_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
 
 theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     ⟨⟨u', v'⟩, h⟩ ∈ p.darts ↔ [u', v'] <:+: p.support := by
-  rw [List.infix_iff_getElem?]
-  refine ⟨fun h ↦ ?_, fun ⟨i, hi, h⟩ ↦ ?_⟩
+  refine .trans ⟨fun h ↦ ?_, fun ⟨i, hi, h⟩ ↦ ?_⟩ List.infix_iff_getElem?.symm
   · have ⟨i, hi, h⟩ := List.getElem_of_mem h
-    refine ⟨i, by grind, fun j hj ↦ ?_⟩
-    by_cases hj : j = 0
-    · subst hj
-      grind [fst_darts_getElem]
-    · have hj : j = 1 := by grind
-      grind [snd_darts_getElem]
+    exact ⟨i, by grind, fun j hj ↦ by grind [fst_darts_getElem, snd_darts_getElem]⟩
   · have := h 0
     have := h 1
     convert p.darts.getElem_mem (n := i) (by grind)
