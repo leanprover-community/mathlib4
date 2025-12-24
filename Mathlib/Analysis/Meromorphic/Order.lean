@@ -834,10 +834,9 @@ lemma MeromorphicAt.meromorphicOrderAt_comp (hf : MeromorphicAt f (g x)) (hg : A
   rw [meromorphicOrderAt_ne_top_iff hf] at hf'
   set r := (meromorphicOrderAt f (g x)).untop₀
   rw [hr]
-  -- Now write `F = (· - g x) ^ r • G` for `G` analytic and nonzero at `g x`
+  -- Now write `f = (· - g x) ^ r • F` for `F` analytic and nonzero at `g x`
   obtain ⟨F, hFan, hFne, hFev⟩ := hf'
-  have aux1 : f ∘ g =ᶠ[𝓝[≠] x] (g · - g x) ^ r • (F ∘ g) :=
-    hFev.comp_tendsto (hg.map_nhdsNE hg_nc)
+  have aux1 : f ∘ g =ᶠ[𝓝[≠] x] (g · - g x) ^ r • (F ∘ g) := hFev.comp_tendsto (hg.map_nhdsNE hg_nc)
   have aux2 : meromorphicOrderAt (F ∘ g) x = 0 := by
     rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop),
       analyticOrderAt_eq_zero.mpr (by exact .inr hFne), ENat.map_zero, CharP.cast_eq_zero,
@@ -860,7 +859,7 @@ lemma AnalyticAt.analyticOrderAt_comp (hf : AnalyticAt 𝕜 f (g x)) (hg : Analy
     · simpa [hf', show analyticOrderAt f (g x) ≠ 0 by grind [analyticOrderAt_ne_zero]]
     · rw [show analyticOrderAt f (g x) = 0 from ?_, zero_mul] <;>
       grind [hf.comp hg, AnalyticAt.analyticOrderAt_eq_zero]
-  simpa [hf.meromorphicOrderAt_eq, (hf.comp hg).meromorphicOrderAt_eq, ← ENat.map_mul]
+  simpa [hf.meromorphicOrderAt_eq, (hf.comp hg).meromorphicOrderAt_eq, ← ENat.map_natCast_mul]
     using hf.meromorphicAt.meromorphicOrderAt_comp hg hg_nc
 
 lemma meromorphicAt_comp_iff_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0)

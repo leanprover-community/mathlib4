@@ -277,6 +277,48 @@ lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg
     exact eventually_nhds_iff.2
       ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; module), h₂t.inter h₂s, h₃t, h₃s⟩
 
+theorem AnalyticAt.analyticOrderAt_deriv_add_one {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
+    [CompleteSpace E] [CharZero 𝕜] :
+    analyticOrderAt (deriv f) x + 1 = analyticOrderAt (f · - f x) x := by
+  generalize h : analyticOrderAt (f · - f x) x = r
+  cases r with
+  | top =>
+    suffices analyticOrderAt (deriv f) x = ⊤ by simp_all
+    simp only [analyticOrderAt_eq_top, sub_eq_zero] at h ⊢
+    obtain ⟨U, hUf, hUo, hUx⟩ := eventually_nhds_iff.mp h
+    filter_upwards [hUo.mem_nhds hUx] with y hy
+    simp [(eventuallyEq_of_mem (hUo.mem_nhds hy) hUf).deriv_eq]
+  | coe r =>
+    have hrne : r ≠ 0 := by
+      intro hr
+      rw [hr, ENat.coe_zero, AnalyticAt.analyticOrderAt_eq_zero (by fun_prop)] at h
+      grind
+    obtain ⟨s, rfl⟩ := Nat.exists_add_one_eq.mpr (Nat.pos_of_ne_zero hrne)
+    rw [Nat.cast_succ]
+    congr 1
+    rw [analyticOrderAt_eq_natCast (by fun_prop)] at h
+    obtain ⟨F, hFa, hFne, hfF⟩ := h
+    simp only [sub_eq_iff_eq_add] at hfF
+    obtain ⟨U, hUf, hUo, hUx⟩ := eventually_nhds_iff.mp (hfF.and hFa.eventually_analyticAt)
+    have : ∀ y ∈ U, deriv f y =
+        (y - x) ^ (s + 1) • deriv F y + (s + 1) • (y - x) ^ s • F y := by
+      intro y hy
+      rw [EventuallyEq.deriv_eq (eventually_of_mem (hUo.mem_nhds hy) (fun u hu ↦ (hUf u hu).1)),
+        deriv_add_const, deriv_fun_smul (by fun_prop) (hUf y hy).2.differentiableAt]
+      simp [mul_smul, add_smul, Nat.cast_smul_eq_nsmul]
+    rw [analyticOrderAt_congr (eventually_of_mem (hUo.mem_nhds hUx) this)]
+    have : analyticOrderAt (fun y ↦ (s + 1) • (y - x) ^ s • F y) x = s := by
+      rw [analyticOrderAt_eq_natCast]
+      · refine ⟨fun z ↦ (↑(s + 1) : 𝕜) • F z, hFa.fun_const_smul, ?_, .of_forall fun y ↦ ?_⟩
+        · simpa using ⟨by norm_cast, hFne⟩
+        · simpa only [Nat.cast_smul_eq_nsmul] using smul_comm ..
+      · simp_rw [← Nat.cast_smul_eq_nsmul 𝕜]
+        fun_prop
+    rwa [← Pi.add_def, analyticOrderAt_add_eq_right_of_lt]
+    rw [this, ← Order.succ_le_iff_of_not_isMax (not_isMax_iff.mpr ⟨⊤, ENat.coe_lt_top s⟩),
+      ENat.succ_def, ← Nat.cast_add_one, natCast_le_analyticOrderAt (by fun_prop)]
+    exact ⟨deriv F, hFa.deriv, by simp⟩
+
 theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
     (hf' : deriv f x ≠ 0) : analyticOrderAt (f · - f x) x = 1 := by
   generalize h : analyticOrderAt (f · - f x) x = r
