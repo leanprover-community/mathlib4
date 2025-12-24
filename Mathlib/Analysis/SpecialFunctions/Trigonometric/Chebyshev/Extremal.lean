@@ -190,4 +190,15 @@ theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
     (fun i hi => leadingCoeff_eq_sum_chebyshevNode_coeff_pos hi) hPdeg hPbnd
   simp
 
+theorem eval_iterate_derivative_eq_sum_chebshevNode {n k : ℕ} (hk : k ≤ n) (x : ℝ)
+    (P : ℝ[X]) (hP : P.degree = n) :
+    (derivative^[k] P).eval x = k.factorial *
+      ∑ i ≤ n, P.eval (chebyshevNode n i) *
+        ((∏ j ∈ (Finset.range (n + 1)).erase i, ((chebyshevNode n i) - (chebyshevNode n j)))⁻¹ *
+        ∑ t ∈ ((Finset.range (n + 1)).erase i).powerset with t.card = n - k,
+        ∏ a ∈ t, (x - chebyshevNode n a)) := by
+  rw [Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_chebyshevNode n).injOn (by simp [hP])
+    hk x]
+  sorry
+
 end Polynomial.Chebyshev
