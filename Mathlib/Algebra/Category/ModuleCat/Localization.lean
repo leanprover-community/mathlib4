@@ -79,7 +79,7 @@ noncomputable def localizedModule_functor [Small.{v} R] (S : Submonoid R) :
   map := ModuleCat.localizedModuleMap S
   map_comp {X Y Z} f g := by
     ext
-    simp [localizedModuleMap, IsLocalizedModule.map_comp' S _ (Y.localizedModuleMkLinearMap S)]
+    simp [IsLocalizedModule.map_comp' S _ (Y.localizedModuleMkLinearMap S)]
 
 instance [Small.{v} R] (S : Submonoid R) : (ModuleCat.localizedModule_functor S).Additive where
 
