@@ -67,7 +67,7 @@ lemma hasFiniteIntegral_of_bound [CompactSpace Y] (f : X → C(Y, E)) (bound : X
     (bound_int : HasFiniteIntegral bound μ)
     (bound_ge : ∀ᵐ x ∂μ, ∀ y : Y, ‖f x y‖ ≤ bound x) :
     HasFiniteIntegral f μ := by
-  rcases isEmpty_or_nonempty Y with (h|h)
+  rcases isEmpty_or_nonempty Y with (h | h)
   · simp
   · have bound_nonneg : 0 ≤ᵐ[μ] bound := by
       filter_upwards [bound_ge] with x bound_x using le_trans (norm_nonneg _) (bound_x h.some)
