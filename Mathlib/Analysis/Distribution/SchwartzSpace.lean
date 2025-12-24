@@ -1266,9 +1266,8 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (L : E →L[ℝ] F →L[ℝ] V) :
     ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
   MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    f.hasDerivAt g.hasDerivAt (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).integrable
-    (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
-    (bilinLeftCLM L g.hasTemperateGrowth f).integrable
+    f.hasDerivAt g.hasDerivAt (pairing L f (derivCLM ℝ g)).integrable
+    (pairing L (derivCLM ℝ f) g).integrable (pairing L f g).integrable
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
