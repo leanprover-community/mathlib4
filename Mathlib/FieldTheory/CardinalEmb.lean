@@ -194,7 +194,7 @@ instance (i : ι) : FiniteDimensional (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
   adjoin.finiteDimensional ((Algebra.IsAlgebraic.tower_top (K := F) _).isAlgebraic _).isIntegral
 
 theorem deg_lt_aleph0 (i : ι) : #(X i) < ℵ₀ :=
-  (toNat_ne_zero.mp (Field.instNeZeroFinSepDegree (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯).out).2
+  lt_aleph0_of_finite _
 
 open WithTop in
 /-- Extend the family `E⟮<i⟯, i : ι` by adjoining a top element. -/
