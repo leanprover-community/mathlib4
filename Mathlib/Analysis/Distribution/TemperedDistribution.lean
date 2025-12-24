@@ -19,6 +19,8 @@ public import Mathlib.MeasureTheory.Function.Holder
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `Function.HasTemperateGrowth.toTemperedDistribution`: Every function of temperate growth is a
+tempered distribution.
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
 map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
@@ -81,6 +83,24 @@ theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
   rfl
 
 end MeasureTheory.Measure
+
+namespace Function.HasTemperateGrowth
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+
+set_option backward.privateInPublic true in
+/-- A function of temperate growth `f` defines a tempered distribution via integration, namely
+`g ↦ ∫ (x : E), g x • f x ∂μ`. -/
+def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
+    toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+
+set_option backward.privateInPublic true in
+@[simp]
+theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, ℂ)) :
+    toTemperedDistribution μ hf g = ∫ (x : E), g x • f x ∂μ := rfl
+
+end Function.HasTemperateGrowth
 
 namespace SchwartzMap
 
@@ -152,6 +172,15 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
 instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     CoeDep (Lp F p μ) f 𝓢'(E, F) where
   coe := toTemperedDistribution f
+
+@[simp]
+theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+    (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
+  ext g
+  simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
+  apply integral_congr_ae
+  filter_upwards [f.coeFn_toLp p μ] with x hf
+  rw [hf]
 
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
@@ -240,6 +269,25 @@ instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
 
 instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
+
+variable [CompleteSpace F]
+
+/-- The distributional Fourier transform and the classical Fourier transform coincide on
+`𝓢(E, F)`. -/
+theorem fourierTransform_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕 (f : 𝓢'(E, F)) = 𝓕 f := by
+  ext g
+  simpa using integral_fourier_smul_eq g f
+
+/-- The distributional inverse Fourier transform and the classical inverse Fourier transform
+coincide on `𝓢(E, F)`. -/
+theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕⁻ (f : 𝓢'(E, F)) = 𝓕⁻ f := calc
+  _ = 𝓕⁻ (toTemperedDistributionCLM E F volume (𝓕 (𝓕⁻ f))) := by
+    congr; exact (fourier_fourierInv_eq f).symm
+  _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
+    rw [fourierTransform_toTemperedDistributionCLM_eq]
+  _ = _ := fourierInv_fourier_eq _
 
 end Fourier
 
