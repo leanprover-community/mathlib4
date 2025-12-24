@@ -7273,6 +7273,7 @@ public import Mathlib.Topology.Order.LeftRightLim
 public import Mathlib.Topology.Order.LeftRightNhds
 public import Mathlib.Topology.Order.LiminfLimsup
 public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.LowerUpperLimitTopology
 public import Mathlib.Topology.Order.LowerUpperTopology
 public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.MonotoneContinuity
