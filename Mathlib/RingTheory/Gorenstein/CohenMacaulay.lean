@@ -349,7 +349,7 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
   let _ : IsScalarTower Rq Rp (M.localizedModule p.asIdeal.primeCompl) :=
     ModuleCat.Algebra.instIsScalarTowerCarrier
   let _ : IsLocalizedModule.AtPrime ((p.1.map f).comap f)
-    (M.localizedModule_mkLinearMap p.1.primeCompl) := by
+    (M.localizedModuleMkLinearMap p.1.primeCompl) := by
     convert M.localizedModule_isLocalizedModule p.1.primeCompl
     exact IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq p.1 p.2 disj
   let _ : IsScalarTower R Rq (M.localizedModule p.1.primeCompl) := {
@@ -359,10 +359,10 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
         ← IsScalarTower.algebraMap_apply] }
   let f2 : (M.localizedModule q.1.primeCompl) →ₗ[Rq] (M.localizedModule p.asIdeal.primeCompl) :=
     isLocalizaedModule_map_of_disjoint_map q.1.primeCompl Rq (p.1.map f)
-    (M.localizedModule_mkLinearMap q.1.primeCompl) (M.localizedModule_mkLinearMap p.1.primeCompl)
+    (M.localizedModuleMkLinearMap q.1.primeCompl) (M.localizedModuleMkLinearMap p.1.primeCompl)
   have isl2 : IsLocalizedModule (p.1.map f).primeCompl f2 :=
     isLocalizaedModule_map_of_disjoint q.1.primeCompl Rq (p.1.map f)
-    (M.localizedModule_mkLinearMap q.1.primeCompl) (M.localizedModule_mkLinearMap p.1.primeCompl)
+    (M.localizedModuleMkLinearMap q.1.primeCompl) (M.localizedModuleMkLinearMap p.1.primeCompl)
   let _ : Module.Finite Rq (Shrink.{v} (Rq ⧸ Ideal.map f p.asIdeal)) :=
     Module.Finite.equiv (Shrink.linearEquiv Rq _).symm
   have isl := Ext.isLocalizedModule' (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
@@ -476,7 +476,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
       exact IsLocalizedModule.of_linearEquiv qq.1.1.primeCompl LinearMap.id f
     have isl := Ext.isLocalizedModule' qq.1.1.primeCompl
       (Localization qq.1.1.primeCompl) f.toLinearMap isl1
-      (M.localizedModule_mkLinearMap qq.1.1.primeCompl)
+      (M.localizedModuleMkLinearMap qq.1.1.primeCompl)
       (M.localizedModule_isLocalizedModule qq.1.1.primeCompl) q.length
     exact nontrivial_of_islocalizedModule isl ntr'
   simp only [← hq, injectiveDimension_eq_sInf_of_finite.{v} M, le_sInf_iff, Set.mem_setOf_eq]
