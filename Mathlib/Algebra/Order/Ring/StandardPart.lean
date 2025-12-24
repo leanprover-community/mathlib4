@@ -279,12 +279,6 @@ noncomputable def stdPart (x : K) : ℝ :=
   if h : 0 ≤ mk x then
     OrderRingHom.comp default FiniteResidueField.mk (.mk x h) else 0
 
-theorem stdPart_of_mk_ne_zero (h : mk x ≠ 0) : stdPart x = 0 := by
-  obtain h | h := h.lt_or_gt
-  · exact dif_neg h.not_ge
-  · rw [stdPart, dif_pos h.le, OrderRingHom.comp_apply, FiniteResidueField.mk_eq_zero.2 h,
-      map_zero]
-
 theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk x) :
     stdPart x = f (.mk <| .mk x h) := by
   rw [stdPart, dif_pos h, OrderRingHom.comp_apply]
@@ -292,17 +286,21 @@ theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk
   exact Subsingleton.allEq _ _
 
 @[simp]
-theorem stdPart_eq_zero_iff {x : K} : stdPart x = 0 ↔ mk x ≠ 0 where
-  mpr := stdPart_of_mk_ne_zero
+theorem stdPart_eq_zero {x : K} : stdPart x = 0 ↔ mk x ≠ 0 where
+  mpr h := by
+    obtain h | h := h.lt_or_gt
+    · exact dif_neg h.not_ge
+    · rw [stdPart, dif_pos h.le, OrderRingHom.comp_apply, FiniteResidueField.mk_eq_zero.2 h,
+        map_zero]
   mp := by
     contrapose!
     intro h
     rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
 
-theorem stdPart_ne_zero_iff {x : K} : stdPart x ≠ 0 ↔ mk x = 0 :=
-  stdPart_eq_zero_iff.ne_left
+alias ⟨_, stdPart_of_mk_ne_zero⟩ := stdPart_eq_zero
 
-alias ⟨_, stdPart_ne_zero⟩ := stdPart_ne_zero_iff
+theorem stdPart_ne_zero {x : K} : stdPart x ≠ 0 ↔ mk x = 0 :=
+  stdPart_eq_zero_iff.ne_left
 
 theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
   intro x (hx : 0 ≤ mk x) y (hy : 0 ≤ mk y) h
