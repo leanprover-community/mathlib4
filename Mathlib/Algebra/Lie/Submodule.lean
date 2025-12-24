@@ -671,6 +671,7 @@ theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
 
 lemma isCompactElement_lieSpan_singleton (m : M) :
     IsCompactElement (lieSpan R L {m}) := by
+  rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro s hne hdir hsup
   replace hsup : m ∈ (↑(sSup s) : Set M) := (SetLike.le_def.mp hsup) (subset_lieSpan rfl)
   suffices (↑(sSup s) : Set M) = ⋃ N ∈ s, ↑N by simp_all

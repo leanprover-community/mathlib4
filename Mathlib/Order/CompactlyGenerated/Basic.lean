@@ -56,13 +56,16 @@ complete lattice, well-founded, compact
 @[expose] public section
 
 open Set
-
-/-- An element `k` is compact if any directed set with `sSup` above
+/-- An element `k` is compact if any directed set with `LUB` (least upper bound) above
 `k` has already got above `k` at some point in the set.
 Such an element is also called "finite" or "S-compact". -/
-def IsCompactElement {α : Type*} [PartialOrder α] [SupSet α] (k : α) :=
-  ∀ s : Set α, s.Nonempty → DirectedOn (· ≤ ·) s → k ≤ sSup s → ∃ x ∈ s, k ≤ x
-
+def IsCompactElement {α : Type*} [PartialOrder α] (k : α) :=
+  ∀ (s : Set α) (u : α),
+    s.Nonempty →
+    DirectedOn (· ≤ ·) s →
+    IsLUB s u →
+    k ≤ u →
+    ∃ x ∈ s, k ≤ x
 
 variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α}
 
@@ -80,11 +83,25 @@ same `sSup`. -/
 def IsSupFiniteCompact : Prop :=
   ∀ s : Set α, ∃ t : Finset α, ↑t ⊆ s ∧ sSup s = t.sup id
 
+/-- An element `k` is compact if and only if any directed set with `sSup` above
+`k` already got above `k` at some point in the set. -/
+theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
+    IsCompactElement k ↔
+      ∀ s : Set α, s.Nonempty → DirectedOn (· ≤ ·) s → k ≤ sSup s → ∃ x : α, x ∈ s ∧ k ≤ x := by
+  constructor
+  · intro hk s hs hs' h_le
+    exact hk s (sSup s) hs hs' (isLUB_sSup s) h_le
+  · intro h s u hs hs' hu h_le
+    rw [isLUB_iff_sSup_eq] at hu
+    rw [← hu] at h_le
+    exact h s hs hs' h_le
+
 /-- An element `k` of is compact if any set with `sSup`
 above `k` has a finite subset with `sSup` above `k`. -/
 theorem isCompactElement_iff_exists_le_sSup_of_le_sSup (k : α) :
     IsCompactElement k ↔ ∀ s : Set α, k ≤ sSup s → ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id := by
   classical
+    rw [isCompactElement_iff_le_of_directed_sSup_le]
     constructor
     · intro hk s hsup
       -- Consider the set of finite joins of elements of the (plain) set s.
@@ -150,6 +167,7 @@ theorem isCompactElement_iff_exists_le_iSup_of_le_iSup.{u} {α : Type u} [Comple
 theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElement k) {ι : Type*}
     (f : ι → α) (h : k ≤ ⨆ i, f i) : ∃ s : Finset ι, k ≤ ⨆ i ∈ s, f i := by
   classical
+    rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
     let g : Finset ι → α := fun s => ⨆ i ∈ s, f i
     have h1 : DirectedOn (· ≤ ·) (Set.range g) := by
       rintro - ⟨s, rfl⟩ - ⟨t, rfl⟩
@@ -169,6 +187,7 @@ its `sSup` strictly below `k`. -/
 theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α] {k : α}
     (hk : IsCompactElement k) {s : Set α} (hemp : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s)
     (hbelow : ∀ x ∈ s, x < k) : sSup s < k := by
+  rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
   by_contra h
   have sSup' : sSup s ≤ k := sSup_le s k fun s hs => (hbelow s hs).le
   replace sSup : sSup s = k := eq_iff_le_not_lt.mpr ⟨sSup', h⟩
@@ -179,6 +198,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α
 theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
     (h : ∀ x ∈ s, IsCompactElement (f x)) : IsCompactElement (s.sup f) := by
   classical
+    simp_rw [isCompactElement_iff_le_of_directed_sSup_le] at ⊢ h
     intro d hemp hdir hsup
     rw [← Function.id_comp f]
     rw [← Finset.sup_image]
@@ -361,6 +381,7 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
       rw [le_iff_compact_le_imp]
       by_cases hs : s.Nonempty
       · intro c hc hcinf
+        rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le] at hc
         rw [le_inf_iff] at hcinf
         rcases hc s hs h hcinf.2 with ⟨d, ds, cd⟩
         refine (le_inf hcinf.1 cd).trans (le_trans ?_ (le_iSup₂ d ds))
