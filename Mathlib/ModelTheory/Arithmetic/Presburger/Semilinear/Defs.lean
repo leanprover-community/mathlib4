@@ -182,7 +182,7 @@ theorem IsSemilinearSet.add (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinear
   exact biUnion hS₁ fun s₁ hs₁ => biUnion hS₂ fun s₂ hs₂ =>
     ((hS₁' s₁ hs₁).add (hS₂' s₂ hs₂)).isSemilinearSet
 
-/-- The image of a semilinear set under an homomorphism is semilinear. -/
+/-- The image of a semilinear set under a homomorphism is semilinear. -/
 theorem IsSemilinearSet.image (hs : IsSemilinearSet s) (f : F) : IsSemilinearSet (f '' s) := by
   rcases hs with ⟨S, hS, hS', rfl⟩
   simp_rw [sUnion_eq_biUnion, image_iUnion]

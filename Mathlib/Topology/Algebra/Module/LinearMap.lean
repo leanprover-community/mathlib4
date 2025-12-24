@@ -325,11 +325,9 @@ end
 instance one : One (M₁ →L[R₁] M₁) :=
   ⟨.id R₁ M₁⟩
 
-theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ :=
-  rfl
+theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
-theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x :=
-  rfl
+theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
 
 @[simp, norm_cast]
 theorem coe_id : (ContinuousLinearMap.id R₁ M₁ : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
@@ -347,9 +345,7 @@ theorem toContinuousAddMonoidHom_id :
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
 
-@[simp]
-theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
-  rfl
+@[simp] theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x := rfl
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
   ⟨0, 1, fun e ↦
@@ -694,21 +690,13 @@ end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
-@[simp]
-theorem smulRight_one_one (c : R₁ →L[R₁] M₂) : smulRight (1 : R₁ →L[R₁] R₁) (c 1) = c := by
-  ext
-  simp [← ContinuousLinearMap.map_smul_of_tower]
-
-@[simp]
-theorem smulRight_one_eq_iff {f f' : M₂} :
-    smulRight (1 : R₁ →L[R₁] R₁) f = smulRight (1 : R₁ →L[R₁] R₁) f' ↔ f = f' := by
-  simp only [ContinuousLinearMap.ext_ring_iff, smulRight_apply, one_apply, one_smul]
-
-theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
-    (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =
-      smulRight (1 : R₁ →L[R₁] R₁) (c • x) := by
+theorem smulRight_comp_smulRight {M₃ : Type*} [AddCommMonoid M₃] [Module R₁ M₃]
+    [TopologicalSpace M₃] [ContinuousSMul R₁ M₃] (f : M₃ →L[R₁] R₁) (g : M₁ →L[R₁] R₁) {x : M₂}
+    {y : M₃} : (smulRight f x).comp (smulRight g y) = smulRight g (f y • x) := by
   ext
   simp
+
+@[deprecated (since := "2025-12-18")] alias smulRight_comp := smulRight_comp_smulRight
 
 theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [Module R M₂]
     [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
@@ -730,8 +718,20 @@ def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
   rfl
 
-theorem toSpanSingleton_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
+@[simp]
+theorem toSpanSingleton_zero : toSpanSingleton R₁ (0 : M₁) = 0 := by ext; simp
+
+theorem toSpanSingleton_apply_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
   one_smul _ _
+
+@[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
+
+@[simp] theorem toSpanSingleton_apply_map_one (c : R₁ →L[R₁] M₂) :
+    toSpanSingleton R₁ (c 1) = c := by
+  ext
+  simp [← ContinuousLinearMap.map_smul_of_tower]
+
+@[deprecated (since := "2025-12-18")] alias smulRight_one_one := toSpanSingleton_apply_map_one
 
 theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
     toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y :=
@@ -744,18 +744,34 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
 
 @[deprecated (since := "2025-08-28")] alias toSpanSingleton_smul' := toSpanSingleton_smul
 
-theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
+theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ := M₁) := rfl
+
+theorem smulRight_one_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
+
+@[deprecated (since := "2025-12-05")] alias one_smulRight_eq_toSpanSingleton :=
+  smulRight_one_eq_toSpanSingleton
 
 @[simp]
 theorem toLinearMap_toSpanSingleton (x : M₁) :
     (toSpanSingleton R₁ x).toLinearMap = LinearMap.toSpanSingleton R₁ M₁ x := rfl
 
-variable {R₁} in
+variable {R₁}
+
 theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
     f ∘L toSpanSingleton R₁ x = toSpanSingleton R₁ (f x) :=
   coe_inj.mp <| LinearMap.comp_toSpanSingleton _ _
+
+@[simp] theorem toSpanSingleton_inj {f f' : M₂} :
+    toSpanSingleton R₁ f = toSpanSingleton R₁ f' ↔ f = f' := by
+  simp [ContinuousLinearMap.ext_ring_iff]
+
+@[deprecated (since := "2025-12-18")] alias smulRight_one_eq_iff := toSpanSingleton_inj
+
+theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
+    (toSpanSingleton R₁ x).comp (toSpanSingleton R₁ c) =
+      toSpanSingleton R₁ (c • x) := smulRight_comp_smulRight 1 1
 
 end ToSpanSingleton
 
@@ -873,11 +889,14 @@ instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) where
 theorem intCast_apply [IsTopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
   rfl
 
-theorem smulRight_one_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
-    smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
+theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
+    toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) := by
   induction n with
   | zero => ext; simp
-  | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
+  | succ n ihn =>
+    rw [pow_succ, ihn, mul_def, toSpanSingleton_comp_toSpanSingleton, smul_eq_mul, pow_succ']
+
+@[deprecated (since := "2025-12-18")] alias smulRight_one_pow := toSpanSingleton_pow
 
 section
 
@@ -1010,6 +1029,24 @@ def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M�
   map_smul' c f := coe_smul c f
 
 end SMul
+
+section toSpanSingletonLE
+
+variable (R S M : Type*) [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+  [SMulCommClass R S M] [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul S M]
+  [TopologicalSpace R] [ContinuousSMul R M]
+
+/-- `ContinuousLinearMap.toSpanSingleton` as a linear equivalence. -/
+@[simps -fullyApplied]
+def toSpanSingletonLE : M ≃ₗ[S] (R →L[R] M) where
+  toFun := toSpanSingleton R
+  invFun f := f 1
+  map_add' := toSpanSingleton_add R
+  map_smul' := toSpanSingleton_smul R
+  left_inv x := by simp
+  right_inv f := by ext; simp
+
+end toSpanSingletonLE
 
 section SMulRightₗ
 
@@ -1218,7 +1255,7 @@ lemma IsIdempotentElem.commute_iff {f T : M →L[R] M}
 
 variable [IsTopologicalAddGroup M]
 
-/-- An idempotent operator `f` commutes with an unit operator `T` if and only if
+/-- An idempotent operator `f` commutes with a unit operator `T` if and only if
 `T (range f) = range f` and `T (ker f) = ker f`. -/
 theorem IsIdempotentElem.commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
     (hf : IsIdempotentElem f) :

@@ -109,7 +109,7 @@ theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a 
   rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
 
 theorem left_le_lineMap_iff_nonneg (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r := by
-  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero,]
+  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero]
 
 theorem lineMap_le_left_iff_nonpos (h : a < b) : lineMap a b r ≤ a ↔ r ≤ 0 := by
   rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero]
@@ -130,7 +130,7 @@ theorem left_lt_lineMap_iff_pos (h : a < b) : a < lineMap a b r ↔ 0 < r := by
 theorem lineMap_lt_left_iff_neg (h : a < b) : lineMap a b r < a ↔ r < 0 := by
   rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_zero]
 
-theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r  := by
+theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r := by
   rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_one]
 
 theorem lineMap_lt_right_iff_lt_one (h : a < b) : lineMap a b r < b ↔ r < 1 := by

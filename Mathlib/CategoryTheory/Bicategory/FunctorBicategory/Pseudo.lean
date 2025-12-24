@@ -44,7 +44,7 @@ abbrev whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ
       rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
       simp }
 
-/-- Right whiskering of an strong natural transformation between pseudofunctors
+/-- Right whiskering of a strong natural transformation between pseudofunctors
 and a modification. -/
 abbrev whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι where
   as := {
@@ -76,7 +76,7 @@ variable (B C)
 Note that this instance is scoped to the `Pseudofunctor.StrongTrans` namespace. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
 rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
-scoped instance bicategory : Bicategory (Pseudofunctor B C) where
+scoped instance : Bicategory (Pseudofunctor B C) where
   whiskerLeft {F G H} η _ _ Γ := StrongTrans.whiskerLeft η Γ
   whiskerRight {F G H} _ _ Γ η := StrongTrans.whiskerRight Γ η
   associator {F G H} I := StrongTrans.associator

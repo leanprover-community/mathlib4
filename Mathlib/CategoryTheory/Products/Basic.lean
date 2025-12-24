@@ -41,7 +41,7 @@ section
 variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStruct.{v₂} D]
 
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
-@[simps (notRecursive := [])] -- notRecursive to generate simp lemmas like `id_fst` and `comp_snd`
+@[simps id_fst id_snd comp_fst comp_snd Hom]
 instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -56,7 +56,7 @@ lemma hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.1 = g.1) (h₂ : f.2 = g.
   Prod.ext h₁ h₂
 
 /-- Construct a morphism in a product category by giving its constituent components.
-This constructor should be preferred over `Prod.mk`, because lean infers better the
+This constructor should be preferred over `Prod.mk`, because Lean infers better the
 source and target of the resulting morphism. -/
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
   ⟨f, g⟩
@@ -65,11 +65,9 @@ abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
 scoped infixr:70 " ×ₘ " => Prod.mkHom
 
 /-- Analogue of `Prod.mk.injEq` in this setting. -/
-@[simp]
 lemma mkHom_eq {X₁ X₂ : C} {Y₁ Y₂ : D} (f f' : X₁ ⟶ X₂) (g g' : Y₁ ⟶ Y₂) :
     f ×ₘ g = f' ×ₘ g' ↔ (f = f' ∧ g = g') :=
   Prod.hom_ext_iff
-
 
 end Prod
 
@@ -97,8 +95,6 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 @[stacks 001K]
 instance prod' : Category.{max v₁ v₂} (C × D) where
 
--- TODO: is there a nice way to fix the non-terminal simp?
-set_option linter.flexible false in
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor

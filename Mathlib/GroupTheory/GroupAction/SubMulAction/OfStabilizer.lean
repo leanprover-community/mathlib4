@@ -93,13 +93,13 @@ alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
 @[to_additive]
 lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
-  dsimp only [Nat.card]
-  rw [← Cardinal.mk_sum_compl {a},
-    Cardinal.toNat_add Cardinal.mk_lt_aleph0 Cardinal.mk_lt_aleph0]
-  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
-  congr
+  classical
+  let := Fintype.ofFinite α
+  rw [Nat.subtype_card {a}ᶜ, ← Finset.card_singleton a, Finset.card_compl_add_card,
+    Nat.card_eq_fintype_card]
+  simp [mem_ofStabilizer_iff]
 
-@[deprecated  (since := "2025-10-03")]
+@[deprecated (since := "2025-10-03")]
 alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
@@ -251,7 +251,7 @@ instance (s : Set α) : MulAction (stabilizer G s) s where
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
   mul_smul g k x := by
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul,
-      MulAction.mul_smul]
+      SemigroupAction.mul_smul]
 
 theorem stabilizer_empty_eq_top :
     stabilizer G (∅ : Set α) = ⊤ := by
