@@ -87,31 +87,34 @@ protected def mk (x : K) (h : 0 ≤ mk x) : FiniteElement K := ⟨x, h⟩
 @[simp] theorem mk_intCast (n : ℤ) : FiniteElement.mk (n : K) (mk_intCast_nonneg n) = n := rfl
 
 @[simp]
-theorem mk_neg {x : K} (h : 0 ≤ mk x) :
+theorem neg_mk {x : K} (h : 0 ≤ mk x) :
     -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
 
+@[deprecated (since := "2025-12-24")]
+alias mk_neg := neg_mk
+
 @[simp]
-theorem mk_add_mk {x y : K} (hx hy) :
+theorem mk_add_mk (x y : K) (hx hy) :
     .mk x hx + .mk y hy = FiniteElement.mk (x + y) ((le_min hx hy).trans <| min_le_mk_add ..) :=
   rfl
 
 @[simp]
-theorem mk_sub_mk {x y : K} (hx hy) :
+theorem mk_sub_mk (x y : K) (hx hy) :
     .mk x hx - .mk y hy = FiniteElement.mk (x - y) ((le_min hx hy).trans <| min_le_mk_sub ..) :=
   rfl
 
 @[simp]
-theorem mk_mul_mk {x y : K} (hx hy) :
+theorem mk_mul_mk (x y : K) (hx hy) :
     .mk x hx * .mk y hy = FiniteElement.mk (x * y) (add_nonneg hx hy) :=
   rfl
 
 @[simp]
-theorem mk_le_mk {x y : K} (hx hy) : FiniteElement.mk x hx ≤ .mk y hy ↔ x ≤ y :=
+theorem mk_le_mk (x y : K) (hx hy) : FiniteElement.mk x hx ≤ .mk y hy ↔ x ≤ y :=
   .rfl
 
 @[simp]
-theorem mk_lt_mk {x y : K} (hx hy) : FiniteElement.mk x hx < .mk y hy ↔ x < y :=
+theorem mk_lt_mk (x y : K) (hx hy) : FiniteElement.mk x hx < .mk y hy ↔ x < y :=
   .rfl
 
 theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
@@ -321,7 +324,7 @@ theorem stdPart_one : stdPart (1 : K) = 1 := by
 theorem stdPart_neg (x : K) : stdPart (-x) = -stdPart x := by
   simp_rw [stdPart, ArchimedeanClass.mk_neg]
   split_ifs
-  · rw [← FiniteElement.mk_neg, map_neg]
+  · rw [← FiniteElement.neg_mk, map_neg]
   · simp
 
 @[simp]
