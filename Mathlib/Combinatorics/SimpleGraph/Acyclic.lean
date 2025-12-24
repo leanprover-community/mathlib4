@@ -171,8 +171,8 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   --     apply List.mem_cons_self
 
 theorem isAcyclic_iff_forall_isBridge :
-    G.IsAcyclic ↔ ∀ ⦃e⦄, G.IsBridge e := by sorry
-  -- rw [isBridge_iff_forall_cycle_notMem]
+    G.IsAcyclic ↔ ∀ ⦃e⦄, G.IsBridge e := by
+  simp [isBridge_iff_forall_cycle_notMem]
 
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
