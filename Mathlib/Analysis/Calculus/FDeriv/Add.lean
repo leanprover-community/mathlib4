@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Tactic.ToFun
 
 /-!
 # Additive operations on derivatives
