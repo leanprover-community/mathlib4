@@ -79,6 +79,14 @@ def ofSnowflaking : Snowflaking X α hα₀ hα₁ ≃ X where
 /-- The natural equivalence between `X` and `Snowflaking X α hr₀ hr₁`. -/
 def toSnowflaking : X ≃ Snowflaking X α hα₀ hα₁ := ofSnowflaking.symm
 
+@[simp]
+theorem toSnowflaking.sizeOf_spec [SizeOf X] (x : X) :
+    sizeOf (toSnowflaking x : Snowflaking X α hα₀ hα₁) = 1 + sizeOf x :=
+  rfl
+
+attribute [-simp] mk.sizeOf_spec mk.injEq
+
+/-- This definition makes `cases x` and `induction x` use `toSnowflaking` instead of `mk`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def casesOn_toSnowflaking {motive : Snowflaking X α hα₀ hα₁ → Sort*}
     (toSnowflaking : ∀ x, motive (Snowflaking.toSnowflaking x)) (x : Snowflaking X α hα₀ hα₁) :
