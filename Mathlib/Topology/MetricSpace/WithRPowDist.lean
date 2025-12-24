@@ -15,10 +15,20 @@ import Mathlib.Analysis.MeanInequalitiesPow
 
 Given a (pseudo) (extended) metric space `X` and a number `0 < α < 1`,
 one can consider the metric given by `d x y = (dist x y) ^ α`.
-In this file we define `WithRPowDist X α hα₀ hα₁` to be a one-field structure wrapper around `X`
-with metric given by this formula.
+The metric space determined by this new metric is said to be the `α`-snowflaking  (or `α`-snowflake)
+of `X`. In this file we define `Metric.Snowflaking X α hα₀ hα₁` to be a one-field structure wrapper
+around `X` with metric given by this formula.
 
-One of the reasons to introduce this definition is the following.
+The use of the term *snowflaking* arises from the fact that if one chooses `X := Set.Icc 0 1` and
+`α := log 3 / log 4`, then `Metric.Snowflaking X α … …` is the isometric to the von Koch snowflake,
+where we equip that space with the natural metric induced by the `α⁻¹`-Hausdorff measure of paths.
+
+Snowflake metrics are used regularly in geometric measure theory where, among other things, they
+characterize doubling measures. In particular, a measure on metric space is doubling if and only
+if every `α`-snowflaking (with `α < 1`) of it is bilipschitz equivalent to a subset of some
+Euclidean space (the dimension of the Euclidean space depends on `α`).
+
+Another reason to introduce this definition is the following.
 In the proof of his version of the Morse-Sard theorem,
 Moreira [Moreira2001] studies maps of two variables that are Lipschitz continuous in one variable,
 but satisfy a stronger assumption `‖f (a, y) - f (a, b)‖ = O(‖y - b‖ ^ α)`
