@@ -365,17 +365,17 @@ lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsT
 Adding an edge to an acyclic graph preserves acyclicity if the endpoints are not reachable.
 -/
 theorem isAcyclic_add_edge_iff_of_not_reachable (x y : V) (hxy : ¬ G.Reachable x y) :
-    (G ⊔ fromEdgeSet {s(x,y)}).IsAcyclic ↔ IsAcyclic G := by
+    (G ⊔ fromEdgeSet {s(x, y)}).IsAcyclic ↔ IsAcyclic G := by
   refine ⟨fun h ↦ h.anti le_sup_left, fun hG ↦ ?_⟩
   have x_neq_y : x ≠ y := fun c => (c ▸ hxy) (Reachable.refl y)
-  have h_add_remove : (G ⊔ fromEdgeSet {s(x,y)}) \ fromEdgeSet {s(x,y)} = G := by
+  have h_add_remove : (G ⊔ fromEdgeSet {s(x, y)}) \ fromEdgeSet {s(x, y)} = G := by
     simpa using fun h => hxy h.reachable
-  have h_bridge : (G ⊔ fromEdgeSet {s(x,y)}).IsBridge s(x,y) := by
+  have h_bridge : (G ⊔ fromEdgeSet {s(x, y)}).IsBridge s(x, y) := by
     simpa [isBridge_iff, x_neq_y, h_add_remove]
   rw [isBridge_iff_adj_and_forall_cycle_notMem] at h_bridge
   intro u c hc
   let c' : G.Walk u u := Walk.transfer c G (fun e he ↦ by
-    have eneq : e ≠ s(x,y) := fun h => h_bridge.2 c hc (h ▸ he)
+    have eneq : e ≠ s(x, y) := fun h => h_bridge.2 c hc (h ▸ he)
     simpa [eneq] using Walk.edges_subset_edgeSet c he)
   exact hG c' (Walk.IsCycle.transfer (qc := hc) ..)
 
