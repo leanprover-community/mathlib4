@@ -81,10 +81,10 @@ instance : IsStrictOrderedRing (FiniteElement K) := by
 /-- The constructor for `FiniteElement`. -/
 protected def mk (x : K) (h : 0 ≤ mk x) : FiniteElement K := ⟨x, h⟩
 
-@[simp] theorem mk_zero (h : 0 ≤ mk (0 : K)) : FiniteElement.mk 0 h = 0 := rfl
-@[simp] theorem mk_one (h : 0 ≤ mk (1 : K)) : FiniteElement.mk 1 h = 1 := rfl
-@[simp] theorem mk_natCast {n : ℕ} (h : 0 ≤ mk (n : K)) : FiniteElement.mk (n : K) h = n := rfl
-@[simp] theorem mk_intCast {n : ℤ} (h : 0 ≤ mk (n : K)) : FiniteElement.mk (n : K) h = n := rfl
+@[simp] theorem mk_zero : FiniteElement.mk (0 : K) (by simp) = 0 := rfl
+@[simp] theorem mk_one : FiniteElement.mk (1 : K) (by simp) = 1 := rfl
+@[simp] theorem mk_natCast (n : ℕ) : FiniteElement.mk (n : K) (mk_natCast_nonneg n) = n := rfl
+@[simp] theorem mk_intCast (n : ℤ) : FiniteElement.mk (n : K) (mk_intCast_nonneg n) = n := rfl
 
 @[simp]
 theorem mk_neg {x : K} (h : 0 ≤ mk x) :
@@ -123,7 +123,7 @@ theorem isUnit_iff_mk_eq_zero {x : FiniteElement K} : IsUnit x ↔ mk x.1 = 0 :=
 instance : RatCast (FiniteElement K) where
   ratCast q := .mk q (mk_ratCast_nonneg q)
 
-@[simp] theorem mk_ratCast (q : ℚ) (h : 0 ≤ mk (q : K)) : FiniteElement.mk (q : K) h = q := rfl
+@[simp] theorem mk_ratCast (q : ℚ) : FiniteElement.mk (q : K) (mk_ratCast_nonneg q) = q := rfl
 
 end FiniteElement
 
@@ -347,25 +347,25 @@ theorem stdPart_add (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) : stdPart (x + y) = stdP
   rw [dif_pos hx, dif_pos hy, dif_pos]
   exact map_add _ (FiniteElement.mk x hx) (.mk y hy)
 
-theorem stdPart_add_of_mk_neg_left (hx : 0 < mk x) : stdPart (x + y) = stdPart y := by
+theorem stdPart_add_eq_right (hx : 0 < mk x) : stdPart (x + y) = stdPart y := by
   obtain hy | hy := le_or_gt 0 (mk y)
   · rw [stdPart_add hx.le hy, stdPart_of_mk_ne_zero hx.ne', zero_add]
   · rw [stdPart_of_mk_ne_zero hy.ne, stdPart_of_mk_ne_zero]
     rw [mk_add_eq_mk_right (hy.trans hx)]
     exact hy.ne
 
-theorem stdPart_add_of_mk_neg_right (hy : 0 < mk y) : stdPart (x + y) = stdPart x := by
-  rw [add_comm, stdPart_add_of_mk_neg_left hy]
+theorem stdPart_add_eq_left (hy : 0 < mk y) : stdPart (x + y) = stdPart x := by
+  rw [add_comm, stdPart_add_eq_right hy]
 
 theorem stdPart_sub (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) : stdPart (x - y) = stdPart x - stdPart y := by
   rw [sub_eq_add_neg, sub_eq_add_neg, stdPart_add hx, stdPart_neg]
   rwa [mk_neg]
 
-theorem stdPart_sub_of_mk_neg_left (hx : 0 < mk x) : stdPart (x - y) = -stdPart y := by
-  rw [sub_eq_add_neg, stdPart_add_of_mk_neg_left hx, stdPart_neg]
+theorem stdPart_sub_eq_right (hx : 0 < mk x) : stdPart (x - y) = -stdPart y := by
+  rw [sub_eq_add_neg, stdPart_add_eq_right hx, stdPart_neg]
 
-theorem stdPart_sub_of_mk_neg_right (hy : 0 < mk y) : stdPart (x - y) = stdPart x := by
-  rw [sub_eq_add_neg, stdPart_add_of_mk_neg_right (by simpa)]
+theorem stdPart_sub_eq_left (hy : 0 < mk y) : stdPart (x - y) = stdPart x := by
+  rw [sub_eq_add_neg, stdPart_add_eq_left (by simpa)]
 
 theorem stdPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
     stdPart (x * y) = stdPart x * stdPart y := by
