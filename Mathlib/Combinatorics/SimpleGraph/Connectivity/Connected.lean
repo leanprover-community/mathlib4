@@ -168,36 +168,6 @@ variable (G)
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
   Equivalence.mk (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
 
-/-- The reachability relation as a set of pairs of vertices.
-A pair of vertices is in this set iff there exists a walk between these vertices. -/
-def reachabilitySet (G : SimpleGraph V) : Set (Sym2 V) :=
-  Sym2.fromRel G.reachable_is_equivalence.symmetric
-
-@[simp]
-theorem mem_reachabilitySet_iff_reachable {u v : V} :
-    s(u, v) ∈ G.reachabilitySet ↔ G.Reachable u v := by
-  rfl
-
-theorem edgeSet_subset_reachabilitySet : G.edgeSet ⊆ G.reachabilitySet :=
-  Sym2.fromRel_mono G.symm _ G.adj_le_reachable
-
-theorem reachabilitySet_mono {G G' : SimpleGraph V} (h : G ≤ G') :
-    G.reachabilitySet ⊆ G'.reachabilitySet :=
-  Sym2.fromRel_mono _ _ <| Reachable.mono' h
-
-theorem reachabilitySet_monotone : Monotone (reachabilitySet : SimpleGraph V → Set (Sym2 V)) :=
-  @reachabilitySet_mono V
-
-theorem reachabilitySet_fromEdgeSet_fromRel_eq_fromRel_reflTransGen {r : V → V → Prop}
-    (sym : Symmetric r) : (fromEdgeSet <| Sym2.fromRel sym).reachabilitySet =
-      Sym2.fromRel (Relation.ReflTransGen.symmetric sym) := by
-  grind [reachabilitySet, reachable_fromEdgeSet_fromRel_eq_reflTransGen]
-
-theorem reachabilitySet_fromEdgeSet_eq_fromRel_reflTransGen_toRel {s : Set (Sym2 V)} :
-    (fromEdgeSet s).reachabilitySet =
-      Sym2.fromRel (Relation.ReflTransGen.symmetric (Sym2.toRel_symmetric s)) := by
-  grind [reachabilitySet, reachable_fromEdgeSet_eq_reflTransGen_toRel]
-
 /-- Distinct vertices are not reachable in the empty graph. -/
 @[simp]
 lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
@@ -753,10 +723,6 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
-theorem isBridge_iff_mem_edgeSet_and_notMem_reachabilitySet_deleteEdges {e : Sym2 V} :
-    G.IsBridge e ↔ e ∈ G.edgeSet ∧ e ∉ (G.deleteEdges {e}).reachabilitySet :=
-  e.ind fun _ _ ↦ isBridge_iff
-
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor
@@ -825,11 +791,6 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       ?_ (Walk.start_mem_support _)
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 
-theorem mem_edgeSet_and_mem_reachabilitySet_deleteEdges_iff_exists_isCycle_and_mem_edges
-    {e : Sym2 V} : e ∈ G.edgeSet ∧ e ∈ (G.deleteEdges {e}).reachabilitySet ↔
-      ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ e ∈ p.edges :=
-  e.ind fun _ _ ↦ adj_and_reachable_delete_edges_iff_exists_cycle
-
 theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
   rw [isBridge_iff, and_congr_right_iff]
@@ -867,27 +828,20 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
       (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
 
 /-- Connecting two unreachable vertices by an edge creates a bridge. -/
-theorem isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet {e : Sym2 V}
-    (h : e ∉ G.reachabilitySet) : (G ⊔ fromEdgeSet {e}).IsBridge e := by
-  apply isBridge_iff_mem_edgeSet_and_notMem_reachabilitySet_deleteEdges.mpr
-  refine ⟨?_, fun h' ↦ h <| reachabilitySet_mono (sdiff_le_iff'.mpr <| le_refl _) h'⟩
-  rw [edgeSet_sup, edgeSet_fromEdgeSet]
-  refine Or.inr ⟨Set.mem_singleton_iff.mpr rfl, mt ?_ h⟩
-  rw [Sym2.mem_diagSet_iff_isDiag]
-  exact e.ind fun u v (hd : u = v) ↦ hd ▸ Reachable.refl _
+theorem IsBridge.sup_fromEdgeSet_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
+    (G ⊔ fromEdgeSet {s(u, v)}).IsBridge s(u, v) := by
+  refine isBridge_iff.mpr ⟨.inr ⟨Set.mem_singleton _, mt (· ▸ .rfl) h⟩, ?_⟩
+  exact fun h' ↦ h <| .mono (sdiff_le_iff'.mpr <| refl _) h'
 
 /-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
-theorem IsBridge.isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet {e e' : Sym2 V}
-    (h : e ∉ G.reachabilitySet) (h' : G.IsBridge e') : (G ⊔ fromEdgeSet {e}).IsBridge e' := by
+theorem IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
+    (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ fromEdgeSet {s(u, v)}).IsBridge e := by
   refine isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨edgeSet_mono le_sup_left h'.left, ?_⟩
   refine fun _ p hp hpe ↦ isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
-    (p.transfer G fun e'' he'' ↦ ?_) (Walk.IsCycle.transfer hp _) (Walk.edges_transfer p _ ▸ hpe)
-  have := Walk.edges_subset_edgeSet _ he''
-  rw [edgeSet_sup, edgeSet_fromEdgeSet] at this
-  refine this.elim id fun h' ↦ False.elim <| h ?_
-  apply reachabilitySet_mono <| sdiff_le_iff'.mpr <| le_refl _
-  exact mem_edgeSet_and_mem_reachabilitySet_deleteEdges_iff_exists_isCycle_and_mem_edges.mpr
-    (by grind) |>.right
+    (p.transfer G fun e' he' ↦ ?_) (hp.transfer _) (Walk.edges_transfer p _ ▸ hpe)
+  refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
+  exact .mono (sdiff_le_iff'.mpr <| refl _) <|
+    adj_and_reachable_delete_edges_iff_exists_cycle.mpr (by grind [edgeSet_fromEdgeSet]) |>.right
 
 end BridgeEdges
 
