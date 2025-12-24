@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Horner
+Authors: Mitchell Horner, Sun Yue, Nick Adfor, Aristotle
 -/
 module
 
@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Tactic.Cases
 
 /-!
 # Bipartite graphs
@@ -58,7 +59,7 @@ This file proves results about bipartite simple graphs, including several double
 For the formulation of double-counting arguments where a bipartite graph is considered as a
 relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/DoubleCounting.lean`.
 
-## TODO
+## Odd Cycle Theorem (A Solution to TODO)
 
 * Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
   I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
@@ -444,5 +445,190 @@ theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
   exact card_le_card (neighborFinset_subset_between_union_compl hw)
 
 end Between
+
+section OddCycleTheorem
+
+lemma even_length_iff_same_color
+    {c : G.Coloring (Fin 2)}
+    {u v : V} (p : G.Walk u v) :
+    Even p.length ↔ c u = c v := by
+  induction p with
+  | nil =>
+    -- Base case: length 0 is even, c u = c u is true
+    simp
+  | cons h_adj p_tail ih =>
+    -- Inductive step
+    -- Goal: Even (cons ...).length ↔ c u = c w
+    have h_first_step_diff := c.valid h_adj
+    rw [SimpleGraph.Walk.length_cons]
+    rw [Nat.even_add_one] -- 1 + x is even <-> x is odd
+    -- Using induction hypothesis ih: Even p_tail.length ↔ c v = c w
+    rw [ih]
+    -- Now the goal becomes: ¬(c v = c w) ↔ c u = c w
+    constructor
+    · -- Direction 1: (c next ≠ c end) -> (c start = c end)
+      intro h_next_ne_end
+      have h_cases : c u = 0 ∨ c u = 1 := by
+        match c u with
+        | 0 => left; rfl
+        | 1 => right; rfl
+      cases h_cases
+      · -- Case 1: c u = 0
+        simp_all
+        omega
+      · -- Case 2: c u = 1
+        simp_all
+        omega
+    · -- Direction 2: (c start = c end) -> (c next ≠ c end)
+      intro h_start_eq_end
+      -- Given: start ≠ next
+      -- Replacing start with end, we get end ≠ next
+      rw [h_start_eq_end] at h_first_step_diff
+      exact h_first_step_diff.symm
+
+/-- Sufficient lemma. -/
+lemma bipartite_implies_even_cycles (h : G.IsBipartite) :
+    ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+  -- 1. Since it's a bipartite graph, there exists a 2-coloring scheme (color : V -> Bool)
+  rcases h with ⟨color⟩
+  -- 2. Analyze any cycle c
+  intro v c hc
+  -- 3. Use Walk property: In a bipartite graph, if a path has same start and end color,
+  --    then the path length must be even.
+  --    A cycle starts and ends at the same point v, so colors are obviously the same.
+  have h_color_eq : color v = color v := rfl
+  -- 4. Call the lemma about bipartite path parity in Mathlib
+  -- (SimpleGraph.Coloring.valid_walk_length_even_iff)
+  rw [even_length_iff_same_color]
+  exact color
+
+namespace SimpleGraph.walk
+
+/-- Helper lemma 1: The prefix of a shortest path is also a shortest path. -/
+lemma dist_eq_length_takeUntil {u v x : V} (p : G.Walk u v) (hp : p.IsPath)
+    (hp_len : p.length = G.dist u v) (hx : x ∈ p.support) :
+    (p.takeUntil x hx).length = G.dist u x := by
+  -- Strategy: Prove takeUntil yields a path, and length ≤ dist
+  -- Since dist ≤ length of any walk, they are equal
+  let p_to_x := p.takeUntil x hx
+  -- p_to_x is a path
+  have hp_to_x : p_to_x.IsPath := by
+    have : (p.takeUntil x hx).append (p.dropUntil x hx) = p := p.take_spec hx
+    exact hp.takeUntil _
+  -- p_to_x.length ≤ p.length
+  have h_le : p_to_x.length ≤ p.length := SimpleGraph.Walk.length_takeUntil_le p hx
+  have h_triangle : G.dist u v ≤ G.dist u x + G.dist x v := by
+    by_cases h : G.Reachable u x ∧ G.Reachable x v
+    · obtain ⟨q, hq⟩ : ∃ q : G.Walk u x, q.length = G.dist u x := by
+        have := h.1
+        exact Reachable.exists_walk_length_eq_dist this
+      obtain ⟨r, hr⟩ : ∃ r : G.Walk x v, r.length = G.dist x v := by
+        obtain ⟨r, hr⟩ : ∃ r : G.Walk x v, r.length = G.dist x v := by
+          have h_reachable : G.Reachable x v := h.right
+          exact Reachable.exists_walk_length_eq_dist h_reachable
+        use r
+      exact SimpleGraph.dist_le (q.append r) |> le_trans <| by simp +decide [hq, hr]
+    · cases hp_to_x ; simp_all +decide [SimpleGraph.Reachable]
+      contrapose! h
+      exact ⟨p_to_x, ⟨p.dropUntil x hx⟩⟩
+  have h_dist_xv_le : G.dist x v ≤ (p.dropUntil x hx).length := SimpleGraph.dist_le (p.dropUntil x hx)
+  have h_eq_parts : p.length = p_to_x.length + (p.dropUntil x hx).length := by
+    have := congr_arg Walk.length (p.take_spec hx)
+    -- The length of the appended walk is the sum of the lengths of the two parts.
+    rw [← this]
+    -- The length of the appended walk is the sum of the lengths of the two parts by definition.
+    apply SimpleGraph.Walk.length_append
+  have h_upper : p_to_x.length ≤ G.dist u x := by
+    rw [hp_len] at h_eq_parts
+    have := calc G.dist u v
+      _ ≤ G.dist u x + G.dist x v := h_triangle
+      _ ≤ G.dist u x + (p.dropUntil x hx).length := Nat.add_le_add_left h_dist_xv_le _
+    omega
+  refine' le_antisymm h_upper _
+  exact dist_le (p.takeUntil x hx)
+
+/-- Helper lemma 2: Length of the suffix of a shortest path. -/
+lemma length_dropUntil_eq_dist_sub {u v x : V} (p : G.Walk u v) (hp : p.IsPath)
+    (hp_len : p.length = G.dist u v) (hx : x ∈ p.support) :
+    (p.dropUntil x hx).length = G.dist u v - G.dist u x := by
+  have h1 := congr_arg Walk.length (p.take_spec hx)
+  have h4 : (p.takeUntil x hx).length = G.dist u x := by
+    rw [SimpleGraph.Walk.dist_eq_length_takeUntil]
+    · assumption
+    · exact hp_len
+  rw [← h4, ← hp_len, ← h1, SimpleGraph.Walk.length_append] ; aesop
+
+lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
+    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+    exact SimpleGraph.two_colorable_iff_forall_loop_even
+
+lemma bypass_eq_nil_of_closed {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
+    w.bypass = SimpleGraph.Walk.nil := by
+      have h_nil : ∀ {u : V} {p : G.Walk u u}, p.IsPath → p = SimpleGraph.Walk.nil := by
+        aesop
+      exact h_nil (SimpleGraph.Walk.bypass_isPath _)
+
+lemma even_cycle_length_of_path
+    (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
+    {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
+    Even (SimpleGraph.Walk.cons ha q).length := by
+      by_cases hq' : q.length = 1 <;> simp_all +decide [parity_simps]
+      have h_cycle : SimpleGraph.Walk.IsCycle (SimpleGraph.Walk.cons ha q) := by
+        simp_all +decide [SimpleGraph.Walk.isCycle_def]
+        refine' ⟨⟨_, _⟩, _⟩
+        · exact hq.isTrail
+        · intro h
+          cases q <;> simp_all +decide [SimpleGraph.Walk.edges]
+          rcases h with ((⟨rfl, rfl⟩ | rfl) | ⟨a, ha, ha'⟩) <;> simp_all +decide [SimpleGraph.Walk.mem_support_iff]
+          have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha; simp_all +decide [SimpleGraph.Walk.mem_support_iff]
+          cases a ; simp_all +decide
+          cases ha' <;> simp_all +decide
+          cases this <;> simp_all +decide
+          · aesop
+          · have := SimpleGraph.Walk.dart_snd_mem_support_of_mem_darts _ ha; simp_all +decide [SimpleGraph.Walk.mem_support_iff]
+        · exact hq.support_nodup
+      have := h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle; simp_all +decide [parity_simps] ;
+
+lemma even_length_iff_even_bypass_length
+    (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
+    {u v : V} (p : G.Walk u v) :
+    Even p.length ↔ Even p.bypass.length := by
+      induction' p with u v pᵥ _ ih <;> simp_all +decide
+      · exact even_iff_two_dvd.mpr ⟨0, rfl⟩
+      · by_cases h : v ∈ (‹G.Walk pᵥ _›.bypass).support <;> simp_all +decide [SimpleGraph.Walk.bypass]
+        · -- By Lemma 2, the length of the bypass of a path is equal to the length of the path minus the length of the prefix.
+          have h_bypass : (‹G.Walk pᵥ _›.bypass.length) = (‹G.Walk pᵥ _›.bypass.takeUntil v h).length + (‹G.Walk pᵥ _›.bypass.dropUntil v h).length := by
+            rw [← SimpleGraph.Walk.length_append, SimpleGraph.Walk.take_spec _ _]
+          -- By Lemma 2, the length of the bypass of a path is equal to the length of the path minus the length of the prefix, and the length of the prefix is even.
+          have h_prefix_even : Even ((‹G.Walk pᵥ _›.bypass.takeUntil v h).length + 1) := by
+            have h_prefix_even : Even ((SimpleGraph.Walk.cons ih (‹G.Walk pᵥ _›.bypass.takeUntil v h)).length) := by
+              apply even_cycle_length_of_path
+              · assumption
+              · exact SimpleGraph.Walk.IsPath.takeUntil (SimpleGraph.Walk.bypass_isPath _) _
+            simpa [add_comm] using h_prefix_even
+          simp_all +decide [parity_simps]
+          by_cases h : Even (‹G.Walk pᵥ _›.bypass.dropUntil v h).length <;> simp_all +decide [Nat.even_iff, Nat.odd_iff]
+        · grind
+
+theorem bipartite_iff_all_cycles_even :
+  G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+  constructor
+  · -- Forward direction: G is bipartite → all cycles have even length
+    intro h_bip
+    exact bipartite_implies_even_cycles G h_bip
+  · -- Assume all cycles have even length. We need to show that the graph is bipartite.
+    intro h
+    have h_colorable : G.Colorable 2 := by
+      -- By the lemma, this implies that G is colorable with 2 colors. We can use the lemma `two_colorable_iff_forall_loop_even` which states that a graph is 2-colorable if and only if every closed walk has even length.
+      apply (two_colorable_iff_forall_loop_even).mpr
+      intro u w
+      -- By `even_length_iff_even_bypass_length`, `Even w.length ↔ Even w.bypass.length`.
+      have h_even_bypass : Even w.length ↔ Even w.bypass.length := by
+        apply even_length_iff_even_bypass_length
+        assumption
+      rw [h_even_bypass]
+      rw [bypass_eq_nil_of_closed]
+      aesop
+    exact Colorable.mono_left (fun ⦃v w⦄ a => a) h_colorable
 
 end SimpleGraph
