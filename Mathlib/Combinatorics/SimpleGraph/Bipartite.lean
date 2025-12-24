@@ -454,51 +454,33 @@ lemma even_length_iff_same_color
     Even p.length ↔ c u = c v := by
   induction p with
   | nil =>
-    -- Base case: length 0 is even, c u = c u is true
     simp
   | cons h_adj p_tail ih =>
-    -- Inductive step
-    -- Goal: Even (cons ...).length ↔ c u = c w
     have h_first_step_diff := c.valid h_adj
     rw [SimpleGraph.Walk.length_cons]
     rw [Nat.even_add_one] -- 1 + x is even <-> x is odd
-    -- Using induction hypothesis ih: Even p_tail.length ↔ c v = c w
     rw [ih]
-    -- Now the goal becomes: ¬(c v = c w) ↔ c u = c w
     constructor
-    · -- Direction 1: (c next ≠ c end) -> (c start = c end)
-      intro h_next_ne_end
+    · intro h_next_ne_end
       have h_cases : c u = 0 ∨ c u = 1 := by
         match c u with
         | 0 => left; rfl
         | 1 => right; rfl
       cases h_cases
-      · -- Case 1: c u = 0
-        simp_all
+      · simp_all
         omega
-      · -- Case 2: c u = 1
-        simp_all
+      · simp_all
         omega
-    · -- Direction 2: (c start = c end) -> (c next ≠ c end)
-      intro h_start_eq_end
-      -- Given: start ≠ next
-      -- Replacing start with end, we get end ≠ next
+    · intro h_start_eq_end
       rw [h_start_eq_end] at h_first_step_diff
       exact h_first_step_diff.symm
 
 /-- Sufficient lemma. -/
 lemma bipartite_implies_even_cycles (h : G.IsBipartite) :
     ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
-  -- 1. Since it's a bipartite graph, there exists a 2-coloring scheme (color : V -> Bool)
   rcases h with ⟨color⟩
-  -- 2. Analyze any cycle c
   intro v c hc
-  -- 3. Use Walk property: In a bipartite graph, if a path has same start and end color,
-  --    then the path length must be even.
-  --    A cycle starts and ends at the same point v, so colors are obviously the same.
   have h_color_eq : color v = color v := rfl
-  -- 4. Call the lemma about bipartite path parity in Mathlib
-  -- (SimpleGraph.Coloring.valid_walk_length_even_iff)
   rw [even_length_iff_same_color]
   exact color
 
@@ -508,14 +490,10 @@ namespace SimpleGraph.walk
 lemma dist_eq_length_takeUntil {u v x : V} (p : G.Walk u v) (hp : p.IsPath)
     (hp_len : p.length = G.dist u v) (hx : x ∈ p.support) :
     (p.takeUntil x hx).length = G.dist u x := by
-  -- Strategy: Prove takeUntil yields a path, and length ≤ dist
-  -- Since dist ≤ length of any walk, they are equal
   let p_to_x := p.takeUntil x hx
-  -- p_to_x is a path
   have hp_to_x : p_to_x.IsPath := by
     have : (p.takeUntil x hx).append (p.dropUntil x hx) = p := p.take_spec hx
     exact hp.takeUntil _
-  -- p_to_x.length ≤ p.length
   have h_le : p_to_x.length ≤ p.length := SimpleGraph.Walk.length_takeUntil_le p hx
   have h_triangle : G.dist u v ≤ G.dist u x + G.dist x v := by
     by_cases h : G.Reachable u x ∧ G.Reachable x v
@@ -535,9 +513,7 @@ lemma dist_eq_length_takeUntil {u v x : V} (p : G.Walk u v) (hp : p.IsPath)
   have h_dist_xv_le : G.dist x v ≤ (p.dropUntil x hx).length := SimpleGraph.dist_le (p.dropUntil x hx)
   have h_eq_parts : p.length = p_to_x.length + (p.dropUntil x hx).length := by
     have := congr_arg Walk.length (p.take_spec hx)
-    -- The length of the appended walk is the sum of the lengths of the two parts.
     rw [← this]
-    -- The length of the appended walk is the sum of the lengths of the two parts by definition.
     apply SimpleGraph.Walk.length_append
   have h_upper : p_to_x.length ≤ G.dist u x := by
     rw [hp_len] at h_eq_parts
