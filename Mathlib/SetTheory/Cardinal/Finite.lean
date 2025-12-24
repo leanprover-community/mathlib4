@@ -315,34 +315,13 @@ theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
   letI _ (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
 
-universe w
-theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
-    lift.{w} (prod c) = prod fun i => lift.{w} (c i) := by
-  lift c to ι → Type v using fun _ => trivial
-  simp only [← mk_pi, ← mk_uLift]
-  exact mk_congr (Equiv.ulift.trans <| Equiv.piCongrRight fun i => Equiv.ulift.symm)
-
-theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
-    #(Π i, (f i).out) = Cardinal.lift.{u} (∏ i, f i) := by
-  revert f
-  refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
-  · intro α β hβ e h f
-    letI := Fintype.ofEquiv β e.symm
-    rw [← e.prod_comp f, ← h]
-    exact mk_congr (e.piCongrLeft _).symm
-  · intro f
-    rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, mk_eq_one]
-  · intro α hα h f
-    rw [mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, Fintype.prod_option,
-      lift_mul, ← h fun a => f (some a)]
-    simp
-
 @[elab_as_elim]
 theorem induction_empty_option' {P : ∀ (α : Type u) [Fintype α], Prop}
     (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
     (h_fintype : Fintype α) : P α := by
   apply Fintype.induction_empty_option <;> assumption
+
 theorem card_pi {β : α → Type*} [h : Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   classical
   induction α, h using induction_empty_option' with
