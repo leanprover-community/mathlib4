@@ -29,7 +29,7 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
-* `exists_set_equiv_eq_mkQ_span_of_span_eq_map_mkQ_of_le_jacobson_bot` - Statement (8) in
+* `Submodule.exists_set_equiv_eq_mkQ_span_of_span_eq_map_mkQ_of_le_jacobson_bot` - Statement (8) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
 Note that a version of Statement (1) in
