@@ -221,10 +221,14 @@ lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
-/-- `I ⧸ I ^ 2` as an `R`-submodule of `R ⧸ I ^ 2`. -/
+/-- `I ⧸ I ^ 2` as the image of `I` in the `R`-module `R / I ^ 2`. -/
 def cotangentSubmodule (I : Ideal R) : Submodule R (R ⧸ I ^ 2) :=
   Submodule.map (I ^ 2).mkQ I
 
+/--
+The equivalence of the two definitions of `I / I ^ 2`,
+either as a quotient of `I` or the image of `I` in the `R`-module `R / I ^ 2`.
+-/
 noncomputable def cotangentEquivSubmodule (I : Ideal R) :
     I.Cotangent ≃ₗ[R] (Submodule.map (I ^ 2).mkQ I) := by
   rw [pow_two]; exact Submodule.quotientIdealSubmoduleEquivMap I I

@@ -198,9 +198,13 @@ theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
   grw [sup_comm, ← htspan]
   simp only [le_sup_right]
 
--- TODO: this might should be placed elsewhere?
+/--
+The equivalence of the two definitions of `N / I N`,
+either as a quotient of `N`, or the image of `N` in `M / I M`.
+-/
 noncomputable def quotientIdealSubmoduleEquivMap (N : Submodule R M) (I : Ideal R) :
     (N ⧸ (I • ⊤ : Submodule R N)) ≃ₗ[R] (map (I • N).mkQ N) := by
+  -- TODO: find a better place for this equivalence
   refine LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩
   · refine Submodule.liftQ _ ?_ ?_
     · exact {
