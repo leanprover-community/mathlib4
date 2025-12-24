@@ -104,6 +104,14 @@ def mor ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
     (presheafHom F (D₁.obj i) (D₂.obj i)).obj (op (Over.mk q)) :=
   D₁.hom (q ≫ f i) q (a ≫ p' j) ≫ pullHom (φ.hom j) a _ _ ≫ D₂.hom (q ≫ f i) (a ≫ p' j) q
 
+lemma mor_eq ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
+    (fac : a ≫ f' j = q ≫ f i) (q' : Z ⟶ S) (hq' : q ≫ f i = q')
+    (a' : Z ⟶ X (α j)) (ha' : a ≫ p' j = a') :
+    mor w φ q a fac =
+      D₁.hom q' q a' ≫ pullHom (φ.hom j) a _ _ ≫ D₂.hom q' a' q := by
+  subst hq' ha'
+  rfl
+
 include w φ in
 lemma mor_precomp ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
     (fac : a ≫ f' j = q ≫ f i) {Z' : C} (r : Z' ⟶ Z)
@@ -154,25 +162,52 @@ lemma compatible_familyOfElements (i : ι) :
   apply mor_unique
 
 include hf' in
-noncomputable def hom (i : ι) : D₁.obj i ⟶ D₂.obj i := by
-  refine F.presheafHomObjHomEquiv.symm
+noncomputable def hom (i : ι) : D₁.obj i ⟶ D₂.obj i :=
+  F.presheafHomObjHomEquiv.symm
     (Presieve.IsSheafFor.amalgamate (Presieve.IsSheaf.isSheafFor _
-    ((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J _ _)) _ ?_) _
-    (compatible_familyOfElements w φ i))
-  rw [J.mem_over_iff]
-  refine J.superset_covering ?_ (J.pullback_stable (f i) hf')
-  simp only [Sieve.generate_sieve]
-  rintro Z g ⟨_, q, _, ⟨j⟩, fac⟩
-  exact ⟨Over.mk g, Over.homMk g, 𝟙 _, ⟨_, q, _, ⟨j⟩, by simpa⟩, by simp⟩
+    ((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J _ _)) _
+      (by simpa using sieve_mem _ hf' i)) _
+        (compatible_familyOfElements w φ i))
+
+lemma map_hom ⦃i : ι⦄ ⦃Y : C⦄ (q : Y ⟶ X i) ⦃j : ι'⦄
+    (a : Y ⟶ X' j) (fac : a ≫ f' j = q ≫ f i) :
+    (F.map q.op.toLoc).toFunctor.map (hom w hf' φ i) = mor w φ q a fac := by
+  let s := Presieve.IsSheafFor.amalgamate (Presieve.IsSheaf.isSheafFor _
+    ((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J _ _)) _
+      (by simpa using sieve_mem _ hf' i)) _
+        (compatible_familyOfElements w φ i)
+  have hs : (familyOfElements w φ i).IsAmalgamation s :=
+    Presieve.IsSheafFor.isAmalgamation (Presieve.IsSheaf.isSheafFor _
+      ((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J _ _)) _
+        (by simpa using sieve_mem _ hf' i)) (compatible_familyOfElements w φ i)
+  change (F.map q.op.toLoc).toFunctor.map (F.presheafHomObjHomEquiv.symm s) = _
+  simpa [familyOfElements_eq w φ (Z := Over.mk q) _ a fac,
+    presheafHomObjHomEquiv, pullHom, mapComp'_id_comp_hom_app,
+    mapComp'_id_comp_inv_app] using hs _ (mem_sieve _ _ fac)
+
+@[reassoc]
+lemma comm ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄
+    (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    (F.map f₁.op.toLoc).toFunctor.map (hom w hf' φ i₁) ≫ D₂.hom q f₁ f₂ =
+    D₁.hom q f₁ f₂ ≫ (F.map f₂.op.toLoc).toFunctor.map (hom w hf' φ i₂) := by
+  rw [← cancel_mono (D₂.hom q f₂ f₁), Category.assoc,
+    Category.assoc, DescentData.hom_comp, D₂.hom_self _ _ hf₁, Category.comp_id]
+  sorry
 
 end full_pullFunctor
 
+open full_pullFunctor in
 include w hf' in
 lemma full_pullFunctor :
     (pullFunctor F (f := f) (p := 𝟙 _) (f' := f') (p' := p') (by cat_disch)).Full where
   map_surjective {D₁ D₂} φ :=
-    ⟨{ hom := fun i ↦ full_pullFunctor.hom w hf' φ i, comm := sorry }, by
-      sorry⟩
+    ⟨{ hom := fun i ↦ hom w hf' φ i, comm := comm _ _ _ }, by
+      ext i
+      dsimp
+      rw [map_hom _ _ _ _ (𝟙 _) (by cat_disch),
+        mor_eq _ _ _ _ _ (f' i) (by cat_disch) (p' i) (by simp), pullHom_id,
+        D₁.hom_self _ _ (by cat_disch), D₂.hom_self _ _ (by cat_disch),
+        Category.id_comp, Category.comp_id]⟩
 
 noncomputable def fullyFaithfulPullFunctor :
     (pullFunctor F (f := f) (p := 𝟙 _) (f' := f') (p' := p') (by cat_disch)).FullyFaithful := by
