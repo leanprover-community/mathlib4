@@ -6,21 +6,24 @@ Authors: Yuval Filmus
 module
 
 public import Mathlib.RingTheory.Polynomial.Chebyshev
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExtrema
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
-# Chebyshev polynomials over the reals: leading coefficient
+# Chebyshev polynomials over the reals: some extremal properties
 
-* Chebyshev polynomials minimize deviation from zero,
+* Chebyshev polynomials have largest leading coefficient,
   following proof in https://math.stackexchange.com/a/978145/1277
-  [SWITCH TO STATEMENT]
-* Chebyshev polynomials maximize iterated derivatives at 1 and beyond, using similar idea
+* Chebyshev polynomials maximize iterated derivatives at 1 and beyond
 
 ## Main statements
 
-[STATEMENTS]
+* `leadingCoeff_le_of_bounded`: If P is a degree n polynomial and |P(x)|≤1 for all |x|≤ 1 then
+  the leading coefficient of P is at most 2^(n-1)
+* `leadingCoeff_eq_iff_of_bounded`: If P is a degree n polynomial and |P(x)|≤1 for all |x|≤ 1 then
+  the leading coefficient of P equals 2^(n-1) iff it is the n'th Chebyshev polynomial
 -/
 @[expose] public section
 namespace Polynomial.Chebyshev
@@ -159,5 +162,32 @@ theorem apply_eq_apply_T_real_iff {n : ℕ} {param : ℝ[X] → ℝ} {c : ℕ �
   refine Finset.sum_lt_sum (fun i hi => h_le hi) ⟨i, hi, lt_of_le_of_ne (h_le hi) ?_⟩
   have := ne_of_lt (hcpos i (Finset.mem_Iic.mp hi))
   grind => ring
+
+theorem leadingCoeff_eq_sum_chebyshevNode (n : ℕ) (P : ℝ[X]) (hP : P.degree = n) :
+    P.leadingCoeff = ∑ i ≤ n, (P.eval (chebyshevNode n i)) *
+    (∏ j ∈ (Finset.range (n + 1)).erase i, (chebyshevNode n i - chebyshevNode n j))⁻¹ := by
+  rw [Lagrange.leadingCoeff_eq_sum (strictAntiOn_chebyshevNode n).injOn (by simp [hP]),
+    show Finset.range (n + 1) = Finset.Iic n by grind]
+  rfl
+
+theorem leadingCoeff_eq_sum_chebyshevNode_c_pos {n i : ℕ} (hi : i ≤ n) :
+    0 < (-1) ^ i *
+    (∏ j ∈ (Finset.range (n + 1)).erase i, (chebyshevNode n i - chebyshevNode n j))⁻¹ := by
+  have := inv_pos_of_pos <| zero_lt_prod_chebyshevNode_sub_chebyshevNode hi
+  rwa [mul_inv, ← inv_pow, inv_neg_one] at this
+
+theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    P.leadingCoeff ≤ 2 ^ (n - 1) := by
+  convert apply_le_apply_T_real (leadingCoeff_eq_sum_chebyshevNode n)
+    (fun i hi => le_of_lt <| leadingCoeff_eq_sum_chebyshevNode_c_pos hi) hPdeg hPbnd
+  simp
+
+theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
+  convert apply_eq_apply_T_real_iff (leadingCoeff_eq_sum_chebyshevNode n)
+    (fun i hi => leadingCoeff_eq_sum_chebyshevNode_c_pos hi) hPdeg hPbnd
+  simp
 
 end Polynomial.Chebyshev
