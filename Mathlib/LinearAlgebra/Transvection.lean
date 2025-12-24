@@ -38,7 +38,7 @@ namespace LinearMap
 
 open Module
 
-variable {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
+variable {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
 
 /-- The transvection associated with a linear form `f` and a vector `v`.
 
@@ -46,8 +46,8 @@ NB. In mathematics, these linear maps are only called “transvections” when `
 See also `Module.preReflection` for a similar definition, up to a sign. -/
 def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
   toFun x := x + f x • v
-  map_add' x y := by simp only [map_add]; module
-  map_smul' r x := by simp only [map_smul, RingHom.id_apply, smul_eq_mul]; module
+  map_add' x y := by simp only [map_add, add_smul]; abel
+  map_smul' r x := by simp only [map_smul, RingHom.id_apply, smul_eq_mul, mul_smul, smul_add]
 
 namespace transvection
 
@@ -57,8 +57,9 @@ theorem apply (f : Dual R V) (v x : V) :
 
 theorem comp_of_left_eq_apply {f : Dual R V} {v w : V} {x : V} (hw : f w = 0) :
     transvection f v (transvection f w x) = transvection f (v + w) x := by
-  simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul, hw, smul_add]
-  module
+  simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul,
+    hw, smul_add, zero_smul, smul_zero]
+  abel
 
 theorem comp_of_left_eq {f : Dual R V} {v w : V} (hw : f w = 0) :
     (transvection f v) ∘ₗ (transvection f w) = transvection f (v + w) := by
@@ -66,8 +67,9 @@ theorem comp_of_left_eq {f : Dual R V} {v w : V} (hw : f w = 0) :
 
 theorem comp_of_right_eq_apply {f g : Dual R V} {v : V} {x : V} (hf : f v = 0) :
     (transvection f v) (transvection g v x) = transvection (f + g) v x := by
-  simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul, hf, add_apply]
-  module
+  simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul,
+    hf, add_apply, zero_smul, add_smul, smul_add, smul_zero]
+  abel
 
 theorem comp_of_right_eq {f g : Dual R V} {v : V} (hf : f v = 0) :
     (transvection f v) ∘ₗ (transvection g v) = transvection (f + g) v := by
@@ -86,6 +88,7 @@ theorem of_right_eq_zero (f : Dual R V) :
   simp [transvection]
 
 theorem eq_id_of_finrank_le_one
+    {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
     [Free R V] [Module.Finite R V] [StrongRankCondition R]
     {f : Dual R V} {v : V} (hfv : f v = 0) (h1 : finrank R V ≤ 1) :
     transvection f v = LinearMap.id := by
@@ -111,7 +114,7 @@ theorem congr {W : Type*} [AddCommMonoid W] [Module R W]
 
 end LinearMap.transvection
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 
 namespace LinearEquiv
 
@@ -185,7 +188,8 @@ namespace LinearMap.transvection
 
 open LinearMap LinearEquiv Module
 
-variable {A : Type*} [CommRing A] [Algebra R A]
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+  {A : Type*} [CommRing A] [Algebra R A]
 
 theorem baseChange (f : Dual R V) (v : V) :
     (transvection f v).baseChange A = transvection (f.baseChange A) (1 ⊗ₜ[R] v) := by
