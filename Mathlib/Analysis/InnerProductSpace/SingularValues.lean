@@ -169,6 +169,15 @@ public noncomputable def rightSingularVectors : ℕ →₀ E :=
       (Set.toFinite _)
 
 public noncomputable def leftSingularVectors : ℕ →₀ F :=
+  Finsupp.embDomain Fin.valEmbedding <| Finsupp.ofSupportFinite
+    (Fin.append
+      (fun i : Fin (Module.finrank 𝕜 (LinearMap.range T)) ↦
+        ((T.singularValues i : ℝ)⁻¹ : 𝕜) • T (T.rightSingularVectors i))
+      (fun i ↦ stdOrthonormalBasis 𝕜 (LinearMap.range T)ᗮ i))
+    (Set.toFinite _)
+
+-- Old definition:
+/-
   Finsupp.ofSupportFinite
     (fun i =>
       if h1 : i < Module.finrank 𝕜 (LinearMap.range T) then
@@ -188,6 +197,7 @@ public noncomputable def leftSingularVectors : ℕ →₀ F :=
       · exact h1.trans_le (Submodule.finrank_le _)
       · exact h2
       · exact absurd rfl hi)
+-/
 
 -- This is no longer true under our new definition
 -- @[simp]
