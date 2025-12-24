@@ -838,7 +838,7 @@ variable [Preorder α] [SuccOrder α] [PredOrder α] {a b : α}
 @[to_dual pred_succ_le]
 lemma le_succ_pred (a : α) : a ≤ succ (pred a) := (pred_wcovBy _).le_succ
 
-@[to_dual]
+@[to_dual le_succ_iff_pred_le]
 lemma pred_le_iff_le_succ : pred a ≤ b ↔ a ≤ succ b where
   mp hab := (le_succ_pred _).trans (succ_le_succ hab)
   mpr hab := (pred_le_pred hab).trans (pred_succ_le _)
