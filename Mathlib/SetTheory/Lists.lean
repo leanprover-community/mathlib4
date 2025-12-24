@@ -97,8 +97,7 @@ theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction 
 
 @[simp]
 theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
-  suffices
-    ∀ (b) (h : true = b) (l : Lists' α b),
+  suffices ∀ (b) (h : true = b) (l : Lists' α b),
       let l' : Lists' α true := h ▸ l
       ofList (toList l') = l'
     from this _ rfl
@@ -240,8 +239,7 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
     (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
-  suffices
-    ∀ {b} (l : Lists' α b),
+  suffices ∀ {b} (l : Lists' α b),
       PProd (C ⟨_, l⟩)
         (match b, l with
         | true, l => D l

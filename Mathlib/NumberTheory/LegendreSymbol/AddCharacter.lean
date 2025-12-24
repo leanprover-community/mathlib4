@@ -295,9 +295,12 @@ section Field
 
 variable (F : Type*) [Field F] [Finite F]
 
+set_option backward.privateInPublic true in
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
   letI ch := primitiveChar F ℂ <| ringChar_ne F

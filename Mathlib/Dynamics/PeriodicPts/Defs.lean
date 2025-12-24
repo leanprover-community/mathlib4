@@ -214,9 +214,6 @@ theorem periodicPts_subset_range : periodicPts f ⊆ range f := by
   rw [← iterate_add_apply, Nat.add_sub_cancel' (by lia)]
   exact h
 
-@[deprecated (since := "2025-04-27")]
-alias periodicPts_subset_image := periodicPts_subset_range
-
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
   rcases hx with ⟨r, hr, hr'⟩
@@ -234,9 +231,6 @@ theorem bUnion_ptsOfPeriod : ⋃ n > 0, ptsOfPeriod f n = periodicPts f :=
 
 theorem iUnion_pnat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f :=
   iSup_subtype.trans <| bUnion_ptsOfPeriod f
-
-@[deprecated (since := "2025-04-27")]
-alias iUnion_pNat_ptsOfPeriod := iUnion_pnat_ptsOfPeriod
 
 variable {f}
 
@@ -477,7 +471,7 @@ theorem periodicOrbit_apply_eq (hx : x ∈ periodicPts f) :
   periodicOrbit_apply_iterate_eq hx 1
 
 theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
-    (periodicOrbit f x).Chain r ↔ ∀ n < minimalPeriod f x, r (f^[n] x) (f^[n+1] x) := by
+    (periodicOrbit f x).Chain r ↔ ∀ n < minimalPeriod f x, r (f^[n] x) (f^[n + 1] x) := by
   by_cases hx : x ∈ periodicPts f
   · have hx' := minimalPeriod_pos_of_mem_periodicPts hx
     have hM := Nat.sub_add_cancel (succ_le_iff.2 hx')
@@ -495,7 +489,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
     simp
 
 theorem periodicOrbit_chain' (r : α → α → Prop) {f : α → α} {x : α} (hx : x ∈ periodicPts f) :
-    (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n+1] x) := by
+    (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n + 1] x) := by
   rw [periodicOrbit_chain r]
   refine ⟨fun H n => ?_, fun H n _ => H n⟩
   rw [iterate_succ_apply, ← iterate_mod_minimalPeriod_eq, ← iterate_mod_minimalPeriod_eq (n := n),

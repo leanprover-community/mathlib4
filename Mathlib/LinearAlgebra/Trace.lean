@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.TensorProduct.Free
 
 This file defines the trace of a linear map.
 
-See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
+See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 ## Tags
 
@@ -134,7 +134,7 @@ variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 variable {ι : Type*}
 
-/-- The trace of a linear map correspond to the contraction pairing under the isomorphism
+/-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
 `End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
@@ -273,7 +273,7 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
 lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
     trace R M (f.smulRight x) = f x := by
   rw [trace_eq_matrix_trace _ (Free.chooseBasis R M), ← (Free.chooseBasis R M).sum_repr x]
-  simp [- Basis.sum_repr, dotProduct]
+  simp [-Basis.sum_repr, dotProduct]
 
 end
 

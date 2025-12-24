@@ -387,13 +387,15 @@ section OrderTop
 
 variable [OrderTop α]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem succ_top : succ (⊤ : α) = ⊤ := by
   rw [succ_eq_iff_isMax, isMax_iff_eq_top]
 
+@[to_dual le_pred_iff_eq_bot]
 theorem succ_le_iff_eq_top : succ a ≤ a ↔ a = ⊤ :=
   succ_le_iff_isMax.trans isMax_iff_eq_top
 
+@[to_dual pred_lt_iff_ne_bot]
 theorem lt_succ_iff_ne_top : a < succ a ↔ a ≠ ⊤ :=
   lt_succ_iff_not_isMax.trans not_isMax_iff_ne_top
 
@@ -403,9 +405,11 @@ section OrderBot
 
 variable [OrderBot α] [Nontrivial α]
 
+@[to_dual pred_lt_top]
 theorem bot_lt_succ (a : α) : ⊥ < succ a :=
-  (lt_succ_of_not_isMax not_isMax_bot).trans_le <| succ_mono bot_le
+  (lt_succ_of_not_isMax not_isMax_bot).trans_le <| succ_le_succ bot_le
 
+@[to_dual]
 theorem succ_ne_bot (a : α) : succ a ≠ ⊥ :=
   (bot_lt_succ a).ne'
 
@@ -560,8 +564,10 @@ section OrderBot
 
 variable [OrderBot α]
 
+@[to_dual pred_top_lt_iff]
 theorem lt_succ_bot_iff [NoMaxOrder α] : a < succ ⊥ ↔ a = ⊥ := by rw [lt_succ_iff, le_bot_iff]
 
+@[to_dual pred_top_le_iff]
 theorem le_succ_bot_iff : a ≤ succ ⊥ ↔ a = ⊥ ∨ a = succ ⊥ := by
   rw [le_succ_iff_eq_or_le, le_bot_iff, or_comm]
 
@@ -726,34 +732,6 @@ theorem pred_eq_iff_covBy : pred b = a ↔ a ⋖ b :=
 
 end NoMinOrder
 
-section OrderBot
-
-variable [OrderBot α]
-
-@[simp]
-theorem pred_bot : pred (⊥ : α) = ⊥ :=
-  isMin_bot.pred_eq
-
-theorem le_pred_iff_eq_bot : a ≤ pred a ↔ a = ⊥ :=
-  @succ_le_iff_eq_top αᵒᵈ _ _ _ _
-
-theorem pred_lt_iff_ne_bot : pred a < a ↔ a ≠ ⊥ :=
-  @lt_succ_iff_ne_top αᵒᵈ _ _ _ _
-
-end OrderBot
-
-section OrderTop
-
-variable [OrderTop α] [Nontrivial α]
-
-theorem pred_lt_top (a : α) : pred a < ⊤ :=
-  (pred_mono le_top).trans_lt <| pred_lt_of_not_isMin not_isMin_top
-
-theorem pred_ne_top (a : α) : pred a ≠ ⊤ :=
-  (pred_lt_top a).ne
-
-end OrderTop
-
 end PartialOrder
 
 section LinearOrder
@@ -822,18 +800,6 @@ theorem Ioo_eq_empty_iff_pred_le : Ioo a b = ∅ ↔ pred b ≤ a := by
 
 end NoMinOrder
 
-section OrderTop
-
-variable [OrderTop α]
-
-theorem pred_top_lt_iff [NoMinOrder α] : pred ⊤ < a ↔ a = ⊤ :=
-  @lt_succ_bot_iff αᵒᵈ _ _ _ _ _
-
-theorem pred_top_le_iff : pred ⊤ ≤ a ↔ a = ⊤ ∨ a = pred ⊤ :=
-  @le_succ_bot_iff αᵒᵈ _ _ _ _
-
-end OrderTop
-
 end LinearOrder
 
 /-- There is at most one way to define the predecessors in a `PartialOrder`. -/
@@ -862,12 +828,13 @@ section SuccPredOrder
 section Preorder
 variable [Preorder α] [SuccOrder α] [PredOrder α] {a b : α}
 
+@[to_dual pred_succ_le]
 lemma le_succ_pred (a : α) : a ≤ succ (pred a) := (pred_wcovBy _).le_succ
-lemma pred_succ_le (a : α) : pred (succ a) ≤ a := (wcovBy_succ _).pred_le
 
+@[to_dual le_succ_iff_pred_le]
 lemma pred_le_iff_le_succ : pred a ≤ b ↔ a ≤ succ b where
-  mp hab := (le_succ_pred _).trans (succ_mono hab)
-  mpr hab := (pred_mono hab).trans (pred_succ_le _)
+  mp hab := (le_succ_pred _).trans (succ_le_succ hab)
+  mpr hab := (pred_le_pred hab).trans (pred_succ_le _)
 
 lemma gc_pred_succ : GaloisConnection (pred : α → α) succ := fun _ _ ↦ pred_le_iff_le_succ
 
@@ -1029,6 +996,7 @@ section Pred
 
 variable [Preorder α] [NoMaxOrder α]
 
+@[to_dual]
 instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
   ⟨by
     intro
@@ -1051,6 +1019,7 @@ section Succ
 
 variable [Preorder α] [OrderBot α] [SuccOrder α]
 
+@[to_dual existing]
 instance : SuccOrder (WithBot α) where
   succ a :=
     match a with
@@ -1090,6 +1059,7 @@ section Pred
 
 variable [PartialOrder α] [PredOrder α] [∀ a : α, Decidable (pred a = a)]
 
+@[to_dual existing]
 instance : PredOrder (WithBot α) where
   pred a :=
     match a with
@@ -1134,24 +1104,6 @@ theorem pred_coe [NoMinOrder α] {a : α} : pred (↑a : WithBot α) = ↑(pred 
   pred_coe_of_not_isMin <| not_isMin a
 
 end Pred
-
-/-! #### Adding a `⊥` to a `NoMinOrder` -/
-
-section Succ
-
-variable [Preorder α] [NoMinOrder α]
-
-instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
-  ⟨by
-    intro
-    cases h : succ (⊥ : WithBot α) with
-    | bot => exact hα.elim fun a => (max_of_succ_le h.le).not_lt <| bot_lt_coe a
-    | coe a =>
-      obtain ⟨c, hc⟩ := exists_lt a
-      rw [← coe_lt_coe, ← h] at hc
-      exact (succ_le_of_lt (bot_lt_coe _)).not_gt hc⟩
-
-end Succ
 
 end WithBot
 

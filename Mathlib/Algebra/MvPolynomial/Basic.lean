@@ -509,6 +509,10 @@ theorem support_monomial [h : Decidable (a = 0)] :
   rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
 
+lemma support_C (c : R) [h : Decidable (c = 0)] :
+    (C (σ := σ) c).support = if c = 0 then ∅ else {0} :=
+  support_monomial
+
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
 
@@ -543,7 +547,7 @@ section Coeff
 def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
   @DFunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ p m
 
-@[simp]
+@[simp, grind =]
 theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.support ↔ p.coeff m ≠ 0 := by
   simp [support, coeff]
 
@@ -788,7 +792,7 @@ theorem _root_.IsRegular.monomial {m : σ →₀ ℕ} {a : R}
   rw [← isLeftRegular_iff_isRegular]
   intro p q h
   ext d
-  have h' := congr_arg  (coeff (m + d)) h
+  have h' := congr_arg (coeff (m + d)) h
   simp only [coeff_monomial_mul] at h'
   rw [← ha.left.eq_iff, h']
 
@@ -990,7 +994,7 @@ variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i 
   {n : ℕ}
 
 variable (σ M) in
-/-- The `R`-submodule of multivariate polynomials whose coefficients lie in a `R`-submodule `M`. -/
+/-- The `R`-submodule of multivariate polynomials whose coefficients lie in an `R`-submodule `M`. -/
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}

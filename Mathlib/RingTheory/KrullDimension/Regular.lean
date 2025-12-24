@@ -110,15 +110,19 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson {x : R} (reg : Is
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson
     (fun _ ↦ reg.notMem_of_mem_minimalPrimes) hx
 
+lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
+    ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
+  rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
+  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
+    ((annihilator R R).ringJacobson_le_jacobson hx)
+
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
     ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
-  have h := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
-  simp only [smul_eq_mul, mul_top] at h
+  have h : span {x} = x • (⊤ : Ideal R) := by simp [← Submodule.ideal_span_singleton_smul]
   rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R h).toRingEquiv,
-    ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
-  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
-    ((annihilator R R).ringJacobson_le_jacobson hx)
+    ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg hx]
 
 variable [IsLocalRing R]
 
@@ -128,6 +132,58 @@ variable [IsLocalRing R]
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 :=
   supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson ((maximalIdeal_le_jacobson _) hx)
+
+lemma _root_.ringKrullDim_le_ringKrullDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
+  rw [← Module.supportDim_self_eq_ringKrullDim, ← Module.supportDim_quotient_eq_ringKrullDim]
+  exact supportDim_le_supportDim_quotSMulTop_succ hx
+
+lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
+    (hS : (S : Set R) ⊆ maximalIdeal R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (SetLike.coe S)) + S.card := by
+  classical
+  induction S using Finset.induction_on with
+  | empty =>
+    simp only [Finset.card_empty, CharP.cast_eq_zero, add_zero]
+    apply le_of_eq
+    rw [Finset.coe_empty, Ideal.span_empty]
+    exact RingEquiv.ringKrullDim (RingEquiv.quotientBot R).symm
+  | insert a S nmem ih =>
+    have sub : (S : Set R) ⊆ maximalIdeal R := fun x hx ↦ hS (Finset.mem_insert_of_mem hx)
+    have : Nontrivial (R ⧸ Ideal.span (SetLike.coe S)) :=
+      Ideal.Quotient.nontrivial_iff.mpr
+      (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr sub))
+    have lochom : IsLocalHom (Ideal.Quotient.mk (Ideal.span (SetLike.coe S))) :=
+      IsLocalHom.of_surjective _ (Ideal.Quotient.mk_surjective)
+    let _ : IsLocalRing (R ⧸ span (SetLike.coe S)) :=
+      IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+    apply le_trans (ih sub)
+    simp only [Finset.card_insert_of_notMem nmem, Nat.cast_add, Nat.cast_one, add_comm _ 1,
+      ← add_assoc]
+    apply add_le_add_left
+    have eq1 : (Ideal.Quotient.mk (span S) a) • (⊤ : Ideal (R ⧸ span (S : Set R))) =
+      (span {a}).map (Ideal.Quotient.mk (span S)) := by
+      simp [← Submodule.ideal_span_singleton_smul, Ideal.map_span]
+    have eq2 : span (((insert a S) : Finset R) : Set R) = (span S) ⊔ (span {a}) := by
+      simp [Ideal.span_insert, sup_comm]
+    let e : (R ⧸ span S) ⧸ (Ideal.Quotient.mk (span S) a) •
+      (⊤ : Ideal (R ⧸ span (S : Set R))) ≃+* R ⧸ span (((insert a S) : Finset R) : Set R) := by
+      rw [eq1, eq2]
+      exact DoubleQuot.quotQuotEquivQuotSup (span (S : Set R)) (span {a})
+    rw [← ringKrullDim_eq_of_ringEquiv e]
+    apply ringKrullDim_le_ringKrullDim_quotSMulTop_succ
+    have := ((IsLocalRing.local_hom_TFAE _).out 0 4).mp lochom
+    simpa [← mem_comap, this] using hS (Finset.mem_insert_self a S)
+
+lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤)
+    (fg : I.FG) : ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
+  let _ : Fintype I.generators := (Submodule.FG.finite_generators fg).fintype
+  have eq : Ideal.span I.generators.toFinset = I := by
+    simpa using Submodule.span_generators I
+  rw [← Submodule.FG.generators_ncard fg, Set.ncard_eq_toFinset_card',
+    ← ringKrullDim_eq_of_ringEquiv (Ideal.quotEquivOfEq eq)]
+  apply ringKrullDim_le_ringKrullDim_add_card
+  simpa using (Submodule.FG.generators_mem I).trans (le_maximalIdeal h)
 
 @[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
@@ -139,6 +195,11 @@ theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIde
 theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
     (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg ((maximalIdeal_le_jacobson _) hx)
+
+lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
+    (hx : x ∈ maximalIdeal R) : ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R :=
+  ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
+    simpa [ringJacobson_eq_maximalIdeal R]
 
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :

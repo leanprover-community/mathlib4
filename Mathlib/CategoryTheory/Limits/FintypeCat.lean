@@ -140,7 +140,7 @@ noncomputable instance inclusion_preservesFiniteColimits :
 noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
   FintypeCat.inclusion_preservesFiniteColimits
 
-lemma jointly_surjective {J : Type*} [Category J] [FinCategory J]
+lemma jointly_surjective {J : Type*} [SmallCategory J] [FinCategory J]
     (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :
     ∃ j y, t.ι.app j y = x :=
   let hs := isColimitOfPreserves FintypeCat.incl.{u} h

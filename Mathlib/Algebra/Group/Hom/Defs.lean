@@ -707,6 +707,10 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 
+@[to_additive] theorem isDedekindFiniteMonoid_of_injective (f : F) (hf : Function.Injective f)
+    [IsDedekindFiniteMonoid N] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm eq := hf <| by simpa [mul_eq_one_comm] using congr_arg f eq
+
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/

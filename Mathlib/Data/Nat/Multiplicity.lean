@@ -133,7 +133,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have hm : emultiplicity p (p * n)! ≠ ⊤ := by
     rw [Ne, emultiplicity_eq_top, Classical.not_not, Nat.finiteMultiplicity_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
@@ -221,7 +221,7 @@ theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
   | n + 1, k + 1 => by
     rw [← hp.emultiplicity_mul]
     refine emultiplicity_le_emultiplicity_of_dvd_right ?_
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}

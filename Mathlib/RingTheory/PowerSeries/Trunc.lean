@@ -37,6 +37,7 @@ section Trunc
 variable [Semiring R]
 open Finset Nat
 
+set_option backward.privateInPublic true in
 private def trunc_aux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
   ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ)
 
@@ -44,6 +45,8 @@ private theorem coeff_trunc_aux (m) (n) (φ : R⟦X⟧) :
     (trunc_aux n φ).coeff m = if m < n then coeff m φ else 0 := by
   simp [trunc_aux, Polynomial.coeff_monomial]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The `n`th truncation of a formal power series to a polynomial. -/
 def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
   toFun := trunc_aux n

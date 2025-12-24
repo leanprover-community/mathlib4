@@ -79,13 +79,13 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
     (isLocallyFraction M).pred f =
       ∀ y : U,
         ∃ (V : _) (_ : y.1 ∈ V) (i : V ⟶ U),
-          ∃ (m : M) (s: R), ∀ x : V, s ∉ x.1.asIdeal ∧ s • f (i x) =
+          ∃ (m : M) (s : R), ∀ x : V, s ∉ x.1.asIdeal ∧ s • f (i x) =
             LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m :=
   rfl
 
 /- M_x is an O_SpecR(U)-module when x is in U -/
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop) :
-    Module ((Spec.structureSheaf R).val.obj U) (Localizations M x):=
+    Module ((Spec.structureSheaf R).val.obj U) (Localizations M x) :=
   Module.compHom (R := (Localization.AtPrime x.1.asIdeal)) _
     ((StructureSheaf.openToLocalization R U.unop x x.2).hom)
 
@@ -284,7 +284,7 @@ The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization o
 prime ideal of `R` corresponding to `x`.
 -/
 noncomputable def stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
-    (tildeInModuleCat M).stalk  x ⟶
+    (tildeInModuleCat M).stalk x ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (tildeInModuleCat M))
     { pt := _

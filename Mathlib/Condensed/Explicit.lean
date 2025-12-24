@@ -39,7 +39,7 @@ open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
 namespace Condensed
 
-variable {A : Type*} [Category A]
+variable {A : Type*} [Category* A]
 
 /-- The condensed object associated to a finite-product-preserving presheaf on `Stonean`. -/
 noncomputable def ofSheafStonean

@@ -68,7 +68,7 @@ deduce higher-dimensional lemmas from one-dimensional versions.
 theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by
   simpa using (lineMap a b : 𝕜 →ᵃ[𝕜] E).hasStrictDerivAt
 
-theorem hasDerivAt_lineMap :  HasDerivAt (lineMap a b) (b - a) x :=
+theorem hasDerivAt_lineMap : HasDerivAt (lineMap a b) (b - a) x :=
   hasStrictDerivAt_lineMap.hasDerivAt
 
 theorem hasDerivWithinAt_lineMap : HasDerivWithinAt (lineMap a b) (b - a) s x :=

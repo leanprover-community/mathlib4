@@ -136,6 +136,11 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     use single i 1
     simp [hi]
 
+theorem _root_.span_range_eq_top_iff_surjective_finsuppLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Finsupp.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, range_linearCombination]
+
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
@@ -339,6 +344,11 @@ theorem Fintype.range_linearCombination :
     LinearMap.range (Fintype.linearCombination R v) = Submodule.span R (Set.range v) := by
   rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
       LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
+
+theorem span_range_eq_top_iff_surjective_fintypeLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Fintype.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, Fintype.range_linearCombination]
 
 /-- `Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.

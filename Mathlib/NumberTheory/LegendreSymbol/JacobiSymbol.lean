@@ -491,6 +491,7 @@ section FastJacobi
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
+set_option backward.privateInPublic true
 
 open NumberTheorySymbols jacobiSym
 
@@ -556,6 +557,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
   induction b using Nat.strongRecOn with | ind b IH =>
@@ -583,6 +586,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inline, nolint unusedArguments]
 private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
   ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]
 

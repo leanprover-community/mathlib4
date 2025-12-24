@@ -308,7 +308,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
-  TensorProduct.lift  {
+  TensorProduct.lift {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
     map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change h (p + p') ⊗ₜ[R] q - (h p ⊗ₜ[R] q + h p' ⊗ₜ[R] q) ∈ range (rTensor Q f)
@@ -537,7 +537,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
-          use (a * x) ⊗ₜ[R] (b •y)
+          use (a * x) ⊗ₜ[R] (b • y)
           simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           rfl
         | add x y hx hy =>

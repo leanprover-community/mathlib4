@@ -355,11 +355,7 @@ section UniqueUnits
 variable [Monoid M] [Subsingleton Mˣ]
 
 theorem associated_iff_eq {x y : M} : x ~ᵤ y ↔ x = y := by
-  constructor
-  · rintro ⟨c, rfl⟩
-    rw [c.eq_one, Units.val_one, mul_one]
-  · rintro rfl
-    rfl
+  simp [Associated, Units.eq_one]
 
 theorem associated_eq_eq : (Associated : M → M → Prop) = Eq := by
   ext

@@ -287,6 +287,29 @@ instance {X Y : Type*}
     [SFinite (volume : Measure Y)] : IsOpenPosMeasure (volume : Measure (X × Y)) :=
   prod.instIsOpenPosMeasure
 
+protected theorem FiniteAtFilter.prod {X Y : Type*} {m : MeasurableSpace X} {μ : Measure X}
+    {m' : MeasurableSpace Y} {ν : Measure Y} {l : Filter X} {l' : Filter Y}
+    (hμ : μ.FiniteAtFilter l) (hν : ν.FiniteAtFilter l') :
+    (μ.prod ν).FiniteAtFilter (l ×ˢ l') := by
+  rcases hμ with ⟨s, hs, hμs⟩
+  rcases hν with ⟨t, ht, hνt⟩
+  use s ×ˢ t, Filter.prod_mem_prod hs ht
+  grw [prod_prod_le]
+  exact ENNReal.mul_lt_top hμs hνt
+
+instance prod.instIsLocallyFiniteMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasurableSpace X} {μ : Measure X} [IsLocallyFiniteMeasure μ] {m' : MeasurableSpace Y}
+    {ν : Measure Y} [IsLocallyFiniteMeasure ν] : IsLocallyFiniteMeasure (μ.prod ν) where
+  finiteAtNhds x := by
+    rw [nhds_prod_eq]
+    exact μ.finiteAt_nhds _ |>.prod <| ν.finiteAt_nhds _
+
+instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasureSpace X} [IsLocallyFiniteMeasure (volume : Measure X)]
+    {m' : MeasureSpace Y} [IsLocallyFiniteMeasure (volume : Measure Y)] :
+    IsLocallyFiniteMeasure (volume : Measure (X × Y)) :=
+  prod.instIsLocallyFiniteMeasure
+
 instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     (μ : Measure α) (ν : Measure β) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     IsFiniteMeasure (μ.prod ν) := by

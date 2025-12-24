@@ -23,11 +23,11 @@ namespace CategoryTheory
 
 open Limits MorphismProperty.Comma
 
-variable {T : Type*} [Category T] (P : MorphismProperty T)
+variable {T : Type*} [Category* T] (P : MorphismProperty T)
 
 namespace MorphismProperty.Comma
 
-variable {A B J : Type*} [Category A] [Category B] [Category J] {L : A ⥤ T} {R : B ⥤ T}
+variable {A B J : Type*} [Category* A] [Category* B] [Category* J] {L : A ⥤ T} {R : B ⥤ T}
 variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
@@ -94,7 +94,7 @@ end MorphismProperty.Comma
 
 section
 
-variable {A : Type*} [Category A] {L : A ⥤ T}
+variable {A : Type*} [Category* A] {L : A ⥤ T}
 
 instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] [L.Full] {Y : A}
     [P.ContainsIdentities] [P.RespectsIso] :
@@ -108,7 +108,7 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
       P.costructuredArrow_iso_iff e]
     simpa using P.id_mem (L.obj Y)
 
-lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category J]
+lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasColimit D], Cocone D)
     (hc : ∀ (D : J ⥤ T) [HasColimit D], IsColimit (c D))

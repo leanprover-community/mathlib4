@@ -148,17 +148,23 @@ theorem tendstoInMeasure_iff_tendsto_toNNReal [EDist E] [IsFiniteMeasure μ]
   · rw [← ENNReal.tendsto_toNNReal_iff ENNReal.zero_ne_top (hfin ε)]
     exact h ε hε
 
-lemma TendstoInMeasure.mono [EDist E] {f : ι → α → E} {g : α → E} {u v : Filter ι} (huv : v ≤ u)
-    (hg : TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
-  fun ε hε => (hg ε hε).mono_left huv
-
-lemma TendstoInMeasure.comp [EDist E] {f : ι → α → E} {g : α → E} {u : Filter ι}
-    {v : Filter κ} {ns : κ → ι} (hg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
-    TendstoInMeasure μ (f ∘ ns) v g := fun ε hε ↦ (hg ε hε).comp hns
-
 namespace TendstoInMeasure
 
 variable [EDist E] {l : Filter ι} {f f' : ι → α → E} {g g' : α → E}
+
+lemma mono {v : Filter ι} (huv : v ≤ l) (hg : TendstoInMeasure μ f l g) :
+    TendstoInMeasure μ f v g := fun ε hε => (hg ε hε).mono_left huv
+
+lemma comp {v : Filter κ} {ns : κ → ι} (hg : TendstoInMeasure μ f l g)
+    (hns : Tendsto ns v l) : TendstoInMeasure μ (f ∘ ns) v g := fun ε hε ↦ (hg ε hε).comp hns
+
+theorem indicator {F : Type*} [PseudoEMetricSpace F] [Zero F] {f : ι → α → F} {g : α → F}
+    (hg : TendstoInMeasure μ f l g) (s : Set α) :
+    TendstoInMeasure μ (fun i => s.indicator (f i)) l (s.indicator g) := by
+  refine fun ε hε => tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (hg ε hε) ?_ ?_
+  · intro; simp
+  · refine fun n => measure_mono (fun x hx => ?_)
+    by_cases x ∈ s <;> simp_all
 
 protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
     (h_tendsto : TendstoInMeasure μ f l g) : TendstoInMeasure μ f' l g' := by
@@ -355,7 +361,7 @@ end ExistsSeqTendstoAe
 is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by `C`. -/
 lemma eLpNorm_le_of_tendstoInMeasure {ι : Type*} [SeminormedAddGroup E]
     {u : Filter ι} [NeBot u] [IsCountablyGenerated u] {f : ι → α → E} {g : α → E} {C : ℝ≥0∞}
-    (p : ℝ≥0∞) (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
+    {p : ℝ≥0∞} (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ) : eLpNorm g p μ ≤ C := by
   obtain ⟨l, hl⟩ := h_tendsto.exists_seq_tendsto_ae'
   exact Lp.eLpNorm_le_of_ae_tendsto (hl.1.eventually bound) (fun n => hf (l n)) hl.2

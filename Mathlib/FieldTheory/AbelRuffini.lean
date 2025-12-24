@@ -285,7 +285,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
     · exact minpoly.ne_zero (isIntegral (α ^ n)) h'
     · exact hn (by rw [← @natDegree_C F, ← h'.2, natDegree_X_pow])
   apply gal_isSolvable_of_splits
-  · exact ⟨(SplittingField.splits (p.comp (X ^ n))).splits_of_dvd (map_ne_zero hp)
+  · exact ⟨(SplittingField.splits (p.comp (X ^ n))).of_dvd (map_ne_zero hp)
       ((map_dvd_map' _).mpr (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval])))⟩
   · refine gal_isSolvable_tower p (p.comp (X ^ n)) ?_ hα ?_
     · exact Gal.splits_in_splittingField_of_comp _ _ (by rwa [natDegree_X_pow])

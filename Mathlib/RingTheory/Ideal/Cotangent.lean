@@ -81,7 +81,7 @@ def cotangentToQuotientSquare : I.Cotangent →ₗ[R] R ⧸ I ^ 2 :=
   Submodule.mapQ (I • ⊤) (I ^ 2) I.subtype
     (by
       rw [← Submodule.map_le_iff_le_comap, Submodule.map_smul'', Submodule.map_top,
-        Submodule.range_subtype, smul_eq_mul, pow_two] )
+        Submodule.range_subtype, smul_eq_mul, pow_two])
 
 theorem to_quotient_square_comp_toCotangent :
     I.cotangentToQuotientSquare.comp I.toCotangent = (I ^ 2).mkQ.comp (Submodule.subtype I) :=
@@ -103,7 +103,7 @@ lemma isTorsionBySet_cotangent :
 
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
-  Submodule.map (Quotient.mk (I ^ 2)|>.toSemilinearMap) I
+  Submodule.map (Quotient.mk (I ^ 2) |>.toSemilinearMap) I
 
 theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   rw [eq_bot_iff, pow_two I.cotangentIdeal, ← smul_eq_mul]
@@ -171,6 +171,12 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
       Ideal.Quotient.lift_mk]
     exact f.map_algebraMap r
+
+-- Can't be `simp`, because `RingHom.ker f.toRingHom` in the definition of `AlgHom.kerSquareLift`
+-- is not simp NF. Will be fixed by removing `RingHomClass` in the definition of `RingHom.ker`.
+-- (#25138)
+lemma _root_.AlgHom.kerSquareLift_mk (f : A →ₐ[R] B) (x : A) : f.kerSquareLift x = f x :=
+  rfl
 
 theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
     RingHom.ker f.kerSquareLift.toRingHom = (RingHom.ker f.toRingHom).cotangentIdeal := by

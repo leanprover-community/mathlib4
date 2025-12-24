@@ -72,6 +72,10 @@ alias isSeparated_insert_of_not_mem := isSeparated_insert_of_notMem
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
     IsSeparated ε (insert x s) := isSeparated_insert.2 ⟨hs, h⟩
 
+@[simp]
+lemma isSeparated_zero {X : Type*} [EMetricSpace X] (s : Set X) : IsSeparated 0 s := by
+  simp [IsSeparated, Set.Pairwise]
+
 /-!
 ### Metric separated pairs of sets
 

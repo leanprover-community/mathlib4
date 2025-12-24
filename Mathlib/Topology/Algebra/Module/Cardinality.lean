@@ -77,7 +77,7 @@ lemma cardinal_eq_of_mem_nhds_zero
     exact lt_irrefl _ (hc.trans zero_lt_one)
   have A : ∀ (x : E), ∀ᶠ n in (atTop : Filter ℕ), x ∈ c^n • s := by
     intro x
-    have : Tendsto (fun n ↦ (c^n) ⁻¹ • x) atTop (𝓝 ((0 : 𝕜) • x)) := by
+    have : Tendsto (fun n ↦ (c^n)⁻¹ • x) atTop (𝓝 ((0 : 𝕜) • x)) := by
       have : Tendsto (fun n ↦ (c^n)⁻¹) atTop (𝓝 0) := by
         simp_rw [← inv_pow]
         apply tendsto_pow_atTop_nhds_zero_of_norm_lt_one

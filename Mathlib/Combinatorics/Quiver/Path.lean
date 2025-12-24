@@ -175,7 +175,7 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
       p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · have h_len : p.length = (p.length - 1) + 1 := by omega
+  · have h_len : p.length = (p.length - 1) + 1 := by lia
     obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
     exact ⟨c, e, p', rfl, by lia⟩
   · rintro ⟨c, p', e, rfl, h⟩
@@ -268,8 +268,9 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with
     | _, _, .nil, .nil => isTrue rfl
-    | _, _, .nil, .cons _ _ => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
-    | _, _, .cons _ _, .nil => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .nil, .cons _ _
+    | _, _, .cons _ _, .nil =>
+      isFalse fun h => Quiver.Path.noConfusion rfl .rfl .rfl .rfl (heq_of_eq (Subtype.mk.inj h))
     | _, _, .cons (b := v') p' α, .cons (b := v'') q' β =>
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>

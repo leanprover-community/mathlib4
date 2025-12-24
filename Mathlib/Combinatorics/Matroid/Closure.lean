@@ -475,7 +475,7 @@ lemma Indep.closure_inter_eq_self_of_subset (hI : M.Indep I) (hJI : J ⊆ I) :
 /-- For a nonempty collection of subsets of a given independent set,
 the closure of the intersection is the intersection of the closure. -/
 lemma Indep.closure_sInter_eq_biInter_closure_of_forall_subset {Js : Set (Set α)} (hI : M.Indep I)
-    (hne : Js.Nonempty) (hIs : ∀ J ∈ Js, J ⊆ I) : M.closure (⋂₀ Js) = (⋂ J ∈ Js, M.closure J)  := by
+    (hne : Js.Nonempty) (hIs : ∀ J ∈ Js, J ⊆ I) : M.closure (⋂₀ Js) = (⋂ J ∈ Js, M.closure J) := by
   rw [subset_antisymm_iff, subset_iInter₂_iff]
   have hiX : ⋂₀ Js ⊆ I := (sInter_subset_of_mem hne.some_mem).trans (hIs _ hne.some_mem)
   have hiI := hI.subset hiX
@@ -493,7 +493,7 @@ lemma Indep.closure_sInter_eq_biInter_closure_of_forall_subset {Js : Set (Set α
   have hIb : M.IsBasis I (insert e I) := by
     rw [hI.insert_isBasis_iff_mem_closure]
     exact (M.closure_subset_closure (hIs _ hne.some_mem)) (he _ hne.some_mem)
-  obtain ⟨f, hfIJ, hfb⟩ :=  hJI.exchange hIb ⟨heJ (mem_insert e _), heEI.2⟩
+  obtain ⟨f, hfIJ, hfb⟩ := hJI.exchange hIb ⟨heJ (mem_insert e _), heEI.2⟩
   obtain rfl := hI.eq_of_isBasis (hfb.isBasis_subset (insert_subset hfIJ.1
     (by (rw [diff_subset_iff, singleton_union]; exact hJI.subset))) (subset_insert _ _))
   refine hfIJ.2 (heJ (mem_insert_of_mem _ fun X hX' ↦ by_contra fun hfX ↦ ?_))
@@ -511,7 +511,7 @@ lemma closure_iInter_eq_iInter_closure_of_iUnion_indep [hι : Nonempty ι] (Is :
   simp
 
 lemma closure_sInter_eq_biInter_closure_of_sUnion_indep (Is : Set (Set α)) (hIs : Is.Nonempty)
-    (h : M.Indep (⋃₀ Is)) :  M.closure (⋂₀ Is) = (⋂ I ∈ Is, M.closure I) :=
+    (h : M.Indep (⋃₀ Is)) : M.closure (⋂₀ Is) = (⋂ I ∈ Is, M.closure I) :=
   h.closure_sInter_eq_biInter_closure_of_forall_subset hIs (fun _ ↦ subset_sUnion_of_mem)
 
 lemma closure_biInter_eq_biInter_closure_of_biUnion_indep {ι : Type*} {A : Set ι} (hA : A.Nonempty)
@@ -933,7 +933,7 @@ lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
     (hsp : ∀ S, S ⊆ M.E → (M.Spanning S ↔ M'.Spanning S)) : M = M' := by
   have hsp' : M.Spanning = M'.Spanning := by
     ext S
-    refine (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE] )
+    refine (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE])
       (fun hSE ↦ iff_of_false (fun h ↦ hSE h.subset_ground)
       (fun h' ↦ hSE (h'.subset_ground.trans h.symm.subset)))
   rw [← dual_inj, ext_iff_indep, dual_ground, dual_ground, and_iff_right h]

@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.SurjectiveOnStalks
 
 /-!
 # The residue field of a prime ideal
@@ -19,8 +20,10 @@ and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 
 @[expose] public section
 
-variable {R A} [CommRing R] [CommRing A] [Algebra R A]
-variable (I : Ideal R) [I.IsPrime]
+open scoped nonZeroDivisors
+
+variable {R S A B : Type*} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
+variable [Algebra R A] [Algebra R B] (I : Ideal R) [I.IsPrime]
 
 /--
 The residue field at a prime ideal, defined to be the residue field of the local ring
@@ -32,25 +35,30 @@ abbrev Ideal.ResidueField : Type _ :=
 
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
-abbrev Ideal.ResidueField.map (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
-    (f : R →+* A) (hf : I = J.comap f) : I.ResidueField →+* J.ResidueField :=
+abbrev Ideal.ResidueField.map (I : Ideal R) [I.IsPrime] (J : Ideal S) [J.IsPrime]
+    (f : R →+* S) (hf : I = J.comap f) : I.ResidueField →+* J.ResidueField :=
   IsLocalRing.ResidueField.map (Localization.localRingHom I J f hf)
+
+@[simp]
+lemma Ideal.ResidueField.map_algebraMap (I : Ideal R) [I.IsPrime] (J : Ideal S) [J.IsPrime]
+    (f : R →+* S) (hf : I = J.comap f) (r : R) :
+    ResidueField.map I J f hf (algebraMap _ _ r) = algebraMap _ _ (f r) := by
+  rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime I)]
+  simp [IsLocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
+  rfl
 
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
-def Ideal.ResidueField.mapₐ (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
-    (hf : I = J.comap (algebraMap R A)) : I.ResidueField →ₐ[R] J.ResidueField where
-  __ := Ideal.ResidueField.map I J (algebraMap R A) hf
+def Ideal.ResidueField.mapₐ (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime]
+    (f : A →ₐ[R] B) (hf : I = J.comap f.toRingHom) : I.ResidueField →ₐ[R] J.ResidueField where
+  __ := Ideal.ResidueField.map I J f hf
   commutes' r := by
-    rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime I),
-      IsLocalRing.ResidueField.algebraMap_eq]
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, IsLocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
-    rfl
+    simp [IsScalarTower.algebraMap_apply R A I.ResidueField,
+      IsScalarTower.algebraMap_apply R B J.ResidueField]
 
-@[simp] lemma Ideal.ResidueField.mapₐ_apply (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
-    (hf : I = J.comap (algebraMap R A)) (x) :
-    Ideal.ResidueField.mapₐ I J hf x = Ideal.ResidueField.map I J _ hf x := rfl
+@[simp] lemma Ideal.ResidueField.mapₐ_apply (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime]
+    (f : A →ₐ[R] B) (hf : I = J.comap f.toRingHom) (x) :
+    Ideal.ResidueField.mapₐ I J f hf x = Ideal.ResidueField.map I J _ hf x := rfl
 
 variable {I} in
 @[simp high] -- marked `high` to override the more general `FaithfulSMul.algebraMap_eq_zero_iff`
@@ -74,9 +82,12 @@ instance : IsScalarTower R (R ⧸ I) I.ResidueField :=
   IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
 
 @[simp]
-lemma algebraMap_mk (x) :
+lemma Ideal.algebraMap_quotient_residueField_mk (x) :
     algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
     algebraMap R I.ResidueField x := rfl
+
+@[deprecated (since := "2025-12-02")]
+alias algebraMap_mk := Ideal.algebraMap_quotient_residueField_mk
 
 lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
@@ -99,8 +110,9 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
     obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
     rw [← sub_eq_zero, ← map_sub, ← map_sub] at e
     simp only [IsLocalRing.ResidueField.algebraMap_eq, IsLocalRing.residue_eq_zero_iff,
-      IsScalarTower.algebraMap_apply R (Localization.AtPrime I) I.ResidueField, algebraMap_mk,
-      IsLocalization.AtPrime.to_map_mem_maximal_iff _ I, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem] at e
+      IsScalarTower.algebraMap_apply R (Localization.AtPrime I) I.ResidueField,
+      Ideal.algebraMap_quotient_residueField_mk, IsLocalization.AtPrime.to_map_mem_maximal_iff _ I,
+      ← Ideal.Quotient.mk_eq_mk_iff_sub_mem] at e
     use 1
     simp [e]
 
@@ -109,6 +121,53 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
 
+lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
+    (algebraMap R I.ResidueField).SurjectiveOnStalks :=
+  (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective).comp
+    (RingHom.surjectiveOnStalks_of_isLocalization I.primeCompl _)
+
 instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
   Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
+
+/-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
+noncomputable def Ideal.ResidueField.lift
+    (f : R →+* S) (hf₁ : I ≤ RingHom.ker f)
+    (hf₂ : I.primeCompl ≤ (IsUnit.submonoid S).comap f) : I.ResidueField →+* S :=
+  IsLocalization.lift (M := (R ⧸ I)⁰) (g := Ideal.Quotient.lift I (f := f) hf₁) <| by
+    simpa [Ideal.Quotient.mk_surjective.forall, Ideal.Quotient.eq_zero_iff_mem]
+
+@[simp] lemma Ideal.ResidueField.lift_algebraMap
+    (f : R →+* S) (hf₁ : I ≤ RingHom.ker f)
+    (hf₂ : I.primeCompl ≤ (IsUnit.submonoid S).comap f) (r : R) :
+    lift I f hf₁ hf₂ (algebraMap _ _ r) = f r := by
+  rw [lift, IsScalarTower.algebraMap_apply R (R ⧸ I) I.ResidueField, IsLocalization.lift_eq]
+  simp
+
+/-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
+noncomputable
+def Ideal.ResidueField.liftₐ (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B) (hf₁ : I ≤ RingHom.ker f)
+    (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) : I.ResidueField →ₐ[R] B where
+  __ := Ideal.ResidueField.lift I f.toRingHom hf₁ hf₂
+  commutes' r := by simp [IsScalarTower.algebraMap_apply R A I.ResidueField]
+
+@[simp]
+lemma Ideal.ResidueField.liftₐ_algebraMap (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B)
+    (hf₁ : I ≤ RingHom.ker f) (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) (r : A) :
+    liftₐ I f hf₁ hf₂ (algebraMap _ _ r) = f r :=
+  lift_algebraMap _ _ _ hf₂ _
+
+@[simp] lemma Ideal.ResidueField.liftₐ_comp_toAlgHom (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B)
+    (hf₁ : I ≤ RingHom.ker f) (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) :
+    (liftₐ I f hf₁ hf₂).comp (IsScalarTower.toAlgHom _ A _) = f :=
+  AlgHom.ext fun _ ↦ liftₐ_algebraMap _ _ _ hf₂ _
+
+@[ext high] -- higher than `RingHom.ext`.
+lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
+    {f g : I.ResidueField →+* S} (H : f.comp (algebraMap R _) = g.comp (algebraMap R _)) : f = g :=
+  IsLocalization.ringHom_ext (R ⧸ I)⁰ (Ideal.Quotient.ringHom_ext H)
+
+@[ext high] -- higher than `AlgHom.ext`.
+lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
+    (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
+  AlgHom.coe_ringHom_injective (ringHom_ext congr($H))

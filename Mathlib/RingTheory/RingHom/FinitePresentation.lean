@@ -118,6 +118,28 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     apply h
   exact of_span_eq_top_target_aux f' hf' t ht Ht
 
+/-- Finite-presentation can be checked on a standard covering of the target. -/
+lemma of_span_eq_top_target_of_isLocalizationAway {ι : Type*} (s : ι → S)
+    (hs : Ideal.span (Set.range s) = ⊤) (T : ι → Type*) [∀ i, CommRing (T i)] [∀ i, Algebra R (T i)]
+    [∀ i, Algebra S (T i)] [∀ i, IsScalarTower R S (T i)] [∀ i, IsLocalization.Away (s i) (T i)]
+    [∀ i, Algebra.FinitePresentation R (T i)] :
+    Algebra.FinitePresentation R S := by
+  apply of_span_eq_top_target _ hs
+  rintro - ⟨i, rfl⟩
+  exact .equiv <| (IsLocalization.algEquiv (.powers <| s i) _ (T i)).symm |>.restrictScalars R
+
+instance pi {ι : Type*} [Finite ι] (S : ι → Type*) [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)]
+    [∀ i, Algebra.FinitePresentation R (S i)] :
+    Algebra.FinitePresentation R (∀ a, S a) := by
+  classical
+  let (i : ι) : Algebra (Π a, S a) (S i) := (Pi.evalAlgHom R S i).toAlgebra
+  have (i : ι) : IsLocalization.Away (Pi.single i 1 : ∀ a, S a) (S i) := by
+    refine IsLocalization.away_of_isIdempotentElem ?_ (RingHom.ker_evalRingHom _ _)
+      ((Pi.evalRingHom S i).surjective)
+    simp [IsIdempotentElem, ← Pi.single_mul_left]
+  exact Algebra.FinitePresentation.of_span_eq_top_target_of_isLocalizationAway
+    _ (Ideal.span_single_eq_top S) (fun i ↦ S i)
+
 end Algebra.FinitePresentation
 
 namespace RingHom

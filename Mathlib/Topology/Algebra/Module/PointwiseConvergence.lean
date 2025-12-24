@@ -9,7 +9,7 @@ public import Mathlib.Topology.Algebra.Module.StrongTopology
 public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
-# Topology of pointwise convergence on continous linear maps
+# Topology of pointwise convergence on continuous linear maps
 
 ## Main definitions
 
@@ -17,7 +17,7 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 topology on finite sets.
 * `PointwiseConvergenceCLM.evalCLM`: The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for fixed `a : E`
 as a continuous linear map.
-* `ContinousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
+* `ContinuousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
 `E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
 stronger than pointwise convergence.
 * `PointwiseConvergenceCLM.equivWeakDual`: The continuous equivalence between `E →Lₚₜ[𝕜] 𝕜` and
@@ -41,12 +41,13 @@ continuous if for every `x : E` the evaluation `g · x` is continuous.
 /-! ### Topology of pointwise convergence -/
 
 variable {α ι : Type*} [TopologicalSpace α]
-variable {𝕜 𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂]
-variable {σ : 𝕜₁ →+* 𝕜₂}
-variable {E F Fᵤ : Type*} [AddCommGroup E] [TopologicalSpace E]
+variable {𝕜 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
+variable {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ]
+variable {E F Fᵤ G : Type*} [AddCommGroup E] [TopologicalSpace E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [AddCommGroup Fᵤ] [UniformSpace Fᵤ] [IsUniformAddGroup Fᵤ]
-  [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 Fᵤ] [Module 𝕜₁ E] [Module 𝕜₂ F] [Module 𝕜₂ Fᵤ]
+  [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 Fᵤ] [Module 𝕜₁ E] [Module 𝕜₂ F] [Module 𝕜₂ Fᵤ] [Module 𝕜₃ G]
 
 open Set Topology
 
@@ -126,6 +127,25 @@ continuous. -/
 theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
     (h : ∀ x, Continuous (g · x)) : Continuous g := by
   simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).continuous_iff, continuous_pi_iff, h]
+
+variable (G) in
+/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
+convergence topology. -/
+@[simps! apply]
+def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) :
+    (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
+  toFun f := f.comp L
+  __ := ContinuousLinearMap.precomp_uniformConvergenceCLM G { (S : Set E) | Finite S }
+    { (S : Set F) | Finite S } L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
+
+variable (E) in
+/-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
+convergence topology. -/
+@[simps! apply]
+def postcomp [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] (L : F →SL[τ] G) :
+    (E →SLₚₜ[σ] F) →SL[τ] E →SLₚₜ[ρ] G where
+  toFun f := L.comp f
+  __ := ContinuousLinearMap.postcomp_uniformConvergenceCLM { (S : Set E) | Finite S } L
 
 variable (𝕜₂ σ E F) in
 /-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/

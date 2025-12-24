@@ -26,6 +26,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.privateInPublic true in
 /-- The category of R-algebras and their morphisms. -/
 structure AlgCat where
   private mk ::
@@ -45,6 +46,8 @@ instance : CoeSort (AlgCat R) (Type v) :=
 
 attribute [coe] AlgCat.carrier
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `AlgCat R`. -/
 abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgCat.{v} R :=
@@ -54,6 +57,7 @@ lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
 
 variable {R} in
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `AlgCat R`. -/
 @[ext]
 structure Hom (A B : AlgCat.{v} R) where
@@ -61,11 +65,15 @@ structure Hom (A B : AlgCat.{v} R) where
   /-- The underlying algebra map. -/
   hom' : A →ₐ[R] B
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (AlgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (AlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -202,7 +210,7 @@ end AlgCat
 variable {R}
 variable {X₁ X₂ : Type u}
 
-/-- Build an isomorphism in the category `AlgCat R` from a `AlgEquiv` between `Algebra`s. -/
+/-- Build an isomorphism in the category `AlgCat R` from an `AlgEquiv` between `Algebra`s. -/
 @[simps]
 def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
     (e : X₁ ≃ₐ[R] X₂) : AlgCat.of R X₁ ≅ AlgCat.of R X₂ where
@@ -211,7 +219,7 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
 
 namespace CategoryTheory.Iso
 
-/-- Build a `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
+/-- Build an `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
   { i.hom.hom with

@@ -5,13 +5,14 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Choose.Central
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Positivity
+
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Data.Tree.Basic
+import Mathlib.Tactic.Field
 
 /-!
 # Catalan numbers
@@ -116,7 +117,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by omega
+      have m_le_d : x.val ≤ d := by lia
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast

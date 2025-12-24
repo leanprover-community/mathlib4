@@ -209,7 +209,7 @@ theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3} (ha : ∀ n, a n
 this function rescales the interval containing `x` back to `[0, 1]`.
 Used to iteratively extract the ternary representation of `x`. -/
 noncomputable def cantorStep (x : ℝ) : ℝ :=
-  if x ∈ Set.Icc 0 (1/3) then
+  if x ∈ Set.Icc 0 (1 / 3) then
     3 * x
   else
     3 * x - 2
@@ -220,10 +220,7 @@ theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x
     rw [cantorSet_eq_union_halves] at hx
     grind
   all_goals
-    have := cantorSet_subset_unitInterval hy
-    simp only [Set.mem_Icc] at this ⊢
-    field_simp
-    grind
+    grind [cantorSet_subset_unitInterval]
 
 /-- The infinite sequence obtained by repeatedly applying `cantorStep` to `x`. -/
 noncomputable def cantorSequence (x : ℝ) : Stream' ℝ :=
@@ -243,7 +240,7 @@ This function tracks which of the two intervals in `preCantorSet (n + 1)`
 contains `x` at each step, producing the corresponding path as a stream of booleans. -/
 noncomputable def cantorToBinary (x : ℝ) : Stream' Bool :=
   (cantorSequence x).map fun x ↦
-    if x ∈ Set.Icc 0 (1/3) then
+    if x ∈ Set.Icc 0 (1 / 3) then
       false
     else
       true

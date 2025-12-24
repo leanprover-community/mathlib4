@@ -17,16 +17,6 @@ public meta import Lean.Elab.Command
 This file defines passes to run from the tactic analysis framework.
 -/
 
-
--- This is a temporary shim that can be replaced on `v4.27.0-rc1`.
-public meta section
-
-/-- `lia` is an alias for the `cutsat` tactic, which solves linear integer arithmetic goals. -/
-syntax (name := tacticLia) "lia" : tactic
-macro_rules | `(tactic| lia) => `(tactic| cutsat)
-
-end
-
 public meta section
 
 open Lean Meta
@@ -118,6 +108,21 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
     }
 
 
+/-- Convert a term syntax to a grindParam syntax (wrapping in grindLemma).
+If the term is a simple identifier (like `pi_pos`), wrap it in an explicit application
+`(id pi_pos)` so grind treats it as a term rather than an e-matching theorem. -/
+private def termToGrindParam (t : Syntax) : Syntax :=
+  -- grindLemma := ppGroup((Attr.grindMod ppSpace)? term)
+  -- grindParam := grindErase <|> grindLemmaMin <|> grindLemma <|> anchor
+  -- With no modifier, the first child is a null node
+  -- If t is a simple identifier, wrap as `(id t)` to force term interpretation
+  let t' : Syntax := if t.isIdent then
+      -- Create `id t` application - this ensures grind sees it as a term, not an e-match candidate
+      mkNode ``Lean.Parser.Term.app #[mkIdent `id, mkNullNode #[t]]
+    else t
+  let grindLemma := mkNode ``Lean.Parser.Tactic.grindLemma #[mkNullNode, t']
+  mkNode ``Lean.Parser.Tactic.grindParam #[grindLemma]
+
 /--
 Define a pass that tries replacing a specific tactic with `grind`.
 
@@ -127,12 +132,46 @@ all produce the same message.
 
 `tacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
 for example `Mathlib.Tactic.linarith`.
+
+If `extractArgs` is provided, it extracts term arguments from the original tactic
+(e.g., `linarith [X, Y]`) and passes them to grind (e.g., `grind [X, Y]`).
+Local hypotheses are filtered out since grind uses them automatically.
 -/
 def grindReplacementWith (tacticName : String) (tacticKind : SyntaxNodeKind)
+    (extractArgs : Syntax → Option (Syntax.TSepArray `term ",") := fun _ => none)
     (reportFailure : Bool := true) (reportSuccess : Bool := false)
     (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
     TacticAnalysis.Config :=
-  terminalReplacement tacticName "grind" tacticKind (fun _ _ _ => `(tactic| grind))
+  let newTactic : ContextInfo → TacticInfo → Syntax → CommandElabM (TSyntax `tactic) :=
+    fun _ctxI tacI stx => do
+      match extractArgs stx with
+      | some args =>
+        if args.getElems.isEmpty then
+          return ← `(tactic| grind)
+        -- Get local hypothesis names from the goal's local context
+        let lctxNames : Std.HashSet Name :=
+          match tacI.goalsBefore.head? with
+          | some goal =>
+            let goalDecl := tacI.mctxBefore.decls.find! goal
+            goalDecl.lctx.foldl (init := {}) fun s decl =>
+              if decl.isImplementationDetail then s else s.insert decl.userName
+          | none => {}
+        -- Filter out terms that are simple identifiers matching local hypotheses
+        let filteredElems := args.getElems.filter fun term =>
+          match term.raw with
+          | .ident _ _ name _ => !lctxNames.contains name
+          | _ => true  -- Keep non-identifier terms (like `foo.bar x`)
+        if filteredElems.isEmpty then
+          return ← `(tactic| grind)
+        -- Build comma-separated list from filtered elements
+        let grindElemsAndSeps := filteredElems.foldl (init := #[]) fun acc elem =>
+          if acc.isEmpty then #[termToGrindParam elem]
+          else acc.push (mkAtom ",") |>.push (termToGrindParam elem)
+        let grindArgs : Syntax.TSepArray ``Lean.Parser.Tactic.grindParam "," :=
+          ⟨grindElemsAndSeps⟩
+        `(tactic| grind [$grindArgs,*])
+      | none => `(tactic| grind)
+  terminalReplacement tacticName "grind" tacticKind newTactic
     reportFailure reportSuccess reportSlowdown maxSlowdown
 
 end Mathlib.TacticAnalysis
@@ -146,6 +185,13 @@ register_option linter.tacticAnalysis.regressions.linarithToGrind : Bool := {
 @[tacticAnalysis linter.tacticAnalysis.regressions.linarithToGrind,
   inherit_doc linter.tacticAnalysis.regressions.linarithToGrind]
 def linarithToGrindRegressions := grindReplacementWith "linarith" `Mathlib.Tactic.linarith
+    (extractArgs := fun stx => do
+      -- linarith syntax: "linarith" "!"? linarithArgsRest
+      -- linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?
+      let rest := stx[2]  -- linarithArgsRest
+      let argsGroup := rest[2]  -- the optional bracket group
+      guard (argsGroup.getNumArgs >= 2)
+      return ⟨argsGroup[1].getArgs⟩)
 
 /-- Debug `grind` by identifying places where it does not yet supersede `ring`. -/
 register_option linter.tacticAnalysis.regressions.ringToGrind : Bool := {
@@ -156,22 +202,22 @@ register_option linter.tacticAnalysis.regressions.ringToGrind : Bool := {
 def ringToGrindRegressions := grindReplacementWith "ring" `Mathlib.Tactic.RingNF.ring
 
 /-- Debug `lia` by identifying places where it does not yet supersede `omega`. -/
-register_option linter.tacticAnalysis.regressions.omegaToCutsat : Bool := {
+register_option linter.tacticAnalysis.regressions.omegaToLia : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.regressions.omegaToCutsat,
-  inherit_doc linter.tacticAnalysis.regressions.omegaToCutsat]
-def omegaToCutsatRegressions :=
+@[tacticAnalysis linter.tacticAnalysis.regressions.omegaToLia,
+  inherit_doc linter.tacticAnalysis.regressions.omegaToLia]
+def omegaToLiaRegressions :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := false) (reportFailure := true)
 
 /-- Report places where `omega` can be replaced by `lia`. -/
-register_option linter.tacticAnalysis.omegaToCutsat : Bool := {
+register_option linter.tacticAnalysis.omegaToLia : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.omegaToCutsat,
-  inherit_doc linter.tacticAnalysis.omegaToCutsat]
-def omegaToCutsat :=
+@[tacticAnalysis linter.tacticAnalysis.omegaToLia,
+  inherit_doc linter.tacticAnalysis.omegaToLia]
+def omegaToLia :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
@@ -356,8 +402,15 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
           let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
             -- Extract just the tactic name, ignoring trailing comments/whitespace
-            let oldTacticPP := ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
-            let newTacticPP ← label.getDM (return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim)
+            -- Use try/catch because ppTactic can fail on certain syntax (e.g., `congr($h x)`)
+            let oldTacticPP := (← try
+              return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii
+            catch _ =>
+              return i.tacI.stx.reprint.getD "???")
+            let newTacticPP ← label.getDM (try
+              return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trimAscii.copy
+            catch _ =>
+              return tac.raw.reprint.getD "???")
             -- Check if this is a self-replacement (tactic replacing itself)
             if !selfReplacements && oldTacticPP == newTacticPP then
               continue

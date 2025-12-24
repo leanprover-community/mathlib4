@@ -129,7 +129,7 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
   s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le])
 
 @[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
-    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
+    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ := by
   simp [faceOpposite]
 
 lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
@@ -313,8 +313,7 @@ theorem restrict_map_restrict
     letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
     letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
     (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
-      (s.map f hf).restrict S₂ (
-        Eq.trans_le
+      (s.map f hf).restrict S₂ (Eq.trans_le
           (by simp [AffineSubspace.map_span, Set.range_comp])
           (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
   rfl

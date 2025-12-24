@@ -54,7 +54,7 @@ def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := no
       | none => do
         return s!"{(← Std.Time.ZonedDateTime.now).toPlainDate}"
       | some s => return s
-  let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimRight ++ "\"")]
+  let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
 /-- Returns the array of names that are in `new` but not in `old`. -/

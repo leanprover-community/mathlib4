@@ -94,7 +94,7 @@ ensures that we do not get a diamond when doing
 `[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
-class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
+class PseudoEMetricSpace (α : Type u) : Type u extends EDist α where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
   edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z

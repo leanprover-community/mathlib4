@@ -19,7 +19,7 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
 * `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
   algebra with an irreducible faithful finite-dimensional trace-free representation is semisimple.
 
-## TODO
+## TODO
 
 * Introduce a `Prop`-valued typeclass `LieModule.IsTracefree` stating
   `(toEnd R L M).range ≤ LieAlgebra.derivedSeries R (Module.End R M) 1`, prove

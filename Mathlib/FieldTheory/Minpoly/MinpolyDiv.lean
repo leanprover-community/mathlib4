@@ -35,7 +35,7 @@ noncomputable def minpolyDiv : S[X] := (minpoly R x).map (algebraMap R S) /ₘ (
 lemma minpolyDiv_spec :
     minpolyDiv R x * (X - C x) = (minpoly R x).map (algebraMap R S) := by
   delta minpolyDiv
-  rw [mul_comm, mul_divByMonic_eq_iff_isRoot, IsRoot, eval_map, ← aeval_def, minpoly.aeval]
+  rw [mul_comm, mul_divByMonic_eq_iff_isRoot, IsRoot, eval_map_algebraMap, minpoly.aeval]
 
 lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
     algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
@@ -48,11 +48,11 @@ lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
-  rw [aeval_def, ← eval_map, ← derivative_map, ← minpolyDiv_spec R x]; simp
+  rw [← eval_map_algebraMap, ← derivative_map, ← minpolyDiv_spec R x]; simp
 
 lemma minpolyDiv_eval_eq_zero_of_ne_of_aeval_eq_zero [IsDomain S]
     {y} (hxy : y ≠ x) (hy : aeval y (minpoly R x) = 0) : (minpolyDiv R x).eval y = 0 := by
-  rw [aeval_def, ← eval_map, ← minpolyDiv_spec R x] at hy
+  rw [← eval_map_algebraMap, ← minpolyDiv_spec R x] at hy
   simp only [eval_mul, eval_sub, eval_X, eval_C, mul_eq_zero] at hy
   exact hy.resolve_right (by rwa [sub_eq_zero])
 
@@ -72,7 +72,7 @@ lemma eval₂_minpolyDiv_self {T} [CommRing T] [Algebra R T] [IsDomain T] [Decid
       if σ₁ x = σ₂ x then σ₁ (aeval x (derivative <| minpoly R x)) else 0 := by
   apply eval₂_minpolyDiv_of_eval₂_eq_zero
   rw [AlgHom.comp_algebraMap, ← σ₂.comp_algebraMap, ← eval₂_map, ← RingHom.coe_coe, eval₂_hom,
-    eval_map, ← aeval_def, minpoly.aeval, map_zero]
+    eval_map_algebraMap, minpoly.aeval, map_zero]
 
 lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
     {y} (hy : aeval y (minpoly R x) = 0) :

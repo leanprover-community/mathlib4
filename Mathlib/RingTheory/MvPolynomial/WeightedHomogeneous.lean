@@ -256,6 +256,11 @@ theorem mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (hψ : IsWeighte
     IsWeightedHomogeneous w (φ * ψ) (m + n) :=
   weightedHomogeneousSubmodule_mul w m n <| Submodule.mul_mem_mul hφ hψ
 
+lemma C_mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (r : R) :
+    IsWeightedHomogeneous w (C r * φ) m := by
+  rw [← zero_add m]
+  exact (isWeightedHomogeneous_C w r).mul hφ
+
 theorem pow {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (n : ℕ) :
     IsWeightedHomogeneous w (φ ^ n) (n • m) := by
   induction n with
@@ -289,6 +294,33 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
     simp only [← hφ hd]
     replace hd := Finsupp.mem_support_iff.mpr hd
     apply Finset.le_sup hd
+
+/-- Induction principle for weighted homogeneous polynomials. -/
+lemma induction_on {w : σ → M} {m : M}
+    {motive : (p : MvPolynomial σ R) → p.IsWeightedHomogeneous w m → Prop}
+    (zero : motive 0 (isWeightedHomogeneous_zero R w m))
+    (add : ∀ p q hp hq, motive p hp → motive q hq → motive (p + q) (hp.add hq))
+    (monomial : ∀ (d : σ →₀ ℕ) (r : R) (hr : Finsupp.weight w d = m),
+      motive ((monomial d) r) (isWeightedHomogeneous_monomial w d r hr))
+    {p : MvPolynomial σ R} (hp : p.IsWeightedHomogeneous w m) :
+    motive p hp := by
+  suffices h : ∀ a, motive (C a * p) (.C_mul hp _) by simpa using h 1
+  let A : Submodule R (MvPolynomial σ R) :=
+    { carrier := { p | ∃ hp, ∀ a, motive (C a * p) (.C_mul hp _) }
+      add_mem' := fun ⟨_, hx⟩ ⟨_, hy⟩ ↦
+        ⟨.add ‹_› ‹_›, fun a ↦ by simp [mul_add, add _ _ _ _ (hx a) (hy a)]⟩
+      zero_mem' := ⟨isWeightedHomogeneous_zero R w m, by simp [zero]⟩
+      smul_mem' := fun a x ⟨_, hx⟩ ↦ ⟨by simp [Algebra.smul_def, C_mul ‹_› a], fun a ↦ by
+        simp_rw [Algebra.smul_def, algebraMap_eq, ← mul_assoc, ← map_mul]
+        apply hx⟩ }
+  rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
+    Finsupp.supported_eq_span_single] at hp
+  refine (Submodule.span_le (p := A) |>.mpr ?_ hp).2
+  rw [Set.image_subset_iff]
+  intro d hd
+  simp only [single_eq_monomial, Set.mem_preimage, SetLike.mem_coe]
+  refine ⟨isWeightedHomogeneous_monomial w d 1 hd, fun a ↦ ?_⟩
+  simp [MvPolynomial.C_mul_monomial, monomial _ _ hd]
 
 end IsWeightedHomogeneous
 

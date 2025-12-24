@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-!
@@ -124,14 +125,12 @@ lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x)
       (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
--- TODO: non-terminal simp_all followed by positivity
-set_option linter.flexible false in
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
   have h₀ : ContinuousOn (· ^ (p - 1) : ℝ → ℝ) (Ioi 0) := .rpow_const (by fun_prop) <|
     fun t ht => .inl ht.ne'
-  fun_prop (disch := intros; simp_all; positivity)
+  fun_prop (disch := grind -abstractProof)
 
 lemma aestronglyMeasurable_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     AEStronglyMeasurable (rpowIntegrand₀₁ p · x) (volume.restrict (Ioi 0)) :=

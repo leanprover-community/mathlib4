@@ -244,19 +244,19 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
-  have A n : μ (((x * z ⁻¹) • k) \ k) ≤ u n := by
+  have A n : μ (((x * z⁻¹) • k) \ k) ≤ u n := by
     apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
       ((hz.frequently this).and_eventually (eventually_gt_atTop n)).exists
     refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
-    have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
+    have J : x * (y i)⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
-  have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
+  have B : μ (((x * z⁻¹) • k) \ k) = 0 :=
     le_antisymm (ge_of_tendsto u_lim (Eventually.of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
-    have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
+    have : μ ((z * x⁻¹) • (((x * z⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
     group
     simp

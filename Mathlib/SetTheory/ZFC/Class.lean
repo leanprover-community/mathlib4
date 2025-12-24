@@ -348,6 +348,7 @@ theorem choice_mem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
   rw [@map_fval _ (Classical.allZFSetDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
   exact choice_mem_aux x h y yx
 
+set_option backward.privateInPublic true in
 private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
     (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out) = s := by
   ext x
@@ -358,6 +359,8 @@ private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
     simp [h2]
   · simp [PSet.Equiv.refl]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `SetLike.coe` as an equivalence. -/
 @[simps apply_coe]
 noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where

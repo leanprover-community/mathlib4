@@ -305,6 +305,7 @@ theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by r
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 
+set_option backward.privateInPublic true in
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
@@ -355,6 +356,8 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
     rfl
   commutes' := by tauto
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]
@@ -388,6 +391,8 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
         grind }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
   rw [lift]

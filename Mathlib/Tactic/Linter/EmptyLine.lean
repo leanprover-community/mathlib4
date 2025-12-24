@@ -106,7 +106,7 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let some str := stx.getSubstring? | return
   let allowed := stx.filter (AllowEmptyLines.contains ·.getKind)
   let allowedRanges := allowed.filterMap (·.getRange?)
-  let one :: rest@(_ :: _) := str.toString.trimRight.splitOn "\n\n" | return
+  let one :: rest@(_ :: _) := str.toString.trimAsciiEnd.copy.splitOn "\n\n" | return
   -- We extract all trailing ranges of all syntax nodes in `stx`, after we remove
   -- leading and trailing whitespace from them.
   -- These ranges typically represent embedded comments and we ignore line breaks inside them.
@@ -133,11 +133,11 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- * the line following an empty line.
   let mut ranges : Array (Syntax.Range × String × String) := #[]
   let mut currOffset := str.startPos.offsetBy (one.rawEndPos.increaseBy 1)
-  let mut prev := one.takeRightWhile (· != '\n')
+  let mut prev := one.takeEndWhile (· != '\n')
   for r in rest do
-    ranges := ranges.push (⟨currOffset, currOffset⟩, prev, r.takeWhile (· != '\n'))
+    ranges := ranges.push (⟨currOffset, currOffset⟩, prev.copy, (r.takeWhile (· != '\n')).copy)
     currOffset := currOffset.offsetBy (r.rawEndPos.increaseBy 2)
-    prev := r.takeRightWhile (· != '\n')
+    prev := r.takeEndWhile (· != '\n')
   let allowedRanges := trails.insertMany allowedRanges
   for (rg, before, after) in ranges do
     if allowedRanges.any fun okRg ↦ okRg.start ≤ rg.start && rg.stop ≤ okRg.stop then

@@ -133,6 +133,11 @@ theorem snd_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     (snd R M₂ M₃).comp (f.prod g) = g :=
   ext fun _x => rfl
 
+@[simp] theorem fst_comp_inl : fst R M₁ M₂ ∘L inl R M₁ M₂ = .id R M₁ := rfl
+@[simp] theorem fst_comp_inr : fst R M₁ M₂ ∘L inr R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inl : snd R M₁ M₂ ∘L inl R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inr : snd R M₁ M₂ ∘L inr R M₁ M₂ = .id R M₂ := rfl
+
 /-- `Prod.map` of two continuous linear maps. -/
 def prodMap (f₁ : M₁ →L[R] M₂) (f₂ : M₃ →L[R] M₄) :
     M₁ × M₃ →L[R] M₂ × M₄ :=

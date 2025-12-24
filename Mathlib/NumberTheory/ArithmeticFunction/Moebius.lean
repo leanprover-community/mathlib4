@@ -286,7 +286,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
   · intro h
     let G := fun (n : ℕ) => (∑ i ∈ n.divisors, f i)
     intro n hn hnP
-    suffices ∑ d ∈ n.divisors, μ (n/d) • G d = f n by
+    suffices ∑ d ∈ n.divisors, μ (n / d) • G d = f n by
       rw [sum_divisorsAntidiagonal' (f := fun x y => μ x • g y), ← this, sum_congr rfl]
       intro d hd
       rw [← h d (pos_of_mem_divisors hd) <| hs d n (dvd_of_mem_divisors hd) hnP]
@@ -347,7 +347,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
           (@prod_eq_iff_prod_pow_moebius_eq_on Rˣ _
             (fun n => if h : 0 < n then Units.mk0 (f n) (hf n h) else 1)
             (fun n => if h : 0 < n then Units.mk0 (g n) (hg n h) else 1)
-            s hs) )
+            s hs))
         (forall_congr' fun n => ?_) <;>
     refine imp_congr_right fun hn => ?_
   · dsimp

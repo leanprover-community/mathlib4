@@ -45,23 +45,18 @@ variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 instance (i : 𝒰.I₀) : IsOpenImmersion (𝒰.f i) := 𝒰.map_prop i
 
 /-- The affine cover of a scheme. -/
-def affineCover (X : Scheme.{u}) : OpenCover X where
-  I₀ := X
-  X x := Spec (X.local_affine x).choose_spec.choose
-  f x :=
-    ⟨(X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ?_, inferInstance⟩
-    use x
-    simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
-      ContinuousMap.coe_comp]
-    rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
-    · erw [Subtype.range_coe_subtype]
-      exact (X.local_affine x).choose.2
-    rw [← TopCat.epi_iff_surjective]
-    change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
-    infer_instance
+def affineCover (X : Scheme.{u}) : OpenCover X := by
+  choose U R h using X.local_affine
+  let e (x) := (h x).some
+  exact
+  { I₀ := X
+    X x := Spec (R x)
+    f x := ⟨(e x).inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
+    mem₀ := by
+      rw [presieve₀_mem_precoverage_iff]
+      refine ⟨fun x ↦ ⟨x, ⟨(e x).hom.base ⟨x, (U x).2⟩, ?_⟩⟩, inferInstance⟩
+      change ((((e x).hom ≫ (e x).inv).base ≫ (X.ofRestrict _).base)) ⟨x, _⟩ = x
+      cat_disch }
 
 instance : Inhabited X.OpenCover :=
   ⟨X.affineCover⟩

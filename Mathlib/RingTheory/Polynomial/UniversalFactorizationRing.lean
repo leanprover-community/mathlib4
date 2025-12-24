@@ -55,7 +55,7 @@ lemma coeff_freeMonic :
   by_cases h : k < n
   · simp +contextual [Finset.sum_eq_single (ι := Fin n) (a := ⟨k, h⟩),
       Fin.ext_iff, @eq_comm _ k, h, h.ne']
-  ·rw [Finset.sum_eq_zero fun x _ ↦ if_neg (by cases x; omega), add_zero, dif_neg h]
+  · rw [Finset.sum_eq_zero fun x _ ↦ if_neg (by cases x; lia), add_zero, dif_neg h]
 
 lemma degree_freeMonic [Nontrivial R] : (freeMonic R n).degree = n :=
   Polynomial.degree_eq_of_le_of_coeff_ne_zero ((Polynomial.degree_le_iff_coeff_zero _ _).mpr
@@ -122,7 +122,7 @@ lemma mapEquivMonic_symm_map_algebraMap
     (p : MonicDegreeEq S n) [Algebra S T] [IsScalarTower R S T] :
     (mapEquivMonic R T n).symm (p.map (algebraMap S T)) =
       (IsScalarTower.toAlgHom R S T).comp ((mapEquivMonic R S n).symm p) := by
-  rw [← mapEquivMonic_symm_map]; rfl
+  rw [← mapEquivMonic_symm_map, IsScalarTower.coe_toAlgHom]
 
 /-- In light of the fact that `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 this is the map `R[X₁,...,Xₘ₊ₖ] → R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₖ]` corresponding to the multiplication
@@ -252,12 +252,12 @@ lemma pderiv_inl_universalFactorizationMap_X (i j) :
     · rw [Finset.sum_eq_zero, if_pos h]
       simp only [Finset.mem_antidiagonal, Prod.forall]
       intro a b hab
-      simp [show a ≠ i by omega]
+      simp [show a ≠ i by lia]
     rw [Finset.sum_eq_single ⟨i.1, j.1 - i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
       intro a b e h
-      simp [show a ≠ i by omega]
+      simp [show a ≠ i by lia]
     · simp [h]
 
 lemma pderiv_inr_universalFactorizationMap_X (i j) :
@@ -275,12 +275,12 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
     · rw [Finset.sum_eq_zero, if_pos h]
       simp only [Finset.mem_antidiagonal, Prod.forall]
       intro a b hab
-      simp [show b ≠ i by omega]
+      simp [show b ≠ i by lia]
     rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]
       intro a b _ _ _
-      simp [show b ≠ i by omega]
+      simp [show b ≠ i by lia]
     · simp [h]
 
 lemma universalFactorizationMapPresentation_jacobiMatrix :
@@ -289,7 +289,7 @@ lemma universalFactorizationMapPresentation_jacobiMatrix :
     -((Polynomial.sylvester
       ((freeMonic R m).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inl)).toRingHom))
       ((freeMonic R k).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inr)).toRingHom))
-      m k).reindex (finCongr (by omega)) (finCongr (by omega))).transpose := by
+      m k).reindex (finCongr (by lia)) (finCongr (by lia))).transpose := by
   letI := (universalFactorizationMap R n m k hn).toAlgebra
   subst hn
   ext i j : 1
@@ -318,8 +318,8 @@ lemma universalFactorizationMapPresentation_jacobian :
   rw [← (aeval _).coe_toRingHom, ← Polynomial.resultant_map_map,
     Polynomial.map_map, Polynomial.map_map]
   congr 2
-  · ext <;> simp [- algebraMap_apply, ← algebraMap_eq]
-  · ext <;> simp [- algebraMap_apply, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
 

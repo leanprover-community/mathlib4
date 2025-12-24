@@ -26,8 +26,10 @@ namespace Prod
 lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
-    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
+  intros h P w
+  cases h
+  exact w rfl rfl
 
 @[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p

@@ -180,6 +180,13 @@ theorem encard_prod {s : Set α} {t : Set β} : (s ×ˢ t).encard = s.encard * t
   unfold encard
   simp [ENat.card_congr (Equiv.Set.prod ..)]
 
+@[simp]
+theorem encard_pi_eq_prod_encard [h : Fintype α] {ι : α → Type*} {s : ∀ i : α, Set (ι i)} :
+    (Set.pi Set.univ s).encard = ∏ i, (s i).encard := by
+  simp only [encard, ENat.card]
+  rw [Cardinal.mk_congr (Equiv.Set.univPi s)]
+  simp [Cardinal.prod_eq_of_fintype]
+
 section Lattice
 
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
@@ -845,6 +852,9 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
   simp_rw [← _root_.Nat.card_coe_set_eq]
   exact Nat.card_congr (Equiv.ofBijective f' hbij)
 
+theorem ncard_congr' {S : Set α} {T : Set β} (f : S ≃ T) : Set.ncard S = Set.ncard T :=
+  Cardinal.toNat_congr f
+
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
     (ht : t.Finite := by toFinite_tac) :
     s.ncard ≤ t.ncard := by
@@ -1024,6 +1034,10 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : s.ncard + sᶜ.ncard = Nat.card α := by
   rw [← ncard_univ, ← ncard_union_eq (@disjoint_compl_right _ _ s) hs hsc, union_compl_self]
 
+theorem ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
+    (hsc : sᶜ.Finite := by toFinite_tac) : sᶜ.ncard = Nat.card α - s.ncard := by
+  rw [← ncard_add_ncard_compl s hs hsc, Nat.add_sub_cancel_left]
+
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
   rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, left_eq_add]
@@ -1165,6 +1179,19 @@ theorem ncard_le_one_iff_subset_singleton [Nonempty α]
 theorem ncard_le_one_of_subsingleton [Subsingleton α] (s : Set α) : s.ncard ≤ 1 := by
   rw [ncard_eq_toFinset_card]
   exact Finset.card_le_one_of_subsingleton _
+
+theorem one_lt_ncard_iff_nontrivial [Finite s] :
+    1 < s.ncard ↔ s.Nontrivial := by
+  rw [← not_subsingleton_iff, ← ncard_le_one_iff_subsingleton, not_le]
+
+theorem one_lt_ncard_iff_nontrivial_and_finite :
+    1 < s.ncard ↔ s.Nontrivial ∧ s.Finite := by
+  refine ⟨fun hs ↦ ?_, fun ⟨hs_nontrivial, hs_finite⟩ ↦ ?_⟩
+  · have := finite_of_ncard_pos (Nat.zero_lt_of_lt hs)
+    rw [← Set.finite_coe_iff] at this
+    exact ⟨one_lt_ncard_iff_nontrivial.mp hs, this⟩
+  · rw [← Set.finite_coe_iff] at hs_finite
+    rwa [one_lt_ncard_iff_nontrivial]
 
 theorem one_lt_ncard (hs : s.Finite := by toFinite_tac) :
     1 < s.ncard ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by

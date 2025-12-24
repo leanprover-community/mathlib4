@@ -99,7 +99,7 @@ instance decidablePrime : DecidablePred PosNum.Prime
         refine Nat.prime_def_minFac.trans ((and_iff_right ?_).trans ?_)
         · simp only [cast_bit1]
           have := to_nat_pos n
-          omega
+          lia
         rw [← minFac_to_nat, to_nat_inj]; rfl
 
 end PosNum

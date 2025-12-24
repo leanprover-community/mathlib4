@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Module.Normalize
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
 
-This file defines the signed distance between two points, in the direction of a given a vector, and
+This file defines the signed distance between two points, in the direction of a given vector, and
 the signed distance between an affine subspace and a point, in the direction of a given
 reference point.
 
@@ -39,6 +39,7 @@ variable [NormedAddTorsor V P]
 
 section signedDist
 
+set_option backward.privateInPublic true in
 /-- Auxiliary definition for `signedDist`. It is the underlying linear map of `signedDist`. -/
 private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ] ℝ where
   toFun w := .const ℝ P ⟪-normalize v, w⟫
@@ -48,6 +49,8 @@ private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ]
 private lemma signedDistLinear_apply (v w : V) :
     signedDistLinear v w = .const ℝ P ⟪-normalize v, w⟫ := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
 It is the size of `q - p` in the direction of `v`.

@@ -181,10 +181,6 @@ theorem intValuation_def {r : R} :
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   rfl
 
-@[deprecated intValuation_apply (since := "2025-04-26")]
-theorem intValuation_toFun (r : R) :
-    v.intValuation r = v.intValuationDef r := rfl
-
 open scoped Classical in
 theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuation r = exp
@@ -513,11 +509,9 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h :
-        (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      rw [h]
+      rw [algebraMap_adicCompletion]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=

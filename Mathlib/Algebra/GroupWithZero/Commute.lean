@@ -53,9 +53,6 @@ theorem Commute.ringInverse_ringInverse {a b : M₀} (h : Commute a b) :
   (Ring.mul_inverse_rev' h.symm).symm.trans <| (congr_arg _ h.symm.eq).trans <|
     Ring.mul_inverse_rev' h
 
-@[deprecated (since := "2025-04-22")]
-alias Commute.ring_inverse_ring_inverse := Commute.ringInverse_ringInverse
-
 namespace Commute
 
 @[simp]

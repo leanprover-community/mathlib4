@@ -208,7 +208,7 @@ variable {M R : Type*} [Ring R] [Nontrivial R] [IsAddTorsionFree R]
 
 /--
 Let `A` be a subgroup of an additive commutative group `M` that is also an `R`-module.
-Construct a basis of `A` as a `ℤ`-basis from a `R`-basis of `E` that generates `A`.
+Construct a basis of `A` as a `ℤ`-basis from an `R`-basis of `E` that generates `A`.
 -/
 noncomputable def addSubgroupOfClosure (h : A = .closure (Set.range b)) :
     Basis ι ℤ A.toIntSubmodule :=

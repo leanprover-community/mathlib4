@@ -665,10 +665,10 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
   congr 2
   · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
-    · omega
+    · lia
   · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
-    · omega
+    · lia
 
 /-- A point lies in the closed interior of a 1-dimensional face of a simplex if and only if it lies
 weakly between its vertices. -/
@@ -719,10 +719,10 @@ lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : �
   congr! 4
   · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
-    · omega
+    · lia
   · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
-    · omega
+    · lia
 
 end Simplex
 
@@ -776,13 +776,9 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h₂₃ : i₂ ≠ i₃ := by
     rintro rfl
     simp at h₁
-  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by omega
+  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by lia
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
-    #adaptation_note /--
-    https://github.com/leanprover/lean4/issues/11009
-    -/
-    set_option synthInstance.maxSize 1000 in
     decide +revert
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
