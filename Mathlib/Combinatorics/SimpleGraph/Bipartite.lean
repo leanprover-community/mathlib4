@@ -582,15 +582,18 @@ lemma even_cycle_length_of_path
         · intro h
           cases q <;> simp_all +decide [SimpleGraph.Walk.edges]
           rcases h with ((⟨rfl, rfl⟩ | rfl) | ⟨a, ha, ha'⟩) <;> simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-          have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha; simp_all +decide [SimpleGraph.Walk.mem_support_iff]
+          have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha
+          simp_all +decide [SimpleGraph.Walk.mem_support_iff]
           cases a
           simp_all +decide
           cases ha' <;> simp_all +decide
           cases this <;> simp_all +decide
           · aesop
-          · have := SimpleGraph.Walk.dart_snd_mem_support_of_mem_darts _ ha; simp_all +decide [SimpleGraph.Walk.mem_support_iff]
+          · have := SimpleGraph.Walk.dart_snd_mem_support_of_mem_darts _ ha
+            simp_all +decide [SimpleGraph.Walk.mem_support_iff]
         · exact hq.support_nodup
-      have := h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle; simp_all +decide [parity_simps]
+      have := h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle
+      simp_all +decide [parity_simps]
 
 lemma even_length_iff_even_bypass_length
     (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
