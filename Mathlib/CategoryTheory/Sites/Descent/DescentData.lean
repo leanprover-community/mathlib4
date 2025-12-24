@@ -379,6 +379,25 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
       Cat.Hom.inv_hom_id_toNatTrans_app]
     simp [D.hom_self _ _ rfl]
 
+lemma exists_equivalence_of_sieve_eq
+    {ι' : Type t'} {X' : ι' → C} (f' : ∀ i', X' i' ⟶ S)
+    (h : Sieve.ofArrows _ f = Sieve.ofArrows _ f') :
+    ∃ (e : F.DescentData f ≌ F.DescentData f'),
+      Nonempty (F.toDescentData f ⋙ e.functor ≅ F.toDescentData f') := by
+  have h₁ (i' : ι') : ∃ (i : ι) (g' : X' i' ⟶ X i), g' ≫ f i = f' i' := by
+    obtain ⟨_, _, _, ⟨i⟩, fac⟩ : Sieve.ofArrows X f (f' i') := by
+      rw [h]; apply Sieve.ofArrows_mk
+    exact ⟨i, _, fac⟩
+  have h₂ (i : ι) : ∃ (i' : ι') (g : X i ⟶ X' i'), g ≫ f' i' = f i := by
+    obtain ⟨_, _, _, ⟨i'⟩, fac⟩ : Sieve.ofArrows X' f' (f i) := by
+      rw [← h]; apply Sieve.ofArrows_mk
+    exact ⟨i', _, fac⟩
+  choose α p' w using h₁
+  choose β q' w' using h₂
+  exact ⟨pullFunctorEquivalence (p' := p') (q' := q') F (Iso.refl _)
+    (by cat_disch) (by cat_disch), ⟨toDescentDataCompPullFunctorIso _ _ ≪≫
+    Functor.isoWhiskerRight (Cat.Hom.toNatIso (F.mapId _)) _ ≪≫ Functor.leftUnitor _⟩⟩
+
 /-- Morphisms between objects in the image of the functor `F.toDescentData f`
 identify to compatible families of sections of the presheaf `F.presheafHom M N` on
 the object `Over.mk (𝟙 S)`, relatively to the family of morphisms in `Over S`

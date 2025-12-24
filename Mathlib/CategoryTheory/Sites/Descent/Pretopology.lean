@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Descent.DescentData
+public import Mathlib.CategoryTheory.Sites.Descent.IsStack
 
 /-!
 # Characterization of (pre)stacks for a pretopology
@@ -84,11 +84,28 @@ lemma IsPrestack.of_pretopology
     F.IsPrestack J.toGrothendieck := by
   sorry
 
-/-lemma IsStack.of_pretopology
-    (hF : ∀ (S : C) (R : Presieve S) (hR : R ∈ J S),
+lemma IsStack.of_pretopology
+    (hF : ∀ (S : C) (R : Presieve S) (_ : R ∈ J S),
       (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).IsEquivalence) :
     F.IsStack J.toGrothendieck := by
-  sorry-/
+  have : F.IsPrestack J.toGrothendieck := .of_pretopology (fun S R hR ↦ by
+    have := hF S R hR
+    exact Functor.FullyFaithful.ofFullyFaithful _)
+  constructor
+  rintro S R ⟨R', hR', h⟩
+  have := hF S R' hR'
+  let G := F.toDescentData (fun (f : R.arrows.category) ↦ f.obj.hom)
+  let G' := F.toDescentData (fun (f : R'.category) ↦ f.obj.hom)
+  obtain ⟨H, hH, ⟨e⟩⟩ :
+      ∃ (H : _ ⥤ _) (_ : H.FullyFaithful), Nonempty (G ⋙ H ≅ G') :=
+    ⟨pullFunctor (p := 𝟙 _) (α := fun i ↦ ⟨i.obj, h _ i.property⟩)
+      (p' := fun _ ↦ 𝟙 _) _ (by simp),
+        F.fullyFaithfulPullFunctor (J := J.toGrothendieck) (by simp) ⟨R', hR', fun _ g hg ↦
+          ⟨_, 𝟙 _, g, .mk (ι := R'.category) ⟨Over.mk g, hg⟩, by simp⟩⟩,
+        ⟨toDescentDataCompPullFunctorIso _ _ ≪≫
+          (Functor.isoWhiskerRight (Cat.Hom.toNatIso (F.mapId _)) _) ≪≫
+            Functor.leftUnitor _⟩⟩
+  exact ⟨fun D ↦ ⟨_, ⟨hH.preimageIso (e.app _ ≪≫ G'.objObjPreimageIso (H.obj D))⟩⟩⟩
 
 end
 
