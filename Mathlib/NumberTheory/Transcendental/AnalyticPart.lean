@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Normed.Module.Connected
-public import Mathlib.Tactic
 
 /-!
 Some auxiliary lemmata covering the analytic part of the proof of the Gelfond–Schneider theorem.
