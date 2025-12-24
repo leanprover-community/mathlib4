@@ -235,7 +235,7 @@ def counterCoreUniformity : UniformSpace.Core ℕ := by
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn
     simp only [hn, mem_union, mem_range, Prod.mk.injEq, and_self, Subtype.exists, mem_Icc, zero_le,
       true_and, exists_prop', nonempty_prop, exists_eq_right, mem_Ici, Prod.mk_le_mk]
-    omega
+    lia
   · refine ⟨S, hS, ?_⟩
     obtain ⟨n, hn⟩ := hS
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn

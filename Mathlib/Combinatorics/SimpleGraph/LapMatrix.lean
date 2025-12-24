@@ -96,10 +96,9 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
 /-- The Laplacian matrix is positive semidefinite -/
 theorem posSemidef_lapMatrix [Field R] [LinearOrder R] [IsStrictOrderedRing R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
-  constructor
+  refine .of_dotProduct_mulVec_nonneg ?_ (fun x ↦ ?_)
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
-  · intro x
-    rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
+  · rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
@@ -218,9 +217,5 @@ theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
       Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   classical
   rw [Module.finrank_eq_card_basis (lapMatrix_ker_basis G)]
-
-@[deprecated (since := "2025-04-29")]
-alias card_ConnectedComponent_eq_rank_ker_lapMatrix :=
-  card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix
 
 end SimpleGraph
