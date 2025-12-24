@@ -228,7 +228,7 @@ noncomputable def fullyFaithfulPullFunctor :
     (pullFunctor F (f := f) (p := 𝟙 _) (f' := f') (p' := p') (by cat_disch)).FullyFaithful := by
   have := F.faithful_pullFunctor w hf'
   have := F.full_pullFunctor w hf'
-  exact Functor.FullyFaithful.ofFullyFaithful _
+  exact .ofFullyFaithful _
 
 lemma isEquivalence_toDescentData_of_sieve_le
     (h₁ : Sieve.ofArrows _ f' ∈ J _)
@@ -271,7 +271,7 @@ lemma IsStack.of_pretopology
     F.IsStack J.toGrothendieck := by
   have : F.IsPrestack J.toGrothendieck := .of_pretopology (fun S R hR ↦ by
     have := hF S R hR
-    exact Functor.FullyFaithful.ofFullyFaithful _)
+    exact .ofFullyFaithful _)
   constructor
   rintro S R ⟨R', hR', h⟩
   have := hF S R' hR'
