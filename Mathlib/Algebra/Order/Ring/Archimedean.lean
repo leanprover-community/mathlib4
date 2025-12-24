@@ -181,9 +181,21 @@ theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   · exact Subsingleton.allEq ..
   · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
+theorem mk_intCast_nonneg (n : ℤ) : 0 ≤ mk (n : S) := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  · rw [mk_intCast hn]
+
 @[simp]
 theorem mk_natCast {n : ℕ} : n ≠ 0 → mk (n : S) = 0 :=
   mod_cast mk_intCast (n := n)
+
+@[simp]
+theorem mk_ofNat {n : ℕ} [n.AtLeastTwo] : mk (ofNat(n) : S) = 0 :=
+  mod_cast mk_intCast (n := n) (mod_cast NeZero.ne n)
+
+theorem mk_natCast_nonneg (n : ℕ) : 0 ≤ mk (n : S) :=
+  mod_cast mk_intCast_nonneg n
 
 end IsOrderedRing
 
@@ -275,6 +287,11 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
 @[simp]
 theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 := by
   simpa using mk_map_of_archimedean ⟨(Rat.castHom R).toAddMonoidHom, fun _ ↦ by simp⟩ h
+
+theorem mk_ratCast_nonneg (q : ℚ) : 0 ≤ mk (q : R) := by
+  obtain rfl | hn := eq_or_ne q 0
+  · simp
+  · rw [mk_ratCast hn]
 
 theorem mk_le_mk_iff_ratCast {x y : R} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
   simpa using mk_le_mk_iff_denselyOrdered (Rat.castHom _) Rat.cast_strictMono (x := x)
