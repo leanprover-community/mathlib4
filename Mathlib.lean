@@ -5341,6 +5341,7 @@ public import Mathlib.NumberTheory.SmoothNumbers
 public import Mathlib.NumberTheory.SumFourSquares
 public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.NumberTheory.SumTwoSquares
+public import Mathlib.NumberTheory.Transcendental.AnalyticPart
 public import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
