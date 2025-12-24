@@ -461,4 +461,18 @@ lemma zero_iff_order_inf [PreconnectedSpace 𝕜] (f : 𝕜 → E) (z : 𝕜) (h
     exact (eqOn_zero_of_preconnected_of_frequently_eq_zero (fun x hx => by aesop)
       (isPreconnected_univ) trivial hr) trivial
 
+lemma eq_zero_on_iff_forall_analyticOrderAt_eq_top {s : Set 𝕜} (f : 𝕜 → E) (hs : IsOpen s) :
+  (∀ z ∈ s, f z = 0) ↔ ∀ z ∈ s, analyticOrderAt f z = ⊤ := by
+  constructor
+  · intro hzero z hz
+    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ => (0)) := by
+      have : ∀ᶠ w in nhds z, w ∈ s := hs.mem_nhds hz
+      filter_upwards [this] with w hw
+      simp [hzero w hw]
+    exact (analyticOrderAt_eq_top).2 hEv
+  · intro htop z hz
+    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ => (0)) :=
+      (analyticOrderAt_eq_top).1 (htop z hz)
+    simpa using hEv.eq_of_nhds
+
 end AnalyticOnNhd

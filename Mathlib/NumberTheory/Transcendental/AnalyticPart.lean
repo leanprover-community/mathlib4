@@ -17,23 +17,6 @@ Some auxiliary lemmata covering the analytic part of the proof of the Gelfond–
 
 open AnalyticOnNhd AnalyticAt Set
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-lemma eq_zero_on_iff_forall_analyticOrderAt_eq_top {s : Set 𝕜} (f : 𝕜 → E) (hs : IsOpen s)
-  (_ : AnalyticOn 𝕜 f s) :
-  (∀ z ∈ s, f z = 0) ↔ ∀ z ∈ s, analyticOrderAt f z = ⊤ := by
-  constructor
-  · intro hzero z hz
-    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ => (0)) := by
-      have : ∀ᶠ w in nhds z, w ∈ s := hs.mem_nhds hz
-      filter_upwards [this] with w hw
-      simp [hzero w hw]
-    exact (analyticOrderAt_eq_top).2 hEv
-  · intro htop z hz
-    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ => (0)) :=
-      (analyticOrderAt_eq_top).1 (htop z hz)
-    simpa using hEv.eq_of_nhds
-
 lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero : ∀ z₀ (f : ℂ → ℂ)
      (_ : AnalyticAt ℂ f z₀), f z₀ = 0 →
     ((analyticOrderAt (deriv f) z₀) = ⊤ ↔ analyticOrderAt f z₀ = ⊤) := by
