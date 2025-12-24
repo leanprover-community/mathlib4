@@ -7228,6 +7228,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.MetricSpace.Sequences
 public import Mathlib.Topology.MetricSpace.ShrinkingLemma
 public import Mathlib.Topology.MetricSpace.Similarity
+public import Mathlib.Topology.MetricSpace.Snowflaking
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 public import Mathlib.Topology.MetricSpace.Thickening
 public import Mathlib.Topology.MetricSpace.TransferInstance
@@ -7236,7 +7237,6 @@ public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 public import Mathlib.Topology.MetricSpace.Ultra.Pi
 public import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
 public import Mathlib.Topology.MetricSpace.UniformConvergence
-public import Mathlib.Topology.MetricSpace.WithRPowDist
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 public import Mathlib.Topology.Metrizable.ContinuousMap
