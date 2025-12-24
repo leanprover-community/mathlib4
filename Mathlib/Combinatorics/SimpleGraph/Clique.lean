@@ -53,6 +53,10 @@ theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
 lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
   aesop (add simp [isClique_iff, Set.Pairwise])
 
+variable (s) in
+theorem isClique_iff_isChain : G.IsClique s ↔ IsChain G.Adj s :=
+  ⟨fun h _ hx _ hy hxy ↦ .inl <| h hx hy hxy, fun h _ hx _ hy hxy ↦ h hx hy hxy |>.elim id Adj.symm⟩
+
 /-- A clique is a set of vertices whose induced graph is complete. -/
 theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [isClique_iff]
@@ -788,6 +792,10 @@ abbrev IsIndepSet (s : Set α) : Prop :=
   s.Pairwise (fun v w ↦ ¬G.Adj v w)
 
 theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w) :=
+  Iff.rfl
+
+variable (s) in
+theorem isIndepSet_iff_isAntichain : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
   Iff.rfl
 
 /-- An independent set is a clique in the complement graph and vice versa. -/
