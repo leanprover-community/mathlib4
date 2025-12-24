@@ -528,7 +528,8 @@ lemma dist_eq_length_takeUntil {u v x : V} (p : G.Walk u v) (hp : p.IsPath)
           exact Reachable.exists_walk_length_eq_dist h_reachable
         use r
       exact SimpleGraph.dist_le (q.append r) |> le_trans <| by simp +decide [hq, hr]
-    · cases hp_to_x ; simp_all +decide [SimpleGraph.Reachable]
+    · cases hp_to_x
+      simp_all +decide [SimpleGraph.Reachable]
       contrapose! h
       exact ⟨p_to_x, ⟨p.dropUntil x hx⟩⟩
   have h_dist_xv_le : G.dist x v ≤ (p.dropUntil x hx).length := SimpleGraph.dist_le (p.dropUntil x hx)
@@ -556,7 +557,8 @@ lemma length_dropUntil_eq_dist_sub {u v x : V} (p : G.Walk u v) (hp : p.IsPath)
     rw [SimpleGraph.Walk.dist_eq_length_takeUntil]
     · assumption
     · exact hp_len
-  rw [← h4, ← hp_len, ← h1, SimpleGraph.Walk.length_append] ; aesop
+  rw [← h4, ← hp_len, ← h1, SimpleGraph.Walk.length_append]
+  aesop
 
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
@@ -581,7 +583,8 @@ lemma even_cycle_length_of_path
           cases q <;> simp_all +decide [SimpleGraph.Walk.edges]
           rcases h with ((⟨rfl, rfl⟩ | rfl) | ⟨a, ha, ha'⟩) <;> simp_all +decide [SimpleGraph.Walk.mem_support_iff]
           have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha; simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-          cases a ; simp_all +decide
+          cases a
+          simp_all +decide
           cases ha' <;> simp_all +decide
           cases this <;> simp_all +decide
           · aesop
