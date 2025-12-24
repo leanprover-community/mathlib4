@@ -410,9 +410,7 @@ def subtypeCompatibleHomEquiv {M N : F.obj (.mk (op S))} :
     { hom := φ.val
       comm Y q i₁ i₂ f₁ f₂ hf₁ hf₂ := by
         have := φ.property i₁ i₂ (Over.mk q) (Over.homMk f₁) (Over.homMk f₂) (by cat_disch)
-        dsimp at this
-        simp [map_eq_pullHom (φ.val i₁) f₁ q q (by cat_disch) (by cat_disch),
-          map_eq_pullHom (φ.val i₂) f₂ q q (by cat_disch) (by cat_disch), this] }
+        simp_all [map_eq_pullHom] }
   invFun g :=
     { val := g.hom
       property i₁ i₂ Z f₁ f₂ h := by
