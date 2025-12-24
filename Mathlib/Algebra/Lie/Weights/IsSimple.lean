@@ -273,29 +273,24 @@ lemma rootSpace_le_sl2SubmoduleOfRoot (α : LieModule.Weight K H L) (hα : α.Is
 lemma H_le_iSup_sl2SubmoduleOfRoot :
     H.toLieSubmodule ≤
       ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := by
+  have h_span : Submodule.span K (Set.range (coroot : Weight K H L → H)) = ⊤ :=
+    eq_top_iff.mpr ((RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H)).symm.trans_le
+      (Submodule.span_mono fun _ ⟨α, hα⟩ ↦ ⟨α.1, hα⟩))
   intro x hx
-  obtain ⟨c, hc⟩ : ∃ c : LieModule.Weight K H L →₀ K,
-      (c.sum fun α r => r • coroot α) = ⟨x, hx⟩ := by
-    have h_span : Submodule.span K (Set.range (coroot : Weight K H L → H)) = ⊤ := by
-      have h := RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H)
-      refine eq_top_iff.mpr (h.symm.trans_le (Submodule.span_mono fun _ ⟨α, hα⟩ ↦ ⟨α.1, hα⟩))
-    exact Finsupp.mem_span_range_iff_exists_finsupp.mp (h_span.symm ▸ trivial)
+  obtain ⟨c, hc⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp
+    (h_span ▸ Submodule.mem_top : (⟨x, hx⟩ : H.toLieSubmodule) ∈ _)
   have hx_sum : x = ∑ α ∈ c.support, c α • (coroot α : L) := by
     have : (⟨x, hx⟩ : H.toLieSubmodule) = c.sum fun α r => r • coroot α := hc.symm
     calc x = (⟨x, hx⟩ : H.toLieSubmodule) := rfl
-      _ = (c.sum fun α r => r • coroot α) := congrArg Subtype.val this
-      _ = _ := by rw [Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
-  rw [hx_sum]
-  refine Submodule.sum_mem _ fun α hα => Submodule.smul_mem _ _ ?_
-  by_cases hα_zero : α.IsNonZero
+      _ = _ := by rw [this, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
+  rw [hx_sum]; refine Submodule.sum_mem _ fun α _ ↦ Submodule.smul_mem _ _ ?_
+  by_cases hα : α.IsNonZero
   · rw [LieSubmodule.mem_toSubmodule]
-    apply LieSubmodule.mem_iSup_of_mem α
-    apply LieSubmodule.mem_iSup_of_mem hα_zero
+    refine LieSubmodule.mem_iSup_of_mem α (LieSubmodule.mem_iSup_of_mem hα ?_)
     rw [sl2SubmoduleOfRoot_eq_sup]
     exact Submodule.mem_sup_right (Submodule.mem_map_of_mem
       (coe_corootSpace_eq_span_singleton α ▸ Submodule.subset_span (Set.mem_singleton _)))
-  · simp only [LieModule.Weight.IsNonZero, not_not] at hα_zero
-    simp only [coroot_eq_zero_iff.mpr hα_zero, ZeroMemClass.coe_zero, Submodule.zero_mem]
+  · simp only [Weight.IsNonZero, not_not] at hα; simp [coroot_eq_zero_iff.mpr hα]
 
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
