@@ -637,7 +637,7 @@ def prodFintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ
 @[simp]
 lemma coe_prod_fintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (F : (i : ι) → ModularForm Γ (k i)) : (prodFintype m hm F).toFun =  ∏ i, (F i).toFun := by rfl
+    (F : (i : ι) → ModularForm Γ (k i)) : (prodFintype m hm F).toFun = ∏ i, (F i).toFun := by rfl
 
 def prodFintypeEqualWeights {ι : Type} [Fintype ι] [Nonempty ι] {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
