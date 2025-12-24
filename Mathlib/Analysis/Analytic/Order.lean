@@ -329,36 +329,6 @@ theorem analyticOrderNatAt_pow (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
     analyticOrderNatAt (f ^ n) z₀ = n • analyticOrderNatAt f z₀ := by
   simp [analyticOrderNatAt, analyticOrderAt_pow, hf]
 
-open Set AnalyticAt AnalyticOnNhd
-
-lemma eq_zero_on_iff_forall_analyticOrderAt_eq_top {s : Set 𝕜} (f : 𝕜 → E) (hs : IsOpen s)
-  (_ : AnalyticOn 𝕜 f s) :
-  (∀ z ∈ s, f z = 0) ↔ ∀ z ∈ s, analyticOrderAt f z = ⊤ := by
-  constructor
-  · intro hzero z hz
-    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ => (0)) := by
-      have : ∀ᶠ w in nhds z, w ∈ s := hs.mem_nhds hz
-      filter_upwards [this] with w hw
-      simp [hzero w hw]
-    exact (analyticOrderAt_eq_top).2 hEv
-  · intro htop z hz
-    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ => (0)) :=
-      (analyticOrderAt_eq_top).1 (htop z hz)
-    simpa using hEv.eq_of_nhds
-
-lemma zero_iff_order_inf [PreconnectedSpace 𝕜] (f : 𝕜 → E) (z : 𝕜) (hf : ∀ z, AnalyticAt 𝕜 f z) :
-  (∀ z, f z = 0) ↔ analyticOrderAt f z = ⊤ := by
-  constructor
-  · intro H
-    refine (analyticOrderAt_eq_top).2 <| (frequently_eq_iff_eventually_eq (hf z) analyticAt_const).1
-        (Filter.Frequently.of_forall H)
-  · intros hr
-    rw [@analyticOrderAt_eq_top 𝕜 _ _ _ _ f z,
-        ← frequently_eq_iff_eventually_eq (hf z) (analyticAt_const)] at hr
-    intros z
-    exact (eqOn_zero_of_preconnected_of_frequently_eq_zero (fun x hx => by aesop)
-      (isPreconnected_univ) trivial hr) trivial
-
 end NontriviallyNormedField
 
 /-!
