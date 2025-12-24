@@ -148,8 +148,8 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
     · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
       exact Subsingleton.allEq _ _
     simpa using congr(f $(Subsingleton.allEq 0 1))
-  obtain ⟨y, hy⟩ := ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf
-    (f.toAlgEquiv.toLinearEquiv.continuous_symm hf) |>.coe_eq_continuousLinearEquiv_conjugate
+  obtain ⟨y, hy⟩ := (ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf
+    (f.toAlgEquiv.toLinearEquiv.continuous_symm hf)).eq_continuousLinearEquivConjContinuousAlgEquiv
   have (x : V →L[𝕜] V) : adjoint (f x) = f (adjoint x) := map_star _ _ |>.symm
   simp_rw [← StarAlgEquiv.coe_toAlgEquiv,
     (ContinuousAlgEquiv.coe_ofAlgEquiv f.toAlgEquiv hf _ ▸ hy), adjoint_comp] at this
