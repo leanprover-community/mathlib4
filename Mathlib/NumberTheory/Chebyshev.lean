@@ -13,6 +13,7 @@ public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
+import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
 
 /-!
@@ -315,7 +316,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
       apply intervalIntegral.integral_congr fun u hu ↦ ?_
       replace hu : 2 ≤ u := ((Set.uIcc_of_le hx) ▸ hu).1
-      simp [deriv_log_inv (by linarith) (by linarith) (by linarith), field]
+      simp [deriv_inv_log, field]
     simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · -- Differentiability
@@ -326,7 +327,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     fun_prop (disch := assumption)
   · -- Integrability of the derivative
     have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -y⁻¹ / log y ^ 2 := by
-      refine fun y hy ↦ deriv_log_inv ?_ ?_ ?_ <;> linarith [hy.1]
+      exact fun _ _ ↦ deriv_inv_log
     refine ContinuousOn.integrableOn_Icc fun z hz ↦ ContinuousWithinAt.congr ?_ this (this z hz)
     have hz₀ : z ≠ 0 := by linarith [hz.1]
     have : log z ^ 2 ≠ 0 := by
