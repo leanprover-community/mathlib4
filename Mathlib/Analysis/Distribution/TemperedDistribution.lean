@@ -270,6 +270,25 @@ instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
 instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
 
+variable [CompleteSpace F]
+
+/-- The distributional Fourier transform and the classical Fourier transform coincide on
+`𝓢(E, F)`. -/
+theorem fourierTransform_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕 (f : 𝓢'(E, F)) = 𝓕 f := by
+  ext g
+  simpa using integral_fourier_smul_eq g f
+
+/-- The distributional inverse Fourier transform and the classical inverse Fourier transform
+coincide on `𝓢(E, F)`. -/
+theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕⁻ (f : 𝓢'(E, F)) = 𝓕⁻ f := calc
+  _ = 𝓕⁻ (toTemperedDistributionCLM E F volume (𝓕 (𝓕⁻ f))) := by
+    congr; exact (fourier_fourierInv_eq f).symm
+  _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
+    rw [fourierTransform_toTemperedDistributionCLM_eq]
+  _ = _ := fourierInv_fourier_eq _
+
 end Fourier
 
 end TemperedDistribution
