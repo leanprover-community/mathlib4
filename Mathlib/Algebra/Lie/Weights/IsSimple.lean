@@ -270,9 +270,9 @@ lemma rootSpace_le_sl2SubmoduleOfRoot (α : LieModule.Weight K H L) (hα : α.Is
     LieAlgebra.rootSpace H α ≤ sl2SubmoduleOfRoot hα := by
   rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left
 
-lemma H_le_iSup_sl2SubmoduleOfRoot :
-    H.toLieSubmodule ≤
-      ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := by
+lemma H_le_invtSubmoduleToLieIdeal_top :
+    (H.toLieSubmodule : Submodule K L) ≤
+      invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) := by
   have h_span : Submodule.span K (Set.range (coroot : Weight K H L → H)) = ⊤ :=
     eq_top_iff.mpr ((RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H)).symm.trans_le
       (Submodule.span_mono fun _ ⟨α, hα⟩ ↦ ⟨α.1, hα⟩))
@@ -285,25 +285,25 @@ lemma H_le_iSup_sl2SubmoduleOfRoot :
       _ = _ := by rw [this, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
   rw [hx_sum]; refine Submodule.sum_mem _ fun α _ ↦ Submodule.smul_mem _ _ ?_
   by_cases hα : α.IsNonZero
-  · rw [LieSubmodule.mem_toSubmodule]
-    refine LieSubmodule.mem_iSup_of_mem α (LieSubmodule.mem_iSup_of_mem hα ?_)
-    rw [sl2SubmoduleOfRoot_eq_sup]
-    exact Submodule.mem_sup_right (Submodule.mem_map_of_mem
-      (coe_corootSpace_eq_span_singleton α ▸ Submodule.subset_span (Set.mem_singleton _)))
+  · exact LieSubmodule.mem_iSup_of_mem ⟨α, trivial, hα⟩ (sl2SubmoduleOfRoot_eq_sup α hα ▸
+      Submodule.mem_sup_right (Submodule.mem_map_of_mem
+        (coe_corootSpace_eq_span_singleton α ▸ Submodule.subset_span (Set.mem_singleton _))))
   · simp only [Weight.IsNonZero, not_not] at hα; simp [coroot_eq_zero_iff.mpr hα]
 
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
-  have h : (⊤ : LieSubmodule K H L) ≤
-      ⨆ (α : Weight K H L) (hα : α.IsNonZero), sl2SubmoduleOfRoot hα := calc
-    _ = H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α := (iSup_rootSpace_eq_top H).symm
-    _ ≤ _ := sup_le H_le_iSup_sl2SubmoduleOfRoot (iSup_le fun α ↦
-        (rootSpace_le_sl2SubmoduleOfRoot α.1 ((Finset.mem_filter_univ _).mp α.2)).trans
-          (le_iSup₂ α.1 _))
-  rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
-    LieSubmodule.top_toSubmodule, eq_top_iff, ← LieSubmodule.iSup_toSubmodule]
-  simp only [Submodule.mem_top, true_and, iSup_subtype] at h ⊢
-  exact h
+  ext x; simp only [LieSubmodule.mem_top, iff_true]
+  have hx : x ∈ H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α := iSup_rootSpace_eq_top H ▸ trivial
+  rw [LieSubmodule.mem_sup] at hx
+  obtain ⟨y, hy, z, hz, rfl⟩ := hx
+  refine add_mem (H_le_invtSubmoduleToLieIdeal_top hy) ?_
+  induction hz using LieSubmodule.iSup_induction' with
+  | mem α z hz =>
+    simp only [coe_invtSubmoduleToLieIdeal_eq_iSup, Submodule.mem_top, true_and]
+    exact LieSubmodule.mem_iSup_of_mem ⟨α, trivial, (Finset.mem_filter_univ _).mp α.2⟩
+      ((rootSpace_le_sl2SubmoduleOfRoot α _) hz)
+  | zero => simp
+  | add _ _ ih₁ ih₂ => exact add_mem ih₁ ih₂
 
 section IsSimple
 
