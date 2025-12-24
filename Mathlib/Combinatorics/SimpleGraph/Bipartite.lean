@@ -54,15 +54,14 @@ This file proves results about bipartite simple graphs, including several double
 * `SimpleGraph.between`; the simple graph `G.between s t` is the subgraph of `G` containing edges
   that connect a vertex in the set `s` to a vertex in the set `t`.
 
+* `bipartite_iff_all_cycles_even` proves that `G.IsBipartite` iff `G` does not contain an odd cycle.
+  I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
+
 ## Implementation notes
 
 For the formulation of double-counting arguments where a bipartite graph is considered as a
 relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/DoubleCounting.lean`.
 
-## Odd Cycle Theorem (A Solution to TODO)
-
-* Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
-  I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
 -/
 
 @[expose] public section
