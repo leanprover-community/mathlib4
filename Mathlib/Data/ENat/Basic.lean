@@ -582,7 +582,7 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder 
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
 
 @[simp]
-protected lemma map_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
+lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
     (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
   map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
