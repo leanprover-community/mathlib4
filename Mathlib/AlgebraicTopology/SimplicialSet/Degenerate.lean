@@ -120,8 +120,8 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
   obtain ⟨x, hx⟩ := x
   induction m using SimplexCategory.rec with | _ m
   rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
-  by_contra!
-  refine hx ⟨_, not_le.1 (fun h ↦ this ?_), f, y, hy⟩
+  by_contra hf
+  refine hx ⟨_, not_le.1 (fun h ↦ hf ?_), f, y, hy⟩
   rw [SimplexCategory.isIso_iff_of_epi]
   exact le_antisymm h (SimplexCategory.len_le_of_epi f)
 
