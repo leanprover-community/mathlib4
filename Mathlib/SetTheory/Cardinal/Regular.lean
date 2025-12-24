@@ -302,12 +302,15 @@ open Cardinal
 open scoped Ordinal
 
 -- TODO: generalize universes, and use ω₁.
-lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
+lemma iSup_sequence_lt_omega_one {α : Type u} [Countable α]
     (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
     iSup o < (aleph 1).ord := by
   apply iSup_lt_ord_lift _ ho
   rw [Cardinal.isRegular_aleph_one.cof_eq]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
+
+@[deprecated (since := "2025-12-22")]
+alias iSup_sequence_lt_omega1 := iSup_sequence_lt_omega_one
 
 end Ordinal
 
