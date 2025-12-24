@@ -234,7 +234,7 @@ theorem mk_ratCast (q : ℚ) : mk (q : FiniteElement K) = q := by
   change mk (FiniteElement.mk ..) = _
   cases q with | div n d hd
   rw [← mul_left_inj' (c := ↑d) (mod_cast hd), ← map_natCast mk d, ← map_mul,
-    ← FiniteElement.mk_natCast (mk_natCast_nonneg d), FiniteElement.mk_mul_mk]
+    ← FiniteElement.mk_natCast, FiniteElement.mk_mul_mk]
   simp_all
 
 /-- An embedding from an Archimedean field into `K` induces an embedding into
@@ -301,9 +301,6 @@ theorem stdPart_eq_zero {x : K} : stdPart x = 0 ↔ mk x ≠ 0 where
     rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
 
 alias ⟨_, stdPart_of_mk_ne_zero⟩ := stdPart_eq_zero
-
-theorem stdPart_ne_zero {x : K} : stdPart x ≠ 0 ↔ mk x = 0 :=
-  stdPart_eq_zero_iff.ne_left
 
 theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
   intro x (hx : 0 ≤ mk x) y (hy : 0 ≤ mk y) h
