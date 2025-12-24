@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 import Mathlib.Algebra.Central.Basic
+import Mathlib.Algebra.Order.Module.PositiveLinearMap
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -77,12 +78,14 @@ noncomputable abbrev auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : �
   invFun := (α' • e.toContinuousLinearMap.adjoint).toLinearMap
   left_inv := by
     simp only [coe_smul, Function.leftInverse_iff_comp, funext_iff, Function.comp_apply,
-      LinearMap.smul_apply, coe_coe, ContinuousLinearEquiv.coe_coe, map_smul, smul_smul, hα2, id_eq]
+      LinearMap.smul_apply, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
+      _root_.map_smul, smul_smul, hα2, id_eq]
     simp_rw [← ContinuousLinearEquiv.coe_coe, ← comp_apply, he]
     simp [smul_smul, hα]
   right_inv := by
     simp only [coe_smul, Function.rightInverse_iff_comp, funext_iff, Function.comp_apply,
-      LinearMap.smul_apply, coe_coe, map_smul, ContinuousLinearEquiv.coe_coe, smul_smul, hα2, id_eq]
+      LinearMap.smul_apply, ContinuousLinearMap.coe_coe, _root_.map_smul,
+      ContinuousLinearEquiv.coe_coe, smul_smul, hα2, id_eq]
     simp_rw [← ContinuousLinearEquiv.coe_coe, ← comp_apply, he']
     simp [smul_smul, hα]
   map_add' := by simp
@@ -151,8 +154,9 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
   obtain ⟨y, hy⟩ := (ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf
     (f.toAlgEquiv.toLinearEquiv.continuous_symm hf)).eq_continuousLinearEquivConjContinuousAlgEquiv
   have (x : V →L[𝕜] V) : adjoint (f x) = f (adjoint x) := map_star _ _ |>.symm
-  simp_rw [← StarAlgEquiv.coe_toAlgEquiv,
-    (ContinuousAlgEquiv.coe_ofAlgEquiv f.toAlgEquiv hf _ ▸ hy), adjoint_comp] at this
+  rw [ContinuousAlgEquiv.ext_iff] at hy
+  simp_rw [← StarAlgEquiv.coe_toAlgEquiv, ContinuousAlgEquiv.coe_ofAlgEquiv f.toAlgEquiv hf _ ▸ hy,
+    conjContinuousAlgEquiv_apply,  adjoint_comp] at this
   replace this (x : V →L[𝕜] V) : adjoint y.toContinuousLinearMap ∘L y ∘L adjoint x ∘L y.symm =
       adjoint x ∘L adjoint y.toContinuousLinearMap := by
     simp_rw [← this x, ← comp_assoc, ← adjoint_comp]
@@ -206,4 +210,18 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
       simp only [ne_eq, map_eq_zero]
       rw [Real.rpow_eq_zero this2.le (by simp)]
       exact ne_of_gt this2)
-  simp [U, coe_auxIsometry, coe_symm_auxIsometry, smul_smul, la, ← hy]
+  simp [U, coe_auxIsometry, coe_symm_auxIsometry, smul_smul, la, ← conjContinuousAlgEquiv_apply,
+    ← hy]
+
+instance : AddRightMono (V →L[𝕜] V) where elim _ _ := by simp_all [le_def]
+
+instance {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
+    [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _]
+    [ContinuousMapClass F _ _] : OrderHomClass F _ _ :=
+  .of_addMonoidHom fun f x h ↦ by
+    obtain ⟨U, hU⟩ := StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
+      (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
+    simp_rw [LinearIsometryEquiv.toContinuousLinearEquiv_symm, funext_iff,
+      fun x ↦ show StarAlgEquivClass.toStarAlgEquiv f x = f x by rfl] at hU
+    simpa [hU, nonneg_iff_isPositive, ← isPositive_toLinearMap_iff] using
+      (LinearMap.isPositive_linearIsometryEquiv_conj_iff U).mpr h
