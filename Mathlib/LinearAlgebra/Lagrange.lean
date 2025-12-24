@@ -456,7 +456,7 @@ theorem interpolate_eq_sum : interpolate s v r =
   congr! 1 with i hi
   rw [division_def, C_mul, prod_mul_distrib, mul_assoc, ← prod_inv_distrib, map_prod]
 
-theorem iterate_derivative_interpolate [CommRing ι]
+theorem iterate_derivative_interpolate
     (hvs : Set.InjOn v s) {k : ℕ} (hk : k ≤ #s - 1) :
     derivative^[k] (interpolate s v r) = k.factorial *
       ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) *
@@ -529,7 +529,7 @@ private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1)
   have s_card : s.card > 0 := by by_contra! h; simp_all
   grind [Nat.cast_lt]
 
-theorem eval_iterate_derivative_eq_sum [CommRing ι]
+theorem eval_iterate_derivative_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1)
     {k : ℕ} (hk : k ≤ P.degree) (x : F) :
     (derivative^[k] P).eval x = k.factorial *
