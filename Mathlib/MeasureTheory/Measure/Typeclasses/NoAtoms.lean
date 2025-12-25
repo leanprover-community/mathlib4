@@ -141,17 +141,6 @@ open Filter TopologicalSpace
 
 variable {X : Type*} [EMetricSpace X] [MeasurableSpace X]
 
-/-- If a subset of a topological space has no accumulation points,
-then it carries the discrete topology. -/
-lemma discreteTopology_of_noAccPts {X : Type*} [TopologicalSpace X] {E : Set X}
-    (h : ∀ x ∈ E, ¬ AccPt x (𝓟 E)) : DiscreteTopology E := by
-  refine discreteTopology_iff_isOpen_singleton.mpr fun x => ?_
-  simp only [accPt_iff_frequently, not_frequently, ne_eq, not_and] at h
-  obtain ⟨U, hU_mem, hU⟩ := Filter.eventually_iff_exists_mem.mp (h x x.2)
-  obtain ⟨V, hVU, hV_open, hxV⟩ := mem_nhds_iff.mp hU_mem
-  exact ⟨V, hV_open, Set.ext fun y => ⟨fun hyV => by_contra fun hne =>
-    hU y (hVU hyV) (Subtype.coe_ne_coe.mpr hne) y.2, fun hy => hy ▸ hxV⟩⟩
-
 /-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
 theorem exists_accPt_of_noAtoms {X : Type*} {E : Set X}
     [EMetricSpace X] [MeasurableSpace X]
