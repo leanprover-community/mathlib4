@@ -5,7 +5,6 @@ Authors: Weijie Jiang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
 public import Mathlib.Combinatorics.Enumerative.Schroder
 public import Mathlib.RingTheory.PowerSeries.Basic
 
