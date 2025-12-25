@@ -354,7 +354,7 @@ theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.pe
   induction n generalizing ts with | zero => cases h | succ n IH => ?_
   refine List.reverseRecOn ts (fun _ => ?_) (fun ts t _ h => ?_) h; · simp [permutations]
   rw [← concat_eq_append, length_concat, Nat.succ_lt_succ_iff] at h
-  have IH₂ := (IH ts.reverse (by rwa [length_reverse])).trans (reverse_perm _).permutations'
+  have IH₂ := (IH ts.reverse (by rwa [length_reverse])).trans (reverse_perm_self _).permutations'
   simp only [permutations_append, foldr_permutationsAux2, permutationsAux_nil,
     permutationsAux_cons, append_nil]
   refine

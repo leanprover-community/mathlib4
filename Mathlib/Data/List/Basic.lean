@@ -282,14 +282,13 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
   simp only [reverseAux_eq, map_append, map_reverse]
 
--- TODO: Rename `List.reverse_perm` to `List.reverse_perm_self`
 @[simp] lemma reverse_perm' : l₁.reverse ~ l₂ ↔ l₁ ~ l₂ where
-  mp := l₁.reverse_perm.symm.trans
-  mpr := l₁.reverse_perm.trans
+  mp := l₁.reverse_perm_self.symm.trans
+  mpr := l₁.reverse_perm_self.trans
 
 @[simp] lemma perm_reverse : l₁ ~ l₂.reverse ↔ l₁ ~ l₂ where
-  mp hl := hl.trans l₂.reverse_perm
-  mpr hl := hl.trans l₂.reverse_perm.symm
+  mp hl := hl.trans l₂.reverse_perm_self
+  mpr hl := hl.trans l₂.reverse_perm_self.symm
 
 /-! ### getLast -/
 
@@ -1211,11 +1210,11 @@ theorem Perm.disjoint_right {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
 
 @[simp]
 theorem disjoint_reverse_left {l₁ l₂ : List α} : Disjoint l₁.reverse l₂ ↔ Disjoint l₁ l₂ :=
-  reverse_perm _ |>.disjoint_left
+  reverse_perm_self _ |>.disjoint_left
 
 @[simp]
 theorem disjoint_reverse_right {l₁ l₂ : List α} : Disjoint l₁ l₂.reverse ↔ Disjoint l₁ l₂ :=
-  reverse_perm _ |>.disjoint_right
+  reverse_perm_self _ |>.disjoint_right
 
 end Disjoint
 

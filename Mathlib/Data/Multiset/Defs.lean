@@ -249,7 +249,7 @@ instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
 
 @[simp]
 theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
-  Quot.sound <| reverse_perm _
+  Quot.sound <| reverse_perm_self _
 
 /-! ### Map for partial functions -/
 
