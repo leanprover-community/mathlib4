@@ -451,11 +451,9 @@ variable [Lattice α] [BoundedOrder α]
 def IsComplemented (a : α) : Prop :=
   ∃ b, IsCompl a b
 
+@[to_dual]
 theorem isComplemented_bot : IsComplemented (⊥ : α) :=
   ⟨⊤, isCompl_bot_top⟩
-
-theorem isComplemented_top : IsComplemented (⊤ : α) :=
-  ⟨⊥, isCompl_top_bot⟩
 
 end Lattice
 
@@ -528,10 +526,8 @@ instance : BoundedOrder (Complementeds α) :=
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Complementeds α) : α) = ⊥ := rfl
 
+@[to_dual]
 theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := by simp
-
-@[to_dual existing]
-theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := by simp
 
 instance : Inhabited (Complementeds α) := ⟨⊥⟩
 
