@@ -402,9 +402,11 @@ lemma nonempty_fullyFaithful_toDescentData_iff_of_sieve_eq
     {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
     {ι' : Type t'} {X' : ι' → C} (f' : ∀ i', X' i' ⟶ S)
     (h : Sieve.ofArrows _ f = Sieve.ofArrows _ f') :
-    Nonempty (F.toDescentData f).FullyFaithful ↔ Nonempty (F.toDescentData f').FullyFaithful := by
+    Nonempty (F.toDescentData f).FullyFaithful ↔
+      Nonempty (F.toDescentData f').FullyFaithful := by
   obtain ⟨e, ⟨iso⟩⟩ := DescentData.exists_equivalence_of_sieve_eq F f f' h
-  sorry
+  exact ⟨fun ⟨h⟩ ↦ ⟨(h.comp e.fullyFaithfulFunctor).ofIso iso⟩,
+    fun ⟨h⟩ ↦ ⟨(h.comp e.fullyFaithfulInverse).ofIso iso.symm.compInverseIso⟩⟩
 
 /-- Morphisms between objects in the image of the functor `F.toDescentData f`
 identify to compatible families of sections of the presheaf `F.presheafHom M N` on

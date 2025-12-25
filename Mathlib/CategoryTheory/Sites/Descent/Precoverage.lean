@@ -35,6 +35,15 @@ universe t t' v' v u' u
 
 namespace CategoryTheory
 
+lemma Over.mk_surjective {C : Type*} [Category* C] {S : C} (X : Over S) :
+    ∃ (Y : C) (f : Y ⟶ S), X = Over.mk f :=
+  ⟨_, X.hom, rfl⟩
+
+lemma _root_.CategoryTheory.Over.homMk_surjective {C : Type*} [Category* C]
+    {S : C} {X Y : Over S} (f : X ⟶ Y) :
+    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
+  ⟨f.left, by simp⟩
+
 open Limits Opposite Bicategory
 
 namespace Pseudofunctor
@@ -161,7 +170,18 @@ lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
     ⦃j₁ : ι'⦄ (a₁ : Z ⟶ X' j₁) (fac₁ : a₁ ≫ f' j₁ = q ≫ f i)
     ⦃j₂ : ι'⦄ (a₂ : Z ⟶ X' j₂) (fac₂ : a₂ ≫ f' j₂ = q ≫ f i) :
     mor w φ q a₁ fac₁ = mor w φ q a₂ fac₂ := by
-  sorry
+  have := φ.comm (q ≫ f i) a₁ a₂ fac₁ fac₂
+  dsimp at this
+  rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ f i) (a₁ ≫ p' j₁) (a₂ ≫ p' j₂) rfl,
+    pullFunctorObjHom_eq _ _ _ _ _ (q ≫ f i) (a₁ ≫ p' j₁) (a₂ ≫ p' j₂) rfl,
+    map_eq_pullHom _ _ _ _ (by exact rfl) rfl, map_eq_pullHom _ _ _ _ rfl rfl] at this
+  dsimp at this
+  simp only [Category.assoc, Cat.Hom.hom_inv_id_toNatTrans_app_assoc, cancel_epi] at this
+  simp only [← Category.assoc, cancel_mono] at this
+  rw [← cancel_mono (D₂.hom (q ≫ f i) (a₂ ≫ p' j₂) q), Category.assoc,
+    D₂.hom_comp] at this
+  rw [mor_eq _ _ _ _ _ _ rfl _ rfl, mor_eq _ _ _ _ _ _ rfl _ rfl, this]
+  simp
 
 noncomputable def familyOfElements (i : ι) :
     Presieve.FamilyOfElements (presheafHom F (D₁.obj i) (D₂.obj i)) (sieve f f' i).arrows :=
@@ -177,10 +197,6 @@ lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X 
       rw [show g = Over.homMk Z.hom by ext; simpa using Over.w g]
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
   mor_unique _ _ _ _ _ _ _
-
-lemma _root_.CategoryTheory.Over.homMk_surjective {S : C} {X Y : Over S} (f : X ⟶ Y) :
-    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
-  ⟨f.left, by simp⟩
 
 lemma compatible_familyOfElements (i : ι) :
     (familyOfElements w φ i).Compatible := by
@@ -222,13 +238,33 @@ lemma map_hom ⦃i : ι⦄ ⦃Y : C⦄ (q : Y ⟶ X i) ⦃j : ι'⦄
     mapComp'_id_comp_inv_app] using hs _ (mem_sieve _ _ fac)
 
 @[reassoc]
-lemma comm ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄
-    (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
+    (f₁ : W ⟶ X i₁) (f₂ : W ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
     (F.map f₁.op.toLoc).toFunctor.map (hom w hf' φ i₁) ≫ D₂.hom q f₁ f₂ =
     D₁.hom q f₁ f₂ ≫ (F.map f₂.op.toLoc).toFunctor.map (hom w hf' φ i₂) := by
   rw [← cancel_mono (D₂.hom q f₂ f₁), Category.assoc,
     Category.assoc, DescentData.hom_comp, D₂.hom_self _ _ hf₁, Category.comp_id]
-  sorry
+  have H : (Sieve.overEquiv (Over.mk f₁)).symm
+      (Sieve.pullback q (Sieve.ofArrows X' f')) ∈ J.over _ _ := by
+    rw [J.mem_over_iff, Equiv.apply_symm_apply]
+    exact J.pullback_stable _ hf'
+  refine ((isSheaf_iff_isSheaf_of_type _ _).1
+    (IsPrestack.isSheaf J (D₁.obj i₁) (D₂.obj i₁)) _ H).isSeparatedFor.ext ?_
+  rintro T p ⟨_, g, _, ⟨j⟩, fac⟩
+  obtain ⟨T, t, rfl⟩ := T.mk_surjective
+  obtain ⟨p, hp, rfl⟩ := Over.homMk_surjective p
+  dsimp [pullHom] at t g p hp fac ⊢
+  subst hp
+  simp only [mapComp'_inv_naturality, Cat.Hom.comp_toFunctor, Functor.comp_obj,
+    Cat.Hom.hom_inv_id_toNatTrans_app_assoc, Functor.map_comp, Category.assoc]
+  rw [← F.mapComp'_naturality_1 f₂.op.toLoc p.op.toLoc (p ≫ f₂).op.toLoc (by grind),
+    map_hom _ _ _ _ g (by grind), map_hom _ _ _ _ g (by grind),
+    mor_eq _ _ _ _ (by grind) (p ≫ q) (by grind) _ rfl,
+    mor_eq _ _ _ _ (by grind) (p ≫ q) (by grind) _ rfl,
+    map_eq_pullHom _ _ _ _ rfl rfl, map_eq_pullHom _ _ _ _ rfl rfl,
+    pullHom_hom _ _ _ _ rfl _ _ hf₁ hf₂ _ _ rfl rfl,
+    pullHom_hom _ _ _ _ rfl _ _ hf₂ hf₁ _ _ rfl rfl]
+  simp
 
 end full_pullFunctor
 
@@ -280,10 +316,6 @@ section
 
 variable {F} [HasPullbacks C] {J : Precoverage C}
   [J.HasIsos] [J.IsStableUnderBaseChange] [J.IsStableUnderComposition]
-
-lemma _root_.CategoryTheory.Over.mk_surjective {C : Type*} [Category* C] {S : C} (X : Over S) :
-    ∃ (Y : C) (f : Y ⟶ S), X = Over.mk f :=
-  ⟨_, X.hom, rfl⟩
 
 lemma IsPrestack.of_precoverage
     (hF : ∀ (S : C) (R : Presieve S) (_ : R ∈ J S),
