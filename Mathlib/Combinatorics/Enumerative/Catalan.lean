@@ -1,18 +1,16 @@
 /-
 Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Julian Kuelshammer, Weijie Jiang
+Authors: Julian Kuelshammer
 -/
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
-public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Data.Nat.Choose.Central
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
-public import Mathlib.Tactic.Qify
 import Mathlib.Data.Tree.Basic
 
 /-!
@@ -193,128 +191,3 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = c
       aesop
 
 end Tree
-
-/-!
-# Schroder numbers
-
-The Schröder numbers (https://oeis.org/A006318) are a sequence of integers that appear in various
-combinatorial contexts.
-
-## Main definitions
-* `largeSchroder n`: the `n`th large Schroder number, defined recursively as
-  `largeSchroder (n + 1) = largeSchroder n +
-    ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)`.
-* `smallSchroder n`: the `n`th small Schroder number, defined as
-  `smallSchroder n = largeSchroder n / 2` for `n ≠ 1` and `smallSchroder 1 = 1`.
--/
-
-open Nat
-
-/-- The recursive definition of the sequence of the large Schroder numbers :
-`largeSchroder (n + 1) = largeSchroder n + `
-  `∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)` -/
-def largeSchroder : ℕ → ℕ
-  | 0 => 1
-  | n + 1 =>
-    largeSchroder n +
-      ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)
-
-@[simp]
-theorem largeSchroder_zero : largeSchroder 0 = 1 := by
-  simp [largeSchroder]
-
-@[simp]
-theorem largeSchroder_one : largeSchroder 1 = 2 := by
-  simp [largeSchroder]
-
-@[simp]
-theorem largeSchroder_two : largeSchroder 2 = 6 := by
-  simp [largeSchroder]
-
-theorem largeSchroder_succ (n : ℕ) :
-  largeSchroder (n + 1) = largeSchroder n +
-    ∑ i ∈ Iic n, largeSchroder i * largeSchroder (n - i) := by
-  rw [largeSchroder, Iic_eq_Icc]
-  simp only [succ_eq_add_one, Nat.bot_eq_zero, Nat.add_left_cancel_iff]
-  rw [Icc_eq_range', ← Ico_eq_range']
-  simp [sum_range]
-
-theorem largeSchroder_succ_range (n : ℕ) :
-  largeSchroder (n + 1) = largeSchroder n +
-    ∑ i ∈ range (n + 1), largeSchroder i * largeSchroder (n - i) := by
-  rw [largeSchroder_succ]
-  rw [Iic_eq_Icc]
-  simp only [Nat.bot_eq_zero, Nat.add_left_cancel_iff]
-  rw [Icc_eq_range', ← Ico_eq_range']
-  simp [sum_range]
-
-/-- The small Schroder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
-def smallSchroder (n : ℕ) : ℚ :=
-  match n with
-  | 0 => 1
-  | 1 => 1
-  | n + 1 => largeSchroder n / 2
-
-@[simp]
-theorem smallSchroder_zero : smallSchroder 0 = 1 := by
-  simp only [smallSchroder]
-
-@[simp]
-theorem smallSchroder_one : smallSchroder 1 = 1 := by
-  simp only [smallSchroder]
-
-theorem largeSchroder_eq_smallSchroder_succ_mul_two {n : ℕ} (h : 1 ≤ n) :
-  largeSchroder n = smallSchroder (n + 1) * 2 := by
-  simp only [smallSchroder]
-  aesop
-
-theorem smallSchroder_succ_eq_largeSchroder_div_two {n : ℕ} (h : 1 ≤ n) :
-  smallSchroder (n + 1) = largeSchroder n / 2 := by
-  simp only [smallSchroder]
-  aesop
-
-theorem smallSchroder_sum_range (n : ℕ) (hn : 1 < n) :
-  smallSchroder (n + 1) =
-    3 * smallSchroder n +
-      2 * ∑ i ∈ range (n - 2), smallSchroder (i + 2) * smallSchroder (n - 1 - i) := by
-  by_cases hn' : n = 1
-  · simp [hn']
-    aesop
-  · have hn : 2 ≤ n := by omega
-    obtain h_largeSchroder_succ := largeSchroder_succ_range (n - 1)
-    nth_rw 1 [show n - 1 + 1 = n by omega] at h_largeSchroder_succ
-    have sum_eq : ∑ i ∈ range (n - 1 + 1), largeSchroder i * largeSchroder (n - 1 - i) =
-      2 * largeSchroder (n - 1) + ∑ i ∈ Ico 1 (n - 1),
-        largeSchroder i * largeSchroder (n - 1 - i) := by
-      rw [sum_range_succ, show n - 1 = n - 2 + 1 by omega, sum_range_succ', sum_Ico_eq_sum_range,
-        show n - 2 + 1 = n - 1 by omega, show n - 1 - 1 = n - 2 by omega]
-      simp only [largeSchroder_zero, tsub_zero, one_mul, tsub_self, mul_one]
-      rw [add_assoc, ← two_mul, add_comm]
-      congr 1
-      apply sum_congr rfl
-      intro x hx
-      simp at hx
-      rw [add_comm x 1]
-    rw [sum_eq] at h_largeSchroder_succ
-    have sum_eq' : ∑ i ∈ Ico 1 (n - 1), (largeSchroder i : ℚ) * largeSchroder (n - 1 - i) =
-      4 * ∑ i ∈ Ico 1 (n - 1), smallSchroder (i + 1) * smallSchroder (n - i) := by
-      rw [mul_sum]
-      apply sum_congr rfl
-      intro x hx
-      simp at hx
-      rw [largeSchroder_eq_smallSchroder_succ_mul_two (by omega),
-        largeSchroder_eq_smallSchroder_succ_mul_two (by omega), show n - 1 - x + 1 = n - x by omega]
-      linarith
-    qify at h_largeSchroder_succ
-    rw [sum_eq', largeSchroder_eq_smallSchroder_succ_mul_two (by omega),
-      largeSchroder_eq_smallSchroder_succ_mul_two (by omega), sum_Ico_eq_sum_range,
-      ← mul_right_inj' (show (1 / 2 : ℚ) ≠ 0 from by norm_num)] at h_largeSchroder_succ
-    have : (1 / 2 : ℚ) * (smallSchroder (n + 1) * 2) = smallSchroder (n + 1) := by ring
-    rw [this] at h_largeSchroder_succ
-    rw [h_largeSchroder_succ, show n - 1 + 1 = n by omega, show n - 1 - 1 = n - 2 by omega]
-    ring_nf
-    congr 2
-    apply sum_congr rfl
-    intro x hx
-    simp at hx
-    rw [show n - (1 + x) = n - 1 - x by omega]
