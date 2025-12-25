@@ -836,24 +836,30 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
     h
 
 -- alternative: use iterate_derivative_mul
-theorem iterate_derivative_X_mul_poly (P : R[X]) (k : ℕ) :
-    derivative^[k] (X * P) = (k : R[X]) * (derivative^[k - 1] P) + X * derivative^[k] P := by
-  induction k
-  case zero => simp
-  case succ k ih =>
-    simp only [Function.iterate_succ_apply', ih, derivative_add, derivative_mul, derivative_natCast,
-      derivative_X]
-    cases k
-    case zero => simp
-    case succ l =>
-      simp only [add_tsub_cancel_right, Nat.cast_add, Function.iterate_succ_apply']
-      ring_nf
+theorem iterate_derivative_X_mul_derivative (P : R[X]) (k : ℕ) :
+    derivative^[k] (X * (derivative P)) =
+      (k : R[X]) * (derivative^[k] P) + X * derivative^[k + 1] P := by
+  sorry
+  -- induction k
+  -- case zero => simp
+  -- case succ k ih =>
+  --   simp only [Function.iterate_succ_apply', ih, derivative_add, derivative_mul, derivative_natCast,
+  --     derivative_X]
+  --   cases k
+  --   case zero => simp
+  --   case succ l =>
+  --     simp only [add_tsub_cancel_right, Nat.cast_add, Function.iterate_succ_apply']
+  --     ring_nf
 
 -- alternative: use iterate_derivative_mul
-theorem iterate_derivative_one_sub_X_sq_mul_poly (P : R[X]) (k : ℕ) :
-    derivative^[k] ((1 - X ^ 2) * P) =
-      (1 - X ^ 2) * derivative^[k] P - (2 * k : R[X]) * X * derivative^[k - 1] P
-      - (k ^ 2 - k : R[X]) * derivative^[k - 2] P := sorry
+theorem iterate_derivative_one_sub_X_sq_mul_derivative_derivative (P : R[X]) (k : ℕ) :
+    derivative^[k] ((1 - X ^ 2) * (derivative^[2] P)) =
+      (1 - X ^ 2) * derivative^[k + 2] P - (2 * k : R[X]) * X * derivative^[k + 1] P
+      - (k ^ 2 - k : R[X]) * derivative^[k] P := sorry
+
+-- use previous two lemmas to obtain a result about polynomials
+-- (for T and for U)
+-- deduce recurrences for both T and U, at 0 and 1
 
 -- some issues in the proof with small k (but they work out!)
 theorem eval_one_iterate_derivative_T (n : ℤ) (k : ℕ) :
@@ -862,8 +868,6 @@ theorem eval_one_iterate_derivative_T (n : ℤ) (k : ℕ) :
   have h := congr_arg (derivative^[k]) <|
     one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (R := R) n
   sorry
-
--- similar result for U
 
 -- deduce actual formulas ???
 
