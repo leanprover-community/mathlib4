@@ -31,6 +31,7 @@ private def inf [WellFoundedLT ι] (s : Set (Πₗ i, α i)) (i : ι) : α i :=
   ⨅ e : {e ∈ s | ∀ j < i, e j = inf s j}, e.1 i
 termination_by wellFounded_lt.wrap i
 
+@[no_expose]
 instance : InfSet (Πₗ i, α i) where
   sInf s := toLex (inf s)
 
@@ -95,10 +96,10 @@ private theorem sSup_le {s : Set (Πₗ i, α i)} {e : Πₗ i, α i}
   simp_all
 
 noncomputable instance completeLattice : CompleteLattice (Πₗ i, α i) where
-  sInf_le _ _ := sInf_le
-  le_sInf _ _ := le_sInf
-  le_sSup _ _ := le_sSup
-  sSup_le _ _ := sSup_le
+  sInf_le _ _ := by exact sInf_le
+  le_sInf _ _ := by exact le_sInf
+  le_sSup _ _ := by exact le_sSup
+  sSup_le _ _ := by exact sSup_le
 
 noncomputable instance : CompleteLinearOrder (Πₗ i, α i) where
   __ := linearOrder
@@ -145,10 +146,10 @@ theorem sSup_apply_le {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex 
   Lex.sSup_apply_le (ι := ιᵒᵈ) h
 
 noncomputable instance completeLattice : CompleteLattice (Colex ((i : ι) → α i)) where
-  sInf_le _ _ := Lex.sInf_le (ι := ιᵒᵈ)
-  le_sInf _ _ := Lex.le_sInf (ι := ιᵒᵈ)
-  le_sSup _ _ := Lex.le_sSup (ι := ιᵒᵈ)
-  sSup_le _ _ := Lex.sSup_le (ι := ιᵒᵈ)
+  sInf_le _ _ := by exact Lex.sInf_le (ι := ιᵒᵈ)
+  le_sInf _ _ := by exact Lex.le_sInf (ι := ιᵒᵈ)
+  le_sSup _ _ := by exact Lex.le_sSup (ι := ιᵒᵈ)
+  sSup_le _ _ := by exact Lex.sSup_le (ι := ιᵒᵈ)
 
 noncomputable instance : CompleteLinearOrder (Colex ((i : ι) → α i)) where
   __ := linearOrder
