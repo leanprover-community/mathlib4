@@ -51,10 +51,6 @@ But NOT ℤ, whose antidiagonals are infinite.
 The ring axioms are proven directly via finite sum manipulations. Associativity
 uses `Finset.sum_nbij'` to establish a bijection between the two triple-sum indexing
 schemes `⟨(i+j, k), (i, j)⟩ ↔ ⟨(i, j+k), (j, k)⟩`.
-
-## References
-
-* [Katznelson, *An Introduction to Harmonic Analysis*], Chapter I
 -/
 
 open Finset
