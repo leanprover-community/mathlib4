@@ -700,33 +700,42 @@ theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg :
 
 end bilin
 
-section mul
+section smul
 
 variable (F) in
+open Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
 where `g` is a function of temperate growth. -/
-def mulLeftCLM {g : E → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
-  SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+  if hg : g.HasTemperateGrowth then
+    SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+  else 0
 
 @[simp]
-theorem mulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth)
-    (f : 𝓢(E, F)) (x : E) :
-    mulLeftCLM F hg f x = g x • f x := rfl
+theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) (x : E) :
+    smulLeftCLM F g f x = g x • f x := by
+  simp [smulLeftCLM, hg]
 
 @[simp]
-theorem mulLeftCLM_mulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
-    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
-    mulLeftCLM F hg₁ (mulLeftCLM F hg₂ f) = mulLeftCLM F (hg₁.mul hg₂) f := by
+theorem smulLeftCLM_const (c : 𝕜) (f : 𝓢(E, F)) : smulLeftCLM F (fun (_ : E) ↦ c) f = c • f := by
   ext x
-  simp [smul_smul]
+  have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
+  simp [this]
 
-theorem mulLeftCLM_compL_mulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+@[simp]
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F g₁ (smulLeftCLM F g₂ f) = smulLeftCLM F (g₁ * g₂) f := by
+  ext x
+  simp [smul_smul, hg₁, hg₂, hg₁.mul hg₂]
+
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
-    mulLeftCLM F hg₁ ∘L mulLeftCLM F hg₂ = mulLeftCLM F (hg₁.mul hg₂) := by
+    smulLeftCLM F g₁ ∘L smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
-  exact mulLeftCLM_mulLeftCLM_apply hg₁ hg₂ f
+  exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
 
-end mul
+end smul
 
 variable [NormedSpace 𝕜 E]
 
