@@ -235,14 +235,14 @@ variable {E F 𝕜} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
-lemma range_rankOne (x : E) {y : F} (hy : y ≠ 0) :
-    LinearMap.range (rankOne 𝕜 x y) = 𝕜 ∙ x :=
+lemma range_outerProduct (x : E) {y : F} (hy : y ≠ 0) :
+    LinearMap.range (outerProduct 𝕜 x y) = 𝕜 ∙ x :=
   range_smulRight_apply (map_eq_zero_iff _
     (InnerProductSpace.toDualMap 𝕜 F).injective |>.not.mpr hy) _
 
-lemma rank_range_rankOne {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
-    Module.rank 𝕜 (LinearMap.range (rankOne 𝕜 x y)) = 1 := by
-  rw [range_rankOne x hy, Module.rank_eq_one_iff_finrank_eq_one]
+lemma rank_range_outerProduct {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Module.rank 𝕜 (LinearMap.range (outerProduct 𝕜 x y)) = 1 := by
+  rw [range_outerProduct x hy, Module.rank_eq_one_iff_finrank_eq_one]
   exact finrank_span_singleton hx
 
 end InnerProductSpace

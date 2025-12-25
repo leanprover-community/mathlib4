@@ -327,39 +327,39 @@ variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 variable (𝕜) in
-/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`. -/
-noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
+/-- A outer product of x and y on an inner product space is given by `z ↦ ⟪y, z⟫ • x`. -/
+noncomputable def outerProduct : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
   LinearMap.mkContinuous₂
-  ({toFun := fun x =>
-    { toFun := fun y => (lsmul 𝕜 𝕜).flip x ∘L innerSL 𝕜 y
-      map_add' := fun _ _ => by rw [map_add, comp_add]
-      map_smul' := fun _ _ => by rw [map_smulₛₗ, comp_smulₛₗ]; rfl }
-    map_add' := fun _ _ => by ext; simp
-    map_smul' := fun _ _ => by ext; simp })
+  ({toFun x :=
+    { toFun y := toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y
+      map_add' _ _ := by rw [map_add, comp_add]
+      map_smul' _ _ := by rw [map_smulₛₗ, comp_smulₛₗ]; rfl }
+    map_add' _ _ := by ext; simp [toSpanSingleton_add]
+    map_smul' _ _ := by ext; simp [toSpanSingleton_smul] })
   1 (fun x y => le_of_eq <| one_mul ‖x‖ ▸ mul_comm ‖x‖ ‖y‖ ▸
     innerSL_apply_norm 𝕜 y ▸ norm_smulRight_apply (innerSL 𝕜 y) x)
 
-lemma rankOne_def (x : E) (y : F) :
-    rankOne 𝕜 x y = (lsmul 𝕜 𝕜).flip x ∘L innerSL 𝕜 y :=
+lemma outerProduct_def (x : E) (y : F) :
+    outerProduct 𝕜 x y = toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y :=
   rfl
 
-lemma rankOne_def' (x : E) (y : F) :
-    rankOne 𝕜 x y = (innerSL 𝕜 y).smulRight x :=
+lemma outerProduct_def' (x : E) (y : F) :
+    outerProduct 𝕜 x y = (innerSL 𝕜 y).smulRight x :=
   rfl
 
-theorem norm_rankOne (x : E) (y : F) :
-    ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ :=
-  mul_comm ‖x‖ ‖y‖ ▸ innerSL_apply_norm 𝕜 y ▸ norm_smulRight_apply _ x
+theorem norm_outerProduct (x : E) (y : F) :
+    ‖outerProduct 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
+  rw [outerProduct_def', norm_smulRight_apply, innerSL_apply_norm, mul_comm]
 
 @[simp]
-lemma rankOne_apply (x : E) (y z : F) :
-    rankOne 𝕜 x y z = inner 𝕜 y z • x :=
+lemma outerProduct_apply (x : E) (y z : F) :
+    outerProduct 𝕜 x y z = inner 𝕜 y z • x :=
   rfl
 
-lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+lemma comp_outerProduct {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
     (x : E) (y : F) (f : E →L[𝕜] G) :
-    f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
-  simp_rw [rankOne_def, ← comp_assoc, comp_lsmul_flip_apply]
+    f ∘L outerProduct 𝕜 x y = outerProduct 𝕜 (f x) y := by
+  simp_rw [outerProduct_def, ← comp_assoc, comp_toSpanSingleton]
 
 end
 
@@ -368,22 +368,22 @@ section
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
-lemma inner_left_rankOne_apply (x : E) (y z : F) (w : E) :
-    inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
+lemma inner_left_outerProduct_apply (x : E) (y z : F) (w : E) :
+    inner 𝕜 (outerProduct 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
   simp [inner_smul_left, inner_conj_symm]
 
-lemma inner_right_rankOne_apply (x y : E) (z w : F) :
-    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
+lemma inner_right_outerProduct_apply (x y : E) (z w : F) :
+    inner 𝕜 x (outerProduct 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
   simp [inner_smul_right, mul_comm]
 
-lemma rankOne_comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+lemma outerProduct_comp_outerProduct {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (x : E) (y z : F) (w : G) :
-    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by
-  simp [comp_rankOne]
+    outerProduct 𝕜 x y ∘L outerProduct 𝕜 z w = inner 𝕜 y z • outerProduct 𝕜 x w := by
+  simp [comp_outerProduct]
 
-lemma isIdempotentElem_rankOne_self {x : E} (h : ‖x‖ = 1) :
-    IsIdempotentElem (rankOne 𝕜 x x) := by
-  simp [IsIdempotentElem, mul_def, rankOne_comp_rankOne, inner_self_eq_norm_sq_to_K, h]
+lemma isIdempotentElem_outerProduct_self {x : E} (h : ‖x‖ = 1) :
+    IsIdempotentElem (outerProduct 𝕜 x x) := by
+  simp [IsIdempotentElem, mul_def, outerProduct_comp_outerProduct, inner_self_eq_norm_sq_to_K, h]
 
 end
 

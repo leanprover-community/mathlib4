@@ -1233,9 +1233,15 @@ variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 variable [Fintype ι] [Fintype ι'] [DecidableEq ι']
 
-theorem rankOne_toMatrix (x : E) (y : F) (b : Module.Basis ι 𝕜 E) (b' : OrthonormalBasis ι' 𝕜 F) :
-    (rankOne 𝕜 x y).toMatrix b'.toBasis b = Matrix.vecMulVec (b.repr x) (star (b'.repr y)) := by
-  simp [rankOne_def, LinearMap.toMatrix_comp _ (Module.Basis.singleton Unit 𝕜),
-    ContinuousLinearMap.lsmul_flip_apply_toMatrix, innerSL_apply_toMatrix, Matrix.vecMulVec_eq Unit]
+theorem toMatrix_outerProduct (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
+    (b' : OrthonormalBasis ι' 𝕜 F) :
+    (outerProduct 𝕜 x y).toMatrix b'.toBasis b
+      = Matrix.vecMulVec (b.repr x) (star (b'.repr y)) := by
+  rw [outerProduct_def, ContinuousLinearMap.coe_comp,
+    ContinuousLinearMap.toLinearMap_toSpanSingleton,
+    LinearMap.toMatrix_comp _ (OrthonormalBasis.singleton Unit 𝕜).toBasis,
+    LinearMap.toMatrix_toSpanSingleton, toMatrix_innerSL_apply, OrthonormalBasis.toBasis_singleton,
+    Basis.coe_singleton, Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one,
+    Matrix.one_vecMulVec, Matrix.vecMulVec_eq Unit]
 
 end InnerProductSpace

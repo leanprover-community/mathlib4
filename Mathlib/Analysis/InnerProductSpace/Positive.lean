@@ -405,14 +405,14 @@ theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPosi
     U.inner_orthogonalProjection_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
-lemma _root_.InnerProductSpace.isPositive_rankOne_self (x : E) :
-    (rankOne 𝕜 x x).IsPositive := by
-  rw [rankOne_def, ← id_comp (innerSL 𝕜 x), ← adjoint_innerSL_apply]
+lemma _root_.InnerProductSpace.isPositive_outerProduct_self [CompleteSpace E] (x : E) :
+  (outerProduct 𝕜 x x).IsPositive := by
+  rw [outerProduct_def, ← id_comp (innerSL 𝕜 x), ← adjoint_innerSL_apply]
   exact IsPositive.adjoint_conj isPositive_one _
 
-lemma _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (h : ‖x‖ = 1) :
-    IsStarProjection (rankOne 𝕜 x x) :=
-  ⟨isIdempotentElem_rankOne_self h, isSelfAdjoint_rankOne_self x⟩
+lemma _root_.InnerProductSpace.isStarProjection_outerProduct_self [CompleteSpace E] {x : E}
+    (h : ‖x‖ = 1) : IsStarProjection (outerProduct 𝕜 x x) :=
+  ⟨isIdempotentElem_outerProduct_self h, isSelfAdjoint_outerProduct_self x⟩
 
 open scoped NNReal
 

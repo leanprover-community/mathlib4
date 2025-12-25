@@ -58,16 +58,16 @@ open ContinuousLinearMap
 variable {𝕜 E ι : Type*} [RCLike 𝕜] [Fintype ι]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-lemma sum_rankOne_OrthonormalBasis (b : OrthonormalBasis ι 𝕜 E) :
-    ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i) = 1 := by
+lemma sum_outerProduct_OrthonormalBasis (b : OrthonormalBasis ι 𝕜 E) :
+    ∑ i, InnerProductSpace.outerProduct 𝕜 (b i) (b i) = 1 := by
   ext x
-  simp only [ContinuousLinearMap.sum_apply, InnerProductSpace.rankOne_apply, one_apply,
+  simp only [ContinuousLinearMap.sum_apply, InnerProductSpace.outerProduct_apply, one_apply,
     b.sum_repr' x]
 
-lemma trace_toLinearMap_rankOne (x y : E) (b : Module.Basis ι 𝕜 E) :
-    (InnerProductSpace.rankOne 𝕜 x y).trace 𝕜 E = inner 𝕜 y x := by
+lemma trace_toLinearMap_outerProduct (x y : E) (b : Module.Basis ι 𝕜 E) :
+    (InnerProductSpace.outerProduct 𝕜 x y).trace 𝕜 E = inner 𝕜 y x := by
   have : Module.Finite 𝕜 E := Module.Finite.of_basis b
-  rw [rankOne_def, coe_comp, LinearMap.trace_comp_comm', ← coe_comp, comp_lsmul_flip_apply]
+  rw [outerProduct_def, coe_comp, LinearMap.trace_comp_comm', ← coe_comp, comp_toSpanSingleton]
   simp [LinearMap.trace_eq_sum_inner _ ((Module.Basis.singleton Unit 𝕜).toOrthonormalBasis
     (by simp [orthonormal_iff_ite]))]
 
