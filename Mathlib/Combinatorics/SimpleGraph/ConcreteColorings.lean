@@ -214,7 +214,6 @@ lemma even_length_iff_same_color
     {c : G.Coloring (Fin 2)}
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ c u = c v := by
-  classical
   induction p with
   | nil =>
     simp
@@ -241,16 +240,17 @@ lemma even_length_iff_same_color
 lemma bypass_eq_nil_of_closed
 {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
     w.bypass = SimpleGraph.Walk.nil := by
-    classical
     have h_nil : ∀ {u : V} {p : G.Walk u u}, p.IsPath → p = SimpleGraph.Walk.nil := by
       aesop
     exact h_nil (SimpleGraph.Walk.bypass_isPath _)
+
+set_option linter.style.induction false
+set_option linter.style.refine false
 
 lemma even_cycle_length_of_path
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
     Even (SimpleGraph.Walk.cons ha q).length := by
-      classical
       by_cases hq' : q.length = 1 <;>
       simp_all +decide only [Walk.length_cons]
       have h_cycle : SimpleGraph.Walk.IsCycle (SimpleGraph.Walk.cons ha q) := by
@@ -259,18 +259,22 @@ lemma even_cycle_length_of_path
         refine' ⟨⟨_, _⟩, _⟩
         · exact hq.isTrail
         · intro h
-          cases q <;> simp_all +decide [SimpleGraph.Walk.edges]
-          rcases h with ((⟨rfl, rfl⟩ | rfl) | ⟨a, ha, ha'⟩) <;>
-          simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-          have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha
-          simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-          cases a
-          simp_all +decide
-          cases ha' <;> simp_all +decide
-          cases this <;> simp_all +decide
-          · aesop
-          · have := SimpleGraph.Walk.dart_snd_mem_support_of_mem_darts _ ha
+          cases q
+          · simp_all
+          · simp_all +decide only [cons_isPath_iff, length_cons, Nat.add_eq_right, edges,
+            darts_cons, List.map_cons, Dart.edge_mk, List.mem_cons, Sym2.eq, Sym2.rel_iff',
+            Prod.mk.injEq, Prod.swap_prod_mk, and_true, List.mem_map]
+            rcases h with ((⟨rfl, rfl⟩ | rfl) | ⟨a, ha, ha'⟩) <;>
             simp_all +decide [SimpleGraph.Walk.mem_support_iff]
+            have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha
+            simp_all +decide [SimpleGraph.Walk.mem_support_iff]
+            cases a
+            simp_all +decide
+            cases ha' <;> simp_all +decide
+            cases this <;> simp_all +decide
+            · aesop
+            · have := SimpleGraph.Walk.dart_snd_mem_support_of_mem_darts _ ha
+              simp_all +decide [SimpleGraph.Walk.mem_support_iff]
         · exact hq.support_nodup
       have := h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle
       simp_all +decide [parity_simps]
@@ -279,7 +283,6 @@ lemma even_length_iff_even_bypass_length [DecidableEq V]
     (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ Even p.bypass.length := by
-      classical
       induction' p with u v pᵥ _ ih
       · simp_all only [Walk.length_nil, Even.zero, true_iff]
         exact even_iff_two_dvd.mpr ⟨0, rfl⟩
@@ -302,14 +305,11 @@ lemma even_length_iff_even_bypass_length [DecidableEq V]
             not_false_eq_true]
         · grind
 
-variable [DecidableEq V]
-
 theorem bipartite_iff_all_cycles_even :
   G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
   classical
   constructor
-  · -- Forward direction: G is bipartite → all cycles have even length
-    intro h_bip
+  · intro h_bip
     have bipartite_implies_even_cycles (h : G.IsBipartite) :
     ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
       rcases h with ⟨color⟩
