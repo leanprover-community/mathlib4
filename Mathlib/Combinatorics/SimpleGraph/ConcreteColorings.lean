@@ -240,9 +240,10 @@ lemma even_length_iff_same_color
 lemma bypass_eq_nil_of_closed
 {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
     w.bypass = SimpleGraph.Walk.nil := by
-      have h_nil : ∀ {u : V} {p : G.Walk u u}, p.IsPath → p = SimpleGraph.Walk.nil := by
-        aesop
-      exact h_nil (SimpleGraph.Walk.bypass_isPath _)
+    classical
+    have h_nil : ∀ {u : V} {p : G.Walk u u}, p.IsPath → p = SimpleGraph.Walk.nil := by
+      aesop
+    exact h_nil (SimpleGraph.Walk.bypass_isPath _)
 
 lemma even_cycle_length_of_path
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
@@ -276,6 +277,7 @@ lemma even_length_iff_even_bypass_length [DecidableEq V]
     (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ Even p.bypass.length := by
+      classical
       induction' p with u v pᵥ _ ih
       · simp_all only [Walk.length_nil, Even.zero, true_iff]
         exact even_iff_two_dvd.mpr ⟨0, rfl⟩
@@ -302,6 +304,7 @@ variable [DecidableEq V]
 
 theorem bipartite_iff_all_cycles_even :
   G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+  classical
   constructor
   · -- Forward direction: G is bipartite → all cycles have even length
     intro h_bip
