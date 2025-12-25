@@ -835,6 +835,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     h
 
+-- alternative: use iterate_derivative_mul
 theorem iterate_derivative_X_mul_poly (P : R[X]) (k : ℕ) :
     derivative^[k] (X * P) = (k : R[X]) * (derivative^[k - 1] P) + X * derivative^[k] P := by
   induction k
@@ -848,17 +849,23 @@ theorem iterate_derivative_X_mul_poly (P : R[X]) (k : ℕ) :
       simp only [add_tsub_cancel_right, Nat.cast_add, Function.iterate_succ_apply']
       ring_nf
 
+-- alternative: use iterate_derivative_mul
 theorem iterate_derivative_one_sub_X_sq_mul_poly (P : R[X]) (k : ℕ) :
     derivative^[k] ((1 - X ^ 2) * P) =
       (1 - X ^ 2) * derivative^[k] P - (2 * k : R[X]) * X * derivative^[k - 1] P
       - (k ^ 2 - k : R[X]) * derivative^[k - 2] P := sorry
 
+-- some issues in the proof with small k (but they work out!)
 theorem eval_one_iterate_derivative_T (n : ℤ) (k : ℕ) :
     (2 * k + 1) * (derivative^[k + 1] (T R n)).eval 1 =
     (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 1 := by
   have h := congr_arg (derivative^[k]) <|
     one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (R := R) n
   sorry
+
+-- similar result for U
+
+-- deduce actual formulas ???
 
 variable (R)
 
