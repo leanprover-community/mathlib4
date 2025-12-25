@@ -85,7 +85,7 @@ instance : CompactSpace (T.CompleteType α) := by
       have subset : SetLike.coe x ⊆ T.toTheory := by rwa[Set.mem_iInter₂] at T_inter
       exact Theory.IsSatisfiable.mono T.isMaximal'.1 subset
     · intro φ
-      simp [mem_setOf_eq, typesWith_compl]
+      simp only [mem_setOf_eq, typesWith_compl]
       exact Ultrafilter.mem_or_compl_mem F (typesWith φ)
   · refine ⟨trivial, ?_⟩
     · rw [nhds_generateFrom]
@@ -95,6 +95,6 @@ instance : CompactSpace (T.CompleteType α) := by
       obtain ⟨_, rfl⟩ := h.2
       exact h.1
 
-instance {n : ℕ} : BaireSpace (T.CompleteType (Fin n)) := BaireSpace.of_t2Space_locallyCompactSpace
+instance : BaireSpace (T.CompleteType α) := BaireSpace.of_t2Space_locallyCompactSpace
 
 end CompleteType
