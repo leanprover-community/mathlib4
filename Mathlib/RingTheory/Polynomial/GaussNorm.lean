@@ -79,16 +79,10 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
     apply Set.Finite.image f
     rw [Set.top_eq_univ, Set.finite_univ_iff, ← @Finset.coe_sort_coe]
     exact Finite.of_fintype p.support
-  apply Set.Finite.bddAbove <| Set.Finite.subset h_fin _
-  intro x hx
-  obtain ⟨i, hi⟩ := hx
-  rw [← hi]
-  by_cases hi : i ∈ p.support
-  · left
-    use ⟨i, hi⟩
-    simp [f]
-  · right
-    simp [Polynomial.notMem_support_iff.mp hi]
+  refine Set.Finite.bddAbove <| Set.Finite.subset h_fin fun _ ↦ ?_
+  simp only [Set.top_eq_univ, Set.image_univ, Set.union_singleton, Set.mem_insert_iff,
+    Set.mem_range, Subtype.exists, mem_support_iff]
+  grind
 
 @[simp]
 theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]

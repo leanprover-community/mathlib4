@@ -146,7 +146,7 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : Compacts α) ↔ x = y :=
   Iff.rfl
 
 @[simp]
-theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = {x} :=
   rfl
 
 theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
@@ -201,6 +201,15 @@ theorem map_injective_iff {f : α → β} (hf : Continuous f) :
   refine ⟨fun h => .of_comp (f := ({·} : β → Compacts β)) ?_, map_injective hf⟩
   simp_rw [Function.comp_def, ← map_singleton hf]
   exact h.comp singleton_injective
+
+theorem range_map {f : α → β} (hf : Topology.IsInducing f) :
+    range (Compacts.map f hf.continuous) = {K : Compacts β | ↑K ⊆ range f} :=
+  subset_antisymm
+    (range_subset_iff.mpr fun _ => image_subset_range _ _)
+    (fun L hL => ⟨
+      { carrier := f ⁻¹' L
+        isCompact' := hf.isCompact_preimage' L.isCompact hL },
+      Compacts.ext (image_preimage_eq_of_subset hL)⟩)
 
 /-- A homeomorphism induces an equivalence on compact sets, by taking the image. -/
 @[simps]
@@ -275,7 +284,7 @@ instance : SetLike (NonemptyCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
 
-initialize_simps_projections NonemptyCompacts (carrier → coe, as_prefix coe)
+initialize_simps_projections NonemptyCompacts (carrier → coe, as_prefix coe, as_prefix toCompacts)
 
 protected theorem isCompact (s : NonemptyCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -343,7 +352,7 @@ theorem coe_sup (s t : NonemptyCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪
 theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α) : Set α) = univ :=
   rfl
 
-@[simps!]
+@[simps! singleton_coe singleton_toCompacts]
 instance : Singleton α (NonemptyCompacts α) where
   singleton x := ⟨{x}, singleton_nonempty x⟩
 
@@ -352,11 +361,7 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : NonemptyCompacts α) ↔ x = y :
   Iff.rfl
 
 @[simp]
-theorem toCompacts_singleton (x : α) : toCompacts {x} = {x} :=
-  rfl
-
-@[simp]
-theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = {x} :=
   rfl
 
 theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts α) :=
@@ -439,6 +444,16 @@ theorem map_injective_iff {f : α → β} (hf : Continuous f) :
   ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) fun _ _ _ ↦
     singleton_injective (h (by simp_all)), map_injective hf⟩
 
+theorem range_map {f : α → β} (hf : Topology.IsInducing f) :
+    range (NonemptyCompacts.map f hf.continuous) = {K : NonemptyCompacts β | ↑K ⊆ range f} :=
+  subset_antisymm
+    (range_subset_iff.mpr fun _ => image_subset_range _ _)
+    (fun L hL => ⟨
+      { carrier := f ⁻¹' L
+        isCompact' := hf.isCompact_preimage' L.isCompact hL
+        nonempty' := L.nonempty.preimage' hL },
+      NonemptyCompacts.ext (image_preimage_eq_of_subset hL)⟩)
+
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact
 
@@ -488,7 +503,7 @@ instance : SetLike (PositiveCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
 
-initialize_simps_projections PositiveCompacts (carrier → coe, as_prefix coe)
+initialize_simps_projections PositiveCompacts (carrier → coe, as_prefix coe, as_prefix toCompacts)
 
 protected theorem isCompact (s : PositiveCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -623,7 +638,7 @@ instance : SetLike (CompactOpens α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
 
-initialize_simps_projections CompactOpens (carrier → coe, as_prefix coe)
+initialize_simps_projections CompactOpens (carrier → coe, as_prefix coe, as_prefix toCompacts)
 
 protected theorem isCompact (s : CompactOpens α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -729,6 +744,8 @@ end Top.Compl
 @[simps toCompacts]
 def map (f : α → β) (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) : CompactOpens β :=
   ⟨s.toCompacts.map f hf, hf' _ s.isOpen⟩
+
+@[deprecated (since := "2025-11-13")] alias map_toCompacts := toCompacts_map
 
 @[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) :
