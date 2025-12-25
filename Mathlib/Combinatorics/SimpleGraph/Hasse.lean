@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Data.Fin.SuccPredOrder
-public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.SuccPred.Relation
 public import Mathlib.Tactic.FinCases
 
@@ -119,7 +118,7 @@ namespace Walk
 variable {V : Type*} [BEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
 
 /-- The subgraph of a walk contains the path graph with the same number of vertices -/
-def homCoeToSubgraph : pathGraph w.support.length →g w.toSubgraph.coe where
+def pathGraphHomToSubgraph : pathGraph w.support.length →g w.toSubgraph.coe where
   toFun n := ⟨w.support[n], w.mem_verts_toSubgraph.mpr <| List.getElem_mem _⟩
   map_rel' {a b} h := by
     grind [support_getElem_eq_getVert, Subgraph.coe_adj, pathGraph_adj, toSubgraph_adj_getVert,
@@ -127,21 +126,21 @@ def homCoeToSubgraph : pathGraph w.support.length →g w.toSubgraph.coe where
 
 /-- A walk induces a homomorphism from a path graph to the graph -/
 def pathGraphHom : pathGraph w.support.length →g G :=
-  w.toSubgraph.hom.comp w.homCoeToSubgraph
+  w.toSubgraph.hom.comp w.pathGraphHomToSubgraph
 
 variable {w} in
 /-- The subgraph of a path is isomorphic to the path graph with the same number of vertices -/
-def IsPath.isoCoeToSubgraph [LawfulBEq V] (h : w.IsPath) :
+def IsPath.pathGraphIsoToSubgraph [LawfulBEq V] (hw : w.IsPath) :
     pathGraph w.support.length ≃g w.toSubgraph.coe where
-  toFun := w.homCoeToSubgraph
+  toFun := w.pathGraphHomToSubgraph
   invFun v :=
     ⟨w.support.idxOf v.val, List.idxOf_lt_length_of_mem <| w.mem_verts_toSubgraph.mp v.prop⟩
-  left_inv := by grind [homCoeToSubgraph, RelHom.coeFn_mk, h.support_nodup]
-  right_inv := by grind [homCoeToSubgraph, RelHom.coeFn_mk]
+  left_inv := by grind [pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup]
+  right_inv := by grind [pathGraphHomToSubgraph, RelHom.coeFn_mk]
   map_rel_iff' := by
-    refine ⟨fun hadj ↦ ?_, w.homCoeToSubgraph.map_rel'⟩
-    grind [w.toSubgraph_adj_iff.mp hadj, pathGraph_adj, getVert_eq_getD_support, homCoeToSubgraph,
-      RelHom.coeFn_mk, h.support_nodup.getElem_inj_iff]
+    refine ⟨fun hadj ↦ ?_, w.pathGraphHomToSubgraph.map_rel'⟩
+    grind [w.toSubgraph_adj_iff.mp hadj, pathGraph_adj, getVert_eq_getD_support,
+      pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup.getElem_inj_iff]
 
 end Walk
 
