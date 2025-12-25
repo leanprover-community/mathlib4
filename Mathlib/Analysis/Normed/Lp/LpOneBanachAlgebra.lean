@@ -3,11 +3,11 @@ Copyright (c) 2025 Fengyang Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fengyang Wang
 -/
+module
+
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-
-open Finset
 
 /-!
 # Banach Algebra Structure on ℓ¹ via Cauchy Product
@@ -58,6 +58,8 @@ schemes `⟨(i+j, k), (i, j)⟩ ↔ ⟨(i, j+k), (j, k)⟩`.
 -/
 
 open scoped BigOperators NNReal ENNReal
+
+open Finset
 
 noncomputable section
 
