@@ -689,7 +689,7 @@ theorem isPath_bypass (p : G.Walk u v) : p.bypass.IsPath := by
 @[deprecated (since := "2025-12-25")]
 alias bypass_isPath := isPath_bypass
 
-@[simp]
+@[simp, grind =]
 theorem bypass_eq_nil (p : G.Walk u u) : p.bypass = nil :=
   isPath_iff_eq_nil.1 (isPath_bypass _)
 
