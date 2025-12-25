@@ -5,99 +5,108 @@ Authors: Kevin H. Wilson
 -/
 module
 
-public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.RingTheory.Polynomial.GaussNorm
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Algebra.Order.Hom.Basic
+
 
 /-!
-# (Naive) height of polynomials
+# Sup Norm of Polynomials
 
-In this file we define the (naive) height of a polynomial and prove some basic properties.
-See its relationships with Mahler measure in `Mathlib/Analysis/Polynomial/MahlerMeasure.lean`.
+In this file we define the sup norm on `Polynomial`s based on their coefficients as well as several
+basic results about this norm. We note that this is often called the _(naive) height_ of the
+polynomial in the literature.
+
+The sup norm is related to the Mahler measure of the polynomial. See
+`Mathlib/Analysis/Polynomial/MahlerMeasure.lean`.
 
 ## Main definitions
 
-- `Polynomial.height p`: the (naive) height of a polynomial, equal to the maximum norm of its
-  coefficients (or zero for the zero polynomial)
+- `Polynomial.supNorm p`: the sup norm of the coefficients of the polynomial, equal to the
+  maximum of the norm of its coefficients (or zero for the zero polynomial)
+
+## A Note on Naming
+
+In the literature, the sup norm is often called the _(naive) height_ of a polynomial and the
+`l^1` norm is often called the _length_ of the polynomial. Unfortunately, these terms are
+extremely overloaded and Mathlib defines _height_ differently.
+
+### TODOs
+
+All other `l^p` norms can be defined on Polynomials as well. In the literature, the `l^1` norm is
+sometimes called the polynomial's _length_. The `l^2` norm sometimes arises due to Parseval's
+theorem implying that the squared `l^2` norm of a complex polynomial integral of the norm of the
+polynomial's value on the unit circle.
 -/
 
-@[expose] public section basic
 
-variable {A : Type*} [SeminormedRing A] (p : Polynomial A) {a : A}
+@[expose] public section supnorm_seminorm
+
+variable {A : Type*} [SeminormedRing A] (p : Polynomial A)
 
 namespace Polynomial
 
-/-- The (naive) height of a polynomial, defined as the maximum of its coefficients (or `0` when
-`p = 0`) -/
-noncomputable def height : ℝ :=
-  if h : p.support.Nonempty then
-    p.support.sup' h (fun i => ‖p.coeff i‖)
-  else
-    0
+/-- The sup norm of a polynomial on a semi-normed space, defined as the maximum of its coefficients
+(or `0` when `q = 0`). Often called the _(naive) height_ of the polynomial. -/
+noncomputable def supNorm : ℝ := p.gaussNorm (SeminormedRing.toRingSeminorm A) 1
 
-lemma height_def_of_ne_zero (hp : p ≠ 0) :
-    p.height = p.support.sup' (p.support_nonempty.mpr hp) (fun i => ‖p.coeff i‖) := by
-  simp [height, p.support_nonempty.mpr hp]
+/-- The direct definition of the supNorm -/
+lemma supNorm_def' : p.supNorm =
+    if hp : p.support.Nonempty then p.support.sup' hp (norm ∘ p.coeff) else 0 := by
+  split_ifs with h
+  · simp only [supNorm, gaussNorm, h, ↓reduceDIte, one_pow, mul_one, Function.comp_apply]
+    have : (fun x => SeminormedRing.toRingSeminorm A (p.coeff x)) = fun x => ‖p.coeff x‖ := by rfl
+    rw [this]
+  · simp [supNorm, gaussNorm, h]
 
-lemma height_zero : height (0 : Polynomial A) = 0 := by simp [height]
+lemma exists_eq_supNorm : ∃ i : ℕ, p.supNorm = ‖p.coeff i‖ := by
+  obtain ⟨i, hi⟩ := p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1
+  use i
+  simpa using hi
 
-lemma height_C : height (C a) = ‖a‖ := by
-  by_cases ha : a = 0
-  · simp [height, ha]
-  · simp [height, Polynomial.support_C ha]
+@[simp]
+lemma supNorm_zero : (0 : A[X]).supNorm = 0 := gaussNorm_zero _ _
 
-lemma height_one [NormOneClass A] : Polynomial.height (1 : Polynomial A) = 1 := by
-  rw [← Polynomial.C_1, height_C]
+lemma supNorm_nonneg : 0 ≤ p.supNorm := by
+  apply gaussNorm_nonneg
   norm_num
 
-lemma height_X [Nontrivial A] [NormOneClass A] : Polynomial.height (X : Polynomial A) = 1 := by
-  simp [height, support_X]
+@[simp]
+lemma supNorm_C {a : A} : (C a).supNorm = ‖a‖ := by
+  apply gaussNorm_C
 
-lemma norm_coeff_le_height (i : ℕ) : ‖p.coeff i‖ ≤ p.height := by
-  simp only [height, support_nonempty, ne_eq]
-  split_ifs with h
-  · by_cases hi : i ∈ p.support
-    · rw [Finset.le_sup'_iff]
-      refine ⟨i, ⟨hi, by simp⟩⟩
-    · rw [mem_support_iff] at hi
-      push_neg at hi
-      rw [hi]
-      simp only [norm_zero, Finset.le_sup'_iff, norm_nonneg, and_true]
-      obtain ⟨j, hj⟩ := h
-      use j
-  · simp only [support_nonempty, ne_eq, not_not] at h
-    simp [h]
+@[simp]
+lemma supNorm_monomial (n : ℕ) {a : A} : (monomial n a).supNorm = ‖a‖ := by
+  by_cases ha : a = 0
+  · simp [ha]
+  · simp [supNorm, gaussNorm, support_monomial n ha]
+    norm_cast
 
-lemma height_nonneg : 0 ≤ p.height := by
-  calc 0 ≤ ‖p.coeff 0‖ := norm_nonneg _
-    _ ≤ p.height := p.norm_coeff_le_height _
+@[simp]
+lemma supNorm_X [Nontrivial A] [NormOneClass A] : (X : A[X]).supNorm = 1 := by
+  rw [show (X : A[X]) = monomial 1 1 from rfl, supNorm_monomial, norm_one]
+
+lemma le_supNorm (i : ℕ) : ‖p.coeff i‖ ≤ p.supNorm := by
+  have := le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by norm_num : (0 : ℝ) ≤ 1) i
+  simpa using this
 
 end Polynomial
+end supnorm_seminorm
 
-end basic
-
-@[expose] public section normed
+@[expose] public section supnorm_norm
 
 namespace Polynomial
 
-variable {A : Type*} [NormedRing A] (p : Polynomial A) {a : A}
+variable {A : Type*} [NormedRing A] (p : Polynomial A)
 
-lemma height_pos_iff_ne_zero : 0 < p.height ↔ p ≠ 0 := by
-  constructor
-  · intros hp
-    by_contra! h
-    rw [h, Polynomial.height_zero] at hp
-    linarith [hp]
-  · intros hp
-    rw [← Polynomial.support_nonempty] at hp
-    obtain ⟨i, hi⟩ := hp
-    calc 0 < ‖p.coeff i‖ := norm_pos_iff.mpr (p.mem_support_iff.mp hi)
-        _ ≤ p.height := p.norm_coeff_le_height i
-
-lemma height_pos_of_ne_zero (hp : p ≠ 0) : 0 < p.height :=
-  p.height_pos_iff_ne_zero.mpr hp
-
-lemma ne_zero_of_height_pos (hp : 0 < p.height) : p ≠ 0 :=
-  p.height_pos_iff_ne_zero.mp hp
+lemma supNorm_eq_zero_iff : p.supNorm = 0 ↔ p = 0 := by
+  unfold supNorm
+  apply gaussNorm_eq_zero_iff
+  · intro x hx
+    rw [show SeminormedRing.toRingSeminorm A x = ‖x‖ by rfl] at hx
+    exact norm_eq_zero.mp hx
+  · norm_num
 
 end Polynomial
 
-end normed
+end supnorm_norm

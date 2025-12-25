@@ -326,16 +326,13 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     congr
     exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
 
-theorem height_le_choose_middle_mahlerMeasure (p : Polynomial ℂ) :
-    p.height ≤ p.natDegree.choose (p.natDegree / 2) * p.mahlerMeasure := by
-  by_cases hp : p = 0
-  · simp [hp, height_zero, mahlerMeasure_zero]
-  · simp only [p.height_def_of_ne_zero hp, Finset.sup'_le_iff, mem_support_iff, ne_eq]
-    intros b hb
-    calc ‖p.coeff b‖ ≤ (p.natDegree.choose b) * p.mahlerMeasure :=
-      norm_coeff_le_choose_mul_mahlerMeasure b p
-      _ ≤ (p.natDegree.choose (p.natDegree / 2)) * p.mahlerMeasure :=
-        mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle b p.natDegree)
-          p.mahlerMeasure_nonneg
+theorem supNorm_le_choose_middle_mahlerMeasure (p : Polynomial ℂ) :
+    p.supNorm ≤ p.natDegree.choose (p.natDegree / 2) * p.mahlerMeasure := by
+  obtain ⟨i, hi⟩ := p.exists_eq_supNorm
+  calc p.supNorm = ‖p.coeff i‖ := hi
+    _ ≤ (p.natDegree.choose i) * p.mahlerMeasure := p.norm_coeff_le_choose_mul_mahlerMeasure i
+    _ ≤ (p.natDegree.choose (p.natDegree / 2)) * p.mahlerMeasure :=
+      mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle i p.natDegree)
+        p.mahlerMeasure_nonneg
 
 end Polynomial
