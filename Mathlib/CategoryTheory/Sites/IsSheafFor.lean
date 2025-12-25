@@ -833,7 +833,6 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
   obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
   have := Sieve.pullback_ofArrows_of_iso _ g (asIso f)
   dsimp at this
-  simp only [this, ← isSheafFor_iff_generate, isSheafFor_arrows_iff_bijective_toCompabible]
   let e : Subtype (Arrows.Compatible P g) ≃
     Subtype (Arrows.Compatible P (fun i ↦ g i ≫ inv f)) :=
     { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ W g₁ g₂ h ↦ by
@@ -843,7 +842,8 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
         replace h := h =≫ inv f
         simp only [Category.assoc] at h
         exact s.property _ _ _ _ _ h⟩ }
-  rw [← e.bijective.of_comp_iff',
+  simp only [this, ← isSheafFor_iff_generate,
+    isSheafFor_arrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (P.mapIso (asIso f).symm.op).toEquiv.bijective]
   convert Iff.rfl using 2
   ext
@@ -854,8 +854,6 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
     {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
     IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows _ f) ↔
       IsSheafFor P ((Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i)))) := by
-  rw [isSheafFor_arrows_iff_bijective_toCompabible,
-    isSheafFor_arrows_iff_bijective_toCompabible]
   let e : Subtype (Arrows.Compatible ((Over.map p).op ⋙ P) f) ≃
       Subtype (Arrows.Compatible P (fun i ↦ (Over.map p).map (f i))) :=
     { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦ by
@@ -875,7 +873,8 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
       invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
           (by simp only [← Functor.map_comp, h])⟩ }
-  rw [← e.bijective.of_comp_iff']
+  simp only [isSheafFor_arrows_iff_bijective_toCompabible,
+    ← e.bijective.of_comp_iff']
   rfl
 
 lemma isSheafFor_over_map_op_comp_iff
