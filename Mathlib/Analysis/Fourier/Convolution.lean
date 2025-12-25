@@ -13,12 +13,16 @@ public import Mathlib.Analysis.Convolution
 In this file we calculate the Fourier transform of a convolution.
 
 ## Main statements
-* `Real.fourier_convolution_eq`: the Fourier transform of a convolution is the multiplication of the
-Fourier transform of the functions.
+* `Real.fourier_bilin_convolution_eq`: the Fourier transform of a convolution is the multiplication
+of the Fourier transform of the functions in terms of a general bilinear map.
+* `Real.fourier_smul_convolution_eq`: Variant for scalar multiplication.
+* `Real.fourier_mul_convolution_eq`: Variant for multiplication.
 
 -/
 
 @[expose] public section
+
+namespace Real
 
 variable {𝕜 R E F F₁ F₂ F₃ : Type*}
 
@@ -139,3 +143,5 @@ theorem fourier_mul_convolution_eq {f₁ : E → R} {f₂ : E → R}
     (ξ : E) :
     𝓕 (f₁ ⋆[mul ℂ R] f₂) ξ = (𝓕 f₁ ξ) * (𝓕 f₂ ξ) :=
   fourier_bilin_convolution_eq (mul ℂ R) hf₁ hf₂ hf₁' hf₂' ξ
+
+end Real
