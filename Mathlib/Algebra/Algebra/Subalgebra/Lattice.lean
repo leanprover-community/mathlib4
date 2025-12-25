@@ -136,6 +136,7 @@ theorem sup_toSubsemiring (S T : Subalgebra R A) :
 theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (Subalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -169,7 +170,8 @@ theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
 theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →ₐ[R] B) (hf : Function.Injective f)
@@ -223,7 +225,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x
     (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
     (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
-    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem (⨆ i, S i) ‹_›)) :
     motive x mem := by
   refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
   exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
@@ -240,6 +242,11 @@ theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
 
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
+
+@[simp]
+theorem toSubring_bot (A : Type*) [CommRing A] (R : Subring A) :
+    (⊥ : Subalgebra R A).toSubring = R := by
+  aesop (add norm Subalgebra.mem_carrier.symm)
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by
@@ -678,6 +685,7 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
 
 variable (R)
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 

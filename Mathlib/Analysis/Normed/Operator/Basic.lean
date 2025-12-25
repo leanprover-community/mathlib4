@@ -61,7 +61,7 @@ variable [SemilinearMapClass 𝓕 σ₁₂ E F]
 
 theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
     (hr : 0 < r) : ball 0 r ⊆ Set.range f ↔ (⇑f).Surjective :=
-  absorbent_ball (by simpa)|>.subset_range_iff_surjective
+  absorbent_ball (by simpa) |>.subset_range_iff_surjective
 
 theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
     (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
@@ -350,6 +350,7 @@ so that it is definitionally equal to the one coming from the topologies on `E` 
 protected noncomputable def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le opNorm_smul_le
 
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_seminorm :
     𝓤 (E →SL[σ₁₂] F) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
   refine ContinuousLinearMap.seminorm (σ₁₂ := σ₁₂) (E := E) (F := F) |>.uniformity_eq_of_hasBasis
@@ -370,6 +371,8 @@ private lemma uniformity_eq_seminorm :
     rw [mul_comm] at hδ
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
   ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
 

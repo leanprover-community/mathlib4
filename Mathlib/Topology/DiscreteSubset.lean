@@ -150,7 +150,7 @@ lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocal
   refine discreteTopology_iff_isOpen_singleton.mpr (fun x ↦ ?_)
   obtain ⟨K : Set Y, hK : IsCompact K, hK' : K ∈ 𝓝 (f x)⟩ := exists_compact_mem_nhds (f x)
   obtain ⟨U : Set Y, hU₁ : U ⊆ K, hU₂ : IsOpen U, hU₃ : f x ∈ U⟩ := mem_nhds_iff.mp hK'
-  have hU₄ : Set.Finite (f⁻¹' U) :=
+  have hU₄ : Set.Finite (f ⁻¹' U) :=
     Finite.subset (tendsto_cofinite_cocompact_iff.mp hf K hK) (preimage_mono hU₁)
   exact isOpen_singleton_of_finite_mem_nhds _ ((hU₂.preimage hf').mem_nhds hU₃) hU₄
 
@@ -334,7 +334,9 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     obtain ⟨u, hu1, hu2, hu3⟩ := ht1
     refine ⟨u, hu1, hu2, fun v hv ↦ ?_⟩
     simpa using fun hv2 ↦ ⟨hv2, ht2 <| hu3 <| by simpa [hv2]⟩
-  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by convert tendsto_def.mp this _; ext; simp
+  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by
+      have aux : Subtype.val ⁻¹' (S \ Subtype.val '' U)ᶜ = U := by ext; simp
+      simpa [aux] using tendsto_def.mp this ((S \ Subtype.val '' U)ᶜ)
     exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
 
