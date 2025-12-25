@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Fin
-public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
@@ -441,45 +440,6 @@ theorem nonempty_support_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f
     (optionEquivLeft R σ f).support.Nonempty := by
   rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
 
-theorem degree_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
-    (optionEquivLeft R σ f).degree = degreeOf none f := by
-  have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
-    rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image, Function.comp_def]
-  rw [Polynomial.degree, ← h', Nat.cast_withBot,
-    Finset.coe_sup_of_nonempty (nonempty_support_optionEquivLeft R h), Finset.max_eq_sup_coe,
-    Function.comp_def]
-
-@[simp]
-lemma natDegree_optionEquivLeft (p : MvPolynomial (Option σ) R) :
-    Polynomial.natDegree (optionEquivLeft R σ p) = p.degreeOf none := by
-  by_cases c : p = 0
-  · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
-  · rw [Polynomial.natDegree, degree_optionEquivLeft R c, Nat.cast_withBot, WithBot.unbotD_coe]
-
-lemma totalDegree_coeff_optionEquivLeft_add_le
-    (p : MvPolynomial (Option S₁) R) (i : ℕ) (hi : i ≤ p.totalDegree) :
-    ((optionEquivLeft R S₁ p).coeff i).totalDegree + i ≤ p.totalDegree := by
-  classical
-  by_cases hpi : (optionEquivLeft R S₁ p).coeff i = 0
-  · rw [hpi]; simpa
-  rw [totalDegree, add_comm, Finset.add_sup (by simpa only [support_nonempty]), Finset.sup_le_iff]
-  intro σ hσ
-  refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
-  · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain, add_comm i]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
-
-lemma totalDegree_coeff_optionEquivLeft_le
-    (p : MvPolynomial (Option S₁) R) (i : ℕ) :
-    ((optionEquivLeft R S₁ p).coeff i).totalDegree ≤ p.totalDegree := by
-  classical
-  by_cases hpi : (optionEquivLeft R S₁ p).coeff i = 0
-  · rw [hpi]; simp
-  rw [totalDegree, Finset.sup_le_iff]
-  intro σ hσ
-  refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
-  · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
-
 theorem optionEquivLeft_coeff_coeff
     (p : MvPolynomial (Option σ) R) (m : ℕ) (d : σ →₀ ℕ) :
     coeff d (((optionEquivLeft R σ) p).coeff m) = p.coeff (d.optionElim m) := by
@@ -617,26 +577,6 @@ theorem mem_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : �
 @[deprecated (since := "2025-11-28")] alias support_coeff_finSuccEquiv :=
 mem_support_coeff_finSuccEquiv
 
-/--
-The `totalDegree` of a multivariable polynomial `p` is at least `i` more than the `totalDegree` of
-the `i`th coefficient of `finSuccEquiv` applied to `p`, if this is nonzero.
--/
-lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ)
-    (hi : (finSuccEquiv R n f).coeff i ≠ 0) :
-    totalDegree ((finSuccEquiv R n f).coeff i) + i ≤ totalDegree f := by
-  have hf'_sup : ((finSuccEquiv R n f).coeff i).support.Nonempty := by
-    rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
-    exact hi
-  -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
-  have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
-                          (fun s => Finsupp.sum s fun _ e => e)
-  -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
-  let σ' : Fin (n + 1) →₀ ℕ := cons i σ
-  convert le_totalDegree (s := σ') _
-  · rw [totalDegree, hσ2, sum_cons, add_comm]
-  · rw [← mem_support_coeff_finSuccEquiv]
-    exact hσ1
-
 theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
@@ -681,44 +621,6 @@ theorem nonempty_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f 
 
 @[deprecated (since := "2025-11-28")] alias support_finSuccEquiv_nonempty :=
 nonempty_support_finSuccEquiv
-
-theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
-    (finSuccEquiv R n f).degree = degreeOf 0 f := by
-  -- TODO: these should be lemmas
-  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
-  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
-  have h' : ((finSuccEquiv R n f).support.sup fun x => x) = degreeOf 0 f := by
-    rw [degreeOf_eq_sup, support_finSuccEquiv, Finset.sup_image, h₀]
-  rw [Polynomial.degree, ← h', Nat.cast_withBot,
-    Finset.coe_sup_of_nonempty (nonempty_support_finSuccEquiv h), Finset.max_eq_sup_coe, h₁]
-
-theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
-    (finSuccEquiv R n f).natDegree = degreeOf 0 f := by
-  by_cases c : f = 0
-  · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
-  · rw [Polynomial.natDegree, degree_finSuccEquiv c, Nat.cast_withBot, WithBot.unbotD_coe]
-
-/--
-The `MvPolynomial.degreeOf` of a particular variable in a multivariate polynomial
-is equal to the `Polynomial.natDegree` of the single-variable polynomial
-obtained by treating the multivariable polynomial as a single variable polynomial
-over multivariable polynomials in the remaining variables
--/
-lemma degreeOf_eq_natDegree [DecidableEq σ] (a : σ) (p : MvPolynomial σ R) :
-    degreeOf a p =
-      (optionEquivLeft R {b // b ≠ a} (rename (Equiv.optionSubtypeNe a).symm p)).natDegree := by
-  rw [natDegree_optionEquivLeft, eq_comm]
-  convert degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
-  rw [Equiv.optionSubtypeNe_symm_apply, dif_pos rfl]
-
-theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
-    degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by
-  rw [degreeOf_eq_sup, degreeOf_eq_sup, Finset.sup_le_iff]
-  intro m hm
-  rw [← Finsupp.cons_succ j i m]
-  exact Finset.le_sup
-    (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
-    (mem_support_coeff_finSuccEquiv.1 hm)
 
 /-- Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,
 and suppose that `σ ≃ Fin n`.
