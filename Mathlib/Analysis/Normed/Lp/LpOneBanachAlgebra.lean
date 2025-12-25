@@ -235,8 +235,6 @@ The key analytic results are:
 3. **Norm of identity**: `‖1‖ = 1` (requires `NormOneClass R`)
 -/
 
-instance : Fact (1 ≤ (1 : ℝ≥0∞)) := ⟨le_refl 1⟩
-
 section LpOneNormedRing
 
 variable {R : Type*} [NormedRing R]
