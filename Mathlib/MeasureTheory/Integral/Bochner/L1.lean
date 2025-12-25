@@ -21,7 +21,7 @@ and corresponding API.
 The Bochner integral is defined through the extension process described in the file
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
-1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s * x`.
+1. Define the integral of the indicator of a set. This is `weightedSMul μ s x = μ.real s • x`.
   `weightedSMul μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
   (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
@@ -43,9 +43,6 @@ The Bochner integral is defined through the extension process described in the f
                 `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
                  functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean`)
-
-We also define notations for integral on a set, which are described in the file
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
 
 Note: `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
