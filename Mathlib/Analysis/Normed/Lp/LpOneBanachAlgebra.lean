@@ -3,11 +3,11 @@ Copyright (c) 2025 Fengyang Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fengyang Wang
 -/
-module
-
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+
+open Finset
 
 /-!
 # Banach Algebra Structure on ℓ¹ via Cauchy Product
@@ -51,9 +51,11 @@ But NOT ℤ, whose antidiagonals are infinite.
 The ring axioms are proven directly via finite sum manipulations. Associativity
 uses `Finset.sum_nbij'` to establish a bijection between the two triple-sum indexing
 schemes `⟨(i+j, k), (i, j)⟩ ↔ ⟨(i, j+k), (j, k)⟩`.
--/
 
-open Finset
+## References
+
+* [Katznelson, *An Introduction to Harmonic Analysis*], Chapter I
+-/
 
 open scoped BigOperators NNReal ENNReal
 
@@ -225,24 +227,6 @@ end Comm
 end CauchyProduct
 
 
-/-! ## ℓ¹ Ring Structure (General G)
-
-For any `[AddCommMonoid G] [HasAntidiagonal G]`, we establish the ring structure
-on `lp (fun _ : G => R) 1`. The analytic estimates (norm bounds) are proven
-separately for the case `G = ℕ`.
--/
-
-section GeneralRing
-
-variable {G : Type*} {R : Type*}
-variable [AddCommMonoid G] [HasAntidiagonal G] [NormedRing R]
-
--- TODO: Prove membership closure and norm bounds for general G
--- This requires generalizing the Mertens-type lemmas
-
-end GeneralRing
-
-
 /-! ## ℓ¹ Banach Algebra Structure (G = ℕ)
 
 This section establishes the Banach algebra structure on `lp (fun _ : ℕ => R) 1`.
@@ -250,32 +234,14 @@ The key analytic results are:
 
 1. **Membership closure**: If `f, g ∈ ℓ¹`, then `f ⋆ g ∈ ℓ¹`
 2. **Submultiplicativity**: `‖f ⋆ g‖ ≤ ‖f‖ · ‖g‖`
-3. **Norm of identity**: `‖1‖ = 1`
+3. **Norm of identity**: `‖1‖ = 1` (requires `NormOneClass R`)
 -/
-
-section OneNormedRing
-
-variable {R : Type*} [NormedRing R]
 
 instance : Fact (1 ≤ (1 : ℝ≥0∞)) := ⟨le_refl 1⟩
 
-/-! ### Norm Characterization for ℓ¹ -/
+section LpOneNormedRing
 
-namespace lp
-
-/-- The ℓ¹ norm equals the sum of norms (as a tsum). -/
-theorem one_norm_eq_tsum (f : lp (fun _ : ℕ => R) 1) :
-    ‖f‖ = ∑' n, ‖f n‖ := by
-  rw [lp.norm_eq_tsum_rpow (by norm_num : 0 < (1 : ℝ≥0∞).toReal) f]
-  simp only [ENNReal.toReal_one, Real.rpow_one, one_div, inv_one]
-
-/-- The norm sequence of an ℓ¹ function is summable. -/
-theorem one_summable_norm (f : lp (fun _ : ℕ => R) 1) : Summable (fun n => ‖f n‖) := by
-  have := lp.memℓp f
-  rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at this
-  simpa using this
-
-end lp
+variable {R : Type*} [NormedRing R]
 
 /-! ### Membership Closure under Cauchy Product -/
 
@@ -324,9 +290,21 @@ theorem one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
   exact summable_of_ne_finset_zero (s := {0})
       (by simp_all only [mem_singleton, ↓reduceIte, implies_true])
 
-/-! ### Multiplication and Ring Structure -/
+/-! ### lp Instances -/
 
 namespace lp
+
+/-- The ℓ¹ norm equals the sum of norms (as a tsum). -/
+theorem one_norm_eq_tsum (f : lp (fun _ : ℕ => R) 1) :
+    ‖f‖ = ∑' n, ‖f n‖ := by
+  rw [lp.norm_eq_tsum_rpow (by norm_num : 0 < (1 : ℝ≥0∞).toReal) f]
+  simp only [ENNReal.toReal_one, Real.rpow_one, one_div, inv_one]
+
+/-- The norm sequence of an ℓ¹ function is summable. -/
+theorem one_summable_norm (f : lp (fun _ : ℕ => R) 1) : Summable (fun n => ‖f n‖) := by
+  have := lp.memℓp f
+  rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at this
+  simpa using this
 
 instance oneMul : Mul (lp (fun _ : ℕ => R) 1) where
   mul f g := ⟨CauchyProduct.apply (⇑f) (⇑g), f.property.one_mul g.property⟩
@@ -334,11 +312,6 @@ instance oneMul : Mul (lp (fun _ : ℕ => R) 1) where
 @[simp]
 theorem one_coeFn_mul (f g : lp (fun _ : ℕ => R) 1) :
     ⇑(f * g) = CauchyProduct.apply (⇑f) (⇑g) := rfl
-
-/-! ### Submultiplicativity (Key Analytic Property)
-
-This is the defining property of a Banach algebra: `‖f * g‖ ≤ ‖f‖ * ‖g‖`.
-The proof uses Mertens' theorem to exchange sum order. -/
 
 /-- **Submultiplicativity**: `‖f * g‖_1 ≤ ‖f‖_1 · ‖g‖_1`
 
@@ -373,8 +346,6 @@ theorem one_norm_mul_le (f g : lp (fun _ : ℕ => R) 1) : ‖f * g‖ ≤ ‖f�
     rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hmem
     simpa using hmem
 
-/-! ### Identity and Ring/NormedRing Instances -/
-
 instance oneOne : One (lp (fun _ : ℕ => R) 1) where
   one := ⟨CauchyProduct.one, _root_.one_memℓp_one⟩
 
@@ -400,9 +371,15 @@ instance oneNormedRing : NormedRing (lp (fun _ : ℕ => R) 1) :=
     dist_eq := fun _ _ => rfl
     norm_mul_le := one_norm_mul_le }
 
-/-! ### NormOneClass -/
+end lp
 
-variable [NormOneClass R]
+end LpOneNormedRing
+
+section LpOneNormOneClass
+
+variable {R : Type*} [NormedRing R] [NormOneClass R]
+
+namespace lp
 
 theorem one_norm_one : ‖(1 : lp (fun _ : ℕ => R) 1)‖ = 1 := by
   rw [one_norm_eq_tsum]
@@ -419,9 +396,9 @@ instance oneNormOneClass : NormOneClass (lp (fun _ : ℕ => R) 1) where
 
 end lp
 
-end OneNormedRing
+end LpOneNormOneClass
 
-section OneNormedCommRing
+section LpOneNormedCommRing
 
 variable {R : Type*} [NormedCommRing R]
 
@@ -430,11 +407,7 @@ namespace lp
 instance oneNormedCommRing : NormedCommRing (lp (fun _ : ℕ => R) 1) where
   mul_comm f g := lp.ext <| CauchyProduct.comm (⇑f) (⇑g)
 
-/-! ### Scalar Multiplication Compatibility
-
-These instances establish that scalar multiplication by R is compatible with
-ring multiplication. The full algebra structure over a NormedField 𝕜 is
-established in the `OneAlgebra` section. -/
+/-! ### Scalar Multiplication Compatibility -/
 
 instance one_isScalarTower : IsScalarTower R (lp (fun _ : ℕ => R) 1) (lp (fun _ : ℕ => R) 1) :=
   ⟨fun r f g => lp.ext <| CauchyProduct.smul_mul r (⇑f) (⇑g)⟩
@@ -444,20 +417,14 @@ instance one_smulCommClass : SMulCommClass R (lp (fun _ : ℕ => R) 1) (lp (fun 
 
 end lp
 
-end OneNormedCommRing
+end LpOneNormedCommRing
 
-section OneAlgebra
+section LpOneNormedAlgebra
 
 variable {𝕜 : Type*} {R : Type*}
 variable [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
 
 namespace lp
-
-/-! ### Algebra Structure
-
-For a NormedField 𝕜 acting on R via NormedAlgebra 𝕜 R, we establish the algebra
-structure on ℓ¹. The key is that scalar multiplication by 𝕜 commutes with the
-Cauchy product multiplication. -/
 
 /-- Scalar multiplication satisfies `(c • f) * g = c • (f * g)` for Cauchy product. -/
 theorem one_smul_mul_assoc (c : 𝕜) (f g : lp (fun _ : ℕ => R) 1) :
@@ -475,11 +442,9 @@ theorem one_mul_smul_comm (c : 𝕜) (f g : lp (fun _ : ℕ => R) 1) :
   intro kl _
   exact mul_smul_comm c (f kl.1) (g kl.2)
 
-/-- Scalar multiplication by 𝕜 is associative with Cauchy product multiplication. -/
 instance one_isScalarTower' : IsScalarTower 𝕜 (lp (fun _ : ℕ => R) 1) (lp (fun _ : ℕ => R) 1) :=
   ⟨fun c f g => one_smul_mul_assoc c f g⟩
 
-/-- Scalar multiplication by 𝕜 commutes with Cauchy product multiplication. -/
 instance one_smulCommClass' : SMulCommClass 𝕜 (lp (fun _ : ℕ => R) 1) (lp (fun _ : ℕ => R) 1) :=
   ⟨fun c f g => (one_mul_smul_comm c f g).symm⟩
 
@@ -491,7 +456,7 @@ instance oneNormedAlgebra : NormedAlgebra 𝕜 (lp (fun _ : ℕ => R) 1) where
 
 end lp
 
-end OneAlgebra
+end LpOneNormedAlgebra
 
 end
 
