@@ -162,7 +162,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     {f : V →ₗ[R] V}
     {ι : Type*} [Nontrivial ι] (b : Basis ι R V)
     (h : ∀ v, ¬ LinearIndependent R ![v, f v]) :
-    ∃ a ∈ center R, ∀ x, f x = a • x := by
+    ∃ a ∈ Subring.center R, ∀ x, f x = a • x := by
   have feq (i) : f (b i) = (b.coord i) (f (b i)) • b i := by
     classical
     specialize h (b i)
@@ -222,16 +222,15 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     · have := h' j hij 1
       simp only [mul_one, one_mul] at this
       rw [feq, ← this]
-  have ha (r) : Commute a r := by
-    simp [commute_iff_eq, h' j hij r, feq]
+  have ha (r) : r * a = a * r := by simp [h' j hij r, feq]
   refine ⟨a, ?_, ?_⟩
-  · simpa [mem_center_iff, isMulCentral_iff, mul_assoc]
+  · simp [Subring.mem_center_iff, ha]
   intro x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply,
     map_finsuppSum, Finsupp.smul_sum]
   congr
   ext j r
-  simp only [LinearMap.map_smul, feq, ← mul_smul, (ha r).eq]
+  simp only [LinearMap.map_smul, feq, ← mul_smul, ha r]
 
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are colinear, for all `v : V`,
@@ -249,10 +248,10 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
     {f : V →ₗ[R] V}
     (hV1 : finrank R V ≠ 1)
     (h : ∀ v, ¬ LinearIndependent R ![v, f v]) :
-    ∃ a ∈ center R, ∀ x, f x = a • x := by
+    ∃ a ∈ Subring.center R, ∀ x, f x = a • x := by
   rcases subsingleton_or_nontrivial V with hV | hV
   · use 1
-    simp only [one_mem_center, one_smul, true_and]
+    simp only [one_mem, one_smul, true_and]
     intro x
     apply hV.allEq
   let ι := Free.ChooseBasisIndex R V
