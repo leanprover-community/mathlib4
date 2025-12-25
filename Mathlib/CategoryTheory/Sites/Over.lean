@@ -136,15 +136,6 @@ lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
   · rw [generate_le_iff]
     exact fun Z g hg ↦ le_generate _ _ hg
 
-lemma overEquiv_symm_arrows {X : C} {Y : Over X}
-    (S : Sieve Y.left) :
-    ((Sieve.overEquiv Y).symm S).arrows =
-      Presieve.ofArrows (Y := fun (f : S.arrows.category) ↦ Over.mk (f.obj.hom ≫ Y.hom))
-        (fun f ↦ Over.homMk f.obj.hom) :=
-  le_antisymm
-    (fun X g hg ↦ Presieve.ofArrows.mk' ⟨Over.mk g.left, hg⟩ (by cat_disch) (by cat_disch))
-    (by rintro _ _ ⟨f⟩; exact f.property)
-
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
     Sieve.functorPushforward (Over.map f) ((Sieve.overEquiv Z).symm S) =

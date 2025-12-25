@@ -38,7 +38,7 @@ lemma Over.mk_surjective {C : Type*} [Category* C] {S : C} (X : Over S) :
     ∃ (Y : C) (f : Y ⟶ S), X = Over.mk f :=
   ⟨_, X.hom, rfl⟩
 
-lemma _root_.CategoryTheory.Over.homMk_surjective {C : Type*} [Category* C]
+lemma Over.homMk_surjective {C : Type*} [Category* C]
     {S : C} {X Y : Over S} (f : X ⟶ Y) :
     ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
   ⟨f.left, by simp⟩
