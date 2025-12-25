@@ -35,15 +35,6 @@ universe t t' v' v u' u
 
 namespace CategoryTheory
 
-lemma Over.mk_surjective {C : Type*} [Category* C] {S : C} (X : Over S) :
-    ∃ (Y : C) (f : Y ⟶ S), X = Over.mk f :=
-  ⟨_, X.hom, rfl⟩
-
-lemma _root_.CategoryTheory.Over.homMk_surjective {C : Type*} [Category* C]
-    {S : C} {X Y : Over S} (f : X ⟶ Y) :
-    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
-  ⟨f.left, by simp⟩
-
 open Limits Opposite Bicategory
 
 namespace Pseudofunctor
@@ -287,6 +278,7 @@ noncomputable def fullyFaithfulPullFunctor :
   have := F.full_pullFunctor w hf'
   exact .ofFullyFaithful _
 
+-- TODO: `IsStackFor` version of this
 lemma isEquivalence_toDescentData_of_sieve_le
     (h₁ : Sieve.ofArrows _ f' ∈ J _)
     (h₂ : Sieve.ofArrows _ f' ≤ Sieve.ofArrows _ f)
@@ -317,7 +309,7 @@ section
 variable {F} [HasPullbacks C] {J : Precoverage C}
   [J.HasIsos] [J.IsStableUnderBaseChange] [J.IsStableUnderComposition]
 
-lemma IsPrestack.of_precoverage
+/-lemma IsPrestack.of_precoverage
     (hF : ∀ (S : C) (R : Presieve S) (_ : R ∈ J S),
       (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).FullyFaithful) :
     F.IsPrestack J.toGrothendieck where
@@ -394,7 +386,7 @@ lemma IsStack.of_precoverage
       rintro _ _ ⟨r, hr⟩
       exact ⟨_, 𝟙 _, r.hom, .mk (ι := R.arrows.category) ⟨_, h _ hr⟩, by simp⟩
   have := F.isEquivalence_toDescentData_of_sieve_le h₁ h₂
-  infer_instance
+  infer_instance-/
 
 end
 

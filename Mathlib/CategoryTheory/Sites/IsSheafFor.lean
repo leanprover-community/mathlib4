@@ -826,7 +826,44 @@ theorem isSheafFor_arrows_iff_bijective_toCompabible :
     subst hy
     exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
 
-lemma isSheafFor_over_map_comp_arrows_iff
+@[simp]
+lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
+    {Y : C} (f : Y ⟶ X) [IsIso f] :
+    IsSheafFor P (Sieve.pullback f R).arrows ↔ IsSheafFor P R.arrows := by
+  obtain ⟨ι, Y, g, rfl⟩ := R.exists_eq_ofArrows
+  have := Sieve.pullback_ofArrows_of_iso _ g (asIso f)
+  dsimp at this
+  simp only [this, ← isSheafFor_iff_generate, isSheafFor_arrows_iff_bijective_toCompabible]
+  sorry
+
+lemma isSheafFor_over_map_op_comp_ofArrows_iff
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
+    {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
+    IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows _ f) ↔
+      IsSheafFor P ((Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i)))) := by
+  rw [isSheafFor_arrows_iff_bijective_toCompabible,
+    isSheafFor_arrows_iff_bijective_toCompabible]
+  sorry
+
+lemma isSheafFor_over_map_op_comp_iff
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
+    {X : Over B} (R : Sieve X) {X' : Over B'}
+    (e : (Over.map p).obj X ≅ X') :
+    IsSheafFor ((Over.map p).op ⋙ P) R.arrows ↔
+      IsSheafFor P (Sieve.pullback e.inv (Sieve.functorPushforward (Over.map p) R)).arrows := by
+  obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+  rw [← isSheafFor_iff_generate, isSheafFor_pullback_iff,
+    isSheafFor_over_map_op_comp_ofArrows_iff, isSheafFor_iff_generate]
+  convert Iff.rfl
+  refine le_antisymm ?_ ?_
+  · rintro W _ ⟨T, _, a, ⟨_, b, _, ⟨i⟩, rfl⟩, rfl⟩
+    refine ⟨(Over.map p).obj (Z i), Over.homMk (a.left ≫ b.left) ?_, _, ⟨i⟩, ?_⟩
+    · simpa [(Over.w_assoc b)] using Over.w a
+    · cat_disch
+  · rintro W _ ⟨_, a, _, ⟨i⟩, rfl⟩
+    exact ⟨_, _, _, Sieve.ofArrows_mk _ _ i, rfl⟩
+
+/-lemma isSheafFor_over_map_comp_arrows_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {Y : I → C} (π : ∀ i, Y i ⟶ B) :
     IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows (X := Over.mk (𝟙 B))
@@ -865,7 +902,7 @@ lemma isSheafFor_over_map_comp_arrows_iff
   rw [← FunctorToTypes.map_comp_apply]
   apply congr_fun
   congr
-  cat_disch
+  cat_disch-/
 
 variable [(ofArrows X π).HasPairwisePullbacks]
 
