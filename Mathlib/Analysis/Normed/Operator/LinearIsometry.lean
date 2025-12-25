@@ -215,6 +215,11 @@ theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
     IsComplete (f '' s) ↔ IsComplete s :=
   _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
 
+@[deprecated LinearIsometry.isComplete_image_iff (since := "2025-12-25")]
+theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
+    IsComplete (f '' s) ↔ IsComplete s :=
+  LinearIsometry.isComplete_image_iff _
+
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
   isComplete_image_iff f
