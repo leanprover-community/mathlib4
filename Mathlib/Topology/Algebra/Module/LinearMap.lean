@@ -702,6 +702,7 @@ theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [
     [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
     range (f.smulRight x) = Submodule.span R {x} :=
   LinearMap.range_smulRight_apply (by simpa [coe_inj, ← coe_zero] using hf) x
+
 section ToSpanSingleton
 
 variable (R₁)
