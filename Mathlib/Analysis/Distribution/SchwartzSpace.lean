@@ -117,7 +117,7 @@ instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
 
 /-- Every Schwartz function is differentiable. -/
 protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
-  (f.smooth 1).differentiable rfl.le
+  (f.smooth 1).differentiable one_ne_zero
 
 /-- Every Schwartz function is differentiable at any point. -/
 protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt ℝ f x :=

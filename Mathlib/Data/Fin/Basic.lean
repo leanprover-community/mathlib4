@@ -90,6 +90,8 @@ def equivSubtype : Fin n ≃ { i // i < n } where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
 
+lemma neZero {n : ℕ} (i : Fin n) : NeZero n := ⟨Nat.ne_zero_of_lt i.isLt⟩
+
 section coe
 
 /-!
@@ -322,18 +324,26 @@ lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).val < n -
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
 lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
-    letI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
+    haveI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
   simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
 
-lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
+lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
+    haveI := k.neZero
+    (hk : k ≠ 0) → 1 ≤ k := by
+  have : NeZero n := k.neZero
+  intro hk
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   cases n with
   | zero => simp only [Fin.isValue, Fin.zero_le]
   | succ n => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
 
-lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val = i - 1 := by
+lemma val_sub_one_of_ne_zero {i : Fin n} :
+    haveI := i.neZero
+    (hi : i ≠ 0) → (i - 1).val = i - 1 := by
+  have := i.neZero
+  intro hi
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   rw [Fin.sub_val_of_le (one_le_of_ne_zero hi), Fin.val_one', Nat.mod_eq_of_lt
     (Nat.succ_le_iff.mpr (nontrivial_iff_two_le.mp <| nontrivial_of_ne i 0 hi))]
@@ -357,9 +367,11 @@ whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
   Nat.mod_eq_of_lt h
 
-/-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
-in the same value. -/
-@[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+/-- Converting the value of a `Fin n` to `Fin n` results in the same value. -/
+@[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} (a : Fin n) :
+    haveI := a.neZero
+    (a.val : Fin n) = a :=
+  have := a.neZero
   Fin.ext <| val_cast_of_lt a.isLt
 
 -- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
@@ -400,7 +412,7 @@ lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :
 
 @[simp]
 lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
-    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
+    haveI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
     Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
   ext
   simp only [val_castLE, val_natCast]
@@ -457,9 +469,6 @@ theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
 lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by lia
 
-@[deprecated (since := "2025-04-27")]
-alias eq_one_of_neq_zero := eq_one_of_ne_zero
-
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
@@ -507,7 +516,8 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
     ((ofNat(n) : Fin m) : ℕ) = ofNat(n) % m :=
   rfl
 
-theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i : Fin n} (h : i + 1 < n) :
+theorem val_add_one_of_lt' {n : ℕ} {i : Fin n} (h : i + 1 < n) :
+    haveI := i.neZero
     (i + 1).val = i.val + 1 := by
   simpa [add_def] using Nat.mod_eq_of_lt (by lia)
 
