@@ -562,7 +562,7 @@ end degreesLE
 
 section Equiv
 
-theorem degree_optionEquivLeft (R : Type u) {σ : Type v} [CommSemiring R]
+theorem degree_optionEquivLeft
     {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     (optionEquivLeft R σ f).degree = degreeOf none f := by
   have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
@@ -576,33 +576,32 @@ lemma natDegree_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     Polynomial.natDegree (optionEquivLeft R σ p) = p.degreeOf none := by
   by_cases c : p = 0
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
-  · rw [Polynomial.natDegree, degree_optionEquivLeft R c, Nat.cast_withBot, WithBot.unbotD_coe]
+  · rw [Polynomial.natDegree, degree_optionEquivLeft c, Nat.cast_withBot, WithBot.unbotD_coe]
 
-lemma totalDegree_coeff_optionEquivLeft_add_le
-    (R : Type u) (S₁ : Type v) [CommSemiring R]
-    (p : MvPolynomial (Option S₁) R) (i : ℕ) (hi : i ≤ p.totalDegree) :
-    ((optionEquivLeft R S₁ p).coeff i).totalDegree + i ≤ p.totalDegree := by
+lemma totalDegree_coeff_optionEquivLeft_add_le (S : Type v)
+    (p : MvPolynomial (Option S) R) (i : ℕ) (hi : i ≤ p.totalDegree) :
+    ((optionEquivLeft R S p).coeff i).totalDegree + i ≤ p.totalDegree := by
   classical
-  by_cases hpi : (optionEquivLeft R S₁ p).coeff i = 0
+  by_cases hpi : (optionEquivLeft R S p).coeff i = 0
   · rw [hpi]; simpa
   rw [totalDegree, add_comm, Finset.add_sup (by simpa only [support_nonempty]), Finset.sup_le_iff]
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain, add_comm i]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
+  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S] using hσ
 
 lemma totalDegree_coeff_optionEquivLeft_le
-    (R : Type u) (S₁ : Type v) [CommSemiring R]
-    (p : MvPolynomial (Option S₁) R) (i : ℕ) :
-    ((optionEquivLeft R S₁ p).coeff i).totalDegree ≤ p.totalDegree := by
+    (R : Type u) (S : Type v) [CommSemiring R]
+    (p : MvPolynomial (Option S) R) (i : ℕ) :
+    ((optionEquivLeft R S p).coeff i).totalDegree ≤ p.totalDegree := by
   classical
-  by_cases hpi : (optionEquivLeft R S₁ p).coeff i = 0
+  by_cases hpi : (optionEquivLeft R S p).coeff i = 0
   · rw [hpi]; simp
   rw [totalDegree, Finset.sup_le_iff]
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
+  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S] using hσ
 
 
 
