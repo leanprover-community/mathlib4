@@ -358,6 +358,10 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧
 
 @[simp] lemma coe_mk {x y : α} : (s(x, y) : Set α) = {x, y} := by ext z; simp
 
+theorem coe_map (f : α → β) (z : Sym2 α) : z.map f = f '' z := by
+  cases z
+  simp [Set.image_pair]
+
 /-- Given an element of the unordered pair, give the other element using `Classical.choose`.
 See also `Mem.other'` for the computable version.
 -/
