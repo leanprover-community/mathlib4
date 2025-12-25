@@ -532,7 +532,6 @@ theorem coe_mono : Monotone (fun (a : α) => (a : WithBot α)) := fun _ _ => coe
 theorem _root_.WithTop.coe_mono : Monotone (fun a : α => (a : WithTop α)) :=
     fun _ _ => WithTop.coe_le_coe.2
 
-
 theorem monotone_iff {f : WithBot α → β} :
     Monotone f ↔ Monotone (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
   ⟨fun h ↦ ⟨h.comp WithBot.coe_mono, fun _ ↦ h bot_le⟩, fun h ↦
