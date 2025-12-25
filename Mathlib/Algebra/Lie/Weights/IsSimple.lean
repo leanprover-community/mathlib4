@@ -274,16 +274,20 @@ lemma H_le_invtSubmoduleToLieIdeal_top :
       (Submodule.span_mono fun _ ⟨α, hα⟩ ↦ ⟨α.1, hα⟩))
   intro x hx
   obtain ⟨c, hc⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp
-    (h_span ▸ Submodule.mem_top : (⟨x, hx⟩ : H.toLieSubmodule) ∈ _)
+    (by rw [h_span]; exact Submodule.mem_top : (⟨x, hx⟩ : H.toLieSubmodule) ∈ _)
   have hx_sum : x = ∑ α ∈ c.support, c α • (coroot α : L) := by
     have : (⟨x, hx⟩ : H.toLieSubmodule) = c.sum fun α r => r • coroot α := hc.symm
     calc x = (⟨x, hx⟩ : H.toLieSubmodule) := rfl
       _ = _ := by rw [this, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
   rw [hx_sum]; refine Submodule.sum_mem _ fun α _ ↦ Submodule.smul_mem _ _ ?_
   by_cases hα : α.IsNonZero
-  · exact LieSubmodule.mem_iSup_of_mem ⟨α, trivial, hα⟩ (sl2SubmoduleOfRoot_eq_sup α hα ▸
-      Submodule.mem_sup_right (Submodule.mem_map_of_mem
-        (coe_corootSpace_eq_span_singleton α ▸ Submodule.subset_span (Set.mem_singleton _))))
+  · apply LieSubmodule.mem_iSup_of_mem ⟨α, trivial, hα⟩
+    rw [sl2SubmoduleOfRoot_eq_sup]
+    apply Submodule.mem_sup_right
+    have h : coroot α ∈ (corootSpace α : Submodule K H) := by
+      have := Submodule.subset_span (R := K) (s := {coroot α}) rfl
+      rwa [← coe_corootSpace_eq_span_singleton α] at this
+    exact Submodule.mem_map_of_mem h
   · simp only [Weight.IsNonZero, not_not] at hα; simp [coroot_eq_zero_iff.mpr hα]
 
 @[simp] lemma invtSubmoduleToLieIdeal_top :
@@ -291,14 +295,15 @@ lemma H_le_invtSubmoduleToLieIdeal_top :
   set I := invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp)
   have h1 := H_le_invtSubmoduleToLieIdeal_top (H := H)
   have h2 : ∀ α : H.root, (rootSpace H α : Submodule K L) ≤ (I : Submodule K L) := fun ⟨α, hα⟩ =>
-    (sl2SubmoduleOfRoot_eq_sup α _ ▸ le_sup_of_le_left le_sup_left).trans
+    (le_of_le_of_eq (le_sup_of_le_left le_sup_left) (sl2SubmoduleOfRoot_eq_sup α _).symm).trans
       (le_iSup_of_le ⟨α, trivial, (Finset.mem_filter.mp hα).2⟩ le_rfl)
   have h3 : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) ≤ I :=
     sup_le h1 (iSup_le h2)
   have h4 : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) = ⊤ := by
     simpa using congrArg (↑· : LieSubmodule K H L → Submodule K L) (iSup_rootSpace_eq_top H)
   rw [h4, top_le_iff] at h3
-  exact eq_top_iff.mpr fun x _ => (h3 ▸ Submodule.mem_top : x ∈ (I : Submodule K L))
+  exact eq_top_iff.mpr fun x _ => by
+    change x ∈ (I : Submodule K L); rw [h3]; exact Submodule.mem_top
 
 section IsSimple
 
