@@ -3,11 +3,13 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -101,7 +103,7 @@ The following is the second equivalent characterization of linear disjointness:
   their span is not `R ^ 2`). In particular, if any two elements in the intersection of `M` and `N`
   are commutative, then the rank of the intersection of `M` and `N` is at most one.
 
-  These results are stated using bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a not bundled
+  These results are stated using a bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a non-bundled
   version (i.e. `a : S` with `ha : a ∈ M ⊓ N`), you may use `LinearIndependent.of_comp` and
   `FinVec.map_eq` (in `Mathlib/Data/Fin/Tuple/Reflection.lean`),
   see the following code snippet:
@@ -126,6 +128,8 @@ assuming `S` is commutative.
 linearly disjoint, linearly independent, tensor product
 
 -/
+
+@[expose] public section
 
 open Module
 open scoped TensorProduct
@@ -265,7 +269,7 @@ theorem of_linearDisjoint_fg_left
     (H : ∀ M' : Submodule R S, M' ≤ M → M'.FG → M'.LinearDisjoint N) :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨M', hM, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
@@ -278,7 +282,7 @@ theorem of_linearDisjoint_fg_right
     (H : ∀ N' : Submodule R S, N' ≤ N → N'.FG → M.LinearDisjoint N') :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨N', hN, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_right_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_right_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)

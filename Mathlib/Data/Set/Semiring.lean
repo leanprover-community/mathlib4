@@ -3,10 +3,12 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Kleene
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Order.Kleene
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Sets as a semiring under union
@@ -15,6 +17,8 @@ This file defines `SetSemiring α`, an alias of `Set α`, which we endow with `�
 pointwise `*` as multiplication. If `α` is a (commutative) monoid, `SetSemiring α` is a
 (commutative) semiring.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -184,10 +188,18 @@ noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
+  le_add_self _ _ := subset_union_right
   le_self_add _ _ := subset_union_left
 
 noncomputable instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
   CanonicallyOrderedAdd.toIsOrderedRing
+
+/-- If `α` is a monoid, the map that sends `a : α` to
+the singleton set `{a}` is a monoid homomorphism. -/
+def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
+  toFun a := up {a}
+  map_one' := rfl
+  map_mul' _ _ := image2_singleton.symm
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/

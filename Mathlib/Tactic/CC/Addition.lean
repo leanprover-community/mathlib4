@@ -3,12 +3,16 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Tactic.CC.MkProof
+module
+
+public meta import Mathlib.Data.Option.Defs
+public meta import Mathlib.Tactic.CC.MkProof
 
 /-!
-# Process when an new equation is added to a congruence closure
+# Process when a new equation is added to a congruence closure
 -/
+
+public meta section
 
 universe u
 
@@ -501,7 +505,7 @@ def setACVar (e : Expr) : CCM Unit := do
     let newRootEntry := { rootEntry with acVar := some e }
     modify fun ccs => { ccs with entries := ccs.entries.insert eRoot newRootEntry }
 
-/-- If `e` isn't an AC variable, set `e` as an new AC variable. -/
+/-- If `e` isn't an AC variable, set `e` as a new AC variable. -/
 def internalizeACVar (e : Expr) : CCM Bool := do
   let ccs ← get
   if ccs.acEntries.contains e then return false
@@ -894,11 +898,11 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     ```
     t ▸ p ≍ p
 
-    theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
-      (p : P a) {a' : A} (H : a = a'), @Eq.rec.{l₁ l₂} A a P p a' H ≍ p
+    theorem eqRec_heq_self.{l₁, l₂} : ∀ {A : Sort l₁} {a : A} {P : (a' : A) → a = a' → Sort l₂}
+      (p : P a rfl) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
     ```
     -/
-    let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
+    let proof := mkApp6 (.const ``eqRec_heq_self [l₁, l₂]) A a P p a' H
     pushHEq e p proof
 
   if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then
@@ -959,7 +963,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
       { ccs with
         subsingletonReprs := ccs.subsingletonReprs.insert typeRoot e }
 
-/-- Add an new entry for `e` to the congruence closure. -/
+/-- Add a new entry for `e` to the congruence closure. -/
 partial def mkEntry (e : Expr) (interpreted : Bool) : CCM Unit := do
   if (← getEntry e).isSome then return
   let constructor ← isConstructorApp e

@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.Topology.Algebra.Group.Compact
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
 # Haar measure
@@ -59,6 +61,8 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
     invalid.
 * https://en.wikipedia.org/wiki/Haar_measure
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -287,7 +291,7 @@ theorem prehaar_self {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).
 theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Compacts G)
     (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_add_div_same, div_le_div_iff_of_pos_right]
+  simp only [prehaar]; rw [← add_div, div_le_div_iff_of_pos_right]
   · exact mod_cast index_union_le K₁ K₂ hU
   · exact mod_cast index_pos K₀ hU
 
@@ -295,7 +299,7 @@ theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Comp
 theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Compacts G}
     (hU : (interior U).Nonempty) (h : Disjoint (K₁.1 * U⁻¹) (K₂.1 * U⁻¹)) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) = prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_add_div_same]
+  simp only [prehaar]; rw [← add_div]
   -- Porting note: Here was `congr`, but `to_additive` failed to generate a theorem.
   refine congr_arg (fun x : ℝ => x / index K₀ U) ?_
   exact mod_cast index_union_eq K₁ K₂ hU h
@@ -604,13 +608,13 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
 
 /-- **Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+In any locally compact group `G` with a Haar measure `μ` that's inner regular on finite measure
 sets, for any measurable set `E` of finite positive measure, the set `E / E` is a neighbourhood of
 `1`. -/
 @[to_additive
 /-- **Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+In any locally compact group `G` with a Haar measure `μ` that's inner regular on finite measure
 sets, for any measurable set `E` of finite positive measure, the set `E - E` is a neighbourhood of
 `0`. -/]
 theorem div_mem_nhds_one_of_haar_pos_ne_top (μ : Measure G) [IsHaarMeasure μ]
@@ -653,7 +657,7 @@ variable [SecondCountableTopology G]
 @[to_additive
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
   any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
-  This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
+  This is slightly weaker than assuming that `μ` is an additive Haar measure (in particular we don't
   require `μ ≠ 0`).
   See also `isAddLeftInvariant_eq_smul_of_regular`
   for a statement not assuming second-countability. -/]

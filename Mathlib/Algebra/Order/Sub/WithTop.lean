@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+module
+
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Lemma about subtraction in ordered monoids with a top element adjoined.
@@ -19,6 +21,8 @@ additivization of the usual convention `0⁻¹ = 0` and is relevant in valuation
 other instance is only registered for `LinearOrderedAddCommGroup α` (which doesn't have a bottom
 element, unless the group is trivial), this shouldn't create diamonds.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

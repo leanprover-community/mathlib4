@@ -3,12 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Declarations about scalar multiplication on `Finsupp`
@@ -18,6 +20,8 @@ import Mathlib.GroupTheory.GroupAction.Hom
 This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
