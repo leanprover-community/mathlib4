@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.SuccPred.Relation
@@ -141,6 +142,11 @@ def IsPath.pathGraphIsoToSubgraph [LawfulBEq V] (hw : w.IsPath) :
     refine ⟨fun hadj ↦ ?_, w.pathGraphHomToSubgraph.map_rel'⟩
     grind [w.toSubgraph_adj_iff.mp hadj, pathGraph_adj, getVert_eq_getD_support,
       pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup.getElem_inj_iff]
+
+variable {w} in
+/-- A walk induces a homomorphism from a path graph to the graph -/
+def pathGraphCopy [LawfulBEq V] (hw : w.IsPath) : Copy (pathGraph w.support.length) G :=
+  w.toSubgraph.coeCopy.comp hw.pathGraphIsoToSubgraph.toCopy
 
 end Walk
 
