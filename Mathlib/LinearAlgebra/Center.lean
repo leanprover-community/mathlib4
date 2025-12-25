@@ -49,7 +49,7 @@ but they are not left multiplication by some element.
 
 @[expose] public section
 
-open Module LinearMap LinearEquiv Set
+open Module LinearMap LinearEquiv Subsemiring Subring
 
 namespace LinearMap
 
@@ -59,11 +59,8 @@ theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
     [Module R V] {f : V →ₗ[R] V} {a : R}
     (hf : ∀ x, f x = a • x) :
     f ∈ center (End R V) := by
-  simp only [mem_center_iff, isMulCentral_iff, mul_assoc,
-    implies_true, and_self, and_true, commute_iff_eq]
-  intro g
-  ext x
-  simp [hf]
+  simp only [Subsemiring.mem_center_iff]
+  intro; ext; simp [hf]
 
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
@@ -72,8 +69,8 @@ theorem commute_transvections_iff_of_basis
     {ι : Type*} [Nontrivial ι] (b : Basis ι R V)
     {f : V →ₗ[R] V}
     (hcomm : ∀ i j (r : R) (_ : i ≠ j), Commute f (transvection (b.coord i) (r • b j))) :
-    ∃ a ∈ center R, ∀ x, f x = a • x := by
-  simp only [Semigroup.mem_center_iff]
+    ∃ a ∈ Subring.center R, ∀ x, f x = a • x := by
+  simp only [Subring.mem_center_iff]
   rcases subsingleton_or_nontrivial V with hV | hV
   · use 1
     suffices ∀ x, f x = x by simpa using this
@@ -109,17 +106,17 @@ theorem commute_transvections_iff_of_basis
 consists of homotheties with central ratio. -/
 theorem center_End_of_free
     [Ring R] [AddCommGroup V] [Module R V] [Free R V] {f : V →ₗ[R] V} :
-    f ∈ center (End R V) ↔ ∃ a ∈ center R, ∀ x, f x = a • x  := by
+    f ∈ Subring.center (End R V) ↔ ∃ a ∈ Subring.center R, ∀ x, f x = a • x  := by
   symm
   refine ⟨fun ⟨a, hf, ha⟩ ↦ mem_center_of_apply_eq_smul ha, fun h ↦ ?_⟩
   rcases subsingleton_or_nontrivial V with hV | hV
   · use 1
-    simp only [one_mem_center, one_smul, true_and]
+    simp only [one_mem, one_smul, true_and]
     intro x
     apply hV.allEq
   let ι := Free.ChooseBasisIndex R V
   let b : Basis ι R V := Free.chooseBasis R V
-  rw [Semigroup.mem_center_iff] at h
+  rw [Subring.mem_center_iff] at h
   rcases subsingleton_or_nontrivial ι with hι | hι
   · let i : ι := by exact Classical.ofNonempty
     have : Unique ι := _root_.uniqueOfSubsingleton i
@@ -128,10 +125,10 @@ theorem center_End_of_free
       nth_rewrite 1 [← b.linearCombination_repr x]
       simp [Finsupp.linearCombination_unique, Subsingleton.allEq default i]
     use b.coord i (f (b i))
+    rw [Subring.mem_center_iff]
     suffices ∀ r : R, Commute (b.coord i (f (b i))) r by
-      constructor
-      · simpa [mem_center_iff, isMulCentral_iff, mul_assoc] using this
-      simp only [commute_iff_eq] at this
+      simp_rw [commute_iff_eq] at this
+      refine ⟨fun r ↦ (this r).symm, ?_⟩
       intro x
       rw [h' x, LinearMap.map_smul]
       nth_rewrite 1 [h' (f (b i))]
