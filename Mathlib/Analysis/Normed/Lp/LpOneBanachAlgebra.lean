@@ -5,9 +5,9 @@ Authors: Fengyang Wang
 -/
 module
 
-import Mathlib.Analysis.Normed.Lp.lpSpace
-import Mathlib.Algebra.Order.Antidiag.Prod
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
 
 /-!
 # Banach Algebra Structure on ℓ¹ via Cauchy Product
@@ -52,6 +52,8 @@ The ring axioms are proven directly via finite sum manipulations. Associativity
 uses `Finset.sum_nbij'` to establish a bijection between the two triple-sum indexing
 schemes `⟨(i+j, k), (i, j)⟩ ↔ ⟨(i, j+k), (j, k)⟩`.
 -/
+
+@[expose] public section
 
 open scoped BigOperators NNReal ENNReal
 
@@ -99,7 +101,7 @@ section Product
 variable [AddCommMonoid G] [HasAntidiagonal G] [Semiring R]
 
 /-- Cauchy product (convolution) of functions: `(a * b)_n = Σ_{k+l=n} a_k * b_l`. -/
-public def apply (a b : G → R) : G → R :=
+def apply (a b : G → R) : G → R :=
   fun n => ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2
 
 /-- Notation for Cauchy product: `a ⋆ b` denotes the convolution of functions `a` and `b`. -/
