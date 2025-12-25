@@ -597,9 +597,8 @@ theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
   rw [SetLike.le_def]
   intro m h
-  change f₁ m + f₂ m ∈ q
-  change f₁ m ∈ q ∧ f₂ m ∈ q at h
-  apply q.add_mem h.1 h.2
+  simp only [mem_comap, mem_inf, LinearMap.add_apply] at h ⊢
+  exact add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
     {q : Submodule R₂ M₂} : Set.SurjOn f p q ↔ q ≤ p.map f :=
