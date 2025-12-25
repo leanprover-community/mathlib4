@@ -51,6 +51,19 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       intro ⟨n, f, hfsurj, hkernel⟩
       use Fin n, inferInstance, f
     · -- mpr
+      intro ⟨α, instα, f, hfsurj, hkernel⟩
+      classical
+      let n := Fintype.card α
+      let e := Fintype.equivFin α
+      -- Compose: FreeGroup (Fin n) → FreeGroup α → G
+      let f' := f.comp (FreeGroup.map e.invFun)
+      constructor
+      use n, f'
+      constructor
+      · -- f.comp (FreeGroup.map e.invFun) is surjective
+        have h1 : Function.Surjective (FreeGroup.map e.invFun) := by
+          exact FreeGroup.map_surjective e.invFun (Equiv.surjective e.symm)
+        exact hfsurj.comp h1
       sorry
 
 variable (G : Type) [Group G] (g : G)
