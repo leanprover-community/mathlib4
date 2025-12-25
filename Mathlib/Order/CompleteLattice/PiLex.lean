@@ -27,37 +27,37 @@ namespace Pi
 namespace Lex
 variable [WellFoundedLT ι]
 
-private def inf [WellFoundedLT ι] (s : Set (Lex ((i : ι) → α i))) (i : ι) : α i :=
+private def inf [WellFoundedLT ι] (s : Set (Πₗ i, α i)) (i : ι) : α i :=
   ⨅ e : {e ∈ s | ∀ j < i, e j = inf s j}, e.1 i
 termination_by wellFounded_lt.wrap i
 
-instance : InfSet (Lex ((i : ι) → α i)) where
+instance : InfSet (Πₗ i, α i) where
   sInf s := toLex (inf s)
 
-theorem sInf_apply (s : Set (Lex ((i : ι) → α i))) (i : ι) :
+theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.1 i := by
   dsimp [sInf]
   rw [inf]
   rfl
 
-theorem sInf_apply_le {s : Set (Lex ((i : ι) → α i))} {i : ι} {e : Lex ((i : ι) → α i)}
+theorem sInf_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (he : e ∈ s) (h : ∀ j < i, e j = sInf s j) : sInf s i ≤ e i := by
   rw [sInf_apply]
   exact sInf_le ⟨⟨e, he, h⟩, rfl⟩
 
-theorem le_sInf_apply {s : Set (Lex ((i : ι) → α i))} {i : ι} {e : Lex ((i : ι) → α i)}
+theorem le_sInf_apply {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (h : ∀ f ∈ s, (∀ j < i, f j = sInf s j) → e i ≤ f i) : e i ≤ sInf s i := by
   rw [sInf_apply]
   apply le_sInf
   grind
 
-private theorem sInf_le {s : Set (Lex ((i : ι) → α i))} {e : Lex ((i : ι) → α i)}
+private theorem sInf_le {s : Set (Πₗ i, α i)} {e : Πₗ i, α i}
     (he : e ∈ s) : sInf s ≤ e := by
   by_contra! hs
   obtain ⟨a, ha⟩ := hs
   exact ha.2.not_ge (sInf_apply_le he ha.1)
 
-private theorem le_sInf {s : Set (Lex ((i : ι) → α i))} {e : Lex ((i : ι) → α i)}
+private theorem le_sInf {s : Set (Πₗ i, α i)} {e : Πₗ i, α i}
     (h : ∀ b ∈ s, e ≤ b) : e ≤ sInf s := by
   by_contra! hs
   obtain ⟨a, ha⟩ := hs
@@ -66,41 +66,41 @@ private theorem le_sInf {s : Set (Lex ((i : ι) → α i))} {e : Lex ((i : ι) �
 
 -- TODO: figure out how to use `to_dual` here
 
-instance : SupSet (Lex ((i : ι) → α i)) where
-  sSup s := sInf (α := Lex ((i : ι) → (α i)ᵒᵈ)) s
+instance : SupSet (Πₗ i, α i) where
+  sSup s := sInf (α := Πₗ i, (α i)ᵒᵈ) s
 
-theorem sSup_apply (s : Set (Lex ((i : ι) → α i))) (i : ι) :
+theorem sSup_apply (s : Set (Πₗ i, α i)) (i : ι) :
     sSup s i = ⨆ e : {e ∈ s | ∀ j < i, e j = sSup s j}, e.1 i :=
   sInf_apply (α := fun i ↦ (α i)ᵒᵈ) ..
 
-theorem le_sSup_apply {s : Set (Lex ((i : ι) → α i))} {i : ι} {e : Lex ((i : ι) → α i)}
+theorem le_sSup_apply {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (he : e ∈ s) (h : ∀ j < i, e j = sSup s j) : e i ≤ sSup s i :=
   sInf_apply_le (α := fun i ↦ (α i)ᵒᵈ) he h
 
-theorem sSup_apply_le {s : Set (Lex ((i : ι) → α i))} {i : ι} {e : Lex ((i : ι) → α i)}
+theorem sSup_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (h : ∀ f ∈ s, (∀ j < i, f j = sSup s j) → f i ≤ e i) : sSup s i ≤ e i :=
   le_sInf_apply (α := fun i ↦ (α i)ᵒᵈ) h
 
-private theorem le_sSup {s : Set (Lex ((i : ι) → α i))} {e : Lex ((i : ι) → α i)}
+private theorem le_sSup {s : Set (Πₗ i, α i)} {e : Πₗ i, α i}
     (he : e ∈ s) : e ≤ sSup s := by
   by_contra! hs
   obtain ⟨a, ha⟩ := hs
   exact ha.2.not_ge (le_sSup_apply he fun j hj ↦ (ha.1 j hj).symm)
 
-private theorem sSup_le {s : Set (Lex ((i : ι) → α i))} {e : Lex ((i : ι) → α i)}
+private theorem sSup_le {s : Set (Πₗ i, α i)} {e : Πₗ i, α i}
     (h : ∀ b ∈ s, b ≤ e) : sSup s ≤ e := by
   by_contra! hs
   obtain ⟨a, ha⟩ := hs
   refine ha.2.not_ge <| sSup_apply_le fun f hf hf' ↦ apply_le_of_toLex_le (h f hf) ?_
   simp_all
 
-noncomputable instance completeLattice : CompleteLattice (Lex ((i : ι) → α i)) where
+noncomputable instance completeLattice : CompleteLattice (Πₗ i, α i) where
   sInf_le _ _ := sInf_le
   le_sInf _ _ := le_sInf
   le_sSup _ _ := le_sSup
   sSup_le _ _ := sSup_le
 
-noncomputable instance : CompleteLinearOrder (Lex ((i : ι) → α i)) where
+noncomputable instance : CompleteLinearOrder (Πₗ i, α i) where
   __ := linearOrder
   __ := completeLattice
   __ := LinearOrder.toBiheytingAlgebra _
@@ -113,7 +113,7 @@ namespace Colex
 variable [WellFoundedGT ι]
 
 instance : InfSet (Colex ((i : ι) → α i)) where
-  sInf s := sInf (α := Lex ((i : ιᵒᵈ) → α i)) s
+  sInf s := sInf (α := Πₗ i : ιᵒᵈ, α i) s
 
 theorem sInf_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j > i, e j = sInf s j}, e.1 i :=
@@ -130,7 +130,7 @@ theorem le_sInf_apply {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex 
 -- TODO: figure out how to use `to_dual` here
 
 instance : SupSet (Colex ((i : ι) → α i)) where
-  sSup s := sSup (α := Lex ((i : ιᵒᵈ) → α i)) s
+  sSup s := sSup (α := Πₗ i : ιᵒᵈ, α i) s
 
 theorem sSup_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
     sSup s i = ⨆ e : {e ∈ s | ∀ j > i, e j = sSup s j}, e.1 i :=
