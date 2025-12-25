@@ -162,6 +162,20 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       apply hx
       simp
 
+lemma toGrothendieck_toPretopology
+    [Limits.HasPullbacks C] (J : Precoverage C) [J.HasIsos]
+    [J.IsStableUnderBaseChange] [J.IsStableUnderComposition] :
+    J.toPretopology.toGrothendieck = J.toGrothendieck := by
+  rw [toGrothendieck_eq_sInf]
+  refine le_antisymm ?_ ?_
+  · simp only [le_sInf_iff, Set.mem_setOf_eq]
+    rintro t ht S R ⟨S₀, h₁, h₂⟩
+    exact t.superset_covering ((Sieve.generate_le_iff S₀ R).2 h₂) (ht _ h₁)
+  · rw [sInf_le_iff]
+    intro t ht
+    simp only [mem_lowerBounds, Set.mem_setOf_eq] at ht
+    exact ht _ (fun S R hR ↦ ⟨R, hR, Sieve.le_generate R⟩)
+
 end Precoverage
 
 end CategoryTheory

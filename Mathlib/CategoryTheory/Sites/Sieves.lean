@@ -349,6 +349,12 @@ See `arrows_generate_map_eq_functorPushforward`. -/
 inductive map (s : Presieve X) : Presieve (F.obj X) where
   | of {Y : C} {u : Y ⟶ X} (h : s u) : map s (F.map u)
 
+variable {F} in
+lemma map.exists {s : Presieve X} {Y' : D} {f : Y' ⟶ F.obj X} (hf : s.map F f) :
+    ∃ (Y : C) (hY : Y' = F.obj Y) (u : Y ⟶ X) (_ : s u), f = eqToHom hY ≫ F.map u := by
+  obtain ⟨h⟩ := hf
+  exact ⟨_, rfl, _, h, by simp⟩
+
 section
 
 variable {F}

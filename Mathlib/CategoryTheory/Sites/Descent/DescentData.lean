@@ -398,6 +398,14 @@ lemma exists_equivalence_of_sieve_eq
     (by cat_disch) (by cat_disch), ⟨toDescentDataCompPullFunctorIso _ _ ≪≫
     Functor.isoWhiskerRight (Cat.Hom.toNatIso (F.mapId _)) _ ≪≫ Functor.leftUnitor _⟩⟩
 
+lemma nonempty_fullyFaithful_toDescentData_iff_of_sieve_eq
+    {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
+    {ι' : Type t'} {X' : ι' → C} (f' : ∀ i', X' i' ⟶ S)
+    (h : Sieve.ofArrows _ f = Sieve.ofArrows _ f') :
+    Nonempty (F.toDescentData f).FullyFaithful ↔ Nonempty (F.toDescentData f').FullyFaithful := by
+  obtain ⟨e, ⟨iso⟩⟩ := DescentData.exists_equivalence_of_sieve_eq F f f' h
+  sorry
+
 /-- Morphisms between objects in the image of the functor `F.toDescentData f`
 identify to compatible families of sections of the presheaf `F.presheafHom M N` on
 the object `Over.mk (𝟙 S)`, relatively to the family of morphisms in `Over S`
