@@ -384,7 +384,7 @@ from any submodule `p` of the domain onto the image of that submodule.
 This is a version of `LinearMap.submoduleMap` extended to linear isometries. -/
 @[simps!]
 def submoduleMap (p : Submodule R M) (e : M →ₗᵢ[R] M₁) :
-    p →ₗᵢ[R] (p.map (e : M →ₗ[R] M₁)) :=
+    p →ₗᵢ[R] p.map (e : M →ₗ[R] M₁) :=
   { e.toLinearMap.submoduleMap p with norm_map' x := e.norm_map' x }
 
 end submoduleMap
@@ -1063,7 +1063,7 @@ the image of that submodule.
 This is a version of `LinearEquiv.submoduleMap` extended to linear isometry equivalences. -/
 @[simps!]
 def submoduleMap (p : Submodule R M) (e : M ≃ₛₗᵢ[σ₁₂] M₂) :
-    p ≃ₛₗᵢ[σ₁₂] (p.map (e : M →ₛₗ[σ₁₂] M₂)) :=
+    p ≃ₛₗᵢ[σ₁₂] p.map (e : M →ₛₗ[σ₁₂] M₂) :=
   { e.toLinearEquiv.submoduleMap p with norm_map' x := e.norm_map' x }
 
 end submoduleMap
