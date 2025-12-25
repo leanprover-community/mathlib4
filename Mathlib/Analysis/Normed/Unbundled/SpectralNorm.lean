@@ -497,8 +497,6 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
       apply le_ciSup (Finite.bddAbove_range _) σ
-      · rfl
-      all_goals infer_instance
     · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist
