@@ -26,7 +26,7 @@ we say that $f = o(g)$ (resp., $f = O(g)$)
 if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
 such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$
-(resp, $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$,
+(resp., $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$),
 where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
 
 In a normed space, we can use balls of positive radius as both `U` and `V`,
@@ -304,6 +304,18 @@ lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g ∘ f)
 
 lemma _root_.ContinuousLinearMap.isBigOTVS_fun_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
   g.isBigOTVS_comp
+
+lemma _root_.LinearMap.isBigOTVS_rev_comp (g : E →ₗ[𝕜] F) (hg : comap g (𝓝 0) ≤ 𝓝 0) :
+    f =O[𝕜; l] (g ∘ f) := by
+  constructor
+  intro U hU
+  rcases mem_comap.1 (hg hU) with ⟨V, hV, hgV⟩
+  use V, hV
+  filter_upwards with a
+  refine le_egauge_of_forall_ne_zero (mem_of_mem_nhds hV) fun c hc₀ hc ↦ ?_
+  apply egauge_le_of_mem_smul
+  grw [← hgV, ← (IsUnit.mk0 _ hc₀).preimage_smul_set]
+  exact hc
 
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by

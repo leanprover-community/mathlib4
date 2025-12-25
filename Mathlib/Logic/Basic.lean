@@ -143,6 +143,7 @@ protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
 
 alias dec_em := Decidable.em
 
+set_option linter.unusedDecidableInType false in
 theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias em := Classical.em
@@ -727,6 +728,10 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 
+-- This can be removed after https://github.com/leanprover/lean4/pull/11316
+-- arrives in a release candidate.
+grind_pattern Exists.choose_spec => P.choose
+
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
 @[simp]
@@ -907,6 +912,9 @@ theorem dite_apply (f : P → ∀ a, σ a) (g : ¬P → ∀ a, σ a) (a : α) :
 either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
+
+theorem apply_ite_left {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P]
+    (x y : α) (z : β) : f (if P then x else y) z = if P then f x z else f y z := by grind
 
 section
 variable [Decidable Q]

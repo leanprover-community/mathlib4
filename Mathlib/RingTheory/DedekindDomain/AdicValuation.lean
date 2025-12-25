@@ -28,8 +28,8 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
-- `IsDedekindDomain.HeightOneSpectrum.adicAbv v`is the `v`-adic absolute value on `K` defined as `b`
-  raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
+- `IsDedekindDomain.HeightOneSpectrum.adicAbv v` is the `v`-adic absolute value on `K` defined as
+  `b` raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
@@ -180,10 +180,6 @@ theorem intValuation_def {r : R} :
     v.intValuation r = if r = 0 then 0 else
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   rfl
-
-@[deprecated intValuation_apply (since := "2025-04-26")]
-theorem intValuation_toFun (r : R) :
-    v.intValuation r = v.intValuationDef r := rfl
 
 open scoped Classical in
 theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
@@ -513,11 +509,9 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h :
-        (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      rw [h]
+      rw [algebraMap_adicCompletion]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=
@@ -649,7 +643,8 @@ theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
 variable {R K} in
 theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
     v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
+  contrapose
+  rw [← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
   exact adicAbv_coe_le_one v hb r
 
 end AbsoluteValue

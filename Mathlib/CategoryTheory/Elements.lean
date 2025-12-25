@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # The category of elements
@@ -65,7 +66,7 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   id p := ⟨𝟙 p.1, by simp⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
-/-- Natural transformations are mapped to functors between category of elements -/
+/-- Natural transformations are mapped to functors between categories of elements. -/
 @[simps]
 def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.Elements where
   obj := fun ⟨X, x⟩ ↦ ⟨_, φ.app X x⟩
@@ -75,7 +76,7 @@ def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.
 @[simps]
 def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
   obj F := Cat.of F.Elements
-  map n := NatTrans.mapElements n
+  map n := (NatTrans.mapElements n).toCatHom
 
 namespace CategoryOfElements
 
@@ -108,6 +109,11 @@ def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1) (he : F.map e.
     x ≅ y where
   hom := homMk x y e.hom he
   inv := homMk y x e.inv (by rw [← he, FunctorToTypes.map_inv_map_hom_apply])
+
+instance [LocallySmall.{w} C] (F : C ⥤ Type w) : LocallySmall.{w} F.Elements where
+  hom_small := by
+    rintro ⟨X, _⟩ ⟨Y, y⟩
+    exact small_of_injective (f := fun g ↦ g.val) (by cat_disch)
 
 end CategoryOfElements
 

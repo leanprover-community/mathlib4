@@ -92,7 +92,7 @@ theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (h
 
 /--
 If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
-then `f₁` and `f₂` induce the same divisors on`U`.
+then `f₁` and `f₂` induce the same divisors on `U`.
 -/
 theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
@@ -163,6 +163,54 @@ The divisor of a constant function is `0`.
 /-!
 ## Behavior under Standard Operations
 -/
+
+/--
+The divisor of `f₁ + f₂` is larger than or equal to the minimum of the divisors of `f₁` and `f₂`,
+respectively.
+-/
+theorem min_divisor_le_divisor_add {f₁ f₂ : 𝕜 → E} {z : 𝕜} {U : Set 𝕜} (hf₁ : MeromorphicOn f₁ U)
+    (hf₂ : MeromorphicOn f₂ U) (h₁z : z ∈ U) (h₃ : meromorphicOrderAt (f₁ + f₂) z ≠ ⊤) :
+    min (divisor f₁ U z) (divisor f₂ U z) ≤ divisor (f₁ + f₂) U z := by
+  by_cases! hz : z ∉ U
+  · simp_all
+  rw [divisor_apply hf₁ hz, divisor_apply hf₂ hz, divisor_apply (hf₁.add hf₂) hz]
+  by_cases h₁ : meromorphicOrderAt f₁ z = ⊤
+  · simp_all
+  by_cases h₂ : meromorphicOrderAt f₂ z = ⊤
+  · simp_all
+  rw [← WithTop.untop₀_min h₁ h₂]
+  apply WithTop.untop₀_le_untop₀ h₃
+  exact meromorphicOrderAt_add (hf₁ z hz) (hf₂ z hz)
+
+/--
+The pole divisor of `f₁ + f₂` is smaller than or equal to the maximum of the pole divisors of `f₁`
+and `f₂`, respectively.
+-/
+theorem negPart_divisor_add_le_max {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf₁ : MeromorphicOn f₁ U)
+    (hf₂ : MeromorphicOn f₂ U) :
+    (divisor (f₁ + f₂) U)⁻ ≤ max (divisor f₁ U)⁻ (divisor f₂ U)⁻ := by
+  intro z
+  by_cases! hz : z ∉ U
+  · simp [hz]
+  simp only [Function.locallyFinsuppWithin.negPart_apply, Function.locallyFinsuppWithin.max_apply]
+  by_cases hf₁₂ : meromorphicOrderAt (f₁ + f₂) z = ⊤
+  · simp [divisor_apply (hf₁.add hf₂) hz, hf₁₂, negPart_nonneg]
+  rw [← negPart_min]
+  apply ((le_iff_posPart_negPart _ _).1 (min_divisor_le_divisor_add hf₁ hf₂ hz hf₁₂)).2
+
+/--
+The pole divisor of `f₁ + f₂` is smaller than or equal to the sum of the pole divisors of `f₁` and
+`f₂`, respectively.
+-/
+theorem negPart_divisor_add_le_add {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf₁ : MeromorphicOn f₁ U)
+    (hf₂ : MeromorphicOn f₂ U) :
+    (divisor (f₁ + f₂) U)⁻ ≤ (divisor f₁ U)⁻ + (divisor f₂ U)⁻ := by
+  calc (divisor (f₁ + f₂) U)⁻
+    _ ≤ max (divisor f₁ U)⁻ (divisor f₂ U)⁻ :=
+      negPart_divisor_add_le_max hf₁ hf₂
+    _ ≤ (divisor f₁ U)⁻ + (divisor f₂ U)⁻ := by
+      by_cases h : (divisor f₁ U)⁻ ≤ (divisor f₂ U)⁻
+      <;> simp_all [negPart_nonneg]
 
 /--
 If orders are finite, the divisor of the scalar product of two meromorphic functions is the sum of

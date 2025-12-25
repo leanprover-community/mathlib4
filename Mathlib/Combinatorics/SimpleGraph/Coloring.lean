@@ -430,8 +430,9 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 
-theorem eq_top_of_chromaticNumber_eq_card [DecidableEq V] [Fintype V]
+theorem eq_top_of_chromaticNumber_eq_card [Fintype V]
     (h : G.chromaticNumber = Fintype.card V) : G = ⊤ := by
+  classical
   by_contra! hh
   have : G.chromaticNumber ≤ Fintype.card V - 1 := by
     obtain ⟨a, b, hne, _⟩ := ne_top_iff_exists_not_adj.mp hh
@@ -443,7 +444,7 @@ theorem eq_top_of_chromaticNumber_eq_card [DecidableEq V] [Fintype V]
   have := Fintype.one_lt_card_iff_nontrivial.mpr <| SimpleGraph.nontrivial_iff.mp ⟨_, _, hh⟩
   grind
 
-theorem chromaticNumber_eq_card_iff [DecidableEq V] [Fintype V] :
+theorem chromaticNumber_eq_card_iff [Fintype V] :
     G.chromaticNumber = Fintype.card V ↔ G = ⊤ :=
   ⟨eq_top_of_chromaticNumber_eq_card, fun h ↦ h ▸ chromaticNumber_top⟩
 

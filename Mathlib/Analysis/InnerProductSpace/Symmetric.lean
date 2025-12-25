@@ -197,7 +197,7 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
           I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
         4 := by
-  rcases@I_mul_I_ax 𝕜 _ with (h | h)
+  rcases @I_mul_I_ax 𝕜 _ with (h | h)
   · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
       inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
     suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
@@ -207,8 +207,8 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
     simp_rw [h, mul_zero, add_zero]
     norm_cast
   · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
-      LinearMap.map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub,
-      sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
+      map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub, sub_sub,
+      ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
     ring
 
 theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommGroup F]
@@ -332,6 +332,14 @@ theorem IsSymmetricProjection.sub_of_range_le_range {p q : E →ₗ[𝕜] E}
   refine ⟨hp.isIdempotentElem.sub hq.isIdempotentElem (LinearMap.ext fun x => ext_inner_left 𝕜
     fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
   simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
+
+theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmetric) (hf' : f ≠ 0)
+    {α : 𝕜} : (α • f).IsSymmetric ↔ IsSelfAdjoint α := by
+  refine ⟨fun h ↦ ?_, hf.smul⟩
+  simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
+    inner_zero_right] at hf'
+  simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
+    (forall_comm.eq ▸ hf')] using h
 
 end LinearMap
 

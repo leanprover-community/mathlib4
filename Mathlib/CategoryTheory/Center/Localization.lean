@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Center.Basic
+public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -67,9 +67,7 @@ lemma localization_zero :
 
 lemma localization_add :
     (r + s).localization L W = r.localization L W + s.localization L W :=
-  ext_of_localization L W _ _ (fun X => by
-    rw [localization_app, NatTrans.app_add, NatTrans.app_add, L.map_add,
-      localization_app, localization_app])
+  ext_of_localization L W _ _ (by simp)
 
 /-- The morphism of rings `CatCenter C →+* CatCenter D` when `L : C ⥤ D`
 is an additive localization functor between preadditive categories. -/

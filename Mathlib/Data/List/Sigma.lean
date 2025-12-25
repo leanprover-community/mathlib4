@@ -78,9 +78,6 @@ theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, S
 theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 := by
   grind
 
-@[deprecated (since := "2025-04-27")]
-alias not_eq_key := ne_key
-
 /-! ### `NodupKeys` -/
 
 
@@ -235,8 +232,10 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
     (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
+omit [DecidableEq α] [DecidableEq α'] in
 theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
     (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
+  classical
   induction l with
   | nil => grind [nodupKeys_nil]
   | cons hd tl =>

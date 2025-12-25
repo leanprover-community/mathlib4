@@ -159,7 +159,7 @@ theorem mem_srange_self (f : F) (x : R) : f x ∈ srange f :=
 theorem map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = srange (g.comp f) := by
   simpa only [srange_eq_map] using (⊤ : NonUnitalSubsemiring R).map_map g f
 
-/-- The range of a morphism of non-unital semirings is finite if the domain is a finite. -/
+/-- The range of a morphism of non-unital semirings is finite if the domain is finite. -/
 instance finite_srange [Finite R] (f : F) : Finite (srange f : NonUnitalSubsemiring S) :=
   (Set.finite_range f).to_subtype
 
@@ -177,6 +177,7 @@ theorem coe_sInf (S : Set (NonUnitalSubsemiring R)) :
     ((sInf S : NonUnitalSubsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (NonUnitalSubsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -185,8 +186,9 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} :
     (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
@@ -744,7 +746,7 @@ theorem sofLeftInverse'_symm_apply {g : S → R} {f : F} (h : Function.LeftInver
   rfl
 
 /-- Given an equivalence `e : R ≃+* S` of non-unital semirings and a non-unital subsemiring
-`s` of `R`, `non_unital_subsemiring_map e s` is the induced equivalence between `s` and
+`s` of `R`, `nonUnitalSubsemiringMap e s` is the induced equivalence between `s` and
 `s.map e` -/
 @[simps!]
 def nonUnitalSubsemiringMap (e : R ≃+* S) (s : NonUnitalSubsemiring R) :

@@ -178,18 +178,23 @@ theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
 theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 
-theorem restrictScalars_one_smulRight' (x : E) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
+theorem restrictScalars_toSpanSingleton' (x : E) :
+    ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
   ext ⟨a, b⟩
   simp [map_add, mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 
-theorem restrictScalars_one_smulRight (x : ℂ) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =
+theorem restrictScalars_toSpanSingleton (x : ℂ) :
+    ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] ℂ) =
     x • (1 : ℂ →L[ℝ] ℂ) := by
   ext1 z
   dsimp
   apply mul_comm
+
+@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight' :=
+  restrictScalars_toSpanSingleton'
+@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight :=
+  restrictScalars_toSpanSingleton
 
 /-- The complex-conjugation function from `ℂ` to itself is an isometric linear equivalence. -/
 def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
@@ -639,8 +644,8 @@ open Metric in
 the `slitPlane` if it does not contain `-r`. -/
 lemma subset_slitPlane_iff_of_subset_sphere {r : ℝ} {s : Set ℂ} (hs : s ⊆ sphere 0 r) :
     s ⊆ slitPlane ↔ (-r : ℂ) ∉ s := by
-  simp_rw +singlePass [← not_iff_not, Set.subset_def, mem_slitPlane_iff_not_le_zero]
-  push ¬ _
+  simp_rw [Set.subset_def, mem_slitPlane_iff_not_le_zero]
+  contrapose!
   refine ⟨?_, fun hr ↦ ⟨_, hr, by simpa using hs hr⟩⟩
   rintro ⟨z, hzs, hz⟩
   have : ‖z‖ = r := by simpa using hs hzs
