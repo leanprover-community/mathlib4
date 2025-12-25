@@ -65,9 +65,7 @@ theorem Topology.IsOpenEmbedding.baireSpace {Y : Type*} [TopologicalSpace Y] {p 
       _ ⊆ closure (p '' f n) ∪ (interior (closure s))ᶜ := union_subset_union
           (closure_minimal (hp.continuous.range_subset_closure_image_dense (hdf n))
           isClosed_closure) (subset_refl (interior (closure s))ᶜ)
-      _ ⊆ closure (p '' f n ∩ s) ∪ (interior (closure s))ᶜ := by gcongr; simp [s]
-      _ ⊆ closure (p '' f n) ∪ closure ((closure s)ᶜ) := union_subset_union
-        (closure_mono inter_subset_left) (by simp)
+      _ ⊆ closure (p '' f n) ∪ closure ((closure s)ᶜ) := union_subset_union (by simp) (by simp)
       _ = closure (c n) := closure_union.symm
     grind
   have c_inter_dense : Dense (⋂ n, c n) := dense_iInter_of_isOpen_nat c_open c_dense
