@@ -24,7 +24,7 @@ if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvecti
 (in a given basis), then it is an homothety whose central ratio.
 (Assumes that the basis is provided and has a non trivial set of indices.)
 
-* `LinearMap.center_End_of_free`:
+* `LinearMap.mem_center_End_iff_of_free`:
 the center of `V →ₗ[R] V` consists of homotheties with central ratio.
 
 * `LinearMap.exists_eq_smul_id_of_forall_notLinearIndependent`:
@@ -104,7 +104,7 @@ theorem commute_transvections_iff_of_basis
 
 /-- The center of linear endomorphisms of a free module
 consists of homotheties with central ratio. -/
-theorem center_End_of_free
+theorem mem_center_End_iff_of_free
     [Ring R] [AddCommGroup V] [Module R V] [Free R V] {f : V →ₗ[R] V} :
     f ∈ Subring.center (End R V) ↔ ∃ a ∈ Subring.center R, ∀ x, f x = a • x  := by
   symm
