@@ -261,7 +261,8 @@ lemma even_cycle_length_of_path
           simp_all +decide [SimpleGraph.Walk.mem_support_iff]
           have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha
           simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-          cases a ; simp_all +decide
+          cases a
+          simp_all +decide
           cases ha' <;> simp_all +decide
           cases this <;> simp_all +decide
           · aesop
