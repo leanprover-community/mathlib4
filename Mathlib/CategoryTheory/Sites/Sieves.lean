@@ -751,10 +751,16 @@ theorem pullback_inter {f : Y ⟶ X} (S R : Sieve X) :
     (S ⊓ R).pullback f = S.pullback f ⊓ R.pullback f := by simp [Sieve.ext_iff]
 
 lemma pullback_ofArrows_of_iso
-    {I : Type*} {X : C} (Y : I → C) (f : ∀ i, Y i ⟶ X) {X' : C} (e : X' ≅ X) :
+    {I : Type*} {X : C} (Z : I → C) (f : ∀ i, Z i ⟶ X) {X' : C} (e : X' ≅ X) :
     pullback e.hom (Sieve.ofArrows _ f) =
       Sieve.ofArrows _ (fun i ↦ f i ≫ e.inv) := by
-  sorry
+  rw [Sieve.ext_iff]
+  intro W a
+  constructor
+  · rintro ⟨T, b, c, ⟨i⟩, fac⟩
+    exact ⟨_, b, _, ⟨i⟩, by simp [reassoc_of% fac]⟩
+  · rintro ⟨_, a, _, ⟨i⟩, rfl⟩
+    exact ⟨_, a, _, ⟨i⟩, by simp⟩
 
 theorem mem_iff_pullback_eq_top (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
   rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
