@@ -266,10 +266,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
 
-lemma rootSpace_le_sl2SubmoduleOfRoot (α : LieModule.Weight K H L) (hα : α.IsNonZero) :
-    LieAlgebra.rootSpace H α ≤ sl2SubmoduleOfRoot hα := by
-  rw [sl2SubmoduleOfRoot_eq_sup]; exact le_sup_of_le_left le_sup_left
-
 lemma H_le_invtSubmoduleToLieIdeal_top :
     (H.toLieSubmodule : Submodule K L) ≤
       invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) := by
@@ -295,7 +291,7 @@ lemma H_le_invtSubmoduleToLieIdeal_top :
   set I := invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp)
   have h1 := H_le_invtSubmoduleToLieIdeal_top (H := H)
   have h2 : ∀ α : H.root, (rootSpace H α : Submodule K L) ≤ (I : Submodule K L) := fun ⟨α, hα⟩ =>
-    (rootSpace_le_sl2SubmoduleOfRoot α (Finset.mem_filter.mp hα).2).trans
+    (sl2SubmoduleOfRoot_eq_sup α _ ▸ le_sup_of_le_left le_sup_left).trans
       (le_iSup_of_le ⟨α, trivial, (Finset.mem_filter.mp hα).2⟩ le_rfl)
   have h3 : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) ≤ I :=
     sup_le h1 (iSup_le h2)
