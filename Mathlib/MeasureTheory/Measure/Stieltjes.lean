@@ -108,7 +108,7 @@ end Prerequisites
 
 @[expose] public section
 
-variable (R : Type*) [ConditionallyCompleteLinearOrder R] [TopologicalSpace R]
+variable (R : Type*) [LinearOrder R] [TopologicalSpace R]
 
 /-! ### Basic properties of Stieltjes functions -/
 
@@ -332,7 +332,7 @@ protected def outer : OuterMeasure R :=
 theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
   OuterMeasure.ofFunction_le _
 
-variable [OrderTopology R]
+variable [OrderTopology R] [CompactIccSpace R]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -455,7 +455,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 
-omit [OrderTopology R] in
+omit [OrderTopology R] [CompactIccSpace R] in
 theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
   have : Nonempty R := ⟨c⟩
@@ -518,6 +518,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
   exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
 
+omit [CompactIccSpace R] in
 theorem borel_le_measurable [SecondCountableTopology R] :
     borel R ≤ f.outer.caratheodory := by
   rw [borel_eq_generateFrom_Ioi]
@@ -621,18 +622,21 @@ theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - left
 
 theorem measure_Iic [NoMinOrder R] {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iic x) = ofReal (f x - l) := by
+  have : Nonempty R := ⟨x⟩
   refine tendsto_nhds_unique (tendsto_measure_Ioc_atBot _ _) ?_
   simp_rw [measure_Ioc]
   exact ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)
 
 lemma measure_Iio [NoMinOrder R] {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iio x) = ofReal (leftLim f x - l) := by
+  have : Nonempty R := ⟨x⟩
   rw [← Iic_diff_right, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
 
 theorem measure_Ici [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ici x) = ofReal (l - leftLim f x) := by
+  have : Nonempty R := ⟨x⟩
   refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
   simp_rw [measure_Ico]
   refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
@@ -654,6 +658,7 @@ lemma measure_Ioi [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : 
 
 lemma measure_Ioi_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : R) :
     f.measure (Ioi x) = ∞ := by
+  have : Nonempty R := ⟨x⟩
   refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
   obtain ⟨N, hN⟩ := eventually_atTop.mp (tendsto_atTop.mp hf (r + f x))
   exact (f.measure_Ioc x (max x N) ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
@@ -666,6 +671,7 @@ lemma measure_Ici_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : R) :
 
 lemma measure_Iic_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
     f.measure (Iic x) = ∞ := by
+  have : Nonempty R := ⟨x⟩
   refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
   obtain ⟨N, hN⟩ := eventually_atBot.mp (tendsto_atBot.mp hf (f x - r))
   exact (f.measure_Ioc (min x N) x ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
@@ -673,11 +679,12 @@ lemma measure_Iic_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
 
 lemma measure_Iio_of_tendsto_atBot_atBot [NoMinOrder R] (hf : Tendsto f atBot atBot) (x : R) :
     f.measure (Iio x) = ∞ := by
+  have : Nonempty R := ⟨x⟩
   obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
   rw [← top_le_iff, ← f.measure_Iic_of_tendsto_atBot_atBot hf y]
   exact measure_mono <| Set.Iic_subset_Iio.mpr <| hy
 
-theorem measure_univ [NoMinOrder R]
+theorem measure_univ [Nonempty R] [NoMinOrder R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by
   refine tendsto_nhds_unique (tendsto_measure_Iic_atTop _) ?_
@@ -698,9 +705,13 @@ lemma measure_univ_of_tendsto_atBot_atBot [Nonempty R] [NoMinOrder R] (hf : Tend
 
 lemma isFiniteMeasure [NoMinOrder R] {l u : ℝ}
     (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
-    IsFiniteMeasure f.measure := ⟨by simp [f.measure_univ hfl hfu]⟩
+    IsFiniteMeasure f.measure := by
+  constructor
+  cases isEmpty_or_nonempty R
+  · simp [eq_empty_of_isEmpty]
+  · simp [f.measure_univ hfl hfu]
 
-lemma isProbabilityMeasure [NoMinOrder R]
+lemma isProbabilityMeasure [Nonempty R] [NoMinOrder R]
     (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
     IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
