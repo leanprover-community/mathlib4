@@ -279,7 +279,8 @@ lemma H_le_invtSubmoduleToLieIdeal_top :
     have : (⟨x, hx⟩ : H.toLieSubmodule) = c.sum fun α r => r • coroot α := hc.symm
     calc x = (⟨x, hx⟩ : H.toLieSubmodule) := rfl
       _ = _ := by rw [this, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
-  rw [hx_sum]; refine Submodule.sum_mem _ fun α _ ↦ Submodule.smul_mem _ _ ?_
+  rw [hx_sum]
+  refine Submodule.sum_mem _ fun α _ ↦ Submodule.smul_mem _ (c α) ?_
   by_cases hα : α.IsNonZero
   · apply LieSubmodule.mem_iSup_of_mem ⟨α, trivial, hα⟩
     rw [sl2SubmoduleOfRoot_eq_sup]
