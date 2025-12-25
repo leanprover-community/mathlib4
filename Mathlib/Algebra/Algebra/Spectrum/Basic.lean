@@ -187,7 +187,7 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
 
 theorem units_smul_resolvent_self {r : Rˣ} {a : A} :
     r • resolvent a (r : R) = resolvent (r⁻¹ • a) (1 : R) := by
-  simpa only [Units.smul_def, Algebra.id.smul_eq_mul, Units.inv_mul] using
+  simpa only [Units.smul_def, smul_eq_mul, Units.inv_mul] using
     @units_smul_resolvent _ _ _ _ _ r r a
 
 /-- The resolvent is a unit when the argument is in the resolvent set. -/
@@ -231,7 +231,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   constructor
   · exact fun h => ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
   · rintro ⟨w, _, (x'_eq : r • w = x)⟩
-    simpa [← x'_eq ]
+    simpa [← x'_eq]
 
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by

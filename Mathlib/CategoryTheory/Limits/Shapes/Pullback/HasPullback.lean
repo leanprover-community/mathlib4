@@ -102,7 +102,7 @@ abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
 abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 
-/-- The cocone associated to the pullback of `f` and `g` -/
+/-- The cocone associated to the pushout of `f` and `g` -/
 abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
   colimit.cocone (span f g)
 
@@ -574,5 +574,13 @@ instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Catego
 instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
     [HasWidePushouts.{w} D] : HasPushouts.{v, u} D :=
   hasWidePushouts_shrink WalkingPair
+
+theorem hasPullback_symmetry_of_hasPullbacksAlong {S X Y : C} {f : X ⟶ S} [HasPullbacksAlong f]
+    {g : Y ⟶ S} : HasPullback f g :=
+  hasPullback_symmetry g f
+
+theorem hasPushouts_symmetry_of_hasPushoutsAlong {S X Y : C} {f : S ⟶ X} [HasPushoutsAlong f]
+    {g : S ⟶ Y} : HasPushout f g :=
+  hasPushout_symmetry g f
 
 end CategoryTheory.Limits

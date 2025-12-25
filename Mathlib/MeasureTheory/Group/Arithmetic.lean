@@ -57,7 +57,7 @@ variable {α : Type*}
 -/
 
 
-/-- We say that a type has `MeasurableAdd` if `(· + c)` and `(· + c)` are measurable functions.
+/-- We say that a type has `MeasurableAdd` if `(c + ·)` and `(· + c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· + ·)` see `MeasurableAdd₂`. -/
 class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
   measurable_const_add : ∀ c : M, Measurable (c + ·)
@@ -65,7 +65,7 @@ class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
 
 export MeasurableAdd (measurable_const_add measurable_add_const)
 
-/-- We say that a type has `MeasurableAdd₂` if `uncurry (· + ·)` is a measurable functions.
+/-- We say that a type has `MeasurableAdd₂` if `uncurry (· + ·)` is a measurable function.
 For a typeclass assuming measurability of `(c + ·)` and `(· + c)` see `MeasurableAdd`. -/
 class MeasurableAdd₂ (M : Type*) [MeasurableSpace M] [Add M] : Prop where
   measurable_add : Measurable fun p : M × M => p.1 + p.2
@@ -81,7 +81,7 @@ class MeasurableMul (M : Type*) [MeasurableSpace M] [Mul M] : Prop where
 
 export MeasurableMul (measurable_const_mul measurable_mul_const)
 
-/-- We say that a type has `MeasurableMul₂` if `uncurry (· * ·)` is a measurable functions.
+/-- We say that a type has `MeasurableMul₂` if `uncurry (· * ·)` is a measurable function.
 For a typeclass assuming measurability of `(c * ·)` and `(· * c)` see `MeasurableMul`. -/
 @[to_additive MeasurableAdd₂]
 class MeasurableMul₂ (M : Type*) [MeasurableSpace M] [Mul M] : Prop where
@@ -94,22 +94,22 @@ section Mul
 variable {M α β : Type*} [MeasurableSpace M] [Mul M] {m : MeasurableSpace α}
   {mβ : MeasurableSpace β} {f g : α → M} {μ : Measure α}
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem Measurable.const_mul [MeasurableMul M] (hf : Measurable f) (c : M) :
     Measurable fun x => c * f x :=
   (measurable_const_mul c).comp hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem AEMeasurable.const_mul [MeasurableMul M] (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => c * f x) μ :=
   (MeasurableMul.measurable_const_mul c).comp_aemeasurable hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem Measurable.mul_const [MeasurableMul M] (hf : Measurable f) (c : M) :
     Measurable fun x => f x * c :=
   (measurable_mul_const c).comp hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => f x * c) μ :=
   (measurable_mul_const c).comp_aemeasurable hf
@@ -191,20 +191,20 @@ theorem AEMeasurable.pow (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => f x ^ g x) μ :=
   measurable_pow.comp_aemeasurable (hf.prodMk hg)
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem Measurable.pow_const (hf : Measurable f) (c : γ) : Measurable fun x => f x ^ c :=
   hf.pow measurable_const
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem AEMeasurable.pow_const (hf : AEMeasurable f μ) (c : γ) :
     AEMeasurable (fun x => f x ^ c) μ :=
   hf.pow aemeasurable_const
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem Measurable.const_pow (hg : Measurable g) (c : β) : Measurable fun x => c ^ g x :=
   measurable_const.pow hg
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem AEMeasurable.const_pow (hg : AEMeasurable g μ) (c : β) :
     AEMeasurable (fun x => c ^ g x) μ :=
   aemeasurable_const.pow hg
@@ -219,7 +219,7 @@ class MeasurableSub (G : Type*) [MeasurableSpace G] [Sub G] : Prop where
 
 export MeasurableSub (measurable_const_sub measurable_sub_const)
 
-/-- We say that a type has `MeasurableSub₂` if `uncurry (· - ·)` is a measurable functions.
+/-- We say that a type has `MeasurableSub₂` if `uncurry (· - ·)` is a measurable function.
 For a typeclass assuming measurability of `(c - ·)` and `(· - c)` see `MeasurableSub`. -/
 class MeasurableSub₂ (G : Type*) [MeasurableSpace G] [Sub G] : Prop where
   measurable_sub : Measurable fun p : G × G => p.1 - p.2
@@ -235,7 +235,7 @@ class MeasurableDiv (G₀ : Type*) [MeasurableSpace G₀] [Div G₀] : Prop wher
 
 export MeasurableDiv (measurable_const_div measurable_div_const)
 
-/-- We say that a type has `MeasurableDiv₂` if `uncurry (· / ·)` is a measurable functions.
+/-- We say that a type has `MeasurableDiv₂` if `uncurry (· / ·)` is a measurable function.
 For a typeclass assuming measurability of `(c / ·)` and `(· / c)` see `MeasurableDiv`. -/
 @[to_additive MeasurableSub₂]
 class MeasurableDiv₂ (G₀ : Type*) [MeasurableSpace G₀] [Div G₀] : Prop where
@@ -248,22 +248,22 @@ section Div
 variable {G α β : Type*} [MeasurableSpace G] [Div G] {m : MeasurableSpace α}
   {mβ : MeasurableSpace β} {f g : α → G} {μ : Measure α}
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem Measurable.const_div [MeasurableDiv G] (hf : Measurable f) (c : G) :
     Measurable fun x => c / f x :=
   (MeasurableDiv.measurable_const_div c).comp hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem AEMeasurable.const_div [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G) :
     AEMeasurable (fun x => c / f x) μ :=
   (MeasurableDiv.measurable_const_div c).comp_aemeasurable hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem Measurable.div_const [MeasurableDiv G] (hf : Measurable f) (c : G) :
     Measurable fun x => f x / c :=
   (MeasurableDiv.measurable_div_const c).comp hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G) :
     AEMeasurable (fun x => f x / c) μ :=
   (MeasurableDiv.measurable_div_const c).comp_aemeasurable hf
@@ -356,11 +356,11 @@ section Inv
 variable {G α : Type*} [Inv G] [MeasurableSpace G] [MeasurableInv G] {m : MeasurableSpace α}
   {f : α → G} {μ : Measure α}
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem Measurable.inv (hf : Measurable f) : Measurable fun x => (f x)⁻¹ :=
   measurable_inv.comp hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)⁻¹) μ :=
   measurable_inv.comp_aemeasurable hf
 
@@ -520,7 +520,8 @@ variable {M X α β : Type*} [MeasurableSpace X] [SMul M X]
 section MeasurableConstSMul
 variable [MeasurableConstSMul M X]
 
-@[to_additive (attr := fun_prop, measurability)]
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
+@[to_additive (attr := fun_prop)]
 lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :=
   (measurable_const_smul c).comp hg
 
@@ -531,15 +532,12 @@ lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Meas
     (c : M) : Measurable fun a ↦ (c • g a) (h a) :=
   (hg.comp <| measurable_id.prodMk hh).const_smul _
 
-@[deprecated (since := "2025-04-23")] alias Measurable.const_smul' := Measurable.fun_const_smul
-
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
 
-@[deprecated (since := "2025-04-23")] alias AEMeasurable.const_smul' := AEMeasurable.fun_const_smul
-
-@[to_additive (attr := fun_prop, measurability)]
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
+@[to_additive (attr := fun_prop)]
 lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
   hf.fun_const_smul c
 
@@ -584,11 +582,11 @@ instance (priority := 100) MeasurableSMul₂.toMeasurableSMul [MeasurableSMul₂
 
 variable [MeasurableSMul M X]
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem Measurable.smul_const (hf : Measurable f) (y : X) : Measurable fun x => f x • y :=
   (MeasurableSMul.measurable_smul_const y).comp hf
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem AEMeasurable.smul_const (hf : AEMeasurable f μ) (y : X) :
     AEMeasurable (fun x => f x • y) μ :=
   (MeasurableSMul.measurable_smul_const y).comp_aemeasurable hf

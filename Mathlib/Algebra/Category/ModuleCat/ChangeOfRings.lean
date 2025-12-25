@@ -150,7 +150,7 @@ section
 
 variable {R : Type u₁} [Ring R] (f : R →+* R)
 
-/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphism identifies
+/-- For an `R`-module `M`, the restriction of scalars of `M` by the identity morphism identifies
 to `M`. -/
 def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
     (restrictScalars f).obj M ≅ M :=
@@ -395,10 +395,7 @@ instance hasSMul : SMul S <| (restrictScalars f).obj (of _ S) →ₗ[R] M where
     { toFun := fun s' : S => g (s' * s : S)
       map_add' := fun x y : S => by rw [add_mul, map_add]
       map_smul' := fun r (t : S) => by
-        -- Porting note: needed some erw's even after dsimp to clean things up
-        dsimp
-        rw [← map_smul]
-        erw [smul_eq_mul, smul_eq_mul, mul_assoc] }
+        simp [← map_smul, ModuleCat.restrictScalars.smul_def (M := ModuleCat.of _ S), mul_assoc] }
 
 @[simp]
 theorem smul_apply' (s : S) (g : (restrictScalars f).obj (of _ S) →ₗ[R] M) (s' : S) :
@@ -751,6 +748,7 @@ restriction of scalars.
 def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂, u₁, u₂} f where
   app _ := Unit.map.{u₁,u₂,v} f
 
+set_option backward.proofsInPublic true in
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y` -/
 @[simps! hom_apply]
@@ -858,7 +856,7 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
   (extendRestrictScalarsAdj f).isRightAdjoint
 
 noncomputable instance preservesLimit_restrictScalars
-    {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
+    {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category* J]
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => ⟨by
@@ -866,7 +864,7 @@ noncomputable instance preservesLimit_restrictScalars
     exact isLimitOfReflects (forget₂ _ AddCommGrpCat) hc'⟩⟩
 
 instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
-    (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
+    (f : R →+* S) {J : Type*} [Category* J] (F : J ⥤ ModuleCat.{v} S)
     [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)] :
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
   have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrpCat) :=
