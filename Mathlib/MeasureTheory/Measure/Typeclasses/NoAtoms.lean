@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Restrict
+public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Measures having no atoms
