@@ -404,8 +404,8 @@ lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.W
   rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _),
       ← Set.cast_ncard (finite_neighborSet_toSubgraph p), hcyc
         (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
-          Set.nonempty_of_ncard_ne_zero <| by simp [
-          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
+          Set.nonempty_of_ncard_ne_zero <| by
+            simp [hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
       hp.ncard_neighborSet_toSubgraph_eq_two (by simp_all)]
 
 open scoped symmDiff

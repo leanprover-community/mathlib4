@@ -262,7 +262,7 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
   have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
-  have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 one_le_two
+  have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 two_ne_zero
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
     rw [← iteratedDerivWithin_one]
     exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud

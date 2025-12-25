@@ -62,8 +62,8 @@ lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q
 
 /-- The map `Cochain K L n → Cochain (K⟦a⟧) L n'` when `n + a = n'`. -/
 def leftShift (a n' : ℤ) (hn' : n + a = n') : Cochain (K⟦a⟧) L n' :=
-  Cochain.mk (fun p q hpq => (a * n' + ((a * (a-1))/2)).negOnePow •
-    (K.shiftFunctorObjXIso a p (p + a) rfl).hom ≫ γ.v (p+a) q (by lia))
+  Cochain.mk (fun p q hpq => (a * n' + ((a * (a - 1)) / 2)).negOnePow •
+    (K.shiftFunctorObjXIso a p (p + a) rfl).hom ≫ γ.v (p + a) q (by lia))
 
 lemma leftShift_v (a n' : ℤ) (hn' : n + a = n') (p q : ℤ) (hpq : p + n' = q)
     (p' : ℤ) (hp' : p' + n = q) :
@@ -91,12 +91,12 @@ lemma rightUnshift_v {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn :
 /-- The map `Cochain (K⟦a⟧) L n' → Cochain K L n` when `n + a = n'`. -/
 def leftUnshift {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') :
     Cochain K L n :=
-  Cochain.mk (fun p q hpq => (a * n' + ((a * (a-1))/2)).negOnePow •
-    (K.shiftFunctorObjXIso a (p - a) p (by lia)).inv ≫ γ.v (p-a) q (by lia))
+  Cochain.mk (fun p q hpq => (a * n' + ((a * (a - 1)) / 2)).negOnePow •
+    (K.shiftFunctorObjXIso a (p - a) p (by lia)).inv ≫ γ.v (p - a) q (by lia))
 
 lemma leftUnshift_v {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n')
     (p q : ℤ) (hpq : p + n = q) (p' : ℤ) (hp' : p' + n' = q) :
-    (γ.leftUnshift n hn).v p q hpq = (a * n' + ((a * (a-1))/2)).negOnePow •
+    (γ.leftUnshift n hn).v p q hpq = (a * n' + ((a * (a - 1)) / 2)).negOnePow •
       (K.shiftFunctorObjXIso a p' p (by lia)).inv ≫ γ.v p' q (by lia) := by
   obtain rfl : p' = p - a := by lia
   rfl
@@ -139,16 +139,16 @@ lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
 lemma leftUnshift_leftShift (a n' : ℤ) (hn' : n + a = n') :
     (γ.leftShift a n' hn').leftUnshift n hn' = γ := by
   ext p q hpq
-  rw [(γ.leftShift a n' hn').leftUnshift_v n hn' p q hpq (q-n') (by lia),
-    γ.leftShift_v a n' hn' (q-n') q (by lia) p hpq, Linear.comp_units_smul,
+  rw [(γ.leftShift a n' hn').leftUnshift_v n hn' p q hpq (q - n') (by lia),
+    γ.leftShift_v a n' hn' (q - n') q (by lia) p hpq, Linear.comp_units_smul,
     Iso.inv_hom_id_assoc, smul_smul, Int.units_mul_self, one_smul]
 
 @[simp]
 lemma leftShift_leftUnshift {a n' : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn' : n + a = n') :
     (γ.leftUnshift n hn').leftShift a n' hn' = γ := by
   ext p q hpq
-  rw [(γ.leftUnshift n hn').leftShift_v a n' hn' p q hpq (q-n) (by lia),
-    γ.leftUnshift_v n hn' (q-n) q (by lia) p hpq, Linear.comp_units_smul, smul_smul,
+  rw [(γ.leftUnshift n hn').leftShift_v a n' hn' p q hpq (q - n) (by lia),
+    γ.leftUnshift_v n hn' (q - n) q (by lia) p hpq, Linear.comp_units_smul, smul_smul,
     Iso.hom_inv_id_assoc, Int.units_mul_self, one_smul]
 
 @[simp]
@@ -403,10 +403,10 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
     ext p q hpq
     dsimp
     rw [(δ n m γ).rightShift_v a m' hm' p q hpq _ rfl,
-      δ_v n m hnm _ p (p+m) rfl (p+n) (p+1) (by lia) rfl,
-      δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by lia) rfl,
-      γ.rightShift_v a n' hn' p (p+n') rfl (p+n) rfl,
-      γ.rightShift_v a n' hn' (p+1) q _ (p+m) (by lia)]
+      δ_v n m hnm _ p (p + m) rfl (p + n) (p + 1) (by lia) rfl,
+      δ_v n' m' hnm' _ p q hpq (p + n') (p + 1) (by lia) rfl,
+      γ.rightShift_v a n' hn' p (p + n') rfl (p + n) rfl,
+      γ.rightShift_v a n' hn' (p + 1) q _ (p + m) (by lia)]
     simp only [shiftFunctorObjXIso, shiftFunctor_obj_d',
       Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d,
       add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv, Linear.units_smul_comp, smul_add,
@@ -430,11 +430,11 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
   · have hnm' : n' + 1 = m' := by lia
     ext p q hpq
     dsimp
-    rw [(δ n m γ).leftShift_v a m' hm' p q hpq (p+a) (by lia),
-      δ_v n m hnm _ (p+a) q (by lia) (p+n') (p+1+a) (by lia) (by lia),
-      δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by lia) rfl,
-      γ.leftShift_v a n' hn' p (p+n') rfl (p+a) (by lia),
-      γ.leftShift_v a n' hn' (p+1) q (by lia) (p+1+a) (by lia)]
+    rw [(δ n m γ).leftShift_v a m' hm' p q hpq (p + a) (by lia),
+      δ_v n m hnm _ (p + a) q (by lia) (p + n') (p + 1 + a) (by lia) (by lia),
+      δ_v n' m' hnm' _ p q hpq (p + n') (p + 1) (by lia) rfl,
+      γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by lia),
+      γ.leftShift_v a n' hn' (p + 1) q (by lia) (p + 1 + a) (by lia)]
     simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl,
       Iso.refl_hom, id_comp, Linear.units_smul_comp, shiftFunctor_obj_d',
       Linear.comp_units_smul, smul_add, smul_smul]
