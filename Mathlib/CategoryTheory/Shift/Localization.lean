@@ -250,11 +250,11 @@ namespace LocalizerMorphism
 
 open Localization
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂} (Φ : LocalizerMorphism W₁ W₂)
   {M : Type*} [AddMonoid M] [HasShift C₁ M] [HasShift C₂ M]
   [Φ.functor.CommShift M]
-  {D₁ D₂ : Type*} [Category D₁] [Category D₂]
+  {D₁ D₂ : Type*} [Category* D₁] [Category* D₂]
   (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂)
   [HasShift D₁ M] [HasShift D₂ M] [L₁.CommShift M] [L₂.CommShift M]
 

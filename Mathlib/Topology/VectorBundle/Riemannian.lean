@@ -212,10 +212,10 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
   have : (1 - δ * C) * g' x w w ≤ g' y w w := by linarith
-  rw [← (le_div_iff₀' (lt_of_le_of_lt (by positivity) hδ )), div_eq_inv_mul] at this
+  rw [← (le_div_iff₀' (lt_of_le_of_lt (by positivity) hδ)), div_eq_inv_mul] at this
   grw [this]
   gcongr
-  · rw [← hgy, ← hg,real_inner_self_eq_norm_sq]
+  · rw [← hgy, ← hg, real_inner_self_eq_norm_sq]
     positivity
   · exact inv_le_of_inv_le₀ (by positivity) hδ.le
 
@@ -322,7 +322,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     _ = (1 + δ * C) * g' x w w := by ring
     _ ≤ r' ^ 2 * g' x w w := by
       gcongr
-      rw [← hgx, ← hg,real_inner_self_eq_norm_sq]
+      rw [← hgx, ← hg, real_inner_self_eq_norm_sq]
       positivity
 
 /-- In a continuous Riemannian bundle, the inverse of the trivialization at a point is locally
