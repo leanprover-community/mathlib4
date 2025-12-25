@@ -648,6 +648,8 @@ instance instInhabited : Inhabited (E ≃ₗᵢ[R] E) := ⟨refl R E⟩
 theorem coe_refl : ⇑(refl R E) = id :=
   rfl
 
+@[simp] theorem toContinuousLinearEquiv_refl : (refl R E).toContinuousLinearEquiv = .refl R E := rfl
+
 /-- The inverse `LinearIsometryEquiv`. -/
 def symm : E₂ ≃ₛₗᵢ[σ₂₁] E :=
   ⟨e.toLinearEquiv.symm, fun x =>
@@ -730,6 +732,11 @@ theorem trans_apply (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛ�
 @[simp]
 theorem toLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
     (e.trans e').toLinearEquiv = e.toLinearEquiv.trans e'.toLinearEquiv :=
+  rfl
+
+@[simp] theorem toContinuousLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toContinuousLinearEquiv =
+      e.toContinuousLinearEquiv.trans e'.toContinuousLinearEquiv :=
   rfl
 
 @[simp]
@@ -836,18 +843,17 @@ theorem mul_refl (e : E ≃ₗᵢ[R] E) : e * refl _ _ = e :=
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
 instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
-  ⟨fun e => ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
+  ⟨fun e => e.toContinuousLinearEquiv⟩
 
 instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
-@[simp]
-theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=
-  rfl
+theorem toContinuousLinearMap_toLinearIsometry :
+    e.toLinearIsometry.toContinuousLinearMap = e := rfl
 
-@[simp]
-theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
-  rfl
+theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e := rfl
+
+theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e := rfl
 
 theorem map_zero : e 0 = 0 :=
   e.1.map_zero
