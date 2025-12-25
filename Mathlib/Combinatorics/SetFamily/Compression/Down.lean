@@ -91,16 +91,7 @@ theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset
 
 theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     𝒜.memberSubfamily a ∪ 𝒜.nonMemberSubfamily a = 𝒜.image fun s => s.erase a := by
-  ext s
-  simp only [mem_union, mem_memberSubfamily, mem_nonMemberSubfamily, mem_image]
-  constructor
-  · rintro (h | h)
-    · exact ⟨_, h.1, erase_insert h.2⟩
-    · exact ⟨_, h.1, erase_eq_of_notMem h.2⟩
-  · rintro ⟨s, hs, rfl⟩
-    by_cases ha : a ∈ s
-    · exact Or.inl ⟨by rwa [insert_erase ha], notMem_erase _ _⟩
-    · exact Or.inr ⟨by rwa [erase_eq_of_notMem ha], notMem_erase _ _⟩
+  grind [memberSubfamily.eq_def, mem_nonMemberSubfamily, erase_ne_self]
 
 @[simp]
 theorem memberSubfamily_memberSubfamily : (𝒜.memberSubfamily a).memberSubfamily a = ∅ := by
