@@ -578,7 +578,7 @@ lemma natDegree_optionEquivLeft (p : MvPolynomial (Option σ) R) :
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
   · rw [Polynomial.natDegree, degree_optionEquivLeft c, Nat.cast_withBot, WithBot.unbotD_coe]
 
-lemma totalDegree_coeff_optionEquivLeft_add_le (S : Type v)
+lemma totalDegree_coeff_optionEquivLeft_add_le (R : Type u) (S : Type v) [CommSemiring R]
     (p : MvPolynomial (Option S) R) (i : ℕ) (hi : i ≤ p.totalDegree) :
     ((optionEquivLeft R S p).coeff i).totalDegree + i ≤ p.totalDegree := by
   classical
@@ -603,8 +603,6 @@ lemma totalDegree_coeff_optionEquivLeft_le
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
   · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S] using hσ
 
-
-
 /--
 The `totalDegree` of a multivariable polynomial `p` is at least `i` more than the `totalDegree` of
 the `i`th coefficient of `finSuccEquiv` applied to `p`, if this is nonzero.
@@ -626,8 +624,6 @@ lemma totalDegree_coeff_finSuccEquiv_add_le
   · rw [totalDegree, hσ2, sum_cons, add_comm]
   · rw [← mem_support_coeff_finSuccEquiv]
     exact hσ1
-
-
 
 theorem degree_finSuccEquiv
     {R : Type u} [CommSemiring R] {n : ℕ}
