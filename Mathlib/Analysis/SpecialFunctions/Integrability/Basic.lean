@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 
 /-!
 # Integrability of Special Functions
@@ -261,5 +263,10 @@ theorem intervalIntegrable_one_div_one_add_sq :
 theorem intervalIntegrable_inv_one_add_sq :
     IntervalIntegrable (fun x : ℝ => (↑1 + x ^ 2)⁻¹) μ a b := by
   simp [← one_div, intervalIntegrable_one_div_one_add_sq]
+
+@[simp]
+theorem intervalIntegrable_inv_sqrt_one_sub_sq :
+    IntervalIntegrable (fun x : ℝ => (√(1 - x ^ 2))⁻¹) volume a b := by
+  simpa [deriv_arcsin] using (monotone_arcsin.monotoneOn _).intervalIntegrable_deriv
 
 end intervalIntegral
