@@ -19,7 +19,7 @@ inclusions `A ⟶ A ⨿ B` are monomorphisms when `HasCoproduct A B`
 is satisfied. If it is so, it is shown that right inclusions are
 also monomorphisms.
 
-More generally, we deduce that when suitable coproducts exists, then
+More generally, we deduce that when suitable coproducts exist, then
 if `X : I → C` and `ι : J → I` is an injective map,
 then the canonical morphism `∐ (X ∘ ι) ⟶ ∐ X` is a monomorphism.
 It also follows that for any `i : I`, `Sigma.ι X i : X i ⟶ ∐ X` is
@@ -43,7 +43,7 @@ open CategoryTheory.Category CategoryTheory.Limits
 
 namespace Limits
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- This condition expresses that inclusion morphisms into coproducts are monomorphisms. -/
 class MonoCoprod : Prop where
@@ -131,7 +131,7 @@ def isColimitBinaryCofanSum : IsColimit (binaryCofanSum c c₁ c₂ hc₁ hc₂)
     (fun f₁ f₂ => Cofan.IsColimit.hom_ext hc₂ _ _ (by simp))
     (fun f₁ f₂ m hm₁ hm₂ => by
       apply Cofan.IsColimit.hom_ext hc
-      rintro (i₁|i₂) <;> cat_disch)
+      rintro (i₁ | i₂) <;> cat_disch)
 
 lemma mono_binaryCofanSum_inl [MonoCoprod C] :
     Mono (binaryCofanSum c c₁ c₂ hc₁ hc₂).inl :=
@@ -222,7 +222,7 @@ open Functor
 
 section Preservation
 
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
 
 theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     [PreservesColimitsOfShape (Discrete WalkingPair) F]

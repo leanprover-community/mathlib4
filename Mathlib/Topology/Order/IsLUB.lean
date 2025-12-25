@@ -166,6 +166,92 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
     IsGLB (t ∩ s) x ↔ IsGLB t x :=
   hs.isLUB_inter_iff (α := αᵒᵈ) ht
 
+/-- The upper bounds of the image of a continuous function on a dense set are equal to the upper
+bounds of the range of the universe. -/
+theorem Dense.upperBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
+    [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
+    (hf : Continuous f) :
+    upperBounds (f '' S) = upperBounds (range f) := by
+  refine subset_antisymm ?_ fun _ => upperBounds_mono (Set.image_subset_range f S) le_rfl
+  refine subset_trans ?_ fun _ => upperBounds_mono (hf.range_subset_closure_image_dense hS) le_rfl
+  intro x hx i hi
+  rw [mem_closure_iff_frequently] at hi
+  exact (hi.mono hx).mem_of_closed isClosed_Iic
+
+/-- The lower bounds of the image of a continuous function on a dense set are equal to the lower
+bounds of the range of the universe. -/
+theorem Dense.lowerBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
+    [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
+    (hf : Continuous f) :
+    lowerBounds (f '' S) = lowerBounds (range f) :=
+  hS.upperBounds_image (α := αᵒᵈ) hf
+
+/-- The supremum of a bounded above, continuous function on a dense set is equal to the supremum on
+the universe. -/
+theorem Dense.ciSup {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLattice α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddAbove (range f)) :
+    ⨆ s : S, f s = ⨆ i, f i := by
+  rw [← sSup_range, ← sSup_range]
+  obtain (_ | _) := isEmpty_or_nonempty γ
+  · simp [Set.range_eq_empty]
+  refine ((isLUB_csSup (range_nonempty f) h).unique ?_).symm
+  refine (isLUB_congr (hS.upperBounds_image hf)).mp (isLUB_ciSup_set ?_ hS.nonempty)
+  exact h.mono (by grind)
+
+/-- The infimum of a bounded below, continuous function on a dense set is equal to the infimum on
+the universe. -/
+theorem Dense.ciInf {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLattice α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddBelow (range f)) :
+    ⨅ s : S, f s = ⨅ i, f i :=
+  hS.ciSup (α := αᵒᵈ) hf h
+
+/-- This is an analogue of `Dense.continuous_sup` for functions taking values in a conditionally
+complete linear order. The assumption of `BddAbove (range f)` is not needed in this theorem. -/
+theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) :
+    ⨆ s : S, f s = ⨆ i, f i := by
+  by_cases h : BddAbove (range (fun x : S ↦ f x))
+  · refine hS.ciSup hf <| h.closure.mono ?_
+    simpa [← Function.comp_def, range_comp] using hf.range_subset_closure_image_dense hS
+  · suffices ¬ BddAbove (range f) by simp [ciSup_of_not_bddAbove, this, h]
+    contrapose h
+    exact h.mono fun _ ↦ by aesop
+
+/-- This is an analogue of `Dense.continuous_inf` for functions taking values in a conditionally
+complete linear order. The assumption of `BddBelow (range f)` is not needed in this theorem. -/
+theorem Dense.ciInf' {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) :
+    ⨅ s : S, f s = ⨅ i, f i :=
+  hS.ciSup' (α := αᵒᵈ) hf
+
+/-- A closed interval in a conditionally complete linear order is compact.
+Also see general API on `CompactIccSpace`. -/
+protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
+    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] (a b : α) :
+    IsCompact (Icc a b) := by
+  simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff]
+  refine (le_or_gt a b).elim (fun _ f hfab ↦ ?_) (by simp [·])
+  by_contra! hf
+  have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx _ ↦ hf x hx (le_trans (by simpa) (pure_le_nhds x))
+  set s := { x ∈ Icc a b | Icc a x ∉ f }
+  have hsb : b ∈ upperBounds s := fun x hx ↦ hx.1.2
+  have ha : a ∈ s := by simp [s, *]
+  let c := sSup s
+  have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩
+  have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
+  have (i : _) (hic : i < c) : Ioi i ∈ f := by
+    have ⟨j, hj, hij, hjc⟩ := hsc.exists_between hic
+    filter_upwards [f.compl_mem_iff_notMem.mpr hj.2, hfab]; grind
+  have ⟨x, hx, hxf⟩ : ∃ x, c < x ∧ Iio x ∉ f := by simpa [nhds_eq_order, eq_true this] using hf c hc
+  have : Icc a c ∉ f := mt (mem_of_superset · (by grind)) hxf
+  have : x ∈ Icc a b := ⟨by grind, le_of_not_gt fun h ↦ hxf (mem_of_superset hfab (by grind))⟩
+  have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
+  exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)
+
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/

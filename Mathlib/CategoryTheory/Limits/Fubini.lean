@@ -43,8 +43,8 @@ open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 
-variable {J K : Type*} [Category J] [Category K]
-variable {C : Type*} [Category C]
+variable {J K : Type*} [Category* J] [Category* K]
+variable {C : Type*} [Category* C]
 variable (F : J ⥤ K ⥤ C) (G : J × K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?
@@ -551,7 +551,7 @@ noncomputable def colimitFlipCompColimIsoColimitCompColim :
 theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
     colimit.ι (F.flip.obj k) j ≫ colimit.ι (F.flip ⋙ colim) k ≫
       (colimitFlipCompColimIsoColimitCompColim F).hom =
-        (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F⋙ colim)) := by
+        (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   slice_lhs 1 3 => simp only []
   simp [Equivalence.unit]
@@ -614,7 +614,7 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι ((curry.obj G).obj j) k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫
-      (colimitIsoColimitCurryCompColim G).inv  = colimit.ι _ (j, k) := by
+      (colimitIsoColimitCurryCompColim G).inv = colimit.ι _ (j, k) := by
   simp [colimitIsoColimitCurryCompColim, Trans.simple, colimitUncurryIsoColimitCompColim]
 
 @[simp, reassoc]
@@ -683,7 +683,8 @@ noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
 theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
     colimit.ι _ j ≫ colimit.ι (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) k ≫
       (colimitCurrySwapCompColimIsoColimitCurryCompColim G).hom =
-        (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j : _ ⟶ colimit (curry.obj G⋙ colim)) := by
+        (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j :
+          _ ⟶ colimit (curry.obj G ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
   slice_lhs 1 3 => simp only []
   simp

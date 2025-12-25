@@ -79,12 +79,12 @@ instance : InfSet (Submonoid M) :=
 theorem coe_sInf (S : Set (Submonoid M)) : ((sInf S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
-@[to_additive]
-theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
@@ -223,6 +223,9 @@ example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x �
   | one => exact one
   | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
+-- TODO: find a nice way to fix the linter
+-- simp_all is called on four goals, with only one remaining goal
+set_option linter.flexible false in
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by

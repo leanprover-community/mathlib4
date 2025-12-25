@@ -27,10 +27,11 @@ Finally, if the codomain of `f` is a finite-dimensional space, then we can autom
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
+For the version where the implicit equation is defined by a $C^n$ function `f : E × F → G` with an
+invertible derivative `∂f/∂y`, see `IsContDiffImplicitAt.implicitFunction`.
+
 ## TODO
 
-* Add a version for a function `f : E × F → G` such that $$\frac{\partial f}{\partial y}$$ is
-  invertible.
 * Add a version for `f : 𝕜 × 𝕜 → 𝕜` proving `HasStrictDerivAt` and `deriv φ = ...`.
 * Prove that in a real vector space the implicit function has the same smoothness as the original
   one.
@@ -73,9 +74,7 @@ Consider two functions `f : E → F` and `g : E → G` and a point `a` such that
 Note that the map `x ↦ (f x, g x)` has a bijective derivative, hence it is an open partial
 homeomorphism between `E` and `F × G`. We use this fact to define a function `φ : F → G → E`
 (see `ImplicitFunctionData.implicitFunction`) such that for `(y, z)` close enough to `(f a, g a)`
-we have `f (φ y z) = y` and `g (φ y z) = z`.
-
-We also prove a formula for $$\frac{\partial\varphi}{\partial z}.$$
+we have `f (φ y z) = y` and `g (φ y z) = z`. We also prove a formula for `∂φ / ∂z`.
 
 Though this statement is almost symmetric with respect to `F`, `G`, we interpret it in the following
 way. Consider a family of surfaces `{x | f x = y}`, `y ∈ 𝓝 (f a)`. Each of these surfaces is
@@ -141,6 +140,10 @@ protected theorem hasStrictFDerivAt :
       φ.pt :=
   φ.hasStrictFDerivAt_leftFun.prodMk φ.hasStrictFDerivAt_rightFun
 
+theorem isInvertible_fderiv_prodFun : (fderiv 𝕜 φ.prodFun φ.pt).IsInvertible := by
+  rw [φ.hasStrictFDerivAt.hasFDerivAt.fderiv]
+  exact ContinuousLinearMap.isInvertible_equiv
+
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
 complementary subspaces of `E`, then `x ↦ (f x, g x)` defines an open partial homeomorphism between
@@ -204,16 +207,70 @@ theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
   show map (Prod.fst ∘ φ.prodFun) (𝓝 φ.pt) = 𝓝 (φ.prodFun φ.pt).1 by
     rw [← map_map, φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, map_fst_nhds]
 
+/-- The implicit function is strictly differentiable. -/
+theorem hasStrictFDerivAt_implicitFunction_fderiv :
+    HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt))
+      (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt)) (φ.rightFun φ.pt) := by
+  have := φ.hasStrictFDerivAt.to_localInverse.comp (φ.rightFun φ.pt)
+    ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
+  convert this
+  exact this.hasFDerivAt.fderiv
+
+theorem differentiableAt_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) :
+    DifferentiableAt 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) :=
+  φ.hasStrictFDerivAt_implicitFunction_fderiv.hasFDerivAt.differentiableAt
+
+theorem fderiv_implicitFunction_apply_eq_iff (φ : ImplicitFunctionData 𝕜 E F G) {x : G} {y : E} :
+    fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x = y ↔
+      φ.leftDeriv y = 0 ∧ φ.rightDeriv y = x := by
+  unfold implicitFunction Function.curry toOpenPartialHomeomorph
+  simp only [← HasStrictFDerivAt.localInverse_def]
+  rw [φ.hasStrictFDerivAt.to_localInverse.comp (φ.rightFun φ.pt)
+    ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _)) |>.hasFDerivAt |>.fderiv]
+  simp [ContinuousLinearEquiv.symm_apply_eq, @eq_comm _ (φ.leftDeriv _),
+    @eq_comm _ (φ.rightDeriv _)]
+
+@[simp]
+theorem leftDeriv_fderiv_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) (x : G) :
+    φ.leftDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = 0 := by
+  exact φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.left
+
+@[simp]
+theorem rightDeriv_fderiv_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) (x : G) :
+    φ.rightDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = x := by
+  exact φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.right
+
 theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
-  have := φ.hasStrictFDerivAt.to_localInverse
-  simp only [prodFun] at this
-  convert this.comp (φ.rightFun φ.pt)
-    ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
-  simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
-  simp [ContinuousLinearEquiv.eq_symm_apply, *]
+  convert φ.hasStrictFDerivAt_implicitFunction_fderiv
+  ext1 x
+  rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
+  simp_all [DFunLike.ext_iff]
+
+theorem map_implicitFunction_nhdsWithin_preimage (φ : ImplicitFunctionData 𝕜 E F G)
+    (s : Set E) :
+    (𝓝[φ.implicitFunction (φ.leftFun φ.pt) ⁻¹' s] (φ.rightFun φ.pt)).map
+      (φ.implicitFunction (φ.leftFun φ.pt)) = 𝓝[s ∩ φ.leftFun ⁻¹' {φ.leftFun φ.pt}] φ.pt := by
+  have H : φ.implicitFunction (φ.leftFun φ.pt) =
+      φ.toOpenPartialHomeomorph.symm ∘ (φ.leftFun φ.pt, ·) := rfl
+  rw [H, ← Filter.map_map, (isInducing_prodMkRight _).map_nhdsWithin_eq, ← Set.singleton_prod,
+    OpenPartialHomeomorph.map_nhdsWithin_eq, ← prodFun_apply, ← toOpenPartialHomeomorph_coe,
+    φ.toOpenPartialHomeomorph.leftInvOn φ.pt_mem_toOpenPartialHomeomorph_source,
+    OpenPartialHomeomorph.image_source_inter_eq']
+  · conv_rhs =>
+      rw [← φ.toOpenPartialHomeomorph.nhdsWithin_source_inter
+        φ.pt_mem_toOpenPartialHomeomorph_source]
+    congr 1
+    ext x
+    suffices x ∈ φ.toOpenPartialHomeomorph.source → φ.leftFun x = φ.leftFun φ.pt →
+        (φ.toOpenPartialHomeomorph.symm (φ.leftFun φ.pt, φ.rightFun x) ∈ s ↔ x ∈ s) by
+      simpa [@and_comm (_ = _)]
+    intro hxs hx_eq
+    rw [← hx_eq, ← prodFun_apply, ← toOpenPartialHomeomorph_coe,
+      φ.toOpenPartialHomeomorph.leftInvOn hxs]
+  · exact φ.toOpenPartialHomeomorph.mapsTo φ.pt_mem_toOpenPartialHomeomorph_source
 
 end ImplicitFunctionData
 

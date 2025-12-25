@@ -199,7 +199,7 @@ theorem sound {a b : List.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) =
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
-  multiplicity of `a` if a is present in the sym. -/
+  multiplicity of `a` if `a` is present in the sym. -/
 def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α n :=
   ⟨s.val.erase a, (Multiset.card_erase_of_mem h).trans <| s.property.symm ▸ n.pred_succ⟩
 
@@ -243,7 +243,7 @@ def symEquivSym' {α : Type*} {n : ℕ} : Sym α n ≃ Sym' α n :=
   Equiv.subtypeQuotientEquivQuotientSubtype _ _ (fun _ => by rfl) fun _ _ => by rfl
 
 theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
-    (a::symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
+    (a :: symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
   rcases s with ⟨⟨l⟩, _⟩
   rfl
 

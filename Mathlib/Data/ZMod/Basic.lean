@@ -63,6 +63,8 @@ theorem val_lt {n : ℕ} [NeZero n] (a : ZMod n) : a.val < n := by
   · cases NeZero.ne 0 rfl
   exact Fin.is_lt a
 
+grind_pattern val_lt => a.val
+
 theorem val_le {n : ℕ} [NeZero n] (a : ZMod n) : a.val ≤ n :=
   a.val_lt.le
 
@@ -146,6 +148,7 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
 
+@[aesop unsafe 75%]
 lemma natCast_pow_eq_zero_of_le (p : ℕ) {m n : ℕ} (h : n ≤ m) :
     (p ^ m : ZMod (p ^ n)) = 0 := by
   obtain ⟨q, rfl⟩ := Nat.exists_eq_add_of_le h
@@ -432,11 +435,11 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.val_mul, Fin.val_mul, Fin.coe_cast, Fin.coe_cast, ← h]
+          rw [Fin.val_cast, Fin.val_mul, Fin.val_mul, Fin.val_cast, Fin.val_cast, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
+          rw [Fin.val_cast, Fin.val_add, Fin.val_add, Fin.val_cast, Fin.val_cast, ← h] }
 
 @[simp] lemma ringEquivCongr_refl (a : ℕ) : ringEquivCongr (rfl : a = a) = .refl _ := by
   cases a <;> rfl
@@ -529,7 +532,7 @@ lemma intCast_cast_neg (x : ZMod n) : (cast (-x) : ℤ) = -cast x % n := by
 
 @[simp]
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
-  dsimp [val, Fin.coe_neg]
+  dsimp [val, Fin.val_neg']
   cases n
   · simp
   · dsimp [ZMod, ZMod.cast]
@@ -732,7 +735,7 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
   · exact Subsingleton.elim _ _
   · simpa [ZMod.val_one'' hn] using mul_inv_eq_gcd (1 : ZMod n)
 
-@[simp]
+@[simp, grind =]
 theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a :=
   (CharP.cast_eq_mod (ZMod n) n a).symm
 
@@ -908,8 +911,8 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩
   { toFun := to_fun,
     invFun := inv_fun,
-    map_mul' := RingHom.map_mul _
-    map_add' := RingHom.map_add _
+    map_mul' := map_mul _
+    map_add' := map_add _
     left_inv := inv.1
     right_inv := inv.2 }
 
@@ -926,8 +929,7 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
-instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
-  ⟨by decide⟩
+instance instSubsingletonUnits : Subsingleton (ZMod 2)ˣ := ⟨by decide⟩
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
@@ -996,9 +998,9 @@ theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a :=
 
 theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
     (a.cast : ZMod n).val < m := by
-  rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
+  rcases m with (⟨⟩ | ⟨m⟩); · cases NeZero.ne 0 rfl
   by_cases! h : m < n
-  · rcases n with (⟨⟩|⟨n⟩); · simp at h
+  · rcases n with (⟨⟩ | ⟨n⟩); · simp at h
     rw [← natCast_val, val_cast_of_lt]
     · apply a.val_lt
     apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
@@ -1023,7 +1025,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   rwa [Nat.le_zero, val_eq_zero] at h
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
-    (- a).val = n - a.val := by simp_all [neg_val a, na.out]
+    (-a).val = n - a.val := by simp_all [neg_val a, na.out]
 
 theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
     (a - b).val = a.val - b.val := by
@@ -1229,7 +1231,7 @@ variable (G) in
 lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := NeZero.ne n
   have := char_ne_one n G
-  cutsat
+  lia
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
@@ -1296,3 +1298,12 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
         cast_id', id_eq, zero_add]
     · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
         (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
+
+-- there is a faster proof with Module.toAddMonoidEnd
+instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :
+    Subsingleton (Module (ZMod n) M) := by
+  obtain _ | n := n
+  · exact inferInstanceAs (Subsingleton (Module ℤ M))
+  refine ⟨fun m1 m2 ↦ Module.ext' _ _ fun r m ↦ ?_⟩
+  obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
+  rw [(letI := m1; Nat.cast_smul_eq_nsmul _ r m), Nat.cast_smul_eq_nsmul _ r m]
