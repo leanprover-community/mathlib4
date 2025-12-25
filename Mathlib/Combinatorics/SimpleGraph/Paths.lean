@@ -663,7 +663,7 @@ namespace Walk
 variable {G} [DecidableEq V] {u u' v v' : V}
 
 /-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
-The result is a path, as shown in `SimpleGraph.Walk.bypass_isPath`.
+The result is a path, as shown in `SimpleGraph.Walk.isPath_bypass`.
 This is packaged up in `SimpleGraph.Walk.toPath`. -/
 def bypass {u v : V} : G.Walk u v → G.Walk u v
   | nil => nil
