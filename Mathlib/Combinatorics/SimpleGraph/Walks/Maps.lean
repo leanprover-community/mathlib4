@@ -48,23 +48,23 @@ protected def map (f : G →g G') {u v : V} : G.Walk u v → G'.Walk (f u) (f v)
 
 variable (f : G →g G') (f' : G' →g G'') {u v u' v' w : V} (p : G.Walk u v)
 
-@[simp]
+@[simp, grind =]
 theorem map_nil : (nil : G.Walk u u).map f = nil := rfl
 
-@[simp]
+@[simp, grind =]
 theorem map_cons {w : V} (h : G.Adj w u) : (cons h p).map f = cons (f.map_adj h) (p.map f) := rfl
 
-@[simp]
+@[simp, grind =]
 theorem map_copy (hu : u = u') (hv : v = v') :
     (p.copy hu hv).map f = (p.map f).copy (hu ▸ rfl) (hv ▸ rfl) := by
   subst_vars
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
   induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
   induction p <;> simp [*]
 
@@ -75,32 +75,32 @@ theorem map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
   subst_vars
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem map_eq_nil_iff {p : G.Walk u u} : p.map f = nil ↔ p = nil := by cases p <;> simp
 
-@[simp]
+@[simp, grind =]
 theorem length_map : (p.map f).length = p.length := by induction p <;> simp [*]
 
 theorem map_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).map f = (p.map f).append (q.map f) := by induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem reverse_map : (p.map f).reverse = p.reverse.map f := by induction p <;> simp [map_append, *]
 
-@[simp]
+@[simp, grind =]
 theorem support_map : (p.map f).support = p.support.map f := by induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem darts_map : (p.map f).darts = p.darts.map f.mapDart := by induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
   induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem edgeSet_map : (p.map f).edgeSet = Sym2.map f '' p.edgeSet := by ext; simp
 
-@[simp]
+@[simp, grind =]
 theorem getVert_map (n : ℕ) : (p.map f).getVert n = f (p.getVert n) := by
   induction p generalizing n <;> cases n <;> simp [*]
 
