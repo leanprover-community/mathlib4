@@ -41,35 +41,26 @@ lemma lineGraph_adj_iff_exists {e₁ e₂ : G.edgeSet} :
 
 @[simp] lemma lineGraph_bot : (⊥ : SimpleGraph V).lineGraph = ⊥ := by aesop (add simp lineGraph)
 
-/-- Lift a copy between graphs to a copy between their line graphs -/
-def Copy.ofLineGraph (f : Copy G G') : Copy G.lineGraph G'.lineGraph where
-  toHom := {
-    toFun e := ⟨e.val.map f, by rcases e with ⟨⟨⟩, h⟩; exact f.toHom.map_adj h⟩
-    map_rel' := fun ⟨hne, hnonempty⟩ ↦ by
-      refine ⟨(hne <| SetCoe.ext <| Sym2.map.injective f.injective <| Subtype.mk.inj ·), ?_⟩
-      rw [Sym2.coe_map, Sym2.coe_map]
-      exact .mono (Set.image_inter_subset f ..) <| .image _ hnonempty
-  }
-  injective' _ _ h := SetCoe.ext <| Sym2.map.injective f.injective <| Subtype.mk.inj h
-
-/-- Lift an embedding between graphs to an embedding between their line graphs -/
+/-- Lift a copy between graphs to an embedding between their line graphs -/
 def Embedding.ofLineGraph (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
-  toFun := f.ofLineGraph
-  inj' := f.ofLineGraph.injective
+  toFun e := ⟨e.val.map f, by rcases e with ⟨⟨⟩, h⟩; exact f.toHom.map_adj h⟩
+  inj' _ _ h := SetCoe.ext <| Sym2.map.injective f.injective <| Subtype.mk.inj h
   map_rel_iff' := by
-    refine ⟨fun ⟨hne, hnonempty⟩ ↦ ⟨(hne <| congrArg _ ·), ?_⟩, (f.ofLineGraph.toHom.map_rel ·)⟩
-    simp only [Copy.ofLineGraph, Copy.coe_mk, RelHom.coeFn_mk, Function.Embedding.coeFn_mk,
-      Sym2.coe_map] at hnonempty
-    exact .of_image <| Set.image_inter f.injective ▸ hnonempty
+    simp only [lineGraph, Function.Embedding.coeFn_mk, Sym2.coe_map, ne_eq]
+    refine .and ?_ <| Set.image_inter f.injective ▸ Set.image_nonempty
+    rw [Subtype.mk.injEq, Subtype.mk.injEq]
+    exact Sym2.map.injective f.injective |>.eq_iff.not
+
+/-- Lift a copy between graphs to a copy between their line graphs -/
+def Copy.ofLineGraph (f : Copy G G') : Copy G.lineGraph G'.lineGraph :=
+  Embedding.ofLineGraph f |>.toCopy
 
 /-- Lift an isomorphism between graphs to an isomorphism between their line graphs -/
 def Iso.ofLineGraph (f : G ≃g G') : G.lineGraph ≃g G'.lineGraph where
   toFun := f.toCopy.ofLineGraph
   invFun := f.symm.toCopy.ofLineGraph
-  left_inv _ := by simp [Copy.ofLineGraph, Sym2.map_map]
-  right_inv _ := by simp [Copy.ofLineGraph, Sym2.map_map]
-  map_rel_iff' := by
-    refine ⟨fun h ↦ ?_, (f.toCopy.ofLineGraph.toHom.map_rel ·)⟩
-    simpa [Copy.ofLineGraph, Sym2.map_map] using f.symm.toCopy.ofLineGraph.toHom.map_rel h
+  left_inv _ := by simp [Copy.ofLineGraph, Embedding.ofLineGraph, Sym2.map_map]
+  right_inv _ := by simp [Copy.ofLineGraph, Embedding.ofLineGraph, Sym2.map_map]
+  map_rel_iff' := Embedding.ofLineGraph f.toCopy |>.map_rel_iff
 
 end SimpleGraph
