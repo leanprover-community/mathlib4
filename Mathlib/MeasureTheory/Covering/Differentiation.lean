@@ -87,11 +87,8 @@ variable {α : Type*} [PseudoMetricSpace α] {m0 : MeasurableSpace α} {μ : Mea
 
 namespace VitaliFamily
 
-/-- The limit along a Vitali family of `ρ a / μ a` where it makes sense, and garbage otherwise.
-Do *not* use this definition: it is only a temporary device to show that this ratio tends almost
-everywhere to the Radon-Nikodym derivative. -/
-noncomputable def limRatio (ρ : Measure α) (x : α) : ℝ≥0∞ :=
-  limUnder (v.filterAt x) fun a => ρ a / μ a
+noncomputable def limRatio (ρ : OuterMeasure α) (x : α) : ℝ≥0∞ :=
+  (v.filterAt x).liminf fun a => ρ a / μ a
 
 /-- For almost every point `x`, sufficiently small sets in a Vitali family around `x` have positive
 measure. (This is a nontrivial result, following from the covering property of Vitali families). -/
@@ -107,7 +104,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
     simp only [frequently_filterAt_iff, gt_iff_lt, mem_setOf_eq] at hx
     rcases hx ε εpos with ⟨a, a_sets, ax, μa⟩
     exact ⟨a, ⟨a_sets, μa⟩, ax⟩
-  refine le_antisymm ?_ bot_le
+  rw [← nonpos_iff_eq_zero]
   calc
     μ s ≤ ∑' x : h.index, μ (h.covering x) := h.measure_le_tsum
     _ = ∑' x : h.index, 0 := by congr; ext1 x; exact h.covering_mem x.2
@@ -119,10 +116,11 @@ theorem eventually_measure_lt_top [IsLocallyFiniteMeasure μ] (x : α) :
     ∀ᶠ a in v.filterAt x, μ a < ∞ :=
   (μ.finiteAt_nhds x).eventually.filter_mono inf_le_left
 
-/-- If two measures `ρ` and `ν` have, at every point of a set `s`, arbitrarily small sets in a
-Vitali family satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s` if `ρ ≪ μ`. -/
-theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α] {ρ : Measure α}
-    (ν : Measure α) [IsLocallyFiniteMeasure ν] (hρ : ρ ≪ μ) (s : Set α)
+/-- Let `ρ` be an outer measure; let `ν` be a measure. Assume that, at every point of a set `s`,
+arbitrarily small sets in a Vitali family satisfy `ρ a ≤ ν a`. Then `ρ s ≤ ν s` if `ρ ≪ μ`. -/
+theorem outerMeasure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
+    {ρ : OuterMeasure α} (ν : Measure α) [OuterRegular ν]
+    (hρ : ∀ ⦃t⦄, MeasurableSet t → μ t = 0 → ρ t = 0) (s : Set α)
     (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s := by
   -- this follows from a covering argument using the sets satisfying `ρ a ≤ ν a`.
   apply ENNReal.le_of_forall_pos_le_add fun ε εpos _ => ?_
@@ -140,12 +138,19 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     exact ⟨ρa, aU⟩
   haveI : Encodable h.index := h.index_countable.toEncodable
   calc
-    ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
+    ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.outerMeasure_le_tsum_of_null_imp_null hρ
     _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1
     _ = ν (⋃ x : h.index, h.covering x) := by
       rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.2]
     _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
     _ ≤ ν s + ε := νU
+
+/-- If two measures `ρ` and `ν` have, at every point of a set `s`, arbitrarily small sets in a
+Vitali family satisfying `ρ a ≤ ν a`, then `ρ s ≤ ν s` if `ρ ≪ μ`. -/
+theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α] {ρ : Measure α}
+    (ν : Measure α) [OuterRegular ν] (hρ : ρ ≪ μ) (s : Set α)
+    (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s :=
+  v.outerMeasure_le_of_frequently_le ν (fun _ _ h ↦ hρ h) s hs
 
 theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᶠ a in v.filterAt x, IntegrableOn f a μ := by
@@ -271,7 +276,7 @@ almost everywhere measurable is to show that these sets have measurable superset
 disjoint, up to zero measure. This is the content of this lemma. -/
 theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
     ∃ a b, MeasurableSet a ∧ MeasurableSet b ∧
-      {x | v.limRatio ρ x < p} ⊆ a ∧ {x | (q : ℝ≥0∞) < v.limRatio ρ x} ⊆ b ∧ μ (a ∩ b) = 0 := by
+      {x | v.limRatio ρ.1 x < p} ⊆ a ∧ {x | (q : ℝ≥0∞) < v.limRatio ρ.1 x} ⊆ b ∧ μ (a ∩ b) = 0 := by
   /- Here is a rough sketch, assuming that the measure is finite and the limit is well defined
     everywhere. Let `u := {x | v.limRatio ρ x < p}` and `w := {x | q < v.limRatio ρ x}`. They
     have measurable supersets `u'` and `w'` of the same measure. We will show that these satisfy
