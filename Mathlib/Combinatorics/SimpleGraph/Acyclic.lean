@@ -68,7 +68,7 @@ variable {G G'}
 /-- A graph that has an injective homomorphism to an acyclic graph is acyclic. -/
 lemma IsAcyclic.comap (f : G →g G') (hinj : Function.Injective f) (h : G'.IsAcyclic) :
     G.IsAcyclic :=
-  fun _ _ ↦ map_isCycle_iff_of_injective hinj |>.not.mp <| h _
+  fun _ _ ↦ isCycle_map_iff_of_injective hinj |>.not.mp <| h _
 
 lemma IsAcyclic.embedding (f : G ↪g G') (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.comap f f.injective

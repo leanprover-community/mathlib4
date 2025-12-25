@@ -843,7 +843,7 @@ alias ⟨_, isCycle_map_of_injective⟩ := isCycle_map_iff_of_injective
 @[deprecated (since := "2025-12-25")]
 alias ⟨_, map_isCycle_of_injective⟩ := isCycle_map_iff_of_injective
 
-alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
+alias ⟨_, IsCycle.map⟩ := isCycle_map_iff_of_injective
 
 @[simp]
 theorem isTrail_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
