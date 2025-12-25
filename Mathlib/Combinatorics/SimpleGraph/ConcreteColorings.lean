@@ -214,6 +214,7 @@ lemma even_length_iff_same_color
     {c : G.Coloring (Fin 2)}
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ c u = c v := by
+  classical
   induction p with
   | nil =>
     simp
@@ -249,6 +250,7 @@ lemma even_cycle_length_of_path
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
     Even (SimpleGraph.Walk.cons ha q).length := by
+      classical
       by_cases hq' : q.length = 1 <;>
       simp_all +decide only [Walk.length_cons]
       have h_cycle : SimpleGraph.Walk.IsCycle (SimpleGraph.Walk.cons ha q) := by
