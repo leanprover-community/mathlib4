@@ -87,22 +87,13 @@ lemma isEdgeReachable_add_one :
 
 lemma isEdgeConnected_add_one (hk : k ≠ 0) :
     G.IsEdgeConnected (k + 1) ↔ ∀ e, (G.deleteEdges {e}).IsEdgeConnected k := by
-  refine ⟨fun h e u v ↦ ?_, fun h u v ↦ ?_⟩
-  · let h_reach := h u v
-    by_cases he : e ∈ G.edgeSet
-    · exact (isEdgeReachable_add_one.mp h_reach).2 e he
-    · have hG : G.deleteEdges {e} = G := by
-        ext x y; simp only [deleteEdges_adj, Set.mem_singleton_iff]
-        exact ⟨(·.1), fun ha ↦ ⟨ha, fun heq ↦ he (heq ▸ ha)⟩⟩
-      rw [hG]
-      exact h_reach.anti (k.le_add_right 1)
-  · rw [isEdgeReachable_add_one]
-    constructor
-    · let e := s(u, v)
-      have h1 := (h e u v).anti (Nat.one_le_iff_ne_zero.mpr hk)
-      exact (isEdgeReachable_one.mp h1).mono (deleteEdges_le _)
-    · intro e he
-      exact h e u v
+  refine ⟨fun h e u v ↦ ?_, fun h u v ↦ isEdgeReachable_add_one.mpr ⟨?_, fun e _ ↦ h e u v⟩⟩
+  · by_cases he : e ∈ G.edgeSet
+    · exact (isEdgeReachable_add_one.mp <| h u v).right e he
+    · rw [G.deleteEdges_eq_self.mpr <| Set.disjoint_singleton_right.mpr he]
+      exact h u v |>.anti <| k.le_succ
+  · refine isEdgeReachable_one.mp ?_ |>.mono <| G.deleteEdges_le {s(u, v)}
+    exact h _ u v |>.anti <| k.one_le_iff_ne_zero.mpr hk
 
 /-- A graph is 2-edge-connected iff it is preconnected and has no bridges. -/
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ∀ e, ¬G.IsBridge e := by
