@@ -12,7 +12,7 @@ public import Mathlib.Data.Set.Insert
 /-!
 # Additional lemmas about homomorphisms of semirings and rings
 
-These lemmas were in `Mathlib/Algebra/Hom/Ring/Defs.lean` and have now been deprecated.
+These lemmas were in `Mathlib/Algebra/Ring/Hom/Defs.lean` and have now been deprecated.
 -/
 
 @[expose] public section
