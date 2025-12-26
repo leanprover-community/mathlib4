@@ -22,6 +22,43 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 
 open CategoryTheory Limits
 
+-- to be moved
+namespace CategoryTheory.Limits
+
+variable {C : Type*} [Category C] {X Y : C}
+
+lemma isPushout_of_isColimit_binaryCofan_of_isInitial {c : BinaryCofan X Y} (hc : IsColimit c)
+    {I : C} (hI : IsInitial I) :
+    IsPushout (hI.to _) (hI.to _) c.inl c.inr where
+  w := hI.hom_ext _ _
+  isColimit' := ⟨PushoutCocone.IsColimit.mk _
+    (fun s ↦ hc.desc (BinaryCofan.mk s.inl s.inr))
+    (fun s ↦ hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.left⟩)
+    (fun s ↦ hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.right⟩)
+    (fun s m h₁ h₂ ↦ by
+      apply BinaryCofan.IsColimit.hom_ext hc
+      · rw [h₁, hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.left⟩]
+        rfl
+      · rw [h₂, hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.right⟩]
+        rfl)⟩
+
+lemma isPullback_of_isLimit_binaryFan_of_isTerminal {c : BinaryFan X Y} (hc : IsLimit c)
+    {P : C} (hP : IsTerminal P) :
+    IsPullback c.fst c.snd (hP.from _) (hP.from _) where
+  w := hP.hom_ext _ _
+  isLimit' := ⟨PullbackCone.IsLimit.mk _
+    (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩)
+    (fun s m h₁ h₂ ↦ by
+      apply BinaryFan.IsLimit.hom_ext hc
+      · rw [h₁, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩]
+        rfl
+      · rw [h₂, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩]
+        rfl)⟩
+
+end CategoryTheory.Limits
+
 namespace HomotopicalAlgebra
 
 variable {C : Type*} [Category* C]
