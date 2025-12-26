@@ -127,7 +127,7 @@ theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
 theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 
-instance (priority := 100) [DecidableLE α] : Decidable (a ∈ s) :=
+instance [DecidableLE α] : Decidable (a ∈ s) :=
   decidable_of_iff' _ mem_def
 
 theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
