@@ -199,47 +199,34 @@ namespace TemperedDistribution
 
 section Multiplication
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup F₁]
-  [NormedAddCommGroup F₂]
-  [NormedSpace ℝ E]
-  [NormedSpace ℂ F] [NormedSpace ℂ F₁] [NormedSpace ℂ F₂]
-
-/-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`.
-
-Version for a general bilinear map. -/
-def bilinLeftCLM (B : F₂ →L[ℂ] ℂ →L[ℂ] ℂ) {g : E → F₂} (hg : g.HasTemperateGrowth) :
-    𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp _ (SchwartzMap.bilinLeftCLM B.flip hg)
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 variable (F) in
 /-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`. -/
-def mulLeftCLM {g : E → ℂ} (hg : g.HasTemperateGrowth) :
-    𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  bilinLeftCLM (ContinuousLinearMap.mul ℂ ℂ) hg
+def smulLeftCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  PointwiseConvergenceCLM.precomp _ (SchwartzMap.smulLeftCLM ℂ g)
 
 @[simp]
-theorem mulLeftCLM_apply_apply {g : E → ℂ} (hg : g.HasTemperateGrowth) (f : 𝓢'(E, F))
-    (f' : 𝓢(E, ℂ)) :
-    mulLeftCLM F hg f f' = f (SchwartzMap.mulLeftCLM ℂ hg f') := by
+theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, ℂ)) :
+    smulLeftCLM F g f f' = f (SchwartzMap.smulLeftCLM ℂ g f') := by
   rfl
 
 @[simp]
-theorem mulLeftCLM_const_apply (f : 𝓢'(E, F)) (c : ℂ) :
-    mulLeftCLM F (Function.HasTemperateGrowth.const (E := E) c) f = c • f := by
-  ext g
-  simp
+theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦  c) f = c • f := by
+  ext1; simp
 
 @[simp]
-theorem mulLeftCLM_mulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
-    mulLeftCLM F hg₂ (mulLeftCLM F hg₁ f) = mulLeftCLM F (hg₁.mul hg₂) f := by
-  ext; simp
+    smulLeftCLM F g₂ (smulLeftCLM F g₁ f) = smulLeftCLM F (g₁ * g₂) f := by
+  ext; simp [hg₁, hg₂]
 
-theorem mulLeftCLM_compL_mulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
-    mulLeftCLM F hg₂ ∘L mulLeftCLM F hg₁ = mulLeftCLM F (hg₁.mul hg₂) := by
+    smulLeftCLM F g₂ ∘L smulLeftCLM F g₁ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
-  simp
+  simp [hg₁, hg₂]
 
 end Multiplication
 
@@ -302,23 +289,21 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 open FourierTransform
 
 variable (F) in
-def fourierMultiplierCLM {g : E → ℂ} (hg : g.HasTemperateGrowth) :
-    𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  fourierTransformInvCLM E F ∘L (mulLeftCLM F hg) ∘L fourierTransformCLM E F
+def fourierMultiplierCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  fourierTransformInvCLM E F ∘L (smulLeftCLM F g) ∘L fourierTransformCLM E F
 
-theorem fourierMultiplierCLM_apply {g : E → ℂ} (hg : g.HasTemperateGrowth)
-    (f : 𝓢'(E, F)) : fourierMultiplierCLM F hg f = 𝓕⁻ (mulLeftCLM F hg (𝓕 f)) := by
+theorem fourierMultiplierCLM_apply (g : E → ℂ) (f : 𝓢'(E, F)) :
+    fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
   rfl
 
 @[simp]
-theorem fourierMultiplierCLM_apply_apply {g : E → ℂ} (hg : g.HasTemperateGrowth) (f : 𝓢'(E, F))
-    (u : 𝓢(E, ℂ)) :
-    fourierMultiplierCLM F hg f u = f (𝓕 (SchwartzMap.mulLeftCLM ℂ hg (𝓕⁻ u))) := by
+theorem fourierMultiplierCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) :
+    fourierMultiplierCLM F g f u = f (𝓕 (SchwartzMap.smulLeftCLM ℂ g (𝓕⁻ u))) := by
   rfl
 
 @[simp]
 theorem fourierMultiplierCLM_const_apply (f : 𝓢'(E, F)) (c : ℂ) :
-    fourierMultiplierCLM F (Function.HasTemperateGrowth.const (E := E) c) f = c • f := by
+    fourierMultiplierCLM F (fun _ ↦ c) f = c • f := by
   ext
   simp
 
