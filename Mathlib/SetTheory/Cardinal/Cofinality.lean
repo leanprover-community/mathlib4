@@ -532,7 +532,7 @@ theorem cof_cof (a : Ordinal.{u}) : cof (cof a).ord = cof a := by
   obtain ⟨g, hg⟩ := exists_fundamental_sequence a.cof.ord
   exact ord_injective (hf.trans hg).cof_eq.symm
 
-theorem isFundamentalSequence_of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
+theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     {a o} (ha : IsSuccLimit a) {g} (hg : IsFundamentalSequence a o g) :
     IsFundamentalSequence (f a) o fun b hb => f (g b hb) := by
   refine ⟨?_, @fun i j _ _ h => hf.strictMono (hg.2.1 _ _ h), ?_⟩
@@ -560,11 +560,11 @@ theorem isFundamentalSequence_of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf 
     exact IsNormal.blsub_eq.{u, u} hf ha
 
 @[deprecated (since := "2025-12-25")]
-alias IsNormal.isFundamentalSequence := isFundamentalSequence_of_isNormal
+alias IsNormal.isFundamentalSequence := IsFundamentalSequence.of_isNormal
 
 theorem cof_eq_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof (f a) = cof a :=
   let ⟨_, hg⟩ := exists_fundamental_sequence a
-  ord_injective (isFundamentalSequence_of_isNormal hf ha hg).cof_eq
+  ord_injective (IsFundamentalSequence.of_isNormal hf ha hg).cof_eq
 
 @[deprecated (since := "2025-12-25")]
 alias IsNormal.cof_eq := cof_eq_of_isNormal
