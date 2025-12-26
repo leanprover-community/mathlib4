@@ -55,6 +55,12 @@ def Embedding.ofLineGraph (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
 def Copy.ofLineGraph (f : Copy G G') : Copy G.lineGraph G'.lineGraph :=
   Embedding.ofLineGraph f |>.toCopy
 
+theorem IsContained.lineGraph (h : G ⊑ G') : G.lineGraph ⊑ G'.lineGraph :=
+  ⟨h.some.ofLineGraph⟩
+
+theorem IsIndContained.lineGraph (h : G ⊴ G') : G.lineGraph ⊴ G'.lineGraph :=
+  ⟨.ofLineGraph h.some.toCopy⟩
+
 /-- Lift an isomorphism between graphs to an isomorphism between their line graphs -/
 def Iso.ofLineGraph (f : G ≃g G') : G.lineGraph ≃g G'.lineGraph where
   toFun := f.toCopy.ofLineGraph
@@ -62,5 +68,10 @@ def Iso.ofLineGraph (f : G ≃g G') : G.lineGraph ≃g G'.lineGraph where
   left_inv _ := by simp [Copy.ofLineGraph, Embedding.ofLineGraph, Sym2.map_map]
   right_inv _ := by simp [Copy.ofLineGraph, Embedding.ofLineGraph, Sym2.map_map]
   map_rel_iff' := Embedding.ofLineGraph f.toCopy |>.map_rel_iff
+
+theorem IsSubgraph.lineGraph {G' : SimpleGraph V} (h : G ≤ G') :
+    G.lineGraph.map (.subtype _) ≤ G'.lineGraph.map (.subtype _) := by
+  rintro _ _ ⟨⟨⟨⟩, h₁⟩, ⟨⟨⟩, h₂⟩, ⟨hne, hnonempty⟩, rfl, rfl⟩
+  exact ⟨⟨_, h h₁⟩, ⟨_, h h₂⟩, ⟨(hne <| Subtype.ext <| Subtype.mk.inj ·), hnonempty⟩, rfl, rfl⟩
 
 end SimpleGraph
