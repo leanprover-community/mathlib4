@@ -58,10 +58,10 @@ variable [LinearOrder α] [OrderBot α]
 -- `simp` can prove these, so they shouldn't be simp-lemmas.
 
 @[to_dual] theorem min_bot_left (a : α) : min ⊥ a = ⊥ := bot_inf_eq _
-@[to_dual] theorem max_bot_left (a : α) : max ⊥ a = a := bot_sup_eq _
-
-@[to_dual] theorem max_bot_right (a : α) : max a ⊥ = a := sup_bot_eq _
 @[to_dual] theorem min_bot_right (a : α) : min a ⊥ = ⊥ := inf_bot_eq _
+
+@[to_dual] theorem max_bot_left (a : α) : max ⊥ a = a := bot_sup_eq _
+@[to_dual] theorem max_bot_right (a : α) : max a ⊥ = a := sup_bot_eq _
 
 @[to_dual] theorem max_eq_bot {a b : α} : max a b = ⊥ ↔ a = ⊥ ∧ b = ⊥ := sup_eq_bot_iff
 
