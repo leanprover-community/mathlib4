@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 Given a category `C` endowed with a shift by an additive monoid `M` and two
 objects `X` and `Y` in `C`, we consider the types `ShiftedHom X Y m`
-defined as `X ⟶ (Y⟦m⟧)` for all `m : M`, and the composition on these
+defined as `X ⟶ Y⟦m⟧` for all `m : M`, and the composition on these
 shifted hom.
 
 -/
