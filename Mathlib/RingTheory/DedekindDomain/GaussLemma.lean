@@ -3,11 +3,12 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Polynomial.ContentIdeal
-import Mathlib.RingTheory.Polynomial.GaussNorm
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.Polynomial.ContentIdeal
+public import Mathlib.RingTheory.Polynomial.GaussNorm
 
 /-!
 ## Gauss's Lemma for Dedekind Domains
@@ -17,6 +18,7 @@ polynomial is the whole ring if and only if the `v`-adic Gauss norms of the poly
 1 for all `v`.
 -/
 
+@[expose] public section
 namespace Polynomial
 
 open IsDedekindDomain HeightOneSpectrum
@@ -50,8 +52,8 @@ theorem gaussNorm_lt_one_iff_contentIdeal_le :
     rw [mem_support_iff] at hn
     exact h _ <| p.coeff_mem_coeffs hn
 
-/-- Given a polynomial `p` in `R[X]`, the content ideal of `p` is the whole ring if and only if the
-`v`-adic Gauss norms of `p` are equal to 1 for all `v`. -/
+/-- **Gauss's Lemma:** given a polynomial `p` in `R[X]`, the content ideal of `p` is the whole ring
+if and only if the `v`-adic Gauss norms of `p` are equal to 1 for all `v`. -/
 theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one [Nontrivial R] (hR : ¬IsField R) :
     p.contentIdeal = ⊤ ↔ ∀ v : HeightOneSpectrum R, p.gaussNorm (v.intAdicAbv hb) 1 = 1 := by
   convert_to _ ↔ ∀ (x : HeightOneSpectrum R), 1 ≤ gaussNorm (x.intAdicAbv hb) 1 p
