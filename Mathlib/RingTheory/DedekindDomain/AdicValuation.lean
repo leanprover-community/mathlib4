@@ -600,49 +600,74 @@ section AbsoluteValue
 
 open WithZeroMulInt
 
-variable {R K} in
+variable {R K} {b : NNReal} (hb : 1 < b) (r : R) (x : K)
+
+/-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def intAdicAbvDef := fun r ↦ toNNReal (ne_zero_of_lt hb) (v.intValuation r)
+
+lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (fun r ↦ v.intAdicAbvDef hb r) := by
+  intro x y
+  simp only [intAdicAbvDef]
+  have h_mono := (toNNReal_strictMono hb).monotone
+  rw [← h_mono.map_max]
+  exact h_mono <| v.intValuation.map_add  x y
+
+/-- The `v`-adic absolute value on `R` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def intAdicAbv : AbsoluteValue R ℝ where
+  toFun r := v.intAdicAbvDef hb r
+  map_mul' _ _ := by simp [intAdicAbvDef]
+  nonneg' _ := NNReal.zero_le_coe
+  eq_zero' _ := by simp [intAdicAbvDef, intValuation_def]
+  add_le' _ _ := (isNonarchimedean_intAdicAbvDef v hb).add_le fun _ ↦ bot_le
+
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_intAdicAbv : IsNonarchimedean (v.intAdicAbv hb) :=
+  isNonarchimedean_intAdicAbvDef v hb
+
+theorem intAdicAbv_le_one : v.intAdicAbv hb r ≤ 1 := by
+  simpa [intAdicAbv, intAdicAbvDef, toNNReal_le_one_iff hb] using intValuation_le_one v r
+
+theorem intAdicAbv_lt_one_iff : v.intAdicAbv hb r < 1 ↔ r ∈ v.asIdeal := by
+  simpa [intAdicAbv, intAdicAbvDef, toNNReal_lt_one_iff hb] using intValuation_lt_one_iff_mem v r
+
+theorem intAdicAbv_eq_one_iff : v.intAdicAbv hb r = 1 ↔ r ∉ v.asIdeal := by
+  contrapose
+  rw [← v.intAdicAbv_lt_one_iff hb, ne_iff_lt_iff_le]
+  exact intAdicAbv_le_one v hb r
+
 /-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbvDef (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :=
-  fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+def adicAbvDef := fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
 
-variable {R K} in
-lemma isNonarchimedean_adicAbvDef {b : NNReal} (hb : 1 < b) :
-    IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
+lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
   intro x y
   simp only [adicAbvDef]
   have h_mono := (toNNReal_strictMono hb).monotone
   rw [← h_mono.map_max]
   exact h_mono ((v.valuation _).map_add x y)
 
-variable {R K} in
 /-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue K ℝ where
+def adicAbv : AbsoluteValue K ℝ where
   toFun x := v.adicAbvDef hb x
   map_mul' _ _ := by simp [adicAbvDef]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
   add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
 
-variable {R K} in
 /-- The `v`-adic absolute value is nonarchimedean -/
-theorem isNonarchimedean_adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :
-    IsNonarchimedean (α := K) (v.adicAbv hb) := isNonarchimedean_adicAbvDef v hb
+theorem isNonarchimedean_adicAbv : IsNonarchimedean (α := K) (v.adicAbv hb) :=
+  isNonarchimedean_adicAbvDef v hb
 
-variable {R K} in
-theorem adicAbv_coe_le_one {b : NNReal} (hb : 1 < b) (r : R) :
-    v.adicAbv hb (algebraMap R K r) ≤ 1 := by
+theorem adicAbv_coe_le_one : v.adicAbv hb (algebraMap R K r) ≤ 1 := by
   simpa [adicAbv, adicAbvDef, toNNReal_le_one_iff hb] using valuation_le_one v r
 
-variable {R K} in
-theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
-    v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
+theorem adicAbv_coe_lt_one_iff : v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
   simpa [adicAbv, adicAbvDef, toNNReal_lt_one_iff hb] using valuation_lt_one_iff_mem v r
 
-variable {R K} in
-theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
-    v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
+theorem adicAbv_coe_eq_one_iff : v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
   contrapose
   rw [← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
   exact adicAbv_coe_le_one v hb r
