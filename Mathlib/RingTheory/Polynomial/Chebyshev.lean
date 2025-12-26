@@ -835,6 +835,39 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     h
 
+theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
+    (1 - X ^ 2) * derivative^[k + 2] (T R n) =
+      (2 * k + 1 : R[X]) * X * derivative^[k + 1] (T R n) -
+      (n ^ 2 - k ^ 2 : R[X]) * derivative^[k] (T R n) := by
+  have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T
+    (R := R) n
+  norm_cast at h
+  rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
+    iterate_derivative_sub, mul_comm X, iterate_derivative_intCast_mul,
+    iterate_derivative_mul_X_sq', iterate_derivative_mul_X'] at h
+  linear_combination (norm := (push_cast; ring_nf))
+    h
+  cases k
+  case a.a.zero => simp
+  case a.a.succ k => grind
+
+theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
+    (1 - X ^ 2) * derivative^[k + 2] (U R n) =
+      (2 * k + 3 : R[X]) * X * derivative^[k + 1] (U R n) -
+      ((n + 1) ^ 2 - (k + 1) ^ 2 : R[X]) * derivative^[k] (U R n) := by
+  have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U
+    (R := R) n
+  norm_cast at h
+  rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
+    iterate_derivative_sub, mul_assoc 3, ← Nat.cast_three, iterate_derivative_natCast_mul,
+    mul_comm X, iterate_derivative_intCast_mul, iterate_derivative_mul_X_sq',
+    iterate_derivative_mul_X'] at h
+  linear_combination (norm := (push_cast; ring_nf))
+    h
+  cases k
+  case a.a.zero => simp
+  case a.a.succ k => grind
+
 variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
