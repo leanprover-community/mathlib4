@@ -239,7 +239,7 @@ theorem exists_eq_smul_id_of_forall_notLinearIndependent
   obtain ⟨a, _, hfa⟩ := exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent hV1 h
   refine ⟨a, by ext; simp [hfa]⟩
 
-/-- The map from the the center of `R` to the center of `V →ₗ[R] V`
+/-- The map from the the center of `R` to the center of `V →ₗ[R] V`
 given by homotheties with central ratio. -/
 def centerMap [Semiring R] [AddCommMonoid V] [Module R V] :
     Subsemiring.center R →+* Subsemiring.center (V →ₗ[R] V) where
