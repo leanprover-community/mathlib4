@@ -190,16 +190,41 @@ theorem S_two_mul_real_cosh (n : ℤ) : (S ℝ n).eval (2 * cosh θ) * sinh θ =
 
 theorem iterate_derivative_T_real_eval_one (n : ℤ) (k : ℕ) :
     (derivative^[k] (T ℝ n)).eval 1 =
-      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / ((∏ l ∈ Finset.range k, (2 * l + 1))) := by
-  sorry
+      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
+  have h := iterate_derivative_T_eval_one (R := ℝ) n k
+  push_cast at h ⊢
+  refine CancelDenoms.cancel_factors_eq_div h (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_))
+  norm_cast
 
--- another result: denominator divides numerator
+theorem iterate_derivative_U_real_eval_one (n : ℤ) (k : ℕ) :
+    (derivative^[k] (U ℝ n)).eval 1 =
+      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
+      (∏ l ∈ Finset.range k, (2 * l + 3)) := by
+  have h := iterate_derivative_U_eval_one (R := ℝ) n k
+  push_cast at h ⊢
+  refine CancelDenoms.cancel_factors_eq_div h (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_))
+  norm_cast
 
 theorem iterate_derivative_T_real_eval_one_dvd (n : ℤ) (k : ℕ) :
-    ∏ l ∈ Finset.range k, (2 * l + 1) ∣ ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
-  sorry
+    ∏ l ∈ Finset.range k, (2 * l + 1 : ℤ) ∣ ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
+  have h := iterate_derivative_T_eval_one (R := ℤ) n k
+  push_cast at h
+  apply dvd_of_mul_right_eq _ h
 
--- same for U
+theorem iterate_derivative_U_real_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ∏ l ∈ Finset.range k, (2 * l + 3 : ℤ) ∣
+      (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2)) * (n + 1) := by
+  have h := iterate_derivative_U_eval_one (R := ℤ) n k
+  push_cast at h
+  apply dvd_of_mul_right_eq _ h
+
+theorem derivative_U_real_eval_one (n : ℤ) :
+    (derivative (U ℝ n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
+  CancelDenoms.cancel_factors_eq_div (derivative_U_eval_one (R := ℝ) n) ((NeZero.ne' 3).symm)
+
+theorem derivative_U_real_eval_one_dvd (n : ℤ) :
+    3 ∣ (n + 2) * (n + 1) * n :=
+  dvd_of_mul_right_eq _ (derivative_U_eval_one (R := ℤ) n)
 
 end Real
 
