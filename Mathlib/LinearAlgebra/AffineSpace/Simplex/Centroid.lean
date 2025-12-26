@@ -66,7 +66,6 @@ theorem centroid_mem_affineSpan [CharZero k] {n : ℕ} (s : Simplex k P n) :
   centroid_mem_affineSpan_of_card_eq_add_one k _ (card_fin (n + 1))
 
 /-- The centroid is equal to the affine combination of the points with `centroidWeights`. -/
-@[simp]
 theorem centroid_eq_affine_combination (s : Simplex k P n) :
     s.centroid = affineCombination k univ s.points (centroidWeights k univ) := by rfl
 
@@ -237,16 +236,17 @@ variable [NeZero n]
 def faceOppositeCentroid (s : Affine.Simplex k P n) (i : Fin (n + 1)) : P :=
     (s.faceOpposite i).centroid
 
+/-- The centroid of the face opposite a vertex lies in the affine span of that face. -/
+theorem faceOppositeCentroid_mem_affineSpan_face [CharZero k] (s : Simplex k P n)
+    (i : Fin (n + 1)) :
+    s.faceOppositeCentroid i ∈ affineSpan k (Set.range (s.faceOpposite i).points) :=
+  centroid_mem_affineSpan (s.faceOpposite i)
+
 /-- The `faceOppositeCentroid` lies in the affine span of all simplex vertices. -/
 theorem faceOppositeCentroid_mem_affineSpan [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i ∈ affineSpan k (Set.range s.points) := by
-  unfold faceOppositeCentroid
-  have h : Set.range (s.faceOpposite i).points ⊆ Set.range s.points := by
-    intro j hj
-    rcases hj with ⟨k, _, rfl⟩
-    apply Set.mem_range_self
-  apply affineSpan_mono _ h
-  exact centroid_mem_affineSpan (s.faceOpposite i)
+  have h : Set.range (s.faceOpposite i).points ⊆ Set.range s.points := by simp
+  exact affineSpan_mono _ h (s.faceOppositeCentroid_mem_affineSpan_face i)
 
 /-- The `faceOppositeCentroid` is the affine combination of the complement vertices with equal
  weights `1/n`. -/
@@ -443,6 +443,19 @@ def median (s : Simplex k P n) (i : Fin (n + 1)) : AffineSubspace k P :=
   ext i
   simp [median]
 
+@[simp]
+theorem median_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+    {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1))
+    (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
+    (s.map f hf).median i = (s.median i).map f := by
+  simp [median, map_span, Set.image_pair]
+
+theorem median_restrict [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) (S : AffineSubspace k P)
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    AffineSubspace.map (AffineSubspace.subtype S) ((s.restrict S hS).median i) = s.median i := by
+  simp [median, map_span, Set.image_pair]
+
 /-- The `faceOppositeCentroid` lines on the median through the corresponding vertex. -/
 theorem faceOppositeCentroid_mem_median (s : Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i ∈ s.median i := by
@@ -465,10 +478,10 @@ theorem centroid_mem_median [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
   rw [h]
   exact smul_vsub_vadd_mem_affineSpan_pair _ _ _
 
-/-- The median through a vertex is the same affine span of that vertex and the centroid. -/
-theorem median_eq_affineSpan_point_centroid [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
-    s.median i = affineSpan k {s.points i, s.centroid} := by
-  have h1 : s.median i ≤ affineSpan k {s.points i, s.centroid} := by
+/-- The median of a simplex is the line through the vertex and the centroid. -/
+theorem median_eq_line_point_centroid [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.median i = line[k, s.points i, s.centroid] := by
+  have h1 : s.median i ≤ line[k, s.points i, s.centroid] := by
     unfold median
     apply affineSpan_pair_le_of_right_mem
     rw [faceOppositeCentroid_eq_smul_vsub_vadd_point]
@@ -481,7 +494,7 @@ theorem median_eq_affineSpan_point_centroid [CharZero k] (s : Simplex k P n) (i 
       rw [mul_neg_one, inv_eq_one_div, neg_div]
     rw [h]
     exact smul_vsub_rev_vadd_mem_affineSpan_pair _ _ _
-  have h2 : affineSpan k {s.points i, s.centroid} ≤ s.median i := by
+  have h2 : line[k, s.points i, s.centroid] ≤ s.median i := by
     rw [median]
     apply affineSpan_pair_le_of_right_mem
     exact centroid_mem_median s i
@@ -499,7 +512,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
   have h_span : ∀ i : s', p -ᵥ s.centroid ∈ (Submodule.span k ({u i} : Set V)) := by
     intro i
     have hi := h i
-    grind only [median_eq_affineSpan_point_centroid, vadd_right_mem_affineSpan_pair,
+    grind only [median_eq_line_point_centroid, vadd_right_mem_affineSpan_pair,
       Submodule.smul_mem, Submodule.mem_span_singleton_self]
   have hi : LinearIndependent k u := by
     set p : Fin (n + 1) → P := fun x => if x = i₀ then s.centroid else s.points x
