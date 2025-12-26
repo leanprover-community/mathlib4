@@ -807,8 +807,7 @@ def Arrows.toCompatible (s : P.obj (op B)) :
     Subtype (Arrows.Compatible P π) where
   val i := P.map (π i).op s
   property i j Z gi gj h := by
-    dsimp
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp, h]
+    simp [← FunctorToTypes.map_comp_apply, ← op_comp, h]
 
 theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
     IsSheafFor P (ofArrows X π) ↔
