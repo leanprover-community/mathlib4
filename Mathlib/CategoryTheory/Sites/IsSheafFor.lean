@@ -852,7 +852,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
     IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows _ f) ↔
-      IsSheafFor P ((Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i)))) := by
+      IsSheafFor P (Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i))) := by
   let e : Subtype (Arrows.Compatible ((Over.map p).op ⋙ P) f) ≃
       Subtype (Arrows.Compatible P (fun i ↦ (Over.map p).map (f i))) :=
     { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦ by
