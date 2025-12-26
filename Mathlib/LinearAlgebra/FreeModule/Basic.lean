@@ -196,8 +196,8 @@ theorem mem_center_iff {f : End R M} :
   · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩
   let b := Free.chooseBasis R M
   let i := b.index_nonempty.some
-  have (x : M) := by simpa using h (b.coord i |>.smulRight x) (b i) |>.symm
-  exact ⟨b.coord i <| f <| b i, fun r ↦ by simpa using congr(b.coord i $(this <| r • b i)), this⟩
+  have H x : f x = b.repr (f (b i)) i • x := by simpa using (h ((b.coord i).smulRight x) (b i)).symm
+  exact ⟨b.coord i <| f <| b i, fun r ↦ by simpa using congr(b.coord i $(H <| r • b i)), H⟩
 
 theorem mem_submonoidCenter_iff {f : End R M} :
     f ∈ Submonoid.center (End R M) ↔ ∃ α ∈ Submonoid.center R, ∀ x : M, f x = α • x :=
