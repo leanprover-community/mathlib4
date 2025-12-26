@@ -868,6 +868,58 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
   case a.a.zero => simp
   case a.a.succ k => grind
 
+theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
+    (1 - x ^ 2) * (derivative^[k + 2] (T R n)).eval x =
+      (2 * k + 1) * x * (derivative^[k + 1] (T R n)).eval x -
+      (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval x := by
+  have h := congr_arg (fun (p : R[X]) => p.eval x) <|
+    one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T n k
+  simp only [eval_mul, eval_sub, eval_one, eval_pow,
+    eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
+  linear_combination (norm := (push_cast; ring_nf))
+    h
+
+theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
+    (1 - x ^ 2) * (derivative^[k + 2] (U R n)).eval x =
+      (2 * k + 3) * x * (derivative^[k + 1] (U R n)).eval x -
+      ((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval x := by
+  have h := congr_arg (fun (p : R[X]) => p.eval x) <|
+    one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U n k
+  simp only [eval_mul, eval_sub, eval_one, eval_pow,
+    eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
+  linear_combination (norm := (push_cast; ring_nf))
+    h
+
+theorem iterate_derivative_T_eval_one_recurrence (n : ℤ) (k : ℕ) :
+    (2 * k + 1) * (derivative^[k + 1] (T R n)).eval 1 =
+      (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 1 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 1
+  rw [one_pow, sub_self, zero_mul, mul_one] at h
+  exact sub_eq_zero.mp h.symm
+
+theorem iterate_derivative_U_eval_one_recurrence (n : ℤ) (k : ℕ) :
+    (2 * k + 3) * (derivative^[k + 1] (U R n)).eval 1 =
+      ((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 1 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 1
+  rw [one_pow, sub_self, zero_mul, mul_one] at h
+  exact sub_eq_zero.mp h.symm
+
+theorem iterate_derivative_T_eval_zero_recurrence (n : ℤ) (k : ℕ) :
+    (derivative^[k + 2] (T R n)).eval 0 =
+      -(n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 0 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 0
+  rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
+  linear_combination (norm := (push_cast; ring_nf))
+    h
+
+theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
+    (derivative^[k + 2] (U R n)).eval 0 =
+      -((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 0 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 0
+  rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
+  linear_combination (norm := (push_cast; ring_nf))
+    h
+
 variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
