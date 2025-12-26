@@ -5,9 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-meta import Batteries.Tactic.Lint.Basic
-meta import Lean.Elab.Tactic.Doc
-import Lean.Parser.Tactic.Doc
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Lean.Elab.Tactic.Doc
+public meta import Lean.Parser.Tactic.Doc
 import Mathlib.Tactic.Linter.Header
 
 /-! # The `tacticDocs` linter
@@ -25,7 +25,7 @@ meta def isNonemptyDoc (doc : TacticDoc) : Bool :=
   doc.docString.isSome || doc.extensionDocs.any (! ·.isEmpty)
 
 /-- Check that all tactics available in Mathlib have a docstring. -/
-@[env_linter] meta def tacticDocs : Batteries.Tactic.Lint.Linter where
+@[env_linter] public meta def tacticDocs : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "No tactics are missing documentation."
   errorsFound := "TACTICS ARE MISSING DOCUMENTATION STRINGS:"
   test tac := do
