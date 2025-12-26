@@ -29,10 +29,7 @@ variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Catego
 
 /-- In a category `C` equipped with a shift by an additive monoid,
 this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`. -/
-def ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ (Y⟦m⟧)
-
-instance [Preadditive C] (X Y : C) (n : M) : AddCommGroup (ShiftedHom X Y n) :=
-  inferInstanceAs (AddCommGroup (_ ⟶ _))
+abbrev ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ (Y⟦m⟧)
 
 namespace ShiftedHom
 
@@ -201,9 +198,6 @@ end Preadditive
 section Linear
 
 variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]
-
-instance (X Y : C) (n : M) : Module R (ShiftedHom X Y n) :=
-  inferInstanceAs (Module R (_ ⟶ _))
 
 @[simp]
 lemma comp_smul
