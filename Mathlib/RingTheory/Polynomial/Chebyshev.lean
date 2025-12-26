@@ -920,6 +920,28 @@ theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
   linear_combination (norm := (push_cast; ring_nf))
     h
 
+theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
+    (∏ l ∈ Finset.range k, (2 * l + 1)) * (derivative^[k] (T R n)).eval 1 =
+      ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
+  induction k
+  case zero => simp
+  case succ k ih =>
+    push_cast at ih ⊢
+    rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 1),
+      mul_assoc, iterate_derivative_T_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
+      mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self]
+
+theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
+    (∏ l ∈ Finset.range k, (2 * l + 3)) * (derivative^[k] (U R n)).eval 1 =
+      (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2 : ℤ)) * (n + 1) := by
+  induction k
+  case zero => simp
+  case succ k ih =>
+    push_cast at ih ⊢
+    rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 3),
+      mul_assoc, iterate_derivative_U_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
+      mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self, mul_assoc]
+
 variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
