@@ -19,11 +19,11 @@ open Module Free
 variable {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M]
 
-theorem Module.End.mem_subsemiringCenter_iff {f : End R M} :
+public theorem Module.End.mem_subsemiringCenter_iff {f : End R M} :
     f ∈ Subsemiring.center (End R M) ↔ ∃ α ∈ Subsemiring.center R, ∀ x : M, f x = α • x :=
   mem_center_iff
 
-theorem Module.End.mem_subalgebraCenter_iff {f : End R M} :
+public theorem Module.End.mem_subalgebraCenter_iff {f : End R M} :
     f ∈ Subalgebra.center S (End R M) ↔ ∃ α ∈ Subalgebra.center S R, ∀ x : M, f x = α • x :=
   mem_center_iff
 
