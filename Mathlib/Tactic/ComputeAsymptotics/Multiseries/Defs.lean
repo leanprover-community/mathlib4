@@ -608,7 +608,7 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
       · specialize h_step exp coef tl h
         grind
 
-private abbrev PreservesWellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+abbrev PreservesWellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop :=
   ∀ x, PreMS.WellOrdered x → (op x).WellOrdered
 
