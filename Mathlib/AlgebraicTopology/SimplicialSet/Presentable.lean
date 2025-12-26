@@ -25,9 +25,6 @@ universe u
 
 open CategoryTheory Simplicial Limits Opposite
 
-namespace CategoryTheory
-
-end CategoryTheory
 
 namespace SSet
 
