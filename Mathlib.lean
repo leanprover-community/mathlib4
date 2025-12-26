@@ -388,6 +388,7 @@ public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.Group.MinimalAxioms
 public import Mathlib.Algebra.Group.Nat.Defs
@@ -1373,6 +1374,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
@@ -2262,6 +2264,7 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Balanced
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Bicategory.CatEnriched
@@ -3251,6 +3254,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
