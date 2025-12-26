@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
-# The homotopy functor is monoidal
+# The homotopy category functor is monoidal
 
 Given `2`-truncated simplicial sets `X` and `Y`, we introduce ad operation
 `Truncated.Edge.tensor : Edge x x' → Edge y y' → Edge (x, y) (x', y')`.
