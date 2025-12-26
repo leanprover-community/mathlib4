@@ -34,7 +34,7 @@ furnishing a group isomorphism from `Subgroup.center (V ≃ₗ[R] V)` with
 `(Subgroup.center R)ˣ`.
 
 When `R` is commutative and `V` is nontrivial, the last two cases give the same
-answer and the center of `V ≃ₗ[R] V` is isomorphic with `Rˣ`.
+answer and the center of `V ≃ₗ[R] V` is isomorphic with `Rˣ`.
 
 -/
 
@@ -226,10 +226,13 @@ theorem _root_.Module.Basis.mulOppositeEquivEnd_symm_apply
     b.mulOppositeEquivEnd.symm f = MulOpposite.op (b.coord default (f (b default))) :=
   rfl
 
+/-- Multiplicative anti-equivalence of units with the group
+of linearr automorphisms of a rank one module -/
 noncomputable def _root_.Module.Basis.mulOppositeUnitsEquiv (b : Basis ι R V) :
     (Rˣ)ᵐᵒᵖ ≃* (V ≃ₗ[R] V) :=
   opEquiv.symm.trans ((mapEquiv b.mulOppositeEquivEnd.toMulEquiv).trans (generalLinearEquiv R V))
 
+/-- Multiplicative anti-equivalence of units with the general linear group of a rank one module -/
 noncomputable def _root_.Module.Basis.mulOppositeUnitsEquiv' (b : Basis ι R V) :
     Rᵐᵒᵖˣ ≃* GeneralLinearGroup R V :=
   mapEquiv b.mulOppositeEquivEnd.toMulEquiv
