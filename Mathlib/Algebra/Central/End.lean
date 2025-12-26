@@ -33,8 +33,7 @@ namespace Algebra.IsCentral
 in other words, it is a central algebra. -/
 public instance [IsCentral S R] : IsCentral S (End R M) where
   out _ hT :=
-    have ⟨α, h⟩ := mem_subalgebraCenter_iff.mp hT
-    have ⟨y, hy⟩ := center_eq_bot S R ▸ h.1
+    have ⟨_, ⟨y, _⟩, _⟩ := center_eq_bot S R ▸ mem_subalgebraCenter_iff.mp hT
     ⟨y, by aesop⟩
 
 end Algebra.IsCentral
