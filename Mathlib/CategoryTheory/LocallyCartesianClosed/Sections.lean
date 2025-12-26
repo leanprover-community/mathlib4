@@ -93,7 +93,7 @@ open ChosenPullbacksAlong
 
 variable [BraidedCategory C]
 
-/-- The currying operation `Hom ((star I).obj A) X → Hom A (I ⟹ X.left)`. -/
+/-- The currying operation `Hom ((toOver I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
   ChosenPullbacksAlong.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
