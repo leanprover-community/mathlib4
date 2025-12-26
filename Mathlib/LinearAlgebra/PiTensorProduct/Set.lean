@@ -12,23 +12,17 @@ public import Mathlib.RingTheory.PiTensorProduct
 /-!
 # PiTensorProducts indexed by sets
 
-Given a family of modules `s : ι → Type*`, we consider tensors of type `⨂ (i : S), s i`,
+Given a family of modules `M : ι → Type*`, we consider tensors of type `⨂ (i : S), M i`,
 where `S : Set ι`.
 
 ## Main definitions
-
-* Equivalences for `PiTensorproduct`s over sets:
-
-Definition...           ...pertains to
-`univEquiv`             `univ : Set ι`
-`singletonEquiv`        `{i₀}`
 
 * Equivalences relating binary tensor products to union of sets:
 
 Definition...           ...pertains to
 `tmulUnionEquiv`        `S₁ ∪ S₂`
 `tmulBipartitionEquiv`  `S ∪ Sᶜ`
-`tmulUnifyEquiv`        `S ∪ (T \ S)`
+`tmulDiffEquiv`         `S ∪ (T \ S)`
 `tmulInsertEquiv`       `{i₀} ∪ S`
 
 * Given sets `S ⊆ T`, linear functions defined on tensors indexed by `S` can be
@@ -39,14 +33,15 @@ Definition...           ...pertains to
 `extendEnd`             `⨂ S → ⨂ S`
 `extendFunctional`      `⨂ S → R`
 
-* `extendTensor`: Given a family of distinguished elements `s₀ : (i : ι) → s i`,
+* `extendTensor`: Given a family of distinguished elements `m₀ : (i : ι) → M i`,
 a tensor with index set `S` can be extended to a tensor with index set `T`, by
-padding with the vectors provided by `s₀` on `T \ S`.
+padding with the vectors provided by `m₀` on `T \ S`.
 
 ## TODO
 
-* Injectivity lemmas for the extensions. These are easy for vector spaces, but
-can become quite subtle for `AddCommMonoid`s.
+* Injectivity lemmas: Give sufficient conditions for `extendLinear, extendEnd,
+extendFunctional, extendTensor` to be injective.
+
 -/
 
 open PiTensorProduct
@@ -69,29 +64,16 @@ theorem univEquiv_tprod (f : (i : ι) → M i) : univEquiv (⨂ₜ[R] i, f i) = 
   reindex_tprod (Equiv.Set.univ ι).symm f
 
 @[simp]
-<<<<<<< HEAD
-theorem univEquiv_symm_tprod (f : (i : ι) → s i) :
-  univEquiv.symm (⨂ₜ[R] i : ↥univ, f i) = (⨂ₜ[R] i, f i) := by simp [LinearEquiv.symm_apply_eq]
-
-/-- Tensors indexed by a singleton set `{i₀}` are equivalent to vectors in `s i₀`. -/
-def singletonSetEquiv (i₀ : ι) : (⨂[R] i : ({i₀} : Set ι), s i) ≃ₗ[R] s i₀ :=
-  subsingletonEquiv (⟨i₀, by simp⟩ : ({i₀} : Set ι))
-
-@[simp]
-theorem singletonEquiv_tprod (i₀ : ι) (f : (i : ({i₀} : Set ι)) → s i) :
-  singletonSetEquiv i₀ (⨂ₜ[R] i, f i) = f ⟨i₀, by simp⟩ := by simp [singletonSetEquiv]
-=======
 theorem univEquiv_symm_tprod (f : (i : ι) → M i) :
-    univEquiv.symm (⨂ₜ[R] i : ↥univ, f i) = (⨂ₜ[R] i, f i) := by simp [LinearEquiv.symm_apply_eq]
+  univEquiv.symm (⨂ₜ[R] i : ↥univ, f i) = (⨂ₜ[R] i, f i) := by simp [LinearEquiv.symm_apply_eq]
 
 /-- Tensors indexed by a singleton set `{i₀}` are equivalent to vectors in `M i₀`. -/
 def singletonSetEquiv (i₀ : ι) : (⨂[R] i : ({i₀} : Set ι), M i) ≃ₗ[R] M i₀ :=
-  subsingletonEquivDep (⟨i₀, by simp⟩ : ({i₀} : Set ι))
+  subsingletonEquiv (⟨i₀, by simp⟩ : ({i₀} : Set ι))
 
 @[simp]
 theorem singletonEquiv_tprod (i₀ : ι) (f : (i : ({i₀} : Set ι)) → M i) :
-    singletonSetEquiv i₀ (⨂ₜ[R] i, f i) = f ⟨i₀, by simp⟩ := by simp [singletonSetEquiv]
->>>>>>> 4f65f3583d (Notaiton: s -> M for family of modules)
+  singletonSetEquiv i₀ (⨂ₜ[R] i, f i) = f ⟨i₀, by simp⟩ := by simp [singletonSetEquiv]
 
 @[simp]
 theorem singletonEquiv_symm_tprod (i₀ : ι) (x : M i₀) :
@@ -154,32 +136,32 @@ theorem tmulBipartition_symm_tprod (f : (i : ι) → M i) :
 end tmulBipartitionEquiv
 
 
-section tmulUnifyEquiv
+section tmulDiffEquiv
 
 variable {S T : Set ι} (hsub : S ⊆ T) [(i : ι) → Decidable (i ∈ S)]
 
 /-- For sets `S ⊆ T`, tensors indexed by `S` times tensors indexed by `T \ S`
 are isomorphic to tensors indexed by `T`. -/
-def tmulUnifyEquiv :
+def tmulDiffEquiv :
     (⨂[R] i₁ : S, M i₁) ⊗[R] (⨂[R] i₂ : ↥(T \ S), M i₂) ≃ₗ[R] ⨂[R] i : T, M i :=
   (tmulUnionEquiv (disjoint_sdiff_right)) ≪≫ₗ
     (reindex R (fun i : ↥(S ∪ T \ S) ↦ M i) (Equiv.subtypeEquivProp (union_diff_cancel hsub)))
 
 @[simp]
-theorem tmulUnifyEquiv_tprod (lv : (i : S) → M i) (rv : (i : ↑(T \ S)) → M i) :
-    tmulUnifyEquiv hsub ((⨂ₜ[R] i, lv i) ⊗ₜ (⨂ₜ[R] i, rv i)) =
+theorem tmulDiffEquiv_tprod (lv : (i : S) → M i) (rv : (i : ↑(T \ S)) → M i) :
+    tmulDiffEquiv hsub ((⨂ₜ[R] i, lv i) ⊗ₜ (⨂ₜ[R] i, rv i)) =
       ⨂ₜ[R] i : T, if h : ↑i ∈ S then lv ⟨i, by grind⟩ else rv ⟨i, by grind⟩ := by
-  rw [tmulUnifyEquiv, LinearEquiv.trans_apply, tmulUnionEquiv_tprod]
+  rw [tmulDiffEquiv, LinearEquiv.trans_apply, tmulUnionEquiv_tprod]
   apply reindex_tprod
 
 @[simp]
-theorem tmulUnifyEquiv_tprod_symm (av : (i : T) → M i) :
-    (tmulUnifyEquiv hsub).symm (⨂ₜ[R] i, av i) =
+theorem tmulDiffEquiv_tprod_symm (av : (i : T) → M i) :
+    (tmulDiffEquiv hsub).symm (⨂ₜ[R] i, av i) =
       (⨂ₜ[R] i : S, av ⟨i, by grind⟩) ⊗ₜ (⨂ₜ[R] i : ↥(T \ S), av ⟨i, by grind⟩) := by
-  rw [LinearEquiv.symm_apply_eq, tmulUnifyEquiv_tprod]
+  rw [LinearEquiv.symm_apply_eq, tmulDiffEquiv_tprod]
   grind
 
-end tmulUnifyEquiv
+end tmulDiffEquiv
 
 section tmulInsertEquiv
 
@@ -245,12 +227,12 @@ on tensors with index set `T`. Bundled as a homomorphism of linear maps. -/
 def extendLinearHom : ((⨂[R] i : S, M i) →ₗ[R] N) →ₗ[R]
     (⨂[R] i : T, M i) →ₗ[R] (N ⊗[R] (⨂[R] (i₂ : ↑(T \ S)), M i₂)) :=
   let TmS := ⨂[R] (i : ↑(T \ S)), M i
-  ((tmulUnifyEquiv hsub).congrLeft (M:=N ⊗[R] TmS) R).toLinearMap ∘ₗ LinearMap.rTensorHom TmS
+  ((tmulDiffEquiv hsub).congrLeft (M:=N ⊗[R] TmS) R).toLinearMap ∘ₗ LinearMap.rTensorHom TmS
 
 /-- An endomorphism on tensors with index set `S ⊆ T` extends to an endomorphism
 on tensors with index set `T`. Bundled as a homomorphism of linear maps. -/
 def extendEnd : End R (⨂[R] i : S, M i) →ₗ[R] End R (⨂[R] i : T, M i) :=
-  (tmulUnifyEquiv hsub).congrRight.toLinearMap ∘ₗ extendLinearHom hsub
+  (tmulDiffEquiv hsub).congrRight.toLinearMap ∘ₗ extendLinearHom hsub
 
 /-- A functional on tensors with index set `S ⊆ T` contracts tensors with index
 set `T` to tensors with index set `T \ S`. Bundled as a linear map. -/
@@ -267,7 +249,7 @@ theorem extendLinear_tprod (l : (⨂[R] i : S, M i) →ₗ[R] N) (f : (i : T) �
 @[simp]
 theorem extendEnd_tprod (l : End _ (⨂[R] i : S, M i)) (f : (i : T) → M i) :
     extendEnd hsub l (⨂ₜ[R] i, f i)
-    = (tmulUnifyEquiv hsub) (l (⨂ₜ[R] i₁ : S, f ⟨i₁, by grind⟩)
+    = (tmulDiffEquiv hsub) (l (⨂ₜ[R] i₁ : S, f ⟨i₁, by grind⟩)
       ⊗ₜ[R] (⨂ₜ[R] i₂ : ↑(T \ S), f ⟨i₂, by grind⟩)) := by
   simp [extendEnd, LinearEquiv.congrRight]
 
@@ -287,7 +269,7 @@ variable {m₀ : (i : ι) → M i}
 map a tensor with index set `S` to a tensor with index set `T`, by padding with vectors
 provided by `m₀` on `T \ S`. -/
 def extendTensor (m₀ : (i : ι) → M i) : (⨂[R] (i : S), M i) →ₗ[R] ⨂[R] (i : T), M i where
-  toFun t := (tmulUnifyEquiv hsub) (t ⊗ₜ[R] (⨂ₜ[R] i : ↥(T \ S), m₀ i))
+  toFun t := (tmulDiffEquiv hsub) (t ⊗ₜ[R] (⨂ₜ[R] i : ↥(T \ S), m₀ i))
   map_add' := by simp [TensorProduct.add_tmul]
   map_smul' := by simp [←TensorProduct.smul_tmul']
 
@@ -303,7 +285,7 @@ theorem extendTensor_trans [(i : ι) → Decidable (i ∈ T)] {U : Set ι} (hsub
     (extendTensor (R:=R) (subset_trans hsub hsub₂) m₀) := by
   ext f
   simp only [extendTensor, LinearMap.compMultilinearMap_apply, LinearMap.coe_comp,
-    LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, tmulUnifyEquiv_tprod]
+    LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, tmulDiffEquiv_tprod]
   grind
 
 end ExtendTensor
