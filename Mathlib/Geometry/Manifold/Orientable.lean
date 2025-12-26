@@ -3,8 +3,10 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.IsManifold.Basic
-import Mathlib.Topology.Algebra.Module.Determinant
+module
+
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
+public import Mathlib.Topology.Algebra.Module.Determinant
 
 /-!
 # Orientable Manifolds
@@ -62,6 +64,8 @@ topological manifolds also, and relate them to the current definition.
 
 -/
 
+public section
+
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace ℝ H]
 
 section OrientationPreserving
@@ -102,7 +106,7 @@ lemma OrientationReversing.differentiableAt {f : H → H} {s : Set H} (h : Orien
   contrapose! h
   use x, hs
   rw [fderiv_zero_of_not_differentiableAt h, ContinuousLinearMap.det]
-  simp [ne_of_gt Module.finrank_pos]
+  simp
 
 lemma orientationPreserving_id (s : Set H) : OrientationPreserving id s := by
   intro
@@ -193,18 +197,18 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
         fderivWithin_congr' this hx
       have : fderiv ℝ (↑I ∘ g ∘ ↑I.symm) x = fderiv ℝ (↑I ∘ f ∘ ↑I.symm) x := by
         rw [fderivWithin_of_isOpen, fderivWithin_of_isOpen] at this
-        exact this
-        rw [Set.inter_comm]
-        apply ContinuousOn.isOpen_inter_preimage
-        · exact ModelWithCorners.continuousOn_symm I
-        · exact isOpen_interior
-        exact hu
-        exact hx
-        rw [Set.inter_comm]
-        apply ContinuousOn.isOpen_inter_preimage
-        · exact ModelWithCorners.continuousOn_symm I
-        · exact isOpen_interior
-        exact hu
+        · exact this
+        · rw [Set.inter_comm]
+          apply ContinuousOn.isOpen_inter_preimage
+          · exact ModelWithCorners.continuousOn_symm I
+          · exact isOpen_interior
+          · exact hu
+        · exact hx
+        · rw [Set.inter_comm]
+          apply ContinuousOn.isOpen_inter_preimage
+          · exact ModelWithCorners.continuousOn_symm I
+          · exact isOpen_interior
+          exact hu
         exact hx
       exact this ▸ hf.1 x hx
     · exact Set.EqOn.image_eq this ▸ hf.2
@@ -214,7 +218,7 @@ def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid 
   (orientationPreservingPregroupoid I).groupoid
 
 /-- The groupoid of orientation-preserving `n` times continuously differentiable maps -/
-def contDiffOrientationPreservingGroupoid (n : WithTop  ℕ∞) (I : ModelWithCorners ℝ E H)
+def contDiffOrientationPreservingGroupoid (n : WithTop ℕ∞) (I : ModelWithCorners ℝ E H)
     [FiniteDimensional ℝ E] : StructureGroupoid H :=
   (orientationPreservingGroupoid I) ⊓ (contDiffGroupoid n I)
 
@@ -223,7 +227,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*}
 
 /-- An identity partial homeomorphism belongs to the orientation-preserving groupoid. -/
 theorem ofSet_mem_orientationPreservingGroupoid [FiniteDimensional ℝ E] {s : Set H}
-    (hs : IsOpen s) : PartialHomeomorph.ofSet s hs ∈ orientationPreservingGroupoid I := by
+    (hs : IsOpen s) : OpenPartialHomeomorph.ofSet s hs ∈ orientationPreservingGroupoid I := by
   have h_fderiv : ∀ x ∈ interior (range I), fderiv ℝ (I ∘ I.symm) x = fderiv ℝ id x := by
     intro x hx
     apply Filter.EventuallyEq.fderiv_eq
@@ -239,9 +243,9 @@ The composition of a partial homeomorphism from `H` to `M` and its inverse belon
 orientation-preserving groupoid.
 -/
 theorem symm_trans_mem_orientationPreservingGroupoid [FiniteDimensional ℝ E]
-    (e : PartialHomeomorph M H) : e.symm.trans e ∈ orientationPreservingGroupoid I :=
-  have h : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.symm_trans_self _
+    (e : OpenPartialHomeomorph M H) : e.symm.trans e ∈ orientationPreservingGroupoid I :=
+  have h : e.symm.trans e ≈ OpenPartialHomeomorph.ofSet e.target e.open_target :=
+    OpenPartialHomeomorph.symm_trans_self _
   StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_orientationPreservingGroupoid I e.open_target) h
 
 end OrientationPreserving
@@ -274,7 +278,7 @@ is orientable if and only if it admits an orientable atlas. -/
 class OrientableManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] extends
-  HasGroupoid M (orientationPreservingGroupoid I) : Prop
+  HasGroupoid M (orientationPreservingGroupoid I)
 
 /-- `0`-dimensional manifolds are always orientable. -/
 lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -288,7 +292,7 @@ lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [Norme
       · simp [hE]
       · rw [Set.subset_def]
         intro y hy
-        rw [Set.eq_empty_iff_forall_not_mem] at hE
+        rw [Set.eq_empty_iff_forall_notMem] at hE
         push_neg at hE
         obtain ⟨x, hx⟩ := hE
         let s := I ∘ (e₁.symm.trans e₂) ∘ I.symm ''
@@ -298,7 +302,7 @@ lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [Norme
       · simp [hE]
       · rw [Set.subset_def]
         intro y hy
-        rw [Set.eq_empty_iff_forall_not_mem] at hE
+        rw [Set.eq_empty_iff_forall_notMem] at hE
         push_neg at hE
         obtain ⟨x, hx⟩ := hE
         let s := I ∘ (e₁.symm.trans e₂).symm ∘ I.symm ''
@@ -310,7 +314,7 @@ if and only if it admits an atlas which is both smooth and orientable -/
 class OrientableSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M] extends
-  HasGroupoid M (contDiffOrientationPreservingGroupoid ⊤ I) : Prop
+  HasGroupoid M (contDiffOrientationPreservingGroupoid ⊤ I)
 
 /-- A finite-dimensional normed space is an orientable smooth manifold. -/
 instance {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]

@@ -509,14 +509,12 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
+open Classical in
 def IccOrientation [Fact (x < y)] : atlas (EuclideanHalfSpace 1) (Icc x y) → SignType :=
   fun t ↦ if t.val.source = {⟨y, ⟨Fact.out, le_refl y⟩⟩} then -1 else 1 -- needs decidability
 
-instance : NormedAddCommGroup (EuclideanHalfSpace 1) := by
-  sorry
-
-instance : NormedSpace ℝ (EuclideanHalfSpace 1) := by
-  sorry
+-- Dies ist der alte Code: der ist noch nicht richtig,
+-- weil EuclideanHalfSpace kein normierter Raum ist.
 
 /-- The manifold structure on `[x, y]` is orientable. -/
 instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
@@ -529,7 +527,7 @@ instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
     · constructor
       · constructor
         · rintro z ⟨hz₁, s, ⟨hs₁, hs₂⟩, hz₂⟩
-          -- Notation, for easy of reading
+          -- Notation, for ease of reading
           set F := (𝓡∂ 1) ∘ ((IccLeftChart x y).symm ≫ₕ IccRightChart x y) ∘ (𝓡∂ 1).symm
           let S := (𝓡∂ 1).symm ⁻¹' ((IccLeftChart x y).symm ≫ₕ IccRightChart x y).source
             ∩ range (𝓡∂ 1)
