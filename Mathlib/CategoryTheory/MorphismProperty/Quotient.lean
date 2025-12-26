@@ -53,7 +53,6 @@ variable (homRel)
 
 /-- The property of morphisms that is induced by `W : MorphismProperty C`
 on the quotient category by `homRel : HomRel C` when `W.HasQuotient homRel` holds. -/
-@[nolint unusedArguments]
 def quotient [W.HasQuotient homRel] : MorphismProperty (Quotient homRel) :=
   fun ⟨X⟩ ⟨Y⟩ f ↦ ∃ (f' : X ⟶ Y) (_ : W f'), f = (Quotient.functor _).map f'
 
