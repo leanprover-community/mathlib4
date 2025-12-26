@@ -6,6 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Topology.LocallyFinite
 
 /-!
 # Baire spaces
@@ -40,7 +42,34 @@ variable {X α : Type*} {ι : Sort*}
 
 section BaireTheorem
 
-variable [TopologicalSpace X] [BaireSpace X]
+variable [TopologicalSpace X]
+
+theorem baire_of_finite [Finite X] : BaireSpace X := by sorry
+
+/-- If a space `X` contains a dense Baire subspace, then `X` is Baire. -/
+theorem Dense.baire_mono {s : Set X} (hd : Dense s) (hb : BaireSpace s) : BaireSpace X := by
+  sorry
+
+/-- The union of an arbitrary family of open Baire subspaces is Baire. -/
+theorem baire_of_union_open_baire {s : α → Set X} (hs : ∀ a, IsOpen (s a))
+    (hb : ∀ a, BaireSpace (s a)) : BaireSpace (⋃ a, s a) := by
+  sorry
+
+/-- The union of a finite union of Baire subspaces is Baire. -/
+theorem baire_of_finite_union_baire {s : α → Set X} [Finite α] (hb : ∀ a, BaireSpace (s a)) :
+    BaireSpace (⋃ a, s a) := by
+  sorry
+
+/-- The union of a locally finite collection of Baire subspaces is Baire. -/
+theorem LocallyFinite.baire_of_union_baire {s : α → Set X} (hs : LocallyFinite s)
+    (hb : ∀ a, BaireSpace (s a)) : BaireSpace (⋃ a, s a) := by
+  sorry
+
+/-- If each point of `X` has a Baire neighborhood, then `X` is Baire. -/
+theorem baire_of_nhds_baire (hx : ∀ x : X, ∃ U ∈ 𝓝 x, BaireSpace U) : BaireSpace X := by
+  sorry
+
+variable [BaireSpace X]
 
 /-- Definition of a Baire space. -/
 theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n))
