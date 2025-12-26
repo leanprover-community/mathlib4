@@ -140,19 +140,11 @@ theorem assoc (a b c : G → R) : (a ⋆ b) ⋆ c = a ⋆ (b ⋆ c) := by
     (fun x => ⟨(x.1.1 + x.2.1, x.2.2), (x.1.1, x.2.1)⟩)
     ?_ ?_ ?_ ?_ ?_
   all_goals intro x hx
-  · simp only [mem_sigma, mem_antidiagonal] at hx ⊢
-    exact ⟨by rw [← hx.1, ← hx.2, add_assoc], trivial⟩
-  · simp only [mem_sigma, mem_antidiagonal] at hx ⊢
-    exact ⟨by rw [← hx.1, ← hx.2, add_assoc], trivial⟩
-  · simp_all only [mem_sigma, mem_antidiagonal, Prod.mk.eta, Sigma.eta]
-  · simp_all only [mem_sigma, mem_antidiagonal, Prod.mk.eta, Sigma.eta]
-  · simp_all only [mem_sigma, mem_antidiagonal]
-    obtain ⟨⟨fst, snd_1⟩, ⟨fst_1, snd⟩⟩ := x
-    obtain ⟨left, right⟩ := hx
-    subst left
-    dsimp at *
-    subst right
-    exact mul_assoc (a fst_1) (b snd) (c snd_1)
+  all_goals simp_all only [mem_sigma, mem_antidiagonal, Prod.mk.eta, Sigma.eta]
+  iterate 2 exact ⟨by rw [← hx.1, ← hx.2, add_assoc], trivial⟩
+  obtain ⟨⟨fst, snd_1⟩, ⟨fst_1, snd⟩⟩ := x
+  dsimp at *
+  exact mul_assoc _ _ _
 
 /-! #### Scalar Multiplication -/
 
