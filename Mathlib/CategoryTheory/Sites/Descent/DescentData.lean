@@ -464,6 +464,8 @@ structure IsPrestackFor (R : Presieve S) : Prop where
     Nonempty (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).FullyFaithful
 
 variable {F} in
+/-- If `R` is a presieve such that `F.IsPrestackFor R`, then the functor
+`F.toDescentData (fun (f : R.category) ↦ f.obj.hom)` is fully faithful. -/
 noncomputable def IsPrestackFor.fullyFaithful {R : Presieve S} (hF : F.IsPrestackFor R) :
     (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).FullyFaithful :=
   hF.nonempty_fullyFaithful.some
