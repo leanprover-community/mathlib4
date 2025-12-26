@@ -457,10 +457,10 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
   rw [(supDegree_leadingCoeff_sum_eq hi this).1]
   exact (this j hj hne).ne_bot
 
-lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
+lemma sum_ne_zero_of_injOn_supDegree (hs : s.Nonempty)
     (hf : ∀ i ∈ s, f i ≠ 0) (hd : (s : Set ι).InjOn (supDegree D ∘ f)) :
     ∑ i ∈ s, f i ≠ 0 :=
-  let ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.2 hs
+  let ⟨i, hi⟩ := hs
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
 variable [Add B]
@@ -469,9 +469,9 @@ variable [AddLeftStrictMono B] [AddRightStrictMono B]
 lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
     (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff D * q.leadingCoeff D := by
   obtain rfl | hp := eq_or_ne p 0
-  · simp_rw [leadingCoeff_zero, zero_mul, Finsupp.coe_zero, Pi.zero_apply]
+  · simp
   obtain rfl | hq := eq_or_ne q 0
-  · simp_rw [leadingCoeff_zero, mul_zero, Finsupp.coe_zero, Pi.zero_apply]
+  · simp
   obtain ⟨ap, -, hp⟩ := exists_supDegree_mem_support D hp
   obtain ⟨aq, -, hq⟩ := exists_supDegree_mem_support D hq
   simp_rw [leadingCoeff, hp, hq, ← hadd, Function.leftInverse_invFun hD _]

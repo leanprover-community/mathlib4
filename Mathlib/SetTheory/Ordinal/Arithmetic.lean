@@ -569,7 +569,7 @@ instance monoid : Monoid Ordinal.{u} where
       Quotient.sound
         ⟨⟨punitProd _, @fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
-            simp only [Prod.lex_def, EmptyRelation, false_or]
+            simp only [Prod.lex_def, emptyRelation, false_or]
             simp only [true_and]
             rfl⟩⟩
   one_mul a :=
@@ -577,7 +577,7 @@ instance monoid : Monoid Ordinal.{u} where
       Quotient.sound
         ⟨⟨prodPUnit _, @fun a b => by
             rcases a with ⟨a, ⟨⟨⟩⟩⟩; rcases b with ⟨b, ⟨⟨⟩⟩⟩
-            simp only [Prod.lex_def, EmptyRelation, and_false, or_false]
+            simp only [Prod.lex_def, emptyRelation, and_false, or_false]
             rfl⟩⟩
 
 @[simp]
@@ -585,6 +585,7 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
     [IsWellOrder β s] : type (Prod.Lex s r) = type r * type s :=
   rfl
 
+set_option backward.privateInPublic true in
 private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
   inductionOn a fun α _ _ =>
     inductionOn b fun β _ _ => by
@@ -592,6 +593,8 @@ private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
       rw [or_comm]
       exact isEmpty_prod
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance monoidWithZero : MonoidWithZero Ordinal :=
   { Ordinal.monoid with
     mul_zero := fun _a => mul_eq_zero'.2 <| Or.inr rfl
