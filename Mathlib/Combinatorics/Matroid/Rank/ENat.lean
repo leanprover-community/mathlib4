@@ -46,7 +46,7 @@ which is why mathlib defines matroids using bases/independence. )
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
 The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined in
-`Mathlib/Data/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
+`Mathlib/Combinatorics/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
 ## Implementation Details
