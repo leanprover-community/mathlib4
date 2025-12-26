@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Closure
-public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Data.Set.Notation
+import Mathlib.Topology.Constructions
 
 /-!
 # `Gδ` sets
