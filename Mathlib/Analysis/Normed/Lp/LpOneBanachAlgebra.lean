@@ -311,7 +311,6 @@ theorem one_norm_mul_le (f g : lp (fun _ : ℕ => R) 1) : ‖f * g‖ ≤ ‖f�
   · simpa using (memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)).mp
       (f.property.one_mul g.property)
 
-
 instance oneOne : One (lp (fun _ : ℕ => R) 1) where
   one := ⟨CauchyProduct.one, _root_.one_memℓp_one⟩
 
