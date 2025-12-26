@@ -164,6 +164,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
 public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
@@ -2907,6 +2908,7 @@ public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.PathCategory.Basic
 public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.CategoryTheory.Pi.Monoidal
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
@@ -3019,7 +3021,7 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 public import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
 public import Mathlib.CategoryTheory.Sites.Descent.IsStack
-public import Mathlib.CategoryTheory.Sites.Descent.Precoverage
+public import Mathlib.CategoryTheory.Sites.Descent.Pretopology
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition

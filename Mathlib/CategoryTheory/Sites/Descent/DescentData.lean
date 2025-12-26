@@ -20,8 +20,13 @@ when we replace `S` by an isomorphic object, or the family `f i : X i ⟶ S`
 by another family which generates the same sieve
 (see `Pseudofunctor.DescentData.pullFunctorEquivalence`).
 
+Given a presieve `R`, we introduce predicates `F.IsPrestackFor R` and `F.IsStackFor`
+saying the functor `F.DescentData (fun (f : R.category) ↦ f.obj.hom)` attached
+to `R` are respectively fully faithful or equivalences. We show that
+`F` satisfies `F.IsPrestack J` for a Grothendieck topology `J` iff it
+satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
+
 ## TODO (@joelriou, @chrisflav)
-* Relate the prestack condition to the fully faithfullness of `Pseudofunctor.toDescentData`.
 * Define stacks.
 * Introduce multiple variants of `DescentData` (when `C` has pullbacks,
 when `F` also has a covariant functoriality, etc.).
@@ -33,16 +38,6 @@ when `F` also has a covariant functoriality, etc.).
 universe t t' t'' v' v u' u
 
 namespace CategoryTheory
-
-lemma Over.mk_surjective {C : Type*} [Category* C] {S : C} (X : Over S) :
-    ∃ (Y : C) (f : Y ⟶ S), X = Over.mk f :=
-  ⟨_, X.hom, rfl⟩
-
-lemma Over.homMk_surjective {C : Type*} [Category* C]
-    {S : C} {X Y : Over S} (f : X ⟶ Y) :
-    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
-  ⟨f.left, by simp⟩
-
 
 open Opposite
 
@@ -534,7 +529,7 @@ lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
     Function.Bijective ((F.toDescentData f).map : (M ⟶ N) → _) ↔
   Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk (𝟙 S))
     (Presieve.ofArrows (Y := fun i ↦ Over.mk (f i)) (fun i ↦ Over.homMk (f i))) := by
-  rw [Presieve.isSheafFor_arrows_iff_bijective_toCompabible,
+  rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
     ← (DescentData.subtypeCompatibleHomEquiv F f).bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (presheafHomObjHomEquiv F).bijective]
   convert Iff.rfl
