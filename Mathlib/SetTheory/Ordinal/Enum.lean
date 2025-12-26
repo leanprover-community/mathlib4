@@ -128,7 +128,7 @@ theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (r
 See also `enumOrd_isNormal_iff_isClosed`. -/
 theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t ∈ s) (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) := by
-  refine (isNormal_iff_strictMono_limit _).2 ⟨enumOrd_strictMono hs, fun o ho a ha ↦ ?_⟩
+  refine isNormal_iff.2 ⟨enumOrd_strictMono hs, fun o ho a ha ↦ ?_⟩
   trans ⨆ b : Iio o, enumOrd s b
   · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ (enumOrd_strictMono hs (lt_succ b)).trans_le ?_)
     · have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
