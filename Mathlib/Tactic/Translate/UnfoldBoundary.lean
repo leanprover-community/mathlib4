@@ -170,6 +170,10 @@ public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr)
 /-- Unfold all of the auxiliary functions that were inserted as unfold boundaries. -/
 public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt) : CoreM Expr := do
   let b ← b.toUnfoldBoundaries
-  Meta.deltaExpand e b.insertionFuns.contains
+  -- This is the same as Meta.deltaExpand, but with an extra beta reduction.
+  Core.transform e fun e => do
+    match ← delta? e b.insertionFuns.contains with
+    | some e' => return .visit e'.headBeta
+    | none    => return .continue
 
 end Mathlib.Tactic.UnfoldBoundary
