@@ -26,7 +26,7 @@ open IsDedekindDomain HeightOneSpectrum
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] (v : HeightOneSpectrum R) {b : NNReal}
 (hb : 1 < b) (p : R[X])
 
-theorem gaussNorm_intAdicAbv_le_one :  p.gaussNorm (v.intAdicAbv hb) 1 ≤ 1 := by
+theorem gaussNorm_intAdicAbv_le_one : p.gaussNorm (v.intAdicAbv hb) 1 ≤ 1 := by
   by_cases hp0 : p = 0
   · simp [hp0]
   simp [gaussNorm, hp0, intAdicAbv_le_one]
