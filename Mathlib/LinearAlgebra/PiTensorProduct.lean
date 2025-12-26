@@ -52,8 +52,6 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 ## TODO
 
 * Define tensor powers, symmetric subspace, etc.
-* API for the various ways `ι` can be split into subsets; connect this with the binary
-  tensor product.
 * Include connection with holors.
 * Port more of the API from the binary tensor product over to this case.
 
