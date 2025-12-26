@@ -228,7 +228,7 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
         constructor
         · intros k hk; exact hz (k + 1) (by omega)
         · exact hnz
-      · have := Complex.analyticOrderAt_deriv_of_pos f  z₀ hf
+      · have := Complex.analyticOrderAt_deriv_of_pos f  z₀ hf (n:=n-1)
         specialize hz 0 (by omega)
         obtain ⟨r, hr⟩ := (WithTop.ne_top_iff_exists).mp hfin
         specialize this r hr.symm
