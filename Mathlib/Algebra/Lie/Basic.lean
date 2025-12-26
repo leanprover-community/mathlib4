@@ -692,7 +692,7 @@ attribute [coe] LieModuleHom.toLinearMap
 instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
-instance : FunLike (M →ₗ⁅R, L⁆ N) M N where
+instance : FunLike (M →ₗ⁅R,L⁆ N) M N where
   coe f := f.toFun
   coe_injective' x y h := by cases x; cases y; simp at h; simp [h]
 
@@ -702,7 +702,7 @@ initialize_simps_projections LieModuleHom (toFun → apply)
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl
 
-instance : LinearMapClass (M →ₗ⁅R, L⁆ N) R M N where
+instance : LinearMapClass (M →ₗ⁅R,L⁆ N) R M N where
   map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
   map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
 
