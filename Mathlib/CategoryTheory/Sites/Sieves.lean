@@ -357,12 +357,6 @@ See `arrows_generate_map_eq_functorPushforward`. -/
 inductive map (s : Presieve X) : Presieve (F.obj X) where
   | of {Y : C} {u : Y ⟶ X} (h : s u) : map s (F.map u)
 
-variable {F} in
-lemma map.exists {s : Presieve X} {Y' : D} {f : Y' ⟶ F.obj X} (hf : s.map F f) :
-    ∃ (Y : C) (hY : Y' = F.obj Y) (u : Y ⟶ X) (_ : s u), f = eqToHom hY ≫ F.map u := by
-  obtain ⟨h⟩ := hf
-  exact ⟨_, rfl, _, h, by simp⟩
-
 section
 
 variable {F}
@@ -614,6 +608,9 @@ theorem le_generate (R : Presieve X) : R ≤ generate R :=
 @[simp]
 theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
+
+lemma generate_mono : Monotone (generate : Presieve X → _) :=
+  (giGenerate (X := X)).gc.monotone_l
 
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
@@ -1143,5 +1140,15 @@ lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
   rintro T g ⟨W, v, v', hv', ⟨S, u, u', h, hu⟩, rfl⟩
   rw [← Sieve.ofArrows.fac hv', ← reassoc_of% hu]
   exact ⟨S, u, u' ≫ f _, ⟨_, _, h⟩, rfl⟩
+
+lemma Presieve.functorPushforward_overForget
+    {S : C} {X : Over S} (R : Presieve X) :
+    Presieve.functorPushforward (Over.forget S) R =
+      (Sieve.generate (Presieve.map (Over.forget S) R)).arrows := by
+  refine le_antisymm ?_ ?_
+  · rintro Y _ ⟨Z, a, b, ha, rfl⟩
+    exact ⟨Z.left, b, a.left, ⟨ha⟩, rfl⟩
+  · rintro Y _ ⟨Z, a, b, ⟨hd⟩, rfl⟩
+    exact ⟨_, _, a, hd, by simp⟩
 
 end CategoryTheory

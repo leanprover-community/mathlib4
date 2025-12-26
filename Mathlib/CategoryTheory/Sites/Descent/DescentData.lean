@@ -503,6 +503,12 @@ lemma IsStackFor.isPrestackFor {R : Presieve S} (h : F.IsStackFor R) :
     rw [isStackFor_iff] at h
     exact .ofFullyFaithful _⟩
 
+variable {F} in
+lemma IsStackFor.essSurj {R : Presieve S} (h : F.IsStackFor R) :
+    (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).EssSurj := by
+  have := h.isEquivalence
+  infer_instance
+
 lemma isStackFor_iff_of_sieve_eq
     {R R' : Presieve S} (h : Sieve.generate R = Sieve.generate R') :
     F.IsStackFor R ↔ F.IsStackFor R' := by
