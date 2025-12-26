@@ -161,37 +161,30 @@ section Identity
 variable [AddCommMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
 
 theorem one_mul (a : G → R) : one ⋆ a = a := by
-  ext n
-  simp only [apply_eq, one]
+  ext n; simp only [apply_eq, one]
   rw [sum_eq_single (0, n)]
   · simp only [Pi.single_eq_same, _root_.one_mul]
   · intro ⟨x, y⟩ hxy hne
     simp_all only [mem_antidiagonal, Pi.single_apply]
-    rw [if_neg]
-    · simp only [MulZeroClass.zero_mul]
-    · intro h
-      subst hxy h
-      simp_all only [zero_add, ne_eq, not_true_eq_false]
-  · intro h
-    simp only [mem_antidiagonal, zero_add] at h
-    exact absurd trivial h
+    subst hxy
+    simp_all only [ne_eq, Prod.mk.injEq, not_and, zero_add,
+      not_true_eq_false, imp_false, ↓reduceIte, MulZeroClass.zero_mul]
+  · simp [mem_antidiagonal]
+
 
 theorem mul_one (a : G → R) : a ⋆ one = a := by
-  ext n
-  simp only [apply_eq, one]
+  ext n; simp only [apply_eq, one]
   rw [sum_eq_single (n, 0)]
   · simp only [Pi.single_eq_same, _root_.mul_one]
   · intro ⟨a, b⟩ hab1 hab2
     simp_all only [mem_antidiagonal, Pi.single_apply]
-    rw [if_neg]
-    · simp only [MulZeroClass.mul_zero]
-    · intro hb
-      apply hab2
-      simp only [Prod.mk.injEq, hb, and_true]
-      rw [← hab1, hb, add_zero]
-  · intro h
-    simp only [mem_antidiagonal, add_zero] at h
-    exact absurd trivial h
+    simp_all only [ne_eq, Prod.mk.injEq, not_and, mul_ite,
+      _root_.mul_one, MulZeroClass.mul_zero, ite_eq_right_iff]
+    intro
+    simp_all only [add_zero, not_true_eq_false, imp_false]
+  · simp only [mem_antidiagonal, add_zero, not_true_eq_false,
+      Pi.single_eq_same, _root_.mul_one, IsEmpty.forall_iff]
+
 
 end Identity
 
@@ -202,15 +195,13 @@ section Comm
 variable [AddCommMonoid G] [HasAntidiagonal G] [CommSemiring R]
 
 theorem comm (a b : G → R) : a ⋆ b = b ⋆ a := by
-  ext n
-  simp only [apply_eq]
+  ext n; simp only [apply_eq]
   rw [← Finset.map_swap_antidiagonal (n := n), Finset.sum_map]
   simp only [Function.Embedding.coeFn_mk, Prod.fst_swap, Prod.snd_swap,
       map_swap_antidiagonal, mul_comm]
 
 theorem mul_smul (c : R) (a b : G → R) : a ⋆ (c • b) = c • (a ⋆ b) := by
-  ext n
-  simp only [apply_eq, Pi.smul_apply, smul_eq_mul, mul_sum]
+  ext n; simp only [apply_eq, Pi.smul_apply, smul_eq_mul, mul_sum]
   apply sum_congr rfl; intro kl _; ring
 
 end Comm
@@ -259,8 +250,7 @@ theorem one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
   simp only [ENNReal.toReal_one, Real.rpow_one]
   have h : (fun n => ‖(CauchyProduct.one : ℕ → R) n‖) =
       fun n => if n = 0 then ‖(1 : R)‖ else 0 := by
-    ext n
-    cases n with
+    ext n; cases n with
     | zero => simp [CauchyProduct.one_apply_zero]
     | succ n => simp [CauchyProduct.one_apply_ne (Nat.succ_ne_zero n), norm_zero]
   rw [h]
