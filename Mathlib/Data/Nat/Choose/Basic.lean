@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
+Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell, Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 module
 
@@ -157,23 +157,17 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
     · rw [hk₁]; simp [Nat.mul_comm, choose, Nat.sub_self]
 
-theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
-    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) :=
+theorem choose_mul {n k s : ℕ} (hsk : s ≤ k) :
+    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) := by
+  obtain hnk | hkn := lt_or_ge n k
+  · grind [Nat.choose_eq_zero_of_lt]
   have h : 0 < (n - k)! * (k - s)! * s ! := by apply_rules [factorial_pos, Nat.mul_pos]
-  Nat.mul_right_cancel h <|
+  apply Nat.mul_right_cancel h
   calc
-    n.choose k * k.choose s * ((n - k)! * (k - s)! * s !) =
-        n.choose k * (k.choose s * s ! * (k - s)!) * (n - k)! := by
-      rw [Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc _ s !, Nat.mul_assoc,
-        Nat.mul_comm (n - k)!, Nat.mul_comm s !]
-    _ = n ! := by
-      rw [choose_mul_factorial_mul_factorial hsk, choose_mul_factorial_mul_factorial hkn]
     _ = n.choose s * s ! * ((n - s).choose (k - s) * (k - s)! * (n - s - (k - s))!) := by
-      rw [choose_mul_factorial_mul_factorial (Nat.sub_le_sub_right hkn _),
-        choose_mul_factorial_mul_factorial (hsk.trans hkn)]
+      grind [choose_mul_factorial_mul_factorial]
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) := by
-      rw [Nat.sub_sub_sub_cancel_right hsk, Nat.mul_assoc, Nat.mul_left_comm s !, Nat.mul_assoc,
-        Nat.mul_comm (k - s)!, Nat.mul_comm s !, Nat.mul_right_comm, ← Nat.mul_assoc]
+      grind
 
 theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :
     choose n k = n ! / (k ! * (n - k)!) := by
@@ -233,6 +227,34 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
         Nat.mul_sub_left_distrib, Nat.add_sub_cancel' (Nat.mul_le_mul_left _ hk)]
     · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), Nat.zero_mul,
         Nat.zero_mul]
+
+theorem choose_mul_add {m n : ℕ} (hn : n ≠ 0) :
+    (m * n + n).choose n = (m + 1) * (m * n + n - 1).choose (n - 1) := by
+  rw [← Nat.mul_left_inj (Nat.mul_ne_zero (factorial_ne_zero (m * n)) (factorial_ne_zero n))]
+  set p := n - 1
+  have hp : n = p + 1 := (succ_pred_eq_of_ne_zero hn).symm
+  simp only [hp, add_succ_sub_one]
+  calc
+    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p + 1))! * (p + 1)!)
+      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p + 1))! * (p + 1)! := by lia
+    _ = (m * (p + 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
+    _ = ((m * (p + 1) + p) + 1)! := by lia
+    _ = ((m * (p + 1) + p) + 1) * (m * (p + 1) + p)! := by rw [factorial_succ]
+    _ = (m * (p + 1) + p)! * ((p + 1) * (m + 1)) := by lia
+    _ = ((m * (p + 1) + p).choose p * (m * (p + 1))! * (p)!) * ((p + 1) * (m + 1)) := by
+      rw [add_choose_mul_factorial_mul_factorial]
+    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * (((p + 1) * (p)!) * (m + 1)) := by lia
+    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
+    _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by lia
+
+theorem choose_mul_right {m n : ℕ} (hn : n ≠ 0) :
+    (m * n).choose n = m * (m * n - 1).choose (n - 1) := by
+  by_cases hm : m = 0
+  · simp only [hm, Nat.zero_mul, Nat.choose_eq_zero_iff]
+    exact Nat.pos_of_ne_zero hn
+  · set p := m - 1; have hp : m = p + 1 := (succ_pred_eq_of_ne_zero hm).symm
+    simp only [hp]
+    rw [Nat.add_mul, Nat.one_mul, choose_mul_add hn]
 
 theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :
     (n + 1).ascFactorial k = k ! * (n + k).choose k := by
@@ -352,10 +374,6 @@ i.e. ways to select `k` items (up to permutation) from `n` items with replacemen
 
 Note that `multichoose` is *not* the multinomial coefficient, although it can be computed
 in terms of multinomial coefficients. For details see https://mathworld.wolfram.com/Multichoose.html
-
-TODO: Prove that `choose (-n) k = (-1)^k * multichoose n k`,
-where `choose` is the generalized binomial coefficient.
-<https://github.com/leanprover-community/mathlib/pull/15072#issuecomment-1171415738>
 
 -/
 
