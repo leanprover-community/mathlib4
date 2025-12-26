@@ -181,7 +181,9 @@ def nameDict : Std.HashMap String (List String) := .ofList [
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
 def abbreviationDict : Std.HashMap String String := .ofList [
   ("wellFoundedLT", "WellFoundedGT"),
-  ("wellFoundedGT", "WellFoundedLT")
+  ("wellFoundedGT", "WellFoundedLT"),
+  ("succColimit", "SuccLimit"),
+  ("predColimit", "PredLimit")
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/
