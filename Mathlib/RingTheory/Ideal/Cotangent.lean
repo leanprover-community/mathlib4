@@ -153,9 +153,7 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
     I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
       I.toCotangent ⟨x, hx⟩ := by
-  rw [I.cotangentEquivIdeal.symm_apply_eq]
-  ext
-  simp
+  simp [I.cotangentEquivIdeal.symm_apply_eq, Subtype.ext_iff]
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
