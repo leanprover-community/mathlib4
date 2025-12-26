@@ -210,12 +210,12 @@ protected theorem isometry : Isometry f :=
 
 lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
 
--- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
+@[simp]
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
   _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
 
-@[simp] -- Should be replaced with `LinearIsometry.isComplete_image_iff` when https://github.com/leanprover/lean4/issues/3107 is fixed.
+@[deprecated LinearIsometry.isComplete_image_iff (since := "2025-12-25")]
 theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
   LinearIsometry.isComplete_image_iff _

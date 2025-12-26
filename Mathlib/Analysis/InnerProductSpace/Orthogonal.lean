@@ -332,10 +332,7 @@ theorem isOrtho_span {s t : Set E} :
     mem_orthogonal_singleton_iff_inner_left, Set.mem_singleton_iff, forall_eq]
 
 theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) : U.map f ⟂ V.map f := by
-  rw [isOrtho_iff_inner_eq] at *
-  simp_rw [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-    LinearIsometry.inner_map_map]
-  exact h
+  aesop (add simp [isOrtho_iff_inner_eq])
 
 theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U ⟂ V) :
     U.comap f ⟂ V.comap f := by
