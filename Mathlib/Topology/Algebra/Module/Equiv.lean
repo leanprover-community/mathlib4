@@ -108,9 +108,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
-      Continuous.comp (continuous_apply (A := φ) i) <|
-        @continuous_subtype_val _ _ fun x =>
-          x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
+      Continuous.comp (continuous_apply (A := φ) i) <| continuous_subtype_val
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by
@@ -1291,20 +1289,11 @@ This is the continuous linear version of `LinearEquiv.submoduleMap`.
 This is `ContinuousLinearEquiv.ofSubmodule'` but with map on the right instead of comap on the left.
 -/
 def submoduleMap (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) :
-    p ≃SL[σ₁₂] Submodule.map e p where
-  toLinearMap := (e.comp p.subtype).codRestrict (p.map e) (fun ⟨c, hc⟩ ↦ by simpa)
-  invFun := (e.symm.comp (p.map e).subtype).codRestrict p (fun ⟨c, y, hy, eyc⟩ ↦ by
-    simpa [← eyc, e.symm_apply_apply])
-  left_inv x := by ext; simp
-  right_inv x := by ext; simp
-  continuous_toFun := by
-    have : Continuous (e.comp p.subtype) := by dsimp; fun_prop
-    dsimp
-    exact continuous_induced_rng.mpr this
-  continuous_invFun := by
-    have : Continuous (e.symm.comp (p.map e).subtype) := by dsimp; fun_prop
-    dsimp
-    exact continuous_induced_rng.mpr this
+    p ≃SL[σ₁₂] Submodule.map (e : M →ₛₗ[σ₁₂] M₂) p where
+  __ := LinearEquiv.submoduleMap e.toLinearEquiv p
+  continuous_toFun := map_continuous ((e.toContinuousLinearMap.comp p.subtypeL).codRestrict _ _)
+  continuous_invFun := (map_continuous e.symm).restrict fun x hx ↦
+    ((LinearEquiv.submoduleMap e.toLinearEquiv p).symm ⟨x, hx⟩).2
 
 @[simp]
 lemma submoduleMap_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p) :
