@@ -178,7 +178,7 @@ def tmulInsertEquiv :
 @[simp]
 theorem tmulInsertEquiv_tprod (x : M i₀) (f : (i : S) → M i) :
     (tmulInsertEquiv h₀) (x ⊗ₜ[R] (⨂ₜ[R] i, f i)) = ⨂ₜ[R] i : ↥(insert i₀ S),
-      if h : i.val ∈ ({i₀} : Set ι) then cast (by grind) x else f ⟨i, by grind⟩ := by
+      if h : i = i₀ then cast (by grind) x else f ⟨i, by grind⟩ := by
   rw [tmulInsertEquiv, LinearEquiv.trans_apply, TensorProduct.congr_tmul, singletonEquiv_symm_tprod]
   apply tmulUnionEquiv_tprod
 
