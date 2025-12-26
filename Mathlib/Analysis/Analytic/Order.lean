@@ -454,27 +454,22 @@ lemma eq_zero_iff_order_inf [PreconnectedSpace 𝕜] {f : 𝕜 → E} (z : 𝕜)
   · intro H
     rw [funext_iff] at H
     exact (analyticOrderAt_eq_top).2 <|
-      (AnalyticAt.frequently_eq_iff_eventually_eq (hf z) analyticAt_const).1
-      (Filter.Frequently.of_forall H)
+      ((hf z).frequently_eq_iff_eventually_eq analyticAt_const).1 (Filter.Frequently.of_forall H)
   · intros hr
-    rw [analyticOrderAt_eq_top (f := f),
-        ← AnalyticAt.frequently_eq_iff_eventually_eq (hf z) (analyticAt_const)] at hr
+    rw [analyticOrderAt_eq_top, ← (hf z).frequently_eq_iff_eventually_eq analyticAt_const] at hr
     ext z
-    apply (eqOn_zero_of_preconnected_of_frequently_eq_zero (fun x ↦ by aesop)
-      (isPreconnected_univ) trivial hr) trivial
+    exact eqOn_zero_of_preconnected_of_frequently_eq_zero (fun x ↦ by aesop)
+      isPreconnected_univ trivial hr trivial
 
 lemma eq_zero_on_iff_forall_analyticOrderAt_eq_top {s : Set 𝕜} (f : 𝕜 → E) (hs : IsOpen s) :
   EqOn f 0 s ↔ ∀ z ∈ s, analyticOrderAt f z = ⊤ := by
   constructor
   · intro hzero z hz
-    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ ↦ 0) := by
-      have : ∀ᶠ w in nhds z, w ∈ s := hs.mem_nhds hz
-      filter_upwards [this] with w hw
-      aesop
-    exact (analyticOrderAt_eq_top).2 hEv
+    apply analyticOrderAt_eq_top.2
+    filter_upwards [hs.mem_nhds hz] with w hw
+    aesop
   · intro htop z hz
-    have hEv : (fun w => f w) =ᶠ[nhds z] (fun _ ↦ 0) :=
-      (analyticOrderAt_eq_top).1 (htop z hz)
-    simpa using hEv.eq_of_nhds
+    have hEv : (fun w ↦ f w) =ᶠ[nhds z] 0 := analyticOrderAt_eq_top.1 (htop z hz)
+    simpa using (hEv).eq_of_nhds
 
 end AnalyticOnNhd
