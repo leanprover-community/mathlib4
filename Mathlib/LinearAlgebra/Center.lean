@@ -320,6 +320,3 @@ example (f : End R M) (hf : f ∈ Subsemiring.center (End R M)) :
       this⟩
   intro y
   simpa using congr($(hf ((b.coord i).smulRight y)) (b i)).symm
-
-
-
