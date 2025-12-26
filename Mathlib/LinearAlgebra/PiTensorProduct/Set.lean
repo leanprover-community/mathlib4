@@ -216,6 +216,8 @@ section Extensions
 
 variable {S T : Set ι} (hsub : S ⊆ T) [(i : ι) → Decidable (i ∈ S)]
 
+variable (R)
+
 section LinearMap
 
 open Module
@@ -232,30 +234,30 @@ def extendLinearHom : ((⨂[R] i : S, M i) →ₗ[R] N) →ₗ[R]
 /-- An endomorphism on tensors with index set `S ⊆ T` extends to an endomorphism
 on tensors with index set `T`. Bundled as a homomorphism of linear maps. -/
 def extendEnd : End R (⨂[R] i : S, M i) →ₗ[R] End R (⨂[R] i : T, M i) :=
-  (tmulDiffEquiv hsub).congrRight.toLinearMap ∘ₗ extendLinearHom hsub
+  (tmulDiffEquiv hsub).congrRight.toLinearMap ∘ₗ extendLinearHom R hsub
 
 /-- A functional on tensors with index set `S ⊆ T` contracts tensors with index
 set `T` to tensors with index set `T \ S`. Bundled as a linear map. -/
 def extendFunctional :
     ((⨂[R] i : S, M i) →ₗ[R] R) →ₗ[R] (⨂[R] i : T, M i) →ₗ[R] ⨂[R] (i₂ : ↑(T \ S)), M i₂ :=
-  (TensorProduct.lid R _).congrRight.toLinearMap ∘ₗ (extendLinearHom hsub)
+  (TensorProduct.lid R _).congrRight.toLinearMap ∘ₗ (extendLinearHom R hsub)
 
 @[simp]
 theorem extendLinear_tprod (l : (⨂[R] i : S, M i) →ₗ[R] N) (f : (i : T) → M i) :
-    extendLinearHom hsub l (⨂ₜ[R] i, f i)
+    extendLinearHom R hsub l (⨂ₜ[R] i, f i)
     = l (⨂ₜ[R] i₁ : S, f ⟨i₁, by grind⟩) ⊗ₜ[R] (⨂ₜ[R] i₂ : ↑(T \ S), f ⟨i₂, by grind⟩) := by
   simp [extendLinearHom, LinearEquiv.congrLeft]
 
 @[simp]
 theorem extendEnd_tprod (l : End _ (⨂[R] i : S, M i)) (f : (i : T) → M i) :
-    extendEnd hsub l (⨂ₜ[R] i, f i)
+    extendEnd R hsub l (⨂ₜ[R] i, f i)
     = (tmulDiffEquiv hsub) (l (⨂ₜ[R] i₁ : S, f ⟨i₁, by grind⟩)
       ⊗ₜ[R] (⨂ₜ[R] i₂ : ↑(T \ S), f ⟨i₂, by grind⟩)) := by
   simp [extendEnd, LinearEquiv.congrRight]
 
 @[simp]
 theorem extendFunctional_tprod (l : (⨂[R] i : S, M i) →ₗ[R] R) (f : (i : T) → M i) :
-    extendFunctional hsub l (⨂ₜ[R] i, f i)
+    extendFunctional R hsub l (⨂ₜ[R] i, f i)
     = (l (⨂ₜ[R] i : S, f ⟨i, by grind⟩)) • ⨂ₜ[R] i : ↑(T \ S), f ⟨i, by grind⟩ := by
   simp [extendFunctional, LinearEquiv.congrRight]
 
@@ -274,20 +276,20 @@ def extendTensor (m₀ : (i : ι) → M i) : (⨂[R] (i : S), M i) →ₗ[R] ⨂
   map_smul' := by simp [←TensorProduct.smul_tmul']
 
 @[simp]
-lemma extendTensor_tprod (f : (i : S) → M i) : extendTensor hsub m₀ (⨂ₜ[R] i, f i)
+lemma extendTensor_tprod (f : (i : S) → M i) : extendTensor R hsub m₀ (⨂ₜ[R] i, f i)
     = ⨂ₜ[R] i : T, if h : ↑i ∈ S then f ⟨i, by grind⟩ else m₀ i := by
   simp [extendTensor]
 
 @[simp]
-theorem extendTensor_self : extendTensor (subset_refl S) m₀ = LinearMap.id (R:=R) :=
+theorem extendTensor_self : extendTensor R (subset_refl S) m₀ = LinearMap.id (R:=R) :=
   by ext; simp [extendTensor]
 
 /-- Extending the index set of a tensor along a chain `S ⊆ T ⊆ U` is the same as
 directly extending from `S` to `U`. -/
 @[simp]
 theorem extendTensor_trans [(i : ι) → Decidable (i ∈ T)] {U : Set ι} (hsub₂ : T ⊆ U) :
-    (extendTensor hsub₂ m₀) ∘ₗ (extendTensor hsub m₀) =
-    (extendTensor (R:=R) (subset_trans hsub hsub₂) m₀) := by
+    (extendTensor R hsub₂ m₀) ∘ₗ (extendTensor R hsub m₀) =
+    (extendTensor R (subset_trans hsub hsub₂) m₀) := by
   ext f
   simp only [extendTensor, LinearMap.compMultilinearMap_apply, LinearMap.coe_comp,
     LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, tmulDiffEquiv_tprod]
