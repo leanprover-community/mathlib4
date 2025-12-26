@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.GDelta.Basic
-public import Mathlib.Topology.Defs.Induced
 public import Mathlib.Topology.LocallyFinite
 
 /-!
@@ -44,30 +43,25 @@ section BaireTheorem
 
 variable [TopologicalSpace X]
 
-theorem baire_of_finite [Finite X] : BaireSpace X := by sorry
+/-- The intersection of finitely many open dense sets is dense. -/
+theorem Set.Finite.Dense_sInter {s : Set (Set X)} (hs : s.Finite)
+    (ho : ∀ t ∈ s, IsOpen t) (hd : ∀ t ∈ s, Dense t) : Dense (⋂₀ s) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [sInter_empty]
+  | insert ha hsf ih =>
+    simp only [sInter_insert, forall_mem_insert] at hd ⊢
+    refine hd.1.inter_of_isOpen_right ?_ (hsf.isOpen_sInter (fun y hy => ho y (Or.inr hy)))
+    exact ih ((fun y hy => ho y (Or.inr hy))) (fun y hy => hd.2 y hy)
 
-/-- If a space `X` contains a dense Baire subspace, then `X` is Baire. -/
-theorem Dense.baire_mono {s : Set X} (hd : Dense s) (hb : BaireSpace s) : BaireSpace X := by
-  sorry
-
-/-- The union of an arbitrary family of open Baire subspaces is Baire. -/
-theorem baire_of_union_open_baire {s : α → Set X} (hs : ∀ a, IsOpen (s a))
-    (hb : ∀ a, BaireSpace (s a)) : BaireSpace (⋃ a, s a) := by
-  sorry
-
-/-- The union of a finite union of Baire subspaces is Baire. -/
-theorem baire_of_finite_union_baire {s : α → Set X} [Finite α] (hb : ∀ a, BaireSpace (s a)) :
-    BaireSpace (⋃ a, s a) := by
-  sorry
-
-/-- The union of a locally finite collection of Baire subspaces is Baire. -/
-theorem LocallyFinite.baire_of_union_baire {s : α → Set X} (hs : LocallyFinite s)
-    (hb : ∀ a, BaireSpace (s a)) : BaireSpace (⋃ a, s a) := by
-  sorry
-
-/-- If each point of `X` has a Baire neighborhood, then `X` is Baire. -/
-theorem baire_of_nhds_baire (hx : ∀ x : X, ∃ U ∈ 𝓝 x, BaireSpace U) : BaireSpace X := by
-  sorry
+/-- A finite set is Baire. -/
+theorem baire_of_finite [Finite X] : BaireSpace X := by
+  constructor
+  refine fun f hof hdf => (sInter_range f) ▸ Set.Finite.Dense_sInter
+    (Finite.subset Set.finite_univ (subset_univ (range f))) (fun _ h => ?_) (fun _ h => ?_)
+  · obtain ⟨x, hx⟩ := h
+    simpa [← hx] using hof x
+  · obtain ⟨x, hx⟩ := h
+    simpa [← hx] using hdf x
 
 variable [BaireSpace X]
 
@@ -228,3 +222,5 @@ theorem not_isMeagre_of_mem_residual {s : Set X} (hs : s ∈ residual X) :
   exact not_isMeagre_of_isGδ_of_dense (X := X) htGδ ht_dense (hs_meagre.mono ht_sub)
 
 end BaireTheorem
+
+#min_imports
