@@ -60,20 +60,20 @@ lemma IsMulIndecomposable.baseOf_subset_one_lt [Monoid S] (v : ι → M) (f : M 
 lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [Finite ι] [InvolutiveInv ι]
     [CommGroup S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
-    (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) :
+    (f : G →* S) :
     v '' baseOf v (invMonoidHom.comp f) = (invMonoidHom ∘ v) '' baseOf v f := by
-  suffices ∀ (f : G →* S) (hf : ∀ i, f (v i) ≠ 1),
+  suffices ∀ (f : G →* S),
       v '' baseOf v (invMonoidHom.comp f) ⊆ (invMonoidHom ∘ v) '' baseOf v f by
-    apply subset_antisymm (this f hf)
+    apply subset_antisymm (this f)
     -- TODO Excise these silly `aux`s
     have auxS : invMonoidHom.comp (invMonoidHom : S →* S) = .id _ := by ext; simp
     have auxG : invMonoidHom.comp (invMonoidHom : G →* G) = .id _ := by ext; simp
-    replace this := image_mono (f := invMonoidHom) <| this (invMonoidHom.comp f) (by simpa)
+    replace this := image_mono (f := invMonoidHom) <| this (invMonoidHom.comp f)
     rw [← MonoidHom.comp_assoc, auxS, MonoidHom.id_comp, image_comp,
       ← image_comp invMonoidHom invMonoidHom, ← MonoidHom.coe_comp, auxG, ← image_comp] at this
     simpa using this
-  clear f hf
-  rintro f hf g ⟨i, ⟨hi, hi'⟩, rfl⟩
+  clear f
+  rintro f g ⟨i, ⟨hi, hi'⟩, rfl⟩
   refine ⟨i⁻¹, ⟨by simpa [hv_inv] using hi, fun j hj k hk hi ↦ ?_⟩, by simp [hv_inv]⟩
   replace hi : v i = v j⁻¹ * v k⁻¹ := by
     rwa [hv_inv, inv_eq_iff_eq_inv, mul_inv, ← hv_inv, ← hv_inv] at hi
@@ -131,7 +131,7 @@ lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveI
   · let f' : G →* S := invMonoidHom.comp f
     have h₁ : (invMonoidHom ∘ v) '' IsMulIndecomposable.baseOf v f' =
         v '' IsMulIndecomposable.baseOf v f := by
-      rw [image_comp, IsMulIndecomposable.image_baseOf_inv_comp_eq v hv_inv f hf, image_comp,
+      rw [image_comp, IsMulIndecomposable.image_baseOf_inv_comp_eq v hv_inv f, image_comp,
         ← image_comp]
       simp
     have h₂ : v '' {i | f (v i) < 1} = v '' {i | 1 < f' (v i)} := by simp [f']
