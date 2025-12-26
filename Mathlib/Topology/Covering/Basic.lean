@@ -5,8 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.FiberBundle.Basic
+public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Covering Maps
@@ -414,3 +414,69 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
     [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
     [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
+
+open Function in
+/-- Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
+`V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
+that covers `f⁻¹(V)` such that for every `i`,
+
+ 1. `f` is injective on `Uᵢ`,
+ 2. `V` is contained in the image `f(Uᵢ)`,
+ 3. the open sets in `V` are determined by their preimages in `Uᵢ`.
+
+Then `f` admits a `Trivialization` over the base set `V`. -/
+@[simps source target baseSet] noncomputable def IsOpen.trivializationDiscrete [Nonempty (X → E)]
+    {ι} [Nonempty ι] [TopologicalSpace ι] [DiscreteTopology ι] (U : ι → Set E) (V : Set X)
+    (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))
+    (inj : ∀ i, (U i).InjOn f) (surj : ∀ i, (U i).SurjOn f V)
+    (disjoint : Pairwise (Disjoint on U)) (exhaustive : f ⁻¹' V ⊆ ⋃ i, U i) :
+    Trivialization ι f := by
+  have exhaustive' := exhaustive
+  simp_rw [Set.subset_def, Set.mem_iUnion] at exhaustive
+  choose idx idx_U using exhaustive
+  choose inv inv_U f_inv using surj
+  classical
+  let F : PartialEquiv E (X × ι) :=
+  { toFun e := (f e, if he : f e ∈ V then idx e he else Classical.arbitrary ι),
+    invFun x := if hx : x.1 ∈ V then inv x.2 hx else Classical.arbitrary (X → E) x.1,
+    source := f ⁻¹' V,
+    target := V ×ˢ Set.univ,
+    map_source' x hx := ⟨hx, ⟨⟩⟩
+    map_target' x hx := by rw [dif_pos hx.1]; apply (f_inv _ hx.1).symm ▸ hx.1,
+    left_inv' e he := by
+      simp_rw [dif_pos (id he : f e ∈ V)]
+      exact inj _ (inv_U _ he) (idx_U e he) (f_inv _ _)
+    right_inv' x hx := by
+      rw [dif_pos hx.1]
+      refine Prod.ext (f_inv _ hx.1) ?_
+      rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
+      by_contra h; exact (disjoint h).le_bot ⟨idx_U .., inv_U _ _⟩ }
+  have open_preim {W} (hWV: W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
+    convert isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
+    rw [← Set.inter_iUnion, eq_comm, Set.inter_eq_left]
+    exact (Set.preimage_mono hWV).trans exhaustive'
+  have open_source : IsOpen F.source := open_preim subset_rfl open_V
+  have cont_f : ContinuousOn f F.source := (continuousOn_open_iff open_source).mpr
+    fun W open_W ↦ open_preim Set.inter_subset_left (open_V.inter open_W)
+  refine
+  { toPartialEquiv := F,
+    open_source := open_source,
+    open_target := open_V.prod isOpen_univ,
+    continuousOn_toFun := cont_f.prodMk <| continuousOn_of_forall_continuousAt fun e he ↦
+      continuous_const (y := idx e he) |>.continuousAt.congr <| mem_nhds_iff.mpr
+        ⟨U (idx e he) ∩ F.source, fun e' he' ↦ ?_, ?_, idx_U e he, he⟩
+    continuousOn_invFun := continuousOn_prod_of_discrete_right.mpr fun i ↦ ?_,
+    baseSet := V,
+    open_baseSet := open_V,
+    source_eq := rfl,
+    target_eq := rfl,
+    proj_toFun _ _ := rfl }
+  · by_contra h; apply (disjoint h).le_bot
+    · dsimp only; rw [dif_pos (by exact he'.2)]; exact ⟨he'.1, idx_U ..⟩
+  · rwa [Set.inter_comm, ← open_iff _ subset_rfl]
+  · simp_rw [F, Set.prodMk_mem_set_prod_eq, Set.mem_univ, and_true]
+    refine (continuousOn_open_iff open_V).mpr fun W open_W ↦ ?_
+    rw [open_iff i Set.inter_subset_left]
+    convert ((open_iff i subset_rfl).mp open_V).inter open_W using 1
+    refine Set.ext fun e ↦ and_right_comm.trans (and_congr_right fun ⟨hV, hU⟩ ↦ ?_)
+    rw [Set.mem_preimage, dif_pos hV, inj i (inv_U i _) hU (f_inv i _)]

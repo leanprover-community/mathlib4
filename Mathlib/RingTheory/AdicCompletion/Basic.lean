@@ -88,13 +88,12 @@ theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
     simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
       Submodule.top_toAddSubmonoid]
     rw [AddSubmonoid.smul_le]
-    intro r hr m _
+    intro r hr m hm
     rw [← algebraMap_smul S r m]
-    apply AddSubmonoid.smul_mem_smul
-    · have := Ideal.mem_map_of_mem (algebraMap R S) hr
-      simp only [Ideal.map_pow] at this
-      apply Ideal.pow_right_mono (I := I.map (algebraMap R S)) hIJ n this
-    · trivial
+    apply AddSubmonoid.smul_mem_smul ?_ hm
+    have := Ideal.mem_map_of_mem (algebraMap R S) hr
+    simp only [Ideal.map_pow] at this
+    exact Ideal.pow_right_mono hIJ n this
   · exact h n
 
 variable (I) in
