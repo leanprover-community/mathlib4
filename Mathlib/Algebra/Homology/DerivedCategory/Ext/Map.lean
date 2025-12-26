@@ -235,8 +235,7 @@ lemma Abelian.Ext.mapExactFunctor_add [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
   ext
-  simp only [mapExactFunctor_eq_shiftedHom_map, Functor.comp_obj, add_hom, ShiftedHom.map_add]
-  rw [Preadditive.add_comp, Preadditive.comp_add]
+  simp [mapExactFunctor_eq_shiftedHom_map, ShiftedHom.map_add]
 
 /-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
@@ -260,8 +259,7 @@ lemma Functor.mapExactFunctor_smul [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n :
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
   ext
-  simp only [Ext.mapExactFunctor_eq_shiftedHom_map, comp_obj, Ext.smul_hom, ShiftedHom.map_smul]
-  rw [Linear.smul_comp, Linear.comp_smul]
+  simp [Ext.mapExactFunctor_eq_shiftedHom_map, ShiftedHom.map_smul]
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
 noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
