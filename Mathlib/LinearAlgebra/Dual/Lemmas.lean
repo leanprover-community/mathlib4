@@ -721,6 +721,8 @@ end CommRing
 
 section VectorSpace
 
+section
+
 variable {K V₁ V₂ : Type*} [DivisionRing K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
@@ -778,6 +780,8 @@ lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V
   simp [h', hy, hy']
 
 end Module.Dual
+
+end
 
 variable {K V₁ V₂ : Type*} [Field K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
