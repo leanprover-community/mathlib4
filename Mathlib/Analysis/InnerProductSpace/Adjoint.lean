@@ -378,8 +378,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T
   simp_rw [zero_apply, ← norm_eq_zero (E := E)]
   have :=
     calc (∀ x : E, ‖(T - star T * T) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - T)) (T x)‖ = 0 := by
-          simp [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, norm_eq_zero,
-            ← star_eq_adjoint, star_sub, star_one, one_apply]
+          simp [star_eq_adjoint, one_def]
       _ ↔ ∀ x, ‖(1 - T) (T x)‖ = 0 := by
           simp only [isStarNormal_iff_norm_eq_adjoint.mp h.one_sub]
       _ ↔ ∀ x, ‖(T - T * T) x‖ = 0 := by simp
