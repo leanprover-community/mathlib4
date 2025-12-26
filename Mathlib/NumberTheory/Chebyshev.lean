@@ -313,7 +313,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
   · -- Rewrite the derivative inside the intigral
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
-        ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := 
+        ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
       intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_inv_log, field]
     simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
@@ -398,7 +398,7 @@ theorem integral_theta_div_log_sq_isBigO :
   filter_upwards [eventually_ge_atTop 4] with x hx
   simp_rw [norm_eq_abs]
   calc |∫ (t : ℝ) in 2..x, θ t / (t * log t ^ 2)|
-    _ ≤ ∫ (x : ℝ) in 2..x, |θ x / (x * log x ^ 2)| := 
+    _ ≤ ∫ (x : ℝ) in 2..x, |θ x / (x * log x ^ 2)| :=
         intervalIntegral.abs_integral_le_integral_abs (by linarith)
     _ ≤ ∫ (x : ℝ) in 2..x, log 4 * (1 / log x ^ 2) :=
         intervalIntegral.integral_mono_on (by linarith) ?hf ?hg fun t ⟨ht, _⟩ ↦ ?hh
