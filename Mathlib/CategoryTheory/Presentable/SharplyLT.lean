@@ -3,11 +3,15 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
+module
+
+public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 
 /-!
 # Sharply smaller regular cardinals
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -30,7 +34,7 @@ lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 lemma isCardinalAccessible (h : SharplyLT κ₁ κ₂)
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     IsCardinalAccessibleCategory C κ₂ where
-  toHasCardinalFilteredColimits := HasCardinalFilteredColimits.of_le C h.le
+  toHasCardinalFilteredColimits := .of_le C h.le
   exists_generator := sorry
 
 lemma trans (h₁₂ : SharplyLT κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]

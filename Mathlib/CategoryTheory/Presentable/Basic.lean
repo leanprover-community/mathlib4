@@ -286,7 +286,7 @@ variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
 
-variable {κ} in
+variable (C) {κ} in
 lemma HasCardinalFilteredColimits.of_le
     [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
     HasCardinalFilteredColimits C κ' where
