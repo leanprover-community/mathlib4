@@ -188,6 +188,19 @@ evaluates on `2 * cosh θ` to the value `sinh ((n + 1) * θ) / sinh θ`. -/
 theorem S_two_mul_real_cosh (n : ℤ) : (S ℝ n).eval (2 * cosh θ) * sinh θ = sinh ((n + 1) * θ) :=
   mod_cast S_two_mul_complex_cosh θ n
 
+theorem iterate_derivative_T_real_eval_one (n : ℤ) (k : ℕ) :
+    (derivative^[k] (T ℝ n)).eval 1 =
+      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / ((∏ l ∈ Finset.range k, (2 * l + 1))) := by
+  sorry
+
+-- another result: denominator divides numerator
+
+theorem iterate_derivative_T_real_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ∏ l ∈ Finset.range k, (2 * l + 1) ∣ ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
+  sorry
+
+-- same for U
+
 end Real
 
 end Polynomial.Chebyshev
