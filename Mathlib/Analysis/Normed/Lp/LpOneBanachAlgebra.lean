@@ -266,7 +266,7 @@ theorem one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
     | succ n => simp [CauchyProduct.one_apply_ne (Nat.succ_ne_zero n), norm_zero]
   rw [h]
   exact summable_of_ne_finset_zero (s := {0})
-      (by simp_all only [mem_singleton, ↓reduceIte, implies_true])
+    (by simp_all only [mem_singleton, ↓reduceIte, implies_true])
 
 /-! ### lp Instances -/
 
