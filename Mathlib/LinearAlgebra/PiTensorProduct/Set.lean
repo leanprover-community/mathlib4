@@ -274,6 +274,11 @@ def extendTensor (m₀ : (i : ι) → M i) : (⨂[R] (i : S), M i) →ₗ[R] ⨂
   map_smul' := by simp [←TensorProduct.smul_tmul']
 
 @[simp]
+lemma extendTensor_tprod (f : (i : S) → M i) : extendTensor hsub m₀ (⨂ₜ[R] i, f i)
+    = ⨂ₜ[R] i : T, if h : ↑i ∈ S then f ⟨i, by grind⟩ else m₀ i := by
+  simp [extendTensor]
+
+@[simp]
 theorem extendTensor_self : extendTensor (subset_refl S) m₀ = LinearMap.id (R:=R) :=
   by ext; simp [extendTensor]
 
