@@ -4,3 +4,9 @@
 .cache
 # `lake` stores its files here:
 .lake
+Cajal-2.lean
+Cajal-3.lean
+Cajal-4.lean
+Cajal-6.lean
+funky.lean
+misty.lean
