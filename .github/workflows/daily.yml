@@ -99,7 +99,7 @@ jobs:
   notify-lean4checker:
     runs-on: ubuntu-latest
     needs: check-lean4checker
-    if: always()
+    if: github.repository == 'leanprover-community/mathlib4' && always()
     strategy:
       fail-fast: false
       matrix:
@@ -218,7 +218,7 @@ jobs:
   notify-mathlib_test_executable:
     runs-on: ubuntu-latest
     needs: check-mathlib_test_executable
-    if: always()
+    if: github.repository == 'leanprover-community/mathlib4' && always()
     strategy:
       fail-fast: false
       matrix:
