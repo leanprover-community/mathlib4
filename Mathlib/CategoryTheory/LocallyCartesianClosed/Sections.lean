@@ -160,7 +160,7 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
     · aesop
 
 variable (I) in
-/-- The adjunction between the star functor and the sections functor. -/
+/-- The adjunction between the toOver functor and the sections functor. -/
 @[simps! unit_app counit_app]
 def toOverSectionsAdj : toOver I ⊣ sections I :=
   .mkOfHomEquiv coreHomEquivToOverSections
