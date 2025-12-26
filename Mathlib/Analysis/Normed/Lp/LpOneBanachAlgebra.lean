@@ -324,7 +324,7 @@ instance oneOne : One (lp (fun _ : ℕ => R) 1) where
   one := ⟨CauchyProduct.one, _root_.one_memℓp_one⟩
 
 @[simp]
-theorem one_coeFn_one : ⇑(1 : lp (fun _ : ℕ => R) 1) = CauchyProduct.one := rfl
+lemma one_coeFn_one : ⇑(1 : lp (fun _ : ℕ => R) 1) = CauchyProduct.one := rfl
 
 instance oneRing : Ring (lp (fun _ : ℕ => R) 1) where
   mul_assoc := fun f g h => lp.ext <| CauchyProduct.assoc (⇑f) (⇑g) (⇑h)
