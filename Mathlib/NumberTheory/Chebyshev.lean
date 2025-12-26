@@ -437,15 +437,11 @@ theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
     ∀ᶠ x in atTop, π ⌊x⌋₊ ≤ (log 4 + ε) * x / log x := by
   have := integral_theta_div_log_sq_isLittleO.bound εpos
   filter_upwards [eventually_ge_atTop 2, this] with x hx hx2
-  rw [primeCounting_eq_theta_div_log_add_integral hx,
-    mul_div_assoc, add_mul, ← mul_div_assoc, ← mul_div_assoc]
-  grw [theta_le_log4_mul_x (by linarith)]
-  · gcongr
-    rw [norm_eq_abs, norm_eq_abs] at hx2
-    nth_rewrite 2 [abs_of_nonneg] at hx2
-    · grind
-    · bound
-  · bound
+  rw [primeCounting_eq_theta_div_log_add_integral hx, add_mul, add_div]
+  have hl : 0 ≤ log x := by bound
+  rw [norm_of_nonneg (show 0 ≤ x / log x by bound), ← mul_div_assoc] at hx2
+  grw [theta_le_log4_mul_x (by linarith), ← hx2]
+  grind [le_norm_self]
 
 end PrimeCounting
 end Chebyshev
