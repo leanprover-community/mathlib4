@@ -13,9 +13,10 @@ public import Mathlib.CategoryTheory.Products.Associator
 /-!
 # The homotopy functor is monoidal
 
-Given `2`-truncated simplicial sets `X` and `Y`, we construct an equivalence
-of categories `(X ⊗ Y).HomotopyCategory ≌ X.HomotopyCategory × Y.HomotopyCategory`.
-(see `SSet.Truncated.HomotopyCategory.BinaryProduct.equivalence`).
+Given `2`-truncated simplicial sets `X` and `Y`, we introduce ad operation
+`Truncated.Edge.tensor : Edge x x' → Edge y y' → Edge (x, y) (x', y')`.
+We use this in order to construct an equivalence of categories
+`(X ⊗ Y).HomotopyCategory ≌ X.HomotopyCategory × Y.HomotopyCategory`.
 
 -/
 

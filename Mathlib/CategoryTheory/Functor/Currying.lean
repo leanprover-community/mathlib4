@@ -114,6 +114,12 @@ def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFai
 def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulInverse
 
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Full :=
+  fullyFaithfulCurry.full
+
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Faithful :=
+  fullyFaithfulCurry.faithful
+
 instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
   fullyFaithfulUncurry.full
 

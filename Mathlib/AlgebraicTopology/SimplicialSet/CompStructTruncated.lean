@@ -77,6 +77,10 @@ lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
   ext
   simp [FunctorToTypes.naturality]
 
+instance [Subsingleton (X _⦋1⦌₂)] {x y : X _⦋0⦌₂} :
+    Subsingleton (X.Edge x y) where
+  allEq f g := by ext; subsingleton
+
 /-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a `2`-truncated simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
