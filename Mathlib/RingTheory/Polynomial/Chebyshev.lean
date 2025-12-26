@@ -1006,6 +1006,20 @@ theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
       mul_assoc, iterate_derivative_U_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
       mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self, mul_assoc]
 
+theorem derivative_T_eval_one (n : ℤ) :
+    (derivative (T R n)).eval 1 = n ^ 2 := by
+  rw [T_derivative_eq_U, eval_mul, eval_intCast, U_eval_one, Int.cast_sub, Int.cast_one,
+    sub_add_cancel, sq]
+
+theorem derivative_U_eval_one (n : ℤ) :
+    3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
+  have h := iterate_derivative_U_eval_one (R := R) n 1
+  simp only [Finset.range_one, Finset.prod_singleton, mul_zero, zero_add, Nat.cast_ofNat,
+    Function.iterate_one, CharP.cast_eq_zero, one_pow, Int.cast_sub, Int.cast_pow, Int.cast_add,
+    Int.cast_one] at h
+  rw [h]
+  grind
+
 variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
