@@ -223,6 +223,7 @@ theorem le_of_lt_add_one (h : x < y + 1) : x ≤ y := by
 theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) : x < y + 1 ↔ x ≤ y := by
   rw [← succ_eq_add_one, lt_succ_iff_of_not_isMax hy]
 
+@[simp]
 theorem lt_add_one_iff [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
   lt_add_one_iff_of_not_isMax (not_isMax y)
 
@@ -239,6 +240,7 @@ theorem le_of_sub_one_lt (h : x - 1 < y) : x ≤ y := by
 theorem sub_one_lt_iff_of_not_isMin (hx : ¬ IsMin x) : x - 1 < y ↔ x ≤ y := by
   rw [← pred_eq_sub_one, pred_lt_iff_of_not_isMin hx]
 
+@[simp]
 theorem sub_one_lt_iff [NoMinOrder α] : x - 1 < y ↔ x ≤ y :=
   sub_one_lt_iff_of_not_isMin (not_isMin x)
 
