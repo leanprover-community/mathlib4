@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
-# The section functor as a right adjoint to the star functor
+# The section functor as a right adjoint to the toOver functor
 
 We show that in a cartesian monoidal category `C`, for any exponentiable object `I`, the functor
 `toOver I : C ⥤ Over I` mapping an object `X` to the projection `snd : X ⊗ I ⟶ I` in `Over I`
