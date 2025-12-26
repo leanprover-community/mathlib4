@@ -68,7 +68,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
     obtain ⟨hx, hhx⟩ := h.out x
     rw [algebraMap_eq F K E, ← map_map] at hhx
-    exact ⟨hx.tower_top, hhx.splits_of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
+    exact ⟨hx.tower_top, hhx.of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
       ((map_dvd_map' _).mpr (minpoly.dvd_map_of_isScalarTower F K x))⟩
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
@@ -225,10 +225,10 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
 
 namespace IsScalarTower
 
-/-- In a scalar tower `K₃/K₂/K₁/F` with `K₁` and `K₂` are normal over `F`, the group homomorphism
-given by the restriction of algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
-the group homomorphism given by the restricting an algebra isomorphism of `K₃` to `K₂` and
-the group homomorphism given by the restricting an algebra isomorphism of `K₂` to `K₁` -/
+/-- In a scalar tower `K₃/K₂/K₁/F` with `K₁` and `K₂` normal over `F`, the group homomorphism
+which restricts algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
+the group homomorphism given by restricting an algebra isomorphism of `K₃` to `K₂` and
+the group homomorphism given by restricting an algebra isomorphism of `K₂` to `K₁`. -/
 theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
     [Field F] [Field K₁] [Field K₂] [Field K₃]
     [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]

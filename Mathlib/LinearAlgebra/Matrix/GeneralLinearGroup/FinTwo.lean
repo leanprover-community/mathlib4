@@ -55,7 +55,7 @@ lemma isParabolic_iff_of_upperTriangular [IsReduced R] (hm : m 1 0 = 0) :
   have aux : m.discr = 0 ↔ m 0 0 = m 1 1 := by
     suffices m.discr = (m 0 0 - m 1 1) ^ 2 by
       rw [this, IsReduced.pow_eq_zero_iff two_ne_zero, sub_eq_zero]
-    grind [disc_fin_two, trace_fin_two, det_fin_two]
+    grind [discr_fin_two, trace_fin_two, det_fin_two]
   have (h : m 0 0 = m 1 1) : m ∈ Set.range (scalar _) ↔ m 0 1 = 0 := by
     constructor
     · rintro ⟨a, rfl⟩
@@ -111,7 +111,7 @@ lemma isParabolic_iff_exists [NeZero (2 : K)] :
         tauto
       rw [← sub_scalar_sq_eq_discr, hm, trace_add, scalar_apply, trace_diagonal]
       simp [mul_div_cancel_left₀ _ (NeZero.ne (2 : K)),
-        (Matrix.isNilpotent_trace_of_isNilpotent ⟨2, hnsq⟩).eq_zero , hnsq]
+        (Matrix.isNilpotent_trace_of_isNilpotent ⟨2, hnsq⟩).eq_zero, hnsq]
 
 end Field
 

@@ -23,8 +23,8 @@ objects `X₁ : C₁`, `X₂ : C₂` and `X₃ : C₃` to `(F.obj X₁).obj ((G�
 
 namespace CategoryTheory
 
-variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category C₄] [Category C₁₂] [Category C₂₃]
+variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* C₄] [Category* C₁₂] [Category* C₂₃]
 
 section bifunctorComp₁₂Functor
 
