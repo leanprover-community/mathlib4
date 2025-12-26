@@ -16,9 +16,16 @@ public import Mathlib.LinearAlgebra.RootSystem.Base
 
 ## Implementation details
 
-Explain that we do not pass to root system over `ℚ` using `RootPairing.restrictScalarsRat` but
-instead work simultaneously with general coefficients `R` and auxiliary coefficients `S` which
-ultimately are taken to be `ℚ`.
+The proof needs a set of ordered coefficients, even though the existence ultimate statement does
+not. There are at least two ways to deal with this:
+ (a) Using the fact that a crystallographic root system induces a `ℚ`-structure, pass to the root
+     system over `ℚ` defined by `RootPairing.restrictScalarsRat`, and develop a theory of base
+     change for root system bases.
+ (b) Introduce a second set of ordered coefficients (ultimately taken to be `ℚ`) and develop a
+     theory with two sets of coefficients simultaneously in play.
+
+It is not really clear which is the better approach but here we opt for approach (b) as it seems
+to yield slightly more general results.
 
 ## TODO
 
@@ -26,8 +33,8 @@ ultimately are taken to be `ℚ`.
    in `RootPairing.Base` follows from the others, and combine this with
    `RootPairing.linearIndepOn_coroot_iff` to thus provide an alternate constructor for
    `RootPairing.Base` which demands only the hypotheses on the roots.
-2. Prove that every reduced crystallographic root system has a base by combining the constructor
-   in 1 above with `RootPairing.linearIndepOn_root_baseOf`,
+2. [Easy given 1 above] Prove that every reduced crystallographic root system has a base by
+   combining the constructor in 1 above with `RootPairing.linearIndepOn_root_baseOf`,
    `IsAddIndecomposable.mem_or_neg_mem_closure_baseOf`, `Module.exists_dual_forall_apply_ne_zero`.
 
 -/

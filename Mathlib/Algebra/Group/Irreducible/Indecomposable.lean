@@ -65,12 +65,10 @@ lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [InvolutiveInv ι]
   suffices ∀ (f : G →* S),
       v '' baseOf v (invMonoidHom.comp f) ⊆ (invMonoidHom ∘ v) '' baseOf v f by
     apply subset_antisymm (this f)
-    -- TODO Excise these silly `aux`s
-    have auxS : invMonoidHom.comp (invMonoidHom : S →* S) = .id _ := by ext; simp
-    have auxG : invMonoidHom.comp (invMonoidHom : G →* G) = .id _ := by ext; simp
     replace this := image_mono (f := invMonoidHom) <| this (invMonoidHom.comp f)
-    rw [← MonoidHom.comp_assoc, auxS, MonoidHom.id_comp, image_comp,
-      ← image_comp invMonoidHom invMonoidHom, ← MonoidHom.coe_comp, auxG, ← image_comp] at this
+    rw [← MonoidHom.comp_assoc, invMonoidHom_comp_invMonoidHom, MonoidHom.id_comp, image_comp,
+      ← image_comp invMonoidHom invMonoidHom, ← MonoidHom.coe_comp, invMonoidHom_comp_invMonoidHom,
+      ← image_comp] at this
     simpa using this
   clear f
   rintro f g ⟨i, ⟨hi, hi'⟩, rfl⟩
@@ -135,9 +133,7 @@ lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveI
         ← image_comp]
       simp
     have h₂ : v '' {i | f (v i) < 1} = v '' {i | 1 < f' (v i)} := by simp [f']
-    -- TODO figure out why `to_additive` complains about `coe_invMonoidHom` below (forcing `erw`)
-    -- rw [h₂, ← h₁, image_comp, coe_invMonoidHom, image_inv_eq_inv, closure_inv]
-    rw [h₂, ← h₁, image_comp]; erw [image_inv_eq_inv]; rw [closure_inv]
+    rw [h₂, ← h₁, image_comp, coe_invMonoidHom, image_inv_eq_inv, closure_inv]
     refine le_trans ?_ (le_closure_toSubmonoid (v '' IsMulIndecomposable.baseOf v f'))
     simp [Submonoid.closure_image_isMulIndecomposable_baseOf]
 
