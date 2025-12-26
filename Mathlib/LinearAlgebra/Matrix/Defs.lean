@@ -29,7 +29,7 @@ The scope `Matrix` gives the following notation:
 
 * `ᵀ` for `Matrix.transpose`
 
-See `Mathlib/Data/Matrix/ConjTranspose.lean` for
+See `Mathlib/LinearAlgebra/Matrix/ConjTranspose.lean` for
 
 * `ᴴ` for `Matrix.conjTranspose`
 
