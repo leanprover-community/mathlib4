@@ -46,13 +46,9 @@ lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
 
 theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
   refine IsStableUnderBaseChange.mk finite_respectsIso ?_
-  classical
-  introv h
-  replace h : Module.Finite R T := by
-    rw [RingHom.Finite] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
-  suffices Module.Finite S (S ⊗[R] T) by
-    rw [RingHom.Finite]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
-  exact inferInstance
+  simp only [finite_algebraMap]
+  intros
+  infer_instance
 
 end RingHom
 
