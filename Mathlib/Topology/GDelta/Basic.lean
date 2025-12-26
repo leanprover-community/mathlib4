@@ -284,6 +284,11 @@ lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := b
   contrapose! hs
   simpa [hs] using IsMeagre.empty
 
+/-- A nowhere dense set is meagre. -/
+lemma IsNowhereDense.isMeagre {s : Set X} (h : IsNowhereDense s) : IsMeagre s := by
+  rw [isMeagre_iff_countable_union_isNowhereDense]
+  exact ⟨{s}, by simpa, by simp, by simp⟩
+
 lemma exists_of_not_meagre_biUnion {I : Set ι}
     (c : I.Countable) {A : ι → Set X} (h : ¬IsMeagre (⋃ i ∈ I, A i)) :
     ∃ i ∈ I, ¬IsMeagre (A i) := by
