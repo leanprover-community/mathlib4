@@ -674,8 +674,10 @@ variable [NoMinOrder α]
 @[deprecated (since := "2025-12-04")]
 alias pred_le_pred_of_le := pred_mono
 
+@[to_dual existing]
 theorem pred_strictMono : StrictMono (pred : α → α) := fun _ _ => pred_lt_pred
 
+@[to_dual existing covBy_succ]
 theorem pred_covBy (a : α) : pred a ⋖ a :=
   pred_covBy_of_not_isMin <| not_isMin a
 
@@ -713,10 +715,13 @@ variable [PartialOrder α] [PredOrder α] {a b : α}
 alias pred_le_le_iff := pred_le_and_le_iff
 
 /-- See also `Order.pred_le_of_wcovBy`. -/
+@[to_dual existing]
 lemma pred_eq_of_covBy (h : a ⋖ b) : pred b = a := h.wcovBy.pred_le.antisymm (le_pred_of_lt h.lt)
 
+@[to_dual existing]
 alias _root_.CovBy.pred_eq := pred_eq_of_covBy
 
+@[to_dual existing]
 theorem _root_.OrderIso.map_pred {β : Type*} [PartialOrder β] [PredOrder β] (f : α ≃o β) (a : α) :
     f (pred a) = pred (f a) :=
   f.dual.map_succ a
@@ -725,6 +730,7 @@ section NoMinOrder
 
 variable [NoMinOrder α]
 
+@[to_dual existing]
 theorem pred_eq_iff_covBy : pred b = a ↔ a ⋖ b :=
   ⟨by
     rintro rfl
@@ -803,6 +809,7 @@ end NoMinOrder
 end LinearOrder
 
 /-- There is at most one way to define the predecessors in a `PartialOrder`. -/
+@[to_dual existing]
 instance [PartialOrder α] : Subsingleton (PredOrder α) :=
   ⟨by
     intro h₀ h₁
