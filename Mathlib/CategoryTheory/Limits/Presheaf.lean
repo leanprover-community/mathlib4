@@ -66,7 +66,7 @@ namespace Presheaf
 variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
 
 /--
-Given a functor `A : C ⥤ ℰ` (with `Category.{v₂} ℰ`) and a auxiliary universe `w`,
+Given a functor `A : C ⥤ ℰ` (with `Category.{v₂} ℰ`) and an auxiliary universe `w`,
 this is the functor `ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂)` which sends `(E : ℰ) (c : Cᵒᵖ)`
 to the homset `A.obj C ⟶ E` (considered in the higher universe `max w v₂`).
 Under the existence of a suitable pointwise left Kan extension, it is shown in
@@ -129,7 +129,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
 lemma restrictedULiftYonedaHomEquiv'_symm_naturality_right (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) {E E' : ℰ}
     (g : E ⟶ E') (f : (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E)) :
     (restrictedULiftYonedaHomEquiv' A P E').symm (f ≫ (restrictedULiftYoneda A).map g) =
-      (restrictedULiftYonedaHomEquiv' A P E).symm f ≫ (Functor.const _ ).map g := by
+      (restrictedULiftYonedaHomEquiv' A P E).symm f ≫ (Functor.const _).map g := by
   rfl
 
 @[reassoc]
@@ -235,7 +235,7 @@ end
 
 /-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
 of the category of elements of `X` which sends an element in `P.obj (op X)` to the
-presheaf represented by `X`. The definition`coconeOfRepresentable`
+presheaf represented by `X`. The definition `coconeOfRepresentable`
 gives a cocone for this functor which is a colimit and has point `P`.
 -/
 @[simps! obj map]
@@ -492,7 +492,7 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
   rw [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality, Equiv.apply_symm_apply]
   simp only [← eq₁, ← eq₂, ← eq₃, ← eq₄, op_unop, Functor.comp_obj,
     Functor.op_obj, yoneda_obj_obj, Functor.comp_map,
-    Functor.op_map, Functor.map_comp, FunctorToTypes.comp,]
+    Functor.op_map, Functor.map_comp, FunctorToTypes.comp]
   simp [uliftYoneda]
 
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ (Dᵒᵖ ⥤ Type max w v₁ v₂)`,

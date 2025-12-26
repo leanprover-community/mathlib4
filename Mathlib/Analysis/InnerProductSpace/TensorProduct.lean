@@ -435,16 +435,18 @@ theorem ext_iff_inner_left_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
 end TensorProduct
 
 section orthonormal
-variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂]
+variable {ι₁ ι₂ : Type*}
 
 open Module
 
 /-- The tensor product of two orthonormal vectors is orthonormal. -/
 theorem Orthonormal.tmul
     {b₁ : ι₁ → E} {b₂ : ι₂ → F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
-    Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 :=
-  orthonormal_iff_ite.mpr fun ⟨i₁, i₂⟩ ⟨j₁, j₂⟩ => by
-    simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
+    Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 := by
+  classical
+  rw [orthonormal_iff_ite]
+  rintro ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
+  simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
 
 /-- The tensor product of two orthonormal bases is orthonormal. -/
 theorem Orthonormal.basisTensorProduct

@@ -5,7 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Operator.Mul
 
@@ -40,7 +40,7 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 ## Notes
 
 The main use of this file is `IsBoundedBilinearMap`.
-The file `Analysis.NormedSpace.Multilinear.Basic`
+The file `Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean`
 already expounds the theory of multilinear maps,
 but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 
@@ -156,8 +156,7 @@ protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (
       (fun e =>
         calc
           ‖f e - f x‖ = ‖hf.mk' f (e - x)‖ := by rw [(hf.mk' _).map_sub e x]; rfl
-          _ ≤ M * ‖e - x‖ := hM (e - x)
-          )
+          _ ≤ M * ‖e - x‖ := hM (e - x))
       (suffices Tendsto (fun e : E => M * ‖e - x‖) (𝓝 x) (𝓝 (M * 0)) by simpa
       tendsto_const_nhds.mul (tendsto_norm_sub_self _))
 

@@ -155,8 +155,8 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
     (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ m • g z)
     (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
-  wlog h_le : n ≤ m generalizing m n
-  · exact ((this hn hm) (not_le.mp h_le).le).symm
+  wlog! h_le : n ≤ m generalizing m n
+  · exact ((this hn hm) h_le.le).symm
   let ⟨g, hg_an, _, hg_eq⟩ := hm
   let ⟨j, hj_an, hj_ne, hj_eq⟩ := hn
   contrapose! hj_ne
@@ -270,7 +270,7 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 section Mul
 /-!
-### Vanishing of products of analytic functions
+### Vanishing of products of analytic functions
 -/
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -312,7 +312,7 @@ end Mul
 end AnalyticOnNhd
 
 /-!
-### Preimages of codiscrete sets
+### Preimages of codiscrete sets
 -/
 
 section PreimgCodiscrete

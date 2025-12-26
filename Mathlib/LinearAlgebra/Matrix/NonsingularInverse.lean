@@ -194,9 +194,6 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
 
-@[deprecated (since := "2025-04-22")]
-alias nonsing_inv_eq_ring_inverse := nonsing_inv_eq_ringInverse
-
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 
@@ -594,7 +591,7 @@ variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix
 
 /-- The **Woodbury Identity** (`⁻¹` version).
 
-See ``add_mul_mul_inv_eq_sub'` for the binomial inverse theorem. -/
+See `add_mul_mul_inv_eq_sub'` for the binomial inverse theorem. -/
 theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C⁻¹ + V * A⁻¹ * U)) :
     (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * (C⁻¹ + V * A⁻¹ * U)⁻¹ * V * A⁻¹ := by
   obtain ⟨_⟩ := hA.nonempty_invertible

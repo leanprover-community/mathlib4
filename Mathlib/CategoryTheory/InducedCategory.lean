@@ -10,16 +10,16 @@ public import Mathlib.CategoryTheory.Functor.FullyFaithful
 /-!
 # Induced categories and full subcategories
 
-Given a category `D` and a function `F : C → D `from a type `C` to the
+Given a category `D` and a function `F : C → D` from a type `C` to the
 objects of `D`, there is an essentially unique way to give `C` a
 category structure such that `F` becomes a fully faithful functor,
-namely by taking $$ Hom_C(X, Y) = Hom_D(FX, FY) $$. We call this the
+namely by taking $ Hom_C(X, Y) = Hom_D(FX, FY) $. We call this the
 category induced from `D` along `F`.
 
 ## Implementation notes
 
 It looks odd to make `D` an explicit argument of `InducedCategory`,
-when it is determined by the argument `F` anyways. The reason to make `D`
+when it is determined by the argument `F` anyway. The reason to make `D`
 explicit is in order to control its syntactic form, so that instances
 like `InducedCategory.has_forget₂` (elsewhere) refer to the correct
 form of `D`. This is used to set up several algebraic categories like

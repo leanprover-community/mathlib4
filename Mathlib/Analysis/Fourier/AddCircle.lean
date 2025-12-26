@@ -274,7 +274,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   split_ifs with h
   · simp_rw [h, add_neg_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measureReal_univ_eq_one, Complex.real_smul,
+    rw [this, integral_const, probReal_univ, Complex.real_smul,
       Complex.ofReal_one, mul_one]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)

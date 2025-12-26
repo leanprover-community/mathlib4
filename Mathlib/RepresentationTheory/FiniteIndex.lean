@@ -14,7 +14,7 @@ public import Mathlib.RepresentationTheory.Induced
 
 Given a commutative ring `k`, a finite index subgroup `S ≤ G`, and a `k`-linear `S`-representation
 `A`, this file defines an isomorphism $Ind_S^G(A) ≅ Coind_S^G(A)$. Given `g : G` and `a : A`, the
-forward map sends `⟦g ⊗ₜ[k] a⟧` to the function `G → A`supported at `sg` by `ρ(s)(a)` for `s : S`
+forward map sends `⟦g ⊗ₜ[k] a⟧` to the function `G → A` supported at `sg` by `ρ(s)(a)` for `s : S`
 and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ ⟦gᵢ ⊗ₜ[k] f(gᵢ)⟧` for
 `1 ≤ i ≤ n`, where `g₁, ..., gₙ` is a set of right coset representatives of `S`.
 
@@ -188,8 +188,11 @@ noncomputable def indCoindNatIso : indFunctor k S.subtype ≅ coindFunctor k S.s
 noncomputable def resIndAdjunction : Action.res _ S.subtype ⊣ indFunctor k S.subtype :=
   (resCoindAdjunction k S.subtype).ofNatIsoRight (indCoindNatIso k S).symm
 
-noncomputable instance : (indFunctor k S.subtype).IsRightAdjoint :=
-  (resIndAdjunction k S).isRightAdjoint
+omit [DecidableRel (QuotientGroup.rightRel S)] in
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
+theorem instIsRightAdjointSubtypeMemSubgroupIndFunctorSubtype :
+    (indFunctor k S.subtype).IsRightAdjoint :=
+  open scoped Classical in (resIndAdjunction k S).isRightAdjoint
 
 variable {k S}
 
@@ -225,8 +228,11 @@ variable (k S) in
 noncomputable def coindResAdjunction : coindFunctor k S.subtype ⊣ Action.res _ S.subtype :=
   (indResAdjunction k S.subtype).ofNatIsoLeft (indCoindNatIso k S)
 
-noncomputable instance : (coindFunctor k S.subtype).IsLeftAdjoint :=
-  (coindResAdjunction k S).isLeftAdjoint
+omit [DecidableRel (QuotientGroup.rightRel S)] in
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
+theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
+    (coindFunctor k S.subtype).IsLeftAdjoint :=
+  open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
 
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep k G) :
