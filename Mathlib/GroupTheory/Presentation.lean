@@ -25,21 +25,22 @@ Main definitions:
 
 @[expose] public section
 
-namespace Group
+universe u v
 
-universe u
+namespace Group
 
 /-- A (chosen) generating system for a group `G`. -/
 structure GeneratingSystem (G : Type u) [Group G] where
   /-- The type of abstract generators. -/
-  ι : Type u
+  ι : Type v
   /-- The assignment of each abstract generator to an element of `G`. -/
   val : ι → G
   /-- The images of the generators generate `G`. -/
   closure_range_val : Subgroup.closure (Set.range val) = ⊤
 
 /-- A presentation of a group `G`. -/
-structure Presentation (G : Type u) [Group G] extends GeneratingSystem G where
+structure Presentation (G : Type u) [Group G]
+    extends GeneratingSystem (G := G) where
   /-- The relations (relators). -/
   rels : Set (FreeGroup ι)
   /-- Kernel of the induced map is the normal closure of the relators. -/
@@ -63,7 +64,7 @@ namespace Presentation
 variable {G : Type u} [Group G]
 
 /-- The `PresentedGroup` attached to a `Group.Presentation`. -/
-abbrev presentedGroup (P : Group.Presentation (G := G)) : Type u :=
+abbrev presentedGroup (P : Group.Presentation (G := G)) : Type _ :=
   PresentedGroup (α := P.ι) P.rels
 
 @[simp]
@@ -96,14 +97,14 @@ theorem toGroup_of (P : Group.Presentation (G := G)) (x : P.ι) :
     P.toGroup (PresentedGroup.of (rels := P.rels) x) = P.val x := by
   simp [Presentation.toGroup]
 
-/--
+/-!
 Transport a presentation across a group isomorphism.
-If `P` is a presentation of `H` and `e : H ≃* G`, we get a presentation of `G`
+If `P` is a presentation of `G` and `e : G ≃* H`, we get a presentation of `H`
 with the same generators/relators and generator map composed with `e`.
 -/
-def mapMulEquiv {H : Type u} [Group H]
-    (P : Group.Presentation (G := H)) (e : H ≃* G) :
-    Group.Presentation (G := G) := by
+def mapMulEquiv {G : Type u} [Group G] {H : Type _} [Group H]
+    (P : Group.Presentation (G := G)) (e : G ≃* H) :
+    Group.Presentation (G := H) := by
   refine
     { ι := P.ι
       val := fun i => e (P.val i)
@@ -113,7 +114,7 @@ def mapMulEquiv {H : Type u} [Group H]
   · have hrange :
         Set.range (fun i : P.ι => e (P.val i)) = e '' Set.range P.val := by
       simpa [Function.comp] using
-        (Set.range_comp (f := P.val) (g := fun x : H => e x))
+        (Set.range_comp (f := P.val) (g := fun x : G => e x))
     calc
       Subgroup.closure (Set.range fun i : P.ι => e (P.val i))
           = Subgroup.closure (e '' Set.range P.val) := by simp [hrange]
@@ -127,7 +128,7 @@ def mapMulEquiv {H : Type u} [Group H]
           = e.toMonoidHom.comp (FreeGroup.lift P.val) := by
       ext i
       simp
-    have hker_comp {K : Type u} [Group K] (φ : K →* H) :
+    have hker_comp {K : Type _} [Group K] (φ : K →* G) :
       (e.toMonoidHom.comp φ).ker = φ.ker := by
         ext x; constructor <;> intro hx
         · have hx' : e (φ x) = 1 := by simpa [MonoidHom.mem_ker] using hx
