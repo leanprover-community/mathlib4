@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 This file shows that the algebra of endomorphisms on a free module is central.
 -/
 
-open Module Free
+open Module Free End
 
 variable {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M]
@@ -32,8 +32,8 @@ namespace Algebra.IsCentral
 /-- The center of endomorphisms on a free module is trivial,
 in other words, it is a central algebra. -/
 public instance [IsCentral S R] : IsCentral S (End R M) where
-  out x hT :=
-    have ⟨α, h⟩ := End.mem_subalgebraCenter_iff.mp hT
+  out _ hT :=
+    have ⟨α, h⟩ := mem_subalgebraCenter_iff.mp hT
     have ⟨y, hy⟩ := center_eq_bot S R ▸ h.1
     ⟨y, by aesop⟩
 
