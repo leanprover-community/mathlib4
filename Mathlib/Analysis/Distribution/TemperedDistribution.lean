@@ -173,6 +173,15 @@ instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     CoeDep (Lp F p μ) f 𝓢'(E, F) where
   coe := toTemperedDistribution f
 
+@[simp]
+theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+    (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
+  ext g
+  simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
+  apply integral_congr_ae
+  filter_upwards [f.coeFn_toLp p μ] with x hf
+  rw [hf]
+
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
@@ -260,6 +269,25 @@ instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
 
 instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
+
+variable [CompleteSpace F]
+
+/-- The distributional Fourier transform and the classical Fourier transform coincide on
+`𝓢(E, F)`. -/
+theorem fourierTransform_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕 (f : 𝓢'(E, F)) = 𝓕 f := by
+  ext g
+  simpa using integral_fourier_smul_eq g f
+
+/-- The distributional inverse Fourier transform and the classical inverse Fourier transform
+coincide on `𝓢(E, F)`. -/
+theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕⁻ (f : 𝓢'(E, F)) = 𝓕⁻ f := calc
+  _ = 𝓕⁻ (toTemperedDistributionCLM E F volume (𝓕 (𝓕⁻ f))) := by
+    congr; exact (fourier_fourierInv_eq f).symm
+  _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
+    rw [fourierTransform_toTemperedDistributionCLM_eq]
+  _ = _ := fourierInv_fourier_eq _
 
 end Fourier
 

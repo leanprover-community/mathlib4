@@ -208,18 +208,10 @@ theorem lsmul_flip_inj {x y : E} :
     (lsmul 𝕜 R).flip x = (lsmul 𝕜 R).flip y ↔ x = y :=
   ⟨fun h => by simpa using congr($h 1), fun h => h ▸ rfl⟩
 
-variable {R}
-
-theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
-  refine opNorm_eq_of_bounds (norm_nonneg _) (fun x => ?_) fun N _ h => ?_
-  · rw [toSpanSingleton_apply, norm_smul, mul_comm]
-  · simpa [toSpanSingleton_apply, norm_smul] using h 1
-
-variable {𝕜}
+variable {R 𝕜}
 
 theorem opNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
-
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 := by
