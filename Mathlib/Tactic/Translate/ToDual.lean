@@ -153,10 +153,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cocones", ["Cones"]),
   ("fan", ["Cofan"]),
   ("cofan", ["Fan"]),
-
-  /- These cause problem with `IsSuccLimit` and `IsPredLimit`. -/
-  -- ("limit", ["Colimit"]),
-  -- ("colimit", ["Limit"]),
+  ("limit", ["Colimit"]),
+  ("colimit", ["Limit"]),
   ("limits", ["Colimits"]),
   ("colimits", ["Limits"]),
   ("product", ["Coproduct"]),
@@ -183,7 +181,9 @@ def nameDict : Std.HashMap String (List String) := .ofList [
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
 def abbreviationDict : Std.HashMap String String := .ofList [
   ("wellFoundedLT", "WellFoundedGT"),
-  ("wellFoundedGT", "WellFoundedLT")
+  ("wellFoundedGT", "WellFoundedLT"),
+  ("succColimit", "SuccLimit"),
+  ("predColimit", "PredLimit")
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/
