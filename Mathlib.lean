@@ -12630,6 +12630,7 @@ public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.CompleteLattice.Group
 public import Mathlib.Order.CompleteLattice.Lemmas
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+public import Mathlib.Order.CompleteLattice.PiLex
 public import Mathlib.Order.CompleteLattice.SetLike
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompletePartialOrder
