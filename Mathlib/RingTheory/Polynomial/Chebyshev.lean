@@ -182,6 +182,38 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+theorem T_eval_zero (n : ℤ) :
+    (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    by_cases Even n
+    case pos h =>
+      have h₁ : Even (n : ℤ) := by grind
+      have h₂ : Even ((n : ℤ) + 2) := by grind
+      have h₃ : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by grind
+      simp only [ih2, h₁, h₂, h₃, T_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_zero,
+        zero_mul, zero_sub, ↓reduceIte, Int.negOnePow_add, Int.negOnePow_one, mul_neg, mul_one,
+        Units.val_neg, Int.cast_neg]
+    case neg h =>
+      have h₁ : ¬ Even (n : ℤ) := by grind
+      have h₂ : ¬ Even ((n : ℤ) + 2) := by grind
+      simp [ih2, h₁, h₂]
+  | neg_add_one n ih1 ih2 =>
+    by_cases Even (-n - 1 : ℤ)
+    case pos h =>
+      have h₁ : Even (-n - 1 : ℤ) := by grind
+      have h₂ : Even (-n + 1 : ℤ) := by grind
+      have h₃ : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by grind
+      simp only [T_sub_one, ih2, h₁, h₂, h₃, eval_sub, eval_mul, eval_ofNat, eval_X, mul_zero,
+        zero_mul, zero_sub, ↓reduceIte, Int.negOnePow_add, Int.negOnePow_one, mul_neg, mul_one,
+        Units.val_neg, Int.cast_neg, neg_neg]
+    case neg h =>
+      have h₁ : ¬ Even (-n - 1 : ℤ) := by grind
+      have h₂ : ¬ Even (-n + 1 : ℤ) := by grind
+      simp [T_sub_one, ih2, h₁, h₂]
+
 @[simp]
 theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
@@ -326,6 +358,38 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     norm_cast
     norm_num
     ring
+
+theorem U_eval_zero (n : ℤ) :
+    (U R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    by_cases Even n
+    case pos h =>
+      have h₁ : Even (n : ℤ) := by grind
+      have h₂ : Even ((n : ℤ) + 2) := by grind
+      have h₃ : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by grind
+      simp only [ih2, h₁, h₂, h₃, U_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_zero,
+        zero_mul, zero_sub, ↓reduceIte, Int.negOnePow_add, Int.negOnePow_one, mul_neg, mul_one,
+        Units.val_neg, Int.cast_neg]
+    case neg h =>
+      have h₁ : ¬ Even (n : ℤ) := by grind
+      have h₂ : ¬ Even ((n : ℤ) + 2) := by grind
+      simp [ih2, h₁, h₂]
+  | neg_add_one n ih1 ih2 =>
+    by_cases Even (-n - 1 : ℤ)
+    case pos h =>
+      have h₁ : Even (-n - 1 : ℤ) := by grind
+      have h₂ : Even (-n + 1 : ℤ) := by grind
+      have h₃ : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by grind
+      simp only [U_sub_one, ih2, h₁, h₂, h₃, eval_sub, eval_mul, eval_ofNat, eval_X, mul_zero,
+        zero_mul, zero_sub, ↓reduceIte, Int.negOnePow_add, Int.negOnePow_one, mul_neg, mul_one,
+        Units.val_neg, Int.cast_neg, neg_neg]
+    case neg h =>
+      have h₁ : ¬ Even (-n - 1 : ℤ) := by grind
+      have h₂ : ¬ Even (-n + 1 : ℤ) := by grind
+      simp [U_sub_one, ih2, h₁, h₂]
 
 @[simp]
 theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
