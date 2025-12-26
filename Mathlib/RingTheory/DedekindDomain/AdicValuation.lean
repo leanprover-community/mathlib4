@@ -611,7 +611,7 @@ lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (fun r ↦ v.intAdicAbvD
   simp only [intAdicAbvDef]
   have h_mono := (toNNReal_strictMono hb).monotone
   rw [← h_mono.map_max]
-  exact h_mono <| v.intValuation.map_add  x y
+  exact h_mono <| v.intValuation.map_add x y
 
 /-- The `v`-adic absolute value on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
@@ -668,7 +668,7 @@ theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
   simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
 open scoped algebraMap in
-/-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
+/-- The `v`-adic absolute value on `K` extends the `v`-adic absolute value on `R`. -/
 theorem adicAbv_of_algebraMap (r : R) : v.adicAbv hb (algebraMap R K r) = v.intAdicAbv hb r := by
   simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
