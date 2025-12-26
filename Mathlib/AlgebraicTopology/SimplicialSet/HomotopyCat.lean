@@ -465,26 +465,11 @@ instance (X : Truncated.{u} 2) [Subsingleton (X _⦋0⦌₂)] :
 
 instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)]
     (x y : X.HomotopyCategory) :
-    Subsingleton (x ⟶ y) := by
-  let x₀ : X _⦋0⦌₂ := default
-  let P : MorphismProperty X.HomotopyCategory := .ofHoms (fun (_ : Unit) ↦ 𝟙 (mk x₀))
-  have hP₀ : P (𝟙 (mk x₀)) := ⟨⟨⟩⟩
-  have : P.IsMultiplicative :=
-    { id_mem x := by
-        obtain rfl := Subsingleton.elim (mk x₀) x
-        assumption
-      comp_mem := by rintro _ _ _ _ _ ⟨⟩ ⟨⟩; simpa }
-  have hP : P = ⊤ := morphismProperty_eq_top (fun {x y} e ↦ by
-    obtain rfl := Subsingleton.elim x x₀
-    obtain rfl := Subsingleton.elim y x₀
-    obtain rfl : e = .id _ := by ext; subsingleton
-    simpa)
-  refine ⟨fun f g ↦ ?_⟩
-  have hf : P f := by simp [hP]
-  have hg : P g := by simp [hP]
-  obtain ⟨⟩ := hf
-  obtain ⟨⟩ := hg
-  rfl
+    Subsingleton (x ⟶ y) :=
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  letI (x y : (OneTruncation₂ X)) : Subsingleton (x ⟶ y) :=
+    inferInstanceAs (Subsingleton <| X.Edge _ _)
+  CategoryTheory.Quotient.instSubsingletonHom _ _ _
 
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 then `X.HomotopyCategory` is a terminal object in `Cat`. -/
