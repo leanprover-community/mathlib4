@@ -74,7 +74,7 @@ theorem inner_fourier_eq (f g : Lp (α := E) F 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f,
 end MeasureTheory.Lp
 
 @[simp]
-theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
+theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -83,7 +83,7 @@ theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) 
   exact (norm_fourier_toL2_eq f).le
 
 @[simp]
-theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
+theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -95,7 +95,7 @@ theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.to
 namespace MeasureTheory.Lp
 
 /-- The `𝓢'`-Fourier transform and the `L2`-Fourier transform coincide on `L2`. -/
-theorem fourierTransform_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
+theorem fourier_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
     𝓕 (f : 𝓢'(E, F)) = (𝓕 f : Lp (α := E) F 2) := by
   set p := fun f : Lp (α := E) F 2 ↦ 𝓕 (f : 𝓢'(E, F)) = (𝓕 f : Lp (α := E) F 2)
   apply DenseRange.induction_on (p := p)
@@ -108,12 +108,12 @@ theorem fourierTransform_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
   simp [p, TemperedDistribution.fourierTransform_toTemperedDistributionCLM_eq]
 
 /-- The `𝓢'`-inverse Fourier transform and the `L2`-inverse Fourier transform coincide on `L2`. -/
-theorem fourierTransformInv_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
+theorem fourierInv_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
     𝓕⁻ (f : 𝓢'(E, F)) = (𝓕⁻ f : Lp (α := E) F 2) := calc
   _ = 𝓕⁻ (Lp.toTemperedDistribution (𝓕 (𝓕⁻ f))) := by
     congr; exact (fourier_fourierInv_eq f).symm
   _ = 𝓕⁻ (𝓕 (Lp.toTemperedDistribution (𝓕⁻ f))) := by
-    rw [fourierTransform_toTemperedDistribution_eq]
+    rw [fourier_toTemperedDistribution_eq]
   _ = _ := fourierInv_fourier_eq _
 
 end MeasureTheory.Lp
