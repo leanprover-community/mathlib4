@@ -39,31 +39,6 @@ universe t t' t'' v' v u' u
 
 namespace CategoryTheory
 
-section
-
-variable {C : Type*} [Category* C]
-
-lemma Over.mk_surjective {S : C} (X : Over S) :
-    ∃ (Y : C) (f : Y ⟶ S), Over.mk f = X :=
-  ⟨_, X.hom, rfl⟩
-
-lemma Over.homMk_surjective
-    {S : C} {X Y : Over S} (f : X ⟶ Y) :
-    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
-  ⟨f.left, by simp⟩
-
-lemma Under.mk_surjective {S : C} (X : Under S) :
-    ∃ (Y : C) (f : S ⟶ Y), Under.mk f = X :=
-  ⟨_, X.hom, rfl⟩
-
-lemma Under.homMk_surjective
-    {S : C} {X Y : Under S} (f : X ⟶ Y) :
-    ∃ (g : X.right ⟶ Y.right) (hg : X.hom ≫ g = Y.hom), Under.homMk g = f :=
-  ⟨f.right, by simp⟩
-
-
-end
-
 open Opposite
 
 namespace Pseudofunctor
