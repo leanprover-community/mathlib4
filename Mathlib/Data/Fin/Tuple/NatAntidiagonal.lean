@@ -37,8 +37,8 @@ While we could implement this by filtering `(Fintype.PiFinset fun _ ↦ range (n
 this implementation would be much slower.
 
 In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
-support finitely-supported functions, as is done with `cut` in
-`archive/100-theorems-list/45_partition.lean`.
+support finitely-supported functions, as in `Finset.finsuppAntidiag` from
+`Mathlib/Algebra/Order/Antidiag/Finsupp.lean`.
 -/
 
 @[expose] public section
