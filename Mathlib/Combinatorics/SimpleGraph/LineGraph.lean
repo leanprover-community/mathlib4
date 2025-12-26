@@ -51,15 +51,15 @@ def Embedding.ofLineGraph (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
     rw [Subtype.mk.injEq, Subtype.mk.injEq]
     exact Sym2.map.injective f.injective |>.eq_iff.not
 
+theorem IsIndContained.lineGraph (h : G ⊴ G') : G.lineGraph ⊴ G'.lineGraph :=
+  ⟨.ofLineGraph h.some.toCopy⟩
+
 /-- Lift a copy between graphs to a copy between their line graphs -/
 def Copy.ofLineGraph (f : Copy G G') : Copy G.lineGraph G'.lineGraph :=
   Embedding.ofLineGraph f |>.toCopy
 
 theorem IsContained.lineGraph (h : G ⊑ G') : G.lineGraph ⊑ G'.lineGraph :=
   ⟨h.some.ofLineGraph⟩
-
-theorem IsIndContained.lineGraph (h : G ⊴ G') : G.lineGraph ⊴ G'.lineGraph :=
-  ⟨.ofLineGraph h.some.toCopy⟩
 
 /-- Lift an isomorphism between graphs to an isomorphism between their line graphs -/
 def Iso.ofLineGraph (f : G ≃g G') : G.lineGraph ≃g G'.lineGraph where
