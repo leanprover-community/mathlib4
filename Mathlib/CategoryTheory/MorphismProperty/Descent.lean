@@ -86,6 +86,30 @@ instance [Q.IsStableUnderBaseChange] [P.HasOfPrecompProperty Q] [P.RespectsRight
     rw [← h.1.1]
     exact RespectsRight.postcomp _ hf _ hfst
 
+/-- If `P` descends along `Q`, then `P.diagonal` descends along `Q`. -/
+instance [HasPullbacks C] (P Q : MorphismProperty C) [P.DescendsAlong Q] [P.RespectsIso]
+    [Q.IsStableUnderBaseChange] :
+    DescendsAlong (diagonal P) Q := by
+  apply DescendsAlong.mk'
+  introv hf hfst
+  have heq : pullback.fst (pullback.fst (pullback.snd g g ≫ g) f) (pullback.diagonal g) =
+      (pullbackSymmetry _ _).hom ≫
+      (pullbackRightPullbackFstIso _ _ _).hom ≫
+      (pullback.congrHom (by simp) rfl).hom ≫
+      (pullbackSymmetry _ _).hom ≫
+      pullback.diagonal (pullback.fst f g) ≫
+      (diagonalObjPullbackFstIso f g).hom := by
+    apply pullback.hom_ext
+    apply pullback.hom_ext <;> simp [pullback.condition]
+    simp [pullback.condition]
+  rw [diagonal_iff]
+  apply MorphismProperty.of_pullback_fst_of_descendsAlong (P := P) (Q := Q)
+      (f := pullback.fst (pullback.snd g g ≫ g) f)
+  · exact MorphismProperty.pullback_fst _ _ hf
+  · rw [heq]
+    iterate 4 rw [cancel_left_of_respectsIso (P := P)]
+    rwa [cancel_right_of_respectsIso (P := P)]
+
 end DescendsAlong
 
 /-- `P` codescends along `Q` if whenever `Q` holds for `Z ⟶ X`,
