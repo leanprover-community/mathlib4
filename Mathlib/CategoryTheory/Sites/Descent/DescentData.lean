@@ -20,8 +20,13 @@ when we replace `S` by an isomorphic object, or the family `f i : X i ⟶ S`
 by another family which generates the same sieve
 (see `Pseudofunctor.DescentData.pullFunctorEquivalence`).
 
+Given a presieve `R`, we introduce predicates `F.IsPrestackFor R` and `F.IsStackFor`
+saying the functor `F.DescentData (fun (f : R.category) ↦ f.obj.hom)` attached
+to `R` are respectively fully faithful or equivalences. We show that
+`F` satisfies `F.IsPrestack J` for a Grothendieck topology `J` iff it
+satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
+
 ## TODO (@joelriou, @chrisflav)
-* Relate the prestack condition to the fully faithfullness of `Pseudofunctor.toDescentData`.
 * Define stacks.
 * Introduce multiple variants of `DescentData` (when `C` has pullbacks,
 when `F` also has a covariant functoriality, etc.).
@@ -33,6 +38,31 @@ when `F` also has a covariant functoriality, etc.).
 universe t t' t'' v' v u' u
 
 namespace CategoryTheory
+
+section
+
+variable {C : Type*} [Category* C]
+
+lemma Over.mk_surjective {S : C} (X : Over S) :
+    ∃ (Y : C) (f : Y ⟶ S), Over.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma Over.homMk_surjective
+    {S : C} {X Y : Over S} (f : X ⟶ Y) :
+    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
+  ⟨f.left, by simp⟩
+
+lemma Under.mk_surjective {S : C} (X : Under S) :
+    ∃ (Y : C) (f : S ⟶ Y), Under.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma Under.homMk_surjective
+    {S : C} {X Y : Under S} (f : X ⟶ Y) :
+    ∃ (g : X.right ⟶ Y.right) (hg : X.hom ≫ g = Y.hom), Under.homMk g = f :=
+  ⟨f.right, by simp⟩
+
+
+end
 
 open Opposite
 
@@ -379,6 +409,45 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
       Cat.Hom.inv_hom_id_toNatTrans_app]
     simp [D.hom_self _ _ rfl]
 
+lemma exists_equivalence_of_sieve_eq
+    {ι' : Type t'} {X' : ι' → C} (f' : ∀ i', X' i' ⟶ S)
+    (h : Sieve.ofArrows _ f = Sieve.ofArrows _ f') :
+    ∃ (e : F.DescentData f ≌ F.DescentData f'),
+      Nonempty (F.toDescentData f ⋙ e.functor ≅ F.toDescentData f') := by
+  have h₁ (i' : ι') : ∃ (i : ι) (g' : X' i' ⟶ X i), g' ≫ f i = f' i' := by
+    obtain ⟨_, _, _, ⟨i⟩, fac⟩ : Sieve.ofArrows X f (f' i') := by
+      rw [h]; apply Sieve.ofArrows_mk
+    exact ⟨i, _, fac⟩
+  have h₂ (i : ι) : ∃ (i' : ι') (g : X i ⟶ X' i'), g ≫ f' i' = f i := by
+    obtain ⟨_, _, _, ⟨i'⟩, fac⟩ : Sieve.ofArrows X' f' (f i) := by
+      rw [← h]; apply Sieve.ofArrows_mk
+    exact ⟨i', _, fac⟩
+  choose α p' w using h₁
+  choose β q' w' using h₂
+  exact ⟨pullFunctorEquivalence (p' := p') (q' := q') F (Iso.refl _)
+    (by cat_disch) (by cat_disch), ⟨toDescentDataCompPullFunctorIso _ _ ≪≫
+    Functor.isoWhiskerRight (Cat.Hom.toNatIso (F.mapId _)) _ ≪≫ Functor.leftUnitor _⟩⟩
+
+lemma nonempty_fullyFaithful_toDescentData_iff_of_sieve_eq
+    {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
+    {ι' : Type t'} {X' : ι' → C} (f' : ∀ i', X' i' ⟶ S)
+    (h : Sieve.ofArrows _ f = Sieve.ofArrows _ f') :
+    Nonempty (F.toDescentData f).FullyFaithful ↔
+      Nonempty (F.toDescentData f').FullyFaithful := by
+  obtain ⟨e, ⟨iso⟩⟩ := DescentData.exists_equivalence_of_sieve_eq F f f' h
+  exact ⟨fun ⟨h⟩ ↦ ⟨(h.comp e.fullyFaithfulFunctor).ofIso iso⟩,
+    fun ⟨h⟩ ↦ ⟨(h.comp e.fullyFaithfulInverse).ofIso iso.symm.compInverseIso⟩⟩
+
+lemma isEquivalence_toDescentData_iff_of_sieve_eq
+    {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
+    {ι' : Type t'} {X' : ι' → C} (f' : ∀ i', X' i' ⟶ S)
+    (h : Sieve.ofArrows _ f = Sieve.ofArrows _ f') :
+    (F.toDescentData f).IsEquivalence ↔ (F.toDescentData f').IsEquivalence := by
+  obtain ⟨e, ⟨iso⟩⟩ := DescentData.exists_equivalence_of_sieve_eq F f f' h
+  rw [← Functor.isEquivalence_iff_of_iso iso]
+  exact ⟨fun _ ↦ inferInstance,
+    fun _ ↦ Functor.isEquivalence_of_comp_right _ e.functor⟩
+
 /-- Morphisms between objects in the image of the functor `F.toDescentData f`
 identify to compatible families of sections of the presheaf `F.presheafHom M N` on
 the object `Over.mk (𝟙 S)`, relatively to the family of morphisms in `Over S`
@@ -412,57 +481,164 @@ lemma subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
 
 end DescentData
 
+/-- The condition that a pseudofunctor satisfies the descent of morphisms
+relative to a presieve. -/
+@[mk_iff]
+structure IsPrestackFor (R : Presieve S) : Prop where
+  nonempty_fullyFaithful :
+    Nonempty (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).FullyFaithful
+
+variable {F} in
+noncomputable def IsPrestackFor.fullyFaithful {R : Presieve S} (hF : F.IsPrestackFor R) :
+    (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).FullyFaithful :=
+  hF.nonempty_fullyFaithful.some
+
+lemma isPrestackFor_iff_of_sieve_eq
+    {R R' : Presieve S} (h : Sieve.generate R = Sieve.generate R') :
+    F.IsPrestackFor R ↔ F.IsPrestackFor R' := by
+  simp only [isPrestackFor_iff]
+  obtain ⟨_, _, f, rfl⟩ := Presieve.exists_eq_ofArrows R
+  obtain ⟨_, _, f', rfl⟩ := Presieve.exists_eq_ofArrows R'
+  apply DescentData.nonempty_fullyFaithful_toDescentData_iff_of_sieve_eq
+  simpa only [Sieve.ofArrows_category']
+
+@[simp]
+lemma IsPrestackFor_generate_iff (R : Presieve S) :
+    F.IsPrestackFor (Sieve.generate R).arrows ↔ F.IsPrestackFor R :=
+  F.isPrestackFor_iff_of_sieve_eq (by simp)
+
+lemma isPrestackFor_ofArrows_iff :
+    F.IsPrestackFor (Presieve.ofArrows _ f) ↔
+      Nonempty (F.toDescentData f).FullyFaithful := by
+  simp only [isPrestackFor_iff]
+  apply DescentData.nonempty_fullyFaithful_toDescentData_iff_of_sieve_eq
+  rw [Sieve.ofArrows_category']
+
+/-- The condition that a pseudofunctor has effective descent
+relative to a presieve. -/
+@[mk_iff]
+structure IsStackFor (R : Presieve S) : Prop where
+  isEquivalence :
+    (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).IsEquivalence
+
+variable {F} in
+lemma IsStackFor.isPrestackFor {R : Presieve S} (h : F.IsStackFor R) :
+    F.IsPrestackFor R where
+  nonempty_fullyFaithful := ⟨by
+    rw [isStackFor_iff] at h
+    exact .ofFullyFaithful _⟩
+
+lemma isStackFor_iff_of_sieve_eq
+    {R R' : Presieve S} (h : Sieve.generate R = Sieve.generate R') :
+    F.IsStackFor R ↔ F.IsStackFor R' := by
+  simp only [isStackFor_iff]
+  obtain ⟨_, _, f, rfl⟩ := Presieve.exists_eq_ofArrows R
+  obtain ⟨_, _, f', rfl⟩ := Presieve.exists_eq_ofArrows R'
+  apply DescentData.isEquivalence_toDescentData_iff_of_sieve_eq
+  simpa only [Sieve.ofArrows_category']
+
+@[simp]
+lemma IsStackFor_generate_iff (R : Presieve S) :
+    F.IsStackFor (Sieve.generate R).arrows ↔ F.IsStackFor R :=
+  F.isStackFor_iff_of_sieve_eq (by simp)
+
+lemma isStackFor_ofArrows_iff :
+    F.IsStackFor (Presieve.ofArrows _ f) ↔
+      (F.toDescentData f).IsEquivalence := by
+  simp only [isStackFor_iff]
+  apply DescentData.isEquivalence_toDescentData_iff_of_sieve_eq
+  rw [Sieve.ofArrows_category']
+
 variable {F} in
 lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
     Function.Bijective ((F.toDescentData f).map : (M ⟶ N) → _) ↔
   Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk (𝟙 S))
     (Presieve.ofArrows (Y := fun i ↦ Over.mk (f i)) (fun i ↦ Over.homMk (f i))) := by
-  rw [Presieve.isSheafFor_arrows_iff_bijective_toCompabible,
+  rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
     ← (DescentData.subtypeCompatibleHomEquiv F f).bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (presheafHomObjHomEquiv F).bijective]
   convert Iff.rfl
   ext φ : 1
   apply DescentData.subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
 
+lemma isPrestackFor_iff_isSheafFor {S : C} (R : Sieve S) :
+    F.IsPrestackFor R.arrows ↔ ∀ (M N : F.obj (.mk (op S))),
+      Presieve.IsSheafFor (P := F.presheafHom M N)
+        ((Sieve.overEquiv (Over.mk (𝟙 S))).symm R).arrows := by
+  rw [isPrestackFor_iff, Functor.FullyFaithful.nonempty_iff_map_bijective]
+  refine forall_congr' (fun M ↦ forall_congr' (fun N ↦ ?_))
+  rw [bijective_toDescentData_map_iff]
+  convert Iff.rfl
+  refine le_antisymm ?_ ?_
+  · rintro X f (hf : R.arrows f.left)
+    obtain ⟨X, g, rfl⟩ := Over.mk_surjective X
+    obtain rfl : f = Over.homMk g := by ext; simpa using Over.w f
+    exact Presieve.ofArrows.mk (ι := R.arrows.category) ⟨Over.mk g, hf⟩
+  · rintro _ _ ⟨_, h⟩
+    exact h
+
+lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :
+    F.IsPrestackFor R.arrows ↔ ∀ ⦃S₀ : C⦄ (M N : F.obj (.mk (op S₀))) (a : S ⟶ S₀),
+      Presieve.IsSheafFor (F.presheafHom M N) ((Sieve.overEquiv (Over.mk a)).symm R).arrows := by
+  rw [isPrestackFor_iff_isSheafFor]
+  refine ⟨fun h S₀ M N a ↦ ?_, by tauto⟩
+  replace h := h ((F.map a.op.toLoc).toFunctor.obj M) ((F.map a.op.toLoc).toFunctor.obj N)
+  rw [← Presieve.isSheafFor_iff_of_iso (F.overMapCompPresheafHomIso M N a),
+    Presieve.isSheafFor_over_map_op_comp_iff (X' := Over.mk a)
+      (e := Over.isoMk (Iso.refl _))] at h
+  convert h
+  refine le_antisymm ?_ ?_
+  · intro Y f hf
+    exact ⟨Over.mk f.left, Over.homMk f.left, Over.homMk (𝟙 _) (by simpa using Over.w f),
+      hf, by cat_disch⟩
+  · rintro X b ⟨Y, c, d, h, fac⟩
+    replace fac := (Over.forget _).congr_map fac
+    dsimp at fac
+    rw [Category.comp_id] at fac
+    change R.arrows b.left
+    simpa [fac] using R.downward_closed h d.left
+
 variable {F} in
-lemma bijective_toDescentData_map_iff' (M N : F.obj (.mk (op S)))
-    {T : C} (p : T ⟶ S) {U : ι → C} (f : ∀ i, U i ⟶ T) :
-    Function.Bijective ((F.toDescentData f).map :
-      ((F.map p.op.toLoc).toFunctor.obj M ⟶ (F.map p.op.toLoc).toFunctor.obj N) → _) ↔
-    Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk p)
-      (Presieve.ofArrows (Y := fun i ↦ Over.mk (f i ≫ p)) (fun i ↦ Over.homMk (f i))) := by
-  rw [bijective_toDescentData_map_iff,
-    Presieve.isSheafFor_iff_of_iso (F.overMapCompPresheafHomIso M N p).symm,
-    Presieve.isSheafFor_over_map_comp_arrows_iff]
+lemma IsPrestackFor.isSheafFor'
+    {S₀ : C} (S : Over S₀) {R : Sieve S} (hF : F.IsPrestackFor (Sieve.overEquiv _ R).arrows)
+    (M N : F.obj (.mk (op S₀))) :
+    Presieve.IsSheafFor (F.presheafHom M N) R.arrows := by
+  rw [isPrestackFor_iff_isSheafFor'] at hF
+  obtain ⟨S, a, rfl⟩ := S.mk_surjective
+  simpa using hF M N a
 
 variable {J : GrothendieckTopology C}
 
 /-- If `F` is a prestack for a Grothendieck topology `J`, and `f` is a covering
 family of morphims, then the functor `F.toDescentData f` is fully faithful. -/
 noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArrows _ f ∈ J S) :
-    (F.toDescentData f).FullyFaithful := by
-  refine Nonempty.some ((Functor.FullyFaithful.nonempty_iff_map_bijective _).2 (fun M N ↦ ?_))
-  rw [bijective_toDescentData_map_iff]
-  refine ((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J M N)).isSheafFor _ _ ?_
-  rw [GrothendieckTopology.mem_over_iff]
-  refine J.superset_covering ?_ hf
-  rw [Sieve.generate_le_iff]
-  rintro _ _ ⟨i⟩
-  exact ⟨_, Over.homMk (f i), 𝟙 _, ⟨_, 𝟙 _, _, ⟨i⟩, by simp⟩, by simp⟩
+    (F.toDescentData f).FullyFaithful :=
+  Nonempty.some (by
+    rw [← isPrestackFor_ofArrows_iff, ← IsPrestackFor_generate_iff,
+      isPrestackFor_iff_isSheafFor]
+    intro M N
+    refine ((isSheaf_iff_isSheaf_of_type _ _).1
+      (IsPrestack.isSheaf J M N)).isSheafFor _ _ ?_
+    rwa [GrothendieckTopology.mem_over_iff, Sieve.generate_sieve, Equiv.apply_symm_apply])
+
+lemma isPrestackFor [F.IsPrestack J] {S : C} (R : Presieve S) (hR : Sieve.generate R ∈ J S) :
+    F.IsPrestackFor R := by
+  rw [isPrestackFor_iff]
+  exact ⟨F.fullyFaithfulToDescentData _ (by rwa [Sieve.ofArrows_category'])⟩
+
+lemma isPrestackFor' [F.IsPrestack J] {S : C} (R : Sieve S) (hR : R ∈ J S) :
+    F.IsPrestackFor R.arrows :=
+  F.isPrestackFor _ (by simpa)
 
 variable {F} in
-lemma IsPrestack.of_fullyFaithful
-    (hF : ∀ (S : C) (R : Sieve S) (_ : R ∈ J S),
-      (F.toDescentData (fun (f : R.arrows.category) ↦ f.obj.hom)).FullyFaithful) :
+lemma IsPrestack.of_isPrestackFor
+    (hF : ∀ (S : C) (R : Sieve S) (_ : R ∈ J S), F.IsPrestackFor R.arrows) :
     F.IsPrestack J where
-  isSheaf {T} M N := by
+  isSheaf M N := by
     rw [isSheaf_iff_isSheaf_of_type]
     intro U S hS
-    obtain ⟨S, rfl⟩ := (Sieve.overEquiv _).symm.surjective S
-    rw [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply] at hS
-    rw [Sieve.overEquiv_symm_arrows]
-    exact (bijective_toDescentData_map_iff' M N U.hom
-      (fun (f : S.arrows.category) ↦ f.obj.hom)).1 ((hF _ _ hS).map_bijective _ _)
+    obtain ⟨U, u, rfl⟩ := Over.mk_surjective U
+    apply (hF _ _ hS).isSheafFor'
 
 end Pseudofunctor
 
