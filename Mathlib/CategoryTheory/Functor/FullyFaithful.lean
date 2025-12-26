@@ -217,6 +217,11 @@ def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
 def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
   preimage f := hF.preimage (hG.preimage f)
 
+/-- If `F` is fully faithful and `F ≅ G`, then `G` is fully faithful. -/
+def ofIso {G : C ⥤ D} (e : F ≅ G) : G.FullyFaithful where
+  preimage f := hF.preimage (e.hom.app _ ≫ f ≫ e.inv.app _)
+  map_preimage f := by simp [← NatIso.naturality_1 e]
+
 end
 
 variable (F) in

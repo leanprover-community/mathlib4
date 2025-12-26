@@ -52,41 +52,33 @@ class IsStack (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}) (J : Grothendiec
 
 variable (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}) {J : GrothendieckTopology C}
 
-lemma IsStack.isEquivalence_of_sieve [F.IsStack J] {S : C} (R : Sieve S) (hR : R ∈ J S) :
-    (F.toDescentData (fun (f : R.arrows.category) ↦ f.obj.hom)).IsEquivalence := by
-  let hF : (F.toDescentData (fun (f : R.arrows.category) ↦ f.obj.hom)).FullyFaithful :=
-    F.fullyFaithfulToDescentData _ (by convert hR; apply Sieve.ofArrows_category)
+lemma isStackFor' [F.IsStack J] {S : C} (R : Sieve S) (hR : R ∈ J S) :
+    F.IsStackFor R.arrows := by
+  rw [isStackFor_iff]
+  have hF := (F.isPrestackFor' _ hR).fullyFaithful
   have := hF.full
   have := hF.faithful
-  have := essSurj_of_sieve F R hR
+  have := IsStack.essSurj_of_sieve F  _ hR
   exact { }
 
-lemma isEquivalence_toDescentData_iff_of_sieve_eq
-    {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
-    {ι' : Type t'} {X' : ι' → C} (f' : ∀ i', X' i' ⟶ S)
-    (h : Sieve.ofArrows _ f = Sieve.ofArrows _ f') :
-    (F.toDescentData f).IsEquivalence ↔ (F.toDescentData f').IsEquivalence := by
-  obtain ⟨e, ⟨iso⟩⟩ := DescentData.exists_equivalence_of_sieve_eq F f f' h
-  rw [← Functor.isEquivalence_iff_of_iso iso]
-  exact ⟨fun _ ↦ inferInstance,
-    fun _ ↦ Functor.isEquivalence_of_comp_right _ e.functor⟩
+lemma isStackFor [F.IsStack J] {S : C} (R : Presieve S) (hR : Sieve.generate R ∈ J S) :
+    F.IsStackFor R := by
+  simpa using F.isStackFor' _ hR
 
 lemma isEquivalence_toDescentData [F.IsStack J]
     {ι : Type t} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) (hf : Sieve.ofArrows _ f ∈ J S) :
     (F.toDescentData f).IsEquivalence := by
-  rw [← isEquivalence_toDescentData_iff_of_sieve_eq _ _ _
-    (Sieve.ofArrows_category (Sieve.ofArrows _ f))]
-  exact IsStack.isEquivalence_of_sieve F _ hf
+  rw [← isStackFor_ofArrows_iff, ← IsStackFor_generate_iff]
+  exact F.isStackFor _ (by simpa)
 
 variable {F} in
-lemma IsStack.of_isEquivalence
-    (hF : ∀ (S : C) (R : Sieve S) (_ : R ∈ J S),
-      (F.toDescentData (fun (f : R.arrows.category) ↦ f.obj.hom)).IsEquivalence) :
+lemma IsStack.of_isStackFor
+    (hF : ∀ (S : C) (R : Sieve S) (_ : R ∈ J S), F.IsStackFor R.arrows) :
     F.IsStack J where
-  toIsPrestack := .of_fullyFaithful (fun _ _ hR ↦ by
-    have := hF _ _ hR
-    exact Functor.FullyFaithful.ofFullyFaithful _)
-  essSurj_of_sieve _ hR := by have := hF _ _ hR; infer_instance
+  toIsPrestack := .of_isPrestackFor (fun _ _ hR ↦ (hF _ _ hR).isPrestackFor)
+  essSurj_of_sieve R hR := by
+    have := (isStackFor_iff _ _).1 (hF _ _ hR)
+    infer_instance
 
 end Pseudofunctor
 
