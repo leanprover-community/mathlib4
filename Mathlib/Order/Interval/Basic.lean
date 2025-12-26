@@ -127,6 +127,9 @@ theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
 theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 
+instance (priority := 100) [DecidableLE α] : Decidable (a ∈ s) :=
+  decidable_of_iff' _ mem_def
+
 theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
   nonempty_Icc.2 s.fst_le_snd
 
@@ -342,6 +345,17 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 instance : Preorder (Interval α) :=
   WithBot.instPreorder
 
+@[simp]
+instance (priority := 100) : Membership α (Interval α) where
+  mem
+  | ⊥, _ => False
+  | (s : NonemptyInterval α), a => a ∈ s
+
+instance [DecidableLE α] (a : α) (s : Interval α) : Decidable (a ∈ s) :=
+  match s with
+  | ⊥ => isFalse (by intro h; exact h)
+  | (s : NonemptyInterval α) => inferInstanceAs (Decidable (a ∈ s))
+
 /-- `{a}` as an interval. -/
 def pure (a : α) : Interval α :=
   NonemptyInterval.pure a
@@ -457,7 +471,7 @@ theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map 
   | (s : NonemptyInterval α) => s.subset_coe_map _
 
 @[simp]
-theorem mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton_iff]
+theorem mem_pure : b ∈ pure a ↔ b = a := by simp [pure]
 
 theorem mem_pure_self (a : α) : a ∈ pure a :=
   mem_pure.2 rfl
@@ -682,6 +696,7 @@ theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) : ↑(sInf S) = ⋂ s 
   split_ifs with h
   · ext
     simp [Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
+    rfl
   simp_rw [not_and_or, Classical.not_not] at h
   rcases h with h | h
   · refine (eq_empty_of_subset_empty ?_).symm
