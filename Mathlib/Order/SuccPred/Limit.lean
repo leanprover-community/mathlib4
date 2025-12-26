@@ -399,12 +399,6 @@ end LinearOrder
 
 -- TODO: generate all of this through `to_dual`.
 
-section LT
-
-variable [LT α]
-
-end LT
-
 section Preorder
 
 variable [Preorder α]
