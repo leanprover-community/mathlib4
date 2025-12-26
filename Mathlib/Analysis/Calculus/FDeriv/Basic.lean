@@ -51,8 +51,10 @@ contain the usual formulas (and existence assertions) for the derivative of
 * multiplication of a function by a scalar function (`Mul.lean`)
 * multiplication of two scalar functions (`Mul.lean`)
 * composition of functions (the chain rule) (`Comp.lean`)
-* inverse function (`Mul.lean`)
-  (assuming that it exists; the inverse function theorem is in `../Inverse.lean`)
+* pointwise inverse (`Mul.lean`)
+* inverse function (for equivalences) (`Equiv.lean`)
+  (assuming that it exists; the inverse function theorem is in
+  `Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean`)
 
 For most binary operations we also define `const_op` and `op_const` theorems for the cases when
 the first or second argument is a constant. This makes writing chains of `HasDerivAt`'s easier,
@@ -94,9 +96,6 @@ differentiable, then their composition also is: `simp` would always be able to m
 by taking `f` or `g` to be the identity. Instead, for every reasonable function (say, `exp`),
 we add a lemma that if `f` is differentiable then so is `(fun x ↦ exp (f x))`. This means adding
 some boilerplate lemmas, but these can also be useful in their own right.
-
-Tests for this ability of the simplifier (with more examples) are provided in
-`Tests/Differentiable.lean`.
 
 ## TODO
 
