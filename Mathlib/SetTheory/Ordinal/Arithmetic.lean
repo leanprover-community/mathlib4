@@ -232,7 +232,6 @@ def boundedLimitRecOn {l : Ordinal} (lLim : IsSuccLimit l) {motive : Iio l → S
     exact succ ⟨o, ho'⟩ (IH ho')
   | limit o ho' IH => exact limit _ ho' fun a ha ↦ IH a.1 ha (ha.trans (c := l) ho)
 
-#exit
 set_option linter.deprecated false in
 @[deprecated limitRecOn_zero (since := "2025-12-26")]
 theorem boundedLimitRec_zero {l} (lLim : IsSuccLimit l) {motive} (H₁ H₂ H₃) :
