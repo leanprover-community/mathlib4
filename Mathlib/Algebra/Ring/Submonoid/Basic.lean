@@ -4,10 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Ring.Defs
 
 /-! # Lemmas about additive closures of `Subsemigroup`. -/
+
+@[expose] public section
 
 open AddSubmonoid
 

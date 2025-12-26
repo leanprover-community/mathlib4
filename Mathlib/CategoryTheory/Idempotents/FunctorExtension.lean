@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Extension of functors to the idempotent completion
@@ -20,13 +22,15 @@ and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Idempotents
 
 open Category Karoubi Functor
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 /-- A natural transformation between functors `Karoubi C ⥤ D` is determined
 by its value on objects coming from `C`. -/

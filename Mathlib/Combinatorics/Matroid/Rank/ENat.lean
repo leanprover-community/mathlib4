@@ -3,10 +3,12 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Rank.Finite
-import Mathlib.Combinatorics.Matroid.Loop
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Combinatorics.Matroid.Rank.Finite
+public import Mathlib.Combinatorics.Matroid.Loop
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Tactic.TautoSet
 
 /-!
 # `ℕ∞`-valued rank
@@ -56,6 +58,8 @@ Although this file transitively imports `Cardinal` via `Set.encard`,
 there are plans to refactor the latter to be independent of the former,
 which would carry over to the current version of this file.
 -/
+
+@[expose] public section
 
 open Set ENat
 
@@ -232,7 +236,7 @@ lemma le_eRk_iff : n ≤ M.eRk X ↔ ∃ I, I ⊆ X ∧ M.Indep I ∧ I.encard =
   refine ⟨fun h ↦ ?_, fun ⟨I, hIX, hI, hIc⟩ ↦ ?_⟩
   · obtain ⟨J, hJ⟩ := M.exists_isBasis' X
     rw [← hJ.encard_eq_eRk] at h
-    obtain ⟨I, hIJ, rfl⟩ :=  exists_subset_encard_eq h
+    obtain ⟨I, hIJ, rfl⟩ := exists_subset_encard_eq h
     exact ⟨_, hIJ.trans hJ.subset, hJ.indep.subset hIJ, rfl⟩
   rw [← hIc, ← hI.eRk_eq_encard]
   exact M.eRk_mono hIX

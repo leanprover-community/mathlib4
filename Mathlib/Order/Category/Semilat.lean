@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.BoundedLattice
+module
+
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # The categories of semilattices
@@ -16,6 +18,8 @@ element and inf-semilattices with a top element.
 
 * [nLab, *semilattice*](https://ncatlab.org/nlab/show/semilattice)
 -/
+
+@[expose] public section
 
 
 universe u

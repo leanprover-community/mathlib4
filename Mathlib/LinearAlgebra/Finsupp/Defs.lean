@@ -3,10 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Properties of the module `α →₀ M`
@@ -27,6 +29,8 @@ In this file we define `LinearMap` versions of various maps:
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 assert_not_exists Submodule
 
@@ -336,7 +340,7 @@ that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
 
 variable {ι}
 
-/-- If `M` is an `R`-module and `ι` is an nonempty type, then every additive endomorphism
+/-- If `M` is an `R`-module and `ι` is a nonempty type, then every additive endomorphism
 of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
 endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
 See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/

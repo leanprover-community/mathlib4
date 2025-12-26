@@ -3,14 +3,18 @@ Copyright (c) 2025 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.RingTheory.SimpleModule.Basic
-import Mathlib.Algebra.Module.Injective
-import Mathlib.Algebra.Module.Projective
+module
+
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.Algebra.Module.Injective
+public import Mathlib.Algebra.Module.Projective
 
 /-!
 If `R` is a semisimple ring, then any `R`-module is both injective and projective.
 
 -/
+
+@[expose] public section
 
 namespace Module
 

@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import Mathlib.Algebra.Algebra.Shrink
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.Algebra.Algebra.Shrink
 
 /-!
 
@@ -30,6 +32,8 @@ We show that unramified is stable under algebra isomorphisms, composition and
 localization at an element.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 

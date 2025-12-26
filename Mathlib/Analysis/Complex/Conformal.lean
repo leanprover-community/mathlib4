@@ -3,14 +3,16 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
-import Mathlib.Analysis.Complex.Isometry
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.LinearAlgebra.Complex.Module
+module
+
+public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+public import Mathlib.Analysis.Complex.Isometry
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces
@@ -51,6 +53,8 @@ this file.
 * On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
   throughout or antiholomorphic throughout.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -189,7 +193,7 @@ lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I �
     simp [mul_mul_mul_comm _ I]
   simp only [add_smul, smul_add, ℓ.map_add, t₀, t₁]
   repeat rw [Complex.coe_smul, ℓ.map_smul]
-  have t₂ {r : ℝ}  : ℓ (r : ℂ) = r • ℓ (1 : ℂ) := by simp [← ℓ.map_smul]
+  have t₂ {r : ℝ} : ℓ (r : ℂ) = r • ℓ (1 : ℂ) := by simp [← ℓ.map_smul]
   simp only [t₂, h]
   match_scalars
   simp [mul_mul_mul_comm _ I]
@@ -261,7 +265,7 @@ complex derivative equals `ContinuousLinearMap.complexOfReal` of the real deriva
 theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) :
     HasDerivWithinAt f ((fderivWithin ℝ f s x).complexOfReal h₂ 1) s x := by
-  rw [hasDerivWithinAt_iff_hasFDerivWithinAt, smulRight_one_one]
+  rw [hasDerivWithinAt_iff_hasFDerivWithinAt, toSpanSingleton_apply_map_one]
   exact h₁.hasFDerivWithinAt.complexOfReal h₂
 
 /--
@@ -300,7 +304,7 @@ complex derivative equals `ContinuousLinearMap.complexOfReal` of the real deriva
 theorem complexOfReal_hasDerivAt (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
     HasDerivAt f ((fderiv ℝ f x).complexOfReal h₂ 1) x := by
-  rw [hasDerivAt_iff_hasFDerivAt, smulRight_one_one]
+  rw [hasDerivAt_iff_hasFDerivAt, toSpanSingleton_apply_map_one]
   exact hasFDerivAt_of_restrictScalars ℝ h₁.hasFDerivAt rfl
 
 /--

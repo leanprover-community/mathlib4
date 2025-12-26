@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Algebra.Module.Submodule.LinearMap
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -23,6 +25,8 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 
 submodule, subspace, linear map, pushforward, pullback
 -/
+
+@[expose] public section
 
 open Function Pointwise Set
 
@@ -457,7 +461,7 @@ theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
   ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
-  | ⟨b', hb⟩ => Subtype.eq <| show b' = 0 from (mem_bot R).1 hb
+  | ⟨b', hb⟩ => Subtype.ext <| show b' = 0 from (mem_bot R).1 hb
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/
@@ -591,11 +595,8 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  rw [SetLike.le_def]
-  intro m h
-  change f₁ m + f₂ m ∈ q
-  change f₁ m ∈ q ∧ f₂ m ∈ q at h
-  apply q.add_mem h.1 h.2
+  simp only [SetLike.le_def, mem_comap, mem_inf, LinearMap.add_apply]
+  exact fun _ h ↦ add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
     {q : Submodule R₂ M₂} : Set.SurjOn f p q ↔ q ≤ p.map f :=
@@ -615,11 +616,8 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
 theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
-  rw [SetLike.le_def]
-  intro m h
-  change c • fₗ m ∈ qₗ
-  change fₗ m ∈ qₗ at h
-  apply qₗ.smul_mem _ h
+  simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
+  exact fun _ h ↦ smul_mem _ _ h
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/

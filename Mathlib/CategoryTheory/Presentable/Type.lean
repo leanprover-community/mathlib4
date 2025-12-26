@@ -3,18 +3,22 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.Basic
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Types.Set
+module
+
+public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Types.Set
 
 /-!
 # Presentable objects in Type
 
 In this file, we show that if `κ : Cardinal.{u}` is a regular cardinal,
 then `X : Type u` is `κ`-presentable in the category of types iff
-`HasCardinalLT X κ` holds.
+`HasCardinalLT X κ` holds, i.e. the cardinal number of `X` is less than `κ`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -74,7 +78,7 @@ lemma isFiltered_of_aleph0_le (hκ : Cardinal.aleph0 ≤ κ) :
     IsFiltered (HasCardinalLT.Set X κ) where
   nonempty := ⟨⟨∅, hasCardinalLT_of_finite _ _ hκ⟩⟩
   toIsFilteredOrEmpty := by
-    have : IsDirected (HasCardinalLT.Set X κ) (· ≤ ·) :=
+    have : IsDirectedOrder (HasCardinalLT.Set X κ) :=
       ⟨fun A B ↦ ⟨⟨A.val ∪ B.val, hasCardinalLT_union hκ A.prop B.prop⟩,
         Set.subset_union_left, Set.subset_union_right⟩⟩
     exact isFilteredOrEmpty_of_directed_le _
@@ -123,10 +127,9 @@ lemma isCardinalPresentable_iff (κ : Cardinal.{u}) [Fact κ.IsRegular] :
   obtain rfl : A = .univ := by
     ext x
     have := congr_fun hf x
-    dsimp at f hf this
-    simp only [Set.mem_univ, iff_true]
+    dsimp at this
     rw [← this]
-    exact (f x).2
+    simp
   exact (hasCardinalLT_iff_of_equiv (Equiv.Set.univ X) _).1 hA
 
 instance (X : Type u) : IsPresentable.{u} X := by

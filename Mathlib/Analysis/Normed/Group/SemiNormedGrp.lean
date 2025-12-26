@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Riccardo Brasca
 -/
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of seminormed groups
@@ -14,6 +16,8 @@ import Mathlib.CategoryTheory.Elementwise
 We define `SemiNormedGrp`, the category of seminormed groups and normed group homs between
 them, as well as `SemiNormedGrp₁`, the subcategory of norm non-increasing morphisms.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -173,7 +177,7 @@ instance Hom.neg {M N : SemiNormedGrp} : Neg (M ⟶ N) where
   neg f := ofHom (- f.hom)
 
 @[simp]
-theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = - f.hom :=
+theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = -f.hom :=
   rfl
 
 instance Hom.sub {M N : SemiNormedGrp} : Sub (M ⟶ N) where

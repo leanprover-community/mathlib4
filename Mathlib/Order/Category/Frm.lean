@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Lat
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+module
+
+public import Mathlib.Order.Category.Lat
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of frames
@@ -16,6 +18,8 @@ This file defines `Frm`, the category of frames.
 
 * [nLab, *Frm*](https://ncatlab.org/nlab/show/Frm)
 -/
+
+@[expose] public section
 
 
 universe u
@@ -41,6 +45,7 @@ instance : CoeSort Frm (Type _) :=
 
 attribute [coe] Frm.carrier
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Frm R`. -/
 @[ext]
 structure Hom (X Y : Frm.{u}) where
@@ -48,11 +53,15 @@ structure Hom (X Y : Frm.{u}) where
   /-- The underlying `FrameHom`. -/
   hom' : FrameHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Frm.{u} where
   Hom X Y := Hom X Y
   id X := ⟨FrameHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Frm (FrameHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

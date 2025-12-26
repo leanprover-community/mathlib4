@@ -3,13 +3,15 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.GroupTheory.NoncommCoprod
-import Mathlib.GroupTheory.Perm.ConjAct
-import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-import Mathlib.GroupTheory.Perm.DomMulAct
-import Mathlib.GroupTheory.Rank
+module
+
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.GroupTheory.NoncommCoprod
+public import Mathlib.GroupTheory.Perm.ConjAct
+public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
+public import Mathlib.GroupTheory.Perm.DomMulAct
+public import Mathlib.GroupTheory.Rank
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
@@ -83,7 +85,7 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 * `Equiv.Perm.nat_card_centralizer g` computes the cardinality
   of the centralizer of `g`.
 
-* `Equiv.Perm.card_isConj_mul_eq g`computes the cardinality
+* `Equiv.Perm.card_isConj_mul_eq g` computes the cardinality
   of the conjugacy class of `g`.
 
 * We now can compute the cardinality of the set of permutations with given cycle type.
@@ -95,6 +97,8 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
   compute this cardinality.
 
 -/
+
+@[expose] public section
 
 open scoped Finset Pointwise
 
@@ -704,7 +708,7 @@ variable {α} in
 /-- The number of cycles of given length -/
 lemma card_of_cycleType_singleton {n : ℕ} (hn' : 2 ≤ n) (hα : n ≤ card α) :
     #({g | g.cycleType = {n}} : Finset (Perm α)) = (n - 1)! * (choose (card α) n) := by
-  have hn₀ : n ≠ 0 := by omega
+  have hn₀ : n ≠ 0 := by lia
   have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred hn₀]
   rw [mul_comm, ← Nat.mul_left_inj hn₀, mul_assoc, ← aux, ← Nat.mul_left_inj (factorial_ne_zero _),
     Nat.choose_mul_factorial_mul_factorial hα, mul_assoc]

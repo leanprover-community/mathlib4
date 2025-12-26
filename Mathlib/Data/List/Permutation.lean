@@ -3,14 +3,16 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Lemmas
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.InsertIdx
-import Mathlib.Data.List.Induction
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Perm.Basic
+module
+
+public import Mathlib.Data.List.Lemmas
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.List.Count
+public import Mathlib.Data.List.Duplicate
+public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.List.Induction
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Permutations of a list
@@ -44,6 +46,8 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
    `[0, 3, 1, 2], [3, 0, 1, 2], [3, 1, 0, 2], [3, 1, 2, 0],`
    `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
 -/
+
+@[expose] public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

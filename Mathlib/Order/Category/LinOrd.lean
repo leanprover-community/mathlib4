@@ -3,13 +3,17 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Category.Lat
+module
+
+public import Mathlib.Order.Category.Lat
 
 /-!
 # Category of linear orders
 
 This defines `LinOrd`, the category of linear orders with monotone maps.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -35,6 +39,7 @@ instance : CoeSort LinOrd (Type _) :=
 
 attribute [coe] LinOrd.carrier
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
 structure Hom (X Y : LinOrd.{u}) where
@@ -42,11 +47,15 @@ structure Hom (X Y : LinOrd.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category LinOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory LinOrd (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

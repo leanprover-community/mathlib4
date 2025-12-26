@@ -3,11 +3,13 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules
@@ -22,6 +24,8 @@ module.
 
 * `Module.Free R M` : the class of free `R`-modules.
 -/
+
+@[expose] public section
 
 assert_not_exists DirectSum Matrix TensorProduct
 
@@ -154,7 +158,7 @@ instance self : Module.Free R R :=
 instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
 
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
-  of_basis.{u,z,z} (Basis.empty N : Basis PEmpty R N)
+  of_basis.{u, z, z} (Basis.empty N : Basis PEmpty R N)
 
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.

@@ -3,11 +3,12 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Akra-Bazzi theorem: the polynomial growth condition
@@ -25,6 +26,8 @@ make it harder to prove that a particular function grows polynomially, this issu
 arise in practice.
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -114,12 +117,12 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         rw [Set.left_mem_Icc]
         gcongr
         · norm_num
-        · cutsat
+        · lia
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
         rw [one_div, ← zpow_neg_one, ← mul_assoc, ← zpow_add₀ (by norm_num)]
-        have h₁ : (-1 : ℤ)  + (-k - 1) = -k - 2 := by ring
+        have h₁ : (-1 : ℤ) + (-k - 1) = -k - 2 := by ring
         have h₂ : -(k + (1 : ℤ)) - 1 = -k - 2 := by ring
         rw [h₁]
         rw [h₂] at hz
@@ -217,7 +220,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
                         _ ≤ ((1 : ℝ) / (2 : ℝ)) * (2 : ℝ) ^ n * max n₀ 2 := by gcongr; norm_num
                         _ ≤ _ := by rw [mul_assoc]; gcongr; exact_mod_cast hz.1
           case ub =>
-            have h₁ : (2 : ℝ)^n = ((1 : ℝ)/(2 : ℝ)) * (2 : ℝ)^(n + 1) := by
+            have h₁ : (2 : ℝ)^n = ((1 : ℝ) / (2 : ℝ)) * (2 : ℝ)^(n + 1) := by
               rw [one_div, pow_add, pow_one]
               ring
             rw [h₁, mul_assoc]
@@ -235,12 +238,9 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
 
 lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, f x = 0) ∨ (∀ᶠ x in atTop, 0 < f x) ∨ (∀ᶠ x in atTop, f x < 0) := by
-  if h : ∃ᶠ x in atTop, f x = 0 then
-    exact Or.inl <| eventually_zero_of_frequently_zero hf h
-  else
-    rw [not_frequently] at h
-    push_neg at h
-    cases eventually_atTop_nonneg_or_nonpos hf with
+  by_cases! h : ∃ᶠ x in atTop, f x = 0
+  · exact Or.inl <| eventually_zero_of_frequently_zero hf h
+  · cases eventually_atTop_nonneg_or_nonpos hf with
     | inl h' =>
       refine Or.inr (Or.inl ?_)
       simp only [lt_iff_le_and_ne]
@@ -417,10 +417,10 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     have hfg₂ : ‖g x‖ ≤ 1 / 2 * f x := by
       calc ‖g x‖ ≤ 1 / 2 * ‖f x‖ := hfg' x hbx
            _ = 1 / 2 * f x := by congr; exact norm_of_nonneg (hf₂ _ hbx)
-    have hx_ub : f x + g x ≤ 3/2 * f x := by
+    have hx_ub : f x + g x ≤ 3 / 2 * f x := by
       calc _ ≤ f x + ‖g x‖ := by gcongr; exact le_norm_self (g x)
            _ ≤ f x + 1 / 2 * f x := by gcongr
-           _ = 3/2 * f x := by ring
+           _ = 3 / 2 * f x := by ring
     have hx_lb : 1 / 2 * f x ≤ f x + g x := by
       calc f x + g x ≥ f x - ‖g x‖ := by
                 rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le (g x)
@@ -438,15 +438,15 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ ≥ f u - 1 / 2 * f u := by gcongr
            _ = 1 / 2 * f u := by ring
            _ ≥ 1 / 2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1
-           _ = c₁/3 * (3/2 * f x) := by ring
-           _ ≥ c₁/3 * (f x + g x) := by gcongr
+           _ = c₁ / 3 * (3 / 2 * f x) := by ring
+           _ ≥ c₁ / 3 * (f x + g x) := by gcongr
     case ub =>
       calc _ ≤ f u + ‖g u‖ := by gcongr; exact le_norm_self (g u)
            _ ≤ f u + 1 / 2 * f u := by gcongr
-           _ = 3/2 * f u := by ring
-           _ ≤ 3/2 * (c₂ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).2
-           _ = 3*c₂ * (1 / 2 * f x) := by ring
-           _ ≤ 3*c₂ * (f x + g x) := by gcongr
+           _ = 3 / 2 * f u := by ring
+           _ ≤ 3 / 2 * (c₂ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).2
+           _ = 3 * c₂ * (1 / 2 * f x) := by ring
+           _ ≤ 3 * c₂ * (f x + g x) := by gcongr
   | inr hf' => -- f is eventually nonpos
     have hf := hf b hb
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
@@ -465,7 +465,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
       calc _ ≤ f x + ‖g x‖ := by gcongr; exact le_norm_self (g x)
            _ ≤ f x + (-1 / 2 * f x) := by gcongr
            _ = 1 / 2 * f x := by ring
-    have hx_lb : 3/2 * f x ≤ f x + g x := by
+    have hx_lb : 3 / 2 * f x ≤ f x + g x := by
       calc f x + g x ≥ f x - ‖g x‖ := by
                 rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le (g x)
            _ ≥ f x + 1 / 2 * f x := by
@@ -473,7 +473,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                   gcongr
                   refine le_of_neg_le_neg ?bc.a
                   rwa [neg_neg, ← neg_mul, ← neg_div]
-           _ = 3/2 * f x := by ring
+           _ = 3 / 2 * f x := by ring
     intro u ⟨hu_lb, hu_ub⟩
     have hfu_nonpos : f u ≤ 0 := hf₂ _ hu_lb
     have hfg₃ : ‖g u‖ ≤ -1 / 2 * f u := by
@@ -489,10 +489,10 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                   gcongr
                   refine le_of_neg_le_neg ?_
                   rwa [neg_neg, ← neg_mul, ← neg_div]
-           _ = 3/2 * f u := by ring
-           _ ≥ 3/2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1
-           _ = 3*c₁ * (1 / 2 * f x) := by ring
-           _ ≥ 3*c₁ * (f x + g x) := by gcongr
+           _ = 3 / 2 * f u := by ring
+           _ ≥ 3 / 2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1
+           _ = 3 * c₁ * (1 / 2 * f x) := by ring
+           _ ≥ 3 * c₁ * (f x + g x) := by gcongr
     case ub =>
       calc _ ≤ f u + ‖g u‖ := by gcongr; exact le_norm_self (g u)
            _ ≤ f u - 1 / 2 * f u := by
@@ -501,8 +501,8 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                 rwa [← neg_mul, ← neg_div]
            _ = 1 / 2 * f u := by ring
            _ ≤ 1 / 2 * (c₂ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).2
-           _ = c₂/3 * (3/2 * f x) := by ring
-           _ ≤ c₂/3 * (f x + g x) := by gcongr
+           _ = c₂ / 3 * (3 / 2 * f x) := by ring
+           _ ≤ c₂ / 3 * (f x + g x) := by gcongr
 
 protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially f) :
     GrowsPolynomially fun x => (f x)⁻¹ := by

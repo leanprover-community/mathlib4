@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Group actions on embeddings
@@ -15,6 +17,8 @@ instances defined by `Pi.mulAction`.
 
 Note that unlike the `Pi` instance, this requires `G` to be a group.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

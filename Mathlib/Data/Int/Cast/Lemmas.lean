@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.Parity
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Hom
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Cast of integers (additional theorems)
@@ -21,6 +23,8 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso IsOrderedMonoid Field
 
 open Additive Function Multiplicative Nat
@@ -34,11 +38,6 @@ def ofNatHom : ℕ →+* ℤ :=
   Nat.castRingHom ℤ
 
 section cast
-
-@[simp, norm_cast]
-theorem cast_ite [IntCast α] (P : Prop) [Decidable P] (m n : ℤ) :
-    ((ite P m n : ℤ) : α) = ite P (m : α) (n : α) :=
-  apply_ite _ _ _ _
 
 /-- `coe : ℤ → α` as an `AddMonoidHom`. -/
 def castAddHom (α : Type*) [AddGroupWithOne α] : ℤ →+ α where
@@ -58,7 +57,7 @@ variable [CharZero α] {m n : ℤ}
 @[simp] lemma cast_eq_zero : (n : α) = 0 ↔ n = 0 where
   mp h := by
     cases n
-    · rw [ofNat_eq_coe, Int.cast_natCast] at h
+    · rw [ofNat_eq_natCast, Int.cast_natCast] at h
       exact congr_arg _ (Nat.cast_eq_zero.1 h)
     · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
       contradiction

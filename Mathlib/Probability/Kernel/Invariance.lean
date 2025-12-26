@@ -3,7 +3,9 @@ Copyright (c) 2023 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Matteo Cipollina
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Invariance of measures along a kernel
@@ -16,6 +18,8 @@ kernel `μ.bind κ` is the same measure.
 * `ProbabilityTheory.Kernel.Invariant`: invariance of a given measure with respect to a kernel.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory

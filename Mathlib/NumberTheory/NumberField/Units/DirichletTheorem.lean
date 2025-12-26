@@ -3,9 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Matrix.Gershgorin
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.NumberTheory.NumberField.Units.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Gershgorin
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field
@@ -35,6 +37,8 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 number field, units, Dirichlet unit theorem
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Module NumberField NumberField.InfinitePlace NumberField.Units
@@ -50,7 +54,7 @@ We define a group morphism from `(𝓞 K)ˣ` to `logSpace K`, defined as
 `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a distinguished (arbitrary) infinite place,
 prove that its kernel is the torsion subgroup (see `logEmbedding_eq_zero_iff`) and that its image,
 called `unitLattice`, is a full `ℤ`-lattice. It follows that `unitLattice` is a free `ℤ`-module
-(see `instModuleFree_unitLattice`) of rank `card (InfinitePlaces K) - 1` (see `unitLattice_rank`).
+(see `instModuleFree_unitLattice`) of rank `card (InfinitePlace K) - 1` (see `unitLattice_rank`).
 To prove that the `unitLattice` is a full `ℤ`-lattice, we need to prove that it is discrete
 (see `unitLattice_inter_ball_finite`) and that it spans the full space over `ℝ`
 (see `unitLattice_span_eq_top`); this is the main part of the proof, see the section `span_top`

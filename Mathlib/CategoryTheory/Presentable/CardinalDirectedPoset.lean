@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.Order.Category.PartOrdEmb
-import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+module
+
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.Order.Category.PartOrdEmb
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
 # The κ-accessible category of κ-directed posets
@@ -16,6 +18,8 @@ types (with order embeddings as morphisms), and we show that it is
 a `κ`-accessible category.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -100,11 +104,11 @@ abbrev of (J : PartOrdEmb.{u}) [IsCardinalFiltered J κ] : CardinalFilteredPoset
   property := inferInstance
 
 lemma Hom.injective {J₁ J₂ : CardinalFilteredPoset κ} (f : J₁ ⟶ J₂) :
-    Function.Injective f := f.injective
+    Function.Injective f := f.hom.injective
 
 lemma Hom.le_iff_le {J₁ J₂ : CardinalFilteredPoset κ} (f : J₁ ⟶ J₂) (x₁ x₂ : J₁.obj) :
     f x₁ ≤ f x₂ ↔ x₁ ≤ x₂ :=
-  f.hom.le_iff_le
+  f.hom.hom.le_iff_le
 
 instance (J : CardinalFilteredPoset κ) : IsCardinalFiltered J.obj κ := J.property
 
@@ -127,7 +131,7 @@ def hasCardinalLTWithTerminal : ObjectProperty (CardinalFilteredPoset κ) :=
 
 instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) where
   exists_small_le' := by
-    obtain ⟨X, hX⟩ : ∃ (X : Type u), Cardinal.mk X = κ := ⟨κ.ord.toType, by simp⟩
+    obtain ⟨X, hX⟩ : ∃ (X : Type u), Cardinal.mk X = κ := ⟨κ.ord.ToType, by simp⟩
     let α : Type u := Σ (S : Set X) (_ : PartialOrder S),
       ULift.{u} (PLift (IsCardinalFiltered S κ))
     let (a : α) : PartialOrder a.1 := a.2.1
@@ -172,13 +176,12 @@ instance : IsCardinalFiltered (indexSet J) κ :=
       { top := ⟨m, by simp [S]⟩
         le_top := by
           rintro ⟨s, hs⟩
-          simp [S] at hs
+          simp only [Set.union_singleton, Set.mem_insert_iff, Set.mem_iUnion, S] at hs
           obtain rfl | ⟨k, hs⟩ := hs
           · simp
           · simp only [Subtype.mk_le_mk]
             exact leOfHom ((by exact terminal.from (C := (α k).val) ⟨_, hs⟩) ≫
-              IsCardinalFiltered.toMax _ hK k)
-          }
+              IsCardinalFiltered.toMax _ hK k) }
     refine ⟨⟨S, ?_, isTerminalTop.hasTerminal⟩, fun k ↦ ?_⟩
     · have hκ : Cardinal.aleph0 ≤ κ :=  Cardinal.IsRegular.aleph0_le Fact.out
       exact hasCardinalLT_union hκ (hasCardinalLT_iUnion _ hK (fun k ↦ (α k).2.1))
@@ -194,10 +197,10 @@ as an object in `CardinalFilteredPoset κ`. -/
 @[simps]
 def functor : indexSet J ⥤ CardinalFilteredPoset κ where
   obj S := of (PartOrdEmb.of S.val)
-  map f := PartOrdEmb.ofHom
+  map f := ObjectProperty.homMk (PartOrdEmb.ofHom
     { toFun x := ⟨x, leOfHom f x.2⟩
       inj' := by rintro ⟨x, _⟩ ⟨y, _⟩ h; simpa using h
-      map_rel_iff' := by rfl }
+      map_rel_iff' := by rfl })
 
 end cocone
 
@@ -206,7 +209,7 @@ of its subsets that are of cardinality `< κ` and have a terminal object. -/
 @[simps]
 def cocone (J : CardinalFilteredPoset κ) : Cocone (cocone.functor J) where
   pt := J
-  ι.app _ := PartOrdEmb.ofHom (OrderEmbedding.subtype _)
+  ι.app _ := ObjectProperty.homMk (PartOrdEmb.ofHom (OrderEmbedding.subtype _))
 
 open cocone in
 /-- Any object `J : CardinalFilteredPoset κ` is a colimit
@@ -236,16 +239,16 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ
         rw [← hg, ← ConcreteCategory.comp_apply, c.w]
         rfl
       refine ⟨m,
-        PartOrdEmb.ofHom
+        ObjectProperty.homMk (PartOrdEmb.ofHom
           { toFun := φ
             inj' x y h := Hom.injective f (by simpa [hφ])
-            map_rel_iff' {x y} := ?_ }, ?_⟩
+            map_rel_iff' {x y} := ?_ }), ?_⟩
       · simp only [Function.Embedding.coeFn_mk,
           ← Hom.le_iff_le f, hφ, Hom.le_iff_le (c.ι.app m)]
       · dsimp
         ext x
-        rw [← hg]
-        exact ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j hJ x)).symm (g x)
+        exact (hg x).symm.trans
+          (ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j hJ x)).symm (g x))
     · choose k a hk using fun (x : J.obj) ↦
         (Types.FilteredColimit.isColimit_eq_iff' hc _ _).1 (ConcreteCategory.congr_hom h x)
       dsimp at f g h k a hk ⊢
@@ -259,11 +262,9 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ
           fun x ↦ by simpa [φ] using IsCardinalFiltered.coeq_condition φ hJ x⟩
       refine ⟨l, b, ?_⟩
       ext x
-      dsimp
-      simp only [ConcreteCategory.comp_apply]
-      rw [← hl x]
-      simp only [Functor.map_comp, ConcreteCategory.comp_apply]
-      exact congr_arg _ (hk x)⟩⟩⟩
+      simpa only [← hl x, Functor.map_comp, ObjectProperty.FullSubcategory.comp_hom,
+        PartOrdEmb.hom_comp, RelEmbedding.coe_trans, Function.comp_apply]
+          using congr_arg _ (hk x)⟩⟩⟩
 
 protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
     IsCardinalPresentable J κ ↔ HasCardinalLT J.obj κ := by

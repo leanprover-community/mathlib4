@@ -3,11 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Baire.CompleteMetrizable
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Baire.CompleteMetrizable
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Banach open mapping theorem
@@ -15,6 +17,8 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 This file contains the Banach open mapping theorem, i.e., the fact that a bijective
 bounded linear map between Banach spaces has a bounded inverse.
 -/
+
+@[expose] public section
 
 open Function Metric Set Filter Finset Topology NNReal
 
@@ -363,14 +367,7 @@ lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range
 @[simp]
 lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
     (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
-  suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
-  trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
-  · rfl -- is there an API lemma for this already?
-  simp only [ContinuousLinearEquiv.toLinearEquiv_symm, equivRange_symm_toLinearEquiv]
-  set x' : LinearMap.range f := ⟨f x, by simp⟩
-  set f' : E →ₛₗ[σ] F := ↑f
-  change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _
-  rw [LinearEquiv.ofInjective_symm_apply (f := f') (h := hinj) x']
+  simp [ContinuousLinearEquiv.symm_apply_eq, Subtype.ext_iff]
 
 section
 
@@ -383,14 +380,8 @@ variable {E F : Type*}
 /-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
-    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f := by
-  let S : (LinearMap.range f) →L[𝕜] E := (f.equivRange hf hf').symm
-  use ⟨S.opNorm, S.opNorm_nonneg⟩
-  apply ContinuousLinearMap.antilipschitz_of_bound
-  intro x
-  calc ‖x‖
-    _ = ‖S ⟨f x, by simp⟩‖ := by simp [S]
-    _ ≤ S.opNorm * ‖f x‖ := le_opNorm S ⟨f x, by simp⟩
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
+  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitz⟩
 
 /-- An injective bounded linear operator between Banach spaces has closed range
 iff it is anti-Lipschitz. -/

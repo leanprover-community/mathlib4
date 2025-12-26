@@ -3,8 +3,10 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Data.Finset.Max
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -28,6 +30,8 @@ https://en.wikipedia.org/wiki/Back-and-forth_method
 back and forth, dense, countable, order
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -47,7 +51,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         (exists_between (lo_lt_hi _ (Finset.max'_mem _ nlo) _ (Finset.min'_mem _ nhi))) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm.1, fun y hy ↦
           lt_of_lt_of_le hm.2 (Finset.min'_le hi y hy)⟩
-    else-- upper set is empty, use `NoMaxOrder`
+    else -- upper set is empty, use `NoMaxOrder`
         Exists.elim
         (exists_gt (Finset.max' lo nlo)) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩

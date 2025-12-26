@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
 
@@ -52,6 +53,8 @@ There are two obstructions, though :
 
 -/
 
+@[expose] public section
+
 namespace Polynomial
 
 open Ideal.Quotient Ideal RingHom
@@ -77,7 +80,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     simp only [leadingCoeff_mul, map_mul, ne_eq, mul_eq_zero, not_or] at hf_lC
     exact hf_lC.1
   have map_dvd_pow_q :
-      g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
+      g.map (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
     rw [← IsUnit.dvd_mul_left _, ← hfmodP]
     · exact Polynomial.map_dvd _ hg_div
     · simp_all

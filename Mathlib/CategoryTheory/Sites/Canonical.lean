@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The canonical topology on a category
@@ -31,6 +33,8 @@ equivalently it is subcanonical iff every representable presheaf is a sheaf.
 * https://stacks.math.columbia.edu/tag/00Z9
 * https://math.stackexchange.com/a/358709/
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -250,6 +254,15 @@ def uliftYoneda [J.Subcanonical] : C ⥤ Sheaf J (Type max v w) :=
 
 @[deprecated (since := "2025-11-10")] alias yonedaULift := uliftYoneda
 
+/-- If `C` is a category with `[Category.{max w v} C]`, this is the isomorphism
+`uliftYoneda.{w} (C := C) ≅ yoneda`. -/
+@[simps!]
+def uliftYonedaIsoYoneda {C : Type u} [Category.{max w v} C] (J : GrothendieckTopology C)
+    [J.Subcanonical] :
+    GrothendieckTopology.uliftYoneda.{w} J ≅ J.yoneda :=
+  NatIso.ofComponents (fun _ => (fullyFaithfulSheafToPresheaf J _).preimageIso
+    (NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso)))
+
 variable [Subcanonical J]
 
 /--
@@ -260,6 +273,13 @@ def yonedaCompSheafToPresheaf :
     J.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
   Iso.refl _
 
+/-- A variant of `yonedaCompSheafToPresheaf` with a raise in the universe level. -/
+@[simps!]
+def uliftYonedaCompSheafToPresheaf :
+    GrothendieckTopology.uliftYoneda.{w} J ⋙ sheafToPresheaf J (Type max v w) ≅
+      CategoryTheory.uliftYoneda.{w} :=
+  Iso.refl _
+
 /-- The yoneda functor into the sheaf category is fully faithful -/
 def yonedaFullyFaithful : (J.yoneda).FullyFaithful :=
   Functor.FullyFaithful.ofCompFaithful (G := sheafToPresheaf J (Type v)) Yoneda.fullyFaithful
@@ -267,6 +287,16 @@ def yonedaFullyFaithful : (J.yoneda).FullyFaithful :=
 instance : (J.yoneda).Full := (J.yonedaFullyFaithful).full
 
 instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
+
+/-- A variant of `yonedaFullyFaithful` with a raise in the universe level. -/
+def fullyFaithfulUliftYoneda : (GrothendieckTopology.uliftYoneda.{w} J).FullyFaithful :=
+  J.yonedaFullyFaithful.comp (fullyFaithfulSheafCompose J fullyFaithfulULiftFunctor)
+
+instance : (GrothendieckTopology.uliftYoneda.{w} J).Full :=
+    (J.fullyFaithfulUliftYoneda).full
+
+instance : (GrothendieckTopology.uliftYoneda.{w} J).Faithful :=
+    (J.fullyFaithfulUliftYoneda).faithful
 
 end GrothendieckTopology
 

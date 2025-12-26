@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Portmanteau
+module
+
+public import Mathlib.MeasureTheory.Measure.Portmanteau
 
 /-!
 # Convergence in distribution
@@ -41,6 +43,8 @@ and convergence in distribution.
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
 
 -/
+
+@[expose] public section
 
 open Filter
 open scoped Topology

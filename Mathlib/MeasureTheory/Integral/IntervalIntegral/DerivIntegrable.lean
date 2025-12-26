@@ -3,9 +3,11 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
@@ -23,6 +25,8 @@ then `f'` is interval integrable on `a..b`.
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter
 
@@ -135,7 +139,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     refine intervalIntegral.integral_congr_ae ?_
     rw [uIoc_of_le hab]
     filter_upwards [h₂] with x _ _
-    exact abs_eq_self.mpr (f_deriv_nonneg (by rw [← Ioc_diff_right]; grind)) |>.symm
+    exact abs_eq_self.mpr (f_deriv_nonneg (by grind)) |>.symm
 
 /-- If `f` has bounded variation on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
 theorem BoundedVariationOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}

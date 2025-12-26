@@ -3,7 +3,9 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
-import Mathlib.RingTheory.Bialgebra.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 /-!
 # Hopf algebras
@@ -39,6 +41,8 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 
 -/
+
+@[expose] public section
 
 open Bialgebra
 

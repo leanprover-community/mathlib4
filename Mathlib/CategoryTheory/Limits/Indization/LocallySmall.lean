@@ -3,9 +3,11 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Limits.IndYoneda
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.IndYoneda
+public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
 /-!
 # There are only `v`-many natural transformations between Ind-objects
@@ -18,6 +20,8 @@ serve as the basis for our definition of the category of Ind-objects.
 The equivalence established here serves as the basis for a well-known calculation of hom-sets of
 ind-objects as a limit of a colimit.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Opposite
 
@@ -73,6 +77,6 @@ instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C
     let e₂ := IsColimit.coconePointUniqueUpToIso (Q.isColimit) (colimit.isColimit _)
     let e₃ := Iso.homCongr e₁ e₂
     dsimp only [colimit.cocone_x] at e₃
-    exact small_map e₃
+    exact small_map (InducedCategory.homEquiv.trans e₃)
 
 end CategoryTheory

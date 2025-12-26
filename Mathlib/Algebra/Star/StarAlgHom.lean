@@ -3,11 +3,13 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Star.StarRingHom
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Star.StarRingHom
 
 /-!
 # Morphisms of star algebras
@@ -39,6 +41,8 @@ of unital C⋆-algebras (with `StarAlgHom`s) and of C⋆-algebras (with `NonUnit
 
 non-unital, algebra, morphism, star
 -/
+
+@[expose] public section
 
 open EquivLike
 
@@ -518,7 +522,7 @@ variable {ι : Type*}
 @[simps]
 def _root_.Pi.evalNonUnitalStarAlgHom (R : Type*) (A : ι → Type*) (j : ι) [Monoid R]
     [∀ i, NonUnitalNonAssocSemiring (A i)] [∀ i, DistribMulAction R (A i)] [∀ i, Star (A i)] :
-    (∀ i, A i) →⋆ₙₐ[R] A j:=
+    (∀ i, A i) →⋆ₙₐ[R] A j :=
   { Pi.evalMulHom A j, Pi.evalAddHom A j with
     map_smul' _ _ := rfl
     map_zero' := rfl
@@ -843,8 +847,8 @@ theorem coe_symm_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv.symm = ⇑f
 theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C] (f : A ≃⋆ₐ[R] B)
     (g : B ≃⋆ₐ[R] C) : (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
 
-theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R:=R) (A:=A) (B:=B)) :=
-  fun _ _  h => ext <| AlgEquiv.congr_fun h
+theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R := R) (A := A) (B := B)) :=
+  fun _ _ h => ext <| AlgEquiv.congr_fun h
 
 @[simp]
 theorem toAlgEquiv_refl : (refl : A ≃⋆ₐ[R] A).toAlgEquiv = AlgEquiv.refl := rfl

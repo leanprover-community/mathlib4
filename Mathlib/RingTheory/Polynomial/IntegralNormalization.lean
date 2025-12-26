@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Andrew Yang, Yuyang Zhao
 -/
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Theory of monic polynomials
 
 We define `integralNormalization`, which relate arbitrary polynomials to monic ones.
 -/
+
+@[expose] public section
 
 
 open Polynomial
@@ -121,11 +125,8 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
       exact coe_lt_degree.mp h'
     · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
 
-theorem integralNormalization_degree : (integralNormalization p).degree = p.degree := by
-  apply le_antisymm
-  · exact Finset.sup_mono p.support_integralNormalization_subset
-  · rw [← degree_scaleRoots, ← integralNormalization_mul_C_leadingCoeff]
-    exact (degree_mul_le _ _).trans (add_le_of_nonpos_right degree_C_le)
+@[deprecated (since := "2025-11-24")] alias integralNormalization_degree :=
+  degree_integralNormalization
 
 variable {A : Type*} [CommSemiring S] [Semiring A]
 
@@ -139,7 +140,7 @@ theorem integralNormalization_eval₂_leadingCoeff_mul_of_commute (h : 1 ≤ p.n
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x := by
   rw [eval₂_eq_sum_range, eval₂_eq_sum_range, Finset.mul_sum]
   apply Finset.sum_congr
-  · rw [natDegree_eq_of_degree_eq p.integralNormalization_degree]
+  · rw [natDegree_eq_of_degree_eq p.degree_integralNormalization]
   intro n _hn
   rw [h₁.mul_pow, ← mul_assoc, ← f.map_pow, ← f.map_mul,
     integralNormalization_coeff_mul_leadingCoeff_pow _ h, f.map_mul, h₂.eq, f.map_pow, mul_assoc]

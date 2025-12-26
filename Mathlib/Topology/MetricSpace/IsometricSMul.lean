@@ -3,11 +3,13 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
-import Mathlib.Algebra.Ring.Pointwise.Set
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+public import Mathlib.Algebra.Ring.Pointwise.Set
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Group actions by isometries
@@ -28,6 +30,8 @@ If `G` is a group, then `IsIsometricSMul G G` means that `G` has a left-invarian
 these two notions are equivalent. A group with a right-invariant metric can be also represented as a
 `NormedGroup`.
 -/
+
+@[expose] public section
 
 
 open Set

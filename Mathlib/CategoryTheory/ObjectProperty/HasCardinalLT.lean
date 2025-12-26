@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
-import Mathlib.CategoryTheory.ObjectProperty.Basic
+module
+
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
 /-!
 # Properties of objects that are bounded by a cardinal
@@ -14,6 +16,7 @@ Given `P : ObjectProperty C` and `κ : Cardinal`, we introduce a predicate
 
 -/
 
+@[expose] public section
 
 universe w v u
 
@@ -39,7 +42,7 @@ lemma HasCardinalLT.iSup
     (⨆ i, P i).HasCardinalLT κ :=
   hasCardinalLT_subtype_iSup _ hι hP
 
-lemma HasCardinalLT.union
+lemma HasCardinalLT.sup
     {P₁ P₂ : ObjectProperty C} {κ : Cardinal.{w}}
     (h₁ : P₁.HasCardinalLT κ) (h₂ : P₂.HasCardinalLT κ)
     (hκ : Cardinal.aleph0 ≤ κ) :

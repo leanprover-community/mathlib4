@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 
 /-!
 # Helper structure in order to construct pairings
@@ -17,6 +19,8 @@ their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Simplicial
@@ -25,7 +29,7 @@ namespace SSet.Subcomplex
 
 variable {X : SSet.{u}} (A : X.Subcomplex)
 
-/-- An helper structure in order to construct a pairing for a subcomplex of a
+/-- A helper structure in order to construct a pairing for a subcomplex of a
 simplicial set `X`. The main difference with `Pairing` is that we provide
 an index type `ι` and a function `dim : ι → ℕ` which allow to
 parametrize type (I) simplices as `simplex s : X _⦋dim s + 1⦌` for `s : ι`,

@@ -3,9 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.Data.Set.Pairwise.Lattice
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Covering.VitaliFamily
+public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Vitali covering theorems
@@ -32,6 +34,8 @@ A way to restate this theorem is to say that the set of closed sets `a` with non
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms a Vitali family.
 This version is given in `Vitali.vitaliFamily`.
 -/
+
+@[expose] public section
 
 
 variable {α ι : Type*}

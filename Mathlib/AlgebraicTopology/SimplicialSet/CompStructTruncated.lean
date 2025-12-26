@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 
 /-!
 # Edges and "triangles" in truncated simplicial sets
@@ -18,6 +20,8 @@ data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively
 will allow to obtain relations in the homotopy category of `X`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -72,6 +76,10 @@ lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
     (Edge.id x).map f = Edge.id (f.app _ x) := by
   ext
   simp [FunctorToTypes.naturality]
+
+instance [Subsingleton (X _⦋1⦌₂)] {x y : X _⦋0⦌₂} :
+    Subsingleton (X.Edge x y) where
+  allEq f g := by ext; subsingleton
 
 /-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a `2`-truncated simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
@@ -131,6 +139,12 @@ def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
   d₁ := by
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_one]
     simp
+
+/-- `Edge.id x` is a composition of `Edge.id x` with `Edge.id x`. -/
+@[simps!]
+def idCompId (x : X _⦋0⦌₂) :
+    CompStruct (.id x) (.id x) (.id x) :=
+  idComp _
 
 attribute [local simp ←] FunctorToTypes.naturality in
 /-- The image of a `Edge.CompStruct` by a morphism of `2`-truncated

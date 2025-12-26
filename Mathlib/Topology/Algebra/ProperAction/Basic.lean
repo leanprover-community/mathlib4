@@ -3,10 +3,12 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.LocalAtTarget
+module
+
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Proper group action
@@ -35,6 +37,8 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 
 Hausdorff, group action, proper action
 -/
+
+@[expose] public section
 
 open Filter Topology Set Prod
 
@@ -216,7 +220,7 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
   let Φ : G × X → X × X := fun gx ↦ (gx.1 • gx.2, gx.2)
   have Φ_proper : IsProperMap Φ := ProperSMul.isProperMap_smul_pair
   let α : G × t ≃ₜ (Φ ⁻¹' (snd ⁻¹' t)) :=
-    have : univ ×ˢ t = Φ ⁻¹' (snd ⁻¹' t) := by rw [univ_prod]; rfl
+    have : univ ×ˢ t = Φ ⁻¹' (snd ⁻¹' t) := by ext; simp [Φ]
     Homeomorph.Set.univ G |>.symm.prodCongr (.refl t) |>.trans
       ((Homeomorph.Set.prod _ t).symm) |>.trans (Homeomorph.setCongr this)
   let β : X × t ≃ₜ (snd ⁻¹' t) :=

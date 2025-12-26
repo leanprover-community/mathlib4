@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Double
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.CategoryTheory.Generator.Basic
+module
+
+public import Mathlib.Algebra.Homology.Double
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.CategoryTheory.Generator.Basic
 
 /-!
 # Generators of the category of homological complexes
@@ -15,6 +17,8 @@ If a category `C` has a separator, then `HomologicalComplex C c`
 has a separating family, and a separator when suitable coproducts exist.
 
 -/
+
+@[expose] public section
 
 universe t w v u
 

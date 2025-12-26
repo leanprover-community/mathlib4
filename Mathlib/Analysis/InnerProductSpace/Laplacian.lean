@@ -3,10 +3,12 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
 # The Laplacian
@@ -19,6 +21,8 @@ canonical covariant tensor of `E`, as defined and discussed in
 We show that the Laplacian is `ℝ`-linear on continuously differentiable functions, and establish the
 standard formula for computing the Laplacian in terms of orthonormal bases of `E`.
 -/
+
+@[expose] public section
 
 open Filter TensorProduct Topology
 

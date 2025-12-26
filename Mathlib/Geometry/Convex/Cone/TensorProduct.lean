@@ -3,9 +3,11 @@ Copyright (c) 2025 Bjørn Solheim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
-import Mathlib.Geometry.Convex.Cone.Dual
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor products of cones
@@ -42,6 +44,8 @@ We define the minimal and maximal tensor products of pointed cones:
 
 -/
 
+@[expose] public section
+
 open TensorProduct Module
 
 variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
@@ -71,8 +75,8 @@ theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {
       ∀ φ ∈ PointedCone.dual (dualPairing R G).flip C₁,
       ∀ ψ ∈ PointedCone.dual (dualPairing R H).flip C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2]
-  rfl
+  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2,
+    SetLike.mem_coe, mem_dual, LinearMap.flip_apply, dualPairing_apply]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)

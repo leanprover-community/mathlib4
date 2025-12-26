@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Action.Regular
-import Mathlib.MeasureTheory.Measure.ContinuousPreimage
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Dynamics.Ergodic.Action.Regular
+public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Ergodicity from minimality
@@ -27,6 +29,8 @@ We also prove that a continuous monoid homomorphism `f : G →* G` is ergodic,
 if it is surjective and the preimages of `1` under iterations of `f` are dense in the group.
 This theorem applies, e.g., to the map `z ↦ n • z` on the additive circle or a torus.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Set Function
 open scoped Pointwise Topology

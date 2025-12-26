@@ -3,8 +3,9 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 
@@ -19,6 +20,8 @@ by the trivial valuation which sends all non-zero elements to `1`.
 A trivial valuative relation is equivalent to the value group being isomorphic to `WithZero Unit`.
 
 -/
+
+@[expose] public section
 
 namespace ValuativeRel
 
