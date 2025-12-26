@@ -298,27 +298,19 @@ theorem one_coeFn_mul (f g : lp (fun _ : ℕ => R) 1) :
     2. Triangle inequality to bound Cauchy product by product of norms -/
 theorem one_norm_mul_le (f g : lp (fun _ : ℕ => R) 1) : ‖f * g‖ ≤ ‖f‖ * ‖g‖ := by
   rw [one_norm_eq_tsum, one_norm_eq_tsum f, one_norm_eq_tsum g]
-  -- Define the norm sequences
   let φ := fun k => ‖f k‖
   let ψ := fun l => ‖g l‖
-  have hφ_nn : ∀ k, 0 ≤ φ k := fun k => norm_nonneg _
-  have hψ_nn : ∀ l, 0 ≤ ψ l := fun l => norm_nonneg _
   have hφ : Summable φ := one_summable_norm f
   have hψ : Summable ψ := one_summable_norm g
-  -- The product of summable nonneg sequences is summable on ℕ × ℕ
   have hprod : Summable (fun x : ℕ × ℕ => φ x.1 * ψ x.2) :=
-    Summable.mul_of_nonneg hφ hψ hφ_nn hψ_nn
-  -- Rewrite product of tsum as tsum over antidiagonals (Mertens)
+    hφ.mul_of_nonneg hψ (fun _ => norm_nonneg _) (fun _ => norm_nonneg _)
   rw [hφ.tsum_mul_tsum_eq_tsum_sum_antidiagonal hψ hprod]
-  -- Now compare term-by-term
   refine Summable.tsum_le_tsum ?_ ?_ (summable_sum_mul_antidiagonal_of_summable_mul hprod)
-  · intro n
-    exact (norm_sum_le (antidiagonal n) _).trans
+  · exact fun n => (norm_sum_le (antidiagonal n) _).trans
       (sum_le_sum fun kl _ => norm_mul_le (f kl.1) (g kl.2))
-  · -- Summability of ‖(f*g)_n‖
-    have hmem := f.property.one_mul g.property
-    rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hmem
-    simpa using hmem
+  · simpa using (memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)).mp
+      (f.property.one_mul g.property)
+
 
 instance oneOne : One (lp (fun _ : ℕ => R) 1) where
   one := ⟨CauchyProduct.one, _root_.one_memℓp_one⟩
