@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Localization.Defs
 
 /-!
@@ -39,6 +41,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 @[expose] public section
 
+open Module
 
 namespace LocalizedModule
 
@@ -130,7 +133,7 @@ instance : Zero (LocalizedModule S M) :=
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
   refine ⟨fun a b ↦ ?_⟩
-  induction a,b using LocalizedModule.induction_on₂
+  induction a, b using LocalizedModule.induction_on₂
   exact mk_eq.mpr ⟨⟨0, h⟩, by simp only [Submonoid.mk_smul, zero_smul]⟩
 
 @[simp]
@@ -358,7 +361,7 @@ private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
   induction p with | _ m s
   induction q with | _ n t
   rw [smul_def, smul_def, mk_add_mk, mk_add_mk]
-  rw [show x • _ =  IsLocalization.mk' T _ _ • _ by rw [IsLocalization.mk'_sec (M := S) T]]
+  rw [show x • _ = IsLocalization.mk' T _ _ • _ by rw [IsLocalization.mk'_sec (M := S) T]]
   rw [← IsLocalization.mk'_cancel _ _ (IsLocalization.sec S x).2, mk'_smul_mk]
   congr 1
   · simp only [Submonoid.smul_def, smul_add, ← mul_smul, Submonoid.coe_mul]; ring_nf
@@ -372,7 +375,7 @@ set_option backward.privateInPublic true in
 private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
   induction p with | _ m s
-  rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ =  IsLocalization.mk' T _ _ • _ by
+  rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ = IsLocalization.mk' T _ _ • _ by
     rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y,
       ← IsLocalization.mk'_add, IsLocalization.mk'_cancel _ _ s], mk'_smul_mk, ← smul_assoc,
     ← smul_assoc, ← add_smul]
@@ -1200,7 +1203,7 @@ lemma map_mk' (h : M →ₗ[R] N) (x) (s : S) :
   rfl
 
 @[simp]
-lemma map_id : map S f f (.id ) = .id := by
+lemma map_id : map S f f (.id) = .id := by
   ext x
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   simp
@@ -1374,6 +1377,30 @@ namespace IsLocalizedModule
 variable {R M A N : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
   [CommRing A] [AddCommMonoid N] [Module A N] [Algebra R A] [Module R N] [IsScalarTower R A N]
   (f : M →ₗ[R] N)
+
+lemma isTorsionFree_of_forall_isRegular (S : Submonoid R) (hS : ∀ s ∈ S, s ≠ 0 → IsRegular s)
+    [IsTorsionFree R M] [IsLocalization S A] [IsLocalizedModule S f] : IsTorsionFree A N where
+  isSMulRegular c hc x y hxy := by
+    by_cases hS₀ : 0 ∈ S
+    · have : Subsingleton N := (IsLocalizedModule.subsingleton_iff S f).2 fun _ ↦ ⟨0, hS₀, by simp⟩
+      exact Subsingleton.elim ..
+    obtain ⟨⟨a, s⟩, rfl⟩ := IsLocalization.mk'_surjective S c
+    obtain ⟨⟨m₁, t₁⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
+    obtain ⟨⟨m₂, t₂⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
+    replace hS : ∀ s ∈ S, IsRegular s := fun s hs ↦ hS s hs <| ne_of_mem_of_not_mem hs hS₀
+    rw [IsLocalization.isRegular_mk' hS] at hc
+    have (s : S) (x y : M) : s • x = s • y ↔ x = y := (hS _ s.2).isSMulRegular.eq_iff
+    simp only [Function.uncurry_apply_pair, mk'_smul_mk', mk'_eq_mk'_iff, mul_smul, this,
+      exists_const] at hxy ⊢
+    simpa [smul_comm _ a, hc.isSMulRegular.eq_iff] using hxy
+
+lemma isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
+    [IsLocalization S A] [IsLocalizedModule S f] : Module.IsTorsionFree A N :=
+  isTorsionFree_of_forall_isRegular f S <| by simp [isRegular_iff_ne_zero]
+
+instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
+    IsTorsionFree (Localization S) (LocalizedModule S M) :=
+  isTorsionFree (LocalizedModule.mkLinearMap S M) S
 
 theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
     [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
