@@ -244,8 +244,7 @@ variable [LinearOrder ι] {x y : ∀ i, β i} {i : ι} {a : β i} [∀ i, Linear
 
 section Lex
 
-theorem apply_le_of_toLex_le (hxy : toLex x ≤ toLex y) (h : ∀ j < i, x j = y j) :
-    x i ≤ y i := by
+theorem apply_le_of_toLex (hxy : toLex x ≤ toLex y) (h : ∀ j < i, x j = y j) : x i ≤ y i := by
   contrapose! hxy
   apply not_le_of_gt
   use i
@@ -255,8 +254,7 @@ end Lex
 
 section Colex
 
-theorem apply_le_of_toColex_le (hxy : toColex x ≤ toColex y) (h : ∀ j > i, x j = y j) :
-    x i ≤ y i := by
+theorem apply_le_of_toColex (hxy : toColex x ≤ toColex y) (h : ∀ j > i, x j = y j) : x i ≤ y i := by
   contrapose! hxy
   apply not_le_of_gt
   use i

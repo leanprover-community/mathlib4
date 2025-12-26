@@ -62,11 +62,12 @@ private theorem le_sInf {s : Set (Πₗ i, α i)} {e : Πₗ i, α i}
     (h : ∀ b ∈ s, e ≤ b) : e ≤ sInf s := by
   by_contra! hs
   obtain ⟨a, ha⟩ := hs
-  refine ha.2.not_ge <| le_sInf_apply fun f hf hf' ↦ apply_le_of_toLex_le (h f hf) ?_
+  refine ha.2.not_ge <| le_sInf_apply fun f hf hf' ↦ apply_le_of_toLex (h f hf) ?_
   simp_all
 
 -- TODO: figure out how to use `to_dual` here
 
+@[no_expose]
 instance : SupSet (Πₗ i, α i) where
   sSup s := sInf (α := Πₗ i, (α i)ᵒᵈ) s
 
@@ -92,7 +93,7 @@ private theorem sSup_le {s : Set (Πₗ i, α i)} {e : Πₗ i, α i}
     (h : ∀ b ∈ s, b ≤ e) : sSup s ≤ e := by
   by_contra! hs
   obtain ⟨a, ha⟩ := hs
-  refine ha.2.not_ge <| sSup_apply_le fun f hf hf' ↦ apply_le_of_toLex_le (h f hf) ?_
+  refine ha.2.not_ge <| sSup_apply_le fun f hf hf' ↦ apply_le_of_toLex (h f hf) ?_
   simp_all
 
 noncomputable instance completeLattice : CompleteLattice (Πₗ i, α i) where
@@ -113,6 +114,7 @@ end Lex
 namespace Colex
 variable [WellFoundedGT ι]
 
+@[no_expose]
 instance : InfSet (Colex ((i : ι) → α i)) where
   sInf s := sInf (α := Πₗ i : ιᵒᵈ, α i) s
 
@@ -130,6 +132,7 @@ theorem le_sInf_apply {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex 
 
 -- TODO: figure out how to use `to_dual` here
 
+@[no_expose]
 instance : SupSet (Colex ((i : ι) → α i)) where
   sSup s := sSup (α := Πₗ i : ιᵒᵈ, α i) s
 
