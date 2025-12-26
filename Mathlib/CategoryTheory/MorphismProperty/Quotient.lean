@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 namespace MorphismProperty
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- Let `W : MorphismProperty C` and `homRel : HomRel C`. We say that `W` induces
 a class of morphisms on the quotient category by `homRel` if `homRel` is stable under
