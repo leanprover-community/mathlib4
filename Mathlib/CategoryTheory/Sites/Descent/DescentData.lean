@@ -20,9 +20,9 @@ when we replace `S` by an isomorphic object, or the family `f i : X i ⟶ S`
 by another family which generates the same sieve
 (see `Pseudofunctor.DescentData.pullFunctorEquivalence`).
 
-Given a presieve `R`, we introduce predicates `F.IsPrestackFor R` and `F.IsStackFor`
+Given a presieve `R`, we introduce predicates `F.IsPrestackFor R` and `F.IsStackFor R`
 saying the functor `F.DescentData (fun (f : R.category) ↦ f.obj.hom)` attached
-to `R` are respectively fully faithful or equivalences. We show that
+to `R` is respectively fully faithful or an equivalence. We show that
 `F` satisfies `F.IsPrestack J` for a Grothendieck topology `J` iff it
 satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
 
@@ -446,12 +446,10 @@ def subtypeCompatibleHomEquiv {M N : F.obj (.mk (op S))} :
 lemma subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
     {M N : F.obj (.mk (op S))} (φ : M ⟶ N) :
     subtypeCompatibleHomEquiv F f (Presieve.Arrows.toCompatible _ _
-      (F.presheafHomObjHomEquiv φ)) =
-      (F.toDescentData f).map φ := by
+      (F.presheafHomObjHomEquiv φ)) = (F.toDescentData f).map φ := by
   ext i
   simp [subtypeCompatibleHomEquiv, presheafHomObjHomEquiv, pullHom,
-    Category.assoc, ← Functor.map_comp,
-    Pseudofunctor.mapComp'_id_comp_hom_app_assoc,
+    ← Functor.map_comp, Pseudofunctor.mapComp'_id_comp_hom_app_assoc,
     Pseudofunctor.mapComp'_id_comp_inv_app]
 
 end DescentData
