@@ -13,32 +13,32 @@ public import Mathlib.Algebra.Central.End
 /-!
 # Center of the algebra of linear endomorphisms
 
-If `V` is an `R`-module, we say that an endomorphism `f : V →ₗ[R] V`
+If `V` is an `R`-module, we say that an endomorphism `f : Module.End R V`
 is a *homothety* with central ratio if there exists `a ∈ Set.center R`
 such that `f x = a • x` for all `x`.
+By `Module.End.mem_subsemiringCenter_iff`, these linear maps constitute
+the center of `Module.End R V`.
 (When `R` is commutative, we can write `f = a • LinearMap.id`.)
 
 In what follows, `V` is assumed to be a free `R`-module.
 
 * `LinearMap.commute_transvections_iff_of_basis`:
-if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvections
-(in a given basis), then it is an homothety whose central ratio.
-(Assumes that the basis is provided and has a non trivial set of indices.)
-
-* `LinearMap.mem_center_End_iff_of_free`:
-the center of `V →ₗ[R] V` consists of homotheties with central ratio.
+  if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvections
+  (in a given basis), then it is an homothety whose central ratio.
+  (Assumes that the basis is provided and has a non trivial set of indices.)
 
 * `LinearMap.exists_eq_smul_id_of_forall_notLinearIndependent`:
-over a commutative ring `R` which is a domain, an endomorphism `f : V →ₗ[R] V`
-of a free domain such that `v` and `f v` are not linearly independent,
-for all `v : V`, is a homothety.
+  over a commutative ring `R` which is a domain, an endomorphism `f : V →ₗ[R] V`
+  of a free domain such that `v` and `f v` are not linearly independent,
+  for all `v : V`, is a homothety.
 
 * `LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent`:
-a variant that does not assume that `R` is commutative.
-Then the homothety has central ratio.
+  a variant that does not assume that `R` is commutative.
+  Then the homothety has central ratio.
 
 * `LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis`:
-a variant that does not assume that `R` has the strong rank condition, but requires a basis.
+  a variant that does not assume that `R` has the strong rank condition,
+  but requires a basis.
 
 Note. In the noncommutative case, the last two results do not hold
 when the rank is equal to 1. Indeed, right multiplications
@@ -50,7 +50,7 @@ but they are not left multiplication by some element.
 
 @[expose] public section
 
-open Module LinearMap LinearEquiv Subsemiring Subring
+open Module LinearMap LinearEquiv Finsupp
 
 namespace LinearMap
 
@@ -59,7 +59,7 @@ variable {R V : Type*}
 theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
     [Module R V] {f : V →ₗ[R] V} {a : R}
     (hf : ∀ x, f x = a • x) :
-    f ∈ center (End R V) := by
+    f ∈ Subsemiring.center (End R V) := by
   simp only [Subsemiring.mem_center_iff]
   intro; ext; simp [hf]
 
@@ -77,7 +77,6 @@ theorem commute_transvections_iff_of_basis
     suffices ∀ x, f x = x by simpa using this
     intro; apply hV.allEq
   simp only [commute_iff_eq] at hcomm
-  let t (i j : ι) := LinearMap.transvection (b.coord i) (b j)
   replace hcomm (i j : ι) (hij : i ≠ j) (r : R) :
       r • f (b j) = b.coord i (f (b i)) • r • b j := by
     have := hcomm i j r hij
@@ -87,63 +86,17 @@ theorem commute_transvections_iff_of_basis
     by_cases hij : j = i
     · simp [hij]
     simpa using congr_arg (b.coord i) (hcomm j i hij 1)
-  have h1 (i : ι) : f (b i) = (b.coord i) (f (b i)) • b i := by
+  replace hcomm (i : ι) (r : R) : r • f (b i) = b.coord i (f (b i)) • r • b i := by
     obtain ⟨j, hji⟩ := exists_ne i
-    simpa [h_allEq j i] using hcomm j i hji 1
-  obtain ⟨i, j, hij⟩ := Nontrivial.exists_pair_ne (α := ι)
-  use b.coord i (f (b i))
-  suffices _ by
-    refine ⟨this, ?_⟩
-    intro x
-    rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply,
-      map_finsuppSum, Finsupp.smul_sum]
-    apply Finsupp.sum_congr
-    intro j _
-    rw [_root_.map_smul, ← mul_smul, ← this, mul_smul, h1 j, h_allEq j i]
-  intro r
-  simpa [h_allEq i j] using congr_arg (b.coord j) (hcomm i j hij r)
-
-/-- The center of linear endomorphisms of a free module
-consists of homotheties with central ratio. -/
-theorem mem_center_End_iff_of_free
-    [Ring R] [AddCommGroup V] [Module R V] [Free R V] {f : V →ₗ[R] V} :
-    f ∈ Subring.center (End R V) ↔ ∃ a ∈ Subring.center R, ∀ x, f x = a • x  := by
-  symm
-  refine ⟨fun ⟨a, hf, ha⟩ ↦ mem_center_of_apply_eq_smul ha, fun h ↦ ?_⟩
-  rcases subsingleton_or_nontrivial V with hV | hV
-  · use 1
-    simp only [one_mem, one_smul, true_and]
-    intro x
-    apply hV.allEq
-  let ι := Free.ChooseBasisIndex R V
-  let b : Basis ι R V := Free.chooseBasis R V
-  rw [Subring.mem_center_iff] at h
-  rcases subsingleton_or_nontrivial ι with hι | hι
-  · let i : ι := by exact Classical.ofNonempty
-    have : Unique ι := _root_.uniqueOfSubsingleton i
-    have hi (j : ι) : j = i := Subsingleton.allEq j i
-    have h' (x : V) : x = (b.coord i x) • b i := by
-      nth_rewrite 1 [← b.linearCombination_repr x]
-      simp [Finsupp.linearCombination_unique, Subsingleton.allEq default i]
-    use b.coord i (f (b i))
-    rw [Subring.mem_center_iff]
-    suffices ∀ r : R, Commute (b.coord i (f (b i))) r by
-      simp_rw [commute_iff_eq] at this
-      refine ⟨fun r ↦ (this r).symm, ?_⟩
-      intro x
-      rw [h' x, LinearMap.map_smul]
-      nth_rewrite 1 [h' (f (b i))]
-      simp only [← mul_smul, this]
-    intro r
-    let g : V →ₗ[R] V := {
-      toFun x := b.coord i x • r • b i
-      map_add' x y := by simp [add_smul]
-      map_smul' r x := by simp [mul_smul] }
-    specialize h g
-    rw [LinearMap.ext_iff] at h
-    simpa [commute_iff_eq, g] using congr(b.coord i $(h (b i)))
-  apply commute_transvections_iff_of_basis b
-  intros; rw [commute_iff_eq, h]
+    simpa [h_allEq j i] using hcomm j i hji r
+  let i : ι := Classical.ofNonempty
+  refine ⟨b.coord i (f (b i)),
+    fun r ↦ by simpa using congr(b.coord i $(hcomm i r)),
+    fun x ↦ ?_⟩
+  rw [← b.linearCombination_repr x, linearCombination_apply, map_finsuppSum, smul_sum]
+  apply sum_congr
+  intro j _
+  rw [_root_.map_smul, ← mul_smul, h_allEq i j, mul_smul, hcomm j]
 
 /-- Over a domain, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are colinear, for all `v : V`,
@@ -166,18 +119,17 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     ∃ a ∈ Subring.center R, ∀ x, f x = a • x := by
   have feq (i) : f (b i) = (b.coord i) (f (b i)) • b i := by
     classical
-    specialize h (b i)
-    simp only [LinearIndependent.pair_iff, not_forall] at h
-    obtain ⟨s, t, ⟨h, h'⟩⟩ := h
     rw [b.ext_elem_iff]
     intro j
-    simp only [Basis.coord_apply, _root_.map_smul, Basis.repr_self, Finsupp.smul_single,
+    simp only [LinearIndependent.pair_iff, not_forall] at h
+    obtain ⟨s, t, ⟨h, h'⟩⟩ := h (b i)
+    simp only [Basis.coord_apply, _root_.map_smul, Basis.repr_self, smul_single,
       smul_eq_mul, mul_one, Finsupp.single_apply]
     split_ifs with hj
     · simp [hj]
     · have : t = 0 ∨ b.repr (f (b i)) j = 0 := by
         rw [b.ext_elem_iff] at h
-        simpa [Finsupp.single_eq_of_ne' hj] using h j
+        simpa [single_eq_of_ne' hj] using h j
       apply Or.resolve_left this
       contrapose h'
       refine ⟨?_, h'⟩
@@ -185,53 +137,55 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
       contrapose hj
       apply b.linearIndependent.eq_of_smul_apply_eq_smul_apply s 0 i j hj
       simpa using h
-  obtain ⟨i, j, hij⟩ := Nontrivial.exists_pair_ne (α := ι)
-  set a := b.coord i (f (b i)) with a_def
-  have h' (j) (hij : i ≠ j) (r : R) : a * r = r * b.coord j (f (b j)) := by
+  have h' (i j) (hij : i ≠ j) (r : R) : b.coord i (f (b i)) * r = r * b.coord j (f (b j)) := by
     let x := b.repr.symm ((Finsupp.single i 1).update j r)
     specialize h x
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd,
       LinearIndependent.pair_iff, not_forall, not_and] at h
     obtain ⟨s, t, h, hst⟩ := h
-    simp only [b.ext_elem_iff, map_add, _root_.map_smul, Finsupp.coe_add, Finsupp.coe_smul,
+    simp only [b.ext_elem_iff, map_add, _root_.map_smul, coe_add, Finsupp.coe_smul,
       Pi.add_apply, Pi.smul_apply, smul_eq_mul, map_zero, Finsupp.coe_zero, Pi.zero_apply] at h
     have hx : x = b i + r • b j := by
-      simp only [Basis.repr_symm_apply, Finsupp.linearCombination_apply, x]
-      rw [← add_right_cancel_iff, Finsupp.sum_update_add] <;>
-        simp [Finsupp.single_eq_of_ne' hij, add_smul]
-    have h1 : s + t * a = 0 := by
-      specialize h i
-      simp only [hx, map_add, Basis.repr_self, _root_.map_smul,
-        Finsupp.coe_add, Pi.add_apply] at h
-      rw [← Basis.coord_apply, ← a_def, feq] at h
-      simpa [Finsupp.single_eq_of_ne hij] using h
+      simp only [Basis.repr_symm_apply, linearCombination_apply, x]
+      rw [← add_right_cancel_iff, sum_update_add] <;>
+        simp [single_eq_of_ne' hij, add_smul]
+    have h1 : s + t * (b.coord i (f (b i))) = 0 := by
+      suffices s + t * ((b.repr (f (b i))) i + r * (b.repr (f (b j))) i) = 0 by
+        rw [mul_add, ← add_assoc, ← mul_assoc, add_eq_zero_iff_eq_neg] at this
+        rw [Basis.coord_apply, this, feq]
+        simp [single_eq_of_ne hij]
+      simpa [hx, single_eq_of_ne hij] using h i
     have h2 : s * r + t * r * b.coord j (f (b j)) = 0 := by
-      specialize h j
-      simp only [hx, map_add, Basis.repr_self, _root_.map_smul,
-        Finsupp.coe_add, Pi.add_apply] at h
-      rw [← Basis.coord_apply, feq] at h
-      simpa [Finsupp.single_eq_of_ne' hij, ← mul_assoc] using h
+      suffices s * r + t * ((b.repr (f (b i))) j + r * (b.repr (f (b j))) j) = 0 by
+        rw [mul_add, ← add_assoc, add_right_comm, add_eq_zero_iff_eq_neg, ← mul_assoc] at this
+        rw [Basis.coord_apply, this, feq]
+        simp [single_eq_of_ne' hij]
+      simpa [hx, single_eq_same, single_eq_of_ne' hij] using h j
     rw [add_eq_zero_iff_eq_neg] at h1
     rw [h1, neg_mul, neg_add_eq_sub, mul_assoc, mul_assoc,
       ← mul_sub, mul_eq_zero, sub_eq_zero] at h2
     symm
     apply Or.resolve_left h2
     contrapose hst; simp [h1, hst]
-  replace feq (j) : f (b j) = a • b j := by
+  replace feq (i j) : f (b j) = b.coord i (f (b i)) • b j := by
     by_cases hij : i = j
-    · rw [← hij, feq, a_def]
-    · have := h' j hij 1
+    · rw [← hij, ← feq]
+    · have := h' i j hij 1
       simp only [mul_one, one_mul] at this
       rw [feq, ← this]
-  have ha (r) : r * a = a * r := by simp [h' j hij r, feq]
-  refine ⟨a, ?_, ?_⟩
-  · simp [Subring.mem_center_iff, ha]
+  let i : ι := Classical.ofNonempty
+  have ha (r) : r * (b.coord i (f (b i))) = (b.coord i (f (b i))) *r := by
+    obtain ⟨j, hij⟩ := exists_ne i
+    rw [h' i j (Ne.symm hij), feq i j, feq i i]
+    simp
+  refine ⟨b.coord i (f (b i)), ?_, ?_⟩
+  · simpa [Subring.mem_center_iff] using ha
   intro x
-  rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply,
-    map_finsuppSum, Finsupp.smul_sum]
+  rw [← b.linearCombination_repr x, linearCombination_apply,
+    map_finsuppSum, smul_sum]
   congr
   ext j r
-  simp only [LinearMap.map_smul, feq, ← mul_smul, ha r]
+  simp only [LinearMap.map_smul, feq i j, ← mul_smul, ha r]
 
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are colinear, for all `v : V`,
@@ -281,7 +235,7 @@ theorem exists_eq_smul_id_of_forall_notLinearIndependent
     apply b.ext
     intro i
     nth_rewrite 1 [← b.linearCombination_repr (f (b i))]
-    simp [Finsupp.linearCombination_unique]
+    simp [linearCombination_unique]
   obtain ⟨a, _, hfa⟩ := exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent hV1 h
   refine ⟨a, by ext; simp [hfa]⟩
 
