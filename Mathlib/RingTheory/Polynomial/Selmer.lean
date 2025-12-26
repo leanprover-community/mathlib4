@@ -260,7 +260,6 @@ attribute [local instance] Gal.splits_ℚ_ℂ
 
 open NumberField
 
--- #32574
 theorem _root_.Polynomial.Splits.of_splits_map_of_injective {R : Type*} [CommRing R] {f : R[X]}
     {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hi : Function.Injective i)
     (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f := by
@@ -269,6 +268,13 @@ theorem _root_.Polynomial.Splits.of_splits_map_of_injective {R : Type*} [CommRin
   refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i hi ?_⟩
   conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
+
+theorem _root_.Polynomial.ncard_rootSet_le {R : Type*}
+    (S : Type*) [CommRing R] [CommRing S] [IsDomain S]
+    [Algebra R S] (f : R[X]) : (f.rootSet S).ncard ≤ f.natDegree := by
+  classical
+  grw [rootSet, Set.ncard_coe_finset, Multiset.toFinset_card_le]
+  exact f.card_roots_map_le_natDegree
 
 theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
@@ -346,16 +352,9 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
     )⟩
     exact ⟨y, Subtype.ext_iff.mp hy⟩
   have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
-  refine tada' (S := R) f₀ hf₀ h1 G (NumberField.supr_inertia_eq_top K G) ?_
-  intro m
+  refine tada' (S := R) f₀ hf₀ h1 G (NumberField.supr_inertia_eq_top K G) fun m ↦ ?_
   let := Ideal.Quotient.field m.asIdeal
-  have h' : (f₀.rootSet R).ncard ≤ f₀.natDegree := by
-    -- this should be a lemma
-    rw [rootSet, Set.ncard_coe_finset]
-    grw [Multiset.toFinset_card_le]
-    rw [aroots_def]
-    exact f₀.card_roots_map_le_natDegree
-  refine le_trans h' (h (R ⧸ m.asIdeal) ?_)
+  refine le_trans (f₀.ncard_rootSet_le R) (h (R ⧸ m.asIdeal) ?_)
   rw [IsScalarTower.algebraMap_eq ℤ R (R ⧸ m.asIdeal), ← Polynomial.map_map]
   exact h1.map _
 
