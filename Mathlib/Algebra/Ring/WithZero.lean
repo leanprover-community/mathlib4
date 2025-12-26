@@ -3,12 +3,16 @@ Copyright (c) 2020 Mario Carneiro, Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.WithZero
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Adjoining a zero to a semiring
 -/
+
+@[expose] public section
 
 namespace WithZero
 variable {α : Type*}
@@ -31,7 +35,6 @@ instance instDistrib [Distrib α] : Distrib (WithZero α) where
   left_distrib := left_distrib
   right_distrib := right_distrib
 
-instance instSemiring [Semiring α] : Semiring (WithZero α) :=
-  { addMonoidWithOne, addCommMonoid, mulZeroClass, monoidWithZero, instDistrib with }
+instance instSemiring [Semiring α] : Semiring (WithZero α) where
 
 end WithZero

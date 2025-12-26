@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Kaehler
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Etale.Kaehler
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Support
 
 /-!
 # Smooth locus of an algebra
@@ -22,9 +24,11 @@ Some of them are true for arbitrary algebras but the proof is substantially hard
 - `Algebra.isOpen_smoothLocus` : The smooth locus is open.
 -/
 
+@[expose] public section
+
 universe u
 
-variable (R A : Type u) [CommRing R] [CommRing A] [Algebra R A]
+variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A]
 
 namespace Algebra
 
@@ -50,24 +54,24 @@ variable {R A}
 
 attribute [local instance] Module.finitePresentation_of_projective in
 lemma smoothLocus_eq_compl_support_inter [EssFiniteType R A] :
-    smoothLocus R A = (Module.support A (H1Cotangent R A))ᶜ ∩ Module.freeLocus A (Ω[A⁄R]) := by
+    smoothLocus R A = (Module.support A (H1Cotangent R A))ᶜ ∩ Module.freeLocus A Ω[A⁄R] := by
   ext p
-  simp only [Set.mem_inter_iff, Set.mem_compl_iff, Module.not_mem_support_iff,
+  simp only [Set.mem_inter_iff, Set.mem_compl_iff, Module.notMem_support_iff,
     Module.mem_freeLocus]
-  refine Algebra.FormallySmooth.iff_subsingleton_and_projective.trans ?_
+  refine (Algebra.formallySmooth_iff _ _).trans (and_comm.trans ?_)
   congr! 1
   · have := IsLocalizedModule.iso p.asIdeal.primeCompl
       (H1Cotangent.map R R A (Localization.AtPrime p.asIdeal))
     exact this.subsingleton_congr.symm
-  · trans Module.Free (Localization.AtPrime p.asIdeal) (Ω[Localization.AtPrime p.asIdeal⁄R])
+  · trans Module.Free (Localization.AtPrime p.asIdeal) Ω[Localization.AtPrime p.asIdeal⁄R]
     · have : EssFiniteType A (Localization.AtPrime p.asIdeal) :=
         .of_isLocalization _ p.asIdeal.primeCompl
       have : EssFiniteType R (Localization.AtPrime p.asIdeal) := .comp _ A _
       exact ⟨fun _ ↦ Module.free_of_flat_of_isLocalRing, fun _ ↦ inferInstance⟩
     · have := IsLocalizedModule.iso p.asIdeal.primeCompl
         (KaehlerDifferential.map R R A (Localization.AtPrime p.asIdeal))
-      have := LinearEquiv.ofBijective (this.extendScalarsOfIsLocalization
-        p.asIdeal.primeCompl (Localization.AtPrime p.asIdeal)) this.bijective
+      have := this.extendScalarsOfIsLocalization
+        p.asIdeal.primeCompl (Localization.AtPrime p.asIdeal)
       exact ⟨fun H ↦ H.of_equiv' this.symm, fun H ↦ H.of_equiv' this⟩
 
 lemma basicOpen_subset_smoothLocus_iff [FinitePresentation R A] {f : A} :
@@ -76,16 +80,15 @@ lemma basicOpen_subset_smoothLocus_iff [FinitePresentation R A] {f : A} :
   rw [smoothLocus_eq_compl_support_inter, Set.subset_inter_iff, Set.subset_compl_comm,
     PrimeSpectrum.basicOpen_eq_zeroLocus_compl, compl_compl,
     ← LocalizedModule.subsingleton_iff_support_subset,
-    Algebra.FormallySmooth.iff_subsingleton_and_projective]
+    Algebra.formallySmooth_iff, iff_comm, and_comm]
   congr! 1
   · have := IsLocalizedModule.iso (.powers f) (H1Cotangent.map R R A (Localization.Away f))
     rw [this.subsingleton_congr]
   · rw [← PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Module.basicOpen_subset_freeLocus_iff]
     have := IsLocalizedModule.iso (.powers f)
         (KaehlerDifferential.map R R A (Localization.Away f))
-    have := LinearEquiv.ofBijective (this.extendScalarsOfIsLocalization
-      (.powers f) (Localization.Away f)) this.bijective
-    exact ⟨fun _ ↦ .of_equiv this, fun _ ↦ .of_equiv this.symm⟩
+    have := this.extendScalarsOfIsLocalization (.powers f) (Localization.Away f)
+    exact ⟨fun _ ↦ .of_equiv this.symm, fun _ ↦ .of_equiv this⟩
 
 lemma basicOpen_subset_smoothLocus_iff_smooth [FinitePresentation R A] {f : A} :
     ↑(PrimeSpectrum.basicOpen f) ⊆ smoothLocus R A ↔
@@ -101,7 +104,7 @@ lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     ← basicOpen_subset_smoothLocus_iff]
   simp
 
-lemma smoothLocus_comap_of_isLocalization {Af : Type u} [CommRing Af] [Algebra A Af] [Algebra R Af]
+lemma smoothLocus_comap_of_isLocalization {Af : Type*} [CommRing Af] [Algebra A Af] [Algebra R Af]
     [IsScalarTower R A Af] (f : A) [IsLocalization.Away f Af] :
     PrimeSpectrum.comap (algebraMap A Af) ⁻¹' smoothLocus R A = smoothLocus R Af := by
   ext p
@@ -129,8 +132,7 @@ lemma isOpen_smoothLocus [FinitePresentation R A] : IsOpen (smoothLocus R A) := 
   have : IsOpen (smoothLocus R Af) := by
     have := IsLocalizedModule.iso (.powers f)
       (KaehlerDifferential.map R R A (Localization.Away f))
-    have := LinearEquiv.ofBijective (this.extendScalarsOfIsLocalization
-      (.powers f) (Localization.Away f)) this.bijective
+    have := this.extendScalarsOfIsLocalization (.powers f) (Localization.Away f)
     have := Module.Projective.of_equiv this
     rw [smoothLocus_eq_compl_support_inter, Module.support_eq_zeroLocus]
     exact (isClosed_zeroLocus _).isOpen_compl.inter Module.isOpen_freeLocus

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Properties of objects which hold for a zero object
@@ -16,13 +18,15 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 
 -/
 
-universe v u
+@[expose] public section
+
+universe v v' u u'
 
 namespace CategoryTheory
 
 open Limits ZeroObject
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace ObjectProperty
 
@@ -54,6 +58,29 @@ instance [HasZeroObject C] : (⊤ : ObjectProperty C).ContainsZero where
 instance [HasZeroObject C] : ContainsZero (IsZero (C := C)) where
   exists_zero := ⟨0, isZero_zero C, isZero_zero C⟩
 
+instance [P.ContainsZero] [HasZeroMorphisms C] [HasZeroMorphisms D]
+    (F : C ⥤ D) [F.PreservesZeroMorphisms] : (P.map F).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, h₁, h₂⟩ := P.exists_prop_of_containsZero
+    exact ⟨F.obj Z, F.map_isZero h₁, P.prop_map_obj F h₂⟩
+
+instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms]
+    [HasZeroMorphisms C] [HasZeroMorphisms D]
+    (F : D ⥤ C) [F.PreservesZeroMorphisms] [HasZeroObject D] :
+    (P.inverseImage F).ContainsZero where
+  exists_zero :=
+    ⟨0, isZero_zero D, P.prop_of_isZero (F.map_isZero (isZero_zero D))⟩
+
+instance [P.ContainsZero] : P.isoClosure.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z, hZ, P.le_isoClosure _ hP⟩
+
 end ObjectProperty
+
+/-- Given a functor `F : C ⥤ D`, this is the property of objects of `C`
+satisfies by those `X : C` such that `IsZero (F.obj X)`. -/
+abbrev Functor.kernel (F : C ⥤ D) : ObjectProperty C :=
+  ObjectProperty.inverseImage IsZero F
 
 end CategoryTheory

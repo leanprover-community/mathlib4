@@ -3,7 +3,9 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Combinatorics.Young.YoungDiagram
+module
+
+public import Mathlib.Combinatorics.Young.YoungDiagram
 
 /-!
 # Semistandard Young tableaux
@@ -41,6 +43,8 @@ Semistandard Young tableau
 <https://en.wikipedia.org/wiki/Young_tableau>
 
 -/
+
+@[expose] public section
 
 
 /-- A semistandard Young tableau is a filling of the cells of a Young diagram by natural
@@ -126,10 +130,8 @@ theorem col_weak {μ : YoungDiagram} (T : SemistandardYoungTableau μ) {i1 i2 j 
 def highestWeight (μ : YoungDiagram) : SemistandardYoungTableau μ where
   entry i j := if (i, j) ∈ μ then i else 0
   row_weak' hj hcell := by
-    simp only
     rw [if_pos hcell, if_pos (μ.up_left_mem (by rfl) (le_of_lt hj) hcell)]
   col_strict' hi hcell := by
-    simp only
     rwa [if_pos hcell, if_pos (μ.up_left_mem (le_of_lt hi) (by rfl) hcell)]
   zeros' not_cell := if_neg not_cell
 

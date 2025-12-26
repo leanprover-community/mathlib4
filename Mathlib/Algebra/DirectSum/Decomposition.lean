@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Submodule.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
@@ -27,6 +29,8 @@ we choose to avoid heavily bundling `DirectSum.decompose`, instead making copies
 `AddEquiv`, `LinearEquiv`, etc. This means we have to repeat statements that follow from these
 bundled homs, but means we don't have to repeat statements for different types of decomposition.
 -/
+
+@[expose] public section
 
 
 variable {ι R M σ : Type*}
@@ -97,9 +101,10 @@ omit [AddSubmonoidClass σ M] in
 def SetLike.IsHomogeneous {P : Type*} [SetLike P M] (p : P) : Prop :=
   ∀ (i : ι) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
 
-protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
-    (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
-    ∀ m, p m := by
+@[elab_as_elim]
+protected theorem Decomposition.inductionOn {motive : M → Prop} (zero : motive 0)
+    (homogeneous : ∀ {i} (m : ℳ i), motive (m : M))
+    (add : ∀ m m' : M, motive m → motive m' → motive (m + m')) : ∀ m, motive m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
     (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
   haveI t : DirectSum.Decomposition ℳ' :=
@@ -110,7 +115,7 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (DirectSum.IsInternal.addSubmonoid_iSup_eq_top ℳ' (Decomposition.isInternal ℳ')).symm ▸ trivial
   -- Porting note: needs to use @ even though no implicit argument is provided
   exact fun m ↦ @AddSubmonoid.iSup_induction _ _ _ ℳ' _ _ (mem m)
-    (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
+    (fun i m h ↦ homogeneous ⟨m, h⟩) zero add
 --  exact fun m ↦
 --    AddSubmonoid.iSup_induction ℳ' (mem m) (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
 
@@ -134,7 +139,7 @@ theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose �
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
     (decompose ℳ x j : M) = 0 := by
-  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij, ZeroMemClass.coe_zero]
+  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij.symm, ZeroMemClass.coe_zero]
 
 theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
     i = j := by
@@ -188,6 +193,16 @@ theorem AddSubmonoidClass.IsHomogeneous.mem_iff
   refine ⟨fun hx i ↦ hp i hx, fun hx ↦ ?_⟩
   rw [← DirectSum.sum_support_decompose ℳ x]
   exact sum_mem (fun i _ ↦ hx i)
+
+theorem AddSubmonoidClass.IsHomogeneous.ext
+    {ℳ : ι → σ} [Decomposition ℳ] {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
+    {p q : P} (hp : SetLike.IsHomogeneous ℳ p) (hq : SetLike.IsHomogeneous ℳ q)
+    (hpq : ∀ i, ∀ m ∈ ℳ i, m ∈ p ↔ m ∈ q) :
+    p = q := by
+  refine SetLike.ext fun m ↦ ?_
+  rw [AddSubmonoidClass.IsHomogeneous.mem_iff ℳ p hp,
+    AddSubmonoidClass.IsHomogeneous.mem_iff ℳ q hq]
+  exact forall_congr' fun i ↦ hpq i _ (decompose ℳ _ i).2
 
 end AddCommMonoid
 

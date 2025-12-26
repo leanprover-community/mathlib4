@@ -3,9 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init
-import Batteries.Util.ExtendedBinder
-import Lean.Elab.Term
+module
+
+public import Mathlib.Init
+public import Batteries.Util.ExtendedBinder
 
 /-!
 # Sets
@@ -21,7 +22,7 @@ Given a type `X` and a predicate `p : X → Prop`:
 * `{a | p a} : Set X` : a more concise notation for `{a : X | p a}`
 * `{f x y | (x : X) (y : Y)} : Set Z` : a more concise notation for `{z : Z | ∃ x y, f x y = z}`
 * `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of
-   its elements satisfying `p`.
+  its elements satisfying `p`.
 
 ## Implementation issues
 
@@ -29,6 +30,8 @@ As in Lean 3, `Set X := X → Prop`
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
 -/
+
+@[expose] public section
 
 open Lean Elab Term Meta Batteries.ExtendedBinder
 
@@ -59,6 +62,8 @@ instance : Membership α (Set α) :=
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))
 
+attribute [local ext] ext in
+attribute [grind ext] ext
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 
@@ -66,7 +71,7 @@ Note that you should **not** use this definition directly, but instead write `s 
 protected def Subset (s₁ s₂ : Set α) :=
   ∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂
 
-/-- Porting note: we introduce `≤` before `⊆` to help the unifier when applying lattice theorems
+/-- We introduce `≤` before `⊆` to help the unifier when applying lattice theorems
 to subset hypotheses. -/
 instance : LE (Set α) :=
   ⟨Set.Subset⟩
@@ -118,7 +123,7 @@ See also
   one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]
-def elabSetBuilder : TermElab
+meta def elabSetBuilder : TermElab
   | `({ $x:ident | $p }), expectedType? => do
     elabTerm (← `(setOf fun $x:ident ↦ $p)) expectedType?
   | `({ $x:ident : $t | $p }), expectedType? => do
@@ -129,7 +134,7 @@ def elabSetBuilder : TermElab
 
 /-- Unexpander for set builder notation. -/
 @[app_unexpander setOf]
-def setOf.unexpander : Lean.PrettyPrinter.Unexpander
+meta def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
   | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
@@ -160,17 +165,17 @@ Note that if the type ascription is left out and `p` can be interpreted as an ex
 then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
 be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
 -/
-macro (name := macroPattSetBuilder) (priority := low-1)
+macro (name := macroPattSetBuilder) (priority := low - 1)
   "{" pat:term " : " t:term " | " p:term "}" : term =>
   `({ x : $t | match x with | $pat => $p })
 
 @[inherit_doc macroPattSetBuilder]
-macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
+macro (priority := low - 1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
 /-- Pretty printing for set-builder notation with pattern matching. -/
 @[app_unexpander setOf]
-def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
+meta def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
       if x == y then
         `({ $pat:term | $p:term })
@@ -238,7 +243,7 @@ instance : SDiff (Set α) := ⟨Set.diff⟩
 /-- `𝒫 s` is the set of all subsets of `s`. -/
 def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
-@[inherit_doc] prefix:100 "𝒫" => powerset
+@[inherit_doc] prefix:100 "𝒫 " => powerset
 
 universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that

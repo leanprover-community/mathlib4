@@ -3,13 +3,18 @@ Copyright (c) 2020 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.Topology.NoetherianSpace
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.Topology.NoetherianSpace
 
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -36,6 +41,12 @@ lemma finite_setOf_isMin :
   refine Set.Finite.of_finite_image (f := asIdeal) ?_ this.injOn
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
+
+lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
+    I.minimalPrimes.Finite := by
+  rw [I.minimalPrimes_eq_comap]
+  apply Set.Finite.image
+  apply minimalPrimes.finite_of_isNoetherianRing
 
 end IsNoetherianRing
 

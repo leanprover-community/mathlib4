@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Products.Bifunctor
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Products.Basic
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Products.Bifunctor
 
 /-!
 # A Fubini theorem for categorical (co)limits
@@ -34,13 +36,15 @@ in terms of the uncurried functor.
 All statements have their counterpart for colimits.
 -/
 
+@[expose] public section
 
-open CategoryTheory
+
+open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 
-variable {J K : Type*} [Category J] [Category K]
-variable {C : Type*} [Category C]
+variable {J K : Type*} [Category* J] [Category* K]
+variable {C : Type*} [Category* C]
 variable (F : J ⥤ K ⥤ C) (G : J × K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?
@@ -51,9 +55,9 @@ structure DiagramOfCones where
   obj : ∀ j : J, Cone (F.obj j)
   /-- For each map, a map of cones. -/
   map : ∀ {j j' : J} (f : j ⟶ j'), (Cones.postcompose (F.map f)).obj (obj j) ⟶ obj j'
-  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
+  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
-    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
+    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
 
 /-- A structure carrying a diagram of cocones over the functors `F.obj j`.
 -/
@@ -62,9 +66,9 @@ structure DiagramOfCocones where
   obj : ∀ j : J, Cocone (F.obj j)
   /-- For each map, a map of cocones. -/
   map : ∀ {j j' : J} (f : j ⟶ j'), (obj j) ⟶ (Cocones.precompose (F.map f)).obj (obj j')
-  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
+  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
-    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
+    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
 
 variable {F}
 
@@ -102,25 +106,10 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
             π :=
               { app := fun k => c.π.app (j, k)
                 naturality := fun k k' f => by
-                  dsimp; simp only [Category.id_comp]
-                  have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
-                  dsimp at this
-                  simp? at this says
-                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
-                  exact this } }
+                  simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f) } }
       naturality := fun j j' f =>
         (Q j').hom_ext
-          (by
-            dsimp
-            intro k
-            simp only [Limits.ConeMorphism.w, Limits.Cones.postcompose_obj_π,
-              Limits.IsLimit.fac_assoc, Limits.IsLimit.fac, NatTrans.comp_app, Category.id_comp,
-              Category.assoc]
-            have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)
-            dsimp at this
-            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id,
-              NatTrans.id_app] at this
-            exact this) }
+          (fun k => by simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)) }
 
 /-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
 we can construct a cone over the diagram consisting of the cone points from `D`.
@@ -135,6 +124,7 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
           π := { app k := c.π.app (j, k) } }
       naturality {_ j'} _ := (Q j').hom_ext (by simp) }
 
+open scoped Prod in
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
 -/
@@ -153,7 +143,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
                   conv_lhs =>
                     arg 1; equals (F.map (𝟙 _)).app _ ≫  (F.obj j).map f =>
                       simp
-                  conv_lhs => arg 1; rw [← uncurry_obj_map F ((𝟙 j,f) : (j,k) ⟶ (j,k'))]
+                  conv_lhs => arg 1; rw [← uncurry_obj_map F (𝟙 j ×ₘ f)]
                   rw [c.w] } }
       naturality := fun j j' f =>
         (Q j).hom_ext
@@ -161,12 +151,11 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
             dsimp
             intro k
             simp only [Limits.CoconeMorphism.w_assoc, Limits.Cocones.precompose_obj_ι,
-              Limits.IsColimit.fac_assoc, Limits.IsColimit.fac, NatTrans.comp_app, Category.comp_id,
+              Limits.IsColimit.fac, NatTrans.comp_app, Category.comp_id,
               Category.assoc]
             have := @NatTrans.naturality _ _ _ _ _ _ c.ι (j, k) (j', k) (f, 𝟙 k)
             dsimp at this
-            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id,
-              NatTrans.id_app] at this
+            simp only [Category.comp_id, CategoryTheory.Functor.map_id] at this
             exact this) }
 
 /-- Given a diagram `D` of colimit cocones under the `curry.obj G j`, and a cocone under `G`,
@@ -221,6 +210,39 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     rw [← w j]
     simp
 
+/-- If `coneOfConeUncurry Q c` is a limit cone then `c` is in fact a limit cone.
+-/
+def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
+    {c : Cone (uncurry.obj F)} (P : IsLimit (coneOfConeUncurry Q c)) : IsLimit c :=
+  -- These constructions are used in various fields of the proof so we abstract them here.
+  letI E (j : J) : Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  letI S (s : Cone (uncurry.obj F)) : Cone D.conePoints :=
+    { pt := s.pt
+      π :=
+        { app j := (Q j).lift <|
+            (Cones.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K)
+          naturality {j' j} f := (Q j).hom_ext <|
+            fun k ↦ by simpa [E] using s.π.naturality ((Prod.sectL J k).map f) } }
+  { lift s := P.lift (S s)
+    fac s p := by
+      have h1 := (Q p.1).fac ((Cones.postcompose (E p.1).hom).obj <|
+        s.whisker (Prod.sectR p.1 K)) p.2
+      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
+        Cones.postcompose_obj_pt, Cone.whisker_pt, Cones.postcompose_obj_π,
+        Cone.whisker_π, NatTrans.comp_app, Functor.const_obj_obj, whiskerLeft_app,
+        NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id, E] at h1
+      have h2 := (P.fac (S s) p.1)
+      dsimp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
+        Functor.const_obj_obj, DiagramOfCones.conePoints_obj, DiagramOfCones.conePoints_map,
+        Functor.const_obj_map, id_eq, Cones.postcompose_obj_pt, Cone.whisker_pt,
+        Cones.postcompose_obj_π, Cone.whisker_π, NatTrans.comp_app, whiskerLeft_app,
+        NatIso.ofComponents_hom_app, Iso.refl_hom, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
+        eq_mpr_eq_cast, coneOfConeUncurry_pt, coneOfConeUncurry_π_app, S, E] at h2 ⊢
+      simp [← h1, ← h2]
+    uniq s f hf := P.uniq (s := S s) _ <|
+      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
+
 /-- `coconeOfCoconeUncurry Q c` is a colimit cocone when `c` is a colimit cocone.
 -/
 def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj j))
@@ -231,13 +253,13 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
         ι :=
           { app := fun p => (D.obj p.1).ι.app p.2 ≫ s.ι.app p.1
             naturality := fun p p' f => by
-              dsimp; simp only [Category.id_comp, Category.assoc]
+              dsimp; simp only [Category.assoc]
               rcases p with ⟨j, k⟩
               rcases p' with ⟨j', k'⟩
               rcases f with ⟨fj, fk⟩
               dsimp
               slice_lhs 2 3 => rw [(D.obj j').ι.naturality]
-              simp only [Functor.const_obj_map, Category.id_comp, Category.assoc]
+              simp only [Functor.const_obj_map, Category.assoc]
               have w := (D.map fj).w k
               dsimp at w
               slice_lhs 1 2 => rw [← w]
@@ -258,6 +280,40 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     dsimp
     rw [← w j]
     simp
+
+/-- If `coconeOfCoconeUncurry Q c` is a colimit cocone then `c` is in fact a colimit
+cocone. -/
+def IsColimit.ofCoconeUncurry {D : DiagramOfCocones F}
+    (Q : ∀ j, IsColimit (D.obj j)) {c : Cocone (uncurry.obj F)}
+    (P : IsColimit (coconeOfCoconeUncurry Q c)) : IsColimit c :=
+  -- These constructions are used in various fields of the proof so we abstract them here.
+  letI E (j : J) : (Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j) :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  letI S (s : Cocone (uncurry.obj F)) : Cocone D.coconePoints :=
+    { pt := s.pt
+      ι :=
+        { app j := (Q j).desc <|
+            (Cocones.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K)
+          naturality {j j'} f := (Q j).hom_ext <|
+            fun k ↦ by simpa [E] using s.ι.naturality ((Prod.sectL J k).map f) } }
+  { desc s := P.desc (S s)
+    fac s p := by
+      have h1 := (Q p.1).fac ((Cocones.precompose (E p.1).inv).obj <|
+        s.whisker (Prod.sectR p.1 K)) p.2
+      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
+        Cocones.precompose_obj_pt, Cocone.whisker_pt, Functor.const_obj_obj,
+        Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
+        Iso.refl_inv, whiskerLeft_app, Category.id_comp, E] at h1
+      have h2 := (P.fac (S s) p.1)
+      dsimp only [DiagramOfCocones.coconePoints_obj, Functor.comp_obj, Prod.sectR_obj,
+        uncurry_obj_obj, NatTrans.id_app, Functor.const_obj_obj, DiagramOfCocones.coconePoints_map,
+        Functor.const_obj_map, id_eq, Cocones.precompose_obj_pt, Cocone.whisker_pt,
+        Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
+        Iso.refl_inv, whiskerLeft_app, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
+        eq_mpr_eq_cast, coconeOfCoconeUncurry_pt, coconeOfCoconeUncurry_ι_app, S, E] at h2 ⊢
+      simp [← h1, ← h2]
+    uniq s f hf := P.uniq (s := S s) _ <|
+      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
 
 section
 
@@ -343,11 +399,10 @@ theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
   dsimp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
   simp
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ j ≫ limit.π _ k) := by
   rw [← cancel_epi (limitUncurryIsoLimitCompLim F).hom]
   simp
 
@@ -390,10 +445,11 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
       naturality {x y} := fun ⟨f₁, f₂⟩ ↦ by
         have := (Q.obj y.1).w f₂
         dsimp [Q] at this ⊢
-        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁)]
+        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁),
+          Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
+          G.map_comp_assoc, ← curry_obj_map_app, ← curry_obj_obj_map]
         dsimp
-        simp [Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
-          G.map_comp, ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
+        simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this]} }
 
 
 /-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.
@@ -463,22 +519,18 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
           (NatIso.ofComponents fun _ => by rfl) ≪≫
         limitUncurryIsoLimitCompLim _
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k =
-      (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ k ≫ limit.π _ j) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
   simp [Equivalence.counit]
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
--- See note [dsimp, simp]
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
     (limitFlipCompLimIsoLimitCompLim F).inv ≫ limit.π _ k ≫ limit.π _ j =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
-  dsimp [limitFlipCompLimIsoLimitCompLim]
-  simp
+      (limit.π _ j ≫ limit.π _ k) := by
+  simp [limitFlipCompLimIsoLimitCompLim]
 
 end
 
@@ -499,7 +551,7 @@ noncomputable def colimitFlipCompColimIsoColimitCompColim :
 theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
     colimit.ι (F.flip.obj k) j ≫ colimit.ι (F.flip ⋙ colim) k ≫
       (colimitFlipCompColimIsoColimitCompColim F).hom =
-        (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F⋙ colim)) := by
+        (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   slice_lhs 1 3 => simp only []
   simp [Equivalence.unit]
@@ -525,7 +577,7 @@ the limit of the limits of the functors `G.obj (j, _)`.
 -/
 noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙ lim) := by
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
-  haveI : Limits.HasLimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasLimitOfIso i
+  haveI : Limits.HasLimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasLimit_of_iso i
   trans limit (uncurry.obj ((@curry J _ K _ C _).obj G))
   · apply HasLimit.isoOfNatIso i
   · exact limitUncurryIsoLimitCompLim ((@curry J _ K _ C _).obj G)
@@ -535,11 +587,10 @@ theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   simp [limitIsoLimitCurryCompLim, Trans.simple]
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_inv_π {j} {k} :
     (limitIsoLimitCurryCompLim G).inv ≫ limit.π _ (j, k) =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ j ≫ limit.π _ k) := by
   rw [← cancel_epi (limitIsoLimitCurryCompLim G).hom]
   simp
 
@@ -555,7 +606,7 @@ the colimit of the colimits of the functors `G.obj (j, _)`.
 -/
 noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry.obj G ⋙ colim) := by
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
-  haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimitOfIso i.symm
+  haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimit_of_iso i.symm
   trans colimit (uncurry.obj ((@curry J _ K _ C _).obj G))
   · apply HasColimit.isoOfNatIso i
   · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
@@ -563,7 +614,7 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι ((curry.obj G).obj j) k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫
-      (colimitIsoColimitCurryCompColim G).inv  = colimit.ι _ (j, k) := by
+      (colimitIsoColimitCurryCompColim G).inv = colimit.ι _ (j, k) := by
   simp [colimitIsoColimitCurryCompColim, Trans.simple, colimitUncurryIsoColimitCompColim]
 
 @[simp, reassoc]
@@ -592,11 +643,10 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
     _ ≅ limit G := HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ limit (curry.obj G ⋙ lim) := limitIsoLimitCurryCompLim _
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k =
-      (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ k ≫ limit.π _ j) := by
   dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim, Equivalence.counit]
   rw [Category.assoc, Category.assoc, limitIsoLimitCurryCompLim_hom_π_π,
     HasLimit.isoOfEquivalence_hom_π]
@@ -604,11 +654,10 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   rw [← prod_id, G.map_id]
   simp
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).inv ≫ limit.π _ k ≫ limit.π _ j =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ j ≫ limit.π _ k) := by
   simp [limitCurrySwapCompLimIsoLimitCurryCompLim]
 
 end
@@ -634,7 +683,8 @@ noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
 theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
     colimit.ι _ j ≫ colimit.ι (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) k ≫
       (colimitCurrySwapCompColimIsoColimitCurryCompColim G).hom =
-        (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j : _ ⟶ colimit (curry.obj G⋙ colim)) := by
+        (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j :
+          _ ⟶ colimit (curry.obj G ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
   slice_lhs 1 3 => simp only []
   simp

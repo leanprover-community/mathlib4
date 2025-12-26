@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Units.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Units.Defs
 
 /-! # Group actions on and by `Mˣ`
 
@@ -19,6 +21,8 @@ These instances use a primed name.
 
 The results are repeated for `AddUnits` and `VAdd` where relevant.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -75,6 +79,16 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
+/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
+
+Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
+@[simp]
+lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
+    u₁ • u₂ = u₁ * u₂ := by
+  fail_if_success rfl -- there is an instance diamond here
+  ext
+  rfl
+
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : ↑(g • m) = g • (m : M) := rfl
@@ -85,21 +99,21 @@ lemma smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsSca
     (g : G) (m : Mˣ) : (g • m)⁻¹ = g⁻¹ • m⁻¹ := ext rfl
 
 /-- Transfer `SMulCommClass G H M` to `SMulCommClass G H Mˣ`. -/
-@[to_additive "Transfer `VAddCommClass G H M` to `VAddCommClass G H (AddUnits M)`."]
+@[to_additive /-- Transfer `VAddCommClass G H M` to `VAddCommClass G H (AddUnits M)`. -/]
 instance smulCommClass' [Group G] [Group H] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M] [IsScalarTower H M M]
     [SMulCommClass G H M] :
     SMulCommClass G H Mˣ where smul_comm g h m := Units.ext <| smul_comm g h (m : M)
 
 /-- Transfer `IsScalarTower G H M` to `IsScalarTower G H Mˣ`. -/
-@[to_additive "Transfer `VAddAssocClass G H M` to `VAddAssocClass G H (AddUnits M)`."]
+@[to_additive /-- Transfer `VAddAssocClass G H M` to `VAddAssocClass G H (AddUnits M)`. -/]
 instance isScalarTower' [SMul G H] [Group G] [Group H] [Monoid M] [MulAction G M]
     [SMulCommClass G M M] [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M]
     [IsScalarTower H M M] [IsScalarTower G H M] :
     IsScalarTower G H Mˣ where smul_assoc g h m := Units.ext <| smul_assoc g h (m : M)
 
 /-- Transfer `IsScalarTower G M α` to `IsScalarTower G Mˣ α`. -/
-@[to_additive "Transfer `VAddAssocClass G M α` to `VAddAssocClass G (AddUnits M) α`."]
+@[to_additive /-- Transfer `VAddAssocClass G M α` to `VAddAssocClass G (AddUnits M) α`. -/]
 instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [SMul G α]
     [SMulCommClass G M M] [IsScalarTower G M M] [IsScalarTower G M α] :
     IsScalarTower G Mˣ α where smul_assoc g m := smul_assoc g (m : M)
@@ -108,6 +122,36 @@ instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [S
 example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTower M N N] :
     MulAction Mˣ Nˣ := Units.mulAction'
 
+section MulDistribMulAction
+variable {M N : Type*} [Monoid M] [Monoid N] [MulDistribMulAction M N]
+
+/-- Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
+with it in non-degenerate situations. Indeed, to get a diamond on `MulDistribMulAction G Mˣ`,
+we would need both instances to fire. But `Units.mulAction'` assumes `SMulCommClass G M M`,
+i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`), while
+`Units.instMulDistribMulActionRight` assumes `MulDistribMulAction G M`,
+i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`.
+In particular, if `M` is cancellative, then we obtain `∀ (g : G) (m : M), g • m = m`,
+i.e. the action is trivial!
+
+This however does create a (propeq) diamond for `MulDistribMulAction (ConjAct Mˣ) Mˣ` with
+`ConjAct.unitsMulDistribMulAction` and `ConjAct.instMulDistribMulAction`. Indeed, if we go down
+one way then `u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * v⁻¹ * ofConjAct u⁻¹, _, _⟩`,
+while the other way is
+`u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * (v⁻¹ * ofConjAct u⁻¹), _, _⟩`. -/
+abbrev mulDistribMulActionRight : MulDistribMulAction M Nˣ where
+  smul m u := ⟨m • u, m • u⁻¹, by simp [← smul_mul', smul_one], by simp [← smul_mul', smul_one]⟩
+  one_smul u := Units.ext <| one_smul ..
+  mul_smul m₁ m₂ u := Units.ext <| mul_smul ..
+  smul_mul m₁ u₁ u₂ := Units.ext <| smul_mul' ..
+  smul_one m := Units.ext <| smul_one m
+
+attribute [local instance] mulDistribMulActionRight
+
+@[simp, norm_cast] lemma coe_smul (m : M) (u : Nˣ) : (m • u).val = m • u.val := rfl
+@[simp, norm_cast] lemma coe_inv_smul (m : M) (u : Nˣ) : (m • u)⁻¹.val = m • u⁻¹.val := rfl
+
+end MulDistribMulAction
 end Units
 
 @[to_additive]

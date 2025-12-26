@@ -3,8 +3,10 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+module
+
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 
@@ -31,6 +33,8 @@ We have three ways to construct terms of `ℙ K V`:
 - For `v : ℙ K V`, `v.rep : V` is a representative of `v`.
 
 -/
+
+@[expose] public section
 
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
@@ -191,7 +195,7 @@ def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : �
       rintro ⟨u, hu⟩ ⟨v, hv⟩ ⟨a, ha⟩
       use Units.map σ.toMonoidHom a
       dsimp at ha ⊢
-      erw [← f.map_smulₛₗ, ha])
+      simp [f.map_smulₛₗ, ← ha, Units.smul_def])
 
 theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
     map f hf (mk K v hv) = mk L (f v) (map_zero f ▸ hf.ne hv) :=
@@ -212,11 +216,12 @@ theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injec
   ext ⟨v⟩
   rfl
 
--- Porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
-theorem map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
-    {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
-    (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :
-    map (g.comp f) (hg.comp hf) = map g hg ∘ map f hf := by
+@[simp]
+theorem map_comp {F U : Type*} [DivisionRing F] [AddCommGroup U] [Module F U] {σ : K →+* L}
+    {τ : L →+* F} {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W)
+    (hf : Function.Injective f) (g : W →ₛₗ[τ] U) (hg : Function.Injective g)
+    (hgf : Function.Injective (g.comp f) := hg.comp hf) :
+    map (g.comp f) hgf = map g hg ∘ map f hf := by
   ext ⟨v⟩
   rfl
 

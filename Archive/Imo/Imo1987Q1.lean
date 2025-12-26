@@ -14,8 +14,8 @@ Let $p_{n, k}$ be the number of permutations of a set of cardinality `n ≥ 1` t
 elements. Prove that $∑_{k=0}^n k p_{n,k}=n!$.
 
 To prove this identity, we show that both sides are equal to the cardinality of the set
-`{(x : α, σ : Perm α) | σ x = x}`, regrouping by `card (fixedPoints σ)` for the left hand side and
-by `x` for the right hand side.
+`{(x : α, σ : Perm α) | σ x = x}`, regrouping by `card (fixedPoints σ)` for the left-hand side and
+by `x` for the right-hand side.
 
 The original problem assumes `n ≥ 1`. It turns out that a version with `n * (n - 1)!` in the RHS
 holds true for `n = 0` as well, so we first prove it, then deduce the original version in the case
@@ -40,13 +40,13 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
       setProdEquivSigma _
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
-      (sigmaCongrRight fun x => Equiv.Set.ofEq <| by simp only [SetCoe.forall]; dsimp; simp)
+      (sigmaCongrRight fun x => Equiv.setCongr <| by simp only [SetCoe.forall]; simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 
 theorem card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
   simp only [card_congr (fixedPointsEquiv α), card_sigma, card_perm]
-  have (x) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
+  have (x : _) : ({x}ᶜ : Set α) = Finset.filter (· ≠ x) Finset.univ := by
     ext; simp
   simp [this]
 
@@ -79,7 +79,7 @@ def fixedPointsEquiv' :
     ⟨⟨card (fixedPoints p.1.2), (card_subtype_le _).trans_lt (Nat.lt_succ_self _)⟩, ⟨p.1.2, rfl⟩,
       ⟨p.1.1, p.2⟩⟩
   left_inv := fun ⟨⟨k, hk⟩, ⟨σ, hσ⟩, ⟨x, hx⟩⟩ => by
-    simp only [mem_fiber, Fin.val_mk] at hσ
+    simp only [mem_fiber] at hσ
     subst k; rfl
   right_inv := fun ⟨⟨x, σ⟩, h⟩ => rfl
 
@@ -95,6 +95,6 @@ theorem main₀ (n : ℕ) : ∑ k ∈ range (n + 1), k * p (Fin n) k = n * (n - 
 
 /-- Main statement for permutations of `Fin n`. -/
 theorem main {n : ℕ} (hn : 1 ≤ n) : ∑ k ∈ range (n + 1), k * p (Fin n) k = n ! := by
-  rw [main₀, Nat.mul_factorial_pred hn]
+  rw [main₀, Nat.mul_factorial_pred (Nat.one_le_iff_ne_zero.mp hn)]
 
 end Imo1987Q1

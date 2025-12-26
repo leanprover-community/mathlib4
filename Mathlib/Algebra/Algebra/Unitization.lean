@@ -3,12 +3,14 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Tactic.Abel
 
 /-!
 # Unitization of a non-unital algebra
@@ -53,6 +55,8 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 * prove the unitization operation is a functor between the appropriate categories
 * prove the image of the coercion is an essential ideal, maximal if scalars are a field.
 -/
+
+@[expose] public section
 
 
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
@@ -181,7 +185,7 @@ instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unit
   Prod.instAddCommGroup
 
 instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
-  Prod.smul
+  Prod.instSMul
 
 instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
@@ -257,7 +261,7 @@ theorem inl_add [Add R] [AddZeroClass A] (r₁ r₂ : R) :
   ext rfl (add_zero 0).symm
 
 @[simp]
-theorem inl_neg [Neg R] [AddGroup A] (r : R) : (inl (-r) : Unitization R A) = -inl r :=
+theorem inl_neg [Neg R] [SubtractionMonoid A] (r : R) : (inl (-r) : Unitization R A) = -inl r :=
   ext rfl neg_zero.symm
 
 @[simp]
@@ -266,7 +270,7 @@ theorem inl_sub [AddGroup R] [AddGroup A] (r₁ r₂ : R) :
   ext rfl (sub_zero 0).symm
 
 @[simp]
-theorem inl_smul [Monoid S] [AddMonoid A] [SMul S R] [DistribMulAction S A] (s : S) (r : R) :
+theorem inl_smul [Zero A] [SMul S R] [SMulZeroClass S A] (s : S) (r : R) :
     (inl (s • r) : Unitization R A) = s • inl r :=
   ext rfl (smul_zero s).symm
 
@@ -285,7 +289,7 @@ theorem inr_add [AddZeroClass R] [Add A] (m₁ m₂ : A) : (↑(m₁ + m₂) : U
   ext (add_zero 0).symm rfl
 
 @[simp]
-theorem inr_neg [AddGroup R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
+theorem inr_neg [SubtractionMonoid R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
   ext neg_zero.symm rfl
 
 @[simp]
@@ -293,7 +297,7 @@ theorem inr_sub [AddGroup R] [AddGroup A] (m₁ m₂ : A) : (↑(m₁ - m₂) : 
   ext (sub_zero 0).symm rfl
 
 @[simp]
-theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S A] (r : S) (m : A) :
+theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S A] (r : S) (m : A) :
     (↑(r • m) : Unitization R A) = r • (m : Unitization R A) :=
   ext (smul_zero _).symm rfl
 
@@ -373,13 +377,13 @@ theorem inl_one [One R] [Zero A] : (inl 1 : Unitization R A) = 1 :=
   rfl
 
 @[simp]
-theorem inl_mul [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r₁ r₂ : R) :
+theorem inl_mul [Mul R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r₁ r₂ : R) :
     (inl (r₁ * r₂) : Unitization R A) = inl r₁ * inl r₂ :=
   ext rfl <|
     show (0 : A) = r₁ • (0 : A) + r₂ • (0 : A) + 0 * 0 by
       simp only [smul_zero, add_zero, mul_zero]
 
-theorem inl_mul_inl [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r₁ r₂ : R) :
+theorem inl_mul_inl [Mul R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r₁ r₂ : R) :
     (inl r₁ * inl r₂ : Unitization R A) = inl (r₁ * r₂) :=
   (inl_mul A r₁ r₂).symm
 
@@ -390,20 +394,20 @@ section
 variable (R)
 
 @[simp]
-theorem inr_mul [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A] (a₁ a₂ : A) :
+theorem inr_mul [MulZeroClass R] [AddZeroClass A] [Mul A] [SMulWithZero R A] (a₁ a₂ : A) :
     (↑(a₁ * a₂) : Unitization R A) = a₁ * a₂ :=
   ext (mul_zero _).symm <|
     show a₁ * a₂ = (0 : R) • a₂ + (0 : R) • a₁ + a₁ * a₂ by simp only [zero_smul, zero_add]
 
 end
 
-theorem inl_mul_inr [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
+theorem inl_mul_inr [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : ((inl r : Unitization R A) * a) = ↑(r • a) :=
   ext (mul_zero r) <|
     show r • a + (0 : R) • (0 : A) + 0 * a = r • a by
       rw [smul_zero, add_zero, zero_mul, add_zero]
 
-theorem inr_mul_inl [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] (r : R)
+theorem inr_mul_inl [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : a * (inl r : Unitization R A) = ↑(r • a) :=
   ext (zero_mul r) <|
     show (0 : R) • (0 : A) + r • a + a * 0 = r • a by
@@ -562,12 +566,12 @@ instance instAlgebra : Algebra S (Unitization R A) where
   commutes' := fun s x => by
     induction x with
     | inl_add_inr =>
-      show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
+      change inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
       rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
   smul_def' := fun s x => by
     induction x with
     | inl_add_inr =>
-      show _ = inl (algebraMap S R s) * _
+      change _ = inl (algebraMap S R s) * _
       rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
         smul_one_mul, inl_smul, inr_smul, smul_one_smul]
 
@@ -732,7 +736,6 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
     map_star' := fun x => by
-      induction x
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv := fun φ => by ext; simp,
@@ -814,7 +817,7 @@ variable [StarAddMonoid R] [Star A] {a : A}
 
 @[simp]
 lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
-  simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+  simp only [isSelfAdjoint_iff, ← inr_star, inr_injective.eq_iff]
 
 alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
 
@@ -836,5 +839,13 @@ instance instIsStarNormal (a : A) [IsStarNormal a] :
   isStarNormal_inr.mpr ‹_›
 
 end StarNormal
+
+@[simp]
+lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
+    [AddZeroClass A] [Mul A] [SMulWithZero R A] {a : A} :
+    IsIdempotentElem (a : Unitization R A) ↔ IsIdempotentElem a := by
+  simp only [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
+
+alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
 
 end Unitization

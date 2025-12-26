@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.Hom.Order
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Order.Hom.Order
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Fixed point construction on complete lattices
@@ -27,6 +29,8 @@ This file sets up the basic theory of fixed points of a monotone function in a c
 
 fixed point, complete lattice, monotone function
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -120,6 +124,9 @@ theorem gfp_induction {p : α → Prop} (step : ∀ a, p a → f.gfp ≤ a → p
     (hInf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : p f.gfp :=
   f.dual.lfp_induction step hInf
 
+theorem lfp_le_gfp : f.lfp ≤ f.gfp :=
+  f.lfp_le_fixed f.isFixedPt_gfp
+
 end Basic
 
 section Eqn
@@ -203,7 +210,7 @@ theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x �
     (x ⊔ y : α) = f x ⊔ f y := congr_arg₂ (· ⊔ ·) x.2.symm y.2.symm
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 
--- Porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
+-- Porting note: `x ⊓ y` without the `.val`s fails to synthesize `Inf` instance
 theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
   f.dual.le_map_sup_fixedPoints x y
 
@@ -232,14 +239,10 @@ instance : SemilatticeSup (fixedPoints f) :=
     le_sup_right := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_right.trans (f.le_nextFixed _)
     sup_le := fun _ _ _ hxz hyz => f.nextFixed_le _ <| sup_le hxz hyz }
 
-
-/- porting note: removed `Subtype.partialOrder _` from mathlib3port version,
-  threw `typeclass instance` error and was seemingly unnecessary? -/
 instance : SemilatticeInf (fixedPoints f) :=
   { OrderDual.instSemilatticeInf (fixedPoints f.dual) with
     inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
 
--- Porting note: `coe` replaced with `Subtype.val`
 instance : CompleteSemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
     sSup := fun s =>
@@ -259,8 +262,6 @@ instance : CompleteSemilatticeInf (fixedPoints f) :=
     sInf_le := fun _ _ hx =>
       Subtype.coe_le_coe.1 <| le_trans (f.prevFixed_le _) (sInf_le <| Set.mem_image_of_mem _ hx) }
 
-/- porting note: mathlib3port version contained the instances as a list,
-   giving various "expected structure" errors -/
 /-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
 instance completeLattice : CompleteLattice (fixedPoints f) where
   __ := inferInstanceAs (SemilatticeInf (fixedPoints f))

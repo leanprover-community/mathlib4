@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.Deriv.Linear
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Linear
+public import Mathlib.Analysis.Complex.Basic
 
 /-! # Real differentiability of complex-differentiable functions
 
@@ -13,6 +15,8 @@ import Mathlib.Analysis.Complex.Basic
 then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the real part of the
 complex derivative.
 -/
+
+@[expose] public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -34,12 +38,7 @@ theorem HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
       (ofRealCLM z) :=
     h.hasStrictFDerivAt.restrictScalars ℝ
   have C : HasStrictFDerivAt re reCLM (e (ofRealCLM z)) := reCLM.hasStrictFDerivAt
-  -- Porting note: this should be by:
-  -- simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
-  -- but for some reason simp can not use `ContinuousLinearMap.comp_apply`
-  convert (C.comp z (B.comp z A)).hasStrictDerivAt
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply]
-  simp
+  simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
 
 /-- If a complex function `e` is differentiable at a real point, then the function `ℝ → ℝ` given by
 the real part of `e` is also differentiable at this point, with a derivative equal to the real part
@@ -52,12 +51,7 @@ theorem HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
       (ofRealCLM z) :=
     h.hasFDerivAt.restrictScalars ℝ
   have C : HasFDerivAt re reCLM (e (ofRealCLM z)) := reCLM.hasFDerivAt
-  -- Porting note: this should be by:
-  -- simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
-  -- but for some reason simp can not use `ContinuousLinearMap.comp_apply`
-  convert (C.comp z (B.comp z A)).hasDerivAt
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply]
-  simp
+  simpa using (C.comp z (B.comp z A)).hasDerivAt
 
 theorem ContDiffAt.real_of_complex {n : WithTop ℕ∞} (h : ContDiffAt ℂ n e z) :
     ContDiffAt ℝ n (fun x : ℝ => (e x).re) z := by

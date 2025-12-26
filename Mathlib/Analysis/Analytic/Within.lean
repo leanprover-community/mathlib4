@@ -3,13 +3,15 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
 
-From `Mathlib.Analysis.Analytic.Basic`, we have the definitions
+From `Mathlib/Analysis/Analytic/Basic.lean`, we have the definitions
 
 1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[insert x s] x`.
 2. `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
@@ -20,6 +22,8 @@ This means there exists an extension of `f` which is analytic and agrees with `f
 Here we prove basic properties of these definitions. Where convenient we assume completeness of the
 ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -47,7 +51,7 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
     hasSum := by
       intro y ys yr
       simp only [subset_singleton_iff, mem_inter_iff, and_imp] at st
-      simp only [mem_insert_iff, add_right_eq_self] at ys
+      simp only [mem_insert_iff, add_eq_left] at ys
       have : x + y = x := by
         rcases ys with rfl | ys
         · simp
@@ -71,16 +75,13 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
         intro y ys yr
         simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
         apply fp.hasSum
-        · simp only [mem_insert_iff, add_right_eq_self] at ys
+        · simp only [mem_insert_iff, add_eq_left] at ys
           rcases ys with rfl | ys
           · simp
-          · simp only [mem_insert_iff, add_right_eq_self, mem_inter_iff, ys, true_and]
+          · simp only [mem_insert_iff, add_eq_left, mem_inter_iff, ys, true_and]
             apply Or.inr (ru ?_)
             simp only [Metric.mem_ball, dist_self_add_left, yr]
         · simp only [EMetric.mem_ball, yr] }⟩
-
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn_of_locally_analyticWithinOn := analyticOn_of_locally_analyticOn
 
 /-- On open sets, `AnalyticOnNhd` and `AnalyticOn` coincide -/
 lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen s) :
@@ -100,10 +101,6 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
       apply rs
       simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
 
-@[deprecated (since := "2024-09-26")]
-alias IsOpen.analyticWithinOn_iff_analyticOn := IsOpen.analyticOn_iff_analyticOnNhd
-
-
 /-!
 ### Equivalence to analyticity of a local extension
 
@@ -113,7 +110,6 @@ result for `AnalyticOn`, as this requires a bit more work to show that local ext
 be stitched together.
 -/
 
-set_option linter.style.multiGoal false in
 /-- `f` has power series `p` at `x` iff some local extension of `f` has that series -/
 lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpace F] {f : E → F}
     {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
@@ -126,11 +122,11 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
     · intro y ⟨ys,yb⟩
       simp only [EMetric.mem_ball, edist_eq_enorm_sub] at yb
       have e0 := p.hasSum (x := y - x) ?_
-      have e1 := (h.hasSum (y := y - x) ?_ ?_)
-      · simp only [add_sub_cancel] at e1
-        exact e1.unique e0
-      · simpa only [add_sub_cancel]
-      · simpa only [EMetric.mem_ball, edist_zero_eq_enorm]
+      · have e1 := (h.hasSum (y := y - x) ?_ ?_)
+        · simp only [add_sub_cancel] at e1
+          exact e1.unique e0
+        · simpa only [add_sub_cancel]
+        · simpa only [EMetric.mem_ball, edist_zero_eq_enorm]
       · simp only [EMetric.mem_ball, edist_zero_eq_enorm]
         exact lt_of_lt_of_le yb h.r_le
     · refine ⟨h.r_le, h.r_pos, ?_⟩
@@ -213,3 +209,12 @@ lemma AnalyticWithinAt.exists_mem_nhdsWithin_analyticOn
   · intro y hy
     have : AnalyticWithinAt 𝕜 g u y := hy.2.analyticWithinAt
     exact this.congr (h'g.mono (inter_subset_left)) (h'g (inter_subset_left hy))
+
+theorem AnalyticWithinAt.eventually_analyticWithinAt
+    [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
+    (hf : AnalyticWithinAt 𝕜 f s x) : ∀ᶠ y in 𝓝[s] x, AnalyticWithinAt 𝕜 f s y := by
+  obtain ⟨g, hfg, hga⟩ := analyticWithinAt_iff_exists_analyticAt.mp hf
+  simp only [Filter.EventuallyEq, eventually_nhdsWithin_iff] at hfg ⊢
+  filter_upwards [hfg.eventually_nhds, hga.eventually_analyticAt] with z hfgz hgaz hz
+  refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨g, ?_, hgaz⟩
+  exact (eventually_nhdsWithin_iff.mpr hfgz).filter_mono <| nhdsWithin_mono _ (by simp [hz])

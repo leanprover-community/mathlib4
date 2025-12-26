@@ -3,7 +3,9 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
 # `C^n` bundled maps
@@ -11,6 +13,8 @@ import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 In this file we define the type `ContMDiffMap` of `n` times continuously differentiable
 bundled maps.
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
@@ -31,8 +35,6 @@ the trivial model) in the `Manifold` namespace. -/
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
-@[deprecated (since := "2024-11-21")] alias SmoothMap := ContMDiffMap
-
 @[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n
 
@@ -52,12 +54,6 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
-
-@[deprecated (since := "2024-11-20")] alias smooth := ContMDiffMap.contMDiff
-
--- Porting note: use generic instance instead
--- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
---   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
 attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
@@ -108,7 +104,7 @@ def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
 
 /-- Given two `C^n` maps `f` and `g`, this is the `C^n` map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
-  ⟨fun x => (f x, g x), f.2.prod_mk g.2⟩
+  ⟨fun x => (f x, g x), f.2.prodMk g.2⟩
 
 end ContMDiffMap
 

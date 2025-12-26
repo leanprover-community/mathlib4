@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Analysis.SpecialFunctions.Arsinh
-import Mathlib.Geometry.Euclidean.Inversion.Basic
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Analysis.SpecialFunctions.Arsinh
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
 
 /-!
 # Metric on the upper half-plane
@@ -21,6 +23,8 @@ We also prove that a metric ball/closed ball/sphere in Poincaré metric is a Euc
 ball/sphere with another center and radius.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -111,13 +115,13 @@ def metricSpaceAux : MetricSpace ℍ where
   dist_comm := UpperHalfPlane.dist_comm
   dist_triangle := UpperHalfPlane.dist_triangle
   eq_of_dist_eq_zero {z w} h := by
-    simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_le, Set.ext_iff] using h
+    simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_ge, Set.ext_iff] using h
 
 open Complex
 
 theorem cosh_dist' (z w : ℍ) :
     Real.cosh (dist z w) = ((z.re - w.re) ^ 2 + z.im ^ 2 + w.im ^ 2) / (2 * z.im * w.im) := by
-  field_simp [cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
+  simp [field, cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
   ring
 
 /-- Euclidean center of the circle with center `z` and radius `r` in the hyperbolic metric. -/
@@ -151,16 +155,14 @@ theorem dist_coe_center (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) =
 theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
     cmp (dist z w) r = cmp (dist (z : ℂ) (w.center r)) (w.im * Real.sinh r) := by
   letI := metricSpaceAux
-  rcases lt_or_le r 0 with hr₀ | hr₀
+  rcases lt_or_ge r 0 with hr₀ | hr₀
   · trans Ordering.gt
     exacts [(hr₀.trans_le dist_nonneg).cmp_eq_gt,
       ((mul_neg_of_pos_of_neg w.im_pos (sinh_neg_iff.2 hr₀)).trans_le dist_nonneg).cmp_eq_gt.symm]
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  we need to give Lean the hint `(y := w.im * Real.sinh r)`. -/
   simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
-    ← (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg (y := w.im * Real.sinh r) hr₀',
+    ← (pow_left_strictMonoOn₀ (M₀ := ℝ) two_ne_zero).cmp_map_eq dist_nonneg hr₀',
     dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 
@@ -203,10 +205,10 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
     sinh_log h₀, dist_of_re_eq, coe_im, coe_im, center_im, cosh_abs, cosh_log h₀, inv_div] <;>
   [skip; exact h]
   nth_rw 4 [← abs_of_pos w.im_pos]
-  simp only [← _root_.abs_mul, coe_im, Real.dist_eq]
+  simp only [← _root_.abs_mul, Real.dist_eq]
   congr 1
-  field_simp
-  ring
+  field
+
 /-- Hyperbolic distance between two points is greater than or equal to the distance between the
 logarithms of their imaginary parts. -/
 theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
@@ -321,7 +323,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
   exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
 
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
-instance : IsometricSMul SL(2, ℝ) ℍ :=
+instance : IsIsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by
     have h₀ : Isometry (fun z => ModularGroup.S • z : ℍ → ℍ) :=
       Isometry.of_dist_eq fun y₁ y₂ => by

@@ -3,11 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-import Mathlib.CategoryTheory.ObjectProperty.Extensions
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.ObjectProperty.Extensions
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Serre classes
@@ -27,21 +29,24 @@ and is closed under subobjects, quotients and extensions.
 
 -/
 
-universe v u
+@[expose] public section
+
+universe v v' u u'
 
 namespace CategoryTheory
 
 open Limits ZeroObject
 
 variable {C : Type u} [Category.{v} C] [Abelian C] (P : ObjectProperty C)
+  {D : Type u'} [Category.{v'} D] [Abelian D]
 
 namespace ObjectProperty
 
 /-- A Serre class in an abelian category consists of predicate which
 hold for the zero object and is closed under subobjects, quotients, extensions. -/
-class IsSerreClass extends P.ContainsZero,
+class IsSerreClass : Prop extends P.ContainsZero,
     P.IsClosedUnderSubobjects, P.IsClosedUnderQuotients,
-    P.IsClosedUnderExtensions : Prop where
+    P.IsClosedUnderExtensions where
 
 variable [P.IsSerreClass]
 
@@ -63,6 +68,10 @@ lemma prop_X₂_of_exact {S : ShortComplex C} (hS : S.Exact)
   have := hS.mono_g' d.right
   exact (P.prop_X₂_of_shortExact (hS.shortExact d)
     (P.prop_of_epi d.left.f' h₁) (P.prop_of_mono d.right.g' h₃) :)
+
+instance (F : D ⥤ C) [PreservesFiniteLimits F]
+    [PreservesFiniteColimits F] :
+    (P.inverseImage F).IsSerreClass where
 
 end ObjectProperty
 

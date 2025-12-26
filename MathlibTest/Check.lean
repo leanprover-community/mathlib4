@@ -63,7 +63,7 @@ case a
 x : Nat
 ⊢ Nat
 ---
-info: x : Nat
+trace: x : Nat
 y : Nat := ?a
 ⊢ True
 
@@ -84,7 +84,7 @@ y : Nat := x
 this : x = x
 ⊢ True
 ---
-info: x : Nat
+trace: x : Nat
 y : Nat := x
 this : x = x
 ⊢ True

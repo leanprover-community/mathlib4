@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The complex `log` function
@@ -12,6 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 Basic properties, relationship with `exp`.
 -/
 
+@[expose] public section
 
 noncomputable section
 
@@ -117,16 +120,14 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
   · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_norm_sq, Real.log_pow,
       Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
-    norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
-    split_ifs
-    · rw [add_sub_right_comm, sub_add_cancel_left]
-    · rw [add_sub_right_comm, sub_add_cancel_left]
+    norm_num
+    grind
   · rwa [inv_pos, Complex.normSq_pos]
   · rwa [map_ne_zero]
 
 theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
 
-theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num [Real.pi_ne_zero, I_ne_zero]
+theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by simp [Real.pi_ne_zero, I_ne_zero]
 
 theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * I) := by
   constructor
@@ -159,11 +160,11 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     exact Set.subset_union_left
   · rw [← Set.biUnion_preimage_singleton]
     refine hs.biUnion fun z hz => ?_
-    rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
-    · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
+    by_cases! h : ∃ w, exp w = z
+    · rcases h with ⟨w, rfl⟩
+      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
-    · push_neg at hne
-      simp [Set.preimage, hne]
+    · simp [Set.preimage, h]
 
 alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 
@@ -251,41 +252,3 @@ theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
   continuous_iff_continuousAt.2 fun x => h₁.continuousAt.clog (h₂ x)
 
 end LogDeriv
-
-section tsum_tprod
-
-variable {α ι: Type*}
-
-open Real
-
-lemma Real.hasProd_of_hasSum_log {f : ι → ℝ} (hfn : ∀ n, 0 < f n) {a : ℝ}
-    (hf : HasSum (fun n => log (f n)) a) : HasProd f (rexp a) :=
-  hf.rexp.congr (by simp [exp_log, hfn])
-
-lemma Real.multipliable_of_summable_log (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
-    (hf : Summable fun n => log (f n)) : Multipliable f :=
-  ⟨_, Real.hasProd_of_hasSum_log hfn hf.hasSum⟩
-
-/-- The exponential of a infinite sum of real logs (which converges absolutely) is an infinite
-product. -/
-lemma Real.rexp_tsum_eq_tprod (f : ι → ℝ) (hfn : ∀ n, 0 < f n)
-    (hf : Summable fun n => log (f n)) : rexp (∑' n : ι, log (f n)) = ∏' n : ι, f n :=
-  (Real.hasProd_of_hasSum_log hfn hf.hasSum).tprod_eq.symm
-
-open Complex
-
-lemma Complex.hasProd_of_hasSum_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0) {a : ℂ}
-    (hf : HasSum (fun n => log (f n)) a) : HasProd (fun b ↦ f b) (cexp a) :=
-    hf.cexp.congr (by simp [exp_log, hfn])
-
-lemma Complex.multipliable_of_summable_log (f : ι → ℂ) (hfn : ∀ n, f n ≠ 0)
-    (hf : Summable fun n => log (f n)) : Multipliable fun b ↦ f b  :=
-   ⟨_, Complex.hasProd_of_hasSum_log _ hfn hf.hasSum⟩
-
-/-- The exponential of a infinite sum of comples logs (which converges absolutely) is an infinite
-product. -/
-lemma Complex.cexp_tsum_eq_tprod (f : ι →  ℂ) (hfn : ∀ n, f n ≠ 0)
-    (hf : Summable fun n => log (f n)) : (cexp ((∑' n : ι, log (f n )))) = ∏' n : ι, f n  :=
-  (Complex.hasProd_of_hasSum_log _ hfn hf.hasSum).tprod_eq.symm
-
-end tsum_tprod

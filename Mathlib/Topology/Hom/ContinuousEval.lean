@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Hom.ContinuousEvalConst
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Topology.Hom.ContinuousEvalConst
+public import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Bundled maps with evaluation continuous in both variables
@@ -13,6 +15,8 @@ In this file we define a class `ContinuousEval F X Y`
 saying that `F` is a bundled morphism class (in the sense of `FunLike`)
 with a topology such that `fun (f, x) : F × X ↦ f x` is a continuous function.
 -/
+
+@[expose] public section
 
 open scoped Topology
 open Filter
@@ -33,7 +37,7 @@ variable {F X Y Z : Type*} [FunLike F X Y]
 @[continuity, fun_prop]
 protected theorem Continuous.eval (hf : Continuous f) (hg : Continuous g) :
     Continuous fun z ↦ f z (g z) :=
-  continuous_eval.comp (hf.prod_mk hg)
+  continuous_eval.comp (hf.prodMk hg)
 
 /-- If a type `F'` of bundled morphisms admits a continuous projection
 to a type satisfying `ContinuousEval`,
@@ -54,7 +58,7 @@ instance (priority := 100) ContinuousEval.toContinuousEvalConst : ContinuousEval
 protected theorem Filter.Tendsto.eval {α : Type*} {l : Filter α} {f : α → F} {f₀ : F}
     {g : α → X} {x₀ : X} (hf : Tendsto f l (𝓝 f₀)) (hg : Tendsto g l (𝓝 x₀)) :
     Tendsto (fun a ↦ f a (g a)) l (𝓝 (f₀ x₀)) :=
-  (ContinuousEval.continuous_eval.tendsto _).comp (hf.prod_mk_nhds hg)
+  (ContinuousEval.continuous_eval.tendsto _).comp (hf.prodMk_nhds hg)
 
 protected nonrec theorem ContinuousAt.eval (hf : ContinuousAt f z) (hg : ContinuousAt g z) :
     ContinuousAt (fun z ↦ f z (g z)) z :=

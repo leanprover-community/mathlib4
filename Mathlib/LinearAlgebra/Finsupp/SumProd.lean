@@ -3,13 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Module.Prod
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Prod
+public import Mathlib.Data.Finsupp.SMul
 
 /-!
-# Finsupps and sum/product types
+# `Finsupp`s and sum/product types
 
 This file contains results about modules involving `Finsupp` and sum/product/sigma types.
 
@@ -17,6 +19,8 @@ This file contains results about modules involving `Finsupp` and sum/product/sig
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -82,7 +86,7 @@ noncomputable def sigmaFinsuppLEquivPiFinsupp {M : Type*} {ιs : η → Type*} [
 
 @[simp]
 theorem sigmaFinsuppLEquivPiFinsupp_apply {M : Type*} {ιs : η → Type*} [AddCommMonoid M]
-    [Module R M] (f : (Σj, ιs j) →₀ M) (j i) : sigmaFinsuppLEquivPiFinsupp R f j i = f ⟨j, i⟩ :=
+    [Module R M] (f : (Σ j, ιs j) →₀ M) (j i) : sigmaFinsuppLEquivPiFinsupp R f j i = f ⟨j, i⟩ :=
   rfl
 
 @[simp]

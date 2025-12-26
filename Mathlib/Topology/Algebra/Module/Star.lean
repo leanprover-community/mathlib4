@@ -3,13 +3,17 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Module
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Star
 
 /-!
 # The star operation, bundled as a continuous star-linear equiv
 -/
+
+@[expose] public section
 
 
 
@@ -40,7 +44,7 @@ def starL' (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TrivialStar R]
     A ≃L[R] A :=
   (starL R : A ≃L⋆[R] A).trans
     ({ AddEquiv.refl A with
-        map_smul' := fun r a => by simp [starRingEnd_apply]
+        map_smul' := fun r a => by simp
         continuous_toFun := continuous_id
         continuous_invFun := continuous_id } :
       A ≃L⋆[R] A)
@@ -58,9 +62,9 @@ theorem continuous_skewAdjointPart [ContinuousSub A] [ContinuousStar A] [Continu
 
 theorem continuous_decomposeProdAdjoint [IsTopologicalAddGroup A] [ContinuousStar A]
     [ContinuousConstSMul R A] : Continuous (StarModule.decomposeProdAdjoint R A) :=
-  (continuous_selfAdjointPart R A).prod_mk (continuous_skewAdjointPart R A)
+  (continuous_selfAdjointPart R A).prodMk (continuous_skewAdjointPart R A)
 
-theorem continuous_decomposeProdAdjoint_symm [IsTopologicalAddGroup A] :
+theorem continuous_decomposeProdAdjoint_symm [ContinuousAdd A] :
     Continuous (StarModule.decomposeProdAdjoint R A).symm :=
   (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
 

@@ -3,8 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Linter.UnusedVariables
 
 /-!
 # The `variable?` command
@@ -19,6 +22,8 @@ An inherent limitation with this command is that variables are recorded in the s
 from typeclass synthesis errors, and these might fail to round trip.
 -/
 
+public meta section
+
 namespace Mathlib.Command.Variable
 open Lean Elab Command Parser.Term Meta
 
@@ -26,13 +31,11 @@ initialize registerTraceClass `variable?
 
 register_option variable?.maxSteps : Nat :=
   { defValue := 15
-    group := "variable?"
     descr :=
       "The maximum number of instance arguments `variable?` will try to insert before giving up" }
 
 register_option variable?.checkRedundant : Bool :=
   { defValue := true
-    group := "variable?"
     descr := "Warn if instance arguments can be inferred from preceding ones" }
 
 /-- Get the type out of a bracketed binder. -/
@@ -115,7 +118,7 @@ def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
       if !ty.hasExprMVar then
         return mvarId
     | _ => pure ()
-  throwErrorAt binder "Can not satisfy requirements for {binder} due to metavariables."
+  throwErrorAt binder "Cannot satisfy requirements for {binder} due to metavariables."
 
 /-- Try elaborating `ty`. Returns `none` if it doesn't need any additional typeclasses,
 or it returns a new binder that needs to come first. Does not add info unless it throws
@@ -160,7 +163,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
     (toOmit : Array Bool) (i : Nat) :
     TermElabM (TSyntaxArray ``bracketedBinder × Array Bool) := do
   if h : 0 < gas ∧ i < binders.size then
-    let binder := binders[i]!
+    let binder := binders[i]
     trace[«variable?»] "\
       Have {(← getLCtx).getFVarIds.size} fvars and {(← getLocalInstances).size} local instances. \
       Looking at{indentD binder}"
@@ -213,9 +216,9 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
           | _ => return (binders, toOmit.push false)
         completeBinders' maxSteps gas checkRedundant binders toOmit (i + 1)
   else
-    if gas == 0 && i < binders.size then
+    if h : gas = 0 ∧ i < binders.size then
       let binders' := binders.extract 0 i
-      logErrorAt binders[i]! m!"Maximum recursion depth for variables! reached. This might be a \
+      logErrorAt binders[i] m!"Maximum recursion depth for variables! reached. This might be a \
         bug, or you can try adjusting `set_option variable?.maxSteps {maxSteps}`\n\n\
         Current variable command:{indentD (← `(command| variable $binders'*))}"
     return (binders, toOmit)
@@ -305,7 +308,7 @@ where
 
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
-def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
+def ignorevariable? : Linter.IgnoreFunction := fun _ stack _ =>
   stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
   || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
 

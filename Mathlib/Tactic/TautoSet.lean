@@ -3,12 +3,16 @@ Copyright (c) 2025 Lenny Taelman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lenny Taelman
 -/
+module
 
-import Mathlib.Data.Set.SymmDiff
+public meta import Mathlib.Data.Set.SymmDiff
+public meta import Mathlib.Data.Set.Disjoint
 
 /-!
 # The `tauto_set` tactic
 -/
+
+public meta section
 
 assert_not_exists RelIso
 
@@ -40,7 +44,7 @@ example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A
 ```
 -/
 macro "tauto_set" : tactic => `(tactic|
-  · simp_all only [
+  · simp_all -failIfUnchanged only [
       Set.ext_iff, Set.subset_def,
       Set.mem_union, Set.mem_compl_iff, Set.mem_inter_iff,
       Set.symmDiff_def, Set.diff_eq, Set.disjoint_iff

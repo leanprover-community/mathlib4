@@ -3,14 +3,18 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Functors from a groupoid into a right/left rigid category form a right/left rigid category.
 
 (Using the pointwise monoidal structure on the functor category.)
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -21,7 +25,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory.Monoidal
 
-variable {C D : Type*} [Groupoid C] [Category D] [MonoidalCategory D]
+variable {C D : Type*} [Groupoid C] [Category* D] [MonoidalCategory D]
 
 instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=
@@ -57,12 +61,10 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
     { evaluation' :=
         { app := fun _ => ε_ _ _
           naturality := fun X Y f => by
-            dsimp
             simp [tensorHom_def, leftAdjointMate_comp_evaluation] }
       coevaluation' :=
         { app := fun _ => η_ _ _
           naturality := fun X Y f => by
-            dsimp
             simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }
 
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where

@@ -1,6 +1,8 @@
-# This workflow allows any user to add one of the `awaiting-author`, or `WIP` labels,
+# This workflow allows any user to add or remove one of the labels in the array `labelArray`
 # by commenting on the PR or issue.
-# Other labels from this set are removed automatically at the same time.
+# The script reacts to lines in the comment whose entire content is, up to whitespace,
+# the label name, optionally preceded by `-`.
+# For each label, the bot follows the instruction of the *last* line that matches the label.
 
 name: Label PR based on Comment
 
@@ -8,31 +10,69 @@ on:
   issue_comment:
     types: [created]
 
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 jobs:
   update-label:
-    if: github.event.issue.pull_request && (contains(github.event.comment.body, 'awaiting-author') || contains(github.event.comment.body, 'WIP'))
+    env:
+      COMMENT: ${{ github.event.comment.body }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: Add label based on comment
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const { owner, repo, number: issue_number  } = context.issue;
-          const commentLines = context.payload.comment.body.split(/\r?\n/);
+    - name: Add / remove label based on comment
+      run: |
+        labelArray=("awaiting-author" "WIP" "easy")
 
-          const awaitingAuthor = commentLines.includes('awaiting-author');
-          const wip = commentLines.includes('WIP');
+        # we strip `\r` since line endings from GitHub contain this character
+        COMMENT="${COMMENT//$'\r'/}"
 
-          if (awaitingAuthor || wip) {
-            await github.rest.issues.removeLabel({ owner, repo, issue_number, name: 'awaiting-author' }).catch(() => {});
-            await github.rest.issues.removeLabel({ owner, repo, issue_number, name: 'WIP' }).catch(() => {});
-          }
+        # trim leading/trailing whitespace and collapse "internal" whitespace
+        COMMENT="$(printf '%s' "${COMMENT}" | awk '{$1=$1};1')"
 
-          if (awaitingAuthor) {
-            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['awaiting-author'] });
-          }
-          if (wip) {
-            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['WIP'] });
-          }
+        # for debugging, we print some information
+        printf '%s' "${COMMENT}" | hexdump -cC
+        printf 'Comment:"%s"\n' "${COMMENT}"
+
+        for i in "${!labelArray[@]}"; do
+          inComment=""
+          label="${labelArray[$i]}"
+          printf $'\nProcessing label \'%s\'\n' "${label}"
+          # extract the last line that, up to leading/trailing whitespace, matches the current label
+          inComment="$(printf '%s' "${COMMENT}" | grep "[-]\?${label}$" | tail -1)"
+          if [ -n "${inComment}" ]
+          then
+            printf $'Found \'%s\'\n' "${inComment}"
+            if [ "${inComment:0:1}" == "-" ]
+            then
+              printf $'Removing label \'%s\'\n' "${label}"
+              # we use curl rather than octokit/request-action so that the job won't fail
+              # (and send an annoying email) if the labels don't exist
+              curl --request DELETE \
+                --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels/${label}" \
+                --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+              printf $'%s DELETE done\n' "${inComment}"
+
+            else
+              data="$(printf $'{"labels":["%s"]}' "${label}")"
+              printf $'Using data: %s\n' "${data}"
+              # we use curl rather than octokit/request-action so that the job won't fail
+              # (and send an annoying email) if the labels don't exist
+              curl --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels" \
+                --data "${data}"
+              printf $'%s POST done\n' "${inComment}"
+
+            fi
+
+          else
+            printf $'Label \'%s\' not found.\n' "${label}"
+          fi
+
+        done

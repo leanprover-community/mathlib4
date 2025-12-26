@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.CategoryTheory.ObjectProperty.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
 /-!
 # Properties of objects that are closed under extensions
@@ -15,13 +17,15 @@ is closed under extensions.
 
 -/
 
-universe v u
+@[expose] public section
+
+universe v v' u u'
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace ObjectProperty
 
@@ -49,6 +53,15 @@ instance : (⊤ : ObjectProperty C).IsClosedUnderExtensions where
 instance : IsClosedUnderExtensions (IsZero (C := C)) where
   prop_X₂_of_shortExact hS h₁ h₃ :=
     hS.exact.isZero_of_both_zeros (h₁.eq_of_src _ _) (h₃.eq_of_tgt _ _)
+
+instance [P.IsClosedUnderExtensions] (F : D ⥤ C)
+    [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
+    (P.inverseImage F).IsClosedUnderExtensions where
+  prop_X₂_of_shortExact hS h₁ h₃ := by
+    have := hS.mono_f
+    have := hS.epi_g
+    exact P.prop_X₂_of_shortExact (hS.map F) h₁ h₃
 
 end
 

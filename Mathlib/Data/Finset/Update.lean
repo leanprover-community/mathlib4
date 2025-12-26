@@ -3,8 +3,10 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Logic.Function.DependsOn
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Logic.Function.DependsOn
 
 /-!
 # Update a function on a set of values
@@ -15,6 +17,8 @@ This file defines `Function.updateFinset`, the operation that updates a function
 This is a very specific function used for `MeasureTheory.marginal`, and possibly not that useful
 for other purposes.
 -/
+
+@[expose] public section
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
 
 namespace Function
@@ -72,11 +76,35 @@ theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
     updateFinset (updateFinset x s y) t z =
     updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
   set e := Equiv.Finset.union s t hst
-  congr with i
+  ext i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
     simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, false_or, not_false_iff]
   · exfalso; exact Finset.disjoint_left.mp hst his hit
   · exact piCongrLeft_sumInl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sumInr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
+
+lemma updateFinset_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t)
+    (x : Π i, π i) (y : Π i : s, π i) (z : Π i : t, π i) :
+    updateFinset (updateFinset x s y) t z = updateFinset x t z := by
+  ext i
+  simp only [updateFinset]
+  split_ifs with h1 h2 <;> try rfl
+  exact (h1 (hst h2)).elim
+
+lemma restrict_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i)
+    (y : Π i : t, π i) : s.restrict (updateFinset x t y) = restrict₂ hst y := by
+  ext i
+  simp [updateFinset, dif_pos (hst i.2)]
+
+lemma restrict_updateFinset {s : Finset ι} (x : Π i, π i) (y : Π i : s, π i) :
+    s.restrict (updateFinset x s y) = y := by
+  rw [restrict_updateFinset_of_subset subset_rfl]
+  rfl
+
+@[simp]
+lemma updateFinset_restrict {s : Finset ι} (x : Π i, π i) :
+    updateFinset x s (s.restrict x) = x := by
+  ext i
+  simp [updateFinset]
 
 end Function

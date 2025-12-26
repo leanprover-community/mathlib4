@@ -3,22 +3,26 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Composing modules with a ring hom
 
 ## Main definitions
 
- * `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
- * `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
+* `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
+* `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
 
 ## Tags
 
 semimodule, module, vector space
 -/
+
+@[expose] public section
 
 assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
@@ -63,8 +67,9 @@ variable {M}
 
 end AddCommMonoid
 
-/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
-def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
+/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
+See note [reducible non-instances]. -/
+abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
@@ -79,7 +84,7 @@ When `R` is commutative, usually `algebraMap` should be preferred. -/
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
 
-/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+/-- A homomorphism between semirings R and S can be equivalently specified by an R-module
 structure on S such that S/S/R is a scalar tower. -/
 def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
     (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where

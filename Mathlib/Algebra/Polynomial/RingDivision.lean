@@ -3,9 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.RingTheory.Coprime.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Theory of univariate polynomials
@@ -13,6 +16,8 @@ import Mathlib.RingTheory.Coprime.Basic
 We prove basic results about univariate polynomials.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal.map
 
@@ -74,7 +79,7 @@ variable [Ring S]
 theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} (hq : q.Monic) {x : S}
     (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by
     --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
-  rw [modByMonic_eq_sub_mul_div p hq, _root_.map_sub, _root_.map_mul, hx, zero_mul,
+  rw [modByMonic_eq_sub_mul_div p hq, map_sub, map_mul, hx, zero_mul,
     sub_zero]
 
 end
@@ -120,15 +125,29 @@ section nonZeroDivisors
 open scoped nonZeroDivisors
 
 theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
-  mem_nonZeroDivisors_iff.2 fun _ hx ↦ (mul_left_eq_zero_iff h).1 hx
+  mem_nonzeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
 
-theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ := by
-  refine mem_nonZeroDivisors_iff.2 fun x hx ↦ leadingCoeff_eq_zero.1 ?_
-  by_contra hx'
-  rw [← mul_right_mem_nonZeroDivisors_eq_zero_iff h] at hx'
-  simp only [← leadingCoeff_mul' hx', hx, leadingCoeff_zero, not_true] at hx'
+theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
+  mem_nonzeroDivisors_of_coeff_mem _ h
+
+theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
+  mem_nonzeroDivisors_of_coeff_mem _ h
 
 end nonZeroDivisors
+
+lemma _root_.Irreducible.aeval_ne_zero_of_natDegree_ne_one [IsDomain R] [Ring S] [Algebra R S]
+    [FaithfulSMul R S] {p : R[X]} (hp : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : S}
+    (hx : x ∈ (algebraMap R S).range) : p.aeval x ≠ 0 := by
+  obtain ⟨_, rfl⟩ := hx
+  rw [aeval_algebraMap_apply_eq_algebraMap_eval]
+  exact fun heq ↦ hp.not_isRoot_of_natDegree_ne_one hdeg <|
+    FaithfulSMul.algebraMap_injective _ _ <| map_zero (algebraMap R S) ▸ heq
+
+theorem natDegree_pos_of_monic_of_aeval_eq_zero [Nontrivial R] [Semiring S] [Algebra R S]
+    [FaithfulSMul R S] {p : R[X]} (hp : p.Monic) {x : S} (hx : aeval x p = 0) :
+    0 < p.natDegree :=
+  natDegree_pos_of_aeval_root (Monic.ne_zero hp) hx
+    ((injective_iff_map_eq_zero (algebraMap R S)).mp (FaithfulSMul.algebraMap_injective R S))
 
 theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
@@ -150,7 +169,6 @@ theorem rootMultiplicity_X_sub_C_self [Nontrivial R] {x : R} :
     rootMultiplicity x (X - C x) = 1 :=
   pow_one (X - C x) ▸ rootMultiplicity_X_sub_C_pow x 1
 
--- Porting note: swapped instance argument order
 theorem rootMultiplicity_X_sub_C [Nontrivial R] [DecidableEq R] {x y : R} :
     rootMultiplicity x (X - C y) = if x = y then 1 else 0 := by
   split_ifs with hxy
@@ -204,12 +222,42 @@ theorem irreducible_X : Irreducible (X : R[X]) :=
 theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
   (hm.prime_of_degree_eq_one hp1).irreducible
 
+/-- A degree 1 polynomial `C a * X + C b` is irreducible
+if `a, b` are relatively prime. -/
+theorem irreducible_of_degree_eq_one_of_isRelPrime_coeff
+    {p : R[X]} (hp : p.degree = 1) (hc : IsRelPrime (p.coeff 0) (p.coeff 1)) :
+    Irreducible p where
+  not_isUnit h := by
+    obtain ⟨u, -, h⟩ := isUnit_iff.mp h
+    apply not_le.mpr (zero_lt_one' (WithBot ℕ))
+    simp [← hp, ← h, degree_C_le]
+  isUnit_or_isUnit f g h := by
+    wlog H : f.degree ≤ g.degree generalizing f g
+    · push_neg at H
+      rw [mul_comm] at h
+      exact (this g f h H.le).symm
+    left
+    rw [h, degree_mul, Nat.WithBot.add_eq_one_iff] at hp
+    rcases hp with ⟨hf, hg⟩ | ⟨hf, hg⟩; swap
+    · simp [← not_lt, hf, hg] at H
+    replace hf := f.eq_C_of_degree_eq_zero hf
+    rw [hf]
+    apply IsUnit.map C
+    rw [h, hf, coeff_C_mul, coeff_C_mul] at hc
+    apply hc <;> simp
+
+theorem irreducible_C_mul_X_add_C {a b : R} (ha : a ≠ 0) (hab : IsRelPrime a b) :
+    Irreducible (C a * X + C b) := by
+  apply irreducible_of_degree_eq_one_of_isRelPrime_coeff
+  · compute_degree!
+  · simpa using hab.symm
+
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
-  by_contra! hpq
+  by_contra! ⟨hp, hq⟩
   rcases h with ⟨_, _, h⟩
   apply_fun aeval s at h
-  simp only [map_add, map_mul, map_one, hpq.left, hpq.right, mul_zero, add_zero, zero_ne_one] at h
+  simp only [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=
@@ -248,9 +296,7 @@ theorem exists_multiset_roots [DecidableEq R] :
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
       have hdeg : degree (X - C x) ≤ degree p := by
-        rw [degree_X_sub_C, degree_eq_natDegree hp]
-        rw [degree_eq_natDegree hp] at hpd
-        exact WithBot.coe_le_coe.2 (WithBot.coe_lt_coe.1 hpd)
+        simpa using Nat.WithBot.one_le_iff_zero_lt.mpr hpd
       have hdiv0 : p /ₘ (X - C x) ≠ 0 :=
         mt (divByMonic_eq_zero_iff (monic_X_sub_C x)).1 <| not_lt.2 hdeg
       ⟨x ::ₘ t,
@@ -275,7 +321,6 @@ theorem exists_multiset_roots [DecidableEq R] :
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
 termination_by p => natDegree p
 decreasing_by {
-  simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
   simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf
   assumption}
