@@ -661,16 +661,28 @@ def adicAbv : AbsoluteValue K ℝ where
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (α := K) (v.adicAbv hb) :=
   isNonarchimedean_adicAbvDef v hb
 
+/-- The `v`-adic absolute value of `r/s ∈ K` is the absolute value of `r` divided by the absolute
+value of `s`. -/
+theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
+    v.adicAbv hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
+  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
+
+open scoped algebraMap in
+/-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
+theorem adicAbv_of_algebraMap (r : R) : v.adicAbv hb (algebraMap R K r) = v.intAdicAbv hb r := by
+  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
+
 theorem adicAbv_coe_le_one : v.adicAbv hb (algebraMap R K r) ≤ 1 := by
-  simpa [adicAbv, adicAbvDef, toNNReal_le_one_iff hb] using valuation_le_one v r
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_le_one v hb r
 
 theorem adicAbv_coe_lt_one_iff : v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
-  simpa [adicAbv, adicAbvDef, toNNReal_lt_one_iff hb] using valuation_lt_one_iff_mem v r
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_lt_one_iff v hb r
 
 theorem adicAbv_coe_eq_one_iff : v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  contrapose
-  rw [← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
-  exact adicAbv_coe_le_one v hb r
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_eq_one_iff v hb r
 
 end AbsoluteValue
 
