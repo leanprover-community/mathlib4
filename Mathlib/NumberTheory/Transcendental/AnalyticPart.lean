@@ -28,7 +28,7 @@ lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero : ∀ z₀ (f : ℂ → ℂ)
     obtain ⟨r₂, hr₂, hball⟩ := H
     let r := min r₁ r₂
     use r
-    have hf : DifferentiableOn ℂ f (Metric.ball z₀ r) := fun x hx =>
+    have hf : DifferentiableOn ℂ f (Metric.ball z₀ r) := fun x hx ↦
      (hB x (Metric.ball_subset_ball (min_le_left r₁ r₂) hx)).differentiableAt.differentiableWithinAt
     have hg : DifferentiableOn ℂ (fun _ ↦ (0 : ℂ)) (Metric.ball z₀ r) := differentiableOn_const 0
     have hf' : EqOn (deriv f) (deriv (fun _ ↦ (0 : ℂ))) (Metric.ball z₀ r) := by
@@ -50,7 +50,7 @@ lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero : ∀ z₀ (f : ℂ → ℂ)
       have hf' : EqOn f 0 (Metric.ball z₀ r) :=
         fun x hx ↦ hball x (Metric.ball_subset_ball (min_le_right r₁ r₂) hx)
       unfold EqOn at hf'
-      have hf'' : derivWithin (fun _ => (0 : ℂ)) (Metric.ball z₀ r) x =
+      have hf'' : derivWithin (fun _ ↦ 0) (Metric.ball z₀ r) x =
           derivWithin f (Metric.ball z₀ r) x := by
         apply Filter.EventuallyEq.derivWithin_eq_of_nhds
         unfold Filter.EventuallyEq
@@ -82,7 +82,7 @@ lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred (f : ℂ → ℂ) z₀ (hf
       · exfalso; exact ((AnalyticAt.analyticOrderAt_eq_zero hf).1 Hn') hzero
       · rename_i n''
         have hnn : analyticOrderAt (deriv f) z₀ = ((n'' + 1) - 1 : ℕ) :=
-          Complex.analyticOrderAt_deriv_of_pos f z₀ hf (n'' + 1) Hn' (by omega)
+          Complex.analyticOrderAt_deriv_of_pos hf (n := n'' + 1) Hn' (by omega)
         simp only [horder] at hnn
         have : n = n'' + 1 := by
           norm_cast at hnn
@@ -134,7 +134,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
         have : k ≤ r := by linarith
         have := IH this; clear IH
         obtain ⟨R₂, hR₂, hR1⟩ := this
-        let R2 : ℂ → ℂ := fun z =>
+        let R2 : ℂ → ℂ := fun z ↦
            (↑(r - k) * R₂ z +
          (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)))
         use R2
@@ -143,7 +143,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
         · intros z
           have derivOfderivk : ∀ z,
               deriv
-                (fun z =>
+                (fun z ↦
                   (z - z₀) ^ (r - k) *
                   (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z))
                 z =
@@ -228,10 +228,8 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
         constructor
         · intros k hk; exact hz (k + 1) (by omega)
         · exact hnz
-      · have := Complex.analyticOrderAt_deriv_of_pos f  z₀ hf (n:=n-1)
-        specialize hz 0 (by omega)
+      · specialize hz 0 (by omega)
         obtain ⟨r, hr⟩ := (WithTop.ne_top_iff_exists).mp hfin
-        specialize this r hr.symm
         simp only [Function.iterate_zero, id_eq] at hz
         have r0 : r > 0 := by
           suffices analyticOrderAt f z₀ > 0 by
@@ -239,8 +237,7 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
             rw [hr]
             exact this
           exact pos_of_ne_zero (analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩)
-        have Hr : r ≠ 0 := by omega
-        specialize this Hr
+        have := Complex.analyticOrderAt_deriv_of_pos (n:= r) hf hr.symm (by omega)
         rw [this]
         exact ENat.coe_ne_top (r - 1)
     · intros ho
@@ -262,7 +259,7 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero :
 
 lemma analyticOrderAt_eq_nat_imp_iteratedDeriv_eq_zero
     z₀ (n : ℕ) (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) :
-  analyticOrderAt f z₀ = n → (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) := fun h =>
+  analyticOrderAt f z₀ = n → (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) := fun h ↦
   (analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero z₀ n f hf (h.symm ▸ ENat.coe_ne_top n)).mpr h
 
 lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero : ∀ (n : ℕ) z₀

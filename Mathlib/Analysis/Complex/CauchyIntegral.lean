@@ -696,13 +696,13 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 open AnalyticAt
 
-lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀) (n : ℕ) :
-    analyticOrderAt f z₀ = n → n ≠ 0 → analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
-  intros horder hn
+lemma analyticOrderAt_deriv_of_pos {f : ℂ → ℂ} {z₀ : ℂ} (hf : AnalyticAt ℂ f z₀) {n : ℕ}
+      (horder : analyticOrderAt f z₀ = n) (hn : n ≠ 0) :
+    analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
   rw [analyticOrderAt_eq_natCast hf] at horder
-  obtain ⟨g, hg, ⟨hgneq0, hexp⟩⟩ := horder
+  obtain ⟨g, hg, hgneq0, hexp⟩ := horder
   rw [analyticOrderAt_eq_natCast]
-  · use fun z => n • g z + (z - z₀) • deriv g z
+  · use fun z ↦ n • g z + (z - z₀) • deriv g z
     · constructor
       · refine fun_add (?_) (fun_mul (fun_sub (Differentiable.analyticAt (differentiable_fun_id) z₀)
             ( Differentiable.analyticAt (differentiable_const z₀) z₀)) (AnalyticAt.deriv hg))
@@ -717,7 +717,7 @@ lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f
           · simp only [interior_inter, Filter.inter_mem_iff, interior_mem_nhds]
             simp_all only [ne_eq, smul_eq_mul, and_self]
           · intros z Hz
-            have Hderiv : deriv (fun z => (z - z₀)^n • g z) z =
+            have Hderiv : deriv (fun z ↦ (z - z₀)^n • g z) z =
             (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by
               simp only [smul_eq_mul]
               rw [deriv_fun_mul]
@@ -730,11 +730,8 @@ lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f
                   grind
                 simp only [differentiableAt_fun_id, differentiableAt_const,
                   DifferentiableAt.fun_sub, deriv_fun_pow, deriv_fun_sub, deriv_id'',
-                  deriv_const', sub_zero, mul_one]
-                simp only [this, add_comm]
-                have : ↑n * (z - z₀) ^ (n - 1) = (z - z₀) ^ (n - 1) * ↑n  := by
-                   exact Nat.cast_comm n ((z - z₀) ^ (n - 1))
-                rw [this, mul_assoc]
+                  deriv_const', sub_zero, mul_one, this, add_comm]
+                rw [Nat.cast_comm n ((z - z₀) ^ (n - 1)), mul_assoc]
                 ring
               · aesop
               · apply differentiableAt
@@ -744,7 +741,7 @@ lemma analyticOrderAt_deriv_of_pos (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f
             simp only [nsmul_eq_mul, smul_eq_mul]
             rw [← mul_add] at Hderiv
             rw [← Hderiv]
-            have hL : f =ᶠ[nhds z] (fun z => (fun z ↦ (z - z₀) ^ n • g z) z) := by
+            have hL : f =ᶠ[nhds z] (fun z ↦ (fun z ↦ (z - z₀) ^ n • g z) z) := by
               unfold Filter.EventuallyEq
               rw [Filter.eventually_iff_exists_mem]
               use interior (Ug ∩ Ur)
@@ -763,7 +760,7 @@ lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt �
     · intros n Hn Hpos Hk
       rename_i k hk
       have : analyticOrderAt (deriv (deriv^[k] f)) z₀ = ((n - k) - 1 : ℕ) := by
-        apply analyticOrderAt_deriv_of_pos (deriv^[k] f) z₀ (iterated_deriv hf k) (n - k)
+        apply analyticOrderAt_deriv_of_pos (iterated_deriv hf k)
         · apply hk
           · assumption
           · assumption

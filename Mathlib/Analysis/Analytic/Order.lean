@@ -461,7 +461,7 @@ lemma eq_zero_iff_order_inf [PreconnectedSpace 𝕜] {f : 𝕜 → E} (z : 𝕜)
     exact eqOn_zero_of_preconnected_of_frequently_eq_zero (fun x ↦ by aesop)
       isPreconnected_univ trivial hr trivial
 
-lemma eq_zero_on_iff_forall_analyticOrderAt_eq_top {s : Set 𝕜} (f : 𝕜 → E) (hs : IsOpen s) :
+lemma IsOpen.eqOn_zero_iff_forall_analyticOrderAt_eq_top {s : Set 𝕜} (f : 𝕜 → E) (hs : IsOpen s) :
   EqOn f 0 s ↔ ∀ z ∈ s, analyticOrderAt f z = ⊤ := by
   constructor
   · intro hzero z hz
