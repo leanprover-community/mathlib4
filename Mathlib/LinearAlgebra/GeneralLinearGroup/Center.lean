@@ -11,6 +11,31 @@ public import Mathlib.LinearAlgebra.Center
 /-!
 # Center of the group of linear automorphisms
 
+Let `R` be a ring and let `V` be a free `R`-module.
+We describe the center of the group of linear automorphisms of `V`.
+
+The group of linear automorphisms can be summoned either as `V ≃ₗ[R] V`,
+or as `LinearMap.GeneralLinearGroup R V`, which is a shortcut for `(V →ₗ[R] V)ˣ`.
+We provide both descriptions.
+
+There are three possibilities:
+
+* If `V` is trivial, then `V ≃ₗ[R] V` is trivial, and so is its center.
+
+* If `V` has rank one, then any basis with a `Unique` type of index furnishes
+a ring equivalence from `V →ₗ[R] V` with `Rᵐᵒᵖ`,
+given by right-multiplication on coordinates in the given basis.
+(This equivalence depends on the choice of a basis.)
+Then `V ≃ₗ[R] V` is mul-equivalent with `(Rᵐᵒᵖ)ˣ`, hence its center is isomorphic
+with `Subgroup.center (Rᵐᵒᵖ)ˣ`, or, by commutativity, with `Subgroup.center Rˣ`.
+
+* Otherwise, the center of `V ≃ₗ[R] V` consists of homotheties with central ratio,
+furnishing a group isomorphism from `Subgroup.center (V ≃ₗ[R] V)` with
+`(Subgroup.center R)ˣ`.
+
+When `R` is commutative and `V` is nontrivial, the last two cases give the same
+answer and the center of `V ≃ₗ[R] V` is isomorphic with `Rˣ`.
+
 -/
 
 @[expose] public section
@@ -231,7 +256,7 @@ theorem mem_center_iff_of_unique_basis
       simp only [Basis.coord_apply, smul_smul, coe_unop_opEquiv]
       apply congr_arg₂ _ _ rfl
       rw [← Subgroup.coe_center, SetLike.mem_coe, Subgroup.mem_center_iff] at hf
-
+      sorry
 
     rw [Subgroup.mem_center_iff]
     intro u
@@ -239,7 +264,6 @@ theorem mem_center_iff_of_unique_basis
 
 
   rw [← Subgroup.coe_center,  SetLike.mem_coe]
-  rw [LinearEquiv.mem_center_iff hV]
   sorry
 
 end Unique
@@ -257,8 +281,6 @@ theorem mem_center_iff_of_finrank_one [StrongRankCondition R] [Free R V]
   rw [← SetLike.mem_coe, Subgroup.coe_center]
   rw [Set.map_mem_center_iff (LinearMap.GeneralLinearGroup.generalLinearEquiv R V).symm]
   rw [← Subgroup.coe_center,  SetLike.mem_coe]
-  rw [mem_center_iff_of_unique_basis b]
-  simp
   sorry
 end LinearEquiv
 
