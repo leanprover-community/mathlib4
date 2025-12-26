@@ -52,6 +52,13 @@ lemma re_of_self_star_self (a : A) : (f (a * star a)).re = f (a * star a) :=
   re_of_isSelfAdjoint f (a * star a) (IsSelfAdjoint.mul_star_self a)
 
 /--
+If `f` is a positive linear functional, then `f (a * star a)` is a real number.
+-/
+lemma re_of_star_mul_self (a : A) : (f (star a * a)).re = f (star a * a) := by
+  have := f.re_of_self_star_self (star a)
+  simp_all
+
+/--
 If `f` is a positive linear functional, then `f (star a * b)` is a semi-inner product
 (positive semidefinite sesquilinear form) which makes `A` into a `PreInnerProductSpace`.
 -/
@@ -99,5 +106,27 @@ lemma maps_zero_prod_to_zero
   rw [← norm_eq_zero]
   norm_cast at hab
   exact (_root_.sq_nonpos_iff ‖f (star a * b)‖).mp hab
+
+/-
+def toCLM : A →L[ℂ] ℂ where
+  toFun := f
+  map_add' := by simp
+  map_smul' := by simp
+-/
+@[coe]
+def PLF.toCLM (f : A →ₚ[ℂ] ℂ) : A →L[ℂ] ℂ where
+  toFun := f
+  map_add' := by simp
+  map_smul' := by simp
+
+instance : Coe (A →ₚ[ℂ] ℂ) (A →L[ℂ] ℂ) where
+  coe := PLF.toCLM
+
+noncomputable
+instance : Norm (A →ₚ[ℂ] ℂ) where
+  norm f := ‖(f : A →L[ℂ] ℂ)‖
+
+-- I know this is true, but I will attempt to formalize the proof later
+theorem opNorm_eq_of_one : ‖f‖ = f 1 := sorry
 
 end PositiveLinearMap
