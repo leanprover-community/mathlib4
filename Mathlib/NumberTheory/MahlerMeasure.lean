@@ -6,19 +6,24 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Algebra.Polynomial.OfFn
+public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
 public import Mathlib.Data.Pi.Interval
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # Mahler measure of integer polynomials
 
-The main purpose of this file is to prove Northcott's Theorem for the Mahler measure.
+The main purpose of this file is to prove some facts about the Mahler measure of integer
+polynomials, in particular Northcott's Theorem for the Mahler measure.
 
 ## Main results
 - `Polynomial.finite_mahlerMeasure_le`: Northcott's Theorem: the set of integer polynomials of
   degree at most `n` and Mahler measure at most `B` is finite.
 - `Polynomial.card_mahlerMeasure_le_prod`: an upper bound on the number of integer polynomials
   of degree at most `n` and Mahler measure at most `B`.
+- `Polynomial.cyclotomic_mahlerMeasure_eq_one`: the Mahler measure of a cyclotomic polynomial is 1.
 -/
 
 @[expose] public section
@@ -107,5 +112,22 @@ theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
     ∏ i : Fin (n + 1), (2 * ⌊n.choose i * B⌋₊ + 1) := (card_mahlerMeasure n B).2
 
 end Northcott
+
+section Cyclotomic
+
+/-- The Mahler measure of a cyclotomic polynomial is 1. -/
+theorem cyclotomic_mahlerMeasure_eq_one {R : Type*} [CommRing R] [Algebra R ℂ] (n : ℕ) :
+    ((cyclotomic n R).map (algebraMap R ℂ)).mahlerMeasure = 1 := by
+  rcases eq_or_ne n 0 with hn | hn
+  · simp [hn]
+  have : NeZero n := ⟨hn⟩
+  suffices ∏ x ∈ primitiveRoots n ℂ, max 1 ‖x‖ = 1 by
+    simpa [mahlerMeasure_eq_leadingCoeff_mul_prod_roots, cyclotomic.monic n ℂ,
+      Polynomial.cyclotomic.roots_eq_primitiveRoots_val]
+  suffices ∀ x ∈ primitiveRoots n ℂ, ‖x‖ ≤ 1 from Multiset.prod_eq_one (by simpa)
+  intro _ hz
+  exact (IsPrimitiveRoot.norm'_eq_one (isPrimitiveRoot_of_mem_primitiveRoots hz) hn).le
+
+end Cyclotomic
 
 end Polynomial
