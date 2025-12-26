@@ -235,36 +235,24 @@ variable {R : Type*} [NormedRing R]
 
 /-! ### Membership Closure under Cauchy Product -/
 
+lemma Memℓp.summable_norm {f : ℕ → R} (hf : Memℓp f 1) : Summable (‖f ·‖) := by
+  rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hf; simpa using hf
+
 /-- Cauchy product of ℓ¹ functions is in ℓ¹. -/
 theorem Memℓp.one_mul {f g : ℕ → R} (hf : Memℓp f 1) (hg : Memℓp g 1) :
     Memℓp (CauchyProduct.apply f g) 1 := by
   rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
   simp only [ENNReal.toReal_one, Real.rpow_one]
-  -- Define the norm sequences
   let φ := fun k => ‖f k‖
   let ψ := fun l => ‖g l‖
-  have hφ_nn : ∀ k, 0 ≤ φ k := fun k => norm_nonneg _
-  have hψ_nn : ∀ l, 0 ≤ ψ l := fun l => norm_nonneg _
-  -- Extract summability from Memℓp
-  have hf' : Summable φ := by
-    rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hf
-    simpa using hf
-  have hg' : Summable ψ := by
-    rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hg
-    simpa using hg
-  -- The product of summable nonneg sequences is summable on ℕ × ℕ
   have hprod : Summable (fun x : ℕ × ℕ => φ x.1 * ψ x.2) :=
-    Summable.mul_of_nonneg hf' hg' hφ_nn hψ_nn
-  -- Bound norm of Cauchy product by antidiagonal sum of norm products
-  refine Summable.of_nonneg_of_le (fun n => norm_nonneg _) ?_
+    hf.summable_norm.mul_of_nonneg hg.summable_norm
+      (fun _ => norm_nonneg _) (fun _ => norm_nonneg _)
+  refine Summable.of_nonneg_of_le (fun _ => norm_nonneg _) ?_
     (summable_sum_mul_antidiagonal_of_summable_mul hprod)
   intro n
-  calc ‖CauchyProduct.apply f g n‖
-      = ‖∑ kl ∈ antidiagonal n, f kl.1 * g kl.2‖ := rfl
-    _ ≤ ∑ kl ∈ antidiagonal n, ‖f kl.1 * g kl.2‖ := norm_sum_le _ _
-    _ ≤ ∑ kl ∈ antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := by
-        apply sum_le_sum; intro kl _; exact norm_mul_le _ _
-    _ = ∑ kl ∈ antidiagonal n, φ kl.1 * ψ kl.2 := rfl
+  exact (norm_sum_le _ _).trans (sum_le_sum fun _ _ => norm_mul_le _ _)
+
 
 /-- The identity element `Pi.single 0 1` is in ℓ¹. -/
 theorem one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
@@ -325,12 +313,8 @@ theorem one_norm_mul_le (f g : lp (fun _ : ℕ => R) 1) : ‖f * g‖ ≤ ‖f�
   -- Now compare term-by-term
   refine Summable.tsum_le_tsum ?_ ?_ (summable_sum_mul_antidiagonal_of_summable_mul hprod)
   · intro n
-    calc ‖(f * g) n‖
-        = ‖∑ kl ∈ antidiagonal n, f kl.1 * g kl.2‖ := rfl
-      _ ≤ ∑ kl ∈ antidiagonal n, ‖f kl.1 * g kl.2‖ := norm_sum_le _ _
-      _ ≤ ∑ kl ∈ antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := by
-          apply sum_le_sum; intro kl _; exact norm_mul_le _ _
-      _ = ∑ kl ∈ antidiagonal n, φ kl.1 * ψ kl.2 := rfl
+    exact (norm_sum_le (antidiagonal n) _).trans
+      (sum_le_sum fun kl _ => norm_mul_le (f kl.1) (g kl.2))
   · -- Summability of ‖(f*g)_n‖
     have hmem := f.property.one_mul g.property
     rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hmem
