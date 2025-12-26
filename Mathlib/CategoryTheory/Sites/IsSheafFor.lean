@@ -800,7 +800,7 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
     exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
 /-- If `P` is a presheaf of types and `π : (i : I) → X i ⟶ B` is a family
-of morphism, this is the map from `P.obj (op B)` to the subtype of compatible
+of morphisms, this is the map from `P.obj (op B)` to the subtype of compatible
 families in `P.obj (op (X i))`. -/
 @[simps]
 def Arrows.toCompatible (s : P.obj (op B)) :
