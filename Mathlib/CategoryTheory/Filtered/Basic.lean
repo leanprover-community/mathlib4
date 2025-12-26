@@ -17,6 +17,12 @@ We give a simple characterisation of this condition as
    are equal, and
 3. there exists some object.
 
+An important example of filtered category is given by nonempty directed types;
+actually, filtered categories may be considered as a generalization of nonempty directed types.
+In the file `CategoryTheory.Presentable.Directed`, we show that "conversely"
+if `C` is a filtered category, there exists a final functor `α ⥤ C` from
+a nonempty directed type (`IsFiltered.isDirected`).
+
 Filtered colimits are often better behaved than arbitrary colimits.
 See `CategoryTheory/Limits/Types` for some details.
 
@@ -165,6 +171,10 @@ theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' �
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose_spec
 
 end AllowEmpty
+
+lemma isDirectedOrder (α : Type u) [Preorder α] [IsFiltered α] :
+    IsDirectedOrder α where
+  directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
 
 end IsFiltered
 
