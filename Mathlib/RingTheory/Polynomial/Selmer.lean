@@ -115,19 +115,18 @@ namespace Polynomial
 
 section Moore
 
-instance temp {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
-    [NoZeroSMulDivisors R S] (f : R[X])
+instance {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S] (f : R[X])
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] :
     MulAction G (f.rootSet S) where
   smul g x := ⟨g • x.1, by
-    rw [mem_rootSet_of_ne (ne_zero_of_mem_rootSet x.2), aeval_smul,
-      aeval_eq_zero_of_mem_rootSet x.2, smul_zero]⟩
+    rw [mem_rootSet', aeval_smul, smul_eq_zero_iff_eq, ← mem_rootSet']
+    exact x.2⟩
   one_smul x := Subtype.ext (one_smul G x.1)
   mul_smul g h x := Subtype.ext (mul_smul g h x.1)
 
 theorem rootSet.coe_smul
     {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
-    [NoZeroSMulDivisors R S] {f : R[X]}
+    {f : R[X]}
     {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     (g : G) (x : f.rootSet S) : (g • x : f.rootSet S) = g • (x : S) := rfl
 
@@ -190,15 +189,11 @@ theorem _root_.Multiset.card_le_card_toFinset_add_one_iff {α : Type*} [Decidabl
   exact ⟨fun h x y hx hy ↦ h x y (Multiset.one_le_count_iff_mem.mp hx.le)
     (Multiset.one_le_count_iff_mem.mp hy.le) hx hy, fun h x y _ _ hx hy ↦ h x y hx hy⟩
 
-theorem tada -- R = ℤ, S = 𝓞 K
+theorem tada
     {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
-    [NoZeroSMulDivisors R S]
     (f : R[X]) (hmon : f.Monic) [DecidableEq (f.rootSet S)]
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
-    (m : MaximalSpectrum S)
-     -- all roots already present (so no new roots in `S ⧸ m`)
-    (hf : (f.map (algebraMap R S)).Splits)
-    -- at most one collision
+    (m : MaximalSpectrum S) (hf : (f.map (algebraMap R S)).Splits)
     (h : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
     ∀ g ∈ m.asIdeal.toAddSubgroup.inertia G,
       MulAction.toPermHom G (f.rootSet S) g = 1 ∨
@@ -206,14 +201,10 @@ theorem tada -- R = ℤ, S = 𝓞 K
   intro g hg
   let π : S →ₐ[R] S ⧸ m.asIdeal := Ideal.Quotient.mkₐ R m.asIdeal
   have hπ (x : S) (hx : x ∈ f.rootSet S): π x ∈ f.rootSet (S ⧸ m.asIdeal) := by
-    unfold π
     rw [hmon.mem_rootSet, aeval_algHom_apply, aeval_eq_zero_of_mem_rootSet hx, map_zero]
   have hπ (x : S) : π (g • x) = π x := (Ideal.Quotient.mk_eq_mk_iff_sub_mem (g • x) x).mpr (hg x)
-  rw [or_iff_not_imp_left]
-  intro hg'
-  rw [Equiv.ext_iff, not_forall] at hg'
-  obtain ⟨x, hx⟩ := hg'
-  change g • x ≠ x at hx
+  rw [or_iff_not_imp_left, Equiv.ext_iff, not_forall]
+  rintro ⟨x, hx : g • x ≠ x⟩
   refine ⟨g • x, x, hx, ?_⟩
   ext z
   rw [Equiv.swap_apply_def]
@@ -228,28 +219,16 @@ theorem tada -- R = ℤ, S = 𝓞 K
   · subst hz
     simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
     have key := (Set.ncard_le_ncard_image_add_one_iff (f.rootSet S) π).mp h
-      (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2
-    simp [hπ] at key
-    simp [← Polynomial.rootSet.coe_smul] at key
-    simp [hx] at key
-    replace key := congrArg (fun s ↦ (x : S) ∈ s) key
-    simp [hx.symm] at key
-    exact key.symm
+      (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2 (by simp [hπ])
+      (by simp [hπ]) (by simpa [← rootSet.coe_smul]) (by simpa [← rootSet.coe_smul])
+    grind [rootSet.coe_smul]
   · simp [hz']
   · simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
-    have key := (Set.ncard_le_ncard_image_add_one_iff
-      (f.rootSet S) π).mp h (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2
-    simp [hπ] at key
-    simp [← Polynomial.rootSet.coe_smul] at key
-    simp [hx] at key
-    rw [not_imp_comm] at key
-    apply key
-    contrapose! key
-    replace key := congrArg (fun s ↦ (z : S) ∈ s) key
-    simp [hz, hz'] at key
+    have key := (Set.ncard_le_ncard_image_add_one_iff (f.rootSet S) π).mp h
+      (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2 (by simp [hπ]) (by simp [hπ])
+    grind [rootSet.coe_smul, SetLike.coe_eq_coe]
 
-theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
-    [NoZeroSMulDivisors R S] (f : R[X])
+theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S] (f : R[X])
     (hf : f.Monic) (hf' : (f.map (algebraMap R S)).Splits)
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     [MulAction.IsPretransitive G (f.rootSet S)]
@@ -290,7 +269,6 @@ theorem _root_.Polynomial.Splits.of_splits_map_of_injective {R : Type*} [CommRin
   refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i hi ?_⟩
   conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
-
 
 theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
