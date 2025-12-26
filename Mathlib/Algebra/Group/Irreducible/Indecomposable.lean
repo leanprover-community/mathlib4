@@ -57,7 +57,7 @@ lemma IsMulIndecomposable.baseOf_subset_one_lt [Monoid S] (v : ι → M) (f : M 
   IsMulIndecomposable.subset _ _
 
 @[to_additive]
-lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [Finite ι] [InvolutiveInv ι]
+lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [InvolutiveInv ι]
     [CommGroup S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) :
@@ -164,7 +164,7 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
     exact fun _ ↦ ⟨k⁻¹, hk', i, h_sub hi, by simp [hv_inv, hk]⟩
 
 @[to_additive]
-lemma pairwise_div_notMem_range' [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma pairwise_div_notMem_range' [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1)
     (s : Set ι) (hst : s ⊆ IsMulIndecomposable v {i | 1 < f (v i)}) :
@@ -174,7 +174,7 @@ lemma pairwise_div_notMem_range' [Finite ι] [InvolutiveInv ι] [CommGroup S] [I
   simpa [hv_inv] using (hf i).symm
 
 @[to_additive]
-lemma pairwise_baseOf_div_notMem [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) :
     (baseOf v f).Pairwise fun i j ↦ v i / v j ∉ range v :=
