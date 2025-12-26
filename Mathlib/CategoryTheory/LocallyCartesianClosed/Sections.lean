@@ -102,7 +102,7 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     congr
     simp [braiding_hom_snd])
 
-/-- The uncurrying operation `Hom A (section X) → Hom ((star I).obj A) X`. -/
+/-- The uncurrying operation `Hom A (section X) → Hom ((toOver I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X := by
   let v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ ChosenPullbacksAlong.fst (ihom I |>.map X.hom) (curryId I)
