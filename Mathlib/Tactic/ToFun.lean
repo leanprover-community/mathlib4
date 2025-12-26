@@ -22,11 +22,14 @@ open Lean Meta Elab Tactic
 namespace Mathlib.Tactic
 
 /--
-Adding `@[to_fun]` to a lemma
+Generate an eta-expanded version of a lemma. Adding `@[to_fun]` to a lemma written in "point-free"
+form, e.g.
 ```
-theorem Continuous.mul (hf : Continuous f) (hg : Continuous g) : Continuous (f * g)
+theorem Differentiable.mul (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
+    Differentiable 𝕜 (f * g)
 ```
-will generate a new lemma `Continuous.fun_mul` with conclusion `Continuous fun x => f x * g x`.
+will generate a new lemma `Differentiable.fun_mul` with conclusion
+`Differentiable 𝕜 fun x => f x * g x`.
 
 Use the `to_fun (attr := ...)` syntax to add the same attribute to both declarations.
 -/
