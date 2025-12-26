@@ -471,18 +471,16 @@ instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsin
     inferInstanceAs (Subsingleton <| X.Edge _ _)
   CategoryTheory.Quotient.instSubsingletonHom _ _ _
 
+instance (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] : Unique X.HomotopyCategory := 
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  CategoryTheory.Quotient.instUnique _
+
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 then `X.HomotopyCategory` is a terminal object in `Cat`. -/
 def isTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
     IsTerminal (Cat.of X.HomotopyCategory) :=
-  IsTerminal.ofUniqueHom
-    (fun _ ↦ Cat.Hom.ofFunctor ((Functor.const ..).obj (mk default)))
-    (fun C F ↦ by
-      ext
-      refine CategoryTheory.Functor.ext (fun x ↦ ?_) (fun x y _ ↦ ?_)
-      · exact HomotopyCategory.ext (Subsingleton.elim (α := X _⦋0⦌₂) _ _)
-      · have := subsingleton_hom X
-        apply Subsingleton.elim)
+  letI : IsDiscrete (X.HomotopyCategory) := { eq_of_hom := by subsingleton }
+  Cat.isTerminalOfUniqueOfIsDiscrete
 
 end HomotopyCategory
 
