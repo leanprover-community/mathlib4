@@ -19,6 +19,33 @@ open Module LinearMap LinearEquiv Set
 
 variable {R V : Type*}
 
+theorem Set.map_mem_center_of_surjective
+    {G H : Type*} [Monoid G] [Monoid H] {e : G →* H} {g : G}
+    (he : Function.Surjective e) (hg : g ∈ Set.center G) :
+    e g ∈ Set.center H := by
+  rw [Semigroup.mem_center_iff] at hg ⊢
+  intro h
+  obtain ⟨k, rfl⟩ := he h
+  simp only [← map_mul, hg]
+
+theorem Set.map_mem_center_iff
+    {G H : Type*} [Monoid G] [Monoid H] (e : G ≃* H) (g : G) :
+    g ∈ Set.center G ↔ e g ∈ Set.center H := by
+  constructor
+  · intro hg
+    rw [← MulEquiv.coe_toMonoidHom]
+    exact Set.map_mem_center_of_surjective e.surjective hg
+  · intro hg
+    rw [show g = e.symm.toMonoidHom (e g) from by simp]
+    exact Set.map_mem_center_of_surjective e.symm.surjective hg
+
+-- Mathlib.Algebra.Central.End
+theorem Module.End.mem_subsemiringCenter_iff
+    [Semiring R] [AddCommMonoid V] [Module R V] [Free R V] {f : End R V} :
+    f ∈ Subsemiring.center (End R V) ↔
+      ∃ α ∈ Subsemiring.center R, ∀ x : V, f x = α • x :=
+  sorry
+
 theorem Module.Basis.index_nontrivial_iff
     {R : Type*} [Semiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Nontrivial M]
@@ -27,7 +54,6 @@ theorem Module.Basis.index_nontrivial_iff
   simp [← not_iff_not, ne_eq, not_nontrivial_iff_subsingleton,
     Module.finrank_eq_nat_card_basis b, Nat.card_eq_one_iff_unique,
     b.index_nonempty]
-
 
 namespace LinearEquiv
 
@@ -95,7 +121,6 @@ theorem commute_transvections_iff [StrongRankCondition R] [Free R V]
   rw [← b.index_nontrivial_iff] at hV
   exact commute_transvections_iff_of_basis b (fun _ _ _ _ ↦ hcomm _ ..)
 
-
 /-- The center of linear automorphisms of a free module of rank ≠ 1
 consists of homotheties with central ratio.
 
@@ -138,6 +163,103 @@ theorem mem_center_iff [StrongRankCondition R] [Free R V]
   rw [← b.index_nontrivial_iff] at hV
   exact mem_center_iff_of_basis b
 
+section Unique
+
+open Units LinearMap.GeneralLinearGroup
+
+variable [Unique ι]
+
+/-- Given a basis with a unique index, the ring equivalence
+from `Rᵐᵒᵖ` to `End R V` given by right multiplication in the basis. -/
+noncomputable def _root_.Module.Basis.mulOppositeEquivEnd
+    (b : Basis ι R V) : Rᵐᵒᵖ ≃+* End R V where
+  toFun a := {
+    toFun x := b.coord default x • MulOpposite.unop a • b default
+    map_add' x y := by simp [add_smul]
+    map_smul' r x := by simp [mul_smul] }
+  invFun f := MulOpposite.op (b.coord default (f (b default)))
+  left_inv a := by simp
+  right_inv f := b.ext <| fun i ↦ by
+    rw [Subsingleton.allEq i default]
+    conv_rhs => rw [← b.linearCombination_repr (f (b default)), Finsupp.linearCombination_apply]
+    simp only [Basis.coord_apply, MulOpposite.unop_op, LinearMap.coe_mk, AddHom.coe_mk,
+      Basis.repr_self, Finsupp.single_eq_same, one_smul]
+    rw [Finsupp.sum_eq_single default]
+    · intro j
+      simp [Subsingleton.allEq j default]
+    · simp
+  map_add' a b := by ext x; simp [add_smul]
+  map_mul' a b := by ext x; simp [mul_smul]
+
+theorem _root_.Module.Basis.mulOppositeEquivEnd_apply_apply
+    (b : Basis ι R V) (a : Rᵐᵒᵖ) (x : V) :
+    b.mulOppositeEquivEnd a x = b.coord default x • a.unop • b default :=
+  rfl
+
+theorem _root_.Module.Basis.mulOppositeEquivEnd_symm_apply
+    (b : Basis ι R V) (f : End R V) :
+    b.mulOppositeEquivEnd.symm f = MulOpposite.op (b.coord default (f (b default))) :=
+  rfl
+
+noncomputable def _root_.Module.Basis.mulOppositeUnitsEquiv (b : Basis ι R V) :
+    (Rˣ)ᵐᵒᵖ ≃* (V ≃ₗ[R] V) :=
+  opEquiv.symm.trans ((mapEquiv b.mulOppositeEquivEnd.toMulEquiv).trans (generalLinearEquiv R V))
+
+noncomputable def _root_.Module.Basis.mulOppositeUnitsEquiv' (b : Basis ι R V) :
+    Rᵐᵒᵖˣ ≃* GeneralLinearGroup R V :=
+  mapEquiv b.mulOppositeEquivEnd.toMulEquiv
+
+theorem mem_center_iff_of_unique_basis
+    (b : Basis ι R V) {f : V ≃ₗ[R] V} :
+    f ∈ Subgroup.center (V ≃ₗ[R] V) ↔
+      ∃ a ∈ Subgroup.center Rˣ, ∀ x : V, f x = a.val • x := by
+  rw [← SetLike.mem_coe, Subgroup.coe_center]
+  rw [Set.map_mem_center_iff (LinearMap.GeneralLinearGroup.generalLinearEquiv R V).symm f]
+  rw [Set.map_mem_center_iff (mapEquiv b.mulOppositeEquivEnd.toMulEquiv).symm]
+  -- rw [← Subgroup.coe_center, SetLike.mem_coe, Subgroup.mem_center_iff]
+  constructor
+  · intro hf
+    let a := (mapEquiv b.mulOppositeEquivEnd.toMulEquiv).symm
+      ((generalLinearEquiv R V).symm f)
+    use a.opEquiv.unop
+    have ha (x : V) : f x = (b.coord default x) • a.val.unop • b default := sorry
+    suffices _ by
+      refine ⟨this, fun x ↦ ?_⟩
+      rw [ha]
+      have : x = (b.coord default x) • b default := sorry
+      conv_rhs => rw [this]
+      simp only [Basis.coord_apply, smul_smul, coe_unop_opEquiv]
+      apply congr_arg₂ _ _ rfl
+      rw [← Subgroup.coe_center, SetLike.mem_coe, Subgroup.mem_center_iff] at hf
+
+
+    rw [Subgroup.mem_center_iff]
+    intro u
+    sorry
+
+
+  rw [← Subgroup.coe_center,  SetLike.mem_coe]
+  rw [LinearEquiv.mem_center_iff hV]
+  sorry
+
+end Unique
+
+/-- The center of linear automorphisms of a free module of rank 1
+consists of homotheties with ratio which is central within units.
+
+This version requires `StrongRankCondition R`.
+Otherwise, use `LinearEquiv.mem_center_of_unique_basis`. -/
+theorem mem_center_iff_of_finrank_one [StrongRankCondition R] [Free R V]
+    (hV : finrank R V = 1) {f : V ≃ₗ[R] V} :
+    f ∈ Subgroup.center (V ≃ₗ[R] V) ↔
+      ∃ a ∈ Subgroup.center Rˣ, ∀ x : V, f x = a.val • x := by
+  let b := Module.basisUnique Unit hV
+  rw [← SetLike.mem_coe, Subgroup.coe_center]
+  rw [Set.map_mem_center_iff (LinearMap.GeneralLinearGroup.generalLinearEquiv R V).symm]
+  rw [← Subgroup.coe_center,  SetLike.mem_coe]
+  rw [mem_center_iff_of_unique_basis b]
+  simp
+  sorry
 end LinearEquiv
 
 namespace LinearMap.GeneralLinearGroup
@@ -149,43 +271,18 @@ theorem isUnit_ratio
   apply LinearEquiv.isUnit_ratio (f := f.toLinearEquiv)
   aesop
 
+variable [Ring R] [AddCommGroup V] [Module R V]
+
 /-- The center of linear endomorphisms of a free module
 consists of homotheties with central ratio. -/
-theorem mem_center_iff
-    [Ring R] [AddCommGroup V] [Module R V] [Free R V] {f : GeneralLinearGroup R V} :
-    f ∈ center (GeneralLinearGroup R V) ↔
-      ∃ a ∈ center Rˣ, ∀ x : V, f.val x = a • x  := by
-  rcases subsingleton_or_nontrivial V with hV | hV
-  · constructor
-    · intro hf
-      use 1
-      suffices ∀ x, f.val x = x by simpa using this
-      intro; apply hV.allEq
-    · rintro ⟨a, _, hfa⟩
-      rw [Semigroup.mem_center_iff]
-      intro g
-      ext x
-      simp [hfa]
-  constructor
-  · intro hf
-    obtain ⟨a, ha, hfa⟩ := (center_End_of_free (f := f.toLinearEquiv.toLinearMap)).mp (by
-      rw [Semigroup.mem_center_iff] at hf ⊢
-      intro g
-      apply hf
-      sorry)
-    let ι := Free.ChooseBasisIndex R V
-    let b : Basis ι R V := Free.chooseBasis R V
-    have : Nonempty ι := inferInstance
-    let i : ι := Classical.ofNonempty
-    use (isUnit_ratio hfa).unit
-    constructor
-    · rw [Semigroup.mem_center_iff] at ha ⊢
-      simp [← Units.val_inj, ha]
-    · intro x
-      simpa [this] using hfa x
-  · -- the easy direction
-    rintro ⟨a, ha, hfa⟩
-    rw [Semigroup.mem_center_iff]
-    aesop (add norm hfa)
+theorem mem_center_iff [StrongRankCondition R] [Free R V]
+    {f : GeneralLinearGroup R V} (hV : finrank R V ≠ 1) :
+    f ∈ Subgroup.center (GeneralLinearGroup R V) ↔
+      ∃ a ∈ Subring.center R, IsUnit a ∧ ∀ x : V, f.val x = a • x  := by
+  rw [← SetLike.mem_coe, Subgroup.coe_center]
+  rw [Set.map_mem_center_iff (generalLinearEquiv R V) f]
+  rw [← Subgroup.coe_center,  SetLike.mem_coe]
+  rw [LinearEquiv.mem_center_iff hV]
+  simp
 
 end LinearMap.GeneralLinearGroup
