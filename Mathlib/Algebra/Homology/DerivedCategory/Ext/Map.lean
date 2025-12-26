@@ -82,14 +82,6 @@ lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map [HasExt.{w} C] [HasExt.{w'} 
     nth_rw 2 [← Category.assoc]
     exact (Category.comp_id _).symm.trans (Category.id_comp _).symm
 
-lemma Abelian.Ext.mapExactFunctor_eq_map [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (e : Ext X Y n) : (e.mapExactFunctor F).hom =
-      (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫ F.mapDerivedCategory.map e.hom ≫
-        (F.mapDerivedCategory.commShiftIso (n : ℤ)).hom.app _ ≫
-          ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧' := by
-  nth_rw 2 [← Category.assoc]
-  exact e.mapExactFunctor_eq_shiftedHom_map F
-
 end
 
 @[simp]
@@ -98,7 +90,7 @@ lemma Abelian.Ext.mapExactFunctor_zero [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) 
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
   ext
-  simp [Ext.mapExactFunctor_eq_map]
+  simp [Ext.mapExactFunctor_eq_shiftedHom_map, ShiftedHom.map_zero]
 
 @[simp]
 lemma Abelian.Ext.mapExactFunctor_add [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
@@ -107,7 +99,7 @@ lemma Abelian.Ext.mapExactFunctor_add [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
   ext
-  simp [Ext.mapExactFunctor_eq_map, F.mapDerivedCategory.map_add]
+  simp [Ext.mapExactFunctor_eq_shiftedHom_map, ShiftedHom.map, F.mapDerivedCategory.map_add]
 
 /-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
@@ -131,7 +123,7 @@ lemma Functor.mapExactFunctor_smul [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n :
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
   ext
-  simp [Ext.mapExactFunctor_eq_map, F.mapDerivedCategory.map_smul]
+  simp [Ext.mapExactFunctor_eq_shiftedHom_map, ShiftedHom.map, F.mapDerivedCategory.map_smul]
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
 noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
