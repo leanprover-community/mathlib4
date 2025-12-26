@@ -168,13 +168,22 @@ require manual intervention.
 
 ## Location in Mathlib
 
-The criterion for determining where to place files about general theory of functions pertaining to
-the continuous functional calculus is whether the import
-`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean` is needed, which contains
-the instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
-imports. If this import is not needed, then the file should be placed in the directory
-`Mathlib/Analysis/SpecialFunctions/ContinuousFunctionalCalculus.lean`. If this import is needed
-then the appropriate location is `Mathlib/Analysis/CStarAlgebra/SpecialFunctions.lean`.
-If, as is often thecase, some results need the import and others do not, there should be two files,
-one in each location.
+Pick a location based on content *and* dependencies. Keep the basic API light: avoid importing the
+full C⋆-algebraic construction unless you really need it.
+
+* General theory about `cfc`/`cfcₙ` belongs under
+  `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/`. Prefer the `Unital`/`NonUnital`
+  APIs; add `Unique` only if you need `ContinuousMap.UniqueHom`/`ContinuousMapZero.UniqueHom`
+  (Stone-Weierstrass), and add `Isometric` only for norm/isometry facts.
+* Definitions and basic API for special functions defined via the CFC (abs, exp/log, rpow,
+  posPart, ...) belong under
+  `Mathlib/Analysis/SpecialFunctions/ContinuousFunctionalCalculus/` and should avoid the full
+  construction unless unavoidable.
+* C⋆-specific consequences for a named special function belong under
+  `Mathlib/Analysis/CStarAlgebra/SpecialFunctions/`. If the basic API already lives in the
+  special-functions directory, keep heavier C⋆ results in a separate file so imports stay isolated.
+
+If a development has both general CFC theory and special-function consequences, split into
+separate files in the appropriate directories.
+
 -/
