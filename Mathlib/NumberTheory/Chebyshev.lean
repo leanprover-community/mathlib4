@@ -312,26 +312,22 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     ← intervalIntegral.integral_of_le hx]
   · -- Rewrite the derivative inside the intigral
     have int_deriv (f : ℝ → ℝ) :
-      ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
-      ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
-      apply intervalIntegral.integral_congr fun u hu ↦ ?_
-      replace hu : 2 ≤ u := ((Set.uIcc_of_le hx) ▸ hu).1
-      simp [deriv_inv_log, field]
+        ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
+        ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := 
+      intervalIntegral.integral_congr fun u _ ↦ by simp [deriv_inv_log, field]
     simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · -- Differentiability
-    intro z hz
-    have : z ≠ 0 := by linarith [hz.1]
-    have : log z ≠ 0 := by
-      apply log_ne_zero_of_pos_of_ne_one <;> linarith [hz.1]
+    intro z ⟨hz, _⟩
+    have : z ≠ 0 := by linarith
+    have : log z ≠ 0 := by apply log_ne_zero_of_pos_of_ne_one <;> linarith
     fun_prop (disch := assumption)
   · -- Integrability of the derivative
-    have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -y⁻¹ / log y ^ 2 := by
-      exact fun _ _ ↦ deriv_inv_log
-    refine ContinuousOn.integrableOn_Icc fun z hz ↦ ContinuousWithinAt.congr ?_ this (this z hz)
-    have hz₀ : z ≠ 0 := by linarith [hz.1]
+    refine ContinuousOn.integrableOn_Icc fun z ⟨hz, _⟩ ↦ ContinuousWithinAt.congr ?_
+      (fun _ _ ↦ deriv_inv_log) deriv_inv_log
+    have hz₀ : z ≠ 0 := by linarith
     have : log z ^ 2 ≠ 0 := by
-      refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith [hz.1]
+      refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
     exact ContinuousAt.continuousWithinAt <| by fun_prop (disch := assumption)
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
@@ -398,38 +394,36 @@ theorem integral_one_div_log_sq_isBigO :
 /-- Bound on the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/
 theorem integral_theta_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by
-  apply IsBigO.trans _ integral_one_div_log_sq_isBigO
-  apply IsBigO.of_bound (log 4)
+  refine (IsBigO.of_bound (log 4) ?_).trans integral_one_div_log_sq_isBigO
   filter_upwards [eventually_ge_atTop 4] with x hx
   simp_rw [norm_eq_abs]
-  apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)
-  apply le_trans (intervalIntegral.integral_mono_on (g := (fun t ↦ log 4 * (1 / log t ^ 2)))
-    (by linarith) ..)
-  · rw [intervalIntegral.integral_const_mul, abs_of_nonneg]
-    apply intervalIntegral.integral_nonneg (by linarith) fun u hu ↦ ?_
-    positivity
-  · apply IntervalIntegrable.abs
-    apply intervalIntegrable_iff.mpr
+  calc |∫ (t : ℝ) in 2..x, θ t / (t * log t ^ 2)|
+    _ ≤ ∫ (x : ℝ) in 2..x, |θ x / (x * log x ^ 2)| := 
+        intervalIntegral.abs_integral_le_integral_abs (by linarith)
+    _ ≤ ∫ (x : ℝ) in 2..x, log 4 * (1 / log x ^ 2) :=
+        intervalIntegral.integral_mono_on (by linarith) ?hf ?hg fun t ⟨ht, _⟩ ↦ ?hh
+    _ = log 4 * |∫ (t : ℝ) in 2..x, 1 / log t ^ 2| := by
+        rw [intervalIntegral.integral_const_mul, abs_of_nonneg]
+        exact intervalIntegral.integral_nonneg (by linarith) fun u _ ↦ by positivity
+  case hf =>
+    refine (intervalIntegrable_iff.mpr ?_).abs
     rw [Set.uIoc_of_le (by linarith), ← integrableOn_Icc_iff_integrableOn_Ioc]
-    apply integrableOn_theta_div_id_mul_log_sq
-  · apply IntervalIntegrable.const_mul
-    apply intervalIntegrable_one_div_log_sq <;> linarith
-  · intro t ht
-    have : 1 ≤ t := by linarith [ht.1]
-    rw [abs_of_nonneg (by positivity [theta_nonneg t])]
-    grw [theta_le_log4_mul_x (by linarith)]
-    exact le_of_eq (by field)
+    exact integrableOn_theta_div_id_mul_log_sq x
+  case hg =>
+    refine (intervalIntegrable_one_div_log_sq ?_ ?_).const_mul _ <;> linarith
+  case hh =>
+    calc |θ t / (t * log t ^ 2)|
+    _ = θ t / (t * log t ^ 2) := abs_of_nonneg (by positivity [theta_nonneg t])
+    _ ≤ log 4 * t / (t * log t ^ 2) := by grw [theta_le_log4_mul_x (by linarith)]
+    _ = log 4 * (1 / log t ^ 2) := by field
 
 theorem integral_theta_div_log_sq_isLittleO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =o[atTop] (fun x ↦ x / log x) := by
-  apply integral_theta_div_log_sq_isBigO.trans_isLittleO
-  apply isLittleO_iff_tendsto' _|>.mpr
-  · apply Tendsto.congr' (f₁ := (fun x ↦ 1 / log x))
-    · filter_upwards [eventually_gt_atTop 0] with x hx
-      field
-    simp_rw [one_div]
-    apply Tendsto.inv_tendsto_atTop tendsto_log_atTop
-  simp
+  refine integral_theta_div_log_sq_isBigO.trans_isLittleO ?_
+  refine isLittleO_iff_tendsto' (by simp) |>.mpr ?_
+  refine Tendsto.congr' (f₁ := fun x ↦ (log x)⁻¹) ?_ tendsto_log_atTop.inv_tendsto_atTop
+  filter_upwards [eventually_gt_atTop 0] with x hx
+  field
 
 theorem primeCounting_sub_theta_div_log_isBigO :
     (fun x ↦ π ⌊x⌋₊ - θ x / log x) =O[atTop] (fun x ↦ x / log x ^ 2) := by
