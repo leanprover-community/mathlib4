@@ -27,7 +27,7 @@ variable {m n : ℤ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 where
-  mp := fun ⟨m, hm⟩ ↦ by simp [hm, add_emod]
+  mp := fun ⟨m, hm⟩ ↦ by grind
   mpr h := ⟨n / 2, by grind⟩
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
@@ -107,14 +107,7 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by grind
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 := by grind
 
 @[simp]
-theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
-  induction z using wlog_sign with
-  | inv => simp
-  | w n =>
-    cases n
-    · simp
-    · norm_cast
-      simp
+theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by grind
 
 @[simp]
 theorem odd_sign_iff {z : ℤ} : Odd z.sign ↔ z ≠ 0 := by grind
@@ -129,5 +122,13 @@ theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
 theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (ofNat(n) : ℤ) ↔ IsSquare (ofNat(n) : ℕ) :=
   isSquare_natCast_iff
+
+-- These next two don't make good `norm_cast` lemmas.
+theorem natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
+  have : 1 ≤ b ^ p := Nat.one_le_pow p b w
+  norm_cast
+
+theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
+  natCast_pow_pred 2 p (by decide)
 
 end Int

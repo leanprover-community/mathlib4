@@ -226,6 +226,7 @@ theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 
   · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
 
+set_option backward.privateInPublic true in
 /-- `sigma_eq_one_iff` is to be preferred. -/
 private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
   simp [sigma_zero_apply]
