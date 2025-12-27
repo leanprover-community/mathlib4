@@ -242,17 +242,17 @@ to the general linear group. -/
 def toGeneralLinearGroup : SpecialLinearGroup R V →* LinearMap.GeneralLinearGroup R V :=
   (LinearMap.GeneralLinearGroup.generalLinearEquiv R V).symm.toMonoidHom.comp toLinearEquiv
 
-theorem toGeneralLinearGroup_toLinearEquiv_apply (u : SpecialLinearGroup R V) :
+lemma toGeneralLinearGroup_toLinearEquiv_apply (u : SpecialLinearGroup R V) :
     u.toGeneralLinearGroup.toLinearEquiv = u.toLinearEquiv := rfl
 
-theorem coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
+lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
     u.toGeneralLinearGroup.val = u.toLinearEquiv := rfl
 
-theorem toGeneralLinearGroup_injective :
+lemma toGeneralLinearGroup_injective :
     Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) := by
   simp [toGeneralLinearGroup, toLinearEquiv_injective]
 
-theorem mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
+lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
     u ∈ Set.range ⇑(toGeneralLinearGroup (R := R) (V := V)) ↔
       u.toLinearEquiv.det = 1 := by
   constructor
