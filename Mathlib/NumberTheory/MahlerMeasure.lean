@@ -175,7 +175,6 @@ theorem isIntegral_of_mahlerMeasure_eq_one (h : (p.map (Int.castRingHom ℂ)).ma
   have hp'Monic : p'.Monic := by aesop (add safe (by simp [Monic.def]))
   grind [IsIntegral, RingHom.IsIntegralElem, mem_roots', IsRoot.def, eval₂_mul, eval_map]
 
-
 open IntermediateField in
 theorem pow_eq_one_of_mahlerMeasure_eq_one (h : (p.map (Int.castRingHom ℂ)).mahlerMeasure = 1)
     {z : ℂ} (hz₀ : z ≠ 0) (hz : z ∈ p.aroots ℂ) : ∃ n, 0 < n ∧ z ^ n = 1 := by
