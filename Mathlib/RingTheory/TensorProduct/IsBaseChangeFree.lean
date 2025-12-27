@@ -107,7 +107,7 @@ include A in
 of a finite free module from any under-ring. -/
 theorem of_fintype_basis [Fintype ι] :
     IsBaseChange R (Fintype.linearCombination A b) := by
-  classical
+  have : DecidableEq ι := Classical.typeDecidableEq ι
   let j : R ⊗[A] (ι → A) ≃ₗ[R] ι → R := piScalarRight A R R ι
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Fintype.linearCombination R b ∘ₗ j)
