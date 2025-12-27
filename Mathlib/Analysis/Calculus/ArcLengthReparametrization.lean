@@ -20,8 +20,8 @@ reparametrization.
 
 ## Main results
 
-- `arclength_reparametrization`: this theorem tells us that `arclengthParamTransform` is indeed a 
-  parameter transformation, it is orientation-preserving, and the resulting reparametrization - 
+- `arclength_reparametrization`: this theorem tells us that `arclengthParamTransform` is indeed a
+  parameter transformation, it is orientation-preserving, and the resulting reparametrization -
   `arclengthReparam` is indeed a reparametrization by arc-length, i.e it has unit speed.
 
 ## Notation
@@ -36,9 +36,9 @@ reparametrization.
 
 /-- This is a version of the first part of FTC for a function which is continuous on an interval.
     Credit to Aaron Liu. -/
-theorem derivWithin_integral_of_continuousOn_interval {I : Set ℝ} [I.OrdConnected] {f : ℝ → ℝ} 
-    (h : ContinuousOn f I) {x₀ x : ℝ} (hx₀ : x₀ ∈ I) (hx : x ∈ I) : 
-    HasDerivWithinAt (fun t ↦  ∫ τ in x₀..t, f τ) (f x) I x := 
+theorem derivWithin_integral_of_continuousOn_interval {I : Set ℝ} [I.OrdConnected] {f : ℝ → ℝ}
+    (h : ContinuousOn f I) {x₀ x : ℝ} (hx₀ : x₀ ∈ I) (hx : x ∈ I) :
+    HasDerivWithinAt (fun t ↦  ∫ τ in x₀..t, f τ) (f x) I x :=
   have : intervalIntegral.FTCFilter x (nhdsWithin x I) (nhdsWithin x I) := by
     refine @intervalIntegral.FTCFilter.mk x (nhdsWithin x I) (nhdsWithin x I) ⟨?_⟩ ?_ ?_ ?_
     · rw [Filter.tendsto_smallSets_iff]
@@ -46,7 +46,7 @@ theorem derivWithin_integral_of_continuousOn_interval {I : Set ℝ} [I.OrdConnec
       rw [mem_nhdsWithin_iff_exists_mem_nhds_inter] at ht
       obtain ⟨u, hu, hut⟩ := ht
       obtain ⟨a, b, haxb, habx, habu⟩ := exists_Icc_mem_subset_of_mem_nhds hu
-      have hab : Set.Icc a b ∩ I ∈ nhdsWithin x I := 
+      have hab : Set.Icc a b ∩ I ∈ nhdsWithin x I :=
     Set.inter_comm _ _ ▸ inter_mem_nhdsWithin I habx
       filter_upwards [Filter.prod_mem_prod hab hab] with (i, j) ⟨hi, hj⟩
       refine subset_trans (Set.subset_inter ?_ ?_) hut
@@ -57,24 +57,24 @@ theorem derivWithin_integral_of_continuousOn_interval {I : Set ℝ} [I.OrdConnec
         exact Set.Icc_subset I hi.2 hj.2 (Set.Ioc_subset_Icc_self hk)
     · exact pure_le_nhdsWithin hx
     · exact nhdsWithin_le_nhds
-    · exact @Filter.inf_isMeasurablyGenerated _ _ _ _ _ 
+    · exact @Filter.inf_isMeasurablyGenerated _ _ _ _ _
         (Set.OrdConnected.measurableSet ‹_›).principal_isMeasurablyGenerated
-  intervalIntegral.integral_hasDerivWithinAt_right 
+  intervalIntegral.integral_hasDerivWithinAt_right
     ((h.mono (Set.OrdConnected.uIcc_subset ‹_› hx₀ hx)).intervalIntegrable)
-    (h.stronglyMeasurableAtFilter_nhdsWithin (Set.OrdConnected.measurableSet ‹_›) x) 
+    (h.stronglyMeasurableAtFilter_nhdsWithin (Set.OrdConnected.measurableSet ‹_›) x)
     (h.continuousWithinAt hx)
 
 noncomputable section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (c : ℝ → E)
 
-/-- Auxiliary definition, this is the reversed (inverse) parameter transformation used for 
+/-- Auxiliary definition, this is the reversed (inverse) parameter transformation used for
 constructing the arclength reparametrization of parametrized curve. -/
-def arclengthParamTransformAux (t₀ : ℝ): ℝ → ℝ := fun t ↦ ∫ τ in t₀..t, ‖deriv c τ‖ 
+def arclengthParamTransformAux (t₀ : ℝ): ℝ → ℝ := fun t ↦ ∫ τ in t₀..t, ‖deriv c τ‖
 
-variable (I : Set ℝ) [I.OrdConnected] 
+variable (I : Set ℝ) [I.OrdConnected]
 
-/--This is parameter transformation used to construct the arc-length reparametrization of 
+/--This is parameter transformation used to construct the arc-length reparametrization of
 parametrized curve.-/
 def arclengthParamTransform (t₀ : ℝ) :=
   letI ψ := arclengthParamTransformAux c t₀
@@ -94,26 +94,26 @@ local notation "ψ" => arclengthParamTransformAux c t₀
 lemma speed_continuousOn (hI : IsOpen I) (hc : ContDiffOn ℝ r c I) (once_diff : 1 ≤ r) :
   ContinuousOn (fun t ↦ ‖deriv c t‖) I :=
   Continuous.comp_continuousOn' continuous_norm (hc.continuousOn_deriv_of_isOpen hI once_diff)
-  
+
 /-- An auxiliary lemma giving us the derivative of ψ on I. -/
-lemma revParamTransform_deriv_eq_aux {t : ℝ} (ht : t ∈ I) (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I) 
+lemma revParamTransform_deriv_eq_aux {t : ℝ} (ht : t ∈ I) (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : HasDerivWithinAt ψ ‖deriv c t‖ I t := by
   unfold arclengthParamTransformAux
-  exact derivWithin_integral_of_continuousOn_interval 
+  exact derivWithin_integral_of_continuousOn_interval
     (speed_continuousOn c I hI hc once_diff) ht₀ ht
 
 /--Auxilary lemma - ψ is continuous. -/
-lemma revParamTransform_continuousOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I) 
-  (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContinuousOn ψ I := 
+lemma revParamTransform_continuousOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
+  (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContinuousOn ψ I :=
   fun t ↦ fun ht ↦ (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).continuousWithinAt
 
 /--Auxilary ψ is continuousely differentiable on I. -/
-lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I) 
+lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContDiffOn ℝ 1 ψ I := by
   apply (contDiffOn_iff_continuousOn_differentiableOn_deriv hI.uniqueDiffOn).mpr
   constructor
   · intro m hm
-    have h'm : m=0 ∨ m=1 := by 
+    have h'm : m=0 ∨ m=1 := by
       have h : m ≤ 1 := by simp_all
       apply m.le_one_iff_eq_zero_or_eq_one.mp h
     rcases h'm with h'm | h'm
@@ -127,17 +127,17 @@ lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I
       rw [(revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).derivWithin]
       exact hI.uniqueDiffWithinAt ht
   · intro m hm
-    have h'm : m=0 := by 
+    have h'm : m=0 := by
       have h : m < 1 := by simp_all
       exact Nat.lt_one_iff.mp h
     rw [h'm]
     rw [iteratedDerivWithin_zero]
     intro t ht
-    exact (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).differentiableWithinAt 
+    exact (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).differentiableWithinAt
 
 /-- Auxilary lemma - ψ has positive derivitive. -/
 lemma revParamTrasform_has_pos_deriv_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
-    (regular : ∀ t ∈ I, deriv c t ≠ 0) (hI : IsOpen I) (ht₀ : t₀ ∈ I): 
+    (regular : ∀ t ∈ I, deriv c t ≠ 0) (hI : IsOpen I) (ht₀ : t₀ ∈ I):
     ∀ t ∈ I, 0 < derivWithin ψ I t := by
   intro t ht
   rw [(revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).derivWithin]
@@ -146,8 +146,8 @@ lemma revParamTrasform_has_pos_deriv_aux (once_diff : 1 ≤ r) (hc : ContDiffOn 
 
 /-- Auxilary lemma - ψ is injective. -/
 lemma revParamTransform_injOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
-  (regular : ∀ t ∈ I, deriv c t ≠ 0) (hIo : IsOpen I) (ht₀ : t₀ ∈ I) : I.InjOn ψ := 
-  have hI : Convex ℝ I := convex_iff_ordConnected.mpr (by assumption) 
+  (regular : ∀ t ∈ I, deriv c t ≠ 0) (hIo : IsOpen I) (ht₀ : t₀ ∈ I) : I.InjOn ψ :=
+  have hI : Convex ℝ I := convex_iff_ordConnected.mpr (by assumption)
   have hiI : interior I = I := hIo.interior_eq
   let speed : ℝ → ℝ := fun t ↦ ‖deriv c t‖
   have hψ : ContinuousOn ψ I := revParamTransform_continuousOn_aux c I once_diff ht₀ hc  hIo
@@ -156,7 +156,7 @@ lemma revParamTransform_injOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c
     intro t htI
     exact revParamTransform_deriv_eq_aux c I htI once_diff ht₀ hc hIo
   have hψ'₀ : ∀ t ∈ interior I, 0 < speed t := by
-    intro t 
+    intro t
     unfold speed
     rw [hiI]
     intro htI
@@ -171,20 +171,20 @@ lemma revParamTransform_injOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c
 
 /-- Auxilary lemma - ψ is bijective. -/
 lemma revParamTransform_bijOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
-  (regular : ∀ t ∈ I, deriv c t ≠ 0) (hIo : IsOpen I) (ht₀ : t₀ ∈ I) : Set.BijOn ψ I (ψ '' I) := 
+  (regular : ∀ t ∈ I, deriv c t ≠ 0) (hIo : IsOpen I) (ht₀ : t₀ ∈ I) : Set.BijOn ψ I (ψ '' I) :=
   (revParamTransform_injOn_aux c I once_diff hc regular hIo ht₀).bijOn_image
 
 /-- Auxiliary lemma the arclength paramter trasformation is bijective from the image of ψ. -/
-lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I) 
-    (regular : ∀ t ∈ I, deriv c t ≠ 0) (ht₀ : t₀ ∈ I) (hIo : IsOpen I) : 
+lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
+    (regular : ∀ t ∈ I, deriv c t ≠ 0) (ht₀ : t₀ ∈ I) (hIo : IsOpen I) :
     Set.BijOn (arclengthParamTransform c I t₀) (ψ '' I) I := by
   unfold arclengthParamTransform
   have h₀ := revParamTransform_bijOn_aux c I once_diff hc regular hIo ht₀
-  have h₁ := Set.BijOn.invOn_invFunOn h₀ 
+  have h₁ := Set.BijOn.invOn_invFunOn h₀
   exact (Set.bijOn_comm h₁).mpr h₀
 
 /-- Auxilary lemma ψ is left inverse of the arclength paramter trandformation on the image of ψ. -/
-lemma ψ_leftInvOn_arclengthParamTransform_aux : 
+lemma ψ_leftInvOn_arclengthParamTransform_aux :
   (ψ '' I).LeftInvOn ψ (arclengthParamTransform c I t₀) := by
   intro s hs
   unfold arclengthParamTransform
@@ -195,13 +195,13 @@ lemma ψ_leftInvOn_arclengthParamTransform_aux :
 local notation "φ" => arclengthParamTransform c I t₀
 
 /--Auxilary lemma that gives us the derivative of the parameter transformation -/
-lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_diff : 1 ≤ r) 
-    (ht₀ : t₀ ∈ I) (hc : ContDiffOn ℝ r c I) (hI : IsOpen I)  (regular : ∀ t ∈ I, deriv c t ≠ 0) : 
+lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_diff : 1 ≤ r)
+    (ht₀ : t₀ ∈ I) (hc : ContDiffOn ℝ r c I) (hI : IsOpen I)  (regular : ∀ t ∈ I, deriv c t ≠ 0) :
     HasStrictDerivAt φ ‖deriv c (φ s)‖⁻¹ s := by
-  have hφmT := (bijOn_arclengthParamTransform_aux c I once_diff hc regular ht₀ hI).mapsTo 
+  have hφmT := (bijOn_arclengthParamTransform_aux c I once_diff hc regular ht₀ hI).mapsTo
   have hφsI : φ s ∈ I := hφmT hs
-  have hψ : ContDiffAt ℝ 1 ψ (φ s) := 
-    (revParamTransform_contDiffOn_aux c I once_diff ht₀ hc hI (φ s) hφsI).contDiffAt 
+  have hψ : ContDiffAt ℝ 1 ψ (φ s) :=
+    (revParamTransform_contDiffOn_aux c I once_diff ht₀ hc hI (φ s) hφsI).contDiffAt
     (hI.mem_nhds hφsI)
   have h1 :  (1 : WithTop ℕ∞) ≠ 0 := by norm_num
   have hsd : HasStrictDerivAt ψ (deriv ψ (φ s)) (φ s) := hψ.hasStrictDerivAt h1
@@ -211,23 +211,23 @@ lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_
   have hd₂ : deriv ψ (φ s) = ‖deriv c (φ s)‖ := by
     rw [hd₁]
     rw [(revParamTransform_deriv_eq_aux c I hφsI once_diff ht₀ hc hI).derivWithin]
-    exact hI.uniqueDiffWithinAt hφsI 
+    exact hI.uniqueDiffWithinAt hφsI
   rw [hd₂] at hsd
   have h := hsd.to_local_left_inverse
   have hψ' : ‖deriv c (φ s)‖ ≠ 0 := by
     rw [norm_ne_zero_iff]
     exact regular (φ s) hφsI
   have hhelp : (∀ᶠ (x : ℝ) in nhds (φ s), (arclengthParamTransform c I t₀) (ψ x) = x) := by
-    apply Metric.eventually_nhds_iff_ball.mpr 
+    apply Metric.eventually_nhds_iff_ball.mpr
     rcases Metric.isOpen_iff.mp hI (φ s) hφsI with ⟨ε, hεp, hεb⟩
     use ε
     constructor
     · exact hεp
-    · intro τ hτ 
+    · intro τ hτ
       have hτI : τ ∈ I := Set.mem_of_mem_of_subset hτ hεb
       have hψτ : ψ τ ∈ (ψ '' I) := Set.mem_image_of_mem ψ hτI
-      have hinjψ := (revParamTransform_injOn_aux c I once_diff hc regular hI ht₀) 
-      have heq := ψ_leftInvOn_arclengthParamTransform_aux c I hψτ 
+      have hinjψ := (revParamTransform_injOn_aux c I once_diff hc regular hI ht₀)
+      have heq := ψ_leftInvOn_arclengthParamTransform_aux c I hψτ
       have hφψτI : arclengthParamTransform c I t₀ (ψ τ) ∈ I := hφmT hψτ
       exact hinjψ hφψτI hτI heq
   have hinv : ψ (φ s) = s := ψ_leftInvOn_arclengthParamTransform_aux c I hs
@@ -235,19 +235,19 @@ lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_
   rw [hinv] at hfinal
   exact hfinal
 
-/-- This is the main theorem: arclengthParamTransform is an orientation-preserving parameter 
-transformation, that is: a bijection from some interval J to the given interval I with a positive 
-derivative; and the resulting reparametrization, i.e arclengthReparam is indeed a 
+/-- This is the main theorem: arclengthParamTransform is an orientation-preserving parameter
+transformation, that is: a bijection from some interval J to the given interval I with a positive
+derivative; and the resulting reparametrization, i.e arclengthReparam is indeed a
 reparametrization by arc-length, i.e. with unit speed. -/
 theorem arclength_reparametrization (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
-    (regular : ∀ t ∈ I, deriv c t ≠ 0) (ht₀ : t₀ ∈ I) (hIo : IsOpen I) : 
-    ∃ J : Set ℝ, J.OrdConnected ∧ (Set.BijOn (arclengthParamTransform c I t₀) J I) 
-               ∧ (∀ s ∈ J, deriv (arclengthParamTransform c I t₀) s > 0) 
-               ∧ (∀ s ∈ J, ‖deriv (arclengthReparam c I t₀) s‖ = 1):= by 
+    (regular : ∀ t ∈ I, deriv c t ≠ 0) (ht₀ : t₀ ∈ I) (hIo : IsOpen I) :
+    ∃ J : Set ℝ, J.OrdConnected ∧ (Set.BijOn (arclengthParamTransform c I t₀) J I)
+               ∧ (∀ s ∈ J, deriv (arclengthParamTransform c I t₀) s > 0)
+               ∧ (∀ s ∈ J, ‖deriv (arclengthReparam c I t₀) s‖ = 1):= by
   use ψ '' I
   have h₂ := bijOn_arclengthParamTransform_aux c I once_diff hc regular ht₀ hIo
-  have hφmT := (bijOn_arclengthParamTransform_aux c I once_diff hc regular ht₀ hIo).mapsTo 
-  have hφd {s : ℝ}(hs : s ∈ ψ '' I) := 
+  have hφmT := (bijOn_arclengthParamTransform_aux c I once_diff hc regular ht₀ hIo).mapsTo
+  have hφd {s : ℝ}(hs : s ∈ ψ '' I) :=
     arclengthParamTransform_deriv_eq_aux c I hs once_diff ht₀ hc hIo regular
   constructor
   · rw [Set.ordConnected_iff_uIcc_subset]
@@ -256,13 +256,13 @@ theorem arclength_reparametrization (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r
     let t₂ := φ s₂
     have ht₁ : t₁ ∈ I := h₂.mapsTo hs₁
     have ht₂ : t₂ ∈ I := h₂.mapsTo hs₂
-    have h := 
-      (revParamTransform_continuousOn_aux c I once_diff ht₀ hc hIo).surjOn_uIcc ht₁ ht₂ 
+    have h :=
+      (revParamTransform_continuousOn_aux c I once_diff ht₀ hc hIo).surjOn_uIcc ht₁ ht₂
     have hψt₁ : ψ t₁ = s₁ := (ψ_leftInvOn_arclengthParamTransform_aux c I) hs₁
     have hψt₂ : ψ t₂ = s₂ := (ψ_leftInvOn_arclengthParamTransform_aux c I) hs₂
     rw [hψt₁, hψt₂] at h
     exact h
-  · constructor 
+  · constructor
     · exact h₂
     · constructor
       · intro s hs
@@ -277,11 +277,11 @@ theorem arclength_reparametrization (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r
       · intro s hs
         unfold arclengthReparam
         have hφsI : φ s ∈ I := hφmT hs
-        have hcdφs : DifferentiableAt ℝ c (φ s) := 
+        have hcdφs : DifferentiableAt ℝ c (φ s) :=
           have hr : r ≠ 0 := ENat.one_le_iff_ne_zero_withTop.mp once_diff
           ((hIo.contDiffOn_iff.mp hc) hφsI).differentiableAt hr
         have hφds : DifferentiableAt ℝ φ s := (hφd hs).differentiableAt
-        rw [deriv.scomp s hcdφs hφds, (hφd hs).hasDerivAt.deriv] 
+        rw [deriv.scomp s hcdφs hφds, (hφd hs).hasDerivAt.deriv]
         have hc' : deriv c (φ s) ≠ 0 := regular (φ s) hφsI
         have hnc' : ‖deriv c (φ s)‖ ≠ 0 := by
           rw [norm_ne_zero_iff]
