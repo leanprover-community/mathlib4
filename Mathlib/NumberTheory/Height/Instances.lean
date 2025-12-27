@@ -70,12 +70,14 @@ instance instAdmissibleAbsValues : AdmissibleAbsValues K where
   mulSupport_finite := FinitePlace.mulSupport_finite
   product_formula {x} hx := prod_multisetInfinitePlace_eq (M := ℝ) K ▸ prod_abs_eq_one hx
 
+open AdmissibleAbsValues
+
 lemma prod_archAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
-    (AdmissibleAbsValues.archAbsVal.map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult :=
+    (archAbsVal.map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult :=
   prod_multisetInfinitePlace_eq K
 
 lemma prod_nonarchAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
-    (∏ᶠ v : AdmissibleAbsValues.nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
+    (∏ᶠ v : nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
   rfl
 
 /-- This is the familiar definition of the multiplicative height on a number field. -/
