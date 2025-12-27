@@ -31,9 +31,8 @@ namespace Algebra.IsCentral
 
 /-- The center of endomorphisms on a free module is trivial,
 in other words, it is a central algebra. -/
-public instance [IsCentral S R] : IsCentral S (End R M) where
-  out T hT :=
-    have ⟨_, ⟨y, _⟩, _⟩ := center_eq_bot S R ▸ T.mem_subalgebraCenter_iff.mp hT
-    ⟨y, by aesop⟩
+public instance [IsCentral S R] : IsCentral S (End R M) where out T hT :=
+  have ⟨_, ⟨y, _⟩, _⟩ := center_eq_bot S R ▸ T.mem_subalgebraCenter_iff.mp hT
+  ⟨y, by aesop⟩
 
 end Algebra.IsCentral
