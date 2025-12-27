@@ -335,6 +335,12 @@ theorem fourierMultiplierCLM_const_apply (f : 𝓢'(E, F)) (c : ℂ) :
   ext
   simp
 
+theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → ℂ}
+    (hg₁ : g₁.HasTemperateGrowth) (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
+    fourierMultiplierCLM F g₂ (fourierMultiplierCLM F g₁ f) =
+    fourierMultiplierCLM F (g₁ * g₂) f := by
+  simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
+
 end multiplier
 
 end FourierMultiplier
