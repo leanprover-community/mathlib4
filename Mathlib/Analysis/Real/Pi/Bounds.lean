@@ -223,4 +223,21 @@ theorem pi_lt_d20 : π < 3.14159265358979323847 := by
     2-149/278487845640434185590, 2-207/1547570041545500037992, 2-20/598094702046570062987,
     2-7/837332582865198088180]
 
+theorem floor_pi_eq_three : ⌊π⌋ = 3 := by
+  refine Int.floor_eq_iff.mpr ⟨pi_gt_three.le, ?_⟩
+  norm_num
+  exact pi_lt_four
+
+theorem ceil_pi_eq_four : ⌈π⌉ = 4 := by
+  refine Int.ceil_eq_iff.mpr ⟨?_, pi_lt_four.le⟩
+  norm_num
+  exact pi_gt_three
+
+theorem round_pi_eq_three : round π = 3 := by
+  refine round_eq _ |>.trans <| Int.floor_eq_iff.mpr ⟨?_, ?_⟩
+  · grw [← pi_gt_three]
+    norm_num
+  · grw [pi_lt_d2]
+    norm_num
+
 end Real
