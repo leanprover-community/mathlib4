@@ -2135,6 +2135,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
+public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
@@ -5422,6 +5423,7 @@ public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.CompleteLattice.Group
 public import Mathlib.Order.CompleteLattice.Lemmas
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+public import Mathlib.Order.CompleteLattice.PiLex
 public import Mathlib.Order.CompleteLattice.SetLike
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompletePartialOrder
