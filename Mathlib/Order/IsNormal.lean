@@ -50,6 +50,9 @@ namespace IsNormal
 section LinearOrder
 variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
+protected theorem monotone {f : α → β} (hf : IsNormal f) : Monotone f :=
+  hf.strictMono.monotone
+
 theorem isLUB_image_Iio_of_isSuccLimit {f : α → β} (hf : IsNormal f) {a : α} (ha : IsSuccLimit a) :
     IsLUB (f '' Iio a) (f a) := by
   refine ⟨?_, hf.2 ha⟩
