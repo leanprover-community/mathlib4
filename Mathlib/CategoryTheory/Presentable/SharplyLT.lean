@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 
 universe w v u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 namespace Cardinal
 
@@ -57,6 +57,32 @@ instance [IsCardinalAccessibleCategory C κ₁] :
   infer_instance
 
 variable [IsCardinalAccessibleCategory C κ₁]
+
+namespace isCardinalFilteredGenerator
+
+def prop (_ : SharplyLT κ₁ κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
+  IsCardinalFiltered (Subtype A) κ₁ ∧ HasCardinalLT (Subtype A) κ₂
+
+variable {C} {X : C} {J : Type w} [PartialOrder J] [IsCardinalFiltered J κ₁]
+  (p : (isCardinalPresentable C κ₁).ColimitOfShape J X)
+
+instance (A : Subtype (prop h J)) :
+    HasColimit ((Subtype.mono_coe A.val).functor ⋙ p.diag) := by
+  have := A.prop.1
+  infer_instance
+
+variable {h} in
+noncomputable def colimit (A : Subtype (prop h J)) : C :=
+    Limits.colimit ((Subtype.mono_coe A.val).functor ⋙ p.diag)
+
+noncomputable def functor : Subtype (prop h J) ⥤ C where
+  obj A := colimit p A
+  map {A₁ A₂} f := by
+    sorry
+  map_id := sorry
+  map_comp := sorry
+
+end isCardinalFilteredGenerator
 
 lemma isCardinalFilteredGenerator :
     (h.generator C).IsCardinalFilteredGenerator κ₂ where
