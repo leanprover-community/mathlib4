@@ -38,7 +38,7 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
 `Measure.pi μ (pi univ s) = ∏ i, m i (s i)`. To do this, we follow the following steps:
 * We know that there is some ordering on `ι`, given by an element of `[Countable ι]`.
 * Using this, we have an equivalence `MeasurableEquiv.piMeasurableEquivTProd` between
-  `∀ ι, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
+  `∀ i, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
 * On this iterated product we can easily define a product measure `MeasureTheory.Measure.tprod`
   by iterating `MeasureTheory.Measure.prod`
 * Using the previous two steps we construct `MeasureTheory.Measure.pi'` on `(i : ι) → α i` for
