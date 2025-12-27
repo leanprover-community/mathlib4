@@ -5,9 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!
 # Basic theory of heights
@@ -18,14 +20,14 @@ We aim at a level of generality that allows to apply the theory to algebraic num
 and to function fields (and possibly beyond).
 
 The general set-up for heights is the following. Let `K` be a field.
-* We need a finite family of archimedean absolute values on `K` (with values in `ℝ`).
-* Each of these comes with a weight `weight v`.
-* We also have a familiy of non-archimedean (i.e., `|x + y| ≤ max |x| |y|`) absolute values.
-* For a given `x ≠ 0` in `K`, `|x|ᵥ = 1` for all but finitely many (nonarchimedean) `v`.
-* We have the *product formula* `∏ v : arch, |x|ᵥ ^ weight v * ∏ v : nonarch, |x|ᵥ = 1`
-  for all `x ≠ 0` in `K`.
+* We have a `Multiset` of archimedean absolute values on `K` (with values in `ℝ`).
+* We also have a `Set` of non-archimedean (i.e., `|x+y| ≤ max |x| |y|`) absolute values.
+* For a given `x ≠ 0` in `K`, `|x|ᵥ = 1` for all but finitely many (non-archimedean) `v`.
+* We have the *product formula* `∏ v : arch, |x|ᵥ * ∏ v : nonarch, |x|ᵥ = 1`
+  for all `x ≠ 0` in `K`, where the first product is over the multiset of archimedean
+  absolute values.
 
-This is implementated via the class `Height.AdmissibleAbsValues K`.
+We realize this implementation via the class `Height.AdmissibleAbsValues K`.
 
 ## Main definitions
 
@@ -35,13 +37,17 @@ duplication (in the definitions and statements; the proofs are reduced to those 
 multiplicative height), which is justified, as both versions are frequently used.
 
 We define the following variants.
-* `mulHeight₁ x` and `logHeight₁ x` for `x : K`. This is the height of an element of `K`.
-* (TODO) `mulHeight x` and `logHeight x` for `x : ι → K` with `ι` finite. This is the height
+* `Height.mulHeight₁ x` and `Height.logHeight₁ x` for `x : K`.
+  This is the height of an element of `K`.
+* (TODO)
+  `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
   of a tuple of elements of `K` representing a point in projective space.
   It is invariant under scaling by nonzero elements of `K` (for `x ≠ 0`).
-* (TODO) `mulHeight_finsupp x` and `logHeight_finsupp x` for `x : α →₀ K`. This is the same
-  as the height of `x` restricted to any finite subtype containing the support of `x`.
-* (TODO) `Projectivization.mulHeight` and `Projectivization.logHeight` on
+* (TODO)
+  `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
+  as the height of `x` restricted to the support of `x`.
+* (TODO)
+  `Projectivization.mulHeight` and `Projectivization.logHeight` on
   `Projectivization K (ι → K)` (with a `Fintype ι`). This is the height of a point
   on projective space (with fixed basis).
 
@@ -66,61 +72,57 @@ family of absolute values on `K` satisfying a product formula.
 
 /-- A type class capturing an admissible family of absolute values. -/
 class AdmissibleAbsValues (K : Type*) [Field K] where
-  /-- The type indexing the family of archimedean absolute values -/
-  ArchAbsVal : Type u
-  /-- The archimedean absolute values. -/
-  archAbsVal : ArchAbsVal → AbsoluteValue K ℝ
-  /-- There are only finitely many archimedean absolute values. -/
-  [archAbsVal_fintype : Fintype ArchAbsVal]
-  /-- The weights of the archimedean absolute values.
-      They show up as exponents in the product formula. -/
-  weight : ArchAbsVal → ℕ
-  /-- The weights are positive. -/
-  weight_pos : ∀ v, 0 < weight v
-  /-- The type indexing the nonarchimedean absolute values. -/
-  NonarchAbsVal : Type u
-  /-- The nonarchimedean absolute values. -/
-  nonarchAbsVal : NonarchAbsVal → AbsoluteValue K ℝ
+  /-- The archimedean absolute values as a multiset of `ℝ`-valued absolute values on `K`. -/
+  archAbsVal : Multiset (AbsoluteValue K ℝ)
+  /-- The nonarchimedean absolute values as a set of `ℝ`-valued absolute values on `K`. -/
+  nonarchAbsVal : Set (AbsoluteValue K ℝ)
   /-- The nonarchimedean absolute values are indeed nonarchimedean. -/
-  strong_triangle_ineq (v : NonarchAbsVal) : IsNonarchimedean (nonarchAbsVal v)
-  /-- Only finitely many absolute values are `≠ 1` for any nonzero `x : K`. -/
-  mulSupport_nonarchAbsVal_finite {x : K} (_ : x ≠ 0) : (nonarchAbsVal · x).mulSupport.Finite
-  /-- The product formula -/
+  isNonarchimedean : ∀ v ∈ nonarchAbsVal, IsNonarchimedean v
+  /-- Only finitely many (nonarchimedean) absolute values are `≠ 1` for any nonzero `x : K`. -/
+  mulSupport_finite {x : K} (_ : x ≠ 0) : (fun v : nonarchAbsVal ↦ v.val x).mulSupport.Finite
+  /-- The product formula. The archimedean absolute values are taken with their multiplicity. -/
   product_formula {x : K} (_ : x ≠ 0) :
-      (∏ v, archAbsVal v x ^ weight v) * ∏ᶠ v, nonarchAbsVal v x = 1
+      (archAbsVal.map (· x)).prod * ∏ᶠ v : nonarchAbsVal, v.val x = 1
 
-open AdmissibleAbsValues
+open AdmissibleAbsValues Real
 
-attribute [instance] archAbsVal_fintype
+variable (K : Type*) [Field K] [AdmissibleAbsValues K]
 
-variable (K : Type*) [Field K] [aav : AdmissibleAbsValues K]
-
-/-- The `totalWeight` of a field with `AdmissibleAbsValues` is the sum of the weights of
+/-- The `totalWeight` of a field with `AdmissibleAbsValues` is the sum of the multiplicities of
 the archimedean places. -/
-def totalWeight : ℕ := ∑ v : ArchAbsVal K, weight v
+def totalWeight : ℕ := archAbsVal (K := K) |>.card
 
 variable {K}
 
 /-!
 ### Heights of field elements
+
+We use the subscipt `₁` to denote multiplicative and logarithmic heights of field elements
+(this is because we are in the one-dimensional case of (affine) heights).
 -/
 
 /-- The multiplicative height of an element of `K`. -/
 def mulHeight₁ (x : K) : ℝ :=
-  (∏ v, max (archAbsVal v x) 1 ^ weight v) * ∏ᶠ v, max (nonarchAbsVal v x) 1
+  (archAbsVal.map fun v ↦ max (v x) 1).prod * ∏ᶠ v : nonarchAbsVal, max (v.val x) 1
+
+lemma mulHeight₁_eq (x : K) :
+    mulHeight₁ x =
+      (archAbsVal.map fun v ↦ max (v x) 1).prod * ∏ᶠ v : nonarchAbsVal, max (v.val x) 1 :=
+  rfl
 
 @[simp]
 lemma mulHeight₁_zero : mulHeight₁ (0 : K) = 1 := by
-  simp [mulHeight₁]
+  simp [mulHeight₁_eq]
 
 @[simp]
 lemma mulHeight₁_one : mulHeight₁ (1 : K) = 1 := by
-  simp [mulHeight₁]
+  simp [mulHeight₁_eq]
 
+/-- The mutliplicative height of a field element is always at least `1`. -/
 lemma one_le_mulHeight₁ (x : K) : 1 ≤ mulHeight₁ x := by
-  classical
-  refine one_le_mul_of_one_le_of_one_le ?_ ?_
-  · exact Finset.univ.one_le_prod fun _ ↦ one_le_pow₀ <| le_max_right ..
+  refine one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod fun _ h ↦ ?_) ?_
+  · obtain ⟨v, -, rfl⟩ := Multiset.mem_map.mp h
+    exact le_max_right ..
   · exact one_le_finprod fun _ ↦ le_max_right ..
 
 -- This is needed as a side condition in proofs about logarithmic heights
@@ -135,15 +137,17 @@ lemma zero_le_mulHeight₁ (x : K) : 0 ≤ mulHeight₁ x :=
   (mulHeight₁_pos x).le
 
 /-- The logarithmic height of an element of `K`. -/
-def logHeight₁ (x : K) : ℝ := (mulHeight₁ x).log
+def logHeight₁ (x : K) : ℝ := log (mulHeight₁ x)
+
+lemma logHeight₁_eq_log_mulHeight₁ (x : K) : logHeight₁ x = log (mulHeight₁ x) := rfl
 
 @[simp]
 lemma logHeight₁_zero : logHeight₁ (0 : K) = 0 := by
-  simp [logHeight₁]
+  simp [logHeight₁_eq_log_mulHeight₁]
 
 @[simp]
 lemma logHeight₁_one : logHeight₁ (1 : K) = 0 := by
-  simp [logHeight₁]
+  simp [logHeight₁_eq_log_mulHeight₁]
 
 lemma zero_le_logHeight₁ (x : K) : 0 ≤ logHeight₁ x :=
   Real.log_nonneg <| one_le_mulHeight₁ x
