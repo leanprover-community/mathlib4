@@ -79,6 +79,7 @@ lemma extEquivCohomologyClass_symm_add
 /-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identifies
 to the group of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
 to `R.cochainComplex`. -/
+@[simps!]
 noncomputable def extAddEquivCohomologyClass :
     Ext X Y n ≃+ CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n :=
   AddEquiv.symm
