@@ -64,6 +64,7 @@ theorem Set.map_mem_center_iff
     rw [show g = e.symm.toMonoidHom (e g) from by simp]
     exact Set.map_mem_center_of_surjective e.symm.surjective hg
 
+-- This will be provided by #33301
 -- Mathlib.Algebra.Central.End
 theorem Module.End.mem_subsemiringCenter_iff
     [Semiring R] [AddCommMonoid V] [Module R V] [Free R V] {f : End R V} :
