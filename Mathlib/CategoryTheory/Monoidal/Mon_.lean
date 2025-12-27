@@ -72,9 +72,9 @@ namespace MonObj
 variable {M X Y : C} [MonObj M]
 
 @[inherit_doc] scoped notation "μ" => MonObj.mul
-@[inherit_doc] scoped notation "μ["M"]" => MonObj.mul (X := M)
+@[inherit_doc] scoped notation "μ[" M "]" => MonObj.mul (X := M)
 @[inherit_doc] scoped notation "η" => MonObj.one
-@[inherit_doc] scoped notation "η["M"]" => MonObj.one (X := M)
+@[inherit_doc] scoped notation "η[" M "]" => MonObj.one (X := M)
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 

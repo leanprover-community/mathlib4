@@ -24,7 +24,7 @@ of `q`.
 namespace Polynomial
 variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-local notation "deg("p")" => natDegree p
+local notation3 "deg("p")" => natDegree p
 local notation3 "coeffs("p")" => Set.range (coeff p)
 local notation3 "spanCoeffs("p")" => 1 ⊔ Submodule.span R coeffs(p)
 

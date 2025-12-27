@@ -69,7 +69,7 @@ theorem coeff_eq_ncoeff (A : VertexOperator R V)
 @[deprecated (since := "2025-08-30")] alias ncoeff_smul := map_smul
 
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A [[n]]) x = 0 := by
+    (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A[[n]]) x = 0 := by
   simp only [ncoeff, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
@@ -96,7 +96,7 @@ theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
 @[simp]
 theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
     (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
-    (of_coeff f hf) [[n]] = f (-n - 1) := by
+    (of_coeff f hf)[[n]] = f (-n - 1) := by
   ext v
   rw [ncoeff_apply, coeff_apply_apply, of_coeff_apply_coeff]
 
