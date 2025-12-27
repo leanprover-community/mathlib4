@@ -202,7 +202,7 @@ theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
     (M.map (f : S →ₗ[R] T)).LinearDisjoint (N.map (f : S →ₗ[R] T)) := by
   rw [linearDisjoint_iff] at H ⊢
   have := hf.comp H
-  rw [ ← coe_mulMap_comp_eq] at this
+  rw [← coe_mulMap_comp_eq] at this
   refine this.of_comp_right ?_
   apply TensorProduct.map_surjective <;> exact LinearMap.submoduleMap_surjective _ _
 
