@@ -36,6 +36,8 @@ reparametrization.
  - We roughly followed [Christian_Bar_2010].
 -/
 
+@[expose] public section
+
 /-- This is a version of the first part of FTC for a function which is continuous on an interval.
     Credit to Aaron Liu. -/
 theorem derivWithin_integral_of_continuousOn_interval {I : Set ℝ} [I.OrdConnected] {f : ℝ → ℝ}
