@@ -25,7 +25,8 @@ powerset).
 Note that a set is a term, not a type. There is a coercion from `Set α` to `Type*` sending
 `s` to the corresponding subtype `↥s`.
 
-See also the file `SetTheory/ZFC.lean`, which contains an encoding of ZFC set theory in Lean.
+See also the directory `Mathlib/SetTheory/ZFC/`, which contains an encoding of ZFC set theory in
+Lean.
 
 ## Main definitions
 
@@ -850,6 +851,8 @@ theorem sep_eq_inter_sep {α : Type*} {s t : Set α} {p : α → Prop} (hst : s 
     {x ∈ s | p x} = s ∩ {x ∈ t | p x} := by
   rw [← inter_setOf_eq_sep s p, ← inter_setOf_eq_sep t p,
     ← inter_assoc, ← left_eq_inter.mpr hst]
+
+@[deprecated (since := "2025-12-10")] alias sep_of_subset := sep_eq_inter_sep
 
 @[simp]
 theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=

@@ -46,10 +46,10 @@ Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated dev
 The relevant files are:
 * `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
 * `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
-* `Mathlib/Algebra/Group/Nat.lean` for the monoid instances on `ℕ`
-* `Mathlib/Algebra/Group/Int.lean` for the group instance on `ℤ`
+* `Mathlib/Algebra/Group/Nat/Defs.lean` for the monoid instances on `ℕ`
+* `Mathlib/Algebra/Group/Int/Defs.lean` for the group instance on `ℤ`
 * `Mathlib/Algebra/Ring/Nat.lean` for the semiring instance on `ℕ`
-* `Mathlib/Algebra/Ring/Int.lean` for the ring instance on `ℤ`
+* `Mathlib/Algebra/Ring/Int/Defs.lean` for the ring instance on `ℤ`
 * `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
 * `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
 * `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
@@ -240,17 +240,21 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
+set_option backward.privateInPublic true in
 private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
     ∀ n : ℕ, ∀ m < n, p m
   | 0, _, h => by simp at h
   | n + 1, m, hmn => H _ fun l hlm ↦
       strongRecAux H n l (Nat.lt_of_lt_of_le hlm <| le_of_lt_succ hmn)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Recursion principle based on `<`. -/
 @[elab_as_elim]
 protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) : p n :=
   H n <| strongRecAux H n
 
+set_option backward.privateInPublic true in
 private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) :
     ∀ m (lt : m < n), strongRecAux H n m lt = H m (strongRecAux H m) :=
   n.strongRec' fun n ih m hmn ↦ by
@@ -260,6 +264,8 @@ private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m)
     ext l hlm
     exact (ih _ n.lt_succ_self _ _).trans (ih _ hmn _ _).symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
     n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
   congrArg (H n) <| by ext m lt; apply strongRecAux_spec
@@ -392,7 +398,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   | 0, _ + 1, _ => hb _
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
-    · have this : a + 1 = b ∨ a + 1 < b := by omega
+    · have this : a + 1 = b ∨ a + 1 < b := by lia
       rcases this with (rfl | h)
       · exact ha _
       apply diag_induction P ha hb hd (a + 1) b h
