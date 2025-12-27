@@ -54,6 +54,11 @@ def Embedding.ofLineGraph (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
 theorem IsIndContained.lineGraph (h : G ⊴ G') : G.lineGraph ⊴ G'.lineGraph :=
   ⟨.ofLineGraph h.some.toCopy⟩
 
+theorem IsIndContained.lineGraph_of_isContained (h : G ⊑ G') : G.lineGraph ⊴ G'.lineGraph :=
+  ⟨.ofLineGraph h.some⟩
+
+alias IsContained.isIndContained_lineGraph := IsIndContained.lineGraph_of_isContained
+
 /-- Lift a copy between graphs to a copy between their line graphs -/
 def Copy.ofLineGraph (f : Copy G G') : Copy G.lineGraph G'.lineGraph :=
   Embedding.ofLineGraph f |>.toCopy
