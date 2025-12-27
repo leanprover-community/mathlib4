@@ -35,7 +35,9 @@ class IsIrrefl (α : Sort*) (r : α → α → Prop) : Prop where
 class IsRefl (α : Sort*) (r : α → α → Prop) : Prop where
   refl : ∀ a, r a a
 
-@[deprecated (since := "2025-12-26")] alias IsSymm := Std.Symm
+/-- `IsSymm X r` means the binary relation `r` on `X` is symmetric. -/
+@[deprecated Std.Symm (since := "2025-12-26")]
+abbrev IsSymm (α : Sort*) (r : α → α → Prop) : Prop := @Std.Symm α r
 
 /-- `IsAsymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
 `r a b → ¬ r b a`. -/
