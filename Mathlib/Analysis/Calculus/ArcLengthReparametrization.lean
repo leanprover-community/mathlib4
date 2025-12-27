@@ -79,7 +79,7 @@ lemma revParamTransform_deriv_eq_aux {t : ℝ} (ht : t ∈ I) (once_diff : 1 ≤
 /-- Auxilary lemma - ψ is continuous. -/
 lemma revParamTransform_continuousOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContinuousOn ψ I :=
-  fun t ↦ fun ht ↦ (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).continuousWithinAt
+  fun _t ht ↦ (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).continuousWithinAt
 
 /-- Auxilary ψ is continuousely differentiable on I. -/
 lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
