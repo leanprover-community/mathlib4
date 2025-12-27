@@ -380,7 +380,7 @@ theorem integral_one_div_log_sq_isBigO :
   · apply IsBigO.of_bound'
     filter_upwards [eventually_ge_atTop 4] with x hx
     apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)
-    rw [intervalIntegral.integral_congr (g := (fun t ↦ 1 / log t ^2))]
+    rw [intervalIntegral.integral_congr (g := (fun t ↦ 1 / log t ^ 2))]
     · grw [integral_one_div_log_sq_le_explicit hx, norm_of_nonneg]
       positivity
     intro t ht
