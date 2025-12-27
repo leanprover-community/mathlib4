@@ -158,7 +158,7 @@ variable {𝕜}
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪∑ i ∈ s, f i, x⟫ = ∑ i ∈ s, ⟪f i, x⟫ :=
-  map_sum (LinearMap.flip (innerₛₗ 𝕜) x) _ _
+  map_sum ((innerₛₗ 𝕜).flip x) _ _
 
 /-- An inner product with a sum on the right. -/
 theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
