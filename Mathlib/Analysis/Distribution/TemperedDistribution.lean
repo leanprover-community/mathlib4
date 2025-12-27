@@ -205,8 +205,8 @@ theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (
 variable [FiniteDimensional ℝ E] [IsLocallyFiniteMeasure μ]
 
 theorem ker_toTemperedDistributionCLM_eq_bot {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
-    LinearMap.ker (MeasureTheory.Lp.toTemperedDistributionCLM F μ p) = ⊥ := by
-  rw [LinearMap.ker_eq_bot']
+    (MeasureTheory.Lp.toTemperedDistributionCLM F μ p).ker = ⊥ := by
+  rw [LinearMap.ker_eq_bot', ContinuousLinearMap.coe_coe]
   intro f hf
   rw [eq_zero_iff_ae_eq_zero]
   apply ae_eq_zero_of_integral_contDiff_smul_eq_zero
