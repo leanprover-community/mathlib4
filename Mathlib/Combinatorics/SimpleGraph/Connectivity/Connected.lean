@@ -252,22 +252,7 @@ lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp
   | nil =>
     exact (hp Walk.Nil.nil).elim
   | @cons u v w h p ih =>
-    cases List.mem_cons.mp hx with
-    | inl hxu =>
-      rw [hxu]
-      exact ⟨v, ⟨((Walk.cons h p).mem_support_iff).mpr (Or.inr p.start_mem_support), h⟩⟩
-    | inr hxp =>
-      cases Decidable.em p.Nil with
-      | inl hnil =>
-        rw [Walk.nil_iff_support_eq.mp hnil] at hxp
-        rw [show (x = v) by simp_all]
-        exact ⟨u, ⟨(Walk.cons h p).start_mem_support, G.adj_symm h⟩⟩
-      | inr hnotnil =>
-        obtain ⟨y, hy⟩ := ih hnotnil hxp
-        refine ⟨y, ⟨?_, hy.right⟩⟩
-        rw [Walk.mem_support_iff]
-        simp only [Walk.support_cons, List.tail_cons]
-        exact Or.inr hy.left
+    grind [Walk.nil_iff_support_eq, Walk.support_eq_cons, adj_comm]
 
 lemma mem_support_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil)
     {w : V} (hw : w ∈ p.support) : w ∈ G.support := by
