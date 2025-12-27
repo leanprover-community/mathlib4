@@ -41,7 +41,7 @@ variable {X α : Type*} {ι : Sort*}
 
 section BaireTheorem
 
-variable [TopologicalSpace X] [BaireSpace X] {s : Set X}
+variable [TopologicalSpace X] [BaireSpace X]
 
 /-- Definition of a Baire space. -/
 theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n))
@@ -49,7 +49,7 @@ theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n)
   BaireSpace.baire_property f ho hd
 
 /-- A dense Gδ subset of a Baire space is Baire. -/
-theorem IsGδ.baireSpace_of_dense (hG : IsGδ s) (hd : Dense s) : BaireSpace s := by
+theorem IsGδ.baireSpace_of_dense {s : Set X} (hG : IsGδ s) (hd : Dense s) : BaireSpace s := by
   constructor
   intro f hof hdf
   obtain ⟨V, hV⟩ : ∃ V : ℕ → Set X, (∀ n, IsOpen (V n)) ∧ s = ⋂ n, V n := eq_iInter_nat hG
