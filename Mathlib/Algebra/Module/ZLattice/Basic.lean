@@ -73,8 +73,10 @@ variable (b : Basis ι K E)
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
 
 theorem map {F : Type*} [AddCommGroup F] [Module K F] (f : E ≃ₗ[K] F) :
-    Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
-  simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
+    Submodule.map (f.restrictScalars ℤ : E →ₗ[ℤ] F) (span ℤ (Set.range b)) =
+      span ℤ (Set.range (b.map f)) := by
+  simp_rw [Submodule.map_span, LinearEquiv.coe_coe, LinearEquiv.restrictScalars_apply,
+    Basis.coe_map, Set.range_comp]
 
 open scoped Pointwise in
 theorem smul {c : K} (hc : c ≠ 0) :
@@ -724,7 +726,8 @@ instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K
     IsZLattice K (ZLattice.comap K L e.toLinearMap) where
   span_top := by
     rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
-      ← Submodule.map_span, IsZLattice.span_top, Submodule.map_top, LinearEquivClass.range]
+      ← ContinuousLinearEquiv.coe_toLinearEquiv, ← LinearEquiv.coe_coe, ← Submodule.map_span,
+      IsZLattice.span_top, Submodule.map_top, e.symm.range]
 
 @[simp]
 theorem ZLattice.comap_toAddSubgroup (e : F →ₗ[K] E) :

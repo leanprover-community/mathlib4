@@ -114,6 +114,7 @@ theorem relative_hyperplane_separation {C : ProperCone ℝ E} {f : E →L[ℝ] F
     -- suppose `b ∈ C.map f`
     simp only [map, ClosedSubmodule.map, Submodule.closure, Submodule.topologicalClosure,
       AddSubmonoid.topologicalClosure, Submodule.coe_toAddSubmonoid, Submodule.map_coe,
+      ContinuousLinearMap.coe_coe,
       ContinuousLinearMap.coe_restrictScalars', ClosedSubmodule.coe_toSubmodule,
       ClosedSubmodule.mem_mk, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
       mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, Classical.skolem, forall_and,
