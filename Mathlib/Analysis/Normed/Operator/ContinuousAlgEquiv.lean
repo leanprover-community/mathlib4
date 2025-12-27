@@ -6,13 +6,13 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 import Mathlib.Algebra.Central.Basic
 import Mathlib.Algebra.Order.Module.PositiveLinearMap
-import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -161,14 +161,33 @@ noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α 
 
 open ComplexOrder
 
-public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
+namespace LinearIsometryEquiv
+@[expose] public section
+
+def conjStarAlgEquiv (e : V ≃ₗᵢ[𝕜] W) :
+    (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W) :=
+  .ofAlgEquiv e.toContinuousLinearEquiv.conjContinuousAlgEquiv fun x ↦ by
+    simp [star_eq_adjoint,conjContinuousAlgEquiv_apply, ← toContinuousLinearEquiv_symm, comp_assoc]
+
+@[simp] lemma conjStarAlgEquiv_apply_apply (e : V ≃ₗᵢ[𝕜] W) (x : V →L[𝕜] V) (y : W) :
+    e.conjStarAlgEquiv x y = e (x (e.symm y)) := rfl
+
+lemma conjStarAlgEquiv_apply (e : V ≃ₗᵢ[𝕜] W) (x : V →L[𝕜] V) :
+    e.conjStarAlgEquiv x = e ∘L x ∘L e.symm := rfl
+
+@[simp] lemma conjStarAlgEquiv_symm (e : V ≃ₗᵢ[𝕜] W) :
+    e.conjStarAlgEquiv.symm = e.symm.conjStarAlgEquiv := rfl
+
+end
+end LinearIsometryEquiv
+
+public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
-    ∃ U : V ≃ₗᵢ[𝕜] W,
-      ⇑f = fun x ↦ U.toContinuousLinearEquiv ∘L x ∘L U.symm.toContinuousLinearEquiv := by
+    ∃ U : V ≃ₗᵢ[𝕜] W, f = U.conjStarAlgEquiv := by
   by_cases! hV : Subsingleton V
   · by_cases! hV : Subsingleton W
     · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
-      exact Subsingleton.allEq _ _
+      exact ext fun _ ↦ Subsingleton.allEq _ _
     simpa using congr(f $(Subsingleton.allEq 0 1))
   obtain ⟨y, hy⟩ := (ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf
     (f.toAlgEquiv.toLinearEquiv.continuous_symm hf)).eq_continuousLinearEquivConjContinuousAlgEquiv
@@ -192,13 +211,13 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
   simp only [Set.top_eq_univ, Subalgebra.centralizer_univ, Algebra.IsCentral.center_eq_bot] at this
   obtain ⟨α, hα⟩ := this
   simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId, Algebra.algebraMap_eq_smul_one] at hα
-  have this : IsUnit (adjoint y.toContinuousLinearMap ∘L y) := isUnit_iff_exists.mpr
-    ⟨y.symm ∘L adjoint y.symm.toContinuousLinearMap, by
-        simp [mul_def, ← comp_assoc, comp_assoc _ _ (adjoint y.toContinuousLinearMap),
-          ← adjoint_comp, one_def, comp_assoc _ y.toContinuousLinearMap]⟩
+  have this : IsUnit (adjoint y.toContinuousLinearMap ∘L y) :=
+    isUnit_iff_exists.mpr ⟨y.symm ∘L adjoint y.symm.toContinuousLinearMap, by
+      simp [mul_def, ← comp_assoc, comp_assoc _ _ (adjoint y.toContinuousLinearMap),
+        ← adjoint_comp, one_def, comp_assoc _ y.toContinuousLinearMap]⟩
   have thisα : α = RCLike.re α := by
     have this10 := by simpa [IsSelfAdjoint, ← hα, one_def, star_eq_adjoint] using
-      IsSelfAdjoint.adjoint_conj (IsSelfAdjoint.one (W →L[𝕜] W)) y.toContinuousLinearMap
+      (IsSelfAdjoint.one (W →L[𝕜] W)).adjoint_conj y.toContinuousLinearMap
     rwa [← one_def, (smul_left_injective 𝕜 one_ne_zero).eq_iff, RCLike.conj_eq_iff_re,
       eq_comm] at this10
   have thisα' : α ≠ 0 := fun h ↦ by simp [h, ← hα] at this
@@ -229,17 +248,19 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
       simp only [ne_eq, map_eq_zero]
       rw [Real.rpow_eq_zero this2.le (by simp)]
       exact ne_of_gt this2)
-  simp [U, smul_smul, la, ← conjContinuousAlgEquiv_apply, ← hy]
+  ext
+  simp [U.conjStarAlgEquiv_apply, U, smul_smul, la, ← conjContinuousAlgEquiv_apply, ← hy]
 
 /- Remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
 this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`. -/
-instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
+public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
     [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
     OrderIsoClass F _ _ where
   map_le_map_iff f x y := by
-    obtain ⟨U, hU⟩ := StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
+    obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
       (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
-    simp_rw [LinearIsometryEquiv.toContinuousLinearEquiv_symm, funext_iff,
+    simp_rw [StarAlgEquiv.ext_iff, LinearIsometryEquiv.conjStarAlgEquiv_apply,
+      LinearIsometryEquiv.toContinuousLinearEquiv_symm,
       fun x ↦ show StarAlgEquivClass.toStarAlgEquiv f x = f x by rfl] at hU
     simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, hU]
     exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U
