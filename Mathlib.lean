@@ -1992,6 +1992,7 @@ public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Analysis.Normed.Operator.Conformal
+public import Mathlib.Analysis.Normed.Operator.ContinuousAlgEquiv
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
@@ -5357,6 +5358,7 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 public import Mathlib.NumberTheory.Transcendental.Liouville.Measure
 public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 public import Mathlib.NumberTheory.VonMangoldt
 public import Mathlib.NumberTheory.WellApproximable
