@@ -30,14 +30,14 @@ universe u v
 namespace Group
 
 /-- A generating system for a group `G` indexed by `ι`. -/
-structure GeneratingSystem (G : Type u) [Group G] (ι : Type*) where
+structure GeneratingSystem (G : Type u) [Group G] (ι : Type v) where
   /-- The assignment of each abstract generator to an element of `G`. -/
   val : ι → G
   /-- The images of the generators generate `G`. -/
   closure_range_val : Subgroup.closure (Set.range val) = ⊤
 
 /-- A presentation of a group `G` with generators indexed by `ι`. -/
-structure Presentation (G : Type u) [Group G] (ι : Type*)
+structure Presentation (G : Type u) [Group G] (ι : Type v)
     extends GeneratingSystem G ι where
   /-- The relations (relators). -/
   rels : Set (FreeGroup ι)
@@ -59,7 +59,7 @@ end GeneratingSystem
 
 namespace Presentation
 
-variable {G : Type u} [Group G] {ι : Type*}
+variable {G : Type u} [Group G] {ι : Type v}
 
 /-- The `PresentedGroup` attached to a `Group.Presentation`. -/
 abbrev presentedGroup (P : Presentation G ι) : Type _ :=
