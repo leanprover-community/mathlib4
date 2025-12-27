@@ -100,7 +100,7 @@ def one : G → R := Pi.single 0 1
 
 @[simp] lemma one_apply_zero : (one : G → R) 0 = 1 := Pi.single_eq_same 0 1
 
-lemma one_apply_ne {g : G} (hg : g ≠ 0) : (one : G → R) g = 0 := Pi.single_eq_of_ne hg 1
+@[simp] lemma one_apply_ne {g : G} (hg : g ≠ 0) : (one : G → R) g = 0 := Pi.single_eq_of_ne hg 1
 
 end One
 
@@ -172,7 +172,8 @@ section Identity
 
 variable [AddCommMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
 
-theorem one_mul (a : G → R) : one ⋆ a = a := by
+@[simp]
+lemma one_mul (a : G → R) : one ⋆ a = a := by
   ext n; simp only [apply_eq, one]
   rw [sum_eq_single (0, n)]
   · simp only [Pi.single_eq_same, _root_.one_mul]
@@ -184,7 +185,8 @@ theorem one_mul (a : G → R) : one ⋆ a = a := by
   · simp [mem_antidiagonal]
 
 
-theorem mul_one (a : G → R) : a ⋆ one = a := by
+@[simp]
+lemma mul_one (a : G → R) : a ⋆ one = a := by
   ext n; simp only [apply_eq, one]
   rw [sum_eq_single (n, 0)]
   · simp only [Pi.single_eq_same, _root_.mul_one]
@@ -280,7 +282,7 @@ theorem one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
       fun n => if n = 0 then ‖(1 : R)‖ else 0 := by
     ext n; cases n with
     | zero => simp [CauchyProduct.one_apply_zero]
-    | succ n => simp [CauchyProduct.one_apply_ne (Nat.succ_ne_zero n), norm_zero]
+    | succ n => simp [norm_zero]
   rw [h]
   exact summable_of_ne_finset_zero (s := {0})
     (by simp_all only [mem_singleton, ↓reduceIte, implies_true])
