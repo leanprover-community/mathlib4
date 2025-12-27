@@ -90,7 +90,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
 
-/-- can't do this inline, it times out -/
+/-- Scalar multiple of a continuous linear equivalence (given certain properties are satisfied). -/
 noncomputable abbrev auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
     (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
@@ -128,7 +128,8 @@ noncomputable abbrev auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : �
       α' • e.toContinuousLinearMap.adjoint := by
   simp [hαa, MulActionSemiHomClass.map_smulₛₗ]
 
-/-- can't do this inline either, it times out -/
+/-- Construct an isometry linear equivalence from a continuous linear equivalence
+and that its adjoint is a real-scalar multiple of its inverse. -/
 noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
     (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
@@ -162,7 +163,10 @@ noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α 
 open ComplexOrder
 
 /-- The ⋆-algebra equivalence version of
-`ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`. -/
+`ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
+
+TODO: remove the hypothesis `Continuous f`, as star-algebra equivalences between endormophisms are
+automatically continuous. -/
 public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
     ∃ U : V ≃ₗᵢ[𝕜] W, f = U.conjStarAlgEquiv := by
