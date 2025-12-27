@@ -55,7 +55,7 @@ variable [MeasurableSpace α] [PseudoEMetricSpace α] [OpensMeasurableSpace α]
 
 /-- `nearestPtInd e N x` is the index `k` such that `e k` is the nearest point to `x` among the
 points `e 0`, ..., `e N`. If more than one point are at the same distance from `x`, then
-`nearestPtInd e N x` returns the least of their indexes. -/
+`nearestPtInd e N x` returns the least of their indices. -/
 noncomputable def nearestPtInd (e : ℕ → α) : ℕ → α →ₛ ℕ
   | 0 => const α 0
   | N + 1 =>

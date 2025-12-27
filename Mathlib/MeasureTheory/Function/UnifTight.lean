@@ -49,7 +49,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 section UnifTight
 
 /- This follows closely the `UnifIntegrable` section
-from `Mathlib/MeasureTheory/Functions/UniformIntegrable.lean`. -/
+from `Mathlib/MeasureTheory/Function/UniformIntegrable.lean`. -/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
