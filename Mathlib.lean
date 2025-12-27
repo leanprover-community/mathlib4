@@ -2393,7 +2393,6 @@ public import Mathlib.CategoryTheory.Discrete.SumsProducts
 public import Mathlib.CategoryTheory.Distributive.Cartesian
 public import Mathlib.CategoryTheory.Distributive.Monoidal
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-public import Mathlib.CategoryTheory.EffectiveEpi.Coequalizer
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough

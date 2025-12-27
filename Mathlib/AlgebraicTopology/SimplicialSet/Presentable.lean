@@ -8,15 +8,13 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
-public import Mathlib.CategoryTheory.EffectiveEpi.Coequalizer
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.Presheaf
-public import Mathlib.CategoryTheory.Presentable.Limits
 
 /-!
 # Finite simplicial sets are presentable
 
-In this file, we show that finite simplicial sets are `ℵ₀`-presentable,
+In this file, we show that finite simplicial sets are finitely presentable,
 which will allow the use of the small object argument in `SSet`.
 
 -/
@@ -57,8 +55,8 @@ instance (X : SSet.{u}) [X.Finite] : IsFinitelyPresentable.{u} X := by
   have := IsRegularEpiCategory.regularEpiOfEpi p
   apply (config := { allowSynthFailures := true })
     isCardinalPresentable_of_isColimit' _
-      ((EffectiveEpi.getStruct p).isColimitCoforkOfEpiOfIsPullback
-    (IsPullback.of_hasPullback p p) q) _
+      (isCoequalizerEpiComp ((EffectiveEpi.getStruct p).isColimitCoforkOfIsPullback
+        (IsPullback.of_hasPullback p p)) q) _
   · exact hasCardinalLT_of_finite _ _ (by rfl)
   · rintro (_ | _) <;> dsimp <;> infer_instance
 
