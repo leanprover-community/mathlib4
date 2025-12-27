@@ -155,8 +155,9 @@ lemma abs_leadingCoeff_eq_one_of_mahlerMeasure_eq_one
 /-
 If the product of max(1, |root|) for all roots is 1, then every root has absolute value at most 1.
 -/
-lemma norm_le_one_of_mahlerMeasure_eq_one {p : ℤ[X]} (h : (p.map (Int.castRingHom ℂ)).mahlerMeasure = 1)
-    (z : ℂ) (hz : z ∈ (Polynomial.map (Int.castRingHom ℂ) p).roots) : ‖z‖ ≤ 1 := by
+lemma norm_le_one_of_mahlerMeasure_eq_one {p : ℤ[X]}
+    (h : (p.map (Int.castRingHom ℂ)).mahlerMeasure = 1) (z : ℂ)
+    (hz : z ∈ (Polynomial.map (Int.castRingHom ℂ) p).roots) : ‖z‖ ≤ 1 := by
   have hroots :
       (Multiset.map (fun a ↦ max 1 ‖a‖) (Polynomial.map (Int.castRingHom ℂ) p).roots).prod = 1 := by
     simp_all [mahlerMeasure_eq_leadingCoeff_mul_prod_roots,
