@@ -257,7 +257,7 @@ def toDescentDataCompPullFunctorIso :
         (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc)).symm.app M)
       (fun Y q i₁ i₂ f₁ f₂ hf₁ hf₂ ↦ by
         dsimp
-        rw [F.isoMapOfCommSq_eq _ _  rfl, F.isoMapOfCommSq_eq _ _  rfl]
+        rw [F.isoMapOfCommSq_eq _ _ rfl, F.isoMapOfCommSq_eq _ _ rfl]
         dsimp
         simp only [Functor.map_comp, Category.assoc]
         rw [← F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app_assoc p.op.toLoc
@@ -333,7 +333,7 @@ def pullFunctorCompIso
     (fun D ↦ isoMk (fun _ ↦ (Cat.Hom.toNatIso (F.mapComp' _ _ _ (by grind))).symm.app _) (by
       intro Y s k₁ k₂ f₁ f₂ hf₁ hf₂
       dsimp
-      rw [pullFunctorObjHom_eq _ _ _ _ _  (s ≫ r) _ _ rfl,
+      rw [pullFunctorObjHom_eq _ _ _ _ _ (s ≫ r) _ _ rfl,
         pullFunctorObjHom_eq _ _ _ _ _ (s ≫ q) (f₁ ≫ q' k₁) (f₂ ≫ q' k₂)]
       dsimp
       rw [pullFunctorObjHom_eq _ _ _ _ _ (s ≫ r) (f₁ ≫ r' k₁) (f₂ ≫ r' k₂)
