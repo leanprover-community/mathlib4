@@ -90,7 +90,7 @@ def arclengthReparam (t₀ : ℝ) : ℝ → E :=
 
 variable {r : WithTop ℕ∞} {t₀ : ℝ}
 
---Auxilary definition, so we don't have to type the full long expression everytime
+-- Auxilary definition, so we don't have to type the full long expression every time
 local notation "ψ" => arclengthParamTransformAux c t₀
 
 /-- The 'speed' function of a parametrized curve is continuous. -/
