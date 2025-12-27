@@ -93,8 +93,7 @@ lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I
     rcases h'm with h'm | h'm
     · rw [h'm, iteratedDerivWithin_zero]
       exact revParamTransform_continuousOn_aux c I once_diff ht₀ hc hI
-    · rw [h'm]
-      rw [iteratedDerivWithin_one]
+    · rw [h'm, iteratedDerivWithin_one]
       apply (speed_continuousOn c I hI hc once_diff).congr
       intro t ht
       rw [(revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).derivWithin]
@@ -103,8 +102,7 @@ lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I
     have h'm : m=0 := by
       have h : m < 1 := by simp_all
       exact Nat.lt_one_iff.mp h
-    rw [h'm]
-    rw [iteratedDerivWithin_zero]
+    rw [h'm, iteratedDerivWithin_zero]
     intro t ht
     exact (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).differentiableWithinAt
 
