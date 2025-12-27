@@ -95,7 +95,7 @@ local notation "ψ" => arclengthParamTransformAux c t₀
 
 /-- The 'speed' function of a parametrized curve is continuous. -/
 lemma speed_continuousOn (hI : IsOpen I) (hc : ContDiffOn ℝ r c I) (once_diff : 1 ≤ r) :
-  ContinuousOn (fun t ↦ ‖deriv c t‖) I :=
+    ContinuousOn (fun t ↦ ‖deriv c t‖) I :=
   Continuous.comp_continuousOn' continuous_norm (hc.continuousOn_deriv_of_isOpen hI once_diff)
 
 /-- An auxiliary lemma giving us the derivative of ψ on I. -/
