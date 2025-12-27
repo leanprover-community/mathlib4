@@ -40,7 +40,7 @@ public def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R)
   map_id _ := ModuleCat.hom_ext <| LinearMap.mapMatrixModule_id
   map_comp f g := ModuleCat.hom_ext (LinearMap.mapMatrixModule_comp f.hom g.hom)
 
-namespace MatrixModCat.toModuleCat
+namespace MatrixModCat
 
 open Matrix
 
