@@ -148,8 +148,8 @@ variable (ι R M N) in
   invFun P := P.flip
 
 instance [P.IsRootSystem] : P.flip.IsRootSystem where
-    span_root_eq_top := IsRootSystem.span_coroot_eq_top
-    span_coroot_eq_top := IsRootSystem.span_root_eq_top
+  span_root_eq_top := IsRootSystem.span_coroot_eq_top
+  span_coroot_eq_top := IsRootSystem.span_root_eq_top
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i
@@ -731,8 +731,8 @@ protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N�
 
 instance [P.IsRootSystem] (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
     (P.map e f g).IsRootSystem where
-  span_root_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
-  span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
+  span_root_eq_top := by simp [RootPairing.map, Embedding.coe_trans, range_comp]
+  span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, RootPairing.map]
 
 end Map
 
