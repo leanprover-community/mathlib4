@@ -712,9 +712,8 @@ lemma commute_iff (hf : IsIdempotentElem f) :
 theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
   lift T to GeneralLinearGroup R E using hT
-  have {a : E ≃ₗ[R] E} {b : Submodule R E} : b ≤ b.map a.toLinearMap ↔ b ≤ b.map a := by rfl
   simp_rw [← GeneralLinearGroup.generalLinearEquiv_to_linearMap, le_antisymm_iff,
-    ← Module.End.mem_invtSubmodule_iff_map_le, this, ← Module.End.mem_invtSubmodule_symm_iff_le_map,
+    ← Module.End.mem_invtSubmodule_iff_map_le, ← Module.End.mem_invtSubmodule_symm_iff_le_map,
     and_and_and_comm (c := (ker f ∈ _)), ← hf.commute_iff,
     GeneralLinearGroup.generalLinearEquiv_to_linearMap, iff_self_and]
   exact Commute.units_inv_right

@@ -162,14 +162,16 @@ theorem range_polarization_domRestrict_le_span_coroot :
   simp
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm ≤ LinearMap.ker P.RootForm := by
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) ≤
+      P.RootForm.ker := by
   rw [P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot']
   intro x hx
   ext y
   simp_all [coroot', rootForm_apply_apply]
 
 theorem rootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm ≤ LinearMap.ker P.CorootForm :=
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) ≤
+      P.CorootForm.ker :=
   P.flip.corootSpan_dualAnnihilator_le_ker_rootForm
 
 end Fintype

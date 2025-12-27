@@ -731,8 +731,8 @@ protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N�
 
 instance [P.IsRootSystem] (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
     (P.map e f g).IsRootSystem where
-  span_root_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
-  span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
+  span_root_eq_top := by simp [RootPairing.map, Embedding.coe_trans, range_comp]
+  span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, RootPairing.map]
 
 end Map
 

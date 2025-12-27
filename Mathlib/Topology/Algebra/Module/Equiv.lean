@@ -103,8 +103,7 @@ variable (R φ)
 of `φ` is linearly equivalent to the product over `I`. -/
 def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
-    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) :
-    Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
+    (⨅ i ∈ J, (proj i : (∀ i, φ i) →L[R] φ i).ker : Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
@@ -1009,8 +1008,8 @@ variable [Module R M₂] [IsTopologicalAddGroup M]
 linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x` for `x ∈ f₁.ker`,
 `(e x).1 = f₁ x`, and `(e (f₂ y)).2 = 0`. The map is given by `e x = (f₁ x, x - f₂ (f₁ x))`. -/
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
-    M ≃L[R] M₂ × ker f₁ :=
-  equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod (ker f₁).subtypeL)
+    M ≃L[R] M₂ × f₁.ker :=
+  equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod f₁.ker.subtypeL)
     (fun x => by simp) fun ⟨x, y⟩ => by simp [h x]
 
 @[simp]
@@ -1026,7 +1025,7 @@ theorem snd_equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M)
 
 @[simp]
 theorem equivOfRightInverse_symm_apply (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M)
-    (h : Function.RightInverse f₂ f₁) (y : M₂ × ker f₁) :
+    (h : Function.RightInverse f₂ f₁) (y : M₂ × f₁.ker) :
     (equivOfRightInverse f₁ f₂ h).symm y = f₂ y.1 + y.2 :=
   rfl
 
@@ -1301,7 +1300,8 @@ lemma submoduleMap_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p
   rfl
 
 @[simp]
-lemma submoduleMap_symm_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p.map e) :
+lemma submoduleMap_symm_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M)
+    (x : p.map (e : M →ₛₗ[σ₁₂] M₂)) :
     (e.submoduleMap p).symm x = e.symm x := by
   rfl
 
@@ -1309,35 +1309,37 @@ lemma submoduleMap_symm_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (
 restricts to a continuous linear equivalence of the two submodules.
 This is `LinearEquiv.ofSubmodules` as a continuous linear equivalence. -/
 def ofSubmodules (e : M ≃SL[σ₁₂] M₂)
-    (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M →SL[σ₁₂] M₂) = q) : p ≃SL[σ₁₂] q :=
+    (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) : p ≃SL[σ₁₂] q :=
   (e.submoduleMap p).trans (.ofEq _ _ h)
 
 @[simp]
 theorem ofSubmodules_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
-    (h : p.map e = q) (x : p) :
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) (x : p) :
     e.ofSubmodules p q h x = e x :=
   rfl
 
 @[simp]
 theorem ofSubmodules_symm_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
-    (h : p.map e = q) (x : q) : (e.ofSubmodules p q h).symm x = e.symm x :=
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) (x : q) : (e.ofSubmodules p q h).symm x = e.symm x :=
   rfl
 
 /-- A continuous linear equivalence of two modules restricts to a continuous linear equivalence
 from the preimage of any submodule to that submodule.
 This is `ContinuousLinearEquiv.ofSubmodule` but with `comap` on the left
 instead of `map` on the right. -/
-def ofSubmodule' (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) : U.comap f ≃SL[σ₁₂] U :=
+def ofSubmodule' (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
+    U.comap (f : M →ₛₗ[σ₁₂] M₂) ≃SL[σ₁₂] U :=
   f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.toLinearEquiv.symm) |>.symm
 
 theorem ofSubmodule'_toContinuousLinearMap (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
     (f.ofSubmodule' U).toContinuousLinearMap =
-      (f.toContinuousLinearMap.comp ((U.comap f).subtypeL)).codRestrict U
+      (f.toContinuousLinearMap.comp ((U.comap f.toLinearMap).subtypeL)).codRestrict U
         ((fun ⟨x, hx⟩ ↦ by simpa [Submodule.mem_comap])) := by
   rfl
 
 @[simp]
-theorem ofSubmodule'_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U.comap f) :
+theorem ofSubmodule'_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂)
+    (x : U.comap (f : M →ₛₗ[σ₁₂] M₂)) :
     (f.ofSubmodule' U x : M₂) = f (x : M) :=
   rfl
 
@@ -1366,7 +1368,7 @@ lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
     ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
       (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
   let ⟨f, hf⟩ := hp
-  ⟨LinearMap.ker f, .equivOfRightInverse _ p.subtypeL hf,
+  ⟨f.ker, .equivOfRightInverse f p.subtypeL hf,
     fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp, fun _ ↦ rfl⟩
 
 end Submodule

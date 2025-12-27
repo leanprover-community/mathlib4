@@ -177,24 +177,23 @@ theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [Co
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
 
 theorem orthogonal_ker (T : E →L[𝕜] F) :
-    (LinearMap.ker T)ᗮ = (LinearMap.range (T†)).topologicalClosure := by
+    T.kerᗮ = T†.range.topologicalClosure := by
   rw [← Submodule.orthogonal_orthogonal_eq_closure]
   apply le_antisymm
   all_goals refine Submodule.orthogonal_le fun x hx ↦ ?_
   · refine ext_inner_left 𝕜 fun y ↦ ?_
-    simp [← T.adjoint_inner_left, hx _ (LinearMap.mem_range_self (T†) y)]
+    simp [← T.adjoint_inner_left, hx _]
   · rintro _ ⟨y, rfl⟩
     simp_all [T.adjoint_inner_left]
 
-theorem orthogonal_range (T : E →L[𝕜] F) :
-    (LinearMap.range T)ᗮ = LinearMap.ker (T†) := by
-  rw [← (LinearMap.ker (T†)).orthogonal_orthogonal, (T†).orthogonal_ker]
+theorem orthogonal_range (T : E →L[𝕜] F) : T.rangeᗮ = T†.ker := by
+  rw [← T†.ker.orthogonal_orthogonal, T†.orthogonal_ker]
   simp
 
 omit [CompleteSpace E] in
 theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
     (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
-    LinearMap.ker U ≤ LinearMap.ker T ↔ LinearMap.range T ≤ LinearMap.range U := by
+    U.ker ≤ T.ker ↔ T.range ≤ U.range := by
   refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
   have := FiniteDimensional.complete 𝕜 E
   simpa [orthogonal_ker, hT, hU] using Submodule.orthogonal_le h
@@ -355,15 +354,14 @@ lemma IsStarNormal.adjoint_apply_eq_zero_iff (hT : IsStarNormal T) (x : E) :
 open ContinuousLinearMap
 
 theorem IsStarNormal.ker_adjoint_eq_ker (hT : IsStarNormal T) :
-    LinearMap.ker (adjoint T) = LinearMap.ker T :=
+    (adjoint T).ker = T.ker :=
   Submodule.ext hT.adjoint_apply_eq_zero_iff
 
 /-- The range of a normal operator is pairwise orthogonal to its kernel.
 
 This is a weaker version of `LinearMap.IsSymmetric.orthogonal_range`
 but with stronger type class assumptions (i.e., `CompleteSpace`). -/
-theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) :
-    (LinearMap.range T)ᗮ = LinearMap.ker T :=
+theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) : T.rangeᗮ = T.ker :=
   T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
 
 /- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
@@ -400,7 +398,7 @@ theorem isStarProjection_iff_isSymmetricProjection :
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
-    S = T ↔ LinearMap.range S = LinearMap.range T := by
+    S = T ↔ S.range = T.range := by
   simpa using LinearMap.IsSymmetricProjection.ext_iff
     (isStarProjection_iff_isSymmetricProjection.mp hS)
     (isStarProjection_iff_isSymmetricProjection.mp hT)
@@ -418,16 +416,15 @@ theorem isStarProjection_starProjection [CompleteSpace E] {U : Submodule 𝕜 E}
 open ContinuousLinearMap in
 /-- An operator is a star projection if and only if it is an orthogonal projection. -/
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
-    IsStarProjection p ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
-    p = (LinearMap.range p).starProjection := by
+    IsStarProjection p ↔ ∃ (_ : p.range.HasOrthogonalProjection),
+    p = p.range.starProjection := by
   simp_rw [← p.isStarProjection_iff_isSymmetricProjection.symm.eq,
     LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range, coe_inj]
-  rfl
 
 lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p
       ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
-  ⟨fun h ↦ ⟨LinearMap.range p, isStarProjection_iff_eq_starProjection_range.mp h⟩,
+  ⟨fun h ↦ ⟨p.range, isStarProjection_iff_eq_starProjection_range.mp h⟩,
     by rintro ⟨_, _, rfl⟩; simp⟩
 
 namespace LinearMap

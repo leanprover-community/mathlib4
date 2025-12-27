@@ -89,8 +89,8 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
   isCompl_ker := by
     apply IsCompl.of_eq
     · ext ⟨x, y⟩
-      rw [Submodule.mem_inf, Submodule.mem_bot, LinearMap.mem_ker, ContinuousLinearMap.coe_fst',
-        LinearMap.mem_ker, Prod.ext_iff, ← h.bijective.injective.eq_iff]
+      rw [Submodule.mem_inf, Submodule.mem_bot, LinearMap.mem_ker, ContinuousLinearMap.coe_fst,
+        LinearMap.coe_fst, LinearMap.mem_ker, Prod.ext_iff, ← h.bijective.injective.eq_iff]
       simp +contextual [Prod.mk_zero_zero]
     · ext x
       simp only [Submodule.mem_sup, Submodule.mem_top, iff_true]

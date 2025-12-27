@@ -163,7 +163,7 @@ def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopMod
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
     (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
-    LinearMap.ker (((homogeneousCochains R G).obj X).d 0 n).hom ≃L[R] (invariants R G).obj X where
+    (((homogeneousCochains R G).obj X).d 0 n).hom.ker ≃L[R] (invariants R G).obj X where
   toFun x :=
   { val := DFunLike.coe (F := C(G, _)) x.1.1 1
     property g := by
