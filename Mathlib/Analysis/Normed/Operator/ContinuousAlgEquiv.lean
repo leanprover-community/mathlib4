@@ -90,50 +90,38 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
 
+section auxiliaryDefs
+variable (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
+  (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+  (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
+include hα hα2 he he'
+
 /-- Scalar multiple of a continuous linear equivalence (given certain properties are satisfied). -/
-noncomputable abbrev auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
-    (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
-    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
+noncomputable abbrev auxContinuousLinearEquiv :
     V ≃L[𝕜] W where
-  toFun := (α' • e.toContinuousLinearMap).toLinearMap
+  toLinearMap := (α' • e.toContinuousLinearMap).toLinearMap
   invFun := (α' • e.toContinuousLinearMap.adjoint).toLinearMap
-  left_inv := by
-    simp only [coe_smul, Function.leftInverse_iff_comp, funext_iff, Function.comp_apply,
-      LinearMap.smul_apply, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
-      _root_.map_smul, smul_smul, hα2, id_eq]
-    simp_rw [← ContinuousLinearEquiv.coe_coe, ← comp_apply, he]
-    simp [smul_smul, hα]
-  right_inv := by
-    simp only [coe_smul, Function.rightInverse_iff_comp, funext_iff, Function.comp_apply,
-      LinearMap.smul_apply, ContinuousLinearMap.coe_coe, _root_.map_smul,
-      ContinuousLinearEquiv.coe_coe, smul_smul, hα2, id_eq]
-    simp_rw [← ContinuousLinearEquiv.coe_coe, ← comp_apply, he']
-    simp [smul_smul, hα]
-  map_add' := by simp
-  map_smul' := by simp
+  left_inv x := by
+    have := by simpa using congr($he x)
+    simp [smul_smul, hα2, this, hα, ← mul_assoc]
+  right_inv x := by
+    have := by simpa using congr($he' x)
+    simp [smul_smul, hα2, this, hα, ← mul_assoc]
   continuous_toFun := (α' • e.toContinuousLinearMap).continuous
   continuous_invFun := (α' • e.toContinuousLinearMap.adjoint).continuous
 
-@[simp] theorem coe_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
-    (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
-    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
+@[simp] theorem coe_auxContinuousLinearEquiv :
     (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
       α' • e.toContinuousLinearMap := rfl
 
-@[simp] theorem adjoint_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
-    (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
-    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
-    (hαa : starRingEnd 𝕜 α' = α') :
+@[simp] theorem adjoint_auxContinuousLinearEquiv (hαa : starRingEnd 𝕜 α' = α') :
     adjoint (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
       α' • e.toContinuousLinearMap.adjoint := by
   simp [hαa, MulActionSemiHomClass.map_smulₛₗ]
 
 /-- Construct an isometry linear equivalence from a continuous linear equivalence
 and that its adjoint is a real-scalar multiple of its inverse. -/
-noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
-    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
-    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
-    (hαa : starRingEnd 𝕜 α' = α') :
+noncomputable abbrev auxIsometry (hαa : starRingEnd 𝕜 α' = α') :
     V ≃ₗᵢ[𝕜] W where
   __ := auxContinuousLinearEquiv e hα hα2 he he' |>.toLinearEquiv
   norm_map' := by
@@ -143,22 +131,18 @@ noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α 
     simp only [comp_smulₛₗ, RingHom.id_apply, smul_comp, smul_smul, hα2]
     simp [he, smul_smul, hα, one_def]
 
-@[simp] theorem coe_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
-    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
-    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
-    (hαa : starRingEnd 𝕜 α' = α') :
+@[simp] theorem coe_auxIsometry (hαa : starRingEnd 𝕜 α' = α') :
     (auxIsometry e hα hα2 he he' hαa).toContinuousLinearEquiv.toContinuousLinearMap =
       α' • e.toContinuousLinearMap := rfl
 
-@[simp] theorem coe_symm_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
-    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
-    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
-    (hαa : starRingEnd 𝕜 α' = α') :
+@[simp] theorem coe_symm_auxIsometry (hαa : starRingEnd 𝕜 α' = α') :
     (auxIsometry e hα hα2 he he' hαa).toContinuousLinearEquiv.symm.toContinuousLinearMap =
       α'⁻¹ • e.symm.toContinuousLinearMap := by
   ext y
   apply (auxIsometry e hα hα2 he he' hαa).toContinuousLinearEquiv.injective
   simp [smul_smul, inv_mul_cancel₀ (a := α') (by grind)]
+
+end auxiliaryDefs
 
 open ComplexOrder
 
@@ -191,9 +175,8 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     simp_rw [Commute, SemiconjBy, mul_def, ← comp_assoc, ← this, comp_assoc]
     simp
   replace this :
-      (adjoint y.toContinuousLinearMap ∘L y) ∈ Subalgebra.centralizer 𝕜 (⊤ : Set (V →L[𝕜] V)) := by
-    rw [Subalgebra.mem_centralizer_iff]
-    exact fun _ _ ↦ this _
+      (adjoint y.toContinuousLinearMap ∘L y) ∈ Subalgebra.centralizer 𝕜 (⊤ : Set (V →L[𝕜] V)) :=
+    Subalgebra.mem_centralizer_iff 𝕜 |>.mpr fun _ _ ↦ this _
   simp only [Set.top_eq_univ, Subalgebra.centralizer_univ, Algebra.IsCentral.center_eq_bot] at this
   obtain ⟨α, hα⟩ := this
   simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId, Algebra.algebraMap_eq_smul_one] at hα
@@ -210,9 +193,8 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   have this2 : 0 ≤ α := by
     have this1 := thisα.symm ▸ (nonneg_iff_isPositive _ |>.mpr
       (thisα ▸ hα ▸ isPositive_adjoint_comp_self y.toContinuousLinearMap))
-    rw [← LinearMap.IsPositive.isPositive_smul_iff (E := V) isPositive_one]
-    · exact (nonneg_iff_isPositive _).mp this1
-    · exact one_ne_zero' (V →ₗ[𝕜] V)
+    rw [← LinearMap.isPositive_one.isPositive_smul_iff (E := V) (one_ne_zero' (V →ₗ[𝕜] V))]
+    exact (nonneg_iff_isPositive _).mp this1
   replace this2 := RCLike.ofReal_pos.mp <| thisα ▸ (lt_of_le_of_ne' this2 thisα')
   have thisU : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =
       α • ContinuousLinearMap.id 𝕜 _ := by
@@ -229,11 +211,10 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   set U := auxIsometry y thisα' αa2 hα.symm thisU (by simp [αa])
   use U
   have la : αa⁻¹ * αa = 1 := by
-    simp only [one_div, αa]
-    exact inv_mul_cancel₀ (by
-      simp only [ne_eq, map_eq_zero]
-      rw [Real.rpow_eq_zero this2.le (by simp)]
-      exact ne_of_gt this2)
+    refine inv_mul_cancel₀ ?_
+    simp only [αa, ne_eq, map_eq_zero]
+    rw [Real.rpow_eq_zero this2.le (by simp)]
+    exact ne_of_gt this2
   ext
   simp [U.conjStarAlgEquiv_apply, U, smul_smul, la, ← conjContinuousAlgEquiv_apply, ← hy]
 
