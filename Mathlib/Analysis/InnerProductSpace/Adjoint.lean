@@ -712,6 +712,7 @@ theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductS
 
 end LinearIsometryEquiv
 end linearIsometryEquiv
+
 namespace Unitary
 
 theorem norm_map (u : unitary (H →L[𝕜] H)) (x : H) : ‖(u : H →L[𝕜] H) x‖ = ‖x‖ :=
