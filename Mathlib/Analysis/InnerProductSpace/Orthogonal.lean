@@ -203,9 +203,12 @@ theorem orthogonalFamily_self :
 end Submodule
 
 @[simp]
-theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (K : Submodule ℝ E) : K.orthogonalBilin bilinFormOfRealInner = Kᗮ :=
+theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
   rfl
+
+@[deprecated (since := "2025-12-26")]
+alias bilinFormOfRealInner_orthogonal := orthogonalBilin_innerₗ
 
 /-!
 ### Orthogonality of submodules
