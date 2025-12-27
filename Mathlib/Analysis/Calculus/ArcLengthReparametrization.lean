@@ -91,8 +91,7 @@ lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I
       have h : m ≤ 1 := by simp_all
       apply m.le_one_iff_eq_zero_or_eq_one.mp h
     rcases h'm with h'm | h'm
-    · rw [h'm]
-      rw [iteratedDerivWithin_zero]
+    · rw [h'm, iteratedDerivWithin_zero]
       exact revParamTransform_continuousOn_aux c I once_diff ht₀ hc hI
     · rw [h'm]
       rw [iteratedDerivWithin_one]
