@@ -264,7 +264,7 @@ theorem one_le_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMo
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 
 /-- A version of `one_le_finprod'` for `PosMulMono` in place of `MulLeftMono`. -/
-lemma one_le_finprod {α M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneClass M]
+lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneClass M]
     [PosMulMono M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ ↦ one_le_mul_of_one_le_of_one_le) hf
