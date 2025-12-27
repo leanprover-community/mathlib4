@@ -123,15 +123,15 @@ Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
 we provide no estimates on the norm of the extension.
 -/
 lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submodule 𝕜 E}
-    (f : p →L[𝕜] F) [FiniteDimensional 𝕜 (LinearMap.range f)] :
+    (f : p →L[𝕜] F) [FiniteDimensional 𝕜 f.range] :
     ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  set b := Module.finBasis 𝕜 (LinearMap.range f)
+  set b := Module.finBasis 𝕜 f.range
   set e := b.equivFunL
   set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
     (f.codRestrict _ <| LinearMap.mem_range_self _)
   choose gi hgf _ using fun i ↦ exists_extension_norm_eq p (fi i)
-  use (LinearMap.range f).subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
+  use f.range.subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
   ext x
   simp [fi, e, hgf]
 
