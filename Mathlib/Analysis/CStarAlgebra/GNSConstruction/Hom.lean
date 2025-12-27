@@ -214,8 +214,6 @@ theorem out_comp_mk (c : f.GNS) :
   nth_rw 1 [mkCLM_apply,mk_outCLM] at h2
   exact mk_eq_mk.mp (id (Eq.symm h3))
 
-variable [StarOrderedRing A]
-
 #check f.out_comp_mk
 
 lemma mk_to_mkCLM (c : f.GNS) :
@@ -247,7 +245,6 @@ lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
           (ContinuousLinearMap.continuous ((f.π_ofA a).comp (f.π_ofA b))))
     | ih c
   simp only [π_completion_onQuot_equiv, Completion.coe_inj]
-
   dsimp [constA_mul_Quot_toQuot]
   simp_all only [A_mul_GNS_mult, Function.comp_apply]--, SeparationQuotient.mk_eq_mk]
   induction c using Quot.induction_on
@@ -255,15 +252,20 @@ lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
   simp only [quot_sepQuot, mk_to_mkCLM]
   simp_all only [mkCLM_apply, mk_eq_mk]
   rw [mk_to_mkCLM, mk_to_mkCLM]
-  -- think out on paper, use awkward transitives
   suffices
     Inseparable
       (((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c))))
       (((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS)
         ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))))) by
-    sorry -- use Inseparable.map
-  -- direct transtiives here should suffice
-  sorry
+    exact Inseparable.map this (Y := f.GNS) (f := (f.A_mul_GNS a)) (by continuity)
+  have h1 : Inseparable
+    ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))
+    ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) ((f.A_mul_GNS b) c))) := by exact move_func f c b
+  have h2 : Inseparable
+    ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))))
+    (((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))) :=
+      out_comp_mk f ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))
+  exact Inseparable.symm (out_comp_mk f ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c))))
 
 noncomputable
 def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
@@ -277,7 +279,7 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     simp_all only [π_completion_onQuot_equiv, Completion.coe_inj]
     dsimp [constA_mul_Quot_toQuot, A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
     simp_all
-  map_mul' := map_mul
+  map_mul' := f.map_mul
   map_zero' := by
     ext b
     dsimp [π_ofA]
