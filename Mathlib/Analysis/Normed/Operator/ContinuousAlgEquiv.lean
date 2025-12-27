@@ -21,7 +21,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 This file shows that continuous (star-)algebra equivalences between continuous endomorphisms are
 isometrically inner.
 See `Mathlib/LinearAlgebra/GeneralLinearGroup/AlgEquiv.lean` for the non-continuous version.
-The proof is essentially the same as the non-continuous version.
+The proof follows the same idea as the non-continuous version.
 
 # TODO:
 - when `V = W`, we can state that the group homomorphism
@@ -34,10 +34,24 @@ open ContinuousLinearMap ContinuousLinearEquiv
 
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
 public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv {𝕜 V W : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup V] [NormedAddCommGroup W]
+    [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
     [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W]
-    [CompleteSpace V] [CompleteSpace W] (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
+    (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
     ∃ U : V ≃L[𝕜] W, f = U.conjContinuousAlgEquiv := by
+  /- The proof goes as follows:
+    We want to show the existence of a continuous linear equivalence `U : V ≃L[𝕜] W` such that
+    `f A (U x) = U (A x)` for all `A : V →L[𝕜] V` and `x : V`.
+    Assume nontriviality of `V`, and let `(u : V) ≠ 0`. Let `v` be a strong dual on `V` such that
+    `v u ≠ 0` (exists since it has a separating dual).
+    Let `z : W` such that `f (smulRight v u) z ≠ 0`.
+    Then we construct a bijective continuous linear map `T : V →L[𝕜] W`
+    given by `x ↦ f (smulRight v x) z` and so satisfies `T (A x) = f A (T x)` for all
+    `A : V →L[𝕜] V` and `x : V`. So it remains to show that this map has a continuous inverse.
+    Let `d` be a strong dual on `W` such that `d ((f (smulRight v u)) z) = 1` (exists since it has
+    a separating dual).
+    We then construct a right-inverse continuous linear map `T' : W →L[𝕜] V` given by
+    `x ↦ f.symm (smulRight d x) u`.
+    And so it follows that `T` is also a continuous linear equivalence. -/
   by_cases! hV : Subsingleton V
   · by_cases! hV : Subsingleton W
     · exact ⟨{ toLinearEquiv := 0 }, ext <| Subsingleton.allEq _ _⟩
@@ -54,17 +68,24 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply, ← map_mul]
     congr; ext; simp
-  have surj : Function.Surjective T := fun w ↦ by
-    obtain ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
-    exact ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
+  have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
+  have surj : Function.Surjective T := fun w ↦ ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRight v x = smulRight v y := by
       apply f.injective <| ContinuousLinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp [← this, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
-  exact ⟨.ofBijective T ((LinearMapClass.ker_eq_bot _).mpr inj)
-    (LinearMap.range_eq_top_of_surjective T surj), fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
+  set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
+  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
+    smulRightL 𝕜 _ _ d
+  set TL : V ≃L[𝕜] W := { Tₗ with
+    continuous_toFun := T.continuous
+    continuous_invFun := by
+      change Continuous Tₗ.symm.toLinearMap
+      suffices T'.toLinearMap = Tₗ.symm from this ▸ T'.continuous
+      simp [LinearMap.ext_iff, ← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ] }
+  exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
 
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
