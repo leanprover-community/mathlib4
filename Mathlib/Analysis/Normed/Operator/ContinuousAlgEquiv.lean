@@ -34,13 +34,13 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   /- The proof goes as follows:
     We want to show the existence of a continuous linear equivalence `U : V ≃L[𝕜] W` such that
     `f A (U x) = U (A x)` for all `A : V →L[𝕜] V` and `x : V`.
-    Assume nontriviality of `V`, and let `(u : V) ≠ 0`. Let `v` be the strong dual on `V` such that
+    Assume nontriviality of `V`, and let `(u : V) ≠ 0`. Let `v` be a strong dual on `V` such that
     `v u ≠ 0` (exists since it has a separating dual).
     Let `z : W` such that `f (smulRight v u) z ≠ 0`.
     Then we construct a bijective continuous linear map `T : V →L[𝕜] W`
     given by `x ↦ f (smulRight v x) z` and so satisfies `T (A x) = f A (T x)` for all
     `A : V →L[𝕜] V` and `x : V`. So it remains to show that this map has a continuous inverse.
-    Let `d` be the strong dual on `W` such that `d ((f (smulRight v u)) z) = 1` (exists since it has
+    Let `d` be a strong dual on `W` such that `d ((f (smulRight v u)) z) = 1` (exists since it has
     a separating dual).
     We then construct a right-inverse continuous linear map `T' : W →L[𝕜] V` given by
     `x ↦ f.symm (smulRight d x) u`.
