@@ -104,7 +104,7 @@ def topEquiv : (⊤ : Subsemiring R) ≃+* R where
   map_add' := (⊤ : Subsemiring R).coe_add
 
 /-- The preimage of a subsemiring along a ring homomorphism is a subsemiring. -/
-@[simps coe toSubmonoid]
+@[simps coe]
 def comap (f : R →+* S) (s : Subsemiring S) : Subsemiring R :=
   { s.toSubmonoid.comap (f : R →* S), s.toAddSubmonoid.comap (f : R →+ S) with carrier := f ⁻¹' s }
 
@@ -112,14 +112,30 @@ def comap (f : R →+* S) (s : Subsemiring S) : Subsemiring R :=
 theorem mem_comap {s : Subsemiring S} {f : R →+* S} {x : R} : x ∈ s.comap f ↔ f x ∈ s :=
   Iff.rfl
 
+@[simp]
+theorem comap_toSubmonoid (f : R →+* S) (s : Subsemiring S) :
+    (s.comap f).toSubmonoid = s.toSubmonoid.comap f.toMonoidHom := rfl
+
+@[simp]
+theorem comap_toAddSubmonoid (f : R →+* S) (s : Subsemiring S) :
+    (s.comap f).toAddSubmonoid = s.toAddSubmonoid.comap f.toAddMonoidHom := rfl
+
 theorem comap_comap (s : Subsemiring T) (g : S →+* T) (f : R →+* S) :
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
 /-- The image of a subsemiring along a ring homomorphism is a subsemiring. -/
-@[simps coe toSubmonoid]
+@[simps coe]
 def map (f : R →+* S) (s : Subsemiring R) : Subsemiring S :=
   { s.toSubmonoid.map (f : R →* S), s.toAddSubmonoid.map (f : R →+ S) with carrier := f '' s }
+
+@[simp]
+theorem map_toSubmonoid (f : R →+* S) (s : Subsemiring R) :
+    (s.map f).toSubmonoid = s.toSubmonoid.map f.toMonoidHom := rfl
+
+@[simp]
+theorem map_toAddSubmonoid (f : R →+* S) (s : Subsemiring R) :
+    (s.map f).toAddSubmonoid = s.toAddSubmonoid.map f.toAddMonoidHom := rfl
 
 @[simp]
 lemma mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := Iff.rfl

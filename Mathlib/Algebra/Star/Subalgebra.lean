@@ -237,9 +237,9 @@ theorem mem_map {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} {y : B} :
     y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   Subsemiring.mem_map
 
+@[simp]
 theorem map_toSubalgebra {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} :
-    (S.map f).toSubalgebra = S.toSubalgebra.map f.toAlgHom :=
-  SetLike.coe_injective rfl
+    (S.map f).toSubalgebra = S.toSubalgebra.map f.toAlgHom := rfl
 
 @[simp, norm_cast]
 theorem coe_map (S : StarSubalgebra R A) (f : A →⋆ₐ[R] B) : (S.map f : Set B) = f '' S :=
@@ -279,6 +279,10 @@ theorem comap_comap (S : StarSubalgebra R C) (g : B →⋆ₐ[R] C) (f : A →�
 @[simp]
 theorem mem_comap (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) (x : A) : x ∈ S.comap f ↔ f x ∈ S :=
   Iff.rfl
+
+@[simp]
+theorem comap_toSubalgebra (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) :
+    (S.comap f).toSubalgebra = S.toSubalgebra.comap f.toAlgHom := rfl
 
 @[simp, norm_cast]
 theorem coe_comap (S : StarSubalgebra R B) (f : A →⋆ₐ[R] B) :
