@@ -291,7 +291,8 @@ lemma isCompl_corootSpan_ker_corootForm :
   P.flip.isCompl_rootSpan_ker_rootForm
 
 lemma ker_rootForm_eq_dualAnnihilator :
-    LinearMap.ker P.RootForm = (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm := by
+    P.RootForm.ker =
+      (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) := by
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   suffices finrank R (LinearMap.ker P.RootForm) = finrank R (P.corootSpan R).dualAnnihilator by
@@ -304,7 +305,8 @@ lemma ker_rootForm_eq_dualAnnihilator :
   lia
 
 lemma ker_corootForm_eq_dualAnnihilator :
-    LinearMap.ker P.CorootForm = (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm :=
+    P.CorootForm.ker =
+      (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) :=
   P.flip.ker_rootForm_eq_dualAnnihilator
 
 instance : P.IsBalanced where

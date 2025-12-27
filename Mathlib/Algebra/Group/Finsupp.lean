@@ -452,8 +452,7 @@ lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
   Finset.Subset.antisymm support_mapRange
     (calc
       support f = support (- -f) := congr_arg support (neg_neg _).symm
-      _ ⊆ support (-f) := support_mapRange
-      )
+      _ ⊆ support (-f) := support_mapRange)
 
 lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ support f ∪ support g := by
   rw [sub_eq_add_neg, ← support_neg g]

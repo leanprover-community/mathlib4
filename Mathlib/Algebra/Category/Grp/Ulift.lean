@@ -183,7 +183,7 @@ namespace AddCommGrpCat
 /-- The universe lift for commutative additive groups is additive.
 -/
 instance uliftFunctor_additive :
-    AddCommGrpCat.uliftFunctor.{u,v}.Additive where
+    AddCommGrpCat.uliftFunctor.{u, v}.Additive where
 
 open Colimits in
 /--
