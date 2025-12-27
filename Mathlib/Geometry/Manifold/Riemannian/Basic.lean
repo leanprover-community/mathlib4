@@ -349,7 +349,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
       (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t) := by
     apply mfderivWithin_comp
     · exact mdifferentiableWithinAt_extChartAt_symm (hη.1 ht)
-    · exact η_smooth.mdifferentiableOn le_rfl t ht
+    · exact η_smooth.mdifferentiableOn one_ne_zero t ht
     · exact hη.1.trans (preimage_mono (extChartAt_target_subset_range x))
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       exact uniqueDiffOn_Icc zero_lt_one t ht
@@ -464,7 +464,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
         apply mfderiv_comp_mfderivWithin
         · refine mdifferentiableAt_extChartAt (uc' ?_)
           apply t₁_mem ht'
-        · exact (γ_smooth.mdifferentiable le_rfl).mdifferentiableOn _ ht'
+        · exact (γ_smooth.mdifferentiable one_ne_zero).mdifferentiableOn _ ht'
         · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
           exact uniqueDiffOn_Icc h't' _ ht'
       have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' 1 =

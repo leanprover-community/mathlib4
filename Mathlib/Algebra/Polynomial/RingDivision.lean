@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Theory of univariate polynomials
@@ -221,40 +222,35 @@ theorem irreducible_X : Irreducible (X : R[X]) :=
 theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
   (hm.prime_of_degree_eq_one hp1).irreducible
 
-/-- The degree 1 polynomial `a • X + C b` is irreducible
-if `a ≠ 0` and `a, b` are relatively prime. -/
-theorem irreducible_smul_X_add_C {a : R} (b : R) (ha : a ≠ 0) (hab : IsRelPrime a b) :
-    Irreducible (a • X + C b : Polynomial R) where
+/-- A degree 1 polynomial `C a * X + C b` is irreducible
+if `a, b` are relatively prime. -/
+theorem irreducible_of_degree_eq_one_of_isRelPrime_coeff
+    {p : R[X]} (hp : p.degree = 1) (hc : IsRelPrime (p.coeff 0) (p.coeff 1)) :
+    Irreducible p where
   not_isUnit h := by
-    obtain ⟨u, hu, h⟩ := isUnit_iff.mp h
-    apply ha
-    simpa using congr_arg (fun f ↦ coeff f 1) h.symm
+    obtain ⟨u, -, h⟩ := isUnit_iff.mp h
+    apply not_le.mpr (zero_lt_one' (WithBot ℕ))
+    simp [← hp, ← h, degree_C_le]
   isUnit_or_isUnit f g h := by
     wlog H : f.degree ≤ g.degree generalizing f g
-    · rcases le_total f.degree g.degree with h' | h'
-      · exact this f g h h'
-      · rw [mul_comm] at h
-        exact or_comm.mp (this g f h h')
-    have hd := congr_arg degree h
-    have ha' : (a • (X : R[X])).degree = 1 := by
-      simp [smul_eq_C_mul a, degree_C ha]
-    rw [degree_mul, degree_add_C (by simp [ha']), ha'] at hd
-    rw [eq_comm, Nat.WithBot.add_eq_one_iff] at hd
-    rcases hd with hd | hd
-    · left
-      have hf := f.eq_C_of_degree_eq_zero hd.1
-      suffices IsUnit (f.coeff 0) by
-        rw [isUnit_iff]
-        exact ⟨f.coeff 0, this, hf.symm⟩
-      rw [hf, ← smul_eq_C_mul] at h
-      apply hab
-      · use g.coeff 1
-        simpa using congr_arg (fun f ↦ coeff f 1) h
-      · use g.coeff 0
-        simpa using congr_arg (fun f ↦ coeff f 0) h
-    · exfalso
-      rw [hd.1, hd.2, ← not_lt] at H
-      apply H (zero_lt_one' (WithBot ℕ))
+    · push_neg at H
+      rw [mul_comm] at h
+      exact (this g f h H.le).symm
+    left
+    rw [h, degree_mul, Nat.WithBot.add_eq_one_iff] at hp
+    rcases hp with ⟨hf, hg⟩ | ⟨hf, hg⟩; swap
+    · simp [← not_lt, hf, hg] at H
+    replace hf := f.eq_C_of_degree_eq_zero hf
+    rw [hf]
+    apply IsUnit.map C
+    rw [h, hf, coeff_C_mul, coeff_C_mul] at hc
+    apply hc <;> simp
+
+theorem irreducible_C_mul_X_add_C {a b : R} (ha : a ≠ 0) (hab : IsRelPrime a b) :
+    Irreducible (C a * X + C b) := by
+  apply irreducible_of_degree_eq_one_of_isRelPrime_coeff
+  · compute_degree!
+  · simpa using hab.symm
 
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by

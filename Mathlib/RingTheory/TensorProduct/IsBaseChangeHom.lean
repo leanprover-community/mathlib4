@@ -225,7 +225,7 @@ variable {R : Type*} [CommRing R]
     (M : Type*) [AddCommGroup M] [Module R M]
     {P : Type*} [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P]
 
-variable [Module.Free R M] [Module.Finite R M]
+variable [Free R M] [Module.Finite R M]
 
 theorem det_endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
     LinearMap.det (endHom j f) = algebraMap R S (LinearMap.det f) := by
