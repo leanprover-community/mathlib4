@@ -72,7 +72,7 @@ lemma speed_continuousOn (hI : IsOpen I) (hc : ContDiffOn ℝ r c I) (once_diff 
 lemma revParamTransform_deriv_eq_aux {t : ℝ} (ht : t ∈ I) (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : HasDerivWithinAt ψ ‖deriv c t‖ I t := by
   unfold arclengthParamTransformAux
-  exact integralInterval.hasDerivWithinAt_of_continuousOn_interval
+  exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval
     (speed_continuousOn c I hI hc once_diff) ht₀ ht
 
 / --Auxilary lemma - ψ is continuous. -/
