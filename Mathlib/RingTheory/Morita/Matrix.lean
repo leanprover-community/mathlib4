@@ -76,7 +76,7 @@ def _root_.LinearMap.fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matr
   map_smul' := by simp
 
 
-end MatrixModCat.toModuleCat
+end MatrixModCat
 
 variable [Inhabited ι]
 
@@ -91,17 +91,17 @@ def MatrixModCat.toModuleCat : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   haveI (M : ModuleCat (Matrix ι ι R)) : IsScalarTower R (Matrix ι ι R) M :=
     { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
         rw [← mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
-  { obj M := ModuleCat.of R (MatrixModCat.toModuleCat.toModuleCatObj R ι M)
+  { obj M := ModuleCat.of R (MatrixModCat.toModuleCatObj R ι M)
     map {M N} f := ModuleCat.ofHom <| LinearMap.fromMatrixLinear f.hom
     map_id _ := rfl
     map_comp _ _ := rfl }
 
-open MatrixModCat.toModuleCat Matrix
+open MatrixModCat Matrix
 
 /-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = E₁₁ • Mⁿ` -/
 def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup M] [Module R M] :
     (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι).obj (.of R M) ≃ₗ[R]
-    MatrixModCat.toModuleCat.toModuleCatObj R ι (ι → M) where
+    MatrixModCat.toModuleCatObj R ι (ι → M) where
   __ := AddEquiv.refl _
   map_smul' r x := by
     dsimp at x ⊢
@@ -112,7 +112,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup 
 /-- auxilary isomorphism showing that compose two functors gives `id` on objects. -/
 @[simps]
 def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M] :
-    MatrixModCat.toModuleCat.toModuleCatObj R ι (ι → M) ≃ₗ[R] M where
+    MatrixModCat.toModuleCatObj R ι (ι → M) ≃ₗ[R] M where
   toFun x := ∑ i : ι, x.1 i
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
