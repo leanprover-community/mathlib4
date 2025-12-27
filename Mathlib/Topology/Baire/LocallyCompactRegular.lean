@@ -5,9 +5,7 @@ Authors: Damien Thomine
 -/
 module
 
-public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Sets.Compacts
-public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Second Baire theorem
