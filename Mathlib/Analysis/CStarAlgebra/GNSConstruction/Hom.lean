@@ -246,7 +246,7 @@ lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
     | ih c
   simp only [π_completion_onQuot_equiv, Completion.coe_inj]
   dsimp [constA_mul_Quot_toQuot]
-  simp_all only [A_mul_GNS_mult, Function.comp_apply]--, SeparationQuotient.mk_eq_mk]
+  simp_all only [A_mul_GNS_mult, Function.comp_apply]
   induction c using Quot.induction_on
   rename_i c
   simp only [quot_sepQuot, mk_to_mkCLM]
@@ -266,6 +266,102 @@ lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
     (((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))) :=
       out_comp_mk f ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))
   exact Inseparable.symm (out_comp_mk f ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c))))
+
+-- Other theorems up my sleeve
+#check Inseparable.mul
+#check Inseparable.add
+#check Inseparable.pow
+#check Inseparable.nsmul
+#check Inseparable.inv
+#check Inseparable.neg
+#check Inseparable.zpow
+#check Inseparable.zsmul
+#check Inseparable.const_smul
+#check Inseparable.smul
+
+lemma map_add (x y : A) : f.π_ofA (x + y) = f.π_ofA x + f.π_ofA y := by
+  ext c
+  simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, add_apply]
+  induction c using Completion.induction_on with
+    | hp => exact (isClosed_eq (by continuity) (by continuity))
+    | ih c
+  simp only [π_completion_onQuot_equiv]
+  dsimp [constA_mul_Quot_toQuot]
+  --rw [mk_to_mkCLM, mk_to_mkCLM, mk_to_mkCLM]
+  simp_all only [_root_.map_add, add_apply, mk_add]
+  rw [mk_to_mkCLM, mk_to_mkCLM]
+  norm_cast
+
+lemma commutes (r : ℂ) : f.π_ofA ((algebraMap ℂ A) r) =
+    (algebraMap ℂ (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace)) r := by
+  simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_ofA]
+  congr
+  ext c
+  simp only [constA_mul_Quot_toQuot, map_smul, coe_smul', coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
+    Function.comp_apply, Pi.smul_apply, mkCLM_apply]
+  rw [mk_to_mkCLM]
+  simp only [A_mul_GNS, const_mul_GNS, LinearMap.coe_mk, AddHom.coe_mk,
+    LinearMap.mkContinuous_apply, mkCLM_apply]
+  congr
+  rw [mk_to_mkCLM]
+  dsimp [const_mul_GNS_nonCont]
+  rw [mk_to_mkCLM]
+  simp_all only [one_mul, toOf, mkCLM_apply, mk_outCLM]
+
+lemma adj_star (a : A) : (f.π_ofA (star a)) = adjoint (f.π_ofA a) := by
+
+  rw [← ContinuousLinearMap.star_eq_adjoint]
+  ext c
+  induction c using Completion.induction_on with
+    | hp => exact (isClosed_eq (by continuity) (by continuity))
+    | ih c
+  induction c using Quot.induction_on
+  rename_i c
+  simp only [quot_sepQuot]
+  dsimp [π_ofA, constA_mul_Quot_toQuot]
+
+
+  sorry
+
+
+lemma contA_mul_Quot_of_mk_to_mk (x : f.GNS) :
+  ((f.constA_mul_Quot_toQuot a) (SeparationQuotient.mk x))
+    = SeparationQuotient.mk ((f.A_mul_GNS a) x) := by
+  dsimp [constA_mul_Quot_toQuot]
+  simp_all only [mk_eq_mk]
+  rw [mk_to_mkCLM]
+  have := f.out_comp_mk x
+  exact Inseparable.map (f := f.A_mul_GNS a) this (by continuity)
+
+lemma map_star (a : A) : f.π_ofA (star a) = star (f.π_ofA a) := by
+  refine (eq_adjoint_iff (π_ofA f (star a)) (π_ofA f a)).mpr ?_
+  intro x y
+  /-have : inner ℂ ((f.π_ofA (star a)) x) y = inner ℂ x ((f.π_ofA (star a)).adjoint y) := by
+    exact Eq.symm (adjoint_inner_right (f.π_ofA (star a)) x y)
+  rw [this]-/
+  induction x using Completion.induction_on with
+  | hp => exact (isClosed_eq (by continuity)
+    (Continuous.inner (continuous_id) (continuous_const)))
+  | ih x
+  induction x using Quot.induction_on
+  rename_i x
+  induction y using Completion.induction_on with
+  | hp => exact (isClosed_eq (Continuous.inner (continuous_const) (continuous_id))
+      (Continuous.inner (by continuity) (by continuity)))
+  | ih y
+  induction y using Quot.induction_on
+  rename_i y
+  simp only [quot_sepQuot]
+  simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, π_completion_onQuot_equiv, inner_coe]
+  -- I think I should be able to remove the quot bit from everything here to bring it to a version
+  -- strictly in f.GNS
+  rw [contA_mul_Quot_of_mk_to_mk, contA_mul_Quot_of_mk_to_mk]
+  simp_all only [inner_mk_mk]
+  dsimp [A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
+  rw [GNS_inner_def, GNS_inner_def]
+  simp_all only [ofTo, star_mul, star_star]
+  congr 1
+  group
 
 noncomputable
 def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
@@ -289,14 +385,57 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     simp_all only [π_completion_onQuot_equiv]
     dsimp [constA_mul_Quot_toQuot, A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
     simp_all
-  map_add' x y := sorry
-  commutes' r := sorry
-  map_star' a := sorry
+  map_add' := f.map_add
+  commutes' := f.commutes
+  map_star' := f.map_star
 
 
 end PositiveLinearMap
 
 /-
+ext c
+  simp [π_ofA]
+
+  refine (eq_adjoint_iff (π_ofA f (star a)) (π_ofA f a)).mpr ?_
+  intro x y
+  induction x using Completion.induction_on with
+  | hp => exact (isClosed_eq (by continuity)
+    (Continuous.inner (continuous_id) (continuous_const)))
+  | ih x
+  induction y using Completion.induction_on with
+  | hp => exact (isClosed_eq (Continuous.inner (continuous_const) (continuous_id))
+      (Continuous.inner (by continuity) (by continuity)))
+  | ih y
+  simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, π_completion_onQuot_equiv, inner_coe]
+  simp only [constA_mul_Quot_toQuot, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+    mkCLM_apply]
+  rw [mk_to_mkCLM, mk_to_mkCLM]
+
+
+  -- move the function out from between and then move the conjugation outside the inner product
+  dsimp [A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
+  induction x using Quot.induction_on
+  rename_i x
+  induction y using Quot.induction_on
+  rename_i y
+  simp only [quot_sepQuot, mkCLM_apply, inner_mk_mk]
+  --rw [← InnerProductSpace.conj_inner_symm]
+  rw [GNS_inner_def, GNS_inner_def]
+  simp_all only [ofTo, star_mul, star_star]
+  rw [mk_to_mkCLM, mk_to_mkCLM]
+  suffices
+    Inseparable (f (star (f.ofGNS ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) x))) * a * f.ofGNS y))
+    (f (star (f.ofGNS x) * (a * f.ofGNS ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) y))))) by
+    simp_all only [mkCLM_apply, inseparable_eq_eq]
+  suffices
+    Inseparable
+      ((star (f.ofGNS ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) x))) * a * f.ofGNS y))
+      ((star (f.ofGNS x) * (a * f.ofGNS ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) y))))) by
+    simp_all only [mkCLM_apply, inseparable_eq_eq]
+
+
+
+
 
 example (b : A) (c : f.GNS_Quotient) :
     ((f.A_mul_GNS b) ((SeparationQuotient.outCLM ℂ f.GNS) c)) =
