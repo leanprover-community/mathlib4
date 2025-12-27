@@ -29,24 +29,62 @@ We provide instances of `Height.AdmissibleAbsValues` for
 ### Instance for number fields
 -/
 
-section number_field
+namespace NumberField
 
-open NumberField Height
+open Height
+
+variable {K : Type*} [Field K] [NumberField K]
+
+variable (K) in
+/-- The infinite places of a number field `K` as a `Multiset` of absolute values on `K`,
+with multiplicity given by `InfinitePlace.mult`. -/
+noncomputable def multisetInfinitePlace : Multiset (AbsoluteValue K ℝ) :=
+  .bind (.univ : Finset (InfinitePlace K)).val fun v ↦ .replicate v.mult v.val
+
+@[simp]
+lemma mem_multisetInfinitePlace {v : AbsoluteValue K ℝ} :
+    v ∈ multisetInfinitePlace K ↔ IsInfinitePlace v := by
+  simp [multisetInfinitePlace, Multiset.mem_replicate, isInfinitePlace_iff, eq_comm (a := v)]
+
+lemma count_multisetInfinitePlace_eq_mult [DecidableEq (AbsoluteValue K ℝ)] (v : InfinitePlace K) :
+    (multisetInfinitePlace K).count v.val = v.mult := by
+  have : DecidableEq (InfinitePlace K) := Subtype.instDecidableEq
+  simpa only [multisetInfinitePlace, Multiset.count_bind, Finset.sum_map_val,
+    Multiset.count_replicate, ← Subtype.ext_iff] using Fintype.sum_ite_eq' v ..
+
+-- For the user-facing version, see `prod_archAbsVal_eq` below.
+variable (K) in
+private lemma prod_multisetInfinitePlace_eq {M : Type*} [CommMonoid M] {f : AbsoluteValue K ℝ → M} :
+    ((multisetInfinitePlace K).map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult := by
+  classical
+  rw [Finset.prod_multiset_map_count]
+  exact Finset.prod_bij' (fun w hw ↦ ⟨w, mem_multisetInfinitePlace.mp <| Multiset.mem_dedup.mp hw⟩)
+    (fun v _ ↦ v.val) (fun _ _ ↦ Finset.mem_univ _) (fun v _ ↦ by simp [v.isInfinitePlace])
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) fun w hw ↦ by rw [count_multisetInfinitePlace_eq_mult ⟨w, _⟩]
 
 noncomputable
-instance NumberField.instAdmissibleAbsValues {K : Type*} [Field K] [NumberField K] :
-    AdmissibleAbsValues K where
-  ArchAbsVal := InfinitePlace K
-  archAbsVal v := v.val
-  archAbsVal_fintype := inferInstance
-  weight := InfinitePlace.mult
-  weight_pos _ := InfinitePlace.mult_pos
-  NonarchAbsVal := FinitePlace K
-  nonarchAbsVal v := v.val
-  strong_triangle_ineq := FinitePlace.add_le
-  mulSupport_nonarchAbsVal_finite := FinitePlace.mulSupport_finite
-  product_formula := prod_abs_eq_one
+instance instAdmissibleAbsValues : AdmissibleAbsValues K where
+  archAbsVal := multisetInfinitePlace K
+  nonarchAbsVal := {v | IsFinitePlace v}
+  isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using hv⟩
+  mulSupport_finite := FinitePlace.mulSupport_finite
+  product_formula {x} hx := prod_multisetInfinitePlace_eq (M := ℝ) K ▸ prod_abs_eq_one hx
 
-end number_field
+lemma prod_archAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
+    (AdmissibleAbsValues.archAbsVal.map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult :=
+  prod_multisetInfinitePlace_eq K
+
+lemma prod_nonarchAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
+    (∏ᶠ v : AdmissibleAbsValues.nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
+  rfl
+
+/-- This is the familiar definition of the multiplicative height on a number field. -/
+lemma mulHeight₁_eq (x : K) :
+    mulHeight₁ x =
+      (∏ v : InfinitePlace K, max (v x) 1 ^ v.mult) * ∏ᶠ v : FinitePlace K, max (v x) 1 := by
+  simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight₁_eq,
+    prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ max (v x) 1]
+
+end NumberField
 
 end
