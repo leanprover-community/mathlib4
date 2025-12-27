@@ -1268,7 +1268,7 @@ theorem IsIdempotentElem.commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit 
 
 theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
     (hp : IsIdempotentElem p) : IsClosed (p.range : Set M) :=
-  LinearMap.IsIdempotentElem.range_eq_ker hp.toLinearMap ▸ isClosed_ker (1 - p)
+  LinearMap.IsIdempotentElem.range_eq_ker hp.toLinearMap ▸ isClosed_ker (.id R M - p)
 
 end ContinuousLinearMap
 
