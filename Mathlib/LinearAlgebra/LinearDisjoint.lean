@@ -198,14 +198,13 @@ namespace LinearDisjoint
 
 /-- Linear disjointness is preserved by injective algebra homomorphisms. -/
 theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
-    {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) (hf : Function.Injective f) :
-    (M.map f).LinearDisjoint (N.map f) := by
+    (f : S →ₐ[R] T) (hf : Function.Injective f) :
+    (M.map (f : S →ₗ[R] T)).LinearDisjoint (N.map (f : S →ₗ[R] T)) := by
   rw [linearDisjoint_iff] at H ⊢
-  have : _ ∘ₗ
-    (TensorProduct.congr (M.equivMapOfInjective f hf) (N.equivMapOfInjective f hf)).toLinearMap
-      = _ := M.mulMap_map_comp_eq N f
-  replace H : Function.Injective ((f : S →ₗ[R] T) ∘ₗ mulMap M N) := hf.comp H
-  simpa only [← this, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] using H
+  have := hf.comp H
+  rw [← coe_mulMap_comp_eq] at this
+  refine this.of_comp_right ?_
+  apply TensorProduct.map_surjective <;> exact LinearMap.submoduleMap_surjective _ _
 
 variable (M N)
 

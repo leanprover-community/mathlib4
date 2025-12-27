@@ -144,8 +144,8 @@ variable [IsFractionRing A K]
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
-    (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
-      traceDual A K (I.map (FractionRing.algEquiv B L)) := by
+    (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L).toLinearMap =
+      traceDual A K (I.map (FractionRing.algEquiv B L).toLinearMap) := by
   change Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
     traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
   rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]

@@ -315,8 +315,8 @@ variable (p) in
 `V` in `N` are perfectly complementary w.r.t. `p` if their dual annihilators are complementary,
 using `p` to identify `M` and `N` with dual spaces. -/
 structure IsPerfectCompl (U : Submodule R M) (V : Submodule R N) : Prop where
-  isCompl_left : IsCompl U (V.dualAnnihilator.map p.toPerfPair.symm)
-  isCompl_right : IsCompl V (U.dualAnnihilator.map p.flip.toPerfPair.symm)
+  isCompl_left : IsCompl U (V.dualAnnihilator.map (p.toPerfPair.symm : Dual R N →ₗ[R] M))
+  isCompl_right : IsCompl V (U.dualAnnihilator.map (p.flip.toPerfPair.symm : Dual R M →ₗ[R] N))
 
 namespace IsPerfectCompl
 variable {U : Submodule R M} {V : Submodule R N}
@@ -422,31 +422,38 @@ namespace Submodule
 
 open LinearEquiv
 
+omit [IsReflexive R M] in
 @[simp]
 lemma dualCoannihilator_map_linearEquiv_flip (p : Submodule R M) :
-    (p.map e.flip).dualCoannihilator = p.dualAnnihilator.map e.symm := by
-  ext; simp [LinearEquiv.symm_apply_eq, Submodule.mem_dualCoannihilator]
+    (p.map e.toLinearMap.flip).dualCoannihilator =
+      p.dualAnnihilator.map (e.symm : Dual R M →ₗ[R] N) := by
+  ext; simp
 
 @[simp]
 lemma map_dualAnnihilator_linearEquiv_flip_symm (p : Submodule R N) :
-    p.dualAnnihilator.map e.flip.symm = (p.map e).dualCoannihilator := by
+    p.dualAnnihilator.map (e.flip.symm : Dual R N →ₗ[R] M) =
+      (p.map (e : N →ₗ[R] Dual R M)).dualCoannihilator := by
   have : IsReflexive R N := e.isReflexive_of_equiv_dual_of_isReflexive
-  rw [← dualCoannihilator_map_linearEquiv_flip, flip_flip]
+  rw [← dualCoannihilator_map_linearEquiv_flip, ← LinearEquiv.coe_toLinearMap_flip, flip_flip]
 
 @[simp]
 lemma map_dualCoannihilator_linearEquiv_flip (p : Submodule R (Dual R M)) :
-    p.dualCoannihilator.map e.flip = (p.map e.symm).dualAnnihilator := by
+    p.dualCoannihilator.map e.toLinearMap.flip =
+      (p.map (e.symm : Dual R M →ₗ[R] N)).dualAnnihilator := by
   have : IsReflexive R N := e.isReflexive_of_equiv_dual_of_isReflexive
-  suffices (p.map e.symm).dualAnnihilator.map e.flip.symm =
-      (p.dualCoannihilator.map e.flip).map e.flip.symm by
-    exact (Submodule.map_injective_of_injective e.flip.symm.injective this).symm
-  erw [← dualCoannihilator_map_linearEquiv_flip, flip_flip, ← map_comp, ← map_comp]
+  suffices
+      (p.map (e.symm : Dual R M →ₗ[R] N)).dualAnnihilator.map (e.flip.symm : Dual R N →ₗ[R] M) =
+        (p.dualCoannihilator.map (e.flip : M →ₗ[R] Dual R N)).map (e.flip.symm : Dual R N →ₗ[R] M)
+    from (Submodule.map_injective_of_injective e.flip.symm.injective this).symm
+  rw [← dualCoannihilator_map_linearEquiv_flip, ← LinearEquiv.coe_toLinearMap_flip, flip_flip,
+    ← map_comp, ← map_comp]
   simp [-coe_toLinearMap_flip]
 
 @[simp]
 lemma dualAnnihilator_map_linearEquiv_flip_symm (p : Submodule R (Dual R N)) :
-    (p.map e.flip.symm).dualAnnihilator = p.dualCoannihilator.map e := by
+    (p.map (e.flip.symm : Dual R N →ₗ[R] M)).dualAnnihilator =
+      p.dualCoannihilator.map (e : N →ₗ[R] Dual R M) := by
   have : IsReflexive R N := e.isReflexive_of_equiv_dual_of_isReflexive
-  rw [← map_dualCoannihilator_linearEquiv_flip, flip_flip]
+  rw [← map_dualCoannihilator_linearEquiv_flip, ← LinearEquiv.coe_toLinearMap_flip, flip_flip]
 
 end Submodule

@@ -203,10 +203,10 @@ theorem mfderiv_injective {x : M} (hx : x ∈ e.source) : Function.Injective (mf
 theorem mfderiv_surjective {x : M} (hx : x ∈ e.source) : Function.Surjective (mfderiv I I' e x) :=
   (he.mfderiv hx).surjective
 
-theorem ker_mfderiv_eq_bot {x : M} (hx : x ∈ e.source) : LinearMap.ker (mfderiv I I' e x) = ⊥ :=
+theorem ker_mfderiv_eq_bot {x : M} (hx : x ∈ e.source) : (mfderiv I I' e x).ker = ⊥ :=
   (he.mfderiv hx).toLinearEquiv.ker
 
-theorem range_mfderiv_eq_top {x : M} (hx : x ∈ e.source) : LinearMap.range (mfderiv I I' e x) = ⊤ :=
+theorem range_mfderiv_eq_top {x : M} (hx : x ∈ e.source) : (mfderiv I I' e x).range = ⊤ :=
   (he.mfderiv hx).toLinearEquiv.range
 
 theorem range_mfderiv_eq_univ {x : M} (hx : x ∈ e.source) : range (mfderiv I I' e x) = univ :=
