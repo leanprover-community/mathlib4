@@ -165,9 +165,7 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     simp_rw [← this x, ← comp_assoc, ← adjoint_comp]
     simp
   replace this (x : V →L[𝕜] V) : Commute x (adjoint y.toContinuousLinearMap ∘L y) := by
-    specialize this (adjoint x)
-    simp only [adjoint_adjoint] at this
-    simp_rw [Commute, SemiconjBy, mul_def, ← comp_assoc, ← this, comp_assoc]
+    simp_rw [commute_iff_eq, mul_def, ← comp_assoc, ← (adjoint_adjoint x ▸ this _), comp_assoc]
     simp
   replace this :
       (adjoint y.toContinuousLinearMap ∘L y) ∈ Subalgebra.centralizer 𝕜 (⊤ : Set (V →L[𝕜] V)) :=
@@ -193,16 +191,12 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   replace this2 := RCLike.ofReal_pos.mp <| thisα ▸ (lt_of_le_of_ne' this2 thisα')
   have thisU : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =
       α • ContinuousLinearMap.id 𝕜 _ := by
-    have := by simpa [one_def, comp_assoc] using congr($hα ∘L y.symm.toContinuousLinearMap)
-    ext
-    apply_fun y.symm using y.symm.injective
-    simp [← this]
+    ext x
+    simpa using congr(y (($hα ∘L y.symm.toContinuousLinearMap) x)).symm
   set αa := (((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜)
   have αa2 : αa * αa = α⁻¹ := by
-    simp_rw [αa, ← RCLike.ofReal_mul, ← Real.rpow_add this2]
     rw [thisα]
-    norm_num
-    simp [Real.rpow_neg_one]
+    norm_num [αa, ← RCLike.ofReal_mul, ← Real.rpow_add this2, Real.rpow_neg_one]
   set U := auxIsometry y thisα' αa2 hα.symm thisU (by simp [αa])
   use U
   have la : αa⁻¹ * αa = 1 := by
