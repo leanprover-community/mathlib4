@@ -577,8 +577,8 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
   exact eq_comm
 
 theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
-    IsAdjointPair (LinearMap.flip (innerₛₗ 𝕜 (E := E)))
-      (LinearMap.flip (innerₛₗ 𝕜 (E := F))) A A.adjoint := by
+    IsAdjointPair (innerₛₗ 𝕜 (E := E)).flip
+      (innerₛₗ 𝕜 (E := F)).flip A A.adjoint := by
   intro x y
   simp [adjoint_inner_left]
 
