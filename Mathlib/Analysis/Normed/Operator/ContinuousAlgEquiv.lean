@@ -41,11 +41,8 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   obtain ⟨v, huv⟩ := SeparatingDual.exists_ne_zero (R := 𝕜) hu
   obtain ⟨z, hz⟩ : ∃ z : W, ¬ f (smulRight v u) z = (0 : W →L[𝕜] W) z := by
     rw [← not_forall, ← ContinuousLinearMap.ext_iff, map_eq_zero_iff, ContinuousLinearMap.ext_iff]
-    exact not_forall.mpr ⟨u, (by grind : v u ≠ 0).isUnit.smul_eq_zero.not.mpr hu⟩
-  obtain ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
+    exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
-  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
-    smulRightL 𝕜 _ _ d
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply, ← map_mul]
@@ -60,13 +57,13 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       simp [← this, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
-  have h_T'_eq_symm : T'.toLinearMap = Tₗ.symm := by
-    ext x
-    apply Tₗ.injective
-    simp [T', this, hT, hd, Tₗ]
+  obtain ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
+  set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
+    smulRightL 𝕜 _ _ d
   set TL : V ≃L[𝕜] W := { Tₗ with
     continuous_toFun := T.continuous
     continuous_invFun := by
       change Continuous Tₗ.symm.toLinearMap
-      exact h_T'_eq_symm ▸ T'.continuous }
+      suffices T'.toLinearMap = Tₗ.symm from this ▸ T'.continuous
+      simp [LinearMap.ext_iff, ← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ] }
   exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
