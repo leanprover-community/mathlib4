@@ -143,7 +143,7 @@ open ComplexOrder
 /-- The ⋆-algebra equivalence version of
 `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
 
-TODO: remove the hypothesis `Continuous f`, as star-algebra equivalences between endormophisms are
+TODO: remove the hypothesis `Continuous f`, as star-algebra equivalences between endomorphisms are
 automatically continuous. -/
 public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
