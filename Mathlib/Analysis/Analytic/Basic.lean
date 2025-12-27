@@ -479,7 +479,7 @@ lemma AnalyticOn.congr {f g : E → F} {s : Set E}
   fun x m ↦ (hf x m).congr hs (hs m)
 
 lemma analyticOn_congr (hs : EqOn f g s) : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s :=
-  ⟨fun h => h.congr hs.symm, fun h => h.congr hs⟩
+  ⟨fun h ↦ h.congr hs.symm, fun h ↦ h.congr hs⟩
 
 theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 g x :=
   let ⟨_, hpf⟩ := hf
