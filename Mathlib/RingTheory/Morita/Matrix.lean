@@ -34,7 +34,7 @@ open CategoryTheory Matrix.Module
 /-- The functor from `Mod-R` to `Mod-Mₙ(R)` induced by `LinearMap.mapModule` and
   `Matrix.matrixModule`. -/
 @[simps]
-public def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
+def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
   obj M := ModuleCat.of (Matrix ι ι R) (ι → M)
   map f := ModuleCat.ofHom <| f.hom.mapMatrixModule ι
   map_id _ := ModuleCat.hom_ext <| LinearMap.mapMatrixModule_id
