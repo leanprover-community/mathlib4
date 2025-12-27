@@ -248,9 +248,7 @@ lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : S
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
     (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
-  induction p with
-  | nil => exact (hp Walk.Nil.nil).elim
-  | _ => grind [Walk.nil_iff_support_eq, Walk.support_eq_cons, adj_comm]
+  induction p with grind [Walk.Nil.nil, Walk.nil_iff_support_eq, Walk.support_eq_cons, adj_comm]
 
 lemma mem_support_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil)
     {w : V} (hw : w ∈ p.support) : w ∈ G.support := by
