@@ -62,7 +62,7 @@ theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one (hR : ¬IsField R) :
 
 /-- In case `R` is a Bézout domain, given a polynomial `p` in `R[X]`, `p` is primitive if and only
 if the `v`-adic Gauss norms of `p` are equal to 1 for all `v`. -/
-theorem isPrimitive_iff_forall_gaussNorm_eq_one [Nontrivial R] [IsBezout R] (hR : ¬IsField R) :
+theorem isPrimitive_iff_forall_gaussNorm_eq_one [IsBezout R] (hR : ¬IsField R) :
     p.IsPrimitive ↔ ∀ v : HeightOneSpectrum R, p.gaussNorm (v.intAdicAbv hb) 1 = 1 := by
   rw [isPrimitive_iff_contentIdeal_eq_top, p.contentIdeal_eq_top_iff_forall_gaussNorm_eq_one hb hR]
 
