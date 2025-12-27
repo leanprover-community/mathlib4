@@ -47,14 +47,9 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
     smulRightL 𝕜 _ _ d
   have hT x : T x = f (smulRight v x) z := rfl
-  have hT' x : T' x = f.symm (smulRight d x) u := rfl
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply, ← map_mul]
     congr; ext; simp
-  have this' A x : T' (A x) = f.symm A (T' x) := by
-    simp only [hT', ← mul_apply, ← map_mul]
-    congr; ext; simp
-  have hTT' : T ∘L T' = .id _ _ := by ext; simp [T', this, hT, hd]
   have surj : Function.Surjective T := fun w ↦
     have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
     ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
@@ -68,7 +63,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   have h_T'_eq_symm : T'.toLinearMap = Tₗ.symm := by
     ext x
     apply Tₗ.injective
-    simpa using congr($hTT' x)
+    simp [T', this, hT, hd, Tₗ]
   set TL : V ≃L[𝕜] W := { Tₗ with
     continuous_toFun := T.continuous
     continuous_invFun := by
