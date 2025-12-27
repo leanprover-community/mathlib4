@@ -9,6 +9,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.CategoryTheory.EffectiveEpi.Coequalizer
+public import Mathlib.CategoryTheory.Presentable.Finite
+public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Limits
 
 /-!
@@ -25,22 +27,16 @@ universe u
 
 open CategoryTheory Simplicial Limits Opposite
 
-
 namespace SSet
-
-attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 namespace Finite
 
 instance (n : SimplexCategory) :
-    IsCardinalPresentable (stdSimplex.{u}.obj n) Cardinal.aleph0.{u} where
-  preservesColimitOfShape J _ _ := by
-    let e : coyoneda.obj (op (stdSimplex.{u}.obj n)) ≅ (evaluation _ _).obj (op n) :=
-      NatIso.ofComponents (fun X ↦ yonedaEquiv.toIso)
-    apply preservesColimitsOfShape_of_natIso e.symm
+    IsFinitelyPresentable.{u} (stdSimplex.{u}.obj n) :=
+  inferInstanceAs (IsFinitelyPresentable.{u} (uliftYoneda.obj n))
 
 lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
-    ∃ (Y : SSet.{u}) (_ : Y.Finite ) (_ : IsCardinalPresentable Y Cardinal.aleph0.{u})
+    ∃ (Y : SSet.{u}) (_ : Y.Finite ) (_ : IsFinitelyPresentable.{u} Y)
       (p : Y ⟶ X), Epi p := by
   refine ⟨∐ (fun (s : X.N) ↦ Δ[s.dim]), inferInstance, ?_,
     Sigma.desc (fun s ↦ yonedaEquiv.symm s.simplex), ?_⟩
@@ -54,9 +50,10 @@ lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
         colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, ← N.iSup_subcomplex_eq_top,
         Subcomplex.range_eq_ofSimplex, Equiv.apply_symm_apply]
 
-instance (X : SSet.{u}) [X.Finite] : IsCardinalPresentable X (Cardinal.aleph0.{u}) := by
+instance (X : SSet.{u}) [X.Finite] : IsFinitelyPresentable.{u} X := by
   obtain ⟨Y, _, _, p, _⟩ := exists_epi_from_isCardinalPresentable X
   obtain ⟨Z, _, _, q, _⟩ := exists_epi_from_isCardinalPresentable (pullback p p)
+  have := Cardinal.fact_isRegular_aleph0.{u}
   have := IsRegularEpiCategory.regularEpiOfEpi p
   apply (config := { allowSynthFailures := true })
     isCardinalPresentable_of_isColimit' _
