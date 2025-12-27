@@ -59,8 +59,7 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpac
   exact hK_nonempty.mono hK_subset
 
 /-- A Gδ subset of a locally compact R₁ space is Baire. -/
-theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) :
-    BaireSpace s := by
+theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
   have : BaireSpace (closure s) := by
     convert BaireSpace.of_t2Space_locallyCompactSpace using 1
     · infer_instance
