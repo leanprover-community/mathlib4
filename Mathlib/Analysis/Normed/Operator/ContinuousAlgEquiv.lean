@@ -27,7 +27,7 @@ open ContinuousLinearMap ContinuousLinearEquiv
 
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
 public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv {𝕜 V W : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup V] [NormedAddCommGroup W]
+    [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
     [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W]
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
     ∃ U : V ≃L[𝕜] W, f = U.conjContinuousAlgEquiv := by
