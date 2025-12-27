@@ -43,10 +43,8 @@ NB. In mathematics, these linear maps are only called “transvections” when `
 See also `Module.preReflection` for a similar definition, up to a sign. -/
 def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
   toFun x := x + f x • v
-  map_add' x y := by
-    simp only [map_add, add_add_add_comm]
-    simp [add_assoc, add_smul]
-  map_smul' r x := by simp only [map_smul, RingHom.id_apply, smul_eq_mul, smul_add, mul_smul]
+  map_add' x y := by simp [add_add_add_comm, add_smul]
+  map_smul' r x := by simp [smul_eq_mul, smul_add, mul_smul]
 
 namespace transvection
 
@@ -99,8 +97,7 @@ theorem eq_id_of_finrank_le_one
     let i : Fin (finrank R V) := ⟨0, by simp [h]⟩
     suffices ∀ x, x = b.repr x i • (b i) by
       rw [this v, map_smul, smul_eq_mul, mul_comm] at hfv
-      rw [this x, this v, map_smul, smul_eq_mul, ← mul_smul,
-        mul_assoc, hfv, mul_zero, zero_smul]
+      rw [this x, this v, map_smul, smul_eq_mul, ← mul_smul, mul_assoc, hfv, mul_zero, zero_smul]
     intro x
     have : x = ∑ i, b.repr x i • b i := (b.sum_equivFun x).symm
     rwa [Finset.sum_eq_single_of_mem i (Finset.mem_univ i) (by grind)] at this
