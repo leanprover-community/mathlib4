@@ -49,7 +49,7 @@ def arclengthParamTransformAux (t₀ : ℝ) : ℝ → ℝ := fun t ↦ ∫ τ in
 variable (I : Set ℝ) [I.OrdConnected]
 
 /-- This is parameter transformation used to construct the arc-length reparametrization of
-parametrized curve.-/
+parametrized curve. -/
 def arclengthParamTransform (t₀ : ℝ) :=
   letI ψ := arclengthParamTransformAux c t₀
   ψ.invFunOn I
@@ -114,8 +114,8 @@ lemma revParamTrasform_has_pos_deriv_aux (once_diff : 1 ≤ r) (hc : ContDiffOn 
     ∀ t ∈ I, 0 < derivWithin ψ I t := by
   intro t ht
   rw [(revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).derivWithin]
-  apply norm_pos_iff.mpr (regular t ht)
-  apply hI.uniqueDiffWithinAt ht
+  · apply norm_pos_iff.mpr (regular t ht)
+  · apply hI.uniqueDiffWithinAt ht
 
 /-- Auxilary lemma - ψ is injective. -/
 lemma revParamTransform_injOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
