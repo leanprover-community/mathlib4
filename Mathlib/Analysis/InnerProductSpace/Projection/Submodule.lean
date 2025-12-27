@@ -208,7 +208,7 @@ theorem coe_orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjecti
 open Submodule in
 theorem coe_starProjection_eq_isComplProjection [K.HasOrthogonalProjection] :
     K.starProjection.toLinearMap = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection := by
-  simp [starProjection, orthogonalProjection_coe_eq_linearProjOfIsCompl, IsCompl.projection]
+  simp [starProjection, coe_orthogonalProjection_eq_linearProjOfIsCompl, IsCompl.projection]
 
 @[deprecated (since := "2025-12-26")] alias starProjection_coe_eq_isCompl_projection :=
   coe_starProjection_eq_isComplProjection
