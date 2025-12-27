@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Michael Novak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Novak.
+Authors: Michael Novak
 -/
 module
 
@@ -44,17 +44,17 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (c : ℝ → E)
 
 /-- Auxiliary definition, this is the reversed (inverse) parameter transformation used for
 constructing the arclength reparametrization of parametrized curve. -/
-def arclengthParamTransformAux (t₀ : ℝ): ℝ → ℝ := fun t ↦ ∫ τ in t₀..t, ‖deriv c τ‖
+def arclengthParamTransformAux (t₀ : ℝ) : ℝ → ℝ := fun t ↦ ∫ τ in t₀..t, ‖deriv c τ‖
 
 variable (I : Set ℝ) [I.OrdConnected]
 
-/--This is parameter transformation used to construct the arc-length reparametrization of
+/-- This is parameter transformation used to construct the arc-length reparametrization of
 parametrized curve.-/
 def arclengthParamTransform (t₀ : ℝ) :=
   letI ψ := arclengthParamTransformAux c t₀
   ψ.invFunOn I
 
-/--Unit speed / arclength reparametrization of a parametrized curve. -/
+/-- Unit speed / arclength reparametrization of a parametrized curve. -/
 def arclengthReparam (t₀ : ℝ) : ℝ → E :=
   c ∘ (arclengthParamTransform c I t₀)
 
@@ -75,12 +75,12 @@ lemma revParamTransform_deriv_eq_aux {t : ℝ} (ht : t ∈ I) (once_diff : 1 ≤
   exact integralInterval.hasDerivWithinAt_of_continuousOn_interval
     (speed_continuousOn c I hI hc once_diff) ht₀ ht
 
-/--Auxilary lemma - ψ is continuous. -/
+/ --Auxilary lemma - ψ is continuous. -/
 lemma revParamTransform_continuousOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContinuousOn ψ I :=
   fun t ↦ fun ht ↦ (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).continuousWithinAt
 
-/--Auxilary ψ is continuousely differentiable on I. -/
+/ --Auxilary ψ is continuousely differentiable on I. -/
 lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContDiffOn ℝ 1 ψ I := by
   apply (contDiffOn_iff_continuousOn_differentiableOn_deriv hI.uniqueDiffOn).mpr
@@ -110,7 +110,7 @@ lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I
 
 /-- Auxilary lemma - ψ has positive derivitive. -/
 lemma revParamTrasform_has_pos_deriv_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
-    (regular : ∀ t ∈ I, deriv c t ≠ 0) (hI : IsOpen I) (ht₀ : t₀ ∈ I):
+    (regular : ∀ t ∈ I, deriv c t ≠ 0) (hI : IsOpen I) (ht₀ : t₀ ∈ I) : 
     ∀ t ∈ I, 0 < derivWithin ψ I t := by
   intro t ht
   rw [(revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).derivWithin]
@@ -167,9 +167,9 @@ lemma ψ_leftInvOn_arclengthParamTransform_aux :
 --Auxilary definition, so we don't have to type the full long expression everytime
 local notation "φ" => arclengthParamTransform c I t₀
 
-/--Auxilary lemma that gives us the derivative of the parameter transformation -/
+/-- Auxilary lemma that gives us the derivative of the parameter transformation -/
 lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_diff : 1 ≤ r)
-    (ht₀ : t₀ ∈ I) (hc : ContDiffOn ℝ r c I) (hI : IsOpen I)  (regular : ∀ t ∈ I, deriv c t ≠ 0) :
+    (ht₀ : t₀ ∈ I) (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) (regular : ∀ t ∈ I, deriv c t ≠ 0) :
     HasStrictDerivAt φ ‖deriv c (φ s)‖⁻¹ s := by
   have hφmT := (bijOn_arclengthParamTransform_aux c I once_diff hc regular ht₀ hI).mapsTo
   have hφsI : φ s ∈ I := hφmT hs
