@@ -84,6 +84,7 @@ def const_mul_GNS_nonCont : f.GNS →ₗ[ℂ] f.GNS where
   map_add' x y := by simp [map_add]
   map_smul' c x := by simp_all
 
+-- maybe I should bound it using the unit ball method instead. Re-work later if possible
 noncomputable
 def const_mul_GNS : f.GNS →L[ℂ] f.GNS := by
   refine LinearMap.mkContinuous (f.const_mul_GNS_nonCont a) (‖a‖) ?_
@@ -140,6 +141,10 @@ def A_mul_GNS : A →ₗ[ℂ] f.GNS →L[ℂ] f.GNS where
     rw [← map_smul]
     simp
 
+@[continuity]
+lemma A_mul_GNS_cont (a : A) : Continuous (f.A_mul_GNS a) := by
+  exact ContinuousLinearMap.continuous (f.A_mul_GNS a)
+
 noncomputable
 def constA_mul_Quot_toQuot : f.GNS_Quotient →L[ℂ] f.GNS_Quotient where
   toFun := (SeparationQuotient.mkCLM (M := f.GNS) (R := ℂ)) ∘ (f.A_mul_GNS a) ∘
@@ -178,6 +183,42 @@ def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace where
 
 variable [StarOrderedRing A]
 
+@[simp]
+lemma A_mul_GNS_mult (a b : A) : f.A_mul_GNS (a * b) = f.A_mul_GNS (a) ∘ f.A_mul_GNS (b) := by
+  ext c
+  simp only [Function.comp_apply]
+  dsimp [A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
+  simp_all only [ofTo, EmbeddingLike.apply_eq_iff_eq]
+  rw [mul_assoc]
+
+example (b : A) (c : f.GNS) : ((f.constA_mul_Quot_toQuot b) (SeparationQuotient.mk c)) =
+    SeparationQuotient.mk ((f.A_mul_GNS b) c) := by
+  dsimp [constA_mul_Quot_toQuot]
+  sorry
+
+lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
+  ext c
+  simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mul,
+    Function.comp_apply]
+  induction c using Completion.induction_on with
+    | hp => exact (isClosed_eq (by continuity)
+          (ContinuousLinearMap.continuous ((f.π_ofA a).comp (f.π_ofA b))))
+    | ih c
+  -- I think this might be the inductin principle I need
+  simp only [π_completion_onQuot_equiv, Completion.coe_inj]
+  dsimp [constA_mul_Quot_toQuot]
+  simp_all only [A_mul_GNS_mult, Function.comp_apply]
+  #check SeparationQuotient.forall
+  --apply SeparationQuotient.forall.mpr
+  --apply SeparationQuotient.exists.mpr
+  simp
+    --set out := (SeparationQuotient.outCLM ℂ f.GNS)
+  #check SeparationQuotient.exists
+  #check SeparationQuotient.mkCLM_apply
+  -- may need to use
+  #check Inseparable.map_of_continuousAt
+  sorry
+
 noncomputable
 def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
   toFun := f.π_ofA
@@ -190,16 +231,7 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     simp_all only [π_completion_onQuot_equiv, Completion.coe_inj]
     dsimp [constA_mul_Quot_toQuot, A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
     simp_all
-  map_mul' a b := by
-    ext c
-    induction c using Completion.induction_on with
-    | hp => exact (isClosed_eq (by continuity)
-          (ContinuousLinearMap.continuous ((f.π_ofA a).comp (f.π_ofA b))))
-    | ih c
-    simp [π_ofA]
-    dsimp [constA_mul_Quot_toQuot, A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
-    congr 2
-    sorry
+  map_mul' := map_mul
   map_zero' := by
     ext b
     dsimp [π_ofA]
@@ -209,27 +241,73 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     simp_all only [π_completion_onQuot_equiv]
     dsimp [constA_mul_Quot_toQuot, A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
     simp_all
-  map_add' x y := by
-    ext c
-    rw [add_apply]
-    induction c using Completion.induction_on with
-    | hp => exact (isClosed_eq (by continuity) (by continuity))
-    | ih c
-    simp [π_ofA, constA_mul_Quot_toQuot, A_mul_GNS, const_mul_GNS]
-    sorry
-  commutes' r := by sorry
-  map_star' a := by
-    refine (eq_adjoint_iff (f.π_ofA (star a)) (f.π_ofA a)).mpr ?_
-    intro x y
-    induction x using Completion.induction_on with
-    | hp => exact (isClosed_eq (by continuity)
-      (Continuous.inner (continuous_id) (continuous_const)))
-    | ih x
-    induction y using Completion.induction_on with
-    | hp => exact (isClosed_eq (Continuous.inner (continuous_const) (continuous_id))
-        (Continuous.inner (by continuity) (by continuity)))
-    | ih y
-    sorry
+  map_add' x y := sorry
+  commutes' r := sorry
+  map_star' a := sorry
 
 
 end PositiveLinearMap
+
+/-
+
+example (b : A) (c : f.GNS_Quotient) :
+    ((f.A_mul_GNS b) ((SeparationQuotient.outCLM ℂ f.GNS) c)) =
+    ((SeparationQuotient.outCLM ℂ f.GNS) ((f.A_mul_GNS b) c)) := by
+
+  sorry
+
+example (c : f.GNS_Quotient) (b : A) : ((f.A_mul_GNS b) ((SeparationQuotient.outCLM ℂ f.GNS) c)) =
+    (SeparationQuotient.outCLM ℂ f.GNS) ((f.constA_mul_Quot_toQuot b) c) := by
+  dsimp [constA_mul_Quot_toQuot]
+  dsimp [SeparationQuotient.outCLM]
+  dsimp [SeparationQuotient.mk]
+
+
+lemma constA_mul_Quot_toQuot_mult (a b : A) :
+  f.constA_mul_Quot_toQuot (a * b) = f.constA_mul_Quot_toQuot (a) ∘ f.constA_mul_Quot_toQuot (b) := by
+  ext c
+  dsimp [constA_mul_Quot_toQuot]
+  rw [A_mul_GNS_mult]
+  simp_all
+  congr 2
+
+  simp only [Function.comp_apply]
+  dsimp [constA_mul_Quot_toQuot]
+  simp_all only [A_mul_GNS_mult, Function.comp_apply, SeparationQuotient.mk_eq_mk]
+  set pt := ((SeparationQuotient.outCLM ℂ f.GNS) c)
+  set result := (f.A_mul_GNS b) pt
+  suffices Inseparable
+    result (((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mk result))) by
+    refine Inseparable.map_of_continuousAt this ?_ ?_
+    · exact map_continuousAt (f.A_mul_GNS a) result
+    exact
+      map_continuousAt (f.A_mul_GNS a)
+        ((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mk result))
+  --by_contra
+  dsimp [Inseparable]
+
+
+
+
+  /-  have result_self_insep : Inseparable
+    (((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mk result)))
+    (((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mk result))) := by exact SeparationQuotient.mk_eq_mk.mp rfl
+  #check SeparationQuotient.mkCLM (M := f.GNS) (R := ℂ)
+  have : ContinuousAt (⇑(SeparationQuotient.mkCLM ℂ f.GNS)) (((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mk result))) := by
+    exact map_continuousAt (SeparationQuotient.mkCLM ℂ f.GNS) (((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mk result)))
+  have := Inseparable.map_of_continuousAt result_self_insep (f := SeparationQuotient.mkCLM (M := f.GNS) (R := ℂ))
+    this this
+  nth_rw 1 [SeparationQuotient.mkCLM_apply, SeparationQuotient.mk_outCLM] at this
+  rw [SeparationQuotient.mkCLM_apply] at this
+  -- something something continuity at this to get goal
+  -/
+
+
+
+  -- maybe apply mk to both sides?
+
+
+
+
+  sorry
+-/
