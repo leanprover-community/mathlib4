@@ -47,9 +47,8 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply, ← map_mul]
     congr; ext; simp
-  have surj : Function.Surjective T := fun w ↦
-    have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
-    ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
+  have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
+  have surj : Function.Surjective T := fun w ↦ ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRight v x = smulRight v y := by
       apply f.injective <| ContinuousLinearMap.ext fun z ↦ ?_
@@ -57,7 +56,6 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       simp [← this, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
-  obtain ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
   set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
     smulRightL 𝕜 _ _ d
   set TL : V ≃L[𝕜] W := { Tₗ with
