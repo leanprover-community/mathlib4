@@ -163,7 +163,7 @@ lemma ψ_leftInvOn_arclengthParamTransform_aux :
   apply Function.invFunOn_eq
   exact (Set.mem_image ψ I s).mp hs
 
---Auxilary definition, so we don't have to type the full long expression everytime
+--Auxilary definition, so we don't have to type the full long expression every time
 local notation "φ" => arclengthParamTransform c I t₀
 
 /-- Auxilary lemma that gives us the derivative of the parameter transformation -/
