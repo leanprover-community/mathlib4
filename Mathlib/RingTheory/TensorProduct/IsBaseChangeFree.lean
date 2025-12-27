@@ -26,7 +26,6 @@ variable {R : Type*} [CommSemiring R]
     {V : Type*} [AddCommMonoid V] [Module R V]
     {W : Type*} [AddCommMonoid W] [Module R W] [Module S W] [IsScalarTower R S W]
     {ι : Type*}
---    {ι : Type*} [DecidableEq ι]
     {ε : V →ₗ[R] W}
 
 variable (b : Module.Basis ι R V) (ibc : IsBaseChange S ε)
