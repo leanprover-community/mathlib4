@@ -84,8 +84,7 @@ def arclengthParamTransform (t₀ : ℝ) :=
 
 /--Unit speed / arclength reparametrization of a parametrized curve. -/
 def arclengthReparam (t₀ : ℝ) : ℝ → E :=
-  letI φ := arclengthParamTransform c I t₀
-  c ∘ φ
+  c ∘ (arclengthParamTransform c I t₀)
 
 variable {r : WithTop ℕ∞} {t₀ : ℝ}
 
