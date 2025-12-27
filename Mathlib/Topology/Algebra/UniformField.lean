@@ -77,8 +77,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   apply CompleteSpace.complete
   have : (fun (x : K) => (↑x⁻¹ : hat K)) =
       ((fun (y : K) => (↑y : hat K)) ∘ (fun (x : K) => (x⁻¹ : K))) := by
-    unfold Function.comp
-    simp
+    simp [Function.comp_def]
   rw [this, ← Filter.map_map]
   apply Cauchy.map _ (Completion.uniformContinuous_coe K)
   apply CompletableTopField.nice

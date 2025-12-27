@@ -1203,7 +1203,7 @@ lemma map_mk' (h : M →ₗ[R] N) (x) (s : S) :
   rfl
 
 @[simp]
-lemma map_id : map S f f (.id) = .id := by
+lemma map_id : map S f f .id = .id := by
   ext x
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   simp
