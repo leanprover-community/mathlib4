@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
+import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+
 /-!
 # Akra-Bazzi theorem: the sum transform
 
@@ -353,16 +355,16 @@ lemma differentiableAt_one_add_smoothingFn {x : ℝ} (hx : 1 < x) :
 lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + ε z) (Set.Ioi 1) :=
   fun _ hx => (differentiableAt_one_add_smoothingFn hx).differentiableWithinAt
 
-lemma deriv_smoothingFn {x : ℝ} (hx : 1 < x) : deriv ε x = -x⁻¹ / (log x ^ 2) := by
-  have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
-  change deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
-  rw [deriv_fun_div] <;> aesop
+lemma deriv_smoothingFn {x : ℝ} : deriv ε x = -x⁻¹ / (log x ^ 2) := by
+  unfold smoothingFn
+  simp_rw [one_div]
+  apply deriv_inv_log
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ :=
   calc deriv ε
     _ =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      rw [deriv_smoothingFn hx]
+      filter_upwards with x
+      rw [deriv_smoothingFn]
     _ = fun x => (-x * log x ^ 2)⁻¹ := by
       simp_rw [neg_div, div_eq_mul_inv, ← mul_inv, neg_inv, neg_mul]
     _ =o[atTop] fun x => (x * 1)⁻¹ := by
@@ -381,8 +383,8 @@ lemma eventually_deriv_one_sub_smoothingFn :
     _ =ᶠ[atTop] -(deriv ε) := by
       filter_upwards [eventually_gt_atTop 1] with x hx; rw [deriv_fun_sub] <;> aesop
     _ =ᶠ[atTop] fun x => x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      simp [deriv_smoothingFn hx, neg_div]
+      filter_upwards with x
+      simp [deriv_smoothingFn, neg_div]
 
 lemma eventually_deriv_one_add_smoothingFn :
     deriv (fun x => 1 + ε x) =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) :=
@@ -390,8 +392,8 @@ lemma eventually_deriv_one_add_smoothingFn :
     _ =ᶠ[atTop] deriv ε := by
       filter_upwards [eventually_gt_atTop 1] with x hx; rw [deriv_fun_add] <;> aesop
     _ =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      simp [deriv_smoothingFn hx]
+      filter_upwards with x
+      simp [deriv_smoothingFn]
 
 lemma isLittleO_deriv_one_sub_smoothingFn :
     deriv (fun x => 1 - ε x) =o[atTop] fun (x : ℝ) => x⁻¹ :=
