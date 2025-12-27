@@ -63,6 +63,7 @@ variable {r : WithTop ℕ∞} {t₀ : ℝ}
 -- Auxilary definition, so we don't have to type the full long expression every time
 local notation "ψ" => arclengthParamTransformAux c t₀
 
+omit [I.OrdConnected] in
 /-- The 'speed' function of a parametrized curve is continuous. -/
 lemma speed_continuousOn (hI : IsOpen I) (hc : ContDiffOn ℝ r c I) (once_diff : 1 ≤ r) :
     ContinuousOn (fun t ↦ ‖deriv c t‖) I :=
@@ -156,6 +157,7 @@ lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn �
   have h₁ := Set.BijOn.invOn_invFunOn h₀
   exact (Set.bijOn_comm h₁).mpr h₀
 
+omit [I.OrdConnected] in
 /-- Auxilary lemma ψ is left inverse of the arclength paramter trandformation on the image of ψ. -/
 lemma ψ_leftInvOn_arclengthParamTransform_aux :
   (ψ '' I).LeftInvOn ψ (arclengthParamTransform c I t₀) := by
