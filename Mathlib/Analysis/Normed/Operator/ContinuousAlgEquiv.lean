@@ -114,11 +114,6 @@ noncomputable abbrev auxContinuousLinearEquiv :
     (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
       α' • e.toContinuousLinearMap := rfl
 
-@[simp] theorem adjoint_auxContinuousLinearEquiv (hαa : starRingEnd 𝕜 α' = α') :
-    adjoint (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
-      α' • e.toContinuousLinearMap.adjoint := by
-  simp [hαa, MulActionSemiHomClass.map_smulₛₗ]
-
 /-- Construct an isometry linear equivalence from a continuous linear equivalence
 and that its adjoint is a real-scalar multiple of its inverse. -/
 noncomputable abbrev auxIsometry (hαa : starRingEnd 𝕜 α' = α') :
@@ -126,9 +121,9 @@ noncomputable abbrev auxIsometry (hαa : starRingEnd 𝕜 α' = α') :
   __ := auxContinuousLinearEquiv e hα hα2 he he' |>.toLinearEquiv
   norm_map' := by
     rw [ContinuousLinearEquiv.coe_toLinearEquiv, ← ContinuousLinearEquiv.coe_coe,
-      norm_map_iff_adjoint_comp_self, adjoint_auxContinuousLinearEquiv _ _ _ _ _ hαa,
-      coe_auxContinuousLinearEquiv]
-    simp only [comp_smulₛₗ, RingHom.id_apply, smul_comp, smul_smul, hα2]
+      norm_map_iff_adjoint_comp_self, coe_auxContinuousLinearEquiv,
+      MulActionSemiHomClass.map_smulₛₗ]
+    simp only [hαa, comp_smulₛₗ, RingHom.id_apply, smul_comp, smul_smul, hα2]
     simp [he, smul_smul, hα, one_def]
 
 @[simp] theorem coe_auxIsometry (hαa : starRingEnd 𝕜 α' = α') :
