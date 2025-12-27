@@ -246,7 +246,7 @@ instance mono_inl [Mono g] : Mono (Pushout.inl f g) :=
     (PushoutCocone.flipIsColimit (Pushout.isColimitCocone f g))
 
 instance [Mono f] : Mono (pushout.inr f g) :=
-  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g):)
+  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g) :)
 
 instance [Mono g] : Mono (pushout.inl f g) :=
   pushoutCocone_inr_mono_of_isColimit
