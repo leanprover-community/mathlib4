@@ -104,8 +104,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup 
     MatrixModCat.toModuleCat.toModuleCatObj R ι (ι → M) where
   __ := AddEquiv.refl _
   map_smul' r x := by
-    dsimp at x
-    dsimp
+    dsimp at x ⊢
     ext i
     change (Matrix.scalar ι r • x.1) i = r • x.1 i
     simp [Matrix.scalar_apply, Matrix.diagonal_apply]
