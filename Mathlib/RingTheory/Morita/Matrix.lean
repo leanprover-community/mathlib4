@@ -6,9 +6,9 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.LinearAlgebra.Matrix.Module
+
 
 /-!
 # Morita Equivalece between `R` and `Mₙ(R)`
