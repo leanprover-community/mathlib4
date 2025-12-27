@@ -181,8 +181,7 @@ lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_
     symm
     exact derivWithin_of_isOpen hI hφsI
   have hd₂ : deriv ψ (φ s) = ‖deriv c (φ s)‖ := by
-    rw [hd₁]
-    rw [(revParamTransform_deriv_eq_aux c I hφsI once_diff ht₀ hc hI).derivWithin]
+    rw [hd₁, (revParamTransform_deriv_eq_aux c I hφsI once_diff ht₀ hc hI).derivWithin]
     exact hI.uniqueDiffWithinAt hφsI
   rw [hd₂] at hsd
   have h := hsd.to_local_left_inverse
