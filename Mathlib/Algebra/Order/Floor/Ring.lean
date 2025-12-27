@@ -567,20 +567,20 @@ end fract
 
 section ceil
 
-@[simp]
+lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
+lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
+
+@[deprecated lt_ceil (since := "2025-12-26")]
 theorem add_one_le_ceil_iff : z + 1 ≤ ⌈a⌉ ↔ (z : R) < a := by rw [← lt_ceil, add_one_le_iff]
 
 @[simp]
 theorem one_le_ceil_iff : 1 ≤ ⌈a⌉ ↔ 0 < a := by
-  rw [← zero_add (1 : ℤ), add_one_le_ceil_iff, cast_zero]
+  simpa using le_ceil_iff (z := 1)
 
 @[bound]
 theorem ceil_le_floor_add_one (a : R) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
   rw [ceil_le, Int.cast_add, Int.cast_one]
   exact (lt_floor_add_one a).le
-
-lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
-lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
 
 theorem ceil_mono : Monotone (ceil : R → ℤ) :=
   gc_ceil_coe.monotone_l
@@ -700,7 +700,7 @@ lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉
   · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
     linarith [Int.cast_inj.mp this]
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
-    rw [Int.add_one_le_ceil_iff]
+    rw [Int.add_one_le_iff, lt_ceil]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
 
 @[deprecated (since := "2025-05-23")]
