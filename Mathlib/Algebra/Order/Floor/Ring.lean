@@ -122,12 +122,12 @@ section floor
 theorem floor_le_iff : ⌊a⌋ ≤ z ↔ a < z + 1 := by rw [← lt_add_one_iff, floor_lt]; norm_cast
 theorem lt_floor_iff : z < ⌊a⌋ ↔ z + 1 ≤ a := by rw [← add_one_le_iff, le_floor]; norm_cast
 
-@[simp]
+@[deprecated floor_lt (since := "2025-12-26")]
 theorem floor_le_sub_one_iff : ⌊a⌋ ≤ z - 1 ↔ a < z := by rw [← floor_lt, le_sub_one_iff]
 
 @[simp]
 theorem floor_le_neg_one_iff : ⌊a⌋ ≤ -1 ↔ a < 0 := by
-  rw [← zero_sub (1 : ℤ), floor_le_sub_one_iff, cast_zero]
+  simpa using floor_le_iff (z := -1)
 
 theorem lt_succ_floor (a : R) : a < ⌊a⌋.succ :=
   floor_lt.1 <| Int.lt_succ_self _
