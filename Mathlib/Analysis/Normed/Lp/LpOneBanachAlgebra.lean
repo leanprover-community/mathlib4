@@ -19,34 +19,46 @@ For the special case `G = ℕ`, we establish the full Banach algebra structure.
 Note: This is the *discrete* Cauchy product over finite antidiagonals, not the
 measure-theoretic convolution from `MeasureTheory.convolution`.
 
+## Main Definitions
+
+* `CauchyProduct.apply`: Cauchy product `(a * b)_n = Σ_{k+l=n} a_k * b_l`
+* `CauchyProduct.one`: Identity element `Pi.single 0 1`
+* `CauchyProduct.npow`: Natural number power under Cauchy product
+
 ## Main Results
 
-### Cauchy Product (General G with HasAntidiagonal)
-* `CauchyProduct.assoc`: Associativity of Cauchy product
+### Cauchy Product (General `[AddCommMonoid G] [HasAntidiagonal G]`)
+* `CauchyProduct.assoc`: Associativity
 * `CauchyProduct.one_mul`, `CauchyProduct.mul_one`: Identity laws
-* `CauchyProduct.comm`: Commutativity (when R is commutative)
+* `CauchyProduct.comm`: Commutativity (when `R` is commutative)
+* `CauchyProduct.left_distrib`, `CauchyProduct.right_distrib`: Distributivity
+* `CauchyProduct.smul_mul`, `CauchyProduct.mul_smul`: Scalar multiplication compatibility
 
-### Banach Algebra Structure (G = ℕ)
-* `lp.oneRing`: `lp (fun _ : ℕ => R) 1` is a `Ring`
-* `lp.oneNormedRing`: `lp (fun _ : ℕ => R) 1` is a `NormedRing`
-* `lp.oneNormOneClass`: `‖1‖ = 1`
-* `lp.oneNormedCommRing`: `lp (fun _ : ℕ => R) 1` is a `NormedCommRing` (when R is commutative)
-* `lp.oneNormedAlgebra`: `lp (fun _ : ℕ => R) 1` is a `NormedAlgebra 𝕜`
-
-### Key Lemmas
+### Membership (G = ℕ)
 * `Memℓp.one_mul`: Cauchy product preserves ℓ¹ membership
 * `one_memℓp_one`: The identity element is in ℓ¹
+* `Memℓp.one_pow`: Powers preserve ℓ¹ membership
+* `natCast_memℓp_one`, `intCast_memℓp_one`: Cast membership
+
+### Banach Algebra Structure (G = ℕ)
+* `lp.oneRing`: `Ring` instance
+* `lp.oneNormedRing`: `NormedRing` instance
+* `lp.oneNormedCommRing`: `NormedCommRing` instance (when `R` is commutative)
+* `lp.oneNormedAlgebra`: `NormedAlgebra 𝕜` instance
+* `lp.oneNormOneClass`: `‖1‖ = 1` (requires `NormOneClass R`)
 * `lp.one_norm_mul_le`: Submultiplicativity `‖f * g‖ ≤ ‖f‖ * ‖g‖`
 
-## Design Philosophy
+## Design Notes
 
-The Cauchy product `(a * b)_n = Σ_{k+l=n} a_k * b_l` uses `Finset.antidiagonal` from
-the `HasAntidiagonal` typeclass. This covers:
-- ℕ (univariate discrete convolution)
-- ℕ × ℕ, ℕ^k (multivariate discrete convolution)
+The Cauchy product uses `Finset.antidiagonal` from the `HasAntidiagonal` typeclass. This covers:
+- ℕ (univariate power series multiplication)
+- ℕ × ℕ, ℕ^k (multivariate)
 - `α →₀ ℕ` (finitely supported functions)
 
 But NOT ℤ, whose antidiagonals are infinite.
+
+The ℓ¹ analytic estimates are ℕ-specific because Mathlib's `tsum_mul_tsum_eq_tsum_sum_antidiagonal`
+and `summable_sum_mul_antidiagonal_of_summable_mul` are proven for ℕ.
 
 The ring axioms are proven directly via finite sum manipulations. Associativity
 uses `Finset.sum_nbij'` to establish a bijection between the two triple-sum indexing
@@ -206,6 +218,22 @@ theorem mul_smul (c : R) (a b : G → R) : a ⋆ (c • b) = c • (a ⋆ b) := 
 
 end Comm
 
+/-! ### Powers -/
+
+section Pow
+
+variable [AddCommMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
+
+/-- Natural number power under Cauchy product. -/
+def npow : ℕ → (G → R) → (G → R)
+  | 0, _ => one
+  | n + 1, a => npow n a ⋆ a
+
+@[simp] theorem npow_zero (a : G → R) : npow 0 a = one := rfl
+@[simp] theorem npow_succ (n : ℕ) (a : G → R) : npow (n + 1) a = npow n a ⋆ a := rfl
+
+end Pow
+
 end CauchyProduct
 
 
@@ -256,6 +284,33 @@ theorem one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
   rw [h]
   exact summable_of_ne_finset_zero (s := {0})
     (by simp_all only [mem_singleton, ↓reduceIte, implies_true])
+
+/-- Powers (under Cauchy product) preserve ℓ¹ membership. -/
+theorem Memℓp.one_pow {f : ℕ → R} (hf : Memℓp f 1) (n : ℕ) :
+    Memℓp (CauchyProduct.npow n f) 1 := by
+  induction n with
+  | zero => exact one_memℓp_one
+  | succ n ih => exact ih.one_mul hf
+
+/-- Natural number cast is in ℓ¹ (as `n • 1` under Cauchy product). -/
+theorem natCast_memℓp_one (n : ℕ) : Memℓp (n • CauchyProduct.one : ℕ → R) 1 := by
+  induction n with
+  | zero =>
+    simp only [zero_nsmul]
+    exact zero_memℓp
+  | succ n ih =>
+    simp only [add_smul, one_smul]
+    exact ih.add one_memℓp_one
+
+/-- Integer cast is in ℓ¹ (as `z • 1` under Cauchy product). -/
+theorem intCast_memℓp_one (z : ℤ) : Memℓp (z • CauchyProduct.one : ℕ → R) 1 := by
+  cases z with
+  | ofNat n =>
+    simp only [Int.ofNat_eq_natCast, natCast_zsmul]
+    exact natCast_memℓp_one n
+  | negSucc n =>
+    simp only [negSucc_zsmul]
+    exact (natCast_memℓp_one (n + 1)).neg
 
 /-! ### lp Instances -/
 
@@ -420,11 +475,18 @@ end
 ### Generalization via HasAntidiagonal
 
 The `CauchyProduct` namespace is defined for any `[AddCommMonoid G] [HasAntidiagonal G]`.
-This covers ℕ, ℕ × ℕ, and finitely supported functions `α →₀ ℕ`.
+This covers ℕ, ℕ × ℕ, ℕ^k, and finitely supported functions `α →₀ ℕ`.
 
 The analytic part (ℓ¹ Banach algebra) is currently ℕ-specific because the key lemmas
 `tsum_mul_tsum_eq_tsum_sum_antidiagonal` and `summable_sum_mul_antidiagonal_of_summable_mul`
-are proven for ℕ in Mathlib.
+are proven for ℕ in Mathlib. Generalizing these would be a separate upstream contribution.
+
+### Typeclass Requirements
+
+- `oneRing`, `oneNormedRing`: require only `[NormedRing R]`
+- `oneNormOneClass`: requires `[NormOneClass R]` (uses `norm_one`)
+- `oneNormedCommRing`: requires `[NormedCommRing R]`
+- `oneNormedAlgebra`: requires `[NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]`
 
 ### Relation to MeasureTheory.convolution
 
@@ -432,7 +494,7 @@ For `AddCommGroup G` with discrete topology and counting measure,
 `MeasureTheory.convolution` gives `(f ⋆ g)(n) = ∑' k, f(k) * g(n - k)`.
 This is related but distinct:
 - Our Cauchy product uses `HasAntidiagonal` (finite sums over `{(k,l) : k + l = n}`)
-- MeasureTheory.convolution uses infinite sums and requires `g(n - k)` (subtraction)
+- `MeasureTheory.convolution` uses infinite sums and requires subtraction
 
 For ℕ (not a group), only the Cauchy product approach works.
 -/
