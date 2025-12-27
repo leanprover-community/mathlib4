@@ -45,7 +45,7 @@ instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
 
 -- TODO: add variants of this result for `yoneda` and `shrinkYoneda`
 instance {C : Type u} [SmallCategory C]
-    [HasColimitsOfSize.{w, w} (Type (max u u'))] [HasCoproducts.{u} (Type (max u u'))]
+    [HasColimitsOfSize.{w, w} (Type (max u u'))]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] (X : C) :
     IsCardinalPresentable (uliftYoneda.{u'}.obj X) κ where
   preservesColimitOfShape J _ _ := by
