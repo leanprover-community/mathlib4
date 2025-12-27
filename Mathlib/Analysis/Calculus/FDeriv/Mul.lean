@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
-import Mathlib.Tactic.ToFun
 
 /-!
 # Multiplicative operations on derivatives
