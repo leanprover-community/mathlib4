@@ -110,7 +110,7 @@ lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I
 
 /-- Auxilary lemma - ψ has positive derivitive. -/
 lemma revParamTrasform_has_pos_deriv_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
-    (regular : ∀ t ∈ I, deriv c t ≠ 0) (hI : IsOpen I) (ht₀ : t₀ ∈ I) : 
+    (regular : ∀ t ∈ I, deriv c t ≠ 0) (hI : IsOpen I) (ht₀ : t₀ ∈ I) :
     ∀ t ∈ I, 0 < derivWithin ψ I t := by
   intro t ht
   rw [(revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).derivWithin]
