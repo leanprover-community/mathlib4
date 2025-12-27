@@ -161,26 +161,8 @@ noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α 
 
 open ComplexOrder
 
-namespace LinearIsometryEquiv
-@[expose] public section
-
-def conjStarAlgEquiv (e : V ≃ₗᵢ[𝕜] W) :
-    (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W) :=
-  .ofAlgEquiv e.toContinuousLinearEquiv.conjContinuousAlgEquiv fun x ↦ by
-    simp [star_eq_adjoint,conjContinuousAlgEquiv_apply, ← toContinuousLinearEquiv_symm, comp_assoc]
-
-@[simp] lemma conjStarAlgEquiv_apply_apply (e : V ≃ₗᵢ[𝕜] W) (x : V →L[𝕜] V) (y : W) :
-    e.conjStarAlgEquiv x y = e (x (e.symm y)) := rfl
-
-lemma conjStarAlgEquiv_apply (e : V ≃ₗᵢ[𝕜] W) (x : V →L[𝕜] V) :
-    e.conjStarAlgEquiv x = e ∘L x ∘L e.symm := rfl
-
-@[simp] lemma conjStarAlgEquiv_symm (e : V ≃ₗᵢ[𝕜] W) :
-    e.conjStarAlgEquiv.symm = e.symm.conjStarAlgEquiv := rfl
-
-end
-end LinearIsometryEquiv
-
+/-- The ⋆-algebra equivalence version of
+`ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`. -/
 public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
     ∃ U : V ≃ₗᵢ[𝕜] W, f = U.conjStarAlgEquiv := by
