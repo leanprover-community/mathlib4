@@ -148,8 +148,8 @@ variable (ι R M N) in
   invFun P := P.flip
 
 instance [P.IsRootSystem] : P.flip.IsRootSystem where
-    span_root_eq_top := IsRootSystem.span_coroot_eq_top
-    span_coroot_eq_top := IsRootSystem.span_root_eq_top
+  span_root_eq_top := IsRootSystem.span_coroot_eq_top
+  span_coroot_eq_top := IsRootSystem.span_root_eq_top
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i
@@ -705,8 +705,7 @@ lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R M]
 
 lemma isFixedPt_reflectionPerm_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
     IsFixedPt (P.reflectionPerm i) j ↔ P.pairing i j = 0 := by
-  refine ⟨fun h ↦ ?_, P.reflectionPerm_eq_of_pairing_eq_zero'⟩
-  simpa [P.ne_zero i, pairing_eq_zero_iff, IsFixedPt, reflectionPerm_eq_iff_smul_root] using h
+  simp [P.ne_zero i, pairing_eq_zero_iff, IsFixedPt, reflectionPerm_eq_iff_smul_root]
 
 @[deprecated (since := "2025-05-28")]
 alias isFixedPt_reflection_perm_iff := isFixedPt_reflectionPerm_iff
@@ -732,8 +731,8 @@ protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N�
 
 instance [P.IsRootSystem] (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
     (P.map e f g).IsRootSystem where
-  span_root_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
-  span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
+  span_root_eq_top := by simp [RootPairing.map, Embedding.coe_trans, range_comp]
+  span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, RootPairing.map]
 
 end Map
 

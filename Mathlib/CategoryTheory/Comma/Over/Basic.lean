@@ -259,9 +259,9 @@ variable (T) in
 /-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
-  map := map
-  map_id := mapId_eq
-  map_comp := mapComp_eq
+  map f := (map f).toCatHom
+  map_id X := congr($(mapId_eq X).toCatHom)
+  map_comp f g := congr($(mapComp_eq f g).toCatHom)
 
 end coherences
 
@@ -334,6 +334,10 @@ def iteratedSliceForward : Over f ⥤ Over f.left where
 def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
+
+theorem iteratedSliceBackward_forget (f : Over X) :
+    iteratedSliceBackward f ⋙ Over.forget f = Over.map f.hom :=
+  rfl
 
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
@@ -702,9 +706,9 @@ variable (T) in
 /-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
-  map f := map f.unop
-  map_id X := mapId_eq X.unop
-  map_comp f g := mapComp_eq (g.unop) (f.unop)
+  map f := (map f.unop).toCatHom
+  map_id X := congr($(mapId_eq X.unop).toCatHom)
+  map_comp f g := congr($(mapComp_eq (g.unop) (f.unop)).toCatHom)
 
 end coherences
 
