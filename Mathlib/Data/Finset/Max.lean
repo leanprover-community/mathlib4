@@ -73,7 +73,7 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
   induction s using Finset.induction_on with
   | empty => intro _ H; cases H
-  | insert b s _ ih => grind [WithBot.coe_eq_coe]
+  | _ => grind [WithBot.coe_eq_coe]
 
 theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
   le_sup as
