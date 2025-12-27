@@ -200,9 +200,8 @@ theorem quot_sepQuot (c : f.GNS) :
   (Quot.mk (⇑(inseparableSetoid f.GNS)) c) = SeparationQuotient.mk c := by rfl
 
 open SeparationQuotient
-theorem me (c : f.GNS) :
-  Inseparable
-    ((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mkCLM (R := ℂ) (M := f.GNS) c))
+theorem out_comp_mk (c : f.GNS) :
+  Inseparable ((outCLM ℂ f.GNS) (mkCLM ℂ f.GNS c))
     c := by
   -- apply mk to both sides
   have h1 : Inseparable c c := by exact mk_eq_mk.mp rfl
@@ -217,7 +216,27 @@ theorem me (c : f.GNS) :
 
 variable [StarOrderedRing A]
 
-#check f.me
+#check f.out_comp_mk
+
+lemma mk_to_mkCLM (c : f.GNS) :
+    (SeparationQuotient.mk c) = (SeparationQuotient.mkCLM (R := ℂ) (M := f.GNS) c) := by
+  simp
+
+lemma move_func (c : f.GNS) (b : A) :
+  Inseparable ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))
+    ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) ((f.A_mul_GNS b) c))) := by
+  -- Inseparability should be transitive
+  -- show both sides are inseparable from flat function times thing
+  #check Inseparable.trans
+  have h1 : Inseparable
+    ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) ((f.A_mul_GNS b) c)))
+    ((f.A_mul_GNS b) c) := by exact out_comp_mk f ((f.A_mul_GNS b) c)
+  have h2 : Inseparable
+    c
+    ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)) := by exact Inseparable.symm (out_comp_mk f c)
+  -- apply the function to h2
+  have h3 := Inseparable.map h2 (f := (f.A_mul_GNS b)) (by continuity)
+  exact Inseparable.trans (id (Inseparable.symm h3)) (id (Inseparable.symm h1))
 
 lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
   ext c
@@ -233,19 +252,17 @@ lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
   simp_all only [A_mul_GNS_mult, Function.comp_apply]--, SeparationQuotient.mk_eq_mk]
   induction c using Quot.induction_on
   rename_i c
-  simp only [quot_sepQuot]
-  congr 2
-
-  #check SeparationQuotient.forall
-  apply SeparationQuotient.forall.mp
-
-  --apply SeparationQuotient.exists.mpr
-  simp
-    --set out := (SeparationQuotient.outCLM ℂ f.GNS)
-  #check SeparationQuotient.exists
-  #check SeparationQuotient.mkCLM_apply
-  -- may need to use
-  #check Inseparable.map_of_continuousAt
+  simp only [quot_sepQuot, mk_to_mkCLM]
+  simp_all only [mkCLM_apply, mk_eq_mk]
+  rw [mk_to_mkCLM, mk_to_mkCLM]
+  -- think out on paper, use awkward transitives
+  suffices
+    Inseparable
+      (((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c))))
+      (((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS)
+        ((f.A_mul_GNS b) ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) c)))))) by
+    sorry -- use Inseparable.map
+  -- direct transtiives here should suffice
   sorry
 
 noncomputable
