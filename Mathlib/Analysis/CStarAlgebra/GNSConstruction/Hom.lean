@@ -181,7 +181,6 @@ def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace where
     simp
   cont := continuous_map
 
-variable [StarOrderedRing A]
 
 @[simp]
 lemma A_mul_GNS_mult (a b : A) : f.A_mul_GNS (a * b) = f.A_mul_GNS (a) ∘ f.A_mul_GNS (b) := by
@@ -196,6 +195,30 @@ example (b : A) (c : f.GNS) : ((f.constA_mul_Quot_toQuot b) (SeparationQuotient.
   dsimp [constA_mul_Quot_toQuot]
   sorry
 
+@[simp]
+theorem quot_sepQuot (c : f.GNS) :
+  (Quot.mk (⇑(inseparableSetoid f.GNS)) c) = SeparationQuotient.mk c := by rfl
+
+open SeparationQuotient
+theorem me (c : f.GNS) :
+  Inseparable
+    ((SeparationQuotient.outCLM ℂ f.GNS) (SeparationQuotient.mkCLM (R := ℂ) (M := f.GNS) c))
+    c := by
+  -- apply mk to both sides
+  have h1 : Inseparable c c := by exact mk_eq_mk.mp rfl
+  have h2 := Inseparable.map h1 (f := mkCLM (M := f.GNS) (R := ℂ)) (by continuity)
+  have h3 : ((mkCLM ℂ f.GNS) c) =
+    SeparationQuotient.mk ((outCLM ℂ f.GNS)
+      ((mkCLM ℂ f.GNS) c)) := by
+    simp
+  rw [h3] at h2
+  nth_rw 1 [mkCLM_apply,mk_outCLM] at h2
+  exact mk_eq_mk.mp (id (Eq.symm h3))
+
+variable [StarOrderedRing A]
+
+#check f.me
+
 lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
   ext c
   simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mul,
@@ -204,12 +227,18 @@ lemma map_mul (a b : A) : f.π_ofA (a * b) = f.π_ofA a * f.π_ofA b := by
     | hp => exact (isClosed_eq (by continuity)
           (ContinuousLinearMap.continuous ((f.π_ofA a).comp (f.π_ofA b))))
     | ih c
-  -- I think this might be the inductin principle I need
   simp only [π_completion_onQuot_equiv, Completion.coe_inj]
+
   dsimp [constA_mul_Quot_toQuot]
-  simp_all only [A_mul_GNS_mult, Function.comp_apply]
+  simp_all only [A_mul_GNS_mult, Function.comp_apply]--, SeparationQuotient.mk_eq_mk]
+  induction c using Quot.induction_on
+  rename_i c
+  simp only [quot_sepQuot]
+  congr 2
+
   #check SeparationQuotient.forall
-  --apply SeparationQuotient.forall.mpr
+  apply SeparationQuotient.forall.mp
+
   --apply SeparationQuotient.exists.mpr
   simp
     --set out := (SeparationQuotient.outCLM ℂ f.GNS)
