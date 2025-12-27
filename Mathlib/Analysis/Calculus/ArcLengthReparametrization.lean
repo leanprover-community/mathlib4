@@ -76,12 +76,12 @@ lemma revParamTransform_deriv_eq_aux {t : ℝ} (ht : t ∈ I) (once_diff : 1 ≤
   exact intervalIntegral.hasDerivWithinAt_of_continuousOn_interval
     (speed_continuousOn c I hI hc once_diff) ht₀ ht
 
-/ --Auxilary lemma - ψ is continuous. -/
+/-- Auxilary lemma - ψ is continuous. -/
 lemma revParamTransform_continuousOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContinuousOn ψ I :=
   fun t ↦ fun ht ↦ (revParamTransform_deriv_eq_aux c I ht once_diff ht₀ hc hI).continuousWithinAt
 
-/ --Auxilary ψ is continuousely differentiable on I. -/
+/-- Auxilary ψ is continuousely differentiable on I. -/
 lemma revParamTransform_contDiffOn_aux (once_diff : 1 ≤ r) (ht₀ : t₀ ∈ I)
   (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) : ContDiffOn ℝ 1 ψ I := by
   apply (contDiffOn_iff_continuousOn_differentiableOn_deriv hI.uniqueDiffOn).mpr
