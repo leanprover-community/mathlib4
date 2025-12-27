@@ -13,7 +13,7 @@ public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 This file provides a function that normalizes 2-morphisms in bicategories. The function also
 used to normalize morphisms in monoidal categories. This is used in the string diagram widget given
-in `Mathlib/Tactic/StringDiagram.lean`, as well as `monoidal` and `bicategory` tactics.
+in `Mathlib/Tactic/Widget/StringDiagram.lean`, as well as `monoidal` and `bicategory` tactics.
 
 We say that the 2-morphism `η` in a bicategory is in normal form if
 1. `η` is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where each `αᵢ` is a
