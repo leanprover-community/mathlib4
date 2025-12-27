@@ -39,7 +39,7 @@ This definition is meant to be used for small values of `ε`, and in particular 
 of `ε` greater than or equal to `1`. The junk value is chosen to be positive, so that
 `0 < ε → 0 < triangleRemovalBound ε` regardless of whether `ε < 1` or not. -/
 noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
-  min (2 * ⌈4 / ε⌉₊^3)⁻¹ ((1 - min 1 ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊))^3)
+  min (2 * ⌈4 / ε⌉₊ ^ 3)⁻¹ ((1 - min 1 ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3)
 
 lemma triangleRemovalBound_pos (hε : 0 < ε) : 0 < triangleRemovalBound ε := by
   have : 0 < 1 - min 1 ε / 4 := by have := min_le_left 1 ε; linarith
@@ -95,7 +95,7 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hε₁ : ε ≤ 1) (hP₁ : P
   have : 0 ≤ 1 - 2 * (ε / 8) := by
     have : ε / 4 ≤ 1 := ‹ε / 4 ≤ _›.trans (by exact mod_cast G.edgeDensity_le_one _ _); linarith
   calc
-    _ ≤ (1 - ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊))^3 * card α ^ 3 := by
+    _ ≤ (1 - ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3 * card α ^ 3 := by
       gcongr; exact triangleRemovalBound_le hε₁
     _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) *
           (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) := by
