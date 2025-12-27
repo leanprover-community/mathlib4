@@ -54,7 +54,7 @@ theorem gaussNorm_lt_one_iff_contentIdeal_le :
 
 /-- **Gauss's Lemma:** given a polynomial `p` in `R[X]`, the content ideal of `p` is the whole ring
 if and only if the `v`-adic Gauss norms of `p` are equal to 1 for all `v`. -/
-theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one [Nontrivial R] (hR : ¬IsField R) :
+theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one (hR : ¬IsField R) :
     p.contentIdeal = ⊤ ↔ ∀ v : HeightOneSpectrum R, p.gaussNorm (v.intAdicAbv hb) 1 = 1 := by
   convert_to _ ↔ ∀ (x : HeightOneSpectrum R), 1 ≤ gaussNorm (x.intAdicAbv hb) 1 p
   · grind [gaussNorm_intAdicAbv_le_one]
