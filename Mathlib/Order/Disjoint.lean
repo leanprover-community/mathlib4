@@ -240,11 +240,11 @@ theorem Disjoint.sup_left (ha : Disjoint a c) (hb : Disjoint b c) : Disjoint (a 
 theorem Disjoint.sup_right (hb : Disjoint a b) (hc : Disjoint a c) : Disjoint a (b ⊔ c) :=
   disjoint_sup_right.2 ⟨hb, hc⟩
 
-@[to_dual]
+@[to_dual left_le_of_le_inf_left]
 theorem Disjoint.left_le_of_le_sup_right (h : a ≤ b ⊔ c) (hd : Disjoint a c) : a ≤ b :=
   le_of_inf_le_sup_le (le_trans hd.le_bot bot_le) <| sup_le h le_sup_right
 
-@[to_dual]
+@[to_dual left_le_of_le_inf_right]
 theorem Disjoint.left_le_of_le_sup_left (h : a ≤ c ⊔ b) (hd : Disjoint a c) : a ≤ b :=
   hd.left_le_of_le_sup_right <| by rwa [sup_comm]
 
