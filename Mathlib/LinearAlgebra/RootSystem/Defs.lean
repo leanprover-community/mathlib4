@@ -148,8 +148,8 @@ variable (ι R M N) in
   invFun P := P.flip
 
 instance [P.IsRootSystem] : P.flip.IsRootSystem where
-    span_root_eq_top := IsRootSystem.span_coroot_eq_top
-    span_coroot_eq_top := IsRootSystem.span_root_eq_top
+  span_root_eq_top := IsRootSystem.span_coroot_eq_top
+  span_coroot_eq_top := IsRootSystem.span_root_eq_top
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i

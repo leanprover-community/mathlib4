@@ -216,11 +216,11 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         have half_z_to_base : f (1 / 2 * z) = f (max n₀ 2) := by
           refine hyp_ind (1 / 2 * z) ⟨?lb, ?ub⟩
           case lb =>
-            calc max n₀ 2 ≤ ((1 : ℝ) / (2 : ℝ)) * (2 : ℝ) ^ 1 * max n₀ 2 := by simp
-                        _ ≤ ((1 : ℝ) / (2 : ℝ)) * (2 : ℝ) ^ n * max n₀ 2 := by gcongr; norm_num
+            calc max n₀ 2 ≤ (1 / 2 : ℝ) * (2 : ℝ) ^ 1 * max n₀ 2 := by simp
+                        _ ≤ (1 / 2 : ℝ) * (2 : ℝ) ^ n * max n₀ 2 := by gcongr; norm_num
                         _ ≤ _ := by rw [mul_assoc]; gcongr; exact_mod_cast hz.1
           case ub =>
-            have h₁ : (2 : ℝ)^n = ((1 : ℝ) / (2 : ℝ)) * (2 : ℝ)^(n + 1) := by
+            have h₁ : (2 : ℝ) ^ n = (1 / 2 : ℝ) * (2 : ℝ) ^ (n + 1) := by
               rw [one_div, pow_add, pow_one]
               ring
             rw [h₁, mul_assoc]

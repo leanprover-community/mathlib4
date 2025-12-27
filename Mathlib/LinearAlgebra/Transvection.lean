@@ -92,14 +92,14 @@ theorem eq_id_of_finrank_le_one
     [Free R V] [Module.Finite R V] [StrongRankCondition R]
     {f : Dual R V} {v : V} (hfv : f v = 0) (h1 : finrank R V ≤ 1) :
     transvection f v = LinearMap.id := by
-  let b := finBasis R V
-  rcases (by lia : finrank R V = 0 ∨ finrank R V = 1) with h0 | h1
-  · have : Subsingleton V := (finrank_eq_zero_iff_of_free R V).mp h0
+  interval_cases h : finrank R V
+  · have : Subsingleton V := (finrank_eq_zero_iff_of_free R V).mp h
     simp [Subsingleton.eq_zero v]
-  · ext x
+  · let b := finBasis R V
+    ext x
     suffices f x • v = 0 by
       simp [apply, this]
-    let i : Fin (finrank R V) := ⟨0, by simp [h1]⟩
+    let i : Fin (finrank R V) := ⟨0, by simp [h]⟩
     suffices ∀ x, x = b.repr x i • (b i) by
       rw [this v, map_smul, smul_eq_mul, mul_comm] at hfv
       rw [this x, this v, map_smul, smul_eq_mul, ← mul_smul, mul_assoc, hfv, mul_zero, zero_smul]
