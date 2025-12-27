@@ -149,6 +149,18 @@ automatically continuous. -/
 public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
     ∃ U : V ≃ₗᵢ[𝕜] W, f = U.conjStarAlgEquiv := by
+  /- Assume nontriviality of `V`.
+    Then by `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`,
+    we know there exists a continuous linear equivalence `y : V ≃L[𝕜] W` such that
+    `f = y.conjAlgEquiv`.
+    Our goal will be to construct an isometry from `y`. We do this by first showing
+    `adjoint y ∘ y` is in the center of the endormorphisms, and as the algebra of endomorphisms
+    are central, `adjoint y ∘ y` is a scalar multiple of the identity.
+    Let `α : 𝕜` be that scalar, i.e., `adjoint y ∘ y = α • id`. This scalar is clearly real.
+    Also, it's easy to see that `adjoint y ∘ y` is invertible, so `α ≠ 0`.
+    As `adjoint y ∘ y` is positive, we get `0 < α`.
+    We also get `y ∘ adjoint y = α • id`.
+    Finally, we construct our isometry `1/√(re α) • y`. -/
   by_cases! hV : Subsingleton V
   · by_cases! hV : Subsingleton W
     · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
@@ -167,10 +179,8 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   replace this (x : V →L[𝕜] V) : Commute x (adjoint y.toContinuousLinearMap ∘L y) := by
     simp_rw [commute_iff_eq, mul_def, ← comp_assoc, ← (adjoint_adjoint x ▸ this _), comp_assoc]
     simp
-  replace this :
-      (adjoint y.toContinuousLinearMap ∘L y) ∈ Subalgebra.centralizer 𝕜 (⊤ : Set (V →L[𝕜] V)) :=
-    Subalgebra.mem_centralizer_iff 𝕜 |>.mpr fun _ _ ↦ this _
-  simp only [Set.top_eq_univ, Subalgebra.centralizer_univ, Algebra.IsCentral.center_eq_bot] at this
+  replace this := (Subalgebra.mem_center_iff (R := 𝕜)).mpr fun _ ↦ this _
+  simp only [Algebra.IsCentral.center_eq_bot] at this
   obtain ⟨α, hα⟩ := this
   simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId, Algebra.algebraMap_eq_smul_one] at hα
   have this : IsUnit (adjoint y.toContinuousLinearMap ∘L y) :=
