@@ -64,15 +64,14 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       obtain ⟨w, rfl⟩ := surj z
       simp [← this, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
-  let Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
+  set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
   have h_T'_eq_symm : T'.toLinearMap = Tₗ.symm := by
     ext x
     apply Tₗ.injective
     simpa using congr($hTT' x)
-  let TL : V ≃L[𝕜] W :=
-    { __ := Tₗ
-      continuous_toFun := T.continuous
-      continuous_invFun := by
-        change Continuous Tₗ.symm.toLinearMap
-        exact h_T'_eq_symm ▸ T'.continuous }
+  set TL : V ≃L[𝕜] W := { Tₗ with
+    continuous_toFun := T.continuous
+    continuous_invFun := by
+      change Continuous Tₗ.symm.toLinearMap
+      exact h_T'_eq_symm ▸ T'.continuous }
   exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
