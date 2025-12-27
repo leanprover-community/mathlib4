@@ -114,21 +114,19 @@ noncomputable abbrev auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : �
   continuous_toFun := (α' • e.toContinuousLinearMap).continuous
   continuous_invFun := (α' • e.toContinuousLinearMap.adjoint).continuous
 
-theorem coe_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
-    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+@[simp] theorem coe_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
+    (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
     (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
       α' • e.toContinuousLinearMap := rfl
 
-theorem adjoint_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
+@[simp] theorem adjoint_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
     (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
     (hαa : starRingEnd 𝕜 α' = α') :
     adjoint (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
       α' • e.toContinuousLinearMap.adjoint := by
-  ext x
-  apply ext_inner_left 𝕜 fun y ↦ ?_
-  simp [auxContinuousLinearEquiv, adjoint_inner_right, inner_smul_left, inner_smul_right, hαa]
+  simp [hαa, MulActionSemiHomClass.map_smulₛₗ]
 
 /-- can't do this inline either, it times out -/
 noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
@@ -144,14 +142,14 @@ noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α 
     simp only [comp_smulₛₗ, RingHom.id_apply, smul_comp, smul_smul, hα2]
     simp [he, smul_smul, hα, one_def]
 
-theorem coe_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+@[simp] theorem coe_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
     (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
     (hαa : starRingEnd 𝕜 α' = α') :
     (auxIsometry e hα hα2 he he' hαa).toContinuousLinearEquiv.toContinuousLinearMap =
       α' • e.toContinuousLinearMap := rfl
 
-theorem coe_symm_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+@[simp] theorem coe_symm_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
     (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
     (hαa : starRingEnd 𝕜 α' = α') :
@@ -213,10 +211,10 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
   replace this2 := RCLike.ofReal_pos.mp <| thisα ▸ (lt_of_le_of_ne' this2 thisα')
   have thisU : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =
       α • ContinuousLinearMap.id 𝕜 _ := by
-        have := by simpa [one_def, comp_assoc] using congr($hα ∘L y.symm.toContinuousLinearMap)
-        ext
-        apply_fun y.symm using y.symm.injective
-        simp [← this]
+    have := by simpa [one_def, comp_assoc] using congr($hα ∘L y.symm.toContinuousLinearMap)
+    ext
+    apply_fun y.symm using y.symm.injective
+    simp [← this]
   set αa := (((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜)
   have αa2 : αa * αa = α⁻¹ := by
     simp_rw [αa, ← RCLike.ofReal_mul, ← Real.rpow_add this2]
@@ -231,8 +229,7 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
       simp only [ne_eq, map_eq_zero]
       rw [Real.rpow_eq_zero this2.le (by simp)]
       exact ne_of_gt this2)
-  simp [U, coe_auxIsometry, coe_symm_auxIsometry, smul_smul, la, ← conjContinuousAlgEquiv_apply,
-    ← hy]
+  simp [U, smul_smul, la, ← conjContinuousAlgEquiv_apply, ← hy]
 
 /- Remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
 this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`. -/
