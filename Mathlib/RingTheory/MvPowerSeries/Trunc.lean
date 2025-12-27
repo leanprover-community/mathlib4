@@ -223,8 +223,8 @@ theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
   · rw [coeff_trunc', if_pos (le_trans le_self_add h)]
   · rw [coeff_trunc', if_pos (le_trans le_add_self h)]
 
-theorem trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
-    trunc' R n (φ ^ k) = trunc' R n ((trunc' R n φ) ^ k) := by
+theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
+    trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) := by
   induction k, hk using Nat.le_induction with
   | base => simp [trunc'_trunc']
   | succ m h_le ih =>
@@ -250,7 +250,7 @@ theorem trunc'_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvP
 
 section
 
-theorem trunc'_totalDegree {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
+theorem totalDegree_trunc' {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
     (trunc' R n φ).totalDegree ≤ n.degree := by
   have supp_aux : (trunc' R n φ).support ⊆ (Set.Icc 0 n).toFinset := fun d hd => by
     simp only [Set.toFinset_Icc, Finset.mem_Icc, zero_le, true_and]
@@ -275,8 +275,8 @@ theorem ext_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∀ n, trunc' R n f = 
   simp_rw [this, h]
 
 open Filter in
-theorem ext'_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∃ᶠ m in atTop,
-    trunc' R m f = trunc' R m g := by
+theorem ext'_trunc' {f g : MvPowerSeries σ R} :
+    f = g ↔ ∃ᶠ m in atTop, trunc' R m f = trunc' R m g := by
   refine ⟨fun h => by simp [h, atTop_neBot], fun h => ?_⟩
   ext n
   obtain ⟨m, hm₁, hm₂⟩ := h.forall_exists_of_atTop n

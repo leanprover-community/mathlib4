@@ -189,7 +189,7 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
     rw [coeff_trunc', if_neg hd]
 
 include hp in
-theorem expand_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) [DecidableEq σ] (f : MvPowerSeries σ R) :
+theorem trunc'_expand_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) [DecidableEq σ] (f : MvPowerSeries σ R) :
     (MvPolynomial.expand p) (trunc' R n f) = (trunc' R (p • n))
     ↑((MvPolynomial.expand p) (trunc' R m f)) := by
   rw [← expand_eq_expand p hp, trunc'_expand, ← trunc'_trunc' h]
@@ -200,7 +200,7 @@ section ExpChar
 
 variable [ExpChar R p]
 
-theorem expand_char {f : MvPowerSeries σ R} :
+theorem map_frobenius_expand {f : MvPowerSeries σ R} :
     (f.expand p hp).map (frobenius R p) = f ^ p := by
   classical
   rw [ext'_trunc', Filter.frequently_atTop]
@@ -213,20 +213,19 @@ theorem expand_char {f : MvPowerSeries σ R} :
       congr
       ext m
       simp only [MvPolynomial.coeff_coe, MvPolynomial.coeff_map, coeff_map]
-    rw [trunc'_map, trunc'_expand, trunc'_pow (Nat.one_le_iff_ne_zero.mpr (expChar_ne_zero R p)),
-      ← MvPolynomial.coe_pow p, ← MvPolynomial.expand_char, this, trunc'_map,
-        expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]
+    rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
+      (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
+        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]
 
-
-theorem map_expand_pow_char (f : MvPowerSeries σ R) (n : ℕ) :
-    map (frobenius R p ^ n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by
+theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
+    map (iterateFrobenius R p n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by
   induction n with
-  | zero => simp [RingHom.one_def, map_id]
+  | zero => simp [map_id]
   | succ k n_ih =>
     symm
     conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
-    simp_rw [← expand_char p hp, pow_succ', RingHom.mul_def, ← map_map, ← map_expand,
-      ← expand_mul]
+    simp_rw [← map_frobenius_expand p hp, pow_succ', add_comm k, iterateFrobenius_add,
+      ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
 
 end ExpChar
 
