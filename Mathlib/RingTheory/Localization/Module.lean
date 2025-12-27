@@ -49,7 +49,7 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   obtain ⟨⟨m, s⟩, h⟩ := IsLocalizedModule.surj S f x
   rw [Submonoid.smul_def, ← algebraMap_smul Rₛ, ← Units.smul_isUnit (IsLocalization.map_units Rₛ s),
     eq_comm, ← inv_smul_eq_iff] at h
-  refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ ?_)
+  refine h ▸ smul_mem _ _ (span_subset_span R Rₛ _ ?_)
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
 
@@ -179,7 +179,8 @@ theorem localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A)
 
 theorem localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
-      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := b.ofIsLocalizedModule_span Rₛ S _
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) :=
+  b.ofIsLocalizedModule_span Rₛ S _
 
 end Module.Basis
 end LocalizationLocalization
