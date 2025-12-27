@@ -36,10 +36,6 @@ des groupes classiques”].
 
 @[expose] public section
 
-theorem add_sub_sub_eq {G : Type*} [AddCommGroup G] (a b c d : G) :
-    a + b - c - d = a - c + b - d := by
-   abel
-
 open LinearEquiv LinearMap Module.End Module Submodule MulAction
 
 section Center
@@ -313,7 +309,7 @@ universe uR uV
 variable {R : Type uR} [Ring R] {V : Type uV} [AddCommGroup V] [Module R V]
 
 variable (R V) in
-/-- The set of transvections in the special linear group -/
+/-- The set of transvections in the group of linear equivalences -/
 def transvections : Set (V ≃ₗ[R] V) :=
   { e | ∃ (f : Dual R V) (v : V) (hfv : f v = 0),
       e = LinearEquiv.transvection hfv }
