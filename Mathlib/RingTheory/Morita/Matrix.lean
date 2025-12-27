@@ -88,10 +88,9 @@ universe w
 @[simps]
 def MatrixModCat.toModuleCat : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
-  letI (M : ModuleCat (Matrix ι ι R)) : IsScalarTower R (Matrix ι ι R) M := {
-      smul_assoc r m x := by
-        change _ = (Matrix.scalar ι r) • (m • x)
-        rw [← mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul]}
+  haveI (M : ModuleCat (Matrix ι ι R)) : IsScalarTower R (Matrix ι ι R) M :=
+    { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
+        rw [← mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
   { obj M := ModuleCat.of R (MatrixModCat.toModuleCat.toModuleCatObj R ι M)
     map {M N} f := ModuleCat.ofHom <| LinearMap.fromMatrixLinear f.hom
     map_id _ := rfl
