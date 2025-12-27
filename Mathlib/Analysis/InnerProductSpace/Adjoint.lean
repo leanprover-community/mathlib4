@@ -246,10 +246,10 @@ instance : CStarRing (E →L[𝕜] E) where
   norm_mul_self_le x := le_of_eq <| Eq.symm <| norm_adjoint_comp_self x
 
 theorem isAdjointPair_inner (A : E →L[𝕜] F) :
-    LinearMap.IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜)
-      (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
+    LinearMap.IsAdjointPair (LinearMap.flip (innerₛₗ 𝕜 (E := E)))
+      (innerₛₗ 𝕜 (E := F)).flip A (A†) := by
   intro x y
-  simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
+  simp [adjoint_inner_left]
 
 theorem adjoint_innerSL_apply (x : E) :
     adjoint (innerSL 𝕜 x) = toSpanSingleton 𝕜 x :=
@@ -574,10 +574,10 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
   exact eq_comm
 
 theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
-    IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜) (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A
-      A.adjoint := by
+    IsAdjointPair (innerₛₗ 𝕜 (E := E)).flip
+      (innerₛₗ 𝕜 (E := F)).flip A A.adjoint := by
   intro x y
-  simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
+  simp [adjoint_inner_left]
 
 /-- The Gram operator T†T is symmetric. -/
 theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (T.adjoint * T) := by
