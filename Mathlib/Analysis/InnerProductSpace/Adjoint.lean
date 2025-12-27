@@ -248,7 +248,7 @@ instance : CStarRing (E →L[𝕜] E) where
 
 theorem isAdjointPair_inner (A : E →L[𝕜] F) :
     LinearMap.IsAdjointPair (LinearMap.flip (innerₛₗ 𝕜 (E := E)))
-      (LinearMap.flip (innerₛₗ 𝕜 (E := F))) A (A†) := by
+      (innerₛₗ 𝕜 (E := F)).flip A (A†) := by
   intro x y
   simp [adjoint_inner_left]
 
