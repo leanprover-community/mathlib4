@@ -30,7 +30,7 @@ For instances relating, e.g., `ContinuousMul` to `MeasurableMul` see file
 ## Implementation notes
 
 For the heuristics of `@[to_additive]` it is important that the type with a multiplication
-(or another multiplicative operations) is the first (implicit) argument of all declarations.
+(or another multiplicative operation) is the first (implicit) argument of all declarations.
 
 ## Tags
 

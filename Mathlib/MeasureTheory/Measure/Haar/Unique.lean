@@ -32,7 +32,7 @@ To get genuine equality of measures, we typically need additional regularity ass
 
 * `isMulLeftInvariant_eq_smul_of_innerRegular`: two left invariant measures which are
   inner regular coincide up to a scalar.
-* `isMulLeftInvariant_eq_smul_of_regular`: two left invariant measure which are
+* `isMulLeftInvariant_eq_smul_of_regular`: two left invariant measures which are
   regular coincide up to a scalar.
 * `isHaarMeasure_eq_smul`: in a second countable space, two Haar measures coincide up to a
   scalar.

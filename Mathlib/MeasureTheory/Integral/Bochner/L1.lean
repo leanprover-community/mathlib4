@@ -42,7 +42,7 @@ The Bochner integral is defined through the extension process described in the f
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
                 `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
-                 functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDense`)
+                 functions (defined in `Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean`)
 
 We also define notations for integral on a set, which are described in the file
 `Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
