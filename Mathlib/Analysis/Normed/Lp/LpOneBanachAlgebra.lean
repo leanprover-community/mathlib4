@@ -13,7 +13,7 @@ public import Mathlib.Algebra.BigOperators.NatAntidiagonal
 # Banach Algebra Structure on ℓ¹ via Cauchy Product
 
 This file establishes that `lp (fun _ : G => R) 1` is a ring when equipped with the
-Cauchy product (discrete convolution), for any `AddCommMonoid G` with `HasAntidiagonal G`.
+Cauchy product (discrete convolution), for any `AddMonoid G` with `HasAntidiagonal G`.
 For the special case `G = ℕ`, we establish the full Banach algebra structure.
 
 Note: This is the *discrete* Cauchy product over finite antidiagonals, not the
@@ -27,12 +27,15 @@ measure-theoretic convolution from `MeasureTheory.convolution`.
 
 ## Main Results
 
-### Cauchy Product (General `[AddCommMonoid G] [HasAntidiagonal G]`)
-* `CauchyProduct.assoc`: Associativity
+### Cauchy Product (General `[AddMonoid G] [HasAntidiagonal G]`)
+* `CauchyProduct.assoc`: Associativity (no commutativity required)
 * `CauchyProduct.one_mul`, `CauchyProduct.mul_one`: Identity laws
-* `CauchyProduct.comm`: Commutativity (when `R` is commutative)
 * `CauchyProduct.left_distrib`, `CauchyProduct.right_distrib`: Distributivity
-* `CauchyProduct.smul_mul`, `CauchyProduct.mul_smul`: Scalar multiplication compatibility
+* `CauchyProduct.smul_mul`: Left scalar multiplication compatibility
+
+### Cauchy Product (Commutative `[AddCommMonoid G] [HasAntidiagonal G]`)
+* `CauchyProduct.comm`: Commutativity (when `R` is commutative)
+* `CauchyProduct.mul_smul`: Right scalar multiplication compatibility
 
 ### Membership (G = ℕ)
 * `Memℓp.one_mul`: Cauchy product preserves ℓ¹ membership
@@ -54,6 +57,7 @@ The Cauchy product uses `Finset.antidiagonal` from the `HasAntidiagonal` typecla
 - ℕ (univariate power series multiplication)
 - ℕ × ℕ, ℕ^k (multivariate)
 - `α →₀ ℕ` (finitely supported functions)
+- Potentially `List α` with append (non-commutative)
 
 But NOT ℤ, whose antidiagonals are infinite.
 
@@ -62,7 +66,8 @@ and `summable_sum_mul_antidiagonal_of_summable_mul` are proven for ℕ.
 
 The ring axioms are proven directly via finite sum manipulations. Associativity
 uses `Finset.sum_nbij'` to establish a bijection between the two triple-sum indexing
-schemes `⟨(i+j, k), (i, j)⟩ ↔ ⟨(i, j+k), (j, k)⟩`.
+schemes `⟨(i+j, k), (i, j)⟩ ↔ ⟨(i, j+k), (j, k)⟩`
+this only requires `add_assoc`, not commutativity.
 -/
 
 @[expose] public section
@@ -89,18 +94,18 @@ variable {G : Type*} {R : Type*}
 /-! ### Identity Element
 
 The multiplicative identity is `Pi.single 0 1`: the function that is 1 at 0 and 0 elsewhere.
-This section requires only `DecidableEq G`, not `HasAntidiagonal G`. -/
+This section requires only `DecidableEq G` and `AddMonoid G` (for the zero element). -/
 
 section One
 
-variable [AddCommMonoid G] [DecidableEq G] [Semiring R]
+variable [AddMonoid G] [DecidableEq G] [Semiring R]
 
 /-- The multiplicative identity: `e_0 = 1, e_g = 0` for `g ≠ 0`. -/
 def one : G → R := Pi.single 0 1
 
 @[simp] lemma one_apply_zero : (one : G → R) 0 = 1 := Pi.single_eq_same 0 1
 
-@[simp] lemma one_apply_ne {g : G} (hg : g ≠ 0) : (one : G → R) g = 0 := Pi.single_eq_of_ne hg 1
+lemma one_apply_ne {g : G} (hg : g ≠ 0) : (one : G → R) g = 0 := Pi.single_eq_of_ne hg 1
 
 end One
 
@@ -110,7 +115,7 @@ This section requires `HasAntidiagonal G` for the finite sums over antidiagonals
 
 section Product
 
-variable [AddCommMonoid G] [HasAntidiagonal G] [Semiring R]
+variable [AddMonoid G] [HasAntidiagonal G] [Semiring R]
 
 /-- Cauchy product (convolution) of functions: `(a * b)_n = Σ_{k+l=n} a_k * b_l`. -/
 def apply (a b : G → R) : G → R :=
@@ -140,7 +145,7 @@ lemma right_distrib (a b c : G → R) : (a + b) ⋆ c = a ⋆ c + b ⋆ c := by
 
 Both `((a ⋆ b) ⋆ c)_n` and `(a ⋆ (b ⋆ c))_n` sum over all triples `(i, j, k)` with
 `i + j + k = n`. We use `Finset.sum_nbij'` to establish the equality via bijection
-between the two indexing schemes. -/
+between the two indexing schemes. This proof does not require commutativity. -/
 
 theorem assoc (a b c : G → R) : (a ⋆ b) ⋆ c = a ⋆ (b ⋆ c) := by
   ext n
@@ -166,14 +171,14 @@ end Product
 
 /-! ### Identity Laws
 
-These require both `DecidableEq G` (for `one`) and `HasAntidiagonal G` (for `⋆`). -/
+These require both `DecidableEq G` (for `one`) and `HasAntidiagonal G` (for `⋆`).
+Only `AddMonoid` is needed — we use `zero_add` and `add_zero`, not commutativity. -/
 
 section Identity
 
-variable [AddCommMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
+variable [AddMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
 
-@[simp]
-lemma one_mul (a : G → R) : one ⋆ a = a := by
+theorem one_mul (a : G → R) : one ⋆ a = a := by
   ext n; simp only [apply_eq, one]
   rw [sum_eq_single (0, n)]
   · simp only [Pi.single_eq_same, _root_.one_mul]
@@ -185,8 +190,7 @@ lemma one_mul (a : G → R) : one ⋆ a = a := by
   · simp [mem_antidiagonal]
 
 
-@[simp]
-lemma mul_one (a : G → R) : a ⋆ one = a := by
+theorem mul_one (a : G → R) : a ⋆ one = a := by
   ext n; simp only [apply_eq, one]
   rw [sum_eq_single (n, 0)]
   · simp only [Pi.single_eq_same, _root_.mul_one]
@@ -224,7 +228,7 @@ end Comm
 
 section Pow
 
-variable [AddCommMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
+variable [AddMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
 
 /-- Natural number power under Cauchy product. -/
 def npow : ℕ → (G → R) → (G → R)
@@ -282,7 +286,7 @@ theorem one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
       fun n => if n = 0 then ‖(1 : R)‖ else 0 := by
     ext n; cases n with
     | zero => simp [CauchyProduct.one_apply_zero]
-    | succ n => simp [norm_zero]
+    | succ n => simp [CauchyProduct.one_apply_ne (Nat.succ_ne_zero n), norm_zero]
   rw [h]
   exact summable_of_ne_finset_zero (s := {0})
     (by simp_all only [mem_singleton, ↓reduceIte, implies_true])
@@ -476,8 +480,11 @@ end
 
 ### Generalization via HasAntidiagonal
 
-The `CauchyProduct` namespace is defined for any `[AddCommMonoid G] [HasAntidiagonal G]`.
-This covers ℕ, ℕ × ℕ, ℕ^k, and finitely supported functions `α →₀ ℕ`.
+The `CauchyProduct` namespace is defined for `[AddMonoid G] [HasAntidiagonal G]`.
+This covers ℕ, ℕ × ℕ, finitely supported functions `α →₀ ℕ`, and potentially
+non-commutative monoids like `List α` with append (if given a `HasAntidiagonal` instance).
+
+Only `CauchyProduct.comm` and `CauchyProduct.mul_smul` require `[AddCommMonoid G]`.
 
 The analytic part (ℓ¹ Banach algebra) is currently ℕ-specific because the key lemmas
 `tsum_mul_tsum_eq_tsum_sum_antidiagonal` and `summable_sum_mul_antidiagonal_of_summable_mul`
