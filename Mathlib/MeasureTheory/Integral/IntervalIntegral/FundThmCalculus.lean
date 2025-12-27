@@ -1262,7 +1262,7 @@ theorem intervalIntegrable_deriv_of_nonneg (hcont : ContinuousOn g (uIcc a b))
 
 /-- This is a version of the first part of FTC for a function which is continuous on an interval.
     Credit to Aaron Liu. -/
-theorem derivWithin_integral_of_continuousOn_interval {I : Set ℝ} [I.OrdConnected] {f : ℝ → ℝ}
+theorem hasDerivWithinAt_of_continuousOn_interval {I : Set ℝ} [I.OrdConnected] {f : ℝ → ℝ}
     (h : ContinuousOn f I) {x₀ x : ℝ} (hx₀ : x₀ ∈ I) (hx : x ∈ I) :
     HasDerivWithinAt (fun t ↦  ∫ τ in x₀..t, f τ) (f x) I x :=
   have : intervalIntegral.FTCFilter x (nhdsWithin x I) (nhdsWithin x I) := by
