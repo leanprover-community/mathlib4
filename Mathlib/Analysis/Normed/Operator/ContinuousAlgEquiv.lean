@@ -19,7 +19,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 # Continuous (star-)algebra equivalences between continuous endomorphisms are (isometrically) inner
 
 This file shows that continuous (star-)algebra equivalences between continuous endomorphisms are
-isometrically inner.
+(isometrically) inner.
 See `Mathlib/LinearAlgebra/GeneralLinearGroup/AlgEquiv.lean` for the non-continuous version.
 The proof follows the same idea as the non-continuous version.
 
