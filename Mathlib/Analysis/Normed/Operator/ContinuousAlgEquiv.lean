@@ -22,7 +22,7 @@ This file shows that continuous (star-)algebra equivalences between continuous e
 See `Mathlib/LinearAlgebra/GeneralLinearGroup/AlgEquiv.lean` for the non-continuous version.
 The proof follows the same idea as the non-continuous version.
 
-# TODO:
+### TODO:
 - when `V = W`, we can state that the group homomorphism
   `(V →L[𝕜] V)ˣ →* ((V →L[𝕜] V) ≃A[𝕜] (V →L[𝕜] V))` is surjective,
   see `Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective` for the non-continuous
