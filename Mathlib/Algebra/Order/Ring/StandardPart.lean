@@ -443,21 +443,15 @@ theorem bddAbove_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : Bd
   rw [← bddBelow_neg, neg_setOf_real_lt]
   exact bddBelow_setOf_lt_real f (by simpa)
 
-theorem mk_nonneg_of_between (f : ℝ →+*o K) {x : K} {r : ℝ}
-    (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) : 0 ≤ mk x := by
-  obtain ⟨n, hn⟩ := exists_nat_gt |r|
-  use n
-  dsimp
-  simp_rw [abs_le, abs_one, nsmul_eq_mul, mul_one]
-  convert And.intro (hl (-n) _) (hr n _)
-  · simp
-  · simp
-  · exact neg_lt_of_abs_lt hn
-  · exact lt_of_abs_lt hn
-
 theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
     stdPart x = r := by
-  have hx := mk_nonneg_of_between f hl hr
+  have hx : 0 ≤ mk x := by
+    obtain ⟨n, hn⟩ := exists_nat_gt |r|
+    refine (mk_natCast_nonneg n).trans (mk_le_mk_of_abs (abs_le.2 ⟨?_, ?_⟩))
+    · convert hl (-n) (neg_lt_of_abs_lt hn)
+      simp
+    · convert hr n (lt_of_abs_lt hn)
+      simp
   by_contra h
   obtain h | h := lt_or_gt_of_ne h
   · obtain ⟨s, hs, hs'⟩ := exists_between h
