@@ -149,7 +149,7 @@ theorem exists_accPt_of_noAtoms {X : Type*} {E : Set X}
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
   haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
-  exact hE.ne' <| (TopologicalSpace.separableSpace_iff_countable.mp h_sep.separableSpace
+  exact hE.ne' <| (separableSpace_iff_countable.mp h_sep.separableSpace
     |> E.countable_coe_iff.mp).measure_zero μ
 
 end
