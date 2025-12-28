@@ -99,6 +99,18 @@ theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
   rw [Subgroup.relIndex_sup_left]
   exact Subgroup.FiniteIndex.index_ne_zero
 
+@[simp]
+lemma aux_ {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
+  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] (f : M ≃ₛₗ[σ] M₂) :
+  (f.toAddEquiv : M →+ M₂) = (f : M →+ M₂) := rfl
+
+@[simp]
+lemma aux_'' {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
+  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] (f : M ≃ₛₗ[σ] M₂) :
+  (f : M →ₛₗ[σ] M₂) = (f : M →+ M₂) := rfl
+
 open Subgroup in
 /--
 A family of units is of maximal rank iff the index of the subgroup it generates has finite index.
@@ -113,13 +125,13 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     rw [← AddSubgroup.index_ne_zero_iff_finite]
     have := index_map (closure (Set.range u)) (QuotientGroup.mk' (torsion K))
     rw [QuotientGroup.ker_mk', QuotientGroup.range_mk', index_top, mul_one] at this
-    rw [← this, ← index_toAddSubgroup, ← AddSubgroup.index_map_equiv
-        _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← LinearEquiv.coe_coe,
-      ← map_span (logEmbeddingEquiv K).toLinearMap,
+    rw [← this, ← index_toAddSubgroup,
+      ← AddSubgroup.index_map_equiv _ (logEmbeddingEquiv K).toAddEquiv,
+      Set.range_comp, ← LinearEquiv.coe_coe, ← map_span (logEmbeddingEquiv K).toLinearMap,
       map_toAddSubgroup, span_int_eq_addSubgroupClosure,
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
       QuotientGroup.coe_mk', ← Equiv.image_symm_eq_preimage]
-    rfl
+    simp
   have h₂ : DiscreteTopology
       (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
     rw [← SetLike.isDiscrete_iff_discreteTopology]
