@@ -447,24 +447,17 @@ theorem preimage_zero_mem_codiscrete [ConnectedSpace 𝕜] {x : 𝕜} (hf : Anal
     f ⁻¹' {0}ᶜ ∈ codiscrete 𝕜 :=
   hf.preimage_zero_mem_codiscreteWithin hx trivial isConnected_univ
 
-lemma eq_zero_iff_order_inf [PreconnectedSpace 𝕜] {f : 𝕜 → E} (z : 𝕜)
-    (hf : ∀ z₀, AnalyticAt 𝕜 f z₀) :
-  f = 0 ↔ analyticOrderAt f z = ⊤ := by
-  rw [analyticOrderAt_eq_top]
-  refine ⟨by simp +contextual, fun h ↦  ?_⟩
-  exact (eqOn_univ _ _).1 <| eqOn_zero_of_preconnected_of_frequently_eq_zero
-    (fun _ _ ↦ hf _) (preconnectedSpace_iff_univ.1 inferInstance) trivial <|
-      ((hf z).frequently_eq_iff_eventually_eq analyticAt_const).2 h
+lemma analyticOrderAt_eq_top_iff_eq_zero [PreconnectedSpace 𝕜] {f : 𝕜 → E} (z : 𝕜)
+    (hf : ∀ z₀, AnalyticAt 𝕜 f z₀) : analyticOrderAt f z = ⊤ ↔ f = 0 := by
+  refine analyticOrderAt_eq_top.trans ⟨fun h ↦ eqOn_univ .. |>.mp ?_, by simp +contextual⟩
+  apply eqOn_zero_of_preconnected_of_frequently_eq_zero (fun z _ ↦ hf z) isPreconnected_univ trivial
+  exact hf z |>.frequently_eq_iff_eventually_eq analyticAt_const |>.mpr h
 
-lemma IsOpen.eqOn_zero_iff_forall_analyticOrderAt_eq_top {s : Set 𝕜} (f : 𝕜 → E) (hs : IsOpen s) :
-  EqOn f 0 s ↔ ∀ z ∈ s, analyticOrderAt f z = ⊤ := by
-  constructor
-  · intro hzero z hz
-    apply analyticOrderAt_eq_top.2
-    filter_upwards [hs.mem_nhds hz]
-    aesop
-  · intro htop z hz
-    have hEv : f =ᶠ[nhds z] 0 := analyticOrderAt_eq_top.1 (htop z hz)
-    simpa using (hEv).eq_of_nhds
+lemma _root_.IsOpen.forall_analyticOrderAt_eq_top_iff_eqOn_zero {s : Set 𝕜} (hs : IsOpen s)
+    (f : 𝕜 → E) : (∀ z ∈ s, analyticOrderAt f z = ⊤) ↔ EqOn f 0 s := by
+  refine ⟨(EventuallyEq.eq_of_nhds <| analyticOrderAt_eq_top.mp <| · · ·), fun hzero z hz ↦ ?_⟩
+  apply analyticOrderAt_eq_top.mpr
+  filter_upwards [hs.mem_nhds hz]
+  exact fun _ ↦ hzero.eq_of_mem
 
 end AnalyticOnNhd
