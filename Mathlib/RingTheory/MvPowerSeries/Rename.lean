@@ -288,8 +288,7 @@ theorem killCompl_X (t : τ) : killCompl (R := R) f (X t) = if h : t ∈ Set.ran
   · set s := ((Equiv.ofInjective f f.injective).symm ⟨t, h1⟩) with hs
     simp only [← Equiv.symm_apply_eq, Equiv.symm_symm, Equiv.ofInjective_apply,
       Subtype.mk.injEq] at hs
-    simp only [← hs, comapDomain_single]
-    rfl
+    simp [← hs, X_def]
   · rw [mem_range_embDomain_iff, support_single_ne_zero] at h2
     · grind only [= Set.subset_def, = mem_coe, = mem_singleton]
     simp
@@ -338,12 +337,5 @@ theorem renameEquiv_symm (f : σ ≃ τ) : (renameEquiv R f).symm = renameEquiv 
 theorem renameEquiv_trans (e : σ ≃ τ) (f : τ ≃ α) :
     (renameEquiv R e).trans (renameEquiv R f) = renameEquiv R (e.trans f) :=
   AlgEquiv.ext (rename_rename e.toEmbedding f.toEmbedding)
-
-variable {R}
-
-@[simp]
-theorem coeff_rename_mapDomain (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
-    (rename f p).coeff (x.mapDomain f) = p.coeff x := by
-  simp [← embDomain_eq_mapDomain, ← coeff_killComplFun, ← killCompl_apply f]
 
 end MvPowerSeries
