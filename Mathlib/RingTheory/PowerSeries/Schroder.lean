@@ -14,11 +14,11 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 This file defines lemmas and theorems about the power series for large and small Schröder numbers.
 
 ## Main Definitions
-* `PowerSeries.largeSchroderPowerSeries`: The power series for large Schröder numbers.
-* `PowerSeries.smallSchroderPowerSeries`: The power series for small Schröder
+* `PowerSeries.largeSchroderSeries`: The power series for large Schröder numbers.
+* `PowerSeries.smallSchroderSeries`: The power series for small Schröder numbers.
 
 ## Main Results
-* `PowerSeries.largeSchroder_eq_one_add_X_mul_largeSchroder_add_X_mul_largeSchroder_pow`:
+* `largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_largeSchroderSeries_sq`:
   The functional equation for the large Schröder numbers power series.
 
 ## TODO
@@ -34,45 +34,41 @@ open Finset BigOperators Nat
 namespace PowerSeries
 
 /-- The power series for large Schröder numbers -/
-def largeSchroderPowerSeries : PowerSeries ℕ :=
+def largeSchroderSeries : PowerSeries ℕ :=
   PowerSeries.mk largeSchroder
 
 @[simp]
-lemma largeSchroderPowerSeries_coeff (n : ℕ) :
-  (coeff n) largeSchroderPowerSeries = largeSchroder n := by
-  simp [largeSchroderPowerSeries]
+lemma coeff_largeSchroderSeries (n : ℕ) :
+    (coeff n) largeSchroderSeries = largeSchroder n :=
+  by simp [largeSchroderSeries]
 
 @[simp]
-lemma largeSchroderPowerSeries_constantCoeff :
-  constantCoeff largeSchroderPowerSeries = 1 := by
+lemma constantCoeff_largeSchroderSeries :
+    constantCoeff largeSchroderSeries = 1 := by
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
-  simp [largeSchroderPowerSeries_coeff, largeSchroder_zero]
+  simp [coeff_largeSchroderSeries, largeSchroder_zero]
 
 @[simp]
-lemma largeSchroder_sum_coeff (n : ℕ) (hn : 0 < n) :
-  ∑ i ∈ range (n + 1), coeff i X * largeSchroder (n - i) =
-    largeSchroder (n - 1) := by
-  simp [coeff_X]
-  aesop
-
-@[simp]
-lemma X_mul_largeSchroder_coeff (n : ℕ) (hn : 0 < n) :
-  coeff n (X * largeSchroderPowerSeries) = largeSchroder (n - 1) := by
-  simp only [coeff_mul, largeSchroderPowerSeries_coeff,
+lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
+    coeff n (X * largeSchroderSeries) = largeSchroder (n - 1) := by
+  simp only [coeff_mul, coeff_largeSchroderSeries,
     Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => coeff x X * largeSchroder y),
     succ_eq_add_one]
-  rw [largeSchroder_sum_coeff n hn]
+  simp only [coeff_X, ite_mul, one_mul, zero_mul, sum_ite_eq', mem_range, lt_add_iff_pos_left,
+    ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
+  intro a; subst a
+  simp_all only [lt_self_iff_false]
 
-lemma X_mul_largeSchroder_pow_coeff (n : ℕ) (hn : 0 < n) :
-  coeff n (X * largeSchroderPowerSeries ^ 2) =
+lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
+  coeff n (X * largeSchroderSeries ^ 2) =
     ∑ i ∈ range n, largeSchroder i * largeSchroder (n - 1 - i) := by
   rw [pow_two, ← mul_assoc, coeff_mul]
   rw [Nat.sum_antidiagonal_eq_sum_range_succ
-    (fun x y => (coeff x) (X * largeSchroderPowerSeries) * (coeff y) largeSchroderPowerSeries) n,
+    (fun x y => (coeff x) (X * largeSchroderSeries) * (coeff y) largeSchroderSeries) n,
     Nat.succ_eq_add_one, sum_range_succ]
-  simp only [largeSchroderPowerSeries_coeff, X_mul_largeSchroder_coeff n hn, tsub_self,
+  simp only [coeff_largeSchroderSeries, coeff_X_mul_largeSchroderSeries n hn, tsub_self,
     largeSchroder_zero, mul_one]
-  have : ∑ x ∈ range n, (coeff x) (X * largeSchroderPowerSeries) * largeSchroder (n - x)  =
+  have : ∑ x ∈ range n, (coeff x) (X * largeSchroderSeries) * largeSchroder (n - x)  =
     ∑ x ∈ range n, if 0 < x then largeSchroder (x - 1) * largeSchroder (n - x) else 0 := by
     apply sum_congr rfl
     intro x a
@@ -80,10 +76,10 @@ lemma X_mul_largeSchroder_pow_coeff (n : ℕ) (hn : 0 < n) :
     split
     next h =>
       simp_all only [mul_eq_mul_right_iff]
-      simp [X_mul_largeSchroder_coeff x (by omega)]
+      simp [coeff_X_mul_largeSchroderSeries x (by omega)]
     next h =>
       simp_all only [not_lt, nonpos_iff_eq_zero, coeff_zero_eq_constantCoeff, map_mul,
-      constantCoeff_X, largeSchroderPowerSeries_constantCoeff, mul_one, tsub_zero, zero_mul]
+      constantCoeff_X, constantCoeff_largeSchroderSeries, mul_one, tsub_zero, zero_mul]
   rw [this, sum_range_eq_add_Ico _ (by omega)]
   simp only [lt_self_iff_false, reduceIte, zero_add]
   have : (∑ x ∈ Ico 1 n, if 0 < x then largeSchroder (x - 1) * largeSchroder (n - x) else 0) =
@@ -99,18 +95,17 @@ lemma X_mul_largeSchroder_pow_coeff (n : ℕ) (hn : 0 < n) :
   apply sum_congr rfl
   intros x hx
   simp at hx
-  have : n - 1 - x = n - (1 + x) := by omega
-  rw [this]
+  rw [show n - 1 - x = n - (1 + x) by omega]
 
-theorem largeSchroder_eq_one_add_X_mul_largeSchroder_add_X_mul_largeSchroder_pow :
-  largeSchroderPowerSeries = 1 + X * largeSchroderPowerSeries +
-    X * largeSchroderPowerSeries ^ 2 := by
+theorem largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_largeSchroderSeries_sq :
+  largeSchroderSeries = 1 + X * largeSchroderSeries +
+    X * largeSchroderSeries ^ 2 := by
   ext n
   by_cases hn : n = 0
   · aesop
   · have hn' : 0 < n := by omega
-    simp only [largeSchroderPowerSeries_coeff, map_add, coeff_one, hn, ↓reduceIte, zero_add]
-    rw [X_mul_largeSchroder_pow_coeff _ hn', X_mul_largeSchroder_coeff _ hn',
+    simp only [coeff_largeSchroderSeries, map_add, coeff_one, hn, ↓reduceIte, zero_add]
+    rw [coeff_X_mul_largeSchroderSeriesSeries_sq _ hn', coeff_X_mul_largeSchroderSeries _ hn',
       show n = n - 1 + 1 by omega, largeSchroder_succ (n - 1)]
     simp_all only [add_tsub_cancel_right, Nat.add_left_cancel_iff]
     rw [Iic_eq_Icc, Nat.bot_eq_zero]
@@ -118,82 +113,7 @@ theorem largeSchroder_eq_one_add_X_mul_largeSchroder_add_X_mul_largeSchroder_pow
     rw [hI]
 
 /-- The power series for small Schröder numbers -/
-def smallSchroderPowerSeries : PowerSeries ℕ :=
+def smallSchroderSeries : PowerSeries ℕ :=
   PowerSeries.mk smallSchroder
-
-@[simp]
-lemma smallSchroderPowerSeries_coeff (n : ℕ) :
-  (coeff n) smallSchroderPowerSeries = smallSchroder n := by
-  simp [smallSchroderPowerSeries]
-
-@[simp]
-lemma smallSchroderPowerSeries_constantCoeff :
-  constantCoeff smallSchroderPowerSeries = 1 := by
-  rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
-  simp [smallSchroderPowerSeries_coeff, smallSchroder_zero]
-
-@[simp]
-lemma smallSchroder_sum_coeff (n : ℕ) (hn : 0 < n) :
-  ∑ i ∈ range (n + 1), coeff i X * smallSchroder (n - i) =
-    smallSchroder (n - 1) := by
-  simp [coeff_X]
-  aesop
-
-@[simp]
-lemma X_mul_smallSchroder_coeff (n : ℕ) (hn : 0 < n) :
-  coeff n (X * smallSchroderPowerSeries) = smallSchroder (n - 1) := by
-  simp only [coeff_mul, smallSchroderPowerSeries_coeff,
-    Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => coeff x X * smallSchroder y),
-    succ_eq_add_one]
-  rw [smallSchroder_sum_coeff n hn]
-
-lemma two_mul_smallSchroder_eq_largeSchroder_coeff (n : ℕ) (hn : 1 ≤ n) :
-  2 * coeff (n + 1) (smallSchroderPowerSeries) = coeff n (largeSchroderPowerSeries) := by
-  simp only [smallSchroderPowerSeries_coeff, largeSchroderPowerSeries_coeff]
-  rw [smallSchroder_succ_eq_largeSchroder_div_two (by omega), Nat.mul_div_cancel_left'
-    (even_largeSchroder (by omega)).two_dvd]
-
-lemma X_mul_smallSchroder_pow_coeff (n : ℕ) :
-  coeff n (X * smallSchroderPowerSeries ^ 2) =
-    ∑ i ∈ range n, smallSchroder i * smallSchroder (n - 1 - i) := by
-  by_cases hn' : n = 0
-  · aesop
-  · have hn : 1 ≤ n := by omega
-    rw [pow_two, ← mul_assoc, coeff_mul]
-    rw [Nat.sum_antidiagonal_eq_sum_range_succ
-      (fun x y => (coeff x) (X * smallSchroderPowerSeries) * (coeff y) smallSchroderPowerSeries) n,
-      Nat.succ_eq_add_one, sum_range_succ]
-    simp only [smallSchroderPowerSeries_coeff, X_mul_smallSchroder_coeff n hn, tsub_self,
-      smallSchroder_zero, mul_one]
-    have : ∑ x ∈ range n, (coeff x) (X * smallSchroderPowerSeries) * smallSchroder (n - x)  =
-      ∑ x ∈ range n, if 0 < x then smallSchroder (x - 1) * smallSchroder (n - x) else 0 := by
-      apply sum_congr rfl
-      intro x a
-      simp_all only [mem_range]
-      split
-      next h =>
-        simp_all only [mul_eq_mul_right_iff]
-        simp [X_mul_smallSchroder_coeff x (by omega)]
-      next h =>
-        simp_all only [not_lt, nonpos_iff_eq_zero, coeff_zero_eq_constantCoeff, map_mul,
-        constantCoeff_X, smallSchroderPowerSeries_constantCoeff, tsub_zero, zero_mul]
-    rw [this, sum_range_eq_add_Ico _ (by omega)]
-    simp only [lt_self_iff_false, reduceIte, zero_add]
-    have : (∑ x ∈ Ico 1 n, if 0 < x then smallSchroder (x - 1) * smallSchroder (n - x) else 0) =
-      ∑ x ∈ Ico 1 n, smallSchroder (x - 1) * smallSchroder (n - x) := by
-      apply sum_congr rfl
-      intros x hx
-      simp at hx
-      have hx' : 0 < x := by omega
-      rw [if_pos hx']
-    rw [this, sum_Ico_eq_sum_range, show n = n - 1 + 1 by omega,
-      sum_range_succ, show n - 1 + 1 = n by omega,
-        show n - 1 - (n - 1) = 0 by omega, smallSchroder_zero]
-    congr 1
-    · apply sum_congr rfl
-      intros x hx
-      simp at hx
-      rw [show 1 + x - 1 = x by omega, show n - (1 + x) = n - 1 - x by omega]
-    · rw [mul_one]
 
 end PowerSeries
