@@ -54,16 +54,10 @@ noncomputable def extEquivCohomologyClass :
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle ((singleFunctor C 0).obj X) R.cochainComplex n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =
-      DerivedCategory.Q.map (Cocycle.equivHomShift.symm x) ≫
-        inv (DerivedCategory.Q.map (R.ι'⟦(n : ℤ)⟧')) ≫
-        (DerivedCategory.Q.commShiftIso (n : ℤ)).hom.app _ := by
+      (ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q).comp
+        (.mk₀ _ rfl (inv (DerivedCategory.Q.map (R.ι')))) (zero_add _) := by
   change SmallShiftedHom.equiv _ _ ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
-  simp only [SmallShiftedHom.equiv_comp, ShiftedHom.comp,
-    CohomologyClass.equiv_toSmallShiftedHom_mk, ShiftedHom.map, SmallShiftedHom.equiv_mk₀Inv,
-    ShiftedHom.mk₀, shiftFunctorZero', eqToIso_refl, Iso.refl_trans,
-    shiftFunctorAdd'_zero_add_inv_app, Functor.id_obj, Category.assoc, Functor.comp_obj]
-  congr 1
-  simp [← Functor.map_comp]
+  simp [SmallShiftedHom.equiv_comp, isoOfHom]
 
 @[simp]
 lemma extEquivCohomologyClass_symm_add
@@ -74,7 +68,7 @@ lemma extEquivCohomologyClass_symm_add
   obtain ⟨x, rfl⟩ := x.mk_surjective
   obtain ⟨y, rfl⟩ := y.mk_surjective
   ext
-  simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom]
+  simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom, ShiftedHom.map]
 
 /-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identifies
 to the group of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
