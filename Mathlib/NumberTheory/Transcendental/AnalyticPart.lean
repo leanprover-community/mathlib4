@@ -87,7 +87,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
           simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
           left
           rw [div_self]
-          · simp only [one_mul]
+          · grind
           · simp only [ne_eq, Nat.cast_eq_zero]
             exact Nat.factorial_ne_zero r
       · rename_i k IH
