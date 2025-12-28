@@ -342,9 +342,7 @@ lemma sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs [FaithfulSMul R�
 noncomputable
 def ofHasCoeffs [FaithfulSMul R₀ R] :
     Algebra.SubmersivePresentation R₀ (P.ModelOfHasCoeffs R₀) ι σ where
-  __ := Algebra.Presentation.naive
-  map := P.map
-  map_inj := P.map_inj
+  __ := P.toPreSubmersivePresentation.ofHasCoeffs R₀
   jacobian_isUnit := by
     classical
     let : Fintype σ := Fintype.ofFinite _
