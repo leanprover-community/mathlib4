@@ -60,7 +60,7 @@ def arclengthReparam (t₀ : ℝ) : ℝ → E :=
 
 variable {r : WithTop ℕ∞} {t₀ : ℝ}
 
--- Auxilary definition, so we don't have to type the full long expression every time
+-- Auxiliary definition, so we don't have to type the full long expression every time
 local notation "ψ" => arclengthParamTransformAux c t₀
 
 omit [I.OrdConnected] in
