@@ -20,7 +20,7 @@ where `mulFiber x = {(a, b) | a * b = x}` is the fiber of the multiplication map
 This is analogous to `MeasureTheory.convolution` but for the discrete (counting measure) setting.
 The measure-theoretic convolution uses `(f ⋆ g) x = ∫ t, f(t) * g(x - t) ∂μ` which requires
 a group structure for subtraction; our definition sums over multiplicative fibers and works
-for any monoid.
+for `[Monoid M]`.
 
 ## Main Definitions
 
