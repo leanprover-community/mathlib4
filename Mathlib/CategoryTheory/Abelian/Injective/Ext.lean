@@ -55,7 +55,7 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle ((singleFunctor C 0).obj X) R.cochainComplex n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =
       (ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q).comp
-        (.mk₀ _ rfl (inv (DerivedCategory.Q.map (R.ι')))) (zero_add _) := by
+        (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι'))) (zero_add _) := by
   change SmallShiftedHom.equiv _ _ ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
   simp [SmallShiftedHom.equiv_comp, isoOfHom]
 
