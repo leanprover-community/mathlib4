@@ -105,4 +105,3 @@ instance : (uliftFunctor.{v', v} R).Linear R where
 end CommRing
 
 end ModuleCat
-#lint
