@@ -42,7 +42,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
 instance : R.cochainComplex.IsKInjective := isKInjective_of_injective _ 0
 
-/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identify
+/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
 to `R.cochainComplex`. -/
 noncomputable def extEquivCohomologyClass :
@@ -57,16 +57,11 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
       DerivedCategory.Q.map (Cocycle.equivHomShift.symm x) ≫
         inv (DerivedCategory.Q.map (R.ι'⟦(n : ℤ)⟧')) ≫
         (DerivedCategory.Q.commShiftIso (n : ℤ)).hom.app _ := by
-  simp only [Ext.hom, Ext.homEquiv, extEquivCohomologyClass, SmallShiftedHom.postcompEquiv,
-    Equiv.symm_trans_apply, Equiv.symm_symm, CohomologyClass.equivOfIsKInjective_apply,
-    Equiv.coe_fn_symm_mk, Functor.comp_obj]
-  refine (SmallShiftedHom.equiv_comp _ _ _ _ _).trans ?_
-  simp only [ShiftedHom.comp, CohomologyClass.equiv_toSmallShiftedHom_mk, ShiftedHom.map,
-    SmallShiftedHom.equiv_mk₀Inv, ShiftedHom.mk₀, shiftFunctorZero', eqToIso_refl, Iso.refl_trans,
-    Functor.map_comp, shiftFunctorAdd'_zero_add_inv_app, Functor.id_obj, Category.assoc]
-  rw [← Functor.map_comp, Iso.inv_hom_id_app]
-  dsimp
-  rw [Functor.map_id, Category.comp_id]
+  change SmallShiftedHom.equiv _ _ ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
+  simp only [SmallShiftedHom.equiv_comp, ShiftedHom.comp,
+    CohomologyClass.equiv_toSmallShiftedHom_mk, ShiftedHom.map, SmallShiftedHom.equiv_mk₀Inv,
+    ShiftedHom.mk₀, shiftFunctorZero', eqToIso_refl, Iso.refl_trans,
+    shiftFunctorAdd'_zero_add_inv_app, Functor.id_obj, Category.assoc, Functor.comp_obj]
   congr 1
   simp [← Functor.map_comp]
 
@@ -81,9 +76,10 @@ lemma extEquivCohomologyClass_symm_add
   ext
   simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom]
 
-/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identify
-to the type of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
+/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identifies
+to the group of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
 to `R.cochainComplex`. -/
+@[simps!]
 noncomputable def extAddEquivCohomologyClass :
     Ext X Y n ≃+ CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n :=
   AddEquiv.symm

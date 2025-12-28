@@ -126,9 +126,9 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
   · rw [heq]
     exact (b.linearIndependent.map' _ (LinearMap.ker_eq_bot_of_injective h.injective)).map' _
       (Finsupp.linearEquivFunOnFinite S S σ).ker
-  · rw [heq, Set.range_comp, Set.range_comp, ← Submodule.map_span, ← Submodule.map_span,
+  · rw [heq, Set.range_comp, Set.range_comp, Submodule.span_image_linearEquiv, ← Submodule.map_span,
       b.span_eq, Submodule.map_top, LinearMap.range_eq_top_of_surjective _ h.surjective,
-      Submodule.map_top, LinearEquivClass.range]
+      Submodule.map_top, LinearEquiv.range]
 
 end PreSubmersivePresentation
 
