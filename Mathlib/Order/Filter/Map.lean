@@ -991,7 +991,7 @@ variable {α β : Type*} {F : Filter α} {G : Filter β}
 theorem Filter.map_surjOn_Iic_iff_le_map {m : α → β} :
     SurjOn (map m) (Iic F) (Iic G) ↔ G ≤ map m F := by
   refine ⟨fun hm ↦ ?_, fun hm ↦ ?_⟩
-  · rcases hm right_mem_Iic with ⟨H, (hHF : H ≤ F), rfl⟩
+  · rcases hm self_mem_Iic with ⟨H, (hHF : H ≤ F), rfl⟩
     exact map_mono hHF
   · have : RightInvOn (F ⊓ comap m ·) (map m) (Iic G) :=
       fun H (hHG : H ≤ G) ↦ by simpa [Filter.push_pull] using hHG.trans hm
