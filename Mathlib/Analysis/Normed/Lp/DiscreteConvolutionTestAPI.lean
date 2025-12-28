@@ -157,25 +157,39 @@ theorem delta_ne {x : M} (hx : x ≠ 1) : (delta : M → R) x = 0 := Pi.single_e
 
 end Identity
 
-/-! ### Banach Algebra Structure for ℓ¹(M, R) -/
+/-! ### Banach Algebra Structure for ℓ¹(M, R)
+
+The following lemmas specialize the general `lp` API to `p = 1`:
+* `lp.one_summable_norm` is `Memℓp.summable` with `p = 1`
+* `lp.one_norm_eq_tsum` is `lp.norm_eq_tsum_rpow` with `p = 1`
+
+The lemma `lp.one_summable_norm_mul` (product summability over `M × M`) is new;
+the existing `lp.summable_mul` handles Hölder conjugates, not two ℓ¹ functions. -/
 
 section LpOneSummability
 
 variable [NormedRing R]
 
-/-- ℓ¹ membership gives summable norms. -/
+/-- ℓ¹ membership gives summable norms.
+
+This is `Memℓp.summable` specialized to `p = 1`. -/
 theorem lp.one_summable_norm (f : lp (fun _ : M => R) 1) : Summable (fun m => ‖f m‖) := by
   have hf := lp.memℓp f
   rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hf
   simpa using hf
 
-/-- The ℓ¹ norm equals the sum of norms. -/
+/-- The ℓ¹ norm equals the sum of norms.
+
+This is `lp.norm_eq_tsum_rpow` specialized to `p = 1`. -/
 theorem lp.one_norm_eq_tsum (f : lp (fun _ : M => R) 1) :
     ‖f‖ = ∑' m, ‖f m‖ := by
   rw [lp.norm_eq_tsum_rpow (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
   simp only [ENNReal.toReal_one, Real.rpow_one, one_div, inv_one]
 
-/-- Product of ℓ¹ norms is summable over M × M. -/
+/-- Product of ℓ¹ norms is summable over M × M.
+
+This is used for convolution bounds. Note: `lp.summable_mul` handles Hölder conjugates
+(1/p + 1/q = 1), not two ℓ¹ functions. -/
 theorem lp.one_summable_norm_mul (f g : lp (fun _ : M => R) 1) :
     Summable (fun ab : M × M => ‖f ab.1‖ * ‖g ab.2‖) :=
   (lp.one_summable_norm f).mul_of_nonneg (lp.one_summable_norm g)
@@ -194,20 +208,18 @@ theorem lp.one_convolution_memℓp (f g : lp (fun _ : M => R) 1) :
   simp only [ENNReal.toReal_one, Real.rpow_one]
   have hprod := lp.one_summable_norm_mul f g
   have hfiber : ∀ x, Summable fun ab : mulFiber x => ‖f ab.1.1‖ * ‖g ab.1.2‖ :=
-    fun x => hprod.subtype (mulFiber x)
-  -- ‖(f ⋆ g) x‖ ≤ ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖
-  have hbound : ∀ x, ‖(convolution (⇑f) (⇑g)) x‖ ≤
-      ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := fun x => by
+    fun x => hprod.subtype _
+  have hbound :
+      ∀ x, ‖(convolution (⇑f) (⇑g)) x‖ ≤
+        ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := by
+    intro x
+    have hx := hfiber x
     refine (norm_tsum_le_tsum_norm ?_).trans ?_
-    · exact Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) (hfiber x)
+    · exact Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) hx
     · exact Summable.tsum_le_tsum (fun ab => norm_mul_le _ _)
-        (Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) (hfiber x))
-        (hfiber x)
+        (Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) hx) hx
   apply Summable.of_nonneg_of_le (fun _ => norm_nonneg _) hbound
-  -- Fiber partition: ∑' x, ∑' (ab : mulFiber x), ... = ∑' ab, ... via sigmaFiberEquiv
-  have : Summable fun p : Σ x, mulFiber x => ‖f p.2.1.1‖ * ‖g p.2.1.2‖ := by
-    convert (Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod using 1
-  exact this.sigma
+  exact ((Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod).sigma
 
 /-- Cauchy product multiplication on ℓ¹. -/
 def lp.oneMul (f g : lp (fun _ : M => R) 1) : lp (fun _ : M => R) 1 :=
@@ -364,7 +376,7 @@ theorem convolution_assoc_left_sum (f g h : M → R)
   have h1 : ∑' cd : mulFiber x, (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
       ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, (f ab.1.1 * g ab.1.2) * h cd.1.2 := by
     congr 1; ext cd; exact ((hfg cd.1.1).tsum_mul_right (h cd.1.2)).symm
-  -- Step 2: Summability (use convert to avoid timeout)
+  -- Step 2: Summability
   have hsigmaL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
       (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 := by
     convert (leftAssocEquiv x).summable_iff.mpr (htriple x) using 1
@@ -372,11 +384,11 @@ theorem convolution_assoc_left_sum (f g h : M → R)
       (f ab.1.1 * g ab.1.2) * h cd.1.2 := fun cd => (hfg cd.1.1).mul_right (h cd.1.2)
   -- Step 3: Equivalence tsum
   have h2 := (leftAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
-  -- Step 4: Fubini (compute h3 via have to avoid timeout)
+  -- Step 4: Fubini
   have h3 : ∑' (p : Σ cd : mulFiber x, mulFiber cd.1.1), (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 =
       ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, (f ab.1.1 * g ab.1.2) * h cd.1.2 :=
     hsigmaL.tsum_sigma' hfiberL
-  rw [h1, ← h2, ← h3]; congr 1
+  rw [h1, ← h2, ← h3]; rfl
 
 /-- Right-associated convolution sum as a triple fiber sum. -/
 theorem convolution_assoc_right_sum (f g h : M → R)
@@ -387,7 +399,7 @@ theorem convolution_assoc_right_sum (f g h : M → R)
   have h1 : ∑' ae : mulFiber x, f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
       ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) := by
     congr 1; ext ae; exact ((hgh ae.1.2).tsum_mul_left (f ae.1.1)).symm
-  -- Step 2: Summability (use convert + simp_rw for associativity)
+  -- Step 2: Summability
   have hsigmaR : Summable fun p : Σ ae : mulFiber x, mulFiber ae.1.2 =>
       f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) := by
     simp_rw [← mul_assoc]
@@ -396,11 +408,12 @@ theorem convolution_assoc_right_sum (f g h : M → R)
       f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae => (hgh ae.1.2).mul_left (f ae.1.1)
   -- Step 3: Equivalence tsum
   have h2 := (rightAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
-  -- Step 4: Fubini (compute h3 via have to avoid timeout)
+  -- Step 4: Fubini
   have h3 : ∑' (p : Σ ae : mulFiber x, mulFiber ae.1.2), f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) =
       ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) :=
     hsigmaR.tsum_sigma' hfiberR
-  rw [h1, ← h2, ← h3]; simp_rw [← mul_assoc]; congr 1
+  rw [h1, ← h2, ← h3]
+  simp_rw [← mul_assoc]; rfl
 
 /-- Convolution is associative: `(f ⋆ g) ⋆ h = f ⋆ (g ⋆ h)`.
 
