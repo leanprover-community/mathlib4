@@ -263,20 +263,13 @@ lemma hasFPowerSeriesWithinAt_nhds_iff (f : ℂ → ℂ) (p : FormalMultilinearS
   HasFPowerSeriesWithinAt f p U z ↔ HasFPowerSeriesAt f p z := by
     simp only [HasFPowerSeriesWithinAt, HasFPowerSeriesAt]
     refine ⟨fun ⟨renn, r_le, r_pos, hs⟩ ↦ ?_,
-        fun ⟨r, hr⟩ ↦ ⟨r, HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall hr⟩⟩
+      fun ⟨r, hr⟩ ↦ ⟨r, HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall hr⟩⟩
     · have hzmem : z ∈ U := mem_of_mem_nhds hU
       rw [Metric.mem_nhds_iff] at hU
       obtain ⟨r', hr', hball⟩ := hU
       let r'' : ENNReal := Option.some ⟨r', by linarith⟩
-      have hball' : EMetric.ball z r'' ⊆ U := by aesop
       use min renn r''
-      refine ⟨by aesop, by aesop, fun hy s ↦ ?_⟩
-      · rename_i y
-        have : z + y ∈ EMetric.ball (z + 0) (min renn r'') := add_mem_emetric_ball_left _ hy
-        have : z + y ∈ EMetric.ball z (min renn r'') := by aesop
-        have : z + y ∈ EMetric.ball z r'' := by aesop
-        have : z + y ∈ U := by aesop
-        refine hs (U := s) (y := y) (by aesop) (by aesop)
+      refine ⟨by aesop, by aesop, fun hy s ↦ hs (U := s) (y := _) (by aesop) (by aesop)⟩
 
 lemma AnalyticOn.analyticAt (f : ℂ → ℂ) (z : ℂ) (U : Set ℂ) (hU : U ∈ nhds z) :
   AnalyticOn ℂ f U → AnalyticAt ℂ f z := by
