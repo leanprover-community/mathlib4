@@ -1,10 +1,14 @@
-import Mathlib.CFT.HardCore
-import Mathlib.CFT.Stuff2
-import Mathlib.RingTheory.Etale.StandardEtale
-import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.LocalRing.ResidueField.Instances
-import Mathlib.RingTheory.ZariskiMain
-import Mathlib.RingTheory.Etale.Locus
+module
+
+public import Mathlib.CFT.HardCore
+public import Mathlib.CFT.Stuff2
+public import Mathlib.RingTheory.Etale.StandardEtale
+public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.ZariskiMain
+public import Mathlib.RingTheory.Etale.Locus
+
+@[expose] public section
 
 open Polynomial TensorProduct
 open IsLocalRing

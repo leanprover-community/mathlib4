@@ -271,7 +271,7 @@ lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain [FaithfulSMul R S]
       (RingHom.Finite.tensorProductMap (f := AlgHom.id R R') (RingEquiv.refl _).finite hx')).comp
       (polyEquivTensor R R').toRingEquiv.finite using 1
     ext <;> simp [g]
-  obtain ⟨⟨Q, _⟩, hQ⟩ := hf.specComap_surjective hf' ⟨P, ‹_›⟩
+  obtain ⟨⟨Q, _⟩, hQ⟩ := hf.comap_surjective hf' ⟨P, ‹_›⟩
   refine fun H ↦ not_quasiFiniteAt_of_stronglyTranscendental_of_isIntegrallyClosed H₁ H₂ Q ?_
   have : Algebra.QuasiFiniteAt R' (Q.comap g.toRingHom) := .baseChange P _ <| by
     rw [Ideal.comap_comap]
@@ -471,10 +471,6 @@ lemma ZariskiMainProperty.of_algHom_polynomial
       ← AlgHom.map_adjoin_singleton f]
   · refine ⟨⟨x, by simpa using hx 1⟩, hxp, top_le_iff.mp fun s _ ↦ ⟨_, ⟨1, rfl⟩, ?_⟩⟩
     simpa [Algebra.mem_bot] using hx s
-
-lemma MvPolynomial.optionEquivLeft_symm_C_X (R S₁ : Type*) [CommSemiring R] (i) :
-    (MvPolynomial.optionEquivLeft R S₁).symm (.C (.X i)) = .X (.some i) := by
-  simp [MvPolynomial.optionEquivLeft]
 
 open scoped Pointwise in
 lemma ZariskiMainProperty.of_algHom_mvPolynomial
