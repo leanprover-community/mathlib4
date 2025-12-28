@@ -276,6 +276,10 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_notMem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
+@[simp, mfld_simps]
+theorem empty_eq_image {α β} {f : α → β} {s : Set α} : ∅ = f '' s ↔ s = ∅ := by
+  rw [eq_comm, image_eq_empty]
+
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
     HasCompl.compl ⁻¹' s = HasCompl.compl '' s :=
   Set.ext fun x =>
