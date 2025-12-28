@@ -281,7 +281,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     intro i hi
     by_cases eq0 : i = 0
     · rw [eq0, ← finte_free_ext_vanish_iff S.X₁]
-      have mono := Ext.mono_postcomp_mk₀_of_mono K S.X₁ S.X₂ S.f S_exact.mono_f
+      have mono := Ext.mono_postcomp_mk₀_of_mono K S.f (hf := S_exact.mono_f)
       exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ (hom_zero 0))
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
