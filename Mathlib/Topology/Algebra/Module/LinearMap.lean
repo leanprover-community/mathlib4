@@ -1073,7 +1073,7 @@ end SMulRightₗ
 
 section CommSemiring
 variable {R S M : Type*} [Semiring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  [CommSemiring S] [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M]
+  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M]
   [ContinuousConstSMul S M] [IsTopologicalAddGroup M]
 
 instance algebra : Algebra S (M →L[R] M) :=
