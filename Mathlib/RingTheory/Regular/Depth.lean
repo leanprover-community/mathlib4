@@ -508,9 +508,8 @@ lemma moduleDepth_ge_min_of_shortExact_trd_fst
   have zero2 : IsZero (AddCommGrpCat.of (Ext S.X₂ N i)) :=
     @AddCommGrpCat.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
   by_cases eq0 : i = 0
-  · rw [eq0] at zero2 ⊢
-    have := Ext.mono_precomp_mk₀_of_epi N _ _ S.g hS.epi_g
-    exact AddCommGrpCat.subsingleton_of_isZero <| @zero2.of_mono _ _ _ _ _ _ this
+  · simp only [eq0, AddCommGrpCat.isZero_iff_subsingleton] at zero2 ⊢
+    exact (Ext.precomp_mk₀_injective_of_epi N S.g (hg := hS.epi_g)).subsingleton
   · have hi1' : (i - 1 : ℕ) < moduleDepth S.X₁ N := by
       have : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero eq0
       rw [← this, Nat.cast_add, Nat.cast_one] at hi1
@@ -544,9 +543,8 @@ lemma moduleDepth_ge_min_of_shortExact_fst_snd
   have zero2 : IsZero (AddCommGrpCat.of (Ext N S.X₂ i)) :=
     @AddCommGrpCat.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
   by_cases eq0 : i = 0
-  · rw [eq0] at zero2 ⊢
-    have := Ext.mono_postcomp_mk₀_of_mono N _ _ S.f hS.mono_f
-    exact AddCommGrpCat.subsingleton_of_isZero <| @zero2.of_mono _ _ _ _ _ _ this
+  · simp only [eq0, AddCommGrpCat.isZero_iff_subsingleton] at zero2 ⊢
+    exact (Ext.postcomp_mk₀_injective_of_mono N S.f (hf := hS.mono_f)).subsingleton
   · have hi3' : (i - 1 : ℕ) < moduleDepth N S.X₃ := by
       have : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero eq0
       rw [← this, Nat.cast_add, Nat.cast_one] at hi3
