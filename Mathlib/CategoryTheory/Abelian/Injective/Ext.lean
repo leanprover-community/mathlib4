@@ -168,6 +168,16 @@ lemma extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : X ⟶ R.cocomplex.X n) m hm (by simp) = 0 := by
   simp [extMk]
 
+lemma extMk_hom
+    [HasDerivedCategory C] {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) :
+    (R.extMk f m hm hf).hom =
+      (ShiftedHom.map (Cocycle.equivHomShift.symm
+        (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
+          m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) _).comp
+            (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι'))) (zero_add _) :=
+  extEquivCohomologyClass_symm_mk_hom _ _
+
 lemma extMk_eq_zero_iff (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0)
     (p : ℕ) (hp : p + 1 = n) :
@@ -191,16 +201,6 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
   exact ⟨f ≫ (R.cochainComplexXIso n n rfl).hom,
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
-
-lemma extMk_hom
-    [HasDerivedCategory C] {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
-    (hf : f ≫ R.cocomplex.d n m = 0) :
-    (R.extMk f m hm hf).hom =
-      (ShiftedHom.map (Cocycle.equivHomShift.symm
-        (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
-          m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) _).comp
-            (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι'))) (zero_add _) := by
-  sorry
 
 lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) {X' : C} (g : X' ⟶ X) :
