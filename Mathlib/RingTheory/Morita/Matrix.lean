@@ -82,7 +82,6 @@ variable [Inhabited ι]
 
 universe w
 
--- set_option pp.universes true in
 /-- the functor from Module Cat of `Mₙ(R)` to Module Cat of `R` induced by sending `M` to
   the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix -/
 @[simps]
