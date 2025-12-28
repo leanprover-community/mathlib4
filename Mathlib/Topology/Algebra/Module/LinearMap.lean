@@ -761,7 +761,7 @@ theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
   coe_inj.mp <| LinearMap.comp_toSpanSingleton _ _
 
 omit [ContinuousSMul R₁ M₁] in
-theorem toSpanSingleton_comp_eq_smulRight (f : M₁ →L[R₁] R₁) (g : M₂) :
+theorem toSpanSingleton_comp (f : M₁ →L[R₁] R₁) (g : M₂) :
     toSpanSingleton R₁ g ∘L f = f.smulRight g := rfl
 
 @[simp] theorem toSpanSingleton_inj {f f' : M₂} :
