@@ -29,7 +29,8 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
-* `Submodule.le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot` - Statement (8) in
+* `Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot` -
+  Statement (8) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
 Note that a version of Statement (1) in
@@ -184,10 +185,13 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   | add _ _ _ _ hx hy => exact N.add_mem hx hy
   | zero => exact N.zero_mem
 
-/-- **Nakayama's Lemma** - Statement (8) in
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV). -/
-@[stacks 00DV "(8)"]
-theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
+/--
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`t` is a set of `M` whose span image under the quotient map `M → M / (I • N)`
+contains the image of `N`, then `N` is contained in the span of `t`.
+-/
+lemma le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
     {I : Ideal R} {N : Submodule R M} {t : Set M}
     (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ N ≤ map (I • N).mkQ (span R t)) :
     N ≤ span R t := by
@@ -197,5 +201,42 @@ theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
   simp only [comap_map_mkQ] at htspan
   grw [sup_comm, ← htspan]
   simp only [le_sup_right]
+
+/--
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`t` is a set of `M` whose span image under the quotient map `M → M / (I • N)`
+is the image of `N`, then `t` spans `N`.
+-/
+lemma span_eq_of_map_mkQ_span_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} {t : Set M}
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ (span R t) = map (I • N).mkQ N) :
+    span R t = N := by
+  apply le_antisymm
+  · apply_fun comap (I • N).mkQ at htspan
+    simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at htspan
+    rw [← htspan]; apply le_sup_right
+  · exact le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot hN hIjac htspan.ge
+
+/--
+**Nakayama's Lemma** - Statement (8) in
+[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
+
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`s` is a set of `M / (I • N)` that spans the quotient image of `N`,
+then there exists a spanning set `t` of `N` in bijection with `s` via the quotient map.
+-/
+@[stacks 00DV "(8)"]
+theorem exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} (s : Set (M ⧸ (I • N)))
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (hsspan : span R s = map (I • N).mkQ N) :
+    ∃ (t : Set M), t.InjOn (I • N).mkQ ∧ (I • N).mkQ '' t = s ∧ span R t = N := by
+  use Quotient.out '' s
+  split_ands
+  · simp [Set.InjOn]
+  · simp [Set.image_image]
+  · apply span_eq_of_map_mkQ_span_eq_map_mkQ_of_le_jacobson_bot hN hIjac
+    simp [← hsspan, map_span, Set.image_image]
 
 end Submodule
