@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -146,15 +146,14 @@ variable [IsTopologicalAddGroup V] [ContinuousSMul R V]
 
 theorem _root_.ContinuousLinearMap.mem_center_iff {f : V →L[R] V} :
     f ∈ Set.center (V →L[R] V) ↔ ∃ α ∈ Set.center R, ∀ x : V, f x = α • x := by
-  simp only [Semigroup.mem_center_iff, ContinuousLinearMap.ext_iff, mul_apply]
+  simp only [Semigroup.mem_center_iff, ContinuousLinearMap.ext_iff, ContinuousLinearMap.mul_apply]
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases! Subsingleton V
   · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
   obtain ⟨g, hg⟩ := SeparatingDual.exists_eq_one (R := R) hx
-  use g (f x)
-  have := fun y ↦ by simpa [hg] using (h (toSpanSingleton R y ∘L g) x).symm
-  simp [← this, mul_comm]
+  have := fun y ↦ by simpa [hg] using (h (.toSpanSingleton R y ∘L g) x).symm
+  exact ⟨g (f x), by simp [← this, mul_comm]⟩
 
 section algebra
 variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
@@ -162,11 +161,11 @@ variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebr
 
 theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
     f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, ∀ x : V, f x = α • x :=
-  mem_center_iff
+  f.mem_center_iff
 
 /-- The center of continuous linear maps on a topological vector space
 with separating dual is trivial, in other words, it is a central algebra. -/
-instance _root_.Algebra.IsCentral.instContinuousLinearMap : [Algebra.IsCentral S R] :
+instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R] :
     Algebra.IsCentral S (V →L[R] V) where out T hT :=
   have ⟨_, ⟨y, _⟩, _⟩ := Algebra.IsCentral.center_eq_bot S R ▸ T.mem_subalgebraCenter_iff.mp hT
   ⟨y, by aesop⟩
