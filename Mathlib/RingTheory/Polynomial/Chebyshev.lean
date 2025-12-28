@@ -832,8 +832,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
   simp only [derivative_add, derivative_sub, derivative_mul, derivative_X, derivative_one,
     derivative_X_pow, derivative_intCast, C_eq_natCast, T_derivative_eq_U] at h
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
-  linear_combination (norm := (push_cast; ring_nf))
-    h
+  linear_combination (norm := (push_cast; ring_nf)) h
 
 variable (R)
 
