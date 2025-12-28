@@ -20,7 +20,6 @@ we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.complex` and to make computations in the `Ext`-group.
 
 ## TODO
-* Functoriality in `Y` for a given projective resolution `R`
 * Functoriality in `X`: this would involve a morphism `X ⟶ X'`, projective
 resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
 of cochain complexes `R.complex ⟶ R'.complex`; in this context,
@@ -199,5 +198,22 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
   refine ⟨(R.cochainComplexXIso (-n) n rfl).inv ≫ f, ?_, by simp [extMk]⟩
   rw [← cancel_epi (R.cochainComplexXIso (-m) m rfl).hom]
   simpa [R.cochainComplex_d _ _ _ _ rfl rfl] using hf
+
+lemma extMk_comp_mk₀ {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
+    (hf : R.complex.d m n ≫ f = 0) {Y' : C} (g : Y ⟶ Y') :
+    (R.extMk f m hm hf).comp (Ext.mk₀ g) (add_zero _) =
+      R.extMk (f ≫ g) m hm (by simp [reassoc_of% hf]) := by
+  have := HasDerivedCategory.standard C
+  ext
+  simp only [extMk, Ext.comp_hom, Int.cast_ofNat_Int, Ext.mk₀_hom,
+    extEquivCohomologyClass_symm_mk_hom]
+  simp only [← Category.assoc]
+  rw [Cocycle.toSingleMk_postcomp _ _ _ _
+      (by simpa [cochainComplex_d _ _ _ m n rfl rfl]) g,
+    Cocycle.equivHomShift_symm_postcomp,
+    ← ShiftedHom.comp_mk₀ _ 0 rfl,
+    ShiftedHom.map_comp, ShiftedHom.map_mk₀,
+    ShiftedHom.comp_assoc _ _ _ (add_zero _) (zero_add _) (by simp)]
+  rfl
 
 end CategoryTheory.ProjectiveResolution

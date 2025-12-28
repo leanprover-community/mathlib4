@@ -161,6 +161,11 @@ noncomputable def toSingleEquiv {p q n : ℤ} (h : p + n = q) :
   map_add' := by simp
 
 @[simp]
+lemma toSingleEquiv_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
+    toSingleEquiv h (toSingleMk f h) = f := by
+  simp [toSingleEquiv]
+
+@[simp]
 lemma toSingleMk_add {p q : ℤ} (f g : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
     toSingleMk (f + g) h = toSingleMk f h + toSingleMk g h :=
   (toSingleEquiv h).symm.map_add _ _
@@ -179,6 +184,13 @@ lemma toSingleMk_surjective {q n : ℤ} (α : Cochain K ((singleFunctor C q).obj
     (p : ℤ) (h : p + n = q) :
     ∃ (f : K.X p ⟶ X), toSingleMk f h = α :=
   (toSingleEquiv h).symm.surjective α
+
+lemma toSingleMk_postcomp
+    {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) {X' : C} (g : X ⟶ X') :
+    toSingleMk (f ≫ g) h =
+      (toSingleMk f h).comp (.ofHom ((singleFunctor C q).map g)) (add_zero n) := by
+  apply (toSingleEquiv h).injective
+  simp [toSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
 
 end Cochain
 
@@ -256,6 +268,13 @@ noncomputable def toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n 
   Cocycle.mk (Cochain.toSingleMk f h) _ rfl (by
     rw [Cochain.δ_toSingleMk _ _ _ p' (by lia), hf]
     simp)
+
+lemma toSingleMk_postcomp {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0) {X' : C} (g : X ⟶ X') :
+    toSingleMk (f ≫ g) h p' hp' (by simp [reassoc_of% hf]) =
+      (toSingleMk f h p' hp' hf).postcomp ((singleFunctor C q).map g) := by
+  ext : 1
+  exact (Cochain.toSingleEquiv h).injective (by simp [Cochain.toSingleMk_postcomp])
 
 lemma toSingleMk_surjective {q n : ℤ} (α : Cocycle K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) (p' : ℤ) (hp' : p' + 1 = p) :

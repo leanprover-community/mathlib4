@@ -20,7 +20,6 @@ we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.cocomplex` and to make computations in the `Ext`-group.
 
 ## TODO
-* Functoriality in `X` for a given injective resolution `R`
 * Functoriality in `Y`: this would involve a morphism `Y ⟶ Y'`, injective
 resolutions `R` and `R'` of `Y` and `Y'`, a lift of `Y ⟶ Y'` as a morphism
 of cochain complexes `R.cocomplex ⟶ R'.cocomplex`; in this context,
