@@ -79,8 +79,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
       intros k hkr
       induction k
       · use 0
-        simp only [Function.iterate_zero, id_eq, tsub_zero,
-          Pi.zero_apply, mul_zero, add_zero]
+        simp only [Function.iterate_zero, id_eq, tsub_zero, Pi.zero_apply, mul_zero, add_zero]
         refine ⟨fun z ↦ ?_, fun z ↦ ?_⟩
         · refine Differentiable.analyticAt (differentiable_zero) z
         · rw [hR₁ z]
