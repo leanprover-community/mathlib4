@@ -166,7 +166,7 @@ theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
 
 /-- The center of continuous linear maps on a topological vector space
 with separating dual is trivial, in other words, it is a central algebra. -/
-instance _root_.Algebra.IsCentral.continuousLinearMap : [Algebra.IsCentral S R] :
+instance _root_.Algebra.IsCentral.instContinuousLinearMap : [Algebra.IsCentral S R] :
     Algebra.IsCentral S (V →L[R] V) where out T hT :=
   have ⟨_, ⟨y, _⟩, _⟩ := Algebra.IsCentral.center_eq_bot S R ▸ T.mem_subalgebraCenter_iff.mp hT
   ⟨y, by aesop⟩
