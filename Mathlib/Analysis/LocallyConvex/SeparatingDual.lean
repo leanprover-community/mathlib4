@@ -152,8 +152,8 @@ theorem _root_.ContinuousLinearMap.mem_center_iff {f : V →L[R] V} :
   · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
   obtain ⟨g, hg⟩ := SeparatingDual.exists_eq_one (R := R) hx
-  have := fun y ↦ by simpa [hg] using (h (.toSpanSingleton R y ∘L g) x).symm
-  exact ⟨g (f x), by simp [← this, mul_comm]⟩
+  have := fun y ↦ by simpa [hg] using h (.toSpanSingleton R y ∘L g) x
+  exact ⟨g (f x), by simp [this, mul_comm]⟩
 
 section algebra
 variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
