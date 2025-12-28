@@ -392,7 +392,7 @@ theorem commute_X_pow (φ : MvPowerSeries σ R) (s : σ) (n : ℕ) : Commute φ 
 theorem X_pow_mul {φ : MvPowerSeries σ R} {s : σ} {n : ℕ} : X s ^ n * φ = φ * X s ^ n :=
   φ.commute_X_pow s n |>.symm.eq
 
-theorem X_def (s : σ) : X s = monomial (single s 1) 1 :=
+theorem X_def (s : σ) : X s = monomial (single s 1) (1 : R) :=
   rfl
 
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial (single s n) 1 := by
