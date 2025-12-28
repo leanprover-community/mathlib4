@@ -40,6 +40,9 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
 section Basic
 variable {R I J K L}
 
+theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J R 1 = 1 := by
+  ext; simp only [comp, Equiv.coe_fn_mk, one_apply, apply_ite]; aesop
+
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
     comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
@@ -123,11 +126,7 @@ theorem compAddEquiv_apply (M : Matrix I J (Matrix K L R)) :
 theorem compAddEquiv_symm_apply (M : Matrix (I × K) (J × L) R) :
     (compAddEquiv I J K L R).symm M = (comp I J K L R).symm M := rfl
 
-end AddCommMonoid
-
-section Semiring
-
-variable [Semiring R] [Fintype I] [Fintype J]
+variable [Mul R] [Fintype I] [Fintype J]
 
 /-- `Matrix.comp` as `RingEquiv` -/
 def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R where
@@ -142,15 +141,20 @@ theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :
 theorem compRingEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compRingEquiv I J R).symm M = (comp I I J J R).symm M := rfl
 
-end Semiring
+instance (R) [MulOne R] [AddCommMonoid R] [Fintype I] [DecidableEq I] [IsStablyFiniteRing R] :
+    IsStablyFiniteRing (Matrix I I R) :=
+  ⟨fun n ↦ let f := MonoidHom.mk ⟨compRingEquiv (Fin n) I R, comp_one⟩ (map_mul _)
+    .of_injective f (compRingEquiv ..).injective⟩
+
+end AddCommMonoid
 
 section LinearMap
 
-variable (K : Type*) [CommSemiring K] [AddCommMonoid R] [Module K R]
+variable (R₀ : Type*) [Semiring R₀] [AddCommMonoid R] [Module R₀ R]
 
 /-- `Matrix.comp` as `LinearEquiv` -/
 @[simps!]
-def compLinearEquiv : Matrix I J (Matrix K L R) ≃ₗ[K] Matrix (I × K) (J × L) R where
+def compLinearEquiv : Matrix I J (Matrix K L R) ≃ₗ[R₀] Matrix (I × K) (J × L) R where
   __ := Matrix.compAddEquiv I J K L R
   map_smul' _ _ := rfl
 
