@@ -36,7 +36,7 @@ section Ring
 variable [Ring R]
 
 /-- Universe lift functor for `R`-module. -/
-@[simps obj map]
+@[simps obj map, pp_with_univ]
 def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
   obj X := ModuleCat.of R (ULift.{v', v} X)
   map f := ModuleCat.ofHom <|
@@ -46,6 +46,12 @@ def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
 def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage f := ModuleCat.ofHom (ULift.moduleEquiv.toLinearMap.comp
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
+
+@[simps!]
+def uliftFunctorForgetIso :
+    ModuleCat.uliftFunctor.{v'} R ⋙ forget _ ≅
+    forget _ ⋙ CategoryTheory.uliftFunctor.{v'} :=
+  .refl _
 
 instance : (uliftFunctor.{v', v} R).Full := (fullyFaithfulUliftFunctor R).full
 
