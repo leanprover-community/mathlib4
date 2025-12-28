@@ -416,38 +416,6 @@ theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
 theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
   (mk_sub_pos_iff f hx).2 rfl
 
-theorem mk_pos_of_between (f : ℝ →+*o K) {x : K} {r : ℝ}
-    (hl : ∀ s < r, f s < x) (hr : ∀ s > r, x < f s) : 0 ≤ mk x := by
-  obtain ⟨n, hn⟩ := exists_nat_gt |r|
-  use n
-  dsimp
-  simp_rw [abs_le, abs_one, nsmul_eq_mul, mul_one]
-  constructor
-  · convert (hl (-n) _).le
-    · simp
-    · exact neg_lt_of_abs_lt hn
-  · convert (hr n _).le
-    · simp
-    · exact lt_of_abs_lt hn
-
-theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s < x) (hr : ∀ s > r, x < f s) :
-    stdPart x = r := by
-  have hx := mk_pos_of_between f hl hr
-  by_contra h
-  obtain h | h := lt_or_gt_of_ne h
-  · obtain ⟨s, hs, hs'⟩ := exists_between h
-    apply (mk_sub_pos_iff f hx).not.2 hs.ne <|
-      (mk_sub_stdPart_pos f hx).trans_le (mk_antitoneOn _ _ _)
-    · simpa using (hl _ hs').le
-    · simpa using (hl _ h).le
-    · rw [sub_le_sub_iff_left]
-      exact f.monotone' hs.le
-  ·
-  rw [← mk_sub_pos_iff f]
-  · intro n
-    dsimp
-  sorry
-
 private theorem neg_setOf_lt_real (f : ℝ →+*o K) : -{r | x < f r} = {r | f r < -x} := by
   aesop (add simp [lt_neg])
 
@@ -475,27 +443,46 @@ theorem bddAbove_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : Bd
   rw [← bddBelow_neg, neg_setOf_real_lt]
   exact bddBelow_setOf_lt_real f (by simpa)
 
-attribute [local simp] Nat.cast_add_one_pos in
+theorem mk_nonneg_of_between (f : ℝ →+*o K) {x : K} {r : ℝ}
+    (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) : 0 ≤ mk x := by
+  obtain ⟨n, hn⟩ := exists_nat_gt |r|
+  use n
+  dsimp
+  simp_rw [abs_le, abs_one, nsmul_eq_mul, mul_one]
+  convert And.intro (hl (-n) _) (hr n _)
+  · simp
+  · simp
+  · exact neg_lt_of_abs_lt hn
+  · exact lt_of_abs_lt hn
+
+theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
+    stdPart x = r := by
+  have hx := mk_nonneg_of_between f hl hr
+  by_contra h
+  obtain h | h := lt_or_gt_of_ne h
+  · obtain ⟨s, hs, hs'⟩ := exists_between h
+    apply (mk_sub_pos_iff f hx).not.2 hs.ne <|
+      (mk_sub_stdPart_pos f hx).trans_le (mk_antitoneOn _ _ _)
+    · simpa using hl _ hs'
+    · simpa using hl _ h
+    · rw [sub_le_sub_iff_left]
+      exact f.monotone' hs.le
+  · obtain ⟨s, hs', hs⟩ := exists_between h
+    apply (mk_sub_pos_iff f hx).not.2 hs.ne' <|
+      (mk_sub_stdPart_pos f hx).trans_le (mk_monotoneOn _ _ _)
+    · simpa using hr _ h
+    · simpa using hr _ hs'
+    · rw [sub_le_sub_iff_left]
+      exact f.monotone' hs.le
+
 theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
   obtain hx | hx := le_or_gt 0 (mk x)
   · have hn := nonempty_setOf_lt_real f hx
     have hb := bddBelow_setOf_lt_real f hx
-    rw [← mk_sub_pos_iff f hx, ← mk_one, mk_lt_mk, abs_one]
-    rintro (_ | n); · simp
-    rw [nsmul_eq_mul, Nat.cast_add_one, ← lt_inv_mul_iff₀ n.cast_add_one_pos, mul_one]
-    apply abs_by_cases (· < _)
-    · rw [sub_lt_iff_lt_add]
-      have : sInf {r | x < f r} < (n + 1 : ℝ)⁻¹ + sInf {r | x < f r} := by simp
-      rw [csInf_lt_iff hb hn] at this
-      obtain ⟨r, hr, hr'⟩ := this
-      apply lt_of_lt_of_le hr
-      simpa using f.monotone' hr'.le
-    · rw [neg_sub, sub_lt_comm]
-      have : sInf {r | x < f r} - (n + 1 : ℝ)⁻¹ / 2 < sInf {r | x < f r} := by simp
-      have := notMem_of_lt_csInf this hb
-      rw [Set.notMem_setOf_iff, not_lt] at this
-      apply this.trans_lt'
-      simp [map_ofNat]
+    apply stdPart_eq f <;> intro r hr
+    · simpa using notMem_of_lt_csInf hr hb
+    · obtain ⟨s, hs, hs'⟩ := (csInf_lt_iff hb hn).1 hr
+      exact hs.le.trans (f.monotone' hs'.le)
   · rw [stdPart_of_mk_ne_zero hx.ne]
     have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
     obtain h | h := le_or_gt 0 x
