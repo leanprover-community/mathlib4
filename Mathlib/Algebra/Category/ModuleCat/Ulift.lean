@@ -59,6 +59,15 @@ instance : (uliftFunctor.{v', v} R).Faithful := (fullyFaithfulUliftFunctor R).fa
 
 instance : (uliftFunctor R).Additive where
 
+instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
+  let :  Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R ⋙ forget _) := by
+    change Limits.PreservesLimitsOfSize.{v, v} (forget _ ⋙ CategoryTheory.uliftFunctor.{v'})
+    infer_instance
+  Limits.preservesLimits_of_reflects_of_preserves (uliftFunctor.{v', v} R) (forget _)
+
+instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) :=
+  Limits.PreservesLimitsOfSize.preservesFiniteLimits _
+
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact]
@@ -68,11 +77,6 @@ lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) 
   simp only [Function.comp_apply, Set.mem_range, LinearEquiv.symm_apply_eq, map_zero]
   rw [(CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mp h]
   cat_disch
-
-instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) := by
-  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
-    (uliftFunctor_map_exact R)
-  exact this.1
 
 instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
   have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
