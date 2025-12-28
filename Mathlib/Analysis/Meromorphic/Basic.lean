@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Tactic.ToFun
 
 /-!
 # Meromorphic functions
@@ -595,7 +594,7 @@ theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelS
     [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : Meromorphic f) :
     Measurable f := by
   set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
-  have h₁ : sᶜ.Countable  := by simpa using h.countable_compl_analyticAt
+  have h₁ : sᶜ.Countable := by simpa using h.countable_compl_analyticAt
   have h₁' := h₁.to_subtype
   have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
