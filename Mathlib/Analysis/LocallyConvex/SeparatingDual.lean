@@ -145,7 +145,7 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
 variable [IsTopologicalAddGroup V] [ContinuousSMul R V]
 
 theorem _root_.ContinuousLinearMap.mem_center_iff {f : V →L[R] V} :
-    f ∈ Set.center (V →L[R] V) ↔ ∃ α ∈ Set.center R, ∀ x : V, f x = α • x := by
+    f ∈ Set.center (V →L[R] V) ↔ ∃ α ∈ Set.center R, f = α • .id R V := by
   simp only [Semigroup.mem_center_iff, ContinuousLinearMap.ext_iff, ContinuousLinearMap.mul_apply]
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases! Subsingleton V
@@ -160,7 +160,7 @@ variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebr
   [IsScalarTower S R V] [ContinuousConstSMul S V]
 
 theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
-    f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, ∀ x : V, f x = α • x :=
+    f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, f = α • .id R V :=
   f.mem_center_iff
 
 /-- The center of continuous linear maps on a topological vector space
