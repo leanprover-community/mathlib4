@@ -605,8 +605,10 @@ theorem isSwap_iff_cycleType {σ : Perm α} : σ.IsSwap ↔ σ.cycleType = {2} :
   · intro h
     simp [← card_support_eq_two, ← sum_cycleType, h]
 
+omit [Fintype α] in variable [Finite α] in
 theorem IsSwap.orderOf {σ : Equiv.Perm α} (h : σ.IsSwap) :
     orderOf σ = 2 := by
+  have := Fintype.ofFinite α
   rw [← lcm_cycleType, isSwap_iff_cycleType.mp h, Multiset.lcm_singleton, normalize_eq]
 
 end IsSwap
@@ -680,16 +682,8 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
     simp [ab, ac, bc]
   apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => ?_
   · simp [ab, ac]
-  · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
-    rw [mem_support]
-    simp only [Perm.coe_mul, Function.comp_apply, Ne]
-    obtain rfl | rfl | rfl := hx
-    · rw [swap_apply_left, swap_apply_of_ne_of_ne ac.symm bc.symm]
-      exact ac.symm
-    · rw [swap_apply_of_ne_of_ne ab.symm bc, swap_apply_right]
-      exact ab
-    · rw [swap_apply_right, swap_apply_left]
-      exact bc
+  · simp only [mem_support, coe_mul]
+    grind
 
 open Subgroup
 

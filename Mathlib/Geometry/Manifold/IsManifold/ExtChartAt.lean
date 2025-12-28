@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.IsManifold.Basic
 In a `C^n` manifold with corners with the model `I` on `(E, H)`, the charts take values in the
 model space `H`. However, we also need to use extended charts taking values in the model vector
 space `E`. These extended charts are not `OpenPartialHomeomorph` as the target is not open in `E`
-in general, but we can still register them as `PartialEquiv`.
+in general, but we can still register them as `PartialEquiv`s.
 
 ## Main definitions
 
@@ -810,8 +810,8 @@ theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
 
 theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
-    ( letI := ChartedSpace.comp H H' M'
-      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
+    (letI := ChartedSpace.comp H H' M'
+     writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
   letI := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
