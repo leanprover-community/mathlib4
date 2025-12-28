@@ -216,7 +216,7 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   ext
   simp [U.conjStarAlgEquiv_apply, U, smul_smul, la, ← conjContinuousAlgEquiv_apply, ← hy]
 
-/- Remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
+/- TODO: Remove instance when we have `StarOrderedRing (V →L[𝕜] V)` since
 this then becomes an instance from `StarRingEquivClass.instOrderIsoClass`. -/
 public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W →L[𝕜] W)]
     [NonUnitalAlgEquivClass F 𝕜 _ _] [StarHomClass F _ _] [ContinuousMapClass F _ _] :
@@ -224,8 +224,6 @@ public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W �
   map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
       (StarAlgEquivClass.toStarAlgEquiv f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
-    simp_rw [StarAlgEquiv.ext_iff, LinearIsometryEquiv.conjStarAlgEquiv_apply,
-      LinearIsometryEquiv.toContinuousLinearEquiv_symm,
-      fun x ↦ show StarAlgEquivClass.toStarAlgEquiv f x = f x by rfl] at hU
-    simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, hU]
+    have this a : f a = U.conjStarAlgEquiv a := by simpa using congr($hU a)
+    simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, this]
     exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U
