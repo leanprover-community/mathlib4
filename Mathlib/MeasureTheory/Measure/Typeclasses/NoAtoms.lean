@@ -145,7 +145,7 @@ variable {X : Type*} [EMetricSpace X] [MeasurableSpace X]
 /-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
 theorem exists_accPt_of_noAtoms {X : Type*} {E : Set X}
     [EMetricSpace X] [MeasurableSpace X]
-    (μ : Measure X) [NoAtoms μ] (h_sep : TopologicalSpace.IsSeparable E) (hE : 0 < μ E) :
+    {μ : Measure X} [NoAtoms μ] (h_sep : IsSeparable E) (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
   haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
