@@ -163,10 +163,8 @@ lemma postcomp_mk₀_injective_of_mono (L : C) {M N : C} (f : M ⟶ N) [hf : Mon
     Function.Injective ((Ext.mk₀ f).postcomp L (add_zero 0)) := by
   rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall]
   intro x hx
-  simp only [AddMonoidHom.mem_ker, AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply] at hx
-  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
-  have : (Ext.addEquiv₀ x ≫ f) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
-  exact Ext.addEquiv₀.map_eq_zero_iff.mp (Limits.zero_of_comp_mono f this)
+  obtain ⟨g, rfl⟩ := Ext.addEquiv₀.symm.surjective x
+  simpa [← cancel_mono f] using hx
 
 lemma mono_postcomp_mk₀_of_mono (L : C) {M N : C} (f : M ⟶ N) [hf : Mono f] :
     Mono (AddCommGrpCat.ofHom <| (Ext.mk₀ f).postcomp L (add_zero 0)) :=
@@ -294,10 +292,8 @@ lemma precomp_mk₀_injective_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g
     Function.Injective ((Ext.mk₀ g).precomp L (zero_add 0)) := by
   rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall]
   intro x hx
-  simp only [AddMonoidHom.mem_ker, Ext.bilinearComp_apply_apply] at hx
-  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
-  have : (g ≫ Ext.addEquiv₀ x) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
-  exact Ext.addEquiv₀.map_eq_zero_iff.mp (Limits.zero_of_epi_comp g this)
+  obtain ⟨f, rfl⟩ := Ext.addEquiv₀.symm.surjective x
+  simpa [← cancel_epi g] using hx
 
 lemma mono_precomp_mk₀_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g] :
     Mono (AddCommGrpCat.ofHom <| (Ext.mk₀ g).precomp L (zero_add 0)) :=
