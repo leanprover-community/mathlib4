@@ -206,7 +206,7 @@ lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_
   rw [hinv] at hfinal
   exact hfinal
 
-/-- This is the main theorem: arclengthParamTransform is an orientation-preserving parameter
+/-- This is the main theorem: `arclengthParamTransform` is an orientation-preserving parameter
 transformation, that is: a bijection from some interval J to the given interval I with a positive
 derivative; and the resulting reparametrization, i.e arclengthReparam is indeed a
 reparametrization by arc-length, i.e. with unit speed. -/
