@@ -91,7 +91,8 @@ we can localize `M` by `S`.
 abbrev _root_.LocalizedModule : Type max u v :=
   OreLocalization S M
 
-example {R} [CommSemiring R] (S : Submonoid R) : Localization S = LocalizedModule S R := by
+private lemma example_localization_eq_localizedModule
+    {R} [CommSemiring R] (S : Submonoid R) : Localization S = LocalizedModule S R := by
   with_reducible rfl
 
 section
@@ -188,7 +189,8 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       use 1
       simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
 
-example : OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := by
+private lemma example_oreLocalizationInstMonoid_eq_localizedModuleInstMonoid :
+    OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := by
   with_reducible_and_instances rfl
 
 /-- A variant of `mk_mul_mk` that is `rfl` but has a stranger multiplication order. -/
@@ -253,8 +255,9 @@ instance (priority := 900) {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid
   { __ := inferInstanceAs (Ring (LocalizedModule S A))
     __ := inferInstanceAs (CommSemiring (LocalizedModule S A)) }
 
-example {R : Type*} [CommRing R] {S : Submonoid R} :
-    (LocalizedModule.instCommRing : CommRing R[S⁻¹]) = OreLocalization.instCommRing := by
+private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing
+    {R : Type*} [CommRing R] {S : Submonoid R} :
+    OreLocalization.instCommRing = (LocalizedModule.instCommRing : CommRing R[S⁻¹]) := by
   with_reducible_and_instances rfl
 
 /-- If `IsLocalization S T`, then `M[S⁻¹]` has a `T`-action.
@@ -452,7 +455,8 @@ noncomputable instance (priority := 900) algebra' {A : Type*} [Semiring A] [Alge
     change _ • mk _ _ = mk _ _ * mk _ _
     rw [mk_mul_mk, smul'_mk, Algebra.smul_def, one_mul]
 
-example : (algebra' : Algebra R (LocalizedModule S R)) = OreLocalization.instAlgebra := by
+private lemma example_oreLocalizationInstAlgebra_eq_localizedModuleAlgebra' :
+    OreLocalization.instAlgebra = (algebra' : Algebra R (LocalizedModule S R)) := by
   with_reducible_and_instances rfl
 
 section
