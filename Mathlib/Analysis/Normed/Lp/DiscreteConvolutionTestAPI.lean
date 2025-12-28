@@ -370,8 +370,8 @@ theorem convolution_assoc_left_sum (f g h : M → R)
     convert (leftAssocEquiv x).summable_iff.mpr (htriple x) using 1
   have hfiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
       (f ab.1.1 * g ab.1.2) * h cd.1.2 := fun cd => (hfg cd.1.1).mul_right (h cd.1.2)
-  -- Step 3: Equivalence tsum (use `by exact` to avoid timeout)
-  have h2 := by exact (leftAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
+  -- Step 3: Equivalence tsum
+  have h2 := (leftAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
   -- Step 4: Fubini (compute h3 via have to avoid timeout)
   have h3 : ∑' (p : Σ cd : mulFiber x, mulFiber cd.1.1), (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 =
       ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, (f ab.1.1 * g ab.1.2) * h cd.1.2 :=
@@ -394,8 +394,8 @@ theorem convolution_assoc_right_sum (f g h : M → R)
     convert (rightAssocEquiv x).summable_iff.mpr (htriple x) using 1
   have hfiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
       f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae => (hgh ae.1.2).mul_left (f ae.1.1)
-  -- Step 3: Equivalence tsum (use `by exact` to avoid timeout)
-  have h2 := by exact (rightAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
+  -- Step 3: Equivalence tsum
+  have h2 := (rightAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
   -- Step 4: Fubini (compute h3 via have to avoid timeout)
   have h3 : ∑' (p : Σ ae : mulFiber x, mulFiber ae.1.2), f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) =
       ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) :=
