@@ -39,7 +39,7 @@ The ring axioms follow directly from the algebraic properties of discrete convol
 
 ## Connection to Finite Antidiagonals
 
-For types with `HasAntidiagonal` (e.g., `ℕ`, `ℕ × ℕ`), the fiber `mulFiber x` is *finite*
+For types with `HasAntidiagonal` (e.g., `ℕ`, `ℕ × ℕ`), the fiber `mulFiber x` is finite
 and the `tsum` in discrete convolution reduces to a finite sum over the antidiagonal.
 See `CauchyProduct` namespace for the finite-sum formulation.
 -/
@@ -69,6 +69,7 @@ variable [AddCommMonoid G] [HasAntidiagonal G] [Semiring R]
 def apply (a b : G → R) : G → R :=
   fun n => ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2
 
+/-- Notation for Cauchy product convolution. -/
 scoped notation:70 a:70 " ⋆ " b:71 => apply a b
 
 lemma apply_eq (a b : G → R) (n : G) :

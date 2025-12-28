@@ -64,6 +64,7 @@ ring convolutions.
 
 ## TODO
 
+* Connection to `HasAntidiagonal` for finite fibers
 * Convolution with measures (generalization?)
 * Ring/algebra instances for `lp (fun _ : M => R) 1`
 -/
@@ -131,6 +132,7 @@ variable [Monoid M] [Semiring R] [TopologicalSpace R]
 def convolution (f g : M → R) : M → R :=
   fun x => ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2
 
+/-- Notation for discrete convolution. -/
 scoped notation:70 f:70 " ⋆ " g:71 => convolution f g
 
 @[simp]
