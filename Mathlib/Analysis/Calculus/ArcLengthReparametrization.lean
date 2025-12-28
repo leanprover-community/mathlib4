@@ -166,7 +166,7 @@ lemma ψ_leftInvOn_arclengthParamTransform_aux :
 /-- Auxiliary definition, so we don't have to type the full long expression every time -/
 local notation "φ" => arclengthParamTransform c I t₀
 
-/-- Auxilary lemma that gives us the derivative of the parameter transformation -/
+/-- Auxiliary lemma that gives us the derivative of the parameter transformation -/
 lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_diff : 1 ≤ r)
     (ht₀ : t₀ ∈ I) (hc : ContDiffOn ℝ r c I) (hI : IsOpen I) (regular : ∀ t ∈ I, deriv c t ≠ 0) :
     HasStrictDerivAt φ ‖deriv c (φ s)‖⁻¹ s := by
