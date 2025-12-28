@@ -226,7 +226,7 @@ public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalge
   have : P.HasCoeffs A₀ := ⟨by simp [A₀]⟩
   exact ⟨A₀, (P.ModelOfHasCoeffs A₀:), inferInstance, inferInstance,
     ⟨P.finite_coeffs.toFinset, by simp [A₀]⟩, ⟨_, _, _, inferInstance,
-      P.submersivePresentationOfHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
+      P.ofHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
 
 /--
 Let `A` be an `R`-algebra. If `B` is an etale `A`-algebra, there exists an
