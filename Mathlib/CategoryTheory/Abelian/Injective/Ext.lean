@@ -19,13 +19,6 @@ Given an injective resolution `R` of an object `Y` in an abelian category `C`,
 we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.cocomplex` and to make computations in the `Ext`-group.
 
-## TODO
-* Functoriality in `Y`: this would involve a morphism `Y ⟶ Y'`, injective
-resolutions `R` and `R'` of `Y` and `Y'`, a lift of `Y ⟶ Y'` as a morphism
-of cochain complexes `R.cocomplex ⟶ R'.cocomplex`; in this context,
-we should be able to compute the postcomposition of an element
-`R.extMk f m hm hf : Ext X Y n` by `Y ⟶ Y'`.
-
 -/
 
 @[expose] public section
