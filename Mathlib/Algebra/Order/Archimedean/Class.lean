@@ -332,8 +332,8 @@ theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
 
 @[to_additive]
 theorem mk_le_mk_of_mabs {a b : M} (h : |a|ₘ ≤ |b|ₘ) : mk b ≤ mk a := by
-  have ha := one_le_mabs a
   rw [← mk_mabs a, ← mk_mabs]
+  have ha := one_le_mabs a
   exact mk_antitoneOn ha (ha.trans h) h
 
 @[to_additive]
