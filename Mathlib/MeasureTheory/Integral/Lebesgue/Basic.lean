@@ -319,8 +319,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   -- but it has been inlined for the sake of imports
   refine ⟨fun h ↦ ?_, lintegral_eq_zero_of_ae_eq_zero⟩
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
-    by_contra! h'; rw [← zero_lt_iff] at h'
-    refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
+    by_contra! h'
+    refine ((ENNReal.mul_pos εpos.ne' h').trans_le ?_).ne' h
     calc
       _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
       _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
@@ -360,8 +360,6 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
 theorem setLIntegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
-
-@[deprecated (since := "2025-04-22")] alias setLintegral_pos_iff := setLIntegral_pos_iff
 
 end
 
@@ -642,8 +640,6 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
   rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
-
-@[deprecated (since := "2025-04-22")] alias setLintegral_compl := setLIntegral_compl
 
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :

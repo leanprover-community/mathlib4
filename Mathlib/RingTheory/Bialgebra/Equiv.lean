@@ -285,7 +285,7 @@ lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEqu
 @[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
 
-/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
     (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B where
   __ := f

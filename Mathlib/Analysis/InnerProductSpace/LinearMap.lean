@@ -14,8 +14,7 @@ This file studies linear maps on inner product spaces.
 
 ## Main results
 
-- We define `innerSL` as the inner product bundled as a continuous sesquilinear map, and
-  `innerₛₗ` for the non-continuous version.
+- We define `innerSL` as the inner product bundled as a continuous sesquilinear map
 - We prove a general polarization identity for linear maps (`inner_map_polarization`)
 - We show that a linear map preserving the inner product is an isometry
   (`LinearMap.isometryOfInner`) and conversely an isometry preserves the inner product
@@ -57,7 +56,7 @@ theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
             Complex.I * ⟪T (x + Complex.I • y), x + Complex.I • y⟫_ℂ -
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
-  simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
+  simp only [map_add, map_sub, inner_add_left, inner_add_right, map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
@@ -68,7 +67,7 @@ theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
             Complex.I * ⟪T (x + Complex.I • y), x + Complex.I • y⟫_ℂ +
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
-  simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
+  simp only [map_add, map_sub, inner_add_left, inner_add_right, map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
@@ -158,31 +157,6 @@ theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [Linea
 end
 
 variable (𝕜)
-
-/-- The inner product as a sesquilinear map. -/
-def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
-  LinearMap.mk₂'ₛₗ _ _ (fun v w => ⟪v, w⟫) inner_add_left (fun _ _ _ => inner_smul_left _ _ _)
-    inner_add_right fun _ _ _ => inner_smul_right _ _ _
-
-@[simp]
-theorem coe_innerₛₗ_apply (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
-  rfl
-
-@[simp]
-theorem innerₛₗ_apply_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
-  rfl
-
-variable (F)
-/-- The inner product as a bilinear map in the real case. -/
-def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
-
-@[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
-  ext v w
-  exact real_inner_comm v w
-
-variable {F}
-
-@[simp] lemma innerₗ_apply_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
 
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
@@ -311,8 +285,8 @@ theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :
     T.reApplyInnerSelf (c • x) = ‖c‖ ^ 2 * T.reApplyInnerSelf x := by
-  simp only [ContinuousLinearMap.map_smul, ContinuousLinearMap.reApplyInnerSelf_apply,
-    inner_smul_left, inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
+  simp only [map_smul, ContinuousLinearMap.reApplyInnerSelf_apply, inner_smul_left,
+    inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
     Algebra.smul_def (‖c‖ ^ 2) ⟪T x, x⟫, algebraMap_eq_ofReal]
 
 end ReApplyInnerSelf_Seminormed

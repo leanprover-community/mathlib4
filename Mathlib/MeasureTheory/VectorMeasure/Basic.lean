@@ -22,7 +22,7 @@ Similarly, when `M = ℂ`, we call the measure a complex measure and write `Comp
 ## Main definitions
 
 * `MeasureTheory.VectorMeasure` is a vector-valued, σ-additive function that maps the empty
-  and non-measurable set to zero.
+  and non-measurable sets to zero.
 * `MeasureTheory.VectorMeasure.map` is the pushforward of a vector measure along a function.
 * `MeasureTheory.VectorMeasure.restrict` is the restriction of a vector measure on some set.
 
@@ -1198,9 +1198,7 @@ theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
     s.toMeasureOfLEZero i hi₁ hi j = ((↑) : ℝ≥0 → ℝ≥0∞) ⟨-s (i ∩ j), neg_apply s (i ∩ j) ▸
       nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ Set.inter_subset_left
       (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi))⟩ := by
-  erw [toMeasureOfZeroLE_apply]
-  · simp
-  · assumption
+  simp [toMeasureOfLEZero, toMeasureOfZeroLE_apply _ _ _ hj₁]
 
 theorem toMeasureOfLEZero_real_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i)
     (hj₁ : MeasurableSet j) :

@@ -17,7 +17,7 @@ In this file we prove theorems about products and sums indexed by a `Finset`.
 
 @[expose] public section
 
--- TODO: assert_not_exists AddCommMonoidWithOne
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
@@ -149,7 +149,7 @@ theorem prod_filter_mul_prod_filter_not
     (s : Finset ι) (p : ι → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] (f : ι → M) :
     (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, f x = ∏ x ∈ s, f x := by
   have := Classical.decEq ι
-  rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
+  rw [← prod_union (disjoint_filter_filter_not s s p), filter_union_filter_not_eq]
 
 @[to_additive]
 lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [DecidablePred p]
@@ -356,6 +356,11 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
     (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
       prod_const_one.trans (h₁ this).symm
 
+@[to_additive (attr := simp)]
+lemma prod_ite_mem_eq [Fintype ι] (s : Finset ι) (f : ι → M) [DecidablePred (· ∈ s)] :
+    (∏ i, if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
+  rw [← Finset.prod_filter]; congr; aesop
+
 @[to_additive]
 lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
@@ -487,7 +492,8 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => if_pos hi
 
-@[to_additive]
+/-- Also see `Finset.prod_ite_mem_eq` -/
+@[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
 theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
   rw [univ_eq_attach, ← Finset.prod_attach s]
   congr with ⟨x, hx⟩
@@ -516,10 +522,8 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
 
 @[to_additive]
 theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s, f a ≠ 1 := by
-  classical
-    rw [← prod_filter_ne_one] at h
-    rcases nonempty_of_prod_ne_one h with ⟨x, hx⟩
-    exact ⟨x, (mem_filter.1 hx).1, by simpa using (mem_filter.1 hx).2⟩
+  contrapose! h
+  exact prod_eq_one h
 
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :

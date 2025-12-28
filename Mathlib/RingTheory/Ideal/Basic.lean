@@ -92,7 +92,7 @@ theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
   · rw [hab.pow_pow]
     exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    cutsat
+    lia
 
 theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
@@ -200,6 +200,17 @@ theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
   rw [Finset.prod_eq_prod_diff_singleton_mul hi]
   exact Ideal.mul_mem_left _ _ hfi
 
+lemma span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)
+    [∀ i, Semiring (R i)] : Ideal.span (Set.range fun i ↦ (Pi.single i 1 : Π i, R i)) = ⊤ := by
+  rw [_root_.eq_top_iff]
+  rintro x -
+  induction x using Pi.single_induction with
+  | zero => simp
+  | add f g hf hg => exact Ideal.add_mem _ hf hg
+  | single i r =>
+      rw [show Pi.single i r = Pi.single i r * Pi.single i 1 by simp [← Pi.single_mul_left]]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)
+
 end Ideal
 
 end CommSemiring
@@ -276,9 +287,9 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
   · exact
       ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
-  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
-  push_neg
-  simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
+  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+  contrapose! +distrib
+  simp_rw [not_lt_top_iff, not_bot_lt_iff]
   exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/

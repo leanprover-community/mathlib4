@@ -79,7 +79,7 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
     (isLocallyFraction M).pred f =
       ∀ y : U,
         ∃ (V : _) (_ : y.1 ∈ V) (i : V ⟶ U),
-          ∃ (m : M) (s: R), ∀ x : V, s ∉ x.1.asIdeal ∧ s • f (i x) =
+          ∃ (m : M) (s : R), ∀ x : V, s ∉ x.1.asIdeal ∧ s • f (i x) =
             LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m :=
   rfl
 
@@ -223,7 +223,7 @@ noncomputable def toOpen (U : Opens (PrimeSpectrum.Top R)) :
   { toFun := fun f =>
     ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
       ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
-    map_add' := fun f g => Subtype.ext <| funext fun x ↦ LinearMap.map_add _ _ _
+    map_add' := fun f g => Subtype.ext <| funext fun x ↦ map_add _ _ _
     map_smul' := fun r m => by
       apply Subtype.val_injective
       ext x
@@ -298,7 +298,7 @@ The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization o
 prime ideal of `R` corresponding to `x`.
 -/
 noncomputable def stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
-    (tildeInModuleCat M).stalk  x ⟶
+    (tildeInModuleCat M).stalk x ⟶
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (tildeInModuleCat M))
     { pt := _

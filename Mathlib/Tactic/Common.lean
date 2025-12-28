@@ -77,7 +77,6 @@ public meta import Mathlib.Tactic.Observe
 public meta import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
-public meta import Mathlib.Tactic.Propose
 public meta import Mathlib.Tactic.Push
 public meta import Mathlib.Tactic.RSuffices
 public meta import Mathlib.Tactic.Recover
@@ -98,6 +97,7 @@ public meta import Mathlib.Tactic.SuccessIfFailWithMsg
 public meta import Mathlib.Tactic.SudoSetOption
 public meta import Mathlib.Tactic.SwapVar
 public meta import Mathlib.Tactic.Tauto
+public meta import Mathlib.Tactic.ToFun
 public meta import Mathlib.Tactic.TermCongr
 -- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
@@ -152,3 +152,15 @@ register_hint 200 omega
 register_hint 200 fun_prop
 
 end Hint
+
+/-!
+# Register tactics with `try?`. Tactics with larger priority run first.
+-/
+
+section Try
+
+register_try?_tactic (priority := 500) tauto
+register_try?_tactic (priority := 80) aesop
+register_try?_tactic (priority := 200) fun_prop
+
+end Try
