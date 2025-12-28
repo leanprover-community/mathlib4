@@ -400,8 +400,7 @@ theorem convolution_assoc_right_sum (f g h : M → R)
   have h3 : ∑' (p : Σ ae : mulFiber x, mulFiber ae.1.2), f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) =
       ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) :=
     hsigmaR.tsum_sigma' hfiberR
-  rw [h1, ← h2, ← h3]
-  simp_rw [← mul_assoc]; congr 1
+  rw [h1, ← h2, ← h3]; simp_rw [← mul_assoc]; congr 1
 
 /-- Convolution is associative: `(f ⋆ g) ⋆ h = f ⋆ (g ⋆ h)`.
 
