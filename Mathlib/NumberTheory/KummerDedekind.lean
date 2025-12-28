@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.Conductor
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.IsAdjoinRoot
+module
+
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Kummer-Dedekind theorem
@@ -52,6 +54,8 @@ with a formula).
 
 kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S} {I : Ideal R}

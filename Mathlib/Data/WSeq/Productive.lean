@@ -3,7 +3,9 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Relation
+module
+
+public import Mathlib.Data.WSeq.Relation
 
 /-!
 # Productive weak sequences
@@ -12,6 +14,8 @@ This file defines the property of a weak sequence being productive as never stal
 output always comes after a finite time. Given a productive weak sequence, a regular sequence
 (`Seq`) can be derived from it using `toSeq`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -64,7 +68,7 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
     contradiction⟩
 
 theorem toSeq_ofSeq (s : Seq α) : toSeq (ofSeq s) = s := by
-  apply Subtype.eq; funext n
+  apply Subtype.ext; funext n
   dsimp [toSeq]; apply get_eq_of_mem
   rw [get?_ofSeq]; apply ret_mem
 

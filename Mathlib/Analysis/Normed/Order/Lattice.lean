@@ -3,10 +3,12 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Rat
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Rat
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Normed lattice ordered groups
@@ -27,6 +29,8 @@ topology.
 
 normed, lattice, ordered, group
 -/
+
+@[expose] public section
 
 
 /-!

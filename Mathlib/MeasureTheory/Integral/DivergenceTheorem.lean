@@ -3,12 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
-import Mathlib.Analysis.BoxIntegral.Integrability
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
+public import Mathlib.Analysis.BoxIntegral.Integrability
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Divergence theorem for Bochner integral
@@ -48,6 +50,8 @@ website shows the actual terms, not those abbreviated using local notations.
 
 divergence theorem, Bochner integral
 -/
+
+@[expose] public section
 
 
 open Set Finset TopologicalSpace Function BoxIntegral MeasureTheory Filter

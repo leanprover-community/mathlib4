@@ -3,15 +3,18 @@ Copyright (c) 2023 Yaël Dillies, Vladimir Ivanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Ivanov
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Sups
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Data.Rat.Defs
 
 /-!
 # The Ahlswede-Zhang identity
@@ -42,6 +45,8 @@ inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
 * [R. Ahlswede, Z. Zhang, *An identity in combinatorial extremal theory*](https://doi.org/10.1016/0001-8708(90)90023-G)
 * [D. T. Tru, *An AZ-style identity and Bollobás deficiency*](https://doi.org/10.1016/j.jcta.2007.03.005)
 -/
+
+@[expose] public section
 
 section
 variable (α : Type*) [Fintype α] [Nonempty α] {m n : ℕ}
@@ -105,6 +110,7 @@ variable {α β : Type*}
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
+set_option backward.privateInPublic true in
 private lemma sup_aux [DecidableLE α] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
@@ -114,10 +120,14 @@ private lemma lower_aux [DecidableEq α] :
 
 variable [DecidableLE α] [OrderTop α]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The supremum of the elements of `s` less than `a` if there are some, otherwise `⊤`. -/
 def truncatedSup (s : Finset α) (a : α) : α :=
   if h : a ∈ lowerClosure s then {b ∈ s | a ≤ b}.sup' (sup_aux h) id else ⊤
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
     truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dif_pos h
 
@@ -180,6 +190,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
   [BoundedOrder β] [DecidableLE β] {s t : Finset α} {a : α}
 
+set_option backward.privateInPublic true in
 private lemma inf_aux [DecidableLE α] : a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
@@ -189,10 +200,14 @@ private lemma upper_aux [DecidableEq α] :
 
 variable [DecidableLE α] [BoundedOrder α]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The infimum of the elements of `s` less than `a` if there are some, otherwise `⊥`. -/
 def truncatedInf (s : Finset α) (a : α) : α :=
   if h : a ∈ upperClosure s then {b ∈ s | b ≤ a}.inf' (inf_aux h) id else ⊥
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
     truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dif_pos h
 
@@ -418,7 +433,7 @@ lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜
   cases m
   · cases h𝒜₁.card_pos.ne hm
   obtain ⟨s, 𝒜, hs, rfl, rfl⟩ := card_eq_succ.1 hm.symm
-  have h𝒜 : 𝒜.Nonempty := nonempty_iff_ne_empty.2 (by rintro rfl; simp at h𝒜₃)
+  have h𝒜 : 𝒜.Nonempty := by by_contra! rfl; simp at h𝒜₃
   rw [insert_eq, eq_sub_of_add_eq (supSum_union_add_supSum_infs _ _), singleton_infs,
     supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_cancel_right]
   · exact card_image_le.trans_lt (lt_add_one _)

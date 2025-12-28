@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Results on the category of rings requiring linear algebra
@@ -17,6 +19,8 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
   is non-trivial.
 
 -/
+
+@[expose] public section
 
 universe u
 

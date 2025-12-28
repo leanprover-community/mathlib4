@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Algebras over commutative semirings
@@ -79,6 +81,8 @@ You should always use the first approach when working with associative unital al
 the second approach only when you need to weaken a condition on either `R` or `A`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finset Module.End
 
@@ -372,6 +376,9 @@ packaged as an `R`-linear map.
 protected def linearMap : R →ₗ[R] A :=
   { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
 
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "η" => Algebra.linearMap _ _
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "η[" R "]" => Algebra.linearMap R _
+
 @[simp]
 theorem linearMap_apply (r : R) : Algebra.linearMap R A r = algebraMap R A r :=
   rfl
@@ -404,7 +411,7 @@ theorem map_eq_id : algebraMap R R = RingHom.id _ :=
 theorem map_eq_self (x : R) : algebraMap R R x = x :=
   rfl
 
-@[simp]
+@[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=
   rfl
 

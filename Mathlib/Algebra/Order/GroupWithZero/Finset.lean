@@ -3,13 +3,17 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # `Finset.sup` in a group with zero
 -/
+
+@[expose] public section
 
 namespace Finset
 variable {ι M₀ G₀ : Type*}

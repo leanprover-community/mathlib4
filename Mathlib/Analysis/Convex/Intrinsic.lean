@@ -3,7 +3,9 @@ Copyright (c) 2023 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Intrinsic frontier and interior
@@ -42,6 +44,8 @@ The main results are:
 * `IsClosed s → IsExtreme 𝕜 s (intrinsicFrontier 𝕜 s)`
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
+
+@[expose] public section
 
 open AffineSubspace Set Topology
 open scoped Pointwise

@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.CategoryTheory.DifferentialObject
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.CategoryTheory.DifferentialObject
 
 /-!
 # Homological complexes are differential graded objects.
@@ -15,6 +17,8 @@ essentially the same thing as a differential graded object.
 This equivalence is probably not particularly useful in practice;
 it's here to check that definitions match up as expected.
 -/
+
+@[expose] public section
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -28,7 +32,7 @@ TODO: We should move these to their own file.
 namespace CategoryTheory.DifferentialObject
 
 variable {β : Type*} [AddCommGroup β] {b : β}
-variable {V : Type*} [Category V] [HasZeroMorphisms V]
+variable {V : Type*} [Category* V] [HasZeroMorphisms V]
 variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
 /-- Since `eqToHom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
@@ -63,7 +67,7 @@ open CategoryTheory.DifferentialObject
 namespace HomologicalComplex
 
 variable {β : Type*} [AddCommGroup β] (b : β)
-variable (V : Type*) [Category V] [HasZeroMorphisms V]
+variable (V : Type*) [Category* V] [HasZeroMorphisms V]
 
 @[reassoc]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :

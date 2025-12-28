@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Curry
-import Mathlib.Data.Set.Countable
+module
+
+public import Mathlib.Order.Filter.Curry
+public import Mathlib.Data.Set.Countable
 
 /-!
 # Filters with countable intersection property
@@ -12,8 +14,8 @@ import Mathlib.Data.Set.Countable
 In this file we define `CountableInterFilter` to be the class of filters with the following
 property: for any countable collection of sets `s ∈ l` their intersection belongs to `l` as well.
 
-Two main examples are the `residual` filter defined in `Mathlib/Topology/GDelta.lean` and
-the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory.OuterMeasure/AE`.
+Two main examples are the `residual` filter defined in `Mathlib/Topology/GDelta/Basic.lean` and
+the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory/OuterMeasure/AE.lean`.
 
 We reformulate the definition in terms of indexed intersection and in terms of `Filter.Eventually`
 and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.principal`, `Filter.map`,
@@ -27,6 +29,8 @@ preferred spelling; it has the advantage of not requiring the user to import the
 ## Tags
 filter, countable
 -/
+
+@[expose] public section
 
 
 open Set Filter

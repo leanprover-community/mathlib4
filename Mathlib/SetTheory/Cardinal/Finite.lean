@@ -3,11 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.ENat.Pow
-import Mathlib.Data.ULift
-import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ULift
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Finite Cardinality Functions
@@ -19,6 +21,8 @@ import Mathlib.SetTheory.Cardinal.ENat
 * `ENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
