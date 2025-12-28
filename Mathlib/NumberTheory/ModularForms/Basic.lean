@@ -619,9 +619,9 @@ function is a product of those indexed by `ι`, a `Fintype`, with weight `m = �
 def prodFintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
-  toSlashInvariantForm := SlashInvariantForm.prod_fintype m hm (fun i ↦ (F i).1)
+  toSlashInvariantForm := SlashInvariantForm.prodFintype m hm (fun i ↦ (F i).1)
   holo' := by
-    simp only [SlashInvariantForm.prod_fintype, toFun_eq_coe]
+    simp only [SlashInvariantForm.prodFintype, toFun_eq_coe]
     apply MDifferentiable.prod
     intro i hi
     exact (F i).holo'

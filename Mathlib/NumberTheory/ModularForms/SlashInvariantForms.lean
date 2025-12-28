@@ -294,7 +294,6 @@ def prodFintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ
       Subgroup.HasDetPlusMinusOne.abs_det hA, SlashInvariantForm.slash_action_eqn (f _) A hA]
 
 @[simp]
-@[simp]
 lemma coe_prodType {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
      (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
      (f : (i : ι) → SlashInvariantForm Γ (k i)) : prodFintype m hm f = ∏ i, (f i).toFun := by rfl
