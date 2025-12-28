@@ -416,42 +416,10 @@ theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
 theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
   (mk_sub_pos_iff f hx).2 rfl
 
-private theorem neg_setOf_lt_real (f : ℝ →+*o K) : -{r | x < f r} = {r | f r < -x} := by
-  aesop (add simp [lt_neg])
-
-private theorem neg_setOf_real_lt (f : ℝ →+*o K) : -{r | f r < x} = {r | -x < f r} := by
-  rw [neg_eq_iff_eq_neg, neg_setOf_lt_real, neg_neg]
-
-theorem nonempty_setOf_lt_real (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r | x < f r}.Nonempty := by
-  obtain ⟨n, hn⟩ := hx
-  refine ⟨n + 1, lt_of_le_of_lt (b := ↑n) (le_of_abs_le ?_) ?_⟩
-  · simpa using hn
-  · simp
-
-theorem nonempty_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r | f r < x}.Nonempty := by
-  rw [← Set.nonempty_neg, neg_setOf_real_lt]
-  exact nonempty_setOf_lt_real f (by simpa)
-
-theorem bddBelow_setOf_lt_real (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : BddBelow {r | x < f r} := by
-  obtain ⟨n, hn⟩ := hx
-  refine ⟨-n, fun r hr ↦ ?_⟩
-  by_contra! hr'
-  apply (neg_le_of_abs_le hn).not_gt (hr.trans_le _)
-  simpa using f.monotone' hr'.le
-
-theorem bddAbove_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : BddAbove {r | f r < x} := by
-  rw [← bddBelow_neg, neg_setOf_real_lt]
-  exact bddBelow_setOf_lt_real f (by simpa)
-
 theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
     stdPart x = r := by
   have hx : 0 ≤ mk x := by
-    obtain ⟨n, hn⟩ := exists_nat_gt |r|
-    refine (mk_natCast_nonneg n).trans (mk_le_mk_of_abs (abs_le.2 ⟨?_, ?_⟩))
-    · convert hl (-n) (neg_lt_of_abs_lt hn)
-      simp
-    · convert hr n (lt_of_abs_lt hn)
-      simp
+    apply mk_nonneg_of_mem_Icc f (hl (r - 1) _) (hr (r + 1) _) <;> simp
   by_contra h
   obtain h | h := lt_or_gt_of_ne h
   · obtain ⟨s, hs, hs'⟩ := exists_between h
@@ -471,8 +439,12 @@ theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤
 
 theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
   obtain hx | hx := le_or_gt 0 (mk x)
-  · have hn := nonempty_setOf_lt_real f hx
-    have hb := bddBelow_setOf_lt_real f hx
+  · obtain ⟨a, b, ha, hb⟩ := exists_mem_Ioo_of_mk_nonneg f.toRingHom hx
+    have hn : {r | x < f r}.Nonempty := ⟨b, hb⟩
+    have hb : BddBelow {r | x < f r} := by
+      refine ⟨a, fun r hr ↦ ?_⟩
+      by_contra! hra
+      exact (f.monotone' hra.le).not_gt (ha.trans hr)
     apply stdPart_eq f <;> intro r hr
     · simpa using notMem_of_lt_csInf hr hb
     · obtain ⟨s, hs, hs'⟩ := (csInf_lt_iff hb hn).1 hr
