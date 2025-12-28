@@ -206,6 +206,21 @@ lemma tensorModelOfHasCoeffsEquiv_symm_tmul (x : MvPolynomial ι R₀) :
   tensorModelOfHasCoeffsInv_aeval_val _ x
 
 end Algebra.Presentation
+namespace Algebra.PreSubmersivePresentation
+
+variable (P : Algebra.PreSubmersivePresentation R S ι σ)
+variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+  [P.HasCoeffs R₀]
+
+/-- The presubmersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
+@[simps!]
+noncomputable def ofHasCoeffs :
+    Algebra.PreSubmersivePresentation R₀ (P.ModelOfHasCoeffs R₀) ι σ where
+  __ := Algebra.Presentation.naive
+  map := P.map
+  map_inj := P.map_inj
+
+end Algebra.PreSubmersivePresentation
 
 namespace Algebra.SubmersivePresentation
 
@@ -261,7 +276,7 @@ noncomputable
 def jacobianOfHasCoeffs : MvPolynomial ι R₀ :=
   letI := Classical.decEq σ
   letI := Fintype.ofFinite σ
-  (Matrix.of fun i j ↦ MvPolynomial.pderiv (P.map i) (P.relationOfHasCoeffs R₀ j)).det
+  (P.toPreSubmersivePresentation.ofHasCoeffs R₀).jacobiMatrix.det
 
 @[simp]
 lemma map_jacobianOfHasCoeffs [Fintype σ] [DecidableEq σ] :
@@ -269,7 +284,8 @@ lemma map_jacobianOfHasCoeffs [Fintype σ] [DecidableEq σ] :
   rw [jacobianOfHasCoeffs, @RingHom.map_det]
   congr! 1
   ext1 i j
-  simp [Presentation.map_relationOfHasCoeffs, ← MvPolynomial.pderiv_map, P.jacobiMatrix_apply]
+  simp [Presentation.map_relationOfHasCoeffs, ← MvPolynomial.pderiv_map,
+    PreSubmersivePresentation.jacobiMatrix_apply]
 
 @[simp]
 lemma aeval_jacobianOfHasCoeffs :
@@ -324,7 +340,7 @@ lemma sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs [FaithfulSMul R�
 
 /-- The submersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
 noncomputable
-def submersivePresentationOfHasCoeffs [FaithfulSMul R₀ R] :
+def ofHasCoeffs [FaithfulSMul R₀ R] :
     Algebra.SubmersivePresentation R₀ (P.ModelOfHasCoeffs R₀) ι σ where
   __ := Algebra.Presentation.naive
   map := P.map
@@ -337,9 +353,7 @@ def submersivePresentationOfHasCoeffs [FaithfulSMul R₀ R] :
     simp only [map_sum, map_mul, Ideal.Quotient.mk_span_range, mul_zero, Finset.sum_const_zero,
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
     convert IsUnit.of_mul_eq_one _ this
-    rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det, jacobianOfHasCoeffs]
-    congr 2
-    ext1 i j
-    simp [PreSubmersivePresentation.jacobiMatrix_apply]
+    rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
+    rfl
 
 end Algebra.SubmersivePresentation
