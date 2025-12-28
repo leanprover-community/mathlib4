@@ -235,7 +235,16 @@ lemma extMk_comp {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m
   have : (f ≫ φ.hom.f n) ≫ (R'.cochainComplexXIso n n (by lia)).inv =
       (f ≫ (R.cochainComplexXIso n n (by lia)).inv) ≫ φ.hom'.f n := by
     simp [φ.hom'_f n n rfl]
-  simp only [Ext.comp_hom, Int.cast_ofNat_Int, extMk_hom, Ext.mk₀_hom, this]
-  sorry
+  simp only [Ext.comp_hom, extMk_hom, Ext.mk₀_hom, this]
+  rw [Cocycle.fromSingleMk_postcomp _ (zero_add _) _ (by lia)
+      (by simp [R.cochainComplex_d _ _ _ _ rfl rfl, reassoc_of% hf]),
+    Cocycle.equivHomShift_symm_postcomp,
+    ← ShiftedHom.comp_mk₀ _ 0 rfl, ShiftedHom.map_comp,
+    ShiftedHom.comp_assoc _ _ _ _ (add_zero _) (by simp),
+    ShiftedHom.comp_assoc _ _ _ _ (add_zero _) (by simp),
+    ShiftedHom.map_mk₀, ShiftedHom.mk₀_comp_mk₀, ShiftedHom.mk₀_comp_mk₀]
+  congr 2
+  simpa only [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
+    Functor.map_comp] using DerivedCategory.Q.congr_map φ.ι'_comp.symm
 
 end CategoryTheory.InjectiveResolution
