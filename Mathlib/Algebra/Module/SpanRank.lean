@@ -5,6 +5,7 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, An
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.RingTheory.Finiteness.Ideal
@@ -257,20 +258,102 @@ end Submodule
 section map
 
 universe u
-section Submodule
+namespace Submodule
 
-variable {R : Type*} {M N : Type u} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
-  [Module R N] (f : M →ₗ[R] N) (p : Submodule R M)
+section Semilinear
 
-lemma Submodule.spanRank_map_le : (p.map f).spanRank ≤ p.spanRank := by
+variable {R S : Type*} {M N : Type u} [Semiring R] [Semiring S]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module S N]
+
+lemma spanRank_map_le {σ : R →+* S} [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] N) (p : Submodule R M) : (p.map f).spanRank ≤ p.spanRank := by
   rw [← generators_card p, FG.spanRank_le_iff_exists_span_set_card_le]
   exact ⟨f '' p.generators, Cardinal.mk_image_le, le_antisymm (span_le.2 (fun n ⟨m, hm, h⟩ ↦
     ⟨m, span_generators p ▸ subset_span hm, h⟩)) (by simp [span_generators])⟩
 
-variable {p} in
-lemma Submodule.spanFinrank_map_le_of_fg (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
+lemma spanFinrank_map_le_of_fg {σ : R →+* S} [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] N) {p : Submodule R M} (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
   (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (FG.map f hp))
     (spanRank_finite_iff_fg.mpr hp)).2 (p.spanRank_map_le f)
+
+variable {M₁ : Submodule R M} {N₁ : Submodule S N}
+
+lemma spanRank_le_spanRank_of_map_eq {σ : R →+* S} [RingHomSurjective σ]
+  (f : M →ₛₗ[σ] N) (h_map : map f M₁ = N₁) : N₁.spanRank ≤ M₁.spanRank := by
+  rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
+  rw [FG.spanRank_le_iff_exists_span_set_card_le]
+  use f '' s
+  constructor
+  · rw [← hscard]; exact Cardinal.mk_image_le
+  · rw [span_image', hsspan, h_map]
+
+lemma spanRank_le_spanRank_of_range_eq {σ : R →+* S} [RingHomSurjective σ]
+    (f : M₁ →ₛₗ[σ] N) (h_range : LinearMap.range f = N₁) : N₁.spanRank ≤ M₁.spanRank := by
+  -- obtain the spanning set of submodule `M₁`
+  rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
+  rw [FG.spanRank_le_iff_exists_span_set_card_le]
+  -- lift the set to a `Set M₁`
+  lift s to Set M₁ using show s ⊆ M₁ by rw [← hsspan]; exact subset_span
+  rw [Cardinal.mk_image_eq Subtype.val_injective] at hscard
+  change span R (M₁.subtype '' s) = M₁ at hsspan
+  rw [span_image] at hsspan
+  apply_fun comap M₁.subtype at hsspan
+  rw [comap_map_eq_of_injective (subtype_injective M₁) (span R s), comap_subtype_self] at hsspan
+  -- transfer the lifted set via `f` to get a spanning set of `N₁`
+  use f '' s
+  constructor
+  · grw [Cardinal.mk_image_le]; rw [hscard]
+  · rw [span_image, hsspan, map_top, h_range]
+
+lemma spanRank_le_spanRank_of_surjective {σ : R →+* S} [RingHomSurjective σ]
+    (f : M₁ →ₛₗ[σ] N₁) (h_surj : Function.Surjective f) : N₁.spanRank ≤ M₁.spanRank := by
+  apply spanRank_le_spanRank_of_range_eq (N₁.subtype.comp f)
+  rw [LinearMap.range_comp, LinearMap.range_eq_top_of_surjective f h_surj, map_top, range_subtype]
+
+lemma spanRank_eq_spanRank_of_equiv'
+    (σ : R →+* S) {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    (e : M₁ ≃ₛₗ[σ] N₁) : M₁.spanRank = N₁.spanRank :=
+  le_antisymm
+    (spanRank_le_spanRank_of_surjective e.symm.toLinearMap e.symm.surjective)
+    (spanRank_le_spanRank_of_surjective e.toLinearMap e.surjective)
+
+end Semilinear
+
+section Linear
+
+variable {R : Type*} {M N : Type u}
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable {M₁ : Submodule R M} {N₁ : Submodule R N}
+
+lemma spanRank_eq_spanRank_of_equiv (e : M₁ ≃ₗ[R] N₁) : M₁.spanRank = N₁.spanRank :=
+  spanRank_eq_spanRank_of_equiv' _ e
+
+end Linear
+
+section RestrictScalars
+
+variable {S R : Type*} {M : Type u} [CommSemiring S] [Semiring R] [AddCommMonoid M]
+  [Algebra S R] [Module R M] [Module S M] [IsScalarTower S R M] [RingHomSurjective (algebraMap S R)]
+
+lemma spanRank_restrictScalars_eq_spanRank
+    (M₁ : Submodule R M) :
+    (M₁.restrictScalars S).spanRank = M₁.spanRank := by
+  apply le_antisymm
+  · rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
+    rw [FG.spanRank_le_iff_exists_span_set_card_le]
+    use s
+    constructor
+    · rw [hscard]
+    · rw [← hsspan, ← span_coe_eq_restrictScalars,
+        coe_span_eq_span_of_surjective S R <| RingHom.surjective (algebraMap S R)]
+      simp
+  · let f : M₁.restrictScalars S →ₛₗ[algebraMap S R] M₁ := {
+      AddEquiv.refl M₁ with
+      map_smul' := by simp
+    }
+    apply spanRank_le_spanRank_of_surjective f Function.surjective_id
+
+end RestrictScalars
 
 end Submodule
 
