@@ -200,4 +200,19 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
 
+lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) {X' : C} (g : X' ⟶ X) :
+    (Ext.mk₀ g).comp (R.extMk f m hm hf) (zero_add _) =
+      R.extMk (g ≫ f) m hm (by simp [hf]) := by
+  have := HasDerivedCategory.standard C
+  ext
+  simp only [extMk, Ext.comp_hom, Int.cast_ofNat_Int, Ext.mk₀_hom,
+    extEquivCohomologyClass_symm_mk_hom, Category.assoc]
+  rw [Cocycle.fromSingleMk_precomp g _ (zero_add _) _ (by lia) (by
+      simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]),
+    Cocycle.equivHomShift_symm_precomp, ← ShiftedHom.mk₀_comp 0 rfl,
+    ShiftedHom.map_comp, ShiftedHom.map_mk₀,
+    ShiftedHom.comp_assoc _ _ _ (add_zero _) (zero_add _) (by simp)]
+  rfl
+
 end CategoryTheory.InjectiveResolution
