@@ -35,6 +35,10 @@ lemma formallyUnramified_algebraMap [Algebra R S] :
 
 namespace FormallyUnramified
 
+lemma of_surjective {f : R →+* S} (hf : Function.Surjective f) : f.FormallyUnramified := by
+  algebraize [f]
+  exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) hf
+
 lemma stableUnderComposition :
     StableUnderComposition FormallyUnramified := by
   intro R S T _ _ _ f g _ _
@@ -45,8 +49,7 @@ lemma respectsIso :
     RespectsIso FormallyUnramified := by
   refine stableUnderComposition.respectsIso ?_
   intro R S _ _ e
-  letI := e.toRingHom.toAlgebra
-  exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) e.surjective
+  exact .of_surjective e.surjective
 
 lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
