@@ -150,13 +150,12 @@ variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebr
 
 private theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
     f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, f = α • .id R V := by
-  change f ∈ Set.center (V →L[R] V) ↔ ∃ α ∈ Set.center R, f = α • .id R V
-  simp only [Semigroup.mem_center_iff, ContinuousLinearMap.ext_iff, ContinuousLinearMap.mul_apply]
+  simp only [Subalgebra.mem_center_iff, ContinuousLinearMap.ext_iff, ContinuousLinearMap.mul_apply]
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases! Subsingleton V
   · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
-  obtain ⟨g, hg⟩ := SeparatingDual.exists_eq_one (R := R) hx
+  obtain ⟨g, hg⟩ := exists_eq_one (R := R) hx
   have := fun y ↦ by simpa [hg] using h (g.smulRight y) x
   exact ⟨g (f x), by simp [this, mul_comm]⟩
 
