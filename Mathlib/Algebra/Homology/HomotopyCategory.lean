@@ -259,15 +259,14 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
     NatTrans.mapHomotopyCategory (α ≫ β) c =
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
 
+instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
+    (F.mapHomotopyCategory c).Additive :=
+  let := Functor.additive_of_iso (F.mapHomotopyCategoryFactors c).symm
+  (HomotopyCategory.quotient V c).additive_of_full_essSurj_comp (F.mapHomotopyCategory c)
+
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Linear R V] [Linear R W] [F.Linear R] :
-    Functor.Linear R (F.mapHomotopyCategory c) where
-  map_smul {X Y} f r:= by
-    dsimp only [Functor.mapHomotopyCategory]
-    have full : (HomotopyCategory.quotient V c).Full := Quotient.full_functor _
-    rcases full.1 f with ⟨g, hg⟩
-    rw [← hg, ← Functor.Linear.map_smul]
-    simp only [HomotopyCategory.quotient, Quotient.lift_map_functor_map, Functor.comp_map,
-      Functor.map_smul]
-    rfl
+    Functor.Linear R (F.mapHomotopyCategory c) :=
+  let := Functor.linear_of_iso R (F.mapHomotopyCategoryFactors c).symm
+  (HomotopyCategory.quotient V c).linear_of_full_essSurj_comp (F.mapHomotopyCategory c)
 
 end CategoryTheory
