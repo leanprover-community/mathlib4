@@ -29,21 +29,6 @@ public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
 @[expose] public section
 
-namespace Real
-
-lemma abs_cos_eq_one_iff {x : ℝ} :
-    |cos x| = 1 ↔ ∃ k : ℤ, k * π = x := by
-  rw [← abs_one, abs_eq_abs, cos_eq_one_iff, cos_eq_neg_one_iff]
-  constructor
-  · rintro (⟨n, h⟩ | ⟨n, h⟩)
-    · exact ⟨2 * n, by grind⟩
-    · exact ⟨1 + n * 2, by grind⟩
-  · rintro (⟨n, h⟩)
-    obtain (⟨n, rfl⟩ | ⟨n, rfl⟩) := n.even_or_odd
-    · exact .inl ⟨n, by grind⟩
-    · exact .inr ⟨n, by grind⟩
-
-end Real
 namespace Polynomial.Chebyshev
 
 open Real
