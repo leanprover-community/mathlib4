@@ -264,20 +264,22 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
   P.flip.rootSpan_mem_invtSubmodule_reflection i
 
 lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm = ⨅ i, LinearMap.ker (P.root' i) :=
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) =
+      ⨅ i, (P.root' i).ker :=
   SetLike.coe_injective <| by ext; simp [LinearEquiv.symm_apply_eq, subset_def]
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) =
+      ⨅ i, (P.coroot' i).ker :=
   P.flip.rootSpan_dualAnnihilator_map_eq_iInf_ker_root'
 
 lemma rootSpan_dualAnnihilator_map_eq :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm =
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) =
       (span R (range P.root')).dualCoannihilator :=
   SetLike.coe_injective <| by ext; simp [LinearEquiv.symm_apply_eq, subset_def]
 
 lemma corootSpan_dualAnnihilator_map_eq :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm =
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) =
       (span R (range P.coroot')).dualCoannihilator :=
   P.flip.rootSpan_dualAnnihilator_map_eq
 
@@ -290,11 +292,13 @@ lemma iInf_ker_coroot'_eq :
   P.flip.iInf_ker_root'_eq
 
 @[simp] lemma rootSpan_map_toPerfPair :
-    (P.rootSpan R).map P.toPerfPair = span R (range P.root') := by
-  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toPerfPair_comp_root]
+    (P.rootSpan R).map (P.toPerfPair : M →ₗ[R] Dual R N) = span R (range P.root') := by
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, LinearEquiv.coe_coe,
+    toPerfPair_comp_root]
 
 @[simp] lemma corootSpan_map_flip_toPerfPair :
-    (P.corootSpan R).map P.toLinearMap.flip.toPerfPair = span R (range P.coroot') :=
+    (P.corootSpan R).map (P.toLinearMap.flip.toPerfPair : N →ₗ[R] Dual R M) =
+      span R (range P.coroot') :=
   P.flip.rootSpan_map_toPerfPair
 
 @[simp] lemma span_root'_eq_top [P.IsRootSystem] :
