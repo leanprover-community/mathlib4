@@ -208,7 +208,7 @@ lemma arclengthParamTransform_deriv_eq_aux {s : ℝ} (hs : s ∈ ψ '' I) (once_
 
 /-- This is the main theorem: `arclengthParamTransform` is an orientation-preserving parameter
 transformation, that is: a bijection from some interval J to the given interval I with a positive
-derivative; and the resulting reparametrization, i.e arclengthReparam is indeed a
+derivative; and the resulting reparametrization, i.e `arclengthReparam` is indeed a
 reparametrization by arc-length, i.e. with unit speed. -/
 theorem arclength_reparametrization (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
     (regular : ∀ t ∈ I, deriv c t ≠ 0) (ht₀ : t₀ ∈ I) (hIo : IsOpen I) :
