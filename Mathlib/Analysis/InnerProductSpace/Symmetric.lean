@@ -220,6 +220,14 @@ theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommG
 
 end LinearMap
 
+theorem LinearEquiv.isSymmetric_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    T.symm.IsSymmetric :=
+  fun x y ↦ by simpa [eq_comm] using hT (T.symm x) (T.symm y)
+
+@[simp] theorem LinearEquiv.isSymmetric_symm_iff {T : E ≃ₗ[𝕜] E} :
+    T.symm.IsSymmetric ↔ T.IsSymmetric :=
+ ⟨fun hT ↦ T.symm.isSymmetric_symm hT, fun hT ↦ T.isSymmetric_symm hT⟩
+
 end Seminormed
 
 section Normed
