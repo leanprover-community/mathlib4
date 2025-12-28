@@ -20,11 +20,10 @@ open AnalyticOnNhd AnalyticAt Set
 
 lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero (z₀ : ℂ) (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀)
     (hzero : f z₀ = 0) : analyticOrderAt (deriv f) z₀ = ⊤ ↔ analyticOrderAt f z₀ = ⊤ := by
+  obtain ⟨r₁, hr₁0, hB⟩ := exists_ball_analyticOnNhd hf
   simp_rw [analyticOrderAt_eq_top,Metric.eventually_nhds_iff_ball]
-  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-  · obtain ⟨r₁, hr₁0, hB⟩ := exists_ball_analyticOnNhd hf
-    obtain ⟨r₂, hr₂, hball⟩ := H
-    let r := min r₁ r₂
+  refine ⟨fun ⟨r₂, hr₂, hball⟩ ↦ ?_, fun ⟨r₂, hr₂, hball⟩ ↦ ?_⟩
+  · let r := min r₁ r₂
     use r
     have hf : DifferentiableOn ℂ f (Metric.ball z₀ r) := fun x hx ↦
      (hB x (Metric.ball_subset_ball (min_le_left r₁ r₂) hx)).differentiableAt.differentiableWithinAt
@@ -37,9 +36,7 @@ lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero (z₀ : ℂ) (f : ℂ → ℂ)
     have := IsOpen.eqOn_of_deriv_eq (Metric.isOpen_ball)
       (IsConnected.isPreconnected <| Metric.isConnected_ball (by grind)) hf hg hf' hx
     grind
-  · obtain ⟨r₁, hr₁0, hB⟩ := exists_ball_analyticOnNhd hf
-    obtain ⟨r₂, hr₂, hball⟩ := H
-    let r := min r₁ r₂
+  · let r := min r₁ r₂
     use r
     refine ⟨by simp_all [r], fun x hx ↦ ?_⟩
     · have hf' : EqOn f 0 (Metric.ball z₀ r) :=
@@ -107,7 +104,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
             exact Nat.factorial_ne_zero r
       · rename_i k IH
         simp only [Function.iterate_succ, Function.comp_apply]
-        have change_deriv (R : ℂ → ℂ) (z: ℂ) :
+        have change_deriv (R : ℂ → ℂ) (z : ℂ) :
           deriv^[k] (deriv R) z = deriv (deriv^[k] R) z := by
           have : deriv^[k] (deriv R) z = deriv^[k+1] R z := by
            simp only [Function.iterate_succ, Function.comp_apply]
@@ -124,8 +121,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
           exact id (Eq.symm this)
         simp only [change_deriv R]
         have : k ≤ r := by linarith
-        have := IH this; clear IH
-        obtain ⟨R₂, hR₂, hR1⟩ := this
+        obtain ⟨R₂, hR₂, hR1⟩ := IH this
         let R2 : ℂ → ℂ := fun z ↦
            (↑(r - k) * R₂ z +
          (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)))
@@ -258,36 +254,30 @@ lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero (n : ℕ) z₀
     by_contra! h
     exact Hm.2 (hkn m h)
 
+lemma add_mem_emetric_ball_left {x y z : ℂ} (r : ENNReal) :
+    x ∈ EMetric.ball y r → z + x ∈ EMetric.ball (z + y) r := by
+  simp
+
 lemma hasFPowerSeriesWithinAt_nhds_iff (f : ℂ → ℂ) (p : FormalMultilinearSeries ℂ ℂ ℂ)
     (U : Set ℂ) (z : ℂ) (hU : U ∈ nhds z) :
   HasFPowerSeriesWithinAt f p U z ↔ HasFPowerSeriesAt f p z := by
     simp only [HasFPowerSeriesWithinAt, HasFPowerSeriesAt]
-    refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
+    refine ⟨fun ⟨renn, r_le, r_pos, hs⟩ ↦ ?_,
+        fun ⟨r, hr⟩ ↦ ⟨r, HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall hr⟩⟩
     · have hzmem : z ∈ U := mem_of_mem_nhds hU
       rw [Metric.mem_nhds_iff] at hU
       obtain ⟨r', hr', hball⟩ := hU
       let r'' : ENNReal := Option.some ⟨r', by linarith⟩
       have hball' : EMetric.ball z r'' ⊆ U := by aesop
-      obtain ⟨renn, hr⟩ := H
-      use min (renn) r''
-      obtain ⟨r_le, r_pos, hs⟩ := hr
-      refine ⟨by aesop, by aesop, ?_⟩
-      · intros y a
-        apply hs
-        · have shift_ball (x y z : ℂ) (renn : ENNReal) :
-            x ∈ EMetric.ball y renn → z + x ∈ EMetric.ball (z + y) renn := by
-              simp only [EMetric.mem_ball, edist_add_left, imp_self]
-          have : z + y ∈ EMetric.ball (z + 0) (min renn r'') := by
-            apply shift_ball
-            exact a
+      use min renn r''
+      refine ⟨by aesop, by aesop, fun hy s ↦ ?_⟩
+      · rename_i y
+        refine hs (U := s) (y := y) (by aesop) ?_
+        · have : z + y ∈ EMetric.ball (z + 0) (min renn r'') := add_mem_emetric_ball_left _ hy
           have : z + y ∈ EMetric.ball z (min renn r'') := by aesop
           have : z + y ∈ EMetric.ball z r'' := by aesop
           have : z + y ∈ U := by aesop
           aesop
-        · aesop
-    · obtain ⟨renn,hr⟩:= H
-      use renn
-      exact HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall hr
 
 lemma AnalyticOn.analyticAt (f : ℂ → ℂ) (z : ℂ) (U : Set ℂ) (hU : U ∈ nhds z) :
   AnalyticOn ℂ f U → AnalyticAt ℂ f z := by
