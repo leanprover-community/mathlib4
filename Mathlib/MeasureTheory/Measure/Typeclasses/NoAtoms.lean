@@ -88,6 +88,8 @@ theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ]
 
 open Filter TopologicalSpace
 
+section
+
 variable {X : Type*} [EMetricSpace X] [MeasurableSpace X] {μ : Measure X} [NoAtoms μ] {E : Set X}
 
 /-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
@@ -97,6 +99,8 @@ theorem exists_accPt_of_noAtoms (h_sep : IsSeparable E) (hE : 0 < μ E) :
   haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
   exact hE.ne' <| (separableSpace_iff_countable.mp h_sep.separableSpace
     |> E.countable_coe_iff.mp).measure_zero μ
+
+end
 
 section
 
