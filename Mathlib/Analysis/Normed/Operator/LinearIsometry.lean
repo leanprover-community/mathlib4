@@ -210,12 +210,12 @@ protected theorem isometry : Isometry f :=
 
 lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
 
--- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
+@[simp]
 theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
   _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
 
-@[simp] -- Should be replaced with `LinearIsometry.isComplete_image_iff` when https://github.com/leanprover/lean4/issues/3107 is fixed.
+@[deprecated LinearIsometry.isComplete_image_iff (since := "2025-12-25")]
 theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
   LinearIsometry.isComplete_image_iff _
@@ -648,6 +648,8 @@ instance instInhabited : Inhabited (E ≃ₗᵢ[R] E) := ⟨refl R E⟩
 theorem coe_refl : ⇑(refl R E) = id :=
   rfl
 
+@[simp] theorem toContinuousLinearEquiv_refl : (refl R E).toContinuousLinearEquiv = .refl R E := rfl
+
 /-- The inverse `LinearIsometryEquiv`. -/
 def symm : E₂ ≃ₛₗᵢ[σ₂₁] E :=
   ⟨e.toLinearEquiv.symm, fun x =>
@@ -730,6 +732,11 @@ theorem trans_apply (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛ�
 @[simp]
 theorem toLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
     (e.trans e').toLinearEquiv = e.toLinearEquiv.trans e'.toLinearEquiv :=
+  rfl
+
+@[simp] theorem toContinuousLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toContinuousLinearEquiv =
+      e.toContinuousLinearEquiv.trans e'.toContinuousLinearEquiv :=
   rfl
 
 @[simp]
@@ -836,18 +843,17 @@ theorem mul_refl (e : E ≃ₗᵢ[R] E) : e * refl _ _ = e :=
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
 instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
-  ⟨fun e => ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
+  ⟨fun e => e.toContinuousLinearEquiv⟩
 
 instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
-@[simp]
-theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=
-  rfl
+theorem toContinuousLinearMap_toLinearIsometry :
+    e.toLinearIsometry.toContinuousLinearMap = e := rfl
 
-@[simp]
-theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
-  rfl
+theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e := rfl
+
+theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e := rfl
 
 theorem map_zero : e 0 = 0 :=
   e.1.map_zero
