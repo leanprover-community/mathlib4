@@ -63,7 +63,7 @@ variable {G : Type*} {R : Type*}
 
 section Product
 
-variable [AddCommMonoid G] [HasAntidiagonal G] [Semiring R]
+variable [AddMonoid G] [HasAntidiagonal G] [Semiring R]
 
 /-- Cauchy product (convolution) via finite antidiagonal sum. -/
 def apply (a b : G → R) : G → R :=
@@ -113,7 +113,7 @@ end Product
 
 section Identity
 
-variable [AddCommMonoid G] [DecidableEq G] [Semiring R]
+variable [AddMonoid G] [DecidableEq G] [Semiring R]
 
 /-- The multiplicative identity: `e_0 = 1, e_g = 0` for `g ≠ 0`. -/
 def one : G → R := Pi.single 0 1
@@ -126,7 +126,7 @@ end Identity
 
 section IdentityIntidiagonal
 
-variable [AddCommMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
+variable [AddMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
 
 theorem one_mul (a : G → R) : one ⋆ a = a := by
   ext n; simp only [apply_eq, one]
