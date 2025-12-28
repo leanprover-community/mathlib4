@@ -201,6 +201,38 @@ lemma Even.sub_odd (ha : Even a) (hb : Odd b) : Odd (a - b) := by
 lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
   rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 
+@[simp]
+lemma even_add_one {R : Type*} [Ring R] {r : R} : Even (r + 1) ↔ Odd r :=
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma even_sub_one {R : Type*} [Ring R] {r : R} : Even (r - 1) ↔ Odd r :=
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma even_add_two {R : Type*} [Ring R] {r : R} : Even (r + 2) ↔ Even r :=
+  ⟨(by convert ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+
+@[simp]
+lemma even_sub_two {R : Type*} [Ring R] {r : R} : Even (r - 2) ↔ Even r :=
+  ⟨(by convert ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+
+@[simp]
+lemma odd_add_one {R : Type*} [Ring R] {r : R} : Odd (r + 1) ↔ Even r :=
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma odd_sub_one {R : Type*} [Ring R] {r : R} : Odd (r - 1) ↔ Even r :=
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma odd_add_two {R : Type*} [Ring R] {r : R} : Odd (r + 2) ↔ Odd r :=
+  by rw [← one_add_one_eq_two, ← add_assoc, odd_add_one, even_add_one]
+
+@[simp]
+lemma odd_sub_two {R : Type*} [Ring R] {r : R} : Odd (r - 2) ↔ Odd r :=
+  by rw [← odd_add_two (r := r - 2), add_comm_sub, sub_self, add_zero]
+
 end Ring
 
 namespace Nat

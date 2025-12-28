@@ -182,38 +182,6 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
-@[simp]
-lemma even_add_one {R : Type*} [Ring R] {r : R} : Even (r + 1) ↔ Odd r :=
-  ⟨(by convert ·.sub_odd odd_one; abel), (·.add_one)⟩
-
-@[simp]
-lemma even_sub_one {R : Type*} [Ring R] {r : R} : Even (r - 1) ↔ Odd r :=
-  ⟨(by convert ·.add_odd odd_one; abel), (·.sub_odd odd_one)⟩
-
-@[simp]
-lemma even_add_two {R : Type*} [Ring R] {r : R} : Even (r + 2) ↔ Even r :=
-  ⟨(by convert ·.sub even_two; abel), (·.add even_two)⟩
-
-@[simp]
-lemma even_sub_two {R : Type*} [Ring R] {r : R} : Even (r - 2) ↔ Even r :=
-  ⟨(by convert ·.add even_two; abel), (·.sub even_two)⟩
-
-@[simp]
-lemma odd_add_one {R : Type*} [Ring R] {r : R} : Odd (r + 1) ↔ Even r :=
-  ⟨(by convert ·.sub_odd odd_one; abel), (·.add_one)⟩
-
-@[simp]
-lemma odd_sub_one {R : Type*} [Ring R] {r : R} : Odd (r - 1) ↔ Even r :=
-  ⟨(by convert ·.add_odd odd_one; abel), (·.sub_odd odd_one)⟩
-
-@[simp]
-lemma odd_add_two {R : Type*} [Ring R] {r : R} : Odd (r + 2) ↔ Odd r :=
-  by rw [← one_add_one_eq_two, ← add_assoc, odd_add_one, even_add_one]
-
-@[simp]
-lemma odd_sub_two {R : Type*} [Ring R] {r : R} : Odd (r - 2) ↔ Odd r :=
-  by rw [← odd_add_two (r := r - 2)]; abel_nf
-
 theorem T_eval_zero (n : ℤ) :
     (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
   induction n using Polynomial.Chebyshev.induct with
