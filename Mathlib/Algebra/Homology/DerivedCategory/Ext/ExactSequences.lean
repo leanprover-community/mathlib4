@@ -159,6 +159,17 @@ lemma covariant_sequence_exact₃ {n₀ : ℕ} (x₃ : Ext X S.X₃ n₀) {n₁ 
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₃ hx₃
 
+lemma postcomp_mk₀_injective_of_mono (L : C) {M N : C} (f : M ⟶ N) [hf : Mono f] :
+    Function.Injective ((Ext.mk₀ f).postcomp L (add_zero 0)) := by
+  rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall]
+  intro x hx
+  obtain ⟨g, rfl⟩ := Ext.addEquiv₀.symm.surjective x
+  simpa [← cancel_mono f] using hx
+
+lemma mono_postcomp_mk₀_of_mono (L : C) {M N : C} (f : M ⟶ N) [hf : Mono f] :
+    Mono (AddCommGrpCat.ofHom <| (Ext.mk₀ f).postcomp L (add_zero 0)) :=
+  (AddCommGrpCat.mono_iff_injective _).mpr (postcomp_mk₀_injective_of_mono L f)
+
 end CovariantSequence
 
 section ContravariantSequence
@@ -276,6 +287,17 @@ lemma contravariant_sequence_exact₃ {n₁ : ℕ} (x₃ : Ext S.X₃ Y n₁)
   have := contravariant_sequence_exact₃' hS Y n₀ n₁ hn₀
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₃ hx₃
+
+lemma precomp_mk₀_injective_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g] :
+    Function.Injective ((Ext.mk₀ g).precomp L (zero_add 0)) := by
+  rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall]
+  intro x hx
+  obtain ⟨f, rfl⟩ := Ext.addEquiv₀.symm.surjective x
+  simpa [← cancel_epi g] using hx
+
+lemma mono_precomp_mk₀_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g] :
+    Mono (AddCommGrpCat.ofHom <| (Ext.mk₀ g).precomp L (zero_add 0)) :=
+  (AddCommGrpCat.mono_iff_injective _).mpr (precomp_mk₀_injective_of_epi L g)
 
 end ContravariantSequence
 
