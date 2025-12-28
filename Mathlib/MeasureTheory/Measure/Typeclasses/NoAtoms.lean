@@ -86,6 +86,18 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
   union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
 
+open Filter TopologicalSpace
+
+variable {X : Type*} [EMetricSpace X] [MeasurableSpace X] {μ : Measure X} [NoAtoms μ] {E : Set X}
+
+/-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
+theorem exists_accPt_of_noAtoms (h_sep : IsSeparable E) (hE : 0 < μ E) :
+    ∃ x, AccPt x (𝓟 E) := by
+  by_contra! h
+  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
+  exact hE.ne' <| (separableSpace_iff_countable.mp h_sep.separableSpace
+    |> E.countable_coe_iff.mp).measure_zero μ
+
 section
 
 variable [PartialOrder α] {a b : α}
@@ -137,20 +149,6 @@ theorem restrict_Ico_eq_restrict_Icc : μ.restrict (Ico a b) = μ.restrict (Icc 
 
 theorem restrict_Ico_eq_restrict_Ioc : μ.restrict (Ico a b) = μ.restrict (Ioc a b) :=
   restrict_congr_set Ico_ae_eq_Ioc
-
-open Filter TopologicalSpace
-
-variable {X : Type*} [EMetricSpace X] [MeasurableSpace X]
-
-/-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
-theorem exists_accPt_of_noAtoms {X : Type*} {E : Set X}
-    [EMetricSpace X] [MeasurableSpace X]
-    {μ : Measure X} [NoAtoms μ] (h_sep : IsSeparable E) (hE : 0 < μ E) :
-    ∃ x, AccPt x (𝓟 E) := by
-  by_contra! h
-  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
-  exact hE.ne' <| (separableSpace_iff_countable.mp h_sep.separableSpace
-    |> E.countable_coe_iff.mp).measure_zero μ
 
 end
 
