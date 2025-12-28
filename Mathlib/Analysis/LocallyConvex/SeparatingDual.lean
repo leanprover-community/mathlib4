@@ -142,24 +142,41 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
-variable [IsTopologicalAddGroup V]
+variable [IsTopologicalAddGroup V] [ContinuousSMul R V]
+
+theorem _root_.ContinuousLinearMap.mem_center_iff {f : V →L[R] V} :
+    f ∈ Set.center (V →L[R] V) ↔ ∃ α ∈ Set.center R, ∀ x : V, f x = α • x := by
+  simp only [Semigroup.mem_center_iff, ContinuousLinearMap.ext_iff, mul_apply]
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  by_cases! Subsingleton V
+  · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : V)
+  obtain ⟨g, hg⟩ := SeparatingDual.exists_eq_one (R := R) hx
+  use g (f x)
+  have := fun y ↦ by simpa [hg] using (h (toSpanSingleton R y ∘L g) x).symm
+  simp [← this, mul_comm]
+
+section algebra
+variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
+  [IsScalarTower S R V] [ContinuousConstSMul S V]
+
+theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
+    f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, ∀ x : V, f x = α • x :=
+  mem_center_iff
 
 /-- The center of continuous linear maps on a topological vector space
 with separating dual is trivial, in other words, it is a central algebra. -/
-instance _root_.Algebra.IsCentral.continuousLinearMap [ContinuousSMul R V] :
-    Algebra.IsCentral R (V →L[R] V) where
-  out T hT := by
-    have h' (f : StrongDual R V) (y v : V) : f (T v) • y = f v • T y := by
-      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
-    nontriviality V
-    obtain ⟨x, hx⟩ := exists_ne (0 : V)
-    obtain ⟨f, hf⟩ := exists_eq_one (R := R) hx
-    exact ⟨f (T x), ContinuousLinearMap.ext fun _ => by simp [h', hf]⟩
+instance _root_.Algebra.IsCentral.continuousLinearMap : [Algebra.IsCentral S R] :
+    Algebra.IsCentral S (V →L[R] V) where out T hT :=
+  have ⟨_, ⟨y, _⟩, _⟩ := Algebra.IsCentral.center_eq_bot S R ▸ T.mem_subalgebraCenter_iff.mp hT
+  ⟨y, by aesop⟩
+
+end algebra
 
 /-- In a topological vector space with separating dual, the group of continuous linear equivalences
 acts transitively on the set of nonzero vectors: given two nonzero vectors `x` and `y`, there
 exists `A : V ≃L[R] V` mapping `x` to `y`. -/
-theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
+theorem exists_continuousLinearEquiv_apply_eq
     {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ A : V ≃L[R] V, A x = y := by
   obtain ⟨G, Gx, Gy⟩ : ∃ G : StrongDual R V, G x = 1 ∧ G y ≠ 0 :=
