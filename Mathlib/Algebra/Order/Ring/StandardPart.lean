@@ -405,8 +405,7 @@ theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
 theorem stdPart_nonneg {x : K} (h : 0 ≤ x) : 0 ≤ stdPart x := by
   obtain hx | hx := eq_or_ne (ArchimedeanClass.mk x) 0
   · rw [stdPart, dif_pos hx.ge]
-    apply map_nonneg
-    exact h
+    exact map_nonneg _ h
   · rw [stdPart_of_mk_ne_zero hx]
 
 theorem stdPart_nonpos {x : K} (h : x ≤ 0) : stdPart x ≤ 0 := by
