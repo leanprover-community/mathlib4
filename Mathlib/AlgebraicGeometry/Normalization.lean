@@ -57,7 +57,7 @@ def normalizationDiagram : Y.Opensᵒᵖ ⥤ CommRingCat where
     simp_rw [X.presheaf.map_comp]
     rfl
 
-/-- The inclusion from the presheaf of `Y` to the integral closure of `Y` in `X`. -/
+/-- The inclusion from the structure presheaf of `Y` to the integral closure of `Y` in `X`. -/
 def normalizationDiagramMap : Y.presheaf ⟶ f.normalizationDiagram where
     app U :=
       letI := (f.app U.unop).hom.toAlgebra
@@ -132,7 +132,7 @@ in `Γ(X, f ⁻¹ U)` where `U` ranges over all affine opens. -/
 def normalizationOpenCover : f.normalization.OpenCover :=
   Scheme.IsLocallyDirected.openCover _
 
-/-- The dominaint morphism into the relative normalization. -/
+/-- The dominant morphism into the relative normalization. -/
 def toNormalization : X ⟶ f.normalization :=
   Scheme.OpenCover.glueMorphismsOfLocallyDirected
     ((directedCover Y).pullback₁ f)
