@@ -319,7 +319,7 @@ only if `p` has defeq endpoints. -/
 inductive Nil : {v w : V} → G.Walk v w → Prop
   | nil {u : V} : Nil (nil : G.Walk u u)
 
-@[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
+@[simp, grind .] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
 @[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
