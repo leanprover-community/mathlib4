@@ -51,11 +51,10 @@ instance {ι : Type*} (c : ComplexShape ι) :
 
 section
 
-variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
-
 open DerivedCategory
 
-lemma Functor.mapTriangleOfSESδ {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
+lemma Functor.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+    {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     F.mapDerivedCategory.map (triangleOfSESδ hS) =
     (F.mapDerivedCategoryFactors.hom.app S.X₃) ≫
     triangleOfSESδ (hS.map_of_exact (F.mapHomologicalComplex (ComplexShape.up ℤ))) ≫
@@ -107,7 +106,8 @@ lemma Functor.mapTriangleOfSESδ {S : ShortComplex (CochainComplex C ℤ)} (hS :
     CochainComplex.mappingCone.mapHomologicalComplexXIso'_hom,
     mapHomologicalComplex_map_f, CochainComplex.mappingCone.desc_f _ _ _ _ n (n + 1) rfl]
 
-lemma Functor.mapShiftedHom_singleδ {S : ShortComplex C} (hS : S.ShortExact) :
+lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+    {S : ShortComplex C} (hS : S.ShortExact) :
     (F.mapDerivedCategorySingleFunctor 0).inv.app S.X₃ ≫
       ShiftedHom.map hS.singleδ F.mapDerivedCategory ≫
         (shiftFunctor (DerivedCategory D) 1).map ((F.mapDerivedCategorySingleFunctor 0).hom.app
