@@ -288,7 +288,7 @@ theorem Ioo_self (a : α) : Ioo a a = ∅ :=
 
 @[simp]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
-  ⟨fun h ↦ h self_mem_Ici, fun h _ ↦ h.trans⟩
+  ⟨fun h => h self_mem_Ici, fun h _ => h.trans⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
@@ -316,7 +316,7 @@ theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b :=
 
 @[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
-  ⟨fun h => h self_mem_Ici, fun h _ hx => h.trans_le hx⟩
+  ⟨fun h => h self_mem_Ici, fun h _ => h.trans_le⟩
 
 @[simp]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
