@@ -335,8 +335,7 @@ section RestrictScalars
 variable {S R : Type*} {M : Type u} [CommSemiring S] [Semiring R] [AddCommMonoid M]
   [Algebra S R] [Module R M] [Module S M] [IsScalarTower S R M] [RingHomSurjective (algebraMap S R)]
 
-lemma spanRank_restrictScalars_eq_spanRank
-    (M₁ : Submodule R M) :
+lemma spanRank_restrictScalars_eq_spanRank (M₁ : Submodule R M) :
     (M₁.restrictScalars S).spanRank = M₁.spanRank := by
   apply le_antisymm
   · rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
