@@ -41,7 +41,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
 /-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
-  SubNegMonoid α, Nontrivial α where
+    SubNegMonoid α, Nontrivial α where
   neg_top : -(⊤ : α) = ⊤
   add_neg_cancel_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → x + -x = 0
 
