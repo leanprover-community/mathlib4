@@ -300,7 +300,7 @@ variable {F : Filter α} {G : Filter β}
 
 theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
     MapsTo (map m) (Iic F) (Iic G) ↔ Tendsto m F G :=
-  ⟨fun hm ↦ hm right_mem_Iic, fun hm _ ↦ hm.mono_left⟩
+  ⟨fun hm ↦ hm self_mem_Iic, fun hm _ ↦ hm.mono_left⟩
 
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 
