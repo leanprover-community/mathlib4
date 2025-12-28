@@ -760,6 +760,10 @@ theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
     f ∘L toSpanSingleton R₁ x = toSpanSingleton R₁ (f x) :=
   coe_inj.mp <| LinearMap.comp_toSpanSingleton _ _
 
+omit [ContinuousSMul R₁ M₁] in
+theorem toSpanSingleton_comp_eq_smulRight (f : M₁ →L[R₁] R₁) (g : M₂) :
+    toSpanSingleton R₁ g ∘L f = f.smulRight g := rfl
+
 @[simp] theorem toSpanSingleton_inj {f f' : M₂} :
     toSpanSingleton R₁ f = toSpanSingleton R₁ f' ↔ f = f' := by
   simp [ContinuousLinearMap.ext_ring_iff]
@@ -1071,7 +1075,7 @@ theorem coe_smulRightₗ (c : M →L[R] S) : ⇑(smulRightₗ c : M₂ →ₗ[T]
 
 end SMulRightₗ
 
-section CommSemiring
+section Semiring
 variable {R S M : Type*} [Semiring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M]
   [ContinuousConstSMul S M] [IsTopologicalAddGroup M]
@@ -1081,7 +1085,7 @@ instance algebra : Algebra S (M →L[R] M) :=
 
 @[simp] theorem algebraMap_apply (r : S) (m : M) : algebraMap S (M →L[R] M) r m = r • m := rfl
 
-end CommSemiring
+end Semiring
 
 section RestrictScalars
 

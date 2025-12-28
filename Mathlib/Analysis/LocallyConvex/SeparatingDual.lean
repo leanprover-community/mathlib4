@@ -144,8 +144,13 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
 
 variable [IsTopologicalAddGroup V] [ContinuousSMul R V]
 
-theorem _root_.ContinuousLinearMap.mem_center_iff {f : V →L[R] V} :
-    f ∈ Set.center (V →L[R] V) ↔ ∃ α ∈ Set.center R, f = α • .id R V := by
+section algebra
+variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
+  [IsScalarTower S R V] [ContinuousConstSMul S V]
+
+private theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
+    f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, f = α • .id R V := by
+  change f ∈ Set.center (V →L[R] V) ↔ ∃ α ∈ Set.center R, f = α • .id R V
   simp only [Semigroup.mem_center_iff, ContinuousLinearMap.ext_iff, ContinuousLinearMap.mul_apply]
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases! Subsingleton V
@@ -154,14 +159,6 @@ theorem _root_.ContinuousLinearMap.mem_center_iff {f : V →L[R] V} :
   obtain ⟨g, hg⟩ := SeparatingDual.exists_eq_one (R := R) hx
   have := fun y ↦ by simpa [hg] using h (g.smulRight y) x
   exact ⟨g (f x), by simp [this, mul_comm]⟩
-
-section algebra
-variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
-  [IsScalarTower S R V] [ContinuousConstSMul S V]
-
-theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
-    f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, f = α • .id R V :=
-  f.mem_center_iff
 
 /-- The center of continuous linear maps on a topological vector space
 with separating dual is trivial, in other words, it is a central algebra. -/
