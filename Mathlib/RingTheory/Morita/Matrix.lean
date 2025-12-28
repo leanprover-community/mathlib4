@@ -71,7 +71,7 @@ variable {R ι} in
 def _root_.LinearMap.fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N]
     [Module R N] [IsScalarTower R (Matrix ι ι R) N] [Module R M] [IsScalarTower R (Matrix ι ι R) M]
     (f : M →ₗ[Matrix ι ι R] N) : (toModuleCatObj R ι M) →ₗ[R] (toModuleCatObj R ι N) where
-  toFun x := ⟨f x.1, by obtain ⟨y, hy⟩ := toModuleCatObj_mem x.1|>.1 x.2; simp [← hy]⟩
+  toFun x := ⟨f x.1, by obtain ⟨y, hy⟩ := mem_toModuleCatObj.1 x.2; simp [← hy]⟩
   map_add' := by simp
   map_smul' := by simp
 
@@ -123,7 +123,7 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
     · simp [h, single]
     · simp [Ne.symm h]⟩
   left_inv := fun ⟨x, hx⟩ ↦ by
-    obtain ⟨y, hy⟩ := toModuleCatObj_mem x|>.1 hx
+    obtain ⟨y, hy⟩ := mem_toModuleCatObj.1 hx
     ext i
     simp only [Function.update_apply, Pi.zero_apply]
     split_ifs with h
