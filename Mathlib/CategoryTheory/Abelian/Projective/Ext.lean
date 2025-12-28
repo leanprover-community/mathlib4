@@ -42,7 +42,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
 instance : R.cochainComplex.IsKProjective := isKProjective_of_projective _ 0
 
-/-- If `R` is a pronjective resolution of `X`, then `Ext X Y n` identify
+/-- If `R` is a projective resolution of `X`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `R.cochainComplex`
 to `(singleFunctor C 0).obj Y`. -/
 noncomputable def extEquivCohomologyClass :
@@ -57,12 +57,9 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
       inv (DerivedCategory.Q.map R.π') ≫
         DerivedCategory.Q.map (Cocycle.equivHomShift.symm x) ≫
           (DerivedCategory.Q.commShiftIso (n : ℤ)).hom.app _ := by
-  simp only [Ext.hom, Ext.homEquiv, extEquivCohomologyClass, SmallShiftedHom.precompEquiv,
-    Equiv.symm_trans_apply, Equiv.symm_symm, CohomologyClass.equivOfIsKProjective_apply,
-    Equiv.coe_fn_symm_mk, Functor.comp_obj]
-  refine (SmallShiftedHom.equiv_comp _ _ _ _ _).trans ?_
-  simp [ShiftedHom.comp, ShiftedHom.mk₀, shiftFunctorZero', ShiftedHom.map,
-    shiftFunctorAdd'_add_zero_inv_app, isoOfHom]
+  change SmallShiftedHom.equiv _ _ (.comp _ (CohomologyClass.mk x).toSmallShiftedHom _) = _
+  simp [SmallShiftedHom.equiv_comp, ShiftedHom.mk₀, ShiftedHom.comp,
+    ShiftedHom.map, shiftFunctorAdd'_add_zero_inv_app, shiftFunctorZero']
 
 @[simp]
 lemma extEquivCohomologyClass_symm_add
@@ -75,9 +72,10 @@ lemma extEquivCohomologyClass_symm_add
   ext
   simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom]
 
-/-- If `R` is a projective resolution of `X`, then `Ext X Y n` identify
+/-- If `R` is a projective resolution of `X`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `R.cochainComplex`
 to `(singleFunctor C 0).obj X`. -/
+@[simps!]
 noncomputable def extAddEquivCohomologyClass :
     Ext X Y n ≃+ CohomologyClass R.cochainComplex ((singleFunctor C 0).obj Y) n :=
   AddEquiv.symm
