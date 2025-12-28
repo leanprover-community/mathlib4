@@ -54,9 +54,8 @@ noncomputable def extEquivCohomologyClass :
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle R.cochainComplex ((singleFunctor C 0).obj Y) n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =
-      inv (DerivedCategory.Q.map R.π') ≫
-        DerivedCategory.Q.map (Cocycle.equivHomShift.symm x) ≫
-          (DerivedCategory.Q.commShiftIso (n : ℤ)).hom.app _ := by
+      (ShiftedHom.mk₀ _ rfl (inv (DerivedCategory.Q.map R.π'))).comp
+        (ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q) (add_zero _) := by
   change SmallShiftedHom.equiv _ _ (.comp _ (CohomologyClass.mk x).toSmallShiftedHom _) = _
   simp [SmallShiftedHom.equiv_comp, ShiftedHom.mk₀, ShiftedHom.comp,
     ShiftedHom.map, shiftFunctorAdd'_add_zero_inv_app, shiftFunctorZero']
@@ -70,7 +69,7 @@ lemma extEquivCohomologyClass_symm_add
   obtain ⟨x, rfl⟩ := x.mk_surjective
   obtain ⟨y, rfl⟩ := y.mk_surjective
   ext
-  simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom]
+  simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom, ShiftedHom.map]
 
 /-- If `R` is a projective resolution of `X`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `R.cochainComplex`
