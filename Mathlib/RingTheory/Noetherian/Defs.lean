@@ -210,6 +210,4 @@ lemma Ideal.fg_of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R]
     I.FG :=
   IsNoetherian.noetherian _
 
-lemma Ideal.FG.of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R] (I : Ideal R) :
-    I.FG :=
-  IsNoetherian.noetherian _
+alias Ideal.FG.of_isNoetherianRing := Ideal.fg_of_isNoetherianRing
