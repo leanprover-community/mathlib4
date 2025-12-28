@@ -199,6 +199,16 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
 
+lemma extMk_hom
+    [HasDerivedCategory C] {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) :
+    (R.extMk f m hm hf).hom =
+      (ShiftedHom.map (Cocycle.equivHomShift.symm
+        (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
+          m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) _).comp
+            (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι'))) (zero_add _) := by
+  sorry
+
 lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) {X' : C} (g : X' ⟶ X) :
     (Ext.mk₀ g).comp (R.extMk f m hm hf) (zero_add _) =
@@ -213,5 +223,19 @@ lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n +
     ShiftedHom.map_comp, ShiftedHom.map_mk₀,
     ShiftedHom.comp_assoc _ _ _ (add_zero _) (zero_add _) (by simp)]
   rfl
+
+variable {R} in
+lemma extMk_comp {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0)
+    {Y' : C} {R' : InjectiveResolution Y'} {g : Y ⟶ Y'} (φ : Hom R R' g) :
+    (R.extMk f m hm hf).comp (Ext.mk₀ g) (add_zero _) =
+      R'.extMk (f ≫ φ.hom.f n) m hm (by simp [reassoc_of% hf]) := by
+  have := HasDerivedCategory.standard C
+  ext
+  have : (f ≫ φ.hom.f n) ≫ (R'.cochainComplexXIso n n (by lia)).inv =
+      (f ≫ (R.cochainComplexXIso n n (by lia)).inv) ≫ φ.hom'.f n := by
+    simp [φ.hom'_f n n rfl]
+  simp only [Ext.comp_hom, Int.cast_ofNat_Int, extMk_hom, Ext.mk₀_hom, this]
+  sorry
 
 end CategoryTheory.InjectiveResolution
