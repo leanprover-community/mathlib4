@@ -60,7 +60,7 @@ def toModuleCatObj : Submodule R M where
 
 variable {R ι} in
 @[simp]
-lemma toModuleCatObj_mem (x : M) : x ∈ toModuleCatObj R ι M ↔ ∃ y : M,
+lemma mem_toModuleCatObj {x : M} : x ∈ toModuleCatObj R ι M ↔ ∃ y : M,
     (single default default 1 : Matrix ι ι R) • y = x :=
   Iff.rfl
 
