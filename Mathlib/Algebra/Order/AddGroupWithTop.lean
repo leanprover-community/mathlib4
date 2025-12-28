@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 
-import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TermCongr
 
 /-!
@@ -217,8 +216,8 @@ lemma sub_le_sub_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b - a ≤ c -
 lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ := by
   obtain rfl | hb := eq_or_ne b ⊤
   · simp
-  · rw [← sub_self_eq_zero_of_ne_top hb, sub_lt_sub_iff_left_of_ne_top hb]
-    tauto
+  · rw [← sub_self_eq_zero_of_ne_top hb]
+    simp [hb]
 
 end LinearOrderedAddCommGroupWithTop
 
