@@ -47,6 +47,7 @@ def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage f := ModuleCat.ofHom (ULift.moduleEquiv.toLinearMap.comp
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
 
+/-- The `ULift` functor on `ModuleCat` is compatible with the one defined on categories of types. -/
 @[simps!]
 def uliftFunctorForgetIso :
     ModuleCat.uliftFunctor.{v'} R ⋙ forget _ ≅
@@ -104,3 +105,4 @@ instance : (uliftFunctor.{v', v} R).Linear R where
 end CommRing
 
 end ModuleCat
+#lint
