@@ -69,25 +69,41 @@ instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by a
 
 instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
 
+theorem left_notMem_Ioo (a b : α) : a ∉ Ioo a b := by simp
+theorem left_notMem_Ioc (a b : α) : a ∉ Ioc a b := by simp
+
+@[deprecated left_notMem_Ioo (since := "2025-12-26")]
 theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
 
-theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [le_refl]
-
-theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
-
+@[deprecated left_notMem_Ioc (since := "2025-12-26")]
 theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
 
-theorem left_mem_Ici : a ∈ Ici a := by simp
+theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp
+theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp
 
+theorem self_notMem_Ioi : a ∉ Ioi a := by simp
+theorem self_mem_Ici : a ∈ Ici a := by simp
+
+@[deprecated (since := "2025-12-26")]
+alias left_mem_Ici := self_mem_Ici
+
+theorem right_notMem_Ioo : b ∉ Ioo a b := by simp
+theorem right_notMem_Ico : b ∉ Ico a b := by simp
+
+@[deprecated right_notMem_Ioo (since := "2025-12-26")]
 theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp
 
+@[deprecated right_notMem_Ico (since := "2025-12-26")]
 theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
 
-theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
+theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp
+theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp
 
-theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp [le_refl]
+theorem self_notMem_Iio : a ∉ Iio a := by simp
+theorem self_mem_Iic : a ∈ Iic a := by simp
 
-theorem right_mem_Iic : a ∈ Iic a := by simp
+@[deprecated (since := "2025-12-26")]
+alias right_mem_Iic := self_mem_Iic
 
 @[simp]
 theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
@@ -167,11 +183,11 @@ theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b :=
 
 @[simp]
 theorem nonempty_Ici : (Ici a).Nonempty :=
-  ⟨a, left_mem_Ici⟩
+  ⟨a, self_mem_Ici⟩
 
 @[simp]
 theorem nonempty_Iic : (Iic a).Nonempty :=
-  ⟨a, right_mem_Iic⟩
+  ⟨a, self_mem_Iic⟩
 
 @[simp]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b :=
@@ -272,7 +288,7 @@ theorem Ioo_self (a : α) : Ioo a a = ∅ :=
 
 @[simp]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
-  ⟨fun h => h <| left_mem_Ici, fun h _ hx => h.trans hx⟩
+  ⟨fun h => h self_mem_Ici, fun h _ => h.trans⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
@@ -282,7 +298,7 @@ theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
     obtain ⟨ab, c, cb, ac⟩ := ssubset_iff_exists.mp h
     exact lt_of_le_not_ge (Ici_subset_Ici.mp ab) (fun h' ↦ ac (h'.trans cb))
   mpr h := (ssubset_iff_of_subset (Ici_subset_Ici.mpr h.le)).mpr
-    ⟨b, right_mem_Iic, fun h' => h.not_ge h'⟩
+    ⟨b, self_mem_Iic, fun h' => h.not_ge h'⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_ssubset_Ici_of_le⟩ := Ici_ssubset_Ici
 
@@ -300,11 +316,11 @@ theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b :=
 
 @[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
-  ⟨fun h => h left_mem_Ici, fun h _ hx => h.trans_le hx⟩
+  ⟨fun h => h self_mem_Ici, fun h _ => h.trans_le⟩
 
 @[simp]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
-  ⟨fun h => h right_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
+  ⟨fun h => h self_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
 @[gcongr]
 theorem Ioo_subset_Ioo (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
@@ -714,11 +730,11 @@ theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
 
 @[simp]
 theorem Ici_diff_Ioi_same : Ici a \ Ioi a = {a} := by
-  rw [← Ici_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 left_mem_Ici)]
+  rw [← Ici_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 self_mem_Ici)]
 
 @[simp]
 theorem Iic_diff_Iio_same : Iic a \ Iio a = {a} := by
-  rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 right_mem_Iic)]
+  rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 self_mem_Iic)]
 
 theorem Ioi_union_left : Ioi a ∪ {a} = Ici a :=
   ext fun x => by simp [eq_comm, le_iff_eq_or_lt]
@@ -812,7 +828,7 @@ theorem eq_endpoints_or_mem_Ioo_of_mem_Icc {x : α} (hmem : x ∈ Icc a b) :
   hmem.1.eq_or_lt'.imp_right fun h => eq_right_or_mem_Ioo_of_mem_Ioc ⟨h, hmem.2⟩
 
 theorem _root_.IsMax.Ici_eq (h : IsMax a) : Ici a = {a} :=
-  eq_singleton_iff_unique_mem.2 ⟨left_mem_Ici, fun _ => h.eq_of_ge⟩
+  eq_singleton_iff_unique_mem.2 ⟨self_mem_Ici, fun _ => h.eq_of_ge⟩
 
 theorem _root_.IsMin.Iic_eq (h : IsMin a) : Iic a = {a} :=
   h.toDual.Ici_eq
