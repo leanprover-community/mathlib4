@@ -36,7 +36,7 @@ section Ring
 variable [Ring R]
 
 /-- Universe lift functor for `R`-module. -/
-@[simps obj map]
+@[simps obj map, pp_with_univ]
 def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
   obj X := ModuleCat.of R (ULift.{v', v} X)
   map f := ModuleCat.ofHom <|
@@ -47,11 +47,27 @@ def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage f := ModuleCat.ofHom (ULift.moduleEquiv.toLinearMap.comp
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
 
+/-- The `ULift` functor on `ModuleCat` is compatible with the one defined on categories of types. -/
+@[simps!]
+def uliftFunctorForgetIso :
+    ModuleCat.uliftFunctor.{v'} R ⋙ forget _ ≅
+    forget _ ⋙ CategoryTheory.uliftFunctor.{v'} :=
+  .refl _
+
 instance : (uliftFunctor.{v', v} R).Full := (fullyFaithfulUliftFunctor R).full
 
 instance : (uliftFunctor.{v', v} R).Faithful := (fullyFaithfulUliftFunctor R).faithful
 
 instance : (uliftFunctor R).Additive where
+
+instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
+  let :  Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R ⋙ forget _) := by
+    change Limits.PreservesLimitsOfSize.{v, v} (forget _ ⋙ CategoryTheory.uliftFunctor.{v'})
+    infer_instance
+  Limits.preservesLimits_of_reflects_of_preserves (uliftFunctor.{v', v} R) (forget _)
+
+instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) :=
+  Limits.PreservesLimitsOfSize.preservesFiniteLimits _
 
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by
@@ -62,11 +78,6 @@ lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) 
   simp only [Function.comp_apply, Set.mem_range, LinearEquiv.symm_apply_eq, map_zero]
   rw [(CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mp h]
   cat_disch
-
-instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) := by
-  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
-    (uliftFunctor_map_exact R)
-  exact this.1
 
 instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
   have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
