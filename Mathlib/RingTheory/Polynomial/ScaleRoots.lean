@@ -119,7 +119,7 @@ lemma one_scaleRoots (r : R) :
 @[simp]
 lemma X_add_C_scaleRoots (r s : R) : (X + C r).scaleRoots s = (X + C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Semiring
 
@@ -318,7 +318,7 @@ section Ring
 lemma X_sub_C_scaleRoots [Ring R] (r s : R) :
     (X - C r).scaleRoots s = (X - C (r * s)) := by
   nontriviality R
-  ext (_|_|i) <;> simp
+  ext (_ | _ | i) <;> simp
 
 end Ring
 

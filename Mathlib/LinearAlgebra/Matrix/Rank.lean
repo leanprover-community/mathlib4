@@ -278,11 +278,8 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   cases nonempty_fintype m
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).equiv v₂ (Equiv.refl _)
-  have range_e₂ : LinearMap.range e₂ = ⊤ := by
-    rw [LinearMap.range_eq_top]
-    exact e₂.surjective
   refine LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ ?_)
-  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) range_e₂]
+  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) e₂.range]
   congr 1
   apply LinearMap.pi_ext'
   rintro i

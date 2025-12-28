@@ -254,7 +254,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     · intro x hx
       refine HasDerivWithinAt.sub ?_ (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt
-      exact (hf.differentiableOn le_add_self _ hx).hasDerivWithinAt
+      exact (hf.differentiableOn (by simp) _ hx).hasDerivWithinAt
 
 /-- **Taylor's theorem** as a limit. -/
 theorem taylor_tendsto {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}

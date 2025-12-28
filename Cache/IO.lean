@@ -459,10 +459,10 @@ Return tuples of the form ("module name", "path to .lean file").
 
 The input string `arg` takes one of the following forms:
 
-1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
-2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder (TODO)
-3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
-4. `Mathlib/Algebra/Fields/`: the folder exists (TODO)
+1. `Mathlib.Algebra.Field.Basic`: there exists such a Lean file
+2. `Mathlib.Algebra.Field`: no Lean file exists but a folder (TODO)
+3. `Mathlib/Algebra/Field/Basic.lean`: the file exists (note potentially `\` on Windows)
+4. `Mathlib/Algebra/Field/`: the folder exists (TODO)
 
 Not supported yet:
 

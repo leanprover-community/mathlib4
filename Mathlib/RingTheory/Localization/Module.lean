@@ -179,7 +179,8 @@ theorem localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A)
 
 theorem localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
-      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := b.ofIsLocalizedModule_span Rₛ S _
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) :=
+  b.ofIsLocalizedModule_span Rₛ S _
 
 end Module.Basis
 end LocalizationLocalization

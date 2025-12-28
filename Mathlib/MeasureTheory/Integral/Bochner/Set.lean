@@ -138,9 +138,9 @@ theorem setIntegral_univ : ∫ x in univ, f x ∂μ = ∫ x, f x ∂μ := by rw 
 
 theorem integral_add_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ := by
-  rw [
-    ← integral_union_ae disjoint_compl_right.aedisjoint hs.compl hfi.integrableOn hfi.integrableOn,
-    union_compl_self, setIntegral_univ]
+  have := integral_union_ae disjoint_compl_right.aedisjoint
+    hs.compl hfi.integrableOn hfi.integrableOn
+  rw [← this, union_compl_self, setIntegral_univ]
 
 theorem integral_add_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ :=

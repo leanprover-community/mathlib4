@@ -91,7 +91,7 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
   rcases lt_or_ge m n with hmn | hnm
   · exact hmin m hmn ⟨y, hyH, hm, hya⟩
   · refine disjoint_left.1 hd (div_mem hxH hyH) ⟨one_lt_div'.2 hxy, div_lt_iff_lt_mul'.2 ?_⟩
-    calc x ≤ a^ (n + 1) := hxn
+    calc x ≤ a ^ (n + 1) := hxn
     _ ≤ a ^ (m + 1) := by grw [hnm]; exact h₀.le
     _ = a ^ m * a := pow_succ _ _
     _ < y * a := by gcongr

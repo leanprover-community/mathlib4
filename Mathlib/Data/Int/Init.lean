@@ -335,4 +335,7 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 @[simp] lemma gcd_negSucc_negSucc (m n : ℕ) :
     (negSucc m).gcd (negSucc n) = (m + 1).gcd (n + 1) := by simp [gcd]
 
+theorem gcd_left_comm (a b c : ℤ) : gcd a (gcd b c) = gcd b (gcd a c) := by
+  rw [← gcd_assoc, ← gcd_assoc, gcd_comm a b]
+
 end Int

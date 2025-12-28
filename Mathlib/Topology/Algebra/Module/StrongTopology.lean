@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
@@ -800,6 +801,32 @@ def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H
 
 @[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
     (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
+
+/-- A continuous linear equivalence of two spaces induces a continuous equivalence of algebras of
+their endomorphisms. -/
+def conjContinuousAlgEquiv (e : G ≃L[𝕜] H) : (G →L[𝕜] G) ≃A[𝕜] (H →L[𝕜] H) :=
+  { e.arrowCongr e with
+    map_mul' _ _ := by ext; simp
+    commutes' _ := by ext; simp }
+
+@[simp] theorem conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) (x : H) :
+    e.conjContinuousAlgEquiv f x = e (f (e.symm x)) := rfl
+
+theorem symm_conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : H →L[𝕜] H) (x : G) :
+    e.conjContinuousAlgEquiv.symm f x = e.symm (f (e x)) := rfl
+
+theorem conjContinuousAlgEquiv_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) :
+    e.conjContinuousAlgEquiv f = e ∘L f ∘L e.symm := rfl
+
+@[simp] theorem symm_conjContinuousAlgEquiv (e : G ≃L[𝕜] H) :
+    e.conjContinuousAlgEquiv.symm = e.symm.conjContinuousAlgEquiv := rfl
+
+@[simp] theorem conjContinuousAlgEquiv_refl : conjContinuousAlgEquiv (.refl 𝕜 G) = .refl 𝕜 _ := rfl
+
+theorem conjContinuousAlgEquiv_trans [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+    (e : E ≃L[𝕜] G) (f : G ≃L[𝕜] H) :
+    (e.trans f).conjContinuousAlgEquiv = e.conjContinuousAlgEquiv.trans f.conjContinuousAlgEquiv :=
+  rfl
 
 end Linear
 

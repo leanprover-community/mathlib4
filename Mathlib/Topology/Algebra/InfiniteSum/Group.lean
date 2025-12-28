@@ -394,7 +394,7 @@ theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
 
 @[to_additive (attr := simp)]
 theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
-  rcases finite_or_infinite β with hβ|hβ
+  rcases finite_or_infinite β with hβ | hβ
   · letI : Fintype β := Fintype.ofFinite β
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]

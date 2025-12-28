@@ -155,8 +155,8 @@ theorem isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
 
 instance : TotallyDisconnectedSpace ℝₗ :=
   ⟨fun _ _ hs x hx y hy =>
-    le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
-      (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
+    le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, self_mem_Ici⟩ hy)
+      (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, self_mem_Ici⟩ hx)⟩
 
 instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
@@ -221,7 +221,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   obtain rfl : x + y = c := by
     change (x, y) ∈ {p : ℝₗ × ℝₗ | p.1 + p.2 = c}
     exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
-  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 left_mem_Ici with
+  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 self_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert H
   · refine hx.antisymm ?_

@@ -22,7 +22,7 @@ Similarly, when `M = ℂ`, we call the measure a complex measure and write `Comp
 ## Main definitions
 
 * `MeasureTheory.VectorMeasure` is a vector-valued, σ-additive function that maps the empty
-  and non-measurable set to zero.
+  and non-measurable sets to zero.
 * `MeasureTheory.VectorMeasure.map` is the pushforward of a vector measure along a function.
 * `MeasureTheory.VectorMeasure.restrict` is the restriction of a vector measure on some set.
 

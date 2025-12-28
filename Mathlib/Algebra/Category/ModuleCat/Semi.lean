@@ -90,7 +90,7 @@ structure Hom (M N : SemimoduleCat.{v} R) where
   /-- The underlying linear map. -/
   hom' : M →ₗ[R] N
 
-instance moduleCategory : Category.{v, max (v+1) u} (SemimoduleCat.{v} R) where
+instance moduleCategory : Category.{v, max (v + 1) u} (SemimoduleCat.{v} R) where
   Hom M N := Hom M N
   id _ := ⟨LinearMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩

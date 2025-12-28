@@ -111,9 +111,9 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas k.2)
-        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt le_rfl
+        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt one_ne_zero
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas j.2)
-        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt le_rfl
+        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt one_ne_zero
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]
@@ -165,7 +165,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
   have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
     rw [PartialEquiv.trans_source'', PartialEquiv.symm_symm, PartialEquiv.symm_target]
     exact mem_image_of_mem _ h
-  ((contDiffWithinAt_ext_coord_change y x h').differentiableWithinAt le_rfl).hasFDerivWithinAt
+  ((contDiffWithinAt_ext_coord_change y x h').differentiableWithinAt one_ne_zero).hasFDerivWithinAt
 
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by

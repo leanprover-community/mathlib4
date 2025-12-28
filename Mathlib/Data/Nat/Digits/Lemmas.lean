@@ -143,7 +143,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert @pow_length_le_mul_ofDigits b (digits (b+2) m)
+  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m)
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 

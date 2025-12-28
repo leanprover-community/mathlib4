@@ -181,7 +181,7 @@ def shiftFunctorAdd' (i j k : A) (h : i + j = k) :
   eqToIso (by rw [h]) ≪≫ shiftFunctorAdd C i j
 
 lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
-    shiftFunctorAdd' C i j (i+j) rfl = shiftFunctorAdd C i j := by
+    shiftFunctorAdd' C i j (i + j) rfl = shiftFunctorAdd C i j := by
   ext1
   apply Category.id_comp
 
@@ -583,7 +583,7 @@ lemma shiftFunctorComm_symm (i j : A) :
     (shiftFunctorComm C i j).symm = shiftFunctorComm C j i := by
   ext1
   dsimp
-  rw [shiftFunctorComm_eq C i j (i+j) rfl, shiftFunctorComm_eq C j i (i+j) (add_comm j i)]
+  rw [shiftFunctorComm_eq C i j (i + j) rfl, shiftFunctorComm_eq C j i (i + j) (add_comm j i)]
   rfl
 
 variable {C}

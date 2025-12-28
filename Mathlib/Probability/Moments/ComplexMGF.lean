@@ -320,14 +320,14 @@ theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
     (h : complexMGF X μ = complexMGF Y μ') :
     μ.map X = μ'.map Y := by
-  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : bilinFormOfRealInner x ≠ 0 :=
+  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : innerₗ ℝ  x ≠ 0 :=
     DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
   apply MeasureTheory.ext_of_integral_char_eq continuous_probChar probChar_ne_one inner_ne_zero
     continuous_inner (fun w ↦ ?_)
   rw [funext_iff] at h
   specialize h (Multiplicative.toAdd w * I)
   simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
-  simp only [BoundedContinuousFunction.char_apply, bilinFormOfRealInner_apply_apply,
+  simp only [BoundedContinuousFunction.char_apply, innerₗ_apply_apply,
     RCLike.inner_apply, conj_trivial, probChar_apply, ofReal_mul]
   rwa [integral_map hX (by fun_prop), integral_map hY (by fun_prop)]
 

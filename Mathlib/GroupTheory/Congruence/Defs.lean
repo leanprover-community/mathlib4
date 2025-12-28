@@ -111,7 +111,7 @@ variable [Mul M] [Mul N] [Mul P] {c d : Con M}
 
 @[to_additive]
 instance : Inhabited (Con M) :=
-  ⟨conGen EmptyRelation⟩
+  ⟨conGen emptyRelation⟩
 
 @[to_additive] lemma toSetoid_injective : Injective (toSetoid (M := M)) :=
   fun c d ↦ by cases c; congr!

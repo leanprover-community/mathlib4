@@ -256,7 +256,7 @@ Topology:
   Metric spaces:
     metric space: 'MetricSpace'
     ball: 'Metric.ball'
-    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'UniformSpace.isCompact_iff_isSeqCompact'
+    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'isCompact_iff_isSeqCompact'
     Heine-Borel theorem (proper metric space version): 'Metric.isCompact_iff_isClosed_bounded'
     Lipschitz continuity: 'LipschitzWith'
     Hölder continuity: 'HolderWith'

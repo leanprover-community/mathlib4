@@ -136,40 +136,28 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
 
 variable {f g : ℝ → F}
 
-theorem fun_add (hf : AbsolutelyContinuousOnInterval f a b)
+@[to_fun]
+theorem add (hf : AbsolutelyContinuousOnInterval f a b)
     (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x + g x) a b := by
-  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.add hg)
+    AbsolutelyContinuousOnInterval (f + g) a b := by
+  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using Tendsto.add hf hg)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · rw [← Finset.sum_add_distrib]
     gcongr
     exact dist_add_add_le _ _ _ _
 
-theorem add (hf : AbsolutelyContinuousOnInterval f a b)
-    (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (f + g) a b :=
-  hf.fun_add hg
-
-theorem fun_neg (hf : AbsolutelyContinuousOnInterval f a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ -(f x)) a b := by
+@[to_fun]
+theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
+    AbsolutelyContinuousOnInterval (-f) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · simp
 
-theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
-    AbsolutelyContinuousOnInterval (-f) a b :=
-  hf.fun_neg
-
-theorem fun_sub (hf : AbsolutelyContinuousOnInterval f a b)
-    (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x - g x) a b := by
-  simp_rw [fun x ↦ show f x - g x = f x + (-(g x)) by abel]
-  exact hf.fun_add (hg.fun_neg)
-
+@[to_fun]
 theorem sub (hf : AbsolutelyContinuousOnInterval f a b)
     (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (f - g) a b :=
-  hf.fun_sub hg
+    AbsolutelyContinuousOnInterval (f - g) a b := by
+  simpa [sub_eq_add_neg] using hf.add (hg.neg)
 
 theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
     (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -215,10 +203,11 @@ theorem exists_bound (hf : AbsolutelyContinuousOnInterval f a b) :
 
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
-theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+@[to_fun]
+theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
     {f : ℝ → M} {g : ℝ → F}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x • g x) a b := by
+    AbsolutelyContinuousOnInterval (f • g) a b := by
   obtain ⟨C, hC⟩ := hf.exists_bound
   obtain ⟨D, hD⟩ := hg.exists_bound
   unfold AbsolutelyContinuousOnInterval at hf hg
@@ -243,27 +232,13 @@ theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
       rw [dist_zero_right]
       exact hD _ (hnI.left i hi |>.right)
 
-/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
-on `uIcc a b`. -/
-theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
-    {f : ℝ → M} {g : ℝ → F}
-    (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (f • g) a b :=
-  hf.fun_smul hg
-
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
 on `uIcc a b`. -/
-theorem fun_mul {f g : ℝ → ℝ}
-    (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
-  hf.fun_smul hg
-
-/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
-on `uIcc a b`. -/
+@[to_fun]
 theorem mul {f g : ℝ → ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (f * g) a b :=
-  hf.fun_mul hg
+  hf.smul hg
 
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
 theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K : ℝ≥0}

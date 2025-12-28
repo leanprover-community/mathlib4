@@ -154,7 +154,7 @@ instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGro
   { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
     mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
 
-local notation " Q " => G ⧸ N
+local notation " Q" => G ⧸ N
 
 @[to_additive (attr := simp)]
 theorem mk_one : ((1 : G) : Q) = 1 :=

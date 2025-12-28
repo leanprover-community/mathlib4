@@ -52,12 +52,12 @@ open Lean
 
 scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofElems l),*])
 
--- this is copied from `src/Init/NotationExtra.lean`
+-- this is copied from `Init/NotationExtra.lean` (Lean core)
 /-- Unexpander for `Vector3.nil` -/
 @[app_unexpander Vector3.nil] meta def unexpandNil : Lean.PrettyPrinter.Unexpander
   | `($(_)) => `([])
 
--- this is copied from `src/Init/NotationExtra.lean`
+-- this is copied from `Init/NotationExtra.lean` (Lean core)
 /-- Unexpander for `Vector3.cons` -/
 @[app_unexpander Vector3.cons] meta def unexpandCons : Lean.PrettyPrinter.Unexpander
   | `($(_) $x [])      => `([$x])

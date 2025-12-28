@@ -309,6 +309,14 @@ instance (V : Type*) [ReflQuiver V] [Unique V]
       obtain rfl := Subsingleton.elim g (𝟙rq _)
       simp [h]
 
+instance (V : Type*) [ReflQuiver V] [Unique V]
+    [∀ (x y : V), Subsingleton (x ⟶ y)] (x y : FreeRefl V) :
+    Subsingleton (x ⟶ y) :=
+  letI (x y : V) : Unique (x ⟶ y) := by
+    obtain rfl : x = y := by subsingleton
+    exact (unique_iff_subsingleton_and_nonempty _ |>.mpr ⟨inferInstance, ⟨𝟙rq _⟩⟩).some
+  inferInstance
+
 end FreeRefl
 
 /-- Given a refl quiver `V`, this is the refl functor `V ⥤rq FreeRefl V` which

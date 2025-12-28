@@ -151,15 +151,9 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
     ↑(I.cotangentEquivIdeal x) = I.cotangentToQuotientSquare x := rfl
 
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
-    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(R₂ := R)` because `I.toCotangent` suggested `R ⧸ I^2` instead
-    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x,
-      -- timeout (200000 heartbeats) without `by exact`
-      by exact Submodule.mem_map_of_mem (F := R →ₗ[R] R ⧸ I ^ 2) (f := (I ^ 2).mkQ) hx⟩ =
-      I.toCotangent (R := R) ⟨x, hx⟩ := by
-  apply I.cotangentEquivIdeal.injective
-  rw [I.cotangentEquivIdeal.apply_symm_apply]
-  ext
-  rfl
+    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
+      I.toCotangent ⟨x, hx⟩ := by
+  simp [I.cotangentEquivIdeal.symm_apply_eq, Subtype.ext_iff]
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 

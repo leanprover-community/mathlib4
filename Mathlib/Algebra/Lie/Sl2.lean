@@ -143,7 +143,7 @@ lemma mem_toLieSubalgebra_iff {x : L} {t : IsSl2Triple h e f} :
 namespace HasPrimitiveVectorWith
 
 variable {m : M} {μ : R} {t : IsSl2Triple h e f}
-local notation "ψ" n => ((toEnd R L M f) ^ n) m
+local notation "ψ " n => ((toEnd R L M f) ^ n) m
 
 -- Although this is true by definition, we include this lemma (and the assumption) to mirror the API
 -- for `lie_h_pow_toEnd_f` and `lie_e_pow_succ_toEnd_f`.
