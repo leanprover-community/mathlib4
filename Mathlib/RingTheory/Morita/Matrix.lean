@@ -135,7 +135,7 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
     · simp [← hy, single, Ne.symm h]
   right_inv x := by simp [Function.update_apply]
 
-/-- the natural isomorphism showing that `toModuleCat` compose with `fromModuleCat` gives `id` -/
+/-- the natural isomorphism showing that `toModuleCat` is the left inverse of `toMatrixModCat` -/
 def MatrixModCat.unitIso :
     ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι ≅ 𝟭 (ModuleCat R) :=
   NatIso.ofComponents (fun X ↦ (fromModuleCatToModuleCatLinearEquivtoModuleCatObj R ι X ≪≫ₗ
