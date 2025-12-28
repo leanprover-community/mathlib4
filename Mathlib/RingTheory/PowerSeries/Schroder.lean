@@ -39,8 +39,8 @@ def largeSchroderSeries : PowerSeries ℕ :=
 
 @[simp]
 lemma coeff_largeSchroderSeries (n : ℕ) :
-    (coeff n) largeSchroderSeries = largeSchroder n :=
-  by simp [largeSchroderSeries]
+    (coeff n) largeSchroderSeries = largeSchroder n := by
+  simp [largeSchroderSeries]
 
 @[simp]
 lemma constantCoeff_largeSchroderSeries :
