@@ -140,7 +140,7 @@ set_option backward.privateInPublic true in
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
-    (subset_mul_right _ left_mem_Ici).antisymm' <| by
+    (subset_mul_right _ self_mem_Ici).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
@@ -199,7 +199,7 @@ set_option backward.privateInPublic true in
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
-    (subset_mul_right _ right_mem_Iic).antisymm' <| by
+    (subset_mul_right _ self_mem_Iic).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 

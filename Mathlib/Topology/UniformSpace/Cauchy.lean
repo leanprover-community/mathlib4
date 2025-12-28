@@ -745,7 +745,7 @@ theorem setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq
   biInter_subset_biInter_left <| Iic_subset_Iic.2 h
 
 theorem setSeq_sub_aux (n : ℕ) : setSeq hf U_mem n ⊆ setSeqAux hf U_mem n :=
-  biInter_subset_of_mem right_mem_Iic
+  biInter_subset_of_mem self_mem_Iic
 
 theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
     setSeq hf U_mem m ×ˢ setSeq hf U_mem n ⊆ U N := fun p hp => by

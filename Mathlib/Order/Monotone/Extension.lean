@@ -36,7 +36,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     have hgs : EqOn f g s := by
       intro x hx
       simp only [g]
-      have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy => hy.1⟩
+      have : IsGreatest (Iic x ∩ s) x := ⟨⟨self_mem_Iic, hx⟩, fun y hy => hy.1⟩
       rw [if_neg this.nonempty.not_disjoint,
         ((h.mono inter_subset_right).map_isGreatest this).csSup_eq]
     refine ⟨g, fun x y hxy => ?_, hgs⟩
