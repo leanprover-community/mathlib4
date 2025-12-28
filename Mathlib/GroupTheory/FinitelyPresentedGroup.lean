@@ -26,6 +26,14 @@ open Subgroup
 def IsNormalClosureOfFiniteSet {G : Type*} [Group G] (H : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = H
 
+lemma IsNormalClosureOfFiniteSet.map {G H : Type*} [Group G] [Group H]
+  (f : G →* H) (hf : Function.Surjective f) (K : Subgroup G) (hK : IsNormalClosureOfFiniteSet K)
+  : IsNormalClosureOfFiniteSet (K.map f) := by
+  obtain ⟨ S, hSf, hS ⟩ := hK
+  refine' ⟨ f '' S, hSf.image _, _ ⟩
+  rw [ ← hS, Subgroup.map_normalClosure ]
+  exact hf
+
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     Function.Surjective f ∧ IsNormalClosureOfFiniteSet (MonoidHom.ker f)
@@ -52,7 +60,6 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       use Fin n, inferInstance, f
     · -- mpr
       intro ⟨α, instα, f, hfsurj, hkernel⟩
-      haveI := instα  -- Register the Fintype instance
       let n := Fintype.card α
       let e := Fintype.equivFin α
       let iso : FreeGroup (Fin n) ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
@@ -60,7 +67,8 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       use n, f'
       constructor
       · exact hfsurj.comp iso.surjective
-      · sorry
+      · --exact  IsNormalClosureOfFiniteSet.map iso.symm.toMonoidHom iso.symm.surjective (MonoidHom.ker f) hkernel
+        sorry
 
 variable (G : Type) [Group G] (g : G)
 
@@ -90,7 +98,7 @@ variable (G : Type) [Group G] (g : G)
     constructor
     sorry -/
 
-namespace IsFinitelyPresented
+/- namespace IsFinitelyPresented
 
 variable {G H : Type*} [Group G] [Group H]
 
@@ -107,7 +115,7 @@ instance instTrivial : IsFinitelyPresented (Unit) := by
 instance instFinite [Finite G] : IsFinitelyPresented G := by
   sorry
 
-end IsFinitelyPresented
+end IsFinitelyPresented -/
 
 /- -- Free groups are finitely presented
 instance FreeGroup.instFinitelyPresented (α : Type*) [Fintype α] :
