@@ -406,7 +406,7 @@ theorem stdPart_nonneg {x : K} (h : 0 ≤ x) : 0 ≤ stdPart x := by
   obtain hx | hx := eq_or_ne (ArchimedeanClass.mk x) 0
   · rw [stdPart, dif_pos hx.ge]
     apply map_nonneg
-    assumption
+    exact h
   · rw [stdPart_of_mk_ne_zero hx]
 
 theorem stdPart_nonpos {x : K} (h : x ≤ 0) : stdPart x ≤ 0 := by
