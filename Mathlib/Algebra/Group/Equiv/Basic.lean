@@ -45,9 +45,9 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
     IsDedekindFiniteMonoid α ↔ IsDedekindFiniteMonoid β where
   mp _ := let e := MulEquivClass.toMulEquiv f
     let g : β →* α := ⟨⟨e.symm, e.injective <| (e.right_inv ..).trans (map_one f).symm⟩, map_mul _⟩
-    MonoidHom.isDedekindFiniteMonoid_of_injective g e.symm.injective
+    .of_injective g e.symm.injective
   mpr _ := let g : α →* β := ⟨⟨f, map_one f⟩, map_mul f⟩
-    MonoidHom.isDedekindFiniteMonoid_of_injective g (EquivLike.injective f)
+    .of_injective g (EquivLike.injective f)
 
 namespace MulEquiv
 section Mul
