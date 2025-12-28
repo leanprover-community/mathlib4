@@ -516,4 +516,4 @@ theorem LinearMap.IsPositive.isPositive_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsPo
   rwa [← T.symm.coe_toLinearMap, ← hT.isSymmetric.isSymmetric_symm _] at this
 
 @[simp] theorem LinearEquiv.isPositive_symm_iff {T : E ≃ₗ[𝕜] E} :
-    T.symm.IsPositive ↔ T.IsPositive := by refine ⟨?_, ?_⟩ <;> exact .isPositive_symm
+    T.symm.IsPositive ↔ T.IsPositive := ⟨.isPositive_symm, .isPositive_symm⟩

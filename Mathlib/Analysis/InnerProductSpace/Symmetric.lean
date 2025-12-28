@@ -224,7 +224,7 @@ theorem LinearMap.IsSymmetric.isSymmetric_symm {T : E ≃ₗ[𝕜] E} (hT : T.Is
     T.symm.IsSymmetric := fun x y ↦ by simpa using hT (T.symm x) (T.symm y) |>.symm
 
 @[simp] theorem LinearEquiv.isSymmetric_symm_iff {T : E ≃ₗ[𝕜] E} :
-    T.symm.IsSymmetric ↔ T.IsSymmetric := by refine ⟨?_, ?_⟩ <;> exact .isSymmetric_symm
+    T.symm.IsSymmetric ↔ T.IsSymmetric := ⟨.isSymmetric_symm, .isSymmetric_symm⟩
 
 end Seminormed
 
