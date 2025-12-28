@@ -509,12 +509,11 @@ theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
     U.starProjection = V.starProjection ↔ U = V := by
   simp only [le_antisymm_iff, ← starProjection_le_starProjection_iff]
 
-theorem LinearEquiv.IsPositive.isPositive_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsPositive) :
+theorem LinearMap.IsPositive.isPositive_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsPositive) :
     T.symm.IsPositive := by
-  refine ⟨IsSymmetric.isSymmetric_symm hT.isSymmetric, fun x ↦ ?_⟩
+  refine ⟨hT.isSymmetric.isSymmetric_symm, fun x ↦ ?_⟩
   have := by simpa using hT.2 (T.symm.toLinearMap x)
-  rwa [← T.symm.coe_toLinearMap, ← IsSymmetric.isSymmetric_symm hT.isSymmetric _] at this
+  rwa [← T.symm.coe_toLinearMap, ← hT.isSymmetric.isSymmetric_symm _] at this
 
 @[simp] theorem LinearEquiv.isPositive_symm_iff {T : E ≃ₗ[𝕜] E} :
-    T.symm.IsPositive ↔ T.IsPositive :=
-  ⟨fun hT ↦ IsPositive.isPositive_symm hT, fun hT ↦ IsPositive.isPositive_symm hT⟩
+    T.symm.IsPositive ↔ T.IsPositive := by refine ⟨?_, ?_⟩ <;> exact .isPositive_symm
