@@ -72,7 +72,7 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x
     simp_rw [ArchimedeanOrder.val_of, abs_mul]
   ring
 
-/-- Multipilication in `R` transfers to Addition in `ArchimedeanClass R`. -/
+/-- Multiplication in `R` transfers to Addition in `ArchimedeanClass R`. -/
 instance : Add (ArchimedeanClass R) where
   add := lift₂ (fun x y ↦ .mk <| x * y) fun _ _ _ _ hx hy ↦ by
     exact (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
