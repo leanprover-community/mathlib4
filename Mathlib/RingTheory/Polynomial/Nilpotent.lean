@@ -3,13 +3,14 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Polynomial.Identities
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotency in polynomial rings.
@@ -22,6 +23,8 @@ This file is a place for results related to nilpotency in (single-variable) poly
 
 -/
 
+@[expose] public section
+
 namespace Polynomial
 
 variable {R : Type*} {r : R}
@@ -32,7 +35,7 @@ variable [Semiring R] {P : R[X]}
 
 lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent ((C r) * X ^ n) := by
-  refine Commute.isNilpotent_mul_left (commute_X_pow _ _).symm ?_
+  refine Commute.isNilpotent_mul_right (commute_X_pow _ _).symm ?_
   obtain ⟨m, hm⟩ := hnil
   refine ⟨m, ?_⟩
   rw [← C_pow, hm, C_0]
@@ -53,7 +56,7 @@ lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
 @[simp] lemma isNilpotent_X_mul_iff :
     IsNilpotent (X * P) ↔ IsNilpotent P := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rwa [Commute.isNilpotent_mul_right_iff (commute_X P) (by simp)] at h
+  · rwa [Commute.isNilpotent_mul_left_iff (commute_X P) (by simp)] at h
   · rintro ⟨k, hk⟩
     exact ⟨k, by simp [(commute_X P).mul_pow, hk]⟩
 
@@ -90,8 +93,8 @@ protected lemma isNilpotent_iff :
 
 @[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
-  simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi
+  simp only [Polynomial.isNilpotent_iff]
+  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_gt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
   · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
   · simpa [hi, revAt_le] using h (N - i)
@@ -107,10 +110,10 @@ nilpotent, then `P` is a unit.
 See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`. -/
 theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
-  induction' h : P.natDegree using Nat.strong_induction_on with k hind generalizing P
+  induction h : P.natDegree using Nat.strong_induction_on generalizing P with | _ k hind
   by_cases hdeg : P.natDegree = 0
-  { rw [eq_C_of_natDegree_eq_zero hdeg]
-    exact hunit.map C }
+  · rw [eq_C_of_natDegree_eq_zero hdeg]
+    exact hunit.map C
   set P₁ := P.eraseLead with hP₁
   suffices IsUnit P₁ by
     rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial, ← hP₁]
@@ -121,9 +124,9 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   refine hind P₁.natDegree ?_ ?_ (fun i hi => ?_) rfl
   · simp_rw [P₁, ← h, hdeg₂]
   · simp_rw [P₁, eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
-  · by_cases H : i ≤ P₁.natDegree
+  · by_cases! H : i ≤ P₁.natDegree
     · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
-    · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+    · simp_rw [coeff_eq_zero_of_natDegree_lt H, IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.
@@ -133,12 +136,12 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor
-  · refine isUnit_of_mul_eq_one _ (Q.coeff 0) ?_
+  · refine .of_mul_eq_one (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
     rwa [hQ, coeff_one_zero] at h
-  · intros n hn
+  · intro n hn
     rw [nilpotent_iff_mem_prime]
-    intros I hI
+    intro I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
     have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
       rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← map_mul, hQ, map_one, degree_one]
@@ -162,10 +165,10 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
   have : ∀ i, coeff (C r + X * P) (i + 1) = coeff P i := by simp
   simp_rw [isUnit_iff_coeff_isUnit_isNilpotent, Nat.forall_ne_zero_iff, this]
   simp only [coeff_add, coeff_C_zero, mul_coeff_zero, coeff_X_zero, zero_mul, add_zero,
-    and_congr_right_iff, ← Polynomial.isNilpotent_iff]
+    ← Polynomial.isNilpotent_iff]
 
 lemma isUnit_iff' :
-    IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X)  := by
+    IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X) := by
   suffices P = C (eval 0 P) + X * (P /ₘ X) by
     conv_lhs => rw [this]; simp
   conv_lhs => rw [← modByMonic_add_div P monic_X]
@@ -185,6 +188,12 @@ theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
     (hpl : 0 < p.degree) : ¬ IsUnit p :=
   not_isUnit_of_natDegree_pos_of_isReduced _ (natDegree_pos_iff_degree_pos.mpr hpl)
 
+instance : IsLocalHom (C : _ →+* Polynomial R) where
+  map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
+
+instance : IsLocalHom (algebraMap R (Polynomial R)) :=
+  inferInstanceAs (IsLocalHom C)
+
 end CommRing
 
 section CommAlgebra
@@ -195,7 +204,7 @@ lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
     IsNilpotent (aeval a P - aeval b P) := by
   simp only [← eval_map_algebraMap]
   have ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
-  exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
+  exact hc ▸ (Commute.all _ _).isNilpotent_mul_left h
 
 variable {P}
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 
@@ -20,6 +22,8 @@ a restricted measure.
   of `s` of the conditional expectation. Namely, `𝔼[s.indicator f | m] = s.indicator 𝔼[f | m]` a.e.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -56,9 +60,6 @@ theorem condExp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
   · exact stronglyMeasurable_condExp.aestronglyMeasurable
   · exact stronglyMeasurable_zero.aestronglyMeasurable
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_ae_eq_restrict_zero := condExp_ae_eq_restrict_zero
-
 /-- Auxiliary lemma for `condExp_indicator`. -/
 theorem condExp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict sᶜ] 0) :
     μ[s.indicator f|m] =ᵐ[μ] s.indicator (μ[f|m]) := by
@@ -68,8 +69,6 @@ theorem condExp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict
     indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs)
   refine ((hsf_zero (μ[f|m]) (condExp_ae_eq_restrict_zero hs.compl hf)).trans ?_).symm
   exact condExp_congr_ae (hsf_zero f hf).symm
-
-@[deprecated (since := "2025-01-21")] alias condexp_indicator_aux := condExp_indicator_aux
 
 /-- The conditional expectation of the indicator of a function over an `m`-measurable set with
 respect to the σ-algebra `m` is a.e. equal to the indicator of the conditional expectation. -/
@@ -111,8 +110,6 @@ theorem condExp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
       · exact indicator_ae_eq_restrict_compl (hm _ hs)
       · rw [Set.indicator_indicator, Set.inter_self]
 
-@[deprecated (since := "2025-01-21")] alias condexp_indicator := condExp_indicator
-
 theorem condExp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs_m : MeasurableSet[m] s) (hf_int : Integrable f μ) :
     (μ.restrict s)[f|m] =ᵐ[μ.restrict s] μ[f|m] := by
@@ -138,9 +135,6 @@ theorem condExp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
         rw [integral_indicator (hm _ hs_m), Measure.restrict_restrict (hm _ hs_m),
           Measure.restrict_restrict (hm _ ht), Set.inter_comm]
   · exact (stronglyMeasurable_condExp.indicator hs_m).aestronglyMeasurable
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_restrict_ae_eq_restrict := condExp_restrict_ae_eq_restrict
 
 /-- If the restriction to an `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
 to `s` of another σ-algebra `m₂` (hypothesis `hs`), then `μ[f | m] =ᵐ[μ.restrict s] μ[f | m₂]`. -/
@@ -182,9 +176,5 @@ theorem condExp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
   simp_rw [this, setIntegral_condExp hm₂ (hf_int.indicator (hm _ hs_m)) ht,
     setIntegral_condExp hm (hf_int.indicator (hm _ hs_m)) hst_m, integral_indicator (hm _ hs_m),
     Measure.restrict_restrict (hm _ hs_m), ← Set.inter_assoc, Set.inter_self]
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_ae_eq_restrict_of_measurableSpace_eq_on :=
-  condExp_ae_eq_restrict_of_measurableSpace_eq_on
 
 end MeasureTheory

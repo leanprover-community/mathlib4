@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Types
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Objects of a category up to an isomorphism
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Types
 `IsIsomorphic X Y := Nonempty (X ≅ Y)` is an equivalence relation on the objects of a category.
 The quotient with respect to this relation defines a functor from our category to `Type`.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -39,7 +43,7 @@ end Category
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
-  map {_ _} F := Quot.map F.obj fun _ _ ⟨f⟩ => ⟨F.mapIso f⟩
+  map {_ _} F := Quot.map F.toFunctor.obj fun _ _ ⟨f⟩ => ⟨F.toFunctor.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     apply funext; intro x
     apply @Quot.recOn _ _ _ x
@@ -51,7 +55,7 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
     apply funext; intro x
     apply @Quot.recOn _ _ _ x
     · intro _ _ _
-      simp only [types_id_apply]
+      simp only
     · intro _
       rfl
 

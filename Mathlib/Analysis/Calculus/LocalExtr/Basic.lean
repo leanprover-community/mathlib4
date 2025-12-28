@@ -3,7 +3,9 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
 
 /-!
 # Local extrema of differentiable functions
@@ -53,6 +55,8 @@ due to the fact that `fderiv` and `deriv` are defined to be zero for non-differe
 local extremum, tangent cone, Fermat's Theorem
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -63,7 +67,7 @@ open scoped Topology Convex
 section Module
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {f : E → ℝ} {f' : E →L[ℝ] ℝ} {s : Set E} {a x y : E}
+  {f : E → ℝ} {f' : StrongDual ℝ E} {s : Set E} {a x y : E}
 
 /-!
 ### Positive tangent cone
@@ -88,7 +92,7 @@ theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0,
   filter_upwards [(tendsto_nhdsWithin_iff.1 ha).2] with n (hn : 0 < a n)
   simp [ne_of_gt hn]
 
-/-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangnet cone of `s`.
+/-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangent cone of `s`.
 
 Before 2024-07-13, this lemma used to be called `mem_posTangentConeAt_of_segment_subset`.
 See also `sub_mem_posTangentConeAt_of_segment_subset`

@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Andrew Yang,
   Johannes Hölzl, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 
@@ -19,6 +21,8 @@ this restriction of scalars for submodules.
 * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 
 -/
+
+@[expose] public section
 
 namespace Submodule
 
@@ -107,5 +111,10 @@ def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S 
   toFun := restrictScalars S
   map_sInf' s := by ext; simp
   map_sSup' s := by rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]; simp
+
+@[simp]
+lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) :
+    N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
 
 end Submodule

@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 /-!
 # Isometric equivalences with respect to quadratic forms
@@ -20,10 +22,11 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
   parametrization of `QuadraticForm.weightedSumSquares`.
 -/
 
+@[expose] public section
+
+open Module QuadraticMap
 
 variable {ι R K M M₁ M₂ M₃ V N : Type*}
-
-open QuadraticMap
 
 namespace QuadraticMap
 
@@ -59,7 +62,6 @@ instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
 
--- Porting note: was `Coe`
 instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
   ⟨IsometryEquiv.toLinearEquiv⟩
 
@@ -121,7 +123,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticMap R M N) (f : M₁ ≃ₗ[R] 
     map_app' := by
       intro
       simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
-        LinearEquiv.apply_symm_apply, f.apply_symm_apply] }
+        f.apply_symm_apply] }
 
 variable [Finite ι]
 

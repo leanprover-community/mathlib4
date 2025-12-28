@@ -3,12 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.Multiset.UnionInter
+module
+
+public import Mathlib.Data.List.Dedup
+public import Mathlib.Data.Multiset.UnionInter
 
 /-!
 # Erasing duplicates in a multiset.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -74,7 +78,7 @@ alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
   Quot.induction_on m fun _ => by
-    simp only [quot_mk_to_coe'', coe_dedup, mem_coe, List.mem_dedup, coe_nodup, coe_count]
+    simp only [quot_mk_to_coe'', coe_dedup, mem_coe, coe_count]
     apply List.count_dedup _ _
 
 @[simp]

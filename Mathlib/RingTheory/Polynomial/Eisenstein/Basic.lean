@@ -3,9 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Eisenstein polynomials
@@ -26,6 +28,8 @@ We also define a notion `IsWeaklyEisensteinAt` requiring only that
 useful since it is sometimes better behaved (for example it is stable under `Polynomial.map`).
 
 -/
+
+@[expose] public section
 
 
 universe u v w z
@@ -71,7 +75,7 @@ theorem mul (hf : f.IsWeaklyEisensteinAt 𝓟) (hf' : f'.IsWeaklyEisensteinAt �
   intro n hn
   rw [coeff_mul]
   refine sum_mem _ fun x hx ↦ ?_
-  rcases lt_or_le x.1 f.natDegree with hx1 | hx1
+  rcases lt_or_ge x.1 f.natDegree with hx1 | hx1
   · exact mul_mem_right _ _ (hf hx1)
   replace hx1 : x.2 < f'.natDegree := by
     by_contra!
@@ -107,8 +111,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     congr
     · skip
     ext i
-    rw [coeff_map, hφ i.1 (lt_of_lt_of_le i.2 natDegree_map_le),
-      RingHom.map_mul, mul_assoc]
+    rw [coeff_map, hφ i.1 (lt_of_lt_of_le i.2 natDegree_map_le), map_mul, mul_assoc]
   rw [hx, ← mul_sum, neg_eq_neg_one_mul, ← mul_assoc (-1 : S), mul_comm (-1 : S), mul_assoc]
   refine
     ⟨-1 * ∑ i : Fin (f.map (algebraMap R S)).natDegree, (algebraMap R S) (φ i.1) * x ^ i.1, ?_, rfl⟩
@@ -132,8 +135,6 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree_le {x : S} (hx : aeval x f = 0) (
 
 end Principal
 
--- Porting note: `Ideal.neg_mem_iff` was `neg_mem_iff` on line 142 but Lean was not able to find
--- NegMemClass
 theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
     {x : R} (hroot : IsRoot f x) (hmo : f.Monic) :
     ∀ i, f.natDegree ≤ i → x ^ i ∈ 𝓟 := by
@@ -144,7 +145,7 @@ theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
   rw [IsRoot.def, eval_eq_sum_range, Finset.range_add_one,
     Finset.sum_insert Finset.notMem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
-  rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
+  rw [eq_neg_of_add_eq_zero_left hroot, neg_mem_iff]
   exact Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
 
 theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map (hf : f.IsWeaklyEisensteinAt 𝓟)

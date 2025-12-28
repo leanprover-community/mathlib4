@@ -3,11 +3,14 @@ Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.GroupAction.CardCommute
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
 # Dihedral Groups
@@ -18,6 +21,8 @@ For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n
 represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of the
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -34,6 +39,7 @@ namespace DihedralGroup
 
 variable {n : ℕ}
 
+set_option backward.privateInPublic true in
 /-- Multiplication of the dihedral group.
 -/
 private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
@@ -42,20 +48,26 @@ private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
   | sr i, r j => sr (i + j)
   | sr i, sr j => r (j - i)
 
+set_option backward.privateInPublic true in
 /-- The identity `1` is the rotation by `0`.
 -/
 private def one : DihedralGroup n :=
   r 0
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Inhabited (DihedralGroup n) :=
   ⟨one⟩
 
+set_option backward.privateInPublic true in
 /-- The inverse of an element of the dihedral group.
 -/
 private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)
   | sr i => sr i
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The group structure on `DihedralGroup n`.
 -/
 instance : Group (DihedralGroup n) where
@@ -108,16 +120,17 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
 @[simp]
-theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
   induction k with
   | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
   | succ k IH =>
     rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
 
 @[simp]
-theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
+set_option backward.privateInPublic true in
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun
     | r j => .inl j
@@ -128,6 +141,8 @@ private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
@@ -233,6 +248,10 @@ lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
 lemma isCyclic_iff : IsCyclic (DihedralGroup n) ↔ n = 1 where
   mp := not_imp_not.mp not_isCyclic
   mpr h := h ▸ isCyclic_of_prime_card (p := 2) nat_card
+
+instance : IsKleinFour (DihedralGroup 2) where
+  card_four := DihedralGroup.nat_card
+  exponent_two := DihedralGroup.exponent
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/

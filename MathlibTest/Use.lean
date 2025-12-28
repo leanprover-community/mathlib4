@@ -6,6 +6,8 @@ Authors: Arthur Paulino
 
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Basic
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.PNat.Defs
 
 namespace UseTests
 
@@ -26,20 +28,23 @@ example (h : 42 = y) : ∃ x : Nat, x = y := by use 42, h
 example (h : 42 = y) : ∃ x : Nat, x = y := by use 42
 
 -- Check that `use` inserts a coercion:
-/-- info: Try this: Exists.intro (↑n) (Eq.refl ↑n) -/
+/--
+info: Try this:
+  [apply] Exists.intro (↑n) (Eq.refl ↑n)
+-/
 #guard_msgs (info) in
 example (n : Fin 3) : ∃ x : Nat, x = x := show_term by use n
 
 example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
 /--
-error: failed to synthesize
-  OfNat (Nat × Nat) 42
+error: failed to synthesize instance of type class
+  OfNat (ℕ × ℕ) 42
 numerals are polymorphic in Lean, but the numeral `42` cannot be used in a context where the expected type is
-  Nat × Nat
+  ℕ × ℕ
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use 42; sorry
@@ -60,6 +65,15 @@ example (r : Nat → Nat → Prop) (h : ∀ x, r x x) :
 example : ∃ x : String × String, x.1 = x.2 := by use ("a", "a")
 
 example : ∃ x : String × String, x.1 = x.2 := by use! "a", "a"
+
+example : Nonempty Nat := by use 5
+
+example : Nonempty (PNat ≃ Nat) := by
+  use PNat.natPred, Nat.succPNat
+  · exact PNat.succPNat_natPred
+  · intro; rfl
+
+example : ∃ n : {n : Nat // n % 2 = 0}, n.val > 10 := by use! 20; simp
 
 -- This example is why `use` always tries applying the constructor before refining.
 example : ∃ x : Nat, x = x := by
@@ -90,25 +104,25 @@ example : Σ _x _y : Int, (Int × Int) × Int := by
 
 -- There are two constructors, so applying a constructor fails and it tries to just refine
 /--
-error: failed to synthesize
-  OfNat (Option Nat) 1
+error: failed to synthesize instance of type class
+  OfNat (Option ℕ) 1
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
-  Option Nat
+  Option ℕ
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 example : Option Nat := by use 1
 
 /--
-error: failed to synthesize
-  OfNat (Nat → Nat) 1
+error: failed to synthesize instance of type class
+  OfNat (ℕ → ℕ) 1
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
-  Nat → Nat
+  ℕ → ℕ
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 example : Nat → Nat := by use 1
@@ -122,7 +136,10 @@ example : foo := by
 example : foo := by
   use! 100, true, 4, 3
 
-/-- info: Try this: foo.mk 100 (true, 4) 3 -/
+/--
+info: Try this:
+  [apply] foo.mk 100 (true, 4) 3
+-/
 #guard_msgs in
 -- `use` puts placeholders after the current goal
 example : foo := show_term by
@@ -131,7 +148,10 @@ example : foo := show_term by
   exact (100 : Nat)
   exact true
 
-/-- info: Try this: foo.mk 100 (true, 4) 3 -/
+/--
+info: Try this:
+  [apply] foo.mk 100 (true, 4) 3
+-/
 #guard_msgs in
 -- `use` puts placeholders after the current goal
 example : foo := show_term by
@@ -160,12 +180,13 @@ example : Baz 0 3 := by use 4
 
 -- Could not apply constructor due to defeq check
 /--
-error: type mismatch
+error: Type mismatch
   3
 has type
-  Nat : Type
-but is expected to have type
-  Baz 1 3 : Prop
+  ℕ
+of sort `Type` but is expected to have type
+  Baz 1 3
+of sort `Prop`
 -/
 #guard_msgs in
 example : Baz 1 3 := by use (3 : Nat)

@@ -135,10 +135,9 @@ lemma Aquaesulian.u_eq_zero_or_v_eq_zero {x y u v : G} (huv : u ≠ v) (hx : f x
 
 lemma Aquaesulian.card_le_two : #(Set.range (fun x ↦ f x + f (-x))) ≤ 2 := by
   classical
-  by_cases hf : ∀ x, f x + f (-x) = 0
+  by_cases! hf : ∀ x, f x + f (-x) = 0
   · simp [hf]
-  · rw [not_forall] at hf
-    rcases hf with ⟨x, hx⟩
+  · rcases hf with ⟨x, hx⟩
     suffices #(Set.range (fun x ↦ f x + f (-x))) ≤ (2 : ℕ) from mod_cast this
     rw [Cardinal.mk_le_iff_forall_finset_subset_card_le]
     intro s hs
@@ -203,7 +202,7 @@ lemma apply_fExample_add_apply_of_fract_le {x y : ℚ} (h : Int.fract y ≤ Int.
 
 lemma aquaesulian_fExample : Aquaesulian fExample := by
   intro x y
-  rcases lt_or_le (Int.fract x) (Int.fract y) with h | h
+  rcases lt_or_ge (Int.fract x) (Int.fract y) with h | h
   · rw [add_comm (fExample x), add_comm x]
     exact .inr (apply_fExample_add_apply_of_fract_le h.le)
   · exact .inl (apply_fExample_add_apply_of_fract_le h)
@@ -246,7 +245,7 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
       · refine ⟨0, by simp [fExample]⟩
       · refine ⟨1 / 2, ?_⟩
         rw [(by norm_num : (-(1 / 2) : ℚ) = (-1 : ℤ) + (1 / 2 : ℚ)), fExample_intCast_add,
-            fExample_of_mem_Ico ⟨by norm_num, by norm_num⟩]
+            fExample_of_mem_Ico ⟨by simp, by norm_num⟩]
         norm_num
   rw [h]
   simp

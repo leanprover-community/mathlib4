@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Invertible elements
@@ -73,6 +75,8 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
@@ -90,60 +94,60 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 
 /-- The inverse of an `Invertible` element -/
 -- This notation has the same precedence as `Inv.inv`.
-prefix:max "⅟ " => Invertible.invOf
+prefix:max "⅟" => Invertible.invOf
 
 @[simp]
-theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=
+theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟a * a = 1 :=
   Invertible.invOf_mul_self
 
-theorem invOf_mul_self [Mul α] [One α] (a : α) [Invertible a] : ⅟ a * a = 1 := invOf_mul_self' _
+theorem invOf_mul_self [Mul α] [One α] (a : α) [Invertible a] : ⅟a * a = 1 := invOf_mul_self' _
 
 @[simp]
-theorem mul_invOf_self' [Mul α] [One α] (a : α) {_ : Invertible a} : a * ⅟ a = 1 :=
+theorem mul_invOf_self' [Mul α] [One α] (a : α) {_ : Invertible a} : a * ⅟a = 1 :=
   Invertible.mul_invOf_self
 
-theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟ a = 1 := mul_invOf_self' _
+theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟a = 1 := mul_invOf_self' _
 
 @[simp]
-theorem invOf_mul_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a * (a * b) = b := by
+theorem invOf_mul_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : ⅟a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
 example {G} [Group G] (a b : G) : a⁻¹ * (a * b) = b := inv_mul_cancel_left a b
 
-theorem invOf_mul_cancel_left [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b :=
+theorem invOf_mul_cancel_left [Monoid α] (a b : α) [Invertible a] : ⅟a * (a * b) = b :=
   invOf_mul_cancel_left' _ _
 
 @[simp]
-theorem mul_invOf_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟ a * b) = b := by
+theorem mul_invOf_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
 example {G} [Group G] (a b : G) : a * (a⁻¹ * b) = b := mul_inv_cancel_left a b
 
-theorem mul_invOf_cancel_left [Monoid α] (a b : α) [Invertible a] : a * (⅟ a * b) = b :=
+theorem mul_invOf_cancel_left [Monoid α] (a b : α) [Invertible a] : a * (⅟a * b) = b :=
   mul_invOf_cancel_left' a b
 
 @[simp]
-theorem invOf_mul_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟ b * b = a := by
+theorem invOf_mul_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟b * b = a := by
   simp [mul_assoc]
 example {G} [Group G] (a b : G) : a * b⁻¹ * b = a := inv_mul_cancel_right a b
 
-theorem invOf_mul_cancel_right [Monoid α] (a b : α) [Invertible b] : a * ⅟ b * b = a :=
+theorem invOf_mul_cancel_right [Monoid α] (a b : α) [Invertible b] : a * ⅟b * b = a :=
   invOf_mul_cancel_right' _ _
 
 @[simp]
-theorem mul_invOf_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟ b = a := by
+theorem mul_invOf_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟b = a := by
   simp [mul_assoc]
 example {G} [Group G] (a b : G) : a * b * b⁻¹ = a := mul_inv_cancel_right a b
 
-theorem mul_invOf_cancel_right [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a :=
+theorem mul_invOf_cancel_right [Monoid α] (a b : α) [Invertible b] : a * b * ⅟b = a :=
   mul_invOf_cancel_right' _ _
 
-theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟ a = b :=
+theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟a = b :=
   left_inv_eq_right_inv (invOf_mul_self _) hac
 
-theorem invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1) : ⅟ a = b :=
+theorem invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1) : ⅟a = b :=
   (left_inv_eq_right_inv hac (mul_invOf_self _)).symm
 
 theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [Invertible b]
-    (h : a = b) : ⅟ a = ⅟ b := by
+    (h : a = b) : ⅟a = ⅟b := by
   apply invOf_eq_right_inv
   rw [h, mul_invOf_self]
 
@@ -155,11 +159,12 @@ instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible
 /-- If `a` is invertible and `a = b`, then `⅟a = ⅟b`. -/
 @[congr]
 theorem Invertible.congr [Monoid α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
-    ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
+    ⅟a = ⅟b :=
+  invertible_unique a b h
 
 /-- If `r` is invertible and `s = r` and `si = ⅟r`, then `s` is invertible with `⅟s = si`. -/
 def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si : α) (hs : s = r)
-    (hsi : si = ⅟ r) : Invertible s where
+    (hsi : si = ⅟r) : Invertible s where
   invOf := si
   invOf_mul_self := by rw [hs, hsi, invOf_mul_self]
   mul_invOf_self := by rw [hs, hsi, mul_invOf_self]
@@ -174,7 +179,7 @@ def invertibleOfGroup [Group α] (a : α) : Invertible a :=
   ⟨a⁻¹, inv_mul_cancel a, mul_inv_cancel a⟩
 
 @[simp]
-theorem invOf_eq_group_inv [Group α] (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
+theorem invOf_eq_group_inv [Group α] (a : α) [Invertible a] : ⅟a = a⁻¹ :=
   invOf_eq_right_inv (mul_inv_cancel a)
 
 /-- `1` is the inverse of itself -/
@@ -182,30 +187,30 @@ def invertibleOne [Monoid α] : Invertible (1 : α) :=
   ⟨1, mul_one _, one_mul _⟩
 
 @[simp]
-theorem invOf_one' [Monoid α] {_ : Invertible (1 : α)} : ⅟ (1 : α) = 1 :=
+theorem invOf_one' [Monoid α] {_ : Invertible (1 : α)} : ⅟(1 : α) = 1 :=
   invOf_eq_right_inv (mul_one _)
 
-theorem invOf_one [Monoid α] [Invertible (1 : α)] : ⅟ (1 : α) = 1 := invOf_one'
+theorem invOf_one [Monoid α] [Invertible (1 : α)] : ⅟(1 : α) = 1 := invOf_one'
 
 /-- `a` is the inverse of `⅟a`. -/
-instance invertibleInvOf [One α] [Mul α] {a : α} [Invertible a] : Invertible (⅟ a) :=
+instance invertibleInvOf [One α] [Mul α] {a : α} [Invertible a] : Invertible (⅟a) :=
   ⟨a, mul_invOf_self a, invOf_mul_self a⟩
 
 @[simp]
-theorem invOf_invOf [Monoid α] (a : α) [Invertible a] [Invertible (⅟ a)] : ⅟ (⅟ a) = a :=
+theorem invOf_invOf [Monoid α] (a : α) [Invertible a] [Invertible (⅟a)] : ⅟(⅟a) = a :=
   invOf_eq_right_inv (invOf_mul_self _)
 
 @[simp]
-theorem invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟ a = ⅟ b ↔ a = b :=
+theorem invOf_inj [Monoid α] {a b : α} [Invertible a] [Invertible b] : ⅟a = ⅟b ↔ a = b :=
   ⟨invertible_unique _ _, invertible_unique _ _⟩
 
 /-- `⅟b * ⅟a` is the inverse of `a * b` -/
 def invertibleMul [Monoid α] (a b : α) [Invertible a] [Invertible b] : Invertible (a * b) :=
-  ⟨⅟ b * ⅟ a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
+  ⟨⅟b * ⅟a, by simp [← mul_assoc], by simp [← mul_assoc]⟩
 
 @[simp]
 theorem invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertible (a * b)] :
-    ⅟ (a * b) = ⅟ b * ⅟ a :=
+    ⅟(a * b) = ⅟b * ⅟a :=
   invOf_eq_right_inv (by simp [← mul_assoc])
 
 /-- A copy of `invertibleMul` for dot notation. -/
@@ -235,5 +240,15 @@ theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
 
 theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
   rw [← mul_left_inj_of_invertible (c := ⅟c), mul_invOf_cancel_right]
+
+variable [IsDedekindFiniteMonoid α] (a b : α)
+
+/-- An element in a Dedekind-finite monoid is invertible if it has a left inverse. -/
+def invertibleOfLeftInverse (h : b * a = 1) : Invertible a :=
+  ⟨b, h, mul_eq_one_symm h⟩
+
+/-- An element in a Dedekind-finite monoid is invertible if it has a right inverse. -/
+def invertibleOfRightInverse (h : a * b = 1) : Invertible a :=
+  ⟨b, mul_eq_one_symm h, h⟩
 
 end

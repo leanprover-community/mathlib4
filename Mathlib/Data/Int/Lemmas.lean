@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Bitwise
-import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Int.Bitwise
+public import Mathlib.Data.Int.Order.Lemmas
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Miscellaneous lemmas about the integers
@@ -15,15 +17,15 @@ This file contains lemmas about integers, which require further imports than
 
 -/
 
+@[expose] public section
+
 
 open Nat
 
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  by_cases h : m ≥ n
-  · exact le_of_eq (Int.ofNat_sub h).symm
-  · simp [le_of_not_ge h, ofNat_le]
+  lia
 
 /-! ### `succ` and `pred` -/
 
@@ -107,7 +109,7 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
   cases b
   · decide
-  · show ofNat _ = _
+  · change ofNat _ = _
     rw [Nat.div_eq_of_lt] <;> simp
   · decide
 
@@ -116,11 +118,11 @@ theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
     a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
   constructor
   · intro ⟨rfl, rfl⟩
-    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
+    exact ⟨emod_add_mul_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
   · intro ⟨rfl, hz, hb⟩
     constructor
     · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
-      simp [Int.zero_add]
+      simp
     · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
 
 end Int

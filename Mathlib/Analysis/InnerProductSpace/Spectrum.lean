@@ -3,11 +3,13 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Rayleigh
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.Data.Fin.Tuple.Sort
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.Data.Fin.Tuple.Sort
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -36,7 +38,7 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 * `LinearMap.IsSymmetric.eigenvalues` gives the eigenvalues in decreasing order.  This is
   done for several reasons: (i) This agrees with the standard convention of listing singular
   values in decreasing order, with the operator norm as the first singular value
-  (ii) For positive compact operators on an infinite dimensional space, one can list the nonzero
+  (ii) For positive compact operators on an infinite-dimensional space, one can list the nonzero
   eigenvalues in decreasing (but not increasing) order since they converge to zero. (iii) This
   simplifies several theorem statements. For example the Schur-Horn theorem states that the diagonal
   of the matrix representation of a selfadjoint linear map is majorized by the eigenvalue sequence
@@ -55,6 +57,8 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
 
+@[expose] public section
+
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -62,7 +66,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped ComplexConjugate
 
-open Module.End
+open Module.End WithLp
 
 namespace LinearMap
 
@@ -180,12 +184,12 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
     hT.diagonalization (T v) μ = (μ : 𝕜) • hT.diagonalization v μ := by
   suffices
     ∀ w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ,
-      T (hT.diagonalization.symm w) = hT.diagonalization.symm fun μ => (μ : 𝕜) • w μ by
+      T (hT.diagonalization.symm w) = hT.diagonalization.symm (toLp 2 fun μ => (μ : 𝕜) • w μ) by
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
       congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
   intro w
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
-  simp only [hwT, diagonalization_symm_apply, map_sum, Submodule.coe_smul_of_tower]
+  simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
 
 end Version1
 
@@ -193,6 +197,7 @@ section Version2
 
 variable {n : ℕ}
 
+set_option backward.privateInPublic true in
 /-- Unsorted eigenvalues and eigenvectors.  These private definitions should not be used directly.
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
@@ -226,12 +231,16 @@ private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The eigenvalues for a self-adjoint operator `T` on a
 finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/
@@ -274,7 +283,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   suffices
     ∀ w : EuclideanSpace 𝕜 (Fin n),
       T ((hT.eigenvectorBasis hn).repr.symm w) =
-        (hT.eigenvectorBasis hn).repr.symm fun i => hT.eigenvalues hn i * w i by
+        (hT.eigenvectorBasis hn).repr.symm (toLp 2 fun i ↦ hT.eigenvalues hn i * w i) by
     simpa [OrthonormalBasis.sum_repr_symm] using
       congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
@@ -282,7 +291,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]
   apply Fintype.sum_congr
   intro a
-  rw [smul_smul, mul_comm]
+  rw [smul_smul, mul_comm, ofLp_toLp]
 
 end Version2
 
@@ -292,7 +301,7 @@ end LinearMap
 
 section Nonneg
 
-@[simp]
+-- Cannot be @[simp] because the LHS is not in simp normal form
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
     (h : T v = μ • v) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
   simp only [h, inner_smul_right, inner_self_eq_norm_sq_to_K]

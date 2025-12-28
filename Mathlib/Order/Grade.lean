@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Violeta Hernández Palacios. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
 -/
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # Graded orders
@@ -53,6 +55,8 @@ Instead, we define graded orders by their grade function, without talking about 
 * [Konrad Engel, *Sperner Theory*][engel1997]
 * [Richard Stanley, *Enumerative Combinatorics*][stanley2012]
 -/
+
+@[expose] public section
 
 open Nat OrderDual
 
@@ -344,9 +348,9 @@ lemma coe_wcovBy_coe : (a : α) ⩿ b ↔ a ⩿ b := by
   refine and_congr_right' ⟨fun h c hac ↦ h hac, fun h c hac hcb ↦
     @h ⟨c, mem_iff_forall_le_or_ge.2 fun d hd ↦ ?_⟩ hac hcb⟩
   classical
-  obtain hda | had := le_or_lt (⟨d, hd⟩ : s) a
+  obtain hda | had := le_or_gt (⟨d, hd⟩ : s) a
   · exact .inr ((Subtype.coe_le_coe.2 hda).trans hac.le)
-  obtain hbd | hdb := le_or_lt b ⟨d, hd⟩
+  obtain hbd | hdb := le_or_gt b ⟨d, hd⟩
   · exact .inl (hcb.le.trans hbd)
   · cases h had hdb
 

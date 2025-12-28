@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.Finite
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.Finite
 
 /-!
 # Finiteness results on filter bases
@@ -13,6 +15,8 @@ A filter basis `B : FilterBasis α` on a type `α` is a nonempty collection of s
 such that the intersection of two elements of this collection contains some element of
 the collection.
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -27,7 +31,7 @@ variable {l l' : Filter α} {p : ι → Prop} {s : ι → Set α} {t : Set α} {
 
 theorem hasBasis_generate (s : Set (Set α)) :
     (generate s).HasBasis (fun t => Set.Finite t ∧ t ⊆ s) fun t => ⋂₀ t :=
-  ⟨fun U => by simp only [mem_generate_iff, exists_prop, and_assoc, and_left_comm]⟩
+  ⟨fun U => by simp only [mem_generate_iff, and_assoc, and_left_comm]⟩
 
 /-- The smallest filter basis containing a given collection of sets. -/
 def FilterBasis.ofSets (s : Set (Set α)) : FilterBasis α where
@@ -110,7 +114,7 @@ of `⨅ i, 𝓟 (s i)`. -/
 theorem hasBasis_iInf_principal_finite {ι : Type*} (s : ι → Set α) :
     (⨅ i, 𝓟 (s i)).HasBasis (fun t : Set ι => t.Finite) fun t => ⋂ i ∈ t, s i := by
   refine ⟨fun U => (mem_iInf_finite _).trans ?_⟩
-  simp only [iInf_principal_finset, mem_iUnion, mem_principal, exists_prop,
+  simp only [iInf_principal_finset, mem_principal,
     exists_finite_iff_finset, Finset.set_biInter_coe]
 
 end SameType

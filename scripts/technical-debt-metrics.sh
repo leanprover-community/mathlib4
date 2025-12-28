@@ -78,12 +78,16 @@ tdc () {
 titlesPathsAndRegexes=(
   "porting notes"                  "*"      "Porting note"
   "backwards compatibility flags"  "*"      "set_option.*backward"
-  "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
+  "proofsInPublic flags"           "*"      "set_option backward.proofsInPublic"
+  "privateInPublic flags"          "*"      "set_option backward.privateInPublic"
+  "flexible linter exceptions"     ":^MathlibTest"      "set_option linter.flexible"
   "adaptation notes"               ":^Mathlib/Tactic/AdaptationNote.lean :^Mathlib/Tactic/Linter"
                                             "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats.* [0-9][0-9]*"
+  "CommRing (Fin n) instances"     "*"      "^open Fin.CommRing "
+  "NatCast (Fin n) instances"      "*"      "^open Fin.NatCast "
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
@@ -114,6 +118,7 @@ doubleDeprecs="$(git grep -A2 -- "set_option linter.deprecated false" -- ":^Math
 printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
+printf '%s|%s\n' "$(grep -c 'tacticDocs' scripts/nolints.json)" "undocumented tactics"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
 

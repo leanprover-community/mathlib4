@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The colon ideal
@@ -15,11 +17,13 @@ The normal notation for this would be `N : P` which has already been taken by ty
 
 -/
 
+@[expose] public section
+
 namespace Submodule
 
 open Pointwise
 
-variable {R M M' F G : Type*}
+variable {R M : Type*}
 
 section Semiring
 
@@ -30,7 +34,7 @@ variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 def colon (N P : Submodule R M) : Ideal R where
   carrier := {r : R | (r • P : Set M) ⊆ N}
   add_mem' ha hb :=
-    (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp [← coe_sup]))
+    (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp))
   zero_mem' := by simp [Set.zero_smul_set P.nonempty]
   smul_mem' r := by
     simp only [Set.mem_setOf_eq, smul_eq_mul, mul_smul, Set.smul_set_subset_iff]
@@ -56,14 +60,16 @@ theorem colon_bot : colon ⊥ N = N.annihilator := by
 theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
 
+theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon J := by
+  calc I = I.colon ⊤ := colon_top.symm
+       _ ≤ I.colon J := colon_mono (le_refl I) le_top
+
 end Semiring
 
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
-
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {N P : Submodule R M}
+variable {N P : Submodule R M}
 
 theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
   mem_colon
@@ -82,8 +88,7 @@ theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : S
                 this
 
 @[simp]
-theorem mem_colon_singleton {N : Submodule R M} {x : M} {r : R} :
-    r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N :=
+theorem mem_colon_singleton {x : M} {r : R} : r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N :=
   calc
     r ∈ N.colon (Submodule.span R {x}) ↔ ∀ a : R, r • a • x ∈ N := by
       simp [Submodule.mem_colon, Submodule.mem_span_singleton]
@@ -99,7 +104,7 @@ end CommSemiring
 section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M]
-variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
+variable {N P : Submodule R M}
 
 @[simp]
 lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon P := by
@@ -108,8 +113,7 @@ lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon P := by
   exact ⟨fun H p hp ↦ (Quotient.mk_eq_zero N).1 (H (Quotient.mk p) (mem_map_of_mem hp)),
     fun H _ ⟨p, hp, hpm⟩ ↦ hpm ▸ ((Quotient.mk_eq_zero N).2 <| H p hp)⟩
 
-theorem annihilator_quotient {N : Submodule R M} :
-    Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
+theorem annihilator_quotient : Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
   simp_rw [SetLike.ext_iff, Module.mem_annihilator, ← annihilator_map_mkQ_eq_colon, mem_annihilator,
     map_top, LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left,
     forall_const]

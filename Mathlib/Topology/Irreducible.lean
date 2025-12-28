@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Order.Minimal
+public import Mathlib.Order.Zorn
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Irreducibility in topological spaces
@@ -29,6 +31,8 @@ and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
 
 -/
+
+@[expose] public section
 
 open Set Topology
 
@@ -121,7 +125,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
 @[stacks 004W "(3)"]
 lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs : IsIrreducible s) :
     ∃ u ∈ irreducibleComponents X, s ⊆ u := by
-  obtain ⟨u,hu⟩ := exists_preirreducible s hs.isPreirreducible
+  obtain ⟨u, hu⟩ := exists_preirreducible s hs.isPreirreducible
   use u, ⟨⟨hs.left.mono hu.right.left,hu.left⟩,fun _ h hl => (hu.right.right _ h.right hl).le⟩
   exact hu.right.left
 
@@ -221,6 +225,22 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
     (Subtype.preirreducibleSpace h.isPreirreducible).isPreirreducible_univ
   toNonempty := h.nonempty.to_subtype
 
+lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s := by
+  rw [← Subtype.range_coe (s := s), ← Set.image_univ]
+  refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
+  exact continuous_subtype_val.continuousOn
+
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
+  exact ⟨.of_subtype, .of_subtype⟩
+
+theorem isPreirreducible_iff_preirreducibleSpace :
+    IsPreirreducible s ↔ PreirreducibleSpace s :=
+  ⟨Subtype.preirreducibleSpace, fun _ ↦ .of_subtype⟩
+
+theorem isIrreducible_iff_irreducibleSpace :
+    IsIrreducible s ↔ IrreducibleSpace s :=
+  ⟨Subtype.irreducibleSpace, fun _ ↦ .of_subtype⟩
+
 instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
   ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
 
@@ -268,8 +288,6 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   simp only [isOpen_compl_iff, ← compl_union, inter_compl_nonempty_iff]
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
-@[deprecated (since := "2024-11-19")] alias
-isPreirreducible_iff_closed_union_closed := isPreirreducible_iff_isClosed_union_isClosed
 
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
@@ -284,9 +302,6 @@ theorem isIrreducible_iff_sUnion_isClosed :
   refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
   simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
-
-@[deprecated (since := "2024-11-19")] alias
-isIrreducible_iff_sUnion_closed := isIrreducible_iff_sUnion_isClosed
 
 /-- A nonempty open subset of a preirreducible subspace is dense in the subspace. -/
 theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : IsPreirreducible S)

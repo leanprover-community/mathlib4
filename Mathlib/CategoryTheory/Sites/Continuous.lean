@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 
 /-!
 # Continuous functors between sites.
@@ -37,6 +39,8 @@ category).
 * https://stacks.math.columbia.edu/tag/00WU
 
 -/
+
+@[expose] public section
 
 universe w t v₁ v₂ v₃ u₁ u₂ u₃ u
 
@@ -85,14 +89,14 @@ class IsPreservedBy (F : C ⥤ D) (K : GrothendieckTopology D) : Prop where
       (E.toPreOneHypercover.map F).sieve₁ p₁ p₂ ∈ K W
 
 /-- Given a 1-hypercover `E : J.OneHypercover X` of an object of `C`, a functor `F : C ⥤ D`
-such that `E.IsPreversedBy F K` for a Grothendieck topology `K` on `D`, this is
+such that `E.IsPreservedBy F K` for a Grothendieck topology `K` on `D`, this is
 the image of `E` by `F`, as a 1-hypercover of `F.obj X` for `K`. -/
-@[simps toPreOneHypercover]
+@[simps! toPreOneHypercover]
 def map (F : C ⥤ D) (K : GrothendieckTopology D) [E.IsPreservedBy F K] :
     K.OneHypercover (F.obj X) where
   toPreOneHypercover := E.toPreOneHypercover.map F
   mem₀ := IsPreservedBy.mem₀
-  mem₁ := IsPreservedBy.mem₁
+  mem₁ _ _ _ _ _ h := IsPreservedBy.mem₁ _ _ _ _ h
 
 instance : E.IsPreservedBy (𝟭 C) J where
   mem₀ := E.mem₀
@@ -104,8 +108,10 @@ end GrothendieckTopology
 
 namespace Functor
 
-variable (F : C ⥤ D) {A : Type u} [Category.{t} A]
-  (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+variable (F F' : C ⥤ D) (τ : F ⟶ F') (e : F ≅ F') (G : D ⥤ E)
+  {F'' : C ⥤ C} (eF'' : F'' ≅ 𝟭 C) {FG : C ⥤ E} (eFG : F ⋙ G ≅ FG)
+  {A : Type u} [Category.{t} A]
+  (J : GrothendieckTopology C) (K : GrothendieckTopology D) (L : GrothendieckTopology E)
 
 /-- The condition that a functor `F : C ⥤ D` sends 1-hypercovers for
 `J : GrothendieckTopology C` to 1-hypercovers for `K : GrothendieckTopology D`. -/
@@ -120,8 +126,6 @@ class IsContinuous : Prop where
 lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Type t)) :
     Presieve.IsSheaf J (F.op ⋙ G.val) :=
   Functor.IsContinuous.op_comp_isSheaf_of_types _
-
-@[deprecated (since := "2024-11-26")] alias op_comp_isSheafOfTypes := op_comp_isSheaf_of_types
 
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
@@ -152,6 +156,14 @@ lemma isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
     Functor.IsContinuous.{t} F₁₂ J L := by
   have := Functor.isContinuous_comp F₁ F₂ J K L
   apply Functor.isContinuous_of_iso e
+
+instance [Functor.IsContinuous.{t} F J K] :
+    Functor.IsContinuous.{t} (F ⋙ 𝟭 D) J K := by
+  assumption
+
+instance [Functor.IsContinuous.{t} F J K] :
+    Functor.IsContinuous.{t} (𝟭 C ⋙ F) J K := by
+  assumption
 
 section
 
@@ -195,6 +207,57 @@ is induced by the precomposition with `F.op`. -/
 def sheafPushforwardContinuousCompSheafToPresheafIso :
     F.sheafPushforwardContinuous A J K ⋙ sheafToPresheaf J A ≅
       sheafToPresheaf K A ⋙ (whiskeringLeft _ _ _).obj F.op := Iso.refl _
+
+/-- The functor `sheafPushforwardContinuous` corresponding to the identity functor
+identifies to the identity functor. -/
+@[simps!]
+def sheafPushforwardContinuousId :
+    sheafPushforwardContinuous (𝟭 C) A J J ≅ 𝟭 _ := Iso.refl _
+
+/-- The composition of two pushforward functors on sheaves identifies to
+the pushforward for the composition of the two functors. -/
+@[simps!]
+def sheafPushforwardContinuousComp [IsContinuous.{t} G K L] :
+    letI := isContinuous_comp F G J K L
+    sheafPushforwardContinuous G A K L ⋙ sheafPushforwardContinuous F A J K ≅
+    sheafPushforwardContinuous (F ⋙ G) A J L := Iso.refl _
+
+variable {F F'} in
+/-- The action of a natural transformation on pushforward functors of sheaves. -/
+@[simps]
+def sheafPushforwardContinuousNatTrans [IsContinuous.{t} F' J K] :
+    sheafPushforwardContinuous F' A J K ⟶ sheafPushforwardContinuous F A J K where
+  app M := ⟨whiskerRight (NatTrans.op τ) _⟩
+
+variable {F F'} in
+/-- The action of a natural isomorphism on pushforward functors of sheaves. -/
+@[simps]
+def sheafPushforwardContinuousIso [IsContinuous.{t} F' J K] :
+    sheafPushforwardContinuous F A J K ≅ sheafPushforwardContinuous F' A J K where
+  hom := sheafPushforwardContinuousNatTrans e.inv _ _ _
+  inv := sheafPushforwardContinuousNatTrans e.hom _ _ _
+  hom_inv_id := by ext; simp [← Functor.map_comp, ← op_comp]
+  inv_hom_id := by ext; simp [← Functor.map_comp, ← op_comp]
+
+/-- If a continuous functor between sites is isomorphic to the identity functor,
+then the corresponding pushforward functor on sheaves identifies to the
+identity functor. -/
+@[simps!]
+def sheafPushforwardContinuousId' [IsContinuous.{t} F'' J J] :
+    sheafPushforwardContinuous F'' A J J ≅ 𝟭 _ :=
+  sheafPushforwardContinuousIso eF'' _ _ _ ≪≫ sheafPushforwardContinuousId _ _
+
+variable {F G} in
+/-- When we have an isomorphism `F ⋙ G ≅ FG` between continuous functors
+between sites, the composition of the pushforward functors for
+`G` and `F` identifies to the pushforward functor for `FG`. -/
+@[simps!]
+def sheafPushforwardContinuousComp'
+    [IsContinuous.{t} G K L] [IsContinuous.{t} FG J L] :
+    sheafPushforwardContinuous G A K L ⋙ sheafPushforwardContinuous F A J K ≅
+    sheafPushforwardContinuous FG A J L :=
+  letI := isContinuous_comp F G J K L
+  sheafPushforwardContinuousComp _ _ _ _ _ _ ≪≫ sheafPushforwardContinuousIso eFG _ _ _
 
 end Functor
 

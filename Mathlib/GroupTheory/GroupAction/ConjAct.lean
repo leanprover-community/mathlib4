@@ -3,10 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Subgroup.Centralizer
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Conjugation action of a group on itself
@@ -31,6 +32,8 @@ is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -67,8 +70,6 @@ instance : Inhabited (ConjAct G) :=
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
   map_mul' := fun _ _ => rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
@@ -100,11 +101,11 @@ theorem toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
 theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 
@@ -116,11 +117,11 @@ theorem ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
 theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 
@@ -205,9 +206,9 @@ theorem orbit_eq_carrier_conjClasses (g : G) :
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
 theorem stabilizer_eq_centralizer (g : G) :
-    stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
-  le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
-    mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
+    stabilizer (ConjAct G) g = centralizer {toConjAct g} :=
+  le_antisymm (fun _ hg _ h ↦ h ▸ eq_mul_inv_iff_mul_eq.mp hg.symm) fun _ h =>
+    mul_inv_eq_of_eq_mul (h g rfl).symm
 
 theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
     Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
@@ -215,7 +216,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
   ext k
 -- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
 -- with the equality in the other direction
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
 
@@ -287,8 +288,6 @@ def unitsCentralizerEquiv (x : Mˣ) :
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
       exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
-    left_inv := fun _ ↦ by ext; rfl
-    right_inv := fun _ ↦ by ext; rfl
     map_mul' := map_mul _ }
 
 end Units

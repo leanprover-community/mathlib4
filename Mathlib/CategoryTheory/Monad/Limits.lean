@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Jack McKoen
 -/
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+module
+
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Limits and colimits in the category of (co)algebras
@@ -23,10 +25,12 @@ and `T` preserves.
 This is generalised to the case of a comonadic functor `D ⥤ C`.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 open CategoryTheory.Limits
 
@@ -382,7 +386,7 @@ variable (D : J ⥤ Coalgebra T) (c : Cocone (D ⋙ T.forget)) (t : IsColimit c)
 
 /-- (Impl) The natural transformation used to define the new cocone -/
 @[simps]
-def γ : D ⋙ T.forget ⟶ D ⋙ T.forget ⋙ ↑T  where app j := (D.obj j).a
+def γ : D ⋙ T.forget ⟶ D ⋙ T.forget ⋙ ↑T where app j := (D.obj j).a
 
 /-- (Impl) This new cocone is used to construct the coalgebra structure -/
 @[simps! ι_app]

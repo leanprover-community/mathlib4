@@ -3,7 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Maps.Basic
+module
+
+public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Open quotient maps
@@ -16,11 +19,13 @@ Many important quotient maps are open quotient maps, including
 
 - the quotient map from a topological space to its quotient by the action of a group;
 - the quotient map from a topological group to its quotient by a normal subgroup;
-- the quotient map from a topological spaace to its separation quotient.
+- the quotient map from a topological space to its separation quotient.
 
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 
@@ -34,21 +39,12 @@ protected theorem id : IsOpenQuotientMap (id : X → X) := ⟨surjective_id, con
 theorem isQuotientMap (h : IsOpenQuotientMap f) : IsQuotientMap f :=
   h.isOpenMap.isQuotientMap h.continuous h.surjective
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 theorem iff_isOpenMap_isQuotientMap : IsOpenQuotientMap f ↔ IsOpenMap f ∧ IsQuotientMap f :=
   ⟨fun h ↦ ⟨h.isOpenMap, h.isQuotientMap⟩, fun ⟨ho, hq⟩ ↦ ⟨hq.surjective, hq.continuous, ho⟩⟩
-
-@[deprecated (since := "2024-10-22")]
-alias iff_isOpenMap_quotientMap := iff_isOpenMap_isQuotientMap
 
 theorem of_isOpenMap_isQuotientMap (ho : IsOpenMap f) (hq : IsQuotientMap f) :
     IsOpenQuotientMap f :=
   iff_isOpenMap_isQuotientMap.2 ⟨ho, hq⟩
-
-@[deprecated (since := "2024-10-22")]
-alias of_isOpenMap_quotientMap := of_isOpenMap_isQuotientMap
 
 theorem comp {g : Y → Z} (hg : IsOpenQuotientMap g) (hf : IsOpenQuotientMap f) :
     IsOpenQuotientMap (g ∘ f) :=
@@ -68,6 +64,15 @@ theorem continuousAt_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} {x : X} :
 theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻¹' s) ↔ Dense s :=
   ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),
     fun hs ↦ hs.preimage h.isOpenMap⟩
+
+/-- If `f` is an open quotient map and `X` is Baire, then `Y` is Baire. -/
+theorem baireSpace {f : X → Y} [BaireSpace X] (hf : IsOpenQuotientMap f) :
+    BaireSpace Y := by
+  constructor
+  intro u hou hdu
+  have := dense_iInter_of_isOpen_nat (fun n => hf.continuous.isOpen_preimage (u n) (hou n))
+    (fun n => (IsOpenQuotientMap.dense_preimage_iff hf).mpr (hdu n))
+  simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
 
 end IsOpenQuotientMap
 
@@ -113,7 +118,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
     ‹TopologicalSpace A›.coinduced p = ‹TopologicalSpace D›.induced g := by
   ext U
-  show IsOpen (p ⁻¹' U) ↔ ∃ V, _
+  change IsOpen (p ⁻¹' U) ↔ ∃ V, _
   simp_rw [hf.isOpen_iff,
     (Set.image_surjective.mpr hq.surjective).exists,
     ← hq.isQuotientMap.isOpen_preimage]

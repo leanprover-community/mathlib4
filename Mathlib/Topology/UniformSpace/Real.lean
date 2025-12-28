@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.MetricSpace.Cauchy
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 # The reals are complete
@@ -13,6 +15,8 @@ This file provides the instances `CompleteSpace ℝ` and `CompleteSpace ℝ≥0`
 Along the way, we add a shortcut instance for the natural topology on `ℝ≥0`
 (the one induced from `ℝ`), and add some basic API.
 -/
+
+@[expose] public section
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 
@@ -27,7 +31,7 @@ instance Real.instCompleteSpace : CompleteSpace ℝ := by
   refine ⟨c.lim, fun s h => ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
-  simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
+  simp only [mem_map, mem_atTop_sets]
   exact this.imp fun N hN n hn => hε (hN n hn)
 
 namespace NNReal
@@ -43,6 +47,7 @@ instance : TopologicalSpace ℝ≥0 := inferInstance
 instance : CompleteSpace ℝ≥0 :=
   isClosed_Ici.completeSpace_coe
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 

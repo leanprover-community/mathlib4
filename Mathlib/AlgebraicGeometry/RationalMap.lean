@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.SpreadingOut
-import Mathlib.AlgebraicGeometry.FunctionField
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
+module
+
+public import Mathlib.AlgebraicGeometry.SpreadingOut
+public import Mathlib.AlgebraicGeometry.FunctionField
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 /-!
 
 # Rational maps between schemes
@@ -25,6 +27,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Separated
   If `X` is integral and `Y` is separated, then any `f : X ⤏ Y` can be realized as a partial
   map on `f.domain`, the domain of definition of `f`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -48,7 +52,7 @@ structure PartialMap (X Y : Scheme.{u}) where
   hom : ↑domain ⟶ Y
 
 variable (S) in
-/-- A partial map is a `S`-map if the underlying morphism is. -/
+/-- A partial map is an `S`-map if the underlying morphism is. -/
 abbrev PartialMap.IsOver [X.Over S] [Y.Over S] (f : X.PartialMap Y) :=
   f.hom.IsOver S
 
@@ -128,7 +132,7 @@ lemma isOver_iff [X.Over S] [Y.Over S] {f : X.PartialMap Y} :
 
 lemma isOver_iff_eq_restrict [X.Over S] [Y.Over S] {f : X.PartialMap Y} :
     f.IsOver S ↔ f.compHom (Y ↘ S) = (X ↘ S).toPartialMap.restrict _ f.dense_domain (by simp) := by
-  simp [isOver_iff, PartialMap.ext_iff]
+  simp [PartialMap.ext_iff]
 
 /-- If `x` is in the domain of a partial map `f`, then `f` restricts to a map from `Spec 𝒪_x`. -/
 noncomputable
@@ -147,18 +151,18 @@ lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
     {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) {x} (hx : x ∈ U) :
     (f.restrict U hU hU').fromSpecStalkOfMem hx = f.fromSpecStalkOfMem (hU' hx) := by
   dsimp only [fromSpecStalkOfMem, restrict, Scheme.Opens.fromSpecStalkOfMem]
-  have e : ⟨x, hU' hx⟩ = (X.homOfLE hU').base ⟨x, hx⟩ := by
+  have e : ⟨x, hU' hx⟩ = X.homOfLE hU' ⟨x, hx⟩ := by
     rw [Scheme.homOfLE_base]
     rfl
-  rw [Category.assoc, ← Spec_map_stalkMap_fromSpecStalk_assoc,
-    ← Spec_map_stalkSpecializes_fromSpecStalk (Inseparable.of_eq e).specializes,
+  rw [Category.assoc, ← SpecMap_stalkMap_fromSpecStalk_assoc,
+    ← SpecMap_stalkSpecializes_fromSpecStalk (Inseparable.of_eq e).specializes,
     ← TopCat.Presheaf.stalkCongr_inv _ (Inseparable.of_eq e)]
   simp only [← Category.assoc, ← Spec.map_comp]
   congr 3
   rw [Iso.eq_inv_comp, ← Category.assoc, IsIso.comp_inv_eq, IsIso.eq_inv_comp,
-    stalkMap_congr_hom _ _ (X.homOfLE_ι hU').symm]
-  simp only [restrictFunctor_obj_left, homOfLE_leOfHom, TopCat.Presheaf.stalkCongr_hom]
-  rw [← stalkSpecializes_stalkMap_assoc, stalkMap_comp]
+    Hom.stalkMap_congr_hom _ _ (X.homOfLE_ι hU').symm]
+  simp only [TopCat.Presheaf.stalkCongr_hom]
+  rw [← Hom.stalkSpecializes_stalkMap_assoc, Hom.stalkMap_comp]
 
 lemma fromFunctionField_restrict (f : X.PartialMap Y) [IrreducibleSpace X]
     {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
@@ -221,8 +225,7 @@ lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
     refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
       inf_le_right.trans hW₂r, ?_⟩
     dsimp at e₁ e₂
-    simp only [restrict_domain, restrict_hom, restrictFunctor_obj_left, homOfLE_leOfHom,
-      ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l, Functor.map_comp, Over.comp_left,
+    simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
       Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
     simp only [homOfLE_homOfLE_assoc]
 
@@ -248,8 +251,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
-    simp only [TopologicalSpace.Opens.carrier_eq_coe, IsOpenMap.coe_functor_obj,
-      TopologicalSpace.Opens.coe_inf, restrict_hom, ← Category.assoc] at e ⊢
+    simp only [restrict_hom, ← Category.assoc] at e ⊢
     convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
   · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
@@ -325,7 +327,7 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 variable (S) in
-/-- A rational map is a `S`-map if some partial map in the equivalence class is a `S`-map. -/
+/-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 
@@ -408,7 +410,10 @@ def RationalMap.fromFunctionField [IrreducibleSpace X] (f : X ⤏ Y) :
     Spec X.functionField ⟶ Y := by
   refine Quotient.lift PartialMap.fromFunctionField ?_ f
   intro f g ⟨W, hW, hWl, hWr, e⟩
-  have : f.restrict W hW hWl = g.restrict W hW hWr := by ext1; rfl; rw [e]; simp
+  have : f.restrict W hW hWl = g.restrict W hW hWr := by
+    ext1
+    · rfl
+    rw [e]; simp
   rw [← f.fromFunctionField_restrict hW hWl, this, g.fromFunctionField_restrict]
 
 @[simp]
@@ -490,11 +495,14 @@ lemma RationalMap.dense_domain (f : X ⤏ Y) : Dense (X := X) f.domain :=
 consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable
 def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover where
-  J := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
-  obj U := U.1.toScheme
-  map U := X.homOfLE (le_sSup U.2)
-  f x := ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
-  covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
+  I₀ := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
+  X U := U.1.toScheme
+  f U := X.homOfLE (le_sSup U.2)
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
+    exact ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
 
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
 then `f` can be represented as a partial map on its domain of definition. -/
@@ -502,14 +510,14 @@ noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
     (fun x ↦ (X.isoOfEq x.2.choose_spec.2).inv ≫ x.2.choose.hom) ?_⟩
-  intros x y
-  let g (x : f.openCoverDomain.J) := x.2.choose
+  intro x y
+  let g (x : f.openCoverDomain.I₀) := x.2.choose
   have hg₁ (x) : (g x).toRationalMap = f := x.2.choose_spec.1
   have hg₂ (x) : (g x).domain = x.1 := x.2.choose_spec.2
   refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.2) (le_sSup y.2)).isoPullback.hom).mp ?_
   simp only [openCoverDomain, IsPullback.isoPullback_hom_fst_assoc,
     IsPullback.isoPullback_hom_snd_assoc]
-  show _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
+  change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
   simp_rw [← cancel_epi (X.isoOfEq congr($(hg₂ x) ⊓ $(hg₂ y))).hom, ← Category.assoc]
   convert (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]

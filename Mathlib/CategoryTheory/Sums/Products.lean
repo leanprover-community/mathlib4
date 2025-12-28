@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Sums.Associator
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Sums.Associator
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Functors out of sums of categories.
@@ -16,11 +18,17 @@ the product side.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
+
+open Functor
+
+open scoped Prod
 
 universe v u
 
-variable (A : Type*) [Category A] (A' : Type*) [Category A']
+variable (A : Type*) [Category* A] (A' : Type*) [Category* A']
   (B : Type u) [Category.{v} B]
 
 namespace Sum
@@ -30,13 +38,13 @@ namespace Sum
 def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
     { obj F := ⟨inl_ A A' ⋙ F, inr_ A A' ⋙ F⟩
-      map η := ⟨whiskerLeft (inl_ A A') η, whiskerLeft (inr_ A A') η⟩ }
+      map η := whiskerLeft (inl_ A A') η ×ₘ whiskerLeft (inr_ A A') η }
   inverse :=
     { obj F := Functor.sum' F.1 F.2
       map η := NatTrans.sum' η.1 η.2 }
   unitIso := NatIso.ofComponents <| fun F ↦ F.isoSum
-  counitIso := NatIso.ofComponents <| fun F ↦
-    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F
+  counitIso := NatIso.ofComponents (fun F ↦
+    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F)
 
 variable {A A' B}
 
@@ -105,7 +113,7 @@ def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
     natTransOfWhiskerLeftInlInr (𝟙 (Sum.inl_ A A' ⋙ F)) (𝟙 (Sum.inr_ A A' ⋙ F)) = 𝟙 F := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
@@ -113,7 +121,7 @@ lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
     (ν₁ : Sum.inl_ A A' ⋙ G ⟶ Sum.inl_ A A' ⋙ H) (ν₂ : Sum.inr_ A A' ⋙ G ⟶ Sum.inr_ A A' ⋙ H) :
     natTransOfWhiskerLeftInlInr (η₁ ≫ ν₁) (η₂ ≫ ν₂) = natTransOfWhiskerLeftInlInr η₁ η₂ ≫
       natTransOfWhiskerLeftInlInr ν₁ ν₂ := by
-  aesop_cat
+  cat_disch
 
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
@@ -130,7 +138,7 @@ lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
       (Sum.functorEquiv A A' B).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
       (Sum.functorEquiv A A' B).unitIso.symm.app _ := by
-  aesop_cat
+  cat_disch
 
 namespace Swap
 
@@ -148,7 +156,7 @@ end Swap
 
 section CompatibilityWithProductAssociator
 
-variable (T : Type*) [Category T]
+variable (T : Type*) [Category* T]
 
 /-- The equivalence `Sum.functorEquiv` sends associativity of sums to associativity of products -/
 @[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]
@@ -156,8 +164,8 @@ def associativityFunctorEquivNaturalityFunctorIso :
     ((sum.associativity A A' T).congrLeft.trans <| (Sum.functorEquiv A (A' ⊕ T) B).trans <|
       Equivalence.refl.prod <| Sum.functorEquiv _ _ B).functor ≅
         (Sum.functorEquiv (A ⊕ A') T B).trans
-          ((Sum.functorEquiv A A' B).prod Equivalence.refl)|>.trans
-            (prod.associativity _ _ _)|>.functor :=
+          ((Sum.functorEquiv A A' B).prod Equivalence.refl) |>.trans
+            (prod.associativity _ _ _) |>.functor :=
   NatIso.ofComponents (fun E ↦ Iso.prod
     ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (sum.inlCompInverseAssociator A A' T) E ≪≫ Functor.associator _ _ _)

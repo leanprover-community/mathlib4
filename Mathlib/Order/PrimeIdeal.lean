@@ -3,8 +3,10 @@ Copyright (c) 2021 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Order.PFilter
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Order.PFilter
 
 /-!
 # Prime ideals
@@ -29,6 +31,8 @@ structure, such as a bottom element, a top element, or a join-semilattice struct
 ideal, prime
 
 -/
+
+@[expose] public section
 
 
 open Order.PFilter
@@ -104,7 +108,7 @@ variable [SemilatticeInf P] {I : Ideal P}
 theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
   contrapose!
   let F := hI.compl_filter.toPFilter
-  show x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
+  change x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
   exact fun h => inf_mem h.1 h.2
 
 theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :

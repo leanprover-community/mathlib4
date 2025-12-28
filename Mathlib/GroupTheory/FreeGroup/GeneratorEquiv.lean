@@ -3,27 +3,24 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
-# Isomorphisms between free groups come from equivalences of their generators
+# Isomorphisms between free groups imply equivalences of their generators
 
-This file proves that an isomorphism `e : G ≃* H` between free groups `G` and `H` is induced by an
-equivalence of generators.
-
-## TODO
-
-We currently construct the equivalence of generators, but don't show that it induces the isomorphism
-of groups.
 -/
+
+@[expose] public section
 
 noncomputable section
 
 variable {α β G H : Type*}
 
-open IsFreeGroup
+open IsFreeGroup Module
 
 /-- `A` is a basis of the ℤ-module `FreeAbelianGroup A`. -/
 noncomputable def FreeAbelianGroup.basis (α : Type*) : Basis α ℤ (FreeAbelianGroup α) :=
