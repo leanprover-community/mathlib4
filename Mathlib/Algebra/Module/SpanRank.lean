@@ -285,7 +285,7 @@ lemma spanRank_le_spanRank_of_map_eq {σ : R →+* S} [RingHomSurjective σ]
   use f '' s
   constructor
   · rw [← hscard]; exact Cardinal.mk_image_le
-  · rw [span_image', hsspan, h_map]
+  · rw [span_image, hsspan, h_map]
 
 lemma spanRank_le_spanRank_of_range_eq {σ : R →+* S} [RingHomSurjective σ]
     (f : M₁ →ₛₗ[σ] N) (h_range : LinearMap.range f = N₁) : N₁.spanRank ≤ M₁.spanRank := by
