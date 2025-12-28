@@ -41,7 +41,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
 /-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
-    SubNegMonoid α, Nontrivial α where
+  SubNegMonoid α, Nontrivial α where
   neg_top : -(⊤ : α) = ⊤
   add_neg_cancel_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → x + -x = 0
 
@@ -187,14 +187,6 @@ lemma add_right_strictMono_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono fun x
 alias strictMono_add_right_of_ne_top := add_right_strictMono_of_ne_top
 
 @[simp]
-lemma add_lt_add_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b + a < c + a ↔ b < c :=
-  (add_left_strictMono_of_ne_top _ h).lt_iff_lt
-
-@[simp]
-lemma add_lt_add_iff_right_of_ne_top {a b c : α} (h : a ≠ ⊤) : a + b < a + c ↔ b < c :=
-  (add_right_strictMono_of_ne_top _ h).lt_iff_lt
-
-@[simp]
 lemma add_le_add_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b + a ≤ c + a ↔ b ≤ c :=
   (add_left_strictMono_of_ne_top _ h).le_iff_le
 
@@ -202,16 +194,24 @@ lemma add_le_add_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b + a ≤ c +
 lemma add_le_add_iff_right_of_ne_top {a b c : α} (h : a ≠ ⊤) : a + b ≤ a + c ↔ b ≤ c :=
   (add_right_strictMono_of_ne_top _ h).le_iff_le
 
+@[simp]
+lemma add_lt_add_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b + a < c + a ↔ b < c :=
+  (add_left_strictMono_of_ne_top _ h).lt_iff_lt
+
+@[simp]
+lemma add_lt_add_iff_right_of_ne_top {a b c : α} (h : a ≠ ⊤) : a + b < a + c ↔ b < c :=
+  (add_right_strictMono_of_ne_top _ h).lt_iff_lt
+
 lemma sub_left_strictMono_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono fun x ↦ x - b := by
   simpa [sub_eq_add_neg] using add_left_strictMono_of_ne_top (-b) (by simpa)
 
 @[simp]
-lemma sub_lt_sub_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b - a < c - a ↔ b < c :=
-  (sub_left_strictMono_of_ne_top _ h).lt_iff_lt
-
-@[simp]
 lemma sub_le_sub_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b - a ≤ c - a ↔ b ≤ c :=
   (sub_left_strictMono_of_ne_top _ h).le_iff_le
+
+@[simp]
+lemma sub_lt_sub_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b - a < c - a ↔ b < c :=
+  (sub_left_strictMono_of_ne_top _ h).lt_iff_lt
 
 lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ := by
   obtain rfl | hb := eq_or_ne b ⊤
