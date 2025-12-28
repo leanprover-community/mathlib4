@@ -115,7 +115,7 @@ lemma revParamTrasform_has_pos_deriv_aux (once_diff : 1 ≤ r) (hc : ContDiffOn 
   · apply norm_pos_iff.mpr (regular t ht)
   · apply hI.uniqueDiffWithinAt ht
 
-/-- Auxilary lemma - ψ is injective. -/
+/-- Auxiliary lemma - ψ is injective. -/
 lemma revParamTransform_injOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
   (regular : ∀ t ∈ I, deriv c t ≠ 0) (hIo : IsOpen I) (ht₀ : t₀ ∈ I) : I.InjOn ψ :=
   have hI : Convex ℝ I := convex_iff_ordConnected.mpr (by assumption)
