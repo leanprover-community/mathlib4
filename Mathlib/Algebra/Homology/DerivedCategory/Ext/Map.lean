@@ -18,7 +18,7 @@ where `F` is an exact functor between abelian categories.
 
 @[expose] public section
 
-universe w w' u u' v v'
+universe t t' w w' u u' v v'
 
 namespace CategoryTheory
 
@@ -28,8 +28,6 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
-
-section Ext
 
 open Localization
 
@@ -46,15 +44,11 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     (ComplexShape.up ℤ)).smallShiftedHomMap
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
-section
-
-universe t t'
-
-variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
-
 open Functor in
-lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
-    (e : Ext X Y n) : (e.mapExactFunctor F).hom =
+lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
+    [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+    [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ} (e : Ext X Y n) :
+    (e.mapExactFunctor F).hom =
     (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫ e.hom.map F.mapDerivedCategory ≫
     ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧' := by
   rw [← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
@@ -81,8 +75,6 @@ lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map [HasExt.{w} C] [HasExt.{w'} 
       whiskerLeft_app, associator_inv_app, whiskerRight_app, NatTrans.id_app, Category.id_comp]
     nth_rw 2 [← Category.assoc]
     exact (Category.comp_id _).symm.trans (Category.id_comp _).symm
-
-end
 
 @[simp]
 lemma Abelian.Ext.mapExactFunctor_zero [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
@@ -140,7 +132,5 @@ lemma Functor.mapExtLinearMap_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : 
 
 lemma Functor.mapExtLinearMap_apply [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
     (e : Ext X Y n) : F.mapExtLinearMap R X Y n e = e.mapExactFunctor F := rfl
-
-end Ext
 
 end CategoryTheory
