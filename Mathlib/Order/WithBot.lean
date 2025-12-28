@@ -879,7 +879,7 @@ variable {a b : α}
 open Function
 
 /-- `WithBot.toDual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `toDual a : αᵒᵈ`.
-See `WithBot.toDual_top_equiv` for the related order-iso. -/
+See `WithBot.toDualTopEquiv` for the related order-iso. -/
 @[to_dual
 /-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithTop.toDualBotEquiv` for the related order-iso. -/]
@@ -887,7 +887,7 @@ protected def toDual : WithBot α ≃ WithTop αᵒᵈ :=
   Equiv.refl _
 
 /-- `WithBot.ofDual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `ofDual a : α`.
-See `WithBot.ofDual_top_equiv` for the related order-iso.
+See `WithBot.ofDualTopEquiv` for the related order-iso.
 -/
 @[to_dual
 /-- `WithTop.ofDual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `ofDual a : α`.
