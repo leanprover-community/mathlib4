@@ -126,7 +126,10 @@ noncomputable
 instance : Norm (A →ₚ[ℂ] ℂ) where
   norm f := ‖(f : A →L[ℂ] ℂ)‖
 
--- I know this is true, but I will attempt to formalize the proof later
-theorem opNorm_eq_of_one : ‖f‖ = f 1 := sorry
+/-
+To-do:
+1. Eliminate sorrys
+2. Convert to non-unital
+-/
 
 end PositiveLinearMap

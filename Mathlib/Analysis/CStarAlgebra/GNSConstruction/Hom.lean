@@ -50,8 +50,6 @@ lemma toOf : f.toGNS (f.ofGNS a) = a := by rfl
 
 variable [StarOrderedRing A]
 
-lemma fprop (a : A) : ‖f a‖ ≤ ‖f‖ * ‖a‖ := le_opNorm (f : A →L[ℂ] ℂ) a
-
 /--
 This positive linear functional simply helps with some of the below proofs. There should be no
 reason to reference it outside of this file.
@@ -74,15 +72,9 @@ def g (b : A) : A →ₚ[ℂ] ℂ where
 lemma g_apply (x b : A) : f (star b * x * b) = (f.g b) x := by rfl
 
 noncomputable
-def const_mul_GNS_nonCont : f.GNS →ₗ[ℂ] f.GNS where
-  toFun b := f.toGNS ((ContinuousLinearMap.mul (R := A) (𝕜 := ℂ) a) (f.ofGNS b))
-  map_add' x y := by simp [map_add]
-  map_smul' c x := by simp_all
-
--- maybe I should bound it using the unit ball method instead. Re-work later if possible
-noncomputable
 def const_mul_GNS : f.GNS →L[ℂ] f.GNS := by
-  refine LinearMap.mkContinuous (f.const_mul_GNS_nonCont a) (‖a‖) ?_
+  refine LinearMap.mkContinuous
+    ((f.toGNS).comp (((LinearMap.mul (A := A) (R := ℂ) a)).comp (f.ofGNS).toLinearMap)) (‖a‖) ?_
   intro x
   simp only [GNS_norm_def]
   have move_const : ‖a‖ = √((‖a‖) ^ 2) := by simp_all only [norm_nonneg, Real.sqrt_sq]
@@ -94,53 +86,63 @@ def const_mul_GNS : f.GNS →L[ℂ] f.GNS := by
   have : 0 ≤ (f (star (f.ofGNS x) * f.ofGNS x)).re := by simp_all
   have : 0 ≤ (‖a‖) ^ 2 * (f (star (f.ofGNS x) * f.ofGNS x)).re := by
     (expose_names; exact mul_nonneg this_1 this)
-  rw [move_const, ← Real.sqrt_mul']
-  · apply (Real.sqrt_le_sqrt_iff this).mpr
-    dsimp [const_mul_GNS_nonCont]
-    simp only [ofTo, star_mul]
-    nth_rw 1 [← mul_assoc]
-    nth_rw 2 [mul_assoc]
-    rw [f.g_apply (star a * a) (f.ofGNS x)]
-    suffices ((f.g (f.ofGNS x)) (star a * a)).re ≤
-        ‖a‖ ^ 2 * (f (star (f.ofGNS x) * 1 * f.ofGNS x)).re by
-      simp at this
-      assumption
-    rw [f.g_apply (1) (f.ofGNS x)]
-    rw [← opNorm_eq_of_one, pow_two, ← CStarRing.norm_star_mul_self]
-    have main := fprop ((f.g (f.ofGNS x))) (star a * a)
-    have re_eq_self := re_of_self_star_self ((f.g (f.ofGNS x))) (star a)
-    simp only [star_star] at re_eq_self
-    have : 0 ≤ (star a * a) := by exact star_mul_self_nonneg a
-    have : 0 ≤ (f.g (f.ofGNS x)) (star a * a) := PositiveLinearMap.map_nonneg (f.g (f.ofGNS x)) this
-    have : ‖(f.g (f.ofGNS x)) (star a * a)‖ = ((f.g (f.ofGNS x)) (star a * a)).re := by
-      suffices (‖(f.g (f.ofGNS x)) (star a * a)‖ : ℂ) = (((f.g (f.ofGNS x)) (star a * a)).re : ℂ) by
-        norm_cast at this
-      rw [re_eq_self]
-      exact norm_of_nonneg' this
-    rw [← this, mul_comm]
-    have : (‖f.g (f.ofGNS x)‖ : ℂ).re = ‖f.g (f.ofGNS x)‖ := by simp
-    rwa [this]
-  assumption
+  rw [move_const, ← Real.sqrt_mul']; swap
+  · assumption
+  apply (Real.sqrt_le_sqrt_iff this).mpr
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    LinearMap.mul_apply_apply, ofTo, star_mul]
+  nth_rw 1 [← mul_assoc]
+  nth_rw 2 [mul_assoc]
+  rw [f.g_apply (star a * a) (f.ofGNS x)]
+  suffices ((f.g (f.ofGNS x)) (star a * a)).re ≤
+      ‖a‖ ^ 2 * (f (star (f.ofGNS x) * 1 * f.ofGNS x)).re by
+    simp at this
+    assumption
+  rw [f.g_apply (1) (f.ofGNS x)]
+  -- begin new code
+  have staraaPos := (mul_star_self_nonneg (star a : A))
+  rw [star_star] at staraaPos
+  have opNorm_leq_one :=
+    PositiveLinearMap.norm_apply_le_of_nonneg (f.g (f.ofGNS x)) (star a * a) staraaPos
+  rw [CStarRing.norm_star_mul_self, ← pow_two] at opNorm_leq_one
+  -- end new code
+  -- non-negative real things are equal to their norm, so I should be able to change
+  -- the goal and opNorm_leq_one into each other with some re-writes
+  --rw [← opNorm_eq_of_one, pow_two, ← CStarRing.norm_star_mul_self]
+  have main : ‖(f.g (f.ofGNS x)) (star a * a)‖ ≤ ‖f.g (f.ofGNS x)‖ * ‖star a * a‖ :=
+    le_opNorm ((f.g (f.ofGNS x)) : A →L[ℂ] ℂ) (star a * a)
+  have re_eq_self := re_of_self_star_self ((f.g (f.ofGNS x))) (star a)
+  simp only [star_star] at re_eq_self
+  have : 0 ≤ (star a * a) := by exact star_mul_self_nonneg a
+  have : 0 ≤ (f.g (f.ofGNS x)) (star a * a) := PositiveLinearMap.map_nonneg (f.g (f.ofGNS x)) this
+  have : ‖(f.g (f.ofGNS x)) (star a * a)‖ = ((f.g (f.ofGNS x)) (star a * a)).re := by
+    suffices (‖(f.g (f.ofGNS x)) (star a * a)‖ : ℂ) = (((f.g (f.ofGNS x)) (star a * a)).re : ℂ) by
+      norm_cast at this
+    rw [re_eq_self]
+    exact norm_of_nonneg' this
+  rw [← this, mul_comm]
+  --have : (‖f.g (f.ofGNS x)‖ : ℂ).re = ‖f.g (f.ofGNS x)‖ := by simp
+  have : 0 ≤ (f.g (f.ofGNS x)) 1 := PositiveLinearMap.map_nonneg (f.g (f.ofGNS x)) (zero_le_one' A)
+  have : ((f.g (f.ofGNS x)) 1).re = ‖(f.g (f.ofGNS x)) 1‖ := by exact re_eq_norm.mpr this
+  rwa [this]
 
 noncomputable
 def A_mul_GNS : A →ₗ[ℂ] f.GNS →L[ℂ] f.GNS where
   toFun a := f.const_mul_GNS a
   map_add' x y := by
     ext b
-    dsimp [const_mul_GNS, const_mul_GNS_nonCont]
+    dsimp [const_mul_GNS]
     rw [← map_add, add_mul]
   map_smul' c x := by
     ext b
-    simp only [RingHom.id_apply, coe_smul', Pi.smul_apply, const_mul_GNS, const_mul_GNS_nonCont]
+    simp only [RingHom.id_apply, coe_smul', Pi.smul_apply, const_mul_GNS]
     rw [← map_smul]
     simp
 
 noncomputable
-def A_mul_Quot : f.GNS_Quotient →L[ℂ] f.GNS_Quotient where
-  toFun := (SeparationQuotient.mkCLM (M := f.GNS) (R := ℂ)) ∘ (f.A_mul_GNS a) ∘
-      (SeparationQuotient.outCLM (E := f.GNS) (K := ℂ))
-  map_add' := by simp_all
-  map_smul' := by simp_all
+def A_mul_Quot : f.GNS_Quotient →L[ℂ] f.GNS_Quotient :=
+  (SeparationQuotient.mkCLM (M := f.GNS) (R := ℂ)).comp ((f.A_mul_GNS a).comp
+    (SeparationQuotient.outCLM (E := f.GNS) (K := ℂ)))
 
 @[simp]
 lemma A_mul_Quot_from_Completion (b : f.GNS_Quotient) :
@@ -176,7 +178,7 @@ lemma A_mul_GNS_prod_eq_comp (a b : A) :
     f.A_mul_GNS (a * b) = f.A_mul_GNS (a) ∘ f.A_mul_GNS (b) := by
   ext c
   simp only [Function.comp_apply]
-  dsimp [A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
+  dsimp [A_mul_GNS, const_mul_GNS]
   simp_all only [ofTo, EmbeddingLike.apply_eq_iff_eq]
   rw [mul_assoc]
 
@@ -206,14 +208,13 @@ lemma move_A_mul_GNS (c : f.GNS) (b : A) :
     ((outCLM ℂ f.GNS) ((mkCLM ℂ f.GNS) ((f.A_mul_GNS b) c))) :=
   f.move_Continuous c (h := f.A_mul_GNS b) (by continuity)
 
-lemma contA_mul_Quot_of_mk_to_mk (x : f.GNS) :
+lemma A_mul_Quot_of_mk_to_mk (x : f.GNS) :
   ((f.A_mul_Quot a) (SeparationQuotient.mk x))
     = SeparationQuotient.mk ((f.A_mul_GNS a) x) := by
   dsimp [A_mul_Quot]
   simp_all only [mk_eq_mk]
   rw [mk_eq_mkCLM]
-  have := Inseparable.outCLM_comp_mkCLM f x
-  exact Inseparable.map (f := f.A_mul_GNS a) this (by continuity)
+  exact Inseparable.map (f := f.A_mul_GNS a) (Inseparable.outCLM_comp_mkCLM f x) (by continuity)
 
 noncomputable
 def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
@@ -225,7 +226,7 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     | hp => exact (isClosed_eq (by continuity) (by continuity))
     | ih b
     simp_all only [A_mul_Quot_from_Completion, Completion.coe_inj]
-    dsimp [A_mul_Quot, A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
+    dsimp [A_mul_Quot, A_mul_GNS, const_mul_GNS]
     simp_all
   map_mul' a b := by
     ext c
@@ -250,7 +251,7 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     | hp => exact (isClosed_eq (by continuity) (by continuity))
     | ih b
     simp_all only [A_mul_Quot_from_Completion]
-    dsimp [A_mul_Quot, A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
+    dsimp [A_mul_Quot, A_mul_GNS, const_mul_GNS]
     simp_all
   map_add' x y := by
     ext c
@@ -267,12 +268,7 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_ofA]
     congr
     ext c
-    simp only [A_mul_Quot, map_smul, coe_smul', coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
-      Function.comp_apply, Pi.smul_apply, mkCLM_apply, A_mul_GNS, const_mul_GNS, LinearMap.coe_mk,
-      AddHom.coe_mk, LinearMap.mkContinuous_apply]
-    congr
-    dsimp [const_mul_GNS_nonCont]
-    simp
+    simp [A_mul_Quot, A_mul_GNS, const_mul_GNS]
   map_star' a := by
     refine (eq_adjoint_iff (π_ofA f (star a)) (π_ofA f a)).mpr ?_
     intro x y
@@ -288,9 +284,9 @@ def π : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) wher
     induction y using Quot.induction_on
     simp only [Quot_to_SepQuot, π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
       A_mul_Quot_from_Completion, inner_coe]
-    rw [contA_mul_Quot_of_mk_to_mk, contA_mul_Quot_of_mk_to_mk]
+    rw [A_mul_Quot_of_mk_to_mk, A_mul_Quot_of_mk_to_mk]
     simp only [inner_mk_mk]
-    dsimp [A_mul_GNS, const_mul_GNS, const_mul_GNS_nonCont]
+    dsimp [A_mul_GNS, const_mul_GNS]
     rw [GNS_inner_def, GNS_inner_def]
     simp_all only [ofTo, star_mul, star_star]
     congr 1
