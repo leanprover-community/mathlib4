@@ -9,7 +9,6 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs
 public import Mathlib.Analysis.CStarAlgebra.Hom
 
-
 /-!
 # The *-homomorphism of the GNS construction
 
@@ -40,6 +39,7 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A]
 variable (f : A →ₚ[ℂ] ℂ)
 
 namespace PositiveLinearMap
+
 variable (a : A)
 
 @[simp]
@@ -50,6 +50,23 @@ lemma toOf : f.toGNS (f.ofGNS a) = a := by rfl
 
 variable [StarOrderedRing A]
 
+@[coe]
+def PLF.toCLM : A →L[ℂ] ℂ where
+  toFun := f
+  map_add' := by simp
+  map_smul' := by simp
+-- why can't we set by simp as default method to synthesize these fields?
+
+instance : Coe (A →ₚ[ℂ] ℂ) (A →L[ℂ] ℂ) where
+  coe f := PLF.toCLM f
+
+noncomputable
+instance : Norm (A →ₚ[ℂ] ℂ) where
+  norm f := ‖(f : A →L[ℂ] ℂ)‖
+
+-- figure out approximate unit stuff later
+-- How do I get Aguilar 9.0.17
+
 /--
 This positive linear functional simply helps with some of the below proofs. There should be no
 reason to reference it outside of this file.
@@ -57,7 +74,9 @@ reason to reference it outside of this file.
 def g (b : A) : A →ₚ[ℂ] ℂ where
   toFun x := f (star b * x * b)
   map_add' x y := by rw [mul_add, add_mul, map_add]
-  map_smul' m x := by simp
+  map_smul' m x := by
+    have : (star b * m • x * b) = (m • (star b * x * b)) := by noncomm_ring
+    rw [this]; simp
   monotone' := by
     unfold Monotone
     intro y z hyz
@@ -71,6 +90,11 @@ def g (b : A) : A →ₚ[ℂ] ℂ where
 @[simp]
 lemma g_apply (x b : A) : f (star b * x * b) = (f.g b) x := by rfl
 
+lemma re_of_star_mul_self (a : A) : (f (star a * a)).re = f (star a * a) := by
+  have := conj_eq_iff_re.mp (map_isSelfAdjoint f ((star a) * star (star a))
+    (IsSelfAdjoint.mul_star_self (star a)))
+  rwa [star_star] at this
+
 noncomputable
 def const_mul_GNS : f.GNS →L[ℂ] f.GNS := by
   refine LinearMap.mkContinuous
@@ -78,14 +102,13 @@ def const_mul_GNS : f.GNS →L[ℂ] f.GNS := by
   intro x
   simp only [GNS_norm_def]
   have move_const : ‖a‖ = √((‖a‖) ^ 2) := by simp_all only [norm_nonneg, Real.sqrt_sq]
-  have : 0 ≤ (‖a‖) ^ 2 := by exact pow_two_nonneg ‖a‖
-  have : 0 ≤ star (f.ofGNS x) * f.ofGNS x := by exact star_mul_self_nonneg (f.ofGNS x)
-  have : 0 ≤ (f (star (f.ofGNS x) * f.ofGNS x)) := by exact PositiveLinearMap.map_nonneg f this
+  have normSq_nonneg : 0 ≤ (‖a‖) ^ 2 := pow_two_nonneg ‖a‖
+  have : 0 ≤ star (f.ofGNS x) * f.ofGNS x := star_mul_self_nonneg (f.ofGNS x)
+  have : 0 ≤ (f (star (f.ofGNS x) * f.ofGNS x)) := PositiveLinearMap.map_nonneg f this
   have : (0 : ℂ) ≤ (f (star (f.ofGNS x) * f.ofGNS x)).re := by
     rw [f.re_of_star_mul_self]; simp_all
   have : 0 ≤ (f (star (f.ofGNS x) * f.ofGNS x)).re := by simp_all
-  have : 0 ≤ (‖a‖) ^ 2 * (f (star (f.ofGNS x) * f.ofGNS x)).re := by
-    (expose_names; exact mul_nonneg this_1 this)
+  have : 0 ≤ (‖a‖) ^ 2 * (f (star (f.ofGNS x) * f.ofGNS x)).re := mul_nonneg normSq_nonneg this
   rw [move_const, ← Real.sqrt_mul']; swap
   · assumption
   apply (Real.sqrt_le_sqrt_iff this).mpr
@@ -99,21 +122,15 @@ def const_mul_GNS : f.GNS →L[ℂ] f.GNS := by
     simp at this
     assumption
   rw [f.g_apply (1) (f.ofGNS x)]
-  -- begin new code
   have staraaPos := (mul_star_self_nonneg (star a : A))
   rw [star_star] at staraaPos
   have opNorm_leq_one :=
     PositiveLinearMap.norm_apply_le_of_nonneg (f.g (f.ofGNS x)) (star a * a) staraaPos
   rw [CStarRing.norm_star_mul_self, ← pow_two] at opNorm_leq_one
-  -- end new code
-  -- non-negative real things are equal to their norm, so I should be able to change
-  -- the goal and opNorm_leq_one into each other with some re-writes
-  --rw [← opNorm_eq_of_one, pow_two, ← CStarRing.norm_star_mul_self]
   have main : ‖(f.g (f.ofGNS x)) (star a * a)‖ ≤ ‖f.g (f.ofGNS x)‖ * ‖star a * a‖ :=
     le_opNorm ((f.g (f.ofGNS x)) : A →L[ℂ] ℂ) (star a * a)
-  have re_eq_self := re_of_self_star_self ((f.g (f.ofGNS x))) (star a)
-  simp only [star_star] at re_eq_self
-  have : 0 ≤ (star a * a) := by exact star_mul_self_nonneg a
+  have re_eq_self := (f.g (f.ofGNS x)).re_of_star_mul_self a
+  have : 0 ≤ (star a * a) := star_mul_self_nonneg a
   have : 0 ≤ (f.g (f.ofGNS x)) (star a * a) := PositiveLinearMap.map_nonneg (f.g (f.ofGNS x)) this
   have : ‖(f.g (f.ofGNS x)) (star a * a)‖ = ((f.g (f.ofGNS x)) (star a * a)).re := by
     suffices (‖(f.g (f.ofGNS x)) (star a * a)‖ : ℂ) = (((f.g (f.ofGNS x)) (star a * a)).re : ℂ) by
@@ -121,9 +138,8 @@ def const_mul_GNS : f.GNS →L[ℂ] f.GNS := by
     rw [re_eq_self]
     exact norm_of_nonneg' this
   rw [← this, mul_comm]
-  --have : (‖f.g (f.ofGNS x)‖ : ℂ).re = ‖f.g (f.ofGNS x)‖ := by simp
   have : 0 ≤ (f.g (f.ofGNS x)) 1 := PositiveLinearMap.map_nonneg (f.g (f.ofGNS x)) (zero_le_one' A)
-  have : ((f.g (f.ofGNS x)) 1).re = ‖(f.g (f.ofGNS x)) 1‖ := by exact re_eq_norm.mpr this
+  have : ((f.g (f.ofGNS x)) 1).re = ‖(f.g (f.ofGNS x)) 1‖ := re_eq_norm.mpr this
   rwa [this]
 
 noncomputable
