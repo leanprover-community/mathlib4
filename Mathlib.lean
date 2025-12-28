@@ -388,6 +388,7 @@ public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.Group.MinimalAxioms
 public import Mathlib.Algebra.Group.Nat.Defs
@@ -1316,6 +1317,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.AlgebraicGeometry.Normalization
 public import Mathlib.AlgebraicGeometry.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Over
 public import Mathlib.AlgebraicGeometry.PointsPi
@@ -1373,6 +1375,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
@@ -1428,6 +1431,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
+public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
@@ -1989,6 +1993,7 @@ public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Analysis.Normed.Operator.Conformal
+public import Mathlib.Analysis.Normed.Operator.ContinuousAlgEquiv
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
@@ -2132,6 +2137,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
+public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
@@ -2213,6 +2219,7 @@ public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Abelian.Indization
 public import Mathlib.CategoryTheory.Abelian.Injective.Basic
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+public import Mathlib.CategoryTheory.Abelian.Injective.Ext
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 public import Mathlib.CategoryTheory.Abelian.LeftDerived
@@ -2262,6 +2269,7 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Balanced
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Bicategory.CatEnriched
@@ -3251,6 +3259,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
@@ -5351,6 +5360,7 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 public import Mathlib.NumberTheory.Transcendental.Liouville.Measure
 public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 public import Mathlib.NumberTheory.VonMangoldt
 public import Mathlib.NumberTheory.WellApproximable
@@ -5418,6 +5428,7 @@ public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.CompleteLattice.Group
 public import Mathlib.Order.CompleteLattice.Lemmas
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+public import Mathlib.Order.CompleteLattice.PiLex
 public import Mathlib.Order.CompleteLattice.SetLike
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompletePartialOrder
