@@ -64,10 +64,11 @@ def restrict (e : U ≃ₗ[R] V) (h : map e.toLinearMap P = Q) :
   right_inv x := by simp [← Subtype.coe_inj]
 
 @[simp]
-def coe_restrict (e : U ≃ₗ[R] V) (h : map e.toLinearMap P = Q) :
+theorem coe_restrict (e : U ≃ₗ[R] V) (h : map e.toLinearMap P = Q) :
     (restrict e h).toLinearMap = LinearMap.restrict e.toLinearMap (by aesop) :=
   rfl
 
+/-- The fixed submodule of a linear equivalence. -/
 def fixedSubmodule (e : V ≃ₗ[R] V) : Submodule R V where
   carrier := { x | e x = x }
   add_mem' {x y} hx hy := by
@@ -113,6 +114,18 @@ theorem mem_stabilizer_fixedSubmodule (e : V ≃ₗ[R] V) :
 theorem inf_fixedSubmodule_le_fixedSubmodule_mul (e f : V ≃ₗ[R] V) :
     e.fixedSubmodule ⊓ f.fixedSubmodule ≤ (e * f).fixedSubmodule := by
   intro; aesop
+
+theorem fixedSubmodule_mul_inf_fixedSubmodule_le_fixedSubmodule (e f : V ≃ₗ[R] V) :
+    (e * f).fixedSubmodule ⊓ f.fixedSubmodule ≤ e.fixedSubmodule := by
+  intro; aesop
+
+theorem fixedSubmodule_mul_inf_fixedSubmodule_le_fixedSubmodule' (e f : V ≃ₗ[R] V) :
+    (e * f).fixedSubmodule ⊓ e.fixedSubmodule ≤ f.fixedSubmodule := by
+  intro x
+  simp only [mem_inf, mem_fixedSubmodule_iff, mul_apply, and_imp]
+  intro hefx hex
+  nth_rewrite 2 [← hex] at hefx
+  simpa using hefx
 
 theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
     (he : e ∈ fixingSubgroup _ W.carrier) :
@@ -322,6 +335,8 @@ theorem transvections_pow_mono :
   Set.pow_right_monotone one_mem_transvections
 
 variable (R V) in
+/-- Dilatransvections: linear equivalences which differ
+from the identity by a linear map of rank at most 1. -/
 def dilatransvections :=
   { e : V ≃ₗ[R] V | ∃ (f : Dual R V) (v : V), e = LinearMap.transvection f v }
 
