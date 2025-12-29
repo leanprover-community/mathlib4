@@ -35,9 +35,7 @@ lemma IsNormalClosureOfFiniteSet.map {G H : Type*} [Group G] [Group H]
   use f '' S
   constructor
   · exact hSfinite.image _
-  · rw [ ← hSclosure]
-    have h := Subgroup.map_normalClosure S f hf
-    exact h.symm
+  · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
