@@ -212,6 +212,8 @@ theorem transvections_pow_mono :
   Set.pow_right_monotone one_mem_transvections
 
 variable (R V) in
+/-- Dilatransvections are linear equivalences which differ
+from the identity map by a linear map of rank at most 1. -/
 def dilatransvections :=
   { e : V ≃ₗ[R] V | ∃ (f : Dual R V) (v : V), e = LinearMap.transvection f v }
 
