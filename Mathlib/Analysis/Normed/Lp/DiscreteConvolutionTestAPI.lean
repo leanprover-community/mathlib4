@@ -39,14 +39,13 @@ linear maps (see `LinearMap.mk₂'`).
 
 For ring multiplication, use `mulConvolution` which is `convolution (LinearMap.mul R R)`.
 
-### Why `@[to_additive]` Only Applies to Fibers
+### How `@[to_additive]` Works
 
-The `@[to_additive]` attribute converts names in its dictionary. However, convolution
-involves `Module S E` which has implicit monoid structures that `to_additive` incorrectly
-tries to convert (e.g., `CommMonoid S` from scalar action compatibility).
+The `@[to_additive]` attribute converts `Monoid M → AddMonoid M` and `mulFiber → addFiber`.
+For `convolution`, we use `(dont_translate := S E E' F)` to preserve the module structures
+while only converting the index monoid.
 
-**Solution:** We manually define both `convolution` (for `[Monoid M]`) and
-`addConvolution` (for `[AddMonoid M]`). The fiber definitions use `@[to_additive]`:
+Fiber definitions also use `@[to_additive]`:
 * `mulFiber` → `addFiber`
 * `mulMap` → `addMap`
 * `delta` → `addDelta`
@@ -144,6 +143,7 @@ bypassing `LinearMap.mul`.
 * `DiscreteConvolution.addFiber_eq_antidiagonal`: fiber equals antidiagonal
 * `DiscreteConvolution.addFiber_finite`: fiber is finite
 * `DiscreteConvolution.addConvolution_eq_sum_antidiagonal`: `tsum` reduces to `Finset.sum`
+* `DiscreteConvolution.addMulConvolution_eq_cauchyProduct`: `⋆₊ₘ` = `CauchyProduct.apply`
 
 ## Related Files
 
@@ -230,43 +230,22 @@ variable [TopologicalSpace F]
 
 /-- The discrete convolution of `f` and `g` using bilinear map `L`:
 `(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`. -/
+@[to_additive (dont_translate := S E E' F) addConvolution
+  /-- Additive convolution: `(f ⋆₊[L] g) x = ∑' ab : addFiber x, L (f ab.1) (g ab.2)`. -/]
 def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
   fun x => ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)
 
 /-- Notation for discrete convolution with explicit bilinear map. -/
 scoped notation:70 f:70 " ⋆[" L:70 "] " g:71 => convolution L f g
 
-@[simp]
+/-- Notation for additive convolution. -/
+scoped notation:70 f:70 " ⋆₊[" L "] " g:71 => addConvolution L f g
+
+@[to_additive (attr := simp) (dont_translate := S E E' F) addConvolution_apply]
 theorem convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
     (f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2) := rfl
 
 end Definition
-
-/-! ### Additive Convolution
-
-For `[AddMonoid M]`, we define additive convolution using `addFiber` instead of `mulFiber`.
-This is needed for `HasAntidiagonal` types like ℕ. -/
-
-section AddConvolution
-
-variable {M : Type*} [AddMonoid M] {S : Type*} [CommSemiring S]
-variable {E E' F : Type*} [AddCommMonoid E] [Module S E]
-variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
-variable [TopologicalSpace F]
-
-/-- Additive convolution using `addFiber`: `(f ⋆₊[L] g) x = ∑' (a, b) : addFiber x, L (f a) (g b)`.
-This is the additive analogue of `convolution` for use with `HasAntidiagonal`. -/
-def addConvolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
-  fun x => ∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)
-
-/-- Notation for additive convolution. -/
-scoped notation:70 f:70 " ⋆₊[" L "] " g:71 => addConvolution L f g
-
-@[simp]
-theorem addConvolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
-    (f ⋆₊[L] g) x = ∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2) := rfl
-
-end AddConvolution
 
 /-! ### Ring Multiplication Specialization -/
 
@@ -777,6 +756,21 @@ theorem mul_smul (c : R) (a b : G → R) : a ⋆ (c • b) = c • (a ⋆ b) := 
 end Comm
 
 end CauchyProduct
+
+/-! ### Bridge: addMulConvolution = CauchyProduct -/
+
+section Bridge
+
+variable {M : Type*} [AddMonoid M] [HasAntidiagonal M]
+variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
+/-- `addMulConvolution` equals `CauchyProduct.apply` for `HasAntidiagonal` types. -/
+theorem addMulConvolution_eq_cauchyProduct (f g : M → R) (x : M) :
+    (f ⋆₊ₘ g) x = CauchyProduct.apply f g x := by
+  simp only [addMulConvolution, CauchyProduct.apply_eq]
+  exact addConvolution_eq_sum_antidiagonal (LinearMap.mul R R) f g x
+
+end Bridge
 
 end DiscreteConvolution
 
