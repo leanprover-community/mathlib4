@@ -547,9 +547,6 @@ theorem modEq_iff_forall_notMem_Ioo_mod :
     a ≡ b [PMOD p] ↔ ∀ z : ℤ, b - z • p ∉ Set.Ioo a (a + p) :=
   (tfae_modEq hp a b).out 0 1
 
-@[deprecated (since := "2025-05-23")]
-alias modEq_iff_not_forall_mem_Ioo_mod := modEq_iff_forall_notMem_Ioo_mod
-
 theorem modEq_iff_toIcoMod_ne_toIocMod : a ≡ b [PMOD p] ↔ toIcoMod hp a b ≠ toIocMod hp a b :=
   (tfae_modEq hp a b).out 0 2
 
@@ -741,7 +738,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
     obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     simpa [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
   rcases le_or_gt x₃' (x₁ + p) with h₃₁ | h₁₃
-  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
+  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨h₂₁, by simp [x₂', left_le_toIcoMod]⟩, -1, by simp⟩
   have hIoc₁₃ : toIocMod hp x₁ x₃' = x₃' - p := by

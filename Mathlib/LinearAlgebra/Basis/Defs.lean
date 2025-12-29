@@ -537,6 +537,10 @@ theorem constr_apply (f : ι → M') (x : M) :
   simp only [constr_def, LinearMap.comp_apply, lmapDomain_apply, linearCombination_apply]
   rw [Finsupp.sum_mapDomain_index] <;> simp [add_smul]
 
+@[simp] theorem constr_symm_apply (f : M →ₗ[R] M') (i) :
+    (b.constr S).symm f i = f (b i) := by
+  rfl
+
 @[simp]
 theorem constr_basis (f : ι → M') (i : ι) : (constr (M' := M') b S f : M → M') (b i) = f i := by
   simp [Basis.constr_apply, b.repr_self]
@@ -684,7 +688,7 @@ theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i,
   ext m
   simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
     id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
-    LinearMap.coeFn_sum]
+    LinearMap.coe_sum]
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by

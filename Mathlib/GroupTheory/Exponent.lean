@@ -175,7 +175,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
   by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
-  cutsat
+  lia
 
 @[to_additive AddMonoid.exp_eq_one_iff]
 theorem exp_eq_one_iff : exponent G = 1 ↔ Subsingleton G := by
@@ -366,7 +366,7 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
 If there exists a multiplication-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`.
 -/
-@[to_additive /-- If there exists a addition-preserving equivalence between `G` and `H`,
+@[to_additive /-- If there exists an addition-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`. -/]
 theorem exponent_eq_of_mulEquiv (e : G ≃* H) : Monoid.exponent G = Monoid.exponent H :=
   Nat.dvd_antisymm
@@ -436,8 +436,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   apply Nat.dvd_antisymm (order_dvd_exponent _)
   refine Nat.dvd_of_primeFactorsList_subperm he ?_
   rw [List.subperm_ext_iff]
-  by_contra! h
-  obtain ⟨p, hp, hpe⟩ := h
+  by_contra! ⟨p, hp, hpe⟩
   replace hp := Nat.prime_of_mem_primeFactorsList hp
   simp only [Nat.primeFactorsList_count_eq] at hpe
   set k := (orderOf t).factorization p with hk
@@ -499,6 +498,7 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
+set_option backward.proofsInPublic true in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by
@@ -664,23 +664,11 @@ lemma mul_notMem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
     mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
   aesop
 
-@[deprecated (since := "2025-05-23")]
-alias add_not_mem_of_addOrderOf_eq_two := add_notMem_of_addOrderOf_eq_two
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mul_not_mem_of_orderOf_eq_two := mul_notMem_of_orderOf_eq_two
-
 @[to_additive]
 lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
     (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
   mul_notMem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
-
-@[deprecated (since := "2025-05-23")]
-alias add_not_mem_of_exponent_two := add_notMem_of_exponent_two
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mul_not_mem_of_exponent_two := mul_notMem_of_exponent_two
 
 end Group
 

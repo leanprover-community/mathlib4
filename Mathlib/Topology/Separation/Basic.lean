@@ -229,9 +229,6 @@ theorem t0Space_iff_or_notMem_closure (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 
-@[deprecated (since := "2025-05-23")]
-alias t0Space_iff_or_not_mem_closure := t0Space_iff_or_notMem_closure
-
 instance Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
@@ -689,6 +686,22 @@ theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b)
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
   Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
 
+theorem eventually_nhdsWithin_eventually_nhds_iff_of_isOpen {s : Set X} {a : X} {p : X → Prop}
+    (hs : IsOpen s) : (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝 y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
+  nth_rw 2 [← eventually_eventually_nhdsWithin]
+  constructor
+  · intro h
+    filter_upwards [h] with _ hy
+    exact eventually_nhdsWithin_of_eventually_nhds hy
+  · intro h
+    filter_upwards [h, eventually_nhdsWithin_of_forall fun _ a ↦ a] with _ _ _
+    simp_all [IsOpen.nhdsWithin_eq]
+
+@[simp]
+theorem eventually_nhdsNE_eventually_nhds_iff [T1Space X] {a : X} {p : X → Prop} :
+    (∀ᶠ y in 𝓝[≠] a, ∀ᶠ x in 𝓝 y, p x) ↔ ∀ᶠ x in 𝓝[≠] a, p x :=
+  eventually_nhdsWithin_eventually_nhds_iff_of_isOpen isOpen_ne
+
 theorem continuousWithinAt_insert [TopologicalSpace Y] [T1Space X]
     {x y : X} {s : Set X} {f : X → Y} :
     ContinuousWithinAt f (insert y s) x ↔ ContinuousWithinAt f s x := by
@@ -753,6 +766,8 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   refine fun hsf => hx.1 ?_
   rw [← isOpen_singleton_iff_punctured_nhds]
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
+
+instance (priority := low) [DiscreteTopology X] : T1Space X where t1 _ := isClosed_discrete _
 
 instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
   discreteTopology_iff_forall_isClosed.mpr (·.toFinite.isClosed)
@@ -819,10 +834,7 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
   obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hs hx
   obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
-  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
-  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
-  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
-    exact ⟨ht_x, hx⟩
+  grind
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that

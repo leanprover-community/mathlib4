@@ -1075,6 +1075,22 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
     ENNReal.ofReal (∑' n, f n) = ∑' n, ENNReal.ofReal (f n) := by
   simp_rw [ENNReal.ofReal, ENNReal.tsum_coe_eq (NNReal.hasSum_real_toNNReal_of_nonneg hf_nonneg hf)]
 
+section tprod
+
+theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
+    Multipliable f :=
+  ⟨_, _root_.hasProd_of_isGLB_of_le_one _ h₀ (isGLB_sInf _)⟩
+
+theorem ENNReal.hasProd_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
+    HasProd f (⨅ s : Finset α, ∏ i ∈ s, f i) :=
+  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one h₀)
+
+theorem ENNReal.tprod_eq_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
+    ∏' i, f i = ⨅ s : Finset α, ∏ i ∈ s, f i :=
+  (hasProd_iInf_prod h₀).tprod_eq
+
+end tprod
+
 section
 
 variable [EMetricSpace β]
@@ -1212,6 +1228,18 @@ theorem isClosed_setOf_lipschitzOnWith {α β} [PseudoEMetricSpace α] [PseudoEM
 theorem isClosed_setOf_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) :
     IsClosed { f : α → β | LipschitzWith K f } := by
   simp only [← lipschitzOnWith_univ, isClosed_setOf_lipschitzOnWith]
+
+protected lemma LipschitzOnWith.closure [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
+    (hcont : ContinuousOn f (closure s)) (hf : LipschitzOnWith K f s) :
+    LipschitzOnWith K f (closure s) := by
+  have := ENNReal.continuous_const_mul (ENNReal.coe_ne_top (r := K))
+  refine fun x hx ↦ le_on_closure (fun y hy ↦ le_on_closure (fun x hx ↦ hf hx hy) ?_ ?_ hx) ?_ ?_
+  all_goals fun_prop
+
+lemma lipschitzOnWith_closure_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
+    (hcont : ContinuousOn f (closure s)) :
+    LipschitzOnWith K f (closure s) ↔ LipschitzOnWith K f s :=
+  ⟨fun hf ↦ hf.mono subset_closure, LipschitzOnWith.closure hcont⟩
 
 namespace Real
 

@@ -181,10 +181,6 @@ theorem intValuation_def {r : R} :
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   rfl
 
-@[deprecated intValuation_apply (since := "2025-04-26")]
-theorem intValuation_toFun (r : R) :
-    v.intValuation r = v.intValuationDef r := rfl
-
 open scoped Classical in
 theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuation r = exp
@@ -204,9 +200,6 @@ theorem intValuation_ne_zero' (x : nonZeroDivisors R) : v.intValuation x ≠ 0 :
 theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := by
   rw [v.intValuation_if_neg (nonZeroDivisors.coe_ne_zero x)]
   exact WithZero.zero_lt_coe _
-
-@[deprecated (since := "2025-05-11")]
-alias intValuation_zero_le := intValuation_zero_lt
 
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
@@ -311,11 +304,6 @@ open scoped algebraMap in
 /-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
 theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := by
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
-
-open scoped algebraMap in
-@[deprecated valuation_of_algebraMap (since := "2025-05-11")]
-lemma valuation_eq_intValuationDef (r : R) : v.valuation K r = v.intValuationDef r :=
-  Valuation.extendToLocalization_apply_map_apply ..
 
 open scoped algebraMap in
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
@@ -457,9 +445,6 @@ theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
-
 section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
@@ -513,11 +498,9 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h :
-        (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      rw [h]
+      rw [algebraMap_adicCompletion]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=
@@ -649,7 +632,8 @@ theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
 variable {R K} in
 theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
     v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
+  contrapose
+  rw [← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
   exact adicAbv_coe_le_one v hb r
 
 end AbsoluteValue

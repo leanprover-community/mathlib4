@@ -121,8 +121,6 @@ theorem preimage_const_of_mem {b : β} {s : Set β} (h : b ∈ s) : (fun _ : α 
 theorem preimage_const_of_notMem {b : β} {s : Set β} (h : b ∉ s) : (fun _ : α => b) ⁻¹' s = ∅ :=
   eq_empty_of_subset_empty fun _ hx => h hx
 
-@[deprecated (since := "2025-05-23")] alias preimage_const_of_not_mem := preimage_const_of_notMem
-
 theorem preimage_const (b : β) (s : Set β) [Decidable (b ∈ s)] :
     (fun _ : α => b) ⁻¹' s = if b ∈ s then univ else ∅ := by grind
 
@@ -550,18 +548,11 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
 
 theorem disjoint_powerset_insert {s : Set α} {a : α} (h : a ∉ s) :
     Disjoint (𝒫 s) (insert a '' 𝒫 s) := by
-  rw [Set.disjoint_iff_forall_ne]
-  refine fun u u_mem v v_mem ↦ (ne_of_mem_of_not_mem' ?_
-    (Set.notMem_subset (Set.subset_of_mem_powerset u_mem) h)).symm
-  simp only [mem_powerset_iff, mem_image] at v_mem
-  obtain ⟨_, _, eq⟩ := v_mem
-  simp [← eq]
+  grind
 
 theorem powerset_insert_injOn {s : Set α} {a : α} (h : a ∉ s) :
     Set.InjOn (insert a) (𝒫 s) := fun u u_mem v v_mem eq ↦ by
-  rw [Subset.antisymm_iff] at eq ⊢
-  rwa [Set.insert_subset_insert_iff <| Set.notMem_subset ((mem_powerset_iff _ _).mp v_mem) h,
-  Set.insert_subset_insert_iff <| Set.notMem_subset ((mem_powerset_iff _ _).mp u_mem) h] at eq
+  grind
 
 /-! ### Lemmas about range of a function. -/
 
@@ -754,7 +745,7 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
   IsCompl.of_le
     (by
       rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
-      exact Sum.noConfusion h)
+      exact Sum.noConfusion rfl rfl (heq_of_eq h))
     (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 
 @[simp]
@@ -809,8 +800,7 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
 
 theorem image_sumElim (s : Set (α ⊕ β)) (f : α → γ) (g : β → γ) :
     Sum.elim f g '' s = f '' (Sum.inl ⁻¹' s) ∪ g '' (Sum.inr ⁻¹' s) := by
-  rw [← image_preimage_inl_union_image_preimage_inr s]
-  simp [image_union, image_image, preimage_image_preimage]
+  grind
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
@@ -1104,10 +1094,7 @@ alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_ex
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by
-  ext y
-  rcases em (y ∈ range f) with (⟨x, rfl⟩ | hx)
-  · simp [hf.eq_iff]
-  · grind
+  grind
 
 theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) :
     g '' (f '' s) = s := by rw [← image_comp, h.comp_eq_id, image_id]
@@ -1362,14 +1349,12 @@ theorem disjoint_image_inl_image_inr {u : Set α} {v : Set β} :
 @[simp]
 theorem disjoint_range_inl_image_inr {v : Set β} :
     Disjoint (α := Set (α ⊕ β)) (range Sum.inl) (Sum.inr '' v) := by
-  rw [← image_univ]
-  apply disjoint_image_inl_image_inr
+  grind
 
 @[simp]
 theorem disjoint_image_inl_range_inr {u : Set α} :
     Disjoint (α := Set (α ⊕ β)) (Sum.inl '' u) (range Sum.inr) := by
-  rw [← image_univ]
-  apply disjoint_image_inl_image_inr
+  grind
 
 end Set
 

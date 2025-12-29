@@ -144,8 +144,8 @@ variable [IsFractionRing A K]
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
-    (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
-      traceDual A K (I.map (FractionRing.algEquiv B L)) := by
+    (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L).toLinearMap =
+      traceDual A K (I.map (FractionRing.algEquiv B L).toLinearMap) := by
   change Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
     traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
   rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]
@@ -433,7 +433,7 @@ theorem smul_mem_dual_one {x : L} (hx : x ∈ dual A K (1 : FractionalIdeal B⁰
   obtain ⟨a, ha⟩ := hx b
   use a
   simpa [Algebra.smul_def b, hb, mul_comm _ x, ← smul_eq_mul, ← (Algebra.trace L M).map_smul,
-    Algebra.trace_trace, -id.smul_eq_mul, smul_comm x c y] using ha
+    Algebra.trace_trace, smul_comm x c y] using ha
 
 variable [NoZeroSMulDivisors B C]
 

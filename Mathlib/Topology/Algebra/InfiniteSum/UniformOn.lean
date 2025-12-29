@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.AtTopBot.Finset
 /-!
 # Infinite sum and products that converge uniformly
 
-# Main definitions
+## Main definitions
 - `HasProdUniformlyOn f g s` : `∏ i, f i b` converges uniformly on `s` to `g`.
 - `HasProdLocallyUniformlyOn f g s` : `∏ i, f i b` converges locally uniformly on `s` to `g`.
 - `HasProdUniformly f g` : `∏ i, f i b` converges uniformly to `g`.
@@ -119,6 +119,11 @@ theorem MultipliableUniformlyOn.hasProdUniformlyOn (h : MultipliableUniformlyOn 
     tendsto_nhds_unique_inseparable (hp.hasProd hx) (hp.hasProd hx).multipliable.hasProd
 
 @[to_additive]
+theorem multipliableUniformlyOn_iff_hasProdUniformlyOn :
+    MultipliableUniformlyOn f s ↔ HasProdUniformlyOn f (∏' i, f i ·) s :=
+  ⟨MultipliableUniformlyOn.hasProdUniformlyOn, HasProdUniformlyOn.multipliableUniformlyOn⟩
+
+@[to_additive]
 lemma HasProdUniformlyOn.mono {t : Set β}
     (h : HasProdUniformlyOn f g t) (hst : s ⊆ t) : HasProdUniformlyOn f g s :=
   hasProdUniformlyOn_iff_tendstoUniformlyOn.mpr <| h.tendstoUniformlyOn.mono hst
@@ -132,7 +137,7 @@ end UniformlyOn
 
 section LocallyUniformlyOn
 /-!
-## Locally uniform convergence of sums and products
+## Locally uniform convergence of sums and products
 -/
 
 variable [TopologicalSpace β]
@@ -181,17 +186,11 @@ lemma HasProdLocallyUniformlyOn.exists_hasProdUniformlyOn [LocallyCompactSpace �
   exact ⟨K, nhdsWithin_le_nhds hK1,
     HasProdLocallyUniformlyOn.hasProdUniformlyOn_of_isCompact (h.mono hK3) hK2⟩
 
-@[deprecated (since := "2025-05-22")] alias hasProdLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
-
-@[deprecated (since := "2025-05-22")] alias hasSumLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  hasSumLocallyUniformlyOn_of_of_forall_exists_nhds
-
 @[to_additive]
 lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g s) :
     HasProdLocallyUniformlyOn f g s := by
-  simp [HasProdLocallyUniformlyOn, hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
-  exact TendstoUniformlyOn.tendstoLocallyUniformlyOn h
+  simp only [hasProdUniformlyOn_iff_tendstoUniformlyOn, HasProdLocallyUniformlyOn] at *
+  exact h.tendstoLocallyUniformlyOn
 
 @[to_additive]
 lemma hasProdLocallyUniformlyOn_of_forall_compact (hs : IsOpen s) [LocallyCompactSpace β]
@@ -225,14 +224,6 @@ lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
     MultipliableLocallyUniformlyOn f s :=
   (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
   | ⟨t, ht, htr⟩ => ⟨t, ht, htr.hasProdUniformlyOn⟩).multipliableLocallyUniformlyOn
-
-@[deprecated (since := "2025-05-22")]
-alias multipliableLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
-
-@[deprecated (since := "2025-05-22")]
-alias summableLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  summableLocallyUniformlyOn_of_of_forall_exists_nhds
 
 lemma MultipliableLocallyUniformlyOn.multipliableUniformlyOn_of_isCompact
     (h : MultipliableLocallyUniformlyOn f s) (hs : IsCompact s) : MultipliableUniformlyOn f s :=
@@ -382,7 +373,7 @@ end Uniformly
 
 section LocallyUniformly
 /-!
-## Locally uniform convergence of sums and products
+## Locally uniform convergence of sums and products
 -/
 
 variable [TopologicalSpace β]
@@ -442,7 +433,7 @@ lemma hasProdLocallyUniformly_of_of_forall_exists_nhds
 @[to_additive]
 lemma HasProdUniformly.hasProdLocallyUniformly (h : HasProdUniformly f g) :
     HasProdLocallyUniformly f g := by
-  simp [HasProdLocallyUniformly, hasProdUniformly_iff_tendstoUniformly] at *
+  simp only [hasProdUniformly_iff_tendstoUniformly, HasProdLocallyUniformly] at *
   exact TendstoUniformly.tendstoLocallyUniformly h
 
 @[to_additive]

@@ -635,7 +635,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   replace hn := Ideal.mul_mem_right h (Ideal.span {g}) hn
   rw [← pow_succ, Ideal.mem_span_singleton'] at hn
   obtain ⟨c, hc⟩ := hn
-  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by cutsat)
+  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by lia)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n + 1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
@@ -710,7 +710,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   -- Since there are only finitely many indices involved, we can pick the supremum.
   let N := (t ×ˢ t).sup n
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
-    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by cutsat)
+    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by lia)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
   refine
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
@@ -810,7 +810,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   swap
   · intro y hy
     change y ∈ PrimeSpectrum.basicOpen (f ^ (n + 1))
-    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by cutsat)]
+    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by lia)]
     exact (leOfHom (iDh i) :) hy
   -- The rest of the proof is just computation
   apply const_ext
@@ -965,7 +965,8 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   rcases hs ⟨PrimeSpectrum.comap f p, hUV hpV⟩ with ⟨W, m, iWU, a, b, h_frac⟩
   -- We claim that we can write our new section as the fraction `f a / f b` on the neighborhood
   -- `(comap f) ⁻¹ W ⊓ V` of `p`.
-  refine ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
+  refine ⟨⟨_, (PrimeSpectrum.continuous_comap f).isOpen_preimage _ W.2⟩ ⊓ V,
+    ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
   refine ⟨h_frac.1, ?_⟩
@@ -1080,7 +1081,7 @@ theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top
 
 @[elementwise, reassoc]
 theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :
-    (toOpen R U ≫ CommRingCat.ofHom (comap f U (Opens.comap (PrimeSpectrum.comap f) U)
+    (toOpen R U ≫ CommRingCat.ofHom (comap f U (Opens.comap ⟨_, PrimeSpectrum.continuous_comap f⟩ U)
         fun _ => id)) =
       CommRingCat.ofHom f ≫ toOpen S _ :=
   CommRingCat.hom_ext <| RingHom.ext fun _ => Subtype.ext <| funext fun _ =>

@@ -191,8 +191,6 @@ theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y 
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_iff_subset := notMem_iff_subset
-
 theorem not_subset_iff_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : ¬ x ⊆ y ↔ y ∈ x := by
   rw [not_iff_comm, notMem_iff_subset hy hx]
 
@@ -277,24 +275,24 @@ open ZFSet
 
 The elements of `o.toPSet` are all `a.toPSet` with `a < o`. -/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
-  ⟨o.toType, fun a ↦ toPSet ((enumIsoToType o).symm a)⟩
+  ⟨o.ToType, fun a ↦ toPSet a⟩
 termination_by o
-decreasing_by exact ((enumIsoToType o).symm a).2
+decreasing_by exact a.toOrd.prop
 
 @[simp]
-theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.toType := by
+theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
   rw [toPSet]
   rfl
 
 theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
   rw [toPSet, PSet.mem_def]
-  simpa using ((enumIsoToType o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
+  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert (enumIsoToType o).symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
 decreasing_by rename_i x; exact x.2
@@ -366,7 +364,7 @@ namespace ZFSet
 open Ordinal
 
 theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
-  refine ⟨fun x hx y hy ↦ ?_, @fun z y x hz hy hx ↦ ?_⟩
+  refine ⟨fun x hx y hy ↦ ?_, fun {z y x} hz hy hx ↦ ?_⟩
   all_goals
     obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
     obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy

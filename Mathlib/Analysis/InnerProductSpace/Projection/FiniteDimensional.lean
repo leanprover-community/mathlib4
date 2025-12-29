@@ -139,14 +139,14 @@ open Module Submodule
 specifically at most as many reflections as the dimension of the complement of the fixed subspace
 of `φ`. -/
 theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ F] {n : ℕ}
-    (φ : F ≃ₗᵢ[ℝ] F) (hn : finrank ℝ (ker (ContinuousLinearMap.id ℝ F - φ))ᗮ ≤ n) :
+    (φ : F ≃ₗᵢ[ℝ] F) (hn : finrank ℝ (ContinuousLinearMap.id ℝ F - φ).kerᗮ ≤ n) :
     ∃ l : List F, l.length ≤ n ∧ φ = (l.map fun v => (ℝ ∙ v)ᗮ.reflection).prod := by
   -- We prove this by strong induction on `n`, the dimension of the orthogonal complement of the
   -- fixed subspace of the endomorphism `φ`
   induction n generalizing φ with
   | zero => -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
-    have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
+    have : (ContinuousLinearMap.id ℝ F - φ).ker = ⊤ := by
       rwa [le_zero_iff, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
     symm
     ext x
@@ -156,13 +156,13 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   | succ n IH =>
     -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
     -- dimension at most n + 1.
-    let W := ker (ContinuousLinearMap.id ℝ F - φ)
+    let W := (ContinuousLinearMap.id ℝ F - φ).ker
     have hW : ∀ w ∈ W, φ w = w := fun w hw => (sub_eq_zero.mp hw).symm
     by_cases hn' : finrank ℝ Wᗮ ≤ n
     · obtain ⟨V, hV₁, hV₂⟩ := IH φ hn'
       exact ⟨V, hV₁.trans n.le_succ, hV₂⟩
     -- Take a nonzero element `v` of the orthogonal complement of `W`.
-    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by cutsat : 0 < finrank ℝ Wᗮ)
+    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by lia : 0 < finrank ℝ Wᗮ)
     obtain ⟨v, hv⟩ := exists_ne (0 : Wᗮ)
     have hφv : φ v ∈ Wᗮ := by
       intro w hw
@@ -175,7 +175,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     let x : F := v - φ v
     let ρ := (ℝ ∙ x)ᗮ.reflection
     -- Notation: Let `V` be the fixed subspace of `φ.trans ρ`
-    let V := ker (ContinuousLinearMap.id ℝ F - φ.trans ρ)
+    let V := (ContinuousLinearMap.id ℝ F - φ.trans ρ).ker
     have hV : ∀ w, ρ (φ w) = w → w ∈ V := by
       intro w hw
       change w - ρ (φ w) = 0
@@ -202,7 +202,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
         finrank_lt_finrank_of_lt (SetLike.lt_iff_le_and_exists.2 ⟨H₂V, v, H₁V, hv'⟩)
       have : finrank ℝ V + finrank ℝ Vᗮ = finrank ℝ F := V.finrank_add_finrank_orthogonal
       have : finrank ℝ W + finrank ℝ Wᗮ = finrank ℝ F := W.finrank_add_finrank_orthogonal
-      omega
+      lia
     -- So apply the inductive hypothesis to `φ.trans ρ`
     obtain ⟨l, hl, hφl⟩ := IH (ρ * φ) this
     -- Prepend `ρ` to the factorization into reflections obtained for `φ.trans ρ`; this gives a

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Order.Interval.Finset.Nat
 
@@ -81,8 +80,6 @@ theorem notMem_of_lt_sInf {s : Set ℕ} {m : ℕ} (hm : m < sInf s) : m ∉ s :=
   cases eq_empty_or_nonempty s with
   | inl h => subst h; apply notMem_empty
   | inr h => rw [Nat.sInf_def h] at hm; exact Nat.find_min h hm
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_sInf := notMem_of_lt_sInf
 
 protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m := by
   classical
@@ -239,8 +236,5 @@ theorem biInter_le_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = 
 
 theorem biInter_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = u 0 ∩ ⋂ k ≤ n, u (k + 1) :=
   Nat.iInf_le_succ' u n
-
-theorem accumulate_succ (u : ℕ → Set α) (n : ℕ) :
-    Accumulate u (n + 1) = Accumulate u n ∪ u (n + 1) := biUnion_le_succ u n
 
 end Set

@@ -281,7 +281,7 @@ theorem exists_sup_ge [SemilatticeSup β] [OrderBot β] [WellFoundedGT β] (f : 
   refine ⟨t, fun a ↦ ?_⟩
   classical
   have := ht (f a ⊔ t.sup f) ⟨insert a t, by simp⟩
-  rwa [GT.gt, right_lt_sup, not_not] at this
+  rwa [right_lt_sup, not_not] at this
 
 theorem exists_sup_eq_iSup [CompleteLattice β] [WellFoundedGT β] (f : α → β) :
     ∃ t : Finset α, t.sup f = ⨆ a, f a :=
@@ -1139,14 +1139,8 @@ theorem sup_singleton_apply (s : Finset β) (f : β → α) :
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton'' := sup_singleton_apply
-
 @[simp]
 theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton_apply _).trans image_id
-
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton' := sup_singleton_eq_self
 
 end Finset

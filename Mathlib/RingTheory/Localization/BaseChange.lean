@@ -46,6 +46,7 @@ given by `m/s ↦ (1/s) ⊗ₜ m`.
 -/
 theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseChange A f := by
   refine ⟨fun _ ↦ IsLocalizedModule.isBaseChange S A f, fun h ↦ ?_⟩
+  letI : Module A (LocalizedModule S M) := LocalizedModule.moduleOfIsLocalization ..
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
   convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
@@ -113,7 +114,7 @@ instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] 
   convert IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
     (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
     (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
-  ext; congrm(?_ ⊗ₜ ?_) <;> simp [LinearEquiv.eq_symm_apply, eM, eN]
+  ext; congrm (?_ ⊗ₜ ?_) <;> simp [LinearEquiv.eq_symm_apply, eM, eN]
 
 /-- If `A` is a localization of `R`, tensoring two `A`-modules over `A` is the same as
 tensoring them over `R`. -/
