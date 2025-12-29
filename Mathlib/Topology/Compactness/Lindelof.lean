@@ -727,7 +727,7 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
-    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
   rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc

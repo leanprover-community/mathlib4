@@ -314,6 +314,7 @@ variable (f g : R → R) (a : A) (ha : p a := by cfc_tac)
 variable (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
+set_option backward.privateInPublic true in
 lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩]
 
@@ -348,6 +349,7 @@ lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectru
     cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
 
+set_option backward.privateInPublic true in
 /-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
 lemma cfc_apply_mkD :
     cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).restrict f) 0) := by
@@ -356,6 +358,7 @@ lemma cfc_apply_mkD :
   · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
       map_zero]
 
+set_option backward.privateInPublic true in
 /-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
 lemma cfc_eq_cfcL_mkD :
     cfc f a = cfcL (a := a) ha (mkD ((spectrum R a).restrict f) 0) :=
@@ -431,6 +434,7 @@ lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 
+set_option backward.privateInPublic true in
 variable {a f g} in
 include ha hf hg in
 lemma cfc_eq_cfc_iff_eqOn : cfc f a = cfc g a ↔ (spectrum R a).EqOn f g :=
@@ -438,10 +442,12 @@ lemma cfc_eq_cfc_iff_eqOn : cfc f a = cfc g a ↔ (spectrum R a).EqOn f g :=
 
 variable (R)
 
+set_option backward.privateInPublic true in
 include ha in
 lemma cfc_one : cfc (1 : R → R) a = 1 :=
   cfc_apply (1 : R → R) a ▸ map_one (cfcHom (show p a from ha))
 
+set_option backward.privateInPublic true in
 include ha in
 lemma cfc_const_one : cfc (fun _ : R ↦ 1) a = 1 := cfc_one R a
 
@@ -551,6 +557,7 @@ lemma cfc_smul_id {S : Type*} [SMul S R] [ContinuousConstSMul S R]
 lemma cfc_const_mul_id (r : R) (a : A) (ha : p a := by cfc_tac) : cfc (r * ·) a = r • a :=
   cfc_smul_id r a
 
+set_option backward.privateInPublic true in
 include ha in
 lemma cfc_star_id : cfc (star · : R → R) a = star a := by
   rw [cfc_star .., cfc_id' ..]
@@ -858,6 +865,7 @@ variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R A p
 variable (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
+set_option backward.privateInPublic true in
 include hf hg in
 lemma cfc_sub : cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
   by_cases ha : p a
