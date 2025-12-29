@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 public import Mathlib.Analysis.Calculus.VectorField
 
 /-!
-# Theorems about evaluation of differential forms on vector fields
+# Evaluation of the derivative of differential forms on vector fields
 
 In this file we prove the following formula and its corollaries.
 If `ω` is a differentiable `k`-form and `V i` are `k + 1` differentiable vector fields, then
