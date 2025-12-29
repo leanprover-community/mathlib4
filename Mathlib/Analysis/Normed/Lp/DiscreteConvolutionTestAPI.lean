@@ -5,80 +5,157 @@ Authors: Fengyang Wang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Data.ENNReal.Basic
 
 /-!
 # Discrete Convolution of Functions
 
-This file defines the discrete convolution on two functions `f g : M → R` where `M` is a monoid:
+This file defines the discrete convolution of two functions `f : M → E` and `g : M → E'`
+where `M` is a monoid, using a bilinear map `L : E →ₗ[S] E' →ₗ[S] F`:
 
-  `(f ⋆ g) x = ∑' (a, b) : mulFiber x, f a * g b`
+  `(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`
 
 where `mulFiber x = {(a, b) | a * b = x}` is the fiber of the multiplication map.
 
 This is analogous to `MeasureTheory.convolution` but for the discrete (counting measure) setting.
-The measure-theoretic convolution uses `(f ⋆ g) x = ∫ t, f(t) * g(x - t) ∂μ` which requires
-a group structure for subtraction; our definition sums over multiplicative fibers and works
-for `[Monoid M]`.
-
-## Main Definitions
-
-* `DiscreteConvolution.mulFiber x`: the set `{(a, b) | a * b = x}`
-* `DiscreteConvolution.ConvolutionExistsAt f g x`: the convolution sum converges at `x`
-* `DiscreteConvolution.ConvolutionExists f g`: the convolution exists everywhere
-* `DiscreteConvolution.convolution f g`: the convolution `f ⋆ g`
-* `DiscreteConvolution.delta`: the identity element `δ₁` for convolution
-
-## Main Results
-
-### Algebraic Properties
-* `DiscreteConvolution.convolution_assoc`: associativity `(f ⋆ g) ⋆ h = f ⋆ (g ⋆ h)`
-* `DiscreteConvolution.delta_convolution`: left identity `δ₁ ⋆ f = f`
-* `DiscreteConvolution.convolution_delta`: right identity `f ⋆ δ₁ = f`
-* `DiscreteConvolution.convolution_comm`: commutativity for `[CommMonoid M] [CommSemiring R]`
-
-### Banach Algebra Structure for ℓ¹(M, R)
-* `DiscreteConvolution.lp.one_convolution_memℓp`: ℓ¹ is closed under convolution
-* `DiscreteConvolution.lp.one_norm_mul_le`: submultiplicativity `‖f ⋆ g‖₁ ≤ ‖f‖₁ · ‖g‖₁`
-* `DiscreteConvolution.lp.one_delta_memℓp`: the identity `δ₁` is in ℓ¹
 
 ## Design Notes
 
-The associativity proof uses fiber equivalences `leftAssocEquiv` and `rightAssocEquiv` to
-identify nested sums with sums over the triple fiber `{(a, b, d) | a * b * d = x}`. This
-avoids explicit manipulation of indices and leverages `Equiv.tsum_eq` for reindexing.
+### Bilinear Map Approach
 
-For types with `HasAntidiagonal` (e.g., `ℕ`, `ℕ × ℕ`), the fiber `mulFiber x` is finite
-and the `tsum` reduces to a finite sum. This connects to the formulation in polynomial
-ring convolutions.
+We use a bilinear map `L` to combine values, following the design of `MeasureTheory.convolution`.
+This has several advantages:
+* Supports the case where functions are vector-valued with different codomains
+* Unifies scalar multiplication, ring multiplication, and other bilinear operations
+
+The curried bilinear map type `E →ₗ[S] E' →ₗ[S] F` requires `[CommSemiring S]` so that
+`E' →ₗ[S] F` is an `S`-module. This is the standard Mathlib requirement for curried
+linear maps (see `LinearMap.mk₂'`).
+
+For ring multiplication, use `mulConvolution` which is `convolution (LinearMap.mul R R)`.
+
+### Why `@[to_additive]` Only Applies to Fibers
+
+The `@[to_additive]` attribute converts names in its dictionary. However, convolution
+involves `Module S E` which has implicit monoid structures that `to_additive` incorrectly
+tries to convert (e.g., `CommMonoid S` from scalar action compatibility).
+
+**Solution:** We manually define both `convolution` (for `[Monoid M]`) and
+`addConvolution` (for `[AddMonoid M]`). The fiber definitions use `@[to_additive]`:
+* `mulFiber` → `addFiber`
+* `mulMap` → `addMap`
+* `delta` → `addDelta`
+* `tripleFiber` → `tripleAddFiber`
+* `leftAssocEquiv` → `leftAddAssocEquiv`
+* `rightAssocEquiv` → `rightAddAssocEquiv`
+
+### When to Use Each Index Type
+
+* **Multiplicative `[Monoid M]`**: Group algebras R[G], monoid algebras
+* **Additive `[AddMonoid M]`**: Power series, polynomials
+
+For `HasAntidiagonal` types (ℕ, ℕ × ℕ), the additive fiber is finite and the tsum
+reduces to a finite sum, matching `CauchyProduct`.
+
+### Why `mulMap` is Uncurried
+
+We define `mulMap : M × M → M` (uncurried) rather than `M → M → M` (curried) because:
+
+1. **Fiber as preimage**: `mulFiber x = mulMap ⁻¹' {x}` uses the preimage notation
+   `f ⁻¹' S` which requires `f : α → β`.
+
+2. **`Equiv.sigmaFiberEquiv`**: The equivalence `(Σ x, mulFiber x) ≃ M × M` used for
+   sum reindexing in associativity proofs requires `mulMap : M × M → M`.
+
+3. **Subtype iteration**: Elements of `mulFiber x` are pairs `⟨(a, b), hab⟩` where
+   `hab : a * b = x`, fitting naturally with the uncurried domain `M × M`.
+
+### Generalizability: Index vs Coefficient Commutativity
+
+This API separates two algebraic structures with different commutativity requirements:
+
+1. **Index monoid `M`**: Can be **non-commutative/non-abelian**. This is the key
+   generality for group algebras R[G] where G may be non-abelian.
+
+2. **Coefficient ring `R`**: Requires `[CommSemiring R]` when using `LinearMap.mul R R`,
+   because bilinearity needs `r • (a * b) = (r * a) * b = a * (r * b)`.
+
+For the ℓ¹ Banach algebra structure, `NormedCommRing R` is required. This covers all
+standard cases (ℤ, ℚ, ℝ, ℂ, finite fields, p-adics). Non-commutative coefficient
+rings (quaternions, matrix algebras) would need a separate direct definition
+bypassing `LinearMap.mul`.
+
+## Main Definitions
+
+### Fibers
+* `DiscreteConvolution.mulFiber x`: the set `{(a, b) | a * b = x}`
+* `DiscreteConvolution.tripleFiber x`: the set `{(a, b, c) | a * b * c = x}`
+
+### Convolution
+* `DiscreteConvolution.convolution L f g`: convolution `f ⋆[L] g` for `[Monoid M]`
+* `DiscreteConvolution.addConvolution L f g`: additive convolution `f ⋆₊[L] g` for `[AddMonoid M]`
+* `DiscreteConvolution.mulConvolution f g`: ring multiplication convolution `f ⋆ₘ g`
+* `DiscreteConvolution.delta e`: identity element `δ₁(e)` for convolution
+
+### Summability Predicates
+* `DiscreteConvolution.ConvolutionExistsAt L f g x`: convolution sum converges at `x`
+* `DiscreteConvolution.ConvolutionExists L f g`: convolution exists everywhere
+
+## Main Results
+
+### Ring Axioms (General Bilinear)
+* `DiscreteConvolution.convolution_add`: left distributivity
+* `DiscreteConvolution.add_convolution`: right distributivity
+* `DiscreteConvolution.zero_convolution`: left zero
+* `DiscreteConvolution.convolution_zero`: right zero
+
+### Ring Axioms (mulConvolution)
+* `DiscreteConvolution.mulConvolution_add`, `add_mulConvolution`: distributivity
+* `DiscreteConvolution.zero_mulConvolution`, `mulConvolution_zero`: zero laws
+* `DiscreteConvolution.delta_mulConvolution`, `mulConvolution_delta`: identity laws
+* `DiscreteConvolution.mulConvolution_comm`: commutativity (when M commutative)
+
+### Identity Laws
+* `DiscreteConvolution.delta_convolution`: left identity
+* `DiscreteConvolution.convolution_delta`: right identity
+
+### Fiber Equivalences (with additive versions via `@[to_additive]`)
+* `DiscreteConvolution.leftAssocEquiv`: `(Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x`
+* `DiscreteConvolution.rightAssocEquiv`: `(Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFiber x`
+
+### HasAntidiagonal (bridge to finite sums)
+* `DiscreteConvolution.addFiber_eq_antidiagonal`: fiber equals antidiagonal
+* `DiscreteConvolution.addFiber_finite`: fiber is finite
+* `DiscreteConvolution.addConvolution_eq_sum_antidiagonal`: `tsum` reduces to `Finset.sum`
+
+## Related Files
+
+* `LpOneBanachAlgebra.lean`: ℓ¹ Banach algebra instances using this convolution
 
 ## Notation
 
-* `f ⋆ g` for discrete convolution (scoped in `DiscreteConvolution`)
-
-## References
-
-* Analogous to `MeasureTheory.convolution` but for discrete sums
-* Used for Banach algebra structure on ℓ¹ spaces
+* `f ⋆[L] g` for discrete convolution with bilinear map `L`
+* `f ⋆ₘ g` for ring multiplication convolution
 
 ## TODO
 
-* Connection to `HasAntidiagonal` for finite fibers
-* Convolution with measures (generalization?)
-* Ring/algebra instances for `lp (fun _ : M => R) 1`
+* Associativity for general bilinear maps (requires composition of bilinear maps);
+  currently only proved for ℓ¹ ring multiplication in `LpOneBanachAlgebra.lean`
 -/
 
 @[expose] public section
 
 open scoped BigOperators NNReal ENNReal
-open Finset
 
 noncomputable section
 
 namespace DiscreteConvolution
 
-variable {M : Type*} {R : Type*}
+variable {M : Type*} {S : Type*} {E E' F : Type*}
 
 /-! ### Multiplication Fiber -/
 
@@ -109,15 +186,18 @@ end Fiber
 
 section Existence
 
-variable [Monoid M] [Semiring R] [TopologicalSpace R]
+variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F]
+variable [TopologicalSpace F]
 
-/-- The convolution of `f` and `g` exists at `x` when the sum over the fiber is summable. -/
-def ConvolutionExistsAt (f g : M → R) (x : M) : Prop :=
-  Summable fun ab : mulFiber x => f ab.1.1 * g ab.1.2
+/-- The convolution of `f` and `g` with bilinear map `L` exists at `x` when the sum over
+the fiber is summable. -/
+def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
+  Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
 
-/-- The convolution of `f` and `g` exists when it exists at every point. -/
-def ConvolutionExists (f g : M → R) : Prop :=
-  ∀ x, ConvolutionExistsAt f g x
+/-- The convolution of `f` and `g` with bilinear map `L` exists when it exists at every point. -/
+def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
+  ∀ x, ConvolutionExistsAt L f g x
 
 end Existence
 
@@ -125,191 +205,316 @@ end Existence
 
 section Definition
 
-variable [Monoid M] [Semiring R] [TopologicalSpace R]
+variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F]
+variable [TopologicalSpace F]
 
-/-- The discrete convolution of `f` and `g`:
-`(f ⋆ g) x = ∑' (a, b) : mulFiber x, f a * g b`. -/
-def convolution (f g : M → R) : M → R :=
-  fun x => ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2
+/-- The discrete convolution of `f` and `g` using bilinear map `L`:
+`(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`. -/
+def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
+  fun x => ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)
 
-/-- Notation for discrete convolution. -/
-scoped notation:70 f:70 " ⋆ " g:71 => convolution f g
+/-- Notation for discrete convolution with explicit bilinear map. -/
+scoped notation:70 f:70 " ⋆[" L:70 "] " g:71 => convolution L f g
 
 @[simp]
-theorem convolution_apply (f g : M → R) (x : M) :
-    (f ⋆ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
+theorem convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
+    (f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2) := rfl
 
 end Definition
+
+/-! ### Additive Convolution
+
+For `[AddMonoid M]`, we define additive convolution using `addFiber` instead of `mulFiber`.
+This is needed for `HasAntidiagonal` types like ℕ. -/
+
+section AddConvolution
+
+variable {M : Type*} [AddMonoid M] {S : Type*} [CommSemiring S]
+variable {E E' F : Type*} [AddCommMonoid E] [Module S E]
+variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
+variable [TopologicalSpace F]
+
+/-- Additive convolution using `addFiber`: `(f ⋆₊[L] g) x = ∑' (a, b) : addFiber x, L (f a) (g b)`.
+This is the additive analogue of `convolution` for use with `HasAntidiagonal`. -/
+def addConvolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
+  fun x => ∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)
+
+/-- Notation for additive convolution. -/
+scoped notation:70 f:70 " ⋆₊[" L "] " g:71 => addConvolution L f g
+
+@[simp]
+theorem addConvolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
+    (f ⋆₊[L] g) x = ∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2) := rfl
+
+end AddConvolution
+
+/-! ### Ring Multiplication Specialization -/
+
+section RingMul
+
+variable [Monoid M] {R : Type*}
+
+/-- Convolution using ring multiplication. This is `convolution (LinearMap.mul R R)`. -/
+def mulConvolution [CommSemiring R] [TopologicalSpace R] (f g : M → R) : M → R :=
+  convolution (LinearMap.mul R R) f g
+
+/-- Notation for ring multiplication convolution. -/
+scoped notation:70 f:70 " ⋆ₘ " g:71 => mulConvolution f g
+
+theorem mulConvolution_apply [CommSemiring R] [TopologicalSpace R] (f g : M → R) (x : M) :
+    (f ⋆ₘ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
+
+end RingMul
 
 /-! ### Identity Element -/
 
 section Identity
 
-variable [Monoid M] [DecidableEq M] [Semiring R]
+variable [Monoid M] [DecidableEq M] [Semiring S] [AddCommMonoid E] [Module S E]
 
-/-- The identity for convolution: `δ₁(x) = 1` if `x = 1`, else `0`. -/
-def delta : M → R := Pi.single 1 1
+/-- The identity for convolution: `δ₁(x) = e` if `x = 1`, else `0`,
+where `e` is the provided identity element. -/
+@[to_additive addDelta /-- The identity for additive convolution: `δ₀(x) = e` if `x = 0`,
+else `0`. -/]
+def delta (e : E) : M → E := Pi.single 1 e
 
-@[simp]
-theorem delta_one : (delta : M → R) 1 = 1 := Pi.single_eq_same 1 1
+@[to_additive (attr := simp) addDelta_zero]
+theorem delta_one (e : E) : delta e 1 = e := rfl
 
-theorem delta_ne {x : M} (hx : x ≠ 1) : (delta : M → R) x = 0 := Pi.single_eq_of_ne hx 1
+@[to_additive addDelta_ne]
+theorem delta_ne (e : E) {x : M} (hx : x ≠ 1) : delta e x = 0 :=
+  Pi.single_eq_of_ne (M := fun _ => E) hx e
 
 end Identity
 
-/-! ### Banach Algebra Structure for ℓ¹(M, R)
+/-! ### Ring Axioms (Zero) -/
 
-The following lemmas specialize the general `lp` API to `p = 1`:
-* `lp.one_summable_norm` is `Memℓp.summable` with `p = 1`
-* `lp.one_norm_eq_tsum` is `lp.norm_eq_tsum_rpow` with `p = 1`
+section RingAxiomsZero
 
-The lemma `lp.one_summable_norm_mul` (product summability over `M × M`) is new;
-the existing `lp.summable_mul` handles Hölder conjugates, not two ℓ¹ functions. -/
+variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F]
+variable [TopologicalSpace F]
 
-section LpOneSummability
+/-- Left zero: `0 ⋆[L] f = 0`. -/
+@[simp]
+theorem zero_convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E') :
+    (0 : M → E) ⋆[L] f = 0 := by
+  ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, LinearMap.zero_apply, tsum_zero]
 
-variable [NormedRing R]
+/-- Right zero: `f ⋆[L] 0 = 0`. -/
+@[simp]
+theorem convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
+    f ⋆[L] (0 : M → E') = 0 := by
+  ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, tsum_zero]
 
-/-- ℓ¹ membership gives summable norms.
+end RingAxiomsZero
 
-This is `Memℓp.summable` specialized to `p = 1`. -/
-theorem lp.one_summable_norm (f : lp (fun _ : M => R) 1) : Summable (fun m => ‖f m‖) := by
-  have hf := lp.memℓp f
-  rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)] at hf
-  simpa using hf
+/-! ### Ring Axioms (Distributivity) -/
 
-/-- The ℓ¹ norm equals the sum of norms.
+section RingAxiomsDistrib
 
-This is `lp.norm_eq_tsum_rpow` specialized to `p = 1`. -/
-theorem lp.one_norm_eq_tsum (f : lp (fun _ : M => R) 1) :
-    ‖f‖ = ∑' m, ‖f m‖ := by
-  rw [lp.norm_eq_tsum_rpow (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
-  simp only [ENNReal.toReal_one, Real.rpow_one, one_div, inv_one]
+variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F]
+variable [TopologicalSpace F] [T2Space F] [ContinuousAdd F]
 
-/-- Product of ℓ¹ norms is summable over M × M.
+/-- Left distributivity: `f ⋆[L] (g + h) = f ⋆[L] g + f ⋆[L] h`. -/
+theorem convolution_add (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g h : M → E')
+    (hfg : ConvolutionExists L f g) (hfh : ConvolutionExists L f h) :
+    f ⋆[L] (g + h) = f ⋆[L] g + f ⋆[L] h := by
+  ext x; simp only [convolution_apply, Pi.add_apply, map_add]
+  exact (hfg x).tsum_add (hfh x)
 
-This is used for convolution bounds. Note: `lp.summable_mul` handles Hölder conjugates
-(1/p + 1/q = 1), not two ℓ¹ functions. -/
-theorem lp.one_summable_norm_mul (f g : lp (fun _ : M => R) 1) :
-    Summable (fun ab : M × M => ‖f ab.1‖ * ‖g ab.2‖) :=
-  (lp.one_summable_norm f).mul_of_nonneg (lp.one_summable_norm g)
-    (fun _ => norm_nonneg _) (fun _ => norm_nonneg _)
+/-- Right distributivity: `(f + g) ⋆[L] h = f ⋆[L] h + g ⋆[L] h`. -/
+theorem add_convolution (L : E →ₗ[S] E' →ₗ[S] F) (f g : M → E) (h : M → E')
+    (hfh : ConvolutionExists L f h) (hgh : ConvolutionExists L g h) :
+    (f + g) ⋆[L] h = f ⋆[L] h + g ⋆[L] h := by
+  ext x; simp only [convolution_apply, Pi.add_apply, L.map_add, LinearMap.add_apply]
+  exact (hfh x).tsum_add (hgh x)
 
-end LpOneSummability
+end RingAxiomsDistrib
 
-section LpOneMembership
+/-! ### Identity Laws -/
 
-variable [Monoid M] [NormedRing R]
+section IdentityLawsLeft
 
-/-- The convolution of ℓ¹ functions is in ℓ¹. -/
-theorem lp.one_convolution_memℓp (f g : lp (fun _ : M => R) 1) :
-    Memℓp (convolution (⇑f) (⇑g)) 1 := by
-  rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
-  simp only [ENNReal.toReal_one, Real.rpow_one]
-  have hprod := lp.one_summable_norm_mul f g
-  have hfiber : ∀ x, Summable fun ab : mulFiber x => ‖f ab.1.1‖ * ‖g ab.1.2‖ :=
-    fun x => hprod.subtype _
-  have hbound :
-      ∀ x, ‖(convolution (⇑f) (⇑g)) x‖ ≤
-        ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := by
-    intro x
-    have hx := hfiber x
-    refine (norm_tsum_le_tsum_norm ?_).trans ?_
-    · exact Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) hx
-    · exact Summable.tsum_le_tsum (fun ab => norm_mul_le _ _)
-        (Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) hx) hx
-  apply Summable.of_nonneg_of_le (fun _ => norm_nonneg _) hbound
-  exact ((Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod).sigma
+variable [Monoid M] [DecidableEq M] [CommSemiring S]
+variable [AddCommMonoid E] [AddCommMonoid E'] [Module S E] [Module S E']
+variable [TopologicalSpace E']
 
-/-- Cauchy product multiplication on ℓ¹. -/
-def lp.oneMul (f g : lp (fun _ : M => R) 1) : lp (fun _ : M => R) 1 :=
-  ⟨convolution (⇑f) (⇑g), lp.one_convolution_memℓp f g⟩
+/-- Left identity: `delta e ⋆[L] f = L e ∘ f` when `L e` acts as identity. -/
+theorem delta_convolution (L : E →ₗ[S] E' →ₗ[S] E') (e : E) (f : M → E')
+    (hL : ∀ x, L e x = x) : delta e ⋆[L] f = f := by
+  ext x
+  simp only [convolution_apply, delta]
+  rw [tsum_eq_single ⟨(1, x), by simp [mulFiber, mulMap]⟩]
+  · simp only [Pi.single_eq_same, hL]
+  · intro ⟨⟨a, b⟩, hab⟩ hne
+    simp only [mem_mulFiber] at hab
+    have ha : a ≠ 1 := by
+      intro h; apply hne; ext
+      · simp only [h, one_mul] at hab ⊢
+      · simpa [h] using hab
+    simp only [Pi.single_eq_of_ne ha, map_zero, LinearMap.zero_apply]
 
-/-- The identity element δ₁ is in ℓ¹. -/
-theorem lp.one_delta_memℓp [DecidableEq M] : Memℓp (delta : M → R) 1 := by
-  rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
-  simp only [ENNReal.toReal_one, Real.rpow_one]
-  have h : (fun m => ‖(delta : M → R) m‖) = fun m => if m = 1 then ‖(1 : R)‖ else 0 := by
-    ext m; simp only [delta, Pi.single_apply]
-    split_ifs <;> simp
-  rw [h]
-  exact summable_of_ne_finset_zero (s := {1})
-    (by simp_all only [Finset.mem_singleton, ↓reduceIte, implies_true])
+end IdentityLawsLeft
 
-/-- Identity element for ℓ¹ convolution algebra. -/
-def lp.oneOne [DecidableEq M] : lp (fun _ : M => R) 1 :=
-  ⟨delta, lp.one_delta_memℓp⟩
+section IdentityLawsRight
 
-/-- Submultiplicativity of the ℓ¹ norm under convolution: `‖f ⋆ g‖₁ ≤ ‖f‖₁ · ‖g‖₁`.
+variable [Monoid M] [DecidableEq M] [CommSemiring S]
+variable [AddCommMonoid E] [AddCommMonoid E'] [Module S E] [Module S E']
+variable [TopologicalSpace E]
 
-This is the key inequality for the Banach algebra structure on ℓ¹(M, R).
+/-- Right identity: `f ⋆[L] delta e = (fun x => L (f x) e)` when `(L · e)` acts as identity. -/
+theorem convolution_delta (L : E →ₗ[S] E' →ₗ[S] E) (e : E') (f : M → E)
+    (hL : ∀ x, L x e = x) : f ⋆[L] delta e = f := by
+  ext x
+  simp only [convolution_apply, delta]
+  rw [tsum_eq_single ⟨(x, 1), by simp [mulFiber, mulMap]⟩]
+  · simp only [Pi.single_eq_same, hL]
+  · intro ⟨⟨a, b⟩, hab⟩ hne
+    simp only [mem_mulFiber] at hab
+    have hb : b ≠ 1 := by
+      intro h; apply hne; ext
+      · simpa [h] using hab
+      · simp only [h, mul_one] at hab ⊢
+    simp only [Pi.single_eq_of_ne hb, map_zero]
 
-Strategy: Use fiber partition `M × M ≃ Σ x, mulFiber x` to relate
-`∑' ab, ‖f ab.1‖ * ‖g ab.2‖` to `∑' x, ∑' (ab : mulFiber x), ...`. -/
-theorem lp.one_norm_mul_le (f g : lp (fun _ : M => R) 1) :
-    ‖lp.oneMul f g‖ ≤ ‖f‖ * ‖g‖ := by
-  simp only [lp.one_norm_eq_tsum]
-  have hprod := lp.one_summable_norm_mul f g
-  -- Transport summability across fiber equivalence
-  have hsigma : Summable fun p : Σ x, mulFiber x => ‖f p.2.1.1‖ * ‖g p.2.1.2‖ :=
-    (Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod
-  have h1 : ∀ m, Summable fun ab : mulFiber m => ‖(f : M → R) ab.1.1‖ * ‖g ab.1.2‖ :=
-    fun m => hprod.subtype _
-  -- Pointwise bound: ‖(f ⋆ g) x‖ ≤ ∑' (ab : mulFiber x), ‖f ab.1.1‖ * ‖g ab.1.2‖
-  have hbound : ∀ x, ‖(lp.oneMul f g) x‖ ≤ ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := fun x =>
-    (norm_tsum_le_tsum_norm (Summable.of_norm_bounded (h1 x)
-      (fun _ => by simp only [Real.norm_of_nonneg (norm_nonneg _)]; exact norm_mul_le _ _))).trans
-    (Summable.tsum_le_tsum (fun _ => norm_mul_le _ _)
-      (Summable.of_norm_bounded (h1 x)
-        (fun _ =>
-          by simp only [Real.norm_of_nonneg (norm_nonneg _)]; exact norm_mul_le _ _)) (h1 x))
-  -- Fubini: ∑' (p : Σ x, mulFiber x), ... = ∑' x, ∑' (ab : mulFiber x), ...
-  have h2 : ∑' (p : Σ x, mulFiber x), ‖f p.2.1.1‖ * ‖g p.2.1.2‖ =
-      ∑' x, ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := hsigma.tsum_sigma' h1
-  refine (Summable.tsum_le_tsum hbound (lp.one_summable_norm _) hsigma.sigma).trans (le_of_eq ?_)
-  -- Chain equalities via ▸ (avoids rw timeout issues with tsum_sigma')
-  exact (lp.one_summable_norm f).tsum_mul_tsum (lp.one_summable_norm g) hprod ▸
-    h2.symm.trans ((Equiv.sigmaFiberEquiv mulMap).tsum_eq (fun ab => ‖(f : M → R) ab.1‖ * ‖g ab.2‖))
+end IdentityLawsRight
 
-end LpOneMembership
+/-! ### Commutativity -/
 
-section LpOneComplete
+section Commutative
 
-/-! Properties requiring completeness of the codomain.
+variable [CommMonoid M] [CommSemiring S]
+variable [AddCommMonoid E] [Module S E]
+variable [TopologicalSpace E]
 
-The `CompleteSpace R` assumption aligns with `MeasureTheory.convolution`, which requires
-`CompleteSpace F` for results like `convolution_assoc`. This is necessary because absolute
-convergence of a series implies convergence only in complete spaces. -/
+/-- Commutativity for symmetric bilinear maps on commutative monoids. -/
+theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E)
+    (hL : ∀ x y, L x y = L y x) :
+    f ⋆[L] g = g ⋆[L] f := by
+  ext x
+  simp only [convolution_apply]
+  let e : mulFiber x ≃ mulFiber x :=
+    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, mulMap, mul_comm]⟩,
+     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, mulMap, mul_comm]⟩,
+     fun _ => by rfl,
+     fun _ => by rfl⟩
+  rw [← e.tsum_eq]
+  congr 1
+  funext ⟨⟨a, b⟩, hab⟩
+  simp only [e, Equiv.coe_fn_mk, hL]
 
-variable [Monoid M] [NormedRing R] [CompleteSpace R]
+end Commutative
 
-/-- The convolution exists for ℓ¹ functions. -/
-theorem lp.convolutionExists (f g : lp (fun _ : M => R) 1) :
-    ConvolutionExists (⇑f) (⇑g) := fun x =>
-  Summable.of_norm_bounded ((lp.one_summable_norm_mul f g).subtype (mulFiber x))
-    (fun _ => norm_mul_le _ _)
+/-! ### Ring Axioms for mulConvolution -/
 
-end LpOneComplete
+section MulConvolutionRingAxioms
 
-/-! ### Algebraic Properties -/
+variable [Monoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
 
-section Algebraic
+@[simp]
+theorem zero_mulConvolution (f : M → R) : (0 : M → R) ⋆ₘ f = 0 :=
+  zero_convolution (LinearMap.mul R R) f
 
-variable [Monoid M] [Semiring R] [TopologicalSpace R] [T3Space R] [IsTopologicalSemiring R]
+@[simp]
+theorem mulConvolution_zero (f : M → R) : f ⋆ₘ (0 : M → R) = 0 :=
+  convolution_zero (LinearMap.mul R R) f
 
-/-! #### Triple Fiber for Associativity -/
+variable [T2Space R] [ContinuousAdd R]
 
-/-- Triple multiplication map. -/
-def tripleMulMap : M × M × M → M := fun ⟨a, b, d⟩ => a * b * d
+theorem mulConvolution_add (f g h : M → R)
+    (hfg : ConvolutionExists (LinearMap.mul R R) f g)
+    (hfh : ConvolutionExists (LinearMap.mul R R) f h) :
+    f ⋆ₘ (g + h) = f ⋆ₘ g + f ⋆ₘ h :=
+  convolution_add (LinearMap.mul R R) f g h hfg hfh
 
-/-- Fiber over x under triple multiplication. -/
+theorem add_mulConvolution (f g h : M → R)
+    (hfh : ConvolutionExists (LinearMap.mul R R) f h)
+    (hgh : ConvolutionExists (LinearMap.mul R R) g h) :
+    (f + g) ⋆ₘ h = f ⋆ₘ h + g ⋆ₘ h :=
+  add_convolution (LinearMap.mul R R) f g h hfh hgh
+
+end MulConvolutionRingAxioms
+
+section MulConvolutionIdentity
+
+variable [Monoid M] [DecidableEq M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
+theorem delta_mulConvolution (e : R) (f : M → R) : delta e ⋆ₘ f = e • f := by
+  ext x
+  simp only [mulConvolution_apply, delta, Pi.smul_apply, smul_eq_mul]
+  rw [tsum_eq_single ⟨(1, x), by simp [mulFiber, mulMap]⟩]
+  · simp only [Pi.single_eq_same]
+  · intro ⟨⟨a, b⟩, hab⟩ hne
+    simp only [mem_mulFiber] at hab
+    have ha : a ≠ 1 := by
+      intro h; apply hne; ext
+      · simp only [h, one_mul] at hab ⊢
+      · simpa [h] using hab
+    simp only [Pi.single_eq_of_ne ha, zero_mul]
+
+theorem mulConvolution_delta (e : R) (f : M → R) : f ⋆ₘ delta e = e • f := by
+  ext x
+  simp only [mulConvolution_apply, delta, Pi.smul_apply, smul_eq_mul]
+  rw [tsum_eq_single ⟨(x, 1), by simp [mulFiber, mulMap]⟩]
+  · simp only [Pi.single_eq_same, mul_comm]
+  · intro ⟨⟨a, b⟩, hab⟩ hne
+    simp only [mem_mulFiber] at hab
+    have hb : b ≠ 1 := by
+      intro h; apply hne; ext
+      · simpa [h] using hab
+      · simp only [h, mul_one] at hab ⊢
+    simp only [Pi.single_eq_of_ne hb, mul_zero]
+
+end MulConvolutionIdentity
+
+section MulConvolutionComm
+
+variable [CommMonoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
+theorem mulConvolution_comm (f g : M → R) : f ⋆ₘ g = g ⋆ₘ f :=
+  convolution_comm (LinearMap.mul R R) f g (fun x y => mul_comm x y)
+
+end MulConvolutionComm
+
+/-! ### Triple Fiber and Associativity Equivalences
+
+These pure monoid constructions support associativity proofs. The fiber equivalences
+identify nested sums with sums over the triple fiber `{(a, b, c) | a * b * c = x}`. -/
+
+section TripleFiber
+
+variable [Monoid M]
+
+/-- The triple multiplication map `(a, b, c) ↦ a * b * c`. -/
+@[to_additive /-- The triple addition map `(a, b, c) ↦ a + b + c`. -/]
+def tripleMulMap : M × M × M → M := fun ⟨a, b, c⟩ => a * b * c
+
+/-- Fiber over `x` under triple multiplication: `{(a, b, c) | a * b * c = x}`. -/
+@[to_additive tripleAddFiber
+  /-- Fiber over `x` under triple addition: `{(a, b, c) | a + b + c = x}`. -/]
 def tripleFiber (x : M) : Set (M × M × M) := tripleMulMap ⁻¹' {x}
 
-/-- Left association equivalence for associativity proof.
+@[to_additive (attr := simp) mem_tripleAddFiber]
+theorem mem_tripleFiber {x : M} {abc : M × M × M} :
+    abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := Set.mem_preimage
 
+/-! #### Fiber Equivalences
+
+These equivalences identify nested sigma types with the triple fiber. This enables
+the Fubini-style reindexing needed to prove associativity:
+
+`∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, ... = ∑' p : tripleFiber x, ...`
+
+The proofs use only `mul_assoc`, so they work for non-commutative monoids. -/
+
+/-- Left association equivalence for associativity proof.
 Maps `((c, d), (a, b))` where `c * d = x` and `a * b = c` to `(a, b, d)` where `a * b * d = x`.
 This identifies the nested sum `∑' (cd : mulFiber x), ∑' (ab : mulFiber cd.1.1), f a * g b * h d`
 with a sum over the triple fiber. -/
+@[to_additive leftAddAssocEquiv /-- Left association equivalence for additive associativity. -/]
 def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x where
   toFun := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ =>
     ⟨⟨a, b, d⟩, by
@@ -335,10 +540,10 @@ def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFib
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
 /-- Right association equivalence for associativity proof.
-
 Maps `((a, e), (b, d))` where `a * e = x` and `b * d = e` to `(a, b, d)` where `a * b * d = x`.
 This identifies the nested sum `∑' (ae : mulFiber x), ∑' (bd : mulFiber ae.1.2), f a * g b * h d`
 with a sum over the triple fiber. -/
+@[to_additive rightAddAssocEquiv /-- Right association equivalence for additive associativity. -/]
 def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFiber x where
   toFun := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ =>
     ⟨⟨a, b, d⟩, by
@@ -363,143 +568,49 @@ def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFi
     simp_all only [heq_eq_eq]
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
-/-- Summability over triple fiber for associativity. -/
-def tripleConvolutionExistsAt (f g h : M → R) (x : M) : Prop :=
-  Summable fun p : tripleFiber x => f p.1.1 * g p.1.2.1 * h p.1.2.2
+end TripleFiber
 
-/-- Left-associated convolution sum as a triple fiber sum. -/
-theorem convolution_assoc_left_sum (f g h : M → R)
-    (hfg : ConvolutionExists f g) (htriple : ∀ x, tripleConvolutionExistsAt f g h x) (x : M) :
-    ∑' cd : mulFiber x, (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
-      ∑' p : tripleFiber x, f p.1.1 * g p.1.2.1 * h p.1.2.2 := by
-  -- Step 1: Distribute h into inner sum
-  have h1 : ∑' cd : mulFiber x, (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
-      ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, (f ab.1.1 * g ab.1.2) * h cd.1.2 := by
-    congr 1; ext cd; exact ((hfg cd.1.1).tsum_mul_right (h cd.1.2)).symm
-  -- Step 2: Summability
-  have hsigmaL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
-      (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 := by
-    convert (leftAssocEquiv x).summable_iff.mpr (htriple x) using 1
-  have hfiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
-      (f ab.1.1 * g ab.1.2) * h cd.1.2 := fun cd => (hfg cd.1.1).mul_right (h cd.1.2)
-  -- Step 3: Equivalence tsum
-  have h2 := (leftAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
-  -- Step 4: Fubini
-  have h3 : ∑' (p : Σ cd : mulFiber x, mulFiber cd.1.1), (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 =
-      ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, (f ab.1.1 * g ab.1.2) * h cd.1.2 :=
-    hsigmaL.tsum_sigma' hfiberL
-  rw [h1, ← h2, ← h3]; rfl
+/-! ### Connection to Finite Antidiagonals
 
-/-- Right-associated convolution sum as a triple fiber sum. -/
-theorem convolution_assoc_right_sum (f g h : M → R)
-    (hgh : ConvolutionExists g h) (htriple : ∀ x, tripleConvolutionExistsAt f g h x) (x : M) :
-    ∑' ae : mulFiber x, f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
-      ∑' p : tripleFiber x, f p.1.1 * g p.1.2.1 * h p.1.2.2 := by
-  -- Step 1: Distribute f into inner sum
-  have h1 : ∑' ae : mulFiber x, f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
-      ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) := by
-    congr 1; ext ae; exact ((hgh ae.1.2).tsum_mul_left (f ae.1.1)).symm
-  -- Step 2: Summability
-  have hsigmaR : Summable fun p : Σ ae : mulFiber x, mulFiber ae.1.2 =>
-      f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) := by
-    simp_rw [← mul_assoc]
-    convert (rightAssocEquiv x).summable_iff.mpr (htriple x) using 1
-  have hfiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
-      f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae => (hgh ae.1.2).mul_left (f ae.1.1)
-  -- Step 3: Equivalence tsum
-  have h2 := (rightAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
-  -- Step 4: Fubini
-  have h3 : ∑' (p : Σ ae : mulFiber x, mulFiber ae.1.2), f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) =
-      ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) :=
-    hsigmaR.tsum_sigma' hfiberR
-  rw [h1, ← h2, ← h3]
-  simp_rw [← mul_assoc]; rfl
+For types with `HasAntidiagonal` (e.g., ℕ, ℕ × ℕ), the additive fiber `addFiber x` is finite
+and equals `antidiagonal x`. Thus the `tsum` in `addConvolution` reduces to a `Finset.sum`,
+matching the `CauchyProduct` formulation. -/
 
-/-- Convolution is associative: `(f ⋆ g) ⋆ h = f ⋆ (g ⋆ h)`.
+section Antidiagonal
 
-Both sides reduce to `∑' (a,b,d) : tripleFiber x, f a * g b * h d` via the
-`leftAssocEquiv` and `rightAssocEquiv` fiber equivalences. -/
-theorem convolution_assoc (f g h : M → R)
-    (hfg : ConvolutionExists f g) (hgh : ConvolutionExists g h)
-    (htriple : ∀ x, tripleConvolutionExistsAt f g h x) :
-    (f ⋆ g) ⋆ h = f ⋆ (g ⋆ h) := by
-  ext x
-  simp only [convolution]
-  have hleft := convolution_assoc_left_sum (f := f) (g := g) (h := h) hfg htriple x
-  have hright := convolution_assoc_right_sum (f := f) (g := g) (h := h) hgh htriple x
-  rw [hleft, hright]
+open Finset
 
-end Algebraic
+variable [AddMonoid M] [HasAntidiagonal M]
 
-section Identity
+/-- For types with `HasAntidiagonal`, the additive fiber equals the antidiagonal. -/
+theorem addFiber_eq_antidiagonal (x : M) :
+    addFiber x = ↑(antidiagonal x) := by
+  ext ⟨a, b⟩
+  simp only [mem_coe, mem_antidiagonal, mem_addFiber]
 
-variable [Monoid M] [Semiring R] [TopologicalSpace R] [DecidableEq M]
+/-- The additive fiber is finite when `HasAntidiagonal` is available. -/
+theorem addFiber_finite (x : M) : (addFiber x).Finite := by
+  rw [addFiber_eq_antidiagonal]
+  exact (antidiagonal x).finite_toSet
 
-/-- Left identity for convolution: `δ₁ ⋆ f = f`.
+variable {S : Type*} [CommSemiring S]
+variable {E E' F : Type*} [AddCommMonoid E] [Module S E]
+variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
+variable [TopologicalSpace F]
 
-Only the pair `(1, x) ∈ mulFiber x` contributes since `δ₁` is supported at `1`. -/
-theorem delta_convolution (f : M → R) : delta ⋆ f = f := by
-  ext x; simp only [convolution]
-  -- Only (1, x) ∈ mulFiber x contributes since delta is supported at 1
-  rw [← tsum_subtype_eq_of_support_subset (s := {⟨(1, x), by simp [mulFiber, mulMap]⟩})]
-  · simp_all only [tsum_fintype, univ_unique,
-      Set.default_coe_singleton, sum_singleton, delta_one, one_mul]
-  · intro ⟨⟨a, b⟩, hab⟩ hne
-    simp_all only [Function.mem_support, ne_eq,
-      Set.mem_singleton_iff, Subtype.mk.injEq, Prod.mk.injEq]
-    simp_all only [mem_mulFiber]
-    subst hab
-    by_cases ha : a = 1
-    · subst ha
-      simp_all only [delta_one, one_mul, and_self]
-    · simp_all only [false_and]
-      exact hne (by rw [delta_ne ha, zero_mul])
+/-- For `HasAntidiagonal` types, additive convolution equals a finite sum over the antidiagonal.
+This bridges the `tsum`-based `addConvolution` with the `Finset.sum`-based `CauchyProduct`. -/
+theorem addConvolution_eq_sum_antidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
+    (x : M) : addConvolution L f g x = ∑ ab ∈ antidiagonal x, L (f ab.1) (g ab.2) := by
+  simp only [addConvolution_apply]
+  rw [← (antidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
+  exact (Equiv.setCongr (addFiber_eq_antidiagonal x)).tsum_eq
+    (fun ab => (L (f ab.1.1)) (g ab.1.2))
 
-/-- Right identity for convolution: `f ⋆ δ₁ = f`.
-
-Only the pair `(x, 1) ∈ mulFiber x` contributes since `δ₁` is supported at `1`. -/
-theorem convolution_delta (f : M → R) : f ⋆ delta = f := by
-  ext x; simp only [convolution]
-  -- Only (x, 1) ∈ mulFiber x contributes since delta is supported at 1
-  rw [← tsum_subtype_eq_of_support_subset (s := {⟨(x, 1), by simp [mulFiber, mulMap]⟩})]
-  · simp_all only [tsum_fintype, univ_unique,
-      Set.default_coe_singleton, sum_singleton, delta_one, mul_one]
-  · intro ⟨⟨a, b⟩, hab⟩ hne
-    simp_all only [Function.mem_support, ne_eq,
-      Set.mem_singleton_iff, Subtype.mk.injEq, Prod.mk.injEq]
-    simp_all only [mem_mulFiber]
-    subst hab
-    by_cases hb : b = 1
-    · subst hb
-      simp_all only [mul_one, delta_one, and_self]
-    · simp_all only [and_false]
-      exact hne (by rw [delta_ne hb, mul_zero])
-
-end Identity
-
-section Commutative
-
-variable [CommMonoid M] [CommSemiring R] [TopologicalSpace R]
-
-/-- Commutativity of convolution for commutative monoids and semirings: `f ⋆ g = g ⋆ f`.
-
-Uses the swap equivalence `(a, b) ↔ (b, a)` on fibers, which preserves membership
-since `a * b = b * a` in a commutative monoid. -/
-theorem convolution_comm (f g : M → R) : f ⋆ g = g ⋆ f := by
-  ext x; simp only [convolution]
-  -- Swap equivalence: (a, b) ↦ (b, a) preserves fiber since a * b = b * a
-  let e : mulFiber x ≃ mulFiber x :=
-    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, mulMap, mul_comm]⟩,
-     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, mulMap, mul_comm]⟩,
-     fun _ => by rfl,
-     fun _ => by rfl⟩
-  rw [← e.tsum_eq]
-  congr 1
-  funext ⟨⟨a, b⟩, hab⟩
-  simp only [e, Equiv.coe_fn_mk, mul_comm]
-
-end Commutative
+end Antidiagonal
 
 end DiscreteConvolution
+
+end
 
 end
