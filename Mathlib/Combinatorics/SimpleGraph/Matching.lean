@@ -394,7 +394,7 @@ lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v
     simp only [sup_adj, Subgraph.spanningCoe_adj, completeGraph_eq_top, edge_adj, c,
       Walk.toSubgraph, Subgraph.sup_adj, subgraphOfAdj_adj, adj_toSubgraph_mapLe]
     aesop
-  exact this ▸ IsCycle.isCycles_spanningCoe_toSubgraph (by simp [Walk.cons_isCycle_iff, c, hp, hs])
+  exact this ▸ IsCycle.isCycles_spanningCoe_toSubgraph (by simp [Walk.isCycle_cons_iff, c, hp, hs])
 
 lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.Walk u u}
     (hp : p.IsCycle) (hcyc : G.IsCycles) (hv : v ∈ p.toSubgraph.verts) :
@@ -469,7 +469,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Finite V] {v 
     apply sdiff_le_sdiff (by rfl) ?hcd
     simp
   have hp'p : (p.cons hw'2.symm).IsPath := by
-    rw [Walk.cons_isPath_iff]
+    rw [Walk.isPath_cons_iff]
     refine ⟨hp, fun hw' ↦ ?_⟩
     exact hw'1 (hcyc.snd_of_mem_support_of_isPath_of_adj _ hww' hw' hp hw'2)
   have : (G \ p.toSubgraph.spanningCoe).Adj w' v := by

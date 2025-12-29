@@ -289,7 +289,7 @@ theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u
       _ = G.dist u v := hp
       _ ≤ p.bypass.length := dist_le p.bypass
   rw [← this]
-  apply Walk.bypass_isPath
+  apply Walk.isPath_bypass
 
 lemma Reachable.exists_path_of_dist (hr : G.Reachable u v) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
