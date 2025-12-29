@@ -34,9 +34,6 @@ up to a sign change, which are interesting when `f v = 2`, because they give “
 
 @[expose] public section
 
-section
-
-
 namespace LinearEquiv
 
 open Pointwise LinearMap Submodule MulAction
@@ -485,17 +482,6 @@ theorem fixedReduce_eq_smul_iff (e : V ≃ₗ[K] V) (a : K) :
     have ⟨y, hy⟩ := e.fixedSubmodule.mkQ_surjective x
     rw [← hy]
     apply H
-
-theorem Submodule.sup_span_eq_top [Module.Finite K V] {W : Submodule K V} {v : V}
-    (hW : finrank K (V ⧸ W) ≤ 1) (hv : v ∉ W) :
-    W ⊔ Submodule.span K {v} = ⊤ := by
-  apply Submodule.eq_top_of_disjoint
-  · rw [← W.finrank_quotient_add_finrank, add_comm, add_le_add_iff_left]
-    apply le_trans hW
-    suffices v ≠ 0 by simpa
-    aesop
-  · exact Submodule.disjoint_span_singleton_of_notMem hv
-
 
 theorem fixedReduce_eq_one (e : V ≃ₗ[K] V) :
     e.fixedReduce = LinearEquiv.refl K _ ↔ ∀ v, e v - v ∈ e.fixedSubmodule := by
