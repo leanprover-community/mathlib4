@@ -67,32 +67,31 @@ normed ring with submultiplicative norm.
 This file uses `mulConvolution` (notation `⋆ₘ`) for `[Monoid M]`, appropriate for group
 algebras R[G]. For additive indices (ℤ, polynomials), use `AddLp` with `addMulConvolution`.
 
-### @[to_additive] Timeout Workarounds
+### @[to_additive] Usage Notes
 
-The `@[to_additive]`-generated membership lemmas (e.g., `lp.one_addMulConvolution_memℓp`)
-cause timeouts when used directly in `AddLp` proofs. The root cause is expensive `Memℓp`
-predicate unification when Lean tries to match `lp` subtype coercions.
+The `@[to_additive]`-generated lemmas (e.g., `lp.one_addMulConvolution_memℓp`) are used
+directly in `AddLp` instance definitions. Key techniques for reliable elaboration:
 
-**Workarounds used in this file:**
+1. **Context-driven elaboration in subtype constructors**: When constructing `lp` subtypes
+   via `⟨val, proof⟩`, Lean knows the expected type for `proof` from context before
+   elaborating the proof term. This acts as a natural type barrier - Lean elaborates
+   the expected `Memℓp` type first, then checks the proof against this known type,
+   avoiding expensive bidirectional unification. This is why `@[to_additive]`-generated
+   lemmas can be used directly in instance definitions without wrapper lemmas.
 
-1. **Protected def wrappers with explicit type signatures**: `AddLp.addMulConvolution_memℓp'`
-   and `AddLp.addDelta_memℓp'` wrap the `@[to_additive]`-generated lemmas in a `protected def`
-   with an explicit return type. The explicit signature acts as a "type barrier" - Lean
-   elaborates and commits to the return type first, then trusts it when the wrapper is used,
-   rather than attempting deep unification through the definition body. This reduces
-   elaboration from timeout to ~0.01s.
+2. **Explicit type parameters**: `(M := M) (R := R)` annotations help Lean resolve types
+   without expensive unification through `Memℓp` predicates.
 
-2. **Explicit type parameters**: When other `@[to_additive]` lemmas are used (e.g., in
-   `instRing` and `instNormedRing`), explicit `(M := M) (R := R)` annotations help Lean
-   resolve types without deep unification.
-
-3. **Explicit instance references**: The `Ring` proofs reference `instOne.1` explicitly
-   rather than `(1 : AddLp M R)` to avoid ambiguity with the `Zero` inherited from
-   `AddCommGroup` via the equivalence.
+3. **Explicit instance references**: Ring proofs reference `instOne.1` explicitly rather
+   than `(1 : AddLp M R)` to avoid ambiguity with the `Zero` inherited from `AddCommGroup`.
 
 4. **Section restructuring**: Lemmas like `mul_apply` and `one_apply` are placed outside
-   sections with `[CompleteSpace R]` to avoid unused instance warnings, since these
-   definitional equalities don't require completeness in their proofs.
+   sections with `[CompleteSpace R]` to avoid unused instance warnings.
+
+5. **Type barriers for `tsum_sigma'`**: The `Summable.tsum_sigma'` lemma causes timeouts
+   when used with `rw`. Workaround: compute the result via `have` with explicit type
+   signature first, then use `▸` substitution. The explicit signature forces Lean to
+   commit to the type before elaborating the proof body.
 -/
 
 @[expose] public section
@@ -181,7 +180,7 @@ theorem lp.one_norm_mulConvolution_le (f g : lp (fun _ : M => R) 1) :
 
 /-- The identity element `delta 1` is in ℓ¹. -/
 @[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addDelta_memℓp
-  /-- The identity element `addDelta 0` is in ℓ¹. -/]
+  /-- The identity element `addDelta 1` is in ℓ¹. -/]
 theorem lp.one_delta_memℓp [DecidableEq M] : Memℓp (delta (M := M) (1 : R)) 1 := by
   rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
   simp only [ENNReal.toReal_one, Real.rpow_one]
@@ -248,7 +247,8 @@ theorem lp.one_convolution_assoc_left_sum (f g h : lp (fun _ : M => R) 1) (x : M
     exact ((lp.one_convolutionSummable f g cd.1.1).tsum_mul_right (h cd.1.2)).symm
   have hsigmaL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
       (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 := by
-    convert (leftAssocEquiv x).summable_iff.mpr (lp.one_tripleConvolutionSummable f g h x) using 1
+    convert (leftAssocEquiv x).summable_iff.mpr
+      (lp.one_tripleConvolutionSummable f g h x) using 1
   have hfiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
       (f ab.1.1 * g ab.1.2) * h cd.1.2 :=
     fun cd => (lp.one_convolutionSummable f g cd.1.1).mul_right (h cd.1.2)
@@ -514,7 +514,7 @@ instance : CoeFun (AddLp M R) (fun _ => M → R) where
 
 @[simp] theorem toLp_ofLp (f : lp (fun _ : M => R) 1) : (ofLp f).toLp = f := rfl
 @[simp] theorem ofLp_toLp (f : AddLp M R) : ofLp f.toLp = f := rfl
-lemma mk_toLp (f : lp (fun _ : M => R) 1) : (⟨f⟩ : AddLp M R).toLp = f := rfl
+@[simp] theorem mk_toLp (f : lp (fun _ : M => R) 1) : (⟨f⟩ : AddLp M R).toLp = f := rfl
 
 theorem ext {f g : AddLp M R} (h : ∀ m, f m = g m) : f = g := by
   cases f; cases g; simp only [mk.injEq]; exact lp.ext (funext h)
@@ -531,41 +531,28 @@ variable {M : Type*} {R : Type*} [AddMonoid M] [NormedCommRing R]
 
 namespace AddLp
 
-/- Note: The AddLp instances cannot use `@[to_additive]`-generated lemmas directly due to
-   extremely expensive type unification when Lean tries to compare `Memℓp` predicates.
-   Wrapping them in a `protected lemma` with explicit type signature forces Lean to elaborate
-   the return type first, avoiding the deep unification that causes timeouts. -/
-
-/-- Wrapper to avoid `@[to_additive]` timeout issues. -/
-protected lemma addMulConvolution_memℓp' (f g : lp (fun _ : M => R) 1) :
-    Memℓp ((⇑f) ⋆₊ₘ (⇑g)) 1 := lp.one_addMulConvolution_memℓp f g
-
-/-- Wrapper to avoid `@[to_additive]` timeout issues. -/
-protected lemma addDelta_memℓp' [DecidableEq M] : Memℓp (addDelta (M := M) (1 : R)) 1 :=
-  lp.one_addDelta_memℓp
-
 section Mul
 
 variable [CompleteSpace R]
 
 instance instMul : Mul (AddLp M R) where
-  mul f g := ⟨⟨(⇑f.toLp) ⋆₊ₘ (⇑g.toLp), AddLp.addMulConvolution_memℓp' f.toLp g.toLp⟩⟩
+  mul f g := ⟨⟨(⇑f.toLp) ⋆₊ₘ (⇑g.toLp), lp.one_addMulConvolution_memℓp f.toLp g.toLp⟩⟩
 
 end Mul
 
-@[simp] theorem mul_apply (f g : AddLp M R) (x : M) :
+@[simp] theorem mul_apply [CompleteSpace R] (f g : AddLp M R) (x : M) :
     (f * g) x = (f.toLp ⋆₊ₘ g.toLp) x := rfl
 
 section One
 
-variable [DecidableEq M]
+variable [CompleteSpace R] [DecidableEq M]
 
 instance instOne : One (AddLp M R) where
-  one := ⟨⟨addDelta 1, AddLp.addDelta_memℓp'⟩⟩
+  one := ⟨⟨addDelta 1, lp.one_addDelta_memℓp⟩⟩
 
 end One
 
-@[simp] theorem one_apply [DecidableEq M] (x : M) :
+@[simp] theorem one_apply [CompleteSpace R] [DecidableEq M] (x : M) :
     (1 : AddLp M R) x = addDelta (1 : R) x := rfl
 
 section Ring
