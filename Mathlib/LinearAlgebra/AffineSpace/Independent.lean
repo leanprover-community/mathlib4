@@ -237,6 +237,16 @@ theorem affineIndependent_iff_eq_of_fintype_affineCombination_eq [Fintype ι] (p
       Finset.affineCombination_indicator_subset w2 p (Finset.subset_univ s2)] at hweq
     exact h _ _ hw1' hw2' hweq
 
+/-- A linearly independent family of vectors is affinely independent when viewed as points
+in the vector space (as an affine space over itself). -/
+theorem LinearIndependent.affineIndependent
+    {v : ι → V} (hv : LinearIndependent k v) : AffineIndependent k v := by
+  intro s w hw0 hwv i hi
+  rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ hw0 0,
+    Finset.weightedVSubOfPoint_apply] at hwv
+  simp only [vsub_eq_sub, sub_zero] at hwv
+  exact linearIndependent_iff'.mp hv s w hwv i hi
+
 variable {k}
 
 /-- If we single out one member of an affine-independent family of points and affinely transport
