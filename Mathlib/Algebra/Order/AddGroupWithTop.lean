@@ -140,28 +140,84 @@ instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
     have ha : a ≠ ⊤ := by rintro rfl; simp at h
     exact left_neg_eq_right_neg (a := a) (by simp [neg_add_cancel_of_ne_top, *]) h
 
-lemma injective_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ x + b) :=
+lemma add_left_injective_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective fun x ↦ x + b :=
   fun x y hxy ↦ by simpa [h] using congr($hxy - b)
 
-lemma injective_add_right_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ b + x) := by
-  simpa [add_comm] using injective_add_left_of_ne_top b h
+@[deprecated (since := "2025-12-27")]
+alias injective_add_left_of_ne_top := add_left_injective_of_ne_top
 
-lemma strictMono_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ x + b) := by
-  apply Monotone.strictMono_of_injective
-  · apply Monotone.add_const monotone_id
-  · apply injective_add_left_of_ne_top _ h
+lemma add_right_injective_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective fun x ↦ b + x := by
+  simpa [add_comm] using add_left_injective_of_ne_top b h
 
-lemma strictMono_add_right_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ b + x) := by
-  simpa [add_comm] using strictMono_add_left_of_ne_top b h
+@[deprecated (since := "2025-12-27")]
+alias injective_add_right_of_ne_top := add_right_injective_of_ne_top
 
-lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ where
-  mp h := or_iff_not_imp_right.mpr fun hb ↦ by
-    simpa [sub_eq_add_neg, add_assoc, hb] using strictMono_add_left_of_ne_top _ hb h
-  mpr := by
-    rintro (h | rfl)
-    · simpa [sub_eq_add_neg, h.ne_top]
-        using strictMono_add_left_of_ne_top (-b) (by simp [h.ne_top]) h
-    · simp
+@[simp]
+lemma add_left_inj_of_ne_top {a b c : α} (h : a ≠ ⊤) : b + a = c + a ↔ b = c :=
+  (add_left_injective_of_ne_top _ h).eq_iff
+
+@[simp]
+lemma add_right_inj_of_ne_top {a b c : α} (h : a ≠ ⊤) : a + b = a + c ↔ b = c :=
+  (add_right_injective_of_ne_top _ h).eq_iff
+
+lemma sub_left_injective_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective fun x ↦ x - b := by
+  simpa [sub_eq_add_neg] using add_left_injective_of_ne_top (-b) (by simpa)
+
+lemma sub_right_injective_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective fun x ↦ b - x := by
+  simpa [sub_eq_add_neg] using (add_right_injective_of_ne_top b h).comp neg_injective
+
+@[simp]
+lemma sub_left_inj_of_ne_top {a b c : α} (h : a ≠ ⊤) : b - a = c - a ↔ b = c :=
+  (sub_left_injective_of_ne_top _ h).eq_iff
+
+@[simp]
+lemma sub_right_inj_of_ne_top {a b c : α} (h : a ≠ ⊤) : a - b = a - c ↔ b = c :=
+  (sub_right_injective_of_ne_top _ h).eq_iff
+
+lemma add_left_strictMono_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono fun x ↦ x + b :=
+  (Monotone.add_const monotone_id _).strictMono_of_injective (add_left_injective_of_ne_top _ h)
+
+@[deprecated (since := "2025-12-27")]
+alias strictMono_add_left_of_ne_top := add_left_strictMono_of_ne_top
+
+lemma add_right_strictMono_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono fun x ↦ b + x := by
+  simpa [add_comm] using add_left_strictMono_of_ne_top b h
+
+@[deprecated (since := "2025-12-27")]
+alias strictMono_add_right_of_ne_top := add_right_strictMono_of_ne_top
+
+@[simp]
+lemma add_le_add_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b + a ≤ c + a ↔ b ≤ c :=
+  (add_left_strictMono_of_ne_top _ h).le_iff_le
+
+@[simp]
+lemma add_le_add_iff_right_of_ne_top {a b c : α} (h : a ≠ ⊤) : a + b ≤ a + c ↔ b ≤ c :=
+  (add_right_strictMono_of_ne_top _ h).le_iff_le
+
+@[simp]
+lemma add_lt_add_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b + a < c + a ↔ b < c :=
+  (add_left_strictMono_of_ne_top _ h).lt_iff_lt
+
+@[simp]
+lemma add_lt_add_iff_right_of_ne_top {a b c : α} (h : a ≠ ⊤) : a + b < a + c ↔ b < c :=
+  (add_right_strictMono_of_ne_top _ h).lt_iff_lt
+
+lemma sub_left_strictMono_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono fun x ↦ x - b := by
+  simpa [sub_eq_add_neg] using add_left_strictMono_of_ne_top (-b) (by simpa)
+
+@[simp]
+lemma sub_le_sub_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b - a ≤ c - a ↔ b ≤ c :=
+  (sub_left_strictMono_of_ne_top _ h).le_iff_le
+
+@[simp]
+lemma sub_lt_sub_iff_left_of_ne_top {a b c : α} (h : a ≠ ⊤) : b - a < c - a ↔ b < c :=
+  (sub_left_strictMono_of_ne_top _ h).lt_iff_lt
+
+lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ := by
+  obtain rfl | hb := eq_or_ne b ⊤
+  · simp
+  · rw [← sub_self_eq_zero_of_ne_top hb]
+    simp [hb]
 
 end LinearOrderedAddCommGroupWithTop
 
