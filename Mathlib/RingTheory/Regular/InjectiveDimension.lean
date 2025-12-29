@@ -255,7 +255,8 @@ universe u'
 
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
-instance (priority := 2000) : (ModuleCat.restrictScalars.{v} f).Additive where
+instance (priority := 2000) ModuleCat.restrictScalars_additive :
+    (ModuleCat.restrictScalars.{v} f).Additive where
   map_add := by simp
 
 lemma ModuleCat.restrictScalars_map_exact' (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
@@ -263,12 +264,14 @@ lemma ModuleCat.restrictScalars_map_exact' (S : ShortComplex (ModuleCat.{v} R'))
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
   exact h
 
-instance (priority := 2000) : Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
+instance (priority := 2000) ModuleCat.restrictScalars_preservesFiniteLimits :
+    Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
   have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
     (ModuleCat.restrictScalars_map_exact' f)
   exact this.1
 
-instance (priority := 2000) : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
+instance (priority := 2000) ModuleCat.restrictScalars_preservesFiniteColimits :
+    Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
   have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
     (ModuleCat.restrictScalars_map_exact' f)
   exact this.2
