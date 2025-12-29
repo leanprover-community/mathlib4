@@ -616,7 +616,7 @@ variable [TopologicalSpace F]
 /-- For `HasAntidiagonal` types, additive convolution equals a finite sum over the antidiagonal.
 This bridges the `tsum`-based `addConvolution` with the `Finset.sum`-based `CauchyProduct`. -/
 theorem addConvolution_eq_sum_antidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
-    (x : M) : addConvolution L f g x = ∑ ab ∈ antidiagonal x, L (f ab.1) (g ab.2) := by
+    (x : M) : (f ⋆₊[L] g) x = ∑ ab ∈ antidiagonal x, L (f ab.1) (g ab.2) := by
   simp only [addConvolution_apply]
   rw [← (antidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
   exact (Equiv.setCongr (addFiber_eq_antidiagonal x)).tsum_eq
