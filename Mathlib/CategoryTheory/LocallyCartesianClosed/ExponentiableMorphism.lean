@@ -92,7 +92,7 @@ theorem ev_coev (X : Over J) :
   pullbackAdjPushforward f |>.left_triangle_components X
 
 /-- The second triangle identity for the counit and unit of the adjunction. -/
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem coev_ev (Y : Over I) :
     (coev f |>.app (pushforward f |>.obj Y)) ≫
     (pushforward f |>.map (ev f |>.app Y)) =
