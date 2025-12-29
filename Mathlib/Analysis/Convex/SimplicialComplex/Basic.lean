@@ -5,8 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # Simplicial complexes
@@ -47,8 +49,6 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 open Finset Set
 
-variable (𝕜 E : Type*) [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 namespace Geometry
 
 -- TODO: update to new binder order? not sure what binder order is correct for `down_closed`.
@@ -57,7 +57,8 @@ Note that the textbook meaning of "glue nicely" is given in
 `Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull`. It is mostly useless, as
 `Geometry.SimplicialComplex.convexHull_inter_convexHull` is enough for all purposes. -/
 @[ext]
-structure SimplicialComplex where
+structure SimplicialComplex (𝕜 E : Type*)
+    [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] where
   /-- the faces of this simplicial complex: currently, given by their spanning vertices -/
   faces : Set (Finset E)
   /-- the empty set is not a face: hence, all faces are non-empty -/
@@ -74,7 +75,9 @@ namespace SimplicialComplex
 @[deprecated (since := "2025-05-23")]
 alias not_empty_mem := empty_notMem
 
-variable {𝕜 E}
+section
+
+variable {𝕜 E : Type*} [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
@@ -139,6 +142,9 @@ def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset
     indep := fun hs => K.indep (subset hs)
     down_closed := fun hs hts _ => down_closed hs hts
     inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull (subset hs) (subset ht) }
+
+
+
 
 /-! ### Vertices -/
 
@@ -246,6 +252,80 @@ theorem space_bot : (⊥ : SimplicialComplex 𝕜 E).space = ∅ :=
 
 theorem facets_bot : (⊥ : SimplicialComplex 𝕜 E).facets = ∅ :=
   eq_empty_of_subset_empty facets_subset
+
+end
+
+section AffineIndependent
+
+open Classical in
+/-- Construct a simplicial complex from a downward-closed set of faces whose union is affinely
+independent. This is a common way to construct simplicial complexes: if you have a set of
+vertices that is affinely independent, then any downward-closed family of nonempty subsets
+forms a simplicial complex. -/
+def ofAffineIndependent {𝕜 E}
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    (faces : Set (Finset E)) (empty_notMem : ∅ ∉ faces)
+    (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces)
+    (indep : AffineIndependent 𝕜 (Subtype.val : (⋃ s ∈ faces, (s : Set E)) → E)) :
+    SimplicialComplex 𝕜 E where
+  faces := faces
+  empty_notMem := empty_notMem
+  indep {s} hs := indep.mono (Set.subset_biUnion_of_mem hs)
+  down_closed := down_closed
+  inter_subset_convexHull {s t} hs ht := by
+    apply subset_of_eq
+    rw [AffineIndependent.convexHull_inter (R := 𝕜) (s := s ∪ t)]
+    · apply indep.mono
+      simp only [Finset.coe_union]
+      exact Set.union_subset (Set.subset_biUnion_of_mem hs) (Set.subset_biUnion_of_mem ht)
+    · exact Finset.subset_union_left
+    · exact Finset.subset_union_right
+
+open Classical in
+/--
+Construct a simplicial complex from a downward-closed set of points
+over the `𝕜`-module of finitely supported functions on those points.
+-/
+def onFinsupp {𝕜 ι : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    (faces : Set (Finset ι))
+    (empty_notMem : ∅ ∉ faces)
+    (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces) :
+    SimplicialComplex 𝕜 (ι →₀ 𝕜) :=
+  ofAffineIndependent (𝕜 := 𝕜) (E := ι →₀ 𝕜)
+    (faces.image (fun x => x.image (fun i => Finsupp.single i (1 : 𝕜))))
+    (empty_notMem := by
+      simp only [Set.mem_image, Finset.image_eq_empty]
+      rintro ⟨s, hs, rfl⟩
+      exact empty_notMem hs)
+    (down_closed := by
+      intro s t hs hts ht
+      simp only [Set.mem_image] at hs ⊢
+      obtain ⟨s', hs', rfl⟩ := hs
+      have hinj : Function.Injective (fun i : ι => Finsupp.single i (1 : 𝕜)) :=
+        Finsupp.single_left_injective one_ne_zero
+      rw [Finset.subset_image_iff] at hts
+      obtain ⟨t', ht', rfl⟩ := hts
+      refine ⟨t', down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
+    (indep := by
+      have hunion : ⋃ s ∈ (fun x => Finset.image (fun i => Finsupp.single i (1 : 𝕜)) x) '' faces,
+          (s : Set (ι →₀ 𝕜)) ⊆ Set.range (fun i : ι => Finsupp.single i (1 : 𝕜)) := by
+        intro x hx
+        simp only [Set.mem_iUnion, Set.mem_image, Finset.mem_coe] at hx
+        obtain ⟨s, ⟨t, ht, rfl⟩, hx⟩ := hx
+        obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+        exact Set.mem_range_self i
+      apply AffineIndependent.mono _ hunion
+      have hind : AffineIndependent 𝕜 (fun i : ι => Finsupp.single i (1 : 𝕜)) := by
+        intro s w hw0 hwv i hi
+        rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ hw0 0,
+            Finset.weightedVSubOfPoint_apply] at hwv
+        simp only [vsub_eq_sub, sub_zero] at hwv
+        have hli := Finsupp.linearIndependent_single_one 𝕜 ι
+        rw [linearIndependent_iff'] at hli
+        exact hli s w hwv i hi
+      exact hind.range)
+
+end AffineIndependent
 
 end SimplicialComplex
 
