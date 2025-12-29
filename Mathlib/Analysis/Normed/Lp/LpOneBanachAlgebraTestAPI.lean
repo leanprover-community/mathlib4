@@ -65,13 +65,13 @@ noncomputable section
 
 namespace DiscreteConvolution
 
-variable {M : Type*}
+variable {M : Type*} {R : Type*}
 
 /-! ### ℓ¹ Summability and Membership -/
 
 section LpOneSummability
 
-variable {R : Type*} [NormedRing R]
+variable [NormedRing R]
 
 /-- ℓ¹ membership gives summable norms. -/
 theorem lp.one_summable_norm (f : lp (fun _ : M => R) 1) : Summable (fun m => ‖f m‖) := by
@@ -95,7 +95,7 @@ end LpOneSummability
 
 section LpOneMembership
 
-variable [Monoid M] {R : Type*} [NormedCommRing R]
+variable [Monoid M] [NormedCommRing R]
 
 /-- The ring multiplication convolution of ℓ¹ functions is in ℓ¹. -/
 theorem lp.one_mulConvolution_memℓp (f g : lp (fun _ : M => R) 1) :
@@ -162,7 +162,7 @@ end LpOneMembership
 
 section LpOneAssociativity
 
-variable [Monoid M] {R : Type*} [NormedCommRing R] [CompleteSpace R]
+variable [Monoid M] [NormedCommRing R] [CompleteSpace R]
 
 /-- Summability over triple fiber for associativity. -/
 def TripleConvolutionSummable (f g h : M → R) (x : M) : Prop :=
@@ -262,7 +262,7 @@ end LpOneAssociativity
 
 section LpOneMul
 
-variable [Monoid M] {R : Type*} [NormedCommRing R]
+variable [Monoid M] [NormedCommRing R]
 
 namespace lp
 
@@ -286,7 +286,7 @@ end LpOneMul
 
 section LpOneOne
 
-variable [Monoid M] [DecidableEq M] {R : Type*} [NormedCommRing R]
+variable [Monoid M] [DecidableEq M] [NormedCommRing R]
 
 namespace lp
 
@@ -305,7 +305,7 @@ end LpOneOne
 
 section LpOneRing
 
-variable [Monoid M] [DecidableEq M] {R : Type*} [NormedCommRing R] [CompleteSpace R]
+variable [Monoid M] [DecidableEq M] [NormedCommRing R] [CompleteSpace R]
 
 namespace lp
 
@@ -335,7 +335,7 @@ end LpOneRing
 
 section LpOneNormOneClass
 
-variable [Monoid M] [DecidableEq M] {R : Type*}
+variable [Monoid M] [DecidableEq M]
 variable [NormedCommRing R] [NormOneClass R]
 
 namespace lp
@@ -361,7 +361,7 @@ end LpOneNormOneClass
 
 section LpOneCommRing
 
-variable [CommMonoid M] [DecidableEq M] {R : Type*} [NormedCommRing R] [CompleteSpace R]
+variable [CommMonoid M] [DecidableEq M] [NormedCommRing R] [CompleteSpace R]
 
 namespace lp
 
@@ -377,7 +377,7 @@ end LpOneCommRing
 
 section LpOneNormedCommRing
 
-variable [CommMonoid M] [DecidableEq M] {R : Type*} [NormedCommRing R] [CompleteSpace R]
+variable [CommMonoid M] [DecidableEq M] [NormedCommRing R] [CompleteSpace R]
 
 namespace lp
 
@@ -394,7 +394,7 @@ end LpOneNormedCommRing
 section LpOneAlgebra
 
 variable [CommMonoid M] [DecidableEq M]
-variable {𝕜 : Type*} {R : Type*}
+variable {𝕜 : Type*}
 variable [NormedField 𝕜] [NormedCommRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
 
 namespace lp
