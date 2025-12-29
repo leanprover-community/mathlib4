@@ -298,32 +298,22 @@ def onFinsupp {𝕜 ι : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrdered
       rintro ⟨s, hs, rfl⟩
       exact empty_notMem hs)
     (by
-      intro s t hs hts ht
-      simp only [Set.mem_image] at hs ⊢
-      obtain ⟨s', hs', rfl⟩ := hs
-      have hinj : Function.Injective (fun i : ι => Finsupp.single i (1 : 𝕜)) :=
-        Finsupp.single_left_injective one_ne_zero
+      simp only [Set.mem_image]
+      rintro _ t ⟨s', hs', rfl⟩ hts ht
       rw [Finset.subset_image_iff] at hts
       obtain ⟨t', ht', rfl⟩ := hts
-      refine ⟨t', down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
+      exact ⟨t', down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
     (by
-      have hunion : ⋃ s ∈ (fun x => Finset.image (fun i => Finsupp.single i (1 : 𝕜)) x) '' faces,
-          (s : Set (ι →₀ 𝕜)) ⊆ Set.range (fun i : ι => Finsupp.single i (1 : 𝕜)) := by
-        intro x hx
-        simp only [Set.mem_iUnion, Set.mem_image, Finset.mem_coe] at hx
-        obtain ⟨s, ⟨t, ht, rfl⟩, hx⟩ := hx
-        obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
-        exact Set.mem_range_self i
-      apply AffineIndependent.mono _ hunion
       have hind : AffineIndependent 𝕜 (fun i : ι => Finsupp.single i (1 : 𝕜)) := by
         intro s w hw0 hwv i hi
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ hw0 0,
-            Finset.weightedVSubOfPoint_apply] at hwv
+          Finset.weightedVSubOfPoint_apply] at hwv
         simp only [vsub_eq_sub, sub_zero] at hwv
-        have hli := Finsupp.linearIndependent_single_one 𝕜 ι
-        rw [linearIndependent_iff'] at hli
-        exact hli s w hwv i hi
-      exact hind.range)
+        exact (linearIndependent_iff'.mp (Finsupp.linearIndependent_single_one 𝕜 ι)) s w hwv i hi
+      refine hind.range.mono fun x hx => ?_
+      simp only [Set.mem_iUnion, Set.mem_image, Finset.mem_coe] at hx
+      obtain ⟨_, ⟨_, _, rfl⟩, hx⟩ := hx
+      exact Finset.mem_image.mp hx |>.choose_spec.2 ▸ Set.mem_range_self _)
 
 end AffineIndependent
 
