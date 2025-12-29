@@ -440,10 +440,10 @@ theorem BddBelow.exists_le [SemilatticeInf γ] {s : Set γ} (hs : BddBelow s) (x
 
 
 theorem isLeast_Ici : IsLeast (Ici a) a :=
-  ⟨left_mem_Ici, fun _ => id⟩
+  ⟨self_mem_Ici, fun _ => id⟩
 
 theorem isGreatest_Iic : IsGreatest (Iic a) a :=
-  ⟨right_mem_Iic, fun _ => id⟩
+  ⟨self_mem_Iic, fun _ => id⟩
 
 theorem isLUB_Iic : IsLUB (Iic a) a :=
   isGreatest_Iic.isLUB

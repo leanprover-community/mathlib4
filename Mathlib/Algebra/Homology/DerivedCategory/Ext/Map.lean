@@ -20,7 +20,7 @@ where `F` is an exact functor between abelian categories.
 
 @[expose] public section
 
-universe w w' u u' v v'
+universe t t' w w' u u' v v'
 
 namespace CategoryTheory
 
@@ -51,13 +51,10 @@ instance {ι : Type*} (c : ComplexShape ι) :
 
 section
 
-universe t t'
-
-variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
-
 open DerivedCategory
 
-lemma Functor.mapTriangleOfSESδ {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
+lemma Functor.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+    {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     F.mapDerivedCategory.map (triangleOfSESδ hS) =
     (F.mapDerivedCategoryFactors.hom.app S.X₃) ≫
     triangleOfSESδ (hS.map_of_exact (F.mapHomologicalComplex (ComplexShape.up ℤ))) ≫
@@ -109,7 +106,8 @@ lemma Functor.mapTriangleOfSESδ {S : ShortComplex (CochainComplex C ℤ)} (hS :
     CochainComplex.mappingCone.mapHomologicalComplexXIso'_hom,
     mapHomologicalComplex_map_f, CochainComplex.mappingCone.desc_f _ _ _ _ n (n + 1) rfl]
 
-lemma Functor.mapShiftedHom_singleδ {S : ShortComplex C} (hS : S.ShortExact) :
+lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+    {S : ShortComplex C} (hS : S.ShortExact) :
     (F.mapDerivedCategorySingleFunctor 0).inv.app S.X₃ ≫
       ShiftedHom.map hS.singleδ F.mapDerivedCategory ≫
         (shiftFunctor (DerivedCategory D) 1).map ((F.mapDerivedCategorySingleFunctor 0).hom.app
@@ -182,15 +180,11 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     (ComplexShape.up ℤ)).smallShiftedHomMap
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
-section
-
-universe t t'
-
-variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
-
 open Functor in
-lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
-    (e : Ext X Y n) : (e.mapExactFunctor F).hom =
+lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
+    [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
+    [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ} (e : Ext X Y n) :
+    (e.mapExactFunctor F).hom =
     (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫ e.hom.map F.mapDerivedCategory ≫
     ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧' := by
   rw [← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
@@ -218,32 +212,19 @@ lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map [HasExt.{w} C] [HasExt.{w'} 
     nth_rw 2 [← Category.assoc]
     exact (Category.comp_id _).symm.trans (Category.id_comp _).symm
 
-lemma Abelian.Ext.mapExactFunctor_eq_map [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (e : Ext X Y n) : (e.mapExactFunctor F).hom =
-      (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫ F.mapDerivedCategory.map e.hom ≫
-        (F.mapDerivedCategory.commShiftIso (n : ℤ)).hom.app _ ≫
-          ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧' := by
-  nth_rw 2 [← Category.assoc]
-  exact e.mapExactFunctor_eq_shiftedHom_map F
-
-end
+attribute [local simp] Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
+attribute [local instance] HasDerivedCategory.standard
 
 @[simp]
 lemma Abelian.Ext.mapExactFunctor_zero [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     (0 : Ext X Y n).mapExactFunctor F  = 0 := by
-  let _ := HasDerivedCategory.standard C
-  let _ := HasDerivedCategory.standard D
-  ext
-  simp [Ext.mapExactFunctor_eq_map]
+  aesop
 
 @[simp]
 lemma Abelian.Ext.mapExactFunctor_add [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
     (f g : Ext.{w} X Y n) :
     (f + g).mapExactFunctor F  = f.mapExactFunctor F + g.mapExactFunctor F := by
-  let _ := HasDerivedCategory.standard C
-  let _ := HasDerivedCategory.standard D
-  ext
-  simp [Ext.mapExactFunctor_eq_map, F.mapDerivedCategory.map_add]
+  aesop
 
 /-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
@@ -264,10 +245,7 @@ variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear
 @[simp]
 lemma Functor.mapExactFunctor_smul [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
     (r : R) (f : Ext.{w} X Y n) : (r • f).mapExactFunctor F  = r • (f.mapExactFunctor F) := by
-  let _ := HasDerivedCategory.standard C
-  let _ := HasDerivedCategory.standard D
-  ext
-  simp [Ext.mapExactFunctor_eq_map, F.mapDerivedCategory.map_smul]
+  aesop
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
 noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :

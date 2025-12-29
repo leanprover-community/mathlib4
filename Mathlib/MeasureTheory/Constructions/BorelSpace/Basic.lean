@@ -28,7 +28,7 @@ public import Mathlib.Topology.Instances.Rat
 * `IsOpen.measurableSet`, `IsClosed.measurableSet`: open and closed sets are measurable;
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
-  is continuous, then `fun x => op (f x, g y)` is measurable;
+  is continuous, then `fun x => op (f x, g x)` is measurable;
 * `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
@@ -203,7 +203,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
-    OpensMeasurableSpace α ↔  (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
+    OpensMeasurableSpace α ↔ (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ ⟨generateFrom_le h⟩⟩
   exact OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ hs
 
@@ -405,7 +405,7 @@ product sigma-algebra. -/
 instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
     OpensMeasurableSpace (α × β) := by
   apply opensMeasurableSpace_iff_forall_measurableSet.2 (fun s hs ↦ ?_)
-  rcases h.out with hα|hβ
+  rcases h.out with hα | hβ
   · let F : Set α → Set β := fun a ↦ {y | ∃ b, IsOpen b ∧ y ∈ b ∧ a ×ˢ b ⊆ s}
     have A : ∀ a, IsOpen (F a) := by
       intro a
