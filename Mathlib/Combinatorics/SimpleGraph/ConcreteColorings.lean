@@ -11,7 +11,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Data.Fin.Parity
-public import Mathlib.Tactic.Cases
 
 /-!
 # Concrete colorings of common graphs
