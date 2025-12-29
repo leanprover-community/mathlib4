@@ -587,13 +587,13 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
 
 section AbsoluteValue
 
-open WithZeroMulInt
+open WithZeroMulInt NNReal
 
 variable {R K} {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
 
 /-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def intAdicAbvDef (r : R) : ℝ≥0 := fun r ↦ toNNReal (ne_zero_of_lt hb) (v.intValuation r)
+def intAdicAbvDef (r : R) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.intValuation r)
 
 lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := by
   intro x y
@@ -607,7 +607,7 @@ valuation, for some `b` in `ℝ≥0` -/
 def intAdicAbv : AbsoluteValue R ℝ where
   toFun r := v.intAdicAbvDef hb r
   map_mul' _ _ := by simp [intAdicAbvDef]
-  nonneg' _ := NNReal.zero_le_coe
+  nonneg' _ := zero_le_coe
   eq_zero' _ := by simp [intAdicAbvDef, intValuation_def]
   add_le' _ _ := (isNonarchimedean_intAdicAbvDef v hb).add_le fun _ ↦ bot_le
 
@@ -628,9 +628,9 @@ theorem intAdicAbv_eq_one_iff : v.intAdicAbv hb r = 1 ↔ r ∉ v.asIdeal := by
 
 /-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbvDef := fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+def adicAbvDef (x : K) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.valuation K x)
 
-lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
+lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb) := by
   intro x y
   simp only [adicAbvDef]
   have h_mono := (toNNReal_strictMono hb).monotone
@@ -642,7 +642,7 @@ valuation, for some `b` in `ℝ≥0` -/
 def adicAbv : AbsoluteValue K ℝ where
   toFun x := v.adicAbvDef hb x
   map_mul' _ _ := by simp [adicAbvDef]
-  nonneg' _ := NNReal.zero_le_coe
+  nonneg' _ := zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
   add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
 
