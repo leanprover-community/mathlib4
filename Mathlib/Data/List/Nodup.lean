@@ -52,8 +52,6 @@ theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
 theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
 
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
-
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
   imp_not_comm.1 Nodup.notMem
 

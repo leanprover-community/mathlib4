@@ -764,12 +764,6 @@ theorem finprod_mem_insert_of_eq_one_if_notMem (h : a ∉ s → f a = 1) :
   rintro (rfl | hxs)
   exacts [not_imp_comm.1 h hx, hxs]
 
-@[deprecated (since := "2025-05-23")]
-alias finsum_mem_insert_of_eq_zero_if_not_mem := finsum_mem_insert_of_eq_zero_if_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias finprod_mem_insert_of_eq_one_if_not_mem := finprod_mem_insert_of_eq_one_if_notMem
-
 /-- If `f a = 1`, then the product of `f i` over `i ∈ insert a s` equals the product of `f i` over
 `i ∈ s`. -/
 @[to_additive

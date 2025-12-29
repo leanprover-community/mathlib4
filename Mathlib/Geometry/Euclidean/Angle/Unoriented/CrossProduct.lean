@@ -36,24 +36,10 @@ lemma norm_ofLp_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
   · linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +
       congrArg (· ^ 2) (cos_angle_mul_norm_mul_norm a b)
 
-@[deprecated norm_ofLp_crossProduct (since := "2025-05-04")]
-theorem norm_withLpEquiv_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
-    ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm (WithLp.equiv _ _ a ⨯₃ WithLp.equiv _ _ b)‖ =
-    ‖a‖ * ‖b‖ * sin (angle a b) := norm_ofLp_crossProduct ..
-
 /-- The L2 norm of the cross product of two real vectors (of type `Fin 3 → R`) equals the product
 of their individual L2 norms times the sine of the angle between them. -/
 lemma norm_toLp_symm_crossProduct (a b : Fin 3 → ℝ) :
     ‖toLp 2 (a ⨯₃ b)‖ = ‖toLp 2 a‖ * ‖toLp 2 b‖ * sin (angle (toLp 2 a) (toLp 2 b)) := by
   simp [← norm_ofLp_crossProduct (toLp 2 a) (toLp 2 b)]
-
-/-- The L2 norm of the cross product of two real vectors (of type `Fin 3 → R`) equals the product
-of their individual L2 norms times the sine of the angle between them. -/
-@[deprecated norm_toLp_symm_crossProduct (since := "2025-05-04")]
-theorem norm_withLpEquiv_symm_crossProduct (a b : Fin 3 → ℝ) :
-    ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm (a ⨯₃ b)‖ =
-    ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm a‖ * ‖(WithLp.equiv 2 (Fin 3 → ℝ)).symm b‖ *
-      sin (angle ((WithLp.equiv 2 (Fin 3 → ℝ)).symm a) ((WithLp.equiv 2 (Fin 3 → ℝ)).symm b)) :=
-  norm_toLp_symm_crossProduct ..
 
 end InnerProductGeometry

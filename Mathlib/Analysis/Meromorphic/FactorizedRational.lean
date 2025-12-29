@@ -159,8 +159,6 @@ theorem meromorphicOrderAt_eq {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.F
   filter_upwards
   simp [extractFactor z h₁d]
 
-@[deprecated (since := "2025-05-22")] alias order := meromorphicOrderAt_eq
-
 /--
 Factorized rational functions are nowhere locally constant zero.
 -/
@@ -171,8 +169,6 @@ theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
   · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
     simp [finprod_of_infinite_mulSupport hd]
-
-@[deprecated (since := "2025-05-22")] alias order_ne_top := meromorphicOrderAt_ne_top
 
 /--
 If `D` is a divisor, then the divisor of the factorized rational function equals `D`.

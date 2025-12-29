@@ -110,13 +110,6 @@ initialize_simps_projections Path (toFun → simps.apply, -toContinuousMap)
 theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 
-/-- A special version of `ContinuousMap.coe_coe`.
-
-When you delete this deprecated lemma, please rename `Path.coe_mk'` to `Path.coe_mk`. -/
-@[deprecated ContinuousMap.coe_coe (since := "2025-05-02")]
-theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
-  rfl
-
 @[simp]
 theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
   Subset.antisymm (range_subset_iff.mpr fun γ ↦ ⟨γ.source, γ.target⟩) fun f ⟨hf₀, hf₁⟩ ↦
@@ -195,9 +188,6 @@ theorem _root_.Continuous.pathExtend {γ : Y → Path x y} {f : Y → ℝ} (hγ 
     (hf : Continuous f) : Continuous fun t => (γ t).extend (f t) :=
   Continuous.IccExtend hγ hf
 
-@[deprecated (since := "2025-05-02")]
-alias _root_.Continuous.path_extend := Continuous.pathExtend
-
 /-- A useful special case of `Continuous.path_extend`. -/
 theorem continuous_extend : Continuous γ.extend :=
   γ.continuous.Icc_extend'
@@ -208,16 +198,10 @@ theorem _root_.Filter.Tendsto.pathExtend
     Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
-@[deprecated (since := "2025-05-02")]
-alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
-
 theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
     {y : Y} (hγ : ContinuousAt ↿γ (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
-
-@[deprecated (since := "2025-05-02")]
-alias _root_.ContinuousAt.path_extend := ContinuousAt.pathExtend
 
 @[simp, grind =]
 theorem extend_apply {a b : X} (γ : Path a b) {t : ℝ}

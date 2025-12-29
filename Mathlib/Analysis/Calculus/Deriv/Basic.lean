@@ -246,9 +246,6 @@ theorem derivWithin_zero_of_not_uniqueDiffWithinAt (h : ¬UniqueDiffWithinAt �
 theorem derivWithin_zero_of_notMem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_notMem_closure h, ContinuousLinearMap.zero_apply]
 
-@[deprecated (since := "2025-05-24")]
-alias derivWithin_zero_of_nmem_closure := derivWithin_zero_of_notMem_closure
-
 theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
   unfold deriv
   rw [fderiv_zero_of_not_differentiableAt h]

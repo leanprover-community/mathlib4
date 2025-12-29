@@ -602,9 +602,6 @@ theorem LinearIndepOn.notMem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : 
     f a ∉ Submodule.span K (f '' s) ↔ LinearIndepOn K f (insert a s) ∧ a ∉ s := by
   rw [h.mem_span_iff, _root_.not_imp]
 
-@[deprecated (since := "2025-05-23")]
-alias LinearIndepOn.not_mem_span_iff := LinearIndepOn.notMem_span_iff
-
 theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∈ Submodule.span K s ↔ (LinearIndepOn K id (insert a s) → a ∈ s) := by
   simpa using h.mem_span_iff (a := a)
@@ -612,9 +609,6 @@ theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K i
 theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∉ Submodule.span K s ↔ LinearIndepOn K id (insert a s) ∧ a ∉ s := by
   rw [h.mem_span_iff_id, _root_.not_imp]
-
-@[deprecated (since := "2025-05-23")]
-alias LinearIndepOn.not_mem_span_iff_id := LinearIndepOn.notMem_span_iff_id
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} := by

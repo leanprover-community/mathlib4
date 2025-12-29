@@ -136,19 +136,11 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_tr
 
 theorem left_notMem_Ioc : a ∉ Ioc a b := fun h => lt_irrefl _ (mem_Ioc.1 h).1
 
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioc := left_notMem_Ioc
-
 theorem left_notMem_Ioo : a ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).1
-
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioo := left_notMem_Ioo
 
 theorem right_notMem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).2
 
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ico := right_notMem_Ico
-
 theorem right_notMem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
-
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ioo := right_notMem_Ioo
 
 @[gcongr]
 theorem Icc_subset_Icc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := by
@@ -750,8 +742,6 @@ theorem Ioi_insert [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
 
 theorem notMem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioi_self := notMem_Ioi_self
-
 -- Purposefully written the other way around
 /-- `Finset.cons` version of `Finset.Ioi_insert`. -/
 theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a notMem_Ioi_self := by
@@ -777,8 +767,6 @@ theorem Iio_insert [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
   simp_rw [Finset.mem_insert, mem_Iic, mem_Iio, le_iff_lt_or_eq, or_comm]
 
 theorem notMem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iio_self := notMem_Iio_self
 
 -- Purposefully written the other way around
 /-- `Finset.cons` version of `Finset.Iio_insert`. -/
@@ -1044,13 +1032,9 @@ theorem notMem_uIcc_of_lt : c < a → c < b → c ∉ [[a, b]] := by
   rw [mem_uIcc]
   exact Set.notMem_uIcc_of_lt
 
-@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_lt := notMem_uIcc_of_lt
-
 theorem notMem_uIcc_of_gt : a < c → b < c → c ∉ [[a, b]] := by
   rw [mem_uIcc]
   exact Set.notMem_uIcc_of_gt
-
-@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_gt := notMem_uIcc_of_gt
 
 theorem uIcc_subset_uIcc_iff_le :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ min a₂ b₂ ≤ min a₁ b₁ ∧ max a₁ b₁ ≤ max a₂ b₂ :=

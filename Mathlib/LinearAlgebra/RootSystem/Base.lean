@@ -263,14 +263,10 @@ lemma sub_notMem_range_root
   · simpa [hij, f] using le_of_lt pos j
   · simpa [hij, f] using le_of_lt neg i
 
-@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
-
 lemma sub_notMem_range_coroot
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
   b.flip.sub_notMem_range_root hi hj
-
-@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
 lemma pairingIn_le_zero_of_ne [IsDomain R] [P.IsCrystallographic] [Finite ι]
     {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :

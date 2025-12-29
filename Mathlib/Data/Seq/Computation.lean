@@ -346,8 +346,6 @@ theorem of_think_terminates {s : Computation α} : Terminates (think s) → Term
 
 theorem notMem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradiction
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => notMem_empty a h
 
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by

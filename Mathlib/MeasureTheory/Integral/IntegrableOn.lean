@@ -408,18 +408,11 @@ theorem IntegrableOn.integrable_of_ae_notMem_eq_zero
   apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
   filter_upwards [h't] with x hx h'x using hx h'x.2
 
-@[deprecated (since := "2025-05-23")]
-alias IntegrableOn.integrable_of_ae_not_mem_eq_zero := IntegrableOn.integrable_of_ae_notMem_eq_zero
-
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
     {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
   hf.integrable_of_ae_notMem_eq_zero (Eventually.of_forall fun x hx => h't x hx)
-
-@[deprecated (since := "2025-05-23")]
-alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
-  IntegrableOn.integrable_of_forall_notMem_eq_zero
 
 theorem IntegrableOn.of_inter_support {f : α → ε'}
     (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :

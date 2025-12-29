@@ -231,8 +231,6 @@ lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} 
 
 namespace UnitAddCircle
 
-attribute [local instance] Real.fact_zero_lt_one
-
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 
 /-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,

@@ -550,9 +550,6 @@ theorem dist_orthogonalProjection_ne_zero_of_notMem {s : AffineSubspace 𝕜 P} 
     dist p (orthogonalProjection s p) ≠ 0 :=
   mt dist_orthogonalProjection_eq_zero_iff.mp hp
 
-@[deprecated (since := "2025-05-23")]
-alias dist_orthogonalProjection_ne_zero_of_not_mem := dist_orthogonalProjection_ne_zero_of_notMem
-
 @[simp] lemma reflection_map (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (f : P →ᵃⁱ[𝕜] P₂)
     [(s.map f.toAffineMap).direction.HasOrthogonalProjection] (p : P) :

@@ -276,8 +276,6 @@ instance : Inhabited ZFSet :=
 theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
   Quotient.inductionOn x PSet.notMem_empty
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 @[simp, norm_cast] lemma coe_empty : ((∅ : ZFSet.{u}) : Set ZFSet.{u}) = ∅ := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_empty := coe_empty
@@ -521,8 +519,6 @@ theorem mem_sUnion_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ 
 theorem notMem_sInter_of_notMem {x y z : ZFSet} (hy : y ∉ z) (hz : z ∈ x) : y ∉ ⋂₀ x :=
   fun hx => hy <| mem_of_mem_sInter hx hz
 
-@[deprecated (since := "2025-05-23")] alias not_mem_sInter_of_not_mem := notMem_sInter_of_notMem
-
 @[simp]
 theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
   ext fun y => by simp_rw [mem_sUnion, mem_singleton, exists_eq_left]
@@ -639,8 +635,6 @@ theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
 
 theorem notMem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>

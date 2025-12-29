@@ -104,8 +104,6 @@ variable [DecidableEq α]
 theorem card_insert_of_notMem (h : a ∉ s) : #(insert a s) = #s + 1 := by
   grind [=_ cons_eq_insert]
 
-@[deprecated (since := "2025-05-23")] alias card_insert_of_not_mem := card_insert_of_notMem
-
 theorem card_insert_of_mem (h : a ∈ s) : #(insert a s) = #s := by rw [insert_eq_of_mem h]
 
 theorem card_insert_le (a : α) (s : Finset α) : #(insert a s) ≤ #s + 1 := by grind
@@ -596,9 +594,6 @@ theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
 omit [DecidableEq α] in
 theorem exists_mem_notMem_of_card_lt_card (h : #s < #t) : ∃ e, e ∈ t ∧ e ∉ s := by
   classical simpa [Finset.Nonempty] using sdiff_nonempty_of_card_lt_card h
-
-@[deprecated (since := "2025-05-23")]
-alias exists_mem_not_mem_of_card_lt_card := exists_mem_notMem_of_card_lt_card
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :

@@ -77,9 +77,6 @@ lemma Module.Finite.of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R]
   use T.image (algebraMap S Sₚ)
   simpa using span_eq_top_localization_localization Rₚ M Sₚ hT
 
-@[deprecated (since := "2025-05-01")] alias Module.Finite_of_isLocalization :=
-  Module.Finite.of_isLocalization
-
 open Algebra nonZeroDivisors in
 instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
     Module.Finite (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=

@@ -646,9 +646,6 @@ theorem coe_strictlyPositive : ↑(strictlyPositive R M) = Set.Ioi (0 : M) :=
 
 lemma strictlyPositive_le_positive : strictlyPositive R M ≤ positive R M := fun _ => le_of_lt
 
-@[deprecated (since := "2025-05-29")]
-alias positive_le_strictlyPositive := strictlyPositive_le_positive
-
 /-- The strictly positive cone of an ordered module is always salient. -/
 theorem salient_strictlyPositive : Salient (strictlyPositive R M) :=
   salient_positive.anti strictlyPositive_le_positive

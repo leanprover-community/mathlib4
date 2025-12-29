@@ -413,8 +413,6 @@ theorem mk_of_mem (hi : i ∈ s) : (mk s x : ∀ i, β i) i = x ⟨i, hi⟩ :=
 theorem mk_of_notMem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
   dif_neg hi
 
-@[deprecated (since := "2025-05-23")] alias mk_of_not_mem := mk_of_notMem
-
 theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := by
   intro x y H
   ext i
@@ -860,8 +858,6 @@ theorem mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∈ f.support ↔ f i �
 
 theorem notMem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f i = 0 :=
   not_iff_comm.1 mem_support_iff.symm
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[simp]
 theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=

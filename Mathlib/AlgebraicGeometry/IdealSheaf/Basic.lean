@@ -536,9 +536,6 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
     Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
     IsAffineOpen.range_fromSpec]
 
-@[deprecated (since := "2025-05-16")]
-alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
-
 /-- `support` and `vanishingIdeal` forms a Galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
 lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=

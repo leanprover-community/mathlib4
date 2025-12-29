@@ -533,8 +533,6 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
   idxOf_eq_length_iff.2
 
-@[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
-
 theorem idxOf_eq_zero_iff_eq_nil_or_head_eq {l : List α} (a : α) :
     l.idxOf a = 0 ↔ l = [] ∨ l.head? = a := by
   cases l
@@ -549,8 +547,6 @@ theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) =
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by grind
-
-@[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
 theorem IsPrefix.idxOf_le (hl : l₁ <+: l₂) (a : α) : l₁.idxOf a ≤ l₂.idxOf a := by
   obtain ⟨l₃, rfl⟩ := hl
@@ -858,8 +854,6 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
       ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
-
-@[deprecated (since := "2025-05-23")] alias append_cons_inj_of_not_mem := append_cons_inj_of_notMem
 
 section FoldlEqFoldr
 
