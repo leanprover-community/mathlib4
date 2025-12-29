@@ -35,13 +35,29 @@ lemma sqrt_mul_le_half_add (x y : ℝ≥0) : sqrt (x * y) ≤ (x + y) / 2 := by
 
 open Function
 
+/-- `agmSequences x y` returns the pair of sequences converging to the arithmetic-geometric mean
+starting from `x` and `y`, with the sequence of geometric means first. -/
+noncomputable def agmSequences (x y : ℝ≥0) : (ℕ → ℝ≥0) × (ℕ → ℝ≥0) :=
+  Equiv.arrowProdEquivProdArrow _ _ _ ((fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[·] (x, y))
+
 /-- One step of the iteration defining the arithmetic-geometric mean. -/
 noncomputable def agmStep (ga : ℝ≥0 × ℝ≥0) : ℝ≥0 × ℝ≥0 :=
   (sqrt (ga.1 * ga.2), (ga.1 + ga.2) / 2)
 
-variable {g a : ℝ≥0} (h : g ≤ a)
+variable {g a : ℝ≥0} (h : g ≤ a) {n : ℕ}
 
-lemma agmStep_iterate_comm {n : ℕ} (hn : n ≠ 0) : agmStep^[n] (g, a) = agmStep^[n] (a, g) := by
+lemma agmSequences_fst_le_agmSequences_snd :
+    (agmSequences g a).1 (n + 1) ≤ (agmSequences g a).2 (n + 1) := by
+  simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, iterate_succ', comp_apply]
+  exact sqrt_mul_le_half_add ..
+
+lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences g a).1 (n + 1) := by
+  sorry
+
+lemma agmSequences_snd_antitone : Antitone fun n ↦ (agmSequences g a).2 (n + 1) := by
+  sorry
+
+lemma agmStep_iterate_comm (hn : n ≠ 0) : agmStep^[n] (g, a) = agmStep^[n] (a, g) := by
   rw [← Nat.sub_one_add_one hn, iterate_add, iterate_one, comp_apply]
   congr 1
   simp only [agmStep, add_comm, mul_comm]
