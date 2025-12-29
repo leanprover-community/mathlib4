@@ -113,8 +113,6 @@ lemma filter_piFinset_of_notMem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (
     {f ∈ piFinset t | f a = x} = ∅ := by
   grind
 
-@[deprecated (since := "2025-05-23")] alias filter_piFinset_of_not_mem := filter_piFinset_of_notMem
-
 lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
     (hts : t ⊆ s i) : piFinset (Function.update s i t) = {f ∈ piFinset s | f i ∈ t} := by
   grind
