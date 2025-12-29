@@ -85,7 +85,7 @@ theorem coev_naturality {X Y : Over J} (g : X ⟶ Y) :
   coev f |>.naturality g
 
 /-- The first triangle identity for the counit and unit of the adjunction. -/
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem ev_coev (X : Over J) :
     (pullback f).map (coev f |>.app X) ≫ (ev f |>.app (pullback f |>.obj X)) =
     𝟙 (pullback f |>.obj X) :=
