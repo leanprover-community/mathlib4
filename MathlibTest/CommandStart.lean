@@ -342,6 +342,17 @@ section Desiderata_and_todos
 -- Pretty-printing of unification hints: TODO allow for an additional space
 public def Foo := Nat
 
+/--
+warning: remove space in the source
+
+This part of the code
+  '⊢ Foo'
+should be written as
+  '⊢Foo'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
 #guard_msgs in
 unif_hint (_C : Foo) where
   ⊢ Foo =?= Foo
