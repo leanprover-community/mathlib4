@@ -286,9 +286,8 @@ lemma IsPath.length_eq_one_of_mem_edges
     rcases p with (_ | ⟨_, _, p⟩)
     · aesop
     · aesop
-    · aesop
-      -- I don't know what happened here, `aesop` change `p✝` to `p`,
-      -- but `aesop?` cannot generate anything benifit.
+    · -- `aesop` change `p✝` to `p`, but `aesop?` generate nothing valuable.
+      aesop (config := {warnOnNonterminal := false})
       have := by exact SimpleGraph.Walk.fst_mem_support_of_mem_edges p h_3
       exact Classical.not_forall_not.mp fun a ↦ right this
   obtain ⟨q, hq⟩ := h_cycle
