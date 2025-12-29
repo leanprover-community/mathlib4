@@ -536,7 +536,7 @@ section Mul
 variable [CompleteSpace R]
 
 instance instMul : Mul (AddLp M R) where
-  mul f g := ⟨⟨(⇑f.toLp) ⋆₊ₘ (⇑g.toLp), lp.one_addMulConvolution_memℓp f.toLp g.toLp⟩⟩
+  mul f g := ⟨(⇑f.toLp) ⋆₊ₘ (⇑g.toLp), lp.one_addMulConvolution_memℓp f.toLp g.toLp⟩
 
 end Mul
 
@@ -548,7 +548,7 @@ section One
 variable [CompleteSpace R] [DecidableEq M]
 
 instance instOne : One (AddLp M R) where
-  one := ⟨⟨addDelta 1, lp.one_addDelta_memℓp⟩⟩
+  one := ⟨addDelta 1, lp.one_addDelta_memℓp⟩
 
 end One
 
