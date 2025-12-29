@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Analytic.Polynomial
 public import Mathlib.Analysis.Complex.JensenFormula
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-public import Mathlib.Analysis.Polynomial.Height
+public import Mathlib.Analysis.Polynomial.Norm
 
 /-!
 # Mahler measure of complex polynomials
