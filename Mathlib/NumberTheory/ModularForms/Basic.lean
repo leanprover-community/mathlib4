@@ -591,28 +591,25 @@ open Filter SlashInvariantForm
 
 /-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
-def prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ} (m : ℤ)
+@[simps!]
+def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
-  toSlashInvariantForm := SlashInvariantForm.prod hs m hm (fun i ↦ (F i).1)
+  toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i).1)
   holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).1)
       (by intro (i : ι) hi; simpa using (F i).holo')
   bdd_at_cusps' hc γ hγ := by
     change IsBoundedAtImInfty (((∏ i ∈ s, ((F i).1 : ℍ → ℂ)) ∣[m] γ))
-    rw [hm, prod_slash_sum_weights hs, IsBoundedAtImInfty]
+    rw [hm, prod_slash_sum_weights, IsBoundedAtImInfty]
     refine BoundedAtFilter.smul _ (BoundedAtFilter.prod (s := s) ?_)
     intro i hi
     simpa [toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
 
-@[simp]
-lemma coe_prod {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ι → ℤ} (m : ℤ)
-    (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (F : (i : ι) → ModularForm Γ (k i)) : (prod hs m hm F).toFun = ∏ i ∈ s, (F i).toFun := by rfl
-
-def prodEqualWeights {ι : Type} {s : Finset ι} (hs : s.Nonempty) {k : ℤ}
+@[simps!]
+def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
      {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
-  prod hs (s.card * k) (by simp) F
+  prod (s := s) (s.card * k) (by simp) F
 
 /-- Given `ModularForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `ι`, a `Fintype`, with weight `m = ∑ i ∈ s, k i`. -/
