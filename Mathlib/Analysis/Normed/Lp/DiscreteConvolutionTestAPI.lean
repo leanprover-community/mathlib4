@@ -24,6 +24,42 @@ where `mulFiber x = {(a, b) | a * b = x}` is the fiber of the multiplication map
 
 This is analogous to `MeasureTheory.convolution` but for the discrete (counting measure) setting.
 
+## Convolution Examples
+
+**Additive index `[AddMonoid ℕ]` (polynomials/power series):**
+```
+(f ⋆ g)(3) = f(0)·g(3) + f(1)·g(2) + f(2)·g(1) + f(3)·g(0)
+```
+This is polynomial multiplication: if `f` and `g` represent coefficients, then `(f ⋆ g)(n)`
+is the n-th coefficient of the product.
+
+**Multiplicative index `[Group G]` (group algebras):**
+```
+(f ⋆ g)(x) = ∑ f(a) · g(b)    where a, b range over all pairs with a·b = x
+            a·b = x
+```
+
+## Variables and Typeclasses
+
+### Basic Convolution
+
+| Variable | Type (example)       | Role                                    |
+|----------|----------------------|-----------------------------------------|
+| `M`      | `[AddMonoid M]`      | Additive index                          |
+| `G`      | `[Monoid G]`         | Multiplicative index (group algebras)   |
+| `R`      | `[CommSemiring R]`   | Coefficient ring                        |
+| `f`, `g` | `M → R`              | Input functions to convolve             |
+| `x`      | `M`                  | Evaluation point for `(f ⋆ g)(x)`       |
+| `a`, `b` | `M`                  | Summation indices with `a * b = x`      |
+
+### Generalized (Bilinear) Convolution
+
+| Variable       | Type                 | Role                                    |
+|----------------|----------------------|-----------------------------------------|
+| `S`            | `[CommSemiring S]`   | Scalar ring for module structures       |
+| `E`, `E'`, `F` | `[Module S E]`, etc. | Codomains: `f : M → E`, `g : M → E'`    |
+| `L`            | `E →ₗ[S] E' →ₗ[S] F`  | Bilinear map combining values           |
+
 ## Design Notes
 
 ### Bilinear Map Approach
@@ -575,26 +611,12 @@ with a sum over the triple fiber. -/
 @[to_additive leftAddAssocEquiv /-- Left association equivalence for additive associativity. -/]
 def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x where
   toFun := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ =>
-    ⟨⟨a, b, d⟩, by
-      simp only [tripleFiber, tripleMulMap, Set.mem_preimage, Set.mem_singleton_iff]
-      simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-        Function.uncurry_apply_pair] at hcd hab
-      rw [← hcd, ← hab, mul_assoc]⟩
+    ⟨⟨a, b, d⟩, by rw [mem_tripleFiber]; rw [mem_mulFiber] at hcd hab; rw [← hcd, ← hab, mul_assoc]⟩
   invFun := fun ⟨⟨a, b, d⟩, habd⟩ =>
-    ⟨⟨⟨a * b, d⟩, by
-        simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-          Function.uncurry_apply_pair]
-        simp only [tripleFiber, tripleMulMap, Set.mem_preimage, Set.mem_singleton_iff] at habd
-        exact habd⟩,
-     ⟨⟨a, b⟩, by
-        simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-          Function.uncurry_apply_pair]⟩⟩
+    ⟨⟨⟨a * b, d⟩, by rw [mem_mulFiber]; rw [mem_tripleFiber] at habd; exact habd⟩,
+     ⟨⟨a, b⟩, by rw [mem_mulFiber]⟩⟩
   left_inv := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ => by
-    simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-      Function.uncurry_apply_pair] at hab
-    simp only [Sigma.mk.injEq, hab, true_and]
-    subst hab
-    simp_all only [heq_eq_eq]
+    simp only [mem_mulFiber] at hab; subst hab; rfl
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
 /-- Right association equivalence for associativity proof.
@@ -604,26 +626,12 @@ with a sum over the triple fiber. -/
 @[to_additive rightAddAssocEquiv /-- Right association equivalence for additive associativity. -/]
 def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFiber x where
   toFun := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ =>
-    ⟨⟨a, b, d⟩, by
-      simp only [tripleFiber, tripleMulMap, Set.mem_preimage, Set.mem_singleton_iff]
-      simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-        Function.uncurry_apply_pair] at hae hbd
-      rw [← hae, ← hbd, mul_assoc]⟩
+    ⟨⟨a, b, d⟩, by rw [mem_tripleFiber]; rw [mem_mulFiber] at hae hbd; rw [← hae, ← hbd, mul_assoc]⟩
   invFun := fun ⟨⟨a, b, d⟩, habd⟩ =>
-    ⟨⟨⟨a, b * d⟩, by
-        simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-          Function.uncurry_apply_pair]
-        simp only [tripleFiber, tripleMulMap, Set.mem_preimage, Set.mem_singleton_iff] at habd
-        rw [← mul_assoc]; exact habd⟩,
-     ⟨⟨b, d⟩, by
-        simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-          Function.uncurry_apply_pair]⟩⟩
+    ⟨⟨⟨a, b * d⟩, by rw [mem_mulFiber]; rw [mem_tripleFiber] at habd; rw [← mul_assoc]; exact habd⟩,
+     ⟨⟨b, d⟩, by rw [mem_mulFiber]⟩⟩
   left_inv := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ => by
-    simp only [mulFiber, mulMap, Set.mem_preimage, Set.mem_singleton_iff,
-      Function.uncurry_apply_pair] at hbd
-    simp only [Sigma.mk.injEq, hbd, true_and]
-    subst hbd
-    simp_all only [heq_eq_eq]
+    simp only [mem_mulFiber] at hbd; subst hbd; rfl
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
 end TripleFiber
@@ -756,24 +764,18 @@ variable [AddMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
 
 theorem one_mul (a : G → R) : one ⋆ a = a := by
   ext n; simp only [apply_eq, one]
-  rw [sum_eq_single (0, n)]
-  · simp only [Pi.single_eq_same, _root_.one_mul]
+  rw [sum_eq_single (0, n), Pi.single_eq_same, _root_.one_mul]
   · intro ⟨x, y⟩ hxy hne
-    simp_all only [mem_antidiagonal, Pi.single_apply]
-    subst hxy
-    simp_all only [ne_eq, Prod.mk.injEq, not_and, zero_add,
-      not_true_eq_false, imp_false, ↓reduceIte, MulZeroClass.zero_mul]
+    simp only [mem_antidiagonal] at hxy; subst hxy
+    simp [show x ≠ 0 from fun h => hne (by simp [h])]
   · simp [mem_antidiagonal]
 
 theorem mul_one (a : G → R) : a ⋆ one = a := by
   ext n; simp only [apply_eq, one]
-  rw [sum_eq_single (n, 0)]
-  · simp only [Pi.single_eq_same, _root_.mul_one]
+  rw [sum_eq_single (n, 0), Pi.single_eq_same, _root_.mul_one]
   · intro ⟨x, y⟩ hxy hne
-    simp only [mem_antidiagonal] at hxy
-    simp only [ne_eq, Prod.mk.injEq, not_and] at hne
-    have : y ≠ 0 := fun h => hne (by simp [← hxy, h]) h
-    simp [this]
+    simp only [mem_antidiagonal] at hxy; subst hxy
+    simp [show y ≠ 0 from fun h => hne (by simp only [h, add_zero])]
   · simp [mem_antidiagonal]
 
 end IdentityAntidiagonal

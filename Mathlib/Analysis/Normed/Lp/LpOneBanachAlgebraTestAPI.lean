@@ -60,6 +60,16 @@ normed ring with submultiplicative norm.
 * `AddLp.instIsScalarTower`, `AddLp.instSMulCommClass`: scalar tower and commutativity
 * `AddLp.instAlgebra`, `AddLp.instNormedAlgebra`: algebra instances
 
+## Variables and Typeclasses
+
+| Variable | Type (example)          | Role                                    |
+|----------|-------------------------|-----------------------------------------|
+| `M`      | `[AddMonoid M]`         | Additive index                          |
+| `G`      | `[Monoid G]`            | Multiplicative index (group algebras)   |
+| `R`      | `[NormedCommRing R]`    | Coefficient ring with norm              |
+| `f`, `g` | `lp (fun _ : M => R) 1` | ℓ¹ functions (norm `∑ ‖f(m)‖ < ∞`)      |
+| `𝕜`      | `[NormedField 𝕜]`       | Scalar field for `[NormedAlgebra 𝕜 R]`  |
+
 ## Design Notes
 
 ### Multiplicative vs Additive Convolution
@@ -732,7 +742,6 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (AddLp M R) where
   norm_smul_le := norm_smul_le
 
 end AddLp
-
 
 end AddLpAlgebra
 
