@@ -6,6 +6,7 @@ Authors: Fengyang Wang
 module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Algebra.Algebra.Bilinear
@@ -101,6 +102,11 @@ bypassing `LinearMap.mul`.
 * `DiscreteConvolution.mulConvolution f g`: ring multiplication convolution `f ⋆ₘ g`
 * `DiscreteConvolution.delta e`: identity element `δ₁(e)` for convolution
 
+### CauchyProduct (finite sums for HasAntidiagonal)
+* `DiscreteConvolution.CauchyProduct.apply`: `(a ⋆ b) n = ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2`
+* `DiscreteConvolution.CauchyProduct.one`: identity `δ₀`
+* `DiscreteConvolution.CauchyProduct.assoc`: associativity without `CompleteSpace`
+
 ### Summability Predicates
 * `DiscreteConvolution.ConvolutionExistsAt L f g x`: convolution sum converges at `x`
 * `DiscreteConvolution.ConvolutionExists L f g`: convolution exists everywhere
@@ -118,6 +124,12 @@ bypassing `LinearMap.mul`.
 * `DiscreteConvolution.zero_mulConvolution`, `mulConvolution_zero`: zero laws
 * `DiscreteConvolution.delta_mulConvolution`, `mulConvolution_delta`: identity laws
 * `DiscreteConvolution.mulConvolution_comm`: commutativity (when M commutative)
+
+### CauchyProduct Ring Axioms
+* `CauchyProduct.assoc`: associativity via `sum_nbij'`
+* `CauchyProduct.one_mul`, `CauchyProduct.mul_one`: identity laws
+* `CauchyProduct.comm`: commutativity (when G commutative)
+* `CauchyProduct.left_distrib`, `CauchyProduct.right_distrib`: distributivity
 
 ### Identity Laws
 * `DiscreteConvolution.delta_convolution`: left identity
@@ -139,7 +151,9 @@ bypassing `LinearMap.mul`.
 ## Notation
 
 * `f ⋆[L] g` for discrete convolution with bilinear map `L`
+* `f ⋆₊[L] g` for additive convolution
 * `f ⋆ₘ g` for ring multiplication convolution
+* `a ⋆ b` for CauchyProduct (finite sum)
 
 ## TODO
 
@@ -150,6 +164,8 @@ bypassing `LinearMap.mul`.
 @[expose] public section
 
 open scoped BigOperators NNReal ENNReal
+
+open Finset
 
 noncomputable section
 
@@ -608,6 +624,139 @@ theorem addConvolution_eq_sum_antidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f :
     (fun ab => (L (f ab.1.1)) (g ab.1.2))
 
 end Antidiagonal
+
+/-! ## CauchyProduct: Finite Antidiagonal Convolution
+
+For types with `HasAntidiagonal` (e.g., ℕ, ℕ × ℕ, List α), convolution is a finite sum
+over the antidiagonal. This gives a purely algebraic ring structure without requiring
+`CompleteSpace` or `tsum` convergence.
+
+This is equivalent to `addConvolution` when applied to `LinearMap.mul`, but the finite-sum
+formulation allows proving associativity via `sum_nbij'` rather than `tsum_sigma'`. -/
+
+namespace CauchyProduct
+
+variable {G : Type*} {R : Type*}
+
+/-! ### Product Definition -/
+
+section Product
+
+variable [AddMonoid G] [HasAntidiagonal G] [Semiring R]
+
+/-- Cauchy product (convolution) via finite antidiagonal sum. -/
+def apply (a b : G → R) : G → R :=
+  fun n => ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2
+
+/-- Notation for Cauchy product convolution. -/
+scoped notation:70 a:70 " ⋆ " b:71 => apply a b
+
+theorem apply_eq (a b : G → R) (n : G) :
+    (a ⋆ b) n = ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2 := rfl
+
+/-! ### Ring Axioms -/
+
+theorem left_distrib (a b c : G → R) : a ⋆ (b + c) = a ⋆ b + a ⋆ c := by
+  ext n; simp only [Pi.add_apply, apply_eq, mul_add, Finset.sum_add_distrib]
+
+theorem right_distrib (a b c : G → R) : (a + b) ⋆ c = a ⋆ c + b ⋆ c := by
+  ext n; simp only [apply_eq, Pi.add_apply, add_mul, Finset.sum_add_distrib]
+
+@[simp]
+theorem zero_mul (a : G → R) : (0 : G → R) ⋆ a = 0 := by
+  ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.zero_mul, Finset.sum_const_zero]
+
+@[simp]
+theorem mul_zero (a : G → R) : a ⋆ (0 : G → R) = 0 := by
+  ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.mul_zero, Finset.sum_const_zero]
+
+/-! ### Associativity via bijection on triple sums -/
+
+/-- Associativity of Cauchy product, proved via bijection on sigma types. -/
+theorem assoc (a b c : G → R) : (a ⋆ b) ⋆ c = a ⋆ (b ⋆ c) := by
+  ext n
+  simp only [apply_eq, sum_mul, mul_sum]
+  rw [Finset.sum_sigma', Finset.sum_sigma']
+  refine Finset.sum_nbij'
+    (fun x => ⟨(x.2.1, x.2.2 + x.1.2), (x.2.2, x.1.2)⟩)
+    (fun x => ⟨(x.1.1 + x.2.1, x.2.2), (x.1.1, x.2.1)⟩)
+    ?_ ?_ ?_ ?_ ?_
+  all_goals intro x hx
+  all_goals simp_all only [Finset.mem_sigma, Finset.mem_antidiagonal, Prod.mk.eta, Sigma.eta]
+  · exact ⟨by rw [← hx.1, ← hx.2, add_assoc], trivial⟩
+  · exact ⟨by rw [← hx.1, ← hx.2, add_assoc], trivial⟩
+  · exact mul_assoc _ _ _
+
+theorem smul_mul (c : R) (a b : G → R) : (c • a) ⋆ b = c • (a ⋆ b) := by
+  ext n; simp only [apply_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum, mul_assoc]
+
+end Product
+
+/-! ### Identity Element -/
+
+section Identity
+
+variable [AddMonoid G] [DecidableEq G] [Semiring R]
+
+/-- The multiplicative identity: `δ₀(0) = 1`, `δ₀(g) = 0` for `g ≠ 0`. -/
+def one : G → R := Pi.single 0 1
+
+@[simp]
+theorem one_apply_zero : (one : G → R) 0 = 1 := Pi.single_eq_same 0 1
+
+theorem one_apply_ne {g : G} (hg : g ≠ 0) : (one : G → R) g = 0 := Pi.single_eq_of_ne hg 1
+
+end Identity
+
+/-! ### Identity Laws -/
+
+section IdentityAntidiagonal
+
+variable [AddMonoid G] [DecidableEq G] [HasAntidiagonal G] [Semiring R]
+
+theorem one_mul (a : G → R) : one ⋆ a = a := by
+  ext n; simp only [apply_eq, one]
+  rw [sum_eq_single (0, n)]
+  · simp only [Pi.single_eq_same, _root_.one_mul]
+  · intro ⟨x, y⟩ hxy hne
+    simp_all only [mem_antidiagonal, Pi.single_apply]
+    subst hxy
+    simp_all only [ne_eq, Prod.mk.injEq, not_and, zero_add,
+      not_true_eq_false, imp_false, ↓reduceIte, MulZeroClass.zero_mul]
+  · simp [mem_antidiagonal]
+
+theorem mul_one (a : G → R) : a ⋆ one = a := by
+  ext n; simp only [apply_eq, one]
+  rw [Finset.sum_eq_single (n, 0)]
+  · simp only [Pi.single_eq_same, _root_.mul_one]
+  · intro ⟨x, y⟩ hxy hne
+    simp only [Finset.mem_antidiagonal] at hxy
+    simp only [ne_eq, Prod.mk.injEq, not_and] at hne
+    have : y ≠ 0 := fun h => hne (by simp [← hxy, h]) h
+    simp [this]
+  · simp [Finset.mem_antidiagonal]
+
+end IdentityAntidiagonal
+
+/-! ### Commutativity -/
+
+section Comm
+
+variable [AddCommMonoid G] [HasAntidiagonal G] [CommSemiring R]
+
+theorem comm (a b : G → R) : a ⋆ b = b ⋆ a := by
+  ext n; simp only [apply_eq]
+  rw [← Finset.map_swap_antidiagonal (n := n), Finset.sum_map]
+  simp only [Function.Embedding.coeFn_mk, Prod.fst_swap,
+    Prod.snd_swap, map_swap_antidiagonal, mul_comm]
+
+theorem mul_smul (c : R) (a b : G → R) : a ⋆ (c • b) = c • (a ⋆ b) := by
+  ext n; simp only [apply_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum]
+  apply Finset.sum_congr rfl; intro kl _; ring
+
+end Comm
+
+end CauchyProduct
 
 end DiscreteConvolution
 
