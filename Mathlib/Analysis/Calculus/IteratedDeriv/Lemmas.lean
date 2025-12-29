@@ -234,4 +234,13 @@ lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
   | succ n IH =>
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
 
+lemma iteratedDeriv_comp_sub_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (s - z)) = fun t ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (s - t) := by
+  induction n with
+  | zero => simp [iteratedDeriv_zero]
+  | succ n IH =>
+    simpa [iteratedDeriv_succ, IH] using funext <| fun _ ↦ by
+      rw [deriv_fun_const_smul', deriv_comp_const_sub]
+      module
+
 end shift_invariance
