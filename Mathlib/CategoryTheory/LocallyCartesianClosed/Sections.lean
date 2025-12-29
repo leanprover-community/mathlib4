@@ -115,16 +115,17 @@ theorem sections_uncurry_curry {X : Over I} {A : C} {u : (toOver I).obj A ⟶ X}
 
 open Adjunction
 
+variable (I)
+
 /-- An auxiliary definition which is used to define the adjunction between the star functor
 and the sections functor. See starSectionsAdjunction`. -/
 @[simps homEquiv]
 def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
-  homEquiv A X := {
-    toFun := sectionsCurry
-    invFun := sectionsUncurry
-    left_inv {u} := sections_uncurry_curry
-    right_inv {v} := sections_curry_uncurry
-  }
+  homEquiv A X :=
+    { toFun := sectionsCurry
+      invFun := sectionsUncurry
+      left_inv {u} := sections_uncurry_curry
+      right_inv {v} := sections_curry_uncurry }
   homEquiv_naturality_left_symm := by
     intro A' A X g v
     dsimp [sectionsCurry, sectionsUncurry, curryRightUnitorHom]
@@ -139,11 +140,10 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
     · simp [← curry_natural_right]
     · simp
 
-variable (I) in
 /-- The adjunction between the toOver functor and the sections functor. -/
 @[simps! unit_app counit_app]
 def toOverSectionsAdj : toOver I ⊣ sections I :=
-  .mkOfHomEquiv coreHomEquivToOverSections
+  .mkOfHomEquiv (coreHomEquivToOverSections I)
 
 end Over
 
