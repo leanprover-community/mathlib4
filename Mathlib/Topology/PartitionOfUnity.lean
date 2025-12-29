@@ -289,23 +289,16 @@ theorem exists_finset_nhds' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X
   have : ∑ᶠ i : ι, ρ i x = ∑ i ∈ I, ρ i x := finsum_eq_sum_of_support_subset _ hx
   rwa [eq_comm, ρ.sum_eq_one x_in] at this
 
-@[deprecated (since := "2025-05-22")] alias exists_finset_nhd' := exists_finset_nhds'
-
 theorem exists_finset_nhds (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, ∑ i ∈ I, ρ i x = 1 ∧ support (ρ · x) ⊆ I := by
   rcases ρ.exists_finset_nhds' x₀ with ⟨I, H⟩
   use I
   rwa [nhdsWithin_univ, ← eventually_and] at H
 
-@[deprecated (since := "2025-05-22")] alias exists_finset_nhd := exists_finset_nhds
-
 theorem exists_finset_nhds_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
   f.locallyFinite.exists_finset_nhds_support_subset hso ho x
-
-@[deprecated (since := "2025-05-22")]
-alias exists_finset_nhd_support_subset := exists_finset_nhds_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
 `g : ι → X → E` is a family of functions such that each `g i` is continuous on `U i`, then the sum

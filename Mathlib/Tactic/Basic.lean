@@ -88,7 +88,7 @@ h₂ : b = c
 ⊢ a = c
 ```
 -/
-syntax (name := introv) "introv " (ppSpace colGt binderIdent)* : tactic
+syntax (name := introv) "introv" (ppSpace colGt binderIdent)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
   match stx with
   | `(tactic| introv)                     => introsDep

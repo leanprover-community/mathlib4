@@ -169,9 +169,6 @@ theorem erase_orderedInsert_of_notMem [DecidableEq α]
     (xs.orderedInsert r x).erase x = xs := by
   induction xs <;> grind [IsRefl]
 
-@[deprecated (since := "2025-05-23")]
-alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
-
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)
     (hxs : Pairwise r xs) :
@@ -330,7 +327,7 @@ variable {r : α → α → Prop} [IsAntisymm α r]
 
 /-- Variant of `Perm.eq_of_pairwise` using relation typeclasses. -/
 theorem Perm.eq_of_pairwise' {l₁ l₂ : List α} :
-    Pairwise r l₁ →  Pairwise r l₂ → (hl : l₁ ~ l₂) → l₁ = l₂ :=
+    Pairwise r l₁ → Pairwise r l₂ → (hl : l₁ ~ l₂) → l₁ = l₂ :=
   eq_of_pairwise (fun _ _ _ _ => antisymm)
 
 @[deprecated (since := "2025-10-11")]
