@@ -237,8 +237,7 @@ theorem affineIndependent_iff_eq_of_fintype_affineCombination_eq [Fintype ι] (p
       Finset.affineCombination_indicator_subset w2 p (Finset.subset_univ s2)] at hweq
     exact h _ _ hw1' hw2' hweq
 
-/-- A linearly independent family of vectors is affinely independent when viewed as points
-in the vector space (as an affine space over itself). -/
+/-- A linearly independent family of vectors is also affinely independent. -/
 theorem LinearIndependent.affineIndependent
     {v : ι → V} (hv : LinearIndependent k v) : AffineIndependent k v := by
   intro s w hw0 hwv i hi
