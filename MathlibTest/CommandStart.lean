@@ -10,6 +10,9 @@ public import Mathlib.Util.ParseCommand
 import Batteries.Util.LibraryNote
 public import Batteries.Linter.UnreachableTactic
 public import Qq
+import Mathlib.Tactic.FindSyntax
+public import Mathlib.adomaniLeanUtils.Inspect
+public import Mathlib.Util.Superscript
 
 meta section
 
@@ -39,6 +42,106 @@ elab tk:"#reformat " cmd:command : command => do
     liftTermElabM do Meta.liftMetaM do Lean.Meta.Tactic.TryThis.addSuggestion cmd reformatted
 
 end
+
+namespace Bundle
+set_option linter.style.commandStart true
+scoped notation:max "π " F':max E':max => Nat.add F' E'
+
+/-- info: 7 -/
+#guard_msgs in
+#eval
+  π 3 4
+
+/--
+info: 7
+---
+warning: add space in the source
+
+This part of the code
+  '3(4)'
+should be written as
+  '3 (4)'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+#eval
+  π 3(4)
+
+/-- info: 7 -/
+#guard_msgs in
+#eval
+  π 3 (4)
+
+/--
+info: 7
+---
+warning: remove space in the source
+
+This part of the code
+  '3  (4)'
+should be written as
+  '3 (4)'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+#eval
+  π 3  (4)
+
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
+proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
+scoped syntax:max (name := mkNotation)
+  "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
+scoped macro_rules
+  | `(⦋$m:term⦌$n:subscript) =>
+    `($m + $n)
+  | `(⦋$m:term, $p:term⦌$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
+
+/-- info: 15 -/
+#guard_msgs in
+#eval
+  ⦋0⦌₀₊₁₊₀₊₁₃ + 1
+
+/--
+info: 15
+---
+warning: remove space in the source
+
+This part of the code
+  '⦋0⦌₀₊₁₊ ₀₊₁₃'
+should be written as
+  '₊ ₀'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+#eval
+  ⦋0⦌₀₊₁₊ ₀₊₁₃ + 1
+
+/--
+info: 15
+---
+warning: add space in the source
+
+This part of the code
+  '⦋0⦌₀₊₁₊₀₊₁₃+'
+should be written as
+  '₁₃ +'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+#eval
+  ⦋0⦌₀₊₁₊₀₊₁₃+ 1
+
+end Bundle
 
 #reformat
 set_option linter.style.commandStart true

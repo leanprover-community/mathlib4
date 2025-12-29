@@ -511,6 +511,23 @@ def modifyTail (si : SourceInfo) (newTrail : Substring.Raw) : SourceInfo :=
   | _ => si
 
 /--
+Convert a single-character subscript string into the corresponding normal single-character string.
+-/
+def unSubscript : String → String
+  | "₀" => "0"
+  | "₁" => "1"
+  | "₂" => "2"
+  | "₃" => "3"
+  | "₄" => "4"
+  | "₅" => "5"
+  | "₆" => "6"
+  | "₇" => "7"
+  | "₈" => "8"
+  | "₉" => "9"
+  | "₊" => "+"
+  | s => s
+
+/--
 Compares the two substrings `s` and `t`, with the expectation that `t` starts with `s`,
 up to whitespace and guillemets (`«` and `»`).
 
@@ -541,6 +558,13 @@ def readWhile (s t : Substring.Raw) : Substring.Raw :=
     else
     if #["«", "»"].contains s1.toString then
       readWhile (s.drop 1) t
+    else
+    if unSubscript t1.toString == s1.toString then
+      let tdrop := if unSubscript ((t.drop 2).take 1).toString == ((t.drop 2).take 1).toString then
+        t.drop 1
+      else
+        t.drop 2
+      readWhile (s.drop 1) tdrop
     else
       t
 
@@ -652,6 +676,7 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     ``«term¬_»,
     -- notation for `upShadow`, the pretty-printer prefers `∂⁺ ` over `∂⁺` *always*
     `FinsetFamily.«term∂⁺»,
+    `Mathlib.Tactic.superscriptTerm, `Mathlib.Tactic.subscript,
   ]
   depth := some 2
 
@@ -676,6 +701,12 @@ def forceSpaceAfter' : ExcludedSyntaxNodeKind where
     `atom.«let», -- `let (a)` in term mode.
   ]
   depth := some 1
+
+def forceSpaceAfter'' : ExcludedSyntaxNodeKind where
+  kinds := #[
+    `Bundle.termπ__,
+  ]
+  depth := some 3
 
 /--
 These are the `SyntaxNodeKind`s for which the pretty-printer would likely space out from the
@@ -804,7 +835,7 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
   let origWs := orig.takeWhile (·.isWhitespace)
   --dbg_trace "here for '{(orig.take 10).toString}'\n{ks}\n"
   --dbg_trace ks
-  if forceSpaceAfter.contains ks || forceSpaceAfter'.contains ks  then
+  if forceSpaceAfter.contains ks || forceSpaceAfter'.contains ks || forceSpaceAfter''.contains ks  then
     --dbg_trace "forceSpaceAfter"
     let space := if (pp.take 1).trim.isEmpty then "" else " "
     if origWs.isEmpty then
