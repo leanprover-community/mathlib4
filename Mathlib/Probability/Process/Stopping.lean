@@ -270,6 +270,104 @@ theorem isStoppingTime_of_measurableSet_eq [Preorder ι] [Countable ι] {f : Fil
 
 end Countable
 
+section IsRightContinuous
+
+open Filtration
+
+variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
+    [DenselyOrdered ι] [FirstCountableTopology ι] {f : Filtration ι m}
+
+lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [NoMaxOrder ι]
+    {τ : Ω → WithTop ι} [hf : f.IsRightContinuous] (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω < i}) :
+    IsStoppingTime f τ := by
+  intro i
+  obtain ⟨u, hu₁, hu₂, hu₃⟩ := exists_seq_strictAnti_tendsto i
+  refine MeasurableSet.of_compl ?_
+  rw [(_ : {ω | τ ω ≤ i}ᶜ = ⋃ n, {ω | u n ≤ τ ω})]
+  · refine hf.measurableSet ?_
+    simp_rw [f.rightCont_eq, MeasurableSpace.measurableSet_iInf]
+    intros j hj
+    obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hj).exists
+    rw [(_ : ⋃ n, {ω | u n ≤ τ ω} = ⋃ n ≥ N, {ω | u n ≤ τ ω})]
+    · refine MeasurableSet.iUnion <| fun n ↦ MeasurableSet.iUnion <| fun hn ↦
+        f.mono ((hu₁.antitone hn).trans hN) _ <| MeasurableSet.of_compl ?_
+      rw [(by ext; simp : {ω | u n ≤ τ ω}ᶜ = {ω | τ ω < u n})]
+      exact hτ (u n)
+    · ext ω
+      simp only [Set.mem_iUnion, Set.mem_setOf_eq, ge_iff_le, exists_prop]
+      constructor
+      · rintro ⟨i, hle⟩
+        refine ⟨i + N, N.le_add_left i, le_trans ?_ hle⟩
+        norm_cast
+        exact hu₁.antitone <| i.le_add_right N
+      · rintro ⟨i, -, hi⟩
+        exact ⟨i, hi⟩
+  · ext ω
+    simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le, Set.mem_iUnion]
+    constructor
+    · intro h
+      by_cases hτ : τ ω = ⊤
+      · exact ⟨0, hτ ▸ le_top⟩
+      · have hlt : i < (τ ω).untop hτ := by
+          rwa [WithTop.lt_untop_iff]
+        obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hlt).exists
+        refine ⟨N, WithTop.coe_le_iff.2 <| fun n hn ↦ hN.trans ?_⟩
+        simp [hn, WithTop.untop_coe]
+    · rintro ⟨j, hj⟩
+      refine lt_of_lt_of_le ?_ hj
+      norm_cast
+      exact hu₂ _
+
+lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous'
+    {τ : Ω → WithTop ι} [hf : f.IsRightContinuous]
+    (hτ1 : ∀ i, ¬ IsMax i → MeasurableSet[f i] {ω | τ ω < i})
+    (hτ2 : ∀ i, IsMax i → MeasurableSet[f i] {ω | τ ω ≤ i}) :
+    IsStoppingTime f τ := by
+  intro i
+  by_cases hmax : IsMax i
+  · rw [hf.eq, f.rightCont_eq_of_isMax hmax]
+    exact hτ2 i hmax
+  rw [hf.eq, f.rightCont_eq_of_not_isMax hmax]
+  rw [not_isMax_iff] at hmax
+  obtain ⟨j, hj⟩ := hmax
+  obtain ⟨u, hu₁, hu₂, hu₃⟩ := exists_seq_strictAnti_tendsto' hj
+  refine MeasurableSet.of_compl ?_
+  rw [(_ : {ω | τ ω ≤ i}ᶜ = ⋃ n, {ω | u n ≤ τ ω})]
+  · simp_rw [MeasurableSpace.measurableSet_iInf]
+    intros j hj
+    obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hj).exists
+    rw [(_ : ⋃ n, {ω | u n ≤ τ ω} = ⋃ n > N, {ω | u n ≤ τ ω})]
+    · refine MeasurableSet.iUnion <| fun n ↦ MeasurableSet.iUnion <| fun hn ↦
+        f.mono ((hu₁ hn).le.trans hN) _ <| MeasurableSet.of_compl ?_
+      rw [(by ext; simp : {ω | u n ≤ τ ω}ᶜ = {ω | τ ω < u n})]
+      refine hτ1 (u n) <| not_isMax_iff.2 ⟨u N, hu₁ hn⟩
+    · ext ω
+      simp only [Set.mem_iUnion, Set.mem_setOf_eq, gt_iff_lt, exists_prop]
+      constructor
+      · rintro ⟨i, hle⟩
+        refine ⟨i + N + 1, by linarith, le_trans ?_ hle⟩
+        norm_cast
+        exact hu₁.antitone (by linarith)
+      · rintro ⟨i, -, hi⟩
+        exact ⟨i, hi⟩
+  · ext ω
+    simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le, Set.mem_iUnion]
+    constructor
+    · intro h
+      by_cases hτ : τ ω = ⊤
+      · exact ⟨0, hτ ▸ le_top⟩
+      · have hlt : i < (τ ω).untop hτ := by
+          rwa [WithTop.lt_untop_iff]
+        obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hlt).exists
+        refine ⟨N, WithTop.coe_le_iff.2 <| fun n hn ↦ hN.trans ?_⟩
+        simp [hn, WithTop.untop_coe]
+    · rintro ⟨j, hj⟩
+      refine lt_of_lt_of_le ?_ hj
+      norm_cast
+      exact (hu₂ j).1
+
+end IsRightContinuous
+
 end MeasurableSet
 
 namespace IsStoppingTime
@@ -295,6 +393,18 @@ protected theorem min [LinearOrder ι] {f : Filtration ι m} {τ π : Ω → Wit
 protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → WithTop ι}
     (hτ : IsStoppingTime f τ) (i : ι) : IsStoppingTime f fun ω => min (τ ω) i :=
   hτ.min (isStoppingTime_const f i)
+
+protected lemma iInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι]
+    [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
+    {f : Filtration ι m} {τ : ℕ → Ω → WithTop ι} (s : Set ℕ)
+    [f.IsRightContinuous] (hτ : ∀ n, IsStoppingTime f (τ n)) :
+    IsStoppingTime f (fun ω ↦ ⨅ (n) (_ : n ∈ s), τ n ω) := by
+  refine isStoppingTime_of_measurableSet_lt_of_isRightContinuous <|
+    fun i ↦ MeasurableSet.of_compl ?_
+  rw [(_ : {ω | ⨅ n ∈ s, τ n ω < i}ᶜ = ⋂ n ∈ s, {ω | i ≤ τ n ω})]
+  · exact MeasurableSet.iInter <| fun n ↦ MeasurableSet.iInter <| fun hn ↦ (hτ n).measurableSet_ge i
+  · ext ω
+    simp
 
 theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
     [AddLeftMono ι] {f : Filtration ι m} {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
