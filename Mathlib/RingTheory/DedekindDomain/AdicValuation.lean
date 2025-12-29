@@ -656,7 +656,6 @@ theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
     v.adicAbv hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
   simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
-open scoped algebraMap in
 /-- The `v`-adic absolute value on `K` extends the `v`-adic absolute value on `R`. -/
 theorem adicAbv_of_algebraMap (r : R) : v.adicAbv hb (algebraMap R K r) = v.intAdicAbv hb r := by
   simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
