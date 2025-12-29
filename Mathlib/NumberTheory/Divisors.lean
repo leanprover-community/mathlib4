@@ -89,9 +89,6 @@ theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} =
 
 theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDivisors]
 
-@[deprecated (since := "2025-05-23")]
-alias properDivisors.not_self_mem := self_notMem_properDivisors
-
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [properDivisors]
@@ -651,7 +648,8 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    suffices (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a:ℤ) = -1 + -↑x) ↔ (n:ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
+    suffices
+      (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a : ℤ) = -1 + -↑x) ↔ (n : ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
       simpa [divisorsAntidiag, eq_comm, negSucc_eq]
     simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
     norm_cast

@@ -109,23 +109,15 @@ lemma pairingIn_reflectionPerm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) 
   simp only [← (FaithfulSMul.algebraMap_injective S R).eq_iff, algebraMap_pairingIn]
   exact pairing_reflectionPerm P i j k
 
-@[deprecated (since := "2025-05-28")] alias pairingIn_reflection_perm := pairingIn_reflectionPerm
-
 @[simp]
 lemma pairingIn_reflectionPerm_self_left [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
     P.pairingIn S (P.reflectionPerm i i) j = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
 
-@[deprecated (since := "2025-05-28")]
-alias pairingIn_reflection_perm_self_left := pairingIn_reflectionPerm_self_left
-
 @[simp]
 lemma pairingIn_reflectionPerm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
     P.pairingIn S i (P.reflectionPerm j j) = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
-
-@[deprecated (since := "2025-05-28")]
-alias pairingIn_reflection_perm_self_right := pairingIn_reflectionPerm_self_right
 
 lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
     [P.IsValuedIn T] :
@@ -188,16 +180,10 @@ lemma rootSpanMem_reflectionPerm_self [Module S M] (i : ι) :
     P.rootSpanMem S (P.reflectionPerm i i) = - P.rootSpanMem S i := by
   ext; simp
 
-@[deprecated (since := "2025-05-28")]
-alias rootSpanMem_reflection_perm_self := rootSpanMem_reflectionPerm_self
-
 omit [Algebra S R] in
 lemma corootSpanMem_reflectionPerm_self [Module S N] (i : ι) :
     P.corootSpanMem S (P.reflectionPerm i i) = - P.corootSpanMem S i := by
   ext; simp
-
-@[deprecated (since := "2025-05-28")]
-alias corootSpanMem_reflection_perm_self := corootSpanMem_reflectionPerm_self
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
 def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
@@ -264,20 +250,22 @@ lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
   P.flip.rootSpan_mem_invtSubmodule_reflection i
 
 lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm = ⨅ i, LinearMap.ker (P.root' i) :=
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) =
+      ⨅ i, (P.root' i).ker :=
   SetLike.coe_injective <| by ext; simp [LinearEquiv.symm_apply_eq, subset_def]
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm = ⨅ i, LinearMap.ker (P.coroot' i) :=
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) =
+      ⨅ i, (P.coroot' i).ker :=
   P.flip.rootSpan_dualAnnihilator_map_eq_iInf_ker_root'
 
 lemma rootSpan_dualAnnihilator_map_eq :
-    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm =
+    (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) =
       (span R (range P.root')).dualCoannihilator :=
   SetLike.coe_injective <| by ext; simp [LinearEquiv.symm_apply_eq, subset_def]
 
 lemma corootSpan_dualAnnihilator_map_eq :
-    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm =
+    (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) =
       (span R (range P.coroot')).dualCoannihilator :=
   P.flip.rootSpan_dualAnnihilator_map_eq
 
@@ -290,11 +278,13 @@ lemma iInf_ker_coroot'_eq :
   P.flip.iInf_ker_root'_eq
 
 @[simp] lemma rootSpan_map_toPerfPair :
-    (P.rootSpan R).map P.toPerfPair = span R (range P.root') := by
-  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, toPerfPair_comp_root]
+    (P.rootSpan R).map (P.toPerfPair : M →ₗ[R] Dual R N) = span R (range P.root') := by
+  rw [rootSpan, Submodule.map_span, ← image_univ, ← image_comp, image_univ, LinearEquiv.coe_coe,
+    toPerfPair_comp_root]
 
 @[simp] lemma corootSpan_map_flip_toPerfPair :
-    (P.corootSpan R).map P.toLinearMap.flip.toPerfPair = span R (range P.coroot') :=
+    (P.corootSpan R).map (P.toLinearMap.flip.toPerfPair : N →ₗ[R] Dual R M) =
+      span R (range P.coroot') :=
   P.flip.rootSpan_map_toPerfPair
 
 @[simp] lemma span_root'_eq_top [P.IsRootSystem] :

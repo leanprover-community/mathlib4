@@ -66,6 +66,7 @@ private structure NameStruct where
   /-- A list of pieces to be joined by `toName`. -/
   components : List String
 
+set_option backward.privateInPublic true in
 /-- Join the components with `_`, or append `_def` if there is only one component. -/
 private def NameStruct.toName (n : NameStruct) : Name :=
   Name.mkStr n.parent <|
@@ -74,6 +75,8 @@ private def NameStruct.toName (n : NameStruct) : Name :=
     | [x] => s!"{x}_def"
     | e => "_".intercalate e
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Coe NameStruct Name where coe := NameStruct.toName
 
 /-- `update nm s isPrefix` adds `s` to the last component of `nm`,
@@ -1002,7 +1005,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
-  addConstInfo ref declName
+  addTermInfo' ref (← mkConstWithLevelParams declName) (isBinder := true) |>.run'
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   TermElabM.run' do
@@ -1040,6 +1043,8 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
   headStructureEtaReduce reduct
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Derive lemmas specifying the projections of the declaration.
 `nm`: name of the lemma
 If `todo` is non-empty, it will generate exactly the names in `todo`.
