@@ -162,7 +162,7 @@ theorem rename_C (r : R) : rename f (C r : MvPowerSeries σ R) = C r := renameFu
 
 @[simp]
 theorem rename_X (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) := by
-  simpa [← X_def, embDomain_single] using renameFun_monomial f (single i 1) 1
+  simpa using renameFun_monomial f (single i 1) 1
 
 theorem map_rename (F : R →+* S) (p : MvPowerSeries σ R) :
     map F (rename f p) = rename f (map F p) := by
