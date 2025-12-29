@@ -246,7 +246,6 @@ def Trivialization.continuousLinearMap :
     Trivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) :=
   VectorPrebundle.trivializationOfMemPretrivializationAtlas _ ⟨e₁, e₂, he₁, he₂, rfl⟩
 
-
 instance Bundle.ContinuousLinearMap.memTrivializationAtlas :
     MemTrivializationAtlas
       (e₁.continuousLinearMap σ e₂ :
