@@ -95,22 +95,7 @@ section RayleighGeneral
 
 variable {x : E} {T : E →L[𝕜] E}
 
-/-!
-### General lemmas
-theorem
-`ContinuousLinearMap.rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors`:
-For a continuous linear operator `T` with an orthonormal family of eigenvectors
-`v j` with real eigenvalues `u j`, the Rayleigh quotient of a unit vector in the span
-of `{v j | j ∈ s}` lies between the minimum and maximum eigenvalues `u j` for `j ∈ s`.
 
-theorem
-`ContinuousLinearMap.rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors_nonzero`:
-Non-normalized version of the above.
--/
-
-/-- The Rayleigh quotient is additive in the operator: the Rayleigh quotient of the sum of two
-operators equals the sum of their individual Rayleigh quotients. This property is useful for
-decomposing operators into simpler components. -/
 @[simp]
 theorem rayleighQuotient_add {S : E →L[𝕜] E} :
     (T + S).rayleighQuotient x = T.rayleighQuotient x + S.rayleighQuotient x := by
@@ -120,110 +105,59 @@ theorem rayleighQuotient_add {S : E →L[𝕜] E} :
 variable {ι : Type*} {v : ι → E} {u : ι → ℝ} {s : Finset ι}
 
 
-/-- Rayleigh quotient expressed using coefficients in an orthonormal eigenbasis.
-If `v` is an orthonormal family of eigenvectors of a continuous linear operator `T` with
-real eigenvalues `u`, and `x` is a linear combination of `v j` for `j ∈ s` with coefficients
-`c j`, then the Rayleigh quotient of `x` is the weighted average of the corresponding
-eigenvalues with weights `‖c j‖²`. -/
-lemma rayleighQuotient_eq_sum_sqNorm_mul_eigenvalues {c : s → 𝕜} (hv : Orthonormal 𝕜 v)
-    (h_eigen : ∀ j : ι, T (v j) = (u j : 𝕜) • v j) (hx : x = ∑ j, c j • v j) :
-    T.rayleighQuotient x = (∑ j, ‖c j‖ ^ 2 * u j) / ‖x‖ ^ 2 := by
+lemma reApplyInnerSelf_eq_sum_sqNorm_mul_eigenvalues {c : s → 𝕜} (hv : Orthonormal 𝕜 v)
+    (h_eigen : ∀ j : ι, T (v j) = (u j : 𝕜) • v j) :
+    T.reApplyInnerSelf (∑ j, c j • v j) = ∑ j, ‖c j‖ ^ 2 * u j := by
   have hv' : Orthonormal 𝕜 (fun j : s => v j) :=
     ⟨fun j => hv.1 j, fun i j hij => hv.2 (Subtype.coe_ne_coe.mpr hij)⟩
-  rw [ContinuousLinearMap.rayleighQuotient, ContinuousLinearMap.reApplyInnerSelf, hx]
-  congr 1
-  simp only [map_sum, map_smul, h_eigen, smul_smul, Orthonormal.inner_sum hv']
+  simp only [reApplyInnerSelf, map_sum, map_smul, h_eigen, smul_smul, Orthonormal.inner_sum hv']
   refine Finset.sum_congr rfl fun i _ => ?_
   rw [RingHom.map_mul, RCLike.conj_ofReal, mul_right_comm, mul_comm (starRingEnd 𝕜 (c i)),
     RCLike.mul_conj]
   simp
 
+lemma rayleighQuotient_eq_sum_sqNorm_mul_eigenvalues {c : s → 𝕜} (hv : Orthonormal 𝕜 v)
+    (h_eigen : ∀ j : ι, T (v j) = (u j : 𝕜) • v j) (hx : x = ∑ j, c j • v j) :
+    T.rayleighQuotient x = (∑ j, ‖c j‖ ^ 2 * u j) / ‖x‖ ^ 2 := by
+  rw [ContinuousLinearMap.rayleighQuotient, hx,
+    reApplyInnerSelf_eq_sum_sqNorm_mul_eigenvalues hv h_eigen]
 
-variable [LinearOrder ι]
-
-
-/-- **Rayleigh quotient bounds for a unit vector** in the span of an orthonormal family
-of eigenvectors, indexed by a finite set.
-Assume the eigenvalues `u` are indexed in nonincreasing order with respect to the index
-(order-preserving indices correspond to nonincreasing eigenvalues). For a unit vector in
-the span of `{v j | j ∈ s}`, its Rayleigh quotient lies between the minimal and maximal
-eigenvalues among `u j` for `j ∈ s`. -/
+/-- If `x` lies in the span of orthonormal eigenvectors `v j` for `j ∈ s`, with corresponding
+eigenvalues `u j`, then the Rayleigh quotient of `T` at `x` is bounded between the minimum and
+maximum eigenvalues in `s`. -/
 theorem rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors
-    (hv : Orthonormal 𝕜 v)
-    (h_eigen : ∀ j : ι, T (v j) = (u j : 𝕜) • v j)
-    (hs : s.Nonempty) (h_norm : ‖x‖ = 1)
-    (h_in_span : x ∈ Submodule.span 𝕜 (Set.range fun j : s => v j))
-    (h_sorted : Antitone u) :
-    u (s.max' hs) ≤ T.rayleighQuotient x ∧
-    T.rayleighQuotient x ≤ u (s.min' hs) := by
-  have ⟨c, hc⟩ : ∃ (c : s → 𝕜), x = ∑ j, c j • v j := by
+    (hv : Orthonormal 𝕜 v) (h_eigen : ∀ j : ι, T (v j) = (u j : 𝕜) • v j)
+    (hs : s.Nonempty) (h_norm : x ≠ 0)
+    (h_in_span : x ∈ Submodule.span 𝕜 (Set.range fun j : s => v j)) :
+    s.inf' hs u ≤ T.rayleighQuotient x ∧ T.rayleighQuotient x ≤ s.sup' hs u := by
+  obtain ⟨c, hc⟩ : ∃ (c : s → 𝕜), x = ∑ j, c j • v j := by
     rw [Submodule.mem_span_range_iff_exists_fun] at h_in_span
     exact ⟨h_in_span.choose, h_in_span.choose_spec.symm⟩
-  have hv' : Orthonormal 𝕜 (fun j : s => v j) :=
-    ⟨fun j => hv.1 j, fun i j hij => hv.2 (Subtype.coe_ne_coe.mpr hij)⟩
-  have hsum : ∑ j, ‖c j‖ ^ 2 = 1 := by
+  have hsum : ∑ j, ‖c j‖ ^ 2 = ‖x‖ ^ 2 := by
+    have hv' : Orthonormal 𝕜 (fun j : s => v j) :=
+      ⟨fun j => hv.1 j, fun i j hij => hv.2 (Subtype.coe_ne_coe.mpr hij)⟩
     have : OrthogonalFamily 𝕜 (fun _ : s => 𝕜)
         (fun j : s => LinearIsometry.toSpanSingleton 𝕜 E (hv'.1 j)) := by
       intro i j hij v w
-      simp only [LinearIsometry.toSpanSingleton_apply, inner_smul_left, inner_smul_right,
-        hv'.2 hij, mul_zero]
-    have parseval := OrthogonalFamily.norm_sum this c  (Finset.univ : Finset s)
-    simp only [LinearIsometry.toSpanSingleton_apply, Finset.univ_eq_attach] at parseval
-    calc ∑ j, ‖c j‖ ^ 2
-        = ‖∑ j, c j • v j‖ ^ 2 := parseval.symm
-      _ = ‖x‖ ^ 2 := by rw [hc]
-      _ = 1 := by rw [h_norm]; ring
-  rw [rayleighQuotient_eq_sum_sqNorm_mul_eigenvalues hv h_eigen hc]
-  simp only [h_norm, one_pow, div_one]
+      simp [LinearIsometry.toSpanSingleton_apply, inner_smul_left, inner_smul_right, hv'.2 hij]
+    calc
+      _ = ‖∑ j, c j • v j‖ ^ 2 := (OrthogonalFamily.norm_sum this c ⊤).symm
+      _ = _ := by rw [hc]
+  rw [rayleighQuotient_eq_sum_sqNorm_mul_eigenvalues hv h_eigen hc, le_div_iff₀ (by positivity),
+    div_le_iff₀ (by positivity)]
   constructor
-  · calc u (s.max' hs) = u (s.max' hs) * ∑ j : s, ‖c j‖ ^ 2 := by rw [hsum]; ring
-      _ = ∑ j : s, u (s.max' hs) * ‖c j‖ ^ 2 := by rw [← Finset.mul_sum]
-      _ ≤ ∑ j : s, u ↑j * ‖c j‖ ^ 2 := by
-          refine Finset.sum_le_sum fun j _ => ?_
-          exact mul_le_mul_of_nonneg_right
-            (h_sorted (Finset.le_max' s (↑j) j.2)) (sq_nonneg _)
-      _ = ∑ j : s, ‖c j‖ ^ 2 * u ↑j := by
-          refine Finset.sum_congr rfl fun j _ => mul_comm _ _
-  · calc ∑ j : s, ‖c j‖ ^ 2 * u ↑j
-        = ∑ j : s, u ↑j * ‖c j‖ ^ 2 := by
-          refine Finset.sum_congr rfl fun j _ => mul_comm _ _
-      _ ≤ ∑ j : s, u (s.min' hs) * ‖c j‖ ^ 2 := by
-          refine Finset.sum_le_sum fun j _ => ?_
-          exact mul_le_mul_of_nonneg_right
-            (h_sorted (Finset.min'_le s (↑j) j.2)) (sq_nonneg _)
-      _ = u (s.min' hs) * ∑ j : s, ‖c j‖ ^ 2 := by rw [← Finset.mul_sum]
-      _ = u (s.min' hs) := by rw [hsum]; ring
+  · calc
+      _ = (∑ j : s, (s.inf' hs u) * ‖c j‖ ^ 2) := by
+        rw [← hsum, ← Finset.mul_sum]
+      _ ≤ (∑ j : s, u ↑j * ‖c j‖ ^ 2) := Finset.sum_le_sum fun j hj =>
+        mul_le_mul_of_nonneg_right (s.inf'_le u (Finset.coe_mem j)) (sq_nonneg _)
+      _ = _ := Finset.sum_congr rfl fun j _ => mul_comm _ _
+  · calc
+      _ = ∑ j : s, u j * ‖c j‖ ^ 2 := Finset.sum_congr rfl fun j _ => mul_comm _ _
+      _ ≤ ∑ j : s, (s.sup' hs u) * ‖c j‖ ^ 2 := Finset.sum_le_sum fun j _ =>
+        mul_le_mul_of_nonneg_right (s.le_sup' u (Finset.coe_mem j)) (sq_nonneg _)
+      _ = _ := by rw [← Finset.mul_sum, hsum]
 
-
-/-- **Rayleigh quotient bounds for a nonzero vector** in the span of an orthonormal family
-of eigenvectors, indexed by a finite set.
-This is the non-normalized version of
-`ContinuousLinearMap.rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors`, obtained by
-normalizing the vector and using the fact that the Rayleigh quotient is invariant
-under nonzero scalar multiples. -/
-theorem rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors_nonzero
-    (hv : Orthonormal 𝕜 v)
-    (h_eigen : ∀ j : ι, T (v j) = (u j : 𝕜) • v j)
-    (hs : s.Nonempty) (h_nz : x ≠ 0)
-    (h_in_span : x ∈ Submodule.span 𝕜 (Set.range fun j : s => v j))
-    (h_sorted : Antitone u) :
-    u (s.max' hs) ≤ T.rayleighQuotient x ∧
-    T.rayleighQuotient x ≤ u (s.min' hs) := by
-  by_cases h_unit : ‖x‖ = 1
-  · exact rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors
-        hv h_eigen  hs  h_unit h_in_span h_sorted
-  · have h_norm_pos : 0 < ‖x‖ := norm_pos_iff.mpr h_nz
-    set a : 𝕜 := ((‖x‖ : ℝ)⁻¹ : 𝕜) with ha
-    set t := a • x with ht
-    have h_t_norm : ‖t‖ = 1 := by
-      rw [ht, norm_smul]; simp [ha, h_norm_pos.ne']
-    have h_t_mem : t ∈ Submodule.span 𝕜 (Set.range fun j : s => v j) :=
-      Submodule.smul_mem _ _ h_in_span
-    have ha_ne : a ≠ 0 := by simp [ha, h_norm_pos.ne']
-    rw [show T.rayleighQuotient x = T.rayleighQuotient t from
-      (ht ▸ (ContinuousLinearMap.rayleigh_smul T x ha_ne).symm)]
-    exact rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors
-        hv h_eigen hs  h_t_norm h_t_mem h_sorted
 
 end RayleighGeneral
 
