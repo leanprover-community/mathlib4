@@ -375,10 +375,10 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
 
 /-- An Unoriented angle is unchanged by replacing the third point by one strictly further away on
 the same ray. -/
-theorem _root_.Sbtw.angle_eq_right {p₁ p₂ p₃ p₃' : P} (h : Sbtw ℝ p₂ p₃ p₃') :
-    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p₃' := by
+theorem _root_.Sbtw.angle_eq_right {p₁ p₂ p₃ p : P} (h : Sbtw ℝ p₂ p₃ p) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p := by
   rw [angle, angle]
-  have h : ∃ r : ℝ, 0 < r ∧ (p₃ -ᵥ p₂) = r • (p₃' -ᵥ p₂) := by
+  have h : ∃ r : ℝ, 0 < r ∧ (p₃ -ᵥ p₂) = r • (p -ᵥ p₂) := by
     have hr := sbtw_iff_mem_image_Ioo_and_ne.mp h
     obtain ⟨hr1, hr2⟩ := hr
     simp only [Set.mem_image, Set.mem_Ioo] at hr1
@@ -392,24 +392,24 @@ theorem _root_.Sbtw.angle_eq_right {p₁ p₂ p₃ p₃' : P} (h : Sbtw ℝ p₂
 
 /-- An Unoriented angle is unchanged by replacing the first point by one strictly further away on
 the same ray. -/
-theorem _root_.Sbtw.angle_eq_left {p₁ p₁' p₂ p₃ : P} (h : Sbtw ℝ p₂ p₁ p₁') :
-    ∠ p₁ p₂ p₃ = ∠ p₁' p₂ p₃ := by
+theorem _root_.Sbtw.angle_eq_left {p₁ p p₂ p₃ : P} (h : Sbtw ℝ p₂ p₁ p) :
+    ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
   rw [angle_comm]
   nth_rw 2 [angle_comm]
   exact Sbtw.angle_eq_right h
 
 /-- An Unoriented angle is unchanged by replacing the third point by one weakly further away on the
 same ray. -/
-theorem _root_.Wbtw.angle_eq_right {p₁ p₂ p₃ p₃' : P} (h : Wbtw ℝ p₂ p₃ p₃') (hp₃p₂ : p₃ ≠ p₂) :
-    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p₃' := by
-  by_cases hp₃p₃' : p₃ = p₃'; · simp [hp₃p₃']
+theorem _root_.Wbtw.angle_eq_right {p₁ p₂ p₃ p : P} (h : Wbtw ℝ p₂ p₃ p) (hp₃p₂ : p₃ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p := by
+  by_cases hp₃p : p₃ = p; · simp [hp₃p]
   apply Sbtw.angle_eq_right
-  exact ⟨h, hp₃p₂, hp₃p₃'⟩
+  exact ⟨h, hp₃p₂, hp₃p⟩
 
 /-- An Unoriented angle is unchanged by replacing the first point by one weakly further away on the
 same ray. -/
-theorem _root_.Wbtw.angle_eq_left {p₁ p₁' p₂ p₃ : P} (h : Wbtw ℝ p₂ p₁ p₁') (hp₁p₂ : p₁ ≠ p₂) :
-    ∠ p₁ p₂ p₃ = ∠ p₁' p₂ p₃ := by
+theorem _root_.Wbtw.angle_eq_left {p₁ p p₂ p₃ : P} (h : Wbtw ℝ p₂ p₁ p) (hp₁p₂ : p₁ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
   rw [angle_comm]
   nth_rw 2 [angle_comm]
   exact Wbtw.angle_eq_right h hp₁p₂
