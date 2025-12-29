@@ -9,6 +9,8 @@ public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
+deprecated_module (since := "2025-08-16")
+
 /-!
 # Perfect pairings and matrices
 

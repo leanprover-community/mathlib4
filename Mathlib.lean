@@ -324,7 +324,6 @@ public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 public import Mathlib.Algebra.GCDMonoid.Multiset
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.GCDMonoid.PUnit
-public import Mathlib.Algebra.GeomSum
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.Algebra.Group.Action.Basic
@@ -1158,7 +1157,6 @@ public import Mathlib.Algebra.Ring.Ext
 public import Mathlib.Algebra.Ring.Fin
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.GrindInstances
-public import Mathlib.Algebra.Ring.Hom.Basic
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Ring.Idempotent
@@ -2826,7 +2824,6 @@ public import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
 public import Mathlib.CategoryTheory.Monoidal.DayConvolution.DayFunctor
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.End
-public import Mathlib.CategoryTheory.Monoidal.ExternalProduct
 public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
@@ -3292,7 +3289,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Matching
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Partition
-public import Mathlib.Combinatorics.SimpleGraph.Path
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
@@ -5305,7 +5301,6 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House
-public import Mathlib.NumberTheory.NumberField.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
@@ -5376,7 +5371,6 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Birkhoff
-public import Mathlib.Order.BooleanAlgebra
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Order.BooleanAlgebra.Defs
 public import Mathlib.Order.BooleanAlgebra.Set
@@ -5778,11 +5772,6 @@ public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
 public import Mathlib.RepresentationTheory.FiniteIndex
-public import Mathlib.RepresentationTheory.GroupCohomology.Basic
-public import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
-public import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
-public import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
-public import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
@@ -6570,7 +6559,6 @@ public import Mathlib.Tactic.Explode.Pretty
 public import Mathlib.Tactic.Ext
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.ExtractGoal
-public import Mathlib.Tactic.ExtractLets
 public import Mathlib.Tactic.FBinop
 public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.FastInstance
@@ -6586,10 +6574,8 @@ public import Mathlib.Tactic.Finiteness
 public import Mathlib.Tactic.Finiteness.Attr
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.FunProp.Attr
-public import Mathlib.Tactic.FunProp.ContDiff
 public import Mathlib.Tactic.FunProp.Core
 public import Mathlib.Tactic.FunProp.Decl
-public import Mathlib.Tactic.FunProp.Differentiable
 public import Mathlib.Tactic.FunProp.Elab
 public import Mathlib.Tactic.FunProp.FunctionData
 public import Mathlib.Tactic.FunProp.Mor
@@ -6619,7 +6605,6 @@ public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
-public import Mathlib.Tactic.LiftLets
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Frontend
@@ -6927,7 +6912,6 @@ public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 public import Mathlib.Topology.Algebra.ProperConstSMul
-public import Mathlib.Topology.Algebra.RestrictedProduct
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.Ring.Basic
@@ -7038,11 +7022,9 @@ public import Mathlib.Topology.Closure
 public import Mathlib.Topology.ClusterPt
 public import Mathlib.Topology.Coherent
 public import Mathlib.Topology.CompactOpen
-public import Mathlib.Topology.Compactification.OnePoint
 public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 public import Mathlib.Topology.Compactification.OnePoint.Sphere
-public import Mathlib.Topology.Compactification.OnePointEquiv
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.Compactness.Compact
@@ -7374,7 +7356,6 @@ public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
-public import Mathlib.Topology.StoneCech
 public import Mathlib.Topology.TietzeExtension
 public import Mathlib.Topology.Ultrafilter
 public import Mathlib.Topology.UniformSpace.AbsoluteValue
