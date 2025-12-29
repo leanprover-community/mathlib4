@@ -657,17 +657,7 @@ example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
 declare_aesop_rule_sets [$id](default := true)
 
 -- `library_note` may not have a space between `""` and `/-- -/`
-/--
-warning: add space in the source
-
-This part of the code
-  '"a"/--'
-should be written as
-  '"a" /--'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
--/
+-- TODO: currently, this does not error!
 #guard_msgs in
 library_note "a"/-- Avoid empty doc-string -/
 library_note "b" /-- Avoid empty doc-string -/
@@ -788,14 +778,13 @@ where
   aux : Unit := ()
 
 -- For structure fields, all field definitions are linted.
--- TODO: currently, only the first field is linted
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'field1     : Nat'
+  'field1     :'
 should be written as
-  'field1 : Nat'
+  'field1 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -805,12 +794,44 @@ structure A where
   field1     : Nat
   field2 : Nat
 
--- TODO: this is not linted yet!
+/--
+warning: remove space in the source
+
+This part of the code
+  'field2     :'
+should be written as
+  'field2 :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 structure B where
   field1 : Nat
   field2     : Nat
 
--- TODO: this is not linted yet!
+/--
+warning: remove space in the source
+
+This part of the code
+  ':     Nat'
+should be written as
+  ': Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'field2     :'
+should be written as
+  'field2 :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 structure C where
   field1 :     Nat
   field2     : Nat
@@ -818,12 +839,32 @@ structure C where
 -- Note that the linter does not attempt to recognise or respect manual alignment of fields:
 -- this is often brittle and should usually be removed.
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'field1    :  '
+  'field1    :'
 should be written as
-  'field1 : Nat'
+  'field1 :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  ':     Nat'
+should be written as
+  ': Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'field2    :'
+should be written as
+  'field2 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -837,12 +878,12 @@ structure D where
 /--
 warning: declaration uses 'sorry'
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   'instance   {R}'
 should be written as
-  'instance {R} :'
+  'instance {R}'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -855,12 +896,12 @@ instance   {R} : Add R := sorry
 /--
 warning: declaration uses 'sorry'
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   'instance   {R}'
 should be written as
-  'instance {R} :'
+  'instance {R}'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
