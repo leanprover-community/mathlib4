@@ -200,6 +200,7 @@ theorem im_neg (z : 𝔻) : (-z).im = -z.im :=
 instance : Star 𝔻 where
   star z := mk (conj z) <| (norm_conj z).symm ▸ z.norm_lt_one
 
+/-- Conjugate point of the unit disc. Deprecated, use `star` instead. -/
 @[deprecated star (since := "2025-12-28")]
 protected def «conj» (z : 𝔻) := star z
 
