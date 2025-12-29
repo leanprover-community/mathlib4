@@ -523,7 +523,7 @@ theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b �
   intro hc
   exact tendsto_abs_logb_atTop hb
 
-theorem isBigO_logb_log : Real.logb b =O[⊤] Real.log := by
+theorem isBigO_logb_log : logb b =O[⊤] log := by
   by_cases h : b ≠ -1 ∧ b ≠ 0 ∧ b ≠ 1
   · unfold logb
     conv_lhs => ext x; rw [div_eq_mul_inv, mul_comm]
