@@ -39,10 +39,12 @@ open Lean.Meta Qq
 
 variable {α : Type*}
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem int_floor_nonneg [Ring α] [LinearOrder α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
     0 ≤ ⌊a⌋ :=
   Int.floor_nonneg.2 ha
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α}
     (ha : 0 < a) :
     0 ≤ ⌊a⌋ :=
@@ -63,6 +65,7 @@ meta def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Int.floor application"
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} :
     0 < a → 0 < ⌈a⌉₊ :=
   Nat.ceil_pos.2
@@ -82,6 +85,7 @@ meta def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Nat.ceil application"
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
   Int.ceil_pos.2
 
@@ -282,7 +286,7 @@ variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRin
 theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
   obtain rfl | hn := hn.eq_or_lt
   · simp
-  nth_rw 2 [<-div_mul_cancel₀ (a := a) (ne_of_gt (Int.cast_pos.mpr hn))]
+  nth_rw 2 [← div_mul_cancel₀ (a := a) (ne_of_gt (Int.cast_pos.mpr hn))]
   rw [mul_cast_floor_div_cancel_of_pos hn]
 
 theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
@@ -698,9 +702,6 @@ lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
     rw [Int.add_one_le_ceil_iff]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
-
-@[deprecated (since := "2025-05-23")]
-alias ceil_eq_floor_add_one_iff_not_mem := ceil_eq_floor_add_one_iff_notMem
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
   rcases eq_or_ne (fract a) 0 with ha | ha

@@ -71,8 +71,6 @@ theorem ae_mem_or_ae_notMem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.1 <| hf.aeconst_set hsm hs
 
-@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem := ae_mem_or_ae_notMem
-
 /-- On a probability space, the (pre)ergodicity condition is a zero-one law. -/
 theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ s = 1 := by
@@ -146,8 +144,6 @@ theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
-
-@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem₀ := ae_mem_or_ae_notMem₀
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
