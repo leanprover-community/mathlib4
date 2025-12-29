@@ -240,17 +240,26 @@ lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ →
     exact abs_ne_zero.mpr (Matrix.GeneralLinearGroup.det_ne_zero g)
 
 lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
-    {s : Finset ι} (hs : s.Nonempty) :
-    (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1) • (∏ i ∈ s, f i ∣[k i] g) := by
+    {s : Finset ι} :
+    (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by
   classical
   induction s using Finset.induction_on with
-  | empty => simp_all
+  | empty =>
+    simp only [sum_empty, prod_empty, Matrix.GeneralLinearGroup.val_det_apply, card_empty,
+      CharP.cast_eq_zero, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
+    ext _
+    simp [slash_apply]
   | insert i t hi IH =>
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simp
-    simp only [prod_insert hi, card_insert_of_notMem hi, sum_insert hi]
-    simp [IH ht, mul_slash, show t.card + 1 - 1 = t.card - 1 + 1 by grind, pow_succ,
-      ← mul_smul, mul_comm]
+    simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ, add_sub_cancel_right,
+    show ∑ i ∈ insert i t, k i = (k i) + ∑ i ∈ t, k i by grind, mul_slash, IH, mul_smul_comm,
+      ← mul_smul]
+    congr 1
+    nth_rw 2 [show (#t : ℤ) = 1 + (#t - 1) by grind]
+    rw [zpow_add', zpow_one]
+    left
+    exact abs_ne_zero.mpr (Matrix.GeneralLinearGroup.det_ne_zero g)
 
 end
 
@@ -261,8 +270,8 @@ lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : 
 
 lemma prod_fintype_sum_weights_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ι → ℤ}
     {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[∑ i , k i] g =
-    |g.det.val| ^ (Fintype.card ι - 1) • (∏ i, f i ∣[k i] g) := by
-  simpa using ModularForm.prod_slash_sum_weights Finset.univ_nonempty
+    |g.det.val| ^ (Fintype.card ι - 1 : ℤ) • (∏ i, f i ∣[k i] g) := by
+  simpa using ModularForm.prod_slash_sum_weights
 
 
 end ModularForm
