@@ -93,7 +93,6 @@ theorem continuousOn_continuousLinearMapCoordChange [RingHomIsometric σ]
 variable (σ e₁ e₁' e₂ e₂')
 variable [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂] [e₂'.IsLinear 𝕜₂]
 
-set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 /-- Given trivializations `e₁`, `e₂` for vector bundles `E₁`, `E₂` over a base `B`,
 `Pretrivialization.continuousLinearMap σ e₁ e₂` is the induced pretrivialization for the
 continuous `σ`-semilinear maps from `E₁` to `E₂`. That is, the map which will later become a
@@ -240,7 +239,6 @@ instance Bundle.ContinuousLinearMap.vectorBundle :
 
 variable [he₁ : MemTrivializationAtlas e₁] [he₂ : MemTrivializationAtlas e₂] {F₁ E₁ F₂ E₂}
 
-set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 /-- Given trivializations `e₁`, `e₂` in the atlas for vector bundles `E₁`, `E₂` over a base `B`,
 the induced trivialization for the continuous `σ`-semilinear maps from `E₁` to `E₂`,
 whose base set is `e₁.baseSet ∩ e₂.baseSet`. -/
@@ -248,7 +246,7 @@ def Trivialization.continuousLinearMap :
     Trivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) :=
   VectorPrebundle.trivializationOfMemPretrivializationAtlas _ ⟨e₁, e₂, he₁, he₂, rfl⟩
 
-set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
+
 instance Bundle.ContinuousLinearMap.memTrivializationAtlas :
     MemTrivializationAtlas
       (e₁.continuousLinearMap σ e₂ :
@@ -279,7 +277,6 @@ theorem hom_trivializationAt_apply (x₀ : B)
       ⟨x.1, inCoordinates F₁ E₁ F₂ E₂ x₀ x.1 x₀ x.1 x.2⟩ :=
   rfl
 
-set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 @[simp, mfld_simps]
 theorem hom_trivializationAt_source (x₀ : B) :
     (trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀).source =

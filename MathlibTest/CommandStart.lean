@@ -11,7 +11,6 @@ import Batteries.Util.LibraryNote
 public import Batteries.Linter.UnreachableTactic
 public import Qq
 import Mathlib.Tactic.FindSyntax
-public import Mathlib.adomaniLeanUtils.Inspect
 public import Mathlib.Util.Superscript
 
 meta section

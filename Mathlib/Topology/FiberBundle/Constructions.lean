@@ -54,7 +54,6 @@ theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
 def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
   (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
-set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 /-- Local trivialization for trivial bundle. -/
 @[simps!]
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
@@ -82,7 +81,6 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   totalSpaceMk_isInducing' _ := (homeomorphProd B F).symm.isInducing.comp
     (isInducing_const_prod.2 .id)
 
-set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 theorem eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
     [i : MemTrivializationAtlas e] : e = trivialization B F := i.out
 

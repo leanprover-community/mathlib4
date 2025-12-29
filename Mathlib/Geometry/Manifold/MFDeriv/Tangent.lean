@@ -63,7 +63,6 @@ lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y
   have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
   simp [mfderiv, if_pos this, Function.comp_assoc]
 
-set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 /-- The preimage under the projection from the tangent bundle of a set with unique differential in
 the basis also has unique differential. -/
 theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffOn I s) :

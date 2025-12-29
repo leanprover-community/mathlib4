@@ -835,7 +835,7 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
   let origWs := orig.takeWhile (·.isWhitespace)
   --dbg_trace "here for '{(orig.take 10).toString}'\n{ks}\n"
   --dbg_trace ks
-  if forceSpaceAfter.contains ks || forceSpaceAfter'.contains ks || forceSpaceAfter''.contains ks  then
+  if forceSpaceAfter.contains ks || forceSpaceAfter'.contains ks || forceSpaceAfter''.contains ks then
     --dbg_trace "forceSpaceAfter"
     let space := if (pp.take 1).trim.isEmpty then "" else " "
     if origWs.isEmpty then
