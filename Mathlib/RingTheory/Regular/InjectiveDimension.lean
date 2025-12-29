@@ -264,12 +264,14 @@ lemma ModuleCat.restrictScalars_map_exact' (S : ShortComplex (ModuleCat.{v} R'))
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
   exact h
 
-instance (priority := 2000) : Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
+instance ModuleCat.restrictScalars_preservesFiniteLimits (priority := 2000) :
+    Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
   have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
     (ModuleCat.restrictScalars_map_exact' f)
   exact this.1
 
-instance (priority := 2000) : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
+instance ModuleCat.restrictScalars_preservesFiniteColimits (priority := 2000) :
+    Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
   have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
     (ModuleCat.restrictScalars_map_exact' f)
   exact this.2
