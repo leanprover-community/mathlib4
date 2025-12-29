@@ -23,7 +23,7 @@ elab_rules : tactic
       | none => pure <| GoalLocation.target pos
       | some h => pure <| GoalLocation.hypType (← getFVarId h) pos
     let locs := #[{ mvarId := goal, loc := loc }]
-    let some range := (← getFileMap).rangeOfStx? stx | failure
+    let some range := (← getFileMap).lspRangeOfStx? stx | failure
     let interactive ← Lean.Widget.goalToInteractive goal
     let params : SelectInsertParams := {
       pos := range.start
