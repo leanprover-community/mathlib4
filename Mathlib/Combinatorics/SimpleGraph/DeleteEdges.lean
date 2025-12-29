@@ -79,8 +79,8 @@ theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
   ext
   simp +contextual [imp_false]
 
-@[simp] lemma deleteEdges_of_forall_isDiag (G : SimpleGraph V) (hs : ∀ e ∈ s, e.IsDiag) :
-    G.deleteEdges s = G := by ext u v; simpa using fun huv h ↦ huv.ne <| hs _ h
+@[simp] lemma deleteEdges_of_subset_diagSet (G : SimpleGraph V) (hs : s ⊆ Sym2.diagSet) :
+    G.deleteEdges s = G := by ext u v; simpa using (·.ne <| Sym2.mem_diagSet_iff_eq.mp <| hs ·)
 
 theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
