@@ -40,6 +40,7 @@ the discrete convolution from `DiscreteConvolution.lean`.
 * `lp.oneRing`: `Ring` instance (requires `[CompleteSpace R]`)
 * `lp.oneNormedRing`: `NormedRing` instance
 * `lp.oneNormOneClass`: `NormOneClass` (when `[NormOneClass R]`)
+* `lp.oneCommRing`: `CommRing` (when `[CommMonoid M]`)
 * `lp.oneNormedCommRing`: `NormedCommRing` (when `[CommMonoid M]`)
 * `lp.oneAlgebra`: `Algebra 𝕜` instance
 * `lp.oneNormedAlgebra`: `NormedAlgebra 𝕜` instance
@@ -355,6 +356,22 @@ instance oneNormOneClass : NormOneClass (lp (fun _ : M => R) 1) where
 end lp
 
 end LpOneNormOneClass
+
+/-! ### ℓ¹ CommRing -/
+
+section LpOneCommRing
+
+variable [CommMonoid M] [DecidableEq M] {R : Type*} [NormedCommRing R] [CompleteSpace R]
+
+namespace lp
+
+/-- `lp (fun _ : M => R) 1` is a commutative ring when M is a commutative monoid. -/
+instance oneCommRing : CommRing (lp (fun _ : M => R) 1) where
+  mul_comm f g := lp.ext <| mulConvolution_comm (⇑f) (⇑g)
+
+end lp
+
+end LpOneCommRing
 
 /-! ### ℓ¹ NormedCommRing -/
 
