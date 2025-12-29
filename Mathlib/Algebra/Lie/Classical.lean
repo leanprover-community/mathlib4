@@ -108,13 +108,9 @@ Along with some elements produced by `singleSubSingle`, these form a natural bas
 def single (h : i ≠ j) : R →ₗ[R] sl n R :=
   Matrix.singleLinearMap R i j |>.codRestrict _ fun r => Matrix.trace_single_eq_of_ne i j r h
 
-@[deprecated (since := "2025-05-06")] alias Eb := single
-
 @[simp]
 theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
-
-@[deprecated (since := "2025-05-06")] alias eb_val := val_single
 
 /-- The matrices with matching positive and negative elements on the diagonal are elements of
 `sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
@@ -194,7 +190,7 @@ def Pso (i : R) : Matrix (p ⊕ q) (p ⊕ q) R :=
 variable [Fintype p] [Fintype q]
 
 theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, h, one_apply]
@@ -212,7 +208,7 @@ def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
     (Pso p q R i)ᵀ * indefiniteDiagonal p q R * Pso p q R i = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, indefiniteDiagonal, h, one_apply]
