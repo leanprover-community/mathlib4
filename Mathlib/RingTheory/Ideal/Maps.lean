@@ -723,8 +723,6 @@ theorem one_notMem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
   rw [mem_ker, map_one]
   exact one_ne_zero
 
-@[deprecated (since := "2025-05-23")] alias not_one_mem_ker := one_notMem_ker
-
 theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr <| one_notMem_ker f
 
@@ -1257,3 +1255,12 @@ instance {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R) [
       Ideal.submodule_span_eq]⟩
 
 end PrincipalIdeal
+
+lemma RingHom.ker_evalRingHom {ι : Type*} [DecidableEq ι] (R : ι → Type*)
+    [∀ i, CommRing (R i)] (i : ι) :
+    RingHom.ker (Pi.evalRingHom R i) = Ideal.span {1 - Pi.single i 1} := by
+  refine le_antisymm (fun x hx ↦ ?_) (by simp [Ideal.span_le])
+  simp only [RingHom.mem_ker, Pi.evalRingHom_apply] at hx
+  rw [Ideal.mem_span_singleton]
+  use x + Pi.single i 1
+  simp [mul_add, sub_mul, one_mul, ← Pi.single_mul_left, hx]
