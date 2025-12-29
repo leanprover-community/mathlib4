@@ -47,6 +47,8 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 open Finset Set
 
+variable (𝕜 E : Type*) [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
 namespace Geometry
 
 -- TODO: update to new binder order? not sure what binder order is correct for `down_closed`.
@@ -55,8 +57,7 @@ Note that the textbook meaning of "glue nicely" is given in
 `Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull`. It is mostly useless, as
 `Geometry.SimplicialComplex.convexHull_inter_convexHull` is enough for all purposes. -/
 @[ext]
-structure SimplicialComplex (𝕜 E : Type*)
-    [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] where
+structure SimplicialComplex where
   /-- the faces of this simplicial complex: currently, given by their spanning vertices -/
   faces : Set (Finset E)
   /-- the empty set is not a face: hence, all faces are non-empty -/
@@ -73,9 +74,7 @@ namespace SimplicialComplex
 @[deprecated (since := "2025-05-23")]
 alias not_empty_mem := empty_notMem
 
-section
-
-variable {𝕜 E : Type*} [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
@@ -140,9 +139,6 @@ def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset
     indep := fun hs => K.indep (subset hs)
     down_closed := fun hs hts _ => down_closed hs hts
     inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull (subset hs) (subset ht) }
-
-
-
 
 /-! ### Vertices -/
 
@@ -250,8 +246,6 @@ theorem space_bot : (⊥ : SimplicialComplex 𝕜 E).space = ∅ :=
 
 theorem facets_bot : (⊥ : SimplicialComplex 𝕜 E).facets = ∅ :=
   eq_empty_of_subset_empty facets_subset
-
-end
 
 end SimplicialComplex
 
