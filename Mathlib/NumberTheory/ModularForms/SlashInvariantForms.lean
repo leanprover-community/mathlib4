@@ -273,6 +273,8 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     simp [hm, prod_slash_sum_weights, -Matrix.GeneralLinearGroup.val_det_apply,
        Subgroup.HasDetPlusMinusOne.abs_det hA, SlashInvariantForm.slash_action_eqn (f _) A hA]
 
+/-- Given `SlashInvariantForm`'s `f i` of weight `k`, define the form which as a
+function is a product of those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps!]
 def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]

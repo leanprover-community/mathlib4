@@ -605,6 +605,8 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     intro i hi
     simpa [toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
 
+/-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
+those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps!]
 def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
      {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
