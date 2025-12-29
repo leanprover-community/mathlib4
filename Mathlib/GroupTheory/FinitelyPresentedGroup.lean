@@ -23,16 +23,21 @@ finitely presented group, normal closure finitely generated,
 
 open Subgroup
 
+-- We define the normal closure of a finite set that.
 def IsNormalClosureOfFiniteSet {G : Type*} [Group G] (H : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = H
 
+-- We state that this property is invariant under surjective homomorphism.
 lemma IsNormalClosureOfFiniteSet.map {G H : Type*} [Group G] [Group H]
   (f : G →* H) (hf : Function.Surjective f) (K : Subgroup G) (hK : IsNormalClosureOfFiniteSet K)
   : IsNormalClosureOfFiniteSet (K.map f) := by
-  obtain ⟨ S, hSf, hS ⟩ := hK
-  refine' ⟨ f '' S, hSf.image _, _ ⟩
-  rw [ ← hS, Subgroup.map_normalClosure ]
-  exact hf
+  obtain ⟨ S, hSfinite, hSclosure ⟩ := hK
+  use f '' S
+  constructor
+  · exact hSfinite.image _
+  · rw [ ← hSclosure]
+    have h := Subgroup.map_normalClosure S f hf
+    exact h.symm
 
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
