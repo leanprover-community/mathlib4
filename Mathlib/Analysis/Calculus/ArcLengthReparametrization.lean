@@ -155,8 +155,8 @@ lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn �
   exact (Set.bijOn_comm h₁).mpr h₀
 
 omit [I.OrdConnected] in
-/-- Auxiliary lemma ψ is left inverse of the arc-length parameter transformation on the 
-image of ψ. -/
+/-- Auxiliary lemma ψ is left inverse of the arc-length parameter transformation on the image 
+of ψ. -/
 lemma ψ_leftInvOn_arclengthParamTransform_aux :
   (ψ '' I).LeftInvOn ψ (arclengthParamTransform c I t₀) := by
   intro s hs
