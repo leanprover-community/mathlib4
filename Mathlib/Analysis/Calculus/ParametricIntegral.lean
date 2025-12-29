@@ -77,15 +77,14 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [RCL
   [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*}
   [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 
-variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {ε : ℝ}
+variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {s : Set H}
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming `F x₀` is
 integrable, `‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖` for `x` in a ball around `x₀` for ae `a` with
 integrable Lipschitz bound `bound` (with a ball radius independent of `a`), and `F x` is
 ae-measurable for `x` in the same ball. See `hasFDerivAt_integral_of_dominated_loc_of_lip` for a
 slightly less general but usually more useful version. -/
-theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] E} {s : Set H}
-    (hs : s ∈ 𝓝 x₀)
+theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] E} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ x ∈ s, AEStronglyMeasurable (F x) μ) (hF_int : Integrable (F x₀) μ)
     (hF'_meas : AEStronglyMeasurable F' μ)
     (h_lipsch : ∀ᵐ a ∂μ, ∀ x ∈ s, ‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖)
@@ -173,7 +172,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
 `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`
 (with a ball radius independent of `a`) with integrable Lipschitz bound, and `F x` is ae-measurable
 for `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F' : α → H →L[𝕜] E} {s : Set H}
+theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F' : α → H →L[𝕜] E}
     (hs : s ∈ 𝓝 x₀) (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ)
     (hF_int : Integrable (F x₀) μ) (hF'_meas : AEStronglyMeasurable F' μ)
     (h_lip : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs <| bound a) (F · a) s)
@@ -186,7 +185,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F' : α → H →L[𝕜] E
   replace h_lip : ∀ᵐ a : α ∂μ, ∀ x ∈ ball x₀ δ, ‖F x a - F x₀ a‖ ≤ |bound a| * ‖x - x₀‖ :=
     h_lip.mono fun a lip x hx ↦ lip.norm_sub_le (hδε x hx) (mem_of_mem_nhds hs)
   replace bound_integrable := bound_integrable.norm
-  apply hasFDerivAt_integral_of_dominated_loc_of_lip' δ_pos <;> assumption
+  apply hasFDerivAt_integral_of_dominated_loc_of_lip' (ball_mem_nhds x₀ δ_pos) <;> assumption
 
 open scoped Interval in
 /-- Differentiation under integral of `x ↦ ∫ x in a..b, F x t` at a given point `x₀ ∈ (a,b)`,
@@ -194,12 +193,12 @@ assuming `F x₀` is integrable on `(a,b)`, that `x ↦ F x t` is Lipschitz on a
 for almost every `t` (with a ball radius independent of `t`) with integrable Lipschitz bound,
 and `F x` is a.e.-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H] {μ : Measure ℝ}
-    {F : H → ℝ → E} {F' : ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (ε_pos : 0 < ε)
+    {F : H → ℝ → E} {F' : ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))
     (hF_int : IntervalIntegrable (F x₀) μ a b)
     (hF'_meas : AEStronglyMeasurable F' <| μ.restrict (Ι a b))
     (h_lip : ∀ᵐ t ∂μ.restrict (Ι a b),
-      LipschitzOnWith (Real.nnabs <| bound t) (F · t) (ball x₀ ε))
+      LipschitzOnWith (Real.nnabs <| bound t) (F · t) s)
     (bound_integrable : IntervalIntegrable bound μ a b)
     (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), HasFDerivAt (F · t) (F' t) x₀) :
     IntervalIntegrable F' μ a b ∧
@@ -207,10 +206,10 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H
   simp_rw [AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff, eventually_and] at hF_meas hF'_meas
   rw [ae_restrict_uIoc_iff] at h_lip h_diff
   have H₁ :=
-    hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas.1 hF_int.1 hF'_meas.1 h_lip.1
+    hasFDerivAt_integral_of_dominated_loc_of_lip hs hF_meas.1 hF_int.1 hF'_meas.1 h_lip.1
       bound_integrable.1 h_diff.1
   have H₂ :=
-    hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas.2 hF_int.2 hF'_meas.2 h_lip.2
+    hasFDerivAt_integral_of_dominated_loc_of_lip hs hF_meas.2 hF_int.2 hF'_meas.2 h_lip.2
       bound_integrable.2 h_diff.2
   exact ⟨⟨H₁.1, H₂.1⟩, H₁.2.sub H₂.2⟩
 
@@ -218,26 +217,27 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H
 `F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
 derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
 and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L[𝕜] E} (ε_pos : 0 < ε)
+theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L[𝕜] E} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ) (hF_int : Integrable (F x₀) μ)
     (hF'_meas : AEStronglyMeasurable (F' x₀) μ)
-    (h_bound : ∀ᵐ a ∂μ, ∀ x ∈ ball x₀ ε, ‖F' x a‖ ≤ bound a)
+    (h_bound : ∀ᵐ a ∂μ, ∀ x ∈ s, ‖F' x a‖ ≤ bound a)
     (bound_integrable : Integrable (bound : α → ℝ) μ)
-    (h_diff : ∀ᵐ a ∂μ, ∀ x ∈ ball x₀ ε, HasFDerivAt (F · a) (F' x a) x) :
+    (h_diff : ∀ᵐ a ∂μ, ∀ x ∈ s, HasFDerivAt (F · a) (F' x a) x) :
     HasFDerivAt (fun x ↦ ∫ a, F x a ∂μ) (∫ a, F' x₀ a ∂μ) x₀ := by
   letI : NormedSpace ℝ H := NormedSpace.restrictScalars ℝ 𝕜 H
+  rcases Metric.mem_nhds_iff.1 hs with ⟨ε, ε_pos, hε⟩
   have x₀_in : x₀ ∈ ball x₀ ε := mem_ball_self ε_pos
   have diff_x₀ : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (F' x₀ a) x₀ :=
-    h_diff.mono fun a ha ↦ ha x₀ x₀_in
+    h_diff.mono fun a ha ↦ ha x₀ (hε x₀_in)
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (F · a) (ball x₀ ε) := by
     apply (h_diff.and h_bound).mono
     rintro a ⟨ha_deriv, ha_bound⟩
     refine (convex_ball _ _).lipschitzOnWith_of_nnnorm_hasFDerivWithin_le
-      (fun x x_in ↦ (ha_deriv x x_in).hasFDerivWithinAt) fun x x_in ↦ ?_
+      (fun x x_in ↦ (ha_deriv x (hε x_in)).hasFDerivWithinAt) fun x x_in ↦ ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.coe_nnabs]
-    exact (ha_bound x x_in).trans (le_abs_self _)
-  exact (hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hF'_meas this
-    bound_integrable diff_x₀).2
+    exact (ha_bound x (hε x_in)).trans (le_abs_self _)
+  apply (hasFDerivAt_integral_of_dominated_loc_of_lip (ball_mem_nhds x₀ ε_pos)
+    hF_meas hF_int hF'_meas this bound_integrable diff_x₀).2
 
 open scoped Interval in
 /-- Differentiation under integral of `x ↦ ∫ x in a..b, F x a` at a given point `x₀`, assuming
@@ -245,20 +245,20 @@ open scoped Interval in
 derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
 and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ : Measure ℝ}
-    {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (ε_pos : 0 < ε)
+    {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))
     (hF_int : IntervalIntegrable (F x₀) μ a b)
     (hF'_meas : AEStronglyMeasurable (F' x₀) <| μ.restrict (Ι a b))
-    (h_bound : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ ball x₀ ε, ‖F' x t‖ ≤ bound t)
+    (h_bound : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ s, ‖F' x t‖ ≤ bound t)
     (bound_integrable : IntervalIntegrable bound μ a b)
-    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ ball x₀ ε, HasFDerivAt (F · t) (F' x t) x) :
+    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ s, HasFDerivAt (F · t) (F' x t) x) :
     HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
   rw [ae_restrict_uIoc_iff] at h_diff h_bound
   simp_rw [AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff, eventually_and] at hF_meas hF'_meas
   exact
-    (hasFDerivAt_integral_of_dominated_of_fderiv_le ε_pos hF_meas.1 hF_int.1 hF'_meas.1 h_bound.1
+    (hasFDerivAt_integral_of_dominated_of_fderiv_le hs hF_meas.1 hF_int.1 hF'_meas.1 h_bound.1
           bound_integrable.1 h_diff.1).sub
-      (hasFDerivAt_integral_of_dominated_of_fderiv_le ε_pos hF_meas.2 hF_int.2 hF'_meas.2 h_bound.2
+      (hasFDerivAt_integral_of_dominated_of_fderiv_le hs hF_meas.2 hF_int.2 hF'_meas.2 h_bound.2
         bound_integrable.2 h_diff.2)
 
 /-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
@@ -303,7 +303,7 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Spa
     ⟨by simp [(MeasurableEmbedding.subtype_coe hk'').comap_apply, hk']⟩
   simp_rw [← integral_subtype_comap hk'']
   refine hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
-    (F' := fun x (a : k) ↦ fderiv 𝕜 (fun x ↦ F x a) x) hε ?_ ?_ ?_ ?_ ?_ ?_
+    (F' := fun x (a : k) ↦ fderiv 𝕜 (fun x ↦ F x a) x) (ball_mem_nhds x₀ hε) ?_ ?_ ?_ ?_ ?_ ?_
   · refine eventually_nhds_iff.2 ⟨u, fun x hx ↦ ?_, hu', hxu⟩
     refine Continuous.aestronglyMeasurable_of_compactSpace ?_
     exact (hF₁.uncurry_left x hx).comp_continuous (by fun_prop) (by simp)
@@ -353,8 +353,13 @@ theorem restrict_inter_toMeasurable {α : Type*} [MeasurableSpace α]
   congr 1
   grind
 
+#check ContinuousMultilinearMap.curryLeft
+
+#check LinearIsometryEquiv
+
 open ContinuousMultilinearMap
 
+set_option maxHeartbeats 300000 in
 /-- If `f.uncurry : H × H' → E` is Cⁿ on `u ×ˢ k` for an open set `u` and a compact set `k`,
 the parametric integral `fun x ↦ ∫ a in k f x a ∂μ` is Cⁿ on `u` too. -/
 lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -457,9 +462,23 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
         exact (hk'_bound 0 (Nat.zero_le m) _ ⟨hz, tk' hw⟩).le
   · intro i hi z' hz'
     simp only [P]
+    apply HasFDerivAt.hasFDerivWithinAt
+    change HasFDerivAt
+      (fun x ↦ ∫ y in t, (compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H'))
+        (p (x, y) i) ∂μ)
+      ((continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E).toContinuousLinearEquiv
+        (∫ y in t, (compContinuousLinearMapL fun i ↦ ContinuousLinearMap.inl 𝕜 H H')
+        (p (z', y) i.succ) ∂μ)) z'
+    let A : NormedSpace ℝ (H →L[𝕜] ContinuousMultilinearMap 𝕜 (fun (j : Fin i) ↦ H) E) :=
+      NormedSpace.restrictScalars ℝ 𝕜 _
+    rw [← ContinuousLinearEquiv.integral_comp_comm]
+    apply hasFDerivAt_integral_of_dominated_of_fderiv_le
+      (F := fun x y ↦ (compContinuousLinearMapL fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) i))
 
 
 #exit
+
+-- continuousMultilinearCurryLeftEquiv
 
   · intro i hi
     simp only [P]
