@@ -165,23 +165,19 @@ theorem lp.one_norm_mulConvolution_le (f g : lp (fun _ : M => R) 1) :
       lp (fun _ : M => R) 1)‖ ≤ ‖f‖ * ‖g‖ := by
   simp only [lp.one_norm_eq_tsum]
   have hprod := lp.one_summable_norm_mul f g
-  have hsigma : Summable fun p : Σ x : M, mulFiber x => ‖f p.2.1.1‖ * ‖g p.2.1.2‖ := by
-    convert (Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod using 1
-  have hbound : ∀ x, ‖(mulConvolution (⇑f) (⇑g)) x‖ ≤
-      ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := by
-    intro x
-    have hx := hprod.subtype (mulFiber x)
-    refine (norm_tsum_le_tsum_norm ?_).trans ?_
-    · exact Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) hx
-    · exact Summable.tsum_le_tsum (fun ab => norm_mul_le _ _)
-        (Summable.of_nonneg_of_le (fun _ => norm_nonneg _) (fun ab => norm_mul_le _ _) hx) hx
+  have hsigma : Summable fun p : Σ x : M, mulFiber x => ‖f p.2.1.1‖ * ‖g p.2.1.2‖ :=
+    (Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod
+  have hbound (x : M) : ‖(mulConvolution (⇑f) (⇑g)) x‖ ≤
+      ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ :=
+    (norm_tsum_le_tsum_norm (.of_nonneg_of_le (fun _ => norm_nonneg _) (fun _ => norm_mul_le _ _)
+      (hprod.subtype _))).trans (Summable.tsum_le_tsum (fun _ => norm_mul_le _ _) (.of_nonneg_of_le
+      (fun _ => norm_nonneg _) (fun _ => norm_mul_le _ _) (hprod.subtype _)) (hprod.subtype _))
+  have hsigma' : ∑' p : Σ x : M, mulFiber x, ‖f p.2.1.1‖ * ‖g p.2.1.2‖ =
+      ∑' x, ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := hsigma.tsum_sigma' hsigma.sigma_factor
   refine (Summable.tsum_le_tsum hbound ?_ hsigma.sigma).trans (le_of_eq ?_)
-  · have := lp.one_mulConvolution_memℓp f g
-    simpa using (memℓp_gen_iff (by norm_num)).mp this
-  · rw [← hsigma.tsum_sigma']
-    · exact (lp.one_summable_norm f).tsum_mul_tsum (lp.one_summable_norm g) hprod ▸
-        (Equiv.sigmaFiberEquiv mulMap).tsum_eq (fun p => ‖f p.1‖ * ‖g p.2‖)
-    · exact fun b => hsigma.sigma_factor b
+  · simpa using (memℓp_gen_iff (by norm_num)).mp (lp.one_mulConvolution_memℓp f g)
+  · exact hsigma' ▸ (lp.one_summable_norm f).tsum_mul_tsum (lp.one_summable_norm g) hprod ▸
+      (Equiv.sigmaFiberEquiv mulMap).tsum_eq (fun p => ‖f p.1‖ * ‖g p.2‖)
 
 /-- The identity element `delta 1` is in ℓ¹. -/
 @[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addDelta_memℓp
@@ -220,22 +216,13 @@ def TripleConvolutionSummable (f g h : M → R) (x : M) : Prop :=
 theorem lp.one_tripleConvolutionSummable (f g h : lp (fun _ : M => R) 1) (x : M) :
     TripleConvolutionSummable (⇑f) (⇑g) (⇑h) x := by
   unfold TripleConvolutionSummable
-  have hf : Summable fun m : M => ‖f m‖ := lp.one_summable_norm f
-  have hg : Summable fun m : M => ‖g m‖ := lp.one_summable_norm g
-  have hh : Summable fun m : M => ‖h m‖ := lp.one_summable_norm h
-  have hfg : Summable fun ab : M × M => ‖f ab.1‖ * ‖g ab.2‖ :=
-    hf.mul_of_nonneg hg (fun _ => norm_nonneg _) (fun _ => norm_nonneg _)
-  have hfg' : Summable fun ab : M × M => ‖f ab.1‖ * ‖g ab.2‖ := hfg
-  have hfgh : Summable fun abc : (M × M) × M => (‖f abc.1.1‖ * ‖g abc.1.2‖) * ‖h abc.2‖ :=
-    hfg'.mul_of_nonneg hh
-      (fun ab => mul_nonneg (norm_nonneg _) (norm_nonneg _))
-      (fun _ => norm_nonneg _)
-  have hfgh' : Summable fun abc : M × M × M => ‖f abc.1‖ * ‖g abc.2.1‖ * ‖h abc.2.2‖ :=
-    (Equiv.prodAssoc M M M).symm.summable_iff.mpr hfgh |>.congr fun _ => by rfl
-  have hsub : Summable fun p : tripleFiber x => ‖f p.1.1‖ * ‖g p.1.2.1‖ * ‖h p.1.2.2‖ :=
-    hfgh'.subtype (tripleFiber x)
-  exact Summable.of_norm_bounded hsub (fun ⟨⟨a, b, c⟩, _⟩ =>
-    (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right (norm_mul_le _ _) (norm_nonneg _)))
+  have hfg := (lp.one_summable_norm f).mul_of_nonneg (lp.one_summable_norm g)
+    (fun _ => norm_nonneg _) (fun _ => norm_nonneg _)
+  have hfgh : Summable fun abc : M × M × M => ‖f abc.1‖ * ‖g abc.2.1‖ * ‖h abc.2.2‖ :=
+    (Equiv.prodAssoc M M M).symm.summable_iff.mpr (hfg.mul_of_nonneg (lp.one_summable_norm h)
+      (fun _ => mul_nonneg (norm_nonneg _) (norm_nonneg _)) (fun _ => norm_nonneg _))
+  exact (hfgh.subtype _).of_norm_bounded fun ⟨⟨a, b, c⟩, _⟩ =>
+    (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right (norm_mul_le _ _) (norm_nonneg _))
 
 /-- ℓ¹ functions have summable convolutions at each point. -/
 @[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addConvolutionSummable
@@ -261,8 +248,7 @@ theorem lp.one_convolution_assoc_left_sum (f g h : lp (fun _ : M => R) 1) (x : M
     exact ((lp.one_convolutionSummable f g cd.1.1).tsum_mul_right (h cd.1.2)).symm
   have hsigmaL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
       (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 := by
-    convert (leftAssocEquiv x).summable_iff.mpr
-      (lp.one_tripleConvolutionSummable f g h x) using 1
+    convert (leftAssocEquiv x).summable_iff.mpr (lp.one_tripleConvolutionSummable f g h x) using 1
   have hfiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
       (f ab.1.1 * g ab.1.2) * h cd.1.2 :=
     fun cd => (lp.one_convolutionSummable f g cd.1.1).mul_right (h cd.1.2)
@@ -528,7 +514,7 @@ instance : CoeFun (AddLp M R) (fun _ => M → R) where
 
 @[simp] theorem toLp_ofLp (f : lp (fun _ : M => R) 1) : (ofLp f).toLp = f := rfl
 @[simp] theorem ofLp_toLp (f : AddLp M R) : ofLp f.toLp = f := rfl
-@[simp] theorem mk_toLp (f : lp (fun _ : M => R) 1) : (⟨f⟩ : AddLp M R).toLp = f := rfl
+lemma mk_toLp (f : lp (fun _ : M => R) 1) : (⟨f⟩ : AddLp M R).toLp = f := rfl
 
 theorem ext {f g : AddLp M R} (h : ∀ m, f m = g m) : f = g := by
   cases f; cases g; simp only [mk.injEq]; exact lp.ext (funext h)
@@ -547,15 +533,15 @@ namespace AddLp
 
 /- Note: The AddLp instances cannot use `@[to_additive]`-generated lemmas directly due to
    extremely expensive type unification when Lean tries to compare `Memℓp` predicates.
-   Wrapping them in a `protected def` with explicit type signature forces Lean to elaborate
+   Wrapping them in a `protected lemma` with explicit type signature forces Lean to elaborate
    the return type first, avoiding the deep unification that causes timeouts. -/
 
 /-- Wrapper to avoid `@[to_additive]` timeout issues. -/
-protected def addMulConvolution_memℓp' (f g : lp (fun _ : M => R) 1) :
+protected lemma addMulConvolution_memℓp' (f g : lp (fun _ : M => R) 1) :
     Memℓp ((⇑f) ⋆₊ₘ (⇑g)) 1 := lp.one_addMulConvolution_memℓp f g
 
 /-- Wrapper to avoid `@[to_additive]` timeout issues. -/
-protected def addDelta_memℓp' [DecidableEq M] : Memℓp (addDelta (M := M) (1 : R)) 1 :=
+protected lemma addDelta_memℓp' [DecidableEq M] : Memℓp (addDelta (M := M) (1 : R)) 1 :=
   lp.one_addDelta_memℓp
 
 section Mul
@@ -567,19 +553,19 @@ instance instMul : Mul (AddLp M R) where
 
 end Mul
 
-@[simp] theorem mul_apply [CompleteSpace R] (f g : AddLp M R) (x : M) :
+@[simp] theorem mul_apply (f g : AddLp M R) (x : M) :
     (f * g) x = (f.toLp ⋆₊ₘ g.toLp) x := rfl
 
 section One
 
-variable [CompleteSpace R] [DecidableEq M]
+variable [DecidableEq M]
 
 instance instOne : One (AddLp M R) where
   one := ⟨⟨addDelta 1, AddLp.addDelta_memℓp'⟩⟩
 
 end One
 
-@[simp] theorem one_apply [CompleteSpace R] [DecidableEq M] (x : M) :
+@[simp] theorem one_apply [DecidableEq M] (x : M) :
     (1 : AddLp M R) x = addDelta (1 : R) x := rfl
 
 section Ring
