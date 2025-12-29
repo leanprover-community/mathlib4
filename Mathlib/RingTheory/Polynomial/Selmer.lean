@@ -236,17 +236,14 @@ theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     (h : ∀ m : MaximalSpectrum S, (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
     Function.Surjective (MulAction.toPermHom G (f.rootSet S)) := by
   classical
-  let X : Set G := ⋃ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G
-  have hS1 : Subgroup.closure X = ⊤ := by
-    simpa only [X, Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
-  have hS2 : ∀ σ ∈ X, MulAction.toPermHom G (f.rootSet S) σ = 1 ∨
-      (MulAction.toPermHom G (f.rootSet S) σ).IsSwap := by
-    intro σ hσ
-    simp only [X, Set.mem_iUnion] at hσ
+  apply surjective_of_isSwap_of_isPretransitive'
+    (⋃ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G)
+  · intro σ hσ
+    simp only [Set.mem_iUnion] at hσ
     obtain ⟨m, hm⟩ := hσ
     have := tada f hf G m hf' (h m) σ hm
     exact this
-  exact surjective_of_isSwap_of_isPretransitive' X hS2 hS1
+  · simpa only [Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
 
 open Equiv Pointwise
 
