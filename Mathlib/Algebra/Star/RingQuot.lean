@@ -24,7 +24,7 @@ section StarRing
 
 variable [StarRing R]
 
-set_option linter.style.commandStart false in -- manual alignment is not recognised by the linter
+set_option linter.style.commandStart false -- linter does not recognise manual alignment
 theorem Rel.star (hr : ∀ a b, r a b → r (star a) (star b))
     ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
   induction h with

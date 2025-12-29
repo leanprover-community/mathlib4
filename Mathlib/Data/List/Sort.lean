@@ -169,9 +169,6 @@ theorem erase_orderedInsert_of_notMem [DecidableEq α]
     (xs.orderedInsert r x).erase x = xs := by
   induction xs <;> grind [IsRefl]
 
-@[deprecated (since := "2025-05-23")]
-alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
-
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)
     (hxs : Pairwise r xs) :
@@ -253,7 +250,7 @@ alias sorted_insertionSort := pairwise_insertionSort
 
 end TotalAndTransitive
 
-set_option linter.style.commandStart false in -- TODO decide!
+set_option linter.style.commandStart false in -- manual alignment is not recognised
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
 -/
@@ -279,7 +276,7 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
 
 variable [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
 
-set_option linter.style.commandStart false in -- TODO decide!
+set_option linter.style.commandStart false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
 additionally requires `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.

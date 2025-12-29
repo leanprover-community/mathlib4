@@ -290,14 +290,6 @@ def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y
     Homotopy (g₀.comp f) (g₁.comp f) :=
   G.comp (.refl f)
 
-/-- If we have a `Homotopy f₀ f₁` and a `Homotopy g₀ g₁`, then we can compose them and get a
-`Homotopy (g₀.comp f₀) (g₁.comp f₁)`.
--/
-@[simps!, deprecated comp (since := "2025-05-12")]
-def hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
-    Homotopy (g₀.comp f₀) (g₁.comp f₁) :=
-  G.comp F
-
 /-- Let `F` be a homotopy between `f₀ : C(X, Y)` and `f₁ : C(X, Y)`. Let `G` be a homotopy between
 `g₀ : C(X, Z)` and `g₁ : C(X, Z)`. Then `F.prodMk G` is the homotopy between `f₀.prodMk g₀` and
 `f₁.prodMk g₁` that sends `p` to `(F p, G p)`. -/
@@ -355,11 +347,6 @@ theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : Homotopic f g) (h₁ : Homotopic g h
 theorem comp {g₀ g₁ : C(Y, Z)} {f₀ f₁ : C(X, Y)} (hg : Homotopic g₀ g₁) (hf : Homotopic f₀ f₁) :
     Homotopic (g₀.comp f₀) (g₁.comp f₁) :=
   hg.map2 Homotopy.comp hf
-
-@[deprecated comp (since := "2025-05-12")]
-theorem hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (h₀ : Homotopic f₀ f₁) (h₁ : Homotopic g₀ g₁) :
-    Homotopic (g₀.comp f₀) (g₁.comp f₁) :=
-  h₁.comp h₀
 
 theorem equivalence : Equivalence (@Homotopic X Y _ _) :=
   ⟨refl, by apply symm, by apply trans⟩

@@ -78,6 +78,36 @@ example    :   True∧
 warning: add space in the source
 
 This part of the code
+  'first|assumption|'
+should be written as
+  'first |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  '| assumption'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'assumption |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
   '·{exact'
 should be written as
   '· {'
@@ -144,36 +174,6 @@ should be written as
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'first|assumption|'
-should be written as
-  'first |'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'first|assumption|'
-should be written as
-  '| assumption'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'first|assumption|'
-should be written as
-  'assumption |'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
 example : True ∧ True := by
@@ -193,17 +193,6 @@ section Desiderata_and_todos
 -- Pretty-printing of unification hints: TODO allow for an additional space
 public def Foo := Nat
 
-/--
-warning: remove space in the source
-
-This part of the code
-  '⊢ Foo'
-should be written as
-  '⊢Foo'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
--/
 #guard_msgs in
 unif_hint (_C : Foo) where
   ⊢ Foo =?= Foo

@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 /-!
 # Big operators on a finset in ordered groups
 
-This file contains the results concerning the interaction of multiset big operators with ordered
+This file contains the results concerning the interaction of finset big operators with ordered
 groups/monoids.
 -/
 

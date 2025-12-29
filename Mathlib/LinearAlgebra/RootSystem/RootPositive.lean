@@ -177,9 +177,6 @@ lemma rootLength_reflectionPerm_self (i : ι) :
     B.rootLength (P.reflectionPerm i i) = B.rootLength i := by
   simp [rootLength, rootSpanMem_reflectionPerm_self]
 
-@[deprecated (since := "2025-05-28")]
-alias rootLength_reflection_perm_self := rootLength_reflectionPerm_self
-
 @[simp] lemma algebraMap_rootLength (i : ι) :
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
   simp [rootLength]
@@ -189,6 +186,7 @@ lemma pairingIn_mul_eq_pairingIn_mul_swap :
   simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
     B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
+set_option linter.style.commandStart false in -- the linter does not recognise manual alignment
 @[simp]
 lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
     (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
