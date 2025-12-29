@@ -306,7 +306,7 @@ lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right wh
   mpr h := by
     obtain ⟨_, _, _⟩ := h
     use mkIso (asIso f.left) (asIso f.right) (asIso f.base)
-      f.left_coherence f.right_coherence|>.inv
+      f.left_coherence f.right_coherence |>.inv
     aesop_cat
 
 end Iso
