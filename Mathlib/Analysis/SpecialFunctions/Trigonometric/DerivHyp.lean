@@ -791,8 +791,11 @@ end
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
 
+set_option backward.privateInPublic true in
 private alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
+set_option backward.privateInPublic true in
 private alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
+set_option backward.privateInPublic true in
 private alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
 
 /-- Extension for the `positivity` tactic: `Real.sinh` is positive/nonnegative/nonzero if its input
