@@ -140,9 +140,6 @@ theorem induce_deleteIncidenceSet_of_notMem (G : SimpleGraph V) {s : Set V} {x :
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
   exact fun _ ↦ ⟨v₁.prop.ne_of_notMem h, v₂.prop.ne_of_notMem h⟩
 
-@[deprecated (since := "2025-05-23")]
-alias induce_deleteIncidenceSet_of_not_mem := induce_deleteIncidenceSet_of_notMem
-
 variable [Fintype V] [DecidableEq V]
 
 instance {G : SimpleGraph V} [DecidableRel G.Adj] {x : V} :
