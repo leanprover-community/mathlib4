@@ -138,8 +138,6 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
 
 @[deprecated (since := "2025-10-25")] alias notMem_of_lt_hitting := notMem_of_lt_hittingBtwn
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hittingBtwn
-
 theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_

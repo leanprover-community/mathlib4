@@ -564,11 +564,6 @@ theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.List.stronglyMeasurable_sum' := List.stronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.List.stronglyMeasurable_prod' := List.stronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.stronglyMeasurable_fun_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) :
@@ -588,11 +583,6 @@ theorem _root_.Multiset.stronglyMeasurable_prod (l : Multiset (α → M))
   rcases l with ⟨l⟩
   simpa using l.stronglyMeasurable_prod (by simpa using hl)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.Multiset.stronglyMeasurable_sum' := Multiset.stronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Multiset.stronglyMeasurable_prod' := Multiset.stronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.Multiset.stronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, StronglyMeasurable f) :
@@ -603,11 +593,6 @@ theorem _root_.Multiset.stronglyMeasurable_fun_prod (s : Multiset (α → M))
 theorem _root_.Finset.stronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _a _b ha hb => ha.mul hb) (@stronglyMeasurable_one α M _ _ _) hf
-
-@[deprecated (since := "2025-05-30")]
-alias _root_.Finset.stronglyMeasurable_sum' := Finset.stronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Finset.stronglyMeasurable_prod' := Finset.stronglyMeasurable_prod
 
 @[to_additive (attr := measurability, fun_prop)]
 theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)

@@ -79,8 +79,6 @@ theorem eq_of_mem_singleton {x y : α} (h : x ∈ ({y} : Finset α)) : x = y :=
 theorem notMem_singleton {a b : α} : a ∉ ({b} : Finset α) ↔ a ≠ b :=
   not_congr mem_singleton
 
-@[deprecated (since := "2025-05-23")] alias not_mem_singleton := notMem_singleton
-
 theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
   mem_singleton.mpr rfl
 
@@ -266,8 +264,6 @@ theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
 theorem eq_of_mem_cons_of_notMem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
   (mem_cons.1 h).resolve_right hb
 
-@[deprecated (since := "2025-05-23")] alias eq_of_mem_cons_of_not_mem := eq_of_mem_cons_of_notMem
-
 theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
     (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
   (mem_cons.1 hi).resolve_left hia
@@ -371,8 +367,6 @@ theorem insert_val' (a : α) (s : Finset α) : (insert a s).1 = dedup (a ::ₘ s
 theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).1 = a ::ₘ s.1 := by
   rw [insert_val, ndinsert_of_notMem h]
 
-@[deprecated (since := "2025-05-23")] alias insert_val_of_not_mem := insert_val_of_notMem
-
 @[simp, grind =]
 theorem mem_insert : a ∈ insert b s ↔ a = b ∨ a ∈ s :=
   mem_ndinsert
@@ -388,9 +382,6 @@ theorem mem_of_mem_insert_of_ne (h : b ∈ insert a s) : b ≠ a → b ∈ s :=
 
 theorem eq_of_mem_insert_of_notMem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
   (mem_insert.1 ha).resolve_right hb
-
-@[deprecated (since := "2025-05-23")]
-alias eq_of_mem_insert_of_not_mem := eq_of_mem_insert_of_notMem
 
 /-- A version of `LawfulSingleton.insert_empty_eq` that works with `dsimp`. -/
 @[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
@@ -450,8 +441,6 @@ instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α)
 theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
   contrapose! h
   simp [h]
-
-@[deprecated (since := "2025-05-23")] alias ne_insert_of_not_mem := ne_insert_of_notMem
 
 theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
 

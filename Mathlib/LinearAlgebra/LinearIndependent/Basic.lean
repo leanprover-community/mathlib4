@@ -257,9 +257,6 @@ theorem LinearIndependent.notMem_span_image [Nontrivial R] (hv : LinearIndepende
   refine disjoint_def.1 (hv.disjoint_span_image ?_) (v x) h' w
   simpa using h
 
-@[deprecated (since := "2025-05-23")]
-alias LinearIndependent.not_mem_span_image := LinearIndependent.notMem_span_image
-
 theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
     (hv : LinearIndependent R v) {x : ι} (f : ι →₀ R) (h : x ∉ f.support) :
     f.linearCombination R v ≠ v x := by
@@ -269,10 +266,6 @@ theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
     Finsupp.linearCombination R v x ≠ f.linearCombination R v := by
     simpa [← w, Finsupp.span_image_eq_map_linearCombination] using hv.notMem_span_image h
   exact p f (f.mem_supported_support R) rfl
-
-@[deprecated (since := "2025-05-23")]
-alias LinearIndependent.linearCombination_ne_of_not_mem_support :=
-  LinearIndependent.linearCombination_ne_of_notMem_support
 
 end Subtype
 

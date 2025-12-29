@@ -152,9 +152,6 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
 
-@[deprecated (since := "2025-05-23")]
-alias measure_mem_forall_ge_image_not_mem_eq_zero := measure_mem_forall_ge_image_notMem_eq_zero
-
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
 almost every point `x ∈ s` returns back to `s` infinitely many times. -/
 theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :

@@ -209,12 +209,8 @@ lemma mem_uIcc : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b 
 lemma notMem_uIcc_of_lt (ha : c < a) (hb : c < b) : c ∉ [[a, b]] :=
   notMem_Icc_of_lt <| lt_min_iff.mpr ⟨ha, hb⟩
 
-@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_lt := notMem_uIcc_of_lt
-
 lemma notMem_uIcc_of_gt (ha : a < c) (hb : b < c) : c ∉ [[a, b]] :=
   notMem_Icc_of_gt <| max_lt_iff.mpr ⟨ha, hb⟩
-
-@[deprecated (since := "2025-05-23")] alias not_mem_uIcc_of_gt := notMem_uIcc_of_gt
 
 lemma uIcc_subset_uIcc_iff_le :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ min a₂ b₂ ≤ min a₁ b₁ ∧ max a₁ b₁ ≤ max a₂ b₂ :=
@@ -265,8 +261,6 @@ lemma notMem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := 
   simp only [uIoc_eq_union, mem_union, mem_Ioc, ← not_le]
   tauto
 
-@[deprecated (since := "2025-05-23")] alias not_mem_uIoc := notMem_uIoc
-
 @[simp] lemma left_mem_uIoc : a ∈ Ι a b ↔ b < a := by simp [mem_uIoc]
 @[simp] lemma right_mem_uIoc : b ∈ Ι a b ↔ a < b := by simp [mem_uIoc]
 
@@ -299,9 +293,6 @@ lemma eq_of_notMem_uIoc_of_notMem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
       apply le_antisymm <;>
     first | assumption | exact le_of_lt ‹_› |
     exact absurd hb (not_le_of_gt ‹c < b›) | exact absurd ha (not_le_of_gt ‹c < a›)
-
-@[deprecated (since := "2025-05-23")]
-alias eq_of_not_mem_uIoc_of_not_mem_uIoc := eq_of_notMem_uIoc_of_notMem_uIoc
 
 lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h

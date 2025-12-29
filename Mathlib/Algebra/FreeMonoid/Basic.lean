@@ -216,11 +216,6 @@ instance : Membership α (FreeMonoid α) := ⟨mem⟩
 @[to_additive]
 theorem notMem_one : m ∉ (1 : FreeMonoid α) := List.not_mem_nil
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.FreeAddMonoid.not_mem_zero := FreeAddMonoid.notMem_zero
-
-@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_one := notMem_one
-
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
 

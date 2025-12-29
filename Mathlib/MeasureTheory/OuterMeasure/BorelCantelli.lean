@@ -87,8 +87,6 @@ theorem ae_eventually_notMem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ �
     ∀ᵐ x ∂μ, ∀ᶠ n in atTop, x ∉ s n :=
   measure_setOf_frequently_eq_zero hs
 
-@[deprecated (since := "2025-05-23")] alias ae_eventually_not_mem := ae_eventually_notMem
-
 theorem measure_liminf_cofinite_eq_zero [Infinite ι] {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     μ (liminf s cofinite) = 0 := by
   rw [← le_zero_iff, ← measure_limsup_cofinite_eq_zero h]

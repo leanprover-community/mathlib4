@@ -74,9 +74,6 @@ lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     use inv
     exact sub_eq_zero.mp <| IsHausdorff.haus IsAdicComplete.toIsHausdorff (inv * r - 1) eq
 
-@[deprecated (since := "2025-05-24")]
-alias isUnit_iff_nmem_of_isAdicComplete_maximal := isUnit_iff_notMem_of_isAdicComplete_maximal
-
 theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing R where
   exists_pair_ne := ⟨0, 1, ne_of_mem_of_not_mem m.zero_mem
     (m.ne_top_iff_one.mp (Ideal.IsMaximal.ne_top hmax))⟩

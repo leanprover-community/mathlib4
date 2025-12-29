@@ -224,8 +224,6 @@ lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
   | inr h' => exact h'
   | inl h' => simpa [lt_iff_le_not_ge, h'] using h
 
-@[deprecated (since := "2025-05-11")] alias IsChain.le_of_not_lt := IsChain.le_of_not_gt
-
 lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
   ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_ge h⟩
@@ -233,8 +231,6 @@ lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
 lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
   (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_ge · h)
-
-@[deprecated (since := "2025-05-11")] alias IsChain.lt_of_not_le := IsChain.lt_of_not_ge
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=

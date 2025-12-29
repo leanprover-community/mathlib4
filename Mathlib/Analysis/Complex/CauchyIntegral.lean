@@ -90,7 +90,7 @@ differentiability at all but countably many points of the set mentioned below.
 ## Implementation details
 
 The proof of the Cauchy integral formula in this file is based on a very general version of the
-divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`
+divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`
 (a version for functions defined on `Fin (n + 1) → ℝ`),
 `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le`, and
 `MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable` (versions for

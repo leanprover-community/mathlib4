@@ -96,8 +96,6 @@ lemma notMem_pool_self : a t ∉ pool a t := by
   obtain ⟨u, lu, hu⟩ := exists_add_eq_of_mem_pool h
   exact lu.ne (ha.2 hu)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_pool_self := notMem_pool_self
-
 /-- The number of balls stays unchanged if there is a ball with height 0 and increases by 1
 otherwise. -/
 lemma card_pool_succ : #(pool a (t + 1)) = #(pool a t) + if 0 ∈ pool a t then 0 else 1 := by

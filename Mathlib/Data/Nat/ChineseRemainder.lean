@@ -56,9 +56,6 @@ lemma modEq_list_map_prod_iff {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairw
       exact (List.pairwise_cons.mp co).1 j hj
     simp [← modEq_and_modEq_iff_modEq_mul this, ih (List.Pairwise.of_cons co)]
 
-@[deprecated (since := "2025-05-24")]
-alias modEq_list_prod_iff' := modEq_list_map_prod_iff
-
 variable (a s : ι → ℕ)
 
 /-- The natural number less than `(l.map s).prod` congruent to

@@ -229,8 +229,6 @@ theorem Q_notMem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
     or_iff_right cfg.C_ne_Q₁, or_iff_right cfg.sbtw_Q_A₁_Q₁.left_ne_right, angle_comm] at hc
   exact cfg.not_collinear_ABC (hc.elim collinear_of_angle_eq_zero collinear_of_angle_eq_pi)
 
-@[deprecated (since := "2025-05-23")] alias Q_not_mem_CB := Q_notMem_CB
-
 theorem Q_ne_B : cfg.Q ≠ cfg.B := by
   intro h
   have h' := cfg.Q_notMem_CB

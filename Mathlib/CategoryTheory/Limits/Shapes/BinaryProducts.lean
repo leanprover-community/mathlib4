@@ -1328,8 +1328,6 @@ def IsLimit.binaryFanSwap (I : IsLimit s) : IsLimit s.swap where
     specialize w ⟨WalkingPair.swap j⟩
     cases j <;> exact w
 
-@[deprecated (since := "2025-05-04")] alias IsLimit.swapBinaryFan := IsLimit.binaryFanSwap
-
 /-- Construct `HasBinaryProduct Y X` from `HasBinaryProduct X Y`.
 This can't be an instance, as it would cause a loop in typeclass search. -/
 lemma HasBinaryProduct.swap (X Y : C) [HasBinaryProduct X Y] : HasBinaryProduct Y X :=

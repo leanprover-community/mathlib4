@@ -121,9 +121,6 @@ theorem single_hadamard_single_eq (i : m) (j : n) (a b : α) :
     single i j a ⊙ single i j b = single i j (a * b) :=
   ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 
-@[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_hadamard_stdBasisMatrix_eq := single_hadamard_single_eq
-
 theorem single_hadamard_single_of_ne
     {ia : m} {ja : n} {ib : m} {jb : n} (h : ¬(ia = ib ∧ ja = jb)) (a b : α) :
     single ia ja a ⊙ single ib jb b = 0 := by

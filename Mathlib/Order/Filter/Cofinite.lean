@@ -86,14 +86,8 @@ theorem _root_.Set.Finite.eventually_cofinite_notMem {s : Set α} (hs : s.Finite
     ∀ᶠ x in cofinite, x ∉ s :=
   hs.compl_mem_cofinite
 
-@[deprecated (since := "2025-05-24")]
-alias _root_.Set.Finite.eventually_cofinite_nmem := _root_.Set.Finite.eventually_cofinite_notMem
-
 theorem _root_.Finset.eventually_cofinite_notMem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
   s.finite_toSet.eventually_cofinite_notMem
-
-@[deprecated (since := "2025-05-24")]
-alias _root_.Finset.eventually_cofinite_nmem := _root_.Finset.eventually_cofinite_notMem
 
 theorem _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
     Set.Infinite s ↔ ∃ᶠ x in cofinite, x ∈ s :=

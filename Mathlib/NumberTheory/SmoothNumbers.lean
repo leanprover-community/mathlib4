@@ -60,9 +60,6 @@ lemma primesBelow_succ (n : ℕ) :
 lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
 
-@[deprecated (since := "2025-05-23")] alias not_mem_primesBelow := notMem_primesBelow
-
-
 /-!
 ### `s`-factored numbers
 -/

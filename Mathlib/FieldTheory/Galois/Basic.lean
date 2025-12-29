@@ -237,16 +237,12 @@ theorem fixingSubgroup_le {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
     K2.fixingSubgroup ≤ K1.fixingSubgroup :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
-@[deprecated (since := "2025-05-02")] alias fixingSubgroup.antimono := fixingSubgroup_le
-
 theorem fixedField_le {H1 H2 : Subgroup Gal(E/F)} (h12 : H1 ≤ H2) :
     fixedField H2 ≤ fixedField H1 :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
 lemma fixingSubgroup_antitone : Antitone (@fixingSubgroup F _ E _ _) :=
   fun _ _ ↦ fixingSubgroup_le
-
-@[deprecated (since := "2025-05-02")] alias fixingSubgroup_anti := fixingSubgroup_antitone
 
 lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
   fun _ _ ↦ fixedField_le

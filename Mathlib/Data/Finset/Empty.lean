@@ -103,8 +103,6 @@ theorem empty_val : (∅ : Finset α).1 = 0 :=
 theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
   simp only [mem_def, empty_val, notMem_zero, not_false_iff]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Finset α).Nonempty := fun ⟨x, hx⟩ => notMem_empty x hx
 
@@ -125,12 +123,7 @@ theorem empty_subset (s : Finset α) : ∅ ⊆ s :=
 theorem eq_empty_of_forall_notMem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅ :=
   eq_of_veq (eq_zero_of_forall_notMem H)
 
-@[deprecated (since := "2025-05-23")] alias eq_empty_of_forall_not_mem := eq_empty_of_forall_notMem
-
 theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s := by grind
-
-@[deprecated (since := "2025-05-23")]
-alias eq_empty_iff_forall_not_mem := eq_empty_iff_forall_notMem
 
 @[simp]
 theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=

@@ -135,10 +135,6 @@ lemma MonsterData.notMem_monsterCells_of_fst_eq_zero (m : MonsterData N)
     {c : Cell N} (hc : c.1 = 0) : c ∉ m.monsterCells := by
   simp [monsterCells, Prod.ext_iff, hc]
 
-@[deprecated (since := "2025-05-23")]
-alias MonsterData.not_mem_monsterCells_of_fst_eq_zero :=
-  MonsterData.notMem_monsterCells_of_fst_eq_zero
-
 lemma MonsterData.le_N_of_mem_monsterCells {m : MonsterData N} {c : Cell N}
     (hc : c ∈ m.monsterCells) : (c.1 : ℕ) ≤ N := by
   simp only [monsterCells, Set.mem_range, Subtype.exists, Set.mem_Icc] at hc

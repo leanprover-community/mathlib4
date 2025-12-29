@@ -451,9 +451,6 @@ theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     · exact IH hx.right
     · simp
 
-@[deprecated (since := "2025-05-23")]
-alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
-
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
   refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_notMem _ _⟩
   obtain ⟨⟨k, hk⟩, hk'⟩ := get_of_mem H

@@ -820,14 +820,8 @@ theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
 lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h
 
-@[deprecated (since := "2025-05-23")]
-alias Infinite.exists_not_mem_finite := Infinite.exists_notMem_finite
-
 lemma Infinite.exists_notMem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
   hs.exists_notMem_finite t.finite_toSet
-
-@[deprecated (since := "2025-05-23")]
-alias Infinite.exists_not_mem_finset := Infinite.exists_notMem_finset
 
 section Infinite
 variable [Infinite α]
@@ -835,12 +829,7 @@ variable [Infinite α]
 lemma Finite.exists_notMem (hs : s.Finite) : ∃ a, a ∉ s := by
   by_contra! h; exact infinite_univ (hs.subset fun a _ ↦ h _)
 
-@[deprecated (since := "2025-05-23")] alias Finite.exists_not_mem := Finite.exists_notMem
-
 lemma _root_.Finset.exists_notMem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Finset.exists_not_mem := _root_.Finset.exists_notMem
 
 end Infinite
 

@@ -212,9 +212,6 @@ theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 (WithVal (v.valuation K))) 
   rw [norm_def]
   exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x
 
-@[deprecated (since := "2025-05-23")]
-alias FinitePlace.norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_notMem
-
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by

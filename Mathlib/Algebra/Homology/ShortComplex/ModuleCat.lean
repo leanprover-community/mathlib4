@@ -110,27 +110,9 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
 
-/-- The homology of a short complex of modules as a concrete quotient. -/
-@[deprecated "This abbreviation is now inlined" (since := "2025-05-14")]
-abbrev moduleCatHomology := S.moduleCatLeftHomologyData.H
-
-/-- The natural projection map to the homology of a short complex of modules as a
-concrete quotient. -/
-@[deprecated "This abbreviation is now inlined" (since := "2025-05-14")]
-abbrev moduleCatHomologyπ := S.moduleCatLeftHomologyData.π
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatLeftHomologyData_i := moduleCatLeftHomologyData_i_hom
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatLeftHomologyData_π := moduleCatLeftHomologyData_π_hom
-
 @[simp]
 lemma moduleCatLeftHomologyData_f'_hom :
     S.moduleCatLeftHomologyData.f'.hom = S.moduleCatToCycles := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatLeftHomologyData_f' := moduleCatLeftHomologyData_f'_hom
 
 @[simp]
 lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat R}
@@ -154,9 +136,6 @@ noncomputable def moduleCatCyclesIso : S.cycles ≅ S.moduleCatLeftHomologyData.
 lemma moduleCatCyclesIso_hom_i :
     S.moduleCatCyclesIso.hom ≫ S.moduleCatLeftHomologyData.i = S.iCycles :=
   S.moduleCatLeftHomologyData.cyclesIso_hom_comp_i
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatCyclesIso_hom_subtype := moduleCatCyclesIso_hom_i
 
 @[reassoc (attr := simp, elementwise)]
 lemma moduleCatCyclesIso_inv_iCycles :

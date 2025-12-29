@@ -1139,14 +1139,8 @@ theorem sup_singleton_apply (s : Finset β) (f : β → α) :
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]
 
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton'' := sup_singleton_apply
-
 @[simp]
 theorem sup_singleton_eq_self (s : Finset α) : s.sup singleton = s :=
   (s.sup_singleton_apply _).trans image_id
-
-@[deprecated (since := "2025-05-24")]
-alias sup_singleton' := sup_singleton_eq_self
 
 end Finset

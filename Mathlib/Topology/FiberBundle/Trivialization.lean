@@ -238,13 +238,9 @@ theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b 
     (y : F) : e.symm b y = 0 :=
   dif_neg hb
 
-@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
-
 theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
     (e.symm b : F → E b) = 0 :=
   funext fun _ => dif_neg hb
-
-@[deprecated (since := "2025-05-23")] alias coe_symm_of_not_mem := coe_symm_of_notMem
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
@@ -667,8 +663,6 @@ theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
 theorem symm_apply_of_notMem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
     e.symm b y = 0 :=
   dif_neg hb
-
-@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
 
 theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toOpenPartialHomeomorph.symm (b, y) :=

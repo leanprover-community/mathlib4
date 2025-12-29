@@ -429,15 +429,9 @@ lemma repr_eq_zero_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
   simp [hi, snf.snf, map_finsuppSum]
 
-@[deprecated (since := "2025-05-24")]
-alias repr_eq_zero_of_nmem_range := repr_eq_zero_of_notMem_range
-
 lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
   fun m hm ↦ snf.repr_eq_zero_of_notMem_range ⟨m, hm⟩ hi
-
-@[deprecated (since := "2025-05-24")]
-alias le_ker_coord_of_nmem_range := le_ker_coord_of_notMem_range
 
 @[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
     snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by

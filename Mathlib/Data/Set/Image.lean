@@ -121,8 +121,6 @@ theorem preimage_const_of_mem {b : β} {s : Set β} (h : b ∈ s) : (fun _ : α 
 theorem preimage_const_of_notMem {b : β} {s : Set β} (h : b ∉ s) : (fun _ : α => b) ⁻¹' s = ∅ :=
   eq_empty_of_subset_empty fun _ hx => h hx
 
-@[deprecated (since := "2025-05-23")] alias preimage_const_of_not_mem := preimage_const_of_notMem
-
 theorem preimage_const (b : β) (s : Set β) [Decidable (b ∈ s)] :
     (fun _ : α => b) ⁻¹' s = if b ∈ s then univ else ∅ := by grind
 

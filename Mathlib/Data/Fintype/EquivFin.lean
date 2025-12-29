@@ -447,8 +447,6 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
 theorem exists_notMem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
 
-@[deprecated (since := "2025-05-23")] alias exists_not_mem_finset := exists_notMem_finset
-
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
   ⟨let ⟨x, _hx⟩ := exists_notMem_finset (∅ : Finset α)
