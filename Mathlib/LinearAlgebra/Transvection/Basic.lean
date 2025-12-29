@@ -353,10 +353,10 @@ theorem transvection_mem_dilatransvections {f : Dual R V} {v : V} (hfv : f v = 0
     transvection hfv ∈ dilatransvections R V :=
   transvections_subset_dilatransvections transvection_mem_transvections
 
-theorem inv.mem_dilatransvections_iff (e : V ≃ₗ[R] V) :
-    e ∈ dilatransvections R V ↔ e⁻¹ ∈ dilatransvections R V := by
+theorem inv_mem_dilatransvections_iff (e : V ≃ₗ[R] V) :
+    e⁻¹ ∈ dilatransvections R V ↔ e ∈ dilatransvections R V := by
   suffices ∀ e ∈ dilatransvections R V, e⁻¹ ∈ dilatransvections R V by
-    refine ⟨this e, by simpa using this e⁻¹⟩
+    refine ⟨by simpa using this e⁻¹, this e⟩
   rintro e ⟨f, v, he⟩
   use f, - e⁻¹ v
   ext x
