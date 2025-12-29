@@ -3,9 +3,10 @@ Copyright (c) 2025 YiranWang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wang Yiran
 -/
+module
 
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Tactic.Ring
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Monotone lattice paths and a ballot-style subdiagonal condition
@@ -18,6 +19,8 @@ This file defines and studies monotone lattice paths.  It introduces:
 * `pathCount_eq_closed : pathCount m n = (m + n).choose m`
 * `pathCountFrom_eq_closed`
 -/
+
+@[expose] public section
 
 open Nat
 
