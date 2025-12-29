@@ -148,6 +148,26 @@ bypassing `LinearMap.mul`.
 
 * `LpOneBanachAlgebra.lean`: ℓ¹ Banach algebra instances using this convolution
 
+### Relation to MeasureTheory.convolution
+
+This discrete API is related to `MeasureTheory.convolution` with counting measure:
+```
+MeasureTheory: (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ
+Discrete:      (f ⋆₊[L] g) x   = ∑' (a,b) : addFiber x, L (f a) (g b)
+```
+
+With `μ = Measure.count` and additive index, these should agree. However, integration
+is nontrivial:
+* MeasureTheory uses subtraction (`x - t`), requiring `AddGroup`; we only need `AddMonoid`
+* Showing `∫ ... ∂count = ∑'` for fiber decomposition requires measure-theoretic machinery
+* `ConvolutionExists` vs `Summable` conditions differ
+
+For ℓ¹ Banach algebras, the discrete API suffices. Future work could add:
+```lean
+theorem addMulConvolution_eq_convolution [AddGroup M] [MeasurableSpace M] :
+    addMulConvolution f g = MeasureTheory.convolution f g (.mul ℝ R) Measure.count
+```
+
 ## Notation Summary
 
 | Notation     | Index Type           | Operation                                       |
@@ -162,6 +182,8 @@ bypassing `LinearMap.mul`.
 
 * Associativity for general bilinear maps (requires composition of bilinear maps);
   currently only proved for ℓ¹ ring multiplication in `LpOneBanachAlgebra.lean`
+* Bridge to `MeasureTheory.convolution`: prove `addMulConvolution f g =
+  MeasureTheory.convolution f g (.mul ℝ R) Measure.count` for `[AddGroup M]`
 -/
 
 @[expose] public section
@@ -512,39 +534,6 @@ theorem mulConvolution_comm (f g : M → R) : f ⋆ₘ g = g ⋆ₘ f :=
   convolution_comm (LinearMap.mul R R) f g (fun x y => mul_comm x y)
 
 end MulConvolutionComm
-
-section AddConvolutionComm
-
-variable [AddCommMonoid M] [CommSemiring S]
-variable [AddCommMonoid E] [Module S E]
-variable [TopologicalSpace E]
-
-/-- Commutativity for symmetric bilinear maps on additive commutative monoids. -/
-theorem addConvolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E)
-    (hL : ∀ x y, L x y = L y x) :
-    f ⋆₊[L] g = g ⋆₊[L] f := by
-  ext x
-  simp only [addConvolution_apply]
-  let e : addFiber x ≃ addFiber x :=
-    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [addFiber, addMap, add_comm]⟩,
-     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [addFiber, addMap, add_comm]⟩,
-     fun _ => by rfl,
-     fun _ => by rfl⟩
-  rw [← e.tsum_eq]
-  congr 1
-  funext ⟨⟨a, b⟩, hab⟩
-  simp only [e, Equiv.coe_fn_mk, hL]
-
-end AddConvolutionComm
-
-section AddMulConvolutionComm
-
-variable [AddCommMonoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
-
-theorem addMulConvolution_comm (f g : M → R) : f ⋆₊ₘ g = g ⋆₊ₘ f :=
-  addConvolution_comm (LinearMap.mul R R) f g (fun x y => mul_comm x y)
-
-end AddMulConvolutionComm
 
 /-! ### Triple Fiber and Associativity Equivalences
 
