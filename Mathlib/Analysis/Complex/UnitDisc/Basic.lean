@@ -55,9 +55,13 @@ theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
 theorem norm_ne_one (z : 𝔻) : ‖(z : ℂ)‖ ≠ 1 :=
   z.norm_lt_one.ne
 
+theorem sq_norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ ^ 2 < 1 := by
+  rw [sq_lt_one_iff_abs_lt_one, abs_norm]
+  exact z.norm_lt_one
+
 theorem normSq_lt_one (z : 𝔻) : normSq z < 1 := by
-  convert (Real.sqrt_lt' one_pos).1 z.norm_lt_one
-  exact (one_pow 2).symm
+  rw [← Complex.norm_mul_self_eq_normSq, ← sq]
+  exact z.sq_norm_lt_one
 
 theorem coe_ne_one (z : 𝔻) : (z : ℂ) ≠ 1 :=
   ne_of_apply_ne (‖·‖) <| by simp [z.norm_ne_one]

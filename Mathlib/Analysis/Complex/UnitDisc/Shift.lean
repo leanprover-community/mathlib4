@@ -33,19 +33,29 @@ lemma shift_den_ne_zero' (z w : 𝔻) : 1 + z * conj (w : ℂ) ≠ 0 :=
 
 end
 
+theorem norm_shiftFun_le (z w : 𝔻) :
+    ‖(z + w : ℂ) / (1 + conj ↑z * w)‖ ≤ (‖(z : ℂ)‖ + ‖(w : ℂ)‖) / (1 + ‖(z : ℂ)‖ * ‖(w : ℂ)‖) := by
+  have hz := z.sq_norm_lt_one
+  have hw := w.sq_norm_lt_one
+  have hzw : z.re * w.re + z.im * w.im ≤ ‖(z : ℂ)‖ * ‖(w : ℂ)‖ := by
+    rw [norm_def, norm_def, ← Real.sqrt_mul, normSq_apply, normSq_apply]
+    · apply Real.le_sqrt_of_sq_le
+      linear_combination (norm := {apply le_of_eq; simp; ring})
+        sq_nonneg (z.re * w.im - z.im * w.re)
+    · apply normSq_nonneg
+  rw [norm_div, div_le_div_iff₀, ← sq_le_sq₀]
+  · rw [← sub_nonneg] at hzw
+    simp [mul_pow, RCLike.norm_sq_eq_def, add_sq] at hz hw ⊢
+    linear_combination 2 * mul_nonneg hzw (mul_nonneg (sub_nonneg.2 hz.le) (sub_nonneg.2 hw.le))
+  any_goals positivity
+  simpa using shift_den_ne_zero z w
+
 /-- Auxiliary definition for `shift` below. This function is not a part of the public API. -/
 def shiftFun (z w : 𝔻) : 𝔻 :=
   mk ((z + w : ℂ) / (1 + conj ↑z * w)) <| by
-    suffices ‖(z + w : ℂ)‖ < ‖1 + conj (z : ℂ) * w‖ by
-      rwa [norm_div, div_lt_one]
-      exact (norm_nonneg _).trans_lt this
-    dsimp only [Complex.norm_def]
-    gcongr
-    · apply normSq_nonneg -- TODO: add a `positivity` extension
-    · rw [← sub_pos]
-      convert mul_pos (sub_pos.2 z.normSq_lt_one) (sub_pos.2 w.normSq_lt_one) using 1
-      simp [normSq]
-      ring
+    refine (norm_shiftFun_le _ _).trans_lt ?_
+    rw [div_lt_one (by positivity)]
+    nlinarith only [z.norm_lt_one, w.norm_lt_one]
 
 theorem coe_shiftFun (z w : 𝔻) : (shiftFun z w : ℂ) = (z + w) / (1 + conj ↑z * w) := rfl
 
@@ -117,6 +127,10 @@ theorem shift_neg_apply_shift (z w : 𝔻) : shift (-z) (shift z w) = w := by
 @[simp]
 theorem shift_apply_shift_neg (z w : 𝔻) : shift z (shift (-z) w) = w := by
   simpa using shift_neg_apply_shift (-z) w
+
+theorem norm_shift_le (z w : 𝔻) :
+    ‖(z.shift w : ℂ)‖ ≤ (‖(z : ℂ)‖ + ‖(w : ℂ)‖) / (1 + ‖(z : ℂ)‖ * ‖(w : ℂ)‖) :=
+  norm_shiftFun_le z w
 
 /-- A shift by `0` is the identity map, and all other shifts have no fixed points. -/
 @[simp]
