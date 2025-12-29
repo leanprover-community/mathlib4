@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Int.Log
+public import Mathlib.Order.Filter.PosNeg
 
 /-!
 # Real logarithm base `b`
@@ -522,6 +523,57 @@ theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b �
   rw [Asymptotics.isLittleO_const_left, or_iff_not_imp_left]
   intro hc
   exact tendsto_abs_logb_atTop hb
+
+theorem isBigO_logb_log : Real.logb b =O[⊤] Real.log := by
+  by_cases h : b ≠ -1 ∧ b ≠ 0 ∧ b ≠ 1
+  · unfold logb
+    conv_lhs => ext x; rw [div_eq_mul_inv, mul_comm]
+    exact (Asymptotics.isBigO_refl log ⊤).const_mul_left (log b)⁻¹
+  · simp only [not_and_or, ne_eq, not_not] at h
+    obtain h | h | h := h
+    · calc logb b
+        _ = logb (-1) := by rw [h]
+        _ = 0 := by ext x; simp [logb, log_neg_eq_log, log_one]
+        _ =O[⊤] log := Asymptotics.isBigO_zero log ⊤
+    · rw [h, logb_zero_left_eq_zero]
+      exact Asymptotics.isBigO_zero log ⊤
+    · rw [h, logb_one_left_eq_zero]
+      exact Asymptotics.isBigO_zero log ⊤
+
+theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (log ∘ (c * ·)) =O[atTop] log := by
+  by_cases hc : c = 0
+  · conv_lhs => { ext x; simp [hc] }
+    exact isLittleO_const_log_atTop.isBigO
+  · calc (log ∘ (c * ·))
+      =ᶠ[atTop] (fun x => log c + log x) := by
+          filter_upwards [eventually_gt_atTop 0] with a ha
+          rw [Function.comp_apply, log_mul hc (by linarith)]
+      _ =O[atTop] log := by
+          apply Asymptotics.IsBigO.add
+          · exact isLittleO_const_log_atTop.isBigO
+          · exact Asymptotics.isBigO_refl _ _
+
+theorem isBigO_log_mul_const_log_atTop (c : ℝ) : (log ∘ (· * c)) =O[atTop] log := by
+  conv_lhs => { ext x; rw [Function.comp_apply, mul_comm] }
+  exact isBigO_log_const_mul_log_atTop c
+
+theorem isBigO_logb_const_mul_log_atTop (c : ℝ) : (logb b ∘ (c * ·)) =O[atTop] log := by
+  have : logb b = ((log b)⁻¹ * ·) ∘ log := by
+    unfold logb
+    ext x
+    rw [div_eq_mul_inv, mul_comm]
+    simp
+  rw [this, comp_assoc]
+  by_cases hb : (log b)⁻¹ = 0
+  · apply Asymptotics.IsBigO.of_bound 1
+    filter_upwards with a
+    simp [hb]
+  · apply Asymptotics.IsBigO.const_mul_left
+    exact isBigO_log_const_mul_log_atTop c
+
+theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (logb b ∘ (· * c)) =O[atTop] log := by
+  conv_lhs => { ext x; rw [Function.comp_apply, mul_comm] }
+  exact isBigO_logb_const_mul_log_atTop c
 
 end Real
 
