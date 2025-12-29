@@ -236,44 +236,28 @@ lemma even_length_iff_same_color
       rw [h_start_eq_end] at h_first_step_diff
       exact h_first_step_diff.symm
 
-lemma bypass_eq_nil_of_closed
+@[simp]
+lemma bypass_eq_nil
 {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
-    w.bypass = SimpleGraph.Walk.nil := by
-    have h_nil : ∀ {u : V} {p : G.Walk u u}, p.IsPath → p = SimpleGraph.Walk.nil := by
-      aesop
-    exact h_nil (SimpleGraph.Walk.bypass_isPath _)
+    w.bypass = SimpleGraph.Walk.nil :=
+  (isPath_iff_eq_nil _).1 (SimpleGraph.Walk.bypass_isPath _)
 
-lemma even_cycle_length_of_path
+theorem even_length_cons_of_isPath
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
     Even (SimpleGraph.Walk.cons ha q).length := by
-      by_cases hq' : q.length = 1 <;>
-      simp_all +decide only [Walk.length_cons]
-      have h_cycle : SimpleGraph.Walk.IsCycle (SimpleGraph.Walk.cons ha q) := by
-        simp_all only [Walk.isCycle_def, ne_eq, and_imp, Walk.isTrail_cons, reduceCtorEq,
-          not_false_eq_true, Walk.support_cons, List.tail_cons, true_and]
-        refine ⟨⟨?_, ?_⟩, ?_⟩
-        · exact hq.isTrail
-        · intro h
-          cases q
-          · simp_all
-          · simp_all +decide only [cons_isPath_iff, length_cons, Nat.add_eq_right, edges,
-            darts_cons, List.map_cons, Dart.edge_mk, List.mem_cons, Sym2.eq, Sym2.rel_iff',
-            Prod.mk.injEq, Prod.swap_prod_mk, and_true, List.mem_map]
-            rcases h with ((⟨rfl, rfl⟩ | rfl) | ⟨a, ha, ha'⟩) <;>
-            simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-            have := SimpleGraph.Walk.dart_fst_mem_support_of_mem_darts _ ha
-            simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-            cases a
-            simp_all +decide
-            cases ha' <;> simp_all +decide
-            cases this <;> simp_all +decide
-            · aesop
-            · have := SimpleGraph.Walk.dart_snd_mem_support_of_mem_darts _ ha
-              simp_all +decide [SimpleGraph.Walk.mem_support_iff]
-        · exact hq.support_nodup
-      have := h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle
-      simp_all +decide [parity_simps]
+  by_cases hq' : q.length = 1
+  · simp [hq']
+  apply h_cycles u (SimpleGraph.Walk.cons ha q)
+  rw [cons_isCycle_iff]
+  refine ⟨hq, ?_⟩
+  cases q
+  · simp
+  · rw [edges_cons, List.mem_cons]
+    rintro (h | ha)
+    · aesop
+    · rw [cons_isPath_iff] at hq
+      exact hq.2 <| snd_mem_support_of_mem_edges _ ha
 
 /-
 If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1.
@@ -366,7 +350,7 @@ theorem bipartite_iff_all_cycles_even :
         apply even_length_iff_even_bypass_length
         assumption
       rw [h_even_bypass]
-      rw [bypass_eq_nil_of_closed]
+      rw [bypass_eq_nil]
       aesop
     exact Colorable.mono_left (fun ⦃v w⦄ a => a) h_colorable
 
