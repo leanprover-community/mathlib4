@@ -248,15 +248,9 @@ variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
   simp [trace, h]
 
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
-
 @[simp]
 theorem trace_single_eq_same : trace (single i i c) = c := by
   simp [trace]
-
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_eq := trace_single_eq_same
 
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :

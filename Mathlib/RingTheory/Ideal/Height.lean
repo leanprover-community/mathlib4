@@ -36,10 +36,9 @@ chains of prime ideals below it. -/
 noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
   Order.height (⟨I, hI⟩ : PrimeSpectrum R)
 
-set_option backward.proofsInPublic true in
 /-- The height of an ideal is defined as the infimum of the heights of its minimal prime ideals. -/
 noncomputable def Ideal.height : ℕ∞ :=
-  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime ‹_›)
+  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime (I := I) ‹_›)
 
 /-- For a prime ideal, its height equals its prime height. -/
 lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
