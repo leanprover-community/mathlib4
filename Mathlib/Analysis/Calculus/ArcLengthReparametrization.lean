@@ -140,12 +140,12 @@ lemma revParamTransform_injOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c
   have h : StrictMonoOn ψ I := strictMonoOn_of_hasDerivWithinAt_pos hI hψ hψ' hψ'₀
   h.injOn
 
-/-- Auxilary lemma - ψ is bijective. -/
+/-- Auxiliary lemma - ψ is bijective. -/
 lemma revParamTransform_bijOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
   (regular : ∀ t ∈ I, deriv c t ≠ 0) (hIo : IsOpen I) (ht₀ : t₀ ∈ I) : Set.BijOn ψ I (ψ '' I) :=
   (revParamTransform_injOn_aux c I once_diff hc regular hIo ht₀).bijOn_image
 
-/-- Auxiliary lemma the arc-length paramter trasformation is bijective from the image of ψ. -/
+/-- Auxiliary lemma the arc-length parameter transformation is bijective from the image of ψ. -/
 lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
     (regular : ∀ t ∈ I, deriv c t ≠ 0) (ht₀ : t₀ ∈ I) (hIo : IsOpen I) :
     Set.BijOn (arclengthParamTransform c I t₀) (ψ '' I) I := by
@@ -155,8 +155,8 @@ lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn �
   exact (Set.bijOn_comm h₁).mpr h₀
 
 omit [I.OrdConnected] in
-/-- Auxilary lemma ψ is left inverse of the arc-length paramter trandformation on the image of ψ. 
--/
+/-- Auxiliary lemma ψ is left inverse of the arc-length parameter transformation on the 
+image of ψ. -/
 lemma ψ_leftInvOn_arclengthParamTransform_aux :
   (ψ '' I).LeftInvOn ψ (arclengthParamTransform c I t₀) := by
   intro s hs
