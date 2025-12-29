@@ -27,6 +27,17 @@ are affinely independent.
 
 open Finset Set
 
+-- TODO find home
+open Classical in
+theorem AffineIndependent.Finsupp {𝕜 ι : Type*} [inst : Ring 𝕜] :
+    AffineIndependent 𝕜 (V := ι →₀ 𝕜) (P := ι →₀ 𝕜) fun i ↦ Finsupp.single i 1 := by
+  intro s w hw0 hwv i hi
+  rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ hw0 0,
+    Finset.weightedVSubOfPoint_apply] at hwv
+  simp only [vsub_eq_sub, sub_zero] at hwv
+  exact (linearIndependent_iff'.mp (Finsupp.linearIndependent_single_one 𝕜 ι)) s w hwv i hi
+
+
 namespace Geometry
 
 namespace SimplicialComplex
@@ -79,11 +90,7 @@ def onFinsupp {𝕜 ι : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrdered
       exact ⟨t', down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
     (by
       have hind : AffineIndependent 𝕜 (fun i : ι => Finsupp.single i (1 : 𝕜)) := by
-        intro s w hw0 hwv i hi
-        rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ hw0 0,
-          Finset.weightedVSubOfPoint_apply] at hwv
-        simp only [vsub_eq_sub, sub_zero] at hwv
-        exact (linearIndependent_iff'.mp (Finsupp.linearIndependent_single_one 𝕜 ι)) s w hwv i hi
+        exact AffineIndependent.Finsupp
       refine hind.range.mono fun x hx => ?_
       simp only [Set.mem_iUnion, Set.mem_image, Finset.mem_coe] at hx
       obtain ⟨_, ⟨_, _, rfl⟩, hx⟩ := hx
