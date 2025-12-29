@@ -16,7 +16,7 @@ This file defines isomorphisms between objects of a category.
 ## Main definitions
 
 - `structure Iso` : a bundled isomorphism between two objects of a category;
-- `class IsIso` : an unbundled version of `iso`;
+- `class IsIso` : an unbundled version of `Iso`;
   note that `IsIso f` is a `Prop`, and only asserts the existence of an inverse.
   Of course, this inverse is unique, so it doesn't cost us much to use choice to retrieve it.
 - `inv f`, for the inverse of a morphism with `[IsIso f]`

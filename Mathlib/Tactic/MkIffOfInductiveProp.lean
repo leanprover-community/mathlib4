@@ -333,7 +333,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     value := ← instantiateMVars mvar
   }
   addDeclarationRangesFromSyntax rel (← getRef) relStx
-  addConstInfo relStx rel
+  Term.addTermInfo' relStx (← mkConstWithLevelParams rel) (isBinder := true) |>.run'
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
