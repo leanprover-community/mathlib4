@@ -13,6 +13,7 @@ public import Mathlib.FieldTheory.Relrank
 public import Mathlib.GroupTheory.Perm.ClosureSwap
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
@@ -53,15 +54,11 @@ open IsGaloisGroup
 
 open NumberField
 
--- maybe in numberfield/basic?
+-- PR #30666
 theorem Ideal.IsMaximal.ne_bot_of_isIntegral_int {R : Type*} [CommRing R]
     [CharZero R] [Algebra.IsIntegral ℤ R] (I : Ideal R) [hI : I.IsMaximal] : I ≠ ⊥ :=
   Ring.ne_bot_of_isMaximal_of_not_isField hI <|
     Int.not_isField ∘ isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ R)
-
-instance tada1 {K : Type*} [Field K] [NumberField K] (m : Ideal (𝓞 K)) [hm : m.IsMaximal] :
-    Finite (𝓞 K ⧸ m) :=
-  m.finiteQuotientOfFreeOfNeBot hm.ne_bot_of_isIntegral_int
 
 theorem NumberField.supr_inertia_eq_top (K : Type*) [Field K] [NumberField K]
     (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
@@ -99,12 +96,23 @@ theorem NumberField.supr_inertia_eq_top (K : Type*) [Field K] [NumberField K]
     (Ideal.map_ne_bot_of_ne_bot hm1) Ideal.map_comap_le
   rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver m hm1)] at key
 
+def MaximalSpectrum.equiv {R S : Type*} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
+    MaximalSpectrum R ≃ MaximalSpectrum S where
+  toFun m := ⟨m.asIdeal.map e, Ideal.map_isMaximal_of_equiv e⟩
+  invFun m := ⟨m.asIdeal.comap e, Ideal.comap_isMaximal_of_equiv e⟩
+  left_inv m := by simp [Ideal.comap_map_of_bijective e e.bijective]
+  right_inv m := by simp [Ideal.map_comap_eq_self_of_equiv]
+
 -- generalize from `𝓞 K` to `IsIntegralClosure`?
 theorem genthm (K : Type*) [Field K] [NumberField K]
     (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K]
     (G : Type*) [Group G] [MulSemiringAction G K]
     [MulSemiringAction G R] [IsGaloisGroup G ℚ K] :
     ⨆ m : MaximalSpectrum R, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  rw [← NumberField.supr_inertia_eq_top K G]
+  refine (MaximalSpectrum.equiv (IsIntegralClosure.equiv ℤ (𝓞 K) K R).symm).iSup_congr fun m ↦ ?_
+  ext
+  simp [MaximalSpectrum.equiv]
   sorry
 
 end ram
@@ -166,28 +174,6 @@ theorem Set.ncard_le_ncard_image_add_one_iff {α β : Type*} (s : Set α) [Finit
       f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
   simpa [Subtype.ext_iff, ← Set.image_val_inj, Set.image_insert_eq] using
     Function.Surjective.card_le_card_add_one_iff (Set.surjective_mapsTo_image_restrict f s)
-
-theorem _root_.Finset.sum_le_one_iff {α : Type*} {s : Finset α} {f : α → ℕ} :
-    ∑ x ∈ s, f x ≤ 1 ↔ ∀ x y : α, x ∈ s → y ∈ s → f x ≠ 0 → f y ≠ 0 → x = y ∧ f x = 1 := by
-  classical
-  refine ⟨fun h x y hsx hsy hfx hfy ↦ ?_, fun h ↦ ?_⟩
-  · replace h := (Finset.sum_mono_set f (show {x, y} ⊆ s by grind)).trans h
-    grind
-  · by_cases! hx : ∃ x ∈ s, f x ≠ 0
-    · obtain ⟨x, hsx, hfx⟩ := hx
-      have hs : ∀ y ∈ s \ {x}, f y = 0 := by grind
-      simp [Finset.sum_eq_add_sum_diff_singleton hsx, Finset.sum_congr rfl hs,
-        (h x x hsx hsx hfx hfx).2]
-    · simp [Finset.sum_congr rfl hx]
-
-theorem _root_.Multiset.card_le_card_toFinset_add_one_iff {α : Type*} [DecidableEq α]
-    {m : Multiset α} : m.card ≤ m.toFinset.card + 1 ↔
-      ∀ x y : α, 1 < m.count x → 1 < m.count y → x = y ∧ m.count x = 2 := by
-  rw [← m.toFinset_sum_count_eq, m.toFinset.card_eq_sum_ones, ← tsub_le_iff_left,
-    ← Finset.sum_tsub_distrib _ (by simp [Multiset.one_le_count_iff_mem]), Finset.sum_le_one_iff]
-  simp only [← pos_iff_ne_zero, tsub_pos_iff_lt, Multiset.mem_toFinset, Nat.pred_eq_succ_iff]
-  exact ⟨fun h x y hx hy ↦ h x y (Multiset.one_le_count_iff_mem.mp hx.le)
-    (Multiset.one_le_count_iff_mem.mp hy.le) hx hy, fun h x y _ _ hx hy ↦ h x y hx hy⟩
 
 theorem tada
     {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
