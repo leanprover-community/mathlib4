@@ -3,8 +3,10 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-import Mathlib.NumberTheory.EllipticDivisibilitySequence
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
 # Division polynomials of Weierstrass curves
@@ -88,6 +90,8 @@ TODO: implementation notes for the definition of `ωₙ`.
 
 elliptic curve, division polynomial, torsion point
 -/
+
+@[expose] public section
 
 open Polynomial
 open scoped Polynomial.Bivariate
@@ -223,14 +227,10 @@ lemma preΨ_even (m : ℤ) : W.preΨ (2 * m) =
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2 :=
   preNormEDS_even ..
 
-@[deprecated (since := "2025-05-15")] alias preΨ_even_ofNat := preΨ_even
-
 lemma preΨ_odd (m : ℤ) : W.preΨ (2 * m + 1) =
     W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2) :=
   preNormEDS_odd ..
-
-@[deprecated (since := "2025-05-15")] alias preΨ_odd_ofNat := preΨ_odd
 
 end preΨ
 
@@ -275,14 +275,10 @@ lemma ΨSq_even (m : ℤ) : W.ΨSq (2 * m) =
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2) ^ 2 * W.Ψ₂Sq := by
   rw [ΨSq, preΨ_even, if_pos <| even_two_mul m]
 
-@[deprecated (since := "2025-05-15")] alias ΨSq_even_ofNat := ΨSq_even
-
 lemma ΨSq_odd (m : ℤ) : W.ΨSq (2 * m + 1) =
     (W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
   rw [ΨSq, preΨ_odd, if_neg m.not_even_two_mul_add_one, mul_one]
-
-@[deprecated (since := "2025-05-15")] alias ΨSq_odd_ofNat := ΨSq_odd
 
 end ΨSq
 
@@ -330,8 +326,6 @@ lemma Ψ_even (m : ℤ) : W.Ψ (2 * m) * W.ψ₂ =
     Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> ring1
 
-@[deprecated (since := "2025-05-15")] alias Ψ_even_ofNat := Ψ_even
-
 lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
     W.Ψ (m + 2) * W.Ψ m ^ 3 - W.Ψ (m - 1) * W.Ψ (m + 1) ^ 3 +
       W.toAffine.polynomial * (16 * W.toAffine.polynomial - 8 * W.ψ₂ ^ 2) *
@@ -340,8 +334,6 @@ lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
   simp_rw [Ψ, preΨ_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub, even_two,
     iff_true, Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
-
-@[deprecated (since := "2025-05-15")] alias Ψ_odd_ofNat := Ψ_odd
 
 lemma Affine.CoordinateRing.mk_Ψ_sq (n : ℤ) : mk W (W.Ψ n) ^ 2 = mk W (C <| W.ΨSq n) := by
   simp_rw [Ψ, ΨSq, map_mul, apply_ite C, apply_ite <| mk W, mul_pow, ite_pow, mk_ψ₂_sq, map_one,
@@ -439,13 +431,9 @@ lemma ψ_even (m : ℤ) : W.ψ (2 * m) * W.ψ₂ =
     W.ψ (m - 1) ^ 2 * W.ψ m * W.ψ (m + 2) - W.ψ (m - 2) * W.ψ m * W.ψ (m + 1) ^ 2 :=
   normEDS_even ..
 
-@[deprecated (since := "2025-05-15")] alias ψ_even_ofNat := ψ_even
-
 lemma ψ_odd (m : ℤ) : W.ψ (2 * m + 1) =
     W.ψ (m + 2) * W.ψ m ^ 3 - W.ψ (m - 1) * W.ψ (m + 1) ^ 3 :=
   normEDS_odd ..
-
-@[deprecated (since := "2025-05-15")] alias ψ_odd_ofNat := ψ_odd
 
 lemma Affine.CoordinateRing.mk_ψ (n : ℤ) : mk W (W.ψ n) = mk W (W.Ψ n) := by
   simp_rw [ψ, normEDS, Ψ, preΨ, map_mul, map_preNormEDS, map_pow, ← mk_ψ₂_sq, ← pow_mul]

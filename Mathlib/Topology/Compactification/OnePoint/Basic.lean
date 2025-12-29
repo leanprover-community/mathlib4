@@ -3,19 +3,21 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Opens
 
 /-!
-# The OnePoint Compactification
+# The one-point compactification
 
-We construct the OnePoint compactification (the one-point compactification) of an arbitrary
-topological space `X` and prove some properties inherited from `X`.
+We construct the one-point compactification of an arbitrary topological space `X` and prove some
+properties inherited from `X`.
 
 ## Main definitions
 
-* `OnePoint`: the OnePoint compactification, we use coercion for the canonical embedding
+* `OnePoint`: the one-point compactification, we use coercion for the canonical embedding
   `X → OnePoint X`; when `X` is already compact, the compactification adds an isolated point
   to the space.
 * `OnePoint.infty`: the extra point
@@ -30,8 +32,10 @@ topological space `X` and prove some properties inherited from `X`.
 
 ## Tags
 
-one-point compactification, Alexandroff compactification, compactness
+one point compactification, Alexandroff compactification, compactness
 -/
+
+@[expose] public section
 
 
 open Set Filter Topology
@@ -46,7 +50,7 @@ In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`
 
 variable {X Y : Type*}
 
-/-- The OnePoint extension of an arbitrary topological space `X` -/
+/-- The one-point extension of an arbitrary topological space `X` -/
 def OnePoint (X : Type*) :=
   Option X
 
@@ -130,9 +134,8 @@ theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = uni
 theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
   insert_none_range_some _
 
-@[simp]
-theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ :=
-  range_some_inter_none X
+@[deprecated "Use simp" (since := "2025-11-22")]
+theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ := by simp
 
 @[simp]
 theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
@@ -153,17 +156,11 @@ instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
 theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
   rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_range_coe_iff := notMem_range_coe_iff
-
 theorem infty_notMem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
   notMem_range_coe_iff.2 rfl
 
-@[deprecated (since := "2025-05-23")] alias infty_not_mem_range_coe := infty_notMem_range_coe
-
 theorem infty_notMem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X) '' s :=
   notMem_subset (image_subset_range _ _) infty_notMem_range_coe
-
-@[deprecated (since := "2025-05-23")] alias infty_not_mem_image_coe := infty_notMem_image_coe
 
 @[simp]
 theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
@@ -234,8 +231,6 @@ theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
 theorem isOpen_iff_of_notMem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
 
-@[deprecated (since := "2025-05-23")] alias isOpen_iff_of_not_mem := isOpen_iff_of_notMem
-
 theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
   have : ∞ ∉ sᶜ := fun H => H h
   rw [← isOpen_compl_iff, isOpen_iff_of_notMem this, ← isOpen_compl_iff, preimage_compl]
@@ -243,8 +238,6 @@ theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻
 theorem isClosed_iff_of_notMem (h : ∞ ∉ s) :
     IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) ∧ IsCompact ((↑) ⁻¹' s : Set X) := by
   rw [← isOpen_compl_iff, isOpen_iff_of_mem (mem_compl h), ← preimage_compl, compl_compl]
-
-@[deprecated (since := "2025-05-23")] alias isClosed_iff_of_not_mem := isClosed_iff_of_notMem
 
 @[simp]
 theorem isOpen_image_coe {s : Set X} : IsOpen ((↑) '' s : Set (OnePoint X)) ↔ IsOpen s := by
@@ -303,9 +296,6 @@ of `OnePoint X`. -/
 instance nhdsNE_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] : NeBot (𝓝[≠] (x : OnePoint X)) := by
   simpa [nhdsWithin_coe, preimage, coe_eq_coe] using h.map some
 
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_coe_neBot := nhdsNE_coe_neBot
-
 theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
   refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
   · rintro s ⟨hs, hso⟩
@@ -315,23 +305,14 @@ theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedComp
     refine ⟨_, ⟨mem_compl infty_notMem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
     simp [compl_image_coe, ← diff_eq]
 
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_infty_eq := nhdsNE_infty_eq
-
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
 instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
   rw [nhdsNE_infty_eq]
   infer_instance
 
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_infty_neBot := nhdsNE_infty_neBot
-
 instance (priority := 900) nhdsNE_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
     (x : OnePoint X) : NeBot (𝓝[≠] x) :=
   OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
-
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_neBot := nhdsNE_neBot
 
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
   rw [← nhdsNE_infty_eq, nhdsNE_sup_pure]
@@ -644,7 +625,7 @@ open OnePoint
 to the homeomorphism of their one point compactifications. -/
 @[simps]
 def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
-  __ := h.toEquiv.optionCongr
+  __ := h.toEquiv.withTopCongr
   toFun := OnePoint.map h
   invFun := OnePoint.map h.symm
   continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le

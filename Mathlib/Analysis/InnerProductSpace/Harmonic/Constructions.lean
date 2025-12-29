@@ -3,9 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
-import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
+public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
 # Construction of Harmonic Functions
@@ -15,6 +17,8 @@ This file constructs examples of harmonic functions.
 If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`, then so is its real
 part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f‖` is harmonic.
 -/
+
+@[expose] public section
 
 open Complex ComplexConjugate InnerProductSpace Topology
 
@@ -52,13 +56,14 @@ theorem AnalyticAt.harmonicAt_re {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
 If `f : ℂ → ℂ` is complex-analytic, then its imaginary part is harmonic.
 -/
 theorem AnalyticAt.harmonicAt_im {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
-  HarmonicAt (fun z ↦ (f z).im) x := h.harmonicAt.comp_CLM imCLM
+    HarmonicAt (fun z ↦ (f z).im) x :=
+  h.harmonicAt.comp_CLM imCLM
 
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its complex conjugate is harmonic.
 -/
-theorem AnalyticAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
-  HarmonicAt (conj f) x := (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
+theorem AnalyticAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) : HarmonicAt (conj f) x :=
+  (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
 
 /-!
 ## Harmonicity of `log ‖analytic‖`
@@ -106,7 +111,7 @@ theorem AnalyticAt.harmonicAt_log_norm {f : ℂ → ℂ} {z : ℂ} (h₁f : Anal
     funext z
     simp only [Pi.smul_apply, Function.comp_apply, smul_eq_mul]
     rw [Complex.norm_def, Real.log_sqrt]
-    linarith
+    · linarith
     exact (f z).normSq_nonneg
   rw [this]
   apply HarmonicAt.const_smul

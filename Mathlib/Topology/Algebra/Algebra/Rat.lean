@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topological (sub)algebras over `Rat`
@@ -15,6 +17,8 @@ import Mathlib.Topology.Algebra.Monoid.Defs
 This is just a minimal stub for now!
 
 -/
+
+@[expose] public section
 
 section DivisionRing
 

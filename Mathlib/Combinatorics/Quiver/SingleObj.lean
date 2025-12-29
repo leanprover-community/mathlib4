@@ -3,8 +3,10 @@ Copyright (c) 2023 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Combinatorics.Quiver.Cast
-import Mathlib.Combinatorics.Quiver.Symmetric
+module
+
+public import Mathlib.Combinatorics.Quiver.Cast
+public import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
 # Single-object quiver
@@ -21,18 +23,15 @@ More generally, a list of elements of `a` can be reinterpreted as a path from `s
 itself using `pathEquivList`.
 -/
 
+@[expose] public section
+
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
 @[nolint unusedArguments]
 def SingleObj (_ : Type*) : Type :=
   Unit
--- The `Unique` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance {α : Type*} : Unique (SingleObj α) where
-  default := ⟨⟩
-  uniq := fun _ => rfl
+deriving Unique
 
 namespace SingleObj
 
@@ -42,11 +41,7 @@ instance : Quiver (SingleObj α) :=
   ⟨fun _ _ => α⟩
 
 /-- The single object in `SingleObj α`. -/
-def star : SingleObj α :=
-  Unit.unit
-
-instance : Inhabited (SingleObj α) :=
-  ⟨star α⟩
+def star : SingleObj α := default
 
 variable {α β γ}
 

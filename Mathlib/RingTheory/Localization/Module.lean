@@ -3,10 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
 -/
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -23,6 +25,8 @@ This file contains some results about vector spaces over the field of fractions 
 * `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
   linear independent over `Frac(R)`
 -/
+
+@[expose] public section
 
 
 open nonZeroDivisors
@@ -45,7 +49,7 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   obtain ⟨⟨m, s⟩, h⟩ := IsLocalizedModule.surj S f x
   rw [Submonoid.smul_def, ← algebraMap_smul Rₛ, ← Units.smul_isUnit (IsLocalization.map_units Rₛ s),
     eq_comm, ← inv_smul_eq_iff] at h
-  refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ ?_)
+  refine h ▸ smul_mem _ _ (span_subset_span R Rₛ _ ?_)
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
 
@@ -175,7 +179,8 @@ theorem localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A)
 
 theorem localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
-      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := b.ofIsLocalizedModule_span Rₛ S _
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) :=
+  b.ofIsLocalizedModule_span Rₛ S _
 
 end Module.Basis
 end LocalizationLocalization
@@ -225,8 +230,8 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
   invFun := LinearMap.restrictScalars R
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  left_inv := by intros _; ext; simp
-  right_inv := by intros _; ext; simp
+  left_inv := by intro _; ext; simp
+  right_inv := by intro _; ext; simp
 
 /-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 @[simps!]

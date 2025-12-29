@@ -3,14 +3,17 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Algebra.Order.Hom.TypeTags
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Order.WellQuasiOrder
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Algebra.Order.Hom.TypeTags
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 
@@ -28,6 +31,8 @@ import Mathlib.Tactic.Abel
   is isomorphic to `ℤᵐ⁰`.
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -106,11 +111,11 @@ def LocallyFiniteOrder.orderAddMonoidHom :
 
 @[simp]
 lemma LocallyFiniteOrder.orderAddMonoidHom_toAddMonoidHom :
-  orderAddMonoidHom G = addMonoidHom G := rfl
+    orderAddMonoidHom G = addMonoidHom G := rfl
 
 @[simp]
 lemma LocallyFiniteOrder.orderAddMonoidHom_apply (x : G) :
-  orderAddMonoidHom G x = addMonoidHom G x := rfl
+    orderAddMonoidHom G x = addMonoidHom G x := rfl
 
 lemma LocallyFiniteOrder.orderAddMonoidHom_strictMono :
     StrictMono (orderAddMonoidHom G) := by
@@ -157,7 +162,7 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
     · simp [orderAddMonoidHom, addMonoidHom, hb]
 
 lemma LocallyFiniteOrder.orderAddMonoidEquiv_apply [Nontrivial G] (x : G) :
-  orderAddMonoidEquiv G x = addMonoidHom G x := rfl
+    orderAddMonoidEquiv G x = addMonoidHom G x := rfl
 
 /-- Any linearly ordered abelian group that is locally finite embeds to `Multiplicative ℤ`. -/
 noncomputable

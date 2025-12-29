@@ -3,16 +3,20 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Prime.Pow
-import Mathlib.NumberTheory.Divisors
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Prime.Pow
+public import Mathlib.NumberTheory.Divisors
 
 /-!
 # Prime powers and factorizations
 
 This file deals with factorizations of prime powers.
 -/
+
+@[expose] public section
 
 
 theorem IsPrimePow.minFac_pow_factorization_eq {n : ℕ} (hn : IsPrimePow n) :
@@ -59,14 +63,11 @@ theorem IsPrimePow.exists_ordCompl_eq_one {n : ℕ} (h : IsPrimePow n) :
   rcases isPrimePow_iff_factorization_eq_single.mp h with ⟨p, k, hk0, h1⟩
   rcases em' p.Prime with (pp | pp)
   · refine absurd ?_ hk0.ne'
-    simp [← Nat.factorization_eq_zero_of_non_prime n pp, h1]
+    simp [← Nat.factorization_eq_zero_of_not_prime n pp, h1]
   refine ⟨p, pp, ?_⟩
   refine Nat.eq_of_factorization_eq (Nat.ordCompl_pos p hn0).ne' (by simp) fun q => ?_
   rw [Nat.factorization_ordCompl n p, h1]
   simp
-
-@[deprecated (since := "2024-10-24")]
-alias IsPrimePow.exists_ord_compl_eq_one := IsPrimePow.exists_ordCompl_eq_one
 
 theorem exists_ordCompl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
     IsPrimePow n ↔ ∃ p : ℕ, p.Prime ∧ ordCompl[p] n = 1 := by
@@ -77,9 +78,6 @@ theorem exists_ordCompl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
   refine ⟨p, n.factorization p, pp, ?_, by simp⟩
   contrapose! hn
   simp [Nat.le_zero.1 hn]
-
-@[deprecated (since := "2024-10-24")]
-alias exists_ord_compl_eq_one_iff_isPrimePow := exists_ordCompl_eq_one_iff_isPrimePow
 
 /-- An equivalent definition for prime powers: `n` is a prime power iff there is a unique prime
 dividing it. -/
@@ -107,18 +105,14 @@ theorem isPrimePow_iff_unique_prime_dvd {n : ℕ} : IsPrimePow n ↔ ∃! p : �
 theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ IsPrimePow n := by
   simp only [isPrimePow_iff_unique_prime_dvd]
   apply existsUnique_congr
-  simp only [and_congr_right_iff]
-  intro p hp
-  exact ⟨hp.dvd_of_dvd_pow, fun t => t.trans (dvd_pow_self _ hk)⟩
+  simp +contextual [Nat.prime_iff, Prime.dvd_pow_iff_dvd, hk]
 
 theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · simp only [Nat.coprime_zero_left] at hab
-    simp [hab]
+  · simp
   rcases eq_or_ne b 0 with (rfl | hb)
-  · simp only [Nat.coprime_zero_right] at hab
-    simp [hab]
+  · simp
   refine
     ⟨?_, fun h =>
       Or.elim h (fun i => i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))
@@ -183,3 +177,30 @@ lemma Nat.Primes.prodNatEquiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
     prodNatEquiv.symm ⟨n, hn⟩ =
       (⟨n.minFac, minFac_prime hn.ne_one⟩, n.factorization n.minFac - 1) :=
   rfl
+
+namespace Nat
+
+section PrimePowEqPow
+variable {p a m n : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ^ m = a ^ n)
+include hp h
+
+theorem exponent_eq_exponent_mul_factorization_of_prime_pow_eq_base_pow :
+    m = n * a.factorization p := by
+  have := congrArg Nat.factorization h
+  rw [Nat.Prime.factorization_pow hp, Nat.factorization_pow] at this
+  simpa using congr($this p)
+
+theorem exponent_dvd_of_prime_pow_eq_pow : n ∣ m :=
+  Dvd.intro (a.factorization p)
+    (exponent_eq_exponent_mul_factorization_of_prime_pow_eq_base_pow hp h).symm
+
+include hn
+theorem exists_base_eq_prime_pow_of_prime_pow_eq_base_pow : ∃ k, a = p ^ k := by
+  rcases exponent_dvd_of_prime_pow_eq_pow hp h with ⟨k, m_eq⟩
+  rw [m_eq, pow_mul'] at h
+  use k
+  exact Nat.pow_left_injective hn h.symm
+
+end PrimePowEqPow
+
+end Nat

@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Tactic.Group
-import Mathlib.Topology.UrysohnsLemma
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Tactic.Group
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces
@@ -35,6 +37,8 @@ assuming additionally that `s` has finite measure.
   compactly supported functions. This property is also known as completion-regularity of Haar
   measures.
 -/
+
+@[expose] public section
 
 open scoped Topology ENNReal NNReal
 open Set Filter
@@ -177,7 +181,7 @@ lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) : IsEverywherePos ν s := by
   intro x hx n hn
   rcases h x hx with ⟨t, t_mem, ht⟩
-  refine lt_of_lt_of_le ?_ (measure_mono (inter_subset_left (t := t)))
+  grw [← inter_subset_left (s := n)]
   rw [ht (n ∩ t) inter_subset_right]
   exact hs x hx _ (inter_mem hn (mem_nhdsWithin_of_mem_nhds t_mem))
 
@@ -240,19 +244,19 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
-  have A n : μ (((x * z ⁻¹) • k) \ k) ≤ u n := by
+  have A n : μ (((x * z⁻¹) • k) \ k) ≤ u n := by
     apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
       ((hz.frequently this).and_eventually (eventually_gt_atTop n)).exists
     refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
-    have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
+    have J : x * (y i)⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
-  have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
+  have B : μ (((x * z⁻¹) • k) \ k) = 0 :=
     le_antisymm (ge_of_tendsto u_lim (Eventually.of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
-    have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
+    have : μ ((z * x⁻¹) • (((x * z⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
     group
     simp

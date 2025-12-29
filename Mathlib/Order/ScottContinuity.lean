@@ -3,7 +3,9 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Bounds.Basic
+module
+
+public import Mathlib.Order.Bounds.Basic
 
 /-!
 # Scott continuity
@@ -26,6 +28,8 @@ in this file, and ωScott Continuity on chains later in
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -88,7 +92,7 @@ lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
       exact (hp _ hb).2
 
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
+sets. It can be shown that a function is Scott continuous if and only if it is continuous w.r.t. the
 Scott topology.
 -/
 def ScottContinuous (f : α → β) : Prop :=
@@ -111,6 +115,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β]
 
+/-- The join operation is Scott continuous -/
 lemma ScottContinuous.sup₂ :
     ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp

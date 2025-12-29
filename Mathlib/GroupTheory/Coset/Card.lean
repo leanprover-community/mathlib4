@@ -3,8 +3,10 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Lagrange's theorem: the order of a subgroup divides the order of the group.
@@ -13,6 +15,8 @@ import Mathlib.SetTheory.Cardinal.Finite
   there is an analogous version for additive groups
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -25,6 +29,10 @@ namespace QuotientGroup
 @[to_additive]
 instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
   Quotient.fintype (leftRel s)
+
+@[to_additive]
+instance (priority := 100) finite [Finite α] : Finite (α ⧸ s) :=
+  Quotient.finite _
 
 @[to_additive]
 instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
@@ -56,8 +64,8 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
-@[to_additive "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its
-ambient additive group."]
+@[to_additive /-- **Lagrange's Theorem**: The order of an additive subgroup divides the order of its
+ambient additive group. -/]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 

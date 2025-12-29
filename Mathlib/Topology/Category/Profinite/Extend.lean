@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Profinite.AsLimit
-import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.CategoryTheory.Filtered.Final
+module
+
+public import Mathlib.Topology.Category.Profinite.AsLimit
+public import Mathlib.Topology.Category.Profinite.CofilteredLimit
+public import Mathlib.CategoryTheory.Filtered.Final
 /-!
 
 # Extending cones in `Profinite`
@@ -22,6 +24,8 @@ We apply this to define `Profinite.diagram'`, `Profinite.asLimitCone'`, and `Pro
 analogues to their unprimed versions in `Mathlib/Topology/Category/Profinite/AsLimit.lean`, in which
 the indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
 -/
+
+@[expose] public section
 
 universe u w
 
@@ -41,9 +45,9 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
-    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.continuous⟩
+    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
-  refine ⟨i, (g : _ → _), ?_⟩
+  refine ⟨i, ⟨(g : _ → _)⟩, ?_⟩
   ext x
   exact LocallyConstant.congr_fun h x
 
@@ -73,6 +77,7 @@ def functorOp : Iᵒᵖ ⥤ CostructuredArrow toProfinite.op ⟨c.pt⟩ :=
 -- We check that the opposite of the original diagram factors through `Profinite.Extend.functorOp`.
 example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
+attribute [local instance] uliftCategory in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `Profinite.Extend.functor` is initial.
@@ -87,7 +92,7 @@ lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (func
   constructor
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩
     obtain ⟨i, g, h⟩ := exists_hom c hc f
-    refine ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
+    exact ⟨⟨i⟩, ⟨StructuredArrow.homMk g h.symm⟩⟩
   · intro ⟨_, X, (f : c.pt ⟶ _)⟩ ⟨i⟩ ⟨_, (s : F.obj i ⟶ X), (w : f = c.π.app i ≫ _)⟩
       ⟨_, (s' : F.obj i ⟶ X), (w' : f = c.π.app i ≫ _)⟩
     simp only [StructuredArrow.hom_eq_iff,
@@ -103,13 +108,13 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 -/
 lemma functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
-  have : ((StructuredArrow.toCostructuredArrow toProfinite c.pt)).IsEquivalence  :=
-    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
+  have : ((StructuredArrow.toCostructuredArrow toProfinite c.pt)).IsEquivalence :=
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   exact Functor.final_comp (functor c).op _
 
 section Limit
 
-variable {C : Type*} [Category C] (G : Profinite ⥤ C)
+variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
@@ -140,7 +145,7 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category C] (G : Profiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
 
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on

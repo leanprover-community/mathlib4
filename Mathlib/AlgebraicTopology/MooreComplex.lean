@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 ## Moore complex
@@ -28,6 +30,8 @@ This functor is one direction of the Dold-Kan equivalence, which we're still wor
 * https://ncatlab.org/nlab/show/Moore+complex
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -41,7 +45,7 @@ open scoped Simplicial
 
 namespace AlgebraicTopology
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 attribute [local instance] Abelian.hasPullbacks
 
@@ -129,7 +133,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
         erw [kernelSubobject_arrow_comp_assoc]
         rw [zero_comp, comp_zero]))
     fun n => by
-    cases n <;> dsimp [objD, objX] <;> aesop_cat
+    cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 
@@ -149,7 +153,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
 
--- Porting note: removed @[simp] as it is not in normal form
+-- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
   ChainComplex.of_d _ _ (d_squared X) n

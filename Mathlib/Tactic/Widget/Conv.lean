@@ -3,10 +3,11 @@ Copyright (c) 2023 Robin Böhne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot, Aaron Liu
 -/
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Data.String.Defs
-import Batteries.Tactic.Lint
-import Batteries.Lean.Position
+module
+
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Data.String.Defs
+public meta import Batteries.Tactic.Lint
 
 /-! # Conv widget
 
@@ -14,6 +15,8 @@ This is a slightly improved version of one of the examples in the ProofWidget li
 It defines a `conv?` tactic that displays a widget panel allowing to generate
 a `conv` call zooming to the subexpression selected in the goal.
 -/
+
+public meta section
 
 
 open Lean Meta Server ProofWidgets
@@ -136,7 +139,8 @@ where
 open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (params : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
+    (params : SelectInsertParams) :
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
   let some pos := locations[0]? | throwError "You must select something."
   let (fvar, subexprPos) ← match pos with
   | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
@@ -172,6 +176,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
 in the goal. -/
 elab stx:"conv?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
-   (pure <| json% { replaceRange: $(replaceRange) }) stx
+    (pure <| json% { replaceRange: $(replaceRange) }) stx

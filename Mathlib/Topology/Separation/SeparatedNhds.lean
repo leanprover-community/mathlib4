@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Separated neighbourhoods
@@ -24,6 +26,8 @@ formulating separation axioms for topological spaces.
 * <https://en.wikipedia.org/wiki/Separation_axiom>
 * [Willard's *General Topology*][zbMATH02107988]
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -63,7 +67,7 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
         (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ≤ n, v₀ m)) :=
         fun h₀ u₀ v₀ h₀_cov dis x xinh ↦ by
-      rcases h₀_cov xinh with ⟨un , ⟨n, rfl⟩ , xinun⟩
+      rcases h₀_cov xinh with ⟨un, ⟨n, rfl⟩, xinun⟩
       simp only [mem_iUnion]
       refine ⟨n, xinun, ?_⟩
       simp_all only [closure_iUnion₂_le_nat, disjoint_right, mem_iUnion,

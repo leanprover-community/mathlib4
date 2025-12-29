@@ -3,12 +3,14 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.FunctorToTypes
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
-import Mathlib.Logic.Small.Set
+module
+
+public import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.Indization.IndObject
+public import Mathlib.Logic.Small.Set
 
 /-!
 # Ind-objects are closed under filtered colimits
@@ -21,6 +23,8 @@ Our proof is a slight variant of the proof given in Kashiwara-Schapira.
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Theorem 6.1.8
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -53,8 +57,8 @@ local notation "𝒢" => Functor.op G ⋙ Functor.op (toOver yoneda (colimit F))
 variable {K : Type v} [SmallCategory K] (H : K ⥤ Over (colimit F))
 
 /-- (implementation) Pulling out a colimit out of a hom functor is one half of the key lemma. Note
-    that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
-    and `yonedaYonedaColimit`. -/
+that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
+and `yonedaYonedaColimit`. -/
 noncomputable def compYonedaColimitIsoColimitCompYoneda :
     𝒢 ⋙ yoneda.obj (colimit H) ≅ colimit (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢) := calc
   𝒢 ⋙ yoneda.obj (colimit H) ≅ 𝒢 ⋙ colimit (H ⋙ yoneda) :=
@@ -118,16 +122,17 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- is non-empty.
   obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
       yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
-        (pre P.F yoneda (colimit F)).obj <| (map (colimit.ι F i)).obj <| mk _))) :=
+        (CostructuredArrow.pre P.F yoneda (colimit F)).obj <|
+          (map (colimit.ι F i)).obj <| mk _))) :=
     exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
   have htO : (CostructuredArrow.toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
   -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully
   -- faithful, `lim_j Hom_{Over (colimit F)}(yGj, yHk) ≅`
   --   `lim_j Hom_{CostructuredArrow yoneda (colimit F)}(Gj, Hk)` and so `Hk` is the object we're
   -- looking for.
-  let q := htO.homNatIsoMaxRight
+  let q := fun X => isoWhiskerLeft _ (uliftYonedaIsoYoneda.symm.app _) ≪≫ htO.homNatIso X
   obtain ⟨t'⟩ := Nonempty.map (limMap (isoWhiskerLeft G.op (q _)).hom) hk
-  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{u, v} _).inv t').down⟩⟩
+  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{max u v, v} _).inv t').down⟩⟩
 
 end IndizationClosedUnderFilteredColimitsAux
 

@@ -3,9 +3,11 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree cohomology of a `k`-linear `G`-representation
@@ -13,7 +15,7 @@ import Mathlib.RepresentationTheory.Invariants
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
 the cocycles and group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
-In `RepresentationTheory/Homological/GroupCohomology/Basic.lean`, we define the `n`th group
+In `Mathlib/RepresentationTheory/Homological/GroupCohomology/Basic.lean`, we define the `n`th group
 cohomology of `A` to be the cohomology of a complex `inhomogeneousCochains A`, whose objects are
 `(Fin n → G) → A`; this is unnecessarily unwieldy in low degree. Here, meanwhile, we define the one
 and two cocycles and coboundaries as submodules of `Fun(G, A)` and `Fun(G × G, A)`, and provide
@@ -29,8 +31,8 @@ multiplicative case, starting with the section `IsMulCocycle`, just mirrors the 
 unfortunately `@[to_additive]` can't deal with scalar actions.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory/Homological/GroupCohomology/Basic.lean`, `groupCohomology.cocycles A n`, and
-the `cocyclesₙ` in this file, for `n = 0, 1, 2`.
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/Basic.lean`,
+`groupCohomology.cocycles A n`, and the `cocyclesₙ` in this file, for `n = 0, 1, 2`.
 
 ## Main definitions
 
@@ -50,6 +52,8 @@ the `cocyclesₙ` in this file, for `n = 0, 1, 2`.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 noncomputable section
@@ -68,24 +72,18 @@ def cochainsIso₀ : (inhomogeneousCochains A).X 0 ≅ A.V :=
   (LinearEquiv.funUnique (Fin 0 → G) k A).toModuleIso
 
 @[deprecated (since := "2025-06-25")] noncomputable alias zeroCochainsIso := cochainsIso₀
-@[deprecated (since := "2025-05-09")] noncomputable alias zeroCochainsLequiv := zeroCochainsIso
-
 /-- The 1st object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G, A)` as a `k`-module. -/
 def cochainsIso₁ : (inhomogeneousCochains A).X 1 ≅ ModuleCat.of k (G → A) :=
   (LinearEquiv.funCongrLeft k A (Equiv.funUnique (Fin 1) G)).toModuleIso.symm
 
 @[deprecated (since := "2025-06-25")] noncomputable alias oneCochainsIso := cochainsIso₁
-@[deprecated (since := "2025-05-09")] noncomputable alias oneCochainsLequiv := oneCochainsIso
-
 /-- The 2nd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G², A)` as a `k`-module. -/
 def cochainsIso₂ : (inhomogeneousCochains A).X 2 ≅ ModuleCat.of k (G × G → A) :=
   (LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G)).toModuleIso.symm
 
 @[deprecated (since := "2025-06-25")] noncomputable alias twoCochainsIso := cochainsIso₂
-@[deprecated (since := "2025-05-09")] noncomputable alias twoCochainsLequiv := twoCochainsIso
-
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G³, A)` as a `k`-module. -/
 def cochainsIso₃ : (inhomogeneousCochains A).X 3 ≅ ModuleCat.of k (G × G × G → A) :=
@@ -93,8 +91,6 @@ def cochainsIso₃ : (inhomogeneousCochains A).X 3 ≅ ModuleCat.of k (G × G ×
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso.symm
 
 @[deprecated (since := "2025-06-25")] noncomputable alias threeCochainsIso := cochainsIso₃
-@[deprecated (since := "2025-05-09")] noncomputable alias threeCochainsLequiv := threeCochainsIso
-
 end Cochains
 
 section Differentials
@@ -187,8 +183,6 @@ theorem comp_d₀₁_eq :
 
 @[deprecated (since := "2025-06-25")] noncomputable alias comp_dZero_eq := comp_d₀₁_eq
 
-@[deprecated (since := "2025-05-09")] noncomputable alias dZero_comp_eq := comp_dZero_eq
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem eq_d₀₁_comp_inv :
     (cochainsIso₀ A).inv ≫ (inhomogeneousCochains A).d 0 1 =
@@ -214,15 +208,13 @@ theorem comp_d₁₂_eq :
     (cochainsIso₁ A).hom ≫ d₁₂ A =
       (inhomogeneousCochains A).d 1 2 ≫ (cochainsIso₂ A).hom := by
   ext x y
-  change A.ρ y.1 (x _) - x _ + x _ =  _ + _
+  change A.ρ y.1 (x _) - x _ + x _ = _ + _
   rw [Fin.sum_univ_two]
   simp only [Fin.val_zero, zero_add, pow_one, neg_smul, one_smul, Fin.val_one,
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
   rcongr i <;> rw [Subsingleton.elim i 0] <;> rfl
 
 @[deprecated (since := "2025-06-25")] alias comp_dOne_eq := comp_d₁₂_eq
-
-@[deprecated (since := "2025-05-09")] alias dOne_comp_eq := comp_dOne_eq
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem eq_d₁₂_comp_inv :
@@ -258,8 +250,6 @@ theorem comp_d₂₃_eq :
 
 @[deprecated (since := "2025-06-25")] alias comp_dTwo_eq := comp_d₂₃_eq
 
-@[deprecated (since := "2025-05-09")] alias dTwo_comp_eq := comp_dTwo_eq
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem eq_d₂₃_comp_inv :
     (cochainsIso₂ A).inv ≫ (inhomogeneousCochains A).d 2 3 =
@@ -275,8 +265,6 @@ theorem d₀₁_comp_d₁₂ : d₀₁ A ≫ d₁₂ A = 0 := by
 
 @[deprecated (since := "2025-06-25")] alias dZero_comp_dOne := d₀₁_comp_d₁₂
 
-@[deprecated (since := "2025-05-14")] alias dOne_comp_dZero := dZero_comp_dOne
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₁₂_comp_d₂₃ : d₁₂ A ≫ d₂₃ A = 0 := by
   ext f g
@@ -284,8 +272,6 @@ theorem d₁₂_comp_d₂₃ : d₁₂ A ≫ d₂₃ A = 0 := by
   abel
 
 @[deprecated (since := "2025-06-25")] alias dOne_comp_dTwo := d₁₂_comp_d₂₃
-
-@[deprecated (since := "2025-05-14")] alias dTwo_comp_dOne := dOne_comp_dTwo
 
 open ShortComplex
 
@@ -362,7 +348,7 @@ theorem mem_cocycles₁_iff (f : G → A) :
 @[deprecated (since := "2025-06-25")] alias oneCocycles_map_one := cocycles₁_map_one
 
 @[simp] theorem cocycles₁_map_inv (f : cocycles₁ A) (g : G) :
-    A.ρ g (f g⁻¹) = - f g := by
+    A.ρ g (f g⁻¹) = -f g := by
   rw [← add_eq_zero_iff_eq_neg, ← cocycles₁_map_one f, ← mul_inv_cancel g,
     (mem_cocycles₁_iff f).1 f.2 g g⁻¹]
 
@@ -415,9 +401,6 @@ def cocycles₁IsoOfIsTrivial [hA : A.IsTrivial] :
 
 @[deprecated (since := "2025-06-25")]
 noncomputable alias oneCocyclesIsoOfIsTrivial := cocycles₁IsoOfIsTrivial
-
-@[deprecated (since := "2025-05-09")]
-noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial
 
 instance : FunLike (cocycles₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -657,7 +640,7 @@ section
 variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
 
 @[scoped simp] theorem map_inv_of_isCocycle₁ {f : G → A} (hf : IsCocycle₁ f) (g : G) :
-    g • f g⁻¹ = - f g := by
+    g • f g⁻¹ = -f g := by
   rw [← add_eq_zero_iff_eq_neg, ← map_one_of_isCocycle₁ hf, ← mul_inv_cancel g, hf g g⁻¹]
 
 @[deprecated (since := "2025-06-25")] alias map_inv_of_isOneCocycle := map_inv_of_isCocycle₁
@@ -1049,9 +1032,6 @@ lemma isoCocycles₁_hom_comp_i :
 
 @[deprecated (since := "2025-06-25")] alias isoOneCocycles_hom_comp_i := isoCocycles₁_hom_comp_i
 
-@[deprecated (since := "2025-05-09")]
-alias isoOneCocycles_hom_comp_subtype := isoOneCocycles_hom_comp_i
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_inv_comp_iCocycles :
     (isoCocycles₁ A).inv ≫ iCocycles A 1 =
@@ -1076,7 +1056,7 @@ lemma cocyclesMk₁_eq (x : cocycles₁ A) :
       simp [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
       (isoCocycles₁ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+    (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
 
@@ -1112,9 +1092,6 @@ lemma isoCocycles₂_hom_comp_i :
 
 @[deprecated (since := "2025-06-25")] alias isoTwoCocycles_hom_comp_i := isoCocycles₂_hom_comp_i
 
-@[deprecated (since := "2025-05-09")]
-alias isoTwoCocycles_hom_comp_subtype := isoTwoCocycles_hom_comp_i
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_inv_comp_iCocycles :
     (isoCocycles₂ A).inv ≫ iCocycles A 2 =
@@ -1139,7 +1116,7 @@ lemma cocyclesMk₂_eq (x : cocycles₂ A) :
       simp [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
       (isoCocycles₂ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+    (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
 
@@ -1185,18 +1162,12 @@ variable [A.IsTrivial]
 def H0IsoOfIsTrivial :
     H0 A ≅ A.V := H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
 
-@[deprecated (since := "2025-05-09")]
-noncomputable alias H0LequivOfIsTrivial := H0IsoOfIsTrivial
-
 @[simp, elementwise]
 theorem H0IsoOfIsTrivial_hom :
     (H0IsoOfIsTrivial A).hom = (H0Iso A).hom ≫ (shortComplexH0 A).f := rfl
 
 @[deprecated (since := "2025-06-11")]
 alias H0LequivOfIsTrivial_eq_subtype := H0IsoOfIsTrivial_hom
-
-@[deprecated (since := "2025-05-09")]
-alias H0LequivOfIsTrivial_apply := H0IsoOfIsTrivial_hom_apply
 
 @[reassoc, elementwise]
 theorem π_comp_H0IsoOfIsTrivial_hom :
@@ -1207,9 +1178,6 @@ variable {A} in
 @[simp]
 theorem H0IsoOfIsTrivial_inv_apply (x : A) :
     (H0IsoOfIsTrivial A).inv x = (H0Iso A).inv ⟨x, by simp⟩ := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias H0LequivOfIsTrivial_symm_apply := H0IsoOfIsTrivial_inv_apply
 
 end IsTrivial
 end H0
@@ -1234,7 +1202,7 @@ lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundar
   simp only [H1π, isoCocycles₁, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₁, shortComplexH1, cocycles₁]
 
 lemma H1π_eq_iff (x y : cocycles₁ A) :
@@ -1279,16 +1247,10 @@ def H1IsoOfIsTrivial :
       Unique.eq_default (α := Fin 0 → G), Pi.zero_apply (M := fun _ => A)]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
-@[deprecated (since := "2025-05-09")]
-noncomputable alias H1LequivOfIsTrivial := H1IsoOfIsTrivial
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H1π_comp_H1IsoOfIsTrivial_hom :
     H1π A ≫ (H1IsoOfIsTrivial A).hom = (cocycles₁IsoOfIsTrivial A).hom := by
   simp [H1IsoOfIsTrivial, H1π]
-
-@[deprecated (since := "2025-05-09")]
-alias H1LequivOfIsTrivial_comp_H1π := H1π_comp_H1IsoOfIsTrivial_hom
 
 variable {A}
 
@@ -1296,14 +1258,8 @@ theorem H1IsoOfIsTrivial_H1π_apply_apply
     (f : cocycles₁ A) (x : Additive G) :
     (H1IsoOfIsTrivial A).hom (H1π A f) x = f x.toMul := by simp
 
-@[deprecated (since := "2025-05-09")]
-alias H1LequivOfIsTrivial_comp_H1_π_apply_apply := H1IsoOfIsTrivial_H1π_apply_apply
-
 theorem H1IsoOfIsTrivial_inv_apply (f : Additive G →+ A) :
     (H1IsoOfIsTrivial A).inv f = H1π A ((cocycles₁IsoOfIsTrivial A).inv f) := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias H1LequivOfIsTrivial_symm_apply := H1IsoOfIsTrivial_inv_apply
 
 end IsTrivial
 end H1
@@ -1328,7 +1284,7 @@ lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundar
   simp only [H2π, isoCocycles₂, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₂, shortComplexH2, cocycles₂]
 
 lemma H2π_eq_iff (x y : cocycles₂ A) :

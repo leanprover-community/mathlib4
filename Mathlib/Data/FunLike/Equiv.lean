@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.FunLike.Embedding
+module
+
+public import Mathlib.Data.FunLike.Embedding
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
@@ -123,6 +125,8 @@ instead of linearly increasing the work per `MyIso`-related declaration.
 
 -/
 
+@[expose] public section
+
 
 /-- The class `EquivLike E α β` expresses that terms of type `E` have an
 injective coercion to bijections between `α` and `β`.
@@ -224,8 +228,9 @@ theorem comp_surjective (f : α → β) (e : F) : Function.Surjective (e ∘ f) 
 theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) ↔ Function.Bijective f :=
   (EquivLike.bijective e).of_comp_iff' f
 
+include β in
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
-lemma subsingleton_dom [FunLike F β γ] [Subsingleton β] : Subsingleton F :=
+lemma subsingleton_dom [Subsingleton α] : Subsingleton E :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 
 end EquivLike

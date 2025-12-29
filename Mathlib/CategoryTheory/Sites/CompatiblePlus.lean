@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.Plus
+module
+
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
 
@@ -15,6 +17,8 @@ See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -124,7 +128,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
     NatTrans.naturality_assoc, GrothendieckTopology.diagramNatTrans_app]
   simp only [← Category.assoc]
   congr 1
-  aesop_cat
+  cat_disch
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `F`. -/
 @[simps! hom_app inv_app]
@@ -152,9 +156,8 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): this used to work with `ext`
-  apply Multiequalizer.hom_ext
-  intro a
+  dsimp only [diagram] -- Need to unfold `diagram` before `ext` applies.
+  ext a
   dsimp
   simp only [diagramCompIso_hom_ι_assoc, Multiequalizer.lift_ι, diagramCompIso_hom_ι,
     Category.assoc]
@@ -175,8 +178,8 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was ext
-  apply Multiequalizer.hom_ext; intro a
+  dsimp only [diagram] -- Need to unfold `diagram` before `ext` applies.
+  ext a
   rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
   simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]
 
