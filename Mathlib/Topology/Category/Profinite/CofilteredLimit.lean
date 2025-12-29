@@ -62,7 +62,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   -- clopens constructed in the previous step.
   have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (C.π.app (j s)) ⁻¹' V s) i) := by
     intro s
-    exact (hV s).1.2.preimage (C.π.app (j s)).hom.continuous
+    exact (hV s).1.2.preimage (C.π.app (j s)).hom.hom.continuous
   have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ C.π.app (j s) ⁻¹' V s) i := by
     dsimp only
     rw [h]
@@ -87,7 +87,8 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     intro s hs
     dsimp [W]
     rw [dif_pos hs]
-    refine ⟨(hV s).1.1.preimage ?_, (hV s).1.2.preimage ?_⟩ <;> fun_prop
+    exact ⟨(hV s).1.1.preimage (F.map _).hom.hom.continuous,
+      (hV s).1.2.preimage (F.map _).hom.hom.continuous⟩
   · ext x
     constructor
     · intro hx
@@ -104,7 +105,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
 
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
-    ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _).hom := by
+    ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _).hom.hom := by
   let U := f ⁻¹' {0}
   have hU : IsClopen U := f.isLocallyConstant.isClopen_fiber _
   obtain ⟨j, V, hV, h⟩ := exists_isClopen_of_cofiltered C hC hU
@@ -118,7 +119,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
 open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
-      (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _).hom := by
+      (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _).hom.hom := by
   cases nonempty_fintype α
   let ι : α → α → Fin 2 := fun x y => if x = y then 0 else 1
   let ff := (f.map ι).flip
@@ -128,14 +129,14 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists G
   have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by grind
   let fs : ∀ a : α, j0 ⟶ j a := fun a => (hj0 (hj a)).some
-  let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _)).hom
+  let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _)).hom.hom
   let ggg := LocallyConstant.unflip gg
   refine ⟨j0, ggg, ?_⟩
   have : f.map ι = LocallyConstant.unflip (f.map ι).flip := by simp
   rw [this]; clear this
   have :
-    LocallyConstant.comap (C.π.app j0).hom ggg =
-      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0).hom ggg).flip := by
+    LocallyConstant.comap (C.π.app j0).hom.hom ggg =
+      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0).hom.hom ggg).flip := by
     simp
   rw [this]; clear this
   congr 1
@@ -149,7 +150,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
 
 theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
-    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom := by
+    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom.hom := by
   inhabit α
   obtain ⟨j, gg, h⟩ := exists_locallyConstant_finite_aux _ hC f
   classical
@@ -182,7 +183,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
-    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom := by
+    ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _).hom.hom := by
   let S := f.discreteQuotient
   let ff : S → α := f.lift
   cases isEmpty_or_nonempty S
