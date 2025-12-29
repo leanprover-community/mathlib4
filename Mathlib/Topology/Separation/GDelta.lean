@@ -10,6 +10,7 @@ public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.GDelta.Basic
 
 /-!
@@ -36,9 +37,35 @@ variable {X : Type*} [TopologicalSpace X]
 
 section Separation
 
+/-- Urysohn's lemma: a topological space `X` is normal if for any two disjoint closed sets `s` and
+`t` there exists a continuous function `f : X → ℝ` such that
+
+* `f` equals zero on `s`;
+* `f` equals one on `t`.
+-/
+lemma NormalSpace.of_separating {X} [TopologicalSpace X]
+    (sep : {U V : Set X} → IsClosed U → IsClosed V → Disjoint U V →
+      { f : C(X, ℝ) // EqOn f 0 U ∧ EqOn f 1 V }) : NormalSpace X where
+  normal {s t} sC tC disj := by
+    obtain ⟨f, hf₀, hf₁⟩ := sep sC tC disj
+    use f ⁻¹' (Iio 0.5), f ⁻¹' (Ioi 0.5), isOpen_Iio.preimage f.continuous,
+      isOpen_Ioi.preimage f.continuous
+    split_ands
+    · intro x hxs; simp [hf₀ hxs]; linarith
+    · intro x hxt; simp [hf₁ hxt]; linarith
+    · apply Disjoint.preimage; simp
+
 theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
 
+lemma IsGδ.preimage {X Y} [TopologicalSpace X] [TopologicalSpace Y]
+    (f : ContinuousMap X Y) {s : Set Y} (hs : IsGδ s) : IsGδ (f ⁻¹' s) := by
+  rcases hs with ⟨T, To, cardT, hsT⟩
+  use Set.preimage f '' T
+  split_ands
+  · rintro _ ⟨t, ht, rfl⟩; exact (To t ht).preimage f.continuous
+  · exact Countable.image cardT (Set.preimage ⇑f)
+  · simp [hsT]
 
 theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
@@ -100,6 +127,20 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
     exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
+
+/-- Alternative definition of perfectly normal spaces: for any two disjoint closed sets `s` and `t`,
+if there exists a continuous function `δ : X → ℝ` such that `δ ⁻¹' {0} = s` and `δ ⁻¹' {1} = t`,
+then `X` is perfectly normal. -/
+lemma of_precise_separating
+    (sep : {s t : Set X} → IsClosed s → IsClosed t → Disjoint s t →
+      {δ : C(X, ℝ) // δ ⁻¹' {0} = s ∧ δ ⁻¹' {1} = t}) : PerfectlyNormalSpace X where
+  __ := NormalSpace.of_separating fun {s t} sC tC disj ↦ (sep sC tC disj).map id
+      (fun _ ↦ And.imp (fun h₀ x hx ↦ h₀.symm.subset hx) fun h₁ x hx ↦ h₁.symm.subset hx)
+  closed_gdelta ⦃s⦄ sC := by
+    have Gδ₀ : IsGδ ({0} : Set ℝ) := IsGδ.singleton 0
+    let ⟨δ, hδ₀, hδ₁⟩ := sep sC isClosed_empty (disjoint_empty s)
+    rw [← hδ₀]
+    apply Gδ₀.preimage
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where

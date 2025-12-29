@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Set.Basic
 
 /-!
-# Theorems about the `Disjoint` relation on `Set`.
+# Theorems about the `Disjoint` and `Codisjoint relations on `Set`.
 -/
 
 @[expose] public section
@@ -89,7 +89,62 @@ theorem disjoint_range_iff {β γ : Sort*} {x : β → α} {y : γ → α} :
     Disjoint (range x) (range y) ↔ ∀ i j, x i ≠ y j := by
   simp [Set.disjoint_iff_forall_ne]
 
+/-! # Codisjointness -/
+
+-- TODO goes in `Mathlib.Data.Set.Disjoint`
+protected theorem codisjoint_iff {α} {s t : Set α} :
+    Codisjoint s t ↔ s ∪ t = univ := by rw [_root_.codisjoint_iff]; rfl
+
+@[grind =]
+theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t :=
+  codisjoint_iff_le_sup.trans <| forall_congr' fun _ => by simpa using by tauto
+
+alias ⟨_root_.Codisjoint.mem_of_notMem_left, _⟩ := codisjoint_left
+
+theorem codisjoint_right : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ t → a ∈ s := by
+  rw [codisjoint_comm, codisjoint_left]
+
+alias ⟨_root_.Codisjoint.mem_of_notMem_right, _⟩ := disjoint_right
+
+lemma not_codisjoint_iff : ¬Codisjoint s t ↔ ∃ x, x ∉ s ∧ x ∉ t := by grind
+
+alias codisjoint_iff_union_eq_univ := Set.codisjoint_iff
+
+alias ⟨_root_.Codisjoint.union_eq, _⟩ := Set.codisjoint_iff_union_eq_univ
+
+lemma codisjoint_iff_forall_ne : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → ∀ ⦃b⦄, b ∉ t → a ≠ b := by grind
+
+alias ⟨_root_.Codisjoint.ne_of_notMem, _⟩ := disjoint_iff_forall_ne
+
+lemma codisjoint_of_subset_left (h : s ⊆ u) (c : Codisjoint s t) : Codisjoint u t := c.mono_left h
+
+lemma codisjoint_of_subset_right (h : t ⊆ u) (c : Codisjoint s t) : Codisjoint s u :=
+  c.mono_right h
+
+@[gcongr high]
+lemma codisjoint_of_subset (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (h : Codisjoint s₁ t₁) :
+    Codisjoint s₂ t₂ := h.mono hs ht
+
+@[simp]
+lemma codisjoint_inter_left : Codisjoint (s ∩ t) u ↔ Codisjoint s u ∧ Codisjoint t u :=
+  codisjoint_inf_left
+
+@[simp]
+lemma codisjoint_inter_right : Codisjoint s (t ∩ u) ↔ Codisjoint s t ∧ Codisjoint s u :=
+  codisjoint_inf_right
+
+@[simp] lemma codisjoint_univ (s : Set α) : Codisjoint s univ := codisjoint_top_right
+@[simp] lemma univ_codisjoint (s : Set α) : Codisjoint univ s := codisjoint_top_left
+
+@[simp] lemma empty_codisjoint : Codisjoint ∅ s ↔ s = univ := bot_codisjoint
+@[simp] lemma codisjoint_empty : Codisjoint s ∅ ↔ s = univ := codisjoint_bot
+
+theorem codisjoint_range_iff {β γ : Sort*} {x : β → α} {y : γ → α} :
+    Codisjoint (range x) (range y) ↔ ∀ a, (∃ i, x i = a) ∨ (∃ j, y j = a) := by
+  contrapose!; simp [Set.codisjoint_iff_forall_ne]
+
 end Set
+
 
 /-! ### Disjoint sets -/
 

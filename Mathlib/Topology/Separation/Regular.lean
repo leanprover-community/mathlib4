@@ -581,6 +581,37 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
     CompletelyNormalSpace (ULift X) :=
   IsEmbedding.uliftDown.completelyNormalSpace
 
+open Set.Notation in
+/-- Alternative characterization of completely normal spaces: a space `X` is completely normal
+iff every open subset, considered as a space under the subspace topology, is normal. -/
+lemma iff_subspaces_normal {X} [TopologicalSpace X] :
+    CompletelyNormalSpace X ↔ ∀ U : Set X, IsOpen U → NormalSpace U where
+  mp hX U Uo := inferInstance
+  mpr hU :=
+  { completely_normal {s t} Δs Δt := by
+      let U := (closure s ∩ closure t)ᶜ
+      have Uo : IsOpen U := isClosed_closure.inter isClosed_closure |>.isOpen_compl
+      obtain ⟨s', t', s'O, t'O, hs', ht', Δst'⟩ :=
+        hU U Uo |>.normal (U ↓∩ closure s) (U ↓∩ closure t) isClosed_closure.preimage_val
+          isClosed_closure.preimage_val <| by
+            rw [disjoint_iff_inter_eq_empty, ← preimage_inter, ← preimage_inter_range,
+            Subtype.range_coe]
+            simp [U]
+      rw [Filter.disjoint_iff]
+      use ↑s', (Uo.isOpenMap_subtype_val _ s'O).mem_nhdsSet.mpr ?hs',
+        ↑t', (Uo.isOpenMap_subtype_val _ t'O).mem_nhdsSet.mpr ?ht',
+        disjoint_image_of_injective Subtype.val_injective Δst'
+      · intro x hxs
+        have hxU : x ∈ U := by simp [U, Δt.notMem_of_mem_left hxs]
+        have : (⟨x, hxU⟩ : U) ∈ s' := by apply hs'; simp [subset_closure hxs]
+        use ⟨x, hxU⟩, this
+      · intro x hxt
+        have hxU : x ∈ U := by simp [U, Δs.notMem_of_mem_right hxt]
+        have : (⟨x, hxU⟩ : U) ∈ t' := by apply ht'; simp [subset_closure hxt]
+        use ⟨x, hxU⟩, this }
+
+alias ⟨_, of_subspaces_normal⟩ := iff_subspaces_normal
+
 /-- A T₅ space is a completely normal T₁ space. -/
 class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyNormalSpace X
 

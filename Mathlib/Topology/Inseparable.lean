@@ -527,6 +527,37 @@ theorem map (h : x ~ᵢ y) (hf : Continuous f) : f x ~ᵢ f y :=
 
 end Inseparable
 
+open Set in
+/-- A function out of a codiscrete topology is continuous iff all points in its range are
+inseparable. -/
+lemma continuous_codiscrete_dom [CodiscreteTopology X] (f : X → Y) :
+    Continuous f ↔ ∀ x y, Inseparable (f x) (f y) where
+  mp h x y := by
+    rw [inseparable_iff_forall_isOpen]
+    intro s hs
+    have := hs.preimage h
+    simp only [isOpen_codiscrete, preimage_eq_empty_iff, preimage_eq_univ_iff] at this
+    constructor
+    all_goals
+      intro hxy
+      replace this := this.resolve_left (not_disjoint_iff.mpr ⟨f _, hxy, mem_range_self _⟩)
+      exact this <| mem_range_self _
+  mpr h := by
+    simp_rw [inseparable_iff_forall_isOpen] at h
+    fconstructor
+    intro s hs
+    replace h x y := h x y s hs
+    simp_rw [← mem_preimage] at h
+    by_cases h₀ : ∃ x, x ∈ f ⁻¹' s
+    · obtain ⟨x, hx⟩ := h₀
+      simp [eq_univ_of_forall <| (h x · |>.mp hx)]
+    · push_neg at h₀
+      simp [eq_empty_of_forall_notMem h₀]
+
+alias ⟨_, continuous_codiscrete_of_inseparable⟩ := continuous_codiscrete_dom
+
+attribute [continuity] continuous_codiscrete_of_inseparable
+
 theorem IsClosed.not_inseparable (hs : IsClosed s) (hx : x ∈ s) (hy : y ∉ s) : ¬(x ~ᵢ y) := fun h =>
   hy <| (h.mem_closed_iff hs).1 hx
 

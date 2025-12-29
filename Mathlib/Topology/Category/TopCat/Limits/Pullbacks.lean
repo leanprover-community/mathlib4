@@ -400,6 +400,21 @@ theorem coequalizer_isOpen_iff (U : Set ((coequalizer f g :) : Type u)) :
     IsOpen U ↔ IsOpen (coequalizer.π f g ⁻¹' U) :=
   isOpen_iff_of_isColimit_cofork _ (coequalizerIsCoequalizer f g) _
 
+lemma pushout_isOpen_iff {A X Y : TopCat.{u}} {f : A ⟶ X} {g : A ⟶ Y} (s : Set ↥(pushout f g)) :
+    IsOpen s ↔ IsOpen (pushout.inl f g ⁻¹' s) ∧ IsOpen (pushout.inr f g ⁻¹' s) := by
+  have «forall» {p : WalkingSpan → Prop} : (∀ x, p x) ↔ p .left ∧ p .zero ∧  p .right :=
+    ⟨fun h ↦ ⟨h _, h _, h _⟩, by rintro ⟨_, _, _⟩ (_ | _ | _) <;> assumption⟩
+  have {h : IsOpen (pushout.inr f g ⁻¹' s)} : IsOpen (colimit.ι (span f g) .zero ⁻¹' s) := by
+    rw [← colimit.w (span f g) WalkingSpan.Hom.snd, CategoryTheory.hom_comp, Set.preimage_comp,
+    span_map_snd]
+    exact h.preimage g.hom.continuous
+  rw [TopCat.colimit_isOpen_iff, «forall»]
+  conv_lhs =>
+    enter [2]; rw [and_iff_right_of_imp]
+    · rfl
+    · exact @this
+  rfl
+
 end
 
 end TopCat
