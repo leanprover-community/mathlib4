@@ -44,18 +44,39 @@ noncomputable def agmSequences (x y : ℝ≥0) : (ℕ → ℝ≥0) × (ℕ → �
 noncomputable def agmStep (ga : ℝ≥0 × ℝ≥0) : ℝ≥0 × ℝ≥0 :=
   (sqrt (ga.1 * ga.2), (ga.1 + ga.2) / 2)
 
-variable {g a : ℝ≥0} (h : g ≤ a) {n : ℕ}
+variable {g a x y : ℝ≥0} (h : g ≤ a) {m n : ℕ}
 
-lemma agmSequences_fst_le_agmSequences_snd :
-    (agmSequences g a).1 (n + 1) ≤ (agmSequences g a).2 (n + 1) := by
+lemma agmSequences_fst_le_snd : (agmSequences x y).1 (n + 1) ≤ (agmSequences x y).2 (n + 1) := by
   simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, iterate_succ', comp_apply]
   exact sqrt_mul_le_half_add ..
 
-lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences g a).1 (n + 1) := by
-  sorry
+/-- The geometric means form a monotone sequence. -/
+lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences x y).1 (n + 1) := by
+  refine monotone_nat_of_le_succ fun n ↦ ?_
+  nth_rw 2 [agmSequences]
+  simp_rw [Equiv.arrowProdEquivProdArrow_apply]
+  rw [iterate_succ', comp_apply]
+  change _ ≤ sqrt ((agmSequences x y).1 (n + 1) * (agmSequences x y).2 (n + 1))
+  nth_rw 1 [sqrt_mul, ← mul_self_sqrt ((agmSequences x y).1 (n + 1))]
+  exact mul_le_mul_right (sqrt_le_sqrt.mpr agmSequences_fst_le_snd) _
 
-lemma agmSequences_snd_antitone : Antitone fun n ↦ (agmSequences g a).2 (n + 1) := by
-  sorry
+/-- The arithmetic means form an antitone sequence. -/
+lemma agmSequences_snd_antitone : Antitone fun n ↦ (agmSequences x y).2 (n + 1) := by
+  refine antitone_nat_of_succ_le fun n ↦ ?_
+  nth_rw 1 [agmSequences]
+  simp_rw [Equiv.arrowProdEquivProdArrow_apply]
+  rw [iterate_succ', comp_apply]
+  change ((agmSequences x y).1 (n + 1) + (agmSequences x y).2 (n + 1)) / 2 ≤ _
+  rw [add_div]
+  nth_rw 2 [← add_halves ((agmSequences x y).2 (n + 1))]
+  exact add_le_add_left (div_le_div_of_nonneg_right agmSequences_fst_le_snd zero_le_two) _
+
+/-- All geometric means are less than or equal to all arithmetic means. -/
+lemma agmSequences_fst_le_agmSequences_snd :
+    (agmSequences x y).1 (m + 1) ≤ (agmSequences x y).2 (n + 1) := by
+  rcases le_or_gt m n with h | h
+  · exact (agmSequences_fst_monotone h).trans agmSequences_fst_le_snd
+  · exact agmSequences_fst_le_snd.trans (agmSequences_snd_antitone h.le)
 
 lemma agmStep_iterate_comm (hn : n ≠ 0) : agmStep^[n] (g, a) = agmStep^[n] (a, g) := by
   rw [← Nat.sub_one_add_one hn, iterate_add, iterate_one, comp_apply]
