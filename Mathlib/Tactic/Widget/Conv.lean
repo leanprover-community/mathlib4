@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Data.String.Defs
 public meta import Batteries.Tactic.Lint
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Conv widget
 
@@ -16,19 +17,18 @@ It defines a `conv?` tactic that displays a widget panel allowing to generate
 a `conv` call zooming to the subexpression selected in the goal.
 -/
 
-public meta section
-
+meta section
 
 open Lean Meta Server ProofWidgets
 
-private inductive Path where
+inductive Path where
   | node : Path
   | arg (arg : Nat) (all : Bool) (next : Path) : Path
   | fun (depth : Nat) : Path
   | type (next : Path) : Path
   | body (name : Name) (next : Path) : Path
 
-private partial def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
+partial def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
   go expr pos.toArray 0
 where
   go (expr : Expr) (pos : Array Nat) (i : Fin (pos.size + 1)) : MetaM Path :=
@@ -107,7 +107,7 @@ where
         else arg (u + 1) true <$> go acc[u] p i
       else arg 0 false <$> go e p i
 
-private def getName {m} [Monad m] [MonadEnv m] (n : Name) : m String := do
+def getName {m} [Monad m] [MonadEnv m] (n : Name) : m String := do
   let table ← Parser.getTokenTable <$> getEnv
   let isToken s := (table.find? s).isSome
   return (toString? n.eraseMacroScopes isToken).getD "_"
@@ -121,7 +121,7 @@ where
       if isToken r' then return r ++ "." ++ (← Lean.Name.escapePart s true) else return r'
     | _ => none
 
-private def pathToString {m} [Monad m] [MonadEnv m] (path : Path) (spc : String) : m String := do
+def pathToString {m} [Monad m] [MonadEnv m] (path : Path) (spc : String) : m String := do
   let c ← go path
   let cc := List.replicate c.2 "fun"
   return s!"\n{spc}  ".intercalate
@@ -138,7 +138,7 @@ where
 
 open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
-def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
+public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (params : SelectInsertParams) :
     MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
   let some pos := locations[0]? | throwError "You must select something."
@@ -162,14 +162,14 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
 
 /-- Rpc function for the conv widget. -/
 @[server_rpc_method]
-def ConvSelectionPanel.rpc :=
+public def ConvSelectionPanel.rpc :=
 mkSelectionPanelRPC insertEnter
   "Use shift-click to select one sub-expression in the goal that you want to zoom on."
   "Conv 🔍" (onlyGoal := false) (onlyOne := true)
 
 /-- The conv widget. -/
 @[widget_module]
-def ConvSelectionPanel : Component SelectInsertParams :=
+public def ConvSelectionPanel : Component SelectInsertParams :=
   mk_rpc_widget% ConvSelectionPanel.rpc
 
 open scoped Json in
