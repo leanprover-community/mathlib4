@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Int.Log
-public import Mathlib.Order.Filter.PosNeg
 
 /-!
 # Real logarithm base `b`
