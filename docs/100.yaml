@@ -43,6 +43,9 @@
   authors: Chris Hughes (first) and Michael Stoll (second)
 8:
   title  : The Impossibility of Trisecting the Angle and Doubling the Cube
+  authors: Aristotle (Harmonic)
+  links  :
+    result: https://github.com/plby/lean-proofs/blob/main/100Theorems/8.md
 9:
   title  : The Area of a Circle
   decl   : Theorems100.area_disc
@@ -120,6 +123,9 @@
   authors: Joseph Myers
 28:
   title  : Pascal’s Hexagon Theorem
+  authors: Aristotle (Harmonic)
+  links  :
+    result: https://github.com/plby/lean-proofs/blob/main/100Theorems/28.md
 29:
   title  : Feuerbach’s Theorem
 30:
@@ -213,6 +219,9 @@
   authors: mathlib
 53:
   title  : Pi is Transcendental
+  authors: Zhao Yuyang
+  links  :
+    result: https://github.com/leanprover-community/mathlib4/blob/e11e5b0028cb6d8119922c3d4855bc05963f4aa3/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L261-L273
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
@@ -223,6 +232,9 @@
   authors: Manuel Candales
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
+  authors: Zhao Yuyang
+  links  :
+    result: https://github.com/leanprover-community/mathlib4/blob/e11e5b0028cb6d8119922c3d4855bc05963f4aa3/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L233-L241
 57:
   title  : Heron’s Formula
   decl   : Theorems100.heron
@@ -243,6 +255,9 @@
   authors: mathlib
 61:
   title  : Theorem of Ceva
+  authors: Aristotle (Harmonic)
+  links  :
+    result: https://github.com/plby/lean-proofs/blob/main/100Theorems/61.md
 62:
   title  : Fair Games Theorem
   decl   : MeasureTheory.submartingale_iff_expected_stoppedValue_mono
@@ -359,6 +374,9 @@
   authors: Aaron Anderson and Jalex Stark and Kyle Miller
 84:
   title  : Morley’s Theorem
+  authors: Aristotle (Harmonic)
+  links  :
+    result: https://github.com/plby/lean-proofs/blob/main/100Theorems/84.md
 85:
   title  : Divisibility by 3 Rule
   authors: Kim Morrison
@@ -370,6 +388,9 @@
   authors: Johannes Hölzl
 87:
   title  : Desargues’s Theorem
+  authors: Aristotle (Harmonic)
+  links  :
+    result: https://github.com/plby/lean-proofs/blob/main/100Theorems/28.md
 88:
   title  : Derangements Formula
   decls  :
