@@ -84,13 +84,15 @@ integrable, `‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖` for `x` in a b
 integrable Lipschitz bound `bound` (with a ball radius independent of `a`), and `F x` is
 ae-measurable for `x` in the same ball. See `hasFDerivAt_integral_of_dominated_loc_of_lip` for a
 slightly less general but usually more useful version. -/
-theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] E} (ε_pos : 0 < ε)
-    (hF_meas : ∀ x ∈ ball x₀ ε, AEStronglyMeasurable (F x) μ) (hF_int : Integrable (F x₀) μ)
+theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] E} {s : Set H}
+    (hs : s ∈ 𝓝 x₀)
+    (hF_meas : ∀ x ∈ s, AEStronglyMeasurable (F x) μ) (hF_int : Integrable (F x₀) μ)
     (hF'_meas : AEStronglyMeasurable F' μ)
-    (h_lipsch : ∀ᵐ a ∂μ, ∀ x ∈ ball x₀ ε, ‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖)
+    (h_lipsch : ∀ᵐ a ∂μ, ∀ x ∈ s, ‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖)
     (bound_integrable : Integrable (bound : α → ℝ) μ)
     (h_diff : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (F' a) x₀) :
     Integrable F' μ ∧ HasFDerivAt (fun x ↦ ∫ a, F x a ∂μ) (∫ a, F' a ∂μ) x₀ := by
+  obtain ⟨ε, ε_pos, hε⟩ := Metric.mem_nhds_iff.1 hs
   have x₀_in : x₀ ∈ ball x₀ ε := mem_ball_self ε_pos
   have nneg : ∀ x, 0 ≤ ‖x - x₀‖⁻¹ := fun x ↦ inv_nonneg.mpr (norm_nonneg _)
   set b : α → ℝ := fun a ↦ |bound a|
@@ -98,7 +100,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
   have b_nonneg : ∀ a, 0 ≤ b a := fun a ↦ abs_nonneg _
   replace h_lipsch : ∀ᵐ a ∂μ, ∀ x ∈ ball x₀ ε, ‖F x a - F x₀ a‖ ≤ b a * ‖x - x₀‖ :=
     h_lipsch.mono fun a ha x hx ↦
-      (ha x hx).trans <| mul_le_mul_of_nonneg_right (le_abs_self _) (norm_nonneg _)
+      (ha x (hε hx)).trans <| mul_le_mul_of_nonneg_right (le_abs_self _) (norm_nonneg _)
   have hF_int' : ∀ x ∈ ball x₀ ε, Integrable (F x) μ := fun x x_in ↦ by
     have : ∀ᵐ a ∂μ, ‖F x₀ a - F x a‖ ≤ ε * b a := by
       simp only [norm_sub_rev (F x₀ _)]
@@ -106,7 +108,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       rw [mul_comm ε]
       rw [mem_ball, dist_eq_norm] at x_in
       exact mul_le_mul_of_nonneg_left x_in.le (b_nonneg _)
-    exact integrable_of_norm_sub_le (hF_meas x x_in) hF_int
+    exact integrable_of_norm_sub_le (hF_meas x (hε x_in)) hF_int
       (bound_integrable.norm.const_mul ε) this
   have hF'_int : Integrable F' μ :=
     have : ∀ᵐ a ∂μ, ‖F' a‖ ≤ b a := by
@@ -138,7 +140,8 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
   apply tendsto_integral_filter_of_dominated_convergence
   · filter_upwards [h_ball] with _ x_in
     apply AEStronglyMeasurable.const_smul
-    exact ((hF_meas _ x_in).sub (hF_meas _ x₀_in)).sub (hF'_meas.apply_continuousLinearMap _)
+    exact ((hF_meas _ (hε x_in)).sub (hF_meas _ (hε x₀_in))).sub
+      (hF'_meas.apply_continuousLinearMap _)
   · refine mem_of_superset h_ball fun x hx ↦ ?_
     apply (h_diff.and h_lipsch).mono
     on_goal 1 => rintro a ⟨-, ha_bound⟩
@@ -170,18 +173,18 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
 `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`
 (with a ball radius independent of `a`) with integrable Lipschitz bound, and `F x` is ae-measurable
 for `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F' : α → H →L[𝕜] E}
-    (ε_pos : 0 < ε) (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ)
+theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F' : α → H →L[𝕜] E} {s : Set H}
+    (hs : s ∈ 𝓝 x₀) (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ)
     (hF_int : Integrable (F x₀) μ) (hF'_meas : AEStronglyMeasurable F' μ)
-    (h_lip : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs <| bound a) (F · a) (ball x₀ ε))
+    (h_lip : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs <| bound a) (F · a) s)
     (bound_integrable : Integrable (bound : α → ℝ) μ)
     (h_diff : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (F' a) x₀) :
     Integrable F' μ ∧ HasFDerivAt (fun x ↦ ∫ a, F x a ∂μ) (∫ a, F' a ∂μ) x₀ := by
-  obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ x ∈ ball x₀ δ, AEStronglyMeasurable (F x) μ ∧ x ∈ ball x₀ ε :=
-    eventually_nhds_iff_ball.mp (hF_meas.and (ball_mem_nhds x₀ ε_pos))
+  obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ x ∈ ball x₀ δ, AEStronglyMeasurable (F x) μ ∧ x ∈ s :=
+    eventually_nhds_iff_ball.mp (hF_meas.and hs)
   choose hδ_meas hδε using hδ
   replace h_lip : ∀ᵐ a : α ∂μ, ∀ x ∈ ball x₀ δ, ‖F x a - F x₀ a‖ ≤ |bound a| * ‖x - x₀‖ :=
-    h_lip.mono fun a lip x hx ↦ lip.norm_sub_le (hδε x hx) (mem_ball_self ε_pos)
+    h_lip.mono fun a lip x hx ↦ lip.norm_sub_le (hδε x hx) (mem_of_mem_nhds hs)
   replace bound_integrable := bound_integrable.norm
   apply hasFDerivAt_integral_of_dominated_loc_of_lip' δ_pos <;> assumption
 
@@ -334,7 +337,7 @@ theorem hasFDerivAt_integral_of_contDiffOn {H' : Type*} [NormedAddCommGroup H'] 
   · rw [show (fun y ↦ f y x.2) = (f.uncurry ∘ fun y ↦ (y, x.2)) by rfl]
     rw [← fderivWithin_eq_fderiv (s := u) (hu'.uniqueDiffWithinAt hx.1) <| by
       refine DifferentiableOn.differentiableAt (s := u) ?_ (hu'.mem_nhds hx.1)
-      exact ((hF.differentiableOn le_rfl).comp (by fun_prop) (fun y hy ↦ ⟨hy, hx.2⟩))]
+      exact ((hF.differentiableOn one_ne_zero).comp (by fun_prop) (fun y hy ↦ ⟨hy, hx.2⟩))]
     rw [fderivWithin_comp _ (t := u ×ˢ k) (hF.differentiableOn (by simp) _ ⟨hx.1, hx.2⟩)
       (by fun_prop) (by exact fun y hy ↦ ⟨hy, hx.2⟩) (hu'.uniqueDiffWithinAt hx.1)]
     congr
@@ -349,10 +352,6 @@ theorem restrict_inter_toMeasurable {α : Type*} [MeasurableSpace α]
     Measure.measure_toMeasurable_inter (hk.inter ht) h]
   congr 1
   grind
-
-#check continuous_of_dominated
-
-#check ContinuousLinearMap.norm_inl_le_one
 
 open ContinuousMultilinearMap
 
@@ -456,7 +455,12 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
         apply (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _).trans
         simp only [Finset.univ_eq_empty, Finset.prod_const, Finset.card_empty, pow_zero, mul_one]
         exact (hk'_bound 0 (Nat.zero_le m) _ ⟨hz, tk' hw⟩).le
-  · sorry
+  · intro i hi z' hz'
+    simp only [P]
+
+
+#exit
+
   · intro i hi
     simp only [P]
     apply continuousOn_of_dominated (bound := fun z ↦ (1 + ‖p (x, y) i‖) * ∏ (j : Fin i), 1)
@@ -473,6 +477,17 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
       gcongr
       · exact (hk'_bound i (mod_cast hi) (z', w) ⟨hz', tk' hw⟩).le
       · apply ContinuousLinearMap.norm_inl_le_one
+    · apply integrableOn_const hmut.ne
+    · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
+      apply Continuous.comp_continuousOn (by fun_prop)
+      apply (hp.cont i hi).comp (by fun_prop)
+      intro w' hw'
+      exact hk'v ⟨hw', tk' hw⟩
+
+
+
+
+
 
 
 
