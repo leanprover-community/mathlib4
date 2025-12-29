@@ -3,8 +3,10 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Constructions
-import Mathlib.Data.Set.Notation
+module
+
+public import Mathlib.Combinatorics.Matroid.Constructions
+public import Mathlib.Data.Set.Notation
 
 /-!
 # Maps between matroids
@@ -101,6 +103,8 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 * [J. Oxley, Matroid Theory][oxley2011]
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Set Function Set.Notation
@@ -162,9 +166,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
 @[simp] lemma comap_dep_iff :
     (N.comap f).Dep I ↔ N.Dep (f '' I) ∨ (N.Indep (f '' I) ∧ ¬ InjOn f I) := by
   rw [Dep, comap_indep_iff, not_and, comap_ground_eq, Dep, image_subset_iff]
-  refine ⟨fun ⟨hi, h⟩ ↦ ?_, ?_⟩
-  · rw [and_iff_left h, ← imp_iff_not_or]
-    exact fun hI ↦ ⟨hI, hi hI⟩
+  refine ⟨by grind, ?_⟩
   rintro (⟨hI, hIE⟩ | hI)
   · exact ⟨fun h ↦ (hI h).elim, hIE⟩
   rw [iff_true_intro hI.1, iff_true_intro hI.2, implies_true, true_and]
@@ -186,7 +188,7 @@ lemma comap_indep_iff_of_injOn (hf : InjOn f (f ⁻¹' N.E)) :
   rw [eq_loopyOn_iff]; aesop
 
 @[simp] lemma comap_isBasis_iff {I X : Set α} :
-    (N.comap f).IsBasis I X ↔ N.IsBasis (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X  := by
+    (N.comap f).IsBasis I X ↔ N.IsBasis (f '' I) (f '' X) ∧ I.InjOn f ∧ I ⊆ X := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨hI, hinj⟩ := comap_indep_iff.1 h.indep
     refine ⟨hI.isBasis_of_forall_insert (image_mono h.subset) fun e he ↦ ?_, hinj, h.subset⟩
@@ -294,7 +296,7 @@ def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.of
   (Indep := fun I ↦ M.Indep ↑(f ⁻¹' I) ∧ I ⊆ range f)
   (hM := by
     classical
-    obtain (rfl | ⟨⟨e,he⟩⟩) := eq_emptyOn_or_nonempty M
+    obtain (rfl | ⟨⟨e, he⟩⟩) := eq_emptyOn_or_nonempty M
     · refine ⟨emptyOn β, ?_⟩
       simp only [emptyOn_ground] at f
       simp [range_eq_empty f, subset_empty_iff]
@@ -308,7 +310,7 @@ def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.of
     rintro - x hx y hy
     simp only [Subtype.val_inj]
     exact (invFunOn_injOn_image f univ) (image_mono (subset_univ I) hx)
-      (image_mono (subset_univ I) hy) )
+      (image_mono (subset_univ I) hy))
 
 @[simp] lemma mapSetEmbedding_ground (M : Matroid α) (f : M.E ↪ β) :
     (M.mapSetEmbedding f).E = range f := rfl
@@ -403,7 +405,7 @@ lemma map_image_isBase_iff {hf} {B : Set α} (hB : B ⊆ M.E) :
 lemma IsBasis.map {X : Set α} (hIX : M.IsBasis I X) {f : α → β} (hf) :
     (M.map f hf).IsBasis (f '' I) (f '' X) := by
   refine (hIX.indep.map f hf).isBasis_of_forall_insert (image_mono hIX.subset) ?_
-  rintro _ ⟨⟨e,he,rfl⟩, he'⟩
+  rintro _ ⟨⟨e, he, rfl⟩, he'⟩
   have hss := insert_subset (hIX.subset_ground he) hIX.indep.subset_ground
   rw [← not_indep_iff (by simpa [← image_insert_eq] using image_mono hss)]
   simp only [map_indep_iff, not_exists, not_and]
@@ -459,9 +461,7 @@ lemma map_comap {f : α → β} (h_range : N.E ⊆ range f) (hf : InjOn f (f ⁻
     (N.comap f).map f hf = N := by
   refine ext_indep (by simpa [image_preimage_eq_iff]) ?_
   simp only [map_ground, comap_ground_eq, map_indep_iff, comap_indep_iff, forall_subset_image_iff]
-  refine fun I hI ↦ ⟨fun ⟨I₀, ⟨hI₀, _⟩, hII₀⟩ ↦ ?_, fun h ↦ ⟨_, ⟨h, hf.mono hI⟩, rfl⟩⟩
-  suffices h : I₀ ⊆ f ⁻¹' N.E by rw [InjOn.image_eq_image_iff hf hI h] at hII₀; rwa [hII₀]
-  exact (subset_preimage_image f I₀).trans <| preimage_mono (f := f) hI₀.subset_ground
+  exact fun I hI ↦ ⟨by grind, fun h ↦ ⟨_, ⟨h, hf.mono hI⟩, rfl⟩⟩
 
 lemma comap_map {f : α → β} (hf : f.Injective) : (M.map f hf.injOn).comap f = M := by
   simp [ext_iff_indep, preimage_image_eq _ hf, and_iff_left hf.injOn,

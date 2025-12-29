@@ -16,7 +16,7 @@ set_option autoImplicit true
 
 /--
 info: Try this:
-  rw [@List.map_append]
+  [apply] rw [List.map_append]
   -- no goals
 -/
 #guard_msgs in
@@ -27,7 +27,7 @@ open CategoryTheory
 
 /--
 info: Try this:
-  rw [@Category.id_comp]
+  [apply] rw [Category.id_comp]
   -- no goals
 -/
 #guard_msgs in
@@ -36,7 +36,7 @@ example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ 
 
 /--
 info: Try this:
-  rw [@mul_eq_right]
+  [apply] rw [mul_eq_right]
   -- no goals
 -/
 #guard_msgs in
@@ -133,7 +133,7 @@ example : testConst = 4 := by
 -- Discharge side conditions from local hypotheses.
 /--
 info: Try this:
-  rw [h p]
+  [apply] rw [h p]
   -- no goals
 -/
 #guard_msgs in
@@ -143,7 +143,7 @@ example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
 -- Use `solve_by_elim` to discharge side conditions.
 /--
 info: Try this:
-  rw [h (f p)]
+  [apply] rw [h (f p)]
   -- no goals
 -/
 #guard_msgs in
@@ -154,7 +154,7 @@ example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
 -- Rewrite in reverse, discharging side conditions from local hypotheses.
 /--
 info: Try this:
-  rw [← h₁ p]
+  [apply] rw [← h₁ p]
   -- Q a
 -/
 #guard_msgs in

@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Pi
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Topology.Algebra.Order.UpperLower
-import Mathlib.Topology.MetricSpace.Sequences
+module
+
+public import Mathlib.Algebra.Order.Field.Pi
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Topology.Algebra.Order.UpperLower
+public import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -27,6 +29,8 @@ apply to `ℝ`, `ℝ × ℝ`, `EuclideanSpace ι ℝ`? `_pi` has been appended t
 from the other possible lemmas, but we will want there to be a single set of lemmas for all
 situations.
 -/
+
+@[expose] public section
 
 open Bornology Function Metric Set
 open scoped Pointwise
@@ -148,10 +152,9 @@ lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b�
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine ⟨x + const _ (3 / 4 * δ), closedBall_subset_closedBall' ?_, ?_⟩
-  · rw [dist_self_add_left]
-    refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
-    simp only [norm_mul, norm_div, Real.norm_eq_abs]
-    simp only [zero_lt_three, abs_of_pos, zero_lt_four, abs_of_pos hδ]
+  · grw [dist_self_add_left, ← const_def, pi_norm_const_le]
+    apply le_of_eq
+    simp [abs_of_nonneg, hδ.le]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_
@@ -166,10 +169,9 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
 theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine ⟨x - const _ (3 / 4 * δ), closedBall_subset_closedBall' ?_, ?_⟩
-  · rw [dist_self_sub_left]
-    refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
-    simp only [norm_mul, norm_div, Real.norm_eq_abs, zero_lt_three, abs_of_pos,
-      zero_lt_four, abs_of_pos hδ]
+  · grw [dist_self_sub_left, ← const_def, pi_norm_const_le]
+    apply le_of_eq
+    simp [abs_of_nonneg, hδ.le]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_

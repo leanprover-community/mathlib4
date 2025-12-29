@@ -34,7 +34,7 @@ as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
 
-library_note "IMO geometry formalization conventions"/--
+library_note2 «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
 that the points are coplanar (whether or not that in fact follows from the other conditions).
@@ -117,11 +117,7 @@ def symm : Imo2019q2Cfg V Pt where
   Q := cfg.P
   P₁ := cfg.Q₁
   Q₁ := cfg.P₁
-  affineIndependent_ABC := by
-    rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
-    convert cfg.affineIndependent_ABC using 1
-    ext x
-    fin_cases x <;> rfl
+  affineIndependent_ABC := cfg.affineIndependent_ABC.comm_left
   wbtw_B_A₁_C := cfg.wbtw_A_B₁_C
   wbtw_A_B₁_C := cfg.wbtw_B_A₁_C
   wbtw_A_P_A₁ := cfg.wbtw_B_Q_B₁

@@ -1,11 +1,15 @@
 /-
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
+Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The standard simplex
@@ -14,7 +18,12 @@ In this file, given an ordered semiring `𝕜` and a finite type `ι`,
 we define `stdSimplex : Set (ι → 𝕜)` as the set of vectors with non-negative
 coordinates with total sum `1`.
 
+When `f : X → Y` is a map between finite types, we define the map
+`stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
+
 -/
+
+@[expose] public section
 
 open Set Convex Bornology
 
@@ -102,7 +111,7 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
   invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.2.2, x.2.1⟩, by simp⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| by
+  left_inv f := Subtype.ext <| funext <| Fin.forall_fin_two.2 <| by
     simp [← (show f.1 0 + f.1 1 = 1 by simpa using f.2.2)]
 
 @[simp]
@@ -131,7 +140,7 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
     exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
       fun i _ => mem_range_self i
 
-/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : `i`. -/
+/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
 theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
   convert convexHull_basis_eq_stdSimplex R ι
@@ -187,6 +196,16 @@ theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
 instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
   isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
 
+/-- `stdSimplex ℝ ι` is path connected. -/
+theorem isPathConnected_stdSimplex [Nonempty ι] :
+    IsPathConnected (stdSimplex ℝ ι) :=
+  (convex_stdSimplex ℝ ι).isPathConnected (by
+    classical
+    exact ⟨_, single_mem_stdSimplex ℝ (Classical.arbitrary ι)⟩)
+
+instance [Nonempty ι] : PathConnectedSpace (stdSimplex ℝ ι) :=
+  isPathConnected_iff_pathConnectedSpace.1 (isPathConnected_stdSimplex _)
+
 /-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
 is homeomorphic to the unit interval. -/
 @[simps! -fullyApplied]
@@ -207,3 +226,121 @@ lemma stdSimplexHomeomorphUnitInterval_one :
     stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 1⟩ = 1 := rfl
 
 end Topology
+
+namespace stdSimplex
+
+variable {S : Type*} [Semiring S] [PartialOrder S]
+  {X Y Z : Type*} [Fintype X] [Fintype Y] [Fintype Z]
+
+instance : FunLike (stdSimplex S X) X S where
+  coe s := s.val
+  coe_injective' := by aesop
+
+@[ext high]
+lemma ext {s t : stdSimplex S X} (h : (s : X → S) = t) : s = t := by
+  ext : 1
+  assumption
+
+@[simp]
+lemma zero_le (s : stdSimplex S X) (x : X) : 0 ≤ s x := s.2.1 x
+
+@[simp]
+lemma sum_eq_one (s : stdSimplex S X) : ∑ x, s x = 1 := s.2.2
+
+lemma add_eq_one (s : stdSimplex S (Fin 2)) :
+    s 0 + s 1 = 1 := by
+  simpa only [Fin.sum_univ_two] using sum_eq_one s
+
+section
+
+variable [IsOrderedRing S]
+
+@[simp]
+lemma le_one (s : stdSimplex S X) (x : X) : s x ≤ 1 := by
+  rw [← sum_eq_one s]
+  simpa only using Finset.single_le_sum (by simp) (by simp)
+
+lemma image_linearMap (f : X → Y) :
+    Set.image (FunOnFinite.linearMap S S f) (stdSimplex S X) ⊆ stdSimplex S Y := by
+  classical
+  rintro _ ⟨s, ⟨hs₀, hs₁⟩, rfl⟩
+  refine ⟨fun y ↦ ?_, ?_⟩
+  · rw [FunOnFinite.linearMap_apply_apply]
+    exact Finset.sum_nonneg (by aesop)
+  · simp only [FunOnFinite.linearMap_apply_apply, ← hs₁]
+    exact Finset.sum_fiberwise Finset.univ f s
+
+/-- The map `stdSimplex S X → stdSimplex S Y` that is induced by a map `f : X → Y`. -/
+noncomputable def map (f : X → Y) (s : stdSimplex S X) : stdSimplex S Y :=
+  ⟨FunOnFinite.linearMap S S f s, image_linearMap f (by aesop)⟩
+
+@[simp]
+lemma map_coe (f : X → Y) (s : stdSimplex S X) :
+    ⇑(map f s) = FunOnFinite.linearMap S S f s := rfl
+
+@[simp]
+lemma map_id_apply (x : stdSimplex S X) : map id x = x := by
+  aesop
+
+lemma map_comp_apply (f : X → Y) (g : Y → Z) (x : stdSimplex S X) :
+    map g (map f x) = map (g.comp f) x := by
+  ext
+  simp [FunOnFinite.linearMap_comp]
+
+/-- The vertex corresponding to `x : X` in `stdSimplex S X`. -/
+abbrev vertex [DecidableEq X] (x : X) : stdSimplex S X :=
+  ⟨Pi.single x 1, single_mem_stdSimplex S x⟩
+
+@[simp]
+lemma vertex_coe [DecidableEq X] (x : X) :
+    ⇑(vertex (S := S) x) = Pi.single x 1 := rfl
+
+@[simp]
+lemma map_vertex [DecidableEq X] [DecidableEq Y] (f : X → Y) (x : X) :
+    map (S := S) f (vertex x) = vertex (f x) := by
+  aesop
+
+@[continuity]
+lemma continuous_map [TopologicalSpace S] [IsTopologicalSemiring S] (f : X → Y) :
+    Continuous (map (S := S) f) :=
+  Continuous.subtype_mk ((FunOnFinite.continuous_linearMap S S f).comp continuous_induced_dom) _
+
+lemma vertex_injective [Nontrivial S] [DecidableEq X] :
+    Function.Injective (vertex (S := S) (X := X)) := by
+  intro x y h
+  replace h := DFunLike.congr_fun h x
+  by_contra!
+  simp [Pi.single_eq_of_ne this] at h
+
+instance [Nonempty X] : Nonempty (stdSimplex S X) := by
+  classical
+  exact ⟨vertex (Classical.arbitrary _)⟩
+
+instance [Nontrivial S] [Nontrivial X] : Nontrivial (stdSimplex S X) where
+  exists_pair_ne := by
+    classical
+    obtain ⟨x, y, hxy⟩ := exists_pair_ne X
+    exact ⟨vertex x, vertex y, fun h ↦ hxy (vertex_injective h)⟩
+
+instance [Subsingleton X] : Subsingleton (stdSimplex S X) where
+  allEq s t := by
+    ext i
+    have (u : stdSimplex S X) : u i = 1 := by
+      rw [← sum_eq_one u, Finset.sum_eq_single i _ (by simp)]
+      intro j _ hj
+      exact (hj (Subsingleton.elim j i)).elim
+    simp [this]
+
+instance [Unique X] : Unique (stdSimplex S X) where
+  default := ⟨1, by simp, by simp⟩
+  uniq := by subsingleton
+
+@[simp]
+lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
+    s x = 1 := by
+  obtain rfl : s = default := by subsingleton
+  rfl
+
+end
+
+end stdSimplex

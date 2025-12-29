@@ -3,8 +3,10 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Functor.Multivariate
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Control.Functor.Multivariate
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # Constant functors are QPFs
@@ -15,6 +17,8 @@ that are not actually functorial. For instance `Const n Nat` makes
 `Nat` into a functor that can be used in a functor-based data type
 specification.
 -/
+
+@[expose] public section
 
 
 universe u

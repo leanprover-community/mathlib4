@@ -3,14 +3,18 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+module
+
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 /-!
 # Fundamental groupoid of punit
 
 The fundamental groupoid of punit is naturally isomorphic to `CategoryTheory.Discrete PUnit`
 -/
+
+@[expose] public section
 
 
 noncomputable section

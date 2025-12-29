@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.Bornology.Constructions
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Products of pseudometric spaces and other constructions
@@ -13,6 +15,8 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 This file constructs the supremum distance on binary products of pseudometric spaces and provides
 instances for type synonyms.
 -/
+
+@[expose] public section
 
 open Bornology Filter Metric Set Topology
 open scoped NNReal
@@ -48,12 +52,37 @@ def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : Pseu
     (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
 
-instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
+namespace Subtype
+
+variable {p : α → Prop}
+
+instance pseudoMetricSpace : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
 
-lemma Subtype.dist_eq {p : α → Prop} (x y : Subtype p) : dist x y = dist (x : α) y := rfl
+lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 
-lemma Subtype.nndist_eq {p : α → Prop} (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+lemma nndist_eq (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+
+@[simp]
+theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+  rfl
+
+@[simp]
+theorem preimage_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+  rfl
+
+@[simp]
+theorem image_ball {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+  rw [← preimage_ball, image_preimage_eq_inter_range, range_val_subtype]
+
+@[simp]
+theorem image_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+  rw [← preimage_closedBall, image_preimage_eq_inter_range, range_val_subtype]
+
+end Subtype
 
 namespace MulOpposite
 
@@ -107,10 +136,10 @@ lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
 
 lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
     Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
-  by_cases c_pos : 0 < c
+  by_cases! c_pos : 0 < c
   · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
     simp [Real.toNNReal, c_pos.le]
-  simp [not_lt.mp c_pos]
+  simp [c_pos]
 
 lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
     Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp
@@ -143,9 +172,8 @@ variable [PseudoMetricSpace β]
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
-    (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
-      simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
-        Prod.edist_eq]
+    (fun x y ↦ by positivity) fun x y => by
+      simp only [ENNReal.ofReal_max, Prod.edist_eq, edist_dist]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]

@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Basic
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Basic
 
 /-!
 # List Sub-permutations
@@ -15,6 +17,8 @@ This file develops theory about the `List.Subperm` relation.
 
 The notation `<+~` is used for sub-permutations.
 -/
+
+@[expose] public section
 
 open Nat
 

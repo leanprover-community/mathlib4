@@ -3,7 +3,9 @@ Copyright (c) 2024 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.String.Defs
+module
+
+public meta import Mathlib.Data.String.Defs
 
 /-!
 # Format Table
@@ -11,6 +13,8 @@ import Mathlib.Data.String.Defs
 This file provides a simple function for formatting a two-dimensional array of `String`s
 into a markdown-compliant table.
 -/
+
+public meta section
 
 /-- Possible alignment modes for each table item: left-aligned, right-aligned and centered. -/
 inductive Alignment where

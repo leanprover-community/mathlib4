@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Limits.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Limits.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Limits of monoid objects.
@@ -17,6 +19,8 @@ and the forgetful functor preserves these limits.
 in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits Monoidal MonoidalCategory
 
@@ -24,6 +28,7 @@ universe v u w
 
 noncomputable section
 
+namespace CategoryTheory
 namespace Mon
 
 variable {J : Type w} [SmallCategory J]
@@ -61,12 +66,12 @@ the proposed cone over a functor `F : J ⥤ Mon C` is a limit cone.
 def limitConeIsLimit (F : J ⥤ Mon C) : IsLimit (limitCone F) where
   lift s :=
     { hom := limit.lift (F ⋙ Mon.forget C) ((Mon.forget C).mapCone s)
-      isMonHom_hom.mul_hom := limit.hom_ext (fun j ↦ by
+      isMonHom_hom.mul_hom := limit.hom_ext fun j ↦ by
         dsimp
         simp only [Category.assoc, limit.lift_π, Functor.mapCone_pt, forget_obj,
           Functor.mapCone_π_app, forget_map, IsMonHom.mul_hom, limMap_π, tensorObj_obj,
           Functor.comp_obj, MonFunctorCategoryEquivalence.inverseObj_mon_mul_app, lim_μ_π_assoc,
-          lim_obj, ← tensor_comp_assoc]) }
+          lim_obj, tensorHom_comp_tensorHom_assoc] }
   fac s h := by ext; simp
   uniq s m w := by
     ext1
@@ -85,3 +90,4 @@ instance forget_preservesLimitsOfShape : PreservesLimitsOfShape J (Mon.forget C)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon.forget C)) (forgetMapConeLimitConeIso F).symm)
 
 end Mon
+end CategoryTheory
