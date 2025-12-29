@@ -9,6 +9,7 @@ import Counterexamples.DiscreteTopologyNonDiscreteUniformity
 import Counterexamples.EulerSumOfPowers
 import Counterexamples.GameMultiplication
 import Counterexamples.Girard
+import Counterexamples.HeawoodUnitDistance
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.IrrationalPowerOfIrrational
 import Counterexamples.LinearOrderWithPosMulPosEqZero
