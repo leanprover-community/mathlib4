@@ -119,6 +119,14 @@ initialize_simps_projections Finsupp (toFun → apply)
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
+variable (α) in
+theorem nontrivial_of_nontrivial [Nontrivial (α →₀ M)] :
+    Nontrivial M := by
+  obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ M)
+  rw [ne_eq, Finsupp.ext_iff, not_forall] at h
+  obtain ⟨a, h⟩ := h
+  exact nontrivial_of_ne _ _ h
+
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
 @[simp, norm_cast, grind =]
@@ -154,8 +162,6 @@ theorem fun_support_eq (f : α →₀ M) : Function.support f = f.support :=
 theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
   not_iff_comm.1 mem_support_iff.symm
 
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
-
 @[simp, norm_cast]
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
@@ -186,7 +192,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
-  simp only [Set.subset_def, mem_coe, mem_support_iff, forall_congr' fun a => not_imp_comm]
+  grind
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/

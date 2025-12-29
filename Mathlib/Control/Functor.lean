@@ -58,12 +58,6 @@ theorem Functor.ext {F} :
 
 end Functor
 
-/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
-`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
-@[deprecated "Use `pure : α → Id α` instead." (since := "2025-05-21")]
-def id.mk {α : Sort u} : α → id α :=
-  id
-
 namespace Functor
 
 /-- `Const α` is the constant functor, mapping every type to `α`. When

@@ -39,6 +39,7 @@ namespace DihedralGroup
 
 variable {n : ℕ}
 
+set_option backward.privateInPublic true in
 /-- Multiplication of the dihedral group.
 -/
 private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
@@ -47,20 +48,26 @@ private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
   | sr i, r j => sr (i + j)
   | sr i, sr j => r (j - i)
 
+set_option backward.privateInPublic true in
 /-- The identity `1` is the rotation by `0`.
 -/
 private def one : DihedralGroup n :=
   r 0
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Inhabited (DihedralGroup n) :=
   ⟨one⟩
 
+set_option backward.privateInPublic true in
 /-- The inverse of an element of the dihedral group.
 -/
 private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)
   | sr i => sr i
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The group structure on `DihedralGroup n`.
 -/
 instance : Group (DihedralGroup n) where
@@ -123,6 +130,7 @@ theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
 theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
+set_option backward.privateInPublic true in
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun
     | r j => .inl j
@@ -133,6 +141,8 @@ private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
@@ -279,13 +289,6 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
       | .inr (.inr (.inl k)) =>
         congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) <| two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
       | .inr (.inr (.inr ⟨_, _⟩)) => rfl }
-
-@[deprecated (since := "2025-05-07")] alias OddCommuteEquiv := oddCommuteEquiv
-
-@[deprecated (since := "2025-05-07")] alias
-OddCommuteEquiv_apply := DihedralGroup.oddCommuteEquiv_apply
-@[deprecated (since := "2025-05-07")] alias
-OddCommuteEquiv_symm_apply := DihedralGroup.oddCommuteEquiv_symm_apply
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/
 lemma card_commute_odd (hn : Odd n) :
