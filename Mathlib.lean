@@ -158,6 +158,7 @@ public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Ext.BaseChange
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Ulift
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
@@ -6261,6 +6262,7 @@ public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.Etale
