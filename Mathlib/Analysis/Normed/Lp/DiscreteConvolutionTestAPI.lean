@@ -164,7 +164,6 @@ bypassing `LinearMap.mul`.
 @[expose] public section
 
 open scoped BigOperators NNReal ENNReal
-
 open Finset
 
 noncomputable section
@@ -594,8 +593,6 @@ matching the `CauchyProduct` formulation. -/
 
 section Antidiagonal
 
-open Finset
-
 variable [AddMonoid M] [HasAntidiagonal M]
 
 /-- For types with `HasAntidiagonal`, the additive fiber equals the antidiagonal. -/
@@ -727,14 +724,14 @@ theorem one_mul (a : G → R) : one ⋆ a = a := by
 
 theorem mul_one (a : G → R) : a ⋆ one = a := by
   ext n; simp only [apply_eq, one]
-  rw [Finset.sum_eq_single (n, 0)]
+  rw [sum_eq_single (n, 0)]
   · simp only [Pi.single_eq_same, _root_.mul_one]
   · intro ⟨x, y⟩ hxy hne
-    simp only [Finset.mem_antidiagonal] at hxy
+    simp only [mem_antidiagonal] at hxy
     simp only [ne_eq, Prod.mk.injEq, not_and] at hne
     have : y ≠ 0 := fun h => hne (by simp [← hxy, h]) h
     simp [this]
-  · simp [Finset.mem_antidiagonal]
+  · simp [mem_antidiagonal]
 
 end IdentityAntidiagonal
 
