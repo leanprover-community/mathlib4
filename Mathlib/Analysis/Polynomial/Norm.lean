@@ -35,8 +35,8 @@ extremely overloaded and Mathlib defines _height_ differently.
 
 All other `l^p` norms can be defined on Polynomials as well. In the literature, the `l^1` norm is
 sometimes called the polynomial's _length_. The `l^2` norm sometimes arises due to Parseval's
-theorem implying that the squared `l^2` norm of a complex polynomial integral of the norm of the
-polynomial's value on the unit circle.
+theorem implying that the squared `l^2` norm of a complex polynomial is the integral of the norm of
+the polynomial's value on the unit circle.
 -/
 
 
