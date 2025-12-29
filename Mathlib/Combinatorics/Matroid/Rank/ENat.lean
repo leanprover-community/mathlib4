@@ -46,7 +46,7 @@ which is why mathlib defines matroids using bases/independence. )
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
 The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined in
-`Mathlib/Data/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
+`Mathlib/Combinatorics/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
 ## Implementation Details
@@ -236,7 +236,7 @@ lemma le_eRk_iff : n ≤ M.eRk X ↔ ∃ I, I ⊆ X ∧ M.Indep I ∧ I.encard =
   refine ⟨fun h ↦ ?_, fun ⟨I, hIX, hI, hIc⟩ ↦ ?_⟩
   · obtain ⟨J, hJ⟩ := M.exists_isBasis' X
     rw [← hJ.encard_eq_eRk] at h
-    obtain ⟨I, hIJ, rfl⟩ :=  exists_subset_encard_eq h
+    obtain ⟨I, hIJ, rfl⟩ := exists_subset_encard_eq h
     exact ⟨_, hIJ.trans hJ.subset, hJ.indep.subset hIJ, rfl⟩
   rw [← hIc, ← hI.eRk_eq_encard]
   exact M.eRk_mono hIX

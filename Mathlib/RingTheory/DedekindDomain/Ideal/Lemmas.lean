@@ -91,6 +91,10 @@ theorem Ideal.prime_of_isPrime {P : Ideal A} (hP : P ≠ ⊥) (h : IsPrime P) : 
   refine ⟨hP, mt Ideal.isUnit_iff.mp h.ne_top, fun I J hIJ => ?_⟩
   simpa only [Ideal.dvd_iff_le] using h.mul_le.mp (Ideal.le_of_dvd hIJ)
 
+theorem Ideal.prime_of_mem_primesOver {R : Type*} [CommRing R] [Algebra R A] {p : Ideal R}
+    [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} (hP : P ∈ primesOver p A) : Prime P :=
+  prime_of_isPrime (ne_bot_of_mem_primesOver hp hP) hP.1
+
 /-- In a Dedekind domain, the (nonzero) prime elements of the monoid with zero `Ideal A`
 are exactly the prime ideals. -/
 theorem Ideal.prime_iff_isPrime {P : Ideal A} (hP : P ≠ ⊥) : Prime P ↔ IsPrime P :=
@@ -431,6 +435,12 @@ theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {I : Ideal T} (hI
   · nth_rw 1 [← prod_normalizedFactors_eq_self hI, ← filter_add_not (P = ·) (normalizedFactors I)]
     rw [prod_add, pow_count]
 
+theorem map_prime_of_equiv {R : Type*} [CommRing R] [IsDedekindDomain R]
+    (f : T ≃+* R) {I : Ideal T} (hI : Prime I) (h : I ≠ ⊥) : Prime (I.map f) := by
+  rw [Ideal.prime_iff_isPrime h] at hI
+  exact (Ideal.prime_iff_isPrime <| (I.map_eq_bot_iff_of_injective f.injective).not.2 h).2
+    (Ideal.map_isPrime_of_equiv _)
+
 end IsDedekindDomain
 
 /-!
@@ -699,7 +709,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  cutsat
+  lia
 
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
@@ -807,8 +817,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
         (factors I).toFinset.prod_coe_sort fun P => P ^ (factors I).count P
       _ = ((factors I).map fun P => P).prod := (Finset.prod_multiset_map_count (factors I) id).symm
       _ = (factors I).prod := by rw [Multiset.map_id']
-      _ = I := associated_iff_eq.mp (factors_prod hI)
-      )
+      _ = I := associated_iff_eq.mp (factors_prod hI))
 
 @[simp]
 theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :
@@ -969,7 +978,7 @@ variable [DecidableEq R] [DecidableEq (Ideal R)]
   `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
   stated in terms of multiplicity. -/
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
-    Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
+    Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
         Multiset.count (normalize X) (normalizedFactors r) := by
   have := emultiplicity_eq_emultiplicity_span (R := R) (a := X) (b := r)
   rw [emultiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
@@ -1004,12 +1013,8 @@ variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMax
 
 include hpb in
 theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
-  classical
-  ext P
-  rw [primesOverFinset, factors_eq_normalizedFactors, Finset.mem_coe, Multiset.mem_toFinset]
-  exact (P.mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hpb)).trans <| Iff.intro
-    (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
-    (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
+  ext
+  simpa using (mem_primesOver_iff_mem_normalizedFactors _ hpb).symm
 
 include hpb in
 theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by

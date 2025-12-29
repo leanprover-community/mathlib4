@@ -13,9 +13,9 @@ public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 # Some results on free modules over rings satisfying strong rank condition
 
 This file contains some results on free modules over rings satisfying strong rank condition.
-Most of them are generalized from the same result assuming the base ring being division ring,
+Most of them are generalized from the same result assuming the base ring being a division ring,
 and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
-and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
+and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 
 -/
 
@@ -87,13 +87,13 @@ theorem rank_le_one_iff [Module.Free K V] :
       intro v
       simp [h' v]
     · use b i
-      have h' : (K ∙ b i) = ⊤ :=
+      have h' : K ∙ b i = ⊤ :=
         (subsingleton_range b).eq_singleton_of_mem (mem_range_self i) ▸ b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
   · rintro ⟨v₀, hv₀⟩
-    have h : (K ∙ v₀) = ⊤ := by
+    have h : K ∙ v₀ = ⊤ := by
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]

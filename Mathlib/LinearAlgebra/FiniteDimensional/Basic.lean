@@ -20,7 +20,7 @@ of linear maps on such spaces.
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
 - quotients (for the dimension of a quotient, see `Submodule.finrank_quotient_add_finrank` in
-  `Mathlib/LinearAlgebra/FiniteDimensional.lean`)
+  `Mathlib/LinearAlgebra/Dimension/RankNullity.lean`)
 - linear equivs, in `LinearEquiv.finiteDimensional`
 
 Basic properties of linear maps of a finite-dimensional vector space are given. Notably, the
@@ -32,8 +32,9 @@ and `LinearMap.comp_eq_id_comm`.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
-Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
-`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
+Plenty of the results hold for general finitely generated modules (see
+`Mathlib/RingTheory/Finiteness/Basic.lean`) or Noetherian modules (see
+`Mathlib/RingTheory/Noetherian/Basic.lean`).
 -/
 
 @[expose] public section
@@ -115,12 +116,12 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
         apply_fun Equiv.finsuppUnique
-        simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
+        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext
-        simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
+        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel_right₀ _ h }
 

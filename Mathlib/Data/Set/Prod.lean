@@ -376,6 +376,33 @@ theorem _root_.AntitoneOn.set_prod (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
 
 end Mono
 
+lemma eqOn_prod_iff {a b : α → γ × δ} :
+    EqOn a b s ↔ EqOn (Prod.fst ∘ a) (Prod.fst ∘ b) s ∧ EqOn (Prod.snd ∘ a) (Prod.snd ∘ b) s := by
+  grind [EqOn]
+
+lemma EqOn.left_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : t.Nonempty) : EqOn f f' s := by
+  obtain ⟨x, hxt⟩ := ht
+  intro x hxs
+  have h' := h <| mk_mem_prod hxs hxt
+  grind
+
+lemma EqOn.right_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) : EqOn g g' t := by
+  obtain ⟨x, hxs⟩ := hs
+  intro x hxt
+  have h' := h <| mk_mem_prod hxs hxt
+  grind
+
+lemma EqOn.prodMap {f f' : α → γ} {g g' : β → δ}
+    (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
+  grind [EqOn]
+
+lemma eqOn_prodMap_iff {f f' : α → γ} {g g' : β → δ}
+    {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
+    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
+  ⟨fun h ↦ ⟨h.left_of_eqOn_prodMap ht, h.right_of_eqOn_prodMap hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
+
 end Prod
 
 /-! ### Diagonal
@@ -433,7 +460,7 @@ end Diagonal
 theorem range_const_eq_diagonal {α β : Type*} [hβ : Nonempty β] :
     range (const α) = {f : α → β | ∀ x y, f x = f y} := by
   refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ ?_⟩
-  rcases isEmpty_or_nonempty α with h|⟨⟨a⟩⟩
+  rcases isEmpty_or_nonempty α with h | ⟨⟨a⟩⟩
   · exact hβ.elim fun b ↦ ⟨b, Subsingleton.elim _ _⟩
   · exact ⟨f a, funext fun x ↦ hf _ _⟩
 
@@ -572,6 +599,8 @@ theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
 
 variable {s t}
 
+-- TODO: find a good way to fix the linter; simp is called on four goals, with only two remaining
+set_option linter.flexible false in
 theorem offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x
