@@ -290,6 +290,49 @@ example : True ∧ True := by
 
 
 
+-- Ideally, `| true|` would complain.
+/--
+warning: add space in the source
+
+This part of the code
+  'true|'
+should be written as
+  'true |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example {c : Bool} : c = c := by
+  induction c with
+  | true| _ => rfl
+
+/--
+warning: add space in the source
+
+This part of the code
+  'true|'
+should be written as
+  'true |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  '=>rfl'
+should be written as
+  '=> rfl'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example {c : Bool} : c = c := by
+  induction c with
+  | true| _ =>rfl
+
 
 section Desiderata_and_todos
 
@@ -680,27 +723,6 @@ example (h : ∀ a : Nat, a = a) : 0 = 0 := by
   -- The *linter* forces a space in `replace(h)`, but the pretty-printer does not.
   replace(h) := h 0
   exact h
-
--- Ideally, `| true|` would complain.
-example {c : Bool} : c = c := by
-  induction c with
-  | true| _ => rfl
-
-/--
-warning: add space in the source
-
-This part of the code
-  '=>rfl'
-should be written as
-  '=> rfl'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
--/
-#guard_msgs in
-example {c : Bool} : c = c := by
-  induction c with
-  | true| _ =>rfl
 
 -- Ideally, this would complain, but `simp!` requires a trailing space.
 example : 0 = 0 := by
