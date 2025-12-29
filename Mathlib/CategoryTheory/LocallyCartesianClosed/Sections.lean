@@ -37,55 +37,38 @@ variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 variable (I : C) [Closed I]
 
 /-- The first leg of a cospan to define `sectionsObj` as a pullback in `C`. -/
-abbrev curryId : 𝟙_ C ⟶ (I ⟶[C] I) :=
+abbrev curryRightUnitorHom : 𝟙_ C ⟶ (I ⟶[C] I) :=
   curry <| (ρ_ _).hom
 
-theorem toUnit_comp_curryId {A : C} : toUnit A ≫ curryId I = curry (fst I A) := by
+variable {I}
+
+theorem toUnit_comp_curryRightUnitorHom {A : C} :
+    toUnit A ≫ curryRightUnitorHom I = curry (fst I A) := by
   apply uncurry_injective
-  simp [uncurry_natural_left, curryId, fst_def, toUnit]
+  simp [uncurry_natural_left, curryRightUnitorHom, fst_def, toUnit]
 
 namespace Over
 
 open ChosenPullbacksAlong
 
-variable {I} [ChosenPullbacksAlong (curryId I)]
+variable (I) [ChosenPullbacksAlong (curryRightUnitorHom I)]
 
-/-- The object of sections of `X : Over I` defined by the following
-pullback diagram:
+/-- The functor mapping an object `X : Over I` to the object of sections of `X` over `I`, defined
+by the following pullback diagram, and on morphisms by the universal property of chosen pullbacks.
 
 ```
  sections X -->  I ⟹ X
    |               |
    |               |
    v               v
-  ⊤_ C    ---->  I ⟹ I
+  𝟙_ C   ----->  I ⟹ I
 ```
 -/
-abbrev sectionsObj (X : Over I) : C :=
-  pullbackObj (ihom I |>.map X.hom) (curryId I)
-
-/-- The functoriality of `sectionsObj`. -/
-abbrev sectionsMap {X X' : Over I} (u : X ⟶ X') :
-    sectionsObj X ⟶ sectionsObj X' :=
-  pullbackMap _ _ _ _ (ihom I |>.map u.left) (𝟙 _) (𝟙 _)
-    (by simp [← Functor.map_comp]) (by cat_disch)
-
-@[simp]
-lemma sectionsMap_id {X : Over I} : sectionsMap (𝟙 X) = 𝟙 _ := by
-  cat_disch
-
-@[simp]
-lemma sectionsMap_comp {X X' X'' : Over I} (u : X ⟶ X') (v : X' ⟶ X'') :
-    sectionsMap (u ≫ v) = sectionsMap u ≫ sectionsMap v := by
-  cat_disch
-
-variable (I)
-
-/-- The functor mapping an object `X` in `C` to the object of sections of `X` over `I`. -/
 @[simps]
 def sections : Over I ⥤ C where
-  obj X := sectionsObj X
-  map u := sectionsMap u
+  obj X := pullbackObj (ihom I |>.map X.hom) (curryRightUnitorHom I)
+  map u := pullbackMap _ _ _ _ (ihom I |>.map u.left) (𝟙 _) (𝟙 _)
+    (by simp [← Functor.map_comp]) (by cat_disch)
 
 variable {I}
 
@@ -98,18 +81,18 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
   ChosenPullbacksAlong.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
     rw [curry_natural_right, Category.assoc, ← Functor.map_comp, w, toOver_obj_hom,
-    ← curry_natural_right, toUnit_comp_curryId]
+    ← curry_natural_right, toUnit_comp_curryRightUnitorHom]
     congr
     simp [braiding_hom_snd])
 
 /-- The uncurrying operation `Hom A (section X) → Hom ((toOver I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X := by
-  let v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ ChosenPullbacksAlong.fst (ihom I |>.map X.hom) (curryId I)
-  have comm : toUnit A ≫ (curryId I) = v₂ ≫ (ihom I).map X.hom := by
+  let v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ fst (ihom I |>.map X.hom) (curryRightUnitorHom I)
+  have comm : toUnit A ≫ (curryRightUnitorHom I) = v₂ ≫ (ihom I).map X.hom := by
     rw [IsTerminal.hom_ext isTerminalTensorUnit (toUnit A ) (v ≫ snd ..)]
     simp [v₂, condition]
-  dsimp [curryId] at comm
+  dsimp [curryRightUnitorHom] at comm
   have w' := (ihom.adjunction I).homEquiv_naturality_right_square _ _ _ _ comm
   simp only [curriedTensor_obj_obj, curriedTensor_obj_map, curry,
     Equiv.symm_apply_apply] at w'
@@ -144,14 +127,14 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
   }
   homEquiv_naturality_left_symm := by
     intro A' A X g v
-    dsimp [sectionsCurry, sectionsUncurry, curryId]
+    dsimp [sectionsCurry, sectionsUncurry, curryRightUnitorHom]
     simp only [toOver_map]
     rw [← Over.homMk_comp]
     congr 1
     simp [uncurry_natural_left]
   homEquiv_naturality_right := by
     intro A X' X u g
-    dsimp [sectionsCurry, sectionsUncurry, curryId]
+    dsimp [sectionsCurry, sectionsUncurry, curryRightUnitorHom]
     apply ChosenPullbacksAlong.hom_ext
     · simp [← curry_natural_right]
     · simp
