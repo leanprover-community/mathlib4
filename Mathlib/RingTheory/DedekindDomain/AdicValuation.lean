@@ -201,9 +201,6 @@ theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := b
   rw [v.intValuation_if_neg (nonZeroDivisors.coe_ne_zero x)]
   exact WithZero.zero_lt_coe _
 
-@[deprecated (since := "2025-05-11")]
-alias intValuation_zero_le := intValuation_zero_lt
-
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
   by_cases hx : x = 0
@@ -307,11 +304,6 @@ open scoped algebraMap in
 /-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
 theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := by
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
-
-open scoped algebraMap in
-@[deprecated valuation_of_algebraMap (since := "2025-05-11")]
-lemma valuation_eq_intValuationDef (r : R) : v.valuation K r = v.intValuationDef r :=
-  Valuation.extendToLocalization_apply_map_apply ..
 
 open scoped algebraMap in
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
@@ -452,9 +444,6 @@ theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
 
 section AlgebraInstances
 
@@ -598,15 +587,15 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
 
 section AbsoluteValue
 
-open WithZeroMulInt
+open WithZeroMulInt NNReal
 
-variable {R K} {b : NNReal} (hb : 1 < b) (r : R) (x : K)
+variable {R K} {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
 
 /-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def intAdicAbvDef := fun r ↦ toNNReal (ne_zero_of_lt hb) (v.intValuation r)
+def intAdicAbvDef (r : R) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.intValuation r)
 
-lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (fun r ↦ v.intAdicAbvDef hb r) := by
+lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := by
   intro x y
   simp only [intAdicAbvDef]
   have h_mono := (toNNReal_strictMono hb).monotone
@@ -618,7 +607,7 @@ valuation, for some `b` in `ℝ≥0` -/
 def intAdicAbv : AbsoluteValue R ℝ where
   toFun r := v.intAdicAbvDef hb r
   map_mul' _ _ := by simp [intAdicAbvDef]
-  nonneg' _ := NNReal.zero_le_coe
+  nonneg' _ := zero_le_coe
   eq_zero' _ := by simp [intAdicAbvDef, intValuation_def]
   add_le' _ _ := (isNonarchimedean_intAdicAbvDef v hb).add_le fun _ ↦ bot_le
 
@@ -639,9 +628,9 @@ theorem intAdicAbv_eq_one_iff : v.intAdicAbv hb r = 1 ↔ r ∉ v.asIdeal := by
 
 /-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbvDef := fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+def adicAbvDef (x : K) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.valuation K x)
 
-lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
+lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb) := by
   intro x y
   simp only [adicAbvDef]
   have h_mono := (toNNReal_strictMono hb).monotone
@@ -653,7 +642,7 @@ valuation, for some `b` in `ℝ≥0` -/
 def adicAbv : AbsoluteValue K ℝ where
   toFun x := v.adicAbvDef hb x
   map_mul' _ _ := by simp [adicAbvDef]
-  nonneg' _ := NNReal.zero_le_coe
+  nonneg' _ := zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
   add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
 
@@ -667,7 +656,6 @@ theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
     v.adicAbv hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
   simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
-open scoped algebraMap in
 /-- The `v`-adic absolute value on `K` extends the `v`-adic absolute value on `R`. -/
 theorem adicAbv_of_algebraMap (r : R) : v.adicAbv hb (algebraMap R K r) = v.intAdicAbv hb r := by
   simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
