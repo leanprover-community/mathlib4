@@ -89,9 +89,7 @@ def onFinsupp {𝕜 ι : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrdered
       obtain ⟨t', ht', rfl⟩ := hts
       exact ⟨t', down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
     (by
-      have hind : AffineIndependent 𝕜 (fun i : ι => Finsupp.single i (1 : 𝕜)) := by
-        exact AffineIndependent.Finsupp
-      refine hind.range.mono fun x hx => ?_
+      refine AffineIndependent.Finsupp.range.mono fun x hx => ?_
       simp only [Set.mem_iUnion, Set.mem_image, Finset.mem_coe] at hx
       obtain ⟨_, ⟨_, _, rfl⟩, hx⟩ := hx
       exact Finset.mem_image.mp hx |>.choose_spec.2 ▸ Set.mem_range_self _)
