@@ -98,14 +98,15 @@ bypassing `LinearMap.mul`.
 
 ### Convolution
 * `DiscreteConvolution.convolution L f g`: convolution `f ⋆[L] g` for `[Monoid M]`
-* `DiscreteConvolution.addConvolution L f g`: additive convolution `f ⋆₊[L] g` for `[AddMonoid M]`
-* `DiscreteConvolution.mulConvolution f g`: ring multiplication convolution `f ⋆ₘ g`
+* `DiscreteConvolution.addConvolution L f g`: additive `f ⋆₊[L] g` for `[AddMonoid M]`
+* `DiscreteConvolution.mulConvolution f g`: ring multiplication `f ⋆ₘ g`
+* `DiscreteConvolution.addMulConvolution f g`: additive ring multiplication `f ⋆₊ₘ g`
 * `DiscreteConvolution.delta e`: identity element `δ₁(e)` for convolution
 
 ### CauchyProduct (finite sums for HasAntidiagonal)
-* `DiscreteConvolution.CauchyProduct.apply`: `(a ⋆ b) n = ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2`
-* `DiscreteConvolution.CauchyProduct.one`: identity `δ₀`
-* `DiscreteConvolution.CauchyProduct.assoc`: associativity without `CompleteSpace`
+* `CauchyProduct.apply`: `(a ⋆ b) n = ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2`
+* `CauchyProduct.one`: identity `δ₀`
+* `CauchyProduct.assoc`: associativity without `CompleteSpace`
 
 ### Summability Predicates
 * `DiscreteConvolution.ConvolutionExistsAt L f g x`: convolution sum converges at `x`
@@ -148,12 +149,15 @@ bypassing `LinearMap.mul`.
 
 * `LpOneBanachAlgebra.lean`: ℓ¹ Banach algebra instances using this convolution
 
-## Notation
+## Notation Summary
 
-* `f ⋆[L] g` for discrete convolution with bilinear map `L`
-* `f ⋆₊[L] g` for additive convolution
-* `f ⋆ₘ g` for ring multiplication convolution
-* `a ⋆ b` for CauchyProduct (finite sum)
+| Notation     | Index Type           | Operation                                   |
+|--------------|----------------------|---------------------------------------------|
+| `f ⋆[L] g`   | `Monoid M`           | `∑' ab : mulFiber x, L (f ab.1) (g ab.2)`   |
+| `f ⋆₊[L] g`  | `AddMonoid M`        | `∑' ab : addFiber x, L (f ab.1) (g ab.2)`   |
+| `f ⋆ₘ g`     | `Monoid M`           | `∑' ab : mulFiber x, f ab.1 * g ab.2`       |
+| `f ⋆₊ₘ g`    | `AddMonoid M`        | `∑' ab : addFiber x, f ab.1 * g ab.2`       |
+| `a ⋆ b`      | `HasAntidiagonal G`  | `∑ kl ∈ antidiagonal n, a kl.1 * b kl.2`    |
 
 ## TODO
 
@@ -281,6 +285,25 @@ theorem mulConvolution_apply [CommSemiring R] [TopologicalSpace R] (f g : M → 
     (f ⋆ₘ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
 
 end RingMul
+
+/-! ### Additive Ring Multiplication Convolution -/
+
+section AddRingMul
+
+variable [AddMonoid M] {R : Type*}
+
+/-- Additive convolution using ring multiplication.
+This is `addConvolution (LinearMap.mul R R)`. -/
+def addMulConvolution [CommSemiring R] [TopologicalSpace R] (f g : M → R) : M → R :=
+  addConvolution (LinearMap.mul R R) f g
+
+/-- Notation for additive ring multiplication convolution. -/
+scoped notation:70 f:70 " ⋆₊ₘ " g:71 => addMulConvolution f g
+
+theorem addMulConvolution_apply [CommSemiring R] [TopologicalSpace R] (f g : M → R) (x : M) :
+    (f ⋆₊ₘ g) x = ∑' ab : addFiber x, f ab.1.1 * g ab.1.2 := rfl
+
+end AddRingMul
 
 /-! ### Identity Element -/
 
