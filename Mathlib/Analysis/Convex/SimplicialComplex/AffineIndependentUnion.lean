@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 # Simplicial complexes from affinely independent points
@@ -81,6 +82,41 @@ noncomputable def onFinsupp {𝕜 ι : Type*} [DecidableEq ι]
       simp only [Set.mem_iUnion, Set.mem_image, Finset.mem_coe] at hx
       obtain ⟨_, ⟨_, _, rfl⟩, hx⟩ := hx
       exact Finset.mem_image.mp hx |>.choose_spec.2 ▸ Set.mem_range_self _)
+
+/--
+The simplicial complex associated to a simple graph, where vertices of the graph
+are 0-simplices and edges are 1-simplices. The complex is constructed over the
+`𝕜`-module of finitely supported functions on the vertex type.
+-/
+noncomputable def ofSimpleGraph {𝕜 V : Type*} [DecidableEq V] [DecidableEq 𝕜]
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    (G : SimpleGraph V) :
+    SimplicialComplex 𝕜 (V →₀ 𝕜) :=
+  onFinsupp
+    (faces := ((fun v => ({v} : Finset V)) '' (Set.univ (α := V))) ∪ Sym2.toFinset '' G.edgeSet)
+    (empty_notMem := by
+      simp only [Set.mem_union, Set.mem_image, Set.mem_univ, true_and, Finset.singleton_ne_empty,
+        exists_false, false_or, not_exists, not_and]
+      exact fun _ _ h => Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _)) h)
+    (down_closed := by
+      simp only [Set.mem_union, Set.mem_image, Set.mem_univ, true_and]
+      intro s t hs hts ht
+      rcases hs with ⟨v, rfl⟩ | ⟨e, he, rfl⟩
+      · simp only [Finset.subset_singleton_iff] at hts
+        rcases hts with rfl | rfl
+        · exact ht.ne_empty rfl |>.elim
+        · exact Or.inl ⟨v, rfl⟩
+      · by_cases hc : t.card ≤ 1
+        · left
+          obtain ⟨x, hx⟩ := ht
+          exact ⟨x, (Finset.eq_singleton_iff_unique_mem.mpr
+            ⟨hx, fun y hy => Finset.card_le_one.mp hc y hy x hx⟩).symm⟩
+        · right
+          push_neg at hc
+          have hle : e.toFinset.card ≤ t.card := by
+            have := Sym2.card_toFinset e
+            split_ifs at this <;> omega
+          exact ⟨e, he, (Finset.eq_of_subset_of_card_le hts hle).symm⟩)
 
 end SimplicialComplex
 
