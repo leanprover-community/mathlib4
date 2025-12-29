@@ -13,6 +13,8 @@ public import Mathlib.CategoryTheory.CodiscreteCategory
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
