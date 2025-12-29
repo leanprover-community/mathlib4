@@ -514,7 +514,7 @@ instance : CoeFun (AddLp M R) (fun _ => M → R) where
 
 @[simp] theorem toLp_ofLp (f : lp (fun _ : M => R) 1) : (ofLp f).toLp = f := rfl
 @[simp] theorem ofLp_toLp (f : AddLp M R) : ofLp f.toLp = f := rfl
-@[simp] theorem mk_toLp (f : lp (fun _ : M => R) 1) : (⟨f⟩ : AddLp M R).toLp = f := rfl
+theorem mk_toLp (f : lp (fun _ : M => R) 1) : (⟨f⟩ : AddLp M R).toLp = f := rfl
 
 theorem ext {f g : AddLp M R} (h : ∀ m, f m = g m) : f = g := by
   cases f; cases g; simp only [mk.injEq]; exact lp.ext (funext h)
@@ -533,27 +533,29 @@ namespace AddLp
 
 section Mul
 
-variable [CompleteSpace R]
-
 instance instMul : Mul (AddLp M R) where
   mul f g := ⟨(⇑f.toLp) ⋆₊ₘ (⇑g.toLp), lp.one_addMulConvolution_memℓp f.toLp g.toLp⟩
 
+@[simp] theorem mul_apply (f g : AddLp M R) (x : M) :
+    (f * g) x = (f.toLp ⋆₊ₘ g.toLp) x := rfl
+
 end Mul
 
-@[simp] theorem mul_apply [CompleteSpace R] (f g : AddLp M R) (x : M) :
-    (f * g) x = (f.toLp ⋆₊ₘ g.toLp) x := rfl
+attribute [nolint unusedArguments] mul_apply
 
 section One
 
-variable [CompleteSpace R] [DecidableEq M]
+variable [DecidableEq M]
 
 instance instOne : One (AddLp M R) where
   one := ⟨addDelta 1, lp.one_addDelta_memℓp⟩
 
+@[simp] theorem one_apply (x : M) :
+    (1 : AddLp M R) x = addDelta (1 : R) x := rfl
+
 end One
 
-@[simp] theorem one_apply [CompleteSpace R] [DecidableEq M] (x : M) :
-    (1 : AddLp M R) x = addDelta (1 : R) x := rfl
+attribute [nolint unusedArguments] one_apply
 
 section Ring
 
