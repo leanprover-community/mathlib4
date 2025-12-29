@@ -141,10 +141,7 @@ namespace FiniteResidueField
 noncomputable instance : Field (FiniteResidueField K) :=
   inferInstanceAs (Field (IsLocalRing.ResidueField _))
 
-#adaptation_note /-- Removed `private':
-This had been private, but while disabling `set_option backward.privateInPublic` as a global option
-we have made it public again. -/
-theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
+private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
   refine fun x ↦ ⟨?_⟩
   rintro x rfl y hy z ⟨hxz, hzy⟩
@@ -154,7 +151,7 @@ theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
   apply hy.trans_le (mk_antitoneOn _ _ _) <;> simpa
 
 noncomputable instance : LinearOrder (FiniteResidueField K) :=
-  @Quotient.instLinearOrder _ _ _ ordConnected_preimage_mk' (Classical.decRel _)
+  @Quotient.instLinearOrder _ _ _ (by exact ordConnected_preimage_mk') (Classical.decRel _)
 
 /-- The quotient map from finite elements on the field to the associated residue field. -/
 def mk : FiniteElement K →+*o FiniteResidueField K where
@@ -404,6 +401,15 @@ theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
     FiniteResidueField.ofArchimedean f (stdPart x) = .mk (.mk x hx) := by
   rw [stdPart, dif_pos hx, ← OrderRingHom.comp_apply, ← OrderRingHom.comp_assoc,
     OrderRingHom.comp_apply, OrderRingHom.apply_eq_self]
+
+theorem stdPart_nonneg {x : K} (h : 0 ≤ x) : 0 ≤ stdPart x := by
+  obtain hx | hx := eq_or_ne (ArchimedeanClass.mk x) 0
+  · rw [stdPart, dif_pos hx.ge]
+    exact map_nonneg _ h
+  · rw [stdPart_of_mk_ne_zero hx]
+
+theorem stdPart_nonpos {x : K} (h : x ≤ 0) : stdPart x ≤ 0 := by
+  simpa using stdPart_nonneg (neg_nonneg.2 h)
 
 /-- The standard part of `x` is the unique real `r` such that `x - r` is infinitesimal. -/
 theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
