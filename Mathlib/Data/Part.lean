@@ -118,8 +118,6 @@ instance : Inhabited (Part α) :=
 @[simp]
 theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
 
-@[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
-
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
 def some (a : α) : Part α :=
@@ -296,7 +294,7 @@ def ofOption : Option α → Part α
 
 @[simp]
 theorem mem_ofOption {a : α} : ∀ {o : Option α}, a ∈ ofOption o ↔ a ∈ o
-  | Option.none => ⟨fun h => h.fst.elim, fun h => Option.noConfusion h⟩
+  | Option.none => ⟨fun h => h.fst.elim, fun h => Option.noConfusion rfl (heq_of_eq h)⟩
   | Option.some _ => ⟨fun h => congr_arg Option.some h.snd, fun h => ⟨trivial, Option.some.inj h⟩⟩
 
 @[simp]

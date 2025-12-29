@@ -117,6 +117,6 @@ theorem _root_.IsAlgClosure.of_exist_roots
     have ⟨σ⟩ := nonempty_algHom_of_exist_roots fun x : p.SplittingField ↦
       have := Algebra.IsAlgebraic.isIntegral (K := F).1 x
       h _ (minpoly.monic this) (minpoly.irreducible this)
-    splits_of_algHom (SplittingField.splits _) σ
+    Splits.of_algHom (SplittingField.splits _) σ
 
 end Field

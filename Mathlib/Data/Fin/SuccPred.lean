@@ -160,9 +160,7 @@ lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) 
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
 theorem cast_eq_cast (h : n = m) : (Fin.cast h : Fin n → Fin m) = _root_.cast (h ▸ rfl) := by
-  subst h
-  ext
-  rfl
+  grind
 
 theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ i
 
@@ -221,14 +219,6 @@ The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis. -/
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
-@[deprecated Fin.castSucc_eq_zero_iff (since := "2025-05-13")]
-theorem castSucc_eq_zero_iff' [NeZero n] (a : Fin n) : castSucc a = 0 ↔ a = 0 :=
-  Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
-
-@[deprecated Fin.castSucc_ne_zero_iff (since := "2025-05-13")]
-theorem castSucc_ne_zero_iff' [NeZero n] (a : Fin n) : castSucc a ≠ 0 ↔ a ≠ 0 :=
-  not_iff_not.mpr <| castSucc_eq_zero_iff
-
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
   cases n
   · exact i.elim0
@@ -239,10 +229,7 @@ theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ l
   not_iff_not.mpr <| succ_eq_last_succ
 
 theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
-  cases n
-  · exact i.elim0
-  · rw [succ_ne_last_iff, Ne, Fin.ext_iff]
-    exact ((le_last _).trans_lt' h).ne
+  grind
 
 open Fin.NatCast in
 @[norm_cast, simp]
@@ -406,9 +393,6 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
 @[simp]
 theorem castPred_zero [NeZero n] :
     castPred (0 : Fin (n + 1)) (Fin.ext_iff.not.2 last_pos'.ne) = 0 := rfl
-
-@[deprecated (since := "2025-05-11")]
-alias castPred_zero' := castPred_zero
 
 @[simp]
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
@@ -911,7 +895,7 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
   by saying that both functions are strictly monotone and have the same range `{i, i.succAbove j}ᶜ`,
   we give a direct proof by case analysis to avoid extra dependencies. -/
   ext
-  simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, coe_pred, coe_castPred,
+  simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, val_pred, coe_castPred,
     dite_eq_ite, apply_ite Fin.val, val_succ]
   split_ifs <;> lia
 

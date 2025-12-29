@@ -256,6 +256,7 @@ lemma noncommProd_induction (s : Finset α) (f : α → β) (comm)
   obtain (⟨a, ha : a ∈ s, rfl : f a = b⟩) := by simpa using hb
   exact base a ha
 
+set_option backward.proofsInPublic true in
 @[to_additive (attr := congr)]
 theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁ = s₂)
     (h₂ : ∀ x ∈ s₂, f x = g x) (comm) :
@@ -298,24 +299,12 @@ theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
 
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem := noncommSum_insert_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias noncommProd_insert_of_not_mem := noncommProd_insert_of_notMem
-
 @[to_additive]
 theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       noncommProd s f (comm.mono fun _ => mem_insert_of_mem) * f a := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons']
-
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem' := noncommSum_insert_of_notMem'
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias noncommProd_insert_of_not_mem' := noncommProd_insert_of_notMem'
 
 @[to_additive (attr := simp)]
 theorem noncommProd_singleton (a : α) (f : α → β) :

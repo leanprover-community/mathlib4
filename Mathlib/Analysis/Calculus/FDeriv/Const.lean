@@ -345,27 +345,16 @@ theorem HasStrictFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
   rw [notMem_tsupport_iff_eventuallyEq] at h
   exact (hasStrictFDerivAt_const (0 : F) x).congr_of_eventuallyEq h.symm
 
-@[deprecated (since := "2025-05-24")]
-alias HasStrictFDerivAt.of_nmem_tsupport := HasStrictFDerivAt.of_notMem_tsupport
-
 theorem HasFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
   (HasStrictFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivAt
-
-@[deprecated (since := "2025-05-24")]
-alias HasFDerivAt.of_nmem_tsupport := HasFDerivAt.of_notMem_tsupport
 
 theorem HasFDerivWithinAt.of_notMem_tsupport {s : Set E} {x : E} (h : x ∉ tsupport f) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
   (HasFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivWithinAt
 
-@[deprecated (since := "2025-05-23")]
-alias HasFDerivWithinAt.of_not_mem_tsupport := HasFDerivWithinAt.of_notMem_tsupport
-
 theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
   (HasFDerivAt.of_notMem_tsupport 𝕜 h).fderiv
-
-@[deprecated (since := "2025-05-23")] alias fderiv_of_not_mem_tsupport := fderiv_of_notMem_tsupport
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
   rw [← not_imp_not, notMem_support]
