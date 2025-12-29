@@ -299,9 +299,6 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
     simpa using congr($hg _).trans this
 
-@[deprecated (since := "2025-05-23")]
-alias LinearMap.exists_extend_of_not_mem := LinearMap.exists_extend_of_notMem
-
 open Submodule LinearMap
 
 theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v ∉ p) :
@@ -318,9 +315,6 @@ instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
   have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
   obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
   exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
-
-@[deprecated (since := "2025-05-23")]
-alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
