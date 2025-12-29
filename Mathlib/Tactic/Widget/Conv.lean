@@ -163,9 +163,9 @@ public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType 
 /-- Rpc function for the conv widget. -/
 @[server_rpc_method]
 public def ConvSelectionPanel.rpc :=
-mkSelectionPanelRPC insertEnter
-  "Use shift-click to select one sub-expression in the goal that you want to zoom on."
-  "Conv 🔍" (onlyGoal := false) (onlyOne := true)
+  mkSelectionPanelRPC insertEnter
+    "Use shift-click to select one sub-expression in the goal that you want to zoom on."
+    "Conv 🔍" (onlyGoal := false) (onlyOne := true)
 
 /-- The conv widget. -/
 @[widget_module]
