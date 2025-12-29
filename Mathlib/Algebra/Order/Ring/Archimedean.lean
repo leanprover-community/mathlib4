@@ -197,6 +197,37 @@ theorem mk_ofNat {n : ℕ} [n.AtLeastTwo] : mk (ofNat(n) : S) = 0 :=
 theorem mk_natCast_nonneg (n : ℕ) : 0 ≤ mk (n : S) :=
   mod_cast mk_intCast_nonneg n
 
+theorem exists_nat_ge_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℕ, x ≤ n := by
+  obtain ⟨n, hn⟩ := hx
+  refine ⟨n, le_of_abs_le ?_⟩
+  simpa using hn
+
+theorem exists_nat_gt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℕ, x < n := by
+  obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg hx
+  refine ⟨n + 1, hn.trans_lt ?_⟩
+  simp
+
+theorem exists_int_ge_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, x ≤ n := by
+  obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg hx
+  exact ⟨n, mod_cast hn⟩
+
+theorem exists_int_gt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, x < n := by
+  obtain ⟨n, hn⟩ := exists_nat_gt_of_mk_nonneg hx
+  exact ⟨n, mod_cast hn⟩
+
+theorem exists_int_le_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, n ≤ x := by
+  obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg (mk_neg x ▸ hx)
+  use -n
+  simpa [neg_le]
+
+theorem exists_int_lt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, n < x := by
+  obtain ⟨n, hn⟩ := exists_nat_gt_of_mk_nonneg (mk_neg x ▸ hx)
+  use -n
+  simpa [neg_lt]
+
+
+#exit
+
 theorem exists_mem_Icc_of_mk_nonneg {S : Type*} [Ring S]
     (f : S →+* R) {x : R} (hx : 0 ≤ mk x) : ∃ r s, x ∈ Set.Icc (f r) (f s) := by
   obtain ⟨n, hn⟩ := hx
@@ -217,6 +248,7 @@ theorem mk_nonneg_of_mem_Icc [Archimedean S] (f : S →+*o R) {x : R} {r s : S}
   · simpa using f.monotone' (neg_le_of_abs_le hnr)
   · simpa using f.monotone' (le_of_abs_le hns)
 
+#exit
 end IsOrderedRing
 
 section IsStrictOrderedRing
