@@ -1,9 +1,28 @@
+/-
+Copyright (c) 2025 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 module
 
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.Complex.Schwarz
 import Mathlib.Analysis.Complex.UnitDisc.Shift
+
+/-!
+# Schwarz-Pick lemma for maps from a ball
+
+In this file we prove a version of the Schwarz lemma that estimates `dist (f z) (f w)`
+for two points of a disc where `f` is complex differentiable and is bounded.
+
+As a corollary, we prove a similar estimate for a function bounded on a polydisc,
+then use it to show that a function that is separately holomorphic on a polydisc `U`
+and is bounded on `U` is continuous on `U`.
+
+The latter lemma is a step towards Hartogs's theorem
+saying that a function that is separately holomorphic must be holomorphic.
+-/
 
 open Function Set Metric
 open scoped BigOperators ComplexConjugate Complex.UnitDisc Topology
@@ -15,7 +34,10 @@ namespace Complex
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} {r R : ℝ}
 
 /-- **Schwarz-Pick lemma** for a map from a disc in `ℂ` to a disc in a normed space,
-estimating the distance between the images of two points in the disc. -/
+estimating the distance between the images of two points in the disc.
+
+This version assumes that the disc in the codomain
+is centered around the image of one o fthe points. -/
 theorem dist_le_of_mapsTo_ball_of_mem {z w : ℂ} (hd : DifferentiableOn ℂ f (ball c r))
     (h_maps : MapsTo f (ball c r) (closedBall (f z) R))
     (hz : z ∈ ball c r) (hw : w ∈ ball c r) :
@@ -64,6 +86,8 @@ theorem dist_le_of_mapsTo_ball_of_mem {z w : ℂ} (hd : DifferentiableOn ℂ f (
   · simp [hg_coe, hg₀, dist_comm]
   · simp [UnitDisc.coe_shift, dist_eq_norm_sub', ← sub_eq_neg_add, ← sub_eq_add_neg, mul_div_assoc]
 
+/-- Give a function that is separately holomorphic on an open polydisc and is bounded on it,
+this lemma provides an explicit estimate on the distance between the images of any two points. -/
 theorem dist_le_of_differentiableOn_update_of_norm_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     {f : (ι → ℂ) → E} {c : ι → ℂ} {r : ι → ℝ} {M : ℝ}
     (hfd : ∀ z ∈ univ.pi fun i ↦ ball (c i) (r i), ∀ i,
@@ -108,6 +132,12 @@ theorem dist_le_of_differentiableOn_update_of_norm_le {ι : Type*} [Fintype ι] 
       gcongr with i hi
       simpa [mul_assoc, mul_div_assoc] using hz'_dist i
 
+/-- A function that is separately holomorphic and is bounded on a polydisc
+must be continuous on the same polydisc.
+
+This is a preliminary lemma that is needed to prove Hartogs's theorem
+saying that the first assumption is enough to conclude that the function is in fact analytic
+on the polydisc. -/
 theorem continuousOn_of_differentiableOn_update_of_bddAbove {ι : Type*} [Finite ι] [DecidableEq ι]
     {f : (ι → ℂ) → E} {c : ι → ℂ} {r : ι → ℝ}
     (hfd : ∀ z ∈ univ.pi fun i ↦ ball (c i) (r i), ∀ i,
