@@ -92,6 +92,18 @@ directly in `AddLp` instance definitions. Key techniques for reliable elaboratio
    when used with `rw`. Workaround: compute the result via `have` with explicit type
    signature first, then use `▸` substitution. The explicit signature forces Lean to
    commit to the type before elaborating the proof body.
+
+### Runtime Optimization
+
+Proofs in this file are optimized for elaboration speed. Key principles:
+
+1. **Use `convert ... using 1` for deferred unification**: Direct term-mode proofs for
+   `Summable` over sigma types can timeout due to expensive type class searches. The
+   `convert` tactic defers unification, avoiding these searches during initial elaboration.
+
+2. **Use function argument syntax for `have`**: Write `have hfoo (x : T) : P x := ...`
+   instead of `have hfoo : ∀ x : T, P x := fun x => ...` for cleaner syntax.
+
 -/
 
 @[expose] public section
@@ -162,21 +174,22 @@ theorem lp.one_mulConvolution_memℓp (f g : lp (fun _ : M => R) 1) :
 theorem lp.one_norm_mulConvolution_le (f g : lp (fun _ : M => R) 1) :
     ‖(⟨mulConvolution (⇑f) (⇑g), lp.one_mulConvolution_memℓp f g⟩ :
       lp (fun _ : M => R) 1)‖ ≤ ‖f‖ * ‖g‖ := by
-  simp only [lp.one_norm_eq_tsum]
-  have hprod := lp.one_summable_norm_mul f g
-  have hsigma : Summable fun p : Σ x : M, mulFiber x => ‖f p.2.1.1‖ * ‖g p.2.1.2‖ :=
-    (Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod
+  rw [lp.one_norm_eq_tsum, lp.one_norm_eq_tsum, lp.one_norm_eq_tsum]
+  have hprod : Summable fun ab : M × M => ‖f ab.1‖ * ‖g ab.2‖ := lp.one_summable_norm_mul f g
+  have hsigma := (Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod
   have hbound (x : M) : ‖(mulConvolution (⇑f) (⇑g)) x‖ ≤
       ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ :=
-    (norm_tsum_le_tsum_norm (.of_nonneg_of_le (fun _ => norm_nonneg _) (fun _ => norm_mul_le _ _)
-      (hprod.subtype _))).trans (Summable.tsum_le_tsum (fun _ => norm_mul_le _ _) (.of_nonneg_of_le
+    (norm_tsum_le_tsum_norm (Summable.of_nonneg_of_le (fun _ => norm_nonneg _)
+      (fun _ => norm_mul_le _ _) (hprod.subtype _))).trans
+    (Summable.tsum_le_tsum (fun _ => norm_mul_le _ _) (Summable.of_nonneg_of_le
       (fun _ => norm_nonneg _) (fun _ => norm_mul_le _ _) (hprod.subtype _)) (hprod.subtype _))
-  have hsigma' : ∑' p : Σ x : M, mulFiber x, ‖f p.2.1.1‖ * ‖g p.2.1.2‖ =
-      ∑' x, ∑' ab : mulFiber x, ‖f ab.1.1‖ * ‖g ab.1.2‖ := hsigma.tsum_sigma' hsigma.sigma_factor
-  refine (Summable.tsum_le_tsum hbound ?_ hsigma.sigma).trans (le_of_eq ?_)
-  · simpa using (memℓp_gen_iff (by norm_num)).mp (lp.one_mulConvolution_memℓp f g)
-  · exact hsigma' ▸ (lp.one_summable_norm f).tsum_mul_tsum (lp.one_summable_norm g) hprod ▸
-      (Equiv.sigmaFiberEquiv mulMap).tsum_eq (fun p => ‖f p.1‖ * ‖g p.2‖)
+  have hmemℓp : Summable fun m => ‖mulConvolution (⇑f) (⇑g) m‖ := by
+    simpa using (memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)).mp
+      (lp.one_mulConvolution_memℓp f g)
+  refine (Summable.tsum_le_tsum hbound hmemℓp hsigma.sigma).trans (le_of_eq ?_)
+  exact (hsigma.tsum_sigma' hsigma.sigma_factor) ▸
+    (lp.one_summable_norm f).tsum_mul_tsum (lp.one_summable_norm g) hprod ▸
+    (Equiv.sigmaFiberEquiv mulMap).tsum_eq (fun p => ‖f p.1‖ * ‖g p.2‖)
 
 /-- The identity element `delta 1` is in ℓ¹. -/
 @[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addDelta_memℓp
@@ -215,8 +228,7 @@ def TripleConvolutionSummable (f g h : M → R) (x : M) : Prop :=
 theorem lp.one_tripleConvolutionSummable (f g h : lp (fun _ : M => R) 1) (x : M) :
     TripleConvolutionSummable (⇑f) (⇑g) (⇑h) x := by
   unfold TripleConvolutionSummable
-  have hfg := (lp.one_summable_norm f).mul_of_nonneg (lp.one_summable_norm g)
-    (fun _ => norm_nonneg _) (fun _ => norm_nonneg _)
+  have hfg := lp.one_summable_norm_mul f g
   have hfgh : Summable fun abc : M × M × M => ‖f abc.1‖ * ‖g abc.2.1‖ * ‖h abc.2.2‖ :=
     (Equiv.prodAssoc M M M).symm.summable_iff.mpr (hfg.mul_of_nonneg (lp.one_summable_norm h)
       (fun _ => mul_nonneg (norm_nonneg _) (norm_nonneg _)) (fun _ => norm_nonneg _))
@@ -227,12 +239,8 @@ theorem lp.one_tripleConvolutionSummable (f g h : lp (fun _ : M => R) 1) (x : M)
 @[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addConvolutionSummable
   /-- ℓ¹ functions have summable additive convolutions at each point. -/]
 theorem lp.one_convolutionSummable (f g : lp (fun _ : M => R) 1) (x : M) :
-    Summable fun ab : mulFiber x => f ab.1.1 * g ab.1.2 := by
-  have hprod : Summable (fun ab : M × M => ‖f ab.1‖ * ‖g ab.2‖) :=
-    (lp.one_summable_norm f).mul_of_nonneg (lp.one_summable_norm g)
-      (fun _ => norm_nonneg _) (fun _ => norm_nonneg _)
-  exact Summable.of_norm_bounded (hprod.subtype (mulFiber x))
-    fun ⟨⟨a, b⟩, _⟩ => norm_mul_le _ _
+    Summable fun ab : mulFiber x => f ab.1.1 * g ab.1.2 :=
+  ((lp.one_summable_norm_mul f g).subtype _).of_norm_bounded fun ⟨⟨_, _⟩, _⟩ => norm_mul_le _ _
 
 /-- Left-associated convolution sum as a triple fiber sum. -/
 @[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addConvolution_assoc_left_sum
@@ -242,16 +250,14 @@ theorem lp.one_convolution_assoc_left_sum (f g h : lp (fun _ : M => R) 1) (x : M
       ∑' p : tripleFiber x, f p.1.1 * g p.1.2.1 * h p.1.2.2 := by
   have h1 : ∑' cd : mulFiber x,
       (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
-      ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, (f ab.1.1 * g ab.1.2) * h cd.1.2 := by
-    congr 1; ext cd
-    exact ((lp.one_convolutionSummable f g cd.1.1).tsum_mul_right (h cd.1.2)).symm
+      ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, (f ab.1.1 * g ab.1.2) * h cd.1.2 :=
+    tsum_congr fun cd => ((lp.one_convolutionSummable f g cd.1.1).tsum_mul_right (h cd.1.2)).symm
   have hsigmaL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
       (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 := by
-    convert (leftAssocEquiv x).summable_iff.mpr
-      (lp.one_tripleConvolutionSummable f g h x) using 1
-  have hfiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
+    convert (leftAssocEquiv x).summable_iff.mpr (lp.one_tripleConvolutionSummable f g h x) using 1
+  have hfiberL (cd : mulFiber x) : Summable fun ab : mulFiber cd.1.1 =>
       (f ab.1.1 * g ab.1.2) * h cd.1.2 :=
-    fun cd => (lp.one_convolutionSummable f g cd.1.1).mul_right (h cd.1.2)
+    (lp.one_convolutionSummable f g cd.1.1).mul_right (h cd.1.2)
   have h2 := (leftAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
   have h3 : ∑' (p : Σ cd : mulFiber x, mulFiber cd.1.1),
       (f p.2.1.1 * g p.2.1.2) * h p.1.1.2 =
@@ -267,24 +273,21 @@ theorem lp.one_convolution_assoc_right_sum (f g h : lp (fun _ : M => R) 1) (x : 
       ∑' p : tripleFiber x, f p.1.1 * g p.1.2.1 * h p.1.2.2 := by
   have h1 : ∑' ae : mulFiber x,
       f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
-      ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) := by
-    congr 1; ext ae
-    exact ((lp.one_convolutionSummable g h ae.1.2).tsum_mul_left (f ae.1.1)).symm
+      ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) :=
+    tsum_congr fun ae => ((lp.one_convolutionSummable g h ae.1.2).tsum_mul_left (f ae.1.1)).symm
   have hsigmaR : Summable fun p : Σ ae : mulFiber x, mulFiber ae.1.2 =>
       f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) := by
     simp_rw [← mul_assoc]
-    convert (rightAssocEquiv x).summable_iff.mpr
-      (lp.one_tripleConvolutionSummable f g h x) using 1
-  have hfiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
+    convert (rightAssocEquiv x).summable_iff.mpr (lp.one_tripleConvolutionSummable f g h x) using 1
+  have hfiberR (ae : mulFiber x) : Summable fun bd : mulFiber ae.1.2 =>
       f ae.1.1 * (g bd.1.1 * h bd.1.2) :=
-    fun ae => (lp.one_convolutionSummable g h ae.1.2).mul_left (f ae.1.1)
+    (lp.one_convolutionSummable g h ae.1.2).mul_left (f ae.1.1)
   have h2 := (rightAssocEquiv x).tsum_eq (fun p => f p.1.1 * g p.1.2.1 * h p.1.2.2)
   have h3 : ∑' (p : Σ ae : mulFiber x, mulFiber ae.1.2),
       f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) =
       ∑' ae : mulFiber x, ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) :=
     hsigmaR.tsum_sigma' hfiberR
-  rw [h1, ← h2, ← h3]
-  simp_rw [← mul_assoc]; rfl
+  rw [h1, ← h2, ← h3]; simp_rw [← mul_assoc]; rfl
 
 /-- Convolution is associative for ℓ¹ functions: `(f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h)`. -/
 @[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addMulConvolution_assoc
