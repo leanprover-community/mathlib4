@@ -37,7 +37,7 @@ normed ring with submultiplicative norm.
 * `lp.one_convolutionSummable`: pairwise products are summable over fibers
 * `lp.one_mulConvolution_assoc`: `(f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h)`
 
-### Typeclass Instances
+### lp Instances (Multiplicative Convolution)
 * `lp.oneMul`: `Mul` via convolution
 * `lp.oneOne`: `One` via delta function
 * `lp.oneRing`: `Ring` (requires `[CompleteSpace R]`)
@@ -48,7 +48,7 @@ normed ring with submultiplicative norm.
 * `lp.one_isScalarTower`, `lp.one_smulCommClass`: scalar tower and commutativity
 * `lp.oneAlgebra`, `lp.oneNormedAlgebra`: algebra instances
 
-### AddLp (Additive Convolution)
+### AddLp Instances (Additive Convolution)
 * `AddLp M R`: newtype for ℓ¹ with `addMulConvolution` (fibers `a + b = x`)
 * `AddLp.instRing`: `Ring` (requires `[AddMonoid M]`, `[CompleteSpace R]`)
 * `AddLp.instNormedRing`: `NormedRing`
@@ -562,8 +562,6 @@ section Mul
 
 variable [CompleteSpace R]
 
-set_option profiler.threshold 1000 in -- show anything taking >1s
-set_option trace.profiler true in
 instance instMul : Mul (AddLp M R) where
   mul f g := ⟨⟨(⇑f.toLp) ⋆₊ₘ (⇑g.toLp), AddLp.addMulConvolution_memℓp' f.toLp g.toLp⟩⟩
 
