@@ -43,7 +43,7 @@ noncomputable section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (c : ℝ → E)
 
 /-- Auxiliary definition, this is the reversed (inverse) parameter transformation used for
-constructing the arclength reparametrization of parametrized curve. -/
+constructing the arc-length reparametrization of parametrized curve. -/
 def arclengthParamTransformAux (t₀ : ℝ) : ℝ → ℝ := fun t ↦ ∫ τ in t₀..t, ‖deriv c τ‖
 
 variable (I : Set ℝ) [I.OrdConnected]
@@ -54,7 +54,7 @@ def arclengthParamTransform (t₀ : ℝ) :=
   letI ψ := arclengthParamTransformAux c t₀
   ψ.invFunOn I
 
-/-- Unit speed / arclength reparametrization of a parametrized curve. -/
+/-- Unit speed / arc-length reparametrization of a parametrized curve. -/
 def arclengthReparam (t₀ : ℝ) : ℝ → E :=
   c ∘ (arclengthParamTransform c I t₀)
 
@@ -145,7 +145,7 @@ lemma revParamTransform_bijOn_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c
   (regular : ∀ t ∈ I, deriv c t ≠ 0) (hIo : IsOpen I) (ht₀ : t₀ ∈ I) : Set.BijOn ψ I (ψ '' I) :=
   (revParamTransform_injOn_aux c I once_diff hc regular hIo ht₀).bijOn_image
 
-/-- Auxiliary lemma the arclength paramter trasformation is bijective from the image of ψ. -/
+/-- Auxiliary lemma the arc-length paramter trasformation is bijective from the image of ψ. -/
 lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn ℝ r c I)
     (regular : ∀ t ∈ I, deriv c t ≠ 0) (ht₀ : t₀ ∈ I) (hIo : IsOpen I) :
     Set.BijOn (arclengthParamTransform c I t₀) (ψ '' I) I := by
@@ -155,7 +155,8 @@ lemma bijOn_arclengthParamTransform_aux (once_diff : 1 ≤ r) (hc : ContDiffOn �
   exact (Set.bijOn_comm h₁).mpr h₀
 
 omit [I.OrdConnected] in
-/-- Auxilary lemma ψ is left inverse of the arclength paramter trandformation on the image of ψ. -/
+/-- Auxilary lemma ψ is left inverse of the arc-length paramter trandformation on the image of ψ. 
+-/
 lemma ψ_leftInvOn_arclengthParamTransform_aux :
   (ψ '' I).LeftInvOn ψ (arclengthParamTransform c I t₀) := by
   intro s hs
