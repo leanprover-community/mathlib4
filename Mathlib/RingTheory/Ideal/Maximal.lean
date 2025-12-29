@@ -217,9 +217,6 @@ theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentEl
   have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
   ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩
 
-@[deprecated (since := "2025-05-24")]
-alias exists_le_prime_nmem_of_isIdempotentElem := exists_le_prime_notMem_of_isIdempotentElem
-
 section IsPrincipalIdealRing
 
 variable [IsPrincipalIdealRing α]

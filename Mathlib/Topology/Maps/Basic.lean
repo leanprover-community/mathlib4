@@ -408,7 +408,7 @@ theorem isOpenMap_iff_clusterPt_comap :
   refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ ?_⟩
   simp only [isOpenMap_iff_nhds_le, le_map_iff]
   intro x s hs
-  contrapose! hs
+  contrapose hs
   rw [← mem_interior_iff_mem_nhds, mem_interior_iff_not_clusterPt_compl, not_not] at hs ⊢
   exact (h _ _ hs).mono <| by simp [subset_preimage_image]
 
