@@ -70,28 +70,41 @@ algebras R[G]. For additive indices (ℤ, polynomials), use `AddLp` with `addMul
 ### @[to_additive] Usage Notes
 
 The `@[to_additive]`-generated lemmas (e.g., `lp.one_addMulConvolution_memℓp`) are used
-directly in `AddLp` instance definitions. Key techniques for reliable elaboration:
+directly in `AddLp` instance definitions.
 
-1. **Context-driven elaboration in subtype constructors**: When constructing `lp` subtypes
+**Root cause of timeouts**: Having both `[NormedAddCommGroup R]` and `[NormedCommRing R]`
+in scope creates two different paths to `NormedAddCommGroup R`. The instance hierarchy is:
+`NormedCommRing → NormedRing → NonUnitalNormedRing → NormedAddCommGroup`. When both are
+present, Lean must unify two distinct instance terms during elaboration, which is expensive.
+
+```lean
+-- BAD: causes timeout (two paths to NormedAddCommGroup R)
+variable [NormedAddCommGroup R] [AddMonoid M] [NormedCommRing R]
+
+-- GOOD: works (single path to NormedAddCommGroup R via NormedCommRing)
+variable [AddMonoid M] [NormedCommRing R]
+```
+
+See `AddLpTimeoutTest.lean` for a demonstration of this issue.
+
+Key techniques for reliable elaboration:
+
+1. **Avoid redundant instance assumptions**: Don't add `[NormedAddCommGroup R]` when
+   `[NormedCommRing R]` is already present - the former is derived from the latter.
+
+2. **Context-driven elaboration in subtype constructors**: When constructing `lp` subtypes
    via `⟨val, proof⟩`, Lean knows the expected type for `proof` from context before
-   elaborating the proof term. This acts as a natural type barrier - Lean elaborates
-   the expected `Memℓp` type first, then checks the proof against this known type,
-   avoiding expensive bidirectional unification. This is why `@[to_additive]`-generated
-   lemmas can be used directly in instance definitions without wrapper lemmas.
+   elaborating the proof term. This acts as a natural type barrier.
 
-2. **Explicit type parameters**: `(M := M) (R := R)` annotations help Lean resolve types
+3. **Explicit type parameters**: `(M := M) (R := R)` annotations help Lean resolve types
    without expensive unification through `Memℓp` predicates.
 
-3. **Explicit instance references**: Ring proofs reference `instOne.1` explicitly rather
+4. **Explicit instance references**: Ring proofs reference `instOne.1` explicitly rather
    than `(1 : AddLp M R)` to avoid ambiguity with the `Zero` inherited from `AddCommGroup`.
-
-4. **Section restructuring**: Lemmas like `mul_apply` and `one_apply` are placed outside
-   sections with `[CompleteSpace R]` to avoid unused instance warnings.
 
 5. **Type barriers for `tsum_sigma'`**: The `Summable.tsum_sigma'` lemma causes timeouts
    when used with `rw`. Workaround: compute the result via `have` with explicit type
-   signature first, then use `▸` substitution. The explicit signature forces Lean to
-   commit to the type before elaborating the proof body.
+   signature first, then use `▸` substitution.
 
 ### Runtime Optimization
 
