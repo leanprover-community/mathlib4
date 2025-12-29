@@ -87,12 +87,13 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
 
 /-- The uncurrying operation `Hom A (section X) → Hom ((toOver I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
-  letI v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ ChosenPullbacksAlong.fst (ihom I |>.map X.hom) (curryId I)
+    (toOver I).obj A ⟶ X :=
+  letI v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ fst (ihom I |>.map X.hom) (curryRightUnitorHom I)
   Over.homMk ((β_ A I).hom ≫ uncurry v₂) (by
-    have comm : toUnit A ≫ (curryId I) = v₂ ≫ (ihom I).map X.hom := by
+    have comm : toUnit A ≫ (curryRightUnitorHom I) = v₂ ≫ (ihom I).map X.hom := by
       rw [IsTerminal.hom_ext isTerminalTensorUnit (toUnit A ) (v ≫ snd ..)]
       simp [v₂, condition]
-    dsimp [curryId] at comm
+    dsimp [curryRightUnitorHom] at comm
     have w' := (ihom.adjunction I).homEquiv_naturality_right_square _ _ _ _ comm
     simp only [curriedTensor_obj_obj, curriedTensor_obj_map, curry,
       Equiv.symm_apply_apply] at w'
