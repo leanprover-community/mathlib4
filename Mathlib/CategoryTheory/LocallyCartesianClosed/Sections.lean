@@ -121,10 +121,7 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
 theorem sections_curry_uncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
-  let v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ ChosenPullbacksAlong.fst (ihom I |>.map X.hom) (curryId I)
-  apply ChosenPullbacksAlong.hom_ext
-  · simp
-  · subsingleton
+  cat_disch
 
 @[simp]
 theorem sections_uncurry_curry {X : Over I} {A : C} {u : (toOver I).obj A ⟶ X} :
