@@ -244,9 +244,6 @@ lemma bypass_eq_nil_of_closed
       aesop
     exact h_nil (SimpleGraph.Walk.bypass_isPath _)
 
-set_option linter.style.induction false
-set_option linter.style.refine false
-
 lemma even_cycle_length_of_path
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
@@ -256,7 +253,7 @@ lemma even_cycle_length_of_path
       have h_cycle : SimpleGraph.Walk.IsCycle (SimpleGraph.Walk.cons ha q) := by
         simp_all only [Walk.isCycle_def, ne_eq, and_imp, Walk.isTrail_cons, reduceCtorEq,
           not_false_eq_true, Walk.support_cons, List.tail_cons, true_and]
-        refine' ⟨⟨_, _⟩, _⟩
+        refine ⟨⟨?_, ?_⟩, ?_⟩
         · exact hq.isTrail
         · intro h
           cases q
@@ -279,31 +276,79 @@ lemma even_cycle_length_of_path
       have := h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle
       simp_all +decide [parity_simps]
 
+/-
+If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1.
+-/
+lemma IsPath.length_eq_one_of_mem_edges
+{u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
+  by_contra h_non_simple_cycle
+  have h_cycle : ∃ q : G.Walk u u, q.IsCycle := by
+    rcases p with ( _ | ⟨_, _, p⟩ )
+    · aesop
+    · aesop
+    · aesop
+      -- I don't know what happened here, `aesop` change `p✝` to `p`,
+      -- but `aesop?` cannot generate anything benifit.
+      have := by exact SimpleGraph.Walk.fst_mem_support_of_mem_edges p h_3
+      exact Classical.not_forall_not.mp fun a ↦ right this
+  obtain ⟨q, hq⟩ := h_cycle
+  cases q <;> simp_all +decide only [isCycle_def, IsTrail.nil, ne_eq, not_true_eq_false,
+    support_nil, List.tail_cons, List.nodup_nil, and_true, and_false]
+  cases p <;> simp_all +decide only [isTrail_def, edges_cons, List.nodup_cons, reduceCtorEq,
+    not_false_eq_true, support_cons, List.tail_cons, true_and, isPath_iff_eq_nil, edges_nil,
+    List.not_mem_nil]
+  simp_all only [cons_isPath_iff, List.mem_cons, Sym2.eq, Sym2.rel_iff',
+  Prod.mk.injEq, true_and, Prod.swap_prod_mk, length_cons, Nat.add_eq_right]
+  obtain ⟨left, right⟩ := hq
+  obtain ⟨left_1, right_1⟩ := hp
+  obtain ⟨left, right_2⟩ := left
+  cases h with
+  | inl h_3 =>
+    cases h_3 with
+    | inl h =>
+      subst h
+      simp_all only [length_eq_zero_iff, isPath_iff_eq_nil]
+    | inr h_4 => simp_all only [SimpleGraph.irrefl]
+  | inr h_4 => exact right_1 ( SimpleGraph.Walk.fst_mem_support_of_mem_edges _ h_4 )
+
+lemma even_length_cons_takeUntil_of_bypass [DecidableEq V]
+    {u v w : V} (q : G.Walk v w) (hq : q.IsPath) (ha : G.Adj u v) (hs : u ∈ q.support)
+    (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
+    Even (SimpleGraph.Walk.cons ha (q.takeUntil u hs)).length := by
+  by_cases hc : SimpleGraph.Walk.IsCycle (SimpleGraph.Walk.cons ha (q.takeUntil u hs))
+  · exact h_cycles _ _ hc
+  · -- If `c` is not a cycle, then `s(u, v) ∈ p.edges`.
+    have h_edge : s(u, v) ∈ (q.takeUntil u hs).edges := by
+      contrapose! hc; simp_all +decide only [cons_isCycle_iff, not_false_eq_true, and_true]
+      exact IsPath.takeUntil hq hs
+    have h_length : (q.takeUntil u hs).length = 1 := by
+      apply IsPath.length_eq_one_of_mem_edges
+      · exact hq.takeUntil _
+      · rwa [Sym2.eq_swap]
+    aesop
+
 lemma even_length_iff_even_bypass_length [DecidableEq V]
-    (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
+    (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ Even p.bypass.length := by
-      induction' p with u v pᵥ _ ih
-      · simp_all only [Walk.length_nil, Even.zero, true_iff]
-        exact even_iff_two_dvd.mpr ⟨0, rfl⟩
-      · by_cases h : v ∈ (‹G.Walk pᵥ _›.bypass).support <;>
-        simp_all +decide [SimpleGraph.Walk.bypass]
-        · have h_bypass :
-          (‹G.Walk pᵥ _›.bypass.length) = (‹G.Walk pᵥ _›.bypass.takeUntil v h).length
-          + (‹G.Walk pᵥ _›.bypass.dropUntil v h).length := by
-            rw [← SimpleGraph.Walk.length_append, SimpleGraph.Walk.take_spec _ _]
-          have h_prefix_even : Even ((‹G.Walk pᵥ _›.bypass.takeUntil v h).length + 1) := by
-            have h_prefix_even :
-            Even ((SimpleGraph.Walk.cons ih (‹G.Walk pᵥ _›.bypass.takeUntil v h)).length) := by
-              apply even_cycle_length_of_path
-              · assumption
-              · exact SimpleGraph.Walk.IsPath.takeUntil (SimpleGraph.Walk.bypass_isPath _) _
-            simpa [add_comm] using h_prefix_even
-          simp_all +decide [parity_simps]
-          by_cases h : Even (‹G.Walk pᵥ _›.bypass.dropUntil v h).length <;>
-          simp_all +decide only [Nat.even_iff, iff_true, Nat.odd_iff, one_ne_zero,
-            not_false_eq_true]
-        · grind
+  induction p with
+  | nil =>
+    simp_all only [Walk.length_nil, Even.zero, true_iff]
+    exact even_iff_two_dvd.mpr ⟨0, rfl⟩
+  | cons h p ih =>
+    simp +decide [SimpleGraph.Walk.bypass]
+    split_ifs <;> simp_all +decide [parity_simps]
+    have h_even : Even (SimpleGraph.Walk.cons h (p.bypass.takeUntil _ ‹_›)).length := by
+      apply even_length_cons_takeUntil_of_bypass
+      · exact bypass_isPath p
+      · assumption
+    simp_all +decide [SimpleGraph.Walk.length_cons, parity_simps]
+    have h_even :
+    Even (SimpleGraph.Walk.length p.bypass) ↔
+    Even (SimpleGraph.Walk.length (p.bypass.takeUntil _ ‹_›) +
+    SimpleGraph.Walk.length (p.bypass.dropUntil _ ‹_›)) := by
+      rw [← SimpleGraph.Walk.length_append, SimpleGraph.Walk.take_spec]
+    grind
 
 theorem bipartite_iff_all_cycles_even :
   G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
