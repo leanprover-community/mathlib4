@@ -353,14 +353,11 @@ theorem bipartite_iff_all_cycles_even :
   classical
   constructor
   · intro h_bip
-    have bipartite_implies_even_cycles (h : G.IsBipartite) :
-    ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
-      rcases h with ⟨color⟩
-      intro v c hc
-      have h_color_eq : color v = color v := rfl
-      rw [even_length_iff_same_color]
-      exact color
-    aesop
+    rcases h_bip with ⟨color⟩
+    intro v c hc
+    have h_color_eq : color v = color v := rfl
+    rw [even_length_iff_same_color]
+    exact color
   · intro h
     have h_colorable : G.Colorable 2 := by
       apply (two_colorable_iff_forall_loop_even).mpr
@@ -372,6 +369,10 @@ theorem bipartite_iff_all_cycles_even :
       rw [bypass_eq_nil_of_closed]
       aesop
     exact Colorable.mono_left (fun ⦃v w⦄ a => a) h_colorable
+
+theorem no_odd_cycles_implies_bipartite
+(h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
+    G.IsBipartite := (bipartite_iff_all_cycles_even G).mpr h
 
 end OddCycleTheorem
 
