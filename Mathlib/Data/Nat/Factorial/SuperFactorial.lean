@@ -69,7 +69,7 @@ theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x ∈ range (n + 1), x ! = 
     rw [prod_range_succ, prod_range_succ_factorial n, mul_comm, superFactorial]
 
 theorem superFactorial_two_mul : ∀ n : ℕ,
-    sf (2 * n) = (∏ i ∈ range n, (2 * i + 1) !) ^ 2 * 2 ^ n * n !
+    sf (2 * n) = (∏ i ∈ range n, (2 * i + 1)!) ^ 2 * 2 ^ n * n !
   | 0 => rfl
   | (n + 1) => by
     simp only [prod_range_succ, mul_pow, mul_add, mul_one, superFactorial_succ,
