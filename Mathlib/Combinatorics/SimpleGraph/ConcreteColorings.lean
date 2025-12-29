@@ -283,7 +283,7 @@ lemma IsPath.length_eq_one_of_mem_edges
 {u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
   by_contra h_non_simple_cycle
   have h_cycle : ∃ q : G.Walk u u, q.IsCycle := by
-    rcases p with ( _ | ⟨_, _, p⟩ )
+    rcases p with (_ | ⟨_, _, p⟩)
     · aesop
     · aesop
     · aesop
@@ -309,7 +309,7 @@ lemma IsPath.length_eq_one_of_mem_edges
       subst h
       simp_all only [length_eq_zero_iff, isPath_iff_eq_nil]
     | inr h_4 => simp_all only [SimpleGraph.irrefl]
-  | inr h_4 => exact right_1 ( SimpleGraph.Walk.fst_mem_support_of_mem_edges _ h_4 )
+  | inr h_4 => exact right_1 (SimpleGraph.Walk.fst_mem_support_of_mem_edges _ h_4)
 
 lemma even_length_cons_takeUntil_of_bypass [DecidableEq V]
     {u v w : V} (q : G.Walk v w) (hq : q.IsPath) (ha : G.Adj u v) (hs : u ∈ q.support)
