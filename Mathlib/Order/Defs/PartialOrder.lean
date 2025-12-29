@@ -64,8 +64,6 @@ instance [Preorder α] : Std.IsPreorder α where
   le_refl := Preorder.le_refl
   le_trans := Preorder.le_trans
 
-@[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
-
 variable [Preorder α] {a b c : α}
 
 /-- The relation `≤` on a preorder is reflexive. -/
@@ -83,20 +81,13 @@ lemma ge_trans : b ≤ a → c ≤ b → c ≤ a := flip le_trans
 @[to_dual self]
 lemma lt_iff_le_not_ge : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_ge _ _
 
-@[deprecated (since := "2025-05-11")] alias lt_iff_le_not_le := lt_iff_le_not_ge
-
 @[to_dual self]
 lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_ge.2 ⟨hab, hba⟩
-
-@[deprecated (since := "2025-05-11")] alias lt_of_le_not_le := lt_of_le_not_ge
 
 @[to_dual ge_of_eq] lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
 @[to_dual self] lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
 @[to_dual self] lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
 @[to_dual self] lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
-
-@[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
-@[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
 
 @[to_dual self] alias LT.lt.not_ge := not_le_of_gt
 @[to_dual self] alias LE.le.not_gt := not_lt_of_ge
@@ -128,8 +119,6 @@ lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
 @[to_dual self] alias not_lt_of_gt := lt_asymm
-
-@[deprecated (since := "2025-05-11")] alias not_lt_of_lt := not_lt_of_gt
 
 @[to_dual le_of_lt_or_eq']
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
