@@ -156,9 +156,8 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
     intro A X' X u g
     dsimp [sectionsCurry, sectionsUncurry, curryId]
     apply ChosenPullbacksAlong.hom_ext
-    · simp only [ChosenPullbacksAlong.lift_fst, Category.assoc, pullbackMap_fst,
-      ChosenPullbacksAlong.lift_fst_assoc, ← curry_natural_right, Category.assoc]
-    · aesop
+    · simp [← curry_natural_right]
+    · simp
 
 variable (I) in
 /-- The adjunction between the toOver functor and the sections functor. -/
