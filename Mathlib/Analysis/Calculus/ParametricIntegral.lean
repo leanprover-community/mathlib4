@@ -350,7 +350,11 @@ theorem restrict_inter_toMeasurable {α : Type*} [MeasurableSpace α]
   congr 1
   grind
 
-#check HasFTaylorSeriesUpToOn
+#check continuous_of_dominated
+
+#check ContinuousLinearMap.norm_inl_le_one
+
+open ContinuousMultilinearMap
 
 /-- If `f.uncurry : H × H' → E` is Cⁿ on `u ×ˢ k` for an open set `u` and a compact set `k`,
 the parametric integral `fun x ↦ ∫ a in k f x a ∂μ` is Cⁿ on `u` too. -/
@@ -396,38 +400,39 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
   intro y hy
   obtain ⟨v, v_mem, p, hp⟩ : ∃ v ∈ 𝓝[insert (x, y) (u ×ˢ k)] (x, y), ∃ p,
     HasFTaylorSeriesUpToOn m (Function.uncurry f) p v := hf (x, y) ⟨hx, hy⟩ m hm
-  obtain ⟨u', u'_mem, k', k'_mem, k'meas, k'k, hk'⟩ :
+  obtain ⟨u', u'_mem, k', k'_mem, k'meas, k'k, hk'v, hk'_bound⟩ :
       ∃ u' ∈ 𝓝 x, ∃ k' ∈ 𝓝[k] y, MeasurableSet k' ∧ k' ⊆ k ∧ u' ×ˢ k' ⊆ v
       ∧ ∀ N ≤ m, ∀ z ∈ u' ×ˢ k', ‖p z N‖ < 1 + ‖p (x, y) N‖ := by
     rw [show insert (x, y) (u ×ˢ k) = u ×ˢ k from insert_eq_of_mem (by exact ⟨hx, hy⟩)] at v_mem
-    have xyv : (x, y) ∈ v := mem_of_mem_nhdsWithin (by exact ⟨hx, hy⟩) v_mem
-
     let v'' := ⋂ N ∈ Finset.Iic m, {z | ‖p z N‖ < 1 + ‖p (x, y) N‖}
     have : v'' ∈ 𝓝[u ×ˢ k] (x, y) := by
       apply (Filter.biInter_finset_mem _).2 (fun i hi ↦ ?_)
+      apply nhdsWithin_le_of_mem v_mem
+      have xyv : (x, y) ∈ v := mem_of_mem_nhdsWithin (by exact ⟨hx, hy⟩) v_mem
       have : ContinuousWithinAt (fun z ↦ ‖p z i‖) v (x, y) :=
         (hp.cont i (by simpa using hi) (x, y) xyv).norm
-
-
-
-
-
-
-
-
-#exit
-
---      nhdsWithin_prod_eq, Filter.mem_prod_iff, IsOpen.nhdsWithin_eq hu hx] at v_mem
-    rcases v_mem with ⟨u', u'_mem, t', t'_mem, ht'⟩
+      exact this.preimage_mem_nhdsWithin (Iio_mem_nhds (by linarith))
+    have v'_mem : v ∩ v'' ∈ 𝓝[u ×ˢ k] (x, y) := by
+      apply Filter.inter_mem v_mem this
+    rw [nhdsWithin_prod_eq, Filter.mem_prod_iff, IsOpen.nhdsWithin_eq hu hx] at v'_mem
+    rcases v'_mem with ⟨u', u'_mem, t', t'_mem, ht'⟩
     rw [mem_nhdsWithin] at t'_mem
     rcases t'_mem with ⟨t'', t''_open, t''_mem, ht''⟩
     refine ⟨u', u'_mem, t'' ∩ k, ?_, t''_open.measurableSet.inter hk.measurableSet,
-      inter_subset_right, Subset.trans (by gcongr) ht'⟩
-    rw [inter_comm]
-    exact inter_mem_nhdsWithin _ (t''_open.mem_nhds t''_mem)
+      inter_subset_right, ?_, ?_⟩
+    · rw [inter_comm]
+      exact inter_mem_nhdsWithin _ (t''_open.mem_nhds t''_mem)
+    · exact Subset.trans (by gcongr) (ht'.trans inter_subset_left)
+    · intro i hi z z_mem
+      have : z ∈ v'' := by
+        have : u' ×ˢ (t'' ∩ k) ⊆ v'' := Subset.trans (by gcongr) (ht'.trans inter_subset_right)
+        exact this z_mem
+      simp only [Finset.mem_Iic, mem_iInter, mem_setOf_eq, v''] at this
+      exact this i hi
   refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas ↦ ?_⟩
+  have hmut : μ t < ⊤ := (measure_mono (tk'.trans k'k)).trans_lt hk.measure_lt_top
   let P : H → FormalMultilinearSeries 𝕜 H E := fun x N ↦
-    ∫ y in t, (p (x, y) N).compContinuousLinearMap (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ
+    ∫ y in t, compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) N) ∂μ
   apply contDiffWithinAt_nat.2 ⟨u', mem_nhdsWithin_of_mem_nhds u'_mem  , P, ?_⟩
   constructor
   · intro z hz
@@ -436,12 +441,62 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
     · apply setIntegral_congr_fun tmeas
       intro z' hz'
       have := hp.zero_eq (z, z') (by grind)
-      simp only [ContinuousMultilinearMap.curry0_apply, Matrix.zero_empty,
-        Function.uncurry_apply_pair] at this
-      simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply,
+      simp only [curry0_apply, Matrix.zero_empty, Function.uncurry_apply_pair] at this
+      simp only [compContinuousLinearMapL_apply, compContinuousLinearMap_apply,
         ContinuousLinearMap.inl_apply, ← this]
       congr!
-    · have W := hp.cont 0 bot_le
+    · apply IntegrableOn.of_bound hmut ?_ (1 + ‖p (x, y) 0‖) ?_
+      · apply ContinuousOn.aestronglyMeasurable_of_isSeparable ?_ tmeas
+          (hk.isSeparable.mono (tk'.trans k'k))
+        apply Continuous.comp_continuousOn (by fun_prop)
+        apply (hp.cont 0 bot_le).comp (by fun_prop)
+        intro w hw
+        exact hk'v ⟨hz, tk' hw⟩
+      · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
+        apply (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _).trans
+        simp only [Finset.univ_eq_empty, Finset.prod_const, Finset.card_empty, pow_zero, mul_one]
+        exact (hk'_bound 0 (Nat.zero_le m) _ ⟨hz, tk' hw⟩).le
+  · sorry
+  · intro i hi
+    simp only [P]
+    apply continuousOn_of_dominated (bound := fun z ↦ (1 + ‖p (x, y) i‖) * ∏ (j : Fin i), 1)
+    · intro z' hz'
+      apply ContinuousOn.aestronglyMeasurable_of_isSeparable ?_ tmeas
+        (hk.isSeparable.mono (tk'.trans k'k))
+      apply Continuous.comp_continuousOn (by fun_prop)
+      apply (hp.cont i hi).comp (by fun_prop)
+      intro w hw
+      exact hk'v ⟨hz', tk' hw⟩
+    · intro z' hz'
+      apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
+      apply (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _).trans
+      gcongr
+      · exact (hk'_bound i (mod_cast hi) (z', w) ⟨hz', tk' hw⟩).le
+      · apply ContinuousLinearMap.norm_inl_le_one
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
