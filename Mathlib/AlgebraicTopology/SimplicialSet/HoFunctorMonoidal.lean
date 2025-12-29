@@ -29,9 +29,6 @@ open CategoryTheory MonoidalCategory Simplicial SimplicialObject.Truncated
 
 namespace SSet
 
--- TODO: a bug in the linter causes lots of false positive warnings; fix them!
-set_option linter.style.commandStart false
-
 namespace Truncated
 
 namespace Edge

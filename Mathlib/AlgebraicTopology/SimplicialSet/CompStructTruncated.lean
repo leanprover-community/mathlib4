@@ -28,9 +28,6 @@ universe v u
 open CategoryTheory Simplicial SimplicialObject.Truncated
   SimplexCategory.Truncated
 
--- TODO: a bug in the linter causes lots of false positive warnings; fix them!
-set_option linter.style.commandStart false
-
 namespace SSet.Truncated
 
 variable {X Y : Truncated.{u} 2}
