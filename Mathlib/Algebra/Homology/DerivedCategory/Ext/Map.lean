@@ -213,7 +213,6 @@ lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
     exact (Category.comp_id _).symm.trans (Category.id_comp _).symm
 
 attribute [local simp] Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
-attribute [local simp] ShiftedHom.map_zero ShiftedHom.map_add ShiftedHom.map_smul
 attribute [local instance] HasDerivedCategory.standard
 
 @[simp]

@@ -29,7 +29,12 @@ jobs:
       EVENT_NAME: ${{ github.event_name }}
     name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: >- # crude check to skip running this on most reviews / comments
+      github.repository == 'leanprover-community/mathlib4' && 
+      (
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') || 
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer delegate')
+      )
     steps:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate
