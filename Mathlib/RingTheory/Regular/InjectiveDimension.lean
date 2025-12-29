@@ -255,7 +255,8 @@ universe u'
 
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
-instance (priority := 2000) : (ModuleCat.restrictScalars.{v} f).Additive where
+instance ModuleCat.restrictScalars_additive (priority := 2000) :
+    (ModuleCat.restrictScalars.{v} f).Additive where
   map_add := by simp
 
 lemma ModuleCat.restrictScalars_map_exact' (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
