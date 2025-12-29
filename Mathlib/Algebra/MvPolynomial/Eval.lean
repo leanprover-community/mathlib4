@@ -536,9 +536,8 @@ theorem mapAlgHom_id [Algebra R S₁] :
 
 @[simp]
 theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
-    ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
-      (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
-  RingHom.mk_coe _ _ _ _ _
+    (mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂).toRingHom = (map f.toRingHom) :=
+  rfl
 
 lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     (mapAlgHom f).range.toSubmodule = coeffsIn σ f.range.toSubmodule := by
@@ -570,7 +569,7 @@ theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (al
 
 @[simp]
 lemma coe_aeval_eq_eval :
-    RingHomClass.toRingHom (aeval f : MvPolynomial σ S₁ →ₐ[S₁] S₁) = eval f :=
+    (aeval f : MvPolynomial σ S₁ →ₐ[S₁] S₁).toRingHom = eval f :=
   rfl
 
 @[simp]
@@ -723,7 +722,7 @@ theorem aevalTower_ofNat (n : Nat) [n.AtLeastTwo] :
   _root_.map_ofNat _ _
 
 @[simp]
-theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C = g :=
+theorem aevalTower_comp_C : (aevalTower g y).toRingHom.comp C = g :=
   RingHom.ext <| aevalTower_C _ _
 
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=

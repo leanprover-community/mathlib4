@@ -190,7 +190,7 @@ theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂)
   fun _ _ h => ext <| AlgHom.congr_fun h
 
 @[simp, norm_cast]
-lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
+lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂).toRingHom) = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/

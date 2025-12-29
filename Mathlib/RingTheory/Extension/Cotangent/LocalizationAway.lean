@@ -52,7 +52,7 @@ lemma comp_localizationAway_ker (P : Generators R S ι) (f : P.Ring)
     rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway,
       Hom.toAlgHom_X, toAlgHom_ofComp_rename, h, ofComp_val, Sum.elim_inl]
   rw [ker_comp_eq_sup, Algebra.Generators.map_toComp_ker, this,
-    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective _ P), ← RingHom.ker_eq_comap_bot,
+    Ideal.comap_map_of_surjective _ (toAlgHom_ofComp_surjective _ P), ← AlgHom.ker_eq_comap_bot,
     ← sup_assoc]
   simp
 
@@ -93,7 +93,7 @@ lemma compLocalizationAwayAlgHom_relation_eq_zero :
 
 lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
     ((localizationAway T g).comp P).ker ^ 2 ≤
-      RingHom.ker (compLocalizationAwayAlgHom T g P) := by
+      (compLocalizationAwayAlgHom T g P).ker := by
   have hsple {x} (hx : x ∈ Ideal.span {(rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1}) :
         (compLocalizationAwayAlgHom T g P) x = 0 := by
     obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton.mp hx
@@ -104,7 +104,7 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
   · apply sup_le
     · rw [← Ideal.map_mul, Ideal.map_le_iff_le_comap, ← sq]
       intro x hx
-      simp only [Ideal.mem_comap, RingHom.mem_ker,
+      simp only [Ideal.mem_comap, AlgHom.mem_ker,
         compLocalizationAwayAlgHom_toAlgHom_toComp (T := T) g P x]
       rw [IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _),
         Ideal.Quotient.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem.mpr hx, map_zero]

@@ -607,9 +607,7 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
   have h_eq : algebraMap R (T ⧸ P) =
     w.toRingEquiv.toRingHom.comp (w'.toRingHom.comp (algebraMap R (S ⧸ Q'))) := by
     ext r
-    simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
-      RingEquiv.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, coe_comp, coe_coe,
-      AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes]
+    simp
   rw [h_eq]
   apply RingHom.IsIntegral.trans
   · apply RingHom.IsIntegral.trans

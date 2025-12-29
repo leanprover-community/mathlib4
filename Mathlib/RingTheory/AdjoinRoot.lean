@@ -140,6 +140,8 @@ def mkₐ : R[X] →ₐ[R] AdjoinRoot f :=
 
 @[simp, norm_cast] theorem mkₐ_toRingHom : ↑(mkₐ f) = mk f := rfl
 
+@[simp] theorem mkₐ_toRingHom' : (mkₐ f).toRingHom = mk f := rfl
+
 @[simp] theorem coe_mkₐ : ⇑(mkₐ f) = mk f := rfl
 
 @[simp]
@@ -169,7 +171,7 @@ variable (S) in
 /-- Embedding of the original ring `R` into `AdjoinRoot p`. -/
 abbrev ofAlgHom : R →ₐ[S] AdjoinRoot p := Algebra.algHom S R <| AdjoinRoot p
 
-@[simp] lemma toRingHom_ofAlgHom : ofAlgHom S p = of p := rfl
+@[simp] lemma toRingHom_ofAlgHom : (ofAlgHom S p).toRingHom = of p := rfl
 
 @[simp] lemma coe_ofAlgHom : ⇑(ofAlgHom S p) = of p := rfl
 
@@ -304,10 +306,10 @@ variable [CommRing T] [Algebra S R] [Algebra S T] (p : R[X])
 a root of `f` in `S`. -/
 def liftAlgHom (i : R →ₐ[S] T) (x : T) (h : p.eval₂ i x = 0) : AdjoinRoot p →ₐ[S] T where
   __ := lift i.toRingHom _ h
-  commutes' r := by simp [lift_of h, AdjoinRoot.algebraMap_eq']
+  commutes' r := by simp [AdjoinRoot.algebraMap_eq']
 
 @[simp] lemma toRingHom_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) :
-    (liftAlgHom p i x h : AdjoinRoot p →+* T) = lift i.toRingHom _ h := rfl
+    (liftAlgHom p i x h).toRingHom = lift i.toRingHom _ h := rfl
 
 lemma coe_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) : ⇑(liftAlgHom p i x h) = lift i.toRingHom _ h :=
   rfl

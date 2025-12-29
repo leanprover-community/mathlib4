@@ -122,7 +122,7 @@ then so is `B`. -/
 theorem of_surjective {f : A →ₐ[R] B} (hf : Function.Surjective f)
     (hker : (RingHom.ker f.toRingHom).FG)
     [FinitePresentation R A] : FinitePresentation R B :=
-  letI : FinitePresentation R (A ⧸ RingHom.ker f) := FinitePresentation.quotient hker
+  letI : FinitePresentation R (A ⧸ f.ker) := FinitePresentation.quotient hker
   equiv (Ideal.quotientKerAlgEquivOfSurjective hf)
 
 theorem iff :
@@ -140,7 +140,7 @@ variables are indexed by a fintype by a finitely generated ideal. -/
 theorem iff_quotient_mvPolynomial' :
     FinitePresentation R A ↔
       ∃ (ι : Type*) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
-        Surjective f ∧ (RingHom.ker f.toRingHom).FG := by
+        Surjective f ∧ f.ker.FG := by
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
     set ulift_var := MvPolynomial.renameEquiv R Equiv.ulift
@@ -170,9 +170,8 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
-    exact Submodule.fg_bot
-  · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
+  · simpa using Submodule.fg_bot
+  · rw [MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
 
 variable (R A B)
@@ -235,13 +234,13 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
     let s₀ := (MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g
-    let I := RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X))
+    let I := (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)).ker
     change Ideal.span s₀ = I
     have leI : Ideal.span ((MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g) ≤
-      RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)) := by
+      (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)).ker := by
       rw [Ideal.span_le]
       rintro _ (⟨x, hx, rfl⟩ | ⟨⟨x, hx⟩, rfl⟩) <;>
-      rw [SetLike.mem_coe, RingHom.mem_ker]
+      rw [SetLike.mem_coe, AlgHom.mem_ker]
       · rw [MvPolynomial.aeval_map_algebraMap (R := R) (A := A), ← aeval_unique]
         have := Ideal.subset_span hx
         rwa [hs] at this
@@ -249,7 +248,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
           MvPolynomial.aeval_C, ht', Subtype.coe_mk, sub_self]
     apply leI.antisymm
     intro x hx
-    rw [RingHom.mem_ker] at hx
+    rw [AlgHom.mem_ker] at hx
     let s₀ := (MvPolynomial.map (algebraMap R A)) '' ↑s ∪ Set.range g
     change x ∈ Ideal.span s₀
     have : x ∈ (MvPolynomial.map (algebraMap R A) : _ →+* AX).range.toAddSubmonoid ⊔

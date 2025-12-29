@@ -521,38 +521,38 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A)
 
 lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
+    MvPolynomial.map f.toRingHom (W'.baseChange A).toProjective.polynomial := by
   rw [← map_polynomial, map_baseChange]
 
 variable {P} in
 lemma Equation.baseChange (h : (W'.baseChange A).toProjective.Equation P) :
     (W'.baseChange B).toProjective.Equation (f ∘ P) := by
   convert Equation.map f.toRingHom h using 1
-  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [map_baseChange]
 
 variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) :
     (W'.baseChange B).toProjective.Equation (f ∘ P) ↔
       (W'.baseChange A).toProjective.Equation P := by
-  rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [← map_equation P hf, map_baseChange, AlgHom.coe_toRingHom']
 
 lemma baseChange_polynomialX : (W'.baseChange B).toProjective.polynomialX =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialX := by
+    MvPolynomial.map f.toRingHom (W'.baseChange A).toProjective.polynomialX := by
   rw [← map_polynomialX, map_baseChange]
 
 lemma baseChange_polynomialY : (W'.baseChange B).toProjective.polynomialY =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialY := by
+    MvPolynomial.map f.toRingHom (W'.baseChange A).toProjective.polynomialY := by
   rw [← map_polynomialY, map_baseChange]
 
 lemma baseChange_polynomialZ : (W'.baseChange B).toProjective.polynomialZ =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialZ := by
+    MvPolynomial.map f.toRingHom (W'.baseChange A).toProjective.polynomialZ := by
   rw [← map_polynomialZ, map_baseChange]
 
 variable {f} in
 lemma baseChange_nonsingular (hf : Function.Injective f) :
     (W'.baseChange B).toProjective.Nonsingular (f ∘ P) ↔
       (W'.baseChange A).toProjective.Nonsingular P := by
-  rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [← map_nonsingular P hf, map_baseChange, AlgHom.coe_toRingHom']
 
 end Projective
 

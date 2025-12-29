@@ -285,33 +285,33 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
   [IsScalarTower R S B] (f : A →ₐ[S] B) (x y : A)
 
 lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
-    (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
+    (W.baseChange A).toAffine.polynomial.map (mapRingHom f.toRingHom) := by
   rw [← map_polynomial, map_baseChange]
 
 variable {x y} in
 lemma Equation.baseChange (h : (W.baseChange A).toAffine.Equation x y) :
     (W.baseChange B).toAffine.Equation (f x) (f y) := by
   convert Equation.map f.toRingHom h using 1
-  rw [AlgHom.toRingHom_eq_coe, map_baseChange]
+  rw [map_baseChange]
 
 variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) :
     (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
-  rw [← map_equation _ _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
+  rw [← map_equation _ _ hf, map_baseChange, AlgHom.coe_toRingHom']
 
 lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
-    (W.baseChange A).toAffine.polynomialX.map (mapRingHom f) := by
+    (W.baseChange A).toAffine.polynomialX.map (mapRingHom f.toRingHom) := by
   rw [← map_polynomialX, map_baseChange]
 
 lemma baseChange_polynomialY : (W.baseChange B).toAffine.polynomialY =
-    (W.baseChange A).toAffine.polynomialY.map (mapRingHom f) := by
+    (W.baseChange A).toAffine.polynomialY.map (mapRingHom f.toRingHom) := by
   rw [← map_polynomialY, map_baseChange]
 
 variable {f} in
 lemma baseChange_nonsingular (hf : Function.Injective f) :
     (W.baseChange B).toAffine.Nonsingular (f x) (f y) ↔
       (W.baseChange A).toAffine.Nonsingular x y := by
-  rw [← map_nonsingular _ _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
+  rw [← map_nonsingular _ _ hf, map_baseChange, AlgHom.coe_toRingHom']
 
 end Affine
 

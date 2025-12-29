@@ -177,7 +177,7 @@ def universalFactorizationMapLiftEquiv (p : MonicDegreeEq S n) :
     refine (mapEquivMonic R S n).eq_symm_apply.mpr <| Subtype.ext ?_
     simp only [universalFactorizationMap, coe_mapEquivMonic_comp, Equiv.apply_symm_apply,
       Polynomial.map_mul]
-    simp [← coe_mapEquivMonic_comp, ← q.2]⟩
+    simp [-AlgHom.toRingHom_eq_coe, ← coe_mapEquivMonic_comp, ← q.2]⟩
   left_inv f := by ext <;> simp
   right_inv q := by ext <;> simp
 
@@ -207,7 +207,8 @@ lemma ker_eval₂Hom_universalFactorizationMap :
       exact Ideal.mul_sub_mul_mem _ IH (Ideal.subset_span ⟨i, by simp [f]⟩)
   · simp only [Ideal.span_le, Set.range_subset_iff, SetLike.mem_coe, RingHom.mem_ker, map_sub,
       eval₂Hom_C, RingHom.coe_coe, eval₂Hom_map_hom, coe_eval₂Hom, sub_eq_zero, f]
-    simp only [← algebraMap_eq, AlgHom.comp_algebraMap_of_tower, ← aeval_def]
+    simp only [← AlgHom.toRingHom_eq_coe, ← algebraMap_eq, AlgHom.comp_algebraMap_of_tower,
+      ← aeval_def]
     intro i
     generalize universalFactorizationMap R n m k hn (X i) = p
     change AlgHom.id R _ p = ((aeval _).comp (tensorEquivSum R _ _ R).toAlgHom) p
@@ -477,7 +478,7 @@ def UniversalFactorizationRing.homEquiv :
     letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
     letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
     simp only [UniversalFactorizationRing, MvPolynomial.mapEquivMonic, AlgHom.toRingHom_eq_coe,
-      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁, monicDegreeEq_coe,
+      Equiv.coe_fn_symm_mk, factor₁, monicDegreeEq_coe,
       MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor,
       MonicDegreeEq.map_coe, factor₂]
     ext <;> simp +contextual [coeff_freeMonic, apply_dite, MonicDegreeEq.coeff_of_ge]
@@ -584,7 +585,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     letI q := UniversalFactorizationRing.homEquiv S m k hn p (f.comp (IsScalarTower.toAlgHom _ _ _))
     ⟨q.1, q.2, by
       convert (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
-        simp [q, UniversalFactorizationRing.homEquiv,
+        simp [-AlgHom.toRingHom_eq_coe, q, UniversalFactorizationRing.homEquiv,
           AlgHom.comp_toRingHom, ← Polynomial.map_map] <;> rfl⟩
   invFun q := by
     letI f := (UniversalFactorizationRing.homEquiv S m k hn p).symm ⟨q.1, q.2.1⟩

@@ -117,6 +117,8 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 
 initialize_simps_projections AlgHom (toFun → apply)
 
+@[simp] lemma coe_toRingHom' (f : A →ₐ[R] B) : ⇑f.toRingHom = ⇑f := rfl
+
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     ⇑(f : A →ₐ[R] B) = f :=
@@ -153,7 +155,7 @@ theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A �
   rfl
 
 -- make the coercion the simp-normal form
-@[simp]
+@[simp← ]
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 
@@ -170,11 +172,11 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : (f.toRingHom : A →* B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
+theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : (f.toRingHom : A →+ B) = f :=
   rfl
 
 variable (φ : A →ₐ[R] B)
@@ -214,7 +216,7 @@ theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, 
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
-theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
+theorem comp_algebraMap : φ.toRingHom.comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext <| φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
@@ -243,6 +245,10 @@ theorem coe_id : ⇑(AlgHom.id R A) = id :=
 theorem id_toRingHom : (AlgHom.id R A : A →+* A) = RingHom.id _ :=
   rfl
 
+@[simp]
+lemma toRingHom_id : (AlgHom.id R A).toRingHom = RingHom.id _ :=
+  rfl
+
 end
 
 theorem id_apply (p : A) : AlgHom.id R A p = p :=
@@ -265,6 +271,10 @@ theorem comp_apply (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) (p : A) : φ�
 
 theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
     (φ₁.comp φ₂ : A →+* C) = (φ₁ : B →+* C).comp ↑φ₂ :=
+  rfl
+
+lemma comp_toRingHom' (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
+    (φ₁.comp φ₂).toRingHom = φ₁.toRingHom.comp φ₂.toRingHom :=
   rfl
 
 @[simp]
@@ -382,7 +392,7 @@ namespace AlgHomClass
 @[simp]
 lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
     [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+    (AlgHomClass.toAlgHom f).toRingHom = RingHomClass.toRingHom f := rfl
 
 end AlgHomClass
 
@@ -434,6 +444,8 @@ variable {R}
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
 @[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A := rfl
+
+@[simp] lemma toRingHom_ofId' : (ofId R A).toRingHom = algebraMap R A := rfl
 
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=

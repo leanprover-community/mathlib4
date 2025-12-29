@@ -43,7 +43,7 @@ variable {R S : Type*}
 
 @[simp]
 theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
-    (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
+    (f : R →ₐ[ℚ] S) : f.toRingHom.toRatAlgHom = f :=
   AlgHom.ext fun _x => rfl
 
 /-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/

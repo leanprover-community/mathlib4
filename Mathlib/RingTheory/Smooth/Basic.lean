@@ -170,14 +170,14 @@ noncomputable def liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C)
 
 @[simp]
 theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
+    (hg : Function.Surjective g) (hg' : IsNilpotent g.ker) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
   conv_rhs => rw [← AlgHom.coe_coe, ← AlgHom.comp_apply, ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
-  rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
-  simp only [liftOfSurjective, ← RingHom.ker_coe_toRingHom g, RingHom.kerLift_mk,
-    AlgEquiv.toAlgHom_eq_coe, RingHom.coe_coe]
+  rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply, liftOfSurjective,
+    RingHom.kerLift_mk]
+  simp
 
 @[simp]
 theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
@@ -203,7 +203,7 @@ def homInfinitesimal (P₁ P₂ : Extension R A) [FormallySmooth R P₁.Ring] :
     ⟨2, show P₂.infinitesimal.ker ^ 2 = ⊥ by
       rw [ker_infinitesimal]; exact Ideal.cotangentIdeal_square _⟩
   { toRingHom := (Ideal.Quotient.liftₐ (P₁.ker ^ 2) lift (by
-        change P₁.ker ^ 2 ≤ RingHom.ker lift
+        change P₁.ker ^ 2 ≤ lift.ker
         rw [pow_two, Ideal.mul_le]
         have : ∀ r ∈ P₁.ker, lift r ∈ P₂.infinitesimal.ker :=
           fun r hr ↦ (FormallySmooth.liftOfSurjective_apply _
@@ -344,14 +344,12 @@ theorem of_comp_surjective
     Ideal.Quotient.lift_surjective_of_surjective _ _ P.algebraMap_surjective
   have sqz : RingHom.ker f.kerSquareLift.toRingHom ^ 2 = ⊥ := by
     rw [AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square]
-  dsimp only [AlgHom.toRingHom_eq_coe, RingHom.ker_coe_toRingHom] at sqz
+  dsimp only [AlgHom.toRingHom_eq_coe] at sqz
   obtain ⟨g, hg⟩ := H _ sqz (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom
   refine ⟨g, AlgHom.ext fun x ↦ congr(f.kerSquareLift.kerLift ($hg x)).trans ?_⟩
   obtain ⟨x, rfl⟩ := (Ideal.quotientKerAlgEquivOfSurjective surj).surjective x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe,
-    AlgEquiv.symm_apply_apply, AlgHom.coe_id, id_eq]
-  simp only [Ideal.quotientKerAlgEquivOfSurjective_apply]
+  simp
 
 /--
 An `R`-algebra `A` is formally smooth iff "for every `R`-algebra `B`,

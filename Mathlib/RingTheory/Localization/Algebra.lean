@@ -100,7 +100,7 @@ namespace IsLocalization
 
 instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
     IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
-  rw [AlgHom.toRingHom_eq_coe, ← Submonoid.map_coe_toMonoidHom, AlgHom.toRingHom_toMonoidHom,
+  rw [← Submonoid.map_coe_toMonoidHom, AlgHom.toRingHom_toMonoidHom,
     Submonoid.map_coe_toMonoidHom, algebraMapSubmonoid_map_eq M f]
   infer_instance
 
@@ -163,11 +163,11 @@ open IsLocalization
 
 /-- The canonical linear map from the kernel of an algebra homomorphism to its localization. -/
 noncomputable def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
-    RingHom.ker f →ₗ[A] RingHom.ker (mapₐ M Rₚ Aₚ Bₚ f) :=
+    f.ker →ₗ[A] (mapₐ M Rₚ Aₚ Bₚ f).ker :=
   RingHom.toKerIsLocalization Aₚ Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)
 
 @[simp]
-lemma AlgHom.toKerIsLocalization_apply (f : A →ₐ[R] B) (x : RingHom.ker f) :
+lemma AlgHom.toKerIsLocalization_apply (f : A →ₐ[R] B) (x : f.ker) :
     AlgHom.toKerIsLocalization M Rₚ Aₚ Bₚ f x =
       RingHom.toKerIsLocalization Aₚ Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) x :=
   rfl

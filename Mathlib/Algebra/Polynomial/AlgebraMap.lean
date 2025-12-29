@@ -178,7 +178,7 @@ theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
 
 @[simp]
 theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
-    ↑(mapAlgHom f : _ →ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
+    (mapAlgHom f).toRingHom = (mapRingHom f.toRingHom) :=
   rfl
 
 @[simp]
@@ -457,7 +457,7 @@ theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
 
 @[simp]
 theorem coe_aeval_eq_evalRingHom (x : R) :
-    ((aeval x : R[X] →ₐ[R] R) : R[X] →+* R) = evalRingHom x :=
+    ((aeval x : R[X] →ₐ[R] R)).toRingHom = evalRingHom x :=
   rfl
 
 @[simp]
@@ -536,7 +536,7 @@ theorem aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
   eval₂_C _ _
 
 @[simp]
-theorem aevalTower_comp_C : (aevalTower g y : R[X] →+* A').comp C = g :=
+theorem aevalTower_comp_C : (aevalTower g y).toRingHom.comp C = g :=
   RingHom.ext <| aevalTower_C _ _
 
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R R[X] x) = g x :=

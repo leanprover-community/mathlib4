@@ -368,7 +368,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         simp_rw [← Finset.mem_coe, S₁, Finset.coe_image, Set.biUnion_image]
         congr! with x hxT₁
         apply Set.injOn_preimage subset_rfl (f := comap q₁.toRingHom)
-        · dsimp only [q₁, AlgHom.toRingHom_eq_coe]
+        · dsimp only [q₁]
           rw [IsScalarTower.coe_toAlgHom,
             localization_away_comap_range (S := Localization.Away c) (r := c),
             BasicConstructibleSetData.toSet, sdiff_eq, ← basicOpen_eq_zeroLocus_compl,
@@ -392,7 +392,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         congr! 3 with x hxT₂
         apply Set.injOn_preimage subset_rfl (f := comap q₂.toRingHom)
         · rw [range_comap_of_surjective _ _ q₂_surjective]
-          simp only [AlgHom.toRingHom_eq_coe, Ideal.Quotient.mkₐ_ker, zeroLocus_span, q₂]
+          simp only [Ideal.Quotient.mkₐ_ker, zeroLocus_span, q₂]
           exact Set.diff_subset.trans (zeroLocus_anti_mono (by simp))
         · exact Set.image_subset_range _ _
         · simp only [AlgHom.toLinearMap_apply] at hq₂g₂
