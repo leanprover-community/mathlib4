@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
@@ -63,8 +63,6 @@ We also provide versions of these theorems for set integrals.
 ## Tags
 integral, derivative
 -/
-
-universe u
 
 @[expose] public section
 
@@ -343,42 +341,155 @@ theorem hasFDerivAt_integral_of_contDiffOn {H' : Type*} [NormedAddCommGroup H'] 
     exact (hasFDerivAt_prodMk_left _ x.2).hasFDerivWithinAt.fderivWithin
       (hu'.uniqueDiffWithinAt hx.1)
 
+theorem restrict_inter_toMeasurable {α : Type*} [MeasurableSpace α]
+    {μ : Measure α} {s k : Set α} (h : μ s ≠ ⊤) (hk : MeasurableSet k) (hsk : s ⊆ k) :
+    μ.restrict (k ∩ toMeasurable μ s) = μ.restrict s := by
+  ext t ht
+  rw [Measure.restrict_apply ht, Measure.restrict_apply ht, inter_comm k, inter_comm, inter_assoc,
+    Measure.measure_toMeasurable_inter (hk.inter ht) h]
+  congr 1
+  grind
+
+#check HasFTaylorSeriesUpToOn
+
 /-- If `f.uncurry : H × H' → E` is Cⁿ on `u ×ˢ k` for an open set `u` and a compact set `k`,
 the parametric integral `fun x ↦ ∫ a in k f x a ∂μ` is Cⁿ on `u` too. -/
-lemma ContDiffOn.parametric_integral {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [NormedSpace 𝕜 E] {H : Type u} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {H' : Type*}
+lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {H' : Type*}
+    [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
+    {μ : Measure H'} [IsFiniteMeasureOnCompacts μ] {f : H → H' → E} {u : Set H} (hu : IsOpen u)
+    {s₀ k : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
+    (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) :
+    ContDiffOn 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) u := by
+  intro x hx
+  apply contDiffWithinAt_iff_forall_nat_le.2 (fun m hm ↦ ?_)
+  suffices ∃ s, k ∩ k ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
+      ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x by
+    rcases this with ⟨s, ks, sk, -, hs⟩
+    rw [show s = k by grind] at hs
+    have : ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in k ∩ toMeasurable μ s₀, f x a ∂μ) u x := by
+      apply hs _ inter_subset_left
+      exact hk.measurableSet.inter (measurableSet_toMeasurable _ _)
+    convert this using 3
+    apply (restrict_inter_toMeasurable _ hk.measurableSet hs₀).symm
+    exact ((measure_mono hs₀).trans_lt hk.measure_lt_top).ne
+  apply IsCompact.induction_on (s := k)
+    (p := fun s₀ ↦ ∃ s, k ∩ s₀ ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
+      ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x) hk
+  · simp only [inter_empty, empty_subset, true_and]
+    exact ⟨∅, by simpa using contDiffWithinAt_const⟩
+  · grind
+  · rintro s s' ⟨t, kt, tk, tmeas, ht⟩ ⟨t', kt', t'k, t'meas, ht'⟩
+    refine ⟨t ∪ t', by grind, by grind, tmeas.union t'meas, fun v hv vmeas ↦ ?_⟩
+    let v₁ := v ∩ t
+    let v₂ := v \ v₁
+    have v₁meas : MeasurableSet v₁ := vmeas.inter tmeas
+    have v₂meas : MeasurableSet v₂ := vmeas.diff v₁meas
+    have : ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in v₁, f x a ∂μ +  ∫ a in v₂, f x a ∂μ) u x :=
+      (ht v₁ inter_subset_right v₁meas).add (ht' v₂ (by grind) v₂meas)
+    apply this.congr_of_mem (fun y hy ↦ ?_) hx
+    have I : IntegrableOn (f y) k μ :=
+      (hf.continuousOn.uncurry_left _ hy).integrableOn_compact hk
+    rw [show v = v₁ ∪ v₂ by grind, setIntegral_union disjoint_sdiff_left.symm v₂meas]
+    · exact I.mono (by grind) le_rfl
+    · exact I.mono (by grind) le_rfl
+  intro y hy
+  obtain ⟨v, v_mem, p, hp⟩ : ∃ v ∈ 𝓝[insert (x, y) (u ×ˢ k)] (x, y), ∃ p,
+    HasFTaylorSeriesUpToOn m (Function.uncurry f) p v := hf (x, y) ⟨hx, hy⟩ m hm
+  obtain ⟨u', u'_mem, k', k'_mem, k'meas, k'k, hk'⟩ :
+      ∃ u' ∈ 𝓝 x, ∃ k' ∈ 𝓝[k] y, MeasurableSet k' ∧ k' ⊆ k ∧ u' ×ˢ k' ⊆ v := by
+    rw [show insert (x, y) (u ×ˢ k) = u ×ˢ k from insert_eq_of_mem (by exact ⟨hx, hy⟩),
+      nhdsWithin_prod_eq, Filter.mem_prod_iff, IsOpen.nhdsWithin_eq hu hx] at v_mem
+    rcases v_mem with ⟨u', u'_mem, t', t'_mem, ht'⟩
+    rw [mem_nhdsWithin] at t'_mem
+    rcases t'_mem with ⟨t'', t''_open, t''_mem, ht''⟩
+    refine ⟨u', u'_mem, t'' ∩ k, ?_, t''_open.measurableSet.inter hk.measurableSet,
+      inter_subset_right, Subset.trans (by gcongr) ht'⟩
+    rw [inter_comm]
+    exact inter_mem_nhdsWithin _ (t''_open.mem_nhds t''_mem)
+  refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas ↦ ?_⟩
+  let P : H → FormalMultilinearSeries 𝕜 H E := fun x N ↦
+    ∫ y in t, (p (x, y) N).compContinuousLinearMap (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ
+  apply contDiffWithinAt_nat.2 ⟨u', mem_nhdsWithin_of_mem_nhds u'_mem  , P, ?_⟩
+  constructor
+  · intro z hz
+    simp only [ContinuousMultilinearMap.curry0_apply, Matrix.zero_empty, P]
+    rw [ContinuousMultilinearMap.integral_apply]
+    · apply setIntegral_congr_fun tmeas
+      intro z' hz'
+      have := hp.zero_eq (z, z') (by grind)
+      simp only [ContinuousMultilinearMap.curry0_apply, Matrix.zero_empty,
+        Function.uncurry_apply_pair] at this
+      simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply,
+        ContinuousLinearMap.inl_apply, ← this]
+      congr!
+    · have W := hp.cont 0 bot_le
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#exit
+
+
+/-- If `f.uncurry : H × H' → E` is Cⁿ on `u ×ˢ k` for an open set `u` and a compact set `k`,
+the parametric integral `fun x ↦ ∫ a in k f x a ∂μ` is Cⁿ on `u` too. -/
+lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {H' : Type*}
     [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
     {μ : Measure H'} {f : H → H' → E} {u : Set H} (hu : IsOpen u)
-    {k : Set H'} (hk : IsCompact k) (hk' : μ k < ⊤) (hk'' : UniqueDiffOn 𝕜 k) {n : ℕ∞}
-    (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) : ContDiffOn 𝕜 n (fun x ↦ ∫ a in k, f x a ∂μ) u := by
-  revert E; change ∀ E : _, _
-  refine ENat.nat_induction n ?_ ?_ ?_
-  · intro E _ _ f
-    simp_rw [WithTop.coe_zero, contDiffOn_zero]
-    exact ContinuousOn.parametric_integral hk hk.measurableSet hk'
-  · intro m h E _ _ _ f hf
-    refine (contDiffOn_succ_iff_fderiv_of_isOpen (𝕜 := 𝕜) (n := m) hu).2 ⟨?_, by simp, ?_⟩
-    · intro x hx
-      have h := hasFDerivAt_integral_of_contDiffOn (hu.mem_nhds hx) hk hk' hk''
-        (hf.of_le <| by simp)
-      exact h.differentiableAt.differentiableWithinAt
-    · have := hf.fderivWithin (hu.uniqueDiffOn.prod hk'') (m := m) le_rfl
-      refine (h _ (f := fun x a ↦ (fderivWithin 𝕜 f.uncurry (u ×ˢ k) (x, a)).comp
-        (.inl 𝕜 H H')) (by fun_prop)).congr ?_
-      intro x hx
-      have h := hasFDerivAt_integral_of_contDiffOn (μ := μ)
-        (hu.mem_nhds hx) hk hk' hk'' (hf.of_le <| by simp)
-      rw [h.fderiv]
-      refine setIntegral_congr_fun hk.measurableSet fun a ha ↦ ?_
-      rw [show (fun x ↦ f x a) = (f.uncurry ∘ fun x ↦ (x, a)) by rfl]
-      rw [← fderivWithin_eq_fderiv (hu.uniqueDiffWithinAt hx) (((hf.differentiableOn (by simp)).comp
-        (by fun_prop) (fun x hx ↦ ⟨hx, ha⟩)).differentiableAt (hu.mem_nhds hx))]
-      rw [fderivWithin_comp _ (t := u ×ˢ k) (hf.differentiableOn (by simp) _ ⟨hx, ha⟩)
-        (by fun_prop) (fun x hx ↦ ⟨hx, ha⟩) (hu.uniqueDiffWithinAt hx)]
-      congr
-      exact (hasFDerivAt_prodMk_left x a).hasFDerivWithinAt.fderivWithin (hu.uniqueDiffWithinAt hx)
-  · intro h E _ _ _ f hf
-    exact contDiffOn_infty.2 fun n ↦ h n E <| hf.of_le <| WithTop.coe_le_coe.2 le_top
+    {k : Set H'} (hk : IsCompact k) (hk' : μ k < ⊤) {n : ℕ∞}
+    (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) :
+    ContDiffOn 𝕜 n (fun x ↦ ∫ a in k, f x a ∂μ) u := by
+  have : ∃ s, k ∩ k ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
+      ContDiffOn 𝕜 n (fun x ↦ ∫ a in t, f x a ∂μ) u := by
+    apply IsCompact.induction_on (s := k)
+      (p := fun s₀ ↦ ∃ s, k ∩ s₀ ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
+        ContDiffOn 𝕜 n (fun x ↦ ∫ a in t, f x a ∂μ) u) hk
+    · simp only [inter_empty, empty_subset, true_and]
+      exact ⟨∅, by simpa using contDiffOn_const⟩
+    · grind
+    ·
+
+
+
+
+
+
+
+
+
+
+
+#exit
 
 /-- If `f.uncurry : H × H' → E` is Cⁿ, the parametric integral `fun x ↦ ∫ a in k, f x a ∂μ`
 over a nice compact set `k` is Cⁿ too. -/
