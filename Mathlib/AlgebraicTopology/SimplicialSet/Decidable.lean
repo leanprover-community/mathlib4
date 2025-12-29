@@ -35,7 +35,7 @@ instance {C : Type u} [Category.{v} C] [DecidableEq (Arrow C)] (n : ℕ) :
   intro D₁ D₂
   induction n with
   | zero =>
-    have : D₁ = D₂ ↔ (Arrow.mk (𝟙 (D₁.obj 0)) = Arrow.mk ((𝟙 (D₂.obj 0)))) :=
+    have : D₁ = D₂ ↔ (Arrow.mk (𝟙 (D₁.obj 0)) = Arrow.mk (𝟙 (D₂.obj 0))) :=
       ⟨by rintro rfl; rfl, fun h ↦ ComposableArrows.ext₀ (congr_arg Arrow.leftFunc.obj h)⟩
     exact decidable_of_iff _ this.symm
   | succ n hn =>
