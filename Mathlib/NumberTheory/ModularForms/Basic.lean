@@ -595,7 +595,7 @@ function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i
 def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
-  toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i).1)
+  toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i))
   holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).1)
       (by intro (i : ι) hi; simpa using (F i).holo')
   bdd_at_cusps' hc γ hγ := by
