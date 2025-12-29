@@ -218,18 +218,26 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
 open Finset
 
 lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
-    {s : Finset ι} (hs : s.Nonempty) :
-    (∏ i ∈ s, f i) ∣[k * #s] g = |g.det.val| ^ (#s - 1) • (∏ i ∈ s, f i ∣[k] g) := by
+    {s : Finset ι} :
+    (∏ i ∈ s, f i) ∣[k * #s] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k] g) := by
   classical
   induction s using Finset.induction_on with
-  | empty => simp_all
+  | empty =>
+    simp_all only [card_empty, CharP.cast_eq_zero, mul_zero, prod_empty,
+      Matrix.GeneralLinearGroup.val_det_apply, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
+    ext _
+    simp [slash_apply]
   | insert i t hi IH =>
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simp
     simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ,
-      mul_add, mul_one, add_comm]
-    simp [IH ht, mul_slash, show t.card + 1 - 1 = t.card - 1 + 1 by grind, pow_succ,
-      ← mul_smul, mul_comm]
+      mul_add, mul_one, add_comm, mul_slash,  IH,
+      Algebra.mul_smul_comm, ← mul_smul, add_sub_cancel_right]
+    congr 1
+    nth_rw 2 [show (#t : ℤ) = 1 + (#t - 1) by grind]
+    rw [zpow_add', zpow_one]
+    left
+    exact abs_ne_zero.mpr (Matrix.GeneralLinearGroup.det_ne_zero g)
 
 lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
     {s : Finset ι} (hs : s.Nonempty) :
@@ -248,8 +256,8 @@ end
 
 lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}
     {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[k * Fintype.card ι] g =
-      |g.det.val| ^ (Fintype.card ι - 1) • (∏ i, f i ∣[k] g) := by
-  simpa using ModularForm.prod_slash Finset.univ_nonempty
+      |g.det.val| ^ (Fintype.card ι - 1 : ℤ) • (∏ i, f i ∣[k] g) := by
+  simpa using ModularForm.prod_slash
 
 lemma prod_fintype_sum_weights_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ι → ℤ}
     {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[∑ i , k i] g =
