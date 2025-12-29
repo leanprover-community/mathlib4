@@ -31,13 +31,12 @@ namespace Geometry
 
 namespace SimplicialComplex
 
-open Classical in
 /--
 Construct a simplicial complex from a downward-closed set of faces
 with defining points affinely independent.
 -/
 def ofAffineIndependent {𝕜 E}
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DecidableEq E] [AddCommGroup E] [Module 𝕜 E]
     (faces : Set (Finset E)) (empty_notMem : ∅ ∉ faces)
     (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces)
     (indep : AffineIndependent 𝕜 (Subtype.val : (⋃ s ∈ faces, (s : Set E)) → E)) :
@@ -55,12 +54,12 @@ def ofAffineIndependent {𝕜 E}
     · exact Finset.subset_union_left
     · exact Finset.subset_union_right
 
-open Classical in
 /--
 Construct a simplicial complex from a downward-closed set of points
 over the `𝕜`-module of finitely supported functions on those points.
 -/
-def onFinsupp {𝕜 ι : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+noncomputable def onFinsupp {𝕜 ι : Type*} [DecidableEq ι]
+    [DecidableEq 𝕜] [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     (faces : Set (Finset ι))
     (empty_notMem : ∅ ∉ faces)
     (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces) :
