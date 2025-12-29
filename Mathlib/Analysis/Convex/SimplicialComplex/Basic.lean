@@ -258,10 +258,10 @@ end
 section AffineIndependent
 
 open Classical in
-/-- Construct a simplicial complex from a downward-closed set of faces whose union is affinely
-independent. This is a common way to construct simplicial complexes: if you have a set of
-vertices that is affinely independent, then any downward-closed family of nonempty subsets
-forms a simplicial complex. -/
+/--
+Construct a simplicial complex from a downward-closed set of faces
+with defining points affinely independent.
+-/
 def ofAffineIndependent {𝕜 E}
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
     (faces : Set (Finset E)) (empty_notMem : ∅ ∉ faces)
@@ -293,11 +293,11 @@ def onFinsupp {𝕜 ι : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrdered
     SimplicialComplex 𝕜 (ι →₀ 𝕜) :=
   ofAffineIndependent (𝕜 := 𝕜) (E := ι →₀ 𝕜)
     (faces.image (fun x => x.image (fun i => Finsupp.single i (1 : 𝕜))))
-    (empty_notMem := by
+    (by
       simp only [Set.mem_image, Finset.image_eq_empty]
       rintro ⟨s, hs, rfl⟩
       exact empty_notMem hs)
-    (down_closed := by
+    (by
       intro s t hs hts ht
       simp only [Set.mem_image] at hs ⊢
       obtain ⟨s', hs', rfl⟩ := hs
@@ -306,7 +306,7 @@ def onFinsupp {𝕜 ι : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrdered
       rw [Finset.subset_image_iff] at hts
       obtain ⟨t', ht', rfl⟩ := hts
       refine ⟨t', down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
-    (indep := by
+    (by
       have hunion : ⋃ s ∈ (fun x => Finset.image (fun i => Finsupp.single i (1 : 𝕜)) x) '' faces,
           (s : Set (ι →₀ 𝕜)) ⊆ Set.range (fun i : ι => Finsupp.single i (1 : 𝕜)) := by
         intro x hx
