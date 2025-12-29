@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.CharP.IntermediateField
-import Mathlib.FieldTheory.SeparableClosure
+module
+
+public import Mathlib.Algebra.CharP.IntermediateField
+public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
@@ -83,6 +85,8 @@ This file contains basic definitions and results about purely inseparable extens
 separable degree, degree, separable closure, purely inseparable
 
 -/
+
+@[expose] public section
 
 open Module Polynomial IntermediateField Field
 
@@ -328,7 +332,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
     by_cases h : (⊥ : IntermediateField F E) = ⊤
     · rw [← finrank_top', ← h, IntermediateField.finrank_bot] at hd
       exact ⟨0, ((pow_zero q).trans hd).symm⟩
-    obtain ⟨x, -, hx⟩ := SetLike.exists_of_lt (lt_of_le_of_ne bot_le h:)
+    obtain ⟨x, -, hx⟩ := SetLike.exists_of_lt (lt_of_le_of_ne bot_le h :)
     obtain ⟨m, y, e⟩ := IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x
     have : finrank F F⟮x⟯ = q ^ m := by
       rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, natDegree_sub_C, natDegree_X_pow]
@@ -442,7 +446,7 @@ lemma isSeparable_iff_finInsepDegree_eq_one :
   rw [← separableClosure.eq_top_iff, ← IntermediateField.finrank_eq_one_iff_eq_top, finInsepDegree]
 
 variable {F E} in
-/-- An algebraic extension is purely inseparable if and only if all of its finite dimensional
+/-- An algebraic extension is purely inseparable if and only if all of its finite-dimensional
 subextensions are purely inseparable. -/
 theorem isPurelyInseparable_iff_fd_isPurelyInseparable [Algebra.IsAlgebraic F E] :
     IsPurelyInseparable F E ↔
@@ -460,8 +464,8 @@ instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E where
   toIsAlgebraic := isAlgebraic F E
   splits' x := by
     obtain ⟨n, h⟩ := IsPurelyInseparable.minpoly_eq_X_sub_C_pow F (ringExpChar F) x
-    rw [← splits_id_iff_splits, h]
-    exact splits_pow _ (splits_X_sub_C _) _
+    rw [h]
+    exact Splits.pow (Splits.X_sub_C _) _
 
 /-- If `E / F` is algebraic, then `E` is purely inseparable over the
 separable closure of `F` in `E`. -/
@@ -660,7 +664,7 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
     [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :
     ∃ n, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
   nontriviality (R ⊗[k] K)
-  obtain (hq|hq) := expChar_is_prime_or_one k q
+  obtain (hq | hq) := expChar_is_prime_or_one k q
   induction x with
   | zero => exact ⟨0, 0, by simp⟩
   | add x y h h' =>
@@ -687,6 +691,6 @@ lemma IsPurelyInseparable.exists_pow_mem_range_tensorProduct [IsPurelyInseparabl
   let q := ringExpChar k
   obtain ⟨n, hr⟩ := exists_pow_pow_mem_range_tensorProduct_of_expChar q x
   refine ⟨q ^ n, pow_pos ?_ _, hr⟩
-  obtain (hq|hq) := expChar_is_prime_or_one k q <;> simp [hq, Nat.Prime.pos]
+  obtain (hq | hq) := expChar_is_prime_or_one k q <;> simp [hq, Nat.Prime.pos]
 
 end

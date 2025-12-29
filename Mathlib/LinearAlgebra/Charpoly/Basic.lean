@@ -3,10 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.FieldTheory.Minpoly.Field
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 
@@ -21,6 +23,8 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 * `LinearMap.charpoly f` : the characteristic polynomial of `f : M →ₗ[R] M`.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -60,7 +64,7 @@ theorem charpoly_one [StrongRankCondition R] :
   simp [charpoly, Module.finrank_eq_card_chooseBasisIndex, Matrix.charpoly_one]
 
 theorem charpoly_sub_smul (f : Module.End R M) (μ : R) :
-    (f - μ • 1).charpoly  = f.charpoly.comp (X + C μ) := by
+    (f - μ • 1).charpoly = f.charpoly.comp (X + C μ) := by
   simpa [LinearMap.charpoly, smul_eq_mul_diagonal] using Matrix.charpoly_sub_scalar ..
 
 end Basic

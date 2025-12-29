@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Reflective functors
@@ -15,6 +17,8 @@ Basic properties of reflective functors, especially those relating to their esse
 Note properties of reflective functors relating to limits and colimits are included in
 `Mathlib/CategoryTheory/Monad/Limits.lean`.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -212,7 +216,7 @@ lemma Functor.essImage.counit_isIso [Coreflective j] {A : D} (h : j.essImage A) 
 
 lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
     [IsSplitEpi ((coreflectorAdjunction j).counit.app A)] : j.essImage A := by
-  let ε : coreflector j ⋙ j ⟶ 𝟭 D  := (coreflectorAdjunction j).counit
+  let ε : coreflector j ⋙ j ⟶ 𝟭 D := (coreflectorAdjunction j).counit
   haveI : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
     Functor.essImage.counit_isIso ((j.obj_mem_essImage _))
   have : Mono (ε.app A) := by

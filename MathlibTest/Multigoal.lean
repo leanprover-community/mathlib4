@@ -140,3 +140,20 @@ set_option linter.unusedTactic false in
 example : True := by
   my_skip
   trivial
+
+-- Test the linter applies within have statements
+#guard_msgs(drop warning) in
+/--
+  warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
+  trivial
+Please focus on the current goal, for instance using `·` (typed as "\.").
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+example : true ∧ true := by
+  have : true ∧ true := by
+    constructor
+    trivial
+    trivial
+  exact this

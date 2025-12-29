@@ -3,9 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Subset
-import Mathlib.Order.Directed
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Order.Directed
 
 /-!
 # Union lift
@@ -36,6 +38,8 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 
 directed union, directed supremum, glue, gluing
 -/
+
+@[expose] public section
 
 variable {α : Type*} {ι β : Sort _}
 

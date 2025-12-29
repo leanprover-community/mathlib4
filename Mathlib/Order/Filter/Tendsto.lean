@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Basic
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.Order.Filter.Basic
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Convergence in terms of filters
@@ -17,6 +19,8 @@ some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the 
 `M`" is formalized as: `Tendsto u atTop (𝓝 x) → (∀ᶠ n in atTop, u n ∈ M) → x ∈ closure M`,
 which is a special case of `mem_closure_of_tendsto` from `Topology/Basic`.
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -296,7 +300,7 @@ variable {F : Filter α} {G : Filter β}
 
 theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
     MapsTo (map m) (Iic F) (Iic G) ↔ Tendsto m F G :=
-  ⟨fun hm ↦ hm right_mem_Iic, fun hm _ ↦ hm.mono_left⟩
+  ⟨fun hm ↦ hm self_mem_Iic, fun hm _ ↦ hm.mono_left⟩
 
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 

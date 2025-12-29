@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Unique
-import Mathlib.Util.CompileInductive
-import Mathlib.Tactic.Simps.NotationClass
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Unique
+public import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Typeclass for a type `F` with an injective map to `A → B`
@@ -126,6 +128,8 @@ parameter instead. This suits the instance synthesis algorithm better: it's easy
 does **not** have a `FunLike` instance by checking the discrimination tree once instead of searching
 the entire `extends` hierarchy.
 -/
+
+@[expose] public section
 
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.

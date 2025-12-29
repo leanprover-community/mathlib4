@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Properties of objects which hold for a zero object
@@ -15,6 +17,8 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 `P` may not necessarily be closed under isomorphisms.)
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

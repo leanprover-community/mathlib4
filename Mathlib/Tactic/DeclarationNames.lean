@@ -3,16 +3,19 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Moritz Firsching
 -/
+module
 
-import Lean.DeclarationRange
-import Lean.ResolveName
+public meta import Lean.DeclarationRange
+public meta import Lean.ResolveName
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 This file contains functions that are used by multiple linters.
 -/
+
+public meta section
 
 open Lean Parser Elab Command Meta
 namespace Mathlib.Linter
@@ -21,7 +24,7 @@ namespace Mathlib.Linter
 If `pos` is a `String.Pos`, then `getNamesFrom pos` returns the array of identifiers
 for the names of the declarations whose syntax begins in position at least `pos`.
 -/
-def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos) :
+def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos.Raw) :
     m (Array Syntax) := do
   -- declarations from parallelism branches should not be interesting here, so use `local`
   let drs := declRangeExt.toPersistentEnvExtension.getState (asyncMode := .local) (← getEnv)

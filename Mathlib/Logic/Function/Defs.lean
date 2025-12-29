@@ -3,15 +3,19 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Eqns
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Eqns
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # General operations on functions
 -/
+
+@[expose] public section
 
 universe u₁ u₂ u₃ u₄ u₅
 
@@ -72,6 +76,10 @@ variable {α : Type u₁} {β : Type u₂}
 
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) := f x = x
+
+@[nontriviality]
+theorem IsFixedPt.of_subsingleton [Subsingleton α] (f : α → α) (x : α) : IsFixedPt f x :=
+  Subsingleton.elim _ _
 
 end Function
 

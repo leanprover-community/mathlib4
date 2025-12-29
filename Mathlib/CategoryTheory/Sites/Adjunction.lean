@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.PreservesSheafification
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Adjunction.Whiskering
+public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 /-!
 
@@ -13,6 +15,8 @@ In this file, we show that an adjunction `G ⊣ F` induces an adjunction between
 categories of sheaves. We also show that `G` preserves sheafification.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -23,7 +27,7 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D]
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
@@ -47,7 +51,7 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
 @[simp]
 lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (X : Sheaf J E) : ((adjunction J adj).unit.app X).val =
-      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F  := by
+      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F := by
   change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
   simp only [Functor.id_obj, Functor.comp_obj, whiskeringRight_obj_obj, adjunction,
     Adjunction.map_restrictFullyFaithful_unit_app, Adjunction.comp_unit_app,
