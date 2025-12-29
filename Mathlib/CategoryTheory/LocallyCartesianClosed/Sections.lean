@@ -54,8 +54,9 @@ open ChosenPullbacksAlong
 variable (I) [ChosenPullbacksAlong (curryRightUnitorHom I)]
 
 /-- The functor mapping an object `X : Over I` to the object of sections of `X` over `I`, defined
-by the following pullback diagram, and on morphisms by the universal property of chosen pullbacks.
-
+by the following pullback diagram. The functor's mapping of morphisms is induced by `pullbackMap`,
+that is by the universal property of chosen pullbacks.
+`
 ```
  sections X -->  I ⟹ X
    |               |
