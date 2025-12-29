@@ -90,6 +90,23 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 #eval
   π 3  (4)
 
+def Foo (_n : Nat) := Nat
+
+/--
+warning: add space in the source
+
+This part of the code
+  'l)'
+should be written as
+  'l )'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+variable {k l : Nat} in
+def Bar' : Type := Foo (π k l)
+
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
 proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
