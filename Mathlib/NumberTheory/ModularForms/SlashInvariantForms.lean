@@ -279,27 +279,6 @@ def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
     (f : (i : ι) → SlashInvariantForm Γ k) : SlashInvariantForm Γ (s.card * k) :=
   prod (k := fun i ↦ k) (s := s) (s.card * k) (by simp) f
 
-/-- Given `SlashInvariantForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
-function is a product of those indexed by `ι`, a `Fintype`, with weight `m = ∑ i ∈ s, k i`. -/
-def prodFintype {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
-     (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-     (f : (i : ι) → SlashInvariantForm Γ (k i)) : SlashInvariantForm Γ m where
-  toFun := ∏ i, (f i).1
-  slash_action_eq' A hA := by
-    simp [hm, prod_fintype_sum_weights_slash, -Matrix.GeneralLinearGroup.val_det_apply,
-      Subgroup.HasDetPlusMinusOne.abs_det hA, SlashInvariantForm.slash_action_eqn (f _) A hA]
-
-@[simp]
-lemma coe_prodType {ι : Type} [Fintype ι] [Nonempty ι] {k : ι → ℤ} (m : ℤ)
-     (hm : m = ∑ i, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-     (f : (i : ι) → SlashInvariantForm Γ (k i)) : prodFintype m hm f = ∏ i, (f i).toFun := by rfl
-
-def prodFintypeEqualWeights {ι : Type} [Fintype ι] [Nonempty ι] {k : ℤ}
-    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (f : (i : ι) → SlashInvariantForm Γ k) :
-    SlashInvariantForm Γ ((Fintype.card ι) * k) :=
-  prodFintype (k := fun i ↦ k) ((Fintype.card ι) * k) (by simp) f
-
 instance [Γ.HasDetPlusMinusOne] : NatCast (SlashInvariantForm Γ 0) where
   natCast n := constℝ n
 

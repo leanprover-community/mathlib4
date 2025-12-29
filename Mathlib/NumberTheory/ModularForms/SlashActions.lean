@@ -249,15 +249,4 @@ lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ →
 
 end
 
-lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}
-    {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[k * Fintype.card ι] g =
-      |g.det.val| ^ (Fintype.card ι - 1 : ℤ) • (∏ i, f i ∣[k] g) := by
-  simpa using ModularForm.prod_slash
-
-lemma prod_fintype_sum_weights_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ι → ℤ}
-    {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[∑ i , k i] g =
-    |g.det.val| ^ (Fintype.card ι - 1 : ℤ) • (∏ i, f i ∣[k i] g) := by
-  simpa using ModularForm.prod_slash_sum_weights
-
-
 end ModularForm
