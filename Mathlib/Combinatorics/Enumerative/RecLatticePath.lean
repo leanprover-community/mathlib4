@@ -3,7 +3,6 @@ Copyright (c) 2025 YiranWang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wang Yiran
 -/
-module
 
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Ring
@@ -54,9 +53,18 @@ theorem pathCount_eq_closed : ∀ m n, pathCount m n = (m + n).choose m := by
       have h : (m + 1 + (n + 1)) = (m + n + 2) := by ring
       rw [h]
       rw [Nat.choose_succ_succ, Nat.add_comm]
-      congr! 1
-      simp
-      rw [Nat.add_right_comm]
+      have add_left_eq : m + 1 + n = m + n + 1 := by
+        ring
+      have add_right_eq : m + (n + 1) = m + n + 1 := by
+        ring
+      have choose_congr_left :
+          (m + 1 + n).choose (m + 1) = (m + n + 1).choose (m + 1) :=
+        congrArg (fun t => t.choose (m + 1)) add_left_eq
+      have choose_congr_right :
+          (m + (n + 1)).choose m = (m + n + 1).choose m :=
+        congrArg (fun t => t.choose m) add_right_eq
+      rw [choose_congr_left, choose_congr_right]
+
 
 /-- Diagonal specialization of `pathCount_eq_closed`. -/
 theorem pathCount_eq_closed_n_n : ∀ n, pathCount n n = (2 * n).choose n := by
