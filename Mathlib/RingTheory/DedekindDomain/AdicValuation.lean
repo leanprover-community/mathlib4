@@ -600,13 +600,13 @@ section AbsoluteValue
 
 open WithZeroMulInt
 
-variable {R K} {b : NNReal} (hb : 1 < b) (r : R) (x : K)
+variable {R K} {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
 
 /-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def intAdicAbvDef := fun r ↦ toNNReal (ne_zero_of_lt hb) (v.intValuation r)
+def intAdicAbvDef (r : R) : ℝ≥0 := fun r ↦ toNNReal (ne_zero_of_lt hb) (v.intValuation r)
 
-lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (fun r ↦ v.intAdicAbvDef hb r) := by
+lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := by
   intro x y
   simp only [intAdicAbvDef]
   have h_mono := (toNNReal_strictMono hb).monotone
