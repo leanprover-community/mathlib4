@@ -174,6 +174,15 @@ theorem isAcyclic_iff_forall_edge_isBridge :
     G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (G.edgeSet) → G.IsBridge e := by
   simp [isAcyclic_iff_forall_adj_isBridge, Sym2.forall]
 
+theorem isTree_iff_connected_and_forall_edge_isBridge :
+    G.IsTree ↔ G.Connected ∧ ∀ ⦃e : Sym2 V⦄, e ∈ G.edgeSet → G.IsBridge e := by
+  calc
+    G.IsTree ↔ G.Connected ∧ G.IsAcyclic := SimpleGraph.isTree_iff (G := G)
+    _ ↔ G.Connected ∧ (∀ ⦃e : Sym2 V⦄, e ∈ G.edgeSet → G.IsBridge e) := by
+      simpa using
+        (and_congr_right (fun _ =>
+          (SimpleGraph.isAcyclic_iff_forall_edge_isBridge (G := G))))
+
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
   obtain ⟨p, hp⟩ := p
