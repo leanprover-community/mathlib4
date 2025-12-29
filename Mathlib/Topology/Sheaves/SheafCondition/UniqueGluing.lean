@@ -99,7 +99,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
-  rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_ | _ | _ | _)
+  rintro (i | ⟨i, j⟩) (i' | ⟨i', j'⟩) (_ | _ | _ | _)
   · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
@@ -108,7 +108,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
   refine ⟨fun h ↦ ?_, fun h i ↦ h (op <| Pairwise.single i)⟩
-  rintro (i|⟨i,j⟩)
+  rintro (i | ⟨i, j⟩)
   · exact h i
   · rw [← (F.mapCone (Pairwise.cocone U).op).w (op <| Pairwise.Hom.left i j)]
     exact congr_arg _ (h i)
@@ -130,7 +130,7 @@ theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGlu
   · exact h _ cpt.sectionPairwise.prop
   · specialize h (fun i ↦ s <| op <| Pairwise.single i) fun i j ↦
       (hs <| op <| Pairwise.Hom.left i j).trans (hs <| op <| Pairwise.Hom.right i j).symm
-    convert h; ext (i|⟨i,j⟩)
+    convert h; ext (i | ⟨i, j⟩)
     · rfl
     · exact (hs <| op <| Pairwise.Hom.left i j).symm
 
