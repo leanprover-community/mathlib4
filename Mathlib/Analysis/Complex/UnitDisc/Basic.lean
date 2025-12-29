@@ -42,6 +42,9 @@ instance instIsCancelMulZero : IsCancelMulZero UnitDisc := by unfold UnitDisc; i
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
 instance instCoe : Coe UnitDisc ℂ := ⟨UnitDisc.coe⟩
 
+instance instCanLift : CanLift ℂ 𝔻 (↑) (‖·‖ < 1) where
+  prf x hx := ⟨⟨x, mem_ball_zero_iff.mpr hx⟩, rfl⟩
+
 @[ext]
 theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
   Subtype.coe_injective
