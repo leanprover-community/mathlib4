@@ -104,9 +104,7 @@ theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K 
 theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
     fundamentalDomain (b.reindex e) = fundamentalDomain b := by
   ext
-  simp_rw [mem_fundamentalDomain, Basis.repr_reindex_apply]
-  rw [Equiv.forall_congr' e]
-  simp_rw [implies_true]
+  simp [e.forall_congr_left]
 
 variable [IsStrictOrderedRing K]
 
