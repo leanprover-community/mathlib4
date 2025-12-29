@@ -137,6 +137,7 @@ open Adjunction
 
 /-- An auxiliary definition which is used to define the adjunction between the star functor
 and the sections functor. See starSectionsAdjunction`. -/
+@[simps homEquiv]
 def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
   homEquiv A X := {
     toFun := sectionsCurry
