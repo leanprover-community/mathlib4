@@ -30,6 +30,41 @@ open Finset Set
 
 namespace Geometry
 
+namespace AbstractSimplicialComplex
+
+/--
+Construct an abstract simplicial complex from a simple graph, where vertices of the graph
+are 0-simplices and edges are 1-simplices.
+-/
+def ofSimpleGraph {ι : Type*} [DecidableEq ι] (G : SimpleGraph ι) :
+    AbstractSimplicialComplex ι where
+  faces := ((fun v => ({v} : Finset ι)) '' (Set.univ (α := ι))) ∪ Sym2.toFinset '' G.edgeSet
+  empty_notMem := by
+    simp only [Set.mem_union, Set.mem_image, Set.mem_univ, true_and, Finset.singleton_ne_empty,
+      exists_false, false_or, not_exists, not_and]
+    exact fun _ _ h => Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _)) h
+  down_closed := by
+    simp only [Set.mem_union, Set.mem_image, Set.mem_univ, true_and]
+    intro s t hs hts ht
+    rcases hs with ⟨v, rfl⟩ | ⟨e, he, rfl⟩
+    · simp only [Finset.subset_singleton_iff] at hts
+      rcases hts with rfl | rfl
+      · exact ht.ne_empty rfl |>.elim
+      · exact Or.inl ⟨v, rfl⟩
+    · by_cases hc : t.card ≤ 1
+      · left
+        obtain ⟨x, hx⟩ := ht
+        exact ⟨x, (Finset.eq_singleton_iff_unique_mem.mpr
+          ⟨hx, fun y hy => Finset.card_le_one.mp hc y hy x hx⟩).symm⟩
+      · right
+        push_neg at hc
+        have hle : e.toFinset.card ≤ t.card := by
+          have := Sym2.card_toFinset e
+          split_ifs at this <;> omega
+        exact ⟨e, he, (Finset.eq_of_subset_of_card_le hts hle).symm⟩
+
+end AbstractSimplicialComplex
+
 namespace SimplicialComplex
 
 /--
@@ -56,27 +91,25 @@ def ofAffineIndependent {𝕜 E}
     · exact Finset.subset_union_right
 
 /--
-Construct a simplicial complex from a downward-closed set of points
+Construct a simplicial complex from an abstract simplicial complex on a set of points
 over the `𝕜`-module of finitely supported functions on those points.
 -/
 noncomputable def onFinsupp {𝕜 ι : Type*} [DecidableEq ι]
     [DecidableEq 𝕜] [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    (faces : Set (Finset ι))
-    (empty_notMem : ∅ ∉ faces)
-    (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces) :
+    (abstract : AbstractSimplicialComplex ι) :
     SimplicialComplex 𝕜 (ι →₀ 𝕜) :=
   ofAffineIndependent (𝕜 := 𝕜) (E := ι →₀ 𝕜)
-    (faces.image (fun x => x.image (fun i => Finsupp.single i (1 : 𝕜))))
+    (abstract.faces.image (fun x => x.image (fun i => Finsupp.single i (1 : 𝕜))))
     (by
       simp only [Set.mem_image, Finset.image_eq_empty]
       rintro ⟨s, hs, rfl⟩
-      exact empty_notMem hs)
+      exact abstract.empty_notMem hs)
     (by
       simp only [Set.mem_image]
       rintro _ t ⟨s', hs', rfl⟩ hts ht
       rw [Finset.subset_image_iff] at hts
       obtain ⟨t', ht', rfl⟩ := hts
-      exact ⟨t', down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
+      exact ⟨t', abstract.down_closed hs' ht' (Finset.image_nonempty.mp ht), rfl⟩)
     (by
       refine (Finsupp.linearIndependent_single_one 𝕜 ι).affineIndependent.range.mono fun x hx => ?_
       simp only [Set.mem_iUnion, Set.mem_image, Finset.mem_coe] at hx
@@ -92,31 +125,7 @@ noncomputable def ofSimpleGraph {𝕜 V : Type*} [DecidableEq V] [DecidableEq �
     [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     (G : SimpleGraph V) :
     SimplicialComplex 𝕜 (V →₀ 𝕜) :=
-  onFinsupp
-    (faces := ((fun v => ({v} : Finset V)) '' (Set.univ (α := V))) ∪ Sym2.toFinset '' G.edgeSet)
-    (empty_notMem := by
-      simp only [Set.mem_union, Set.mem_image, Set.mem_univ, true_and, Finset.singleton_ne_empty,
-        exists_false, false_or, not_exists, not_and]
-      exact fun _ _ h => Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _)) h)
-    (down_closed := by
-      simp only [Set.mem_union, Set.mem_image, Set.mem_univ, true_and]
-      intro s t hs hts ht
-      rcases hs with ⟨v, rfl⟩ | ⟨e, he, rfl⟩
-      · simp only [Finset.subset_singleton_iff] at hts
-        rcases hts with rfl | rfl
-        · exact ht.ne_empty rfl |>.elim
-        · exact Or.inl ⟨v, rfl⟩
-      · by_cases hc : t.card ≤ 1
-        · left
-          obtain ⟨x, hx⟩ := ht
-          exact ⟨x, (Finset.eq_singleton_iff_unique_mem.mpr
-            ⟨hx, fun y hy => Finset.card_le_one.mp hc y hy x hx⟩).symm⟩
-        · right
-          push_neg at hc
-          have hle : e.toFinset.card ≤ t.card := by
-            have := Sym2.card_toFinset e
-            split_ifs at this <;> omega
-          exact ⟨e, he, (Finset.eq_of_subset_of_card_le hts hle).symm⟩)
+  onFinsupp (AbstractSimplicialComplex.ofSimpleGraph G)
 
 end SimplicialComplex
 
