@@ -22,31 +22,13 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 @[expose] public section
 
-universe w v u
+universe v u
 
-variable (R : Type u) [CommRing R]
+variable {R : Type u} [CommRing R]
 
-variable (M : Type v) [AddCommGroup M] [Module R M] (N : Type v) [AddCommGroup N] [Module R N]
+variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N] [Module R N]
 
 open CategoryTheory Abelian
-
-instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
-  Module.Free.of_equiv (Shrink.linearEquiv R M).symm
-
-instance Module.finite_shrink [Module.Finite R M] [Small.{w} M] : Module.Finite R (Shrink.{w} M) :=
-  Module.Finite.equiv (Shrink.linearEquiv R M).symm
-
-theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M]
-    [Module.Finite R M] :
-    ∃ (P : Type v) (_ : AddCommGroup P) (_ : Module R P) (_ : Module.Free R P)
-      (_ : Module.Finite R P) (f : P →ₗ[R] M), Function.Surjective f := by
-  rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
-  let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
-  use (Fin m →₀ Shrink.{v, u} R), inferInstance, inferInstance, inferInstance, inferInstance, f
-  simpa [f] using hf'
-
-variable {R M N}
 
 /-- Given a linear map `f : M → N`, we can obtain a short complex `ker(f) → M → N`. -/
 abbrev LinearMap.shortComplexKer (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
