@@ -310,9 +310,9 @@ example {c : Bool} : c = c := by
 warning: add space in the source
 
 This part of the code
-  'true|'
+  '=>rfl'
 should be written as
-  'true |'
+  '=> rfl'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -320,9 +320,9 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 warning: add space in the source
 
 This part of the code
-  '=>rfl'
+  'true|'
 should be written as
-  '=> rfl'
+  'true |'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -843,6 +843,16 @@ structure C where
 warning: remove space in the source
 
 This part of the code
+  'field2    :'
+should be written as
+  'field2 :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
   'field1    :'
 should be written as
   'field1 :'
@@ -856,16 +866,6 @@ This part of the code
   ':     Nat'
 should be written as
   ': Nat'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: remove space in the source
-
-This part of the code
-  'field2    :'
-should be written as
-  'field2 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
