@@ -105,7 +105,6 @@ bypassing `LinearMap.mul`.
 ### CauchyProduct (finite sums for HasAntidiagonal)
 * `CauchyProduct.apply`: `(a ⋆ b) n = ∑ kl ∈ antidiagonal n, a kl.1 * b kl.2`
 * `CauchyProduct.one`: identity `δ₀`
-* `CauchyProduct.assoc`: associativity without `CompleteSpace`
 
 ### Summability Predicates
 * `DiscreteConvolution.ConvolutionExistsAt L f g x`: convolution sum converges at `x`
@@ -151,13 +150,13 @@ bypassing `LinearMap.mul`.
 
 ## Notation Summary
 
-| Notation     | Index Type           | Operation                                   |
-|--------------|----------------------|---------------------------------------------|
-| `f ⋆[L] g`   | `Monoid M`           | `∑' ab : mulFiber x, L (f ab.1) (g ab.2)`   |
-| `f ⋆₊[L] g`  | `AddMonoid M`        | `∑' ab : addFiber x, L (f ab.1) (g ab.2)`   |
-| `f ⋆ₘ g`     | `Monoid M`           | `∑' ab : mulFiber x, f ab.1 * g ab.2`       |
-| `f ⋆₊ₘ g`    | `AddMonoid M`        | `∑' ab : addFiber x, f ab.1 * g ab.2`       |
-| `a ⋆ b`      | `HasAntidiagonal G`  | `∑ kl ∈ antidiagonal n, a kl.1 * b kl.2`    |
+| Notation     | Index Type           | Operation                                       |
+|--------------|----------------------|-------------------------------------------------|
+| `f ⋆[L] g`   | `Monoid M`           | `∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)`   |
+| `f ⋆₊[L] g`  | `AddMonoid M`        | `∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)`   |
+| `f ⋆ₘ g`     | `Monoid M`           | `∑' ab : mulFiber x, f ab.1.1 * g ab.1.2`       |
+| `f ⋆₊ₘ g`    | `AddMonoid M`        | `∑' ab : addFiber x, f ab.1.1 * g ab.1.2`       |
+| `a ⋆ b`      | `HasAntidiagonal G`  | `∑ kl ∈ antidiagonal n, a kl.1 * b kl.2`        |
 
 ## TODO
 
@@ -254,35 +253,51 @@ section RingMul
 variable [Monoid M] {R : Type*}
 
 /-- Convolution using ring multiplication. This is `convolution (LinearMap.mul R R)`. -/
+@[to_additive (dont_translate := R) addMulConvolution
+  /-- Additive convolution using ring multiplication.
+  This is `addConvolution (LinearMap.mul R R)`. -/]
 def mulConvolution [CommSemiring R] [TopologicalSpace R] (f g : M → R) : M → R :=
   convolution (LinearMap.mul R R) f g
 
 /-- Notation for ring multiplication convolution. -/
 scoped notation:70 f:70 " ⋆ₘ " g:71 => mulConvolution f g
 
-theorem mulConvolution_apply [CommSemiring R] [TopologicalSpace R] (f g : M → R) (x : M) :
-    (f ⋆ₘ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
-
-end RingMul
-
-/-! ### Additive Ring Multiplication Convolution -/
-
-section AddRingMul
-
-variable [AddMonoid M] {R : Type*}
-
-/-- Additive convolution using ring multiplication.
-This is `addConvolution (LinearMap.mul R R)`. -/
-def addMulConvolution [CommSemiring R] [TopologicalSpace R] (f g : M → R) : M → R :=
-  addConvolution (LinearMap.mul R R) f g
-
 /-- Notation for additive ring multiplication convolution. -/
 scoped notation:70 f:70 " ⋆₊ₘ " g:71 => addMulConvolution f g
 
-theorem addMulConvolution_apply [CommSemiring R] [TopologicalSpace R] (f g : M → R) (x : M) :
-    (f ⋆₊ₘ g) x = ∑' ab : addFiber x, f ab.1.1 * g ab.1.2 := rfl
+@[to_additive (dont_translate := R) addMulConvolution_apply]
+theorem mulConvolution_apply [CommSemiring R] [TopologicalSpace R] (f g : M → R) (x : M) :
+    (f ⋆ₘ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
 
-end AddRingMul
+variable [CommSemiring R] [TopologicalSpace R]
+
+@[to_additive (attr := simp) (dont_translate := R) zero_addMulConvolution]
+theorem zero_mulConvolution (f : M → R) : (0 : M → R) ⋆ₘ f = 0 := by
+  ext x; simp only [mulConvolution_apply, Pi.zero_apply, zero_mul, tsum_zero]
+
+@[to_additive (attr := simp) (dont_translate := R) addMulConvolution_zero]
+theorem mulConvolution_zero (f : M → R) : f ⋆ₘ (0 : M → R) = 0 := by
+  ext x; simp only [mulConvolution_apply, Pi.zero_apply, mul_zero, tsum_zero]
+
+variable [T2Space R] [ContinuousAdd R]
+
+@[to_additive (dont_translate := R) addMulConvolution_add]
+theorem mulConvolution_add (f g h : M → R)
+    (hfg : ∀ x, Summable fun ab : mulFiber x => f ab.1.1 * g ab.1.2)
+    (hfh : ∀ x, Summable fun ab : mulFiber x => f ab.1.1 * h ab.1.2) :
+    f ⋆ₘ (g + h) = f ⋆ₘ g + f ⋆ₘ h := by
+  ext x; simp only [mulConvolution_apply, Pi.add_apply, mul_add]
+  exact Summable.tsum_add (hfg x) (hfh x)
+
+@[to_additive (dont_translate := R) add_addMulConvolution]
+theorem add_mulConvolution (f g h : M → R)
+    (hfh : ∀ x, Summable fun ab : mulFiber x => f ab.1.1 * h ab.1.2)
+    (hgh : ∀ x, Summable fun ab : mulFiber x => g ab.1.1 * h ab.1.2) :
+    (f + g) ⋆ₘ h = f ⋆ₘ h + g ⋆ₘ h := by
+  ext x; simp only [mulConvolution_apply, Pi.add_apply, add_mul]
+  exact Summable.tsum_add (hfh x) (hgh x)
+
+end RingMul
 
 /-! ### Identity Element -/
 
@@ -304,6 +319,38 @@ theorem delta_ne (e : E) {x : M} (hx : x ≠ 1) : delta e x = 0 :=
   Pi.single_eq_of_ne (M := fun _ => E) hx e
 
 end Identity
+
+/-! ### Ring Multiplication with Delta -/
+
+section RingMulDelta
+
+variable [Monoid M] [DecidableEq M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
+@[to_additive (dont_translate := R) addDelta_addMulConvolution']
+theorem delta_mulConvolution' (e : R) (f : M → R) (x : M) :
+    (delta e ⋆ₘ f) x = e * f x := by
+  simp only [mulConvolution_apply, delta, Pi.single_apply]
+  rw [tsum_eq_single ⟨(1, x), by simp [mulFiber, mulMap]⟩]
+  · simp only [↓reduceIte]
+  · intro ⟨⟨a, b⟩, hab⟩ hne
+    simp only [mem_mulFiber] at hab
+    simp only [ne_eq, Subtype.mk.injEq, Prod.mk.injEq, not_and] at hne
+    have ha : a ≠ 1 := fun h => hne h (by simp [← hab, h])
+    simp [ha]
+
+@[to_additive (dont_translate := R) addMulConvolution_addDelta']
+theorem mulConvolution_delta' (f : M → R) (e : R) (x : M) :
+    (f ⋆ₘ delta e) x = f x * e := by
+  simp only [mulConvolution_apply, delta, Pi.single_apply]
+  rw [tsum_eq_single ⟨(x, 1), by simp [mulFiber, mulMap]⟩]
+  · simp only [↓reduceIte]
+  · intro ⟨⟨a, b⟩, hab⟩ hne
+    simp only [mem_mulFiber] at hab
+    simp only [ne_eq, Subtype.mk.injEq, Prod.mk.injEq, not_and] at hne
+    have hb : b ≠ 1 := fun h => hne (by simp [← hab, h]) h
+    simp [hb]
+
+end RingMulDelta
 
 /-! ### Ring Axioms (Zero) -/
 
@@ -425,36 +472,6 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E)
 
 end Commutative
 
-/-! ### Ring Axioms for mulConvolution -/
-
-section MulConvolutionRingAxioms
-
-variable [Monoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
-
-@[simp]
-theorem zero_mulConvolution (f : M → R) : (0 : M → R) ⋆ₘ f = 0 :=
-  zero_convolution (LinearMap.mul R R) f
-
-@[simp]
-theorem mulConvolution_zero (f : M → R) : f ⋆ₘ (0 : M → R) = 0 :=
-  convolution_zero (LinearMap.mul R R) f
-
-variable [T2Space R] [ContinuousAdd R]
-
-theorem mulConvolution_add (f g h : M → R)
-    (hfg : ConvolutionExists (LinearMap.mul R R) f g)
-    (hfh : ConvolutionExists (LinearMap.mul R R) f h) :
-    f ⋆ₘ (g + h) = f ⋆ₘ g + f ⋆ₘ h :=
-  convolution_add (LinearMap.mul R R) f g h hfg hfh
-
-theorem add_mulConvolution (f g h : M → R)
-    (hfh : ConvolutionExists (LinearMap.mul R R) f h)
-    (hgh : ConvolutionExists (LinearMap.mul R R) g h) :
-    (f + g) ⋆ₘ h = f ⋆ₘ h + g ⋆ₘ h :=
-  add_convolution (LinearMap.mul R R) f g h hfh hgh
-
-end MulConvolutionRingAxioms
-
 section MulConvolutionIdentity
 
 variable [Monoid M] [DecidableEq M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
@@ -495,6 +512,39 @@ theorem mulConvolution_comm (f g : M → R) : f ⋆ₘ g = g ⋆ₘ f :=
   convolution_comm (LinearMap.mul R R) f g (fun x y => mul_comm x y)
 
 end MulConvolutionComm
+
+section AddConvolutionComm
+
+variable [AddCommMonoid M] [CommSemiring S]
+variable [AddCommMonoid E] [Module S E]
+variable [TopologicalSpace E]
+
+/-- Commutativity for symmetric bilinear maps on additive commutative monoids. -/
+theorem addConvolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E)
+    (hL : ∀ x y, L x y = L y x) :
+    f ⋆₊[L] g = g ⋆₊[L] f := by
+  ext x
+  simp only [addConvolution_apply]
+  let e : addFiber x ≃ addFiber x :=
+    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [addFiber, addMap, add_comm]⟩,
+     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [addFiber, addMap, add_comm]⟩,
+     fun _ => by rfl,
+     fun _ => by rfl⟩
+  rw [← e.tsum_eq]
+  congr 1
+  funext ⟨⟨a, b⟩, hab⟩
+  simp only [e, Equiv.coe_fn_mk, hL]
+
+end AddConvolutionComm
+
+section AddMulConvolutionComm
+
+variable [AddCommMonoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
+theorem addMulConvolution_comm (f g : M → R) : f ⋆₊ₘ g = g ⋆₊ₘ f :=
+  addConvolution_comm (LinearMap.mul R R) f g (fun x y => mul_comm x y)
+
+end AddMulConvolutionComm
 
 /-! ### Triple Fiber and Associativity Equivalences
 

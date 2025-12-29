@@ -7,54 +7,92 @@ module
 
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Lp.DiscreteConvolutionTestAPI
+public import Mathlib.Analysis.Normed.Module.TransferInstance
 
 /-!
 # Banach Algebra Structure on ℓ¹ via Discrete Convolution
 
 This file establishes the Banach algebra structure on `lp (fun _ : M => R) 1` using
-the discrete convolution from `DiscreteConvolution.lean`.
+discrete convolution from `DiscreteConvolutionTestAPI`. For a monoid `M` and normed ring `R`,
+the convolution `(f ⋆ₘ g)(x) = ∑' (a,b) : a * b = x, f(a) * g(b)` makes ℓ¹(M → R) into a
+normed ring with submultiplicative norm.
 
 ## Main Definitions
 
-* `TripleConvolutionSummable f g h x`: summability predicate for triple products
+* `TripleConvolutionSummable f g h x`: summability of `f(a) * g(b) * h(c)` over `a * b * c = x`
+* `AddLp M R`: newtype wrapper for ℓ¹ with additive convolution (fibers `a + b = x`)
 
 ## Main Results
 
 ### Summability and Membership
-* `lp.one_summable_norm`: ℓ¹ membership gives summable norms
-* `lp.one_norm_eq_tsum`: ℓ¹ norm as tsum
-* `lp.one_summable_norm_mul`: product summability over `M × M`
-* `lp.one_mulConvolution_memℓp`: ℓ¹ closed under convolution
-* `lp.one_norm_mulConvolution_le`: submultiplicativity `‖f ⋆ₘ g‖₁ ≤ ‖f‖₁ * ‖g‖₁`
-* `lp.one_delta_memℓp`: delta is in ℓ¹
+* `lp.one_summable_norm`: ℓ¹ membership implies `Summable (‖f ·‖)`
+* `lp.one_norm_eq_tsum`: ℓ¹ norm equals `∑' m, ‖f m‖`
+* `lp.one_summable_norm_mul`: `Summable (fun (a,b) => ‖f a‖ * ‖g b‖)` for ℓ¹ functions
+* `lp.one_mulConvolution_memℓp`: ℓ¹ is closed under convolution
+* `lp.one_norm_mulConvolution_le`: submultiplicativity `‖f ⋆ₘ g‖ ≤ ‖f‖ * ‖g‖`
+* `lp.one_delta_memℓp`: the delta function `δ₁` is in ℓ¹
 
 ### Associativity (requires `[CompleteSpace R]`)
-* `lp.one_tripleConvolutionSummable`: triple product summability
-* `lp.one_convolutionSummable`: pairwise product summability
-* `lp.one_convolution_assoc_left_sum`, `lp.one_convolution_assoc_right_sum`: fiber reindexing
-* `lp.one_mulConvolution_assoc`: associativity `(f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h)`
+* `lp.one_tripleConvolutionSummable`: triple products are summable over fibers
+* `lp.one_convolutionSummable`: pairwise products are summable over fibers
+* `lp.one_mulConvolution_assoc`: `(f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h)`
 
-### Instances
-* `lp.oneMul`: `Mul` instance via convolution
-* `lp.oneOne`: `One` instance via delta
-* `lp.oneRing`: `Ring` instance (requires `[CompleteSpace R]`)
-* `lp.oneNormedRing`: `NormedRing` instance
+### Typeclass Instances
+* `lp.oneMul`: `Mul` via convolution
+* `lp.oneOne`: `One` via delta function
+* `lp.oneRing`: `Ring` (requires `[CompleteSpace R]`)
+* `lp.oneNormedRing`: `NormedRing`
 * `lp.oneNormOneClass`: `NormOneClass` (when `[NormOneClass R]`)
 * `lp.oneCommRing`: `CommRing` (when `[CommMonoid M]`)
 * `lp.oneNormedCommRing`: `NormedCommRing` (when `[CommMonoid M]`)
-* `lp.oneAlgebra`: `Algebra 𝕜` instance
-* `lp.oneNormedAlgebra`: `NormedAlgebra 𝕜` instance
+* `lp.one_isScalarTower`, `lp.one_smulCommClass`: scalar tower and commutativity
+* `lp.oneAlgebra`, `lp.oneNormedAlgebra`: algebra instances
+
+### AddLp (Additive Convolution)
+* `AddLp M R`: newtype for ℓ¹ with `addMulConvolution` (fibers `a + b = x`)
+* `AddLp.instRing`: `Ring` (requires `[AddMonoid M]`, `[CompleteSpace R]`)
+* `AddLp.instNormedRing`: `NormedRing`
+* `AddLp.instNormOneClass`: `NormOneClass` (when `[NormOneClass R]`)
+* `AddLp.instCommRing`: `CommRing` (when `[AddCommMonoid M]`)
+* `AddLp.instNormedCommRing`: `NormedCommRing`
+* `AddLp.instModule`: `Module 𝕜` for scalar fields
+* `AddLp.instIsBoundedSMul`: `IsBoundedSMul 𝕜` for bounded scalar multiplication
+* `AddLp.instIsScalarTower`, `AddLp.instSMulCommClass`: scalar tower and commutativity
+* `AddLp.instAlgebra`, `AddLp.instNormedAlgebra`: algebra instances
 
 ## Design Notes
 
-This file builds on `DiscreteConvolution.lean` which provides:
-* `mulConvolution`: the convolution operation `f ⋆ₘ g`
-* `delta`: the identity element
-* Ring axioms: `mulConvolution_add`, `delta_mulConvolution`, etc.
-* Fiber equivalences: `leftAssocEquiv`, `rightAssocEquiv` for associativity
+### Multiplicative vs Additive Convolution
 
-The ℓ¹ properties (summability, norm bounds) and typeclass instances are separated here
-to follow Mathlib conventions of keeping core theory distinct from specific instances.
+This file uses `mulConvolution` (notation `⋆ₘ`) for `[Monoid M]`, appropriate for group
+algebras R[G]. For additive indices (ℤ, polynomials), use `AddLp` with `addMulConvolution`.
+
+### @[to_additive] Timeout Workarounds
+
+The `@[to_additive]`-generated membership lemmas (e.g., `lp.one_addMulConvolution_memℓp`)
+cause timeouts when used directly in `AddLp` proofs. The root cause is expensive `Memℓp`
+predicate unification when Lean tries to match `lp` subtype coercions.
+
+**Workarounds used in this file:**
+
+1. **Protected def wrappers with explicit type signatures**: `AddLp.addMulConvolution_memℓp'`
+   and `AddLp.addDelta_memℓp'` wrap the `@[to_additive]`-generated lemmas in a `protected def`
+   with an explicit return type. The explicit signature acts as a "type barrier" - Lean
+   elaborates and commits to the return type first, then trusts it when the wrapper is used,
+   rather than attempting deep unification through the definition body. This reduces
+   elaboration from timeout to ~0.01s.
+
+2. **Explicit type parameters**: When other `@[to_additive]` lemmas are used (e.g., in
+   `instRing` and `instNormedRing`), explicit `(M := M) (R := R)` annotations help Lean
+   resolve types without deep unification.
+
+3. **Explicit instance references**: The `Ring` proofs reference `instOne.1` explicitly
+   rather than `(1 : AddLp M R)` to avoid ambiguity with the `Zero` inherited from
+   `AddCommGroup` via the equivalence.
+
+4. **Section restructuring**: Lemmas like `mul_apply` and `one_apply` are placed outside
+   sections with `[CompleteSpace R]` to avoid unused instance warnings, since these
+   definitional equalities don't require completeness in their proofs.
 -/
 
 @[expose] public section
@@ -98,6 +136,8 @@ section LpOneMembership
 variable [Monoid M] [NormedCommRing R]
 
 /-- The ring multiplication convolution of ℓ¹ functions is in ℓ¹. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addMulConvolution_memℓp
+  /-- The additive ring multiplication convolution of ℓ¹ functions is in ℓ¹. -/]
 theorem lp.one_mulConvolution_memℓp (f g : lp (fun _ : M => R) 1) :
     Memℓp (mulConvolution (⇑f) (⇑g)) 1 := by
   rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
@@ -118,6 +158,8 @@ theorem lp.one_mulConvolution_memℓp (f g : lp (fun _ : M => R) 1) :
   exact ((Equiv.sigmaFiberEquiv mulMap).summable_iff.mpr hprod).sigma
 
 /-- Submultiplicativity of the ℓ¹ norm under ring convolution. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_norm_addMulConvolution_le
+  /-- Submultiplicativity of the ℓ¹ norm under additive ring convolution. -/]
 theorem lp.one_norm_mulConvolution_le (f g : lp (fun _ : M => R) 1) :
     ‖(⟨mulConvolution (⇑f) (⇑g), lp.one_mulConvolution_memℓp f g⟩ :
       lp (fun _ : M => R) 1)‖ ≤ ‖f‖ * ‖g‖ := by
@@ -142,6 +184,8 @@ theorem lp.one_norm_mulConvolution_le (f g : lp (fun _ : M => R) 1) :
     · exact fun b => hsigma.sigma_factor b
 
 /-- The identity element `delta 1` is in ℓ¹. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addDelta_memℓp
+  /-- The identity element `addDelta 0` is in ℓ¹. -/]
 theorem lp.one_delta_memℓp [DecidableEq M] : Memℓp (delta (M := M) (1 : R)) 1 := by
   rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
   simp only [ENNReal.toReal_one, Real.rpow_one]
@@ -165,10 +209,14 @@ section LpOneAssociativity
 variable [Monoid M] [NormedCommRing R] [CompleteSpace R]
 
 /-- Summability over triple fiber for associativity. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) TripleAddConvolutionSummable
+  /-- Summability over triple additive fiber for associativity. -/]
 def TripleConvolutionSummable (f g h : M → R) (x : M) : Prop :=
   Summable fun p : tripleFiber x => f p.1.1 * g p.1.2.1 * h p.1.2.2
 
 /-- ℓ¹ functions have summable triple convolution. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_tripleAddConvolutionSummable
+  /-- ℓ¹ functions have summable triple additive convolution. -/]
 theorem lp.one_tripleConvolutionSummable (f g h : lp (fun _ : M => R) 1) (x : M) :
     TripleConvolutionSummable (⇑f) (⇑g) (⇑h) x := by
   unfold TripleConvolutionSummable
@@ -190,6 +238,8 @@ theorem lp.one_tripleConvolutionSummable (f g h : lp (fun _ : M => R) 1) (x : M)
     (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right (norm_mul_le _ _) (norm_nonneg _)))
 
 /-- ℓ¹ functions have summable convolutions at each point. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addConvolutionSummable
+  /-- ℓ¹ functions have summable additive convolutions at each point. -/]
 theorem lp.one_convolutionSummable (f g : lp (fun _ : M => R) 1) (x : M) :
     Summable fun ab : mulFiber x => f ab.1.1 * g ab.1.2 := by
   have hprod : Summable (fun ab : M × M => ‖f ab.1‖ * ‖g ab.2‖) :=
@@ -199,6 +249,8 @@ theorem lp.one_convolutionSummable (f g : lp (fun _ : M => R) 1) (x : M) :
     fun ⟨⟨a, b⟩, _⟩ => norm_mul_le _ _
 
 /-- Left-associated convolution sum as a triple fiber sum. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addConvolution_assoc_left_sum
+  /-- Left-associated additive convolution sum as a triple fiber sum. -/]
 theorem lp.one_convolution_assoc_left_sum (f g h : lp (fun _ : M => R) 1) (x : M) :
     ∑' cd : mulFiber x, (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
       ∑' p : tripleFiber x, f p.1.1 * g p.1.2.1 * h p.1.2.2 := by
@@ -222,6 +274,8 @@ theorem lp.one_convolution_assoc_left_sum (f g h : lp (fun _ : M => R) 1) (x : M
   rw [h1, ← h2, ← h3]; rfl
 
 /-- Right-associated convolution sum as a triple fiber sum. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addConvolution_assoc_right_sum
+  /-- Right-associated additive convolution sum as a triple fiber sum. -/]
 theorem lp.one_convolution_assoc_right_sum (f g h : lp (fun _ : M => R) 1) (x : M) :
     ∑' ae : mulFiber x, f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
       ∑' p : tripleFiber x, f p.1.1 * g p.1.2.1 * h p.1.2.2 := by
@@ -247,6 +301,8 @@ theorem lp.one_convolution_assoc_right_sum (f g h : lp (fun _ : M => R) 1) (x : 
   simp_rw [← mul_assoc]; rfl
 
 /-- Convolution is associative for ℓ¹ functions: `(f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h)`. -/
+@[to_additive (dont_translate := R) (relevant_arg := 1) lp.one_addMulConvolution_assoc
+  /-- Additive convolution is associative for ℓ¹ functions. -/]
 theorem lp.one_mulConvolution_assoc (f g h : lp (fun _ : M => R) 1) :
     mulConvolution (mulConvolution (⇑f) (⇑g)) (⇑h) =
     mulConvolution (⇑f) (mulConvolution (⇑g) (⇑h)) := by
@@ -430,6 +486,274 @@ instance oneNormedAlgebra : NormedAlgebra 𝕜 (lp (fun _ : M => R) 1) where
 end lp
 
 end LpOneAlgebra
+
+/-! ## AddLp: ℓ¹ with Additive Convolution
+
+`AddLp M R` wraps `lp (fun _ : M => R) 1` with multiplication via `addMulConvolution`:
+`(f * g)(x) = ∑' (a,b) : a + b = x, f(a) * g(b)`. Appropriate for polynomial-like structures
+where the index type has additive structure (e.g., ℤ, ℕ).
+
+See the "Timeout Workarounds" section in the module docstring for implementation details. -/
+
+/-! ### AddLp Type and Instances -/
+
+section AddLp
+
+/-- Newtype wrapper for ℓ¹ with additive convolution.
+`AddLp M R` is `lp (fun _ : M => R) 1` with multiplication via `addMulConvolution`. -/
+structure AddLp (M : Type*) (R : Type*) [NormedAddCommGroup R] where
+  /-- The underlying lp element. -/
+  toLp : lp (fun _ : M => R) 1
+
+namespace AddLp
+
+variable {M : Type*} {R : Type*} [NormedAddCommGroup R]
+
+/-- Equivalence between `AddLp M R` and the underlying `lp` type. -/
+protected def equiv : AddLp M R ≃ lp (fun _ : M => R) 1 where
+  toFun := toLp
+  invFun := mk
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- Coercion from the underlying lp type. -/
+def ofLp (f : lp (fun _ : M => R) 1) : AddLp M R := ⟨f⟩
+
+-- Transfer instances via equiv
+instance : AddCommGroup (AddLp M R) := AddLp.equiv.addCommGroup
+instance : NormedAddCommGroup (AddLp M R) := AddLp.equiv.normedAddCommGroup
+
+instance : CoeFun (AddLp M R) (fun _ => M → R) where
+  coe f := f.toLp
+
+@[simp] theorem toLp_ofLp (f : lp (fun _ : M => R) 1) : (ofLp f).toLp = f := rfl
+@[simp] theorem ofLp_toLp (f : AddLp M R) : ofLp f.toLp = f := rfl
+@[simp] theorem mk_toLp (f : lp (fun _ : M => R) 1) : (⟨f⟩ : AddLp M R).toLp = f := rfl
+
+theorem ext {f g : AddLp M R} (h : ∀ m, f m = g m) : f = g := by
+  cases f; cases g; simp only [mk.injEq]; exact lp.ext (funext h)
+
+-- Helper lemmas for AddLp zero/one coercions (no additional instances needed)
+private theorem zero_toLp : (0 : AddLp M R).toLp = 0 := rfl
+private theorem add_toLp (f g : AddLp M R) : (f + g).toLp = f.toLp + g.toLp := rfl
+
+end AddLp
+
+section AddLpInstances
+
+variable {M : Type*} {R : Type*} [AddMonoid M] [NormedCommRing R]
+
+namespace AddLp
+
+/- Note: The AddLp instances cannot use `@[to_additive]`-generated lemmas directly due to
+   extremely expensive type unification when Lean tries to compare `Memℓp` predicates.
+   Wrapping them in a `protected def` with explicit type signature forces Lean to elaborate
+   the return type first, avoiding the deep unification that causes timeouts. -/
+
+/-- Wrapper to avoid `@[to_additive]` timeout issues. -/
+protected def addMulConvolution_memℓp' (f g : lp (fun _ : M => R) 1) :
+    Memℓp ((⇑f) ⋆₊ₘ (⇑g)) 1 := lp.one_addMulConvolution_memℓp f g
+
+/-- Wrapper to avoid `@[to_additive]` timeout issues. -/
+protected def addDelta_memℓp' [DecidableEq M] : Memℓp (addDelta (M := M) (1 : R)) 1 :=
+  lp.one_addDelta_memℓp
+
+section Mul
+
+variable [CompleteSpace R]
+
+set_option profiler.threshold 1000 in -- show anything taking >1s
+set_option trace.profiler true in
+instance instMul : Mul (AddLp M R) where
+  mul f g := ⟨⟨(⇑f.toLp) ⋆₊ₘ (⇑g.toLp), AddLp.addMulConvolution_memℓp' f.toLp g.toLp⟩⟩
+
+end Mul
+
+@[simp] theorem mul_apply [CompleteSpace R] (f g : AddLp M R) (x : M) :
+    (f * g) x = (f.toLp ⋆₊ₘ g.toLp) x := rfl
+
+section One
+
+variable [CompleteSpace R] [DecidableEq M]
+
+instance instOne : One (AddLp M R) where
+  one := ⟨⟨addDelta 1, AddLp.addDelta_memℓp'⟩⟩
+
+end One
+
+@[simp] theorem one_apply [CompleteSpace R] [DecidableEq M] (x : M) :
+    (1 : AddLp M R) x = addDelta (1 : R) x := rfl
+
+section Ring
+
+variable [CompleteSpace R] [DecidableEq M]
+
+instance instRing : Ring (AddLp M R) where
+  mul_assoc f g h := AddLp.ext fun _ =>
+    congr_fun (lp.one_addMulConvolution_assoc (M := M) (R := R) f.toLp g.toLp h.toLp) _
+  one_mul f := AddLp.ext fun x => by
+    change (instOne.1.toLp ⋆₊ₘ f.toLp) x = f x
+    simp only [instOne, addDelta_addMulConvolution' 1 f.toLp x, one_mul]
+  mul_one f := AddLp.ext fun x => by
+    change (f.toLp ⋆₊ₘ instOne.1.toLp) x = f x
+    simp only [instOne, addMulConvolution_addDelta' f.toLp 1 x, mul_one]
+  left_distrib f g h := AddLp.ext fun x => by
+    change (f.toLp ⋆₊ₘ (g.toLp + h.toLp)) x = ((f * g).toLp + (f * h).toLp) x
+    rw [lp.coeFn_add, Pi.add_apply]
+    exact congr_fun (addMulConvolution_add f.toLp g.toLp h.toLp
+      (lp.one_addConvolutionSummable (M := M) (R := R) f.toLp g.toLp)
+      (lp.one_addConvolutionSummable (M := M) (R := R) f.toLp h.toLp)) x
+  right_distrib f g h := AddLp.ext fun x => by
+    change ((f.toLp + g.toLp) ⋆₊ₘ h.toLp) x = (f * h) x + (g * h) x
+    rw [mul_apply, mul_apply]
+    exact congr_fun (add_addMulConvolution f.toLp g.toLp h.toLp
+      (lp.one_addConvolutionSummable (M := M) (R := R) f.toLp h.toLp)
+      (lp.one_addConvolutionSummable (M := M) (R := R) g.toLp h.toLp)) x
+  zero_mul f := AddLp.ext fun x => by
+    change ((0 : AddLp M R).toLp ⋆₊ₘ f.toLp) x = (0 : AddLp M R) x
+    simp only [zero_toLp, lp.coeFn_zero, zero_addMulConvolution, Pi.zero_apply]
+  mul_zero f := AddLp.ext fun x => by
+    change (f.toLp ⋆₊ₘ (0 : AddLp M R).toLp) x = (0 : AddLp M R) x
+    simp only [zero_toLp, lp.coeFn_zero, addMulConvolution_zero, Pi.zero_apply]
+
+instance instNormedRing : NormedRing (AddLp M R) :=
+  { AddLp.instNormedAddCommGroup, AddLp.instRing with
+    dist_eq := fun _ _ => rfl
+    norm_mul_le := fun f g =>
+      lp.one_norm_addMulConvolution_le (M := M) (R := R) f.toLp g.toLp }
+
+end Ring
+
+section NormOneClass
+
+variable [CompleteSpace R] [DecidableEq M] [NormOneClass R]
+
+theorem norm_one : ‖(1 : AddLp M R)‖ = 1 := by
+  have h : ‖(1 : AddLp M R)‖ = ‖instOne.1.toLp‖ := rfl
+  rw [h, lp.one_norm_eq_tsum]
+  have heq : (fun m => ‖(instOne (M := M) (R := R)).1.toLp m‖) =
+      fun m => if m = 0 then 1 else 0 := by
+    ext m
+    simp only [instOne]
+    by_cases hm : m = 0
+    · subst hm
+      simp only [↓reduceIte, addDelta, Pi.single_eq_same]
+      exact NormOneClass.norm_one
+    · rw [if_neg hm, addDelta_ne 1 hm, norm_zero]
+  rw [heq, tsum_ite_eq]
+
+instance instNormOneClass : NormOneClass (AddLp M R) where
+  norm_one := norm_one
+
+end NormOneClass
+
+end AddLp
+
+/-! ### AddLp CommRing -/
+
+section AddLpCommRing
+
+variable {M : Type*} {R : Type*} [AddCommMonoid M] [DecidableEq M]
+variable [NormedCommRing R] [CompleteSpace R]
+
+namespace AddLp
+
+/-- `AddLp M R` is a commutative ring when M is an additive commutative monoid. -/
+instance instCommRing : CommRing (AddLp M R) where
+  mul_comm f g := AddLp.ext fun _ => congr_fun (addMulConvolution_comm (⇑f.toLp) (⇑g.toLp)) _
+
+end AddLp
+
+end AddLpCommRing
+
+/-! ### AddLp NormedCommRing -/
+
+section AddLpNormedCommRing
+
+variable {M : Type*} {R : Type*} [AddCommMonoid M] [DecidableEq M]
+variable [NormedCommRing R] [CompleteSpace R]
+
+namespace AddLp
+
+/-- `AddLp M R` is a normed commutative ring when M is an additive commutative monoid. -/
+instance instNormedCommRing : NormedCommRing (AddLp M R) where
+  mul_comm f g := AddLp.ext fun _ => congr_fun (addMulConvolution_comm (⇑f.toLp) (⇑g.toLp)) _
+
+end AddLp
+
+end AddLpNormedCommRing
+
+/-! ### AddLp Module -/
+
+section AddLpModule
+
+variable {M : Type*} {R : Type*} [NormedAddCommGroup R]
+variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 R]
+
+namespace AddLp
+
+instance instModule : Module 𝕜 (AddLp M R) := AddLp.equiv.module 𝕜
+
+theorem smul_toLp (c : 𝕜) (f : AddLp M R) : (c • f).toLp = c • f.toLp := rfl
+
+instance instIsBoundedSMul : IsBoundedSMul 𝕜 (AddLp M R) where
+  dist_smul_pair' c f g := by
+    simp only [dist_eq_norm, ← smul_sub, sub_zero]
+    exact norm_smul_le (β := lp (fun _ : M => R) 1) c (f - g).toLp
+  dist_pair_smul' c₁ c₂ f := by
+    simp only [dist_eq_norm, ← sub_smul, sub_zero]
+    exact norm_smul_le (β := lp (fun _ : M => R) 1) (c₁ - c₂) f.toLp
+
+end AddLp
+
+end AddLpModule
+
+/-! ### AddLp Algebra -/
+
+section AddLpAlgebra
+
+variable {M : Type*} {R : Type*} [AddCommMonoid M] [DecidableEq M]
+variable {𝕜 : Type*}
+variable [NormedField 𝕜] [NormedCommRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
+
+namespace AddLp
+
+/-- Scalar multiplication satisfies `(c • f) * g = c • (f * g)`. -/
+theorem one_smul_mul_assoc (c : 𝕜) (f g : AddLp M R) :
+    (c • f) * g = c • (f * g) := AddLp.ext fun x => by
+  simp only [mul_apply, smul_toLp, addMulConvolution_apply, lp.coeFn_smul, Pi.smul_apply]
+  simp_rw [smul_mul_assoc]
+  exact Summable.tsum_const_smul c
+    (lp.one_addConvolutionSummable (M := M) (R := R) f.toLp g.toLp x)
+
+/-- Scalar multiplication satisfies `f * (c • g) = c • (f * g)`. -/
+theorem one_mul_smul_comm (c : 𝕜) (f g : AddLp M R) :
+    f * (c • g) = c • (f * g) := AddLp.ext fun x => by
+  simp only [mul_apply, smul_toLp, addMulConvolution_apply, lp.coeFn_smul, Pi.smul_apply]
+  simp_rw [mul_smul_comm]
+  exact Summable.tsum_const_smul c
+    (lp.one_addConvolutionSummable (M := M) (R := R) f.toLp g.toLp x)
+
+instance instIsScalarTower : IsScalarTower 𝕜 (AddLp M R) (AddLp M R) :=
+  ⟨fun c f g => one_smul_mul_assoc c f g⟩
+
+instance instSMulCommClass : SMulCommClass 𝕜 (AddLp M R) (AddLp M R) :=
+  ⟨fun c f g => (one_mul_smul_comm c f g).symm⟩
+
+instance instAlgebra : Algebra 𝕜 (AddLp M R) :=
+  Algebra.ofModule one_smul_mul_assoc one_mul_smul_comm
+
+instance instNormedAlgebra : NormedAlgebra 𝕜 (AddLp M R) where
+  norm_smul_le := norm_smul_le
+
+end AddLp
+
+
+end AddLpAlgebra
+
+end AddLpInstances
+
+end AddLp
 
 end DiscreteConvolution
 
