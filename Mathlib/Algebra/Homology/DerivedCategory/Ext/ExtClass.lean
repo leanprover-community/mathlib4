@@ -56,6 +56,7 @@ instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
   dsimp
   infer_instance
 
+set_option backward.privateInPublic true in
 include hS in
 private lemma hasSmallLocalizedHom_S'_X₃_K :
     HasSmallLocalizedHom.{w} W (S').X₃ K := by
@@ -63,12 +64,15 @@ private lemma hasSmallLocalizedHom_S'_X₃_K :
   dsimp
   apply Localization.hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀ (M := ℤ)
 
+set_option backward.privateInPublic true in
 include hS in
 private lemma hasSmallLocalizedShiftedHom_K_S'_X₁ :
     HasSmallLocalizedShiftedHom.{w} W ℤ K (S').X₁ := by
   rw [Localization.hasSmallLocalizedShiftedHom_iff_source.{w} W ℤ qis hqis (S').X₁]
   infer_instance
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The class in `Ext S.X₃ S.X₁ 1` that is attached to a short exact
 short complex `S` in an abelian category. -/
 noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by

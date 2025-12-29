@@ -33,8 +33,7 @@ noncomputable def expand : PowerSeries R →ₐ[R] PowerSeries R :=
   MvPowerSeries.expand p hp
 
 theorem expand_apply (f : PowerSeries R) : expand p hp f = subst (X ^ p) f := by
-  simp only [expand, MvPowerSeries.expand, MvPowerSeries.substAlgHom_apply]
-  rfl
+  simp [expand, MvPowerSeries.expand, subst, X]
 
 theorem expand_C (r : R) : expand p hp (C r : PowerSeries R) = C r := by
   conv_lhs => rw [← mul_one (C r), ← smul_eq_C_mul, expand, AlgHom.map_smul_of_tower,
@@ -43,8 +42,7 @@ theorem expand_C (r : R) : expand p hp (C r : PowerSeries R) = C r := by
 theorem expand_mul_eq_comp (q : ℕ) (hq : q ≠ 0) :
     expand (p * q) (p.mul_ne_zero hp hq) = (expand p hp (R := R)).comp (expand q hq) := by
   ext1 i
-  unfold expand
-  erw [MvPowerSeries.expand_mul_eq_comp p hp q hq]
+  simp [expand, MvPowerSeries.expand_mul_eq_comp p hp q hq]
 
 theorem expand_mul (q : ℕ) (hq : q ≠ 0) (φ : PowerSeries R) :
     φ.expand (p * q) (p.mul_ne_zero hp hq) = (φ.expand q hq).expand p hp :=
@@ -57,9 +55,7 @@ theorem expand_X : expand p hp (X (R := R)) = X ^ p :=
 @[simp]
 theorem expand_monomial (d : ℕ) (r : R) :
     expand p hp (monomial d r) = monomial (p * d) r := by
-  unfold expand
-  erw [MvPowerSeries.expand_monomial]
-  simp [monomial]
+  simp [expand, monomial, MvPowerSeries.expand_monomial]
 
 @[simp]
 theorem expand_one : expand 1 one_ne_zero = AlgHom.id R (PowerSeries R) := by
@@ -70,7 +66,7 @@ theorem expand_one_apply (f : PowerSeries R) : expand 1 one_ne_zero f = f := by 
 @[simp]
 theorem map_expand (f : R →+* S) (φ : PowerSeries R) :
     map f (expand p hp φ) = expand p hp (map f φ) := by
-  erw [expand_apply, map_subst (HasSubst.X_pow hp), map_pow, map_X, expand_apply]
+  simp [map, expand, MvPowerSeries.map_expand]
 
 /- TODO : In the original file of multi variate polynomial, there are two theorem about rename
 here, but we don't have rename for multi variate power series. And for `eval₂Hom`, `eval₂`
@@ -81,23 +77,19 @@ variable (q : ℕ) (hq : 0 < q)
 @[simp]
 theorem coeff_expand_mul (φ : PowerSeries R) (m : ℕ) :
     (expand p hp φ).coeff (p * m) = φ.coeff m := by
-  classical
-  erw [coeff, ← smul_eq_mul, (Finsupp.smul_single p () m).symm, MvPowerSeries.coeff_expand_smul]
-  rfl
+  rw [coeff, coeff, expand, ← smul_eq_mul, ← Finsupp.smul_single, MvPowerSeries.coeff_expand_smul]
 
 theorem coeff_expand_of_not_dvd (φ : PowerSeries R) {m : ℕ} (h : ¬ p ∣ m) :
     (expand p hp φ).coeff m = 0 := by
-  classical
-  erw [coeff, MvPowerSeries.coeff_expand_of_not_dvd p hp φ (i := ())]
+  rw [coeff, expand, MvPowerSeries.coeff_expand_of_not_dvd (i := ())]
   simpa
 
 theorem support_expand_subset (φ : PowerSeries R) :
     (expand p hp φ).support ⊆ φ.support.image (p • ·) := by
-  erw [MvPowerSeries.support_expand]
+  rw [expand, MvPowerSeries.support_expand]
 
 theorem support_expand (φ : PowerSeries R) :
     (expand p hp φ).support = φ.support.image (p • ·) := by
-  classical
-  erw [MvPowerSeries.support_expand]
+  rw [expand, MvPowerSeries.support_expand]
 
 end PowerSeries

@@ -185,10 +185,12 @@ section Preadditive
 
 variable [Preadditive C] [Preadditive D]
 
+@[simp]
 lemma map_add {a : M} (α₁ α₂ : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] [F.Additive] :
     (α₁ + α₂).map F = α₁.map F + α₂.map F := by
   simp [ShiftedHom.map, F.map_add]
 
+@[simp]
 lemma map_zero {a : M} (F : C ⥤ D) [F.CommShift M] [F.Additive] :
     (0 : ShiftedHom X Y a).map F = 0 := by
   simp [ShiftedHom.map]
@@ -219,6 +221,7 @@ lemma mk₀_smul (m₀ : M) (hm₀ : m₀ = 0) (r : R) {f : X ⟶ Y} :
 
 variable [Preadditive D] [Linear R D]
 
+@[simp]
 lemma map_smul (r : R) {a : M} (α : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] [F.Linear R] :
     (r • α).map F = r • (α.map F) := by
   simp [ShiftedHom.map, F.map_smul]
