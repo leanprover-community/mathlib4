@@ -48,7 +48,7 @@ include hi hj hij
 set_option backward.privateInPublic true in
 private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
-  · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toPerfPair.symm := by
+  · replace hm : i m ∈ j.range.dualAnnihilator.map (p.toPerfPair.symm : Dual R N →ₗ[R] M) := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator]
       refine ⟨p.toPerfPair (i m), ?_, LinearEquiv.symm_apply_apply _ _⟩
       rintro - ⟨n, rfl⟩
