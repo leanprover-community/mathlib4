@@ -280,6 +280,7 @@ section tangentMap
 
 variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
 
+set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
 is `C^m` when `m+1 ≤ n`. -/
 theorem ContMDiffOn.contMDiffOn_tangentMapWithin
@@ -311,6 +312,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
     exact A.comp _ (contMDiffWithinAt_proj (TangentSpace I)) (fun x h ↦ h)
   exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv hb₂
 
+set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
 derivative is continuous there. -/
 theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : 1 ≤ n)

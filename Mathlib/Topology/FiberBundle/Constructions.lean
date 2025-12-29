@@ -54,6 +54,7 @@ theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
 def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
   (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
+set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 /-- Local trivialization for trivial bundle. -/
 @[simps!]
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
@@ -81,6 +82,7 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   totalSpaceMk_isInducing' _ := (homeomorphProd B F).symm.isInducing.comp
     (isInducing_const_prod.2 .id)
 
+set_option linter.style.commandStart false in -- linter false positive (Bundle.TotalSpace)
 theorem eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
     [i : MemTrivializationAtlas e] : e = trivialization B F := i.out
 
@@ -135,6 +137,7 @@ def Prod.toFun' : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → B × F₁ × F
 
 variable {e₁ e₂}
 
+set_option linter.style.commandStart false -- linter false positive, TODO fix!
 theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
     (π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) := by
   let f₁ : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂ :=
@@ -241,6 +244,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
   trivialization_mem_atlas' b :=
     ⟨trivializationAt F₁ E₁ b, trivializationAt F₂ E₂ b, inferInstance, inferInstance, rfl⟩
 
+set_option linter.style.commandStart false -- linter false positive, TODO fix!
 instance {e₁ : Trivialization F₁ (π F₁ E₁)} {e₂ : Trivialization F₂ (π F₂ E₂)}
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₂] :
     MemTrivializationAtlas (e₁.prod e₂ : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ ×ᵇ E₂))) where
@@ -271,6 +275,7 @@ the projections to the base and the map to the original bundle are continuous. -
 instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   pullbackTopology F E f
 
+set_option linter.style.commandStart false -- linter false positive, TODO fix!
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_left

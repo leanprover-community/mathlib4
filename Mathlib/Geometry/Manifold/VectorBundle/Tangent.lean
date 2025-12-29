@@ -207,6 +207,7 @@ theorem trivializationAt_eq_localTriv (x : M) :
       (tangentBundleCore I M).toFiberBundleCore.localTriv (achart H x) :=
   rfl
 
+set_option linter.style.commandStart false in -- linter bug (pretty-printing of Bundle.TotalSpace)
 @[simp, mfld_simps]
 theorem trivializationAt_source (x : M) :
     (trivializationAt E (TangentSpace I) x).source =
