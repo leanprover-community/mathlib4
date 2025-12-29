@@ -72,13 +72,13 @@ noncomputable irreducible_def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[m
   else 0
 
 @[inherit_doc MeasureTheory.condLExp]
-scoped macro:max μ:term noWs "⁻[" f:term "|" m:term "]" : term =>
-  `(MeasureTheory.condLExp $m $μ $f)
+scoped macro:max P:term noWs "⁻[" X:term "|" mΩ:term "]" : term =>
+  `(MeasureTheory.condLExp $mΩ $P $X)
 
 /-- Unexpander for `μ⁻[f|m]` notation. -/
 @[app_unexpander MeasureTheory.condLExp]
 meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $m $μ $f) => `($μ⁻[$f|$m])
+  | `($_ $mΩ $P $X) => `($P⁻[$X|$mΩ])
   | _ => throw ()
 
 /-- info: P⁻[X|mΩ] : Ω → ℝ≥0∞ -/
