@@ -397,9 +397,27 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
   obtain ⟨v, v_mem, p, hp⟩ : ∃ v ∈ 𝓝[insert (x, y) (u ×ˢ k)] (x, y), ∃ p,
     HasFTaylorSeriesUpToOn m (Function.uncurry f) p v := hf (x, y) ⟨hx, hy⟩ m hm
   obtain ⟨u', u'_mem, k', k'_mem, k'meas, k'k, hk'⟩ :
-      ∃ u' ∈ 𝓝 x, ∃ k' ∈ 𝓝[k] y, MeasurableSet k' ∧ k' ⊆ k ∧ u' ×ˢ k' ⊆ v := by
-    rw [show insert (x, y) (u ×ˢ k) = u ×ˢ k from insert_eq_of_mem (by exact ⟨hx, hy⟩),
-      nhdsWithin_prod_eq, Filter.mem_prod_iff, IsOpen.nhdsWithin_eq hu hx] at v_mem
+      ∃ u' ∈ 𝓝 x, ∃ k' ∈ 𝓝[k] y, MeasurableSet k' ∧ k' ⊆ k ∧ u' ×ˢ k' ⊆ v
+      ∧ ∀ N ≤ m, ∀ z ∈ u' ×ˢ k', ‖p z N‖ < 1 + ‖p (x, y) N‖ := by
+    rw [show insert (x, y) (u ×ˢ k) = u ×ˢ k from insert_eq_of_mem (by exact ⟨hx, hy⟩)] at v_mem
+    have xyv : (x, y) ∈ v := mem_of_mem_nhdsWithin (by exact ⟨hx, hy⟩) v_mem
+
+    let v'' := ⋂ N ∈ Finset.Iic m, {z | ‖p z N‖ < 1 + ‖p (x, y) N‖}
+    have : v'' ∈ 𝓝[u ×ˢ k] (x, y) := by
+      apply (Filter.biInter_finset_mem _).2 (fun i hi ↦ ?_)
+      have : ContinuousWithinAt (fun z ↦ ‖p z i‖) v (x, y) :=
+        (hp.cont i (by simpa using hi) (x, y) xyv).norm
+
+
+
+
+
+
+
+
+#exit
+
+--      nhdsWithin_prod_eq, Filter.mem_prod_iff, IsOpen.nhdsWithin_eq hu hx] at v_mem
     rcases v_mem with ⟨u', u'_mem, t', t'_mem, ht'⟩
     rw [mem_nhdsWithin] at t'_mem
     rcases t'_mem with ⟨t'', t''_open, t''_mem, ht''⟩
