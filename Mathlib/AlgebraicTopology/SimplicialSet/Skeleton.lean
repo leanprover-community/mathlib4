@@ -71,7 +71,7 @@ lemma mem_skeleton_obj_iff_of_nonDegenerate
     x.1 ∈ (X.skeleton n).obj _ ↔ d < n := by
   refine ⟨fun h ↦ ?_, fun _ ↦ X.mem_skeleton _⟩
   obtain ⟨x, hx⟩ := x
-  simp only [skeleton, OrderHom.coe_mk, Subpresheaf.iSup_obj,
+  simp only [skeleton, OrderHom.coe_mk, Subfunctor.iSup_obj,
     Set.iUnion_coe_set, Set.mem_iUnion, exists_prop] at h
   obtain ⟨⟨i, hi⟩, y, hy, ⟨f⟩, rfl⟩ := h
   have := X.mono_of_nonDegenerate ⟨_, hx⟩ f y rfl
@@ -87,7 +87,7 @@ lemma iSup_skeleton :
   le_antisymm (by simp) (by
     rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro n x _
-    simp only [Subpresheaf.iSup_obj, Set.mem_iUnion]
+    simp only [Subfunctor.iSup_obj, Set.mem_iUnion]
     exact ⟨n + 1, mem_skeleton _ _ (by lia)⟩)
 
 lemma skeleton_succ (n : ℕ) :

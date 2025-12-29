@@ -35,7 +35,7 @@ variable {M N : TopModuleCat.{v} R} (φ : M ⟶ N)
 section kernel
 
 /-- Kernel in `TopModuleCat R` is the kernel of the linear map with the subspace topology. -/
-abbrev ker : TopModuleCat R := .of R (LinearMap.ker φ.hom)
+abbrev ker : TopModuleCat R := .of R φ.hom.ker
 
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
 def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
@@ -49,9 +49,9 @@ instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) <| S
 /-- `TopModuleCat.ker` is indeed the kernel in `TopModuleCat R`. -/
 def isLimitKer : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=
   isLimitAux (KernelFork.ofι (kerι φ) (kerι_comp φ))
-    (fun s ↦ ofHom <| (Fork.ι s).hom.codRestrict (LinearMap.ker φ.hom) fun m ↦ by
-      rw [LinearMap.mem_ker, ← ConcreteCategory.comp_apply (Fork.ι s) φ,
-        KernelFork.condition, hom_zero_apply])
+    (fun s ↦ ofHom <| (Fork.ι s).hom.codRestrict φ.hom.ker fun m ↦ by
+      rw [LinearMap.mem_ker, ContinuousLinearMap.coe_coe,
+        ← ConcreteCategory.comp_apply (Fork.ι s) φ, KernelFork.condition, hom_zero_apply])
     (fun s ↦ rfl)
     (fun s m h ↦ by dsimp at h ⊢; rw [← cancel_mono (kerι φ), h]; rfl)
 
@@ -60,7 +60,7 @@ end kernel
 section cokernel
 
 /-- Cokernel in `TopModuleCat R` is the cokernel of the linear map with the quotient topology. -/
-abbrev coker : TopModuleCat R := .of R (N ⧸ LinearMap.range φ.hom)
+abbrev coker : TopModuleCat R := .of R (N ⧸ φ.hom.range)
 
 /-- The projection map to the cokernel in `TopModuleCat R`. -/
 def cokerπ : N ⟶ coker φ := ofHom <| ⟨Submodule.mkQ _, by tauto⟩
@@ -81,7 +81,7 @@ instance : Epi (cokerπ φ) := ConcreteCategory.epi_of_surjective (cokerπ φ) (
 def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ φ)) :=
   isColimitAux (.ofπ (cokerπ φ) (comp_cokerπ φ))
   (fun s ↦ ofHom <|
-    { toLinearMap := (LinearMap.range φ.hom).liftQ s.π.hom.toLinearMap
+    { toLinearMap := φ.hom.range.liftQ s.π.hom.toLinearMap
         (LinearMap.range_le_ker_iff.mpr <| show (φ ≫ s.π).hom.toLinearMap = 0 by
           rw [s.condition, hom_zero, ContinuousLinearMap.coe_zero])
       cont := Continuous.quotient_lift s.π.hom.2 _ })
