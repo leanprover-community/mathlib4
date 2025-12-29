@@ -771,6 +771,24 @@ theorem _root_.Sbtw.oangle_sign_eq_right {p₁ p₂ p₃ : P} (p₄ : P) (h : Sb
     (∡ p₂ p₄ p₃).sign = (∡ p₁ p₄ p₃).sign :=
   h.wbtw.oangle_sign_eq_of_ne_right _ h.ne_right
 
+/-- Given two strict betweenness relations sharing a common point, and four corresponding
+collinear points, the angles formed at the two outer points with the same pair of endpoints
+have the same sign. -/
+theorem _root_.Sbtw.oangle_sign_eq_of_sbtw {p p₁ p₂ p₃ p₄ : P} (hp₁₃ : Sbtw ℝ p₁ p p₃)
+    (hp₂₄ : Sbtw ℝ p₂ p p₄) :
+    (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
+  rw [← Sbtw.oangle_eq_right hp₂₄.symm, Sbtw.oangle_sign_eq _ hp₁₃, ← oangle_rotate_sign,
+    Sbtw.oangle_sign_eq _ hp₂₄.symm, Sbtw.oangle_eq_left hp₁₃.symm]
+
+/-- Given two strict betweenness relations sharing a common endpoint, and four corresponding
+collinear points, the angles formed at the two outer points with the same pair of endpoints
+have the same sign. -/
+theorem _root_.Sbtw.oangle_sign_eq_of_sbtw_left {p p₁ p₂ p₃ p₄ : P} (hp₁₃ : Sbtw ℝ p p₁ p₃)
+    (hp₂₄ : Sbtw ℝ p p₂ p₄) :
+    (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
+  rw [Sbtw.oangle_eq_right hp₂₄.symm, Sbtw.oangle_sign_eq_right _ hp₁₃.symm, oangle_rotate_sign,
+    ← Sbtw.oangle_sign_eq_left p₃ hp₂₄, Sbtw.oangle_eq_left hp₁₃.symm]
+
 /-- Given two points in an affine subspace, the angles between those two points at two other
 points on the same side of that subspace have the same sign. -/
 theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P} {p₁ p₂ p₃ p₄ : P}
