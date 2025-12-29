@@ -541,8 +541,6 @@ instance instMul : Mul (AddLp M R) where
 
 end Mul
 
-attribute [nolint unusedArguments] mul_apply
-
 section One
 
 variable [DecidableEq M]
@@ -554,8 +552,6 @@ instance instOne : One (AddLp M R) where
     (1 : AddLp M R) x = addDelta (1 : R) x := rfl
 
 end One
-
-attribute [nolint unusedArguments] one_apply
 
 section Ring
 
