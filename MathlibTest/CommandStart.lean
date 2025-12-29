@@ -46,14 +46,10 @@ namespace Bundle
 set_option linter.style.commandStart true
 scoped notation:max "π " F':max E':max => Nat.add F' E'
 
-/-- info: 7 -/
 #guard_msgs in
-#eval
-  π 3 4
+example := π 3 4
 
 /--
-info: 7
----
 warning: add space in the source
 
 This part of the code
@@ -65,17 +61,12 @@ should be written as
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-#eval
-  π 3(4)
+example := π 3(4)
 
-/-- info: 7 -/
 #guard_msgs in
-#eval
-  π 3 (4)
+example := π 3 (4)
 
 /--
-info: 7
----
 warning: remove space in the source
 
 This part of the code
@@ -87,25 +78,21 @@ should be written as
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-#eval
-  π 3  (4)
-
-def Foo (_n : Nat) := Nat
+example := π 3  (4)
 
 /--
 warning: add space in the source
 
 This part of the code
-  'l)'
+  '1)'
 should be written as
-  'l )'
+  '1 )'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-variable {k l : Nat} in
-def Bar' : Type := Foo (π k l)
+example := (π 0 1)
 
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
