@@ -209,7 +209,7 @@ theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3} (ha : ∀ n, a n
 this function rescales the interval containing `x` back to `[0, 1]`.
 Used to iteratively extract the ternary representation of `x`. -/
 noncomputable def cantorStep (x : ℝ) : ℝ :=
-  if x ∈ Set.Icc 0 (1/3) then
+  if x ∈ Set.Icc 0 (1 / 3) then
     3 * x
   else
     3 * x - 2
@@ -240,7 +240,7 @@ This function tracks which of the two intervals in `preCantorSet (n + 1)`
 contains `x` at each step, producing the corresponding path as a stream of booleans. -/
 noncomputable def cantorToBinary (x : ℝ) : Stream' Bool :=
   (cantorSequence x).map fun x ↦
-    if x ∈ Set.Icc 0 (1/3) then
+    if x ∈ Set.Icc 0 (1 / 3) then
       false
     else
       true
@@ -259,7 +259,7 @@ theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n �
 
 theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
     (cantorSequence x).get (n + 1) =
-      3 * ((cantorSequence x).get n - 3^n * ofDigitsTerm (cantorToTernary x).get n) := by
+      3 * ((cantorSequence x).get n - 3 ^ n * ofDigitsTerm (cantorToTernary x).get n) := by
   simp only [cantorSequence, ofDigitsTerm, cantorToTernary, cantorToBinary, Set.mem_Icc,
     Bool.if_true_right, Bool.or_false, Stream'.get_map, Bool.cond_not, Bool.cond_decide,
     Stream'.get_succ_iterate', cantorStep]
@@ -268,7 +268,7 @@ theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
 
 theorem cantorSequence_eq_self_sub_sum_cantorToTernary (x : ℝ) (n : ℕ) :
     (cantorSequence x).get n =
-    (x - ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x).get i) * 3^n := by
+    (x - ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x).get i) * 3 ^ n := by
   induction n with
   | zero => simp [cantorSequence]
   | succ n ih => rw [cantorSequence_get_succ, ih, Finset.sum_range_succ]; ring
@@ -282,12 +282,12 @@ theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : �
   simpa using h_mem.left
 
 theorem le_ofDigits_cantorToTernary_sum {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
-    x - (3⁻¹ : ℝ)^n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by
+    x - (3⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by
   have h_mem := cantorSequence_mem_cantorSet hx n
   rw [cantorSequence_eq_self_sub_sum_cantorToTernary x n] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
-  rw [← mul_le_mul_iff_left₀ (show 0 < (3 : ℝ)^n by positivity), sub_mul, inv_pow,
+  rw [← mul_le_mul_iff_left₀ (show 0 < (3 : ℝ) ^ n by positivity), sub_mul, inv_pow,
     inv_mul_cancel₀ (by simp)]
   linarith!
 
@@ -298,7 +298,7 @@ theorem ofDigits_cantorToTernary {x : ℝ} (hx : x ∈ cantorSet) :
   rw [hasSum_iff_tendsto_nat_of_summable_norm]
   swap
   · simpa only [norm_of_nonneg ofDigitsTerm_nonneg] using summable_ofDigitsTerm
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le (g := fun n ↦ x - (3⁻¹ : ℝ)^n) (h := fun _ ↦ x)
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le (g := fun n ↦ x - (3⁻¹ : ℝ) ^ n) (h := fun _ ↦ x)
   · rw [← tendsto_sub_nhds_zero_iff]
     simp only [sub_sub_cancel_left]
     rw [show 0 = -(0 : ℝ) by simp]
