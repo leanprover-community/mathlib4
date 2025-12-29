@@ -477,6 +477,7 @@ variable [AddCommMonoid E] [Module S E]
 variable [TopologicalSpace E]
 
 /-- Commutativity for symmetric bilinear maps on commutative monoids. -/
+@[to_additive (dont_translate := S E) addConvolution_comm]
 theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E)
     (hL : ∀ x y, L x y = L y x) :
     f ⋆[L] g = g ⋆[L] f := by
@@ -530,6 +531,7 @@ section MulConvolutionComm
 
 variable [CommMonoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
 
+@[to_additive (dont_translate := R) addMulConvolution_comm]
 theorem mulConvolution_comm (f g : M → R) : f ⋆ₘ g = g ⋆ₘ f :=
   convolution_comm (LinearMap.mul R R) f g (fun x y => mul_comm x y)
 
