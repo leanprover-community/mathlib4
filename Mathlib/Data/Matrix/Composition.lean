@@ -68,16 +68,12 @@ theorem comp_single_single
       single_apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
   rw [single_apply_same, single_apply_same]
 
-@[deprecated (since := "2025-05-05")] alias comp_stdBasisMatrix_stdBasisMatrix := comp_single_single
-
 @[simp]
 theorem comp_symm_single
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (ii jj r) :
     (comp I J K L R).symm (single ii jj r) =
       (single ii.1 jj.1 (single ii.2 jj.2 r)) :=
   (comp I J K L R).symm_apply_eq.2 <| comp_single_single _ _ _ _ _ |>.symm
-
-@[deprecated (since := "2025-05-05")] alias comp_symm_stdBasisMatrix := comp_symm_single
 
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
