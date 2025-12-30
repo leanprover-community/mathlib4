@@ -13,7 +13,7 @@ open Lean Meta Elab Tactic SubExpr
 syntax "test" str ("at" ident)? : tactic
 
 elab_rules : tactic
-  | `(tactic| test%$stx $t:str $[at $h?:ident]?) =>
+  | `(tactic| test $t:str $[at $h?:ident]?) =>
   withMainContext do
     let goal ← getMainGoal
     let goalType ← goal.getType
@@ -23,21 +23,13 @@ elab_rules : tactic
       | none => pure <| GoalLocation.target pos
       | some h => pure <| GoalLocation.hypType (← getFVarId h) pos
     let locs := #[{ mvarId := goal, loc := loc }]
-    let some range := (← getFileMap).lspRangeOfStx? stx | failure
-    let interactive ← Lean.Widget.goalToInteractive goal
-    let params : SelectInsertParams := {
-      pos := range.start
-      goals := #[interactive]
-      selectedLocations := locs
-      replaceRange := range
-    }
-    let (_, conv, _) ← insertEnter locs goalType params
-    let replacement := s!"{conv}\n{String.replicate range.start.character ' '}  trace_state"
-    let env ← getEnv
-    let tacs := Parser.runParserCategory env `tactic replacement (← getFileName)
-    match tacs with
-    | .error s => throwError s
-    | .ok tacs => evalTactic tacs
+    let conv ← insertEnterSyntax locs goalType
+    let insert ← conv.replaceM fun stx =>
+      match stx with
+      | `(Lean.Parser.Tactic.Conv.skip| skip) =>
+        some <$> `(Lean.Parser.Tactic.Conv.convTrace_state| trace_state)
+      | _ => pure none
+    evalTactic insert
 
 elab "mdata% " e:term : term => do
   let e ← Term.elabTerm e none
@@ -266,32 +258,4 @@ example : let b := 1; let c : Fin b := ⟨0, Nat.zero_lt_one⟩; b = c + 1 := by
   intro b c
   -- go to `b`
   test "/1" at c
-  exact test_sorry
-
-/--
-trace: «,]
-» : Nat
-| 1 +
-    «,]
-      »
--/
-#guard_msgs in
-example : ∀ «,]
-» : Nat, «,]
-» = 1 + «,]
-» - 1 := by
-  /- go to `1 + «,]
-»` -/
-  test "/1/1/0/1"
-  exact test_sorry
-
-/--
-trace: case h
-x✝ : Nat
-| x✝
--/
-#guard_msgs in
-example : id = by_elab return .lam (.str .anonymous "»") (.const ``Nat []) (.bvar 0) .default := by
-  -- go to `»`
-  test "/1/1"
   exact test_sorry

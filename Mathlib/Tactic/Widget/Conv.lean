@@ -22,7 +22,6 @@ meta section
 open Lean Meta Server ProofWidgets
 
 inductive Path where
-  | node : Path
   | arg (arg : Nat) (all : Bool) (next : Path) : Path
   | fun (depth : Nat) : Path
   | type (next : Path) : Path
@@ -32,7 +31,7 @@ partial def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
   go expr pos.toArray 0
 where
   go (expr : Expr) (pos : Array Nat) (i : Fin (pos.size + 1)) : MetaM Path :=
-    if h : i = Fin.last pos.size then pure .node else
+    if h : i = Fin.last pos.size then pure (Path.fun 0) else
     let i := i.castLT (Fin.val_lt_last h)
     if pos[i] = SubExpr.Pos.typeCoord then
       throwError m!"conv mode does not support entering types{indentExpr expr}" else
@@ -107,40 +106,67 @@ where
         else arg (u + 1) true <$> go acc[u] p i
       else arg 0 false <$> go e p i
 
-def getName {m} [Monad m] [MonadEnv m] (n : Name) : m String := do
-  let table ← Parser.getTokenTable <$> getEnv
-  let isToken s := (table.find? s).isSome
-  return (toString? n.eraseMacroScopes isToken).getD "_"
+def Lean.Name.willRoundTrip (n : Name) : Bool :=
+  !n.isAnonymous && !n.hasMacroScopes && !maybePseudoSyntax && go n
 where
-  toString? (n : Name) (isToken : String → Bool) : Option String :=
-    match n with
-    | .str .anonymous s => Lean.Name.escapePart s (isToken s)
-    | .str n s => do
-      let r ← toString? n isToken
-      let r' := r ++ "." ++ (Lean.Name.escapePart s false).getD s
-      if isToken r' then return r ++ "." ++ (← Lean.Name.escapePart s true) else return r'
-    | _ => none
+  go : Lean.Name → Bool
+    | .str n s =>
+      !s.contains (fun c => c == '✝' || c == '\n')
+        && (s.isEmpty || !s.any isIdEndEscape)
+        && go n
+    | .num .. => false
+    | .anonymous => true
+  maybePseudoSyntax :=
+    if n == `_ then
+      -- output hole as is
+      true
+    else if let .str _ s := n.getRoot then
+      -- could be pseudo-syntax for loose bvar or universe mvar, output as is
+      "#".isPrefixOf s || "?".isPrefixOf s
+    else
+      false
 
-def pathToString {m} [Monad m] [MonadEnv m] (path : Path) (spc : String) : m String := do
-  let c ← go path
-  let cc := List.replicate c.2 "fun"
-  return s!"\n{spc}  ".intercalate
-    (if c.1 = [] then cc else s!"enter [{", ".intercalate c.1}]" :: cc)
-where
-  go : Path → m (List String × Nat)
-    | Path.node => pure ([], 0)
-    | Path.arg arg all next => do
-      pure (s!"{if all then "@" else ""}{arg}" :: (← go next).1, (← go next).2)
-    | Path.fun depth => pure ([], depth)
-    | Path.type next => do pure ("1" :: (← go next).1, (← go next).2)
-    | Path.body name next => do
-      pure ((← getName name.eraseMacroScopes) :: (← go next).1, (← go next).2)
+open Lean.Parser.Tactic.Conv in
+def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
+    (path : Path) (loc : Option Lean.Name) (xs : Syntax.TSepArray [``enterArg] "," := ⟨#[]⟩) :
+    m (TSyntax `tactic) := do
+  match path with
+  | Path.arg arg all next =>
+    let num := Syntax.mkNumLit (toString arg) (← MonadRef.mkInfoFromRefPos)
+    let arg ← if all then `(enterArg| @$num:num)
+      else `(enterArg| $num:num)
+    pathToStx next loc (xs.push arg)
+  | Path.type next =>
+    let arg ← `(enterArg| 1)
+    pathToStx next loc (xs.push arg)
+  | Path.body name next =>
+    let bi ←
+      if name.eraseMacroScopes.willRoundTrip then
+        `(binderIdent| $(← mkIdentFromRef name.eraseMacroScopes):ident)
+      else `(binderIdent| _)
+    let arg ← `(enterArg| $bi:binderIdent)
+    pathToStx next loc (xs.push arg)
+  | Path.fun depth =>
+    let o1 := xs.elemsAndSeps.isEmpty
+    let mut arr := Array.emptyWithCapacity ((!o1).toNat + depth + 1)
+    let enterStx ← `(enter| enter [$xs,*])
+    let funStx ← `(«fun»| fun)
+    let skipStx ← `(skip| skip)
+    let add (arr : Array Syntax) (x : Syntax) : Array Syntax :=
+      if arr.isEmpty then arr.push x else (arr.push mkNullNode).push x
+    if !xs.elemsAndSeps.isEmpty then arr := add arr enterStx.raw
+    for _ in [0:depth] do arr := add arr funStx
+    arr := add arr skipStx
+    let seq := Lean.mkNode ``convSeq1Indented #[mkNullNode arr]
+    match loc with
+    | none => `(tactic| conv => $seq:convSeq1Indented)
+    | some n => `(tactic| conv at $(← mkIdentFromRef n):ident => $seq:convSeq1Indented)
 
 open Lean Syntax in
-/-- Return the link text and inserted text above and below of the conv widget. -/
-public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (params : SelectInsertParams) :
-    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
+/-- Return the syntax to insert for the conv widget.
+Factored out of `insertEnter` for easy testing. -/
+public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) :
+    MetaM Syntax := do
   let some pos := locations[0]? | throwError "You must select something."
   let (fvar, subexprPos) ← match pos with
   | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
@@ -150,15 +176,20 @@ public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType 
   let expr ← instantiateMVars expr
   -- generate list of commands for `enter`
   let path ← Path.ofSubExprPos expr subexprPos
+  pathToStx path (← fvar.mapM FVarId.getUserName)
+
+open Lean Syntax in
+/-- Return the link text and inserted text above and below of the conv widget. -/
+public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
+    (params : SelectInsertParams) :
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
   -- prepare `enter` indentation
-  let spc := String.replicate (SelectInsertParamsClass.replaceRange params).start.character ' '
+  let indent := (SelectInsertParamsClass.replaceRange params).start.character
   -- build `enter [...]` string
-  let enterString ← pathToString path spc
-  let loc ← match fvar with
-  | some fvarId => pure s!"at {← fvarId.getUserName} "
-  | none => pure ""
-  let enterval := if enterString = "" then "" else s!"conv {loc}=>\n{spc}  {enterString}"
-  return ("Generate conv", enterval, none)
+  let enterStx ← insertEnterSyntax locations goalType
+  let enterFormat ← PrettyPrinter.ppCategory `tactic enterStx
+  let enterString := enterFormat.pretty (width := 100) (indent := indent) (column := indent)
+  return ("Generate conv", enterString, none)
 
 /-- Rpc function for the conv widget. -/
 @[server_rpc_method]
