@@ -168,6 +168,8 @@ instance (i : I) : (Pi.eval C i).Monoidal where
   η := 𝟙 _
   δ X Y := 𝟙 _
 
+instance [∀ i, BraidedCategory (C i)] (i : I) : (Pi.eval C i).Braided where
+
 @[simps]
 instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ i : I, D ⥤ C i)
     [∀ i, (F i).LaxMonoidal] : (Functor.pi' F).LaxMonoidal where
