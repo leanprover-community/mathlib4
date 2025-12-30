@@ -223,23 +223,19 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
 @[to_additive]
-lemma closure_pow_le : ∀ {n}, closure (s ^ n) ≤ closure s
-  | 0 => by
-    intro x hx
-    simp only [pow_zero] at hx
-    suffices x = 1 by simp [this]
-    simpa [Subgroup.closure_eq_bot_iff.mpr ?_] using hx
-  | n + 1 =>
+lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
+  | 1, _ => by simp
+  | n + 2, _ =>
     calc
-      closure (s ^ (n + 1))
-      _ = closure (s ^ n * s) := by rw [pow_succ]
-      _ ≤ closure (s ^ n) ⊔ closure s := closure_mul_le ..
-      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le
+      closure (s ^ (n + 2))
+      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
+      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
+      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
       _ = closure s := sup_idem _
 
 @[to_additive]
 lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
-  closure_pow_le.antisymm <| by gcongr; exact subset_pow hs hn
+  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
 
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
