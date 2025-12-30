@@ -23,7 +23,7 @@ variable {A : Type*} (k V : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGrou
     [Module A V] [IsScalarTower k A V]
 
 /-- Schur's Lemma: If `V` is a representation of an algebra `A` over an algebraically closed field
-`k`, then any endomorphism of `V` is a scalar map. -/
+`k`, then any endomorphism of `V` is scalar. -/
 theorem scalar_linear_map_of_simple_alg_closed [IsSimpleModule A V] [FiniteDimensional k V]
     [IsAlgClosed k] (f : V →ₗ[A] V) : ∃ a : k, ∀ v : V, f v = a • v := by
   by_cases h : Nontrivial V
