@@ -1009,7 +1009,8 @@ Note that this only assumes `SMulCommClass R A A`, so that it also works for `R 
 
 When `A` is unital and associative, this is the same as `DistribMulAction.toLinearMap R A a` -/
 def mulLeft (a : A) : A →ₗ[R] A where
-  __ := AddMonoidHom.mulLeft a
+  toFun := (a * ·)
+  map_add' := mul_add _
   map_smul' _ := mul_smul_comm _ _
 
 @[simp] theorem mulLeft_apply (a b : A) : mulLeft R a b = a * b := rfl
@@ -1034,7 +1035,8 @@ Note that this only assumes `IsScalarTower R A A`, so that it also works for `R 
 When `A` is unital and associative, this is the same as
 `DistribMulAction.toLinearMap R A (MulOpposite.op b)`. -/
 def mulRight (b : A) : A →ₗ[R] A where
-  __ := AddMonoidHom.mulRight b
+  toFun := (· * b)
+  map_add' _ _ := add_mul _ _ _
   map_smul' _ _ := smul_mul_assoc _ _ _
 
 @[simp] theorem mulRight_apply (a b : A) : mulRight R a b = b * a := rfl
