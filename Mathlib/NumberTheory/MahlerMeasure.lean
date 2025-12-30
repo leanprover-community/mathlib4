@@ -28,7 +28,7 @@ polynomials, in particular Northcott's Theorem for the Mahler measure.
 - `Polynomial.cyclotomic_mahlerMeasure_eq_one`: the Mahler measure of a cyclotomic polynomial is 1.
 - `Polynomial.pow_eq_one_of_mahlerMeasure_eq_one`: if an integer polynomial has Mahler measure equal
   to 1, then all its complex nonzero roots are roots of unity.
-- `Polynomial.cyclotomomic_dvd_of_mahlerMeasure_eq_one`: if an integer non-constant polynomial has
+- `Polynomial.cyclotomic_dvd_of_mahlerMeasure_eq_one`: if an integer non-constant polynomial has
   Mahler measure equal to 1 and is a multiple of X, then it is divisible by a cyclotomic polynomial.
 -/
 
@@ -191,7 +191,7 @@ elements of number fields. We thus first construct the number field K obtained b
     to_charZero := ℚ⟮z⟯.charZero,
     to_finiteDimensional := adjoin.finiteDimensional
       (isIntegral_of_mahlerMeasure_eq_one h hz).tower_top}
---y is z as an element of K
+-- y is z as an element of K
   let y : K := ⟨z, mem_adjoin_simple_self ℚ z⟩
 -- the conjugates of y are inside the closed unit disk
   have (φ : K →+* ℂ) : ‖φ y‖ ≤ 1 := by
@@ -215,9 +215,9 @@ theorem isPrimitiveRoot_of_mahlerMeasure_eq_one : ∃ n, 0 < n ∧ IsPrimitiveRo
   exact IsPrimitiveRoot.exists_pos hz_pow (by omega)
 
 include h in
-/-- If an integer non-constant polynomial has Mahler measure equal to 1 and is a multiple of X,
+/-- If an integer non-constant polynomial has Mahler measure equal to 1 and is not a multiple of X,
 then it is divisible by a cyclotomic polynomial. -/
-theorem cyclotomomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degree ≠ 0) :
+theorem cyclotomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degree ≠ 0) :
     ∃ n, 0 < n ∧ cyclotomic n ℤ ∣ p := by
   have hpdegC : (p.map (castRingHom ℂ)).degree ≠ 0 := by
     convert hpdeg
