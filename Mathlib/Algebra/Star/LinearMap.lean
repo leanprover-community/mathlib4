@@ -230,6 +230,10 @@ theorem IntrinsicStar.isSelfAdjoint_iff_map_star (f : E →L[R] F) :
     IsSelfAdjoint f ↔ ∀ x, f (star x) = star (f x) := by
   simp [IsSelfAdjoint, ContinuousLinearMap.ext_iff, star_eq_iff_star_eq, eq_comm (a := f _)]
 
+theorem IntrinsicStar.isSelfAdjoint_toLinearMap_iff (f : E →L[R] F) :
+    IsSelfAdjoint f.toLinearMap ↔ IsSelfAdjoint f := by
+  simp [isSelfAdjoint_iff_map_star, LinearMap.IntrinsicStar.isSelfAdjoint_iff_map_star]
+
 /-- The involutive intrinsic star structure on continuous linear maps. -/
 def intrinsicInvolutiveStar : InvolutiveStar (E →L[R] F) where
   star_involutive x := by ext; simp
