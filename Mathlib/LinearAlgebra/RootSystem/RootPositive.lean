@@ -177,9 +177,6 @@ lemma rootLength_reflectionPerm_self (i : ι) :
     B.rootLength (P.reflectionPerm i i) = B.rootLength i := by
   simp [rootLength, rootSpanMem_reflectionPerm_self]
 
-@[deprecated (since := "2025-05-28")]
-alias rootLength_reflection_perm_self := rootLength_reflectionPerm_self
-
 @[simp] lemma algebraMap_rootLength (i : ι) :
     algebraMap S R (B.rootLength i) = B.form (P.root i) (P.root i) := by
   simp [rootLength]
