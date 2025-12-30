@@ -23,8 +23,8 @@ The use of the term *snowflaking* arises from the fact that if one chooses `X :=
 `α := log 3 / log 4`, then `Metric.Snowflaking X α … …` is isometric to the von Koch snowflake,
 where we equip that space with the natural metric induced by the `α⁻¹`-Hausdorff measure of paths.
 
-Snowflake metrics are used regularly in geometric measure theory where, among other things, they
-characterize doubling measures. In particular, a measure on metric space is doubling if and only
+Snowflake metrics are used regularly in the geometry of metric spaces where, among other things,
+they characterize doubling metrics. In particular, a metric is doubling if and only
 if every `α`-snowflaking (with `0 < α < 1`) of it is bilipschitz equivalent to a subset of some
 Euclidean space (the dimension of the Euclidean space depends on `α`).
 
