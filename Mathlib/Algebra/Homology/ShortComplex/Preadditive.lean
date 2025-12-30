@@ -3,17 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Opposite
-=======
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Opposite
->>>>>>> origin/master
 
 /-!
 # Homology of preadditive categories

@@ -3,22 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.ObjectProperty.Retracts
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Shift.ShiftSequence
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.Algebra.Homology.ExactSequence
-=======
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.Retracts
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.Algebra.Homology.ExactSequence
->>>>>>> origin/master
 
 /-! # Homological functors
 
@@ -78,13 +70,8 @@ def homologicalKernel : ObjectProperty C :=
 
 lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
     F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-<<<<<<< HEAD
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
-  rfl
-=======
   simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
     homologicalKernel, comp_obj]
->>>>>>> origin/master
 
 section Pretriangulated
 
@@ -329,11 +316,7 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
   · intros
     constructor <;> infer_instance
 
-<<<<<<< HEAD
-@[deprecated (since := "2025-04-19")]
-=======
 @[deprecated (since := "2025-07-21")]
->>>>>>> origin/master
 alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows

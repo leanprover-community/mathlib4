@@ -5,16 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.Homology
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.Algebra.Homology.ShortComplex.Limits
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-=======
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.Limits
+public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Basic
->>>>>>> origin/master
 
 /-!
 # Abelian categories have homology
@@ -34,13 +28,9 @@ coimage-image isomorphism in abelian categories.
 
 -/
 
-<<<<<<< HEAD
-universe v' u' v u
-=======
 @[expose] public section
 
-universe v u
->>>>>>> origin/master
+universe v v' u u'
 
 namespace CategoryTheory
 

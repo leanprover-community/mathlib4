@@ -3,23 +3,22 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.Shift
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
-import Mathlib.CategoryTheory.Localization.Triangulated
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Shift.Localization
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-=======
 module
 
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 public import Mathlib.CategoryTheory.Localization.Triangulated
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.Shift.Localization
->>>>>>> origin/master
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+--import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+--import Mathlib.CategoryTheory.ObjectProperty.Shift
+--import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+--import Mathlib.CategoryTheory.Localization.Triangulated
+--import Mathlib.CategoryTheory.Limits.FullSubcategory
+--import Mathlib.CategoryTheory.Shift.Localization
+--import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! # Triangulated subcategories
 
@@ -32,14 +31,8 @@ and we show that it has both calculus of left and right fractions.
 
 ## TODO
 
-<<<<<<< HEAD
-* obtain (pre)triangulated instances on the localized category with respect to `S.W`
-* show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
-is a pretriangulated category.
-=======
 * show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
   is a pretriangulated category.
->>>>>>> origin/master
 
 ## Implementation notes
 
@@ -64,7 +57,6 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject Pretriangulated Triangulated
 
-<<<<<<< HEAD
 namespace Limits
 
 variable {C J₁ J₂ : Type _} [Category C]
@@ -112,9 +104,6 @@ end Limits
 open Pretriangulated
 
 variable {C : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ]
-=======
-variable {C : Type*} [Category* C] [HasZeroObject C] [HasShift C ℤ]
->>>>>>> origin/master
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace ObjectProperty
@@ -219,13 +208,9 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
 /-- Given `P : ObjectProperty C` with `C` a pretriangulated category, this is the class
-<<<<<<< HEAD
-of morphisms whose cone satisfies `S.P`. -/
-=======
 of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
 for "triangulated", and `W` is a letter that is often used to refer to classes of
 morphisms with respect to which we may consider the localized category.) -/
->>>>>>> origin/master
 def trW : MorphismProperty C :=
   fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
     (_ : Triangle.mk f g h ∈ distTriang C), P Z
@@ -320,7 +305,6 @@ lemma trW_iff_of_distinguished
   · intro h
     exact ⟨_, _, _, hT, h⟩
 
-<<<<<<< HEAD
 /-- Variant of `mem_W_iff_of_distinguished`. -/
 lemma trW_iff_of_distinguished' [P.IsStableUnderShift ℤ]
     [P.IsClosedUnderIsomorphisms] (T : Triangle C) (hT : T ∈ distTriang C) :
@@ -328,8 +312,6 @@ lemma trW_iff_of_distinguished' [P.IsStableUnderShift ℤ]
   simpa [P.prop_shift_iff_of_isStableUnderShift]
     using P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
 
-=======
->>>>>>> origin/master
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -376,7 +358,6 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.IsCompatibleWithTriangula
   exact ⟨φ.hom₃, P.trW.comp_mem _ _ (trW.mk P H.mem mem₄') (trW.mk' P H'.mem mem₅'),
     by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩
 
-<<<<<<< HEAD
 lemma binary_product_stable_of_isTriangulated [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
     (X₁ X₂ : C) (hX₁ : P X₁) (hX₂ : P X₂) :
     P (X₁ ⨯ X₂)  :=
@@ -413,13 +394,14 @@ instance [P.IsTriangulated] : P.trW.IsStableUnderFiniteProducts := by
 
 lemma closedUnderLimitsOfShape_discrete_of_isTriangulated
     [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] (J : Type) [Finite J] :
-    ClosedUnderLimitsOfShape (Discrete J) P := by
-  intro F c hc hF
-  let G (j : J) : C := F.obj ⟨j⟩
-  have e : Discrete.functor G ≅ F := Discrete.natIso (fun _ ↦ Iso.refl _)
-  have := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-    ((IsLimit.postcomposeInvEquiv e c).2 hc)
-  exact P.prop_of_iso this (P.pi_finite_stable G (fun j ↦ hF _))
+    P.IsClosedUnderLimitsOfShape (Discrete J) where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    let G (j : J) : C := p.diag.obj ⟨j⟩
+    have e : Discrete.functor G ≅ p.diag := Discrete.natIso (fun _ ↦ Iso.refl _)
+    have := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+      ((IsLimit.postcomposeInvEquiv e _).2 p.isLimit)
+    exact P.prop_of_iso this (P.pi_finite_stable G (fun j ↦ p.prop_diag_obj _))
 
 section
 
@@ -435,38 +417,6 @@ instance (P' : ObjectProperty C) [P.IsTriangulated] [P.IsClosedUnderIsomorphisms
     (P ⊓ P').IsTriangulated where
 
 end
-=======
-end ObjectProperty
-
-namespace Triangulated
-
-@[deprecated (since := "2025-07-21")]
-alias Subcategory := ObjectProperty.IsTriangulated
-
-namespace Subcategory
-
-open ObjectProperty
-
-@[deprecated (since := "2025-07-21")] alias mk' := IsTriangulatedClosed₂.mk'
-@[deprecated (since := "2025-07-21")] alias ext₁ := ext_of_isTriangulatedClosed₁
-@[deprecated (since := "2025-07-21")] alias ext₁' := ext_of_isTriangulatedClosed₁'
-@[deprecated (since := "2025-07-21")] alias ext₂ := ext_of_isTriangulatedClosed₂
-@[deprecated (since := "2025-07-21")] alias ext₂' := ext_of_isTriangulatedClosed₂'
-@[deprecated (since := "2025-07-21")] alias ext₃ := ext_of_isTriangulatedClosed₃
-@[deprecated (since := "2025-07-21")] alias ext₃' := ext_of_isTriangulatedClosed₃'
-@[deprecated (since := "2025-07-21")] alias W := trW
-@[deprecated (since := "2025-07-21")] alias W_iff := trW_iff
-@[deprecated (since := "2025-07-21")] alias W_iff' := trW_iff'
-@[deprecated (since := "2025-07-21")] alias W.mk := trW.mk
-@[deprecated (since := "2025-07-21")] alias W.mk' := trW.mk'
-@[deprecated (since := "2025-07-21")] alias isoClosure_W := trW_isoClosure
-@[deprecated (since := "2025-07-21")] alias W_of_isIso := trW_of_isIso
-@[deprecated (since := "2025-07-21")] alias smul_mem_W_iff := smul_mem_trW_iff
-@[deprecated (since := "2025-07-21")] alias W.shift := trW.shift
-@[deprecated (since := "2025-07-21")] alias W.unshift := trW.unshift
-@[deprecated (since := "2025-07-21")]
-alias mem_W_iff_of_distinguished := trW_iff_of_distinguished
->>>>>>> origin/master
 
 section
 
@@ -505,6 +455,7 @@ instance : HasZeroObject P.FullSubcategory where
     obtain ⟨Z, hZ, mem⟩ := P.exists_prop_of_containsZero
     refine ⟨⟨Z, mem⟩, ?_⟩
     rw [IsZero.iff_id_eq_zero]
+    apply ObjectProperty.hom_ext
     apply hZ.eq_of_src
 
 attribute [local simp] ObjectProperty.fullyFaithfulι fullyFaithfulInducedFunctor
@@ -573,7 +524,7 @@ instance : (F.essImage).IsTriangulated where
       (isoTriangleOfIso₁₃ _ _ (F.map_distinguished _ H) hT e₁ e₃ (by
         dsimp
         simp only [hh, assoc, Iso.inv_hom_id_app, Functor.comp_obj,
-          comp_id, Iso.cancel_iso_hom_left, ← Functor.map_comp,
+          comp_id, ← Functor.map_comp,
           Iso.inv_hom_id, Functor.map_id]))⟩⟩)
 
 
@@ -606,7 +557,7 @@ noncomputable instance [HasShift D ℤ] [F.CommShift ℤ] :
     Functor.CommShift.ofComp_compatibility _ _
 
 instance isTriangulated_lift [HasShift D ℤ] [Preadditive D] [F.CommShift ℤ] [HasZeroObject D]
-    [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D] [F.IsTriangulated]:
+    [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D] [F.IsTriangulated] :
     (P.lift F hF).IsTriangulated := by
   rw [Functor.isTriangulated_iff_comp_right (P.liftCompιIso F hF)]
   infer_instance
@@ -664,8 +615,7 @@ instance : (ofNatTrans τ).IsTriangulated where
       (G.map_isZero (isZero_zero C)).eq_of_src _ _⟩⟩
   isStableUnderShiftBy n :=
     { le_shift X (hX : IsIso _) := by
-        simp [prop_shift_iff, ofNatTrans]
-        rw [NatTrans.app_shift τ]
+        simp only [prop_shift_iff, ofNatTrans, NatTrans.app_shift]
         infer_instance }
   toIsTriangulatedClosed₂ := .mk' (fun T hT _ _ ↦ by
     exact Pretriangulated.isIso₂_of_isIso₁₃

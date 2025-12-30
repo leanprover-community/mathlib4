@@ -5,16 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-=======
 public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
->>>>>>> origin/master
 
 /-!
 # Functors which preserves homology

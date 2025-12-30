@@ -3,18 +3,6 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
---import Mathlib.CategoryTheory.Abelian.Opposite
---import Mathlib.CategoryTheory.Balanced
---import Mathlib.Algebra.Homology.ShortComplex.Homology
---import Mathlib.CategoryTheory.MorphismProperty
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-=======
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
@@ -23,7 +11,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.Abelian.Opposite
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
->>>>>>> origin/master
 
 /-!
 # Exact short complexes

@@ -3,18 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD:Mathlib/CategoryTheory/ComposableArrows.lean
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.Order.Fin.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.SuppressCompilation
-=======
 module
->>>>>>> origin/master:Mathlib/CategoryTheory/ComposableArrows/Basic.lean
 
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
@@ -940,7 +929,20 @@ def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
 
-<<<<<<< HEAD:Mathlib/CategoryTheory/ComposableArrows.lean
+/-- The isomorphism between `(G.mapComposableArrows 1).obj (.mk₁ f)` and
+`.mk₁ (G.map f)`. -/
+@[simps!]
+def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
+    (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
+  isoMk₁ (Iso.refl _) (Iso.refl _)
+
+/-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
+`.mk₂ (G.map f) (G.map g)`. -/
+@[simps!]
+def Functor.mapComposableArrowsObjMk₂Iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (G.mapComposableArrows 2).obj (.mk₂ f g) ≅ .mk₂ (G.map f) (G.map g) :=
+  isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+
 @[simps]
 def composableArrows₀Equivalence : ComposableArrows C 0 ≌ C where
   functor :=
@@ -970,22 +972,6 @@ def composableArrows₁Equivalence : ComposableArrows C 1 ≌ Arrow C where
     (fun f => ComposableArrows.isoMk₁ (Iso.refl _) (Iso.refl _) (by aesop_cat))
       (by aesop_cat)
   counitIso := Iso.refl _
-=======
-/-- The isomorphism between `(G.mapComposableArrows 1).obj (.mk₁ f)` and
-`.mk₁ (G.map f)`. -/
-@[simps!]
-def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
-    (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
-  isoMk₁ (Iso.refl _) (Iso.refl _)
-
-/-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
-`.mk₂ (G.map f) (G.map g)`. -/
-@[simps!]
-def Functor.mapComposableArrowsObjMk₂Iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (G.mapComposableArrows 2).obj (.mk₂ f g) ≅ .mk₂ (G.map f) (G.map g) :=
-  isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-
->>>>>>> origin/master:Mathlib/CategoryTheory/ComposableArrows/Basic.lean
 
 suppress_compilation in
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`

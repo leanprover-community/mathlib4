@@ -3,20 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
 -/
-<<<<<<< HEAD
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-=======
 module
 
 public import Mathlib.Data.List.Chain
 public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Category.ULift
->>>>>>> origin/master
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
 # Connected category
@@ -524,10 +517,12 @@ lemma Functor.isConnected_of_isConnected_costructuredArrow
   have : ∀ ⦃X₂ Y₂ : C₂⦄ (_ : Zigzag X₂ Y₂),
       ∀ (x : CostructuredArrow F X₂) (y : CostructuredArrow F Y₂), Zigzag x.left y.left := by
     intro X₂ Y₂ z
-    induction' z with Z₂ T₂ hxz hzt HXZ
-    · intro x y
+    induction z with
+    | refl =>
+      intro x y
       exact zigzag_obj_of_zigzag (CostructuredArrow.proj _ _) (isPreconnected_zigzag x y)
-    · intro x t
+    | @tail Z₂ T₂ hxz hzt HXZ =>
+      intro x t
       have z : CostructuredArrow F Z₂ := Nonempty.some inferInstance
       change Zigzag _ _ at hxz
       refine (HXZ x z).trans (?_ : Zigzag _ _)

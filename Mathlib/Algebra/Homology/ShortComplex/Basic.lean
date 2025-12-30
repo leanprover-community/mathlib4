@@ -5,12 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Mathlib.CategoryTheory.ArrowTwo
-=======
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
->>>>>>> origin/master
+public import Mathlib.CategoryTheory.ArrowTwo
 
 /-!
 # Short complexes
@@ -226,7 +222,6 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
 
-<<<<<<< HEAD
 lemma isIso_iff (f : S₁ ⟶ S₂) :
     IsIso f ↔ IsIso f.τ₁ ∧ IsIso f.τ₂ ∧ IsIso f.τ₃ := by
   constructor
@@ -235,7 +230,7 @@ lemma isIso_iff (f : S₁ ⟶ S₂) :
     all_goals infer_instance
   · rintro ⟨_, _, _⟩
     apply isIso_of_isIso
-=======
+
 /-- The first map of a short complex, as a functor. -/
 @[simps] def fFunctor : ShortComplex C ⥤ Arrow C where
   obj S := .mk S.f
@@ -245,7 +240,6 @@ lemma isIso_iff (f : S₁ ⟶ S₂) :
 @[simps] def gFunctor : ShortComplex C ⥤ Arrow C where
   obj S := .mk S.g
   map {S T} f := Arrow.homMk f.τ₂ f.τ₃ f.comm₂₃
->>>>>>> origin/master
 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]

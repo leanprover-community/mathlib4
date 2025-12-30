@@ -442,20 +442,10 @@ lemma shift_distinguished (n : ℤ) :
 
 omit hT in
 lemma shift_distinguished_iff (n : ℤ) :
-<<<<<<< HEAD
-    (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C := by
-  constructor
-  · intro hT
-    exact isomorphic_distinguished _ (shift_distinguished _ hT (-n)) _
-      ((shiftEquiv (Triangle C) n).unitIso.app T)
-  · intro hT
-    exact shift_distinguished T hT n
-=======
     (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C :=
   ⟨fun hT ↦ isomorphic_distinguished _ (shift_distinguished _ hT (-n)) _
       ((shiftEquiv (Triangle C) n).unitIso.app T),
     fun hT ↦ shift_distinguished T hT n⟩
->>>>>>> origin/master
 
 end Triangle
 

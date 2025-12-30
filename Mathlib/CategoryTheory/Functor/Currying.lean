@@ -126,10 +126,6 @@ instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
 instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
   fullyFaithfulUncurry.faithful
 
-/-- The functor `curry : (C × D ⥤ E) ⥤ (C ⥤ D ⥤ E)` is fully faithful. -/
-def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ (C ⥤ D ⥤ E)).FullyFaithful :=
-  currying.fullyFaithfulInverse
-
 /-- Given functors `F₁ : C ⥤ D`, `F₂ : C' ⥤ D'` and `G : D × D' ⥤ E`, this is the isomorphism
 between `curry.obj ((F₁.prod F₂).comp G)` and
 `F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂` in the category `C ⥤ C' ⥤ E`. -/
@@ -197,15 +193,13 @@ lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C 
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 
-<<<<<<< HEAD
 variable {C₁ : Type u₁} {C₂ : Type u₂} {D : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D]
 
 @[simps!]
 def curryObjUncurryObjIso (F : C₁ ⥤ C₂ ⥤ D) : curry.obj (uncurry.obj F) ≅ F :=
-  NatIso.ofComponents (fun X₁ => NatIso.ofComponents (fun X₂ => Iso.refl _) (by aesop_cat))
-    (by aesop_cat)
-=======
+  NatIso.ofComponents (fun X₁ => NatIso.ofComponents (fun X₂ => Iso.refl _))
+
 /-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
 @[simps!]
 def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
@@ -243,7 +237,6 @@ def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
 @[simps!]
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
   flippingEquiv.trans curryingEquiv
->>>>>>> origin/master
 
 end Functor
 

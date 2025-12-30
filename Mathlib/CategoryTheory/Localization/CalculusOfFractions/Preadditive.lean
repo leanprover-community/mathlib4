@@ -347,7 +347,7 @@ lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditiv
 
 /-- Variant of `functor_additive_iff`. -/
 lemma functor_additive_iff' {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
-    (H : C ⥤ E) (G : D ⥤ E) [Localization.Lifting L W H G]:
+    (H : C ⥤ E) (G : D ⥤ E) [Localization.Lifting L W H G] :
     G.Additive ↔ H.Additive := by
   rw [functor_additive_iff L W G, Functor.additive_iff_of_iso (Lifting.iso L W H G)]
 

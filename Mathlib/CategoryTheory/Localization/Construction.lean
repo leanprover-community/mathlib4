@@ -42,13 +42,7 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
-<<<<<<< HEAD
-universe v₁ v₂ u₁ u₂
-
-open CategoryTheory.Category
-=======
 open CategoryTheory.Category CategoryTheory.Functor
->>>>>>> origin/master
 
 namespace CategoryTheory
 

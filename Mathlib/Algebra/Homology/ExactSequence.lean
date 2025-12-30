@@ -3,16 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.Tactic.Linarith
-=======
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
->>>>>>> origin/master
 
 /-!
 # Exact sequences
@@ -143,14 +137,14 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
   exact hS.exact i hk
 
 /-- exactness of `S.sc'` when `S` is exact. -/
-abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by linarith)
-    (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
+abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
     ShortComplex C :=
   S.sc' hS.toIsComplex i j k
 
 /-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
 when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
+abbrev Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by lia) :
     ShortComplex C :=
   S.sc' hS.toIsComplex i (i + 1) (i + 2)
 
@@ -300,11 +294,7 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero n
-<<<<<<< HEAD
-      exact h.exact n (by linarith)
-=======
       exact h.exact n (by lia)
->>>>>>> origin/master
   · rintro ⟨h, h'⟩
     refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · simp only [Nat.add_le_add_iff_right] at hi

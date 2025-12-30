@@ -354,16 +354,6 @@ lemma HasOfPrecompProperty.of_le (Q : MorphismProperty C) [W.HasOfPrecompPropert
   of_precomp f g hg hfg := W.of_precomp (W' := Q) f g (hle _ hg) hfg
 
 instance [W.HasOfPostcompProperty W'] : W.op.HasOfPrecompProperty W'.op where
-<<<<<<< HEAD
-  of_precomp f g hf hfg := of_postcomp _ (f := g.unop) (g := f.unop) hf hfg
-
-instance [W.HasOfPrecompProperty W'] :
-    W.op.HasOfPostcompProperty W'.op where
-  of_postcomp f g hg hfg := of_precomp _ (f := g.unop) (g := f.unop) hg hfg
-
-instance [W.HasTwoOutOfThreeProperty] : W.op.HasTwoOutOfThreeProperty where
-
-=======
   of_precomp _ _ hf hfg := W.of_postcomp _ _ hf hfg
 
 instance [W.HasOfPrecompProperty W'] : W.op.HasOfPostcompProperty W'.op where
@@ -385,7 +375,6 @@ instance [W₁.HasOfPrecompProperty W₂] : W₁.unop.HasOfPostcompProperty W₂
 
 instance [W₁.HasTwoOutOfThreeProperty] : W₁.unop.HasTwoOutOfThreeProperty where
 
->>>>>>> origin/master
 end
 
 instance : (isomorphisms C).HasTwoOutOfThreeProperty where

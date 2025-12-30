@@ -3,14 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Localization.Equivalence
-=======
 module
 
 public import Mathlib.CategoryTheory.Localization.Equivalence
->>>>>>> origin/master
 
 /-!
 
@@ -63,24 +58,6 @@ instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 
-<<<<<<< HEAD
-lemma isLocalization_iff_op :
-    L.IsLocalization W ↔ L.op.IsLocalization W.op := by
-  constructor
-  · intro
-    infer_instance
-  · intro
-    letI : CatCommSq (opOpEquivalence C).functor L.op.op L (opOpEquivalence D).functor :=
-      ⟨Iso.refl _⟩
-    refine Functor.IsLocalization.of_equivalences (L.op.op) W.op.op L W
-      (opOpEquivalence C) (opOpEquivalence D) ?_ ?_
-    · intro X Y f hf
-      exact MorphismProperty.le_isoClosure _ _ hf
-    · intro X Y f hf
-      have := Localization.inverts L.op W.op f.op hf
-      change IsIso (asIso (L.op.map f.op)).unop.hom
-      infer_instance
-=======
 instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty Cᵒᵖ)
     [L.IsLocalization W] : L.unop.IsLocalization W.unop :=
   have : CatCommSq (opOpEquivalence C).functor L.op L.unop
@@ -100,19 +77,14 @@ lemma IsLocalization.op_iff (L : C ⥤ D) (W : MorphismProperty C) :
     fun _ ↦ inferInstance⟩
 
 @[deprecated (since := "2025-12-10")] alias op_iff := IsLocalization.op_iff
->>>>>>> origin/master
 
 end Functor
 
 namespace Localization
 
-<<<<<<< HEAD
 variable [L.IsLocalization W]
 
-lemma isoOfHom_unop  {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
-=======
 lemma isoOfHom_unop {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
->>>>>>> origin/master
     (isoOfHom L.op W.op w hw).unop = (isoOfHom L W w.unop hw) := by ext; rfl
 
 lemma isoOfHom_op_inv {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :

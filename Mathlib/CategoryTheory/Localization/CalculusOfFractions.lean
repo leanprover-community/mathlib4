@@ -640,13 +640,9 @@ variable (W)
 
 
 open StrictUniversalPropertyFixedTarget in
-<<<<<<< HEAD
-noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category E] :
-=======
 /-- The universal property of the localization for the constructed localized category
 when there is a left calculus of fractions. -/
 noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category* E] :
->>>>>>> origin/master
     Localization.StrictUniversalPropertyFixedTarget (Q W) W E where
   inverts := inverts W
   lift := lift

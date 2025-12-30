@@ -3,15 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.CategoryTheory.Localization.Opposite
-=======
 module
 
 public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.Opposite
->>>>>>> origin/master
 
 /-!
 # Morphisms of localizers
@@ -233,17 +228,11 @@ lemma isLocalizedEquivalence_of_unit_of_unit (Ψ : LocalizerMorphism W₂ W₁)
       (Ψ.functor ⋙ W₁.Q) (Ψ.localizedFunctor W₂.Q W₁.Q) ?_ ?_).isEquivalence_functor
     · exact Functor.associator _ _ _ ≪≫
         isoWhiskerLeft _ (CatCommSq.iso Ψ.functor W₂.Q W₁.Q _).symm ≪≫
-<<<<<<< HEAD
-        (asIso (whiskerRight ε₁ W₁.Q)).symm ≪≫ Functor.leftUnitor _
-    · exact Functor.associator _ _ _ ≪≫
-        isoWhiskerLeft _ (CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm ≪≫
-=======
         (Functor.associator _ _ _).symm ≪≫
         (asIso (whiskerRight ε₁ W₁.Q)).symm ≪≫ Functor.leftUnitor _
     · exact Functor.associator _ _ _ ≪≫
         isoWhiskerLeft _ (CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm ≪≫
         (Functor.associator _ _ _).symm ≪≫
->>>>>>> origin/master
         (asIso (whiskerRight ε₂ W₂.Q)).symm ≪≫ Functor.leftUnitor _
 
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by

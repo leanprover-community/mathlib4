@@ -203,18 +203,11 @@ section EnoughInjectives
 
 variable [EnoughInjectives C]
 
-<<<<<<< HEAD
-/-- There exists an injective presentation `I` of `X`, such that `I.J` is zero if `X` is. -/
-lemma exists_presentation' (X : C) : ∃ (I : InjectivePresentation X), IsZero X → IsZero I.J := by
-  by_cases h : IsZero X
-  · have := injective_of_isZero _ h
-=======
 /-- If `C` has enough injectives, we may choose an injective presentation of `X : C`
 which is given by a zero object when `X` is a zero object. -/
 lemma exists_presentation (X : C) : ∃ (p : InjectivePresentation X), IsZero X → IsZero p.J := by
   by_cases h : IsZero X
   · have := h.injective
->>>>>>> origin/master
     exact ⟨{ J := X, f := 𝟙 X}, by tauto⟩
   · exact ⟨(EnoughInjectives.presentation X).some, by tauto⟩
 
@@ -222,32 +215,15 @@ lemma exists_presentation (X : C) : ∃ (p : InjectivePresentation X), IsZero X 
 a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
-<<<<<<< HEAD
-  (exists_presentation' X).choose.J
-
-instance injective_under (X : C) : Injective (under X) :=
-  (exists_presentation' X).choose.injective
-=======
   (exists_presentation X).choose.J
 
 instance injective_under (X : C) : Injective (under X) :=
   (exists_presentation X).choose.injective
->>>>>>> origin/master
 
 /-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
-<<<<<<< HEAD
-  (exists_presentation' X).choose.f
-
-instance ι_mono (X : C) : Mono (ι X) :=
-  (exists_presentation' X).choose.mono
-
-lemma isZero_under (X : C) (hX : IsZero X) :
-    IsZero (under X) :=
-  (exists_presentation' X).choose_spec hX
-=======
   (exists_presentation X).choose.f
 
 instance ι_mono (X : C) : Mono (ι X) :=
@@ -256,7 +232,6 @@ instance ι_mono (X : C) : Mono (ι X) :=
 lemma isZero_under (X : C) (hX : IsZero X) :
     IsZero (under X) :=
   (exists_presentation X).choose_spec hX
->>>>>>> origin/master
 
 section
 

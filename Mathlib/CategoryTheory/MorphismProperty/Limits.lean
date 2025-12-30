@@ -846,7 +846,6 @@ lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X 
 
 end Universally
 
-<<<<<<< HEAD
 variable (C)
 
 def quarrable : MorphismProperty C := fun _ Y f => ∀ ⦃Y' : C⦄ (g : Y' ⟶ Y), HasPullback f g
@@ -892,7 +891,6 @@ lemma coquarrable.unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : coquarrable Cᵒᵖ f
   intro _ g
   have : HasPushout f g.op := hf _
   exact ⟨_, (IsPushout.of_hasPushout f g.op).flip.unop.isLimit⟩
-=======
 variable (P : MorphismProperty C)
 
 /-- `P` has pullbacks if for every `f` satisfying `P`, pullbacks of arbitrary morphisms along `f`
@@ -924,7 +922,6 @@ instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong
     have right := IsPullback.of_hasPullback p g
     IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_right' pb right)
       (IsStableUnderBaseChangeAlong.of_isPullback right hp)
->>>>>>> origin/master
 
 end MorphismProperty
 
