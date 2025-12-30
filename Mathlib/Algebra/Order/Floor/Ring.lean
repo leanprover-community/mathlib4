@@ -256,6 +256,9 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
 
+theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
+  (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
+
 section LinearOrderedRing
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a b : R}
 
@@ -451,6 +454,12 @@ theorem fract_eq_self {a : R} : fract a = a ↔ 0 ≤ a ∧ a < 1 :=
 @[simp]
 theorem fract_fract (a : R) : fract (fract a) = fract a :=
   fract_eq_self.2 ⟨fract_nonneg _, fract_lt_one _⟩
+
+theorem fract_eq_zero_iff {a : R} : fract a = 0 ↔ a ∈ range Int.cast := by
+  simp [fract_eq_iff, eq_comm]
+
+theorem fract_ne_zero_iff {a : R} : fract a ≠ 0 ↔ a ∉ range Int.cast :=
+  fract_eq_zero_iff.not
 
 theorem fract_neg {x : R} (hx : fract x ≠ 0) : fract (-x) = 1 - fract x := by
   rw [fract_eq_iff]
