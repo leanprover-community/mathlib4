@@ -54,15 +54,14 @@ theorem Multiset.le_prod_of_submultiplicative_of_nonneg (f : α → β) (h0 : �
     (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp)
 
 omit [CommMonoid α] in
-lemma Multiset.mem_le_prod_of_one_le [ZeroLEOneClass β] (f : α → β) (h1 : ∀ (a : α), 1 ≤ f a)
-    (s : Multiset α) (a : α) (ha : a ∈ s) : f a ≤ (Multiset.map f s).prod := by
-  obtain ⟨s', rfl⟩ := Multiset.exists_cons_of_mem ha
-  rw [Multiset.map_cons, Multiset.prod_cons]
+lemma Multiset.mem_le_prod_of_one_le [ZeroLEOneClass β] (f : α → β) (h1 : ∀ a : α, 1 ≤ f a)
+    (s : Multiset α) (a : α) (ha : a ∈ s) : f a ≤ (s.map f).prod := by
+  obtain ⟨s', rfl⟩ := exists_cons_of_mem ha
+  rw [map_cons, prod_cons]
   calc f a = f a * 1 := (mul_one (f a)).symm
-    _ ≤ f a * (Multiset.map f s').prod := by
+    _ ≤ f a * (s'.map f).prod := by
       gcongr
-      · exact le_trans (zero_le_one' β) <| MulOpposite.one_le_op.mp (h1 a)
-      · refine Multiset.one_le_prod ?_
-        simp_all
+      · exact le_trans (zero_le_one' β) (h1 a)
+      · simp_all [one_le_prod]
 
 end OrderedCommSemiring
