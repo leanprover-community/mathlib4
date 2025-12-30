@@ -348,7 +348,7 @@ theorem hasFDerivAt_integral_of_contDiffOn {H' : Type*} [NormedAddCommGroup H'] 
 /-- Iterated differentiation under integral of `x ↦ ∫ F x a` on an open set `s`, assuming that each
 function `x ↦ F x a` has a Taylor series of order `n`, with uniform integrability conditions on
 the successive derivatives. -/
-theorem hasFTaylorSeriesOn_integral_of_dominated {n : WithTop ℕ∞} {bound : ℕ → α → ℝ}
+theorem hasFTaylorSeriesOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : ℕ → α → ℝ}
     {p : H → α → FormalMultilinearSeries 𝕜 H E} (hs : IsOpen s)
     (hF_meas : ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → AEStronglyMeasurable (p x · i) μ)
     (h_bound : ∀ᵐ a ∂μ, ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → ‖p x a i‖ ≤ bound i a)
@@ -399,29 +399,24 @@ theorem hasFTaylorSeriesOn_integral_of_dominated {n : WithTop ℕ∞} {bound : �
     · apply bound_integrable i hi
     · filter_upwards [h_diff] with a ha using ha.cont i hi
 
-#where
-
-#check HasFTaylorSeriesUpToOn.compContinuousLinearMap
-
-open ContinuousMultilinearMap
-
-theorem hasFTaylorSeriesOn_integral_of_dominated'
-    {H' : Type*} [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [BorelSpace H']
+open ContinuousMultilinearMap in
+theorem hasFTaylorSeriesOn_setIntegral_of_le_const {H' : Type*} [NormedAddCommGroup H']
+    [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
     {n : WithTop ℕ∞} {C : ℕ → ℝ} {μ : Measure H'}
     {p : H × H' → FormalMultilinearSeries 𝕜 (H × H') E} (hs : IsOpen s)
     {t : Set H'} {F : H → H' → E} (ht : IsSeparable t) (tmeas : MeasurableSet t) (hmut : μ t ≠ ⊤)
-    (hF_meas : HasFTaylorSeriesUpToOn n F.uncurry p (s ×ˢ t))
+    (hF : HasFTaylorSeriesUpToOn n F.uncurry p (s ×ˢ t))
     (h_bound : ∀ x ∈ s, ∀ a ∈ t, ∀ (i : ℕ), i ≤ n → ‖p (x, a) i‖ ≤ C i) :
     HasFTaylorSeriesUpToOn n (fun x ↦ ∫ a in t, F x a ∂μ)
       (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
-        (fun j ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) s := by
-  apply hasFTaylorSeriesOn_integral_of_dominated hs (bound := fun i a ↦ C i * ∏ (j : Fin i), 1)
+        (fun _ ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) s := by
+  apply hasFTaylorSeriesOn_integral_of_le_bound hs (bound := fun i a ↦ C i * ∏ (j : Fin i), 1)
   · intro x hx i hi
     apply ContinuousOn.aestronglyMeasurable_of_isSeparable ?_ tmeas ht
     change ContinuousOn
       (fun y ↦ compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) i)) t
     apply Continuous.comp_continuousOn (by fun_prop)
-    apply (hF_meas.cont i hi).comp (by fun_prop)
+    apply (hF.cont i hi).comp (by fun_prop)
     intro w hw
     exact ⟨hx, hw⟩
   · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
@@ -432,33 +427,16 @@ theorem hasFTaylorSeriesOn_integral_of_dominated'
     · exact le_trans (by positivity) this
     · exact ContinuousLinearMap.norm_inl_le_one 𝕜 H H'
   · intro i hi
-    apply integrableOn_const hmut
+    exact integrableOn_const hmut
   · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
-
-
-
-
-
-
-
-#exit
-
-     ?_ tmeas
-      (hk.isSeparable.mono (tk'.trans k'k))
-    apply Continuous.comp_continuousOn (by fun_prop)
-    apply (hp.cont 0 bot_le).comp (by fun_prop)
-    intro w hw
-    exact hk'v ⟨hz, tk' hw⟩
-
-
-
-
-
-
-
-
-#exit
-
+    let g : H →ᴬ[𝕜] H × H' :=
+    { toFun := fun x ↦ (x, w)
+      linear := LinearMap.inl 𝕜 H H'
+      map_vadd' p v := by simp
+      cont := by fun_prop }
+    apply (hF.compContinuousAffineMap g).mono
+    simp only [ContinuousAffineMap.coe_mk, AffineMap.coe_mk, g]
+    grind
 
 theorem restrict_inter_toMeasurable {α : Type*} [MeasurableSpace α]
     {μ : Measure α} {s k : Set α} (h : μ s ≠ ⊤) (hk : MeasurableSet k) (hsk : s ⊆ k) :
@@ -469,13 +447,7 @@ theorem restrict_inter_toMeasurable {α : Type*} [MeasurableSpace α]
   congr 1
   grind
 
-#check ContinuousMultilinearMap.curryLeft
-
-#check LinearIsometryEquiv
-
-open ContinuousMultilinearMap
-
-set_option maxHeartbeats 300000 in
+open ContinuousMultilinearMap in
 /-- If `f.uncurry : H × H' → E` is Cⁿ on `u ×ˢ k` for an open set `u` and a compact set `k`,
 the parametric integral `fun x ↦ ∫ a in k f x a ∂μ` is Cⁿ on `u` too. -/
 lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -520,8 +492,8 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
   intro y hy
   obtain ⟨v, v_mem, p, hp⟩ : ∃ v ∈ 𝓝[insert (x, y) (u ×ˢ k)] (x, y), ∃ p,
     HasFTaylorSeriesUpToOn m (Function.uncurry f) p v := hf (x, y) ⟨hx, hy⟩ m hm
-  obtain ⟨u', u'_mem, k', k'_mem, k'meas, k'k, hk'v, hk'_bound⟩ :
-      ∃ u' ∈ 𝓝 x, ∃ k' ∈ 𝓝[k] y, MeasurableSet k' ∧ k' ⊆ k ∧ u' ×ˢ k' ⊆ v
+  obtain ⟨u', u'_mem, k', k'_mem, u'_open,  k'meas, k'k, hk'v, hk'_bound⟩ :
+      ∃ u' ∈ 𝓝 x, ∃ k' ∈ 𝓝[k] y, IsOpen u' ∧ MeasurableSet k' ∧ k' ⊆ k ∧ u' ×ˢ k' ⊆ v
       ∧ ∀ N ≤ m, ∀ z ∈ u' ×ˢ k', ‖p z N‖ < 1 + ‖p (x, y) N‖ := by
     rw [show insert (x, y) (u ×ˢ k) = u ×ˢ k from insert_eq_of_mem (by exact ⟨hx, hy⟩)] at v_mem
     let v'' := ⋂ N ∈ Finset.Iic m, {z | ‖p z N‖ < 1 + ‖p (x, y) N‖}
@@ -538,21 +510,36 @@ lemma ContDiffOn.parametric_integral {E : Type*} [NormedAddCommGroup E] [NormedS
     rcases v'_mem with ⟨u', u'_mem, t', t'_mem, ht'⟩
     rw [mem_nhdsWithin] at t'_mem
     rcases t'_mem with ⟨t'', t''_open, t''_mem, ht''⟩
-    refine ⟨u', u'_mem, t'' ∩ k, ?_, t''_open.measurableSet.inter hk.measurableSet,
-      inter_subset_right, ?_, ?_⟩
+    rcases _root_.mem_nhds_iff.1 u'_mem with ⟨u'', hu'', u''_open, xu''⟩
+    refine ⟨u'', u''_open.mem_nhds xu'', t'' ∩ k, ?_, u''_open,
+      t''_open.measurableSet.inter hk.measurableSet, inter_subset_right, ?_, ?_⟩
     · rw [inter_comm]
       exact inter_mem_nhdsWithin _ (t''_open.mem_nhds t''_mem)
     · exact Subset.trans (by gcongr) (ht'.trans inter_subset_left)
     · intro i hi z z_mem
       have : z ∈ v'' := by
-        have : u' ×ˢ (t'' ∩ k) ⊆ v'' := Subset.trans (by gcongr) (ht'.trans inter_subset_right)
+        have : u'' ×ˢ (t'' ∩ k) ⊆ v'' := Subset.trans (by gcongr) (ht'.trans inter_subset_right)
         exact this z_mem
       simp only [Finset.mem_Iic, mem_iInter, mem_setOf_eq, v''] at this
       exact this i hi
   refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas ↦ ?_⟩
   have hmut : μ t < ⊤ := (measure_mono (tk'.trans k'k)).trans_lt hk.measure_lt_top
-  let P : H → FormalMultilinearSeries 𝕜 H E := fun x N ↦
-    ∫ y in t, compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) N) ∂μ
+  have : HasFTaylorSeriesUpToOn m (fun x ↦ ∫ a in t, f x a ∂μ)
+      (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
+        (fun _ ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) u' := by
+    apply hasFTaylorSeriesOn_setIntegral_of_le_const u'_open (hk.isSeparable.mono (tk'.trans k'k))
+      tmeas hmut.ne (hp.mono (by grind)) (C := fun i ↦ 1 + ‖p (x, y) i‖)
+    intro x' hx' a ha i hi
+    exact (hk'_bound i (mod_cast hi) (x', a) ⟨hx', tk' ha⟩).le
+
+
+
+
+
+
+#exit
+
+
   apply contDiffWithinAt_nat.2 ⟨u', mem_nhdsWithin_of_mem_nhds u'_mem  , P, ?_⟩
   constructor
   · intro z hz
