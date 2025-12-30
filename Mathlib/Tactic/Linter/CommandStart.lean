@@ -248,6 +248,7 @@ def unparseable : ExcludedSyntaxNodeKind where
   kinds := #[
     ``Parser.Command.macro_rules,
     ``runCmd,
+    ``Parser.Command.meta,
   ]
   depth := none
 

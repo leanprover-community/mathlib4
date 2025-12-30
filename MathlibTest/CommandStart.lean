@@ -254,6 +254,11 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 
 end Bundle
 
+-- `meta` definitions are ignored
+#guard_msgs in
+set_option linter.style.commandStart true in
+meta def New  := 0
+
 #reformat
 set_option linter.style.commandStart true
 
