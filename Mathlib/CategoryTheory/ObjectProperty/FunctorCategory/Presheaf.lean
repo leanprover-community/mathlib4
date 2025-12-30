@@ -107,11 +107,11 @@ lemma preservesLimit_eq_isLocal_single :
 variable (F) [Small.{w} J]
 
 /-- Auxiliary definition for `Presheaf.preservesLimitHomFamily`. -/
-noncomputable def preservesLimitHomFamilySrc :=
+noncomputable abbrev preservesLimitHomFamilySrc :=
   colimit (F.leftOp ⋙ shrinkYoneda)
 
 /-- Auxiliary definition for `Presheaf.preservesLimitHomFamily`. -/
-noncomputable def preservesLimitHomFamilyTgt (h : PLift (HasLimit F)) :=
+noncomputable abbrev preservesLimitHomFamilyTgt (h : PLift (HasLimit F)) :=
   letI := h.down
   shrinkYoneda.obj (limit F).unop
 
@@ -119,7 +119,7 @@ noncomputable def preservesLimitHomFamilyTgt (h : PLift (HasLimit F)) :=
 which consists of the single morphism
 `colimit (F.leftOp ⋙ shrinkYoneda) ⟶ shrinkYoneda.obj (limit F).unop`
 if `F` has a limit, or is the empty family otherwise. -/
-noncomputable def preservesLimitHomFamily (h : PLift (HasLimit F)) :
+noncomputable abbrev preservesLimitHomFamily (h : PLift (HasLimit F)) :
     preservesLimitHomFamilySrc F ⟶ preservesLimitHomFamilyTgt F h :=
   letI := h.down
   coconePtToShrinkYoneda (limit.cone F) (colimit.isColimit _)
