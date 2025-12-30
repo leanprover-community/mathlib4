@@ -1080,7 +1080,7 @@ See note [reducible non-instances]. -/
 @[to_dual existing] -- `to_dual` cannot yet reorder arguments of arguments
 protected abbrev Function.Injective.semilatticeInf [Min α] [LE α] [LT α] [SemilatticeInf β]
     (f : α → β) (hf_inj : Function.Injective f)
-    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (le : ∀ {y x}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {y x}, f x < f y ↔ x < y)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     SemilatticeInf α where
   __ := hf_inj.partialOrder f le lt
