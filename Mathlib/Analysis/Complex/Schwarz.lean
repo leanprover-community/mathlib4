@@ -54,8 +54,10 @@ open scoped Topology ComplexConjugate
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
   {c z z₀ : ℂ}
 
+namespace Complex
+
 /-- An auxiliary lemma for `Complex.norm_dslope_le_div_of_mapsTo_ball`. -/
-private theorem Complex.schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁))
+theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁))
     (h_maps : MapsTo f (ball c R₁) (closedBall (f c) R₂)) (hz : z ∈ ball c R₁) :
     ‖dslope f c z‖ ≤ R₂ / R₁ := by
   have hR₁ : 0 < R₁ := nonempty_ball.1 ⟨z, hz⟩
@@ -80,9 +82,7 @@ private theorem Complex.schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ
   · rw [closure_ball c hr₀.ne', mem_closedBall]
     exact hr.1.le
 
-@[expose] public section
-
-namespace Complex
+public section
 
 /-- Two cases of the **Schwarz Lemma** (derivative and distance), merged together. -/
 theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R₁))
@@ -171,5 +171,7 @@ theorem norm_le_norm_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball 0 R)
     (h_maps : MapsTo f (ball 0 R) (closedBall 0 R)) (h₀ : f 0 = 0) (hz : ‖z‖ < R) :
     ‖f z‖ ≤ ‖z‖ := by
   simpa [h₀] using dist_le_dist_of_mapsTo_ball_self hd (by rwa [h₀]) (mem_ball_zero_iff.mpr hz)
+
+end -- public section
 
 end Complex
