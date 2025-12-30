@@ -271,8 +271,12 @@
   authors: Sander R. Dahmen (finite) and Johannes Hölzl (infinite)
 67:
   title  : e is Transcendental
-  authors: Jujian Zhang, Yuyang Zhao
-  decl   : transcendental_e
+  decls  :
+    - transcendental_e
+  links  :
+    result: https://github.com/jjaassoonn/transcendental/blob/master/src/e_transcendental.lean
+    website: https://jjaassoonn.github.io/transcendental/
+  authors: Jujian Zhang (outside mathlib), Yuyang Zhao (in mathlib)
 68:
   title  : Sum of an arithmetic series
   decl   : Finset.sum_range_id

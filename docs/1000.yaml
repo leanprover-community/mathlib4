@@ -1743,8 +1743,8 @@ Q1568811:
 
 Q1572474:
   title: Lindemann–Weierstrass theorem
-  decl: linearIndependent_exp
-  authors: Jujian Zhang, Yuyang Zhao
+  decl   : linearIndependent_exp
+  authors: Yuyang Zhao
 
 Q1576235:
   title: Lochs's theorem
