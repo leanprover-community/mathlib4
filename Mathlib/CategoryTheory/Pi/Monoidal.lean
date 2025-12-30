@@ -181,6 +181,17 @@ instance monoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
     (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Monoidal] :
     (Functor.pi' F).Monoidal where
 
+instance [∀ i, BraidedCategory (C i)]
+    {D : Type*} [Category* D] [MonoidalCategory D] [BraidedCategory D]
+    (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).LaxBraided] :
+    (Functor.pi' F).LaxBraided where
+  braided := by intros; ext i; exact Functor.LaxBraided.braided _ _
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : Type*} [Category* D] [MonoidalCategory D] [BraidedCategory D]
+    (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Braided] :
+    (Functor.pi' F).Braided where
+
 @[simps]
 instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
@@ -203,6 +214,19 @@ instance monoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
     [∀ i, (F i).Monoidal] :
     (Functor.pi F).Monoidal where
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)] [∀ i, BraidedCategory (D i)]
+    (F : ∀ i : I, D i ⥤ C i) [∀ i, (F i).LaxBraided] :
+    (Functor.pi F).LaxBraided where
+  braided := by intros; ext i; exact Functor.LaxBraided.braided _ _
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)] [∀ i, BraidedCategory (D i)]
+    (F : ∀ i : I, D i ⥤ C i) [∀ i, (F i).Braided] :
+    (Functor.pi F).Braided where
 
 end Pi
 
