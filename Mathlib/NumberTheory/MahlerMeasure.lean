@@ -28,6 +28,8 @@ polynomials, in particular Northcott's Theorem for the Mahler measure.
 - `Polynomial.cyclotomic_mahlerMeasure_eq_one`: the Mahler measure of a cyclotomic polynomial is 1.
 - `Polynomial.pow_eq_one_of_mahlerMeasure_eq_one`: if an integer polynomial has Mahler measure equal
   to 1, then all its complex nonzero roots are roots of unity.
+- `Polynomial.cyclotomomic_dvd_of_mahlerMeasure_eq_one`: if an integer non-constant polynomial has
+  Mahler measure equal to 1 and is a multiple of X, then it is divisible by a cyclotomic polynomial.
 -/
 
 @[expose] public section
@@ -68,11 +70,11 @@ theorem card_eq_of_natDegree_le_of_coeff_le :
   norm_cast
   grind [Pi.card_Icc, card_Icc]
 
-open Nat NNReal
+open NNReal
 
 private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
-    Set.Finite {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ∧
-    Set.ncard {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ≤
+    Set.Finite {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (castRingHom ℂ)).mahlerMeasure ≤ B} ∧
+    Set.ncard {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (castRingHom ℂ)).mahlerMeasure ≤ B} ≤
     ∏ i : Fin (n + 1), (2 * ⌊n.choose i * B⌋₊ + 1) := by
   simp_rw [← Nat.lt_add_one_iff (n := n)]
   have h_card :
@@ -83,16 +85,16 @@ private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
     simp only [ceil_neg, sub_neg_eq_add, ← two_mul]
     apply Finset.prod_congr rfl fun i _ ↦ ?_
     zify
-    rw [toNat_of_nonneg (by positivity), ← Int.natCast_floor_eq_floor (by positivity)]
+    rw [toNat_of_nonneg (by positivity), ← natCast_floor_eq_floor (by positivity)]
     norm_cast
   rw [← h_card]
   have h_subset :
-      {p : ℤ[X] | p.natDegree < n + 1 ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ⊆
+      {p : ℤ[X] | p.natDegree < n + 1 ∧ (p.map (castRingHom ℂ)).mahlerMeasure ≤ B} ⊆
       {p : ℤ[X] | p.natDegree < n + 1 ∧ ∀ i : Fin (n + 1), ‖p.coeff i‖ ≤ n.choose i * B} := by
     gcongr with p hp
     intro hB d
-    rw [show ‖p.coeff d‖ = ‖(p.map (Int.castRingHom ℂ)).coeff d‖ by aesop]
-    apply le_trans <| (p.map (Int.castRingHom ℂ)).norm_coeff_le_choose_mul_mahlerMeasure d
+    rw [show ‖p.coeff d‖ = ‖(p.map (castRingHom ℂ)).coeff d‖ by aesop]
+    apply le_trans <| (p.map (castRingHom ℂ)).norm_coeff_le_choose_mul_mahlerMeasure d
     gcongr
     · exact mahlerMeasure_nonneg _
     · grind [Polynomial.natDegree_map_le]
@@ -106,13 +108,13 @@ private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
 /-- **Northcott's Theorem:** the set of integer polynomials of degree at most `n` and
 Mahler measure at most `B` is finite. -/
 theorem finite_mahlerMeasure_le (n : ℕ) (B : ℝ≥0) :
-    Set.Finite {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} :=
+    Set.Finite {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (castRingHom ℂ)).mahlerMeasure ≤ B} :=
   (card_mahlerMeasure n B).1
 
 /-- An upper bound on the number of integer polynomials of degree at most `n` and Mahler measure at
 most `B`. -/
 theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
-    Set.ncard {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ≤
+    Set.ncard {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (castRingHom ℂ)).mahlerMeasure ≤ B} ≤
     ∏ i : Fin (n + 1), (2 * ⌊n.choose i * B⌋₊ + 1) := (card_mahlerMeasure n B).2
 
 end Northcott
@@ -132,16 +134,16 @@ theorem cyclotomic_mahlerMeasure_eq_one {R : Type*} [CommRing R] [Algebra R ℂ]
   intro _ hz
   exact (IsPrimitiveRoot.norm'_eq_one (isPrimitiveRoot_of_mem_primitiveRoots hz) hn).le
 
-variable {p : ℤ[X]} (h : (p.map (Int.castRingHom ℂ)).mahlerMeasure = 1)
+variable {p : ℤ[X]} (h : (p.map (castRingHom ℂ)).mahlerMeasure = 1)
 
 include h in
 lemma norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one :
-    ‖(p.map (Int.castRingHom ℂ)).leadingCoeff‖ = 1 := by
+    ‖(p.map (castRingHom ℂ)).leadingCoeff‖ = 1 := by
   rcases eq_or_ne p 0 with _ | hp
   · simp_all
-  have h_ineq := leading_coeff_le_mahlerMeasure <| p.map (Int.castRingHom ℂ)
+  have h_ineq := leading_coeff_le_mahlerMeasure <| p.map (castRingHom ℂ)
   rw [h] at h_ineq
-  rw [leadingCoeff_map_of_injective <| RingHom.injective_int (Int.castRingHom ℂ), eq_intCast]
+  rw [leadingCoeff_map_of_injective <| RingHom.injective_int (castRingHom ℂ), eq_intCast]
     at ⊢ h_ineq
   norm_cast at ⊢ h_ineq
   grind [leadingCoeff_eq_zero]
@@ -149,7 +151,7 @@ lemma norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one :
 include h in
 lemma abs_leadingCoeff_eq_one_of_mahlerMeasure_eq_one : |p.leadingCoeff| = 1 := by
   have := norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one h
-  rw [leadingCoeff_map_of_injective <| RingHom.injective_int (Int.castRingHom ℂ), eq_intCast]
+  rw [leadingCoeff_map_of_injective <| RingHom.injective_int (castRingHom ℂ), eq_intCast]
     at this
   norm_cast at this
 
@@ -176,9 +178,6 @@ lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 := by
   _   ≤ 1 := by grind [prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff,
         norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one]
 
-
-
-
 open IntermediateField in
 include hz₀ hz h in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex nonzero roots are
@@ -197,19 +196,13 @@ elements of number fields. We thus first construct the number field K obtained b
 -- the conjugates of y are inside the closed unit disk
   have (φ : K →+* ℂ) : ‖φ y‖ ≤ 1 := by
     apply norm_root_le_one_of_mahlerMeasure_eq_one h
-    rw [mem_roots', IsRoot.def, eval_map, ← aeval_def]
-    constructor
-    · have : p ≠ 0 := fun h0 ↦ by simp [h0] at h
-      grind [Polynomial.map_eq_zero_iff <| RingHom.injective_int (algebraMap ℤ ℂ)]
-    have : aeval (φ y) p = φ (aeval y p) := by simp [aeval_def]
-    rw [this, map_eq_zero_iff φ <| RingHom.injective φ]
-    have h_aeval_min : aeval y (minpoly ℤ z) = 0 := by
-      convert minpoly.aeval ℤ z
-      simp [aeval_def, eval₂_eq_sum_range, ← Subtype.coe_inj, y]
-    apply Polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero _ h_aeval_min
-    apply minpoly.isIntegrallyClosed_dvd <| isIntegral_of_mahlerMeasure_eq_one h hz
-    rw [aroots_def, mem_roots'] at hz
-    simp_all [aeval_def, eval_map]
+    convert hz using 0
+    have (n : ℕ) : p.coeff n = φ (p.coeff n) := by simp
+    simp_rw [mem_roots', ne_eq, Polynomial.map_eq_zero_iff
+      <| RingHom.injective_int (algebraMap ℤ ℂ), and_congr_right_iff, algebraMap_int_eq,
+      IsRoot.def, eval_map, eval₂_eq_sum_range, eq_intCast, ← map_pow, this, ← map_mul, ← map_sum,
+      map_eq_zero_iff φ <| RingHom.injective φ]
+    simp [y, ← Subtype.coe_injective.eq_iff]
   convert NumberField.Embeddings.pow_eq_one_of_norm_le_one (x := y) K ℂ (Subtype.coe_ne_coe.mp hz₀)
     (coe_isIntegral_iff.mp <| isIntegral_of_mahlerMeasure_eq_one h hz)
   simp_all [Submonoid.mk_eq_one K.toSubfield.toSubmonoid, y]
@@ -221,14 +214,16 @@ theorem isPrimitiveRoot_of_mahlerMeasure_eq_one : ∃ n, 0 < n ∧ IsPrimitiveRo
   obtain ⟨_, _, hz_pow⟩ := pow_eq_one_of_mahlerMeasure_eq_one h hz₀ hz
   exact IsPrimitiveRoot.exists_pos hz_pow (by omega)
 
-theorem cyclotomomic_dvd_of_mahlerMeasure_eq_one (h : (p.map (Int.castRingHom ℂ)).mahlerMeasure = 1)
-    (hX : ¬ X ∣ p) (hpdeg : p.degree ≠ 0) : ∃ n, 0 < n ∧ cyclotomic n ℤ ∣ p := by
-  have hpdegC : (map (Int.castRingHom ℂ) p).degree ≠ 0 := by
-    contrapose! hpdeg
-    rw [← hpdeg]
-    refine (degree_map_eq_of_injective (RingHom.injective_int (Int.castRingHom ℂ)) p).symm
-  obtain ⟨z, hz⟩ := Polynomial.Splits.exists_eval_eq_zero
-    (IsAlgClosed.splits (map (Int.castRingHom ℂ) p)) hpdegC
+include h in
+/-- If an integer non-constant polynomial has Mahler measure equal to 1 and is a multiple of X,
+then it is divisible by a cyclotomic polynomial. -/
+theorem cyclotomomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degree ≠ 0) :
+    ∃ n, 0 < n ∧ cyclotomic n ℤ ∣ p := by
+  have hpdegC : (p.map (castRingHom ℂ)).degree ≠ 0 := by
+    convert hpdeg
+    exact p.degree_map_eq_of_injective (RingHom.injective_int (castRingHom ℂ))
+  obtain ⟨z, _⟩ := Splits.exists_eval_eq_zero (IsAlgClosed.splits <| p.map (castRingHom ℂ))
+    hpdegC
   have hz₀ : z ≠ 0 := by
     contrapose! hX
     simp_all [X_dvd_iff, coeff_zero_eq_aeval_zero]
