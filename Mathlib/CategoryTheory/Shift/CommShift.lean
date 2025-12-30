@@ -48,12 +48,12 @@ lemma NatTrans.naturality_2 {C D : Type*} [Category C] [Category D]
 open Category
 
 instance {C D E : Type*} [Category C] [Category D] [Category E] (G : D ⥤ E)
-    [G.Full] [G.Faithful] : ((whiskeringRight C D E).obj G).Full where
+    [G.Full] [G.Faithful] : ((Functor.whiskeringRight C D E).obj G).Full where
   map_surjective τ := ⟨
     { app := fun X => G.preimage (τ.app X)
       naturality := fun X Y f => by
         apply G.map_injective
-        simpa only [whiskeringRight_obj_obj, Functor.map_comp, Functor.map_preimage]
+        simpa only [Functor.whiskeringRight_obj_obj, Functor.map_comp, Functor.map_preimage]
           using τ.naturality f }, by aesop_cat⟩
 
 namespace Functor
@@ -245,13 +245,13 @@ variable {F G}
 @[simp]
 lemma commShiftIso_id_hom_app (a : A) (X : C) :
     ((𝟭 C).commShiftIso a).hom.app X = 𝟙 _ := by
-  dsimp [commShiftIso, iso]
+  dsimp [commShiftIso]
   rw [id_comp]
 
 @[simp]
 lemma commShiftIso_id_inv_app (a : A) (X : C) :
     ((𝟭 C).commShiftIso a).inv.app X = 𝟙 _ := by
-  dsimp [commShiftIso, iso]
+  dsimp [commShiftIso]
   rw [id_comp]
 
 end CommShift
@@ -320,8 +320,8 @@ variable {C D E J : Type*} [Category* C] [Category* D] [Category* E] [Category* 
 
 variable {A} in
 structure CommShiftCore (a : A) : Prop where
-  shift_comm : (F₁.commShiftIso a).hom ≫ whiskerRight τ _ =
-    whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom
+  shift_comm : (F₁.commShiftIso a).hom ≫ Functor.whiskerRight τ _ =
+    Functor.whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom
 
 namespace CommShiftCore
 
@@ -514,15 +514,15 @@ def of_hasShiftOfFullyFaithful :
     letI := hF.hasShift s i; F.CommShift A := by
   letI := hF.hasShift s i
   exact
-  { iso := i
-    zero := by
+  { commShiftIso := i
+    commShiftIso_zero := by
       ext X
-      simp only [comp_obj, isoZero_hom_app, ShiftMkCore.shiftFunctorZero_eq, Iso.symm_hom,
+      simp only [comp_obj, isoZero_hom_app, ShiftMkCore.shiftFunctorZero_eq,
         FullyFaithful.hasShift.map_zero_hom_app, id_obj, Category.assoc,
         Iso.hom_inv_id_app, Category.comp_id]
-    add := fun a b => by
+    commShiftIso_add := fun a b => by
       ext X
-      simp only [comp_obj, isoAdd_hom_app, ShiftMkCore.shiftFunctorAdd_eq, Iso.symm_hom,
+      simp only [comp_obj, isoAdd_hom_app, ShiftMkCore.shiftFunctorAdd_eq,
         FullyFaithful.hasShift.map_add_hom_app, Category.assoc, ShiftMkCore.shiftFunctor_eq,
         Iso.inv_hom_id_app_assoc, ← (shiftFunctor D b).map_comp_assoc, Iso.inv_hom_id_app,
         Functor.map_id, Category.id_comp, Iso.hom_inv_id_app, Category.comp_id] }
@@ -544,11 +544,11 @@ lemma map_shiftFunctorComm {C D : Type _} [Category C] [Category D] {A : Type _}
       ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
   have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
   simp only [comp_obj, CommShift.isoAdd_hom_app,
-    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)), Category.assoc,
-    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp, F.map_comp] at eq
+    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
+    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at eq
   simp only [shiftFunctorComm_eq D a b _ rfl]
   dsimp
-  simp only [Functor.map_comp, shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
+  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
     ← reassoc_of% eq,
     shiftFunctorComm_eq C a b _ rfl]
   dsimp
@@ -601,12 +601,12 @@ attribute [irreducible] iso
 end OfComp
 
 noncomputable def ofComp : F.CommShift A where
-  iso := OfComp.iso e
-  zero := by
+  commShiftIso := OfComp.iso e
+  commShiftIso_zero := by
     ext X
     apply G.map_injective
     simp [G.commShiftIso_zero, H.commShiftIso_zero]
-  add a b := by
+  commShiftIso_add a b := by
     ext X
     apply G.map_injective
     simp only [comp_obj, OfComp.map_iso_hom_app, H.commShiftIso_add, isoAdd_hom_app,
@@ -627,8 +627,7 @@ lemma ofComp_compatibility :
   have : commShiftIso F a = OfComp.iso e a := rfl
   simp only [comp_obj, NatTrans.comp_app, commShiftIso_comp_hom_app, this,
     OfComp.map_iso_hom_app, assoc, Iso.inv_hom_id_app, comp_id, whiskerRight_app,
-    whiskerLeft_app, NatIso.cancel_natIso_hom_left, ← Functor.map_comp,
-    Functor.map_id]
+    whiskerLeft_app, ← Functor.map_comp, Functor.map_id]
 
 end CommShift
 

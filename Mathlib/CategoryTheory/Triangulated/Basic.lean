@@ -343,137 +343,8 @@ def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct
 def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
-<<<<<<< HEAD
-  Triangle.isoMk _ _ (Iso.refl _)
-    -- should be moved to Limits.Shapes.Biproducts
-    { hom := biprod.lift prod.fst prod.snd
-      inv := prod.lift biprod.fst biprod.snd
-      hom_inv_id := by aesop_cat
-      inv_hom_id := by aesop_cat } (Iso.refl _) (by aesop_cat) (by aesop_cat) (by aesop_cat)
-
-section Preadditive
-
-variable [Preadditive C]
-
-attribute [local simp] Preadditive.comp_zsmul Preadditive.zsmul_comp
-  Preadditive.comp_nsmul Preadditive.nsmul_comp Functor.map_zsmul Functor.map_nsmul
-
-variable (T₁ T₂)
-variable [∀ (n : ℤ), (shiftFunctor C n).Additive]
-
-section
-
-instance : Zero (T₁ ⟶ T₂) where
-  zero :=
-    { hom₁ := 0
-      hom₂ := 0
-      hom₃ := 0 }
-
-
-@[simp] lemma Triangle.zero_hom₁ : (0 : T₁ ⟶ T₂).hom₁ = 0 := rfl
-@[simp] lemma Triangle.zero_hom₂ : (0 : T₁ ⟶ T₂).hom₂ = 0 := rfl
-@[simp] lemma Triangle.zero_hom₃ : (0 : T₁ ⟶ T₂).hom₃ = 0 := rfl
-
-variable {T₁ T₂}
-
-@[simps]
-instance : Add (T₁ ⟶ T₂) where
-  add f g :=
-    { hom₁ := f.hom₁ + g.hom₁
-      hom₂ := f.hom₂ + g.hom₂
-      hom₃ := f.hom₃ + g.hom₃ }
-
-@[simp] lemma Triangle.add_hom₁ (f g : T₁ ⟶ T₂) : (f + g).hom₁ = f.hom₁ + g.hom₁ := rfl
-@[simp] lemma Triangle.add_hom₂ (f g : T₁ ⟶ T₂) : (f + g).hom₂ = f.hom₂ + g.hom₂ := rfl
-@[simp] lemma Triangle.add_hom₃ (f g : T₁ ⟶ T₂) : (f + g).hom₃ = f.hom₃ + g.hom₃ := rfl
-
-@[simps]
-instance : Neg (T₁ ⟶ T₂) where
-  neg f :=
-    { hom₁ := -f.hom₁
-      hom₂ := -f.hom₂
-      hom₃ := -f.hom₃ }
-
-@[simp] lemma Triangle.neg_hom₁ (f : T₁ ⟶ T₂) : (-f).hom₁ = -f.hom₁ := rfl
-@[simp] lemma Triangle.neg_hom₂ (f : T₁ ⟶ T₂) : (-f).hom₂ = -f.hom₂ := rfl
-@[simp] lemma Triangle.neg_hom₃ (f : T₁ ⟶ T₂) : (-f).hom₃ = -f.hom₃ := rfl
-
-@[simps]
-instance : Sub (T₁ ⟶ T₂) where
-  sub f g :=
-    { hom₁ := f.hom₁ - g.hom₁
-      hom₂ := f.hom₂ - g.hom₂
-      hom₃ := f.hom₃ - g.hom₃ }
-
-@[simp] lemma Triangle.sub_hom₁ (f g : T₁ ⟶ T₂) : (f - g).hom₁ = f.hom₁ - g.hom₁ := rfl
-@[simp] lemma Triangle.sub_hom₂ (f g : T₁ ⟶ T₂) : (f - g).hom₂ = f.hom₂ - g.hom₂ := rfl
-@[simp] lemma Triangle.sub_hom₃ (f g : T₁ ⟶ T₂) : (f - g).hom₃ = f.hom₃ - g.hom₃ := rfl
-
-end
-
-section
-
-variable {R : Type*} [Semiring R] [Linear R C]
-  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
-
-@[simps!]
-instance :
-    SMul R (T₁ ⟶ T₂) where
-  smul n f :=
-    { hom₁ := n • f.hom₁
-      hom₂ := n • f.hom₂
-      hom₃ := n • f.hom₃ }
-
-omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
-
-@[simp] lemma Triangle.smul_hom₁ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₁ = n • f.hom₁ := rfl
-@[simp] lemma Triangle.smul_hom₂ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₂ = n • f.hom₂ := rfl
-@[simp] lemma Triangle.smul_hom₃ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₃ = n • f.hom₃ := rfl
-
-end
-
-instance instAddCommGroupTriangleHom : AddCommGroup (T₁ ⟶ T₂) where
-  zero_add f := by ext <;> apply zero_add
-  add_assoc f g h := by ext <;> apply add_assoc
-  add_zero f := by ext <;> apply add_zero
-  add_comm f g := by ext <;> apply add_comm
-  neg_add_cancel f := by ext <;> apply neg_add_cancel
-  sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
-  nsmul n f := n • f
-  nsmul_zero f := by aesop_cat
-  nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
-  zsmul n f := n • f
-  zsmul_zero' := by aesop_cat
-  zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
-  zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
-
-instance instPreadditiveTriangle : Preadditive (Triangle C) where
-
-end Preadditive
-
-section Linear
-
-variable [Preadditive C] {R : Type*} [Semiring R] [Linear R C]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive]
-  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
-
-attribute [local simp] mul_smul add_smul
-
-instance (T₁ T₂ : Triangle C) : Module R (T₁ ⟶ T₂) where
-  one_smul := by aesop
-  mul_smul := by aesop
-  smul_zero := by aesop
-  smul_add := by aesop
-  add_smul := by aesop
-  zero_smul := by aesop
-
-instance : Linear R (Triangle C) where
-
-end Linear
-=======
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
     (by cat_disch) (by simp) (by simp)
->>>>>>> origin/master
 
 section
 
@@ -574,27 +445,18 @@ def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
-<<<<<<< HEAD
-=======
 /-- The first morphism of a triangle, as a natural transformation `π₁ ⟶ π₂`. -/
->>>>>>> origin/master
 @[simps]
 def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
   app T := T.mor₁
 
-<<<<<<< HEAD
-=======
 /-- The second morphism of a triangle, as a natural transformation `π₂ ⟶ π₃`. -/
->>>>>>> origin/master
 @[simps]
 def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
   app T := T.mor₂
 
-<<<<<<< HEAD
-=======
 /-- The third morphism of a triangle, as a natural
 transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ (1 : ℤ)`. -/
->>>>>>> origin/master
 @[simps]
 def π₃Toπ₁ : (π₃ : Triangle C ⥤ C) ⟶ π₁ ⋙ shiftFunctor C (1 : ℤ) where
   app T := T.mor₃
@@ -609,16 +471,13 @@ instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
 
 end
 
-<<<<<<< HEAD
-variable {J : Type _} [Category J]
-
-=======
 section
+
+open Functor
 
 variable {J : Type*} [Category* J]
 
 /-- Constructor for functors to the category of triangles. -/
->>>>>>> origin/master
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
     (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)) :
@@ -629,7 +488,6 @@ def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
       hom₂ := obj₂.map φ
       hom₃ := obj₃.map φ }
 
-<<<<<<< HEAD
 @[simps]
 def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     (hom₂ : A ⋙ π₂ ⟶ B ⋙ π₂) (hom₃ : A ⋙ π₃ ⟶ B ⋙ π₃)
@@ -697,9 +555,8 @@ def functorIsoMk'
     (comm₃ : mor₃ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) = iso₃.hom ≫ mor₃') :
     functorMk mor₁ mor₂ mor₃ ≅ functorMk mor₁' mor₂' mor₃' :=
   functorIsoMk _ _ iso₁ iso₂ iso₃ comm₁ comm₂ comm₃
-=======
+
 end
->>>>>>> origin/master
 
 end Triangle
 

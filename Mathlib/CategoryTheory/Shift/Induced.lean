@@ -29,18 +29,11 @@ used for both quotient and localized shifts.
 
 namespace CategoryTheory
 
-<<<<<<< HEAD
-open Category
+open Category Functor
 
 variable {C D E : Type _} [Category C] [Category D] [Category E]
   (F : C ⥤ D) {G : D ⥤ E} {G' : C ⥤ E} (e : F ⋙ G ≅ G')
   {A : Type _} [AddMonoid A] [HasShift C A]
-=======
-open Functor
-
-variable {C D : Type _} [Category* C] [Category* D]
-  (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
->>>>>>> origin/master
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
 
 section
@@ -276,8 +269,8 @@ end Induced
 variable (A)
 
 noncomputable def induced : G.CommShift A where
-  iso := Induced.iso e
-  zero := by
+  commShiftIso := Induced.iso e
+  commShiftIso_zero := by
     ext1
     apply ((whiskeringLeft C D E).obj F).map_injective
     ext X
@@ -290,7 +283,7 @@ noncomputable def induced : G.CommShift A where
     rw [Functor.map_id, id_comp, ← NatTrans.naturality]
     dsimp
     rw [Iso.hom_inv_id_app_assoc]
-  add a b := by
+  commShiftIso_add a b := by
     ext1
     apply ((whiskeringLeft C D E).obj F).map_injective
     ext X

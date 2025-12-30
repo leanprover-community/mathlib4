@@ -334,6 +334,7 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
+omit [HasZeroObject D] in
 lemma leftExactFunctor_le_additiveFunctor :
     leftExactFunctor C D ≤ additiveFunctor C D :=
   fun F h ↦ by
@@ -346,6 +347,7 @@ lemma rightExactFunctor_le_additiveFunctor :
     simp only [rightExactFunctor_iff] at h
     exact Functor.additive_of_preservesBinaryBiproducts F
 
+omit [HasZeroObject D] in
 lemma exactFunctor_le_additiveFunctor :
     exactFunctor C D ≤ additiveFunctor C D :=
   (exactFunctor_le_leftExactFunctor C D).trans

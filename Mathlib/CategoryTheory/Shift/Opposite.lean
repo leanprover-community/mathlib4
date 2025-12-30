@@ -56,12 +56,8 @@ open Limits Category
 
 section
 
-<<<<<<< HEAD
 variable (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
-=======
-variable (C : Type*) [Category* C] (A : Type*) [AddMonoid A] [HasShift C A]
->>>>>>> origin/master
 
 namespace HasShift
 

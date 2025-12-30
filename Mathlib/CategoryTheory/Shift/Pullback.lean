@@ -38,14 +38,9 @@ namespace CategoryTheory
 
 open Limits Category
 
-<<<<<<< HEAD
 variable (C D : Type*) [Category C] [Category D]
   (F : C ⥤ D) {A B : Type*} [AddMonoid A] [AddMonoid B]
   (φ : A →+ B) [HasShift C B] [HasShift D B]
-=======
-variable (C : Type*) [Category* C] {A B : Type*} [AddMonoid A] [AddMonoid B]
-  (φ : A →+ B) [HasShift C B]
->>>>>>> origin/master
 
 /-- The category `PullbackShift C φ` is equipped with a shift such that for all `a`,
 the shift functor by `a` is `shiftFunctor C (φ a)`. -/
