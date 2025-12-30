@@ -32,8 +32,7 @@ section Semiring
 
 variable [Semiring R]
 
-/-- A polynomial `Splits` if it is a product of constant and monic linear polynomials.
-This will eventually replace `Polynomial.Splits`. -/
+/-- A polynomial `Splits` if it is a product of constant and monic linear polynomials. -/
 def Splits (f : R[X]) : Prop := f ∈ Submonoid.closure ({C a | a : R} ∪ {X + C a | a : R})
 
 @[simp, aesop safe apply]
