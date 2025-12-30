@@ -3,9 +3,11 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Group.UniqueProds.VectorSpace
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.Minpoly.ConjRootClass
+module
+
+public import Mathlib.Algebra.Group.UniqueProds.VectorSpace
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 /-!
 # The Lindemann-Weierstrass theorem
@@ -14,6 +16,8 @@ import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 * [Jacobson, *Basic Algebra I, 4.12*][jacobson1974]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -59,7 +63,7 @@ variable [FiniteDimensional F K] [Normal F K]
 
 open Classical in
 variable (F R K) in
-private def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
+def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
   refine (mapDomainFixedEquivSubtype F R K).trans
     { toFun := fun f ↦
         Quot.liftFinsupp (r := IsConjRoot _) (f : R[K]) (by

@@ -3,13 +3,15 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Analysis.Complex.IsIntegral
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
-import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
-import Mathlib.RingTheory.AlgebraicIndependent.Defs
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
-import Mathlib.Topology.Algebra.Order.Floor
+module
+
+public import Mathlib.Analysis.Complex.IsIntegral
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
+public import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
+public import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # The Lindemann-Weierstrass theorem
@@ -18,6 +20,8 @@ import Mathlib.Topology.Algebra.Order.Floor
 
 * [Jacobson, *Basic Algebra I, 4.12*][jacobson1974]
 -/
+
+@[expose] public section
 
 open scoped Nat
 

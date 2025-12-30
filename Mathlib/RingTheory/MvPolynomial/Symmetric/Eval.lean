@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
-import Mathlib.RingTheory.Polynomial.Vieta
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
+public import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
 # Evaluating symmetric polynomials
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Polynomial.Vieta
 
 These are used in the proof of Lindemann-Weierstrass.
 -/
+
+@[expose] public section
 
 open Finset
 open scoped Polynomial
