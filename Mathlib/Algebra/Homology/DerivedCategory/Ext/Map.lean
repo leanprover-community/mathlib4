@@ -261,8 +261,6 @@ namespace Abelian.Ext
 
 lemma mapExt_mk₀_eq_mk₀_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
-  let _ : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).functor.CommShift ℤ := F.commShiftMapCochainComplex
   simp only [Ext.mapExactFunctor, Functor.comp_obj, Int.cast_ofNat_Int, mk₀]
   rw [(F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
     (ComplexShape.up ℤ)).smallShiftedHomMap_mk₀
@@ -282,8 +280,6 @@ lemma mapExactFunctor₀ [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) :
 lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b : ℕ}
     (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
     (α.comp β h).mapExactFunctor F = (α.mapExactFunctor F).comp (β.mapExactFunctor F) h := by
-  let _ : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).functor.CommShift ℤ := F.commShiftMapCochainComplex
   simp only [mapExactFunctor, Functor.comp_obj, comp]
   have h' : b + a = (c : ℤ) := by simp [← h, add_comm]
   rw [(F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
@@ -296,7 +292,7 @@ lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortC
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
   ext
-  rw [Ext.mapExactFunctor_eq_shiftedHom_map, hS.extClass_hom]
+  rw [Ext.mapExactFunctor_hom, hS.extClass_hom]
   exact (F.mapShiftedHom_singleδ hS).trans (hS.map_of_exact F).extClass_hom.symm
 
 end Abelian.Ext
