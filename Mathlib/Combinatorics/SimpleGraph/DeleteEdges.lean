@@ -61,7 +61,8 @@ instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
 theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
     (G.deleteEdges s).deleteEdges s' = G.deleteEdges (s ∪ s') := by simp [deleteEdges, sdiff_sdiff]
 
-@[simp] lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
+-- `deleteEdges_of_subset_diagSet` already proves it
+lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
 @[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
 
 lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
