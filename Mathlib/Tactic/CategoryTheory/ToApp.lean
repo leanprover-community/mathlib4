@@ -132,17 +132,17 @@ Note that if you want both the lemma and the new lemma to be `simp` lemmas, you 
 `@[to_app (attr := simp)]`. The variant `@[simp, to_app]` on a lemma `F` will tag `F` with
 `@[simp]`, but not `F_app` (this is sometimes useful).
 -/
-syntax (name := to_app) "to_app" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
+syntax (name := to_app) "to_app" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `to_app
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| to_app $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| to_app $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl src "" "_app" ref stx? fun value levels => do
+    addRelatedDecl src "" "_app" ref optAttr fun value levels => do
       let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ← toAppExpr (← toNatTransExpr (← toCatExpr value))
