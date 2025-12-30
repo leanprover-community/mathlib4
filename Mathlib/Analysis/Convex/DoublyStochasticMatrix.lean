@@ -97,6 +97,7 @@ lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n
   simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
 
 /-- Any permutation matrix is doubly stochastic. -/
+@[simp, grind .]
 lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
     σ.permMatrix R ∈ doublyStochastic R n := by
   rw [mem_doublyStochastic_iff_sum]
