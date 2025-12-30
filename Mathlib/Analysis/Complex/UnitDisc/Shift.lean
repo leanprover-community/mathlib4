@@ -128,6 +128,15 @@ theorem shift_neg_apply_shift (z w : 𝔻) : shift (-z) (shift z w) = w := by
 theorem shift_apply_shift_neg (z w : 𝔻) : shift z (shift (-z) w) = w := by
   simpa using shift_neg_apply_shift (-z) w
 
+theorem neg_shift_neg (z w : 𝔻) : -z.shift (-w) = (-z).shift w := by
+  rw [eq_comm, shift_eq_iff, coe_neg, coe_neg, coe_shift]
+  field_simp (disch := apply shift_den_ne_zero')
+  simp; ring
+
+theorem involutive_shift_comp_neg (z : 𝔻) : (shift z <| -·).Involutive := by
+  intro x
+  simp [neg_shift_neg]
+
 theorem norm_shift_le (z w : 𝔻) :
     ‖(z.shift w : ℂ)‖ ≤ (‖(z : ℂ)‖ + ‖(w : ℂ)‖) / (1 + ‖(z : ℂ)‖ * ‖(w : ℂ)‖) :=
   norm_shiftFun_le z w
