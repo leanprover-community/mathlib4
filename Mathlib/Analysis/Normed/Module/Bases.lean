@@ -59,7 +59,8 @@ theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
     by_contra hnonempty
     push_neg at hnonempty
     let n := Classical.choose hnonempty
-    have : s n ≠ 0 := Finsupp.mem_support_iff.mp (Classical.choose_spec hnonempty)
+    have hn: n ∈ s.support := Classical.choose_spec hnonempty
+    have : s n ≠ 0 := Finsupp.mem_support_iff.mp hn
     let f := biorthogonal_functionals h n
     -- have fem: ∀ m, m ≠ n → f (e m) = 0 := fun m hm => ((Classical.choose_spec h).1 n).2 m hm
     have fsm0: ∀ m ∈ {m ∈ s.support | m ≠ n}, f (s m • e m) = 0 := by
@@ -77,17 +78,13 @@ theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
             f (∑ m ∈ ssuppnn, s m • e m) = ∑ m ∈ ssuppnn, f (s m • e m) := by rw [map_sum]
             _ = ∑ m ∈ ssuppnn, 0 := by exact Finset.sum_congr rfl fsm0
             _ = 0 := by rw [Finset.sum_const_zero]
-    have z: {n} = ssuppn := by -- TODO use Set.setOf_eq_eq_singleton
-        ext m
-        rw [Finset.mem_filter, Finset.mem_singleton]
+    -- TODO make it a lemma
+    have z: ssuppn = {n} := by
+        apply Finset.eq_singleton_iff_unique_mem.mpr
         constructor
-        · intro h
-          have : m ∈ s.support := by
-                rw [h]
-                exact Classical.choose_spec hnonempty
-          exact ⟨this, h⟩
-        · intro h
-          exact h.2
+        · exact Finset.mem_filter.mpr ⟨hn, rfl⟩
+        · intro _ hm; exact (Finset.mem_filter.mp hm).2
+
     have : s n = 0 := by
         calc
             s n = s n * 1 := by rw [mul_one]
@@ -96,7 +93,7 @@ theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
             _ = f (s n • e n) := by rw [<-map_smul]
             _ = f (∑ m ∈ {n}, s m • e m) := by rw [Finset.sum_singleton]
             _ = f (∑ m ∈ ssuppn, s m • e m) :=
-                congrArg f (Finset.sum_congr z fun _ _ => rfl)
+                congrArg f (Finset.sum_congr z.symm fun _ _ => rfl)
             _ = f (∑ m ∈ ssuppn, s m • e m) + 0 := by rw [add_zero]
             _ = f (∑ m ∈ ssuppn, s m • e m) + f (∑ m ∈ ssuppnn, s m • e m) := by rw [fmsum0]
             _ = f ((∑ m ∈ ssuppn, s m • e m) + (∑ m ∈ ssuppnn, s m • e m)) := by
@@ -163,17 +160,41 @@ def CanonicalProjections {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℕ → 
 
 namespace CanonicalProjections
 
+lemma bf_eval {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (j i : ℕ) :
+    biorthogonal_functionals h j (e i) = if j = i then (1 : 𝕜) else 0 := by
+    by_cases hji: j = i
+    · rw [hji]
+      simp only
+      exact ((biorthogonal_property h) i).1
+    · rw [if_neg hji]; push_neg at hji
+      exact ((biorthogonal_property h) j).2 i hji.symm
+
 theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
     Module.finrank 𝕜 (range (CanonicalProjections h n)) = n := by
     have einrange: ∀ i, i < n → e i ∈ range (CanonicalProjections h n) := by
         intro i hi
         let bf := biorthogonal_functionals h
+         -- TODO make it a lemma
+        have z: (Finset.range n).filter (fun j => j = i) = {i} := by
+            apply Finset.eq_singleton_iff_unique_mem.mpr
+            constructor
+            · exact Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hi, rfl⟩
+            · intro _ hm; exact (Finset.mem_filter.mp hm).2
         have : CanonicalProjections h n (e i) = e i := by
-            have : i ∈ Finset.range n := by sorry
+            have : i ∈ Finset.range n := by exact Finset.mem_range.mpr hi
             calc
-              CanonicalProjections h n (e i) = ∑ j : Finset.range n, (bf j (e i)) • e j :=   by sorry
-              _ =  ∑ j : Finset.range n, if j = i then 1 • e j else 0 • e j := by sorry
-              _ = 1 • e i := by sorry
+              CanonicalProjections h n (e i) = ∑ j ∈ Finset.range n, (bf j (e i)) • e j := by
+                rw [CanonicalProjections]; simp [bf];
+              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j +
+                    ∑ j ∈ (Finset.range n).filter (fun j => j ≠ i), (bf j (e i))  • e j := by
+                rw [Finset.sum_filter_add_sum_filter_not];
+              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j + 0 := by
+                sorry
+              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j := by
+                rw [add_zero]
+              _ = ∑ j ∈ {i}, (bf j (e i))  • e j := by rw [Finset.sum_congr z.symm fun _ _ => rfl]
+              _ = (bf i (e i)) • e i := by rw [Finset.sum_singleton]
+              _ = 1 • e i := by rw [((biorthogonal_property h) i).1]; simp
               _ = e i := by rw [one_smul]
 
         exact ⟨e i, this⟩
@@ -182,45 +203,48 @@ theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
     have : Module.finrank 𝕜 (Submodule.span 𝕜 ({ e i | i < n })) = n := by sorry
     exact this
 
+
 theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
     CanonicalProjections h n ∘ CanonicalProjections h m = CanonicalProjections h (min n m) := by
     ext x
     let bf := biorthogonal_functionals h
-    have : ∀ j i : ℕ, (bf j (e i)) = (if j = i then (1 : 𝕜) else 0) := by
-        intro j i
-        by_cases hji: j = i
-        · rw [hji]
-          simp only
-          exact ((biorthogonal_property h) i).1
-        · rw [if_neg hji]; push_neg at hji
-          exact ((biorthogonal_property h) j).2 i hji.symm
+    have hinner: ∀ i j : ℕ, (bf i (bf j x • e j)) • e i = if i = j then (bf j x) • e i else 0 := by
+        intro i j
+        rw [ContinuousLinearMap.map_smul]
+        by_cases hij : i = j
+        · rw [hij]; rw [bf_eval h j j]; simp
+        · rw [bf_eval h i j]; simp
+
     calc
         (CanonicalProjections h n ∘ CanonicalProjections h m) x
             = CanonicalProjections h n (CanonicalProjections h m x) := by simp
-        _ = ∑ j ∈ Finset.range n, bf j (CanonicalProjections h m x) • e j := by
+        _ = ∑ i ∈ Finset.range n, bf i (CanonicalProjections h m x) • e i := by
             rw [CanonicalProjections]; simp [bf]
-        _ = ∑ j ∈ Finset.range n, bf j (∑ i ∈ Finset.range m, bf i x • e i) • e j := by
+        _ = ∑ i ∈ Finset.range n, bf i (∑ j ∈ Finset.range m, bf j x • e j) • e i := by
             rw [CanonicalProjections]; simp [bf]
-        _ = ∑ j ∈ Finset.range n, (∑ i ∈ Finset.range m, (bf j (bf i x • e i))) • e j := by
-            exact Finset.sum_congr rfl (fun j hj => by apply congrArg ( · • e j ); rw [map_sum])
-        _ = ∑ j ∈ Finset.range n, (∑ i ∈ Finset.range m, (bf i x) • (bf j (e i))) • e j := by
-            exact Finset.sum_congr rfl (by
-                intro j hj
-                apply congrArg ( · • e j )
-                apply Finset.sum_congr rfl (by
-                    intro i hi
-                    rw [ContinuousLinearMap.map_smul]))
-        _ = ∑ j ∈ Finset.range n, (∑ i ∈ Finset.range m,
-            (bf i x) • (if j = i then (1 : 𝕜) else 0)) • e j := by
-            exact Finset.sum_congr rfl (by
-                intro j hj
-                apply congrArg ( · • e j )
-                apply Finset.sum_congr rfl (by
-                    intro i hi
-                    apply congrArg ( (bf i) x • ·  )
-                    exact this j i
-                    ))
-        _ = ∑ j ∈ Finset.range (min n m), (bf j x) • e j := by sorry
+        _ = ∑ i ∈ Finset.range n, (∑ j ∈ Finset.range m, (bf i (bf j x • e j))) • e i :=
+            Finset.sum_congr rfl (fun j hj => by apply congrArg ( · • e j ); rw [map_sum])
+        _ = ∑ i ∈ Finset.range n, ∑ j ∈ Finset.range m, (bf i (bf j x • e j)) • e i :=
+            Finset.sum_congr rfl (fun j hj => Finset.sum_smul )
+        _ = ∑ i ∈ Finset.range n, ∑ j ∈ Finset.range m, if i = j then (bf j x) • e i else 0 :=
+            Finset.sum_congr rfl (fun j hj => Finset.sum_congr rfl (fun i hi => hinner j i))
+        _ = ∑ i ∈ Finset.range (min n m), (bf i x) • e i := by
+            -- rw [Finset.sum_comm]
+            by_cases hnm: n ≤ m
+            · rw [min_eq_left hnm]
+              apply Finset.sum_congr rfl
+              intro i hi
+              apply Finset.sum_ite_eq_of_mem
+              simp only [Finset.mem_range] at *
+              exact lt_of_lt_of_le hi hnm
+            · push_neg at hnm
+              rw [min_eq_right (le_of_lt hnm)]
+              rw [Finset.sum_comm]
+              apply Finset.sum_congr rfl
+              intro j hj
+              apply Finset.sum_ite_eq_of_mem'
+              simp only [Finset.mem_range] at *
+              exact hj.trans hnm
         _ = CanonicalProjections h (min n m) x := by rw [CanonicalProjections]; simp [bf]
 
 theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
