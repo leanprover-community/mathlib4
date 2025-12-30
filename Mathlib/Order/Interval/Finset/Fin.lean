@@ -896,11 +896,6 @@ theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbeddi
 
 end card
 
-example {n : ℕ} [NeZero n] (hn : 2 ≤ n) : (1 : Fin n).val = 1 := by
-  simp only [coe_ofNat_eq_mod]
-  rw [Nat.mod_eq]
-  grind
-
 /-! ### Perturbations of endpoints by one -/
 
 section pm_one
