@@ -338,9 +338,9 @@ theorem mk_le_mk_of_mabs {a b : M} (h : |a|ₘ ≤ |b|ₘ) : mk b ≤ mk a := by
 
 @[to_additive]
 theorem min_le_mk_of_le_of_le {x y z : M} (hy : y ≤ x) (hz : x ≤ z) : min (mk y) (mk z) ≤ mk x := by
-  have := mabs_le_max_mabs_mabs hy hz
-  rw [← mabs_of_one_le (le_max_of_le_left (one_le_mabs y))] at this
-  apply (mk_le_mk_of_mabs this).trans'
+  have H := mabs_le_max_mabs_mabs hy hz
+  rw [← mabs_of_one_le (le_max_of_le_left (one_le_mabs y))] at H
+  apply (mk_le_mk_of_mabs H).trans'
   obtain h | h := le_total |y|ₘ |z|ₘ
   · rw [max_eq_right h, min_eq_right, mk_mabs]
     exact mk_le_mk_of_mabs h
