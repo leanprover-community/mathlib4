@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.Valuation.LocalSubring
 
-
 /-!
 # Adic valuations on Dedekind domains
 Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`, we define the
@@ -433,12 +432,15 @@ local instance : IsLocalRing (subalgebra.ofField K _ v.asIdeal.primeCompl_le_non
 variable (K) in
 /-- Given a Dedekind domain `R` in `K`, its field of fractions, the localization of `R` at
 a nonzero prime is a valuation subring of `K`. -/
-def IsDedekindDomain.valuationSubringAtPrime : ValuationSubring K := ValuationSubring.ofSubring
-    (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).toSubring (fun x ↦
-      by simpa [IsLocalization.IsInteger] using ValuationRing.isInteger_or_isInteger
-          (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) x)
+def IsDedekindDomain.valuationSubringAtPrime : ValuationSubring K :=
+  .ofSubring (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).toSubring fun x ↦
+    by simpa [IsLocalization.IsInteger] using ValuationRing.isInteger_or_isInteger
+        (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) x
 
 open IsDedekindDomain
+
+theorem IsDedekindDomain.valuationSubringAtPrime.toSubring : (valuationSubringAtPrime K v).toSubring
+    = (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).toSubring := rfl
 
 open scoped algebraMap in
 theorem valuationSubringAtPrime_le_valuationValuationSubring :
@@ -453,15 +455,11 @@ instance : Algebra R (valuationSubringAtPrime K v) :=
 instance : IsScalarTower R (valuationSubringAtPrime K v) K :=
   IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
 
-instance : FaithfulSMul R (valuationSubringAtPrime K v) := by
-  simpa [faithfulSMul_iff_algebraMap_injective, Function.Injective.of_comp_iff
-    (FaithfulSMul.algebraMap_injective (valuationSubringAtPrime K v) K),
-    IsScalarTower.algebraMap_eq R (valuationSubringAtPrime K v) K]
-      using IsFractionRing.injective R K
+instance : NoZeroSMulDivisors R (valuationSubringAtPrime K v) := Subalgebra.noZeroSMulDivisors_bot _
 
 instance : IsDedekindDomain (valuationSubringAtPrime K v) :=
   IsLocalization.AtPrime.isDedekindDomain R v.asIdeal
-  (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors)
+    (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors)
 
 open scoped WithZero algebraMap in
 theorem idealOfLE_valuationSubringAtPrime_valuationSubring_eq :
