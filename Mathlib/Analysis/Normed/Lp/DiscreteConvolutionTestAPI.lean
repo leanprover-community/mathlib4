@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.Data.Set.MulAntidiagonal
 
 /-!
 # Discrete Convolution of Functions
@@ -26,7 +27,7 @@ This is analogous to `MeasureTheory.convolution` but for the discrete (counting 
 
 ## Convolution Examples
 
-**Additive index `[AddMonoid ℕ]` (polynomials/power series):**
+**Additive index `[AddMonoid ℕ]` (power series):**
 ```
 (f ⋆ g)(3) = f(0)·g(3) + f(1)·g(2) + f(2)·g(1) + f(3)·g(0)
 ```
@@ -130,6 +131,7 @@ bypassing `LinearMap.mul`.
 ### Fibers
 * `DiscreteConvolution.mulFiber x`: the set `{(a, b) | a * b = x}`
 * `DiscreteConvolution.tripleFiber x`: the set `{(a, b, c) | a * b * c = x}`
+* `DiscreteConvolution.mulFiber_eq_mulAntidiagonal_univ`: bridge to `Set.mulAntidiagonal`
 
 ### Convolution
 * `DiscreteConvolution.convolution L f g`: convolution `f ⋆[L] g` for `[Monoid M]`
@@ -255,6 +257,12 @@ theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 =
 
 @[to_additive]
 theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := mul_one 1
+
+/-- `mulFiber x` equals `Set.mulAntidiagonal Set.univ Set.univ x`. -/
+@[to_additive /-- `addFiber x` equals `Set.addAntidiagonal Set.univ Set.univ x`. -/]
+theorem mulFiber_eq_mulAntidiagonal_univ (x : M) :
+    mulFiber x = Set.mulAntidiagonal Set.univ Set.univ x := by
+  ext ⟨a, b⟩; simp [mem_mulFiber, Set.mem_mulAntidiagonal]
 
 end Fiber
 
