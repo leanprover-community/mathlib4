@@ -3,10 +3,12 @@ Copyright (c) 2025 Fengyang Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fengyang Wang
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Data.Set.MulAntidiagonal
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Data.Set.MulAntidiagonal
 
 /-!
 # Discrete Convolution
@@ -27,6 +29,8 @@ Discrete convolution of `f : M → E` and `g : M → E'` over a monoid `M`:
 * `f ⋆[L] g`, `f ⋆₊[L] g`: convolution with bilinear map `L`
 * `f ⋆ₘ g`, `f ⋆₊ₘ g`: ring multiplication convolution
 -/
+
+@[expose] public section
 
 open scoped BigOperators
 
