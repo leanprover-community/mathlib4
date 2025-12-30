@@ -25,6 +25,7 @@ group of `x`.
 open CategoryTheory
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ : X}
 
 noncomputable section
@@ -236,6 +237,7 @@ end Path
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
 @[ext]
 structure FundamentalGroupoid (X : Type*) where
+structure FundamentalGroupoid (X : Type*) where
   /-- View a term of `FundamentalGroupoid X` as a term of `X`. -/
   as : X
 
@@ -280,8 +282,10 @@ instance (X : Type*) [Subsingleton X] :
 -- Once it is added, please add the corresponding lemma and instance.
 
 instance {X : Type*} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
+instance {X : Type*} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
   ⟨⟨default⟩⟩
 
+instance : Groupoid (FundamentalGroupoid X) where
 instance : Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x.as y.as
   id x := ⟦Path.refl x.as⟧
@@ -306,7 +310,11 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
+def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
   obj X := { α := FundamentalGroupoid X }
+  map f := map f.hom
+  map_id X := by simp only [map]; congr; ext x y ⟨p⟩; rfl
+  map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
   map f := map f.hom
   map_id X := by simp only [map]; congr; ext x y ⟨p⟩; rfl
   map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
@@ -338,6 +346,7 @@ abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
+abbrev fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
 abbrev fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 
