@@ -33,7 +33,7 @@ variable {p q : MvPolynomial σ R}
 
 section DegreeOf
 
-lemma degreeOf_mul_eq [NoZeroDivisors R] (hp : p ≠ 0) (hq : q ≠ 0) :
+lemma degreeOf_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
     degreeOf n (p * q) = degreeOf n p + degreeOf n q := by
   classical
   simp_rw [degreeOf_eq_natDegree, map_mul, ← renameEquiv_apply]
