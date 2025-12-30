@@ -524,7 +524,7 @@ theorem mem_dilatransvections_pow_of_not_isExceptional
   · exact mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id he
 
 /-- If an element of `V ≃ₗ[K] V` is exceptional, then it is the product
-of at most `finrank K (V ⧸ e.fixedSubmodule)` transvections and one dilatransvection.
+of `finrank K (V ⧸ e.fixedSubmodule)` transvections and one dilatransvection.
 (Fourth part of Dieudonné's theorem). -/
 theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsExceptional e) :
     e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule)) * dilatransvections K V := by
