@@ -41,7 +41,7 @@ variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : Measurable
 namespace Measure
 
 /-- Lift a linear map between `OuterMeasure` spaces such that for each measure `μ` every measurable
-set is caratheodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
+set is Carathéodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
 noncomputable
 def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β)
     (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :

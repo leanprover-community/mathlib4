@@ -331,8 +331,6 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
 theorem notMem_bot {x : α → M} : x ∉ (⊥ : L.DefinableSet A α) :=
   notMem_empty x
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 @[simp]
 theorem mem_sup : x ∈ s ⊔ t ↔ x ∈ s ∨ x ∈ t :=
   Iff.rfl

@@ -183,10 +183,6 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
 
-@[deprecated Fin.zero_le (since := "2025-05-13")]
-protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
-  Nat.zero_le a.val
-
 @[simp, norm_cast]
 theorem val_pos_iff [NeZero n] {a : Fin n} : 0 < a.val ↔ 0 < a := by
   rw [← val_fin_lt, val_zero]
@@ -356,9 +352,6 @@ open Fin.NatCast
 @[simp]
 theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = (a : Fin n) :=
   rfl
-
-@[deprecated ofNat_eq_cast (since := "2025-05-30")]
-alias ofNat'_eq_cast := ofNat_eq_cast
 
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
