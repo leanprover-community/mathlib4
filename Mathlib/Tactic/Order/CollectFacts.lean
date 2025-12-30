@@ -57,21 +57,23 @@ abbrev CollectFactsState := Std.HashMap Expr <| Array AtomicFact
 /-- Monad for the fact collection procedure. -/
 abbrev CollectFactsM := StateT CollectFactsState AtomM
 
-/-- Adds `type` to the state, matching at `reducible_and_instances` transparency. -/
+/-- Adds `type` to the state. It checks if the type has already been added up to
+`reducible_and_instances` transparency. Returns the type that is added to the state and
+defenitionally equal (but may be not syntactically equal) to `type`. -/
 def addType {u : Level} (type : Q(Type u)) : CollectFactsM Q(Type u) := do
-  match ← (← get).keys.findM? (withReducibleAndInstances <| isDefEq · type) with
+  match ← (← get).keys.findM? (withReducibleAndInstances <| isDefEq type ·) with
   | none =>
     modify fun res => res.insert type #[]
     pure type
   | some t => pure t
 
-/-- Adds `fact` to the state. -/
+/-- Adds `fact` to the state. Assumes that `type` is already added by `addType`. -/
 def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun facts => facts.push fact
 
 /-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
 is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
-Similarly for `⊓`. -/
+Similarly for `⊓`. Assumes that `type` is already added by `addType`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
   match ← AtomM.containsThenAddQ x with
   | (true, idx, _) => return idx
