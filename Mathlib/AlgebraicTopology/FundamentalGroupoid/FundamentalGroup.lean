@@ -30,21 +30,13 @@ open CategoryTheory
 
 variable (X)
 
-variable (X)
-
 /-- The fundamental group is the automorphism group (vertex group) of the basepoint
 in the fundamental groupoid. -/
 def FundamentalGroup (x : X) :=
   End (FundamentalGroupoid.mk x)
-def FundamentalGroup (x : X) :=
-  End (FundamentalGroupoid.mk x)
 
 instance (x : X) : Group (FundamentalGroup X x) := inferInstanceAs (Group (End _))
-instance (x : X) : Group (FundamentalGroup X x) := inferInstanceAs (Group (End _))
 
-instance (x : X) : Inhabited (FundamentalGroup X x) := inferInstanceAs (Inhabited (End _))
-
-variable {X}
 instance (x : X) : Inhabited (FundamentalGroup X x) := inferInstanceAs (Inhabited (End _))
 
 variable {X}
@@ -54,7 +46,6 @@ namespace FundamentalGroup
 /-- Get an isomorphism between the fundamental groups at two points given a path -/
 def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
-  ((Groupoid.isoEquivHom ..).symm ⟦p⟧).conj
   ((Groupoid.isoEquivHom ..).symm ⟦p⟧).conj
 
 variable (x₀ x₁)
@@ -66,18 +57,14 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
 abbrev toArrow {x : X} (p : FundamentalGroup X x) :
-abbrev toArrow {x : X} (p : FundamentalGroup X x) :
     FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
-  p
   p
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
 abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
-abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
   toArrow p
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-abbrev fromArrow {x : X}
 abbrev fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
     FundamentalGroup X x :=
@@ -86,7 +73,6 @@ abbrev fromArrow {x : X}
   p
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
-abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
 abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
   fromArrow p
 
