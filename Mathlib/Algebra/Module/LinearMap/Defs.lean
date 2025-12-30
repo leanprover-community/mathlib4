@@ -997,4 +997,58 @@ def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
 
 end RestrictScalarsAsLinearMap
 
+section mulLeftRight
+variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+
+section left
+variable (R) [SMulCommClass R A A]
+
+/-- The multiplication on the left in an algebra is a linear map.
+
+Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
+
+When `A` is unital and associative, this is the same as `DistribMulAction.toLinearMap R A a` -/
+def mulLeft (a : A) : A →ₗ[R] A where
+  __ := AddMonoidHom.mulLeft a
+  map_smul' _ := mul_smul_comm _ _
+
+@[simp] theorem mulLeft_apply (a b : A) : mulLeft R a b = a * b := rfl
+
+@[simp]
+theorem toAddMonoidHom_mulLeft (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a := rfl
+
+@[deprecated (since := "2025-12-30")] alias mulLeft_toAddMonoidHom := toAddMonoidHom_mulLeft
+
+variable (A) in
+@[simp] theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ => zero_mul _
+
+end left
+
+section right
+variable (R) [IsScalarTower R A A]
+
+/-- The multiplication on the right in an algebra is a linear map.
+
+Note that this only assumes `IsScalarTower R A A`, so that it also works for `R := A`.
+
+When `A` is unital and associative, this is the same as
+`DistribMulAction.toLinearMap R A (MulOpposite.op b)`. -/
+def mulRight (b : A) : A →ₗ[R] A where
+  __ := AddMonoidHom.mulRight b
+  map_smul' _ _ := smul_mul_assoc _ _ _
+
+@[simp] theorem mulRight_apply (a b : A) : mulRight R a b = b * a := rfl
+
+@[simp]
+theorem toAddMonoidHom_mulRight (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a := rfl
+
+@[deprecated (since := "2025-12-30")] alias mulRight_toAddMonoidHom := toAddMonoidHom_mulRight
+
+variable (A) in
+@[simp] theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext fun _ => mul_zero _
+
+end right
+
+end mulLeftRight
+
 end LinearMap
