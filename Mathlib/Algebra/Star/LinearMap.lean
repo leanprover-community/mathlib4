@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -204,3 +205,76 @@ theorem spectrum_intrinsicStar (f : End R V) : spectrum R (star f) = star (spect
 
 end eigenspace
 end Module.End
+
+namespace ContinuousLinearMap
+variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousStar E] [ContinuousStar F]
+
+open scoped IntrinsicStar
+
+/-- The intrinsic star operation on continuous lienar maps defined by
+`(star f) x = star (f (star x))`. -/
+def intrinsicStar : Star (E →L[R] F) where
+  star f := { star f.toLinearMap with
+    cont := by
+      dsimp [star]
+      exact .comp' continuous_star (.comp' f.continuous continuous_star) }
+
+scoped[IntrinsicStar] attribute [instance] ContinuousLinearMap.intrinsicStar
+
+@[simp] theorem intrinsicStar_apply (f : E →L[R] F) (x : E) : star f x = star (f (star x)) := rfl
+
+@[simp] theorem toLinearMap_intrinsicStar (f : E →L[R] F) :
+    (star f).toLinearMap = star f.toLinearMap := rfl
+
+theorem IntrinsicStar.isSelfAdjoint_iff_map_star (f : E →L[R] F) :
+    IsSelfAdjoint f ↔ ∀ x, f (star x) = star (f x) := by
+  simp [IsSelfAdjoint, ContinuousLinearMap.ext_iff, star_eq_iff_star_eq, eq_comm (a := f _)]
+
+/-- The involutive intrinsic star structure on continuous linear maps. -/
+def intrinsicInvolutiveStar : InvolutiveStar (E →L[R] F) where
+  star_involutive x := by ext; simp
+
+scoped[IntrinsicStar] attribute [instance] ContinuousLinearMap.intrinsicInvolutiveStar
+
+/-- The intrinsic star additive monoid structure on continuous linear maps. -/
+def intrinsicStarAddMonoid [ContinuousAdd F] : StarAddMonoid (E →L[R] F) where
+  star_add x y := by ext; simp
+
+scoped[IntrinsicStar] attribute [instance] ContinuousLinearMap.intrinsicStarAddMonoid
+
+variable {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G] [StarModule R G]
+  [TopologicalSpace G] [ContinuousStar G]
+
+theorem intrinsicStar_comp (f : E →L[R] F) (g : G →L[R] E) :
+    star (f ∘L g) = star f ∘L star g := by ext; simp
+
+@[simp] theorem intrinsicStar_id : star (ContinuousLinearMap.id R E) = .id R E := by ext; simp
+@[simp] theorem intrinsicStar_zero : star (0 : E →L[R] F) = 0 := by ext; simp
+section starAddMonoidSemiring
+variable {S : Type*} [Semiring S] [StarAddMonoid S] [StarModule S S] [Module S E] [StarModule S E]
+  [TopologicalSpace S] [ContinuousStar S]
+
+@[simp] theorem intrinsicStar_toSpanSingleton [ContinuousSMul S E] (a : E) :
+    star (toSpanSingleton S a) = toSpanSingleton S (star a) := by ext; simp
+
+theorem intrinsicStar_smulRight [Module S F] [StarModule S F] [ContinuousSMul S F]
+    (f : E →L[S] S) (x : F) : star (f.smulRight x) = (star f).smulRight (star x) := by ext; simp
+
+end starAddMonoidSemiring
+
+variable [SMulCommClass R R F] [ContinuousConstSMul R F] in
+lemma intrinsicStarModule : StarModule R (E →L[R] F) where
+  star_smul _ _ := by ext; simp
+
+scoped[IntrinsicStar] attribute [instance] ContinuousLinearMap.intrinsicStarModule
+
+section starRing
+variable {R : Type*} [CommSemiring R] [StarRing R] [Module R E] [StarModule R E]
+  [Module R F] [StarModule R F]
+
+lemma intrinsicStar_eq_comp (f : E →L[R] F) :
+    star f = (starL R).toContinuousLinearMap.comp (f.comp (starL R).toContinuousLinearMap) := rfl
+
+end starRing
+
+end ContinuousLinearMap
