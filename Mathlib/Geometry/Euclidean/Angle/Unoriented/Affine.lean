@@ -376,19 +376,8 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
 /-- An Unoriented angle is unchanged by replacing the third point by one strictly further away on
 the same ray. -/
 theorem _root_.Sbtw.angle_eq_right {p₁ p₂ p₃ p : P} (h : Sbtw ℝ p₂ p₃ p) :
-    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p := by
-  rw [angle, angle]
-  have h : ∃ r : ℝ, 0 < r ∧ (p₃ -ᵥ p₂) = r • (p -ᵥ p₂) := by
-    have hr := sbtw_iff_mem_image_Ioo_and_ne.mp h
-    obtain ⟨hr1, hr2⟩ := hr
-    simp only [Set.mem_image, Set.mem_Ioo] at hr1
-    obtain ⟨r, hr1, hr2⟩ := hr1
-    rw [AffineMap.lineMap_apply] at hr2
-    use r; repeat aesop
-  obtain ⟨r, hr1,hr2⟩ := h
-  rw [hr2]
-  apply InnerProductGeometry.angle_smul_right_of_pos
-  exact hr1
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p :=
+  angle_eq_angle_of_angle_eq_pi _ h.angle₁₂₃_eq_pi
 
 /-- An Unoriented angle is unchanged by replacing the first point by one strictly further away on
 the same ray. -/
