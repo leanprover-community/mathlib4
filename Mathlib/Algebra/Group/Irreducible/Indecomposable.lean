@@ -44,7 +44,7 @@ lemma isMulIndecomposable_id_univ [Subsingleton Mˣ] {x : M} (hx : x ≠ 1) :
 /-- The "base" of a set of points of a monoid relative to a morphism `f`. -/
 @[to_additive /-- The "base" of `v` relative to a morphism `f`.
 
-In the case that `v` is the set of roots of a crystallogrphic root system, and `S = ℚ`, this is the
+In the case that `v` is the set of roots of a crystallographic root system, and `S = ℚ`, this is the
 base of the root system associated to `f`. -/]
 def IsMulIndecomposable.baseOf [Monoid S] (v : ι → M) (f : M →* S) : Set ι :=
   IsMulIndecomposable v {i | 1 < f (v i)}
