@@ -371,8 +371,7 @@ theorem hasFTaylorSeriesOn_integral_of_dominated {n : WithTop ℕ∞} {bound : �
       ((continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E).toContinuousLinearEquiv
         (∫ a, p x a i.succ ∂μ)) x
     -- next line should not be necessary...
-    let A : NormedSpace ℝ (H →L[𝕜] ContinuousMultilinearMap 𝕜 (fun (j : Fin i) ↦ H) E) :=
-      ContinuousLinearMap.toNormedSpace
+    let A : NormedSpace ℝ (H →L[𝕜] (H [×i]→L[𝕜] E)) := ContinuousLinearMap.toNormedSpace
     rw [← ContinuousLinearEquiv.integral_comp_comm]
     let G : H → α → (H [×i]→L[𝕜] E) := fun x a ↦ p x a i
     let G' : H → α → H →L[𝕜] (H [×i]→L[𝕜] E) := fun x a ↦
@@ -402,21 +401,44 @@ theorem hasFTaylorSeriesOn_integral_of_dominated {n : WithTop ℕ∞} {bound : �
 
 #where
 
+#check HasFTaylorSeriesUpToOn.compContinuousLinearMap
+
+open ContinuousMultilinearMap
+
 theorem hasFTaylorSeriesOn_integral_of_dominated'
     {H' : Type*} [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [BorelSpace H']
     {n : WithTop ℕ∞} {C : ℕ → ℝ} {μ : Measure H'}
     {p : H × H' → FormalMultilinearSeries 𝕜 (H × H') E} (hs : IsOpen s)
-    {t : Set H'} {F : H → H' → E} (ht : IsSeparable t)
+    {t : Set H'} {F : H → H' → E} (ht : IsSeparable t) (tmeas : MeasurableSet t) (hmut : μ t ≠ ⊤)
     (hF_meas : HasFTaylorSeriesUpToOn n F.uncurry p (s ×ˢ t))
     (h_bound : ∀ x ∈ s, ∀ a ∈ t, ∀ (i : ℕ), i ≤ n → ‖p (x, a) i‖ ≤ C i) :
     HasFTaylorSeriesUpToOn n (fun x ↦ ∫ a in t, F x a ∂μ)
       (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
         (fun j ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) s := by
-  apply hasFTaylorSeriesOn_integral_of_dominated hs (bound := fun i a ↦ C i)
+  apply hasFTaylorSeriesOn_integral_of_dominated hs (bound := fun i a ↦ C i * ∏ (j : Fin i), 1)
   · intro x hx i hi
-    apply ContinuousOn.aestronglyMeasurable_of_isSeparable
-    change  ContinuousOn
-      (compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) N))
+    apply ContinuousOn.aestronglyMeasurable_of_isSeparable ?_ tmeas ht
+    change ContinuousOn
+      (fun y ↦ compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) i)) t
+    apply Continuous.comp_continuousOn (by fun_prop)
+    apply (hF_meas.cont i hi).comp (by fun_prop)
+    intro w hw
+    exact ⟨hx, hw⟩
+  · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
+    intro x hx i hi
+    apply (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _).trans
+    have : ‖p (x, w) i‖ ≤ C i := h_bound x hx w hw i hi
+    gcongr
+    · exact le_trans (by positivity) this
+    · exact ContinuousLinearMap.norm_inl_le_one 𝕜 H H'
+  · intro i hi
+    apply integrableOn_const hmut
+  · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
+
+
+
+
+
 
 
 #exit
