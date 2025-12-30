@@ -104,4 +104,3 @@ theorem MonoidHom.restrict_surjective (G R : Type*) [CommGroup G] [Finite G] (H 
     monoidHom_card_of_hasEnoughRootsOfUnity, Subgroup.card_eq_card_quotient_mul_card_subgroup H,
     mul_div_cancel_right₀]
   exact Fintype.card_eq_nat_card ▸ Fintype.card_ne_zero
-
