@@ -325,7 +325,7 @@ variable (M) in
 @[to_additive
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
+def mapRangeAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
   __ := mapRangeRingHom M f
   commutes' := by simp
 
@@ -368,7 +368,7 @@ variable (R M) in
 @[to_additive (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
+def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
   __ := mapRangeAlgHom M e
   invFun := mapRangeAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
@@ -442,7 +442,7 @@ That's why it is not a global instance. -/
 
 Warning: This produces a diamond for `Algebra R[M] S[M][M]` and another one for `Algebra R[M] R[M]`.
 That's why it is not a global instance. -/]
-noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
+abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
@@ -566,6 +566,7 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : k[G]) :
 lemma algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
 
+variable (k A) in
 /-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
 @[simps]
 def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where

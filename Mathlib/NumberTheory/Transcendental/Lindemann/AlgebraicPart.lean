@@ -35,17 +35,14 @@ def mapDomainFixed : Subalgebra R R[K] where
 
 theorem mem_mapDomainFixed_iff {x : R[K]} :
     x ∈ mapDomainFixed F R K ↔ ∀ i j, i ∈ MulAction.orbit (K ≃ₐ[F] K) j → x i = x j := by
-  simp_rw [MulAction.mem_orbit_iff]
-  change (∀ f : K ≃ₐ[F] K, Finsupp.equivMapDomain f.toAddEquiv x = x) ↔ _
-  refine ⟨fun h i j hij => ?_, fun h f => ?_⟩
-  · obtain ⟨f, rfl⟩ := hij
-    rw [AlgEquiv.smul_def, ← DFunLike.congr_fun (h f) (f j)]
-    simp
+  simp? [MulAction.mem_orbit_iff, mapDomainFixed] says
+    simp only [mapDomainFixed, AddMonoidAlgebra.domCongrAut_apply, Subalgebra.mem_mk,
+      Subsemiring.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq,
+      MulAction.mem_orbit_iff, AlgEquiv.smul_def, forall_exists_index]
+  refine ⟨fun h i j f hi => ?_, fun h f => ?_⟩
+  · simp [← hi, ← congr($(h f) (f j))]
   · ext i
-    simp only [Finsupp.equivMapDomain_apply, AddEquiv.coe_toEquiv_symm, AddEquiv.symm_mk,
-      AlgEquiv.toEquiv_eq_coe, AlgEquiv.symm_toEquiv_eq_symm, AddEquiv.coe_mk, EquivLike.coe_coe]
-    refine (h i (f.symm i) ⟨f, ?_⟩).symm
-    rw [AlgEquiv.smul_def, AlgEquiv.apply_symm_apply]
+    simpa using (h i (f.symm i) f (by simp)).symm
 
 variable (F R K) in
 /-- The equivalence between `mapDomainFixed F R K` and the `f : R[X]` with
@@ -78,7 +75,7 @@ private def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R)
       exists_eq_right']
   · change ∀ i j, i ∈ MulAction.orbit (K ≃ₐ[F] K) j → f ⟦i⟧ = f ⟦j⟧
     exact fun i j h => congr_arg f (Quotient.sound (isConjRoot_iff_exists_algEquiv.mpr h))
-  · exact fun _ => Subtype.eq <| Finsupp.ext fun x => rfl
+  · exact fun _ => Subtype.ext <| Finsupp.ext fun x => rfl
   · refine fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
 
 @[simp]
@@ -186,7 +183,7 @@ theorem single_mul_single_apply_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
     (mapDomainFixed.single x a * mapDomainFixed.single y b) 0 ≠ 0 ↔ x = -y := by
   classical
   simp_rw [mapDomainFixed.single, MulMemClass.mk_mul_mk]
-  have := Nat.noZeroSMulDivisors F R
+  have : NoZeroSMulDivisors ℕ R := ⟨by simp [← Nat.cast_smul_eq_nsmul F, smul_eq_zero]⟩
   simp_rw [Finsupp.indicator_eq_sum_single, sum_mul, mul_sum, AddMonoidAlgebra.single_mul_single,
     mk_apply_zero_eq, (Finsupp.coe_finset_sum), sum_apply, Finsupp.single_apply, ← sum_product',
     sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
@@ -226,25 +223,25 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     (x : K[G]) (x0 : x ≠ 0) (hfx : f x = 0) :
     ∃ (y : F[G]), y ≠ 0 ∧ f (y.mapRangeAlgHom _ (algebraMap F K).toNatAlgHom) = 0 := by
   classical
-  let y := ∏ f : K ≃ₐ[F] K, x.mapRangeAlgAut f
-  have hy : ∀ f : K ≃ₐ[F] K, y.mapRangeAlgAut f = y := by
+  let y := ∏ f : K ≃ₐ[F] K, x.mapRangeAlgAut _ _ f
+  have hy : ∀ f : K ≃ₐ[F] K, y.mapRangeAlgAut _ _ f = y := by
     intro f; dsimp only [y]
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
-    exact (Group.mulLeft_bijective f).prod_comp fun g => x.mapRangeAlgAut g
+    exact (Group.mulLeft_bijective f).prod_comp fun g => x.mapRangeAlgAut _ _ g
   have y0 : y ≠ 0 := by
     dsimp only [y]; rw [prod_ne_zero_iff]; intro f _hf
     rwa [map_ne_zero_iff]
     apply EquivLike.injective
   have hfy : f y = 0 := by
     suffices
-      f (x.mapRangeAlgAut 1 * ∏ f ∈ univ.erase 1, x.mapRangeAlgAut f) = 0 by
+      f (x.mapRangeAlgAut _ _ 1 * ∏ f ∈ univ.erase 1, x.mapRangeAlgAut _ _ f) = 0 by
       convert this
       exact (mul_prod_erase (univ : Finset (K ≃ₐ[F] K)) _ (mem_univ _)).symm
     simp [map_one, hfx]
   have y_mem : ∀ i : G, y i ∈ IntermediateField.fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
     intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
-    replace hy : y.mapRangeAlgAut f i = y i := by rw [hy f]
+    replace hy : y.mapRangeAlgAut _ _ f i = y i := by rw [hy f]
     simpa using hy
   obtain ⟨y', hy'⟩ :
       y ∈ Set.range (AddMonoidAlgebra.mapRangeAlgHom _ (algebraMap F K).toNatAlgHom) := by
@@ -406,7 +403,7 @@ theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
   rw [Equiv.sum_comp q.equivFin.symm,
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots S).map (φ <| .ofAdd ·)).sum)]
   refine sum_congr rfl fun c _hc => ?_
-  rw [← Polynomial.aroots_map_of_splits c.splits_minpoly, c.aroots_minpoly_eq_carrier_val]
+  rw [← c.splits_minpoly.aroots_map_algebraMap, c.aroots_minpoly_eq_carrier_val]
   simp
 
 theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
@@ -451,12 +448,11 @@ theorem linearIndependent_exp_aux {S : Type*}
   let K : IntermediateField ℚ S := IntermediateField.adjoin ℚ (poly.rootSet S)
   let _ : Algebra K S := K.val.toRingHom.toAlgebra
   have _ : IsSplittingField ℚ K poly :=
-    IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain poly)
+    IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits _)
   have : FiniteDimensional ℚ K := Polynomial.IsSplittingField.finiteDimensional K poly
   have : Normal ℚ K := .of_isSplittingField poly
   have : IsGalois ℚ K := ⟨⟩
   have algebraMap_K_apply x : algebraMap K S x = x := rfl
-
   have poly_ne_0 : poly ≠ 0 := prod_ne_zero_iff.mpr fun x hx => minpoly.ne_zero (hs x hx)
   have u_mem : ∀ i, u i ∈ K := by
     intro i

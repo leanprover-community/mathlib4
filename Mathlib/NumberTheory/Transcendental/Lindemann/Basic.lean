@@ -31,78 +31,63 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- Start of proof of theorem 4.22 (Jacobson, p. 281).
   -- Assume v is not identically zero.
   by_contra! v0
-
   -- This implies we have a similar sum `w + ∑ j, w' j • ∑ u ∈ (p j).aroots ℂ, exp u = 0` where
   -- `w` and `w' j` are integers, `w ≠ 0`, and `p j` are integral polynomials with nonzero constant
   -- coefficients.
   obtain ⟨w, w0, m, p, p0, w', h⟩ := linearIndependent_exp_aux expMonoidHom u hu u_inj v hv v0 h
   simp_rw [expMonoidHom_apply, toAdd_ofAdd] at h
-
   -- Note that none of the `p j` are zero.
   have p0' : ∀ j, p j ≠ 0 := by intro j h; simpa [h] using p0 j
-
   -- And the sum is not trivial. (Otherwise `w = 0`.)
   have m0 : m ≠ 0 := by
     rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
     exact w0 h
   have I : Nonempty (Fin m) := Fin.pos_iff_nonempty.mp (Nat.pos_of_ne_zero m0)
-
   -- Let `P` be the product of the `p j`, which has a nonzero constant coefficient as well.
   let P := ∏ j : Fin m, p j
   have P0 : P.eval 0 ≠ 0 := by
     dsimp only [P]; rw [eval_prod, prod_ne_zero_iff]; exact fun j _hj => p0 j
   have P0' : P ≠ 0 := by intro h; simp [h] at P0
-
   have mem_aroots {j x} (hx : x ∈ (p j).aroots ℂ) : x ∈ P.aroots ℂ := by
     rw [mem_aroots', Polynomial.map_ne_zero_iff (algebraMap ℤ ℂ).injective_int] at hx ⊢
     rw [map_prod]
     exact ⟨P0', prod_eq_zero (mem_univ _) hx.2⟩
-
   -- Now let `K` be the splitting field of `P` in ℂ.
   obtain ⟨K, _, _, _, _, _⟩ : ∃ (K : Type) (_ : Field K) (_ : Algebra ℚ K) (_ : Algebra K ℂ)
       (_ : IsScalarTower ℚ K ℂ), IsSplittingField ℚ K (P.map (algebraMap ℤ ℚ)) :=
     ⟨IntermediateField.adjoin ℚ ((P.map (algebraMap ℤ ℚ)).rootSet ℂ),
       inferInstance, inferInstance, inferInstance, inferInstance,
-      IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain _)⟩
+      IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits _)⟩
   have : CharZero K := algebraRat.charZero K
-
   -- All the `p j` split in `K`.
-  have splits_p (j) : ((p j).map (algebraMap ℤ K)).Splits (RingHom.id K) := by
+  have splits_p (j) : ((p j).map (algebraMap ℤ K)).Splits := by
     have P0'' : P.map (algebraMap ℤ K) ≠ 0 := by
       rwa [Polynomial.map_ne_zero_iff (algebraMap ℤ K).injective_int]
-    refine splits_of_splits_of_dvd _ P0'' ?_ ?_
-    · rw [IsScalarTower.algebraMap_eq ℤ ℚ K, ← Polynomial.map_map, splits_map_iff, RingHom.id_comp]
+    refine .of_dvd ?_ P0'' ?_
+    · rw [IsScalarTower.algebraMap_eq ℤ ℚ K, ← Polynomial.map_map]
       exact IsSplittingField.splits _ _
     simp_rw [P, Polynomial.map_prod]
     exact dvd_prod_of_mem _ (mem_univ _)
-
   -- The roots of `p j` in `ℂ` are simply the roots in `K` embedded into `ℂ`
   have aroots_K_eq_aroots_ℂ (j) (f : ℂ → ℂ) :
       (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) =
         (((p j).aroots ℂ).map f) := by
-    rw [← Polynomial.aroots_map_of_splits (L := ℂ)
-        (by simpa [Polynomial.splits_id_iff_splits] using splits_p j),
-      Multiset.map_map, Function.comp_def]
+    rw [← (splits_p j).aroots_map_algebraMap (B := ℂ), Multiset.map_map, Function.comp_def]
   simp_rw [← aroots_K_eq_aroots_ℂ] at h
-
   -- The following roughly matches Jacobson, p. 286.
-
   -- Let `k` be the product of the leading coefficients of the `p j` (i.e., `P.leadingCoeff`).
   let k : ℤ := ∏ j, (p j).leadingCoeff
   have k0 : k ≠ 0 := prod_ne_zero_iff.mpr fun j _hj => leadingCoeff_ne_zero.mpr (p0' j)
   have sz_h₁ (j) : (p j).leadingCoeff ∣ k := dvd_prod_of_mem _ (mem_univ _)
-
   -- Now there exists a constant `c : ℝ`, such that for each prime `p > |P₀|` we have `nₚ : ℤ` and
   -- `gₚ : ℤ[X]` such that
   -- * `p` does not divide `nₚ`
   -- * `deg(gₚ) ≤ p * deg(f) - 1` (`≤ p * deg(f)` is sufficient)
   -- * all complex roots `r` of `P` satisfy `|nₚ * exp r - p * gₚ(r)| ≤ c ^ p / (p - 1)!`
   obtain ⟨c, hc'⟩ := LindemannWeierstrass.exp_polynomial_approx P P0
-
   -- Let `L` be a nonnegative upper bound on the norms of the coefficients of the sum.
   let L := sup' univ univ_nonempty fun j => ‖w' j‖
   have L0 : 0 ≤ L := I.elim fun j => (norm_nonneg (w' j)).trans (le_sup' (‖w' ·‖) (mem_univ j))
-
   -- Now there exists a sufficiently large prime `q` such that
   -- `L * (∑ i, ((p i).aroots ℂ).card) * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! < 1`.
   let N := max (P.eval 0).natAbs (max k.natAbs w.natAbs)
@@ -114,25 +99,20 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
       have := (FloorSemiring.tendsto_pow_div_factorial_atTop x).const_mul x
       simp_rw [← mul_div_assoc, ← pow_succ', mul_zero] at this
       exact this.comp (Filter.tendsto_atTop_atTop.mpr fun b ↦ ⟨b + 1, fun _ ↦ by omega⟩)
-
     convert Filter.Frequently.forall_exists_of_atTop
       ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually <|
         Filter.Tendsto.eventually_lt_const (u := 1) (by simp)
           ((this (‖k‖ ^ P.natDegree * c)).const_mul (L * ∑ i, Multiset.card ((p i).aroots ℂ))))
       (N + 1) using 2
-    rw [ge_iff_le, Nat.succ_le, mul_div_assoc]
-
+    rw [ge_iff_le, Nat.succ_le_iff, mul_div_assoc]
   -- And this `q` is in particular large enough to apply `hc'`.
   obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q (by order) prime_q
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self
   clear hc'
-
   -- In the splitting field `K`, each `p j` has as many roots as its degree.
-  have sz_h₂ := fun j => (natDegree_eq_card_roots (splits_p j)).symm
-  simp_rw [map_id, natDegree_map_eq_of_injective (algebraMap ℤ K).injective_int] at sz_h₂
-
+  have sz_h₂ := fun j => (splits_p j).natDegree_eq_card_roots.symm
+  simp_rw [natDegree_map_eq_of_injective (algebraMap ℤ K).injective_int] at sz_h₂
   let t := P.natDegree * q
-
   -- Now `k` is a positive integer such that for every `j`,
   -- `k ^ t * ∑ u ∈ (p j).aroots K, gp u` is an integer.
   -- Let `sz` be the vector such that `sz j` is that corresponding integer.
@@ -142,7 +122,6 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   replace hsz : k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum =
       algebraMap ℤ K (∑ j, w' j • sz j) := by
     simp_rw [smul_sum, smul_comm (k ^ t), ← hsz, map_sum, map_zsmul]
-
   -- Then `k ^ t * n * w + q * ∑ j, w' j • sz j
   --  = k ^ t • (∑ j, w' j • ∑ u ∈ (p j).aroots K, q • gp u - n • exp u))`.
   have H' := calc
@@ -177,7 +156,6 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
     _ = k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x => q • gp.aeval x - n • exp x).sum := by
       congr!
       exact aroots_K_eq_aroots_ℂ _ (fun x ↦ q • gp.aeval x - n • exp x)
-
   -- And, as we've taken `q` sufficiently large, `‖k ^ t * n * w + q * ∑ j, w' j • sz j‖ < 1`.
   have H := calc
     ‖((k ^ t * n * w + q * ∑ j, w' j • sz j : ℤ) : ℂ)‖
@@ -205,14 +183,12 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
         nsmul_eq_mul]
       ring
     _ < 1 := hq
-
   -- The left-hand side is an integer with norm less than one, so is zero. Since the second term
   -- is a multiple of `q`, so is the first term.
   rw [norm_intCast, ← Int.cast_abs, ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff] at H
   replace H : q ∣ (k ^ t * n * w).natAbs := by
     rw [← Int.ofNat_dvd_left, ← Int.dvd_add_self_mul, H]
     exact dvd_zero _
-
   -- But `q` is prime and divides none of the factors, so we have our contradiction.
   simp_rw [Int.natAbs_mul, prime_q.dvd_mul, Int.natAbs_pow] at H
   obtain (H | H) | H := H

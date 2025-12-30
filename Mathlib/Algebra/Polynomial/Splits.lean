@@ -291,13 +291,6 @@ alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of
 @[deprecated (since := "2025-10-08")]
 alias sum_roots_eq_nextCoeff_of_monic_of_split := nextCoeff_eq_neg_sum_roots_of_monic_of_splits
 
-theorem aroots_map_of_splits [Algebra K L] [IsScalarTower R K L] {f : R[X]}
-    (hf : Splits (algebraMap R K) f) :
-    (f.aroots K).map (algebraMap K L) = f.aroots L := by
-  rw [← Polynomial.splits_id_iff_splits] at hf
-  rw [← aroots_map L K]
-  simp_rw [aroots_def, roots_map _ hf]
-
 end Splits
 
 end Polynomial
