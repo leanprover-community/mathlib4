@@ -363,6 +363,14 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
     rw [map_pow, pow_exponent_eq_one, map_one])
 
 /--
+The exponent of a submonoid `H ≤ G` divides the exponent of `G`.
+-/
+@[to_additive /-- The exponent of a addsubmonoid `H ≤ G` divides the exponent of `G`. -/]
+theorem exponent_dvd_of_submonoid (H : Submonoid G) :
+    Monoid.exponent H ∣ Monoid.exponent G :=
+  Monoid.exponent_dvd_of_monoidHom H.subtype H.subtype_injective
+
+/--
 If there exists a multiplication-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`.
 -/
@@ -645,6 +653,18 @@ end Monoid
 section Group
 
 variable [Group G]
+
+/--
+If `H` is a normal subgroup of `G`, then the exponent of `G ⧸ H` divides the exponent of `G`.
+-/
+@[to_additive
+/--
+If `H` is a normal addsubgroup of `G`, then the exponent of `G ⧸ H` divides the exponent of `G`.
+-/]
+theorem Group.exponent_dvd_of_quotient (H : Subgroup G) [H.Normal] :
+    Monoid.exponent (G ⧸ H) ∣ Monoid.exponent G :=
+  MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)
+
 /-- In a group of exponent two, every element is its own inverse. -/
 @[to_additive]
 lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
