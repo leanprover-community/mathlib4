@@ -62,10 +62,9 @@ variable (F R K) in
 private def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
   refine (mapDomainFixedEquivSubtype F R K).trans
     { toFun := fun f ↦
-       Quotient.liftFinsupp (s := IsConjRoot.setoid _ _) (f : R[K]) (by
-        change ∀ _ _, IsConjRoot F _ _ → _
-        simp_rw [isConjRoot_iff_exists_algEquiv]
-        exact f.2)
+        Quot.liftFinsupp (r := IsConjRoot _) (f : R[K]) (by
+          simp_rw [isConjRoot_iff_exists_algEquiv]
+          exact f.2)
       invFun := fun f => ⟨?_, ?_⟩
       left_inv := ?_
       right_inv := ?_ }
@@ -76,7 +75,7 @@ private def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R)
   · change ∀ i j, i ∈ MulAction.orbit (K ≃ₐ[F] K) j → f ⟦i⟧ = f ⟦j⟧
     exact fun i j h => congr_arg f (Quotient.sound (isConjRoot_iff_exists_algEquiv.mpr h))
   · exact fun _ => Subtype.ext <| Finsupp.ext fun x => rfl
-  · refine fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
+  · exact fun _ => Finsupp.ext fun x => Quot.inductionOn x fun i => rfl
 
 @[simp]
 private theorem toFinsuppAux_apply_apply_mk (f : mapDomainFixed F R K) (i : K) :
