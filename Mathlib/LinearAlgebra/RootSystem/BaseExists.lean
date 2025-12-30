@@ -16,7 +16,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Base
 
 ## Implementation details
 
-The proof needs a set of ordered coefficients, even though the existence ultimate statement does
+The proof needs a set of ordered coefficients, even though the ultimate existence statement does
 not. There are at least two ways to deal with this:
  (a) Using the fact that a crystallographic root system induces a `ℚ`-structure, pass to the root
      system over `ℚ` defined by `RootPairing.restrictScalarsRat`, and develop a theory of base
