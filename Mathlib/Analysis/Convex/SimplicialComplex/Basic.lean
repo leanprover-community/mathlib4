@@ -106,6 +106,9 @@ namespace SimplicialComplex
 variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
+/--
+Forget the geometric structure of a simplicial complex, yielding an abstract simplicial complex.
+-/
 def toAbstract (K : SimplicialComplex 𝕜 E) : AbstractSimplicialComplex E :=
   { faces := K.faces
     empty_notMem := K.empty_notMem
