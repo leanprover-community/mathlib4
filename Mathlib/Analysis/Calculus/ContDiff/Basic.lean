@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+public import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 
 /-!
 # Higher differentiability of composition
@@ -374,6 +375,18 @@ theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap
   · intro m hm
     exact (hA m).continuous.comp_continuousOn <| (hf.cont m hm).comp g.continuous.continuousOn <|
       Subset.refl _
+
+/-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `f ∘ g` admits a Taylor
+series in `g ⁻¹' s`, whose `k`-th term is given by `p k (g v₁, ..., g vₖ)` . -/
+theorem HasFTaylorSeriesUpToOn.compContinuousAffineMap
+    (hf : HasFTaylorSeriesUpToOn n f p s) (g : G →ᴬ[𝕜] E) {t : Set G} (h : MapsTo g t s) :
+    HasFTaylorSeriesUpToOn n (f ∘ g)
+      (fun x k => (p (g x) k).compContinuousLinearMap fun _ => g.contLinear) t := by
+  have A : g = (· + g 0) ∘ g.contLinear := by ext v; simpa using g.map_vadd 0 v
+  nth_rewrite 1 [A]
+
+#exit
+
 
 /-- Composition by continuous linear maps on the right preserves `C^n` functions at a point on
 a domain. -/
