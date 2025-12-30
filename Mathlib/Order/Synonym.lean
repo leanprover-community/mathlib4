@@ -61,19 +61,10 @@ def toDual : α ≃ αᵒᵈ :=
 def ofDual : αᵒᵈ ≃ α :=
   Equiv.refl _
 
-@[simp]
-theorem toDual_symm_eq : (@toDual α).symm = ofDual := rfl
-
-@[simp]
-theorem ofDual_symm_eq : (@ofDual α).symm = toDual := rfl
-
-@[simp]
-theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
-  rfl
-
-@[simp]
-theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
-  rfl
+@[simp] theorem toDual_symm_eq : (@toDual α).symm = ofDual := rfl
+@[simp] theorem ofDual_symm_eq : (@ofDual α).symm = toDual := rfl
+@[simp] theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a := rfl
+@[simp] theorem ofDual_toDual (a : α) : ofDual (toDual a) = a := rfl
 
 @[simp] theorem toDual_trans_ofDual : (toDual (α := α)).trans ofDual = Equiv.refl _ := rfl
 @[simp] theorem ofDual_trans_toDual : (ofDual (α := α)).trans toDual = Equiv.refl _ := rfl
@@ -81,59 +72,40 @@ theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
 @[simp] theorem ofDual_comp_toDual : (ofDual (α := α)) ∘ toDual = id := rfl
 
 theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
-
 theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b := by simp
 
 @[ext] lemma ext {a b : αᵒᵈ} (h : ofDual a = ofDual b) : a = b := h
 
-@[simp]
-theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a :=
-  Iff.rfl
+@[to_dual self, simp]
+theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a := .rfl
 
-@[simp]
-theorem toDual_lt_toDual [LT α] {a b : α} : toDual a < toDual b ↔ b < a :=
-  Iff.rfl
+@[to_dual self, simp]
+theorem toDual_lt_toDual [LT α] {a b : α} : toDual a < toDual b ↔ b < a := .rfl
 
-@[simp]
-theorem ofDual_le_ofDual [LE α] {a b : αᵒᵈ} : ofDual a ≤ ofDual b ↔ b ≤ a :=
-  Iff.rfl
+@[to_dual self, simp]
+theorem ofDual_le_ofDual [LE α] {a b : αᵒᵈ} : ofDual a ≤ ofDual b ↔ b ≤ a := .rfl
 
-@[simp]
-theorem ofDual_lt_ofDual [LT α] {a b : αᵒᵈ} : ofDual a < ofDual b ↔ b < a :=
-  Iff.rfl
+@[to_dual self, simp]
+theorem ofDual_lt_ofDual [LT α] {a b : αᵒᵈ} : ofDual a < ofDual b ↔ b < a := .rfl
 
-theorem le_toDual [LE α] {a : αᵒᵈ} {b : α} : a ≤ toDual b ↔ b ≤ ofDual a :=
-  Iff.rfl
+@[to_dual toDual_le]
+theorem le_toDual [LE α] {a : αᵒᵈ} {b : α} : a ≤ toDual b ↔ b ≤ ofDual a := .rfl
 
-theorem lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual a :=
-  Iff.rfl
-
-theorem toDual_le [LE α] {a : α} {b : αᵒᵈ} : toDual a ≤ b ↔ ofDual b ≤ a :=
-  Iff.rfl
-
-theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < a :=
-  Iff.rfl
+@[to_dual toDual_lt]
+theorem lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual a := .rfl
 
 /-- Recursor for `αᵒᵈ`. -/
 @[elab_as_elim]
 protected def rec {motive : αᵒᵈ → Sort*} (toDual : ∀ a : α, motive (toDual a)) :
     ∀ a : αᵒᵈ, motive a := toDual
 
-@[simp]
-protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
-  Iff.rfl
+@[simp] protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) := .rfl
+@[simp] protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) := .rfl
 
-@[simp]
-protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
-  Iff.rfl
-
-alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
-
-alias ⟨_, _root_.LT.lt.dual⟩ := toDual_lt_toDual
-
-alias ⟨_, _root_.LE.le.ofDual⟩ := ofDual_le_ofDual
-
-alias ⟨_, _root_.LT.lt.ofDual⟩ := ofDual_lt_ofDual
+@[to_dual self] alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
+@[to_dual self] alias ⟨_, _root_.LT.lt.dual⟩ := toDual_lt_toDual
+@[to_dual self] alias ⟨_, _root_.LE.le.ofDual⟩ := ofDual_le_ofDual
+@[to_dual self] alias ⟨_, _root_.LT.lt.ofDual⟩ := ofDual_lt_ofDual
 
 end OrderDual
 
@@ -177,14 +149,13 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b := by simp
 instance (α : Type*) [BEq α] : BEq (Lex α) where
   beq a b := ofLex a == ofLex b
 
-instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Lex α) :=
-  inferInstanceAs (LawfulBEq α)
+instance (α : Type*) [BEq α] [h : LawfulBEq α] : LawfulBEq (Lex α) := h
+instance (α : Type*) [h : DecidableEq α] : DecidableEq (Lex α) := h
 
-instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
-  inferInstanceAs (DecidableEq α)
-
-instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
-  inferInstanceAs (Inhabited α)
+instance (α : Type*) [h : Inhabited α] : Inhabited (Lex α) := h
+instance (α : Type*) [h : Nonempty α] : Nonempty (Lex α) := h
+instance (α : Type*) [h : Nontrivial α] : Nontrivial (Lex α) := h
+instance (α : Type*) [h : Unique α] : Unique (Lex α) := h
 
 instance {α γ} [H : CoeFun α γ] : CoeFun (Lex α) γ where
   coe f := H.coe (ofLex f)
@@ -236,14 +207,13 @@ theorem ofColex_inj {a b : Colex α} : ofColex a = ofColex b ↔ a = b := by sim
 instance (α : Type*) [BEq α] : BEq (Colex α) where
   beq a b := ofColex a == ofColex b
 
-instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Colex α) :=
-  inferInstanceAs (LawfulBEq α)
+instance (α : Type*) [BEq α] [h : LawfulBEq α] : LawfulBEq (Colex α) := h
+instance (α : Type*) [h : DecidableEq α] : DecidableEq (Colex α) := h
 
-instance (α : Type*) [DecidableEq α] : DecidableEq (Colex α) :=
-  inferInstanceAs (DecidableEq α)
-
-instance (α : Type*) [Inhabited α] : Inhabited (Colex α) :=
-  inferInstanceAs (Inhabited α)
+instance (α : Type*) [h : Inhabited α] : Inhabited (Colex α) := h
+instance (α : Type*) [h : Nonempty α] : Nonempty (Colex α) := h
+instance (α : Type*) [h : Nontrivial α] : Nontrivial (Colex α) := h
+instance (α : Type*) [h : Unique α] : Unique (Colex α) := h
 
 instance {α γ} [H : CoeFun α γ] : CoeFun (Colex α) γ where
   coe f := H.coe (ofColex f)

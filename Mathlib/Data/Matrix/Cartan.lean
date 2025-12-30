@@ -203,6 +203,46 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
                            0, -1,  2,  0;
                            0, -1,  0,  2] := by decide
 
+
+
+/-! ### Exceptional matrix diagonal entries -/
+
+@[simp] theorem E₆_diag (i : Fin 6) : E₆ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem E₇_diag (i : Fin 7) : E₇ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem E₈_diag (i : Fin 8) : E₈ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem G₂_diag (i : Fin 2) : G₂ i i = 2 := by fin_cases i <;> decide
+
+
+/-! ### Exceptional matrix off-diagonal entries -/
+
+theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E₆ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₆]
+
+theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E₇ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₇]
+
+theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E₈ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₈]
+
+theorem F₄_off_diag_nonpos (i j : Fin 4) (h : i ≠ j) : F₄ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [F₄]
+
+theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [G₂]
+
+/-! ### Exceptional matrix transpose properties -/
+
+@[simp] theorem E₆_transpose : E₆.transpose = E₆ := by decide
+
+@[simp] theorem E₇_transpose : E₇.transpose = E₇ := by decide
+
+@[simp] theorem E₈_transpose : E₈.transpose = E₈ := by decide
+
 end Properties
 
 end CartanMatrix
