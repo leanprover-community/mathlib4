@@ -21,15 +21,15 @@ indexed by their union.
 
 * `tmulUnionEquiv` : the equivalence between the tensor product of `PiTensorProduct`s indexed
   by disjoint sets `S₁` and `S₂`, and the `PiTensorProduct` indexed by `S₁ ∪ S₂`.
-* `tmulBipartitionEquiv` : Variant of `tmulUnionEquiv` where the sets are each others' complement.
+* `tmulBipartitionEquiv` : Variant of `tmulUnionEquiv` where the sets are each other's complement.
 * `tmulDiffEquiv` : Variant of `tmulUnionEquiv` where the two are given as `S` and `T \ S`
   for some `T : Set ι`
 * `tmulInsertEquiv` : for `i₀ ∉ S`, the equivalence between the tensor product of `M i₀` with the
   `PiTensorProduct` indexed by `S`, and the `PiTensorProduct` indexed by `insert i₀ S`.
 
 * `extendLinear` : Extends a linear map on the `PiTensorProduct` indexed by a set `S` to a linear
-  map on the `PiTensorProduct` indexed by a superset `T`, by taking the tensor
-  product with the identity map on `T \ S`.
+  map on the `PiTensorProduct` indexed by a superset `T`, by taking the tensor product with the
+  identity map on `T \ S`.
 * `extendTensor` : Given a family `m₀` of vectors, extend an element of the `PiTensorProduct`
   indexed by a set `S` to an element of the `PiTensorProduct` indexed by a superset `T`, by taking
   tensor products with vectors provided by `m₀` on `T \ S`.
@@ -85,7 +85,7 @@ section tmulUnionEquiv
 
 variable {S₁ S₂ : Set ι} (H : Disjoint S₁ S₂) [(i : ι) → Decidable (i ∈ S₁)]
 
-/-- Consider a family of modules indexed by `ι` and disjoint sets `S₁, S₂ : Set ι`.
+/-- Consider a family of modules indexed by `ι`, and disjoint sets `S₁, S₂ : Set ι`.
 `tmulUnionEquiv` is the equivalence between the binary tensor product of
 `PiTensorProduct`s indexed by `S₁` and `S₂`, and the `PiTensorProduct` indexed
 by `S₁ ∪ S₂`. -/
