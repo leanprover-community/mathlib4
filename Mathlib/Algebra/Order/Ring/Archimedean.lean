@@ -222,30 +222,11 @@ theorem exists_int_lt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : �
   use -n
   simpa [neg_lt]
 
-
-#exit
-
-theorem exists_mem_Icc_of_mk_nonneg {S : Type*} [Ring S]
-    (f : S →+* R) {x : R} (hx : 0 ≤ mk x) : ∃ r s, x ∈ Set.Icc (f r) (f s) := by
-  obtain ⟨n, hn⟩ := hx
-  refine ⟨-n, n, (neg_le_of_abs_le hn).trans' ?_, (le_of_abs_le hn).trans ?_⟩ <;>
-    simp
-
-theorem exists_mem_Ioo_of_mk_nonneg {S : Type*} [Ring S] [Nontrivial R]
-    (f : S →+* R) {x : R} (hx : 0 ≤ mk x) : ∃ r s, x ∈ Set.Ioo (f r) (f s) := by
-  obtain ⟨n, hn⟩ := hx
-  refine ⟨-(n + 1), n + 1, (neg_le_of_abs_le hn).trans_lt' ?_, (le_of_abs_le hn).trans_lt ?_⟩ <;>
-    simp
-
-theorem mk_nonneg_of_mem_Icc [Archimedean S] (f : S →+*o R) {x : R} {r s : S}
+theorem mk_nonneg_of_le_of_le_of_archimedean [Archimedean S] (f : S →+*o R) {x : R} {r s : S}
     (hr : f r ≤ x) (hs : x ≤ f s) : 0 ≤ mk x := by
-  obtain ⟨n, hn⟩ := exists_nat_ge (max |r| |s|)
-  obtain ⟨hnr, hns⟩ := max_le_iff.1 hn
-  refine (mk_natCast_nonneg n).trans (mk_le_mk_of_abs (abs_le.2 ⟨hr.trans' ?_, hs.trans ?_⟩))
-  · simpa using f.monotone' (neg_le_of_abs_le hnr)
-  · simpa using f.monotone' (le_of_abs_le hns)
+  apply (min_le_mk_of_le_of_le hr hs).trans'
+  simp [mk_map_nonneg_of_archimedean]
 
-#exit
 end IsOrderedRing
 
 section IsStrictOrderedRing

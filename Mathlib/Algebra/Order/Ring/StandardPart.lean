@@ -425,7 +425,7 @@ theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f 
 theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
     stdPart x = r := by
   have hx : 0 ≤ mk x := by
-    apply mk_nonneg_of_mem_Icc f (hl (r - 1) _) (hr (r + 1) _) <;> simp
+    apply mk_nonneg_of_le_of_le_of_archimedean (hl (r - 1) _) (hr (r + 1) _) <;> simp
   by_contra h
   obtain h | h := lt_or_gt_of_ne h
   · obtain ⟨s, hs, hs'⟩ := exists_between h
@@ -445,12 +445,13 @@ theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤
 
 theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
   obtain hx | hx := le_or_gt 0 (mk x)
-  · obtain ⟨a, b, ha, hb⟩ := exists_mem_Ioo_of_mk_nonneg f.toRingHom hx
-    have hn : {r | x < f r}.Nonempty := ⟨b, hb⟩
+  · obtain ⟨a, ha⟩ := exists_int_lt_of_mk_nonneg hx
+    obtain ⟨b, hb⟩ := exists_int_gt_of_mk_nonneg hx
+    have hn : {r | x < f r}.Nonempty := ⟨b, by simpa using hb⟩
     have hb : BddBelow {r | x < f r} := by
       refine ⟨a, fun r hr ↦ ?_⟩
       by_contra! hra
-      exact (f.monotone' hra.le).not_gt (ha.trans hr)
+      exact (f.monotone' hra.le).not_gt (by simpa using ha.trans hr)
     apply stdPart_eq f <;> intro r hr
     · simpa using notMem_of_lt_csInf hr hb
     · obtain ⟨s, hs, hs'⟩ := (csInf_lt_iff hb hn).1 hr
