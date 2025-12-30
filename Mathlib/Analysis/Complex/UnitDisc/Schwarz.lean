@@ -37,7 +37,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} 
 estimating the distance between the images of two points in the disc.
 
 This version assumes that the disc in the codomain
-is centered around the image of one o fthe points. -/
+is centered around the image of one of the points. -/
 theorem dist_le_of_mapsTo_ball_of_mem {z w : ℂ} (hd : DifferentiableOn ℂ f (ball c r))
     (h_maps : MapsTo f (ball c r) (closedBall (f z) R))
     (hz : z ∈ ball c r) (hw : w ∈ ball c r) :
