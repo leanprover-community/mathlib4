@@ -29,7 +29,7 @@ polynomials, in particular Northcott's Theorem for the Mahler measure.
 - `Polynomial.pow_eq_one_of_mahlerMeasure_eq_one`: if an integer polynomial has Mahler measure equal
   to 1, then all its complex nonzero roots are roots of unity.
 - `Polynomial.cyclotomic_dvd_of_mahlerMeasure_eq_one`: if an integer non-constant polynomial has
-  Mahler measure equal to 1 and is a multiple of X, then it is divisible by a cyclotomic polynomial.
+  Mahler measure equal to 1 and is not a multiple of X, then it is divisible by a cyclotomic polynomial.
 -/
 
 @[expose] public section
