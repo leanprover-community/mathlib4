@@ -245,8 +245,7 @@ instance {D : Type*} [Category* D] [MonoidalCategory D]
   unit := by ext i; simpa using NatTrans.IsMonoidal.unit (τ := τ i)
   tensor X Y := by ext i; simpa using NatTrans.IsMonoidal.tensor _ _ (τ := τ i)
 
-instance [∀ i, BraidedCategory (C i)]
-    {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+instance {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)]
     {F G : ∀ i : I, (D i ⥤ C i)} [∀ i, (F i).LaxMonoidal]
     [∀ i, (G i).LaxMonoidal] (τ : ∀ i : I, (F i) ⟶ (G i))
