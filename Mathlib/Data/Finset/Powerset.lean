@@ -59,7 +59,7 @@ theorem powerset_mono {s t : Finset α} : powerset s ⊆ powerset t ↔ s ⊆ t 
     mem_powerset.2 <| Subset.trans (mem_powerset.1 h) st⟩
 
 theorem powerset_injective : Injective (powerset : Finset α → Finset (Finset α)) :=
-  (injective_of_le_imp_le _) powerset_mono.1
+  .of_eq_imp_le (powerset_mono.1 ·.le)
 
 @[simp]
 theorem powerset_inj : powerset s = powerset t ↔ s = t :=
