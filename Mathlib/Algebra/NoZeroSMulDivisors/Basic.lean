@@ -3,9 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Module.End
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Module.End
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # `NoZeroSMulDivisors`
@@ -14,24 +16,13 @@ This file defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
 -/
 
+@[expose] public section
+
 assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 
 section NoZeroSMulDivisors
 
 variable {R M : Type*}
-
-section Module
-
-variable [Semiring R]
-variable (R M)
-
-/-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
-zero as well. Usually `M` is an `R`-algebra. -/
-theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
-  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
-  rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]
-
-end Module
 
 section AddCommGroup
 
@@ -77,14 +68,7 @@ variable (R)
 variable [NoZeroSMulDivisors R M]
 
 theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
-  fun c d h =>
-  sub_eq_zero.mp
-    ((smul_eq_zero.mp
-          (calc
-            (c - d) • x = c • x - d • x := sub_smul c d x
-            _ = 0 := sub_eq_zero.mpr h
-            )).resolve_right
-      hx)
+  fun c d h ↦ by simpa [← sub_smul, hx, sub_eq_zero] using congr($h - d • x)
 
 end SMulInjective
 

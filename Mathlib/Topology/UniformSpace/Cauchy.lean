@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Bases
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+module
+
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Bases
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -275,7 +279,7 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n +
     obtain ⟨N, h⟩ := h V mV
     use N + k
     intro a ha b hb
-    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> omega
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
   · exact h.comp_tendsto (tendsto_add_atTop_nat k)
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
@@ -445,7 +449,7 @@ variable [DiscreteUniformity α]
 of a point. -/
 theorem eq_pure_of_cauchy {f : Filter α} (hf : Cauchy f) : ∃ x : α, f = pure x := by
   rcases hf with ⟨f_ne_bot, f_le⟩
-  simp only [DiscreteUniformity.eq_principal_relId, le_principal_iff, mem_prod_iff] at f_le
+  simp only [DiscreteUniformity.eq_principal_setRelId, le_principal_iff, mem_prod_iff] at f_le
   obtain ⟨S, hS, T, hT, H⟩ := f_le
   obtain ⟨x, rfl, _, _, _⟩ := SetRel.exists_eq_singleton_of_prod_subset_id
     (f_ne_bot.nonempty_of_mem hS) (f_ne_bot.nonempty_of_mem hT) H
@@ -741,7 +745,7 @@ theorem setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq
   biInter_subset_biInter_left <| Iic_subset_Iic.2 h
 
 theorem setSeq_sub_aux (n : ℕ) : setSeq hf U_mem n ⊆ setSeqAux hf U_mem n :=
-  biInter_subset_of_mem right_mem_Iic
+  biInter_subset_of_mem self_mem_Iic
 
 theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
     setSeq hf U_mem m ×ˢ setSeq hf U_mem n ⊆ U N := fun p hp => by

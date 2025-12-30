@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Probability.ProbabilityMassFunction.Monad
-import Mathlib.Control.ULiftable
+module
+
+public import Mathlib.Probability.ProbabilityMassFunction.Monad
+public import Mathlib.Control.ULiftable
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -23,6 +25,8 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 `bernoulli` represents the Bernoulli distribution on `Bool`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -175,8 +179,6 @@ theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support �
 theorem ofFinset_apply_of_notMem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
   h' a ha
 
-@[deprecated (since := "2025-05-23")] alias ofFinset_apply_of_not_mem := ofFinset_apply_of_notMem
-
 section Measure
 
 variable (t : Set α)
@@ -273,9 +275,6 @@ theorem filter_apply (a : α) :
 
 theorem filter_apply_eq_zero_of_notMem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
   rw [filter_apply, Set.indicator_apply_eq_zero.mpr fun ha' => absurd ha' ha, zero_mul]
-
-@[deprecated (since := "2025-05-23")]
-alias filter_apply_eq_zero_of_not_mem := filter_apply_eq_zero_of_notMem
 
 theorem mem_support_filter_iff {a : α} : a ∈ (p.filter s h).support ↔ a ∈ s ∧ a ∈ p.support :=
   (mem_support_normalize_iff _ _ _).trans Set.indicator_apply_ne_zero

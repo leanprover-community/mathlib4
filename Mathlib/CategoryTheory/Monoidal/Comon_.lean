@@ -3,11 +3,13 @@ Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -18,12 +20,14 @@ and show that they are equivalently monoid objects in the opposite category.
 We construct the monoidal structure on `Comon C`, when `C` is braided.
 
 An oplax monoidal functor takes comonoid objects to comonoid objects.
-That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
+That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 
 ## TODO
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂ u
 
@@ -48,9 +52,9 @@ class ComonObj (X : C) where
 namespace ComonObj
 
 @[inherit_doc] scoped notation "Δ" => ComonObj.comul
-@[inherit_doc] scoped notation "Δ["M"]" => ComonObj.comul (X := M)
+@[inherit_doc] scoped notation "Δ[" M "]" => ComonObj.comul (X := M)
 @[inherit_doc] scoped notation "ε" => ComonObj.counit
-@[inherit_doc] scoped notation "ε["M"]" => ComonObj.counit (X := M)
+@[inherit_doc] scoped notation "ε[" M "]" => ComonObj.counit (X := M)
 
 attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 
@@ -394,7 +398,7 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 open OplaxMonoidal ComonObj IsComonHom
 
-/-- The image of a comonoid object under a oplax monoidal functor is a comonoid object. -/
+/-- The image of a comonoid object under an oplax monoidal functor is a comonoid object. -/
 abbrev obj.instComonObj (A : C) [ComonObj A] (F : C ⥤ D) [F.OplaxMonoidal] :
     ComonObj (F.obj A) where
   counit := F.map ε[A] ≫ η F
@@ -429,9 +433,9 @@ instance map.instIsComon_Hom
     dsimp
     rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, hom_comul]
 
-/-- A oplax monoidal functor takes comonoid objects to comonoid objects.
+/-- An oplax monoidal functor takes comonoid objects to comonoid objects.
 
-That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
+That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 -/
 @[simps]
 def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon C ⥤ Comon D where

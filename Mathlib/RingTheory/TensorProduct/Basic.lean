@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Star.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # The tensor product of R-algebras
@@ -25,6 +27,8 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.cycleType
 
@@ -611,16 +615,16 @@ protected def module : Module (A ⊗[R] B) M where
     · intro z w hz hw a b
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
-      simp only [moduleAux_apply, mul_add, LinearMap.map_add,
+      simp only [moduleAux_apply, mul_add, map_add,
         LinearMap.add_apply, moduleAux_apply, hz, hw]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
+      simp only [map_add, add_mul, LinearMap.add_apply, hz, hw]
     · intro u v _ _ z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
+      simp only [add_mul, map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
 
 attribute [local instance] TensorProduct.Algebra.module
 
@@ -644,8 +648,8 @@ end TensorProduct.Algebra
 open LinearMap in
 lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
     [Module R Q] {I : Submodule R R} :
-    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q) = I • ⊤ := by
-  rw [← map_top, ← map_coe_toLinearMap, ← Submodule.map_comp, map_top]
+    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q : R ⊗[R] Q →ₗ[R] Q) = I • ⊤ := by
+  rw [← map_top, ← Submodule.map_comp, map_top]
   refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
     (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
   rintro _ ⟨t, rfl⟩

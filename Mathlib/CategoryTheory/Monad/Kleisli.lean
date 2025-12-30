@@ -3,8 +3,10 @@ Copyright (c) 2020 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Monad.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Monad.Basic
 
 /-! # Kleisli category on a (co)monad
 
@@ -16,6 +18,8 @@ the monad `(T, η_ T, μ_ T)` as well as the co-Kleisli adjunction which gives r
 ## References
 * [Riehl, *Category theory in context*, Definition 5.2.9][riehl2017]
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -135,7 +139,7 @@ def fromCokleisli : Cokleisli U ⥤ C where
     rw [Comonad.coassoc]
     simp only [Category.assoc, NatTrans.naturality, Functor.comp_map]
 
-/-- The co-Kleisli adjunction which gives rise to the monad `(U, ε_ U, δ_ U)`. -/
+/-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y => Equiv.refl (U.obj X ⟶ Y)

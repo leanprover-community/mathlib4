@@ -3,9 +3,11 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Order.WellFoundedSet
-import Mathlib.Topology.EMetricSpace.Diam
+module
+
+public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Order.WellFoundedSet
+public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Oscillation
@@ -23,6 +25,8 @@ at `x` is 0 if and only if `f` is continuous at `x`, with versions for both `osc
 
 oscillation, oscillationWithin
 -/
+
+@[expose] public section
 
 open Topology EMetric Set ENNReal
 
@@ -43,9 +47,6 @@ noncomputable def oscillationWithin [TopologicalSpace E] (f : E → F) (D : Set 
 theorem oscillationWithin_nhds_eq_oscillation [TopologicalSpace E] (f : E → F) (D : Set E) (x : E)
     (hD : D ∈ 𝓝 x) : oscillationWithin f D x = oscillation f x := by
   rw [oscillation, oscillationWithin, nhdsWithin_eq_nhds.2 hD]
-
-@[deprecated (since := "2025-05-22")]
-alias oscillationWithin_nhd_eq_oscillation := oscillationWithin_nhds_eq_oscillation
 
 /-- The oscillation of `f` at `x` within `univ` is equal to `oscillation f x` -/
 theorem oscillationWithin_univ_eq_oscillation [TopologicalSpace E] (f : E → F) (x : E) :

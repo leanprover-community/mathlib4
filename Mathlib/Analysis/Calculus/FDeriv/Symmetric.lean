@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.IteratedFDeriv
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+module
+
+public import Mathlib.Analysis.Analytic.IteratedFDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
 # Symmetry of the second derivative
@@ -60,6 +62,8 @@ when `v` and `w` both point towards the interior of `s`, to make sure that all t
 rectangle are contained in `s` by convexity. The general case follows by linearity, though.
 -/
 
+@[expose] public section
+
 
 open Asymptotics Set Filter
 
@@ -104,14 +108,14 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
       nhdsWithin_le_iff.2 h (nhdsWithin_mono _ (subset_insert x t) (hf.eventually (by simp)))
     filter_upwards [self_mem_nhdsWithin, this, eventually_eventually_nhdsWithin.2 h]
       with y hy h'y h''y
-    exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt two_ne_zero)
   have : fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x := by
     apply Filter.EventuallyEq.fderivWithin_eq A
-    exact fderivWithin_of_mem_nhdsWithin h (hs x hx) (hf.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h (hs x hx) (hf.differentiableWithinAt two_ne_zero)
   rw [this]
   apply fderivWithin_of_mem_nhdsWithin h (hs x hx)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
-    (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt le_rfl
+    (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt one_ne_zero
 
 lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
@@ -356,7 +360,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
   convert TA1.sub TA2 using 1
   ext h
-  simp only [two_smul, smul_add, ← add_assoc, ContinuousLinearMap.map_add,
+  simp only [two_smul, smul_add, ← add_assoc, map_add,
     ContinuousLinearMap.add_apply]
   abel
 
@@ -419,17 +423,16 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : f'' (z + t m • m) (z + t 0 • (0 : E)) = f'' (z + t 0 • (0 : E)) (z + t m • m) :=
       s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts 0) (ts m)
-    simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, add_right_inj,
-      ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', add_zero,
-      smul_zero] at this
+    simp only [map_add, map_smul, add_right_inj, ContinuousLinearMap.add_apply, Pi.smul_apply,
+      ContinuousLinearMap.coe_smul', add_zero, smul_zero] at this
     exact smul_right_injective F (tpos m).ne' this
   -- applying `second_derivative_within_at_symmetric_of_mem_interior` to the vectors `z + (t v) v`
   -- and `z + (t w) w`, we deduce that `f'' v w = f'' w v`. Cross terms involving `z` can be
   -- eliminated thanks to the fact proved above that `f'' m z = f'' z m`.
   have : f'' (z + t v • v) (z + t w • w) = f'' (z + t w • w) (z + t v • v) :=
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
-  simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, smul_smul,
-    ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', C] at this
+  simp only [map_add, map_smul, ContinuousLinearMap.add_apply, Pi.smul_apply,
+    ContinuousLinearMap.coe_smul', C] at this
   have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
     linear_combination (norm := module) this
   apply smul_right_injective F _ this
@@ -550,10 +553,10 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
       filter_upwards [v_open.mem_nhds xv] with y hy
       have : DifferentiableAt 𝕜 f y := by
         have := (h'u.mono vu y hy).contDiffAt (v_open.mem_nhds hy)
-        exact this.differentiableAt one_le_two
+        exact this.differentiableAt two_ne_zero
       exact DifferentiableAt.hasFDerivAt this
     · have : DifferentiableAt 𝕜 (fderiv 𝕜 f) x := by
-        apply ContDiffAt.differentiableAt _ le_rfl
+        apply ContDiffAt.differentiableAt _ one_ne_zero
         exact hf.fderiv_right (le_minSmoothness.trans hn)
       exact DifferentiableAt.hasFDerivAt this
   -- then deal with the case of an arbitrary field, with analytic functions.

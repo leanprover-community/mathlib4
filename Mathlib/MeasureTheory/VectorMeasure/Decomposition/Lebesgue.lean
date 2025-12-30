@@ -3,10 +3,12 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Complex
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
-import Mathlib.MeasureTheory.VectorMeasure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Complex
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
 /-!
 # Lebesgue decomposition
@@ -18,9 +20,9 @@ to `ν`.
 
 ## Main definitions
 
-* `MeasureTheory.SignedMeasure.HaveLebesgueDecomposition` : A signed measure `s` and a
-  measure `μ` is said to `HaveLebesgueDecomposition` if both the positive part and negative
-  part of `s` `HaveLebesgueDecomposition` with respect to `μ`.
+* `MeasureTheory.SignedMeasure.HaveLebesgueDecomposition` : A signed measure `s` is said to have
+  Lebesgue decomposition with respect to a measure `μ` if both the positive part and negative part
+  of `s` have Lebesgue decomposition with respect to `μ`.
 * `MeasureTheory.SignedMeasure.singularPart` : The singular part between a signed measure `s`
   and a measure `μ` is simply the singular part of the positive part of `s` with respect to `μ`
   minus the singular part of the negative part of `s` with respect to `μ`.
@@ -38,6 +40,8 @@ to `ν`.
 
 Lebesgue decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -172,7 +176,7 @@ theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fu
 
 variable {s t : SignedMeasure α}
 
-@[measurability]
+@[fun_prop]
 theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
   rw [rnDeriv_def]
   fun_prop

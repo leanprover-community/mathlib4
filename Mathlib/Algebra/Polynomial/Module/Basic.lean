@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.Module.AEval
+module
+
+public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Polynomial module
@@ -13,6 +15,8 @@ In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R
 This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
+
+@[expose] public section
 universe u v
 open Polynomial
 

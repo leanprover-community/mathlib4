@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # The forget functor is corepresentable
@@ -14,6 +16,8 @@ by `ULift ℤ`. Similar results are obtained for the variants `CommGrpCat`, `Add
 and `GrpCat`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -38,29 +42,9 @@ def uliftZPowersHom (G : Type u) [Group G] : G ≃ (ULift.{u} (Multiplicative �
 
 namespace MonoidHom
 
-/-- The equivalence `(Multiplicative ℤ →* α) ≃ α` for any group `α`. -/
-@[deprecated zpowersHom (since := "2025-05-11")]
-def fromMultiplicativeIntEquiv (α : Type u) [Group α] : (Multiplicative ℤ →* α) ≃ α :=
-  (zpowersHom _).symm
-
-/-- The equivalence `(ULift (Multiplicative ℤ) →* α) ≃ α` for any group `α`. -/
-@[deprecated uliftZPowersHom (since := "2025-05-11")]
-def fromULiftMultiplicativeIntEquiv (α : Type u) [Group α] :
-    (ULift.{u} (Multiplicative ℤ) →* α) ≃ α :=
-  (uliftZPowersHom _).symm
-
 end MonoidHom
 
 namespace AddMonoidHom
-
-/-- The equivalence `(ℤ →+ α) ≃ α` for any additive group `α`. -/
-@[deprecated zmultiplesHom (since := "2025-05-11")]
-def fromIntEquiv (α : Type u) [AddGroup α] : (ℤ →+ α) ≃ α := (zmultiplesHom _).symm
-
-/-- The equivalence `(ULift ℤ →+ α) ≃ α` for any additive group `α`. -/
-@[deprecated uliftZMultiplesHom (since := "2025-05-11")]
-def fromULiftIntEquiv (α : Type u) [AddGroup α] : (ULift.{u} ℤ →+ α) ≃ α :=
-  (uliftZMultiplesHom _).symm
 
 end AddMonoidHom
 

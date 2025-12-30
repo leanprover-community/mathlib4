@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -13,6 +15,8 @@ We move a few basic statements about algebras out of `Algebra.Algebra.Basic`,
 in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
+
+@[expose] public section
 
 open TensorProduct Module
 
@@ -89,7 +93,6 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
--- TODO: upgrade to A-linear map if A is a semiring.
 def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 
@@ -263,6 +266,13 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.linearMap R A := by
   ext; simp
 
+variable (R A) in
+/-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
+@[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
+  __ := mul' R A
+  map_smul' a x := x.induction_on (by simp) (by simp +contextual [mul', smul_tmul', mul_assoc])
+    (by simp+contextual [mul_add])
+
 end Semiring
 
 section CommSemiring
@@ -301,3 +311,7 @@ lemma comp_mul' (f : A →ₐ B) : f.toLinearMap ∘ₗ μ = μ[R] ∘ₗ (f.toL
   TensorProduct.ext' <| by simp
 
 end AlgHom
+
+lemma LinearMap.toSpanSingleton_one_eq_algebraLinearMap [CommSemiring R] [Semiring A]
+    [Algebra R A] : toSpanSingleton R A 1 = Algebra.linearMap R A := by
+  ext; simp

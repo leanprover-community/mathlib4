@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Frm
-import Mathlib.Topology.Category.CompHaus.Frm
+module
+
+public import Mathlib.Order.Category.Frm
+public import Mathlib.Topology.Category.CompHaus.Frm
 
 /-!
 # The category of locales
 
 This file defines `Locale`, the category of locales. This is the opposite of the category of frames.
 -/
+
+@[expose] public section
 
 
 universe u

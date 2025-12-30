@@ -3,10 +3,12 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Submonoid
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Flows and invariant sets
@@ -27,6 +29,8 @@ Additionally, we define such constructions as the (forward) orbit, a
 semiconjugacy between flows, a factor of a flow, the restriction of a
 flow onto an invariant subset, and the time-reversal of a flow by a group.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter

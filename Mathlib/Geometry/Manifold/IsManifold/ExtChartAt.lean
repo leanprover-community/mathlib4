@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Extended charts in smooth manifolds
@@ -12,7 +14,7 @@ import Mathlib.Geometry.Manifold.IsManifold.Basic
 In a `C^n` manifold with corners with the model `I` on `(E, H)`, the charts take values in the
 model space `H`. However, we also need to use extended charts taking values in the model vector
 space `E`. These extended charts are not `OpenPartialHomeomorph` as the target is not open in `E`
-in general, but we can still register them as `PartialEquiv`.
+in general, but we can still register them as `PartialEquiv`s.
 
 ## Main definitions
 
@@ -27,17 +29,19 @@ in general, but we can still register them as `PartialEquiv`.
 * `contDiffOn_extend_coord_change`: if `f` and `f'` lie in the maximal atlas on `M`,
   `f.extend I ∘ (f'.extend I).symm` is continuous on its source
 
-* `contDiffOn_ext_coord_change`: for `x x : M`, the coordinate change
+* `contDiffOn_ext_coord_change`: for `x x' : M`, the coordinate change
   `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
 * `LocallyCompactSpace.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a locally compact space.
-* `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifolds must be modelled
+* `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a finite-dimensional space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -141,18 +145,11 @@ theorem extend_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x 
   rw [← f.map_extend_nhds_of_boundaryless hx, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
-@[deprecated (since := "2025-05-22")]
-alias extend_image_nhd_mem_nhds_of_boundaryless := extend_image_nhds_mem_nhds_of_boundaryless
-
 theorem extend_image_nhds_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.source)
     (h'x : f.extend I x ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 x) :
     (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
-
-@[deprecated (since := "2025-05-22")]
-alias extend_image_nhd_mem_nhds_of_mem_interior_range :=
-  extend_image_nhds_mem_nhds_of_mem_interior_range
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
 
@@ -315,6 +312,9 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ hx hs]
 
+lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
+    (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
+
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 
 theorem extend_coord_change_source :
@@ -463,19 +463,11 @@ theorem extChartAt_image_nhds_mem_nhds_of_mem_interior_range {x y}
   rw [extChartAt]
   exact extend_image_nhds_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
 
-@[deprecated (since := "2025-05-22")]
-alias extChartAt_image_nhd_mem_nhds_of_mem_interior_range :=
-  extChartAt_image_nhds_mem_nhds_of_mem_interior_range
-
 variable {x} in
 theorem extChartAt_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless]
     {x : M} (hx : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
   rw [extChartAt]
   exact extend_image_nhds_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
-
-@[deprecated (since := "2025-05-22")]
-alias extChartAt_image_nhd_mem_nhds_of_boundaryless :=
-  extChartAt_image_nhds_mem_nhds_of_boundaryless
 
 theorem extChartAt_target_mem_nhdsWithin' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=
@@ -803,8 +795,8 @@ theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
 
 theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
-    ( letI := ChartedSpace.comp H H' M'
-      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
+    (letI := ChartedSpace.comp H H' M'
+     writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
   letI := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
@@ -848,7 +840,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   simp only [(extChartAt I x).right_inv h'y]
   exact interior_mono (extChartAt_target_subset_range x) hy
 
-/-- Riesz's theorem applied to manifolds: a locally compact manifolds must be modelled on a
+/-- Riesz's theorem applied to manifolds: a locally compact manifold must be modelled on a
 finite-dimensional space. This is the converse to `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold
     [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :

@@ -3,11 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -17,6 +19,8 @@ and derives some well-known properties, amongst which the fact that minimal poly
 are irreducible, and uniquely determined by their defining property.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Set Function minpoly
@@ -179,12 +183,12 @@ theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
 theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
-    minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
+    minpoly A (-x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (-X) := by
   by_cases hx : IsIntegral A x
   · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
         ?_ fun q qmo hq => ?_).symm
     · simp [aeval_comp]
-    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (- X)) = 0 := by
+    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (-X)) = 0 := by
         simpa [aeval_comp] using hq
       have H := minpoly.min A x qmo.neg_one_pow_natDegree_mul_comp_neg_X this
       have n1 := ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X).ne_zero
@@ -262,12 +266,12 @@ variable (A)
 /-- The minimal polynomial of `0` is `X`. -/
 @[simp]
 theorem zero : minpoly A (0 : B) = X := by
-  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, RingHom.map_zero] using eq_X_sub_C B (0 : A)
+  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, map_zero] using eq_X_sub_C B (0 : A)
 
 /-- The minimal polynomial of `1` is `X - 1`. -/
 @[simp]
 theorem one : minpoly A (1 : B) = X - 1 := by
-  simpa only [RingHom.map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
+  simpa only [map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
 
 end Ring
 
@@ -301,7 +305,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
   · intro h
     have zero_root := zero_isRoot_of_coeff_zero_eq_zero h
     rw [← root hx zero_root]
-    exact RingHom.map_zero _
+    exact map_zero _
   · rintro rfl
     simp
 

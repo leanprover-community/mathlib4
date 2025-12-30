@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Subsemigroups: definition
@@ -45,6 +47,8 @@ numbers.
 ## Tags
 subsemigroup, subsemigroups
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 
@@ -176,11 +180,6 @@ instance : Inhabited (Subsemigroup M) :=
 @[to_additive]
 theorem notMem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
   Set.notMem_empty x
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubsemigroup.not_mem_bot := AddSubsemigroup.notMem_bot
-
-@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[to_additive (attr := simp)]
 theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=

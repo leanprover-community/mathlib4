@@ -3,14 +3,18 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.RingHom.Smooth
-import Mathlib.RingTheory.RingHom.Unramified
+module
+
+public import Mathlib.RingTheory.RingHom.Smooth
+public import Mathlib.RingTheory.RingHom.Unramified
 
 /-!
 # Étale ring homomorphisms
 
 We show the meta properties of étale morphisms.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -42,6 +46,10 @@ lemma Etale.eq_formallyUnramified_and_smooth :
     @Etale = fun R S (_ : CommRing R) (_ : CommRing S) f ↦ f.FormallyUnramified ∧ f.Smooth := by
   ext
   rw [etale_iff_formallyUnramified_and_smooth]
+
+lemma Etale.of_bijective {f : R →+* S} (hf : Function.Bijective f) : f.Etale := by
+  rw [etale_iff_formallyUnramified_and_smooth]
+  exact ⟨.of_surjective hf.2, .of_bijective hf⟩
 
 lemma Etale.isStableUnderBaseChange : IsStableUnderBaseChange Etale := by
   rw [eq_formallyUnramified_and_smooth]

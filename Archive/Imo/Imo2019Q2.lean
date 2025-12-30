@@ -117,11 +117,7 @@ def symm : Imo2019q2Cfg V Pt where
   Q := cfg.P
   P₁ := cfg.Q₁
   Q₁ := cfg.P₁
-  affineIndependent_ABC := by
-    rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
-    convert cfg.affineIndependent_ABC using 1
-    ext x
-    fin_cases x <;> rfl
+  affineIndependent_ABC := cfg.affineIndependent_ABC.comm_left
   wbtw_B_A₁_C := cfg.wbtw_A_B₁_C
   wbtw_A_B₁_C := cfg.wbtw_B_A₁_C
   wbtw_A_P_A₁ := cfg.wbtw_B_Q_B₁
@@ -232,8 +228,6 @@ theorem Q_notMem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
   rw [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, cfg.angle_CQ₁Q_eq_angle_CBA,
     or_iff_right cfg.C_ne_Q₁, or_iff_right cfg.sbtw_Q_A₁_Q₁.left_ne_right, angle_comm] at hc
   exact cfg.not_collinear_ABC (hc.elim collinear_of_angle_eq_zero collinear_of_angle_eq_pi)
-
-@[deprecated (since := "2025-05-23")] alias Q_not_mem_CB := Q_notMem_CB
 
 theorem Q_ne_B : cfg.Q ≠ cfg.B := by
   intro h

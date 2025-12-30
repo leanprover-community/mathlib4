@@ -3,9 +3,11 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Hom.ContinuousEval
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Hom.ContinuousEval
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The compact-open topology
@@ -31,6 +33,8 @@ topological spaces.
 
 compact-open, curry, function space
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace Topology
@@ -387,7 +391,7 @@ theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
 theorem continuous_coev : Continuous (coev X Y) :=
   ((continuous_prodMk_const (X := Y) (Y := X) (Z := X)).comp
-    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))):)
+    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))) :)
 
 end Coev
 
@@ -405,7 +409,7 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
   rfl
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
-α × β → γ` is continuous. -/
+`α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
   (curry ⟨_, h⟩).2

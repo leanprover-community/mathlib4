@@ -3,10 +3,12 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Calculus.FDeriv.Defs
-import Mathlib.Analysis.Normed.Operator.Asymptotics
-import Mathlib.Analysis.Calculus.TangentCone.Basic
+module
+
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Normed.Operator.Asymptotics
+public import Mathlib.Analysis.Calculus.TangentCone.Basic
 
 /-!
 # The Fréchet derivative: basic properties
@@ -105,6 +107,8 @@ Generalize more results to topological vector spaces.
 derivative, differentiable, Fréchet, calculus
 
 -/
+
+@[expose] public section
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
@@ -398,17 +402,11 @@ as this statement is empty. -/
 theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
   .of_not_accPt (h ·.clusterPt.mem_closure)
 
-@[deprecated (since := "2025-05-23")]
-alias HasFDerivWithinAt.of_not_mem_closure := HasFDerivWithinAt.of_notMem_closure
-
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_not_accPt h)]
 
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
-
-@[deprecated (since := "2025-05-24")]
-alias fderivWithin_zero_of_nmem_closure := fderivWithin_zero_of_notMem_closure
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by

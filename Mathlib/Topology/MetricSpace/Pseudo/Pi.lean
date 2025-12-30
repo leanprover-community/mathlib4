@@ -3,16 +3,20 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Lemmas
-import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Topology.EMetricSpace.Pi
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Data.ENNReal.Lemmas
+public import Mathlib.Topology.Bornology.Constructions
+public import Mathlib.Topology.EMetricSpace.Pi
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Product of pseudometric spaces
 
 This file constructs the infinity distance on finite products of pseudometric spaces.
 -/
+
+@[expose] public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology
