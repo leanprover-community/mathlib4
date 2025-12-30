@@ -140,7 +140,7 @@ instance instSMulCommClass_circle_right : SMulCommClass 𝔻 Circle 𝔻 :=
 theorem coe_circle_smul (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
 
-@[deprecated (since := "2025-04-21")]
+@[deprecated (since := "2025-12-30")]
 alias Complex.UnitDisc.coe_smul_circle := coe_circle_smul
 
 instance instMulActionClosedBall : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
@@ -169,7 +169,7 @@ instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : �
 theorem coe_closedBall_smul (z : closedBall (0 : ℂ) 1) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
 
-@[deprecated (since := "2025-12-25")]
+@[deprecated (since := "2025-12-30")]
 alias coe_smul_closedBall := coe_closedBall_smul
 
 /-- Real part of a point of the unit disc. -/
@@ -201,12 +201,12 @@ instance : Star 𝔻 where
   star z := mk (conj z) <| (norm_conj z).symm ▸ z.norm_lt_one
 
 /-- Conjugate point of the unit disc. Deprecated, use `star` instead. -/
-@[deprecated star (since := "2025-12-28")]
+@[deprecated star (since := "2025-12-30")]
 protected def «conj» (z : 𝔻) := star z
 
 @[simp] theorem coe_star (z : 𝔻) : (↑(star z) : ℂ) = conj ↑z := rfl
 
-@[deprecated (since := "2025-12-28")]
+@[deprecated (since := "2025-12-30")]
 alias coe_conj := coe_star
 
 @[simp]
@@ -219,27 +219,27 @@ protected theorem star_zero : star (0 : 𝔻) = 0 := by simp
 instance : InvolutiveStar 𝔻 where
   star_involutive z := by ext; simp
 
-@[deprecated star_star (since := "2025-12-28")]
+@[deprecated star_star (since := "2025-12-30")]
 theorem conj_conj (z : 𝔻) : star (star z) = z := star_star z
 
 @[simp] protected theorem star_neg (z : 𝔻) : star (-z) = -(star z) := rfl
 
-@[deprecated (since := "2025-12-28")]
+@[deprecated (since := "2025-12-30")]
 alias conj_neg := UnitDisc.star_neg
 
 @[simp] protected theorem re_star (z : 𝔻) : (star z).re = z.re := rfl
 
-@[deprecated (since := "2025-12-28")]
+@[deprecated (since := "2025-12-30")]
 alias re_conj := UnitDisc.re_star
 
 @[simp] protected theorem im_star (z : 𝔻) : (star z).im = -z.im := rfl
 
-@[deprecated (since := "2025-12-28")] alias im_conj := UnitDisc.im_star
+@[deprecated (since := "2025-12-30")] alias im_conj := UnitDisc.im_star
 
 instance : StarMul 𝔻 where
   star_mul z w := coe_injective <| by simp [mul_comm]
 
-@[deprecated star_mul' (since := "2025-12-28")]
+@[deprecated star_mul' (since := "2025-12-30")]
 theorem conj_mul (z w : 𝔻) : star (z * w) = star z * star w :=
   star_mul' z w
 
