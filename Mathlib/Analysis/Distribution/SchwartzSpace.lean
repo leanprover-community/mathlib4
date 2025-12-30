@@ -104,11 +104,17 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 
 /-- Every Schwartz function is smooth. -/
+@[fun_prop]
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
   f.smooth'.of_le (mod_cast le_top)
 
+/-- Every Schwartz function is smooth at any point. -/
+@[fun_prop]
+theorem contDiffAt (f : 𝓢(E, F)) (n : ℕ∞) {x : E} : ContDiffAt ℝ n f x :=
+  (f.smooth n).contDiffAt
+
 /-- Every Schwartz function is continuous. -/
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 
@@ -116,10 +122,12 @@ instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
   map_continuous := SchwartzMap.continuous
 
 /-- Every Schwartz function is differentiable. -/
+@[fun_prop]
 protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
   (f.smooth 1).differentiable one_ne_zero
 
 /-- Every Schwartz function is differentiable at any point. -/
+@[fun_prop]
 protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt ℝ f x :=
   f.differentiable.differentiableAt
 
