@@ -5,7 +5,9 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib
+public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Intertwining
 
 /-public import Mathlib.RepresentationTheory.Subrepresentation
