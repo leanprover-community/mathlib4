@@ -86,7 +86,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
   by_cases hp_top : p = ∞
   · simp only [hp_top, StrongDual.toLpₗ_apply h_Lp, Lp.norm_toLp, eLpNorm_exponent_top] at h_Lp ⊢
     simp only [eLpNormEssSup, id_eq]
-    suffices (essSup (fun x ↦ ‖L x‖ₑ) μ).toReal ≤ (essSup (fun x ↦ ‖L‖ₑ *‖x‖ₑ) μ).toReal by
+    suffices (essSup (fun x ↦ ‖L x‖ₑ) μ).toReal ≤ (essSup (fun x ↦ ‖L‖ₑ * ‖x‖ₑ) μ).toReal by
       rwa [ENNReal.essSup_const_mul, ENNReal.toReal_mul, toReal_enorm] at this
     gcongr
     · rw [ENNReal.essSup_const_mul]
