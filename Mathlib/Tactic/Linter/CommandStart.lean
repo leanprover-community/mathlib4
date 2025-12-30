@@ -52,147 +52,10 @@ public register_option linter.style.commandStart.verbose : Bool := {
   descr := "enable the commandStart linter"
 }
 
-/-- If the command starts with one of the `SyntaxNodeKind`s in `skipped`, then the
-`commandStart` linter ignores the command. -/
-def skipped : Std.HashSet SyntaxNodeKind := Std.HashSet.emptyWithCapacity
-  |>.insert ``Parser.Command.moduleDoc
-  |>.insert ``Parser.Command.elab_rules
-  |>.insert ``Lean.Parser.Command.syntax
-  |>.insert `Aesop.Frontend.Parser.declareRuleSets
-
-/--
-`CommandStart.endPos stx` returns the position up until the `commandStart` linter checks the
-formatting.
-This is every declaration until the type-specification, if there is one, or the value,
-as well as all `variable` commands.
--/
-def CommandStart.endPos (stx : Syntax) : Option String.Pos.Raw :=
-  --dbg_trace stx.getKind
-  if skipped.contains stx.getKind then none else
-  if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
-    if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
-      match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
-      | none => dbg_trace "unreachable?"; none
-      | some _sig => stx.getTailPos? --sig.getTailPos?
-    else
-    match cmd.find? (·.isOfKind ``Parser.Term.typeSpec) with
-      | some _s => stx.getTailPos? --s[0].getTailPos? -- `s[0]` is the `:` separating hypotheses and the type
-      | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
-        | some _s => stx.getTailPos? --s.getPos?
-        | none => stx.getTailPos? --none
-  else if stx.isOfKind ``Parser.Command.variable || stx.isOfKind ``Parser.Command.omit then
-    stx.getTailPos?
-  else stx.getTailPos?
-
-/--
-A `FormatError` is the main structure tracking how some surface syntax differs from its
-pretty-printed version.
-
-In case of deviations, it contains the deviation's location within an ambient string.
--/
--- Some of the information contained in `FormatError` is redundant, however, it is useful to convert
--- between the `String.pos` and `String` length conveniently.
-structure FormatError where
-  /-- The distance to the end of the source string, as number of characters -/
-  srcNat : Nat
-  /-- The distance to the end of the source string, as number of string positions -/
-  srcEndPos : String.Pos.Raw
-  /-- The distance to the end of the formatted string, as number of characters -/
-  fmtPos : Nat
-  /-- The kind of formatting error. For example: `extra space`, `remove line break` or
-  `missing space`.
-
-  Strings starting with `Oh no` indicate an internal error.
-  -/
-  msg : String
-  /-- The length of the mismatch, as number of characters. -/
-  length : Nat
-  /-- The starting position of the mismatch, as a `String.pos`. -/
-  srcStartPos : String.Pos.Raw
-  deriving Inhabited
-
-instance : ToString FormatError where
-  toString f :=
-    s!"srcNat: {f.srcNat}, srcPos: {f.srcEndPos}, fmtPos: {f.fmtPos}, \
-      msg: {f.msg}, length: {f.length}\n"
-
-/--
-Produces a `FormatError` from the input data.  It expects
-* `ls` to be a "user-typed" string;
-* `ms` to be a "pretty-printed" string;
-* `msg` to be a custom error message, such as `extra space` or `remove line break`;
-* `length` (optional with default `1`), how many characters the error spans.
-
-In particular, it extracts the position information within the string, both as number of characters
-and as `String.Pos`.
--/
-def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
-  srcNat := ls.length
-  srcEndPos := ls.rawEndPos
-  fmtPos := ms.length
-  msg := msg
-  length := length
-  srcStartPos := ls.rawEndPos
-
-/--
-Add a new `FormatError` `f` to the array `fs`, trying, as much as possible, to merge the new
-`FormatError` with the last entry of `fs`.
--/
-def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatError :=
-  -- If there are no errors already, we simply add the new one.
-  if fs.isEmpty then fs.push f else
-  let back := fs.back!
-  -- If the latest error is of a different kind than the new one, we simply add the new one.
-  if back.msg != f.msg || back.srcNat - back.length != f.srcNat then fs.push f else
-  -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
-  fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
-
-/--
-Compares the two substrings `s1` and `s2`, with the expectation that `s2` starts with `s1`,
-and that the characters where this is not true satisfy `f`.
-
-If the expectation is correct, then it returns `some (s2 \ s1)`, otherwise, it returns `none`.
-
-The typical application uses `f = invisible`.
--/
-partial
-def consumeIgnoring (s1 s2 : Substring.Raw) (f : String → Bool) : Option Substring.Raw :=
-  -- The expected end of the process: `s1` is fully consumed, we return `s2`.
-  if s1.isEmpty || s2.isEmpty then s2 else
-  -- Otherwise, we compare the first available character of each string.
-  let a1 := s1.take 1
-  let a2 := s2.take 1
-  -- If they agree, we move one step over and continue.
-  if a1 == a2 then
-    consumeIgnoring (s1.drop 1) (s2.drop 1) f
-  else
-    -- Also if every character of `a1` or `a2` satisfies `f`, then we drop that and continue.
-    if f a1.toString then consumeIgnoring (s1.drop 1) s2 f else
-    if f a2.toString then consumeIgnoring s1 (s2.drop 1) f
-    -- If all else failed, then we return `none`.
-    else some s2
-
---def invisible (c : Char) : Bool :=
---  c.isWhitespace || #['«', '»'].contains c
-
-def invisible (s : String) : Bool :=
-  s.all fun c => c.isWhitespace || #['«', '»'].contains c
-
 /-- Extract the `leading` and the `trailing` substring of a `SourceInfo`. -/
 def _root_.Lean.SourceInfo.getLeadTrail : SourceInfo → String × String
   | .original lead _ trail _ => (lead.toString, trail.toString)
   | _ => default
-
-def compareLeaf (tot : Array Nat) (leadTrail : String × String) (orig s : String) : Array Nat := Id.run do
-    let (l, t) := leadTrail
-    let mut newTot := tot
-    if !l.isEmpty then
-      newTot := newTot.push s.length
-    if !s.startsWith orig then newTot := newTot.push s.length
-    let rest := s.drop orig.length
-    if t.trimAscii.isEmpty then if t == " " || t == "\n" then return newTot
-    if (t.dropWhile (· == ' ')).take 2 == "--" || (t.dropWhile (· == ' ')).take 1 == "\n" then return newTot
-    return newTot.push rest.positions.count
 
 /--
 Analogous to `Lean.PrettyPrinter.ppCategory`, but does not run the parenthesizer,
@@ -242,18 +105,6 @@ For this reason, we make a default choice of which single child to follow.
 def getChoiceNode (kind : SyntaxNodeKind) (args : Array Syntax) (n : Nat := 0) : Array Syntax :=
   if kind == `choice then #[args[n]?].reduceOption else args
 
-/--
-Splays the input syntax into a string.
-
-There is a slight subtlety about `choice` nodes, that are traversed only once.
--/
-partial
-def _root_.Lean.Syntax.regString : Syntax → String
-  | .node _ kind args => (getChoiceNode kind args).foldl (init := "") (· ++ ·.regString)
-  | .ident i raw _ _ => let (l, t) := i.getLeadTrail; l ++ raw.toString ++ t
-  | .atom i s => let (l, t) := i.getLeadTrail; l ++ s ++ t
-  | .missing => ""
-
 /-- Replaces the leading and trailing substrings in a `SourceInfo` with `"".toSubstring`. -/
 def _root_.Lean.SourceInfo.removeSpaces : SourceInfo → SourceInfo
   | .original _ p _ q => .original "".toRawSubstring p "".toRawSubstring q
@@ -270,245 +121,11 @@ def _root_.Lean.Syntax.eraseLeadTrailSpaces : Syntax → Syntax
   | .atom i s => .atom i.removeSpaces s
   | .missing => .missing
 
-def withVerbose {α} (v : Bool) (s : String) (a : α) : α :=
-  if v then
-    dbg_trace s
-    a
-  else
-    a
-
 /-- Answers whether a `Substring` starts with a space (` `), contains possibly more spaces,
 until there is either `/ -` (without the space between `/` and `-`) or `--`. -/
 def onlineComment (s : Substring.Raw) : Bool :=
   (s.take 1).toString == " " &&
     #[ "/-", "--"].contains ((s.dropWhile (· == ' ')).take 2).toString
-
-/--
-Assumes that `pp` is either empty or a single space, as this is satisfied by the intended
-application.
-
-Checks whether `orig` is an "acceptable version" of `pp`:
-1. if `pp` is a space, check that `orig` starts either
-   * with a line break, or
-   * with a single space and then a non-space character,
-   * with at least one space and then a `onlineComment`;
-2. if `pp` is empty, check that `orig` is empty as well or starts either
-   * with a non-whitespace character,
-   * with at least one space and then a `onlineComment`.
-
-TODO: should item 2. actually check that there is no space and that's it?
--/
-def validateSpaceAfter (orig pp : Substring.Raw) : Bool :=
-  -- An empty `pp`ed tail sould correspond to
-  -- an empty `orig`,
-  -- something starting with a line break,
-  -- something starting with some spaces and then a comment
-  let orig1 := (orig.take 1).toString
-  let orig2 := (orig.take 2).toString
-  dbg_trace
-    "pp.isEmpty {pp.isEmpty}\n\
-    if {pp.isEmpty}:\n  \
-      orig.takeWhile (·.isWhitespace): {orig.takeWhile (·.isWhitespace)}\n  \
-      or\n  \
-      onlineComment orig: {onlineComment orig}\n\
-    if {!pp.isEmpty}:\n  \
-      (orig1 == \"⏎\"): {(orig1 == "\n")}\n  \
-      or\n  \
-      onlineComment orig: {onlineComment orig}\n  \
-      or\n  \
-      orig1 == \" \" && !orig2.trim.isEmpty: {orig1 == " " && !orig2.trimAscii.isEmpty}"
-  (pp.isEmpty && ((orig.takeWhile (·.isWhitespace)).isEmpty || onlineComment orig)) ||
-    (
-      (!pp.isEmpty) && ((orig1 == "\n") || onlineComment orig || (orig1 == " " && !orig2.trimAscii.isEmpty))
-    )
-/-
-#eval show TermElabM _ from do
-  let space : Substring := " ".toSubstring
-  let spaceChar : Substring := " f".toSubstring
-  let doublespaceChar : Substring := "  f".toSubstring
-  let doublespace : Substring := "  ".toSubstring
-  let noSpace : Substring := "".toSubstring
-  let linebreak : Substring := "\n".toSubstring
-  let commentInline : Substring := "  --".toSubstring
-  let commentMultiline : Substring := "  /-".toSubstring -- -/ to preserve sanity
-  -- `true`
-  guard <| onlineComment commentInline
-  guard <| onlineComment commentMultiline
-  guard <| validateSpaceAfter spaceChar space
-  guard <| validateSpaceAfter linebreak space
-  guard <| validateSpaceAfter commentInline space
-  guard <| validateSpaceAfter commentMultiline space
-  guard <| validateSpaceAfter noSpace noSpace
-  guard <| validateSpaceAfter "a".toSubstring noSpace
-  -- `false`
-  guard <| !onlineComment space
-  guard <| !onlineComment doublespace
-  guard <| !onlineComment noSpace
-  guard <| !onlineComment linebreak
-  -- A space not followed by a character is not accepted.
-  guard <| !validateSpaceAfter space space
-  guard <| !validateSpaceAfter doublespaceChar space
-  guard <| !validateSpaceAfter space noSpace
-  guard <| !validateSpaceAfter spaceChar noSpace
-  guard <| !validateSpaceAfter doublespaceChar noSpace
--/
-
-/-- Assume both substrings come from actual trails. -/
-def validateSpaceAfter' (orig pp : Substring.Raw) : Bool :=
-  -- An empty `pp`ed tail sould correspond to
-  -- an empty `orig`,
-  -- something starting with a line break,
-  -- something starting with some spaces and then a comment
-  let orig1 := (orig.take 1).toString
-  let orig2 := (orig.take 2).toString
-  let answer := (orig1 == "\n") ||
-    (pp.isEmpty && ((orig.takeWhile (·.isWhitespace)).isEmpty || onlineComment orig)) ||
-      (
-        (!pp.isEmpty) && (onlineComment orig || (orig1 == " " && orig2 != "  "))
-      )
-  withVerbose (!answer)
-    s!"\
-    orig1 == \"⏎\": {orig1 == "\n"}\n\
-    or\n  \
-    pp.isEmpty {pp.isEmpty}\n\
-    if {pp.isEmpty}:\n  \
-      orig.takeWhile (·.isWhitespace): {orig.takeWhile (·.isWhitespace)}\n  \
-      or\n  \
-      onlineComment orig: {onlineComment orig}\n\
-    if {!pp.isEmpty}:\n  \
-      onlineComment orig: {onlineComment orig}\n  \
-      or\n  \
-      orig1 == \" \" && orig1 == orig2: {orig1 == " " && orig1 == orig2}"
-      answer
-
-/-
-#eval show TermElabM _ from do
-  let space : Substring := " ".toSubstring
-  let spaceChar : Substring := " f".toSubstring
-  let doublespaceChar : Substring := "  f".toSubstring
-  let doublespace : Substring := "  ".toSubstring
-  let noSpace : Substring := "".toSubstring
-  let linebreak : Substring := "\n".toSubstring
-  let commentInline : Substring := "  --".toSubstring
-  let commentMultiline : Substring := "  /-".toSubstring -- -/ to preserve sanity
-  -- `true`
-  guard <| validateSpaceAfter' spaceChar space
-  guard <| validateSpaceAfter' linebreak space
-  guard <| validateSpaceAfter' commentInline space
-  guard <| validateSpaceAfter' commentMultiline space
-  guard <| validateSpaceAfter' noSpace noSpace
-  guard <| validateSpaceAfter' "a".toSubstring noSpace
-  -- A space not followed by a character *is accepted*.
-  guard <| validateSpaceAfter' space space
-  guard <| !validateSpaceAfter' doublespaceChar space
-  -- `false`
-  guard <| !validateSpaceAfter' space noSpace
-  guard <| !validateSpaceAfter' spaceChar noSpace
-  guard <| !validateSpaceAfter' doublespaceChar noSpace
-
-#eval
-  let origStr := "intro      --hi"
-  let str := "intro hi"
-  let orig : Substring := {origStr.toSubstring with startPos := ⟨"intro".length⟩}
-  let pp : Substring := {str.toSubstring with startPos := ⟨"intro".length⟩}
-  let pp : Substring := "".toSubstring
-  dbg_trace "pp.isEmpty: {pp.isEmpty}, validate {validateSpaceAfter orig pp}"
-  validateSpaceAfter orig pp
-
-#eval validateSpaceAfter' " ".toSubstring " ".toSubstring
--/
-
-structure Exceptions where
-  orig : String
-  pp : String
-  pos : String.Pos.Raw
-  kind : SyntaxNodeKind
-  reason : String
-
-instance : ToString Exceptions where
-  toString
-  | {orig := o, pp := pp, pos := p, kind := k, reason := r} =>
-    s!"Exception\npos:  {p}\nkind: '{k}'\norig: '{o.norm}'\npret: '{pp.norm}'\nreason: {r}\n---"
-
-def addException (e : Array Exceptions) (orig pp : String) (p : String.Pos.Raw) (k : SyntaxNodeKind) (reason : String) :
-    Array Exceptions :=
-  e.push <| Exceptions.mk orig pp p k reason
-
-
-def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 _i2 : SourceInfo) (s1 s2 : String) (str : Substring.Raw) :
-    Substring.Raw × Array Exceptions :=
-  let (_l1, t1) := i1.getLeadTrail
-  --let (l2, t2) := i2.getLeadTrail
-  --dbg_trace "removing '{s2}'"
-  let stripString := consumeIgnoring s2.toRawSubstring str invisible|>.getD default --str.drop s2.length
-  let trail := stripString.takeWhile (·.isWhitespace)
-  --withVerbose (trail.isEmpty != t1.isEmpty) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
-  let isValid := validateSpaceAfter' t1.toRawSubstring trail
-  --dbg_trace "{isValid} -- {(s1, s2)}: '{t1}', '{trail}'\n"
-  let tot1 := if isValid then
-                tot
-              else
-                dbg_trace "invalid with '{s1}' '{s2}' '{t1}' '{trail.toString}' '{stripString.startPos}' '{kind}'"
-                addException tot t1 trail.toString stripString.startPos kind "invalid"
---consumeIgnoring s2.toSubstring str invisible
-  --if ((!str.toString.startsWith s1) || (!str.toString.startsWith s2)) then
-  if (((consumeIgnoring s1.toRawSubstring str invisible).isNone) ||
-      ((consumeIgnoring s2.toRawSubstring str invisible).isNone)) then
-    dbg_trace s!"something went wrong\n\
-      --- All pretty {kind} ---\n{str.toString}\ndoes not start with either of the following\n\
-      --- Orig ---\n'{s1.norm}'\n--- Pretty---\n'{s2.norm}'\n---\n{tot1}"
-    match consumeIgnoring s2.toRawSubstring str invisible with
-    | some leftOver =>
-      (leftOver, addException tot1 t1 trail.toString stripString.startPos kind
-        s!"wrong:\n'{s1}' or\n'{s2}' is not the start of\n'{str.toString}'")
-    | none =>
-      (stripString |>.dropWhile (·.isWhitespace), addException tot1 t1 trail.toString stripString.startPos kind s!"wrong: '{s1}' or '{s2}' is not the start of '{str.toString}'")
-  else
-    ( --withVerbose (!isValid) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
-      stripString |>.dropWhile (·.isWhitespace), tot1)
-
-#guard validateSpaceAfter' " ".toRawSubstring " ".toRawSubstring
-
-def exclusions : NameSet := NameSet.empty
-  |>.insert ``Parser.Command.docComment
-
-def scanWatching (verbose? : Bool) :
-    Array Exceptions → SyntaxNodeKind → Syntax → Syntax → Substring.Raw → Substring.Raw × Array Exceptions
-  | tot, k, .ident i1 s1 n1 p1, .ident i2 s2 n2 p2, str =>
-    withVerbose verbose? "idents" <|
-      validateAtomOrId tot k i1 i2 s1.toString s2.toString str
-  | tot, k, .atom i1 s1, .atom i2 s2, str =>
-    withVerbose verbose? "atoms" <|
-      validateAtomOrId tot k i1 i2 s1 s2 str
-  | tot, k, .node i1 s1 as1, ppstx@(.node i2 s2 as2), str =>
-    let s1 := if s1 == `null then k else s1
-    --if exclusions.contains s1 then
-    --  dbg_trace "skipping {s1}"
-    --  let endPos := ppstx.getTrailingTailPos?.get!
-    --  let endPos := as2.back!.getTrailingTailPos?.get!
-    --  let endPos := as2.back!.getRange?.get!.stop
-    --  let endPos := ppstx.getRange?.get!.stop
-    --  ({str with startPos := endPos}, tot)
-    --else
-    withVerbose (as1.size != as2.size) "** Error! **" <|
-    withVerbose verbose? "nodes" <| Id.run do
-      let mut pos := str.startPos
-      let mut tots := tot
-      for h : i in [:as1.size] do
-        let a1 := as1[i]
-        let a2 := as2[i]?.getD default
-        let ({startPos := sp,..}, news) := scanWatching verbose? tots s1 a1 a2 {str with startPos := pos}
-        pos := sp
-        tots := news
-      ({str with startPos := pos}, tots)
-  | tot, k, s1, s2, str =>
-    withVerbose verbose? "rest" <|
-      (str, tot)
-
-def modifyTail (si : SourceInfo) (newTrail : Substring.Raw) : SourceInfo :=
-  match si with
-  | .original lead pos _ endPos => .original lead pos newTrail endPos
-  | _ => si
 
 /--
 Convert a single-character subscript string into the corresponding normal single-character string.
@@ -584,10 +201,6 @@ def readWhile (s t : Substring.Raw) : Substring.Raw :=
   let t := ":= 0".toRawSubstring
   guard <| (readWhile (" :=".toRawSubstring) t).toString == " 0"
   guard <| (readWhile (" := ".toRawSubstring) t).toString == "0"
-
-def _root_.Substring.Raw.toRange (s : Substring.Raw) : Lean.Syntax.Range where
-  start := s.startPos
-  stop := s.stopPos
 
 structure mex where
   rg : Lean.Syntax.Range
@@ -733,28 +346,10 @@ def ExcludedSyntaxNodeKind.contains (exc : ExcludedSyntaxNodeKind) (ks : Array S
   let lastNodes := if let some n := exc.depth then ks.drop (ks.size - n) else ks
   !(lastNodes.filter exc.kinds.contains).isEmpty
 
-def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
-  as.partition fun a =>
-    (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
-
 --def filterSortExceptions (as : Array mex) : Array mex :=
 --  let filtered := as.filter fun a =>
 --    (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
 --  filtered.qsort (·.rg.start < ·.rg.start)
-
-structure AfterAtom where
-  /-- `next` is either `" ".toSubstring` or `"".toSubstring`, depending on whether the
-  character following the current identifier/atom is required to be followed by a space or not. -/
-  next : Substring.Raw
-  /-- `read` is the pretty-printed substring, starting from after the current identifier/atom,
-  dropping also eventual leading whitespace. -/
-  strNew : Substring.Raw
-
-structure PPinstruction where
-  pos : String.Pos.Raw
-  after : Bool := true
-  space : Bool := true
-  deriving Inhabited
 
 structure PPref where
   pos : String.Pos.Raw
@@ -896,489 +491,7 @@ This part of the code\n  '{origWindow.trim}'\n\
 should be written as\n  '{expectedWindow}'\n"
 -/
 
-open Lean Elab Command in
-elab "#show_corr " cmd:command : command => do
-  elabCommand cmd
-  let orig := cmd.raw.getSubstring?.getD default
-  let stxNoSpaces := cmd.raw.eraseLeadTrailSpaces
-  if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
-    let pp := pretty.toRawSubstring
-    let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] cmd pretty.toRawSubstring
-    for (origPos, ppR) in corr do
-      let ppPos := ppR.pos
-      let origAtPos := {orig with startPos := origPos}
-      let ppAtPos := {pp with startPos := ppPos}
-      if let some (rg, msg) := mkRangeError ppR.kinds origAtPos ppAtPos then
-        -- TODO: temporary change, hopefully reduces false positives!
-        if mkWdw origAtPos != mkWdw ppAtPos then
-          logWarningAt (.ofRange rg)
-            m!"{msg}\n\
-            This part of the code\n  '{mkWdw origAtPos}'\n\
-            should be written as\n  '{indentD <| mkWdw ppAtPos}'\n"
-    let fm ← getFileMap
-    let sorted := corr.toArray.qsort (·.1 < ·.1)
-    let mut msgs := #[]
-    for (a, b) in sorted do
-      msgs := msgs.push (
-        {fm.toPosition a with column := (fm.toPosition a).column + 1},
-          b.pos,
-          "'".push (pretty.toRawSubstring.get (pretty.toRawSubstring.prev b.pos))
-            |>.push (pretty.toRawSubstring.get b.pos)
-            |>.push (pretty.toRawSubstring.get (pretty.toRawSubstring.next b.pos))
-            |>.push '\'',
-          b.ok,
-          b.bracket,
-        )
-    -- TODO: fix `byTens` and re-enable this logging output
-    --logInfo <| .joinSep (msgs.toList.map (m!"{·}") ++ [m!"{byTens pretty (min pretty.length 100)}"]) "\n"
-  else logWarning "Error"
-
--- #show_corr
--- --inspect
--- #check (  { default := (/-  -/) }:    Inhabited   Unit
--- )
-
-def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
-    (verbose? : Bool) (k : Array SyntaxNodeKind) (val str : Substring.Raw) :
-    m (AfterAtom × PPinstruction) := do
-  --dbg_trace "forceSpaceAfter.contains {k}: {forceSpaceAfter.contains k}\nStarting with '{val}'\n"
-  let read := readWhile val str
-  if verbose? then
-    if read == str && (!read.isEmpty) then
-      logWarning m!"No change at{indentD m!"'{read}'"}\n{k.map MessageData.ofConstName}\n\n\
-      Maybe because the `SyntaxNodeKind`s contain:\n\
-      hygieneInfo: {k.contains `hygieneInfo}\n\
-      choice: {k.contains `choice}"
-  let (next, strNew, ppInstr) :=
-    -- Case `read = " "`
-    if (read.take 1).toString == " "
-    then
-      -- Case `read = " "` but we do not want a space after
-      if forceNoSpaceAfter.contains k then
-        ("".toRawSubstring, read.drop 1, {pos := (read.drop 1).startPos, space := false})
-      else
-        (" ".toRawSubstring, read.drop 1, {pos := (read.drop 1).startPos})
-    else
-    -- Case `read = ""` but we want a space after anyway
-    if forceSpaceAfter.contains k || forceSpaceAfter'.contains k then
-      --dbg_trace "adding a space at '{read}'\n"
-      (" ".toRawSubstring, read, {pos := read.startPos})
-    -- Case `read = ""` and we follow the pretty-printer recommendation
-    else
-      ("".toRawSubstring, read, {pos := read.startPos, space := false})
-  pure (AfterAtom.mk next strNew, ppInstr)
-
-/--
-`insertSpacesAux verbose? noSpaceStx prettyString`
-scans the syntax tree `noSpaceStx` and, whenever it finds an `atom` or `ident` node,
-it compares it with the substring `prettyString`, consuming the value of the `atom`/`ident` and
-appending the following whitespace as trailing substring in the `SourceInfo`, if such a space is
-present.
-
-This essentially converts `noSpaceStx` into a `Syntax` tree whose traversal reconstructs exactly
-`prettyString`.
--/
-partial
-def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
-    (verbose? : Bool) :
-    Array SyntaxNodeKind → Syntax → Substring.Raw → m (Syntax × Substring.Raw)
-  | k, .ident info rawVal val pre, str => do
-    let (⟨next, strNew⟩, _) ← processAtomOrIdent verbose? (k.push (.str `ident rawVal.toString)) rawVal str
-    if false then
-      dbg_trace
-        s!"* ident '{rawVal}'\nStr: '{str}'\nNxt: '{next}'\nNew: '{strNew}'\n"
-    pure (.ident (modifyTail info next) rawVal val pre, strNew)
-  | k, .atom info val, str => do
-    let (⟨next, strNew⟩, _) ← processAtomOrIdent verbose? (k.push (.str `atom val)) val.toRawSubstring str
-    if false then
-      dbg_trace
-        s!"* atom '{val}'\nStr: '{str}'\nNxt: '{next}'\nNew: '{strNew}'\n"
-    pure (.atom (modifyTail info next) val, strNew)
-  | k, .node info kind args, str => do
-    --let kind := if kind == `null then k else kind
-    let mut str' := str
-    let mut stxs := #[]
-    for arg in getChoiceNode kind args do
-      let (newStx, strNew) ← insertSpacesAux verbose? (k.push kind) arg str'
-      if false then
-        logInfo m!"'{strNew}' intermediate string at {k.push kind}"
-      str' := strNew.trimLeft
-      stxs := stxs.push newStx
-    pure (.node info kind stxs, str')
-  | _, stx, str => do
-    pure (stx, str)
-
-open Lean in
-/--
-`insertSpaces verbose? stx` first replaces in `stx` every `trailing` substring in every `SourceInfo`
-with either `"".toSubstring` or `" ".toSubstring`, according to what the pretty-printer would
-place there.
-
-In particular, it erases all comments embedded in `SourceInfo`s.
--/
-def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM (Option Syntax) := do
-  let stxNoSpaces := stx.eraseLeadTrailSpaces
-  if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
-    let withSpaces ← insertSpacesAux verbose? #[stx.getKind] stx pretty.toRawSubstring
-    return withSpaces.1
-  else return none
-
-def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) : Option mex :=
-  let orig1 := (orig.take 1).toString
-  if orig.toString == pp.toString then none else
-  -- Case `pp = ""`
-  if pp.isEmpty then
-    match orig1 with
-    | " " => some ⟨orig.toRange, "remove space", ks⟩
-    | "\n" => some ⟨orig.toRange, "remove line break", ks⟩
-    | _ => some ⟨orig.toRange, "please, report this issue!", ks⟩ -- is this an unreachable case?
-  -- Case `pp = " "`
-  else
-    if orig.isEmpty then
-      let misformat : Substring.Raw := {orig with stopPos := orig.stopPos.increaseBy 1}
-      some ⟨misformat.toRange, "add space", ks⟩
-    else
-    -- Allow line breaks
-    if (orig.take 1).toString == "\n" then
-      none
-    else
-    -- Allow comments
-    if onlineComment orig then
-      none
-    else
-    if (2 ≤ orig.toString.length) then
-      some ⟨(orig.drop 1).toRange, if (orig.take 1).toString == "\n" then "remove line break" else "remove space", ks⟩
-    else
-      default
-
-def _root_.Lean.SourceInfo.compareSpaces (ks : Array SyntaxNodeKind) :
-    SourceInfo → SourceInfo → Option mex
-  | .original _ _ origTrail .., .original _ _ ppTrail .. =>
-    allowedTrail ks origTrail ppTrail
-  | _, _ => none
-
-partial
-def _root_.Lean.Syntax.compareSpaces : Array SyntaxNodeKind → Array mex → Syntax → Syntax → Array mex
-  | kinds, tot, .node _ kind a1, .node _ _ a2 =>
-    let (a1, a2) := (getChoiceNode kind a1, getChoiceNode kind a2)
-    a1.zipWith (fun a b => a.compareSpaces (kinds.push kind) tot b) a2 |>.flatten
-  | kinds, tot, .ident origInfo rawVal .., .ident ppInfo .. =>
-    if let some e := origInfo.compareSpaces (kinds.push (.str `ident rawVal.toString)) ppInfo
-    then
-      tot.push e else tot
-  | kinds, tot, .atom origInfo val .., .atom ppInfo .. =>
-    if let some e := origInfo.compareSpaces (kinds.push (.str `atom val)) ppInfo
-    then
-      tot.push e else tot
-  | _, tot, _, _ => tot
---  | tot, .missing .., .missing .. => tot
---  | tot, .node _ k _, _ => tot
---  | tot, _, .node _ k _ => tot
---  | tot, .atom .., _ => tot
---  | tot, _, .atom .. => tot
---  | tot, .ident .., _ => tot
---  | tot, _, .ident .. => tot
-
-open Parser in
-/-- `captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
-using the `ParserFn` `s`.
-
-This is a variation of `Lean.Parser.runParserCategory`.
--/
-def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
-  let ictx := mkInputContext input "<input>"
-  let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
-  if !s.allErrors.isEmpty then
-    .error (s.toErrorMsg ictx)
-  else if String.Pos.Raw.atEnd ictx.input s.pos then
-    .ok s.stxStack.back
-  else
-    .error ((s.mkError "end of input").toErrorMsg ictx)
-
-/-- Returning `none` denotes a processing error. -/
-def getExceptions (stx : Syntax) (verbose? : Bool := false) :
-    CommandElabM (Option (Array mex)) := do
-  let stxNoTrail := stx.unsetTrailing
-  let s ← get
-  let insertSpace ← insertSpaces verbose? stx
-  set s
-  if let some stxNoSpaces := insertSpace then
-    if verbose? then
-      logInfo m!"Pretty-printed syntax:\n{stxNoSpaces}"
-    return stxNoTrail.compareSpaces #[] #[] stxNoSpaces
-  else
-    return none
-
-/--
-Scan the two input strings `L` and `M`, assuming `M` is the pretty-printed version of `L`.
-This almost means that `L` and `M` only differ in whitespace.
-
-While scanning the two strings, accumulate any discrepancies --- with some heuristics to avoid
-flagging some line-breaking changes.
-(The pretty-printer does not always produce desirably formatted code.)
-
-The `rebuilt` input gets updated, matching the input `L`, whenever `L` is preferred over `M`.
-When `M` is preferred, `rebuilt` gets appended the string
-* `addSpace`, if `L` should have an extra space;
-* `removeSpace`, if `L` should not have this space;
-* `removeLine`, if this line break should not be present.
-
-With the exception of `addSpace`, in the case in which `removeSpace` and `removeLine` consist
-of a single character, then number of characters added to `rebuilt` is the same as the number of
-characters removed from `L`.
--/
-partial
-def parallelScanAux (as : Array FormatError) (rebuilt L M addSpace removeSpace removeLine : String) :
-    String × Array FormatError :=
-  if M.trimAscii.isEmpty then (rebuilt ++ L.toSlice, as) else
-  -- We try as hard as possible to scan the strings one character at a time.
-  -- However, single line comments introduced with `--` pretty-print differently than `/--`.
-  -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
-  -- matter too much what we do here and we simply drop `/--` from the original string and the
-  -- pretty-printed one, before continuing. -- -/
-  -- Next, if we already dealt with `/--`, finding a `--` means that this is a single line comment
-  -- (or possibly a comment embedded in a doc-string, which is ok, since we eventually discard
-  -- doc-strings).  In this case, we drop everything until the following line break in the
-  -- original syntax, and for the same amount of characters in the pretty-printed one, since the
-  -- pretty-printer *erases* the line break at the end of a single line comment.
-  --dbg_trace (L.take 3, M.take 3)
-  if (L.take 3) == "/--".toSlice && (M.take 3) == "/--".toSlice then
-    parallelScanAux as (rebuilt ++ "/--") (L.drop 3).copy (M.drop 3).copy addSpace removeSpace removeLine else
-  if (L.take 2) == "--".toSlice
-  then
-    let newL := L.dropWhile (· != '\n')
-    let diff := L.length - newL.copy.length
-    -- Assumption: if `L` contains an embedded inline comment, so does `M`
-    -- (modulo additional whitespace).
-    -- This holds because we call this function with `M` being a pretty-printed version of `L`.
-    -- If the pretty-printer changes in the future, this code may need to be adjusted.
-    let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as (rebuilt ++ (L.takeWhile (· != '\n')).toString ++ (newL.takeWhile (·.isWhitespace)).toString) newL.trimAsciiStart.copy newM.trimAsciiStart.copy addSpace removeSpace removeLine
-  else
-  if (L.take 2) == "-/".toSlice
-  then
-    let newL := L.drop 2 |>.trimAsciiStart
-    let newM := M.drop 2 |>.trimAsciiStart
-    parallelScanAux as (rebuilt ++ "-/" ++ ((L.drop 2).takeWhile (·.isWhitespace)).toString) newL.copy newM.copy addSpace removeSpace removeLine
-  else
-  let ls := L.drop 1
-  let ms := M.drop 1
-  let lf := L.front
-  let m := M.front
-  --match L.front with
-  --| ' ' =>
-  if lf == ' ' then
-    let newAs := if m.isWhitespace then as else pushFormatError as (mkFormatError L M "extra space")
-    let rebs := if m.isWhitespace then rebuilt.push ' ' else rebuilt ++ removeSpace
-    let newLs := if m.isWhitespace then ls.trimAsciiStart.toString else ls.toString
-    let newMs := if m.isWhitespace then ms.trimAsciiStart.toString else M
-    parallelScanAux newAs rebs newLs newMs addSpace removeSpace removeLine
-  else if lf == '\n' then
-  --| '\n' =>
-    if m.isWhitespace then
-      parallelScanAux as (rebuilt ++ (L.takeWhile (·.isWhitespace)).toString) ls.toString.trimAsciiStart.toString ms.toString.trimAsciiStart.toString addSpace removeSpace removeLine
-    else
-      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) (rebuilt ++ removeLine ++ (ls.takeWhile (·.isWhitespace)).toString) ls.toString.trimAsciiStart.toString M addSpace removeSpace removeLine
-  else
-    let l := lf
-  --| l => -- `l` is not whitespace
-    if l == m then
-      parallelScanAux as (rebuilt.push l) ls.toString ms.toString addSpace removeSpace removeLine
-    else
-      if m.isWhitespace then
-        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimAsciiStart.copy addSpace removeSpace removeLine
-    else
-      -- If this code is reached, then `L` and `M` differ by something other than whitespace.
-      -- This should not happen in practice.
-      (rebuilt, pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)"))
---#exit
-@[inherit_doc parallelScanAux]
-def parallelScan (src fmt : String) : Array FormatError :=
-  let (_expected, formatErrors) := parallelScanAux ∅ "" src fmt "🐩" "🦤" "😹"
-  --dbg_trace "src:\n{src}\n---\nfmt:\n{fmt}\n---\nexpected:\n{expected}\n---"
-  formatErrors
-
-partial
-def _root_.Lean.Syntax.compareToString : Array FormatError → Syntax → String → Array FormatError
-  | tot, .node _ kind args, s =>
-    (getChoiceNode kind args).foldl (init := tot) (· ++ ·.compareToString tot s)
-  | tot, .ident i raw _ _, s =>
-    let (l, t) := i.getLeadTrail
-    let (_r, f) := parallelScanAux tot "" (l ++ raw.toString ++ t) s "🐩" "🦤" "😹"
-    --dbg_trace "'{r}'"
-    f
-  | tot, .atom i s', s => --compareLeaf tot i.getLeadTrail s' s
-    let (l, t) := i.getLeadTrail
-    let (_r, f) := parallelScanAux tot "" (l ++ s' ++ t) s "🐩" "🦤" "😹"
-    --dbg__trace "'{r}'"
-    f
-  | tot, .missing, _s => tot
-
-partial
-def _root_.Lean.Syntax.compare : Syntax → Syntax → Array SyntaxNodeKind
-  | .node _ _ a1, .node _ _ a2 => a1.zipWith (fun a b => a.compare b) a2 |>.flatten
-  | .ident .., .ident .. => #[]
-  | .atom .., .atom .. => #[]
-  | .missing .., .missing .. => #[]
-  | .node _ k _, _ => #[k ++ `left]
-  | _, .node _ k _ => #[k ++ `right]
-  | .atom .., _ => #[`atomLeft]
-  | _, .atom .. => #[`atomRight]
-  | .ident .., _ => #[`identLeft]
-  | _, .ident .. => #[`identRight]
-
-/-
-open Lean Elab Command in
-elab "#comp " cmd:command : command => do
-  elabCommand cmd
-  let cmdString := cmd.raw.regString
-  let pp ← pretty cmd
-  dbg_trace "---\n{cmdString}\n---\n{pp}\n---"
-  let comps := cmd.raw.compareToString #[] pp
-  dbg_trace comps
---  dbg_trace "From start: {comps.map (cmdString.length - ·) |>.reverse}"
-  --logInfo m!"{cmd}"
--/
-
 namespace Style.CommandStart
-
-/--
-`unlintedNodes` contains the `SyntaxNodeKind`s for which there is no clear formatting preference:
-if they appear in surface syntax, the linter will ignore formatting.
-
-Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset` notation and
-list notation.
--/
-abbrev unlintedNodes := #[
-  -- # set-like notations, have extra spaces around the braces `{` `}`
-
-  -- subtype, the pretty-printer prefers `{ a // b }`
-  ``«term{_:_//_}»,
-  -- set notation, the pretty-printer prefers `{ a | b }`
-  `«term{_}»,
-  -- empty set, the pretty-printer prefers `{ }`
-  ``«term{}»,
-  -- various set builder notations, the pretty-printer prefers `{ a : X | p a }`
-  `Mathlib.Meta.setBuilder,
-  `Mathlib.Meta.«term{_|_}»,
-
-  -- The pretty-printer lacks a few spaces.
-  ``Parser.Command.syntax,
-
-  -- # misc exceptions
-
-  -- We ignore literal strings.
-  `str,
-
-  -- list notation, the pretty-printer prefers `a :: b`
-  ``«term_::_»,
-
-  -- negation, the pretty-printer prefers `¬a`
-  ``«term¬_»,
-
-  -- declaration name, avoids dealing with guillemets pairs `«»`
-  ``Parser.Command.declId,
-
-  `Mathlib.Tactic.superscriptTerm, `Mathlib.Tactic.subscript,
-
-  -- notation for `Bundle.TotalSpace.proj`, the total space of a bundle
-  -- the pretty-printer prefers `π FE` over `π F E` (which we want)
-  `Bundle.termπ__,
-
-  -- notation for `MeasureTheory.condExp`, the spaces around `|` may or may not be present
-  `MeasureTheory.«term__[_|_]»,
-
-  -- notation for `Finset.slice`, the pretty-printer prefers `𝒜 #r` over `𝒜 # r` (mathlib style)
-  `Finset.«term_#_»,
-
-  -- The docString linter already takes care of formatting doc-strings.
-  ``Parser.Command.docComment,
-
-  -- The pretty-printer adds a space between the backticks and the actual name.
-  ``Parser.Term.doubleQuotedName,
-
-  -- the `f!"..."` for interpolating a string
-  ``Std.termF!_,
-
-  -- `{structure}`
-  ``Parser.Term.structInst,
-
-  -- `let (a) := 0` pretty-prints as `let(a) := 0`, similarly for `rcases`.
-  ``Parser.Term.let,
-  ``Parser.Tactic.rcases,
-
-  -- sometimes, where there are multiple fields, it is convenient to end a line with `⟨` and then
-  -- align the indented fields on the successive lines, before adding the closing `⟩`.
-  ``Parser.Term.anonymousCtor,
-  -- similarly, we ignore lists and arrays
-  ``«term[_]», ``«term#[_,]»,
-
-  -- the `{ tacticSeq }` syntax pretty prints without a space on the left and with a space on the
-  -- right.
-  ``Parser.Tactic.tacticSeqBracketed,
-
-  -- in `conv` mode, the focusing dot (`·`) is *not* followed by a space
-  ``Parser.Tactic.Conv.«conv·._»,
-
-  -- The pretty printer does not place spaces around the braces`{}`.
-  ``Parser.Term.structInstField,
-
-  -- `throwError "Sorry"` does not pretty-print the space before the opening `"`.
-  ``termThrowError__,
-
-  -- Ignore term-mode `have`, since it does not print a space between `have` and the identifier,
-  -- if there is a parenthesis in-between.
-  ``Parser.Term.have,
-  -- For a similar reason, we also ignore tactic `replace`.
-  ``Parser.Tactic.replace,
-
-  -- If two `induction ... with` arms are "merged", then the pretty-printer
-  -- does not put a space before the `|`s
-  ``Parser.Tactic.inductionAlt,
-
-  -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
-  ``Lean.«command__Unif_hint____Where_|_-⊢_»,
-  ]
-
-/--
-Given an array `a` of `SyntaxNodeKind`s, we accumulate the ranges of the syntax nodes of the
-input syntax whose kind is in `a`.
-
-The linter uses this information to avoid emitting a warning for nodes with kind contained in
-`unlintedNodes`.
--/
-def getUnlintedRanges (a : Array SyntaxNodeKind) :
-    Std.HashSet Lean.Syntax.Range → Syntax → Std.HashSet Lean.Syntax.Range
-  | curr, s@(.node _ kind args) =>
-    let new := args.foldl (init := curr) (·.union <| getUnlintedRanges a curr ·)
-    if a.contains kind then
-      --dbg_trace "adding {s} at {s.getRange?.getD default}"
-      new.insert (s.getRange?.getD default)
-    else
-      new
-  -- We special case `where` statements, since they may be followed by an indented doc-string.
-  | curr, .atom info "where" =>
-    if let some trail := info.getRangeWithTrailing? then
-      curr.insert trail
-    else
-      curr
-  | curr, _ => curr
-
-/-- Given a `HashSet` of `Lean.Syntax.Range`s `rgs` and a further `Lean.Syntax.Range` `rg`,
-`isOutside rgs rg` returns `false` if and only if `rgs` contains a range that completely contains
-`rg`.
-
-The linter uses this to figure out which nodes should be ignored.
--/
-def isOutside (rgs : Std.HashSet Lean.Syntax.Range) (rg : Lean.Syntax.Range) : Bool :=
-  rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
-
-def mkWindowSubstring (orig : Substring.Raw) (start : String.Pos.Raw) (ctx : Nat) : String :=
-  let head : Substring.Raw := {orig with stopPos := start} -- `orig`, up to the beginning of the discrepancy
-  let middle : Substring.Raw := {orig with startPos := start}
-  let headCtx := head.takeRightWhile (!·.isWhitespace)
-  let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
-  s!"{headCtx}{middle.take ctx}{tail}"
 
 /--
 We think of `orig` as `orig = ...<wordLeft><whitespaceLeft>|<whitespaceRight><wordRight>...`
@@ -1429,93 +542,12 @@ def mkExpectedWindow (orig : Substring.Raw) (start : String.Pos.Raw) : String :=
 
 #guard mkExpectedWindow "0123 abc    \n def ghi".toRawSubstring ⟨9⟩ == "abc def"
 
-def _root_.Mathlib.Linter.mex.mkWindow (orig : Substring.Raw) (m : mex) (ctx : Nat := 4) : String :=
-  let lth := ({orig with startPos := m.rg.start, stopPos := m.rg.stop}).toString.length
-  mkWindowSubstring orig m.rg.start (ctx + lth)
-
-/-- `mkWindow orig start ctx` extracts from `orig` a string that starts at the first
-non-whitespace character before `start`, then expands to cover `ctx` more characters
-and continues still until the first non-whitespace character.
-
-In essence, it extracts the substring of `orig` that begins at `start`, continues for `ctx`
-characters plus expands left and right until it encounters the first whitespace character,
-to avoid cutting into "words".
-
-*Note*. `start` is the number of characters *from the right* where our focus is!
--/
-public def mkWindow (orig : String) (start ctx : Nat) : String :=
-  let head := orig.dropEnd (start + 1) -- `orig`, up to one character before the discrepancy
-  let middle := orig.takeEnd (start + 1)
-  let headCtx := head.takeEndWhile (!·.isWhitespace)
-  let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
-  s!"{headCtx}{middle.take ctx}{tail}"
-
 def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring.Raw) : MessageData :=
   let origWindow := mkWindowSubstring' orig m.rg.start
   let expectedWindow := mkExpectedWindow orig m.rg.start
   m!"{m.error} in the source\n\n\
   This part of the code\n  '{origWindow.trimAscii}'\n\
   should be written as\n  '{expectedWindow}'\n"
-
-/-- If `s` is a `Substring` and `p` is a `String.Pos`, then `s.break p` is the pair consisting of
-the `Substring` `s` ending at `p` and of the `Substring` `s` starting from `p`. -/
-def _root_.Substring.Raw.break (s : Substring.Raw) (p : String.Pos.Raw) : Substring.Raw × Substring.Raw :=
-  ({s with stopPos := p}, {s with startPos := p})
-
-/--
-Assume that `ms` is a sorted array of `String.Pos` that are within the `startPos` and the `stopPos`
-of `orig`.
-Successively `break` `orig` at all the positions in `ms`.
-For each piece thus created, except for the very first one, check if it starts with whitespace.
-Only if it does, wedge a `" ".toSubstring` between this piece and the previous one.
-In all cases, drop all leading whitespace from the pieces.
-
-Return the concatenation of the possibly-trimmed-pieces with the appropriate `" ".toSubstring`
-separators.
-
-The intuition is that the positions listed in `ms` correspond to places where there is a
-discrepancy between an expected boundary between words and the actual string.
-The expectation is that up to the current position, everything is well-formatted and, if a space
-was available, then it has been used. The convention is that no more than one consecutive space
-is used to separate words at the positions in `ms`.
-
-Thus, if a position in `ms` falls where the following character is not a space, then a space should
-be added before that word.  Hence, the script adds a `" ".toSubstring`.
-
-If, instead, there is a space after a position in `ms`, then it, and all the following streak of
-whitespace, is redundant and gets trimmed.
--/
-def mkStrings (orig : Substring.Raw) (ms : Array String.Pos.Raw) : Array Substring.Raw :=
-  let (tot, orig) := ms.foldl (init := (#[], orig)) fun (tot, orig) pos =>
-    let (start, follow) := orig.break pos
-    let newTot := tot.push start ++ if (follow.take 1).trim.isEmpty then #[] else #[" ".toRawSubstring]
-    (newTot, follow.trimLeft)
-  tot.push orig
-
-section Tests
-local instance : Coe String Substring.Raw := ⟨String.toRawSubstring⟩
-
-#guard -- empty positions, store `s` in a singleton array
-  let s := "abcdef    ghi jkl"
-  let ms : Array String.Pos.Raw := #[]
-  #[s.toRawSubstring] == mkStrings s.toRawSubstring ms
-
-#guard
-  let s := "12345    ghi jkl"
-  let ms : Array String.Pos.Raw := #[⟨5⟩]
-  #["12345".toRawSubstring, "ghi jkl".toRawSubstring] == mkStrings s.toRawSubstring ms
-
-#guard
-  let s := "12345    ghi    jkl"
-  let ms : Array String.Pos.Raw := #[⟨2⟩, ⟨5⟩, ⟨10⟩, ⟨12⟩]
-  #["12".toRawSubstring, " ", "345", "g", " ", "hi", "jkl"] == mkStrings s.toRawSubstring ms
-
-#guard
-  let s := "12345    ghi    jklmno pqr"
-  let ms : Array String.Pos.Raw := #[⟨6⟩, ⟨13⟩, ⟨19⟩]
-  #["12345 ".toRawSubstring, "ghi ", "jkl", " ", "mno pqr"] == mkStrings s.toRawSubstring ms
-
-end Tests
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -1574,126 +606,283 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
               This part of the code\n  '{mkWdw origAtPos}'\n\
               should be written as\n  '{mkWdw ppAtPos mid}'\n\n{ppR.kinds}\n"
 
-/-
-  if let some mexs ← getExceptions stx then
-  let (reported, _) := reportedAndUnreportedExceptions mexs
-  --let parts := mkStrings orig (reported.map (·.rg.start))
-  --dbg_trace "Reformatted:\n{parts.foldl (· ++ ·.toString) ""}\n---"
-  let fname ← getFileName
-  let fm ← getFileMap
-  let mut visitedLines : Std.HashSet Nat := ∅
-  for m in reported.qsort (·.rg.start < ·.rg.start) do
-    --logInfoAt (.ofRange m.rg) m!"{m.error} ({m.kinds})"
-    --dbg_trace "{m.mkWindow orig}"
-    Linter.logLint linter.style.commandStart (.ofRange m.rg) <| m.toLinterWarning orig
-    -- Try to `sed` away. -- remove the trailing `, _` to get the following to ever be executed.
-    if let #[a, _, _] := m.kinds.drop (m.kinds.size - 2) then
-      let lineNumber := (fm.toPosition m.rg.start).line
-      if visitedLines.contains lineNumber then
-        continue
-      visitedLines := visitedLines.insert lineNumber
-      let lineStart := fm.lineStart lineNumber
-      let lineEnd := fm.lineStart (lineNumber + 1)
-      let line : Substring := {fm.source.toSubstring with startPos := lineStart, stopPos := lineEnd}.trimRight
-      let origWindow := mkWindowSubstring' orig m.rg.start
-      let expectedWindow := mkExpectedWindow orig m.rg.start
-      let newLine := line.toString.replace origWindow expectedWindow
-      if newLine != line.toString then
-        logInfoAt (.ofRange m.rg) m!"# {a}\n\
-          sed -i '{lineNumber}\{s={line.toString.replace "=" "\\="}={newLine.replace "=" "\\="}=}' {fname}"
--/
-
-/-
-  if let some pos := stx.getPos? then
-    let colStart := ((← getFileMap).toPosition pos).column
-    if colStart ≠ 0 then
-      Linter.logLint linter.style.commandStart stx
-        m!"'{stx}' starts on column {colStart}, \
-          but all commands should start at the beginning of the line."
-  -- We skip `macro_rules`, since they cause parsing issues.
-  if (stx.find? fun s =>
-    #[``Parser.Command.macro_rules, ``Parser.Command.macro, ``Parser.Command.elab].contains
-      s.getKind ) |>.isSome then
-    return
-  let some upTo := CommandStart.endPos stx | return
-
-  let fmt : Option Format := ←
-      try
-        liftCoreM <| ppCategory' `command stx --PrettyPrinter.ppCategory `command stx
-      catch _ =>
-        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-          m!"The `commandStart` linter had some parsing issues: \
-            feel free to silence it and report this error!"
-        return none
-  if let some fmt := fmt then
-    let st := fmt.pretty
-    let parts := st.split (·.isWhitespace) |>.filter (!·.isEmpty)
-    --for p in parts do dbg_trace "'{p}'"
-    let st := " ".intercalate parts
-    let origSubstring := stx.getSubstring?.getD default
-    let orig := origSubstring.toString
-    if (! Parser.isTerminalCommand stx) && st.trim.isEmpty then logInfo m!"Empty on {stx}"
-    else
-    --dbg_trace "here"
-    let slimStx := captureException (← getEnv) Parser.topLevelCommandParserFn st <|>
-      .ok (.node default ``Parser.Command.eoi #[])
-    --dbg_trace "there"
-    if let .ok slimStx := slimStx then
-      let diffs := stx.compare slimStx
-      if !diffs.isEmpty then
-        logInfo m!"{diffs}"
-        dbg_trace stx
-        dbg_trace slimStx
-    else
-      logWarning m!"Parsing error!\n{stx.getKind}|||\n---"
-      dbg_trace stx
-    --let parts := orig.split (·.isWhitespace) |>.filter (!·.isEmpty)
-    --if ! ("".intercalate parts).startsWith (st.replace " " "" |>.replace "«" "" |>.replace "»" "") then
-    --  logWarning m!"A\n{st.replace " " "" |>.replace "«" "" |>.replace "»" ""}\n---\n{"".intercalate parts}"
-
-    let scan := parallelScan orig st
-    let (o, n) := (scan.size, (← finalScan stx false).size)
-    if o != n then
-      dbg_trace "(old, new): ({o}, {n})"
-      dbg_trace scan
-      for e in (← finalScan stx false) do
-        dbg_trace e
-      let ustx := stx.eraseLeadTrailSpaces
-      let simplySpaced ← pretty ustx <|> return default
-      dbg_trace simplySpaced
-    let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
-    let docStringEnd := docStringEnd.getTailPos? |>.getD default
-    let forbidden := getUnlintedRanges unlintedNodes ∅ stx
-    --dbg_trace forbidden.fold (init := #[]) fun tot ⟨a, b⟩ => tot.push (a, b)
-    for s in scan do
-      --logInfo m!"Scanning '{s}'"
-      let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
-      let rg : Lean.Syntax.Range :=
-        ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
-      if s.msg.startsWith "Oh no" then
-        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
-          m!"This should not have happened: please report this issue!"
-        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
-          m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
-        continue
-      --logInfo m!"Outside '{s}'? {isOutside forbidden rg}"
-      unless isOutside forbidden rg do
-        continue
-      unless rg.stop ≤ upTo do return
-      unless docStringEnd ≤ rg.start do return
-
-      let ctx := 4 -- the number of characters after the mismatch that linter prints
-      let srcWindow := mkWindow orig s.srcNat (ctx + s.length)
-      let expectedWindow := mkWindow st s.fmtPos (ctx + (1))
-      Linter.logLint linter.style.commandStart (.ofRange rg)
-        m!"{s.msg} in the source\n\n\
-          This part of the code\n  '{srcWindow}'\n\
-          should be written as\n  '{expectedWindow}'\n"
-      Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
-        m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
--/
-
 initialize addLinter commandStartLinter
+
+open Lean Elab Command in
+elab "#show_corr " cmd:command : command => do
+  elabCommand cmd
+  let orig := cmd.raw.getSubstring?.getD default
+  let stxNoSpaces := cmd.raw.eraseLeadTrailSpaces
+  if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
+    let pp := pretty.toRawSubstring
+    let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] cmd pretty.toRawSubstring
+    for (origPos, ppR) in corr do
+      let ppPos := ppR.pos
+      let origAtPos := {orig with startPos := origPos}
+      let ppAtPos := {pp with startPos := ppPos}
+      if let some (rg, msg) := mkRangeError ppR.kinds origAtPos ppAtPos then
+        -- TODO: temporary change, hopefully reduces false positives!
+        if mkWdw origAtPos != mkWdw ppAtPos then
+          logWarningAt (.ofRange rg)
+            m!"{msg}\n\
+            This part of the code\n  '{mkWdw origAtPos}'\n\
+            should be written as\n  '{indentD <| mkWdw ppAtPos}'\n"
+    let fm ← getFileMap
+    let sorted := corr.toArray.qsort (·.1 < ·.1)
+    let mut msgs := #[]
+    for (a, b) in sorted do
+      msgs := msgs.push (
+        {fm.toPosition a with column := (fm.toPosition a).column + 1},
+          b.pos,
+          "'".push (pretty.toRawSubstring.get (pretty.toRawSubstring.prev b.pos))
+            |>.push (pretty.toRawSubstring.get b.pos)
+            |>.push (pretty.toRawSubstring.get (pretty.toRawSubstring.next b.pos))
+            |>.push '\'',
+          b.ok,
+          b.bracket,
+        )
+    -- TODO: fix `byTens` and re-enable this logging output
+    --logInfo <| .joinSep (msgs.toList.map (m!"{·}") ++ [m!"{byTens pretty (min pretty.length 100)}"]) "\n"
+  else logWarning "Error"
+
+-- #show_corr
+-- --inspect
+-- #check (  { default := (/-  -/) }:    Inhabited   Unit
+-- )
+
+open Parser in
+/-- `captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
+using the `ParserFn` `s`.
+
+This is a variation of `Lean.Parser.runParserCategory`.
+-/
+def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
+  let ictx := mkInputContext input "<input>"
+  let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if !s.allErrors.isEmpty then
+    .error (s.toErrorMsg ictx)
+  else if String.Pos.Raw.atEnd ictx.input s.pos then
+    .ok s.stxStack.back
+  else
+    .error ((s.mkError "end of input").toErrorMsg ictx)
+
+structure AfterAtom where
+  /-- `next` is either `" ".toSubstring` or `"".toSubstring`, depending on whether the
+  character following the current identifier/atom is required to be followed by a space or not. -/
+  next : Substring.Raw
+  /-- `read` is the pretty-printed substring, starting from after the current identifier/atom,
+  dropping also eventual leading whitespace. -/
+  strNew : Substring.Raw
+
+structure PPinstruction where
+  pos : String.Pos.Raw
+  after : Bool := true
+  space : Bool := true
+  deriving Inhabited
+
+def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+    (verbose? : Bool) (k : Array SyntaxNodeKind) (val str : Substring.Raw) :
+    m (AfterAtom × PPinstruction) := do
+  --dbg_trace "forceSpaceAfter.contains {k}: {forceSpaceAfter.contains k}\nStarting with '{val}'\n"
+  let read := readWhile val str
+  if verbose? then
+    if read == str && (!read.isEmpty) then
+      logWarning m!"No change at{indentD m!"'{read}'"}\n{k.map MessageData.ofConstName}\n\n\
+      Maybe because the `SyntaxNodeKind`s contain:\n\
+      hygieneInfo: {k.contains `hygieneInfo}\n\
+      choice: {k.contains `choice}"
+  let (next, strNew, ppInstr) :=
+    -- Case `read = " "`
+    if (read.take 1).toString == " "
+    then
+      -- Case `read = " "` but we do not want a space after
+      if forceNoSpaceAfter.contains k then
+        ("".toRawSubstring, read.drop 1, {pos := (read.drop 1).startPos, space := false})
+      else
+        (" ".toRawSubstring, read.drop 1, {pos := (read.drop 1).startPos})
+    else
+    -- Case `read = ""` but we want a space after anyway
+    if forceSpaceAfter.contains k || forceSpaceAfter'.contains k then
+      --dbg_trace "adding a space at '{read}'\n"
+      (" ".toRawSubstring, read, {pos := read.startPos})
+    -- Case `read = ""` and we follow the pretty-printer recommendation
+    else
+      ("".toRawSubstring, read, {pos := read.startPos, space := false})
+  pure (AfterAtom.mk next strNew, ppInstr)
+
+def modifyTail (si : SourceInfo) (newTrail : Substring.Raw) : SourceInfo :=
+  match si with
+  | .original lead pos _ endPos => .original lead pos newTrail endPos
+  | _ => si
+
+/--
+`insertSpacesAux verbose? noSpaceStx prettyString`
+scans the syntax tree `noSpaceStx` and, whenever it finds an `atom` or `ident` node,
+it compares it with the substring `prettyString`, consuming the value of the `atom`/`ident` and
+appending the following whitespace as trailing substring in the `SourceInfo`, if such a space is
+present.
+
+This essentially converts `noSpaceStx` into a `Syntax` tree whose traversal reconstructs exactly
+`prettyString`.
+-/
+partial
+def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+    (verbose? : Bool) :
+    Array SyntaxNodeKind → Syntax → Substring.Raw → m (Syntax × Substring.Raw)
+  | k, .ident info rawVal val pre, str => do
+    let (⟨next, strNew⟩, _) ← processAtomOrIdent verbose? (k.push (.str `ident rawVal.toString)) rawVal str
+    if false then
+      dbg_trace
+        s!"* ident '{rawVal}'\nStr: '{str}'\nNxt: '{next}'\nNew: '{strNew}'\n"
+    pure (.ident (modifyTail info next) rawVal val pre, strNew)
+  | k, .atom info val, str => do
+    let (⟨next, strNew⟩, _) ← processAtomOrIdent verbose? (k.push (.str `atom val)) val.toRawSubstring str
+    if false then
+      dbg_trace
+        s!"* atom '{val}'\nStr: '{str}'\nNxt: '{next}'\nNew: '{strNew}'\n"
+    pure (.atom (modifyTail info next) val, strNew)
+  | k, .node info kind args, str => do
+    --let kind := if kind == `null then k else kind
+    let mut str' := str
+    let mut stxs := #[]
+    for arg in getChoiceNode kind args do
+      let (newStx, strNew) ← insertSpacesAux verbose? (k.push kind) arg str'
+      if false then
+        logInfo m!"'{strNew}' intermediate string at {k.push kind}"
+      str' := strNew.trimLeft
+      stxs := stxs.push newStx
+    pure (.node info kind stxs, str')
+  | _, stx, str => do
+    pure (stx, str)
+
+open Lean in
+/--
+`insertSpaces verbose? stx` first replaces in `stx` every `trailing` substring in every `SourceInfo`
+with either `"".toSubstring` or `" ".toSubstring`, according to what the pretty-printer would
+place there.
+
+In particular, it erases all comments embedded in `SourceInfo`s.
+-/
+def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM (Option Syntax) := do
+  let stxNoSpaces := stx.eraseLeadTrailSpaces
+  if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
+    let withSpaces ← insertSpacesAux verbose? #[stx.getKind] stx pretty.toRawSubstring
+    return withSpaces.1
+  else return none
+
+def _root_.Substring.Raw.toRange (s : Substring.Raw) : Lean.Syntax.Range where
+  start := s.startPos
+  stop := s.stopPos
+
+def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) : Option mex :=
+  let orig1 := (orig.take 1).toString
+  if orig.toString == pp.toString then none else
+  -- Case `pp = ""`
+  if pp.isEmpty then
+    match orig1 with
+    | " " => some ⟨orig.toRange, "remove space", ks⟩
+    | "\n" => some ⟨orig.toRange, "remove line break", ks⟩
+    | _ => some ⟨orig.toRange, "please, report this issue!", ks⟩ -- is this an unreachable case?
+  -- Case `pp = " "`
+  else
+    if orig.isEmpty then
+      let misformat : Substring.Raw := {orig with stopPos := orig.stopPos.increaseBy 1}
+      some ⟨misformat.toRange, "add space", ks⟩
+    else
+    -- Allow line breaks
+    if (orig.take 1).toString == "\n" then
+      none
+    else
+    -- Allow comments
+    if onlineComment orig then
+      none
+    else
+    if (2 ≤ orig.toString.length) then
+      some ⟨(orig.drop 1).toRange, if (orig.take 1).toString == "\n" then "remove line break" else "remove space", ks⟩
+    else
+      default
+
+def _root_.Lean.SourceInfo.compareSpaces (ks : Array SyntaxNodeKind) :
+    SourceInfo → SourceInfo → Option mex
+  | .original _ _ origTrail .., .original _ _ ppTrail .. =>
+    allowedTrail ks origTrail ppTrail
+  | _, _ => none
+
+partial
+def _root_.Lean.Syntax.compareSpaces : Array SyntaxNodeKind → Array mex → Syntax → Syntax → Array mex
+  | kinds, tot, .node _ kind a1, .node _ _ a2 =>
+    let (a1, a2) := (getChoiceNode kind a1, getChoiceNode kind a2)
+    a1.zipWith (fun a b => a.compareSpaces (kinds.push kind) tot b) a2 |>.flatten
+  | kinds, tot, .ident origInfo rawVal .., .ident ppInfo .. =>
+    if let some e := origInfo.compareSpaces (kinds.push (.str `ident rawVal.toString)) ppInfo
+    then
+      tot.push e else tot
+  | kinds, tot, .atom origInfo val .., .atom ppInfo .. =>
+    if let some e := origInfo.compareSpaces (kinds.push (.str `atom val)) ppInfo
+    then
+      tot.push e else tot
+  | _, tot, _, _ => tot
+--  | tot, .missing .., .missing .. => tot
+--  | tot, .node _ k _, _ => tot
+--  | tot, _, .node _ k _ => tot
+--  | tot, .atom .., _ => tot
+--  | tot, _, .atom .. => tot
+--  | tot, .ident .., _ => tot
+--  | tot, _, .ident .. => tot
+
+/-- Returning `none` denotes a processing error. -/
+def getExceptions (stx : Syntax) (verbose? : Bool := false) :
+    CommandElabM (Option (Array mex)) := do
+  let stxNoTrail := stx.unsetTrailing
+  let s ← get
+  let insertSpace ← insertSpaces verbose? stx
+  set s
+  if let some stxNoSpaces := insertSpace then
+    if verbose? then
+      logInfo m!"Pretty-printed syntax:\n{stxNoSpaces}"
+    return stxNoTrail.compareSpaces #[] #[] stxNoSpaces
+  else
+    return none
+
+
+/-- If `s` is a `Substring` and `p` is a `String.Pos`, then `s.break p` is the pair consisting of
+the `Substring` `s` ending at `p` and of the `Substring` `s` starting from `p`. -/
+def _root_.Substring.Raw.break (s : Substring.Raw) (p : String.Pos.Raw) : Substring.Raw × Substring.Raw :=
+  ({s with stopPos := p}, {s with startPos := p})
+
+/--
+Assume that `ms` is a sorted array of `String.Pos` that are within the `startPos` and the `stopPos`
+of `orig`.
+Successively `break` `orig` at all the positions in `ms`.
+For each piece thus created, except for the very first one, check if it starts with whitespace.
+Only if it does, wedge a `" ".toSubstring` between this piece and the previous one.
+In all cases, drop all leading whitespace from the pieces.
+
+Return the concatenation of the possibly-trimmed-pieces with the appropriate `" ".toSubstring`
+separators.
+
+The intuition is that the positions listed in `ms` correspond to places where there is a
+discrepancy between an expected boundary between words and the actual string.
+The expectation is that up to the current position, everything is well-formatted and, if a space
+was available, then it has been used. The convention is that no more than one consecutive space
+is used to separate words at the positions in `ms`.
+
+Thus, if a position in `ms` falls where the following character is not a space, then a space should
+be added before that word.  Hence, the script adds a `" ".toSubstring`.
+
+If, instead, there is a space after a position in `ms`, then it, and all the following streak of
+whitespace, is redundant and gets trimmed.
+-/
+def mkStrings (orig : Substring.Raw) (ms : Array String.Pos.Raw) : Array Substring.Raw :=
+  let (tot, orig) := ms.foldl (init := (#[], orig)) fun (tot, orig) pos =>
+    let (start, follow) := orig.break pos
+    let newTot := tot.push start ++ if (follow.take 1).trim.isEmpty then #[] else #[" ".toRawSubstring]
+    (newTot, follow.trimLeft)
+  tot.push orig
+
+def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
+  as.partition fun a =>
+    (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
 
 open Lean Elab Command in
 elab tk:"#mex " cmd:(command)? : command => do
