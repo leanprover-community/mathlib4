@@ -306,14 +306,12 @@ lemma Hom.homeomorph_apply {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := Scheme)
 instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
-set_option linter.style.commandStart false in -- unification hints are printed wrongly, lean4#11780
 /-- forgetful functor to `TopCat` is the same as coercion -/
 unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
 
 /-- The forgetful functor from `Scheme` to `Type`. -/
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
 
-set_option linter.style.commandStart false in -- unification hints are printed wrongly, lean4#11780
 /-- forgetful functor to `Scheme` is the same as coercion -/
 -- Schemes are often coerced as types, and it would be useful to have definitionally equal types
 -- to be reducibly equal. The alternative is to make `forget` reducible but that option has
