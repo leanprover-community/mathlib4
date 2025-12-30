@@ -154,7 +154,7 @@ theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
       map_le_iff_le_comap.2 <| closure_le _ |>.2 fun _y hy => subset_closure ⟨hs, hy⟩⟩)
 
 /-- Product of subgroups is isomorphic to their product as groups. -/
-@[to_additive prodEquiv
+@[to_additive (attr := simps!) prodEquiv
       /-- Product of additive subgroups is isomorphic to their product
       as additive groups -/]
 def prodEquiv (H : Subgroup G) (K : Subgroup N) : H.prod K ≃* H × K :=

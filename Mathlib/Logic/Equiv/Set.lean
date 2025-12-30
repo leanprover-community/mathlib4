@@ -415,6 +415,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
         Set.sumCompl_symm_apply_compl]
 
 /-- The set product of two sets is equivalent to the type product of their coercions to types. -/
+@[simps!]
 protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t :=
   @subtypeProdEquivProd α β s t
 
