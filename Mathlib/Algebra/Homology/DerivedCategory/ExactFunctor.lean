@@ -92,9 +92,6 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
       simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
 
-instance : NatTrans.CommShift F.mapDerivedCategoryFactors.symm.hom ℤ :=
-  NatTrans.CommShift.of_iso_inv F.mapDerivedCategoryFactors ℤ
-
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
@@ -106,16 +103,16 @@ instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
 noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
     DerivedCategory.singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅
       F ⋙ DerivedCategory.singleFunctor C₂ n :=
-  isoWhiskerRight (DerivedCategory.singleFunctorIsoCompQ C₁ n) _
-    ≪≫ associator .. ≪≫ isoWhiskerLeft _ F.mapDerivedCategoryFactors ≪≫ (associator ..).symm
-      ≪≫ isoWhiskerRight (HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n) _
-        ≪≫ associator .. ≪≫ (isoWhiskerLeft _ (DerivedCategory.singleFunctorIsoCompQ C₂ n)).symm
+  isoWhiskerRight (DerivedCategory.singleFunctorIsoCompQ C₁ n) _ ≪≫
+    associator .. ≪≫ isoWhiskerLeft _ F.mapDerivedCategoryFactors ≪≫ (associator ..).symm ≪≫
+      isoWhiskerRight (HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n) _ ≪≫
+        associator .. ≪≫ (isoWhiskerLeft _ (DerivedCategory.singleFunctorIsoCompQ C₂ n)).symm
 
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C₁] [CategoryTheory.Linear R C₂]
 
 instance [F.Linear R] : F.mapDerivedCategory.Linear R := by
   rw [← Localization.functor_linear_iff DerivedCategory.Qh (HomotopyCategory.quasiIso C₁
-    (ComplexShape.up ℤ)) R ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh) _]
+    (ComplexShape.up ℤ)) R ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh)]
   infer_instance
 
 end CategoryTheory.Functor
