@@ -898,6 +898,13 @@ end card
 
 /-! ### Perturbations of endpoints by one -/
 
+/-
+Note: the `haveI`s in the statements below are needed for `0` and `1`
+to be defined in `Fin n`. One could instead add `[NeZero n]` at the
+top of this section, but then this instance would be required to
+rewrite using the lemmas.
+-/
+
 section pm_one
 
 lemma Iio_add_one_eq_Iic {n : ℕ} {b : Fin n} (hb : b + 1 < n) :
