@@ -250,6 +250,7 @@ theorem intrinsicStar_comp (f : E →L[R] F) (g : G →L[R] E) :
 
 @[simp] theorem intrinsicStar_id : star (ContinuousLinearMap.id R E) = .id R E := by ext; simp
 @[simp] theorem intrinsicStar_zero : star (0 : E →L[R] F) = 0 := by ext; simp
+
 section starAddMonoidSemiring
 variable {S : Type*} [Semiring S] [StarAddMonoid S] [StarModule S S] [Module S E] [StarModule S E]
   [TopologicalSpace S] [ContinuousStar S]
