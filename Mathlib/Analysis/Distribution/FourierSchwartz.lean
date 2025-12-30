@@ -28,7 +28,7 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
-  {W : Type*} [NormedAddCommGroup W] [NormedSpace ℂ W] [NormedSpace 𝕜 W]
+  {W : Type*} [NormedAddCommGroup W]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
@@ -200,7 +200,7 @@ section deriv
 open ContinuousLinearMap
 open scoped ContDiff
 
-variable (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E)
+variable [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E)
 
 def fourierSMulRightCLM : 𝓢(V, E) →L[ℂ] 𝓢(V, W →L[ℝ] E) :=
   mkCLM (VectorFourier.fourierSMulRight L ·) (by intros; ext; simp) (by
@@ -282,6 +282,20 @@ def fourierSMulRightCLM : 𝓢(V, E) →L[ℂ] 𝓢(V, W →L[ℝ] E) :=
         simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
           Seminorm.coe_sup, Pi.sup_apply]
         ring)
+
+@[simp]
+theorem fourierSMulRightCLM_apply_apply (f : 𝓢(V, E)) (x : V) :
+    fourierSMulRightCLM L f x = -(2 * π * Complex.I) • (L x).smulRight (f x) := rfl
+
+theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
+    fderivCLM 𝕜 (𝓕 f) = 𝓕 (fourierSMulRightCLM (innerSL ℝ) f) := by
+  ext1 x
+  calc
+    _ = fderiv ℝ (𝓕 (f : V → E)) x := by simp [fourier_coe]
+    _ = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) (f : V → E)) x := by
+      rw [Real.fderiv_fourier f.integrable]
+      convert f.integrable_pow_mul (volume) 1
+      simp
 
 end deriv
 

@@ -19,6 +19,8 @@ public import Mathlib.MeasureTheory.Function.Holder
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `Function.HasTemperateGrowth.toTemperedDistribution`: Every function of temperate growth is a
+tempered distribution.
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
 map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
@@ -83,6 +85,24 @@ theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
   rfl
 
 end MeasureTheory.Measure
+
+namespace Function.HasTemperateGrowth
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+
+set_option backward.privateInPublic true in
+/-- A function of temperate growth `f` defines a tempered distribution via integration, namely
+`g ↦ ∫ (x : E), g x • f x ∂μ`. -/
+def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
+    toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+
+set_option backward.privateInPublic true in
+@[simp]
+theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, ℂ)) :
+    toTemperedDistribution μ hf g = ∫ (x : E), g x • f x ∂μ := rfl
+
+end Function.HasTemperateGrowth
 
 namespace SchwartzMap
 
@@ -156,7 +176,7 @@ instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
   coe := toTemperedDistribution f
 
 @[simp]
-theorem toLp_toTemperedDistribution_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
   ext g
   simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
@@ -187,8 +207,8 @@ theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (
 variable [FiniteDimensional ℝ E] [IsLocallyFiniteMeasure μ]
 
 theorem ker_toTemperedDistributionCLM_eq_bot {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
-    LinearMap.ker (MeasureTheory.Lp.toTemperedDistributionCLM F μ p) = ⊥ := by
-  rw [LinearMap.ker_eq_bot']
+    (MeasureTheory.Lp.toTemperedDistributionCLM F μ p).ker = ⊥ := by
+  rw [LinearMap.ker_eq_bot', ContinuousLinearMap.coe_coe]
   intro f hf
   rw [eq_zero_iff_ae_eq_zero]
   apply ae_eq_zero_of_integral_contDiff_smul_eq_zero

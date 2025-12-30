@@ -648,8 +648,8 @@ end TensorProduct.Algebra
 open LinearMap in
 lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
     [Module R Q] {I : Submodule R R} :
-    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q) = I • ⊤ := by
-  rw [← map_top, ← map_coe_toLinearMap, ← Submodule.map_comp, map_top]
+    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q : R ⊗[R] Q →ₗ[R] Q) = I • ⊤ := by
+  rw [← map_top, ← Submodule.map_comp, map_top]
   refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
     (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
   rintro _ ⟨t, rfl⟩
