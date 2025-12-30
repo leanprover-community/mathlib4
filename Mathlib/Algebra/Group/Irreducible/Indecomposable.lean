@@ -143,7 +143,7 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
     (hv_one : ∀ i, v i ≠ 1)
     (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (s t : Set ι)
-    (hst : s ⊆ IsMulIndecomposable v t)
+    (hst : s ⊆ {i | IsMulIndecomposable v t i})
     (hv_t : ∀ i, i ∈ t ∨ i⁻¹ ∈ t) :
     s.Pairwise fun i j ↦ v i / v j ∉ range v := by
   have h_sub : s ⊆ t := hst.trans (IsMulIndecomposable.subset _ _)
@@ -161,7 +161,7 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
 lemma pairwise_div_notMem_range' [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1)
-    (s : Set ι) (hst : s ⊆ IsMulIndecomposable v {i | 1 < f (v i)}) :
+    (s : Set ι) (hst : s ⊆ {j | IsMulIndecomposable v {i | 1 < f (v i)} j}) :
     s.Pairwise fun i j ↦ v i / v j ∉ range v := by
   have hv_one : ∀ i, v i ≠ 1 := fun i ↦ by contrapose! hf; exact ⟨i, by simp [hf]⟩
   apply pairwise_div_notMem_range v hv_one hv_inv s {i | 1 < f (v i)} hst fun i ↦ ?_
