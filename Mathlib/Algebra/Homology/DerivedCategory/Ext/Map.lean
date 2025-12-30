@@ -33,8 +33,8 @@ open Localization
 
 instance [h : HasExt.{w'} D] (X Y : C) : HasSmallLocalizedShiftedHom.{w'}
     (HomologicalComplex.quasiIso D (ComplexShape.up ℤ)) ℤ
-    (((F ⋙ CochainComplex.singleFunctor D 0).obj X))
-    (((F ⋙ CochainComplex.singleFunctor D 0).obj Y)) :=
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj X)
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj Y) :=
   h (F.obj X) (F.obj Y)
 
 /-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
