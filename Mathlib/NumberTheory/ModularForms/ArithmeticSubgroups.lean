@@ -45,7 +45,7 @@ lemma HasDetPlusMinusOne.abs_det [LinearOrder R] [IsOrderedRing R] [HasDetPlusMi
 
 lemma hasDetPlusMinusOne_iff_abs_det [LinearOrder R] [IsOrderedRing R] :
     HasDetPlusMinusOne Γ ↔ ∀ {g}, g ∈ Γ → |g.det.val| = 1 := by
-  refine ⟨fun h {g} hg => h.abs_det hg, fun h => ⟨?_⟩⟩
+  refine ⟨fun h {g} hg ↦ h.abs_det hg, fun h ↦ ⟨?_⟩⟩
   simpa [-GeneralLinearGroup.val_det_apply, abs_eq zero_le_one] using @h
 
 /-- Typeclass saying that a subgroup of `GL(n, R)` is contained in `SL(n, R)`. Necessary so that
