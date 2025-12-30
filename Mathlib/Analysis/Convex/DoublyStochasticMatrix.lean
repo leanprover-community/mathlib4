@@ -21,8 +21,6 @@ public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 * `convex_doublyStochastic`: The set of doubly stochastic matrices is convex.
 * `permMatrix_mem_doublyStochastic`: Any permutation matrix is doubly stochastic.
-* `mul_mem_doublyStochastic`: Multiplying two doubly stochastic matrices yields a doubly
-  stochastic matrix.
 
 ## TODO
 
