@@ -686,7 +686,7 @@ end ContinuousLinearMap
 namespace LinearIsometryEquiv
 
 open ContinuousLinearMap ContinuousLinearEquiv in
-/-- An isometry linear equivalence of two Hilbert spaces induces an equivalence of
+/-- An isometric linear equivalence of two Hilbert spaces induces an equivalence of
 ⋆-algebras of their endomorphisms. -/
 def conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) : (H →L[𝕜] H) ≃⋆ₐ[𝕜] (K →L[𝕜] K) :=
   .ofAlgEquiv e.toContinuousLinearEquiv.conjContinuousAlgEquiv fun x ↦ by
