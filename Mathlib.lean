@@ -4466,6 +4466,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
