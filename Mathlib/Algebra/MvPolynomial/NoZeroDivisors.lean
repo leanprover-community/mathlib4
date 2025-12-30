@@ -100,7 +100,7 @@ theorem dvd_C_iff_exists {f : MvPolynomial σ R}
     f ∣ C a ↔ ∃ b, b ∣ a ∧ f = C b := by
   constructor
   · intro hf
-    use MvPolynomial.coeff 0 f
+    use coeff 0 f
     suffices f.totalDegree = 0 by
       rw [totalDegree_eq_zero_iff_eq_C] at this
       refine ⟨?_, this⟩
@@ -111,7 +111,7 @@ theorem dvd_C_iff_exists {f : MvPolynomial σ R}
     convert totalDegree_le_of_dvd_of_isDomain hf (by simp [ha])
     simp
   · rintro ⟨b, hab, rfl⟩
-    exact _root_.map_dvd MvPolynomial.C hab
+    exact _root_.map_dvd C hab
 
 end NoZeroDivisors
 
@@ -120,7 +120,7 @@ section nonZeroDivisors
 open nonZeroDivisors
 
 theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) :
-    MvPolynomial.degreeOf j (MvPolynomial.C c * p) = MvPolynomial.degreeOf j p := by
+    degreeOf j (C c * p) = degreeOf j p := by
   by_cases hp : p = 0
   · simp [hp]
   classical
