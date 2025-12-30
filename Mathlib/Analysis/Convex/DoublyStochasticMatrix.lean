@@ -134,32 +134,6 @@ lemma sum_mulVec_of_mem_doublyStochastic {M : Matrix n n R} {x : n → R}
   rw [Finset.sum_comm]
   simp [sum_col_of_mem_doublyStochastic hA, ← Finset.sum_mul]
 
-@[aesop 90% apply, grind .]
-lemma mul_mem_doublyStochastic {M N : Matrix n n R} (hM : M ∈ doublyStochastic R n)
-    (hN : N ∈ doublyStochastic R n) : M * N ∈ doublyStochastic R n := by
-  rw [mem_doublyStochastic_iff_sum] at hM hN ⊢
-  refine ⟨?_, ?_, ?_⟩
-  · intro i j
-    simp only [mul_apply]
-    refine Finset.sum_nonneg fun k _ => ?_
-    have h₁ := hM.1 i k
-    have h₂ := hN.1 k j
-    positivity
-  · intro i
-    simp only [mul_apply]
-    rw [Finset.sum_comm]
-    simp_rw [← Finset.mul_sum]
-    have : ∀ x ∈ univ, M i x * ∑ i, N x i = M i x := by simp [hN.2.1]
-    rw [Finset.sum_congr rfl this]
-    exact hM.2.1 i
-  · intro j
-    simp only [mul_apply]
-    rw [Finset.sum_comm]
-    simp_rw [← Finset.sum_mul]
-    have : ∀ x ∈ univ, (∑ i, M i x) * N x j = N x j := by simp [hM.2.2]
-    rw [Finset.sum_congr rfl this]
-    exact hN.2.2 j
-
 end OrderedSemiring
 
 section LinearOrderedSemifield
