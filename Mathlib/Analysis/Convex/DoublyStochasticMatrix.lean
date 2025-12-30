@@ -21,6 +21,8 @@ public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 * `convex_doublyStochastic`: The set of doubly stochastic matrices is convex.
 * `permMatrix_mem_doublyStochastic`: Any permutation matrix is doubly stochastic.
+* `mul_mem_doublyStochastic`: Multiplying two doubly stochastic matrices yields a doubly
+  stochastic matrix.
 
 ## TODO
 
@@ -104,6 +106,59 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+
+/-- Reindexing a matrix preserves double stochasticity. -/
+@[aesop safe apply, grind .]
+lemma reindex_mem_doublyStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} (hM : M ∈ doublyStochastic R n) : M.reindex e₁ e₂ ∈ doublyStochastic R m := by
+  rw [mem_doublyStochastic_iff_sum]
+  refine ⟨?_, ?_, ?_⟩
+  · intro i j
+    simp only [Matrix.reindex_apply, Matrix.submatrix_apply]
+    exact nonneg_of_mem_doublyStochastic hM
+  · intro i
+    have : ∑ x, M (e₁.symm i) (e₂.symm x) = ∑ x, M (e₁.symm i) x :=
+      Finset.sum_equiv e₂.symm (by simp) (fun j _ => rfl)
+    simp only [this, Matrix.reindex_apply, Matrix.submatrix_apply]
+    exact sum_row_of_mem_doublyStochastic hM (e₁.symm i)
+  · intro j
+    have : ∑ x, M (e₁.symm x) (e₂.symm j) = ∑ x, M x (e₂.symm j) :=
+      Finset.sum_equiv e₁.symm (by simp) (fun i _ => rfl)
+    simp only [this, Matrix.reindex_apply, Matrix.submatrix_apply]
+    exact sum_col_of_mem_doublyStochastic hM (e₂.symm j)
+
+/-- Applying a doubly stochastic matrix to a vector preserves its sum. -/
+lemma sum_mulVec_of_mem_doublyStochastic {M : Matrix n n R} {x : n → R}
+    (hA : M ∈ doublyStochastic R n) : ∑ i, (M *ᵥ x) i = ∑ i, x i := by
+  simp only [Matrix.mulVec, dotProduct]
+  rw [Finset.sum_comm]
+  simp [sum_col_of_mem_doublyStochastic hA, ← Finset.sum_mul]
+
+@[aesop 90% apply, grind .]
+lemma mul_mem_doublyStochastic {M N : Matrix n n R} (hM : M ∈ doublyStochastic R n)
+    (hN : N ∈ doublyStochastic R n) : M * N ∈ doublyStochastic R n := by
+  rw [mem_doublyStochastic_iff_sum] at hM hN ⊢
+  refine ⟨?_, ?_, ?_⟩
+  · intro i j
+    simp only [mul_apply]
+    refine Finset.sum_nonneg fun k _ => ?_
+    have h₁ := hM.1 i k
+    have h₂ := hN.1 k j
+    positivity
+  · intro i
+    simp only [mul_apply]
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.mul_sum]
+    have : ∀ x ∈ univ, M i x * ∑ i, N x i = M i x := by simp [hN.2.1]
+    rw [Finset.sum_congr rfl this]
+    exact hM.2.1 i
+  · intro j
+    simp only [mul_apply]
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.sum_mul]
+    have : ∀ x ∈ univ, (∑ i, M i x) * N x j = N x j := by simp [hM.2.2]
+    rw [Finset.sum_congr rfl this]
+    exact hN.2.2 j
 
 end OrderedSemiring
 
