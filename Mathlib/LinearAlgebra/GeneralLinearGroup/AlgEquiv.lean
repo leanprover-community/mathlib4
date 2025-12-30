@@ -17,6 +17,8 @@ This file shows that given any algebra equivalence `f : End K V ≃ₐ[K] End K 
 there exists a linear equivalence `T : V ≃ₗ[K] V` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
 In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup K V` to
 `End K V ≃ₐ[K] End K V` is surjective.
+
+For the continuous versions, see `Mathlib/Analysis/Normed/Operator/ContinuousAlgEquiv.lean`.
 -/
 
 open Module LinearMap LinearEquiv
