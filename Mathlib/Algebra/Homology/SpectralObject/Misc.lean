@@ -3,17 +3,21 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.ArrowSeven
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.ArrowSeven
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Spectral objects...
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits Preadditive
 
@@ -85,6 +89,8 @@ lemma isIso_iff {C : Type _} [Category C] {X Y : Arrow C} (f : X ⟶ Y) :
 end Arrow-/
 
 namespace Limits
+
+open Functor
 
 variable {C ι ι' J : Type _} [Category C] [Category ι] [Category ι'] [Category J]
   (F : ι' ⥤ ι)
@@ -190,11 +196,13 @@ namespace SimplexCategory
 def natTransToCatMapOfLE {Δ Δ' : SimplexCategory} (f g : Δ ⟶ Δ')
     (h : ∀ x, f.toOrderHom x ≤ g.toOrderHom x) :
     SimplexCategory.toCat.map f ⟶ SimplexCategory.toCat.map g :=
-  Monotone.natTrans f.toOrderHom.monotone g.toOrderHom.monotone h
+  .ofNatTrans (Monotone.natTrans f.toOrderHom.monotone g.toOrderHom.monotone h)
 
 end SimplexCategory
 
 namespace CategoryTheory
+
+open Functor
 
 namespace ComposableArrows
 
@@ -207,7 +215,7 @@ def whiskerLeftNatTrans {n m : ℕ} {Φ Ψ : Fin (n + 1) ⥤ Fin (m + 1)} (α : 
 
 def functorδ {n : ℕ} (i : Fin (n + 2)) :
     ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
-  whiskerLeftFunctor (SimplexCategory.toCat.map (SimplexCategory.δ i))
+  whiskerLeftFunctor (SimplexCategory.toCat.map (SimplexCategory.δ i)).toFunctor
 
 variable {C}
 
@@ -228,7 +236,7 @@ def natTransδ {n : ℕ} (i j : Fin (n + 2)) (hij : i.1 ≤ j.1) :
     obtain ⟨x, hx⟩ := x
     simp only at hij
     simp only [Fin.mk_lt_mk]
-    split_ifs with h₁ h₂ <;> simp only [Fin.mk_le_mk] <;> linarith))
+    split_ifs with h₁ h₂ <;> simp only [Fin.mk_le_mk] <;> linarith)).toNatTrans
 
 variable {C}
 

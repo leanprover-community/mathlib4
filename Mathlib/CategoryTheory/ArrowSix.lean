@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ArrowFive
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.CategoryTheory.ArrowFive
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Arrow₆
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

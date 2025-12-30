@@ -3,18 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-=======
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
->>>>>>> origin/master
 /-!
 
 # Functor categories have finite limits when the target category does
@@ -37,20 +31,10 @@ instance [HasFiniteColimits C] : HasFiniteColimits (K ⥤ C) := ⟨fun _ ↦ inf
 
 instance [HasFiniteCoproducts C] : HasFiniteCoproducts (K ⥤ C) := ⟨inferInstance⟩
 
-<<<<<<< HEAD
-instance [HasFiniteLimits C] (k : K) :
-    PreservesFiniteLimits ((evaluation K C).obj k) where
-  preservesFiniteLimits _ := inferInstance
-
-instance [HasFiniteColimits C] (k : K) :
-    PreservesFiniteColimits ((evaluation K C).obj k) where
-  preservesFiniteColimits _ := inferInstance
-=======
 instance [HasFiniteLimits C] (k : K) : PreservesFiniteLimits ((evaluation K C).obj k) where
   preservesFiniteLimits _ _ _ := inferInstance
 
 instance [HasFiniteColimits C] (k : K) : PreservesFiniteColimits ((evaluation K C).obj k) where
   preservesFiniteColimits _ _ _ := inferInstance
->>>>>>> origin/master
 
 end CategoryTheory.Limits

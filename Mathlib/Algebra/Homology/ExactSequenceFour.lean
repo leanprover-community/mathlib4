@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
 
 /-!
 # Exact sequences with four terms
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -31,43 +35,47 @@ variable (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
 /-- Generalization of `cokerToKer`. -/
 def cokerToKer' : cc.pt ⟶ kf.pt :=
   IsColimit.desc hcc (CokernelCofork.ofπ _
-    (show S.map' k (k + 1) ≫ IsLimit.lift hkf (KernelFork.ofι _ (hS.zero (k + 1))) = 0 from
+    (show S.map' k (k + 1) ≫ IsLimit.lift hkf (KernelFork.ofι _ (hS.zero (k + 1))) = _ from
       Fork.IsLimit.hom_ext hkf (by simpa using hS.zero k)))
 
-@[reassoc (attr := simp)]
-lemma cokerToKer'_fac : cc.π ≫ hS.cokerToKer' k hk cc kf hcc hkf ≫ kf.ι =
-    S.map' (k + 1) (k + 2) := by
+--@[reassoc (attr := simp)] does not work???
+@[simp]
+lemma cokerToKer'_fac :
+    cc.π ≫ hS.cokerToKer' k hk cc kf hcc hkf ≫ kf.ι =
+      S.map' (k + 1) (k + 2) := by
   simp [cokerToKer']
 
 end
 
 section
 
-variable (hk : k ≤ n := by linarith)
-  [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))]
-
-noncomputable def cokerToKer :
-    cokernel (S.map' k (k + 1) _ _) ⟶ kernel (S.map' (k + 2) (k + 3) _ _) :=
+noncomputable def cokerToKer (hk : k ≤ n := by lia)
+    [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))] :
+    cokernel (S.map' k (k + 1)) ⟶ kernel (S.map' (k + 2) (k + 3)) :=
   hS.cokerToKer' k hk (CokernelCofork.ofπ _ (cokernel.condition _))
     (KernelFork.ofι _ (kernel.condition _)) (cokernelIsCokernel _) (kernelIsKernel _)
 
+variable (hk : k ≤ n)
+    [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))]
+
 @[reassoc (attr := simp)]
-lemma cokerToKer_fac :
-    cokernel.π _ ≫ hS.cokerToKer k ≫ kernel.ι _ = S.map' (k + 1) (k + 2) :=
+lemma cokerToKer_fac (hk : k ≤ n := by lia)
+    [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))] :
+    cokernel.π _ ≫ hS.cokerToKer k hk ≫ kernel.ι _ = S.map' (k + 1) (k + 2) :=
   hS.cokerToKer'_fac k hk _ _ (cokernelIsCokernel _) (kernelIsKernel _)
 
 end
 
 section
 
-variable (hk : k ≤ n := by linarith)
+variable (hk : k ≤ n := by lia)
 
 end
 
 
 section
 
-variable (hk : k ≤ n := by linarith)
+variable (hk : k ≤ n := by lia)
   [(S.sc hS k).HasRightHomology] [(S.sc hS (k + 1)).HasLeftHomology]
 
 noncomputable def opcyclesToCycles :
@@ -179,7 +187,7 @@ end
 
 section
 
-variable (k : ℕ) (hk : k ≤ n := by linarith)
+variable (k : ℕ) (hk : k ≤ n := by lia)
   [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))]
 
 noncomputable def cokerIsoKer :
@@ -199,7 +207,7 @@ end
 
 section
 
-variable (k : ℕ) (hk : k ≤ n := by linarith)
+variable (k : ℕ) (hk : k ≤ n := by lia)
   [h₁ : (hS.sc k).HasRightHomology] [h₂ : (hS.sc (k + 1)).HasLeftHomology]
 
 noncomputable def opcyclesIsoCycles :

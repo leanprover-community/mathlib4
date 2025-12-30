@@ -3,26 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Shift.Opposite
-import Mathlib.CategoryTheory.Shift.Pullback
---import Mathlib.CategoryTheory.Limits.Opposites
---import Mathlib.CategoryTheory.Shift.Opposite
---import Mathlib.CategoryTheory.Shift.Pullback
---import Mathlib.CategoryTheory.Triangulated.Subcategory
---import Mathlib.CategoryTheory.Triangulated.Triangulated
---import Mathlib.CategoryTheory.Triangulated.Adjunction
-import Mathlib.CategoryTheory.Triangulated.Functor
---import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
---import Mathlib.Tactic.Linarith
-=======
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Shift.Opposite
 public import Mathlib.CategoryTheory.Shift.Pullback
->>>>>>> origin/master
 
 /-!
 # The shift on the opposite category of a pretriangulated category
@@ -294,40 +279,10 @@ lemma opShiftFunctorEquivalence_add_unitIso_inv_app_eq
     ← unop_comp, Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj, unop_id,
     Functor.map_id, id_comp, ← Functor.map_comp, Iso.hom_inv_id_app]
 
-<<<<<<< HEAD
-lemma opShiftFunctorEquivalence_unitIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
-    (opShiftFunctorEquivalence C n).unitIso.hom.app X =
-      ((shiftFunctorCompIsoId C m n (by omega)).hom.app X.unop).op ≫
-        ((shiftFunctorOpIso C n m hnm).inv.app X).unop⟦n⟧'.op := by
-  obtain rfl : m = -n := by omega
-  rfl
-
-lemma opShiftFunctorEquivalence_unitIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
-    (opShiftFunctorEquivalence C n).unitIso.inv.app X =
-      ((shiftFunctorOpIso C n m hnm).hom.app X).unop⟦n⟧'.op ≫
-      ((shiftFunctorCompIsoId C m n (by omega)).inv.app X.unop).op := by
-  obtain rfl : m = -n := by omega
-  rfl
-
-lemma opShiftFunctorEquivalence_counitIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
-    (opShiftFunctorEquivalence C n).counitIso.hom.app X =
-      ((shiftFunctorOpIso C n m hnm).hom.app (Opposite.op (X.unop⟦n⟧))) ≫
-        ((shiftFunctorCompIsoId C n m hnm).inv.app X.unop).op := by
-  obtain rfl : m = -n := by omega
-  rfl
-
-lemma opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
-    (opShiftFunctorEquivalence C n).counitIso.inv.app X =
-      ((shiftFunctorCompIsoId C n m hnm).hom.app X.unop).op ≫
-      ((shiftFunctorOpIso C n m hnm).inv.app (Opposite.op (X.unop⟦n⟧))) := by
-  obtain rfl : m = -n := by omega
-  rfl
-=======
 @[deprecated (since := "2025-12-08")] alias opShiftFunctorEquivalence_unitIso_hom_app_eq :=
   opShiftFunctorEquivalence_add_unitIso_hom_app_eq
 @[deprecated (since := "2025-12-08")] alias opShiftFunctorEquivalence_unitIso_inv_app_eq :=
   opShiftFunctorEquivalence_add_unitIso_inv_app_eq
->>>>>>> origin/master
 
 lemma shift_unop_opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n : ℤ) :
     ((opShiftFunctorEquivalence C n).counitIso.inv.app X).unop⟦n⟧' =
@@ -384,7 +339,7 @@ lemma opShiftFunctorEquivalence_inv_app_shift (X : Cᵒᵖ) (n m : ℤ) (hnm : n
     Functor.op_map, unop_comp,
     Quiver.Hom.unop_op, assoc, Functor.map_comp, op_comp]
   apply Quiver.Hom.unop_inj
-  simp only [Opposite.op_unop, Opposite.unop_op, Quiver.Hom.unop_op, unop_comp, assoc]
+  simp only [Opposite.unop_op, Quiver.Hom.unop_op, unop_comp, assoc]
   rw [shift_shiftFunctorCompIsoId_inv_app m n (by omega) X.unop]
   erw [← NatTrans.naturality_assoc]
   dsimp
@@ -447,61 +402,6 @@ lemma iso_inv_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
   rfl
 
 end OpOpCommShift
-
-noncomputable instance : (opOp C).CommShift ℤ where
-  iso n := OpOpCommShift.iso C n
-  zero := by
-    ext X
-    dsimp
-    rw [OpOpCommShift.iso_hom_app _ 0 0 (zero_add 0)]
-    dsimp
-    simp only [Functor.CommShift.isoZero_hom_app, unopUnop_obj, unopUnop_map]
-    rw [shiftFunctorZero_op_inv_app, shiftFunctorZero_op_hom_app]
-    dsimp
-    rw [assoc, ← op_comp_assoc, ← op_comp, Iso.hom_inv_id_app, op_id, op_id, id_comp]
-  add a b := by
-    ext X
-    dsimp
-    simp only [Functor.CommShift.isoAdd_hom_app, opOp_obj, Functor.comp_obj, opOp_map,
-      OpOpCommShift.iso_hom_app X _ _ (add_neg_cancel (a + b)),
-      OpOpCommShift.iso_hom_app _ _ _ (add_neg_cancel a),
-      OpOpCommShift.iso_hom_app _ _ _ (add_neg_cancel b),
-      shiftFunctor_op_map _ _ (add_neg_cancel b),
-      shiftFunctor_op_map _ _ (neg_add_cancel b), assoc,
-      ← shiftFunctorAdd'_eq_shiftFunctorAdd,
-      shiftFunctorAdd'_op_inv_app (Opposite.op (Opposite.op X))
-      a b (a + b) rfl _ _ _ (add_neg_cancel a) (add_neg_cancel b)
-      (add_neg_cancel (a+b))]
-    simp only [Functor.op_obj, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op,
-      Functor.map_comp, op_comp, assoc, Iso.inv_hom_id_app_assoc,
-      Iso.op_hom_inv_id_app_assoc]
-    simp only [← op_comp_assoc, ← op_comp, assoc, ← Functor.map_comp, ← unop_comp,
-      Iso.inv_hom_id_app]
-    simp only [Functor.op_obj, Opposite.unop_op, unop_id, id_comp, op_comp, assoc]
-    rw [shiftFunctorAdd'_op_hom_app (Opposite.op X) (-a) (-b) (-(a+b)) (by omega)
-      _ _ _ (neg_add_cancel a) (neg_add_cancel b) (neg_add_cancel (a + b))]
-    simp only [Functor.op_obj, Opposite.unop_op, Functor.comp_obj, op_comp, assoc]
-    simp only [← op_comp_assoc, ← op_comp, assoc]
-    erw [← NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc]
-    simp only [Functor.op_obj, Functor.op_map, op_comp, assoc]
-    simp only [← op_comp_assoc, assoc, ← Functor.map_comp_assoc, ← unop_comp,
-      Iso.inv_hom_id_app]
-    simp only [Functor.op_obj, Opposite.unop_op, unop_id_op, Functor.map_id, id_comp,
-      Iso.op_inv_hom_id_app, comp_id]
-
-variable {C}
-
-lemma opOp_commShiftIso_hom_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
-    ((opOp C).commShiftIso n).hom.app X =
-      ((shiftFunctorOpIso C m n (by omega)).hom.app (Opposite.op X)).op ≫
-        (shiftFunctorOpIso Cᵒᵖ _ _ hnm).inv.app (Opposite.op (Opposite.op X)) :=
-  OpOpCommShift.iso_hom_app _ _ _ hnm
-
-lemma opOp_commShiftIso_inv_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
-    ((opOp C).commShiftIso n).inv.app X =
-      (shiftFunctorOpIso Cᵒᵖ _ _ hnm).hom.app (Opposite.op (Opposite.op X)) ≫
-        ((shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op X)).op :=
-  OpOpCommShift.iso_inv_app _ _ _ hnm
 
 
 end Opposite
@@ -647,24 +547,6 @@ end
 end Functor
 
 -/
-
-@[reassoc]
-lemma shiftFunctorCompIsoId_op_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
-    (shiftFunctorCompIsoId Cᵒᵖ n m hnm).hom.app X =
-      ((shiftFunctorOpIso C n m hnm).hom.app X)⟦m⟧' ≫
-        (shiftFunctorOpIso C m n (by lia)).hom.app (Opposite.op (X.unop⟦m⟧)) ≫
-          ((shiftFunctorCompIsoId C m n (by lia)).inv.app X.unop).op := by
-  simp [shiftFunctorCompIsoId, shiftFunctorZero_op_hom_app X,
-    shiftFunctorAdd'_op_inv_app X n m 0 hnm m n 0 hnm (by lia) (add_zero 0)]
-
-@[reassoc]
-lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
-    (shiftFunctorCompIsoId Cᵒᵖ n m hnm).inv.app X =
-      ((shiftFunctorCompIsoId C m n (by omega)).hom.app X.unop).op ≫
-        (shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
-          ((shiftFunctorOpIso C n m hnm).inv.app X)⟦m⟧' := by
-  simp [shiftFunctorCompIsoId, shiftFunctorZero_op_inv_app X,
-    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0)]
 
 @[reassoc]
 lemma shift_opShiftFunctorEquivalence_counitIso_inv_app

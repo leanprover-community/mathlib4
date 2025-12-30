@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ArrowSix
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.CategoryTheory.ArrowSix
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Arrow₇
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -231,7 +235,7 @@ def δ₇ : Arrow₇ C ⥤ Arrow₆ C where
 def mkOfLE {ι : Type _} [Preorder ι] (a b c d e f g h : ι)
     (hab : a ≤ b := by linarith) (hbc : b ≤ c := by linarith) (hcd : c ≤ d := by linarith)
     (hde : d ≤ e := by linarith) (hef : e ≤ f := by linarith) (hfg : f ≤ g := by linarith)
-    (hgh : g ≤ h := by linarith):
+    (hgh : g ≤ h := by linarith) :
     Arrow₇ ι := Arrow₇.mk (homOfLE hab) (homOfLE hbc) (homOfLE hcd) (homOfLE hde) (homOfLE hef)
       (homOfLE hfg) (homOfLE hgh)
 

@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralObject.Misc
-import Mathlib.Algebra.Homology.ExactSequenceFour
+module
+
+public import Mathlib.Algebra.Homology.SpectralObject.Misc
+public import Mathlib.Algebra.Homology.ExactSequenceFour
 
 /-!
 # Spectral objects in abelian categories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -85,7 +89,7 @@ def δ : (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
 
 @[reassoc]
 lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
-    (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0):
+    (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0) :
     (X.H n₀).map β ≫ X.δ n₀ n₁ hn₁ f' g' = X.δ n₀ n₁ hn₁ f g ≫ (X.H n₁).map α := by
   let φ : mk₂ f g ⟶ mk₂ f' g' := homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
     (by simpa only [hαβ] using naturality' β 0 1)
@@ -567,7 +571,7 @@ lemma shortComplexEMap_id :
   rfl
 
 /-- Variant of `shortComplexEMap_comp`. -/
-lemma shortComplexEMap_comp' (h : α ≫ β  = γ) :
+lemma shortComplexEMap_comp' (h : α ≫ β = γ) :
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
       X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁'' f₂'' f₃'' β =
         X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' γ := by
@@ -614,7 +618,7 @@ lemma EMap_comp :
   rw [shortComplexEMap_comp, ShortComplex.homologyMap_comp]
 
 /-- Variant of `EMap_comp`. -/
-lemma EMap_comp' (h : α ≫ β  = γ) :
+lemma EMap_comp' (h : α ≫ β = γ) :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
       X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁'' f₂'' f₃'' β =
         X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' γ := by

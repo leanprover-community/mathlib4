@@ -1,45 +1,20 @@
 /-
-<<<<<<< HEAD
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-import Mathlib.Algebra.Homology.SpectralObject.Basic
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-=======
 Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.ComposableArrows.One
 public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.Triangulated.Functor
->>>>>>> origin/master
 
 /-!
 # Spectral objects in triangulated categories
 
-<<<<<<< HEAD
--/
-
-namespace CategoryTheory
-
-open Category Limits Pretriangulated ComposableArrows
-
-variable (C ι : Type _) [Category C] [Category ι] [HasZeroObject C]
-  [HasShift C ℤ] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  {D : Type _} [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
-  [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
-  {A : Type _} [Category A] [Abelian A]
-
-namespace Triangulated
-
-structure SpectralObject where
-  ω₁ : ComposableArrows ι 1 ⥤ C
-=======
 In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in a pretriangulated category `C` indexed by the category `ι`.
 
@@ -78,7 +53,6 @@ structure SpectralObject where
   /-- A functor from `ComposableArrows ι 1` to the pretriangulated category. -/
   ω₁ : ComposableArrows ι 1 ⥤ C
   /-- The connecting homomorphism of the spectral object. -/
->>>>>>> origin/master
   δ' : functorArrows ι 1 2 2 ⋙ ω₁ ⟶ functorArrows ι 0 1 2 ⋙ ω₁ ⋙ shiftFunctor C (1 : ℤ)
   distinguished' (D : ComposableArrows ι 2) :
     Triangle.mk (ω₁.map ((mapFunctorArrows ι 0 1 0 2 2).app D))
@@ -86,10 +60,6 @@ structure SpectralObject where
 
 namespace SpectralObject
 
-<<<<<<< HEAD
-variable {C ι}
-variable (X : SpectralObject C ι)
-=======
 variable {C ι} (X : SpectralObject C ι)
 
 /-- The functorial (distinguished) triangle attached to a spectral object in
@@ -102,13 +72,14 @@ noncomputable def ω₂ : ComposableArrows ι 2 ⥤ Triangle C :=
 lemma ω₂_obj_distinguished (D : ComposableArrows ι 2) :
     X.ω₂.obj D ∈ distTriang C :=
   X.distinguished' D
->>>>>>> origin/master
 
 section
 
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
 
-<<<<<<< HEAD
+/-- The connecting homomorphism `X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧`
+of a spectral object `X` in a pretriangulated category when `f : i ⟶ j` and `g : j ⟶ k`
+are composable. -/
 def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
   X.δ'.app (mk₂ f g)
 
@@ -123,14 +94,12 @@ lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
   simp only [φ, hαβ] at h
   convert h <;> aesop_cat
 
+
+<<<<<<< HEAD
+
 section
 
 =======
-/-- The connecting homomorphism `X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧`
-of a spectral object `X` in a pretriangulated category when `f : i ⟶ j` and `g : j ⟶ k`
-are composable. -/
-def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
-  X.δ'.app (mk₂ f g)
 
 /-- The distinguished triangle attached to a spectral object `E : SpectralObjet C ι`
 and composable morphisms `f : i ⟶ j` and `g : j ⟶ k` in `ι`. -/
