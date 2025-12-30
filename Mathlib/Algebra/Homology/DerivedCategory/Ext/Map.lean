@@ -68,17 +68,19 @@ lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
     simp only [map_id, Category.id_comp, NatIso.cancel_natIso_hom_left, comp_obj]
     exact (Category.comp_id _).symm
 
+section
+
 attribute [local simp] Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
 attribute [local instance] HasDerivedCategory.standard
 
+variable [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
+
 @[simp]
-lemma Abelian.Ext.mapExactFunctor_zero [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    (0 : Ext X Y n).mapExactFunctor F  = 0 := by
+lemma Abelian.Ext.mapExactFunctor_zero : (0 : Ext X Y n).mapExactFunctor F  = 0 := by
   aesop
 
 @[simp]
-lemma Abelian.Ext.mapExactFunctor_add [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (f g : Ext.{w} X Y n) :
+lemma Abelian.Ext.mapExactFunctor_add (f g : Ext.{w} X Y n) :
     (f + g).mapExactFunctor F  = f.mapExactFunctor F + g.mapExactFunctor F := by
   aesop
 
@@ -90,17 +92,16 @@ noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) 
   map_add' := by simp
 
 @[simp]
-lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    ⇑(F.mapExtAddHom X Y n) = Ext.mapExactFunctor F := rfl
+lemma Functor.mapExtAddHom_coe : ⇑(F.mapExtAddHom X Y n) = Ext.mapExactFunctor F := rfl
 
-lemma Functor.mapExtAddHom_apply [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) (e : Ext X Y n) :
-    F.mapExtAddHom X Y n e = e.mapExactFunctor F := rfl
+lemma Functor.mapExtAddHom_apply (e : Ext X Y n) : F.mapExtAddHom X Y n e = e.mapExactFunctor F :=
+  rfl
 
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
 
 @[simp]
-lemma Functor.mapExactFunctor_smul [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (r : R) (f : Ext.{w} X Y n) : (r • f).mapExactFunctor F  = r • (f.mapExactFunctor F) := by
+lemma Functor.mapExactFunctor_smul (r : R) (f : Ext.{w} X Y n) :
+    (r • f).mapExactFunctor F  = r • (f.mapExactFunctor F) := by
   aesop
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
@@ -110,13 +111,14 @@ noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : 
   map_smul' := by simp
 
 @[simp]
-lemma Functor.mapExtLinearMap_toAddMonoidHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n := rfl
+lemma Functor.mapExtLinearMap_toAddMonoidHom : F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n :=
+  rfl
 
-lemma Functor.mapExtLinearMap_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    ⇑(F.mapExtLinearMap R X Y n) = Ext.mapExactFunctor F := rfl
+lemma Functor.mapExtLinearMap_coe : ⇑(F.mapExtLinearMap R X Y n) = Ext.mapExactFunctor F := rfl
 
-lemma Functor.mapExtLinearMap_apply [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (e : Ext X Y n) : F.mapExtLinearMap R X Y n e = e.mapExactFunctor F := rfl
+lemma Functor.mapExtLinearMap_apply (e : Ext X Y n) :
+    F.mapExtLinearMap R X Y n e = e.mapExactFunctor F := rfl
+
+end
 
 end CategoryTheory
