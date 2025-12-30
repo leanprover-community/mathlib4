@@ -3,11 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.SpecialFunctions.Sqrt
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.Analysis.Convex.Deriv
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.ZPow
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.Convex.Deriv
 
 /-!
 # Collection of convex functions
@@ -29,6 +32,8 @@ of these could also be switched to elementary proofs, like in
 
 -/
 
+@[expose] public section
+
 
 open Real Set
 
@@ -37,7 +42,8 @@ open scoped NNReal
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
-  rw [deriv_pow', interior_Ici]
+  eta_expand
+  simp_rw [deriv_pow_field, interior_Ici]
   exact fun x (hx : 0 < x) y _ hxy => mul_lt_mul_of_pos_left
     (pow_lt_pow_left₀ hxy hx.le <| Nat.sub_ne_zero_of_lt hn) (by positivity)
 
@@ -45,7 +51,8 @@ theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0)
 theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
     StrictConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
   apply StrictMono.strictConvexOn_univ_of_deriv (continuous_pow n)
-  rw [deriv_pow']
+  eta_expand
+  simp_rw [deriv_pow_field]
   replace h := Nat.pos_of_ne_zero h
   exact StrictMono.const_mul (Odd.strictMono_pow <| Nat.Even.sub_odd h hn <| Nat.odd_iff.2 rfl)
     (Nat.cast_pos.2 h)
@@ -59,8 +66,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*}
       Finset.prod_nonneg fun x _ => by
         split_ifs with hx
         · simp [hx]
-        simp? at hx ⊢ says simp only [not_le, one_mul] at hx ⊢
-        exact le_of_lt hx
+        linarith
     _ = _ := by
       rw [Finset.prod_mul_distrib, Finset.prod_ite, Finset.prod_const_one, mul_one,
         Finset.prod_const, neg_one_pow_eq_pow_mod_two, Nat.even_iff.1 h0, pow_zero, one_mul]
@@ -87,7 +93,7 @@ theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 
   rw [eq_comm, Finset.prod_eq_zero_iff] at h
   obtain ⟨a, ha, h⟩ := h
   rw [sub_eq_zero.1 h]
-  exact ⟨Int.ofNat_zero_le _, Int.ofNat_lt.2 <| Finset.mem_range.1 ha⟩
+  exact ⟨Int.natCast_nonneg _, Int.ofNat_lt.2 <| Finset.mem_range.1 ha⟩
 
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m` except `0` and `1`. -/
 theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
@@ -137,9 +143,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
       mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
-    generalize √x = sqx at h₀ -- else field_simp rewrites sqrt x * sqrt x back to x
-    field_simp
-    ring
+    field
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :
     StrictConcaveOn ℝ (Set.Ioi 1) fun x => √x * log x := by

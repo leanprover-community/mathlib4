@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.W.Basic
+module
+
+public import Mathlib.Data.W.Basic
 
 /-!
 # Polynomial Functors
@@ -11,6 +13,8 @@ import Mathlib.Data.W.Basic
 This file defines polynomial functors and the W-type construction as a polynomial functor.
 (For the M-type construction, see `Mathlib/Data/PFunctor/Univariate/M.lean`.)
 -/
+
+@[expose] public section
 
 universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃
 
@@ -129,7 +133,7 @@ theorem fst_map (x : P α) (f : α → β) : (P.map f x).1 = x.1 := by cases x; 
 @[simp]
 theorem iget_map [DecidableEq P.A] [Inhabited α] [Inhabited β] (x : P α)
     (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (P.map f x).iget i = f (x.iget i) := by
-  simp only [Obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
+  simp only [Obj.iget, fst_map, *, dif_pos]
   cases x
   rfl
 
@@ -180,11 +184,11 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
     @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) := by
-  simp only [liftp_iff, Sigma.mk.inj_iff]; constructor <;> intro h
+  simp only [liftp_iff]; constructor <;> intro h
   · rcases h with ⟨a', f', heq, h'⟩
     cases heq
     assumption
-  repeat' first |constructor|assumption
+  repeat' first | constructor | assumption
 
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
     Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by

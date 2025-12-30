@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
@@ -10,6 +11,15 @@ import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+=======
+module
+
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+public import Mathlib.CategoryTheory.Localization.Triangulated
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.Shift
+public import Mathlib.CategoryTheory.Shift.Localization
+>>>>>>> origin/master
 
 /-! # Triangulated subcategories
 
@@ -22,9 +32,14 @@ and we show that it has both calculus of left and right fractions.
 
 ## TODO
 
+<<<<<<< HEAD
 * obtain (pre)triangulated instances on the localized category with respect to `S.W`
 * show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
 is a pretriangulated category.
+=======
+* show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
+  is a pretriangulated category.
+>>>>>>> origin/master
 
 ## Implementation notes
 
@@ -41,12 +56,15 @@ of an additive category is not closed under isomorphisms.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject Pretriangulated Triangulated
 
+<<<<<<< HEAD
 namespace Limits
 
 variable {C J₁ J₂ : Type _} [Category C]
@@ -94,6 +112,9 @@ end Limits
 open Pretriangulated
 
 variable {C : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ]
+=======
+variable {C : Type*} [Category* C] [HasZeroObject C] [HasShift C ℤ]
+>>>>>>> origin/master
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace ObjectProperty
@@ -179,7 +200,7 @@ instance [P.IsTriangulatedClosed₂] : P.isoClosure.IsTriangulatedClosed₂ wher
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by simp) (by simp) (by
           dsimp
-          simp only [assoc, Iso.cancel_iso_inv_left, ← Functor.map_comp, e₁.hom_inv_id,
+          simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id,
             Functor.map_id, comp_id]))) h₁ h₃)
 
 /-- The property that `P : ObjectProperty C` is a triangulated subcategory
@@ -198,7 +219,13 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
 /-- Given `P : ObjectProperty C` with `C` a pretriangulated category, this is the class
+<<<<<<< HEAD
 of morphisms whose cone satisfies `S.P`. -/
+=======
+of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
+for "triangulated", and `W` is a letter that is often used to refer to classes of
+morphisms with respect to which we may consider the localized category.) -/
+>>>>>>> origin/master
 def trW : MorphismProperty C :=
   fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
     (_ : Triangle.mk f g h ∈ distTriang C), P Z
@@ -293,6 +320,7 @@ lemma trW_iff_of_distinguished
   · intro h
     exact ⟨_, _, _, hT, h⟩
 
+<<<<<<< HEAD
 /-- Variant of `mem_W_iff_of_distinguished`. -/
 lemma trW_iff_of_distinguished' [P.IsStableUnderShift ℤ]
     [P.IsClosedUnderIsomorphisms] (T : Triangle C) (hT : T ∈ distTriang C) :
@@ -300,6 +328,8 @@ lemma trW_iff_of_distinguished' [P.IsStableUnderShift ℤ]
   simpa [P.prop_shift_iff_of_isStableUnderShift]
     using P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
 
+=======
+>>>>>>> origin/master
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -346,6 +376,7 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.IsCompatibleWithTriangula
   exact ⟨φ.hom₃, P.trW.comp_mem _ _ (trW.mk P H.mem mem₄') (trW.mk' P H'.mem mem₅'),
     by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩
 
+<<<<<<< HEAD
 lemma binary_product_stable_of_isTriangulated [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
     (X₁ X₂ : C) (hX₁ : P X₁) (hX₂ : P X₂) :
     P (X₁ ⨯ X₂)  :=
@@ -404,6 +435,38 @@ instance (P' : ObjectProperty C) [P.IsTriangulated] [P.IsClosedUnderIsomorphisms
     (P ⊓ P').IsTriangulated where
 
 end
+=======
+end ObjectProperty
+
+namespace Triangulated
+
+@[deprecated (since := "2025-07-21")]
+alias Subcategory := ObjectProperty.IsTriangulated
+
+namespace Subcategory
+
+open ObjectProperty
+
+@[deprecated (since := "2025-07-21")] alias mk' := IsTriangulatedClosed₂.mk'
+@[deprecated (since := "2025-07-21")] alias ext₁ := ext_of_isTriangulatedClosed₁
+@[deprecated (since := "2025-07-21")] alias ext₁' := ext_of_isTriangulatedClosed₁'
+@[deprecated (since := "2025-07-21")] alias ext₂ := ext_of_isTriangulatedClosed₂
+@[deprecated (since := "2025-07-21")] alias ext₂' := ext_of_isTriangulatedClosed₂'
+@[deprecated (since := "2025-07-21")] alias ext₃ := ext_of_isTriangulatedClosed₃
+@[deprecated (since := "2025-07-21")] alias ext₃' := ext_of_isTriangulatedClosed₃'
+@[deprecated (since := "2025-07-21")] alias W := trW
+@[deprecated (since := "2025-07-21")] alias W_iff := trW_iff
+@[deprecated (since := "2025-07-21")] alias W_iff' := trW_iff'
+@[deprecated (since := "2025-07-21")] alias W.mk := trW.mk
+@[deprecated (since := "2025-07-21")] alias W.mk' := trW.mk'
+@[deprecated (since := "2025-07-21")] alias isoClosure_W := trW_isoClosure
+@[deprecated (since := "2025-07-21")] alias W_of_isIso := trW_of_isIso
+@[deprecated (since := "2025-07-21")] alias smul_mem_W_iff := smul_mem_trW_iff
+@[deprecated (since := "2025-07-21")] alias W.shift := trW.shift
+@[deprecated (since := "2025-07-21")] alias W.unshift := trW.unshift
+@[deprecated (since := "2025-07-21")]
+alias mem_W_iff_of_distinguished := trW_iff_of_distinguished
+>>>>>>> origin/master
 
 section
 

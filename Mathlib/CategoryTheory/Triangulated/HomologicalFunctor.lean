@@ -3,12 +3,22 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.ObjectProperty.Retracts
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Shift.ShiftSequence
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.Algebra.Homology.ExactSequence
+=======
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
+public import Mathlib.Algebra.Homology.ExactSequence
+>>>>>>> origin/master
 
 /-! # Homological functors
 
@@ -45,14 +55,16 @@ for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C D A : Type*} [Category C] [HasShift C ℤ]
-  [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+variable {C D A : Type*} [Category* C] [HasShift C ℤ]
+  [Category* D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive] [Pretriangulated D]
-  [Category A]
+  [Category* A]
 
 namespace Functor
 
@@ -66,15 +78,20 @@ def homologicalKernel : ObjectProperty C :=
 
 lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
     F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
+<<<<<<< HEAD
   simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
   rfl
+=======
+  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
+    homologicalKernel, comp_obj]
+>>>>>>> origin/master
 
 section Pretriangulated
 
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A]
 
-/-- A functor from a pretriangulated category to an abelian category is an homological functor
+/-- A functor from a pretriangulated category to an abelian category is a homological functor
 if it sends distinguished triangles to exact sequences. -/
 class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
@@ -111,6 +128,7 @@ variable [F.IsHomological]
 instance : F.homologicalKernel.IsClosedUnderIsomorphisms where
   of_iso e hX n := (hX n).of_iso ((shiftFunctor C n ⋙ F).mapIso e.symm)
 
+<<<<<<< HEAD
 
 -- to be moved
 lemma _root_.CategoryTheory.Retract.isZero {C : Type*} [Category C] {X Y : C}
@@ -130,6 +148,8 @@ lemma _root_.CategoryTheory.Retract.isZero {C : Type*} [Category C] {X Y : C}
 instance : F.homologicalKernel.IsClosedUnderRetracts where
   of_retract e h n := (e.map (shiftFunctor _ n ⋙ F)).isZero (h n)
 
+=======
+>>>>>>> origin/master
 instance : F.homologicalKernel.IsTriangulated where
   exists_zero := ⟨0, isZero_zero C,
     fun n ↦ (shiftFunctor C n ⋙ F).map_isZero (isZero_zero C)⟩
@@ -183,7 +203,7 @@ end Pretriangulated
 
 section
 
-/-- The connecting homomorphism in the long exact sequence attached to an homological
+/-- The connecting homomorphism in the long exact sequence attached to a homological
 functor and a distinguished triangle. -/
 noncomputable def homologySequenceδ
     [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
@@ -221,7 +241,7 @@ lemma homologySequenceδ_comp :
   rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
 
 @[reassoc]
-lemma homologySequence_comp  :
+lemma homologySequence_comp :
     (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
   rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero]
 
@@ -239,16 +259,17 @@ lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
-    ((F.shiftIso 1 n₀ n₁ (by omega)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
+    ((F.shiftIso 1 n₀ n₁ (by lia)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
-  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by omega)).app _))
+  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by lia)).app _))
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
-    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁ (by omega)]
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁
+      (by lia)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
@@ -308,7 +329,11 @@ lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
   · intros
     constructor <;> infer_instance
 
+<<<<<<< HEAD
 @[deprecated (since := "2025-04-19")]
+=======
+@[deprecated (since := "2025-07-21")]
+>>>>>>> origin/master
 alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
 
 open ComposableArrows

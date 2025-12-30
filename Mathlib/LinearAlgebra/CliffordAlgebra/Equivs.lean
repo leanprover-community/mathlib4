@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Algebra.QuaternionBasis
-import Mathlib.Data.Complex.Module
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.CliffordAlgebra.Star
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Algebra.QuaternionBasis
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Other constructions isomorphic to Clifford Algebras
@@ -57,6 +59,8 @@ and vice-versa:
 
 -/
 
+@[expose] public section
+
 
 open CliffordAlgebra
 
@@ -74,14 +78,13 @@ theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
   Subsingleton.elim _ _
 
 /-- Since the vector space is empty the ring is commutative. -/
-instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) :=
-  { CliffordAlgebra.instRing _ with
-    mul_comm := fun x y => by
-      induction x using CliffordAlgebra.induction with
-      | algebraMap r => apply Algebra.commutes
-      | ι x => simp
-      | add x₁ x₂ hx₁ hx₂ => rw [mul_add, add_mul, hx₁, hx₂]
-      | mul x₁ x₂ hx₁ hx₂ => rw [mul_assoc, hx₂, ← mul_assoc, hx₁, ← mul_assoc] }
+instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) where
+  mul_comm := fun x y => by
+    induction x using CliffordAlgebra.induction with
+    | algebraMap r => apply Algebra.commutes
+    | ι x => simp
+    | add x₁ x₂ hx₁ hx₂ => rw [mul_add, add_mul, hx₁, hx₂]
+    | mul x₁ x₂ hx₁ hx₂ => rw [mul_assoc, hx₂, ← mul_assoc, hx₁, ← mul_assoc]
 
 theorem reverse_apply (x : CliffordAlgebra (0 : QuadraticForm R Unit)) :
     x.reverse = x := by
@@ -154,7 +157,7 @@ theorem toComplex_involute (c : CliffordAlgebra Q) :
 def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
   Complex.lift
     ⟨CliffordAlgebra.ι Q 1, by
-      rw [CliffordAlgebra.ι_sq_scalar, Q_apply, one_mul, RingHom.map_neg, RingHom.map_one]⟩
+      rw [CliffordAlgebra.ι_sq_scalar, Q_apply, one_mul, map_neg, map_one]⟩
 
 @[simp]
 theorem ofComplex_I : ofComplex Complex.I = ι Q 1 :=
@@ -189,11 +192,10 @@ protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
 /-- The clifford algebra is commutative since it is isomorphic to the complex numbers.
 
 TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space. -/
-instance : CommRing (CliffordAlgebra Q) :=
-  { CliffordAlgebra.instRing _ with
-    mul_comm := fun x y =>
-      CliffordAlgebraComplex.equiv.injective <| by
-        rw [map_mul, mul_comm, map_mul] }
+instance : CommRing (CliffordAlgebra Q) where
+  mul_comm := fun x y =>
+    CliffordAlgebraComplex.equiv.injective <| by
+      rw [map_mul, mul_comm, map_mul]
 
 /-- `reverse` is a no-op over `CliffordAlgebraComplex.Q`. -/
 theorem reverse_apply (x : CliffordAlgebra Q) : x.reverse = x := by
@@ -294,14 +296,7 @@ theorem ofQuaternion_mk (a₁ a₂ a₃ a₄ : R) :
 @[simp]
 theorem ofQuaternion_comp_toQuaternion :
     ofQuaternion.comp toQuaternion = AlgHom.id R (CliffordAlgebra (Q c₁ c₂)) := by
-  ext : 1
-  dsimp -- before we end up with two goals and have to do this twice
-  ext
-  all_goals
-    dsimp
-    rw [toQuaternion_ι]
-    dsimp
-    simp only [toQuaternion_ι, zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
+  ext : 2 <;> (ext; simp)
 
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
@@ -345,9 +340,8 @@ open DualNumber TrivSqZeroExt
 variable {R : Type*} [CommRing R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
-  rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, LinearMap.map_smul,
-    LinearMap.map_smul, smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, RingHom.map_zero,
-    smul_zero]
+  rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, map_smul, map_smul,
+    smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, map_zero, smul_zero]
 
 /-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
 the dual numbers. -/

@@ -3,12 +3,14 @@ Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Utensil Song, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.LinearAlgebra.CliffordAlgebra.Star
-import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
+module
+
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!
 # The Pin group and the Spin group
@@ -42,6 +44,8 @@ https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/1
 
 Try to show the reverse statement is true in finite dimensions.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
@@ -141,7 +145,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
 theorem coe_mem_iff_mem {x : (CliffordAlgebra Q)ˣ} :
     ↑x ∈ (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔
     x ∈ lipschitzGroup Q := by
-  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
+  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply]
   norm_cast
   exact exists_eq_right
 
@@ -204,15 +208,15 @@ theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : x
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pinGroup Q := by
   rw [mem_iff] at hx ⊢
-  refine ⟨?_, unitary.star_mem hx.2⟩
+  refine ⟨?_, Unitary.star_mem hx.2⟩
   rcases hx with ⟨⟨y, hy₁, hy₂⟩, _hx₂, hx₃⟩
   simp only [Subgroup.coe_toSubmonoid, SetLike.mem_coe] at hy₁
   simp only [Units.coeHom_apply] at hy₂
-  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
+  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply]
   refine ⟨star y, ?_, by simp only [hy₂, Units.coe_star]⟩
   rw [← hy₂] at hx₃
   have hy₃ : y * star y = 1 := by
-    rw [← Units.eq_iff]
+    rw [← Units.val_inj]
     simp only [hx₃, Units.val_mul, Units.coe_star, Units.val_one]
   apply_fun fun x => y⁻¹ * x at hy₃
   simp only [inv_mul_cancel_left, mul_one] at hy₃

@@ -3,17 +3,20 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.PartialHomeomorph
+module
+
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Further basic lemmas about asymptotics
 
 -/
+
+@[expose] public section
 
 open Set Topology Filter NNReal
 
@@ -45,7 +48,7 @@ theorem isBigO_principal {s : Set α} : f =O[𝓟 s] g ↔ ∃ c, ∀ x ∈ s, �
 @[simp]
 theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'' x = 0 := by
   refine ⟨fun h x hx ↦ norm_le_zero_iff.1 ?_, fun h ↦ ?_⟩
-  · simp only [isLittleO_iff, isBigOWith_principal] at h
+  · simp only [isLittleO_iff] at h
     have : Tendsto (fun c : ℝ => c * ‖g' x‖) (𝓝[>] 0) (𝓝 0) :=
       ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
         inf_le_left
@@ -202,6 +205,14 @@ theorem IsBigO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (hn : n ≠ 0) 
   obtain ⟨c : ℝ, hc₀ : 0 ≤ c, hc : C ≤ c ^ n⟩ :=
     ((eventually_ge_atTop _).and <| (tendsto_pow_atTop hn).eventually_ge_atTop C).exists
   exact (hC.of_pow hn hc hc₀).isBigO
+
+theorem IsBigO.pow_of_le_right {f : α → ℝ}
+    (hf : 1 ≤ᶠ[l] f) {m n : ℕ}
+    (h : n ≤ m) : (f ^ n) =O[l] (f ^ m) := by
+  rw [IsBigO_def]
+  refine ⟨1, ?_⟩
+  rw [IsBigOWith_def]
+  exact hf.mono fun x hx ↦ by simp [abs_eq_self.mpr (zero_le_one.trans hx), pow_le_pow_right₀ hx h]
 
 /-! ### Scalar multiplication -/
 
@@ -386,10 +397,10 @@ theorem isLittleO_const_left_of_ne {c : E''} (hc : c ≠ 0) :
 theorem isLittleO_const_left {c : E''} :
     (fun _x => c) =o[l] g'' ↔ c = 0 ∨ Tendsto (norm ∘ g'') l atTop := by
   rcases eq_or_ne c 0 with (rfl | hc)
-  · simp only [isLittleO_zero, eq_self_iff_true, true_or]
+  · simp only [isLittleO_zero, true_or]
   · simp only [hc, false_or, isLittleO_const_left_of_ne hc]; rfl
 
-@[simp 1001] -- Porting note: increase priority so that this triggers before `isLittleO_const_left`
+@[simp high] -- Increase priority so that this triggers before `isLittleO_const_left`
 theorem isLittleO_const_const_iff [NeBot l] {d : E''} {c : F''} :
     ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=
@@ -420,8 +431,8 @@ section ExistsMulEq
 variable {u v : α → 𝕜}
 
 /-- If `‖φ‖` is eventually bounded by `c`, and `u =ᶠ[l] φ * v`, then we have `IsBigOWith c u v l`.
-    This does not require any assumptions on `c`, which is why we keep this version along with
-    `IsBigOWith_iff_exists_eq_mul`. -/
+This does not require any assumptions on `c`, which is why we keep this version along with
+`IsBigOWith_iff_exists_eq_mul`. -/
 theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c)
     (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
@@ -534,11 +545,7 @@ theorem IsBigO.eq_zero_of_norm_pow {f : E'' → F''} {x₀ : E''} {n : ℕ}
 
 theorem isLittleO_pow_sub_pow_sub (x₀ : E') {n m : ℕ} (h : n < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => ‖x - x₀‖ ^ n :=
-  haveI : Tendsto (fun x => ‖x - x₀‖) (𝓝 x₀) (𝓝 0) := by
-    apply tendsto_norm_zero.comp
-    rw [← sub_self x₀]
-    exact tendsto_id.sub tendsto_const_nhds
-  (isLittleO_pow_pow h).comp_tendsto this
+  (isLittleO_pow_pow h).comp_tendsto (tendsto_norm_sub_self x₀)
 
 theorem isLittleO_pow_sub_sub (x₀ : E') {m : ℕ} (h : 1 < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => x - x₀ := by
@@ -651,12 +658,22 @@ theorem isBigO_atTop_iff_eventually_exists_pos {α : Type*}
     f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c > 0, ∀ n ≥ n₀, c * ‖f n‖ ≤ ‖g n‖ := by
   simp_rw [isBigO_iff'', ← exists_prop, Subtype.exists', exists_eventually_atTop]
 
+lemma isBigOWith_mul_iff_isBigOWith_div {f g h : α → 𝕜} {c : ℝ} (hf : ∀ᶠ x in l, f x ≠ 0) :
+    IsBigOWith c l (fun x ↦ f x * g x) h ↔ IsBigOWith c l g (fun x ↦ h x / f x) := by
+  rw [isBigOWith_iff, isBigOWith_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;>
+  · refine h.congr <| Eventually.mp hf <| Eventually.of_forall fun x hx ↦ ?_
+    rw [norm_mul, norm_div, ← mul_div_assoc, le_div_iff₀' (norm_pos_iff.mpr hx)]
+
 lemma isBigO_mul_iff_isBigO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l, f x ≠ 0) :
     (fun x ↦ f x * g x) =O[l] h ↔ g =O[l] (fun x ↦ h x / f x) := by
-  rw [isBigO_iff', isBigO_iff']
-  refine ⟨fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩⟩ <;>
-  · refine H.congr <| Eventually.mp hf <| Eventually.of_forall fun x hx ↦ ?_
-    rw [norm_mul, norm_div, ← mul_div_assoc, le_div_iff₀' (norm_pos_iff.mpr hx)]
+  rw [isBigO_iff_isBigOWith, isBigO_iff_isBigOWith]
+  simp [isBigOWith_mul_iff_isBigOWith_div hf]
+
+lemma isLittleO_mul_iff_isLittleO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l, f x ≠ 0) :
+    (fun x ↦ f x * g x) =o[l] h ↔ g =o[l] (fun x ↦ h x / f x) := by
+  rw [isLittleO_iff_forall_isBigOWith, isLittleO_iff_forall_isBigOWith]
+  simp [isBigOWith_mul_iff_isBigOWith_div hf]
 
 end Asymptotics
 
@@ -677,13 +694,19 @@ lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
   summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
     tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
 
-namespace PartialHomeomorph
+lemma Summable.mul_tendsto_const {F ι : Type*} [NormedRing F] [NormMulClass F] [NormOneClass F]
+    [CompleteSpace F] {f g : ι → F} (hf : Summable fun n ↦ ‖f n‖) {c : F}
+    (hg : Tendsto g cofinite (𝓝 c)) : Summable fun n ↦ f n * g n := by
+  apply summable_of_isBigO hf
+  simpa using (isBigO_const_mul_self 1 f _).mul (hg.isBigO_one F)
+
+namespace OpenPartialHomeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
-/-- Transfer `IsBigOWith` over a `PartialHomeomorph`. -/
-theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+/-- Transfer `IsBigOWith` over an `OpenPartialHomeomorph`. -/
+theorem isBigOWith_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} {C : ℝ} : IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   ⟨fun h =>
     h.comp_tendsto <| by
@@ -694,19 +717,19 @@ theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.ta
       ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg f hx)
       ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg g hx)⟩
 
-/-- Transfer `IsBigO` over a `PartialHomeomorph`. -/
-theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+/-- Transfer `IsBigO` over an `OpenPartialHomeomorph`. -/
+theorem isBigO_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsBigO_def]
   exact exists_congr fun C => e.isBigOWith_congr hb
 
-/-- Transfer `IsLittleO` over a `PartialHomeomorph`. -/
-theorem isLittleO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+/-- Transfer `IsLittleO` over an `OpenPartialHomeomorph`. -/
+theorem isLittleO_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsLittleO_def]
   exact forall₂_congr fun c _hc => e.isBigOWith_congr hb
 
-end PartialHomeomorph
+end OpenPartialHomeomorph
 
 namespace Homeomorph
 
@@ -718,7 +741,7 @@ open Asymptotics
 /-- Transfer `IsBigOWith` over a `Homeomorph`. -/
 theorem isBigOWith_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} {C : ℝ} :
     IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
-  e.toPartialHomeomorph.isBigOWith_congr trivial
+  e.toOpenPartialHomeomorph.isBigOWith_congr trivial
 
 /-- Transfer `IsBigO` over a `Homeomorph`. -/
 theorem isBigO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :

@@ -3,9 +3,11 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.BooleanAlgebra.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.Order.BooleanAlgebra.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Boolean algebra structure on idempotents in a commutative (semi)ring
@@ -16,6 +18,8 @@ is not available, it is still true that pairs of elements `(a, b)` satisfying `a
 `a + b = 1` form a Boolean algebra (such elements are automatically idempotents, and such a pair
 is uniquely determined by either `a` or `b`).
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 

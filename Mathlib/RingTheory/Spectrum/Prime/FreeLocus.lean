@@ -3,16 +3,18 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.LocalProperties.Projective
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.Localization.Free
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.RingTheory.TensorProduct.Free
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Flat.Stability
+public import Mathlib.RingTheory.LocalProperties.Projective
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.Localization.Free
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.RingTheory.TensorProduct.Free
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -31,6 +33,8 @@ Let `M` be a finitely presented `R`-module.
   If `M` is flat over `R`, then `rankAtStalk` is locally constant.
 
 -/
+
+@[expose] public section
 
 universe uR uM
 
@@ -60,14 +64,13 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
       (Localization.AtPrime p.asIdeal) Rₚ).toRingEquiv
   refine { __ := IsLocalizedModule.iso p.asIdeal.primeCompl f, map_smul' := ?_ }
   intro r x
-  obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective p.asIdeal.primeCompl r
+  obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq p.asIdeal.primeCompl r
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
   simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
     algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
     IsLocalization.map_id_mk']
-  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
-    IsLocalization.map_id_mk']
+  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
@@ -120,7 +123,7 @@ lemma freeLocus_localization (S : Submonoid R) :
       (Submonoid.map (algebraMap R (Localization S)) p'.primeCompl)
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
-      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
@@ -144,7 +147,7 @@ lemma freeLocus_localization (S : Submonoid R) :
       (Algebra.algebraMapSubmonoid (Localization S) p'.primeCompl)
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
-      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
@@ -157,7 +160,7 @@ lemma freeLocus_eq_univ_iff [Module.FinitePresentation R M] :
   exact ⟨fun H ↦ Module.projective_of_localization_maximal fun I hI ↦
     have := H ⟨I, hI.isPrime⟩; .of_free, fun H x ↦ Module.free_of_flat_of_isLocalRing⟩
 
-lemma freeLocus_eq_univ [Module.FinitePresentation R M] [Module.Flat R M] :
+lemma freeLocus_eq_univ [Module.Finite R M] [Module.Flat R M] :
     freeLocus R M = Set.univ := by
   simp_rw [Set.eq_univ_iff_forall, mem_freeLocus]
   exact fun x ↦ Module.free_of_flat_of_isLocalRing
@@ -236,8 +239,7 @@ lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
 lemma nontrivial_of_rankAtStalk_pos (h : 0 < rankAtStalk (R := R) M) :
     Nontrivial M := by
   by_contra! hn
-  have : Subsingleton M := not_nontrivial_iff_subsingleton.mp hn
-  simp [rankAtStalk, this] at h
+  simp at h
 
 lemma rankAtStalk_eq_of_equiv {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
     rankAtStalk (R := R) M = rankAtStalk N := by
@@ -276,7 +278,7 @@ lemma rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
     free_of_flat_of_isLocalRing
   simp_rw [rankAtStalk, e.finrank_eq, Module.finrank_pi_fintype, finsum_eq_sum_of_fintype]
 
-lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R):
+lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R) :
     rankAtStalk M p =
       finrank (Localization.AtPrime p.asIdeal) (Localization.AtPrime p.asIdeal ⊗[R] M) := by
   let e : LocalizedModule p.asIdeal.primeCompl M ≃ₗ[Localization.AtPrime p.asIdeal]
@@ -297,8 +299,8 @@ lemma rankAtStalk_eq_zero_iff_notMem_support (p : PrimeSpectrum R) :
   simp [← finrank_eq_rank, h]
 
 lemma rankAtStalk_pos_iff_mem_support (p : PrimeSpectrum R) :
-    0 < rankAtStalk M p ↔ p ∈ support R M := by
-  rw [← not_iff_not, Nat.pos_iff_ne_zero, not_not, rankAtStalk_eq_zero_iff_notMem_support]
+    0 < rankAtStalk M p ↔ p ∈ support R M :=
+  Nat.pos_iff_ne_zero.trans (rankAtStalk_eq_zero_iff_notMem_support _).not_left
 
 lemma rankAtStalk_eq_zero_iff_subsingleton :
     rankAtStalk (R := R) M = 0 ↔ Subsingleton M := by
@@ -321,8 +323,8 @@ lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
   simp [rankAtStalk, e.finrank_eq]
 
 lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
-    rankAtStalk (S ⊗[R] M) p = rankAtStalk M ((algebraMap R S).specComap p) := by
-  let q : PrimeSpectrum R := (algebraMap R S).specComap p
+    rankAtStalk (S ⊗[R] M) p = rankAtStalk M (p.comap (algebraMap R S)) := by
+  let q : PrimeSpectrum R := p.comap (algebraMap R S)
   let e : LocalizedModule p.asIdeal.primeCompl (S ⊗[R] M) ≃ₗ[Localization.AtPrime p.asIdeal]
       Localization.AtPrime p.asIdeal ⊗[Localization.AtPrime q.asIdeal]
         LocalizedModule q.asIdeal.primeCompl M :=
@@ -338,7 +340,7 @@ lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSp
 lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
     [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
   ext p
-  let e : Localization.AtPrime p.asIdeal ⊗[R] M ⊗[R] N ≃ₗ[Localization.AtPrime p.asIdeal]
+  let e : Localization.AtPrime p.asIdeal ⊗[R] (M ⊗[R] N) ≃ₗ[Localization.AtPrime p.asIdeal]
       (Localization.AtPrime p.asIdeal ⊗[R] M) ⊗[Localization.AtPrime p.asIdeal]
         (Localization.AtPrime p.asIdeal ⊗[R] N) :=
     (AlgebraTensorModule.assoc _ _ _ _ _ _).symm ≪≫ₗ
@@ -349,7 +351,7 @@ lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Modul
 lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algebra R S]
     (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
     [Module.Finite S N] [Module.Flat S N] (p : PrimeSpectrum S) :
-    rankAtStalk (N ⊗[R] M) p = rankAtStalk N p * rankAtStalk M ((algebraMap R S).specComap p) := by
+    rankAtStalk (N ⊗[R] M) p = rankAtStalk N p * rankAtStalk M (p.comap (algebraMap R S)) := by
   simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
     rankAtStalk_tensorProduct, rankAtStalk_baseChange]
 

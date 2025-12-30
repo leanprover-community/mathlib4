@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.End
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.Hom
+public import Mathlib.Algebra.Group.End
 
 /-!
 # Interaction between actions and endomorphisms/automorphisms
@@ -19,6 +21,8 @@ This file provides two things:
 
 monoid action, group action
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -87,6 +91,14 @@ protected lemma smul_def {α : Type*} (f : Perm α) (a : α) : f • a = f a := 
 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
 instance applyFaithfulSMul (α : Type*) : FaithfulSMul (Perm α) α := ⟨Equiv.ext⟩
+
+/-- The permutation group of `α` acts transitively on `α`. -/
+instance : MulAction.IsPretransitive (Perm α) α := by
+  rw [MulAction.isPretransitive_iff]
+  classical
+  intro x y
+  use Equiv.swap x y
+  simp
 
 end Equiv.Perm
 
@@ -163,7 +175,7 @@ variable [AddMonoid M]
 
 When `M` is a group, see `AddAction.toPermHom`. -/
 def AddAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
-  MonoidHom.toAdditive'' MulAction.toEndHom
+  MulAction.toEndHom.toAdditiveRight
 
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
@@ -182,6 +194,14 @@ def MulAction.toPermHom : G →* Equiv.Perm α where
   map_one' := Equiv.ext <| one_smul G
   map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : G) u₂
 
+lemma MulAction.coe_toPermHom :
+    ⇑(MulAction.toPermHom G α) = MulAction.toPerm :=
+  rfl
+
+lemma MulAction.toPerm_one :
+    (MulAction.toPerm (1 : G)) = (1 : Equiv.Perm α) := by
+  aesop
+
 end Group
 
 section AddGroup
@@ -190,8 +210,15 @@ variable (G α) [AddGroup G] [AddAction G α]
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) :=
-  MonoidHom.toAdditive'' <| MulAction.toPermHom ..
+def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
+
+lemma AddAction.coe_toPermHom :
+    ⇑(AddAction.toPermHom G α) = AddAction.toPerm :=
+  rfl
+
+theorem AddAction.toPerm_zero :
+    (AddAction.toPerm (0 : G)) = (1 : Equiv.Perm α) := by
+  aesop
 
 end AddGroup
 

@@ -3,18 +3,22 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # The homology of a restriction
 
-Under extremely favourable circumstrnaces, we may relate the
+Under favourable circumstances, we may relate the
 homology of `K : HomologicalComplex C c'` in degree `j'` and
-that of `K.restriction e` id a degree `j`  when `e : Embedding c c'`
+that of `K.restriction e` in degree `j` when `e : Embedding c c'`
 is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -22,7 +26,7 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsRelIff]
 
 namespace restriction
@@ -107,6 +111,12 @@ lemma pOpcycles_restrictionOpcyclesIso_inv :
       (K.restrictionXIso e hj').inv ≫ (K.restriction e).pOpcycles j := by
   simp [restrictionOpcyclesIso]
 
+<<<<<<< HEAD
+=======
+/-- The isomorphism `(K.restriction e).homology j ≅ K.homology j'` when `e.f j = j'`,
+the predecessors `i` and `i'` of `j` and `j'` satisfy `e.f i = i'`,
+and the successors `k` and `k'` of `j` and `j'` satisfy `e.f k = k'` -/
+>>>>>>> origin/master
 noncomputable def restrictionHomologyIso :
     (K.restriction e).homology j ≅ K.homology j' :=
   have : ((K.restriction e).sc' i j k).HasHomology := by subst hi hk; assumption
@@ -115,7 +125,11 @@ noncomputable def restrictionHomologyIso :
     ShortComplex.homologyMapIso (restriction.sc'Iso K e i j k hi' hj' hk' hi'' hk'') ≪≫
     (K.homologyIsoSc' i' j' k' hi'' hk'').symm
 
+<<<<<<< HEAD
 @[reassoc (attr := simp)]
+=======
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+>>>>>>> origin/master
 lemma homologyπ_restrictionHomologyIso_hom :
     (K.restriction e).homologyπ j ≫
       (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').hom =
@@ -141,7 +155,11 @@ lemma homologyπ_restrictionHomologyIso_inv :
     assoc, assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id,
     Iso.inv_hom_id_assoc]
 
+<<<<<<< HEAD
 @[reassoc (attr := simp)]
+=======
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+>>>>>>> origin/master
 lemma restrictionHomologyIso_inv_homologyι :
     (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv ≫
       (K.restriction e).homologyι j =

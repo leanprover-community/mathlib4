@@ -3,16 +3,20 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.Match.MatcherInfo
-import Lean.Meta.Tactic.Delta
-import Std.Data.HashMap.Basic
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Match.MatcherInfo
+public import Lean.Meta.Tactic.Delta
+public import Std.Data.HashMap.Basic
 
 /-!
 # Additional functions on `Lean.Name`.
 
 We provide `allNames` and `allNamesByModule`.
 -/
+
+public section
 
 open Lean Meta Elab
 
@@ -58,10 +62,10 @@ def Lean.Name.decapitalize (n : Name) : Name :=
 /-- Whether the lemma has a name of the form produced by `Lean.Meta.mkAuxLemma`. -/
 def Lean.Name.isAuxLemma (n : Name) : Bool :=
   match n with
-  | .str _ s => "_proof_".isPrefixOf s
+  -- `mkAuxLemma` generally allows for arbitrary prefixes but these are the ones produced by core.
+  | .str _ s => "_proof_".isPrefixOf s || "_simp_".isPrefixOf s
   | _ => false
 
-/-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`.
-The names of these lemmas end in `_auxLemma.nn` where `nn` is a number. -/
+/-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`. -/
 def Lean.Meta.unfoldAuxLemmas (e : Expr) : MetaM Expr := do
   deltaExpand e Lean.Name.isAuxLemma

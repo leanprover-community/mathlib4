@@ -3,21 +3,44 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
+=======
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.Linear
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.LinearAlgebra.BilinearMap
+>>>>>>> origin/master
 
 /-!
 # Ext-modules in linear categories
 
+<<<<<<< HEAD
 -/
 
+=======
+In this file, we show that if `C` is an `R`-linear abelian category,
+then there is an `R`-module structure on the groups `Ext X Y n`
+for `X` and `Y` in `C` and `n : ℕ`.
+
+-/
+
+@[expose] public section
+
+>>>>>>> origin/master
 universe w' w t v u
 
 namespace CategoryTheory
 
 namespace Abelian
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 namespace Ext
 
 section Ring
@@ -33,7 +56,11 @@ noncomputable instance : Module R (Ext X Y n) :=
 
 lemma smul_eq_comp_mk₀ (x : Ext X Y n) (r : R) :
     r • x = x.comp (mk₀ (r • 𝟙 Y)) (add_zero _) := by
+<<<<<<< HEAD
   letI := HasDerivedCategory.standard C
+=======
+  let := HasDerivedCategory.standard C
+>>>>>>> origin/master
   ext
   apply ((Equiv.linearEquiv R homEquiv).map_smul r x).trans
   change r • homEquiv x = (x.comp (mk₀ (r • 𝟙 Y)) (add_zero _)).hom
@@ -49,17 +76,31 @@ lemma smul_hom (x : Ext X Y n) (r : R) [HasDerivedCategory C] :
 lemma comp_smul {X Y Z : C} {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b)
     {c : ℕ} (h : a + b = c) (r : R) :
     α.comp (r • β) h = r • α.comp β h := by
+<<<<<<< HEAD
   letI := HasDerivedCategory.standard C
+=======
+  let := HasDerivedCategory.standard C
+>>>>>>> origin/master
   aesop
 
 @[simp]
 lemma smul_comp {X Y Z : C} {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b)
     {c : ℕ} (h : a + b = c) (r : R) :
     (r • α).comp β h = r • α.comp β h := by
+<<<<<<< HEAD
   letI := HasDerivedCategory.standard C
   aesop
 
 open DerivedCategory in
+=======
+  let := HasDerivedCategory.standard C
+  aesop
+
+open DerivedCategory in
+/-- When an instance of `[HasDerivedCategory.{w'} C]` is available, this is the `R`-linear
+equivalence between `Ext.{w} X Y n` and a type of morphisms in the derived category
+of the `R`-linear abelian category `C`. -/
+>>>>>>> origin/master
 @[simps]
 noncomputable def homLinearEquiv [HasDerivedCategory.{w'} C] :
     Ext X Y n ≃ₗ[R]
@@ -67,10 +108,30 @@ noncomputable def homLinearEquiv [HasDerivedCategory.{w'} C] :
   __ := homAddEquiv
   map_smul' := by simp
 
+<<<<<<< HEAD
+=======
+lemma mk₀_smul (r : R) (f : X ⟶ Y) : mk₀ (r • f) = r • mk₀ f := by
+  let := HasDerivedCategory.standard C
+  aesop
+
+/-- The linear equivalence `Ext X Y 0 ≃ₜ[R] (X ⟶ Y)`. -/
+@[simps! symm_apply]
+noncomputable def linearEquiv₀ :
+    Ext X Y 0 ≃ₗ[R] (X ⟶ Y) where
+  toAddEquiv := addEquiv₀
+  map_smul' m x := homEquiv₀.symm.injective (by simp [mk₀_smul])
+
+@[simp]
+lemma mk₀_linearEquiv₀_apply (f : Ext X Y 0) :
+    mk₀ (linearEquiv₀ (R := R) f) = f :=
+  addEquiv₀.left_inv f
+
+>>>>>>> origin/master
 end Ring
 
 section CommRing
 
+<<<<<<< HEAD
 variable (R : Type t) [CommRing R] {C : Type u} [Category.{v} C] [Abelian C] [Linear R C]
   [HasExt.{w} C] (X Y Z : C)
 
@@ -80,11 +141,37 @@ noncomputable def bilinearCompOfLinear (a b c : ℕ) (h : a + b = c) :
     Ext X Y a →ₗ[R] Ext Y Z b →ₗ[R] Ext X Z c where
   toFun α :=
     { toFun := fun β ↦ α.comp β h
+=======
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+
+/-- The composition of `Ext`, as a bilinear map. -/
+@[simps!]
+noncomputable def bilinearCompOfLinear (R : Type t) [CommRing R] [Linear R C] (X Y Z : C)
+    (a b c : ℕ) (h : a + b = c) :
+    Ext X Y a →ₗ[R] Ext Y Z b →ₗ[R] Ext X Z c where
+  toFun α :=
+    { toFun β := α.comp β h
+>>>>>>> origin/master
       map_add' := by simp
       map_smul' := by simp }
   map_add' := by aesop
   map_smul' := by aesop
 
+<<<<<<< HEAD
+=======
+/-- The postcomposition `Ext X Y a →ₗ[R] Ext X Z b` with `β : Ext Y Z n` when `a + n = b`. -/
+noncomputable abbrev postcompOfLinear {Y Z : C} {n : ℕ} (β : Ext Y Z n)
+    (R : Type t) [CommRing R] [Linear R C] (X : C) {a b : ℕ} (h : a + n = b) :
+    Ext X Y a →ₗ[R] Ext X Z b :=
+  (bilinearCompOfLinear R X Y Z a n b h).flip β
+
+/-- The precomposition `Ext Y Z a →ₗ[R] Ext X Z b` with `α : Ext X Y n` when `n + a = b`. -/
+noncomputable abbrev precompOfLinear {X Y : C} {n : ℕ} (α : Ext X Y n)
+    (R : Type t) [CommRing R] [Linear R C] (Z : C) {a b : ℕ} (h : n + a = b) :
+    Ext Y Z a →ₗ[R] Ext X Z b :=
+  bilinearCompOfLinear R X Y Z n a b h α
+
+>>>>>>> origin/master
 end CommRing
 
 end Ext

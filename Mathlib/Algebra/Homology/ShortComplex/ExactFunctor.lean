@@ -3,11 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jujian Zhang
 -/
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.CategoryTheory.Preadditive.LeftExact
-import Mathlib.CategoryTheory.Abelian.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.CategoryTheory.Preadditive.LeftExact
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Exact functors
@@ -51,6 +53,8 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits ZeroObject ShortComplex
@@ -59,7 +63,7 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
 
 /-- An additive functor which preserves homology preserves finite limits. -/
@@ -86,11 +90,11 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
+variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--
-If a functor `F : C ⥤ D` preserves short exact sequences on the left hand side, (i.e.
+If a functor `F : C ⥤ D` preserves short exact sequences on the left-hand side, (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact)
 then it preserves monomorphism.
 -/
@@ -100,10 +104,10 @@ lemma preservesMonomorphisms_of_preserves_shortExact_left
   preserves f := h _ { exact := exact_cokernel f } |>.2
 
 /--
-For an addivite functor `F : C ⥤ D` between abelian categories, the following are equivalent:
-- `F` preserves short exact sequences on the left hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
+For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
+- `F` preserves short exact sequences on the left-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
   then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact.
-- `F` preserves exact sequences on the left hand side, i.e. if `A ⟶ B ⟶ C` is exact where `A ⟶ B`
+- `F` preserves exact sequences on the left-hand side, i.e. if `A ⟶ B ⟶ C` is exact where `A ⟶ B`
   is mono, then `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono as well.
 - `F` preserves kernels.
 - `F` preserves finite limits.
@@ -144,7 +148,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
   tfae_finish
 
 /--
-If a functor `F : C ⥤ D` preserves exact sequences on the right hand side (i.e.
+If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact),
 then it preserves epimorphisms.
 -/
@@ -154,10 +158,10 @@ lemma preservesEpimorphisms_of_preserves_shortExact_right
   preserves f := h _ { exact := exact_kernel f } |>.2
 
 /--
-For an addivite functor `F : C ⥤ D` between abelian categories, the following are equivalent:
-- `F` preserves short exact sequences on the right hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
+For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
+- `F` preserves short exact sequences on the right-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
   exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
-- `F` preserves exact sequences on the right hand side, i.e. if `A ⟶ B ⟶ C` is exact where `B ⟶ C`
+- `F` preserves exact sequences on the right-hand side, i.e. if `A ⟶ B ⟶ C` is exact where `B ⟶ C`
   is epi, then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact and `F(B) ⟶ F(C)` is epi as well.
 - `F` preserves cokernels.
 - `F` preserves finite colimits.

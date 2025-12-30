@@ -3,11 +3,20 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.GradedObject.Colimits
+=======
+module
+
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+>>>>>>> origin/master
 
 /-!
 # Limits and colimits in the category of homological complexes
@@ -19,12 +28,18 @@ commute to these.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
+<<<<<<< HEAD
 variable {C D ι J : Type*} [Category C] [Category D] [Category J] {c : ComplexShape ι}
   [HasZeroMorphisms C] [HasZeroMorphisms D]
+=======
+variable {C ι J : Type*} [Category* C] [Category* J] {c : ComplexShape ι} [HasZeroMorphisms C]
+>>>>>>> origin/master
 
 section
 
@@ -72,8 +87,8 @@ noncomputable def coneOfHasLimitEval : Cone F where
       naturality := fun i j φ => by
         ext n
         dsimp
-        erw [limit.w]
-        rw [id_comp] }
+        simp only [Category.id_comp]
+        rw [← eval_map, ← Functor.comp_map, limit.w] }
 
 /-- The cone `coneOfHasLimitEval F` is limit. -/
 noncomputable def isLimitConeOfHasLimitEval : IsLimit (coneOfHasLimitEval F) :=
@@ -89,13 +104,13 @@ end
 instance [HasLimitsOfShape J C] : HasLimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
 noncomputable instance [HasLimitsOfShape J C] (n : ι) :
-  PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
+    PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
 instance [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
-noncomputable instance [HasFiniteLimits C] (n : ι) :
-  PreservesFiniteLimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
+noncomputable instance [HasFiniteLimits C] (n : ι) : PreservesFiniteLimits (eval C c n) :=
+  ⟨fun _ _ _ => inferInstance⟩
 
 instance [HasFiniteLimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Mono φ] (n : ι) :
     Mono (φ.f n) := by
@@ -117,7 +132,7 @@ def isColimitOfEval (s : Cocone F)
         intro j
         have eq := fun k => (hs k).fac ((eval C c k).mapCocone t)
         simp only [Functor.mapCocone_ι_app, eval_map] at eq
-        simp only [Functor.mapCocone_ι_app, eval_map, assoc]
+        simp only [Functor.mapCocone_ι_app, eval_map]
         rw [reassoc_of% (eq i), Hom.comm_assoc, eq i', Hom.comm] }
   fac t j := by
     ext i
@@ -149,8 +164,8 @@ noncomputable def coconeOfHasColimitEval : Cocone F where
       naturality := fun i j φ => by
         ext n
         dsimp
-        erw [colimit.w (F ⋙ eval C c n) φ]
-        rw [comp_id] }
+        simp only [Category.comp_id]
+        rw [← eval_map, ← Functor.comp_map, colimit.w] }
 
 /-- The cocone `coconeOfHasLimitEval F` is colimit. -/
 noncomputable def isColimitCoconeOfHasColimitEval : IsColimit (coconeOfHasColimitEval F) :=
@@ -167,13 +182,13 @@ end
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
 noncomputable instance [HasColimitsOfShape J C] (n : ι) :
-  PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
+    PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
 instance [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
 noncomputable instance [HasFiniteColimits C] (n : ι) :
-  PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
+    PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
 instance [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Epi φ] (n : ι) :
     Epi (φ.f n) := by
@@ -182,7 +197,7 @@ instance [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Ep
 
 /-- A functor `D ⥤ HomologicalComplex C c` preserves limits of shape `J`
 if for any `i`, `G ⋙ eval C c i` does. -/
-lemma preservesLimitsOfShape_of_eval {D : Type*} [Category D]
+lemma preservesLimitsOfShape_of_eval {D : Type*} [Category* D]
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesLimitsOfShape J (G ⋙ eval C c i)) :
     PreservesLimitsOfShape J G :=
@@ -191,7 +206,7 @@ lemma preservesLimitsOfShape_of_eval {D : Type*} [Category D]
 
 /-- A functor `D ⥤ HomologicalComplex C c` preserves colimits of shape `J`
 if for any `i`, `G ⋙ eval C c i` does. -/
-lemma preservesColimitsOfShape_of_eval {D : Type*} [Category D]
+lemma preservesColimitsOfShape_of_eval {D : Type*} [Category* D]
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesColimitsOfShape J (G ⋙ eval C c i)) :
     PreservesColimitsOfShape J G :=

@@ -3,8 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 import Mathlib.CategoryTheory.Functor.Derived.Opposite
+=======
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
+>>>>>>> origin/master
 
 /-!
 # Deriving functors using a derivability structure
@@ -15,6 +21,7 @@ When `Φ` is a left or right derivability structure, it allows to derive
 the functor `F` (with respect to `W₂`) when `Φ.functor ⋙ F : C₁ ⥤ H`
 inverts `W₁` (this is the most favorable case when we can apply the lemma
 `hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure`).
+<<<<<<< HEAD
 We derive `Φ.Derives F` as an abbreviation for `W₁.IsInvertedBy (Φ.functor ⋙ F)`.
 
 When `h : Φ.Derives F` holds and `Φ` is a right derivability structure,
@@ -26,6 +33,21 @@ the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
 
 -/
 
+=======
+We define `Φ.Derives F` as an abbreviation for `W₁.IsInvertedBy (Φ.functor ⋙ F)`.
+
+When `h : Φ.Derives F` holds and `Φ` is a right derivability structure,
+we show that `F` has a right derived functor with respect to `W₂`.
+Under this assumption, if `L₂ : C₂ ⥤ D₂` is a localization functor
+for `W₂`, then a functor `RF : D₂ ⥤ H` equipped with a natural
+transformation `α : F ⟶ L₂ ⋙ RF` is the right derived functor of `F` iff
+for any `X₁ : C₁`, the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
+
+-/
+
+@[expose] public section
+
+>>>>>>> origin/master
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
@@ -50,6 +72,7 @@ abbrev Derives : Prop := W₁.IsInvertedBy (Φ.functor ⋙ F)
 
 namespace Derives
 
+<<<<<<< HEAD
 variable {Φ F} (h : Φ.Derives F)
 
 include h in
@@ -71,18 +94,33 @@ lemma hasLeftDerivedFunctor [Φ.IsLeftDerivabilityStructure] :
   have := h.op.hasPointwiseRightDerivedFunctor
   infer_instance
 
+=======
+variable {Φ F} (h : Φ.Derives F) [Φ.IsRightDerivabilityStructure]
+
+include h
+
+lemma hasPointwiseRightDerivedFunctor : F.HasPointwiseRightDerivedFunctor W₂ := by
+  rw [hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure Φ F]
+  exact Functor.hasPointwiseRightDerivedFunctor_of_inverts _ h
+
+>>>>>>> origin/master
 section
 
 variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H} (α : F ⟶ L₂ ⋙ RF)
 
+<<<<<<< HEAD
 include h in
 lemma isIso_of_isRightDerivabilityStructure
     [Φ.IsRightDerivabilityStructure] (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
+=======
+lemma isIso (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
+>>>>>>> origin/master
     IsIso (α.app (Φ.functor.obj X₁)) := by
   let G : W₁.Localization ⥤ H := Localization.lift (Φ.functor ⋙ F) h W₁.Q
   let eG := Localization.Lifting.iso W₁.Q W₁ (Φ.functor ⋙ F) G
   have := Functor.isRightDerivedFunctor_of_inverts W₁ G eG
   have := (Φ.functor ⋙ F).hasPointwiseRightDerivedFunctor_of_inverts h
+<<<<<<< HEAD
   rw [← Φ.isIso_α_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
   infer_instance
 
@@ -131,12 +169,25 @@ lemma isRightDerivedFunctor_of_isRightDerivabilityStructure
   have := Φ.essSurj_of_hasRightResolutions L₂
   let φ := (F.totalRightDerived L₂ W₂).rightDerivedDesc (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
   have hφ : F.totalRightDerivedUnit L₂ W₂ ≫ whiskerLeft L₂ φ = α :=
+=======
+  rw [← Φ.isIso_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
+  infer_instance
+
+lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    RF.IsRightDerivedFunctor α W₂ := by
+  have := h.hasPointwiseRightDerivedFunctor
+  have := h.isIso (F.totalRightDerivedUnit L₂ W₂)
+  have := Φ.essSurj_of_hasRightResolutions L₂
+  let φ := (F.totalRightDerived L₂ W₂).rightDerivedDesc (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
+  have hφ : F.totalRightDerivedUnit L₂ W₂ ≫ Functor.whiskerLeft L₂ φ = α :=
+>>>>>>> origin/master
     (F.totalRightDerived L₂ W₂).rightDerived_fac (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
   have : IsIso φ := by
     rw [NatTrans.isIso_iff_isIso_app]
     intro Y₂
     rw [NatTrans.isIso_app_iff_of_iso φ ((Φ.functor ⋙ L₂).objObjPreimageIso Y₂).symm]
     dsimp
+<<<<<<< HEAD
     simp only [← hφ, NatTrans.comp_app, whiskerLeft_app, isIso_comp_left_iff] at hα
     infer_instance
   rw [← Functor.isRightDerivedFunctor_iff_of_iso (F.totalRightDerivedUnit L₂ W₂) α W₂
@@ -153,6 +204,21 @@ lemma isLeftDerivedFunctor_of_isLeftDerivabilityStructure
   exact Φ.op.isRightDerivedFunctor_of_isRightDerivabilityStructure
     (F := F.op) (RF := LF.op) (L₂ := L₂.op)
     (α := NatTrans.op α) (fun X₁ ↦ by dsimp; infer_instance)
+=======
+    simp only [← hφ, NatTrans.comp_app, Functor.whiskerLeft_app, isIso_comp_left_iff] at hα
+    infer_instance
+  rw [← Functor.isRightDerivedFunctor_iff_of_iso (F.totalRightDerivedUnit L₂ W₂) α W₂
+    (asIso φ) (by cat_disch)]
+  infer_instance
+
+lemma isRightDerivedFunctor_iff_isIso :
+    RF.IsRightDerivedFunctor α W₂ ↔ ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁)) :=
+  ⟨fun _ _ ↦ h.isIso α _, h.isRightDerivedFunctor_of_isIso α⟩
+
+end
+
+end Derives
+>>>>>>> origin/master
 
 end LocalizerMorphism
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Bifunctor
-import Mathlib.Algebra.Homology.TotalComplexSymmetry
+module
+
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.Algebra.Homology.TotalComplexSymmetry
 
 /-!
 # Action of the flip of a bifunctor on homological complexes
@@ -17,9 +19,11 @@ under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits
 
-variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
+variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
 
 namespace HomologicalComplex
 
@@ -67,10 +71,18 @@ lemma mapBifunctorFlipIso_flip
     mapBifunctorFlipIso K₂ K₁ F.flip c = (mapBifunctorFlipIso K₁ K₂ F c).symm :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).flip_totalFlipIso c
 
+<<<<<<< HEAD
+=======
+variable {K₁ K₂ L₁ L₂} in
+>>>>>>> origin/master
 @[reassoc (attr := simp)]
 lemma mapBifunctorFlipIso_hom_naturality :
       mapBifunctorMap φ₂ φ₁ F.flip c ≫ (mapBifunctorFlipIso L₁ L₂ F c).hom =
     (mapBifunctorFlipIso K₁ K₂ F c).hom ≫ mapBifunctorMap φ₁ φ₂ F c := by
+<<<<<<< HEAD
   aesop
+=======
+  cat_disch
+>>>>>>> origin/master
 
 end HomologicalComplex

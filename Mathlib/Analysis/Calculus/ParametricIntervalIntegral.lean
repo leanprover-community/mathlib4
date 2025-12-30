@@ -3,14 +3,18 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Derivatives of interval integrals depending on parameters
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
 integrals. -/
+
+@[expose] public section
 
 
 open TopologicalSpace MeasureTheory Filter Metric

@@ -3,13 +3,17 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kevin Buzzard
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 # Injective objects and categories with enough injectives
 
 An object `J` is injective iff every morphism into `J` can be obtained by extending a monomorphism.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -29,6 +33,10 @@ class Injective (J : C) : Prop where
   factors : ∀ {X Y : C} (g : X ⟶ J) (f : X ⟶ Y) [Mono f], ∃ h : Y ⟶ J, f ≫ h = g
 
 attribute [inherit_doc Injective] Injective.factors
+
+variable (C) in
+/-- The `ObjectProperty C` corresponding to the notion of injective objects in `C`. -/
+abbrev isInjective : ObjectProperty C := Injective
 
 lemma Limits.IsZero.injective {X : C} (h : IsZero X) : Injective X where
   factors _ _ _ := ⟨h.from_ _, h.eq_of_tgt _ _⟩
@@ -115,10 +123,10 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := WithBot X
         injective := inferInstance
-        f := Option.some
+        f := WithBot.some
         mono := by
           rw [mono_iff_injective]
-          exact Option.some_injective X }
+          exact WithBot.coe_injective }
 
 instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
@@ -195,10 +203,18 @@ section EnoughInjectives
 
 variable [EnoughInjectives C]
 
+<<<<<<< HEAD
 /-- There exists an injective presentation `I` of `X`, such that `I.J` is zero if `X` is. -/
 lemma exists_presentation' (X : C) : ∃ (I : InjectivePresentation X), IsZero X → IsZero I.J := by
   by_cases h : IsZero X
   · have := injective_of_isZero _ h
+=======
+/-- If `C` has enough injectives, we may choose an injective presentation of `X : C`
+which is given by a zero object when `X` is a zero object. -/
+lemma exists_presentation (X : C) : ∃ (p : InjectivePresentation X), IsZero X → IsZero p.J := by
+  by_cases h : IsZero X
+  · have := h.injective
+>>>>>>> origin/master
     exact ⟨{ J := X, f := 𝟙 X}, by tauto⟩
   · exact ⟨(EnoughInjectives.presentation X).some, by tauto⟩
 
@@ -206,15 +222,23 @@ lemma exists_presentation' (X : C) : ∃ (I : InjectivePresentation X), IsZero X
 a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
+<<<<<<< HEAD
   (exists_presentation' X).choose.J
 
 instance injective_under (X : C) : Injective (under X) :=
   (exists_presentation' X).choose.injective
+=======
+  (exists_presentation X).choose.J
+
+instance injective_under (X : C) : Injective (under X) :=
+  (exists_presentation X).choose.injective
+>>>>>>> origin/master
 
 /-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
+<<<<<<< HEAD
   (exists_presentation' X).choose.f
 
 instance ι_mono (X : C) : Mono (ι X) :=
@@ -223,6 +247,16 @@ instance ι_mono (X : C) : Mono (ι X) :=
 lemma isZero_under (X : C) (hX : IsZero X) :
     IsZero (under X) :=
   (exists_presentation' X).choose_spec hX
+=======
+  (exists_presentation X).choose.f
+
+instance ι_mono (X : C) : Mono (ι X) :=
+  (exists_presentation X).choose.mono
+
+lemma isZero_under (X : C) (hX : IsZero X) :
+    IsZero (under X) :=
+  (exists_presentation X).choose_spec hX
+>>>>>>> origin/master
 
 section
 
@@ -233,10 +267,7 @@ an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
   under (cokernel f)
--- The `Injective` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Injective <| syzygies f := injective_under (cokernel f)
+deriving Injective
 
 /-- When `C` has enough injective,
 `Injective.d f : Y ⟶ syzygies f` is the composition
@@ -301,7 +332,7 @@ end Injective
 
 namespace Adjunction
 
-variable {D : Type*} [Category D] {F : C ⥤ D} {G : D ⥤ C}
+variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C}
 
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
@@ -344,6 +375,18 @@ def injectivePresentationOfMap (adj : F ⊣ G)
 
 end Adjunction
 
+namespace Functor
+
+variable {D : Type*} [Category* D] (F : C ⥤ D)
+
+theorem injective_of_map_injective [F.Full] [F.Faithful]
+    [F.PreservesMonomorphisms] {I : C} (hI : Injective (F.obj I)) : Injective I where
+  factors g f _ := by
+    obtain ⟨h, fac⟩ := hI.factors (F.map g) (F.map f)
+    exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
+
+end Functor
+
 /--
 [Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)
 -/
@@ -362,7 +405,7 @@ lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
 
 namespace Equivalence
 
-variable {D : Type*} [Category D] (F : C ≌ D)
+variable {D : Type*} [Category* D] (F : C ≌ D)
 
 theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
   ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩

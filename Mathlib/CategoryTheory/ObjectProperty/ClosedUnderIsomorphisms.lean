@@ -3,10 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.ObjectProperty.Basic
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Order.CompleteLattice.Defs
+=======
+module
+
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.Order.Basic
+>>>>>>> origin/master
 
 /-! # Properties of objects which are closed under isomorphisms
 
@@ -14,6 +22,8 @@ Given a category `C` and `P : ObjectProperty C` (i.e. `P : C → Prop`),
 this file introduces the type class `P.IsClosedUnderIsomorphisms`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -28,8 +38,6 @@ namespace ObjectProperty
 if whenever `P X`, then all the objects `Y` that are isomorphic to `X` also satisfy `P Y`. -/
 class IsClosedUnderIsomorphisms : Prop where
   of_iso {X Y : C} (_ : X ≅ Y) (_ : P X) : P Y
-
-@[deprecated (since := "2025-02-25")] alias ClosedUnderIsomorphisms := IsClosedUnderIsomorphisms
 
 lemma prop_of_iso [IsClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) (hX : P X) : P Y :=
   IsClosedUnderIsomorphisms.of_iso e hX
@@ -77,6 +85,10 @@ instance : IsClosedUnderIsomorphisms (isoClosure P) where
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 
+lemma isClosedUnderIsomorphisms_iff_isoClosure_eq_self :
+    IsClosedUnderIsomorphisms P ↔ isoClosure P = P :=
+  ⟨fun _ ↦ isoClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
+
 instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
   of_iso := by
     rintro _ _ e ⟨X, hX, ⟨e'⟩⟩
@@ -86,6 +98,7 @@ instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P.inverseImage F) where
   of_iso e hX := P.prop_of_iso (F.mapIso e) hX
 
+<<<<<<< HEAD
 instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     (P ⊓ Q).IsClosedUnderIsomorphisms where
   of_iso e hX := ⟨P.prop_of_iso e hX.1, Q.prop_of_iso e hX.2⟩
@@ -97,17 +110,24 @@ lemma prop_map_obj_iff
   rw [prop_map_iff] at hX
   obtain ⟨Y, hY, ⟨e⟩⟩ := hX
   exact P.prop_of_iso (F.preimageIso e) hY
+=======
+@[simp]
+lemma isoClosure_strictMap (F : C ⥤ D) :
+    (P.strictMap F).isoClosure = P.map F := by
+  refine le_antisymm ?_ ?_
+  · rw [isoClosure_le_iff]
+    exact P.strictMap_le_map F
+  · rintro X ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨F.obj Y, ⟨Y, hY⟩, ⟨e.symm⟩⟩
+
+@[simp]
+lemma map_isoClosure (F : C ⥤ D) :
+    P.isoClosure.map F = P.map F := by
+  refine le_antisymm ?_ (map_monotone P.le_isoClosure F)
+  rintro X ⟨Y, ⟨Z, hZ, ⟨e⟩⟩, ⟨e'⟩⟩
+  exact ⟨Z, hZ, ⟨F.mapIso e.symm ≪≫ e'⟩⟩
+>>>>>>> origin/master
 
 end ObjectProperty
-
-open ObjectProperty
-
-@[deprecated (since := "2025-02-25")] alias mem_of_iso := prop_of_iso
-@[deprecated (since := "2025-02-25")] alias mem_iff_of_iso := prop_iff_of_iso
-@[deprecated (since := "2025-02-25")] alias mem_of_isIso := prop_of_isIso
-@[deprecated (since := "2025-02-25")] alias mem_iff_of_isIso := prop_iff_of_isIso
-@[deprecated (since := "2025-02-25")] alias isoClosure := isoClosure
-@[deprecated (since := "2025-02-25")] alias mem_isoClosure_iff := prop_isoClosure_iff
-@[deprecated (since := "2025-02-25")] alias mem_isoClosure := prop_isoClosure
 
 end CategoryTheory

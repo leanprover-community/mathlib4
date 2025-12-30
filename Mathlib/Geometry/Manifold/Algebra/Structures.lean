@@ -3,7 +3,9 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
 # `C^n` structures
@@ -12,6 +14,8 @@ In this file we define `C^n` structures that build on Lie groups. We prefer usin
 term `ContMDiffRing` instead of Lie mainly because Lie ring has currently another use
 in mathematics.
 -/
+
+@[expose] public section
 
 open scoped Manifold ContDiff
 
@@ -27,8 +31,6 @@ class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (R : Type*) [Semiring R] [TopologicalSpace R] [ChartedSpace H R] : Prop
     extends ContMDiffAdd I n R where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R => p.1 * p.2
-
-@[deprecated (since := "2025-01-09")] alias SmoothRing := ContMDiffRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toContMDiffMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
@@ -66,6 +68,3 @@ see note [Design choices about smooth algebraic structures]. -/
 theorem topologicalSemiring_of_contMDiffRing [Semiring R] [ContMDiffRing I n R] :
     IsTopologicalSemiring R :=
   { continuousMul_of_contMDiffMul I n, continuousAdd_of_contMDiffAdd I n with }
-
-@[deprecated (since := "2025-01-09")]
-alias topologicalSemiring_of_smooth := topologicalSemiring_of_contMDiffRing

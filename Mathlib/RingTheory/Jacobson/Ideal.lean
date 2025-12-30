@@ -3,10 +3,12 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.RingTheory.Jacobson.Radical
+module
+
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.Jacobson.Radical
 
 /-!
 # Jacobson radical
@@ -26,7 +28,7 @@ Let `R` be a ring, and `I` be a left ideal of `R`
 
 * `Ideal.jacobson I` is the Jacobson radical, i.e. the infimum of all maximal ideals containing `I`.
 
-* `Ideal.IsLocal I` is the proposition that the jacobson radical of `I` is itself a maximal ideal
+* `Ideal.IsLocal I` is the proposition that the Jacobson radical of `I` is itself a maximal ideal
 
 Furthermore when `I` is a two-sided ideal of `R`
 
@@ -34,9 +36,9 @@ Furthermore when `I` is a two-sided ideal of `R`
 
 ## Main statements
 
-* `mem_jacobson_iff` gives a characterization of members of the jacobson of I
+* `mem_jacobson_iff` gives a characterization of members of the Jacobson of I
 
-* `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the jacobson
+* `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the Jacobson
   radical
 
 ## Tags
@@ -44,6 +46,8 @@ Furthermore when `I` is a two-sided ideal of `R`
 Jacobson, Jacobson radical, Local Ideal
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -171,13 +175,11 @@ theorem eq_jacobson_iff_notMem :
     push_neg
     exact h x hx
 
-@[deprecated (since := "2025-05-23")] alias eq_jacobson_iff_not_mem := eq_jacobson_iff_notMem
-
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
   unfold Ideal.jacobson
-  -- Porting note: dot notation for `RingHom.ker` does not work
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation for `RingHom.ker` does not work
   have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsMaximal }, RingHom.ker f ≤ J :=
     fun J hJ => le_trans h hJ.left
   refine Trans.trans (map_sInf hf this) (le_antisymm ?_ ?_)
@@ -216,7 +218,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
     · exact ⟨map f J, Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
         this⟩
   · simp_rw [comap_sInf, le_iInf_iff]
-    intros J hJ
+    intro J hJ
     haveI : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 
@@ -225,6 +227,9 @@ theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson :=
   intro h x hx
   rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
+
+theorem ringJacobson_le_jacobson {I : Ideal R} : Ring.jacobson R ≤ I.jacobson :=
+  jacobson_bot.symm.trans_le (jacobson_mono bot_le)
 
 /-- The Jacobson radical of a two-sided ideal is two-sided. -/
 instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
@@ -260,8 +265,6 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
       simpa using this
     exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩
 
-@[deprecated (since := "2025-04-13")] alias jacobson_mul_mem_right := Ideal.instIsTwoSidedJacobson
-
 end Ring
 
 section CommRing
@@ -281,7 +284,7 @@ theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ 
     IsUnit r := by
   obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r h
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
-  exact isUnit_of_mul_eq_one _ _ hs
+  exact .of_mul_eq_one _ hs
 
 theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsUnit (x * y + 1) :=
   ⟨fun hx y =>
@@ -295,7 +298,6 @@ theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsU
 
 /-- An ideal `I` of `R` is equal to its Jacobson radical if and only if
 the Jacobson radical of the quotient ring `R/I` is the zero ideal -/
--- Porting note: changed `Quotient.mk'` to ``
 theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
     I.jacobson = I ↔ jacobson (⊥ : Ideal (R ⧸ I)) = ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -311,7 +313,6 @@ theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
 
 /-- The standard radical and Jacobson radical of an ideal `I` of `R` are equal if and only if
 the nilradical and Jacobson radical of the quotient ring `R/I` coincide -/
--- Porting note: changed `Quotient.mk'` to ``
 theorem radical_eq_jacobson_iff_radical_quotient_eq_jacobson_bot :
     I.radical = I.jacobson ↔ radical (⊥ : Ideal (R ⧸ I)) = jacobson ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -343,7 +344,7 @@ variable [CommRing R]
 
 /-- An ideal `I` is local iff its Jacobson radical is maximal. -/
 class IsLocal (I : Ideal R) : Prop where
-  /-- A ring `R` is local if and only if its jacobson radical is maximal -/
+  /-- A ring `R` is local if and only if its Jacobson radical is maximal -/
   out : IsMaximal (jacobson I)
 
 theorem isLocal_iff {I : Ideal R} : IsLocal I ↔ IsMaximal (jacobson I) :=

@@ -3,8 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Localization.Linear
+=======
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Localization.Linear
+>>>>>>> origin/master
 
 /-!
 # Localization of the linearity of the shift functors
@@ -16,12 +23,19 @@ then the shift functors on `D` are `R`-linear.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Shift
 
+<<<<<<< HEAD
 variable (R : Type*) [Ring R] {C : Type*} [Category C] [Preadditive C] [Linear R C]
   {D : Type*} [Category D] [Preadditive D] [Linear R D]
+=======
+variable (R : Type*) [Ring R] {C : Type _} [Category* C] [Preadditive C] [Linear R C]
+  {D : Type*} [Category* D] [Preadditive D] [Linear R D]
+>>>>>>> origin/master
   {M : Type*} [AddMonoid M] [HasShift C M]
   [∀ (n : M), (shiftFunctor C n).Linear R]
   (L : C ⥤ D) (W : MorphismProperty C)

@@ -3,10 +3,19 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+=======
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
+public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+>>>>>>> origin/master
 
 /-!
 # The canonical t-structure on the derived category
@@ -16,6 +25,11 @@ derived category of an abelian category.
 
 -/
 
+<<<<<<< HEAD
+=======
+@[expose] public section
+
+>>>>>>> origin/master
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
 universe w v u
@@ -25,7 +39,11 @@ namespace DerivedCategory
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
 /-- The canonical t-structure on `DerivedCategory C`. -/
+<<<<<<< HEAD
 noncomputable def TStructure.t : TStructure (DerivedCategory C) where
+=======
+def TStructure.t : TStructure (DerivedCategory C) where
+>>>>>>> origin/master
   le n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n
   ge n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyGE n
   le_isClosedUnderIsomorphisms n :=
@@ -52,20 +70,34 @@ noncomputable def TStructure.t : TStructure (DerivedCategory C) where
     apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE K L 0 1 (by simp)).elim
   le_zero_le := by
     rintro X ⟨K, e, _⟩
+<<<<<<< HEAD
     exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by omega)⟩
   ge_one_le := by
     rintro X ⟨K, e, _⟩
     exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by omega)⟩
+=======
+    exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by lia)⟩
+  ge_one_le := by
+    rintro X ⟨K, e, _⟩
+    exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by lia)⟩
+>>>>>>> origin/master
   exists_triangle_zero_one X := by
     obtain ⟨K, ⟨e₂⟩⟩ : ∃ K, Nonempty (Q.obj K ≅ X) := ⟨_, ⟨Q.objObjPreimageIso X⟩⟩
     have h := K.shortComplexTruncLE_shortExact 0
     refine ⟨Q.obj (K.truncLE 0), Q.obj (K.truncGE 1),
       ⟨_, Iso.refl _, inferInstance⟩, ⟨_, Iso.refl _, inferInstance⟩,
       Q.map (K.ιTruncLE 0) ≫ e₂.hom, e₂.inv ≫ Q.map (K.πTruncGE 1),
+<<<<<<< HEAD
       inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega))) ≫ (triangleOfSES h).mor₃,
       isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm ?_)⟩
     refine Triangle.isoMk _ _ (Iso.refl _) e₂
       (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega)))) ?_ ?_ (by simp)
+=======
+      inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by lia))) ≫ (triangleOfSES h).mor₃,
+      isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm ?_)⟩
+    refine Triangle.isoMk _ _ (Iso.refl _) e₂
+      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by lia)))) ?_ ?_ (by simp)
+>>>>>>> origin/master
     · dsimp
       rw [id_comp]
       rfl
@@ -178,6 +210,7 @@ lemma exists_iso_Q_obj_of_isGE_of_isLE (X : DerivedCategory C) (a b : ℤ) [X.Is
     exact TStructure.t.isGE_of_iso e a
   exact ⟨K.truncGE a, inferInstance, inferInstance, ⟨e ≪≫ asIso (Q.map (K.πTruncGE a))⟩⟩
 
+<<<<<<< HEAD
 lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] :
     ∃ (A : C), Nonempty (X ≅ (singleFunctor C n).obj A) := by
   dsimp only [singleFunctor, Functor.comp_obj]
@@ -321,5 +354,13 @@ variable {C}
 abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
 abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
 abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
+=======
+lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
+    (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] :
+    ∃ (Y : C), Nonempty (X ≅ (singleFunctor C n).obj Y) := by
+  obtain ⟨K, _, _, ⟨e⟩⟩ := exists_iso_Q_obj_of_isGE_of_isLE X n n
+  obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
+  exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
+>>>>>>> origin/master
 
 end DerivedCategory

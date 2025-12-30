@@ -3,7 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Topology.Spectral.Prespectral
+module
+
+public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Compact open covered sets
@@ -22,6 +25,8 @@ morphisms such that every compact open is compact-open covered.
 - `IsCompactOpenCovered.of_isOpenMap`: If all the `fᵢ` are open maps, then every compact open
   of `S` is compact-open covered.
 -/
+
+@[expose] public section
 
 open TopologicalSpace Opens
 
@@ -71,7 +76,7 @@ lemma iff_isCompactOpenCovered_sigmaMk :
       · simpa [h] using (V _ _).2
       · simp [h]
     · dsimp only
-      exact Set.isCompact_sigma hs fun i ↦ (by aesop)
+      exact Set.isCompact_sigma hs fun i ↦ (by simp_all)
     · aesop
   · obtain ⟨s, t, hs, hc, heq'⟩ := hc.sigma_exists_finite_sigma_eq
     have (i : ι) (hi : i ∈ s) : IsOpen (t i) := by
@@ -89,11 +94,11 @@ lemma of_iUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : s
     rwa [iff_isCompactOpenCovered_sigmaMk, iff_of_unique] at this
   choose V hVeq hVc using this
   refine ⟨⨆ (t : s), V t t.2, ?_, ?_⟩
-  · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_iSup, Opens.coe_mk]
+  · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk]
     have : Finite s := hf
     exact isCompact_iUnion (fun _ ↦ hVeq _ _)
   · simp [Set.image_iUnion, ← hs]
-    aesop
+    simp_all
 
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/
@@ -112,7 +117,7 @@ lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis 
   choose Us UsB hUsf hUs using fun i : s ↦ (hB i.1).exists_finite_of_isCompact (hc i i.2)
   let σ := Σ i : s, Us i
   have : Finite s := hs
-  have (i) : Finite (Us i) := hUsf i
+  have (i : _) : Finite (Us i) := hUsf i
   refine ⟨σ, inferInstance, fun i ↦ i.1.1, fun i ↦ i.2.1, fun i ↦ UsB _ (by simp),
       fun _ ↦ hBc _ _ (UsB _ (by simp)), ?_⟩
   rw [← hunion]

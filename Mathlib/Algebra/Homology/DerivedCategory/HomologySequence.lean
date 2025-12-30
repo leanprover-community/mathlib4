@@ -3,9 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.SingleHomology
+=======
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+>>>>>>> origin/master
 
 /-!
 # The homology sequence
@@ -16,6 +21,8 @@ the long exact homology sequences associated to distinguished triangles in the
 derived category.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

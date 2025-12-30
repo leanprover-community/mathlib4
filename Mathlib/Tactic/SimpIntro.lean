@@ -3,10 +3,14 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Simp
-import Mathlib.Init
+module
+
+public meta import Lean.Elab.Tactic.Simp
+public import Mathlib.Init
 
 /-! # `simp_intro` tactic -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic
@@ -71,7 +75,7 @@ elab "simp_intro" cfg:optConfig disch:(discharger)?
     ids:(ppSpace colGt binderIdent)* more:" .."? only:(&" only")? args:(simpArgs)? : tactic => do
   let args := args.map fun args ↦ ⟨args.raw[1].getArgs⟩
   let stx ← `(tactic| simp $cfg:optConfig $(disch)? $[only%$only]? $[[$args,*]]?)
-  let { ctx, simprocs, dischargeWrapper } ←
+  let { ctx, simprocs, dischargeWrapper, .. } ←
     withMainContext <| mkSimpContext stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? ↦ do
     let g ← getMainGoal

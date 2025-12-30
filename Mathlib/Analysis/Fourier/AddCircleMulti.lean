@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.MeasureTheory.Integral.Pi
+module
+
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
 # Multivariate Fourier series
@@ -14,6 +16,8 @@ show that it converges to the function in the L² norm. We also prove uniform co
 Fourier series if `f` is continuous and the sequence of its Fourier coefficients is summable.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped BigOperators ComplexConjugate ENNReal
@@ -21,8 +25,6 @@ open scoped BigOperators ComplexConjugate ENNReal
 open Set Algebra Submodule MeasureTheory
 
 -- some instances for unit circle
-
-attribute [local instance] Real.fact_zero_lt_one
 
 /-- In this file we normalise the measure on `ℝ / ℤ` to have total volume 1. -/
 local instance : MeasureSpace UnitAddCircle := ⟨AddCircle.haarAddCircle⟩
@@ -49,8 +51,7 @@ variable (n : d → ℤ)
 /-- Exponential monomials in `d` variables. -/
 def mFourier : C(UnitAddTorus d, ℂ) where
   toFun x := ∏ i : d, fourier (n i) (x i)
-  continuous_toFun := continuous_finset_prod _
-    fun i _ ↦ (fourier (n i)).continuous.comp (continuous_apply i)
+  continuous_toFun := by fun_prop
 
 variable {n} {x : UnitAddTorus d}
 
@@ -91,7 +92,7 @@ section Algebra
 def mFourierSubalgebra (d : Type*) [Fintype d] : StarSubalgebra ℂ C(UnitAddTorus d, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range mFourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
+    change Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
     refine adjoin_le ?_
     rintro _ ⟨n, rfl⟩
     refine subset_adjoin ⟨-n, ?_⟩
@@ -152,6 +153,11 @@ theorem coeFn_mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
     mFourierLp p n =ᵐ[volume] mFourier n :=
   ContinuousMap.coeFn_toLp volume (mFourier n)
 
+-- shortcut instance: avoids `synthInstance.maxHeartbeats` issue in `span_mFourierLp_closure_eq_top`
+instance {p : ℝ≥0∞} [Fact (1 ≤ p)] :
+    ContinuousSMul ℂ (Lp ℂ p (volume : Measure (UnitAddTorus d))) :=
+  inferInstance
+
 /-- For each `1 ≤ p < ∞`, the linear span of the monomials `mFourier n` is dense in the `Lᵖ` space
 of functions on `UnitAddTorus d`. -/
 theorem span_mFourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
@@ -166,7 +172,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   intro m n
   simp only [ContinuousMap.inner_toLp, ← mFourier_neg, ← mFourier_add]
   split_ifs with h
-  · simpa only [h, add_neg_cancel, mFourier_zero, measureReal_univ_eq_one, one_smul] using
+  · simpa only [h, add_neg_cancel, mFourier_zero, probReal_univ, one_smul] using
       integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
   rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_volume_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
@@ -194,7 +200,7 @@ local notation "L²(" α ")" => Lp ℂ 2 (volume : Measure α)
 on `UnitAddTorus d`, which by definition is an isometric isomorphism from `L²(UnitAddTorus d)`
 to `ℓ²(ℤᵈ, ℂ)`. -/
 def mFourierBasis : HilbertBasis (d → ℤ) ℂ L²(UnitAddTorus d) :=
-  HilbertBasis.mk orthonormal_mFourier (span_mFourierLp_closure_eq_top (by norm_num)).ge
+  HilbertBasis.mk orthonormal_mFourier (span_mFourierLp_closure_eq_top (by simp)).ge
 
 /-- The elements of the Hilbert basis `mFourierBasis` are the functions `mFourierLp 2`, i.e. the
 monomials `mFourier n` on `UnitAddTorus d` considered as elements of `L²`. -/

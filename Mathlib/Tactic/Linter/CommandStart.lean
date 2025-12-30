@@ -3,16 +3,19 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The `commandStart` linter
+# The `commandStart` linter
 
 The `commandStart` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
+
+meta section
 
 open Lean Elab Command Linter
 
@@ -32,14 +35,14 @@ as opposed to
 example (a: Nat) {R:Type}  [Add  R] : <not linted part>
 ```
 -/
-register_option linter.style.commandStart : Bool := {
+public register_option linter.style.commandStart : Bool := {
   defValue := false
   descr := "enable the commandStart linter"
 }
 
 /-- If the `linter.style.commandStart.verbose` option is `true`, the `commandStart` linter
 reports some helpful diagnostic information. -/
-register_option linter.style.commandStart.verbose : Bool := {
+public register_option linter.style.commandStart.verbose : Bool := {
   defValue := false
   descr := "enable the commandStart linter"
 }
@@ -50,15 +53,15 @@ formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
 -/
-def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
-  if let some cmd := stx.find? (·.isOfKind ``Parser.Command.declaration) then
+def CommandStart.endPos (stx : Syntax) : Option String.Pos.Raw :=
+  if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
       | none => dbg_trace "unreachable?"; none
       | some sig => sig.getTailPos?
     else
     match cmd.find? (·.isOfKind ``Parser.Term.typeSpec) with
-      | some s => s.getPos?
+      | some s => s[0].getTailPos? -- `s[0]` is the `:` separating hypotheses and the type
       | none => match cmd.find? (·.isOfKind ``Parser.Command.declValSimple) with
         | some s => s.getPos?
         | none => none
@@ -78,7 +81,7 @@ structure FormatError where
   /-- The distance to the end of the source string, as number of characters -/
   srcNat : Nat
   /-- The distance to the end of the source string, as number of string positions -/
-  srcEndPos : String.Pos
+  srcEndPos : String.Pos.Raw
   /-- The distance to the end of the formatted string, as number of characters -/
   fmtPos : Nat
   /-- The kind of formatting error. For example: `extra space`, `remove line break` or
@@ -90,7 +93,7 @@ structure FormatError where
   /-- The length of the mismatch, as number of characters. -/
   length : Nat
   /-- The starting position of the mismatch, as a `String.pos`. -/
-  srcStartPos : String.Pos
+  srcStartPos : String.Pos.Raw
   deriving Inhabited
 
 instance : ToString FormatError where
@@ -110,11 +113,11 @@ and as `String.Pos`.
 -/
 def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
-  srcEndPos := ls.endPos
+  srcEndPos := ls.rawEndPos
   fmtPos := ms.length
   msg := msg
   length := length
-  srcStartPos := ls.endPos
+  srcStartPos := ls.rawEndPos
 
 /--
 Add a new `FormatError` `f` to the array `fs`, trying, as much as possible, to merge the new
@@ -139,7 +142,7 @@ flagging some line-breaking changes.
 -/
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
-  if M.trim.isEmpty then as else
+  if M.trimAscii.isEmpty then as else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
   -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
@@ -150,44 +153,46 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
   -- doc-strings).  In this case, we drop everything until the following line break in the
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
-  if L.take 3 == "/--" && M.take 3 == "/--" then
-    parallelScanAux as (L.drop 3) (M.drop 3) else
-  if L.take 2 == "--" then
+  if L.take 3 == "/--".toSlice && M.take 3 == "/--".toSlice then
+    parallelScanAux as (L.drop 3).copy (M.drop 3).copy else
+  if L.take 2 == "--".toSlice then
     let newL := L.dropWhile (· != '\n')
-    let diff := L.length - newL.length
+    let diff := L.length - newL.copy.length
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
     -- (modulo additional whitespace).
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as newL.trimLeft newM.trimLeft else
-  if L.take 2 == "-/" then
-    let newL := L.drop 2 |>.trimLeft
-    let newM := M.drop 2 |>.trimLeft
-    parallelScanAux as newL newM else
+    parallelScanAux as newL.trimAsciiStart.copy newM.trimAsciiStart.copy else
+  if L.take 2 == "-/".toSlice then
+    let newL := L.drop 2 |>.trimAsciiStart
+    let newM := M.drop 2 |>.trimAsciiStart
+    parallelScanAux as newL.copy newM.copy else
   let ls := L.drop 1
   let ms := M.drop 1
-  match L.get 0, M.get 0 with
+  match L.front, M.front with
   | ' ', m =>
     if m.isWhitespace then
-      parallelScanAux as ls ms.trimLeft
+      parallelScanAux as ls.copy ms.trimAsciiStart.copy
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) ls M
+      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) ls.copy M
   | '\n', m =>
     if m.isWhitespace then
-      parallelScanAux as ls.trimLeft ms.trimLeft
+      parallelScanAux as ls.trimAsciiStart.copy ms.trimAsciiStart.copy
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) ls.trimLeft M
+      parallelScanAux
+        (pushFormatError as (mkFormatError L M "remove line break")) ls.trimAsciiStart.copy M
   | l, m => -- `l` is not whitespace
     if l == m then
-      parallelScanAux as ls ms
+      parallelScanAux as ls.copy ms.copy
     else
       if m.isWhitespace then
-        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) L ms.trimLeft
+        parallelScanAux
+          (pushFormatError as (mkFormatError L M "missing space")) L ms.trimAsciiStart.copy
     else
       -- If this code is reached, then `L` and `M` differ by something other than whitespace.
       -- This should not happen in practice.
-      pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
+      pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)")
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
@@ -252,7 +257,7 @@ The linter uses this information to avoid emitting a warning for nodes with kind
 `unlintedNodes`.
 -/
 def getUnlintedRanges (a : Array SyntaxNodeKind) :
-    Std.HashSet String.Range → Syntax → Std.HashSet String.Range
+    Std.HashSet Lean.Syntax.Range → Syntax → Std.HashSet Lean.Syntax.Range
   | curr, s@(.node _ kind args) =>
     let new := args.foldl (init := curr) (·.union <| getUnlintedRanges a curr ·)
     if a.contains kind then
@@ -267,13 +272,13 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
       curr
   | curr, _ => curr
 
-/-- Given a `HashSet` of `String.Range`s `rgs` and a further `String.Range` `rg`,
+/-- Given a `HashSet` of `Lean.Syntax.Range`s `rgs` and a further `Lean.Syntax.Range` `rg`,
 `isOutside rgs rg` returns `false` if and only if `rgs` contains a range that completely contains
 `rg`.
 
 The linter uses this to figure out which nodes should be ignored.
 -/
-def isOutside (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
+def isOutside (rgs : Std.HashSet Lean.Syntax.Range) (rg : Lean.Syntax.Range) : Bool :=
   rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
 
 /-- `mkWindow orig start ctx` extracts from `orig` a string that starts at the first
@@ -286,10 +291,10 @@ to avoid cutting into "words".
 
 *Note*. `start` is the number of characters *from the right* where our focus is!
 -/
-def mkWindow (orig : String) (start ctx : Nat) : String :=
-  let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
-  let middle := orig.takeRight (start + 1)
-  let headCtx := head.takeRightWhile (!·.isWhitespace)
+public def mkWindow (orig : String) (start ctx : Nat) : String :=
+  let head := orig.dropEnd (start + 1) -- `orig`, up to one character before the discrepancy
+  let middle := orig.takeEnd (start + 1)
+  let headCtx := head.takeEndWhile (!·.isWhitespace)
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
@@ -332,8 +337,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
     for s in scan do
-      let center := origSubstring.stopPos - s.srcEndPos
-      let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
+      let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
+      let rg : Lean.Syntax.Range :=
+        ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
       if s.msg.startsWith "Oh no" then
         Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
           m!"This should not have happened: please report this issue!"

@@ -3,11 +3,13 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Schnirelmann density
@@ -41,6 +43,8 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 * [Ruzsa, Imre, *Sumsets and structure*][ruzsa2009]
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -100,28 +104,21 @@ lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
-@[deprecated (since := "2025-05-23")]
-alias schnirelmannDensity_le_of_not_mem := schnirelmannDensity_le_of_notMem
-
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/
 lemma schnirelmannDensity_eq_zero_of_one_notMem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
   ((schnirelmannDensity_le_of_notMem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
 
-@[deprecated (since := "2025-05-23")]
-alias schnirelmannDensity_eq_zero_of_one_not_mem := schnirelmannDensity_eq_zero_of_one_notMem
-
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
-  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact h
+  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by gcongr
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
   rw [le_antisymm_iff, and_iff_right schnirelmannDensity_le_one]
   constructor
   · rw [← not_imp_not, not_le]
-    simp only [Set.not_subset, forall_exists_index, true_and, and_imp, Set.mem_singleton_iff]
+    simp only [Set.not_subset, forall_exists_index, and_imp]
     intro x hx hx'
     apply (schnirelmannDensity_le_of_notMem hx').trans_lt
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
@@ -159,7 +156,7 @@ lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
 
 lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
     (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B := by
-  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
+  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; simp_all
 
 /-- The Schnirelmann density is unaffected by adding `0`. -/
 @[simp] lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :
@@ -173,7 +170,7 @@ lemma schnirelmannDensity_diff_singleton_zero [DecidablePred (· ∈ A \ {0})] :
 
 lemma schnirelmannDensity_congr {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A = B) :
     schnirelmannDensity A = schnirelmannDensity B :=
-  schnirelmannDensity_congr' (by aesop)
+  schnirelmannDensity_congr' (by simp_all)
 
 /--
 If the Schnirelmann density is `0`, there is a positive natural for which
@@ -254,7 +251,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff₀ (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'
-    rwa [← Nat.succ_le, Nat.succ_pred hn.ne'] at this
+    rwa [← Nat.succ_le_iff, Nat.succ_pred hn.ne'] at this
   intro a b
   simp [hm'.ne']
 

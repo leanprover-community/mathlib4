@@ -3,7 +3,9 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.MetricSpace.PiNat
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # (Topological) Schemes and their induced maps
@@ -38,6 +40,8 @@ scheme, cantor scheme, lusin scheme, approximation.
 
 -/
 
+@[expose] public section
+
 namespace CantorScheme
 
 open List Function Filter Set PiNat Topology
@@ -48,7 +52,7 @@ variable {β α : Type*} (A : List β → Set α)
 which sends each infinite sequence `x` to an element of the intersection along the
 branch corresponding to `x`, if it exists.
 We call this the map induced by the scheme. -/
-noncomputable def inducedMap : Σs : Set (ℕ → β), s → α :=
+noncomputable def inducedMap : Σ s : Set (ℕ → β), s → α :=
   ⟨fun x => Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x => x.property.some⟩
 
 section Topology

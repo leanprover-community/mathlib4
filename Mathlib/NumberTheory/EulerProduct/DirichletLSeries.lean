@@ -3,8 +3,10 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.EulerProduct.ExpLog
-import Mathlib.NumberTheory.LSeries.Dirichlet
+module
+
+public import Mathlib.NumberTheory.EulerProduct.ExpLog
+public import Mathlib.NumberTheory.LSeries.Dirichlet
 
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series
@@ -21,6 +23,8 @@ The second result is `dirichletLSeries_eulerProduct` (with variants
 `dirichletLSeries_eulerProduct_hasProd` and `dirichletLSeries_eulerProduct_tprod`),
 which is the analogous statement for Dirichlet L-series.
 -/
+
+@[expose] public section
 
 open Complex
 
@@ -111,18 +115,12 @@ theorem DirichletCharacter.LSeries_eulerProduct_hasProd {N : ℕ} (χ : Dirichle
   rw [← tsum_dirichletSummand χ hs]
   convert eulerProduct_completely_multiplicative_hasProd <| summable_dirichletSummand χ hs
 
-@[deprecated (since := "2024-11-14")] alias
-  dirichletLSeries_eulerProduct_hasProd := DirichletCharacter.LSeries_eulerProduct_hasProd
-
 /-- The Euler product for Dirichlet L-series, valid for `s.re > 1`.
 This version is stated in terms of `tprod`. -/
 theorem DirichletCharacter.LSeries_eulerProduct_tprod {N : ℕ} (χ : DirichletCharacter ℂ N)
     (hs : 1 < s.re) :
     ∏' p : Primes, (1 - χ p * (p : ℂ) ^ (-s))⁻¹ = L ↗χ s :=
   (DirichletCharacter.LSeries_eulerProduct_hasProd χ hs).tprod_eq
-
-@[deprecated (since := "2024-11-14")] alias
-  dirichlet_LSeries_eulerProduct_tprod := DirichletCharacter.LSeries_eulerProduct_tprod
 
 /-- The Euler product for Dirichlet L-series, valid for `s.re > 1`.
 This version is stated in the form of convergence of finite partial products. -/
@@ -132,9 +130,6 @@ theorem DirichletCharacter.LSeries_eulerProduct {N : ℕ} (χ : DirichletCharact
       (𝓝 (L ↗χ s)) := by
   rw [← tsum_dirichletSummand χ hs]
   apply eulerProduct_completely_multiplicative <| summable_dirichletSummand χ hs
-
-@[deprecated (since := "2024-11-14")] alias
-  dirichletLSeries_eulerProduct := DirichletCharacter.LSeries_eulerProduct
 
 open LSeries
 

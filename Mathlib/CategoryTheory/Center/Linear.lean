@@ -3,18 +3,28 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Center.Preadditive
+=======
+module
+
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Center.Preadditive
+>>>>>>> origin/master
 
 /-!
 # Center of a linear category
 
-If `C` is a `R`-linear category, we define a ring morphism `R →+* CatCenter C`
+If `C` is an `R`-linear category, we define a ring morphism `R →+* CatCenter C`
 and conversely, if `C` is a preadditive category, and `φ : R →+* CatCenter C`
-is a ring morphism, we define a `R`-linear structure on `C` attached to `φ`.
+is a ring morphism, we define an `R`-linear structure on `C` attached to `φ`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -26,19 +36,23 @@ namespace Linear
 
 variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 
-/-- The canonical morphism `R →+* CatCenter C` when `C` is a `R`-linear category. -/
+/-- The canonical morphism `R →+* CatCenter C` when `C` is an `R`-linear category. -/
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
   toFun a :=
     { app := fun X => a • 𝟙 X }
-  map_one' := by aesop_cat
+  map_one' := by cat_disch
   map_mul' a b := by
     rw [mul_comm]
     ext X
     dsimp only [CatCenter.mul_app']
     rw [Linear.smul_comp, Linear.comp_smul, smul_smul]
     simp
+<<<<<<< HEAD
   map_zero' := by aesop_cat
+=======
+  map_zero' := by cat_disch
+>>>>>>> origin/master
   map_add' a b := by ext X; simp [add_smul]
 
 section
@@ -78,9 +92,9 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
       simp only [smulOfRingMorphism_smul_eq', Functor.id_obj, map_mul, End.mul_def,
         NatTrans.comp_app, assoc]
     smul_zero := fun a => by
-      simp only [smulOfRingMorphism_smul_eq, Functor.id_obj, comp_zero]
+      simp only [smulOfRingMorphism_smul_eq, comp_zero]
     zero_smul := fun a => by
-      simp only [smulOfRingMorphism_smul_eq, Functor.id_obj, map_zero,
+      simp only [smulOfRingMorphism_smul_eq, map_zero,
         zero_app, zero_comp]
     smul_add := fun a b => by
       simp [smulOfRingMorphism_smul_eq]

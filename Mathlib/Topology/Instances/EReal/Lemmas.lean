@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.EReal.Inv
-import Mathlib.Topology.Semicontinuous
+module
+
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Topological structure on `EReal`
@@ -23,6 +25,8 @@ We prove basic properties of the topology on `EReal`.
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Set Filter Metric TopologicalSpace Topology
@@ -36,9 +40,6 @@ namespace EReal
 
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ → EReal) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe_eq_Ioo]; exact ordConnected_Ioo
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe := isEmbedding_coe
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
   ⟨isEmbedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
@@ -81,9 +82,6 @@ def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
 theorem isEmbedding_coe_ennreal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennreal_strictMono.isEmbedding_of_ordConnected <| by
     rw [range_coe_ennreal]; exact ordConnected_Ici
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe_ennreal := isEmbedding_coe_ennreal
 
 theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
@@ -154,8 +152,8 @@ lemma nhdsWithin_top : 𝓝[≠] (⊤ : EReal) = (atTop).map Real.toEReal := by
 
 lemma nhdsWithin_bot : 𝓝[≠] (⊥ : EReal) = (atBot).map Real.toEReal := by
   apply (nhdsWithin_hasBasis nhds_bot_basis_Iic _).ext (atBot_basis.map Real.toEReal)
-  · simp only [EReal.image_coe_Iic, Set.subset_compl_singleton_iff, Set.mem_Ioc, lt_self_iff_false,
-      bot_le, and_true, not_false_eq_true, true_and]
+  · simp only [EReal.image_coe_Iic,
+      true_and]
     intro x hx
     by_cases hx_top : x = ⊤
     · simp [hx_top]
@@ -165,6 +163,25 @@ lemma nhdsWithin_bot : 𝓝[≠] (⊥ : EReal) = (atBot).map Real.toEReal := by
   · simp only [EReal.image_coe_Iic, true_implies]
     refine fun x ↦ ⟨x, ⟨EReal.bot_lt_coe x, fun x ⟨(h1 : x ≤ _), h2⟩ ↦ ?_⟩⟩
     simp [h1, Ne.bot_lt' fun a ↦ h2 a.symm]
+
+omit [TopologicalSpace α] in
+@[simp]
+lemma tendsto_coe_nhds_top_iff {f : α → ℝ} {l : Filter α} :
+    Tendsto (fun x ↦ Real.toEReal (f x)) l (𝓝 ⊤) ↔ Tendsto f l atTop := by
+  rw [tendsto_nhds_top_iff_real, atTop_basis_Ioi.tendsto_right_iff]; simp
+
+lemma tendsto_coe_atTop : Tendsto Real.toEReal atTop (𝓝 ⊤) :=
+  tendsto_coe_nhds_top_iff.2 tendsto_id
+
+omit [TopologicalSpace α] in
+@[simp]
+lemma tendsto_coe_nhds_bot_iff {f : α → ℝ} {l : Filter α} :
+    Tendsto (fun x ↦ Real.toEReal (f x)) l (𝓝 ⊥) ↔ Tendsto f l atBot := by
+  rw [tendsto_nhds_bot_iff_real, atBot_basis_Iio.tendsto_right_iff]; simp
+
+lemma tendsto_coe_atBot : Tendsto Real.toEReal atBot (𝓝 ⊥) :=
+  tendsto_coe_nhds_bot_iff.2 tendsto_id
+
 
 lemma tendsto_toReal_atTop : Tendsto EReal.toReal (𝓝[≠] ⊤) atTop := by
   rw [nhdsWithin_top, tendsto_map'_iff]
@@ -188,8 +205,8 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   by_cases h_bot : x = ⊥
   · refine tendsto_nhds_of_eventually_eq ?_
     rw [h_bot, nhds_bot_basis.eventually_iff]
-    simp [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and]
-    exact ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
+    simpa [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and] using
+      ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
   refine ENNReal.continuous_ofReal.continuousAt.comp' <| continuousOn_toReal.continuousAt
     <| (toFinite _).isClosed.compl_mem_nhds ?_
   simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
@@ -199,9 +216,6 @@ lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : 
     (hf : Continuous f) :
     Continuous fun x => (f x).toENNReal :=
   continuous_toENNReal.comp hf
-
-@[deprecated (since := "2025-03-05")] alias _root_.Continous.ereal_toENNReal :=
-  _root_.Continuous.ereal_toENNReal
 
 @[fun_prop]
 lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}
@@ -237,10 +251,10 @@ section LimInfSup
 
 variable {α : Type*} {f : Filter α} {u v : α → EReal}
 
-lemma liminf_neg : liminf (- v) f = - limsup v f :=
+lemma liminf_neg : liminf (-v) f = -limsup v f :=
   EReal.negOrderIso.limsup_apply.symm
 
-lemma limsup_neg : limsup (- v) f = - liminf v f :=
+lemma limsup_neg : limsup (-v) f = -liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
 lemma le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
@@ -264,11 +278,6 @@ lemma liminf_add_le (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤) (h' : limsup
   le_add_of_forall_gt h h' fun _ a_u _ b_v ↦ (liminf_le_iff).2 fun _ c_ab ↦
     (((frequently_lt_of_liminf_lt) b_v).and_eventually ((eventually_lt_of_limsup_lt) a_u)).mono
     fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
-
-@[deprecated (since := "2024-11-11")] alias add_liminf_le_liminf_add := le_liminf_add
-@[deprecated (since := "2024-11-11")] alias limsup_add_le_add_limsup := limsup_add_le
-@[deprecated (since := "2024-11-11")] alias limsup_add_liminf_le_limsup_add := le_limsup_add
-@[deprecated (since := "2024-11-11")] alias liminf_add_le_limsup_add_liminf := liminf_add_le
 
 lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
     limsup (u + v) f = ⊥ := by
@@ -406,6 +415,14 @@ theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) 
   · exact continuousAt_add_top_coe _
   · exact continuousAt_add_top_top
 
+lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p.1 + p.2 := by
+  intro x y
+  by_cases hx₁ : x.1 = ⊥
+  · simp [hx₁]
+  by_cases hx₂ : x.2 = ⊥
+  · simp [hx₂]
+  · exact continuousAt_add (.inr hx₂) (.inl hx₁) |>.lowerSemicontinuousAt _
+
 /-! ### Continuity of multiplication -/
 
 /- Outside of indeterminacies `(0, ±∞)` and `(±∞, 0)`, the multiplication on `EReal` is continuous.
@@ -453,7 +470,7 @@ private lemma continuousAt_mul_top_top :
   rw [_root_.eventually_nhds_iff]
   use (Set.Ioi ((max x 0) : EReal)) ×ˢ (Set.Ioi 1)
   split_ands
-  · intros p p_in_prod
+  · intro p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi, max_lt_iff] at p_in_prod
     rcases p_in_prod with ⟨⟨p1_gt_x, p1_pos⟩, p2_gt_1⟩
     have := mul_le_mul_of_nonneg_left (le_of_lt p2_gt_1) (le_of_lt p1_pos)
@@ -468,17 +485,17 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
   simp only [ContinuousAt, EReal.top_mul_coe_of_pos h, EReal.tendsto_nhds_top_iff_real]
   intro x
   rw [_root_.eventually_nhds_iff]
-  use (Set.Ioi ((2*(max (x+1) 0)/a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a/2 : ℝ) : EReal))
+  use (Set.Ioi ((2 * (max (x + 1) 0) / a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a / 2 : ℝ) : EReal))
   split_ands
-  · intros p p_in_prod
+  · intro p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi] at p_in_prod
     rcases p_in_prod with ⟨p1_gt, p2_gt⟩
     have p1_pos : 0 < p.1 := by
       apply lt_of_le_of_lt _ p1_gt
       rw [EReal.coe_nonneg]
       apply mul_nonneg _ (le_of_lt (inv_pos_of_pos h))
-      simp only [gt_iff_lt, Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, le_max_iff, le_refl, or_true]
-    have a2_pos : 0 < ((a/2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
+      simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, le_max_iff, le_refl, or_true]
+    have a2_pos : 0 < ((a / 2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
     have lock := mul_le_mul_of_nonneg_right (le_of_lt p1_gt) (le_of_lt a2_pos)
     have key := mul_le_mul_of_nonneg_left (le_of_lt p2_gt) (le_of_lt p1_pos)
     replace lock := le_trans lock key
@@ -518,12 +535,28 @@ theorem continuousAt_mul {p : EReal × EReal} (h₁ : p.1 ≠ 0 ∨ p.2 ≠ ⊥)
     exact continuousAt_mul_top_ne_zero h₄
   · exact continuousAt_mul_top_top
 
-lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p.1 + p.2 := by
-  intro x y
-  by_cases hx₁ : x.1 = ⊥
-  · simp [hx₁]
-  by_cases hx₂ : x.2 = ⊥
-  · simp [hx₂]
-  · exact continuousAt_add (.inr hx₂) (.inl hx₁) |>.lowerSemicontinuousAt _
+variable {a b : EReal}
+
+protected theorem tendsto_mul (h₁ : a ≠ 0 ∨ b ≠ ⊥) (h₂ : a ≠ 0 ∨ b ≠ ⊤) (h₃ : a ≠ ⊥ ∨ b ≠ 0)
+    (h₄ : a ≠ ⊤ ∨ b ≠ 0) :
+    Tendsto (fun p : EReal × EReal ↦ p.1 * p.2) (𝓝 (a, b)) (𝓝 (a * b)) :=
+  (continuousAt_mul h₁ h₂ h₃ h₄).tendsto
+
+protected theorem Tendsto.mul {f : Filter α} {ma : α → EReal} {mb : α → EReal} {a b : EReal}
+    (hma : Tendsto ma f (𝓝 a)) (hmb : Tendsto mb f (𝓝 b)) (h₁ : a ≠ 0 ∨ b ≠ ⊥)
+    (h₂ : a ≠ 0 ∨ b ≠ ⊤) (h₃ : a ≠ ⊥ ∨ b ≠ 0) (h₄ : a ≠ ⊤ ∨ b ≠ 0) :
+    Tendsto (fun x ↦ ma x * mb x) f (𝓝 (a * b)) :=
+  (EReal.tendsto_mul h₁ h₂ h₃ h₄).comp (hma.prodMk_nhds hmb)
+
+protected theorem Tendsto.const_mul {f : Filter α} {m : α → EReal} {a b : EReal}
+    (hm : Tendsto m f (𝓝 b)) (h₁ : a ≠ ⊥ ∨ b ≠ 0) (h₂ : a ≠ ⊤ ∨ b ≠ 0) :
+    Tendsto (fun b ↦ a * m b) f (𝓝 (a * b)) :=
+  by_cases (fun (this : a = 0) => by simp [this, tendsto_const_nhds])
+    fun ha : a ≠ 0 => EReal.Tendsto.mul tendsto_const_nhds hm (Or.inl ha) (Or.inl ha) h₁ h₂
+
+protected theorem Tendsto.mul_const {f : Filter α} {m : α → EReal} {a b : EReal}
+    (hm : Tendsto m f (𝓝 a)) (h₁ : a ≠ 0 ∨ b ≠ ⊥) (h₂ : a ≠ 0 ∨ b ≠ ⊤) :
+    Tendsto (fun x ↦ m x * b) f (𝓝 (a * b)) := by
+  simpa only [mul_comm] using EReal.Tendsto.const_mul hm h₁.symm h₂.symm
 
 end EReal
