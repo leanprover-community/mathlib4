@@ -45,7 +45,7 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
 open Functor in
-lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
+lemma Abelian.Ext.mapExactFunctor_hom
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ} (e : Ext X Y n) :
     (e.mapExactFunctor F).hom =
@@ -70,7 +70,7 @@ lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
 
 section
 
-attribute [local simp] Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
+attribute [local simp] Abelian.Ext.mapExactFunctor_hom
 attribute [local instance] HasDerivedCategory.standard
 
 variable [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
