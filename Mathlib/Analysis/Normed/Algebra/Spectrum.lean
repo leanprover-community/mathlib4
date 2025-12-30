@@ -693,16 +693,18 @@ end QuasispectrumRestricts
 
 namespace spectrum
 
-open Filter Set
+open Filter Set Topology
 
-variable [NormedField 𝕜] [ProperSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-  [HasSummableGeomSeries A]
-
-variable (𝕜 A) in
--- it would be nice to have the sequential characterization too, which would avoid a bunch of this
--- nonsense.
-lemma upperHemicontinuous : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
-  intro a s
+/-- A set-valued function `f : α → Set β` is upper hemicontinuous at `x₀ : α` if for every pair
+of sequences `x : ℕ → α` and `y : ℕ → β` such that `x` tends to `x₀` and `y n ∈ f (x n)` there
+is some `y₀ ∈ f x₀` which is a cluster point of the range of `y`. -/
+lemma _root_.UpperHemicontinuousAt.of_sequences {α β : Type*} [TopologicalSpace α]
+    [TopologicalSpace β] {f : α → Set β} {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
+    (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
+      ∀ y : ℕ → β, (∀ n, y n ∈ f (x n)) → ∃ y₀ ∈ f x₀, MapClusterPt y₀ atTop y) :
+    UpperHemicontinuousAt f x₀ := by
+  -- should have some alternate forms of semicontinuity and hemicontinuity.
+  intro s
   simp only [← subset_interior_iff_mem_nhdsSet]
   have hu : IsOpen (interior s) := isOpen_interior
   generalize interior s = u at *
@@ -711,20 +713,41 @@ lemma upperHemicontinuous : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜)
   intro hs
   obtain ⟨seq, seq_tendsto, h_seq⟩ := exists_seq_forall_of_frequently hs
   choose x hx hx' using h_seq
-  obtain ⟨r, hr⟩ := Metric.isBounded_range_of_tendsto seq seq_tendsto |>.exists_norm_le
-  obtain ⟨y, -, φ, hφ, φ_tendsto⟩ := tendsto_subseq_of_bounded
+  specialize h seq seq_tendsto x hx
+  obtain ⟨y₀, hy₁, hy₂⟩ := h
+  refine ⟨y₀, hy₁, ?_⟩
+  rw [mapClusterPt_iff_ultrafilter] at hy₂
+  obtain ⟨l, hl₁, hl₂⟩ := hy₂
+  exact hu.isClosed_compl.mem_of_tendsto hl₂ <| .of_forall hx'
+
+
+variable [NormedField 𝕜] [ProperSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+  [HasSummableGeomSeries A]
+
+variable (𝕜 A) in
+lemma _root_.upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
+  /- It suffices to use the sequential characterization of upper hemicontinuity -/
+  rw [upperHemicontinuous_iff]
+  refine fun a₀ ↦ .of_sequences fun a ha x hx ↦ ?_
+  /- Since the sequence `x : ℕ → 𝕜` satisfies `x n ∈ spectrm 𝕜 (a n)`, and since `a n` converges
+  to `a`, the sequences `x` is bounded (since `‖x n‖ ≤ ‖a n‖ * ‖1‖`), and therefore has a
+  subsequence which converges to some `x₀`. -/
+  obtain ⟨r, hr⟩ := Metric.isBounded_range_of_tendsto a ha |>.exists_norm_le
+  obtain ⟨x₀, -, φ, hφ, φ_tendsto⟩ := tendsto_subseq_of_bounded
     (Metric.isBounded_closedBall (x := 0) (r := r * ‖(1 : A)‖)) (x := x) fun n ↦ by
       simp only [Metric.mem_closedBall, dist_zero_right]
       apply spectrum.norm_le_norm_mul_of_mem (hx n) |>.trans
       gcongr
       exact hr _ ⟨n, rfl⟩
-  have h₁ : Tendsto (fun n ↦ algebraMap 𝕜 A ((x ∘ φ) n) - (seq ∘ φ) n)
-      atTop (𝓝 (algebraMap 𝕜 A y - a)) :=
-    continuous_algebraMap 𝕜 A |>.tendsto _ |>.comp φ_tendsto |>.sub <|
-      seq_tendsto.comp hφ.tendsto_atTop
-  refine ⟨y, ?_, ?_⟩
-  · exact nonunits.isClosed.mem_of_tendsto h₁ <| .of_forall fun n ↦ hx (φ n)
-  · exact hu.isClosed_compl.mem_of_tendsto φ_tendsto <| .of_forall fun n ↦ hx' (φ n)
+  /- Along this subsequence `algebraMap 𝕜 A (x n) - (a n)` converges to `algebraMap 𝕜 A x₀ - a₀`. -/
+  have h₁ : Tendsto (fun n ↦ algebraMap 𝕜 A ((x ∘ φ) n) - (a ∘ φ) n)
+      atTop (𝓝 (algebraMap 𝕜 A x₀ - a₀)) :=
+    continuous_algebraMap 𝕜 A |>.tendsto _ |>.comp φ_tendsto |>.sub <| ha.comp hφ.tendsto_atTop
+  /- `x₀` is a `MapClusterPt` of `x` along `atTop` because a subsequence tends to `x₀`. -/
+  refine ⟨x₀, ?_, φ_tendsto.mapClusterPt.of_comp hφ.tendsto_atTop⟩
+  /- `x₀ ∈ spectrum 𝕜 a₀` since `algebraMap 𝕜 A x₀ - a₀` is not invertible, being itself a limit
+  of non-invertible elements. -/
+  exact nonunits.isClosed.mem_of_tendsto h₁ <| .of_forall fun n ↦ hx (φ n)
 
 lemma subset_of_frequently (a : A) (s : Set 𝕜) (h : ∃ᶠ x in 𝓝 a, s ⊆ spectrum 𝕜 x) :
     s ⊆ spectrum 𝕜 a := by

@@ -122,11 +122,20 @@ lemma upperHemicontinuous_singleton_iff {f : α → β} :
     UpperHemicontinuous ({f ·}) ↔ Continuous f := by
   simpa [upperHemicontinuousOn_univ_iff] using upperHemicontinuousOn_singleton_iff (s := univ)
 
-/-- An upper hemicontinuous function which takes closed values has a closed graph. -/
-lemma UpperHemicontinuous.isClosed_graph (hf : UpperHemicontinuous f)
-    (hf_closed : ∀ x, IsClosed (f x)) (hf_dom : IsClosed {x | f x ≠ ∅}) :
-    IsClosed {x : α × β | x.2 ∈ f x.1} := by
+/-- Sequential characterization of upper hemicontinuity -/
+lemma upperHemicontinuousAt_iff_forall_seq {f : α → Set β} {x₀ : α} (hf' : ∀ x, IsCompact (f x)) :
+    UpperHemicontinuousAt f x₀ ↔
+      ∀ (x : ℕ → α), Tendsto x atTop (𝓝 x₀) → ∀ (y : ℕ → β), (∀ n, y n ∈ f (x n)) →
+        ∃ y₀, MapClusterPt y₀ atTop y ∧ y₀ ∈ f x₀ := by
+  constructor
+  · intro hf x hx y hfxy
+    rw [upperHemicontinuousAt_iff] at hf
+    sorry
+  · sorry
 
-
-
+/-- Sequential characterization of lower hemicontinuity -/
+lemma lowerHemicontinuousAt_iff_forall_seq {f : α → Set β} {x₀ : α} :
+    LowerHemicontinuousAt f x₀ ↔
+      ∀ (x : ℕ → α), Tendsto x atTop (𝓝 x₀) →
+        ∀ (y₀ : β), ∃ (y : ℕ → β), (∀ n, y n ∈ f (x n)) ∧ Tendsto y atTop (𝓝 y₀) := by
   sorry
