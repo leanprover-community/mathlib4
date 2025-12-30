@@ -392,6 +392,28 @@ theorem galEquiv_smul_of_pow_eq (σ : Gal(K/ℚ)) {x : 𝓞 K} (hx : x ^ n = 1) 
   apply FaithfulSMul.algebraMap_injective (𝓞 K) K
   apply galEquiv_apply_of_pow_eq n K σ <| by rw [← Subalgebra.coe_pow, hx, OneMemClass.coe_one]
 
+example (p : ℕ) [hp : Fact (Nat.Prime p)] (hp' : p.Coprime n) (P : Ideal (𝓞 K)) [P.IsPrime]
+    [P.LiesOver (span {(p : ℤ)})] (σ : Gal(K/ℚ)) :
+    σ • P = P ↔ galEquiv n K σ ∈ Subgroup.zpowers (ZMod.unitOfCoprime p hp') := by
+  let ζ := (zeta_spec n ℚ K).toInteger
+  have h₁ : ¬ p ∣ exponent ζ := by
+    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec n ℚ K)]
+    exact hp.out.not_dvd_one
+  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
+
+  have h₃ := primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span h₁ h₂
+  simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
+
+  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
+    (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
+  rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
+  · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
+  · refine dvd_trans h₂.2.2 ?_
+    rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
+      ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
+    rfl
+  sorry
+
 variable {m : ℕ} [NeZero m] (F : Type*) [Field F] [NumberField F]
   [hF : IsCyclotomicExtension {m} ℚ F] [Algebra F K]
 
