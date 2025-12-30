@@ -3,15 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-=======
 module
 
-public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
->>>>>>> origin/master
 
 /-! Sequences of functors from a category equigpped with a shift
 
@@ -36,14 +31,9 @@ in degree `n`.
 
 open CategoryTheory Category ZeroObject Limits
 
-<<<<<<< HEAD
-variable {C D A : Type*} [Category C] [Category D] [Category A] (F : C ⥤ A)
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A] (F : C ⥤ A)
   {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
   (M : Type*) [AddMonoid M] [HasShift C M] [HasShift D M]
-=======
-variable {C A : Type*} [Category* C] [Category* A] (F : C ⥤ A)
-  (M : Type*) [AddMonoid M] [HasShift C M]
->>>>>>> origin/master
   {G : Type*} [AddGroup G] [HasShift C G]
 
 namespace CategoryTheory

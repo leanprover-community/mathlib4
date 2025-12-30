@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
-import Mathlib.CategoryTheory.ObjectProperty.Retracts
+import Mathlib.CategoryTheory.ObjectProperty.Retract
 import Mathlib.CategoryTheory.Monoidal.Subcategory
 import Mathlib.Algebra.Homology.LeftResolutions.Basic
 

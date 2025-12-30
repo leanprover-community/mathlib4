@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Retracts
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 public import Mathlib.CategoryTheory.Triangulated.Functor
@@ -115,7 +115,6 @@ variable [F.IsHomological]
 instance : F.homologicalKernel.IsClosedUnderIsomorphisms where
   of_iso e hX n := (hX n).of_iso ((shiftFunctor C n ⋙ F).mapIso e.symm)
 
-<<<<<<< HEAD
 
 -- to be moved
 lemma _root_.CategoryTheory.Retract.isZero {C : Type*} [Category C] {X Y : C}
@@ -132,11 +131,9 @@ lemma _root_.CategoryTheory.Retract.isZero {C : Type*} [Category C] {X Y : C}
     rw [← cancel_mono e.i]
     apply hY.eq_of_tgt
 
-instance : F.homologicalKernel.IsClosedUnderRetracts where
+instance : F.homologicalKernel.IsStableUnderRetracts where
   of_retract e h n := (e.map (shiftFunctor _ n ⋙ F)).isZero (h n)
 
-=======
->>>>>>> origin/master
 instance : F.homologicalKernel.IsTriangulated where
   exists_zero := ⟨0, isZero_zero C,
     fun n ↦ (shiftFunctor C n ⋙ F).map_isZero (isZero_zero C)⟩
