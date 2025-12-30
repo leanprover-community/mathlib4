@@ -527,6 +527,14 @@ theorem orderTop_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadin
     ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
+@[simp]
+theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
+    (x * y).orderTop = x.orderTop + y.orderTop := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  apply orderTop_mul_of_nonzero
+  simp_all
+
 theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
   exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
@@ -546,6 +554,14 @@ theorem order_mul_of_nonzero {x y : R⟦Γ⟧}
 theorem leadingCoeff_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
   simp only [leadingCoeff_eq, order_mul_of_nonzero h, coeff_mul_order_add_order]
+
+@[simp]
+theorem leadingCoeff_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
+    (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  apply leadingCoeff_mul_of_nonzero
+  simp_all
 
 theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
     {x : R⟦Γ⟧} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
