@@ -581,12 +581,19 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let (reported, excluded) := corr.partition fun _ {kinds := ks,..} =>
       (!totalExclusions.contains ks && !ignoreSpaceAfter.contains ks)
     let fm ← getFileMap
-    --dbg_trace "reported: {reported.toArray.map (fm.toPosition ·.1)}"
-    --dbg_trace "excluded: {excluded.toArray.map (fm.toPosition ·.1)}"
+    -- Sort by position to stabilize output.
+    let reported := reported.toArray.qsort (·.1 < ·.1)
+    -- Counts the number of times that a `Bundle.termπ__` potential exception appears and
+    -- ignores each third one: in `π a b`, spaces after `b` are ignored.
+    let mut con : Nat := 0
     for (origPos, ppR) in reported do
       let ppPos := ppR.pos
       let origAtPos := {orig with startPos := origPos}
       let ppAtPos := {pp with startPos := ppPos}
+      -- Check for `Bundle.termπ__` at the correct depth, increase the counter and skip, as needed
+      if (ppR.kinds.drop (ppR.kinds.size - 3)).contains `Bundle.termπ__ then
+        con := con + 1
+        if con % 3 == 0 then continue
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
         -- TODO: temporary change, hopefully reduces no-op warning spew
         if mkWdw origAtPos != mkWdw ppAtPos mid then

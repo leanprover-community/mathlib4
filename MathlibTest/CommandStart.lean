@@ -81,18 +81,126 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 example := π 3  (4)
 
 /--
-warning: add space in the source
+warning: remove space in the source
 
 This part of the code
-  '1)'
+  '(π  0'
 should be written as
-  '1 )'
+  '(π 0'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '0  1)'
+should be written as
+  '0 1)'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '-  (π'
+should be written as
+  '- (π'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '(π  0'
+should be written as
+  '(π 0'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '0  1)'
+should be written as
+  '0 1)'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-example := (π 0 1)
+example := (π  0  1) + 0 -  (π  0  1)
+
+/--
+warning: remove space in the source
+
+This part of the code
+  '(π  0'
+should be written as
+  '(π 0'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '0  1)'
+should be written as
+  '0 1)'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '-  (π'
+should be written as
+  '- (π'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '(π  0'
+should be written as
+  '(π 0'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '0  1'
+should be written as
+  '0 1'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '+  1)'
+should be written as
+  '+ 1)'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example := (π  0  1) + 0 -  (π  0  1  +  1)
+
+-- Undesirable: spaces after the third argument of `π` are ignored.
+#guard_msgs in
+example := (π 0 1 )
 
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
@@ -184,59 +292,9 @@ example    :   True∧
 warning: add space in the source
 
 This part of the code
-  'first|assumption|'
-should be written as
-  'assumption |'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
   '·{exact'
 should be written as
   '· {'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'done|assumption'
-should be written as
-  'done |'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'done|assumption'
-should be written as
-  '| assumption'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: remove space in the source
-
-This part of the code
-  'done|assumption   |'
-should be written as
-  'assumption |'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: remove space in the source
-
-This part of the code
-  '|     trivial'
-should be written as
-  '| trivial'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -277,6 +335,56 @@ This part of the code
   'first|assumption|'
 should be written as
   '| assumption'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'assumption |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'done|assumption'
+should be written as
+  'done |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'done|assumption'
+should be written as
+  '| assumption'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'done|assumption   |'
+should be written as
+  'assumption |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '|     trivial'
+should be written as
+  '| trivial'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -931,7 +1039,6 @@ run_cmd
       end )
 
 def Card : Type → Nat := fun _ => 0
-
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type)
   /-- Terminal symbols (of the same type as the language) -/
