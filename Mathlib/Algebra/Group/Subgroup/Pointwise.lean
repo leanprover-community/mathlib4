@@ -226,12 +226,6 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
 lemma closure_pow_le : ∀ {n}, closure (s ^ n) ≤ closure s
   | 0 => by simp_all
   | n + 1 => by grw [pow_succ, closure_mul_le, closure_pow_le, sup_idem]
-    calc
-      closure (s ^ (n + 1))
-      _ = closure (s ^ n * s) := by rw [pow_succ]
-      _ ≤ closure (s ^ n) ⊔ closure s := closure_mul_le ..
-      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le
-      _ = closure s := sup_idem _
 
 @[to_additive]
 lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
