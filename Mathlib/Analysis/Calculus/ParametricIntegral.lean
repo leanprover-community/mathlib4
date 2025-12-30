@@ -400,7 +400,33 @@ theorem hasFTaylorSeriesOn_integral_of_dominated {n : WithTop ℕ∞} {bound : �
     · apply bound_integrable i hi
     · filter_upwards [h_diff] with a ha using ha.cont i hi
 
+#where
 
+theorem hasFTaylorSeriesOn_integral_of_dominated'
+    {H' : Type*} [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [BorelSpace H']
+    {n : WithTop ℕ∞} {C : ℕ → ℝ} {μ : Measure H'}
+    {p : H × H' → FormalMultilinearSeries 𝕜 (H × H') E} (hs : IsOpen s)
+    {t : Set H'} {F : H → H' → E} (ht : IsSeparable t)
+    (hF_meas : HasFTaylorSeriesUpToOn n F.uncurry p (s ×ˢ t))
+    (h_bound : ∀ x ∈ s, ∀ a ∈ t, ∀ (i : ℕ), i ≤ n → ‖p (x, a) i‖ ≤ C i) :
+    HasFTaylorSeriesUpToOn n (fun x ↦ ∫ a in t, F x a ∂μ)
+      (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
+        (fun j ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) s := by
+  apply hasFTaylorSeriesOn_integral_of_dominated hs (bound := fun i a ↦ C i)
+  · intro x hx i hi
+    apply ContinuousOn.aestronglyMeasurable_of_isSeparable
+    change  ContinuousOn
+      (compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) N))
+
+
+#exit
+
+     ?_ tmeas
+      (hk.isSeparable.mono (tk'.trans k'k))
+    apply Continuous.comp_continuousOn (by fun_prop)
+    apply (hp.cont 0 bot_le).comp (by fun_prop)
+    intro w hw
+    exact hk'v ⟨hz, tk' hw⟩
 
 
 
