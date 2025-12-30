@@ -112,7 +112,7 @@ where
   go : Lean.Name → Bool
     | .str n s =>
       !s.contains (fun c => c == '✝' || c == '\n')
-        && (s.isEmpty || !s.any isIdEndEscape)
+        && !s.any isIdEndEscape
         && go n
     | .num .. => false
     | .anonymous => true
