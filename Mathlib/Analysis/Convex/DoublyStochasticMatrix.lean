@@ -105,24 +105,37 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
 
+/-- The tranpose of a doubly stochastic matrix is doubly stochastic. -/
+@[aesop safe apply, grind .]
+lemma transpose_mem_doublyStochastic {M : Matrix n n R} (hM : M ∈ doublyStochastic R n) :
+    M.transpose ∈ doublyStochastic R n := by
+  refine ⟨?_, ?_, ?_⟩
+  · simp only [transpose_apply]
+    exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
+  · simp only [mulVec_one, transpose_transpose]
+    ext i
+    simp only [Finset.sum_apply, Pi.one_apply]
+    exact sum_col_of_mem_doublyStochastic hM i
+  · simp only [one_vecMul]
+    ext i
+    simp only [Finset.sum_apply, transpose_apply, Pi.one_apply]
+    exact sum_row_of_mem_doublyStochastic hM i
+
 /-- Reindexing a matrix preserves double stochasticity. -/
 @[aesop safe apply, grind .]
 lemma reindex_mem_doublyStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
     {e₁ e₂ : n ≃ m} (hM : M ∈ doublyStochastic R n) : M.reindex e₁ e₂ ∈ doublyStochastic R m := by
-  rw [mem_doublyStochastic_iff_sum]
   refine ⟨?_, ?_, ?_⟩
   · intro i j
-    simp only [Matrix.reindex_apply, Matrix.submatrix_apply]
+    simp only [reindex_apply, submatrix_apply]
     exact nonneg_of_mem_doublyStochastic hM
-  · intro i
-    have : ∑ x, M (e₁.symm i) (e₂.symm x) = ∑ x, M (e₁.symm i) x :=
-      Finset.sum_equiv e₂.symm (by simp) (fun j _ => rfl)
-    simp only [this, Matrix.reindex_apply, Matrix.submatrix_apply]
-    exact sum_row_of_mem_doublyStochastic hM (e₁.symm i)
-  · intro j
+  · simp [submatrix_mulVec_equiv, hM.2.1]
+  · simp only [reindex_apply, one_vecMul]
+    ext j
+    simp only [Finset.sum_apply, submatrix_apply, Pi.one_apply]
     have : ∑ x, M (e₁.symm x) (e₂.symm j) = ∑ x, M x (e₂.symm j) :=
       Finset.sum_equiv e₁.symm (by simp) (fun i _ => rfl)
-    simp only [this, Matrix.reindex_apply, Matrix.submatrix_apply]
+    rw [this]
     exact sum_col_of_mem_doublyStochastic hM (e₂.symm j)
 
 /-- Applying a doubly stochastic matrix to a vector preserves its sum. -/
