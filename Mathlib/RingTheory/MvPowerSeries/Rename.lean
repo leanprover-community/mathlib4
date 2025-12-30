@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Bingyu Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bingyu Xia
+Authors: Bingyu Xia and Andrew Yang
 -/
 module
 
@@ -42,7 +42,7 @@ This will give rise to a monomial in `MvPowerSeries σ R`
 
 noncomputable section
 
-open MvPowerSeries Finset Finsupp
+open Finset Finsupp
 
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 variable (f : σ ↪ τ)
@@ -105,13 +105,12 @@ theorem renameFun_mul (p q : MvPowerSeries σ R) :
   simp only [coeff_renameFun, coeff_mul, mul_ite, ite_mul, zero_mul, mul_zero, sum_ite,
     sum_const_zero, add_zero, filter_filter]
   split_ifs with h
-  · have : filter (fun x ↦ SetLike.coe x.2.support ⊆ Set.range f ∧
-      SetLike.coe x.1.support ⊆ Set.range f) (antidiagonal x) = antidiagonal x := by
+  · have : ∀ x_1 ∈ antidiagonal x, ↑x_1.2.support ⊆ Set.range ⇑f ∧ ↑x_1.1.support ⊆
+      Set.range ⇑f := by
       simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range,
-        Finset.ext_iff, mem_filter, mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add,
-        Pi.add_apply, and_iff_left_iff_imp, Prod.forall] at h ⊢
+        mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply, Prod.forall] at h ⊢
       grind only
-    rw [this]
+    rw [filter_true_of_mem this]
     replace this : antidiagonal (comapDomain f x f.injective.injOn) = image (fun (x, y) ↦
       (comapDomain f x f.injective.injOn, comapDomain f y f.injective.injOn)) (antidiagonal x) := by
       simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range,
