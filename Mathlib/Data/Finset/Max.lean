@@ -455,6 +455,20 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
     let ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
     ⟨z, mem_sdiff.2 ⟨hzt, fun hzs => hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
 
+lemma exists_min'_image (s : Finset β) (f : β → α) (hs : s.Nonempty) :
+    ∃ a, a ∈ s ∧ (s.image f).min' (image_nonempty.mpr hs) = f a := by
+  have h₁ := Finset.min'_mem (s.image f) <| Nonempty.image hs f
+  rw [Finset.mem_image] at h₁
+  obtain ⟨a, ha₁, ha₂⟩ := h₁
+  refine ⟨a, ha₁, ha₂.symm⟩
+
+lemma exists_max'_image (s : Finset β) (f : β → α) (hs : s.Nonempty) :
+    ∃ a, a ∈ s ∧ (s.image f).max' (image_nonempty.mpr hs) = f a := by
+  have h₁ := Finset.max'_mem (s.image f) <| Nonempty.image hs f
+  rw [Finset.mem_image] at h₁
+  obtain ⟨a, ha₁, ha₂⟩ := h₁
+  refine ⟨a, ha₁, ha₂.symm⟩
+
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
 
