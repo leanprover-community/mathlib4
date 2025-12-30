@@ -130,6 +130,7 @@ theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Fin
 theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
     #(univ \ s) = Fintype.card α - #s := by grind
 
+@[grind =]
 theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
   Finset.card_univ_diff s
 
