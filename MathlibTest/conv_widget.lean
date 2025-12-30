@@ -2,8 +2,9 @@ import Mathlib.Tactic.Widget.Conv
 import Lean.Elab.Tactic.ElabTerm
 
 /-!
-Instead of testing `conv?` directly, we test the `insertEnter` function.
-This has the advantage of not having to run javascript in the tests.
+Instead of testing `conv?` directly, we test the `insertEnterSyntax` function.
+This has the advantage of not having to run javascript in the tests,
+and not having to invoke the parser.
 -/
 
 private axiom test_sorry.{u} {α : Sort u} : α
