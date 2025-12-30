@@ -12,35 +12,33 @@ public import Mathlib.RingTheory.PiTensorProduct
 /-!
 # PiTensorProducts indexed by sets
 
-Given a family of modules `M : ι → Type*`, we consider tensors of type `⨂ (i : S), M i`,
-where `S : Set ι`.
+Given a family of modules `M : ι → Type*`, this module considers tensors of type
+`⨂ (i : S), M i`, where `S : Set ι`. The binary tensor product of
+`PiTensorProducts` indexed by disjoint sets is related to `PiTensorProduct`s
+indexed by their union.
 
 ## Main definitions
 
-* Equivalences relating binary tensor products to union of sets:
+* `tmulUnionEquiv` : the equivalence between the tensor product of `PiTensorProduct`s indexed
+  by disjoint sets `S₁` and `S₂`, and the `PiTensorProduct` indexed by `S₁ ∪ S₂`.
+* `tmulBipartitionEquiv` : Variant of `tmulUnionEquiv` where the sets are each others' complement.
+* `tmulDiffEquiv` : Variant of `tmulUnionEquiv` where the two are given as `S` and `T \ S`
+  for some `T : Set ι`
+* `tmulInsertEquiv` : for `i₀ ∉ S`, the equivalence between the tensor product of `M i₀` with the
+  `PiTensorProduct` indexed by `S`, and the `PiTensorProduct` indexed by `insert i₀ S`.
 
-Definition...           ...pertains to
-`tmulUnionEquiv`        `S₁ ∪ S₂`
-`tmulBipartitionEquiv`  `S ∪ Sᶜ`
-`tmulDiffEquiv`         `S ∪ (T \ S)`
-`tmulInsertEquiv`       `{i₀} ∪ S`
-
-* Given sets `S ⊆ T`, linear functions defined on tensors indexed by `S` can be
-extended to tensors indexed by `T`, by acting trivially on `T \ S`:
-
-Definition...           ...pertains to
-`extendLinear`          `⨂ S → M`
-`extendEnd`             `⨂ S → ⨂ S`
-`extendFunctional`      `⨂ S → R`
-
-* `extendTensor`: Given a family of distinguished elements `m₀ : (i : ι) → M i`,
-a tensor with index set `S` can be extended to a tensor with index set `T`, by
-padding with the vectors provided by `m₀` on `T \ S`.
+* `extendLinear` : Extends a linear map on the `PiTensorProduct` indexed by a set `S` to a linear
+map on the `PiTensorProduct` indexed by a superset `T`, by tensoring with the identity map.
+* `extendTensor` : Extends an element of the `PiTensorProduct` indexed by a set `S` to an
+element of the `PiTensorProduct` indexed by a superset `T`, using a family of
+distinguished vectors for the components indexed by `T \ S`.
 
 ## TODO
 
-* Injectivity lemmas: Give sufficient conditions for `extendLinear, extendEnd,
-extendFunctional, extendTensor` to be injective.
+* Injectivity lemmas: Give sufficient conditions under which `extendLinear`, `extendEnd`,
+`extendFunctional`, and `extendTensor` are injective.
+* We currently treat only pairs of subsets of the index type. The generalization
+to finite collections is PR #32609.
 
 -/
 
@@ -86,7 +84,7 @@ section tmulUnionEquiv
 
 variable {S₁ S₂ : Set ι} (H : Disjoint S₁ S₂) [(i : ι) → Decidable (i ∈ S₁)]
 
-/-- Given a family of modules with index type `ι` and disjoint `S₁, S₂ : Set ι`,
+/-- Consider a family of modules indexed by `ι` and disjoint sets `S₁, S₂ : Set ι`.
 `tmulUnionEquiv` is the equivalence between the binary tensor product of
 `PiTensorProduct`s indexed by `S₁` and `S₂`, and the `PiTensorProduct` indexed
 by `S₁ ∪ S₂`. -/
@@ -119,7 +117,7 @@ section tmulBipartitionEquiv
 
 variable {S : Set ι} [(i : ι) → Decidable (i ∈ S)]
 
-/-- Given a family of modules with index type `ι` and a set `S : Set ι`,
+/-- Consider a family of modules indexed by `ι` and a set `S : Set ι`.
 `tmulBipartitionEquiv` is the equivalence between the binary tensor product of
 `PiTensorProduct`s indexed by `S` and its complement `Sᶜ`, and the
 `PiTensorProduct` indexed by `ι`. -/
@@ -146,7 +144,7 @@ section tmulDiffEquiv
 
 variable {S T : Set ι} (hsub : S ⊆ T) [(i : ι) → Decidable (i ∈ S)]
 
-/-- Given a family of modules with index type `ι` and sets `S ⊆ T` of type `Set ι`,
+/-- Consider a family of modules indexed by `ι` and sets `S ⊆ T` of type `Set ι`.
 `tmulDiffEquiv` is the equivalence between the binary tensor product of
 `PiTensorProduct`s indexed by `S` and `T \ S`, and the `PiTensorProduct`
 indexed by `T`. -/
@@ -176,8 +174,8 @@ section tmulInsertEquiv
 variable {S : Set ι} {i₀} (h₀ : i₀ ∉ S)
 variable [DecidableEq ι]
 
-/-- Given a family of modules with index type `ι`, a set `S : Set ι`, and
-`i₀ ∉ S`, `tmulInsertEquiv` is the equivalence between the binary tensor product of
+/-- Consider a family of modules indexed by `ι`, a set `S : Set ι`, and an element `i₀ ∉ S`.
+`tmulInsertEquiv` is the equivalence between the binary tensor product of
 `M i₀` with the `PiTensorProduct` indexed by `S`, and the `PiTensorProduct`
 indexed by `insert i₀ S`. -/
 def tmulInsertEquiv :
@@ -235,20 +233,27 @@ open Module
 
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 
-/-- A linear map on a `PiTensorProduct` with index set `S ⊆ T` extends to a linear map
-on tensors with index set `T`. Bundled as a homomorphism of linear maps. -/
+/-- Consider a family of modules indexed by `ι` and sets `S ⊆ T` of type `Set ι`.
+A linear map on the `PiTensorProduct` indexed by `S` can be tensored with the
+identity map to extend to a linear map on the `PiTensorProduct` indexed by `T`.
+Bundled as a homomorphism of linear maps. -/
 def extendLinear : ((⨂[R] i : S, M i) →ₗ[R] N) →ₗ[R]
     (⨂[R] i : T, M i) →ₗ[R] (N ⊗[R] (⨂[R] (i₂ : ↑(T \ S)), M i₂)) :=
   let TmS := ⨂[R] (i : ↑(T \ S)), M i
   ((tmulDiffEquiv hsub).congrLeft (M:=N ⊗[R] TmS) R).toLinearMap ∘ₗ LinearMap.rTensorHom TmS
 
-/-- An endomorphism on tensors with index set `S ⊆ T` extends to an endomorphism
-on tensors with index set `T`. Bundled as a homomorphism of linear maps. -/
+/-- Consider a family of modules indexed by `ι` and sets `S ⊆ T` of type `Set ι`.
+An endomorphism of the `PiTensorProduct` indexed by `S` can be tensored with the
+identity map to extend to an endomorphism of the `PiTensorProduct` indexed by `T`.
+Bundled as a homomorphism of linear maps. -/
 def extendEnd : End R (⨂[R] i : S, M i) →ₗ[R] End R (⨂[R] i : T, M i) :=
   (tmulDiffEquiv hsub).congrRight.toLinearMap ∘ₗ extendLinear R hsub
 
-/-- A functional on tensors with index set `S ⊆ T` contracts tensors with index
-set `T` to tensors with index set `T \ S`. Bundled as a linear map. -/
+/-- Consider a family of modules indexed by `ι` and sets `S ⊆ T` of type `Set ι`.
+A linear functional on the `PiTensorProduct` indexed by `S` can be tensored with
+the identity map to extend to a linear map from the `PiTensorProduct` indexed by
+`T` to the `PiTensorProduct` indexed by `T \ S`. Bundled as a homomorphism of
+linear maps. -/
 def extendFunctional :
     ((⨂[R] i : S, M i) →ₗ[R] R) →ₗ[R] (⨂[R] i : T, M i) →ₗ[R] ⨂[R] (i₂ : ↑(T \ S)), M i₂ :=
   (TensorProduct.lid R _).congrRight.toLinearMap ∘ₗ (extendLinear R hsub)
@@ -278,9 +283,10 @@ section ExtendTensor
 
 variable {m₀ : (i : ι) → M i}
 
-/-- Given a family of distinguished elements `m₀ : (i : ι) → M i` and sets `S ⊆ T`,
-map a tensor with index set `S` to a tensor with index set `T`, by padding with vectors
-provided by `m₀` on `T \ S`. -/
+/-- Consider a family of modules indexed by `ι`, a family of distinguished
+elements `m₀ : (i : ι) → M i`, and sets `S ⊆ T`. An element of the
+`PiTensorProduct` indexed by `S` can be extended to the `PiTensorProduct`
+indexed by `T` by tensoring with the vectors `m₀ i` for `i : T \ S`. -/
 def extendTensor (m₀ : (i : ι) → M i) : (⨂[R] (i : S), M i) →ₗ[R] ⨂[R] (i : T), M i where
   toFun t := (tmulDiffEquiv hsub) (t ⊗ₜ[R] (⨂ₜ[R] i : ↥(T \ S), m₀ i))
   map_add' := by simp [TensorProduct.add_tmul]
