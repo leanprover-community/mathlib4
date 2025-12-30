@@ -881,7 +881,7 @@ theorem secondCountable_of_almost_dense_set
 
 /-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
 from the more general `UniformSpace.subset_countable_closure_of_almost_dense_set`. -/
-lemma TotallyBounded.isSeparable {s : Set α} (h : TotallyBounded s) :
+lemma _root_.TotallyBounded.isSeparable {s : Set α} (h : TotallyBounded s) :
     TopologicalSpace.IsSeparable s := by
   obtain ⟨t, -, htc, hts⟩ := subset_countable_closure_of_almost_dense_set s fun U hU => by
     obtain ⟨t, ht, hst⟩ := h (SetRel.inv U)
