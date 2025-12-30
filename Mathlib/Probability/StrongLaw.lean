@@ -755,7 +755,7 @@ lemma strong_law_ae_of_measurable
   -- consider `n` large enough for which the above convergences have taken place within `δ`.
   have I : ∀ᶠ n in atTop, (∑ i ∈ range n, ‖(X i - Y k i) ω‖) / n < δ :=
     (tendsto_order.1 (h'ω k)).2 δ hk
-  have J : ∀ᶠ (n : ℕ) in atTop, ‖(n : ℝ) ⁻¹ • (∑ i ∈ range n, Y k i ω) - μ[Y k 0]‖ < δ := by
+  have J : ∀ᶠ (n : ℕ) in atTop, ‖(n : ℝ)⁻¹ • (∑ i ∈ range n, Y k i ω) - μ[Y k 0]‖ < δ := by
     specialize hω k
     rw [tendsto_iff_norm_sub_tendsto_zero] at hω
     exact (tendsto_order.1 hω).2 δ δpos
