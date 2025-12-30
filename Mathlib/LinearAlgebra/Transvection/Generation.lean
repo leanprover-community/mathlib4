@@ -227,7 +227,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
         rw [he'_rank, ← h, ← add_assoc]
         rw [Submodule.finrank_quotient_add_finrank, add_comm]
 
-/-- If an element `e : V ≃ₗ[K] V` is such that `e.fixedReduce`
+/-- If an element `e : V ≃ₗ[K] V` is such that `e.fixedReduce`
 is not a homothety, then `e` is the product of at
 most `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections
 and one dilatransvection.
@@ -503,7 +503,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
           simp only [mem_sup, mem_span_singleton, exists_exists_eq_and]
           use 0, 1 , by simp
 
-/-- If an element `e : V ≃ₗ[K] V` is not exceptional,
+/-- If an element `e : V ≃ₗ[K] V` is not exceptional,
 then it is the product of at most `finrank K (V ⧸ e.fixedSubmodule)` dilatransvections.
 
 This is the non-exceptional case in Dieudonné's theorem. -/
