@@ -52,8 +52,6 @@ theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
 theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
 
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
-
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
   imp_not_comm.1 Nodup.notMem
 
@@ -134,8 +132,9 @@ theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) →
 
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
-theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
-    idxOf (get l i) l = i := by grind
+theorem get_idxOf [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
+    idxOf (get l i) l = i := by
+  simp [H]
 
 theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|

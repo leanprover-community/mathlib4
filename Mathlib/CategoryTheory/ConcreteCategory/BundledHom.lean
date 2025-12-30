@@ -27,11 +27,11 @@ namespace CategoryTheory
 
 variable {c : Type u → Type u} (hom : ∀ ⦃α β : Type u⦄ (_ : c α) (_ : c β), Type u)
 
-/-- Class for bundled homs. Note that the arguments order follows that of lemmas for `MonoidHom`.
+/-- Class for bundled homs. Note that the argument order follows that of lemmas for `MonoidHom`.
 This way we can use `⟨@MonoidHom.toFun, @MonoidHom.id ...⟩` in an instance. -/
-@[deprecated "The prefered method for talking about concrete categories is to implement the \
+@[deprecated "The preferred method for talking about concrete categories is to implement the \
 category manually and then provide the `ConcreteCategory` instance on top of this. See \
-`ConcreteCategory/Basic.lean`" (since := "2025-11-17")]
+`Mathlib/CategoryTheory/ConcreteCategory/Basic.lean`" (since := "2025-11-17")]
 structure BundledHom where
   /-- the underlying map of a bundled morphism -/
   toFun : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), hom Iα Iβ → α → β

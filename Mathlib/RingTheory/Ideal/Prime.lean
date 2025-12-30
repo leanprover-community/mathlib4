@@ -148,8 +148,6 @@ theorem IsPrime.mul_notMem (hI : I.IsPrime) {x y : α} :
     x ∉ I → y ∉ I → x * y ∉ I := fun hx hy h ↦
   hy ((hI.mem_or_mem h).resolve_left hx)
 
-@[deprecated (since := "2025-05-23")] alias IsPrime.mul_not_mem := IsPrime.mul_notMem
-
 theorem IsPrime.mem_or_mem_of_mul_eq_zero (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
     x ∈ I ∨ y ∈ I :=
   hI.mem_or_mem (h.symm ▸ I.zero_mem)

@@ -76,6 +76,10 @@ theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   cases f
   rfl
 
+lemma mk_surjective (f : Arrow T) :
+    ∃ (X Y : T) (g : X ⟶ Y), f = Arrow.mk g :=
+  ⟨_, _, f.hom, rfl⟩
+
 theorem mk_injective (A B : T) :
     Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h => by
   cases h
@@ -364,7 +368,7 @@ instance isEquivalence_mapArrow (F : C ⥤ D) [IsEquivalence F] :
 
 end Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/

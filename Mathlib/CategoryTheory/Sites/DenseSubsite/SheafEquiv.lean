@@ -30,7 +30,7 @@ namespace CategoryTheory.Functor.IsDenseSubsite
 
 open CategoryTheory Opposite
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (G : C ⥤ D)
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
