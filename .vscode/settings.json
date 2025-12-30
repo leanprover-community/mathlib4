@@ -20,4 +20,15 @@
     "**/.elan/**": true,
     "**/.lake/**": true
   }
+  {
+  "files.watcherExclude": {
+    "**/.lake/**": true,
+    "**/*.olean": true,
+    "**/*.ilean": true
+  },
+  "search.exclude": {
+    "**/.lake/**": true
+  }
+}
+
 }
