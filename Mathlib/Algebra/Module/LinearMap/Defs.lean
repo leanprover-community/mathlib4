@@ -1020,7 +1020,7 @@ theorem toAddMonoidHom_mulLeft (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom
 @[deprecated (since := "2025-12-30")] alias mulLeft_toAddMonoidHom := toAddMonoidHom_mulLeft
 
 variable (A) in
-@[simp] theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ => zero_mul _
+@[simp] theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext zero_mul
 
 end left
 
@@ -1045,7 +1045,7 @@ theorem toAddMonoidHom_mulRight (a : A) : (mulRight R a : A →+ A) = AddMonoidH
 @[deprecated (since := "2025-12-30")] alias mulRight_toAddMonoidHom := toAddMonoidHom_mulRight
 
 variable (A) in
-@[simp] theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext fun _ => mul_zero _
+@[simp] theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext mul_zero
 
 end right
 
