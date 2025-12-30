@@ -69,8 +69,6 @@ abbrev fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
     FundamentalGroup X x :=
   p
-    FundamentalGroup X x :=
-  p
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
 abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
