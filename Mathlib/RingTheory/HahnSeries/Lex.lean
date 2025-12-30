@@ -360,9 +360,7 @@ variable [LinearOrder R] [Ring R] [AddCommMonoid Γ] [LinearOrder Γ]
   [IsOrderedCancelAddMonoid Γ]
 
 instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) where
-  zero_le_one := by
-    rw [← leadingCoeff_nonneg_iff]
-    simp
+  zero_le_one := by simp [← leadingCoeff_nonneg_iff]
   mul_le_mul_of_nonneg_left a ha b c hbc := by
     rw [← sub_nonneg] at hbc ⊢
     rw [← mul_sub, ← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
