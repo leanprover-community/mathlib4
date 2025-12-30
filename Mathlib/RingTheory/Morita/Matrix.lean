@@ -68,7 +68,7 @@ variable {R ι} in
 /-- An `R`-linear map between `E₁₁ • M` and `E₁₁ • N` induced by an `Mₙ(R)`-linear map
   from `M` to `N` -/
 @[simps]
-def _root_.LinearMap.fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N]
+def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N]
     [Module R N] [IsScalarTower R (Matrix ι ι R) N] [Module R M] [IsScalarTower R (Matrix ι ι R) M]
     (f : M →ₗ[Matrix ι ι R] N) : (toModuleCatObj R ι M) →ₗ[R] (toModuleCatObj R ι N) where
   toFun x := ⟨f x.1, by obtain ⟨y, hy⟩ := mem_toModuleCatObj.1 x.2; simp [← hy]⟩
@@ -91,7 +91,7 @@ def MatrixModCat.toModuleCat : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
     { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
         rw [← mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
   { obj M := ModuleCat.of R (MatrixModCat.toModuleCatObj R ι M)
-    map {M N} f := ModuleCat.ofHom <| LinearMap.fromMatrixLinear f.hom
+    map {M N} f := ModuleCat.ofHom <| fromMatrixLinear f.hom
     map_id _ := rfl
     map_comp _ _ := rfl }
 
