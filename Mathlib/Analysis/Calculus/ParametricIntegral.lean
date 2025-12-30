@@ -213,12 +213,6 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H
       bound_integrable.2 h_diff.2
   exact ⟨⟨H₁.1, H₂.1⟩, H₁.2.sub H₂.2⟩
 
-#check integral
-
-#synth NormedSpace ℝ (H →L[𝕜] E)
-
-#check ContinuousLinearMap.toNormedSpace
-
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
 `F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
 derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
@@ -351,15 +345,10 @@ theorem hasFDerivAt_integral_of_contDiffOn {H' : Type*} [NormedAddCommGroup H'] 
     exact (hasFDerivAt_prodMk_left _ x.2).hasFDerivWithinAt.fderivWithin
       (hu'.uniqueDiffWithinAt hx.1)
 
-#check HasFTaylorSeriesUpToOn
-
--- (n : WithTop ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) (s : Set E)
-
-/-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
-`F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
-derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
-and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
-theorem hasFTaylorSeriesOn_integral_of_dominated_of_le {n : WithTop ℕ∞} {bound : ℕ → α → ℝ}
+/-- Iterated differentiation under integral of `x ↦ ∫ F x a` on an open set `s`, assuming that each
+function `x ↦ F x a` has a Taylor series of order `n`, with uniform integrability conditions on
+the successive derivatives. -/
+theorem hasFTaylorSeriesOn_integral_of_dominated {n : WithTop ℕ∞} {bound : ℕ → α → ℝ}
     {p : H → α → FormalMultilinearSeries 𝕜 H E} (hs : IsOpen s)
     (hF_meas : ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → AEStronglyMeasurable (p x · i) μ)
     (h_bound : ∀ᵐ a ∂μ, ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → ‖p x a i‖ ≤ bound i a)
@@ -376,6 +365,7 @@ theorem hasFTaylorSeriesOn_integral_of_dominated_of_le {n : WithTop ℕ∞} {bou
     · apply Integrable.mono' (bound_integrable 0 (by simp)) (hF_meas x hx 0 (by simp))
       filter_upwards [h_bound] with a ha using ha x hx 0 (by simp)
   · intro i hi x hx
+    have h'i : (i + 1 : ℕ) ≤ n := ENat.add_one_natCast_le_withTop_of_lt hi
     apply HasFDerivAt.hasFDerivWithinAt
     change HasFDerivAt (fun x ↦ ∫ a, p x a i ∂μ)
       ((continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E).toContinuousLinearEquiv
@@ -394,9 +384,24 @@ theorem hasFTaylorSeriesOn_integral_of_dominated_of_le {n : WithTop ℕ∞} {bou
     · apply Integrable.mono' (bound_integrable i hi.le) (hF_meas _ hx _ hi.le)
       filter_upwards [h_bound] with a ha using ha x hx i hi.le
     · apply Continuous.comp_aestronglyMeasurable (by fun_prop)
-      exact hF_meas x hx i.succ (ENat.add_one_natCast_le_withTop_of_lt hi)
+      exact hF_meas x hx i.succ h'i
     · filter_upwards [h_bound] with a ha y hy
       simp only [Nat.succ_eq_add_one, LinearIsometryEquiv.norm_map, G']
+      apply ha _ hy _ h'i
+    · apply bound_integrable _ h'i
+    · filter_upwards [h_diff] with a ha y hy
+      exact (ha.fderivWithin i hi y hy).hasFDerivAt (hs.mem_nhds hy)
+  · intro i hi
+    apply continuousOn_of_dominated (bound := bound i)
+    · intro y hy
+      exact hF_meas y hy i hi
+    · intro y hy
+      filter_upwards [h_bound] with a ha using ha y hy i hi
+    · apply bound_integrable i hi
+    · filter_upwards [h_diff] with a ha using ha.cont i hi
+
+
+
 
 
 
@@ -405,20 +410,6 @@ theorem hasFTaylorSeriesOn_integral_of_dominated_of_le {n : WithTop ℕ∞} {bou
 
 
 #exit
-
-{F' : H → α → H →L[𝕜] E}
-
-change HasFDerivAt
-      (fun x ↦ ∫ y in t, (compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H'))
-        (p (x, y) i) ∂μ)
-      ((continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E).toContinuousLinearEquiv
-        (∫ y in t, (compContinuousLinearMapL fun i ↦ ContinuousLinearMap.inl 𝕜 H H')
-        (p (z', y) i.succ) ∂μ)) z'
-    let A : NormedSpace ℝ (H →L[𝕜] ContinuousMultilinearMap 𝕜 (fun (j : Fin i) ↦ H) E) :=
-      NormedSpace.restrictScalars ℝ 𝕜 _
-    rw [← ContinuousLinearEquiv.integral_comp_comm]
-    apply hasFDerivAt_integral_of_dominated_of_fderiv_le
-      (F := fun x y ↦ (compContinuousLinearMapL fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) i))
 
 
 theorem restrict_inter_toMeasurable {α : Type*} [MeasurableSpace α]
