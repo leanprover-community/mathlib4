@@ -11,15 +11,16 @@ public import Mathlib.LinearAlgebra.AffineSpace.Independent
 /-!
 # Simplicial complexes
 
-In this file, we define simplicial complexes in `𝕜`-modules. A simplicial complex is a collection
-of simplices closed by inclusion (of vertices) and intersection (of underlying sets).
-
-We model them by a downward-closed set of affine independent finite sets whose convex hulls "glue
-nicely", each finite set and its convex hull corresponding respectively to the vertices and the
-underlying set of a simplex.
+In this file, we define simplicial complexes, both abstractly and in `𝕜`-modules.
+An abstract simplicial complex is a downwards-closed collection of nonempty finte sets,
+and a simplicial complex is such a collection identified with simplices
+closed by inclusion (of vertices) and intersection (of underlying sets)
+whose convex hulls "glue nicely", each finite set and its convex hull corresponding respectively
+to the vertices and the underlying set of a simplex.
 
 ## Main declarations
 
+* `AbstractSimplicialComplex ι`: An abstract simplicial complex with vertices of type `ι`.
 * `SimplicialComplex 𝕜 E`: A simplicial complex in the `𝕜`-module `E`.
 * `SimplicialComplex.vertices`: The zero-dimensional faces of a simplicial complex.
 * `SimplicialComplex.facets`: The maximal faces of a simplicial complex.

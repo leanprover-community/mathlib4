@@ -22,6 +22,8 @@ are affinely independent.
   downward-closed set of faces whose union of vertices is affinely independent.
 * `Geometry.SimplicialComplex.onFinsupp`: Construct a simplicial complex on `ι →₀ 𝕜` from a
   downward-closed set of finite subsets of `ι`, using the standard basis vectors.
+* `Geometry.SimplicialComplex.ofSimpleGraph`: Construct a simplicial complex from a simple graph,
+  where vertices of the graph are 0-simplices and edges are 1-simplices.
 -/
 
 @[expose] public section
