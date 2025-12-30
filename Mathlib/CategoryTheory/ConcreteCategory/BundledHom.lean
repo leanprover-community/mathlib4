@@ -83,6 +83,7 @@ instance hasForget : HasForget.{u} (Bundled c) where
       map_comp := fun _ _ => 𝒞.comp_toFun _ _ _ _ _ }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
 
+set_option linter.style.commandStart false in -- unification hints are printed wrongly, lean4#11780
 /-- This unification hint helps `rw` to figure out how to apply statements about abstract
 concrete categories to specific concrete categories. Crucially, it fires also at `reducible`
 levels so `rw` can use it (and we don't have to use `erw`). -/
