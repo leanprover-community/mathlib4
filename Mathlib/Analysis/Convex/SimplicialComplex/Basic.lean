@@ -106,14 +106,6 @@ namespace SimplicialComplex
 variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
-/--
-Forget the geometric structure of a simplicial complex, yielding an abstract simplicial complex.
--/
-def toAbstract (K : SimplicialComplex 𝕜 E) : AbstractSimplicialComplex E :=
-  { faces := K.faces
-    empty_notMem := K.empty_notMem
-    down_closed := K.down_closed }
-
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
 instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
   ⟨fun K s => s ∈ K.faces⟩
