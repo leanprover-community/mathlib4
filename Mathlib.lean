@@ -5751,6 +5751,7 @@ public import Mathlib.Probability.Process.Stopping
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
+public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
@@ -5778,6 +5779,7 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.Resolution
 public import Mathlib.RepresentationTheory.Induced
+public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Irreducible
 public import Mathlib.RepresentationTheory.Maschke

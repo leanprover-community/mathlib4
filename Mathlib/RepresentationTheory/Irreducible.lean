@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic-/
 /-!
 # Irreducible representations
 
-This file defines irreducible monoid representations.
+This file gives a definition of irreducible monoid representations.
 
 -/
 
