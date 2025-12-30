@@ -1049,6 +1049,17 @@ variable (A) in
 
 end right
 
+variable [SMulCommClass R A A] [IsScalarTower R A A]
+
+variable (R) in
+/-- Simultaneous multiplication on the left and right is a linear map. -/
+def mulLeftRight (ab : A × A) : A →ₗ[R] A :=
+  (mulRight R ab.snd).comp (mulLeft R ab.fst)
+
+@[simp]
+theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
+  rfl
+
 end mulLeftRight
 
 end LinearMap
