@@ -6,8 +6,7 @@ Authors: Blake Farman
 module
 
 public import Mathlib.Order.PFilter
-public import Mathlib.RingTheory.Ideal.Basic
-public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Colon
 
 /-!
 # Ideal Filters
@@ -18,7 +17,7 @@ An **ideal filter** is a filter in the lattice of ideals of a ring `A`.
 
 * `IdealFilter A`: the type of an ideal filter on a ring `A`.
 * `IsUniform F` : a filter `F` is uniform if whenever `I` is an ideal in the filter, then for all
-  `a : A`, the left ideal `{x | x * a ∈ I}` belongs to `F`.
+  `a : A`, the colon ideal `I.colon (Ideal.span {a})` is in `F`.
 * `IsTorsionElem` : Given a filter `F`, an element, `m`, of an `A`-module, `M`, is `F`-torsion if
   there exists an ideal `L` in `F` that annihilates `m`.
 * `IsTorsion` : Given a filter `F`, an `A`-module, `M`, is `F`-torsion if every element is torsion.
@@ -26,8 +25,8 @@ An **ideal filter** is a filter in the lattice of ideals of a ring `A`.
   the set of ideals `L` of `A` such that there exists an ideal `K` in `G` with `K/L` `F`-torsion.
   This is again a filter.
 * `IsGabriel F` : a filter `F` is a Gabriel filter if it is uniform and satisfies axiom T4:
-  for all `I : Ideal A`, if there exists `J ∈ F` such that for all `a ∈ J` the left ideal
-  `{x | x * a ∈ I}` is in `F`, then `I ∈ F`.
+  for all `I : Ideal A`, if there exists `J ∈ F` such that for all `x ∈ J` the colon ideal
+  `I.colon (Ideal.span {x})` is in `F`, then `I ∈ F`.
 
 ## Main statements
 
@@ -40,17 +39,15 @@ An **ideal filter** is a filter in the lattice of ideals of a ring `A`.
 
 ## Implementation notes
 
-In the classical literature (e.g. Stenström), *right linear topologies* on a ring are often
-described via filters of open **right** ideals, and the terminology is frequently abused by
-identifying the topology with its filter of ideals.
+In the classical literature (e.g. Stenström), *linear topologies* on a ring are often described
+via filters of open ideals, and the terminology is frequently abused by identifying the topology
+with its filter of ideals.  More precisely, linear topologies are in bijective
+correspondence with **uniform filters** of ideals.  The additional *Gabriel condition* (axiom T4)
+imposes an algebraic saturation property on such a filter, but does not change the induced
+topology.
 
-In this development we work systematically with **left ideals**. Accordingly, Stenström’s
-right-ideal construction `(L : x) = {a ∈ A | x * a ∈ L}` is replaced by the left ideal
-`{a | a * x ∈ L}`, implemented using preimages under right multiplication.
-
-With this convention, uniform filters correspond to linear (additive) topologies, while the
-additional Gabriel condition (axiom T4) imposes an algebraic saturation property that does not
-change the induced topology.
+In this file we therefore keep these notions separate: a uniform filter determines a linear
+(additive) topology, while a Gabriel filter is a uniform filter satisfying T4.
 
 ## References
 
@@ -78,26 +75,17 @@ namespace IdealFilter
 
 variable {A : Type u} [Ring A]
 
-/-- The left ideal `{x | x * a ∈ I}`, i.e. the preimage of `I` under right multiplication by `a`. -/
-def comap_mulRight (I : Ideal A) (a : A) :
-    Ideal A := Submodule.comap (LinearMap.mulRight A a) I
-
-lemma mem_comap_mulRight (I : Ideal A) (a x : A) :
-    x ∈ comap_mulRight I a ↔ x * a ∈ I := Iff.of_eq rfl
-
-/-- A filter of ideals is *uniform* if for every `I ∈ F` and `a : A`, `{x ∈ A | x * a ∈ I} ∈ F`. -/
+/-- A filter of ideals is *uniform* if it is closed under colon by principal ideals. -/
 structure IsUniform (F : IdealFilter A) : Prop where
-  /-- If `I ∈ F`, then for every `a : A`, so is the left ideal `{x ∈ A | x * a ∈ I}`. -/
-  comap_mul_right_closed {I : Ideal A} (h_I : I ∈ F) (a : A) :
-    comap_mulRight I a ∈ F
+  /-- If `I ∈ F`, then for every `a : A` the colon ideal `I.colon (Ideal.span {a})`
+  also belongs to `F`. -/
+  colon_closed {I : Ideal A} (h_I : I ∈ F) (a : A) : (I.colon (Ideal.span {a})) ∈ F
 
 namespace IsUniform
-
-/-- Convenience lemma for `comap_mul_right_closed`. -/
-lemma comap_mulRight_mem {F : IdealFilter A} (h : F.IsUniform) {I : Ideal A} (h_I : I ∈ F) (a : A) :
-    comap_mulRight I a ∈ F :=
-  h.comap_mul_right_closed h_I a
-
+/-- Convenience lemma for `colon_closed`. -/
+lemma colon_mem {F : IdealFilter A} (h : F.IsUniform) {I : Ideal A} (h_I : I ∈ F) (a : A) :
+    I.colon (Ideal.span {a}) ∈ F :=
+  h.colon_closed h_I a
 end IsUniform
 
 /-- We say that an element `m : M` is `F`-torsion if it is annihilated by some ideal belonging to
@@ -115,54 +103,105 @@ def IsTorsion (F : IdealFilter A)
 
 /-- We say that the quotient `K/L` is `F`-torsion if every element `k ∈ K` is annihilated
 (modulo `L`) by some ideal in `F`.  Equivalently, for each `k ∈ K` there exists `I ∈ F`
-such that `I ≤ comap_mulRight L k`. That is to say, every `a ∈ I` satisfies `a * k ∈ L`.
+such that `I ≤ L.colon (Ideal.span {k})`. That is to say, every `a ∈ I` satisfies `a * k ∈ L`.
 This formulation avoids forming the quotient module explicitly. -/
 def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
-  ∀ k ∈ K, ∃ I ∈ F, I ≤ comap_mulRight L k
+  ∀ k ∈ K, ∃ I ∈ F, I ≤ L.colon (Ideal.span {k})
+
+/-- If `k ∈ K`, then intersecting with `K` does not change the colon ideal. -/
+lemma colon_inf_eq_of_mem (L K : Ideal A) {k : A} (h_k : k ∈ K) :
+    (L ⊓ K).colon (Ideal.span ({k} : Set A)) = L.colon (Ideal.span ({k} : Set A)) := by
+  -- ext `a : A` and unpack `Submodule.mem_colon`
+  ext a
+  constructor <;> intro h_a
+  · rcases Submodule.mem_colon.mp h_a with h
+    refine Submodule.mem_colon.mpr ?_
+    intro p h_p
+    exact (h p h_p).1
+  · rcases Submodule.mem_colon.mp h_a with h
+    refine Submodule.mem_colon.mpr ?_
+    intro p h_p
+    exact ⟨h p h_p,
+      (Ideal.span_singleton_le_iff_mem K).mpr h_k (Submodule.smul_mem (Ideal.span {k}) a h_p)⟩
 
 /-- Intersecting the left ideal with `K` does not change `IsTorsionQuot` on the right. -/
-lemma isTorsionQuot_inf_left_iff (F : IdealFilter A) (L K : Ideal A) :
-    IsTorsionQuot F (L ⊓ K) K ↔ IsTorsionQuot F L K := by
+lemma isTorsionQuot_inter_left_iff (F : IdealFilter A) (L K : Ideal A) :
+    IsTorsionQuot F L K ↔ IsTorsionQuot F (L ⊓ K) K := by
+  unfold IsTorsionQuot
   constructor
   · intro h k h_k
     rcases h k h_k with ⟨I, h_I, h_I_le⟩
     refine ⟨I, h_I, ?_⟩
-    intro x h_x
-    exact ((mem_comap_mulRight (L ⊓ K) k x).mp (h_I_le h_x)).left
+    · have hcol := colon_inf_eq_of_mem (L := L) (K := K) (k := k) h_k
+      simpa [hcol] using h_I_le
   · intro h k h_k
     rcases h k h_k with ⟨I, h_I, h_I_le⟩
     refine ⟨I, h_I, ?_⟩
-    intro x h_x
-    exact ⟨(Submodule.mem_carrier L).mp (h_I_le h_x), Ideal.mul_mem_left K x h_k⟩
+    · have hcol := colon_inf_eq_of_mem (L := L) (K := K) (k := k) h_k
+      simpa [hcol] using h_I_le
 
 /-- Unfolding lemma for `IsTorsion`. -/
-lemma isTorsion_def (F : IdealFilter A) (M : Type v) [AddCommMonoid M] [Module A M] :
-    IsTorsion F M ↔ ∀ m : M, IsTorsionElem F m := Iff.rfl
-
-/-- Unfolding lemma for `IsTorsionQuot`. -/
-lemma isTorsionQuot_def (F : IdealFilter A) (L K : Ideal A) :
-    IsTorsionQuot F L K ↔ ∀ k ∈ (K : Set A), ∃ I ∈ F, I ≤ comap_mulRight L k :=
+@[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type v) [AddCommMonoid M] [Module A M] :
+    IsTorsion F M ↔ ∀ m : M, IsTorsionElem F m :=
   Iff.rfl
 
-/-- For any filter `F` and ideal `I`, the quotient `I/I` is `F`-torsion in the sense of
+/-- Unfolding lemma for `IsTorsionQuot`. -/
+@[simp] lemma isTorsionQuot_def (F : IdealFilter A) (L K : Ideal A) :
+    IsTorsionQuot F L K ↔ ∀ k ∈ (K : Set A), ∃ I ∈ F, I ≤ L.colon (Ideal.span {k}) :=
+  Iff.rfl
+
+/-- If `x ∈ I`, then the colon ideal `I.colon (Ideal.span {x})` is the whole ring. -/
+lemma colon_span_singleton_eq_top_of_mem {I : Ideal A} {x : A} (h_x : x ∈ I) :
+    I.colon (Ideal.span {x}) = ⊤ := by
+  apply (Ideal.eq_top_iff_one (I.colon (Ideal.span {x}))).mpr
+  apply Submodule.mem_colon.mpr
+  intro p h_p
+  refine (Ideal.span_singleton_le_iff_mem I).mpr h_x ?_
+  simp only [one_smul, h_p]
+
+/-- For any filter `F` and ideal `J`, the quotient `J/J` is `F`-torsion in the sense of
 `IsTorsionQuot`. -/
 lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
     IsTorsionQuot F I I := by
   intro x h_x
   obtain ⟨J, h_J⟩ := F.nonempty
-  refine ⟨J, h_J, ?_⟩
-  intro y h_y
-  rw[mem_comap_mulRight]
-  exact Ideal.mul_mem_left I y h_x
+  exact ⟨J, h_J, by simp [colon_span_singleton_eq_top_of_mem h_x]⟩
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
-lemma IsTorsionQuot.mono_left {F : IdealFilter A}
-    {I J K : Ideal A} (I_tors : IsTorsionQuot F I K) (I_leq_J : I ≤ J) : IsTorsionQuot F J K := by
-  intro x h_x
+lemma isTorsionQuot_mono_left (F : IdealFilter A)
+    {I J K : Ideal A} (I_leq_J : I ≤ J) : IsTorsionQuot F I K → IsTorsionQuot F J K := by
+  intro I_tors x h_x
   obtain ⟨L, ⟨L_in_F, h_L⟩⟩ := I_tors x h_x
   refine ⟨L, L_in_F, ?_⟩
   intro y h_y
-  exact (mem_comap_mulRight J x y).mpr (I_leq_J (h_L h_y))
+  refine Submodule.mem_colon.mpr ?_
+  intro a h_a
+  exact I_leq_J (Submodule.mem_colon.mp (h_L h_y) a h_a)
+
+/-- If `y` belongs to both colon ideals, then it belongs to the colon of the inf. -/
+lemma mem_colon_inf {I J : Ideal A} {s : Set A} {x : A} :
+    x ∈ I.colon (Ideal.span s) →
+    x ∈ J.colon (Ideal.span s) →
+    x ∈ (I ⊓ J).colon (Ideal.span s) := by
+  intro h_xI h_xJ
+  refine Submodule.mem_colon.mpr ?_
+  intro p h_p
+  exact ⟨Submodule.mem_colon.mp h_xI p h_p, Submodule.mem_colon.mp h_xJ p h_p⟩
+
+/-- The colon ideal distributes over `⊓` (intersection of ideals). -/
+lemma colon_inf (I J : Ideal A) (s : Set A) :
+    (I ⊓ J).colon (Ideal.span s)
+      = I.colon (Ideal.span s) ⊓ J.colon (Ideal.span s) := by
+  ext x
+  constructor
+  · intro h_x
+    refine ⟨Submodule.mem_colon.mpr ?_, Submodule.mem_colon.mpr ?_⟩
+    · intro p h_p
+      exact (Submodule.mem_colon.mp h_x p h_p).1
+    · intro p h_p
+      exact (Submodule.mem_colon.mp h_x p h_p).2
+  · rintro ⟨h_xI, h_xJ⟩
+    exact mem_colon_inf h_xI h_xJ
 
 /-- `isPFilter_gabrielComposition` shows that the set defining `gabrielComposition` is a
 `PFilter`. -/
@@ -181,10 +220,9 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
         obtain ⟨K₂, h_K₂F, h_K₂⟩ := h_JL x x_L
         refine ⟨K₁ ⊓ K₂, Order.PFilter.inf_mem h_K₁F h_K₂F, ?_⟩
         rintro y ⟨h_y₁, h_y₂⟩
-        rw[mem_comap_mulRight]
-        exact ⟨(Submodule.mem_carrier I).mp (h_K₁ h_y₁), (Submodule.mem_carrier J).mp (h_K₂ h_y₂)⟩
+        simpa [colon_inf] using ⟨h_K₁ h_y₁, h_K₂ h_y₂⟩
   · intro I J h_IJ ⟨K, h_K, h_IK⟩
-    exact ⟨K, h_K, h_IK.mono_left h_IJ⟩
+    exact ⟨K, h_K, isTorsionQuot_mono_left F h_IJ h_IK⟩
 
 /-- `gabrielComposition F G` is the Gabriel composition of ideal filters `F` and `G`. -/
 def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
@@ -196,8 +234,8 @@ infixl:70 " • " => gabrielComposition
 /-- A *Gabriel filter* is a filter satisfying `IsUniform` and axiom T4. -/
 structure IsGabriel (F : IdealFilter A) extends F.IsUniform where
   /-- **Axiom T4 (Gabriel condition).** If there exists `J ∈ F` such that for all `x ∈ J`,
-  the left ideal `comap_mulRight I x` belongs to `F`, then `I ∈ F`. -/
-  gabriel_closed (I : Ideal A) (h : ∃ J ∈ F, ∀ x ∈ J, comap_mulRight I x ∈ F) : I ∈ F
+  the colon ideal `I.colon (Ideal.span {x})` belongs to `F`, then `I ∈ F`. -/
+  gabriel_closed (I : Ideal A) (h : ∃ J ∈ F, ∀ x ∈ J, I.colon (Ideal.span {x}) ∈ F) : I ∈ F
 
 /-- Characterization of Gabriel filters via `IsUniform` and idempotence of
 `gabrielComposition`. -/
@@ -216,12 +254,9 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
     · exact ⟨I, h_I, isTorsionQuot_self F I⟩
   · rintro ⟨h₁, h₂⟩
     refine ⟨h₁, ?_⟩
-    rintro I ⟨J, h_J, h⟩
+    rintro I ⟨J, h_J, h_colon⟩
     rw [← h₂]
     refine ⟨J, h_J, ?_⟩
     intro x h_x
-    refine ⟨comap_mulRight I x, ?_, ?_⟩
-    · exact Order.PFilter.mem_of_mem_of_le (h x h_x) fun _ a ↦ a
-    · exact Submodule.toAddSubmonoid_le.mp fun _ a ↦ a
-
+    refine ⟨I.colon (Ideal.span {x}), h_colon x h_x, by simp⟩
 end IdealFilter
