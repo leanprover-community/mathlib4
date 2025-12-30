@@ -86,7 +86,7 @@ theorem monoidHom_card_of_hasEnoughRootsOfUnity :
 
 /--
 Let `G` be a finite commutative group and let `H` be a subgroup. If the ring `R` contains enough
-roots of unity, then any homomorphism `H →* Rˣ` can be extendend to an homomorphism `G →* Rˣ`.
+roots of unity, then any homomorphism `H →* Rˣ` can be extended to an homomorphism `G →* Rˣ`.
 -/
 theorem MonoidHom.restrict_surjective (R : Type*) (H : Subgroup G)
     [CommRing R] [IsDomain R] [hR : HasEnoughRootsOfUnity R (Monoid.exponent G)] :
