@@ -175,8 +175,6 @@ theorem eq_jacobson_iff_notMem :
     push_neg
     exact h x hx
 
-@[deprecated (since := "2025-05-23")] alias eq_jacobson_iff_not_mem := eq_jacobson_iff_notMem
-
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h

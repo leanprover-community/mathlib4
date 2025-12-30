@@ -63,7 +63,7 @@ section Real
 /-- An operator `T` on an inner product space is symmetric if and only if it is
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
 theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
-    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) sesqFormOfInner T :=
+    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) (LinearMap.flip (innerₛₗ 𝕜)) T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
 
 end Real
@@ -333,13 +333,21 @@ theorem IsSymmetricProjection.sub_of_range_le_range {p q : E →ₗ[𝕜] E}
     fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
   simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
 
+theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmetric) (hf' : f ≠ 0)
+    {α : 𝕜} : (α • f).IsSymmetric ↔ IsSelfAdjoint α := by
+  refine ⟨fun h ↦ ?_, hf.smul⟩
+  simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
+    inner_zero_right] at hf'
+  simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
+    (forall_comm.eq ▸ hf')] using h
+
 end LinearMap
 
 open ContinuousLinearMap in
 /-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
 theorem ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
     {T : E →L[𝕜] E} (h : IsIdempotentElem T) :
-    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
+    T.IsSymmetric ↔ T.rangeᗮ = T.ker :=
   LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
 
 end Normed

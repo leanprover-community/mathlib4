@@ -697,8 +697,6 @@ variable {P}
 theorem notMem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
   Set.notMem_empty p
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
   Subtype.isEmpty_of_false fun _ ↦ notMem_bot _ _ _
 

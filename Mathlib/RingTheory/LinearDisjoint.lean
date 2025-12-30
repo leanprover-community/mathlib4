@@ -204,8 +204,8 @@ theorem include_range (A : Type v) [Semiring A] (B : Type w) [Semiring B]
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
   rw [Subalgebra.LinearDisjoint, Submodule.linearDisjoint_iff]
   change Function.Injective <|
-    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft)
-      (LinearMap.range Algebra.TensorProduct.includeRight)
+    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft.toLinearMap)
+      (LinearMap.range Algebra.TensorProduct.includeRight.toLinearMap)
   rw [← Algebra.TensorProduct.linearEquivIncludeRange_symm_toLinearMap]
   exact LinearEquiv.injective _
 

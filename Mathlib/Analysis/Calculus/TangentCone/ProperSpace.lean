@@ -44,7 +44,7 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
   have W n := rescale_to_shell hr zero_lt_one (x := d n) (by simpa using (M n).2)
   choose c c_ne c_le le_c hc using W
   have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
-    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
+    suffices Tendsto (fun n ↦ ‖c n‖⁻¹⁻¹) atTop atTop by simpa
     apply tendsto_inv_nhdsGT_zero.comp
     simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, eventually_atTop, ge_iff_le]
     have B (n : ℕ) : ‖c n‖⁻¹ ≤ 1⁻¹ * ‖r‖ * u n := by

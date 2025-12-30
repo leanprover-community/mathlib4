@@ -166,7 +166,7 @@ theorem factorization_choose_prime_pow_add_factorization (hp : p.Prime) (hkn : k
     have filter_le_Ico := (Ico 1 n.succ).card_filter_le
       fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
     rwa [card_Ico 1 n.succ] at filter_le_Ico
-  · nth_rewrite 1 [← factorization_pow_self (n:=n) hp]
+  · nth_rewrite 1 [← factorization_pow_self (n := n) hp]
     exact factorization_le_factorization_choose_add hkn hk0
 
 theorem factorization_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :

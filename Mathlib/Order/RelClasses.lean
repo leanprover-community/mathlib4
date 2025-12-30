@@ -56,7 +56,7 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
+theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
 
 /-- Construct a partial order from an `isStrictOrder` relation.
@@ -323,7 +323,7 @@ theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr 
     trans := fun a b _ h => (not_rel_of_subsingleton r a b h).elim,
     wf := ⟨fun a => ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
 
-instance [Subsingleton α] : IsWellOrder α EmptyRelation :=
+instance [Subsingleton α] : IsWellOrder α emptyRelation :=
   Subsingleton.isWellOrder _
 
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where

@@ -30,7 +30,7 @@ and `φ` is given by the following matrix:
 
 Indeed the snake lemma gives an exact sequence involving the kernels and cokernels
 of the vertical maps: in order to get the expected long exact sequence, it suffices
-to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ⋙ g)`.
+to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ≫ g)`.
 
 -/
 

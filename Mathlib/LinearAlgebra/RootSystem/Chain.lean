@@ -346,7 +346,6 @@ lemma chainTopCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
   exact chainTopCoeff_of_sub h hk
 
 omit h
-
 variable (i j)
 
 open scoped Classical in

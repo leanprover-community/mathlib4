@@ -41,6 +41,9 @@ theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing
     Tendsto ((↑) : ℕ → R) atTop atTop :=
   Nat.mono_cast.tendsto_atTop_atTop exists_nat_ge
 
+lemma tendsto_PNat_val_atTop_atTop : Tendsto PNat.val atTop atTop :=
+  tendsto_atTop_atTop_of_monotone (fun _ _ h ↦ h) fun a ↦ ⟨Nat.succPNat a, Nat.le_succ a⟩
+
 theorem Filter.Eventually.natCast_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℕ) in atTop, p n :=

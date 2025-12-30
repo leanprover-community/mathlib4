@@ -40,7 +40,7 @@ It is also useful to consider the following stronger conditions:
 
 ## Instances
 
-- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
+- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian/Orzech.lean`) :
   any left-Noetherian ring satisfies the Orzech property.
   This applies in particular to division rings.
 
@@ -163,7 +163,7 @@ theorem card_le_of_injective' [StrongRankCondition R] {α β : Type*} [Fintype �
 
 /-- We say that `R` satisfies the rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` surjective
     implies `m ≤ n`. -/
-class RankCondition : Prop where
+@[mk_iff] class RankCondition : Prop where
   /-- Any surjective linear map from `Rⁿ` to `Rᵐ` guarantees `m ≤ n`. -/
   le_of_fin_surjective : ∀ {n m : ℕ} (f : (Fin n → R) →ₗ[R] Fin m → R), Surjective f → m ≤ n
 
@@ -201,7 +201,7 @@ instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondi
 /-- We say that `R` has the invariant basis number property if `(Fin n → R) ≃ₗ[R] (Fin m → R)`
     implies `n = m`. This gives rise to a well-defined notion of rank of a finitely generated free
     module. -/
-class InvariantBasisNumber : Prop where
+@[mk_iff] class InvariantBasisNumber : Prop where
   /-- Any linear equiv between `Rⁿ` and `Rᵐ` guarantees `m = n`. -/
   eq_of_fin_equiv : ∀ {n m : ℕ}, ((Fin n → R) ≃ₗ[R] Fin m → R) → n = m
 
@@ -260,7 +260,7 @@ end
   We construct the isomorphism in two steps:
   1. We construct the ring `R^n/I^n`, show that it is an `R/I`-module and show that there is an
      isomorphism of `R/I`-modules `R^n/I^n ≃ (R/I)^n`. This isomorphism is called
-    `Ideal.piQuotEquiv` and is located in the file `RingTheory/Ideals.lean`.
+    `Ideal.piQuotEquiv` and is located in the file `Mathlib/RingTheory/Ideal/Quotient/Basic.lean`.
   2. We construct an isomorphism of `R/I`-modules `R^n/I^n ≃ R^m/I^m` using the isomorphism
      `R^n ≃ R^m`.
 -/

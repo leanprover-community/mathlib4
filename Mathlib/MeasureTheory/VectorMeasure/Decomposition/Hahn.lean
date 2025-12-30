@@ -66,7 +66,7 @@ such that, for all $n$, $s(A_{n + 1})$ is close to maximal among subsets of
 $i \setminus \bigcup_{k \le n} A_k$.
 
 This sequence of sets does not necessarily exist. However, if this sequence terminates; that is,
-there does not exists any sets satisfying the property, the last $A_n$ will be a negative subset
+there does not exist any set satisfying the property, the last $A_n$ will be a negative subset
 of negative measure, hence proving our claim.
 
 In the case that the sequence does not terminate, it is easy to see that
@@ -86,7 +86,7 @@ To implement this in Lean, we define several auxiliary definitions.
   `restrictNonposSeq s i (n + 1) = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq k)`.
   This definition represents the sequence $(A_n)$ in the proof as described above.
 
-With these definitions, we are able consider the case where the sequence terminates separately,
+With these definitions, we are able to consider the case where the sequence terminates separately,
 allowing us to prove `exists_subset_restrict_nonpos`.
 -/
 

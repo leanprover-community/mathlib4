@@ -114,6 +114,7 @@ theorem relative_hyperplane_separation {C : ProperCone ℝ E} {f : E →L[ℝ] F
     -- suppose `b ∈ C.map f`
     simp only [map, ClosedSubmodule.map, Submodule.closure, Submodule.topologicalClosure,
       AddSubmonoid.topologicalClosure, Submodule.coe_toAddSubmonoid, Submodule.map_coe,
+      ContinuousLinearMap.coe_coe,
       ContinuousLinearMap.coe_restrictScalars', ClosedSubmodule.coe_toSubmodule,
       ClosedSubmodule.mem_mk, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
       mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, Classical.skolem, forall_and,
@@ -137,9 +138,6 @@ theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] 
     (disj : b ∉ K.map f) :
     ∃ y : F, ContinuousLinearMap.adjoint f y ∈ innerDual K ∧ ⟪b, y⟫_ℝ < 0 := by
   contrapose! disj; rwa [K.relative_hyperplane_separation]
-
-@[deprecated (since := "2025-05-24")]
-alias hyperplane_separation_of_nmem := ProperCone.hyperplane_separation_of_notMem
 
 end ProperCone
 
@@ -309,10 +307,6 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : 
       _ ≤ ⟪b - z, b - z⟫_ℝ + ⟪b - z, z⟫_ℝ := add_le_add rfl.ge hinner₀
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
-
-@[deprecated (since := "2025-05-24")]
-alias ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem :=
-  ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem
 
 set_option linter.deprecated false in
 /-- The inner dual of inner dual of a non-empty, closed convex cone is itself. -/

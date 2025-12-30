@@ -357,7 +357,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     apply GradedMonoid.toGradedMul.mul_mem <;> mem_tac_aux
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
-    apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
+    apply GradedMonoid.toGradedMul.mul_mem (i := (j - m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
     rw [← add_smul]; congr; lia
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
@@ -447,8 +447,6 @@ theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
         dsimp
         simp_rw [decompose_of_mem_same _ f_deg]
         simp only [mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self])
-
-@[deprecated (since := "2025-05-23")] alias carrier.denom_not_mem := carrier.denom_notMem
 
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
   fun rid => carrier.denom_notMem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'

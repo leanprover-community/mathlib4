@@ -105,8 +105,6 @@ instance membership : Membership α (WSeq α) :=
 theorem notMem_nil (a : α) : a ∉ @nil α :=
   Seq.notMem_nil (some a)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
-
 /-- Get the head of a weak sequence. This involves a possibly
   infinite computation. -/
 def head (s : WSeq α) : Computation (Option α) :=

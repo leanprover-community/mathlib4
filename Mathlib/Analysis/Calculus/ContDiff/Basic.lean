@@ -1262,8 +1262,8 @@ theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWith
   | succ i hi =>
     rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
     exact ((hi hmn).fderivWithin_right hs le_rfl hx₀s).continuousLinearMap_comp
-      ((continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i+1) ↦ E) F).symm :
-        _ →L[𝕜] E [×(i+1)]→L[𝕜] F)
+      ((continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i + 1) ↦ E) F).symm :
+        _ →L[𝕜] E [×(i + 1)]→L[𝕜] F)
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth at `x₀`. -/
 protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F}
@@ -1338,7 +1338,7 @@ protected theorem Differentiable.fderiv_two {f : E → F → G} {g : E → F}
     Differentiable 𝕜 fun x => fderiv 𝕜 (f x) (g x) :=
   ContDiff.differentiable
     (contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt (le_refl 2))
-    (le_refl 1)
+    one_ne_zero
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x) (k x)` is smooth. -/
 theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}

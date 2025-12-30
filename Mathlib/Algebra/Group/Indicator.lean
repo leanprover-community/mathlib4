@@ -64,12 +64,6 @@ theorem mulIndicator_union_of_notMem_inter (h : a ∉ s ∩ t) (f : α → M) :
     mulIndicator (s ∪ t) f a = mulIndicator s f a * mulIndicator t f a := by
   rw [← mulIndicator_union_mul_inter_apply f s t, mulIndicator_of_notMem h, mul_one]
 
-@[deprecated (since := "2025-05-23")]
-alias indicator_union_of_not_mem_inter := indicator_union_of_notMem_inter
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_union_of_not_mem_inter := mulIndicator_union_of_notMem_inter
-
 @[to_additive]
 theorem mulIndicator_union_of_disjoint (h : Disjoint s t) (f : α → M) :
     mulIndicator (s ∪ t) f = fun a => mulIndicator s f a * mulIndicator t f a :=

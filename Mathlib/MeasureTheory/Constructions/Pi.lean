@@ -38,7 +38,7 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
 `Measure.pi μ (pi univ s) = ∏ i, m i (s i)`. To do this, we follow the following steps:
 * We know that there is some ordering on `ι`, given by an element of `[Countable ι]`.
 * Using this, we have an equivalence `MeasurableEquiv.piMeasurableEquivTProd` between
-  `∀ ι, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
+  `∀ i, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
 * On this iterated product we can easily define a product measure `MeasureTheory.Measure.tprod`
   by iterating `MeasureTheory.Measure.prod`
 * Using the previous two steps we construct `MeasureTheory.Measure.pi'` on `(i : ι) → α i` for
@@ -553,6 +553,24 @@ instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace
     [∀ i, IsLocallyFiniteMeasure (volume : Measure (X i))] :
     IsLocallyFiniteMeasure (volume : Measure (∀ i, X i)) :=
   pi.isLocallyFiniteMeasure
+
+instance _root_.IsUnifLocDoublingMeasure.pi {ι : Type*} [Fintype ι] {X : ι → Type*}
+    [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasurableSpace (X i)] (μ : ∀ i, Measure (X i))
+    [∀ i, SigmaFinite (μ i)] [∀ i, IsUnifLocDoublingMeasure (μ i)] :
+    IsUnifLocDoublingMeasure (Measure.pi μ) := by
+  use ∏ i, IsUnifLocDoublingMeasure.doublingConstant (μ i)
+  filter_upwards [Filter.eventually_all.mpr fun i ↦
+      IsUnifLocDoublingMeasure.eventually_measure_le_doublingConstant_mul (μ i),
+    eventually_mem_nhdsWithin] with r hr (hr₀ : 0 < r) x
+  simpa (disch := positivity) [Finset.prod_mul_distrib, closedBall_pi, pi_pi]
+    using Fintype.prod_mono' fun i ↦ hr i (x i)
+
+instance IsUnifLocDoublingMeasure.volume_pi {ι : Type*} [Fintype ι] {X : ι → Type*}
+    [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasureSpace (X i)]
+    [∀ i, SigmaFinite (volume : Measure (X i))]
+    [∀ i, IsUnifLocDoublingMeasure (volume : Measure (X i))] :
+    IsUnifLocDoublingMeasure (volume : Measure (∀ i, X i)) :=
+  .pi _
 
 variable (μ)
 

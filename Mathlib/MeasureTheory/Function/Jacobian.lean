@@ -51,7 +51,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 * `integral_image_eq_integral_abs_det_fderiv_smul`: for `g : E → F`, one has
     `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
 * `integrableOn_image_iff_integrableOn_abs_det_fderiv_smul`: for `g : E → F`, the function `g` is
-  integrable on `f '' s` if and only if `|(f' x).det| • g (f x))` is integrable on `s`.
+  integrable on `f '' s` if and only if `|(f' x).det| • g (f x)` is integrable on `s`.
 
 ## Implementation
 

@@ -59,9 +59,6 @@ theorem exists_notMem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I 
     (hI1 : I ≠ ⊤) : ∃ x ∈ (I⁻¹ : FractionalIdeal A⁰ K), x ∉ (1 : FractionalIdeal A⁰ K) :=
   Set.not_subset.1 <| not_inv_le_one_of_ne_bot hI0 hI1
 
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_one_of_ne_bot := exists_notMem_one_of_ne_bot
-
 end FractionalIdeal
 
 end Inverse
@@ -156,9 +153,6 @@ theorem Ideal.exists_mem_pow_notMem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI
     ∃ x ∈ I ^ e, x ∉ I ^ (e + 1) :=
   SetLike.exists_of_lt (I.pow_right_strictAnti hI0 hI1 e.lt_succ_self)
 
-@[deprecated (since := "2025-05-23")]
-alias Ideal.exists_mem_pow_not_mem_pow_succ := Ideal.exists_mem_pow_notMem_pow_succ
-
 open UniqueFactorizationMonoid
 
 theorem Ideal.eq_prime_pow_of_succ_lt_of_le {P I : Ideal A} [P_prime : P.IsPrime] (hP : P ≠ ⊥)
@@ -239,9 +233,6 @@ theorem Ideal.exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι 
   exact
     strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
       (lt_top_iff_ne_top.mpr hJ)
-
-@[deprecated (since := "2025-05-23")]
-alias Ideal.exist_integer_multiples_not_mem := Ideal.exist_integer_multiples_notMem
 
 lemma Ideal.mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
     I * ⨅ i, J i = ⨅ i, I * J i := by
@@ -978,7 +969,7 @@ variable [DecidableEq R] [DecidableEq (Ideal R)]
   `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
   stated in terms of multiplicity. -/
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
-    Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
+    Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
         Multiset.count (normalize X) (normalizedFactors r) := by
   have := emultiplicity_eq_emultiplicity_span (R := R) (a := X) (b := r)
   rw [emultiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,

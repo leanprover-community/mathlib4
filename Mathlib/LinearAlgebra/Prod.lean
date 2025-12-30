@@ -653,6 +653,9 @@ theorem snd_comp_prodComm :
     (LinearMap.snd R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.fst R M M₂) := by
   ext <;> simp
 
+@[simp]
+theorem symm_prodComm : (prodComm R M M₂).symm = prodComm R M₂ M := rfl
+
 end prodComm
 
 /-- Product of modules is associative up to linear isomorphism. -/

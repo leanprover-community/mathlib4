@@ -102,7 +102,7 @@ abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
 abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 
-/-- The cocone associated to the pullback of `f` and `g` -/
+/-- The cocone associated to the pushout of `f` and `g` -/
 abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
   colimit.cocone (span f g)
 

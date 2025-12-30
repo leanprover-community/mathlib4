@@ -128,7 +128,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   refine ⟨u, ?_, ?_, ?_⟩
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · rw [h]
       exact isOpen_empty
     · exact T_open _ h
@@ -139,7 +139,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
     exact mem_iUnion_of_mem _ h'v
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · simp only [h, empty_inter, integrableOn_empty]
     · exact hT _ h
 

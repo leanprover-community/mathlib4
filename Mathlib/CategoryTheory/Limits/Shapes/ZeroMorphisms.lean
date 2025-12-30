@@ -390,17 +390,15 @@ def isoZeroOfEpiZero {X Y : C} (_ : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
   inv := 0
   hom_inv_id := (cancel_epi (0 : X ⟶ Y)).mp (by simp)
 
-set_option backward.proofsInPublic true in
 /-- If a monomorphism out of `X` is zero, then `X ≅ 0`. -/
 def isoZeroOfMonoEqZero {X Y : C} {f : X ⟶ Y} [Mono f] (h : f = 0) : X ≅ 0 := by
   subst h
-  apply isoZeroOfMonoZero ‹_›
+  apply isoZeroOfMonoZero (Y := Y) ‹_›
 
-set_option backward.proofsInPublic true in
 /-- If an epimorphism in to `Y` is zero, then `Y ≅ 0`. -/
 def isoZeroOfEpiEqZero {X Y : C} {f : X ⟶ Y} [Epi f] (h : f = 0) : Y ≅ 0 := by
   subst h
-  apply isoZeroOfEpiZero ‹_›
+  apply isoZeroOfEpiZero (X := X) ‹_›
 
 /-- If an object `X` is isomorphic to 0, there's no need to use choice to construct
 an explicit isomorphism: the zero morphism suffices. -/

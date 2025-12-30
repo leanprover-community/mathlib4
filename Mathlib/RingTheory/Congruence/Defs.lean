@@ -121,7 +121,7 @@ protected theorem zsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     (z : ℤ) {x y : S} (hx : t x y) : t (z • x) (z • y) := t.toAddCon.zsmul z hx
 
 instance : Inhabited (RingCon R) :=
-  ⟨ringConGen EmptyRelation⟩
+  ⟨ringConGen emptyRelation⟩
 
 @[simp]
 theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=

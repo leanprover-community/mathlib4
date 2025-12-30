@@ -498,6 +498,10 @@ instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : IsRegularEpi f :=
   isRegularEpi_of_regularEpi <| regularEpiOfEffectiveEpi f
 
+lemma isRegularEpi_iff_effectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f] :
+    IsRegularEpi f ↔ EffectiveEpi f :=
+  ⟨fun ⟨_⟩ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
 /-- Every split epimorphism is a regular epimorphism. -/
 def RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X

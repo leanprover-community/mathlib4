@@ -169,6 +169,20 @@ def toExtension : Extension R S where
   σ := P.σ
   algebraMap_σ := by simp
 
+/-- Transport generators along an algebra isomorphism. -/
+def ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    Generators R T ι where
+  val := e ∘ P.val
+  σ' := P.σ ∘ e.symm
+  aeval_val_σ' t := by
+    rw [Function.comp_def, ← AlgHom.coe_coe e, ← MvPolynomial.comp_aeval_apply]
+    simp
+
+@[simp]
+lemma ofAlgEquiv_val (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    (P.ofAlgEquiv e).val = e ∘ P.val :=
+  rfl
+
 section Localization
 
 variable (r : R) [IsLocalization.Away r S]
@@ -566,6 +580,14 @@ lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.
   change RingHom.ker _ = _
   congr
   exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
+
+@[simp]
+lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    (P.ofAlgEquiv e).ker = P.ker := by
+  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
+    ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,
+    AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
+    ← ker_eq_ker_aeval_val]
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by

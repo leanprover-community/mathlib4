@@ -454,10 +454,7 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
   · apply iff_of_false
     · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
         Icc_isInteriorPoint_interior hp
-    · rw [mem_insert_iff, mem_singleton_iff]
-      push_neg
-      constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
-      exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
+    · rintro (rfl | rfl) <;> simp at hp
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
