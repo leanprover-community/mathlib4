@@ -129,7 +129,7 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 theorem intrinsicStar_eq_comp (f : E →ₗ[R] F) :
     star f = (starLinearEquiv R).toLinearMap ∘ₛₗ f ∘ₛₗ (starLinearEquiv R).toLinearMap := rfl
 
-theorem IntrinsicStar.starLinearEquiv_eq :
+theorem IntrinsicStar.starLinearEquiv_eq_arrowCongr :
     starLinearEquiv R (A := E →ₗ[R] F) = (starLinearEquiv R).arrowCongr (starLinearEquiv R) := rfl
 
 end CommSemiring
