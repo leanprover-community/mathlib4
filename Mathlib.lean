@@ -1741,7 +1741,8 @@ public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.Join
 public import Mathlib.Analysis.Convex.KreinMilman
 public import Mathlib.Analysis.Convex.LinearIsometry
-public import Mathlib.Analysis.Convex.Majorization
+public import Mathlib.Analysis.Convex.Majorization.Basic
+public import Mathlib.Analysis.Convex.Majorization.Defs
 public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Analysis.Convex.NNReal

@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
+public import Mathlib.Analysis.Convex.Majorization.Defs
 
 /-!
 # Majorization
@@ -41,18 +42,6 @@ variable {n m R : Type*} [Fintype n] [LinearOrder R] [Semiring R]
 
 open Fintype Function Finset
 
-/-- The sum of the `k` smallest elements of `x`. -/
-def incSum (k : ℕ) (x : n → R) : R :=
-    if h : k ≤ card n then
-      min' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) <| by simp [h]
-    else ∑ i, x i
-
-/-- The sum of the `k` largest elements of `x`. -/
-def decSum (k : ℕ) (x : n → R) : R :=
-    if h : k ≤ card n then
-      max' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) <| by simp [h]
-    else ∑ i, x i
-
 lemma incSum_of_le_card {k : ℕ} {x : n → R} (hk : k ≤ card n) :
     incSum k x =
       min' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) (by simp [hk]) := by
@@ -62,13 +51,6 @@ lemma decSum_of_le_card {k : ℕ} {x : n → R} (hk : k ≤ card n) :
     decSum k x =
       max' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) (by simp [hk]) := by
   simp [decSum, hk]
-
-/-- An arbitrary set that achieves the value of `incSum k x`. -/
-noncomputable def incSumSet (k : ℕ) (x : n → R) :=
-    if hk : k ≤ card n then
-      Classical.choose (exists_min'_image (powersetCard k (univ : Finset n))
-        (fun s => ∑ i ∈ s, x i) (by grind))
-    else ∅
 
 @[simp]
 lemma card_incSumSet (k : ℕ) (x : n → R) (hk : k ≤ card n) : (incSumSet k x).card = k := by
@@ -116,13 +98,6 @@ lemma le_of_mem_incSumSet [DecidableEq n] [IsStrictOrderedRing R] (k : ℕ) (x :
     grind
   have := sum_incSumSet_le k x hk t tcard
   grind only
-
-/-- An arbitrary set that achieves the value of `decSum k x`. -/
-noncomputable def decSumSet (k : ℕ) (x : n → R) :=
-    if hk : k ≤ card n then
-      Classical.choose (exists_max'_image (powersetCard k (univ : Finset n))
-        (fun s => ∑ i ∈ s, x i) (by grind))
-    else ∅
 
 @[simp]
 lemma card_decSumSet (k : ℕ) (x : n → R) (hk : k ≤ card n) : (decSumSet k x).card = k := by
@@ -397,32 +372,37 @@ section majorization
 
 variable {m n R : Type*} [Fintype m] [Fintype n] [LinearOrder R] [Semiring R]
 
-/-- `x` is submajorized by `y` if the sum of the `k` largest elements of `y` is at least
-as large as the largest `k` elements of `x`, for all `k` -/
-def IsSubmajorizedBy (x : m → R) (y : n → R) :=
-  ∀ k, decSum k x ≤ decSum k y
-
-/-- `x` is supermajorized by `y` if the sum of the `k` smallest elements of `y` is at most
-as large as the smallest `k` elements of `x`, for all `k`. -/
-def IsSupermajorizedBy (x : m → R) (y : n → R) :=
-  ∀ k, incSum k y ≤ incSum k x
-
-/-- `x` is majorized by `y` if `x` is submajorized by `y` and they have equal sums. -/
-def IsMajorizedBy (x : m → R) (y : n → R) := IsSubmajorizedBy x y ∧ ∑ i, x i = ∑ i, y i
-
-scoped[Majorization] infixl:50 " ≼ˢ " => IsSupermajorizedBy
-scoped[Majorization] infixl:50 " ≼ₛ " => IsSubmajorizedBy
-scoped[Majorization] infixl:50 " ≼ " => IsMajorizedBy
-
 open scoped Majorization
+open Finset
 
-lemma isSubmajorizedBy_def (x : m → R) (y : n → R) :
-  x ≼ₛ y ↔ ∀ k, decSum k x ≤ decSum k y := Iff.rfl
+lemma isSubmajorizedBy_iff_forall_pos (x : m → R) (y : n → R) :
+    x ≼ₛ y ↔ ∀ k > 0, decSum k x ≤ decSum k y := by
+  refine ⟨fun h k _ => h k, fun h => ?_⟩
+  intro k
+  by_cases hk : k = 0
+  · simp [hk]
+  · exact h k (by grind)
 
-lemma isSupermajorizedBy_def (x : m → R) (y : n → R) :
-  x ≼ˢ y ↔ ∀ k, incSum k y ≤ incSum k x := Iff.rfl
+lemma isSubmajorizedBy_of_sum_le_sum_antitone [IsOrderedRing R] {n : ℕ} [NeZero n] (x y : Fin n → R)
+    (hx : Antitone x) (hmaj : ∀ k, ∑ i ≤ k, x i ≤ ∑ i ≤ k, y i) : x ≼ₛ y := by
+  rw [isSubmajorizedBy_iff_forall_pos]
+  intro k hk
+  by_cases hk' : n ≤ k
+  · rw [decSum_of_ge_card (by simp [hk']), decSum_of_ge_card (by simp [hk'])]
+    let nmax : Fin n := ⟨n - 1, by grind [neZero_iff]⟩
+    specialize hmaj nmax
+    have hIic : Iic nmax = univ := by grind
+    simpa [hIic] using hmaj
+  let km1 : Fin n := ⟨k - 1, by grind⟩
+  rw [decSum_of_antitone k x hx hk (by grind)]
+  apply (hmaj km1).trans
+  rw [decSum_of_le_card (by grind [Fintype.card_fin])]
+  apply le_max'
+  rw [mem_image]
+  exact ⟨Iic km1, by grind [Fin.card_Iic], rfl⟩
 
-lemma isMajorizedBy_def (x : m → R) (y : n → R) :
-  x ≼ y ↔ x ≼ₛ y ∧ ∑ i, x i = ∑ i, y i := Iff.rfl
+lemma IsMajorizedBy.isSubmajorizedBy [IsStrictOrderedRing R] {x : m → R} {y : n → R}
+    (hxy : x ≼ y) : x ≼ₛ y := hxy.1
+
 
 end majorization
