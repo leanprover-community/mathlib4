@@ -263,7 +263,6 @@ theorem killComplFun_mul (p q : MvPowerSeries τ R) :
     grind only [!mapDomain_injective f.injective]
 
 /-- The `AlgHom` version of `killComplFun`. -/
-@[simps!]
 def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
   toFun := killComplFun f
   map_one' := by simpa using killComplFun_monomial f 0 1
@@ -273,7 +272,10 @@ def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
   commutes' := by simpa using killComplFun_monomial f 0
 }
 
-theorem killCompl_C (r : R) : killCompl f (C r) = C r := by
+lemma killCompl_apply (p : MvPowerSeries τ R) :
+    killCompl f p = killComplFun f p := rfl
+
+lemma killCompl_C (r : R) : killCompl f (C r) = C r := by
   simpa using killComplFun_monomial f 0 r
 
 open Classical in
