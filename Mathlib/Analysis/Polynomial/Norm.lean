@@ -83,7 +83,7 @@ lemma supNorm_monomial (n : ℕ) {a : A} : (monomial n a).supNorm = ‖a‖ := b
     norm_cast
 
 @[simp]
-lemma supNorm_X [Nontrivial A] [NormOneClass A] : (X : A[X]).supNorm = 1 := by
+lemma supNorm_X [NormOneClass A] : (X : A[X]).supNorm = 1 := by
   rw [show (X : A[X]) = monomial 1 1 from rfl, supNorm_monomial, norm_one]
 
 lemma le_supNorm (i : ℕ) : ‖p.coeff i‖ ≤ p.supNorm := by
