@@ -53,8 +53,7 @@ lemma count_multisetInfinitePlace_eq_mult [DecidableEq (AbsoluteValue K ℝ)] (v
     Multiset.count_replicate, ← Subtype.ext_iff] using Fintype.sum_ite_eq' v ..
 
 -- For the user-facing version, see `prod_archAbsVal_eq` below.
-variable (K) in
-private lemma prod_multisetInfinitePlace_eq {M : Type*} [CommMonoid M] {f : AbsoluteValue K ℝ → M} :
+private lemma prod_multisetInfinitePlace_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
     ((multisetInfinitePlace K).map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult := by
   classical
   rw [Finset.prod_multiset_map_count]
@@ -68,13 +67,13 @@ instance instAdmissibleAbsValues : AdmissibleAbsValues K where
   nonarchAbsVal := {v | IsFinitePlace v}
   isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using hv⟩
   mulSupport_finite := FinitePlace.mulSupport_finite
-  product_formula {x} hx := prod_multisetInfinitePlace_eq (M := ℝ) K ▸ prod_abs_eq_one hx
+  product_formula {x} hx := prod_multisetInfinitePlace_eq (· x) ▸ prod_abs_eq_one hx
 
 open AdmissibleAbsValues
 
 lemma prod_archAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
     (archAbsVal.map f).prod = ∏ v : InfinitePlace K, f v.val ^ v.mult :=
-  prod_multisetInfinitePlace_eq K
+  prod_multisetInfinitePlace_eq f
 
 lemma prod_nonarchAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ → M) :
     (∏ᶠ v : nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
