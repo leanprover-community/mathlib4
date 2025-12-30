@@ -200,27 +200,6 @@ theorem tmulInsertEquiv_symm_tprod (f : (i : ↥(insert i₀ S)) → M i) :
 
 end tmulInsertEquiv
 
-section Perm
-
-variable {S : Set ι}
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable (e : Equiv.Perm ι)
-
-/-- Given a permutation `e : Equiv.Perm ι` and a set `S : Set ι`,
-`permSetEquiv e` is the equivalence between the `PiTensorProduct` indexed by
-`S` and the `PiTensorProduct` indexed by image `e '' S`. -/
-def permSetEquiv : (⨂[R] _ : S, M) ≃ₗ[R] ⨂[R] _ : (e '' S), M :=
-  reindex R (fun _ ↦ M) (Equiv.image e S)
-
-@[simp]
-theorem permSetEquiv_tprod (f : S → M) :
-  (permSetEquiv e) (⨂ₜ[R] i, f i) = ⨂ₜ[R] i, f ((Equiv.image e S).symm i) := by simp [permSetEquiv]
-
-@[simp]
-theorem permSetEquiv_symm_tprod (f : (e '' S) → M) :
-  (permSetEquiv e).symm (⨂ₜ[R] i, f i) = ⨂ₜ[R] i, f ((Equiv.image e S) i) := by simp [permSetEquiv]
-
-end Perm
 
 section Extensions
 
