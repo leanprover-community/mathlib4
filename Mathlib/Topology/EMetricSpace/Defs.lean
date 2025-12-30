@@ -32,7 +32,7 @@ to `EMetricSpace` at the end.
 
 assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
 
-open Filter Set Topology
+open Filter Set Topology Set.Notation
 
 universe u v w
 
@@ -54,6 +54,18 @@ class EDist (α : Type*) where
   edist : α → α → ℝ≥0∞
 
 export EDist (edist)
+
+section
+
+variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α} [EDist α]
+
+/-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
+def EMetric.ball (x : α) (ε : ℝ≥0∞) : Set α :=
+  { y | edist y x < ε }
+
+@[simp] theorem EMetric.mem_ball : y ∈ ball x ε ↔ edist y x < ε := Iff.rfl
+
+end
 
 /-- Creating a uniform space from an extended distance. -/
 @[reducible] def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
@@ -140,7 +152,6 @@ theorem edist_congr_left {x y z : α} (h : edist x y = 0) : edist z x = edist z 
   rw [edist_comm z x, edist_comm z y]
   apply edist_congr_right h
 
--- new theorem
 theorem edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
     edist w y = edist x z :=
   (edist_congr_right hl).trans (edist_congr_left hr)
@@ -165,6 +176,53 @@ theorem uniformity_basis_edist :
 theorem mem_uniformity_edist {s : Set (α × α)} :
     s ∈ 𝓤 α ↔ ∃ ε > 0, ∀ {a b : α}, edist a b < ε → (a, b) ∈ s :=
   uniformity_basis_edist.mem_uniformity_iff
+
+/-- Make a PseudoEMetricSpace from the metric. -/
+abbrev pseudoEMetricSpaceOfEDist {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : PseudoEMetricSpace α where
+  edist := edist
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  toUniformSpace := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
+  uniformity_edist := by rfl
+
+/-- Make a PseudoEMetricSpace from the metric. -/
+abbrev pseudoEMetricSpaceOfEDist'
+    {α : Type u} (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x) (edist_triangle : ∀ x y z :
+    α, edist x z ≤ edist x y + edist y z) : PseudoEMetricSpace α where
+  edist := edist
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  toUniformSpace := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
+  uniformity_edist := by rfl
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist'
+    {α : Type u} [TopologicalSpace α] (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) :
+    ((pseudoEMetricSpaceOfEDist'
+    edist edist_self edist_comm edist_triangle).toUniformSpace).toTopologicalSpace =
+    ((uniformSpaceOfEDist
+    edist edist_self edist_comm edist_triangle)).toTopologicalSpace := by rfl
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr'
+    {α : Type u} [TopologicalSpace α] (s : Set α) (edist : α → α → ℝ≥0∞)
+    (edist_self : ∀ x : α, edist x x = 0) (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z):
+    IsOpen[((pseudoEMetricSpaceOfEDist'
+    edist edist_self edist_comm edist_triangle).toUniformSpace).toTopologicalSpace] s
+    ↔ IsOpen[((uniformSpaceOfEDist
+    edist edist_self edist_comm edist_triangle)).toTopologicalSpace] s := by rfl
+
+theorem EMetric.Uniformity_eq {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) :
+    (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle) =
+    (pseudoEMetricSpaceOfEDist edist_self edist_comm edist_triangle).toUniformSpace := by rfl
 
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
@@ -368,12 +426,6 @@ namespace EMetric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
-/-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
-def ball (x : α) (ε : ℝ≥0∞) : Set α :=
-  { y | edist y x < ε }
-
-@[simp] theorem mem_ball : y ∈ ball x ε ↔ edist y x < ε := Iff.rfl
-
 theorem mem_ball' : y ∈ ball x ε ↔ edist x y < ε := by rw [edist_comm, mem_ball]
 
 /-- `EMetric.closedBall x ε` is the set of all points `y` with `edist y x ≤ ε` -/
@@ -534,6 +586,10 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
     simp only [true_and, mem_Ici, mem_ball]
+
+section
+
+end
 
 section Compact
 
@@ -768,5 +824,239 @@ theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :
 
 end
 
+section
+
+/-- A `WeakPseudoEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
+which is *almost* an extended pseudometric space: the `edist` is reflexive, commutative and
+satisfies the triangle inequality, but the topology on `α` need not *equal* the topology induced
+by the `edist`. (It must be at least as fine, and agree with it on balls of finite radius.)
+
+This generalises both pseudo extended metric spaces and `ℝ≥0∞` (which have an extended distance,
+which does not induce the order topology there). -/
+class WeakPseudoEMetricSpace
+    (α : Type u) [τ : TopologicalSpace α] : Type u extends EDist α  where
+  edist_self : ∀ x : α, edist x x = 0
+  edist_comm : ∀ x y : α, edist x y = edist y x
+  edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z
+  /-- The topology on `α` is at most as fine as the topology generated by the `edist`: -/
+  topology_le :
+    (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace ≤ τ
+  /-- The ambient topology on `α` matches the `edist` topology on balls of finite radius`. -/
+  topology_eq_on_restrict :
+    ∀ (x : α) (r : ℝ≥0∞),
+    IsOpen[instTopologicalSpaceSubtype (t := τ)] ((EMetric.ball x ⊤) ↓∩ (ball x r))
+
+/-- Every PseudoEMetricSpace has a WeakPseudoEMetricSpace structure by
+  using the topology induced by edist. -/
+@[reducible]
+def PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : PseudoEMetricSpace α] :
+    WeakPseudoEMetricSpace α where
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  topology_le := by rw [uniformSpace_edist]
+  topology_eq_on_restrict := by
+    intro x r
+    refine IsOpen.preimage_val ?_
+    exact isOpen_ball
+
+/-- A WeakPseudoEMetricSpace has a PseudoEMetricSpace structure by forgetting the topology. -/
+@[reducible]
+def WeakPseudoEMetricSpace.toPseudoEMetricSpace
+    (α : Type u) [TopologicalSpace α] [inst : WeakPseudoEMetricSpace α] :
+    PseudoEMetricSpace α where
+  edist := inst.edist
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  toUniformSpace := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
+  uniformity_edist := rfl
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
+    (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
+    ((WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace).toTopologicalSpace =
+    ((uniformSpaceOfEDist
+    m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace := rfl
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr
+    {α : Type u} [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} (s : Set α) :
+    IsOpen[((WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace).toTopologicalSpace] s
+    ↔ IsOpen[((uniformSpaceOfEDist
+    m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace] s := by rfl
+
+/-
+/-- A WeakPseudoEMetric space can be built by only looking at balls for the restrict part -/
+abbrev weakPseudoEMetricSpaceBall
+    {α : Type u} [τ : TopologicalSpace α] [EDist α] (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x) (edist_triangle : ∀ x y z :
+    α, edist x z ≤ edist x y + edist y z)
+    (topology_le :
+    (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace ≤ τ)
+    (h : ∀ x y : α, ∀ r : ℝ≥0∞,
+    IsOpen (EMetric.ball x ⊤ ↓∩ EMetric.ball y r)): WeakPseudoEMetricSpace α where
+  edist := edist
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  topology_le := topology_le
+  topology_eq_on_restrict := by
+    intro x r
+
+    sorry
+    /-
+    letI : PseudoEMetricSpace α := pseudoEMetricSpaceOfEDist edist_self edist_comm edist_triangle
+    rw [toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr'] at hs
+    refine isOpen_iff_mem_nhds.mpr ?_
+    intro ⟨y, _⟩
+    simp only [mem_preimage]
+    intro ys
+    refine _root_.mem_nhds_iff.mpr ?_
+    obtain ⟨ε, εp, εh⟩ := (isOpen_iff.1 hs) y ys
+    use ball x ⊤ ↓∩ ball y ε
+    exact ⟨by tauto, isOpen_mk.mpr (h x y ε), mem_ball_self εp⟩-/
+-/
+
+/-- WeakPseudoEMetricSpace can be induced -/
+abbrev WeakPseudoEMetricSpace.induced
+  {α β : Type*} [n : TopologicalSpace β] (f : α → β) (m : WeakPseudoEMetricSpace β) :
+    @WeakPseudoEMetricSpace α (TopologicalSpace.induced f n) := by
+  letI := TopologicalSpace.induced f n
+  refine {
+    edist := fun x y ↦ edist (f x) (f y)
+    edist_self x := edist_self (f x)
+    edist_comm x y := edist_comm (f x) (f y)
+    edist_triangle x y z := edist_triangle (f x) (f y) (f z)
+    topology_le := by
+      intro s hs
+      obtain ⟨t, th, ts⟩ := isOpen_induced_iff.1 hs
+      clear hs
+      rw [← ts]
+      replace th := m.topology_le t th
+      letI : TopologicalSpace α := TopologicalSpace.induced f n
+      rw [← toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr'] at th ⊢
+      letI := pseudoEMetricSpaceOfEDist' (fun x y ↦ edist (f x) (f y)) (fun _ ↦ m.edist_self (f _))
+        (fun x y ↦ m.edist_comm (f x) (f y)) (fun x y z ↦ m.edist_triangle (f x) (f y) (f z))
+      letI := m.toPseudoEMetricSpace
+      rw [isOpen_iff] at th ⊢
+      intro x xh
+      obtain ⟨ε, εp, εh⟩ := th (f x) xh
+      use ε
+      refine ⟨εp, ?_⟩
+      have ss : ball x ε ⊆ f ⁻¹' (ball (f x) ε) := by
+        intro
+        simp only [mem_ball, mem_preimage]
+        exact id
+      exact subset_trans ss (preimage_mono εh)
+    topology_eq_on_restrict := by
+      intro x r
+      obtain ⟨u, hu, uy⟩ := m.6 (f x) r
+      use (f ⁻¹' u)
+      refine ⟨isOpen_induced hu, ?_⟩
+      ext ⟨z, zh⟩
+      simp only [mem_preimage, mem_ball]
+      have (i : { x_1 // x_1 ∈ ball (f x) ⊤ }) :
+          i ∈ Subtype.val ⁻¹' u ↔ i ∈ ball (f x) ⊤ ↓∩ ball (f x) r :=
+        Iff.of_eq (congrFun uy i)
+      simp only [mem_preimage, mem_ball, Subtype.forall] at this
+      exact this (f z) zh
+  }
+  /-
+  apply @weakPseudoEMetricSpaceBall
+    α (TopologicalSpace.induced f n) (EDist.mk (fun x y ↦ edist (f x) (f y)))
+    (edist_self := fun _ ↦ m.edist_self (f _)) (edist_comm := fun x y ↦ m.edist_comm (f x) (f y))
+    (edist_triangle := fun x y z ↦ m.edist_triangle (f x) (f y) (f z))
+  · intro s hs
+    obtain ⟨t, th, ts⟩ := isOpen_induced_iff.1 hs
+    clear hs
+    rw [← ts]
+    replace th := m.topology_le t th
+    letI : TopologicalSpace α := TopologicalSpace.induced f n
+    rw [← toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr'] at th ⊢
+    letI := pseudoEMetricSpaceOfEDist' (fun x y ↦ edist (f x) (f y)) (fun _ ↦ m.edist_self (f _))
+      (fun x y ↦ m.edist_comm (f x) (f y)) (fun x y z ↦ m.edist_triangle (f x) (f y) (f z))
+    letI := m.toPseudoEMetricSpace
+    rw [isOpen_iff] at th ⊢
+    intro x xh
+    obtain ⟨ε, εp, εh⟩ := th (f x) xh
+    use ε
+    refine ⟨εp, ?_⟩
+    have ss : ball x ε ⊆ f ⁻¹' (ball (f x) ε) := by
+      intro
+      simp only [mem_ball, mem_preimage]
+      exact id
+    exact subset_trans ss (preimage_mono εh)
+  · intro x y r
+    have ball_eq : ball y r = f ⁻¹' ball (f y) r := by rfl
+    obtain ⟨u, hu, uy⟩ := m.6 (f x) (s := (ball (f y) r)) (by
+      rw [← toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr]
+      exact @isOpen_ball β (WeakPseudoEMetricSpace.toPseudoEMetricSpace β) (f y) r)
+    use (f ⁻¹' u)
+    refine ⟨isOpen_induced hu, ?_⟩
+    ext ⟨z, zh⟩
+    simp only [mem_preimage, mem_ball]
+    have (i : { x_1 // x_1 ∈ ball (f x) ⊤ }) :
+        i ∈ Subtype.val ⁻¹' u ↔ i ∈ ball (f x) ⊤ ↓∩ ball (f y) r := by
+      exact Iff.of_eq (congrFun uy i)
+    simp only [mem_preimage, mem_ball, Subtype.forall] at this
+    apply this (f z)
+    exact zh -/
+
+/-- Weak Pseudoemetric space instance on subsets of weak pseudoemetric spaces -/
+instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakPseudoEMetricSpace α] :
+    WeakPseudoEMetricSpace (Subtype p) :=
+  WeakPseudoEMetricSpace.induced Subtype.val ‹_›
+
+/-- A weak extended metric space extends a `WeakPseudoEMetricSpace` with the condition
+`edist x y = 0 ↔ x = y`. -/
+class WeakEMetricSpace
+    (α : Type u) [TopologicalSpace α] : Type u extends WeakPseudoEMetricSpace α where
+  eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
+
+/-- Every EMetricSpace has a WeakEMetricSpace structure by
+  using the topology induced by edist. -/
+@[reducible]
+def EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] :
+    WeakEMetricSpace α where
+  edist x y := edist x y
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  topology_le := inst.toWeakPseudoEMetricSpace.5
+  topology_eq_on_restrict := inst.toWeakPseudoEMetricSpace.6
+  eq_of_edist_eq_zero := eq_of_edist_eq_zero
+
+/-- Every WeakEMetricSpace is a EMetricSpace by forgetting the topology. -/
+@[reducible]
+def WeakEMetricSpace.toEMetricSpace (α : Type u) [TopologicalSpace α] [inst : WeakEMetricSpace α] :
+    EMetricSpace α where
+  edist := edist
+  edist_self := inst.edist_self
+  edist_comm := inst.edist_comm
+  edist_triangle := inst.edist_triangle
+  uniformity_edist := rfl
+  eq_of_edist_eq_zero := inst.eq_of_edist_eq_zero
+
+/-- WeakEMetric space can be induced with injective -/
+abbrev WeakEMetricSpace.induced
+  {α β : Type*} [n : TopologicalSpace β]
+  {f : α → β} (hf : Function.Injective f) (m : WeakEMetricSpace β) :
+    @WeakEMetricSpace α (TopologicalSpace.induced f n) :=
+  letI := TopologicalSpace.induced f n
+  { WeakPseudoEMetricSpace.induced f m.toWeakPseudoEMetricSpace with
+    eq_of_edist_eq_zero := fun h => hf (m.eq_of_edist_eq_zero h) }
+
+/-- Weak EMetric space instance on subsets of emetric spaces -/
+instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakEMetricSpace α] :
+    WeakEMetricSpace (Subtype p) :=
+  WeakEMetricSpace.induced Subtype.coe_injective ‹_›
+
+@[simp] theorem weakedist_self
+    {α : Type*} [TopologicalSpace α] [m : WeakPseudoEMetricSpace α] (a : α) :
+    edist a a = 0 := by rw [m.edist_self]
+
+end
+
 instance [PseudoEMetricSpace X] : PseudoEMetricSpace Xᵒᵈ := ‹PseudoEMetricSpace X›
 instance [EMetricSpace X] : EMetricSpace Xᵒᵈ := ‹EMetricSpace X›
+
+--die ext sachen fehlen noch
