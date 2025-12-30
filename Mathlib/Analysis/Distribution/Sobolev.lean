@@ -262,6 +262,22 @@ theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁
   rw [mul_comm]
   congr
 
+-- lineDeriv v = fourierMultiplierCLM F (fun x ↦ 2 π I * ⟪x, v⟫)
+
+
+/- What needs to be done for the Laplacian:
+* Laplacian notation type class
+* Laplacian on 𝓢 and 𝓢' via FT
+* Proof that for 𝓢 this is equal to derivative version (need good characterization of derivative
+  version)
+  use
+  -- Real.iteratedFDeriv_fourier
+  -- InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis
+  -- OrthonormalBasis.sum_sq_inner_right
+* ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1) is bounded
+  => Δ maps H^(s+2) to H^s
+-/
+
 namespace Sobolev
 
 instance instInnerProductSpace (s : ℝ) :

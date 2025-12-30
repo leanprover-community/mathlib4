@@ -195,6 +195,96 @@ theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
 
 end fubini
 
+section deriv
+
+open ContinuousLinearMap
+open scoped ContDiff
+
+variable (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E)
+
+def fourierSMulRightCLM : 𝓢(V, E) →L[ℂ] 𝓢(V, W →L[ℝ] E) :=
+  mkCLM (VectorFourier.fourierSMulRight L ·) (by intros; ext; simp) (by
+    intro c g x
+    ext v
+    simp only [VectorFourier.fourierSMulRight_apply, smul_apply, neg_smul, RingHom.id_apply,
+      ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_neg, neg_inj]
+    calc
+      _ = (L x) v • (2 * π * Complex.I) • c • g x := by rw [smul_comm]
+      _ = (L x) v • c • (2 * π * Complex.I) • g x := by congr 1; rw [smul_comm]
+      _ = c • (L x) v • (2 * π * Complex.I) • g x := by rw [smul_comm]
+      _ = _ := by congr 1; rw [smul_comm]) (by
+    intro f
+    unfold VectorFourier.fourierSMulRight
+    fun_prop) (by
+    intro ⟨k, n⟩
+    use {(k + 1, n), (k, n - 1)}, 4 * π * ‖L‖ * (max 1 n), by positivity
+    intro f x
+    calc
+      _ = ‖x‖ ^ k * (2 * π * ‖iteratedFDeriv ℝ n (fun x ↦ (L x).smulRight (f x)) x‖) := by
+        congr 1
+        unfold VectorFourier.fourierSMulRight
+        have : ContDiffAt ℝ n f x := f.contDiffAt n x
+        rw [iteratedFDeriv_const_smul_apply' (by fun_prop), norm_smul]
+        have : 0 ≤ π := by positivity
+        simp [this]
+      _ = 2 * π * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (fun x ↦ (L x).smulRight (f x)) x‖ := by grind
+      _ ≤ 2 * π * ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
+          ‖iteratedFDeriv ℝ i L x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
+        gcongr 1
+        exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (smulRightL ℝ W E)
+          (by fun_prop) (f.smooth ⊤) x (ENat.LEInfty.out) norm_smulRightL_le
+      _ ≤ 2 * π * ‖x‖ ^ k *
+          (‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ + n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖) := by
+        gcongr 1
+        rw [Finset.sum_range_succ', add_comm]
+        simp only [Nat.choose_zero_right, Nat.cast_one, norm_iteratedFDeriv_zero, one_mul,
+          Nat.sub_zero, add_le_add_iff_left]
+        by_cases! h : n = 0
+        · simp only [h, Finset.range_zero, Nat.choose_zero_succ, CharP.cast_eq_zero, zero_mul,
+          Finset.sum_const_zero]
+          positivity
+        · obtain ⟨n', hn'⟩ : ∃ n', n' + 1 = n := by simpa using Nat.zero_lt_of_ne_zero h
+          have : ∑ k ∈ Finset.range n',
+              (((n' + 1).choose (k + 1 + 1)) : ℝ) * ‖iteratedFDeriv ℝ (k + 1 + 1) L x‖ *
+              ‖iteratedFDeriv ℝ (n' + 1 - (k + 1 + 1)) f x‖ = 0 := by
+            apply Finset.sum_eq_zero
+            intro n₂ hn₂
+            simp only [mul_eq_zero, Nat.cast_eq_zero, norm_eq_zero]
+            left; right
+            simp [iteratedFDeriv_succ_eq_comp_right, iteratedFDeriv_succ_const]
+          rw [← hn', Finset.sum_range_succ', this]
+          simp only [zero_add, Nat.choose_one_right, Nat.cast_add, Nat.cast_one, Nat.reduceAdd,
+            Nat.add_one_sub_one, ge_iff_le]
+          gcongr
+          sorry
+      _ = 2 * π * ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n (⇑f) x‖ +
+            2 * π * ‖x‖ ^ k * ↑n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) (⇑f) x‖ := by ring
+      _ ≤ 2 * π * ‖L‖ * 1 * (SchwartzMap.seminorm ℂ (k + 1) n) f +
+            2 * π * ‖L‖ * n * (SchwartzMap.seminorm ℂ k (n - 1) f) := by
+        apply add_le_add
+        · grw [le_opNorm]
+          simp only [mul_one]
+          move_mul [2, π, ‖L‖, ‖L‖]
+          gcongr
+          have : ‖x‖ ^ k * ‖x‖ = ‖x‖ ^ (k + 1) := by ring
+          rw [this]
+          exact le_seminorm ℂ (k + 1) n f x
+        · move_mul [2, π, (n : ℝ), ‖L‖]
+          gcongr
+          exact le_seminorm ℂ k (n - 1) f x
+      _ ≤ 2 * π * ‖L‖ * max 1 n *
+          max ((SchwartzMap.seminorm ℂ (k + 1) n) f) ((SchwartzMap.seminorm ℂ k (n - 1)) f) +
+          2 * π * ‖L‖ * max 1 n *
+          max ((SchwartzMap.seminorm ℂ (k + 1) n) f) ((SchwartzMap.seminorm ℂ k (n - 1)) f) := by
+        apply add_le_add
+        all_goals {gcongr; all_goals simp}
+      _ = _ := by
+        simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
+          Seminorm.coe_sup, Pi.sup_apply]
+        ring)
+
+end deriv
+
 section L2
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
