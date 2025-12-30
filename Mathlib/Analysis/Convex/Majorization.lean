@@ -392,3 +392,37 @@ lemma decSum_one_of_antitone {n : ℕ} [NeZero n] (x : Fin n → R) (hx : Antito
     exact hx <| Fin.zero_le i
 
 end incdecsum
+
+section majorization
+
+variable {m n R : Type*} [Fintype m] [Fintype n] [LinearOrder R] [Semiring R]
+
+/-- `x` is submajorized by `y` if the sum of the `k` largest elements of `y` is at least
+as large as the largest `k` elements of `x`, for all `k` -/
+def IsSubmajorizedBy (x : m → R) (y : n → R) :=
+  ∀ k, decSum k x ≤ decSum k y
+
+/-- `x` is supermajorized by `y` if the sum of the `k` smallest elements of `y` is at most
+as large as the smallest `k` elements of `x`, for all `k`. -/
+def IsSupermajorizedBy (x : m → R) (y : n → R) :=
+  ∀ k, incSum k y ≤ incSum k x
+
+/-- `x` is majorized by `y` if `x` is submajorized by `y` and they have equal sums. -/
+def IsMajorizedBy (x : m → R) (y : n → R) := IsSubmajorizedBy x y ∧ ∑ i, x i = ∑ i, y i
+
+scoped[Majorization] infixl:50 " ≼ˢ " => IsSupermajorizedBy
+scoped[Majorization] infixl:50 " ≼ₛ " => IsSubmajorizedBy
+scoped[Majorization] infixl:50 " ≼ " => IsMajorizedBy
+
+open scoped Majorization
+
+lemma isSubmajorizedBy_def (x : m → R) (y : n → R) :
+  x ≼ₛ y ↔ ∀ k, decSum k x ≤ decSum k y := Iff.rfl
+
+lemma isSupermajorizedBy_def (x : m → R) (y : n → R) :
+  x ≼ˢ y ↔ ∀ k, incSum k y ≤ incSum k x := Iff.rfl
+
+lemma isMajorizedBy_def (x : m → R) (y : n → R) :
+  x ≼ y ↔ x ≼ₛ y ∧ ∑ i, x i = ∑ i, y i := Iff.rfl
+
+end majorization
