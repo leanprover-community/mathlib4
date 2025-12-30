@@ -67,6 +67,17 @@ instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' 
       tensor_assoc, ← tensorHom_comp_tensorHom, μ_natural_assoc]
     simp only [← map_comp, tensor]
 
+instance whiskerRight {G₁ : D ⥤ E} [G₁.LaxMonoidal] [IsMonoidal τ] :
+    IsMonoidal (Functor.whiskerRight τ G₁) := by
+  rw [← Functor.hcomp_id]
+  infer_instance
+
+instance whiskerLeft {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
+    (τ' : G₁ ⟶ G₂) [IsMonoidal τ'] :
+    IsMonoidal (Functor.whiskerLeft F₁ τ') := by
+  rw [← Functor.id_hcomp]
+  infer_instance
+
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
 
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
