@@ -161,6 +161,13 @@ instance monoidalClosed : MonoidalClosed (∀ i, C i) where
 
 end Closed
 
+@[simps!]
+instance (i : I) : (Pi.eval C i).Monoidal where
+  ε := 𝟙 _
+  μ X Y := 𝟙 _
+  η := 𝟙 _
+  δ X Y := 𝟙 _
+
 @[simps]
 instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ i : I, D ⥤ C i)
     [∀ i, (F i).LaxMonoidal] : (Functor.pi' F).LaxMonoidal where
@@ -227,6 +234,22 @@ instance [∀ i, BraidedCategory (C i)]
     [∀ i, MonoidalCategory (D i)] [∀ i, BraidedCategory (D i)]
     (F : ∀ i : I, D i ⥤ C i) [∀ i, (F i).Braided] :
     (Functor.pi F).Braided where
+
+instance {D : Type*} [Category* D] [MonoidalCategory D]
+    {F G : D ⥤ (∀ i, C i)} [F.LaxMonoidal] [G.LaxMonoidal]
+    (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i)
+    [∀ i, (τ i).IsMonoidal] :
+    (NatTrans.pi' τ).IsMonoidal where
+  unit := by ext i; simpa using NatTrans.IsMonoidal.unit (τ := τ i)
+  tensor X Y := by ext i; simpa using NatTrans.IsMonoidal.tensor _ _ (τ := τ i)
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)]
+    {F G : ∀ i : I, (D i ⥤ C i)} [∀ i, (F i).LaxMonoidal]
+    [∀ i, (G i).LaxMonoidal] (τ : ∀ i : I, (F i) ⟶ (G i))
+    [∀ i, (τ i).IsMonoidal] :
+    (NatTrans.pi τ).IsMonoidal where
 
 end Pi
 
