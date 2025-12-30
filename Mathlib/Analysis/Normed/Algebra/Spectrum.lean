@@ -720,10 +720,51 @@ lemma _root_.UpperHemicontinuousAt.of_sequences {α β : Type*} [TopologicalSpac
   obtain ⟨l, hl₁, hl₂⟩ := hy₂
   exact hu.isClosed_compl.mem_of_tendsto hl₂ <| .of_forall hx'
 
+/-- A set-valued function `f : α → Set β` is upper hemicontinuous at `x₀ : α` if for every pair
+of sequences `x : ℕ → α` and `y : ℕ → β` such that `x` tends to `x₀` and `y n ∈ f (x n)` and
+`y` tends to `y₀ : β`, then `y₀ ∈ f x₀`. This requires that there is some compact set containing
+all `f x'` for `x'` sufficiently close to `x`. -/
+lemma _root_.UpperHemicontinuousAt.of_sequences_of_isSeqCompact {α β : Type*} [TopologicalSpace α]
+    [TopologicalSpace β] {f : α → Set β} {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
+    {K : Set β} (hK : IsSeqCompact K) (hf : ∀ᶠ x in 𝓝 x₀, f x ⊆ K)
+    (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
+      ∀ y : ℕ → β, (∀ n, y n ∈ f (x n)) → ∀ y₀, Tendsto y atTop (𝓝 y₀) → y₀ ∈ f x₀) :
+    UpperHemicontinuousAt f x₀ := by
+  refine .of_sequences fun x hx y hy ↦ ?_
+  obtain ⟨y₀, hy₀, φ, hφ, hφ_tendsto⟩ := hK.subseq_of_frequently_in (x := y) <| by
+    refine Eventually.frequently ?_
+    filter_upwards [hx hf] with n hn
+    exact hn (hy n)
+  refine ⟨y₀, ?_, hφ_tendsto.mapClusterPt.of_comp hφ.tendsto_atTop⟩
+  exact h (x ∘ φ) (hx.comp hφ.tendsto_atTop) (y ∘ φ) (fun n ↦ hy (φ n)) y₀ hφ_tendsto
 
 variable [NormedField 𝕜] [ProperSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
   [HasSummableGeomSeries A]
 
+variable (𝕜 A) in
+lemma _root_.upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
+  /- It suffices to use the sequential characterization of upper hemicontinuity.
+  Suppose that `a : ℕ → A` converges to `a₀`, `x : ℕ → 𝕜` converges to `x₀`, and for all `n`,
+  `x n ∈ spectrum 𝕜 (a n)`. -/
+  rw [upperHemicontinuous_iff]
+  refine fun a₀ ↦ .of_sequences_of_isSeqCompact
+    (isCompact_closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)).isSeqCompact ?_ <|
+    fun a ha x hx_mem x₀ hx↦ ?_
+  /- We must show that `spectrum 𝕜 (a n)` is eventually contained in some fixed compact set
+  (we've chosen `closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)`). This follows since the spectrum of `b` is
+  bounded `‖b‖ * ‖1‖` and `a` converges to `a₀`.  -/
+  · filter_upwards [Metric.closedBall_mem_nhds a₀ zero_lt_one] with a ha
+    apply spectrum.subset_closedBall_norm_mul a |>.trans <| Metric.closedBall_subset_closedBall ?_
+    gcongr
+    apply norm_le_norm_add_norm_sub' a a₀ |>.trans
+    gcongr
+    simpa [dist_eq_norm] using ha
+  /- Finally, `x₀ ∈ spectrum 𝕜 a₀` since `algebraMap 𝕜 A x₀ - a₀` is not invertible, being itself
+  the limit of the non-invertible elements `algebraMap 𝕜 A (x n) - (a n)`. -/
+  · exact nonunits.isClosed.mem_of_tendsto
+      (continuous_algebraMap 𝕜 A |>.tendsto x₀ |>.comp hx |>.sub ha) <| .of_forall hx_mem
+
+#exit
 variable (𝕜 A) in
 lemma _root_.upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
   /- It suffices to use the sequential characterization of upper hemicontinuity -/
