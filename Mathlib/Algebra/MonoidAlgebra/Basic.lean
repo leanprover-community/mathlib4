@@ -338,15 +338,6 @@ lemma toRingHom_mapRangeAlgHom (f : A →ₐ[R] B) :
 lemma mapRangeAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :
     mapRangeAlgHom M f x m = f (x m) := mapRangeRingHom_apply f.toRingHom x m
 
-@[to_additive]
-lemma coe_mapRangeAlgHom {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [Monoid G] (f : R →ₐ[k] S) :
-      ⇑(mapRangeAlgHom G f) = Finsupp.mapRange f (map_zero _) := by
-  ext x
-  induction x using Finsupp.induction with
-  | zero => simp
-  | single_add a b f _ _ ih => simp [ih]
-
 @[to_additive (attr := simp)]
 lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapRangeAlgHom M f (single m a) = single m (f a) := by
@@ -563,6 +554,14 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : k[G]) :
     rw [lift_unique' F]
     simp [lift_apply]
 
+theorem lift_mapRangeRingHom_algebraMap [CommSemiring R] [CommSemiring S]
+    [Algebra R A] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
+    (f : Multiplicative G →* A) (x : R[G]) :
+    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+  induction x using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ ih => simp [ih]
+
 lemma algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
 
@@ -575,14 +574,6 @@ def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
   map_mul' _ _ := by ext; simp [AddAut.mul_def]
 
 end lift
-
-theorem lift_mapRangeAlgHom_algebraMap [CommSemiring R] [CommSemiring S]
-    [AddMonoid G] [Semiring A] [Algebra R A] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
-    (f : Multiplicative G →* A) (x : R[G]) :
-    lift _ _ _ f (mapRangeAlgHom _ (algebraMap R S).toNatAlgHom x) = lift _ _ _ f x := by
-  induction x using Finsupp.induction with
-  | zero => simp
-  | single_add a b f _ _ ih => simp [ih]
 
 variable [CommSemiring R] [AddMonoid M] [AddMonoid H] [Semiring A] [Algebra R A]
 
