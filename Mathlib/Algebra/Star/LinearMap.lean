@@ -128,6 +128,17 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 
 end TensorProduct
 
+section starAddMonoidSemiring
+variable {S : Type*} [Semiring S] [StarAddMonoid S] [StarModule S S] [Module S E] [StarModule S E]
+
+@[simp] theorem intrinsicStar_toSpanSingleton (a : E) :
+    star (toSpanSingleton S E a) = toSpanSingleton S E (star a) := by ext; simp
+
+theorem intrinsicStar_smulRight [Module S F] [StarModule S F] (f : E →ₗ[S] S) (x : F) :
+    star (f.smulRight x) = (star f).smulRight (star x) := by ext; simp
+
+end starAddMonoidSemiring
+
 end LinearMap
 
 section matrix
