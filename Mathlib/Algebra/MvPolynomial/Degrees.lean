@@ -231,7 +231,7 @@ theorem degreeOf_zero (n : σ) : degreeOf n (0 : MvPolynomial σ R) = 0 := by
 
 @[simp]
 theorem degreeOf_one (n : σ) : degreeOf n (1 : MvPolynomial σ R) = 0 := by
-  classical simp only [degreeOf_def, degrees_one, Multiset.count_zero]
+  classical simp [degreeOf_def, degrees_one]
 
 @[simp]
 theorem degreeOf_C (a : R) (x : σ) : degreeOf x (C a : MvPolynomial σ R) = 0 := by
