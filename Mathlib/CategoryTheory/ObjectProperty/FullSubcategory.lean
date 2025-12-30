@@ -63,9 +63,8 @@ theorem ι_obj {X} : P.ι.obj X = X.obj :=
 theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f.hom :=
   rfl
 
-<<<<<<< HEAD
 lemma prop_ι_obj (X) : P (P.ι.obj X) := X.2
-=======
+
 @[simp]
 lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
     InducedCategory.Hom.hom (𝟙 X) = 𝟙 X.obj := rfl
@@ -82,7 +81,6 @@ variable {P} in
 @[simps]
 def homMk {X Y : P.FullSubcategory} (f : X.obj ⟶ Y.obj) : X ⟶ Y where
   hom := f
->>>>>>> origin/master
 
 /-- The inclusion of a full subcategory is fully faithful. -/
 abbrev fullyFaithfulι :

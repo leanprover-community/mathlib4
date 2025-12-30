@@ -3,18 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Order.CompleteLattice.Defs
-=======
 module
 
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.Order.Basic
->>>>>>> origin/master
+public import Mathlib.Order.CompleteLattice.Defs
 
 /-! # Properties of objects which are closed under isomorphisms
 
@@ -98,7 +93,6 @@ instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P.inverseImage F) where
   of_iso e hX := P.prop_of_iso (F.mapIso e) hX
 
-<<<<<<< HEAD
 instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     (P ⊓ Q).IsClosedUnderIsomorphisms where
   of_iso e hX := ⟨P.prop_of_iso e hX.1, Q.prop_of_iso e hX.2⟩
@@ -110,7 +104,7 @@ lemma prop_map_obj_iff
   rw [prop_map_iff] at hX
   obtain ⟨Y, hY, ⟨e⟩⟩ := hX
   exact P.prop_of_iso (F.preimageIso e) hY
-=======
+
 @[simp]
 lemma isoClosure_strictMap (F : C ⥤ D) :
     (P.strictMap F).isoClosure = P.map F := by
@@ -126,7 +120,6 @@ lemma map_isoClosure (F : C ⥤ D) :
   refine le_antisymm ?_ (map_monotone P.le_isoClosure F)
   rintro X ⟨Y, ⟨Z, hZ, ⟨e⟩⟩, ⟨e'⟩⟩
   exact ⟨Z, hZ, ⟨F.mapIso e.symm ≪≫ e'⟩⟩
->>>>>>> origin/master
 
 end ObjectProperty
 

@@ -3,13 +3,6 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-=======
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
@@ -17,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.Basic
->>>>>>> origin/master
 
 /-!
 # Triangles
@@ -247,8 +239,6 @@ lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
 
-<<<<<<< HEAD
-=======
 namespace Triangle
 
 section Preadditive
@@ -340,7 +330,6 @@ end Linear
 end Triangle
 
 /-- The obvious triangle `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
->>>>>>> origin/master
 @[simps!]
 def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     Triangle C :=

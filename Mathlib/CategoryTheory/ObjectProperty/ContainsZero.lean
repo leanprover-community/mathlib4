@@ -3,16 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.ObjectProperty.Opposite
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-=======
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
->>>>>>> origin/master
 
 /-!
 # Properties of objects which hold for a zero object
@@ -95,7 +91,6 @@ instance [P.ContainsZero] : P.isoClosure.ContainsZero where
     obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
     exact ⟨Z, hZ, P.le_isoClosure _ hP⟩
 
-<<<<<<< HEAD
 instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] [Q.ContainsZero] :
     (P ⊓ Q).ContainsZero where
   exists_zero := by
@@ -117,8 +112,6 @@ instance [P.ContainsZero] : HasZeroObject P.FullSubcategory where
     obtain ⟨X, h₁, h₂⟩ := P.exists_prop_of_containsZero
     exact ⟨_, IsZero.of_full_of_faithful_of_isZero P.ι ⟨X, h₂⟩ h₁⟩
 
-=======
->>>>>>> origin/master
 end ObjectProperty
 
 /-- Given a functor `F : C ⥤ D`, this is the property of objects of `C`
