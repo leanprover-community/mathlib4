@@ -116,9 +116,9 @@ theorem dvd_monomial_one_iff_exists {n : σ →₀ ℕ} :
   intro m
   simp_rw [isUnit_iff_dvd_one]
 
-theorem dvd_X_iff_exists {i : σ} :
-    p ∣ X i ↔ ∃ r, IsUnit r ∧ (p = C r ∨ p = r • X i) := by
-  rw [X, dvd_monomial_one_iff_exists, exists_comm]
+theorem dvd_smul_X_iff_exists {i : σ} {r : R} (hr : r ≠ 0) :
+    p ∣ r • X i ↔ ∃ s, s ∣ r ∧ (p = C s ∨ p = s • X i) := by
+  rw [X, smul_monomial, smul_eq_mul, mul_one, dvd_monomial_iff_exists hr, exists_comm]
   apply exists_congr
   intro b
   constructor
@@ -143,6 +143,14 @@ theorem dvd_X_iff_exists {i : σ} :
     · use 0; simp [hb, hp]
     · use Finsupp.single i 1, le_rfl, hb
       simp [hp, smul_monomial]
+
+theorem dvd_X_iff_exists {i : σ} :
+    p ∣ X i ↔ ∃ r, IsUnit r ∧ (p = C r ∨ p = r • X i) := by
+  nontriviality R
+  rw [← one_smul R (X i), dvd_smul_X_iff_exists (one_ne_zero' R)]
+  apply exists_congr
+  intro r
+  rw [isUnit_iff_dvd_one, one_smul]
 
 end CommRing
 

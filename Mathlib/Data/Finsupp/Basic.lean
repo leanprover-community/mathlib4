@@ -81,8 +81,6 @@ theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈
 theorem notMem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_graph_snd_zero := notMem_graph_snd_zero
-
 @[simp]
 theorem image_fst_graph [DecidableEq α] (f : α →₀ M) : f.graph.image Prod.fst = f.support := by
   classical
@@ -579,6 +577,12 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
 
+theorem mapDomain_comapDomain_nat_add_one (l : ℕ →₀ M) :
+    mapDomain (· + 1) (comapDomain.addMonoidHom (add_left_injective 1) l) = l.erase 0 := by
+  refine .trans ?_ (mapDomain_comapDomain _ (add_left_injective 1) _ fun _ ↦ ?_)
+  · congr; ext; simp
+  · simp_all [Nat.pos_iff_ne_zero]
+
 theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
     comapDomain f (mapDomain f l) hf.injOn = l := by
   ext; rw [comapDomain_apply, mapDomain_apply hf]
@@ -695,8 +699,6 @@ theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ �
     ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
 
 theorem zero_notMem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
-
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_frange := zero_notMem_frange
 
 theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr =>
   let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
@@ -1119,7 +1121,9 @@ theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
 
 theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, P a) :
     (subtypeDomain P f).extendDomain = f := by
-  ext a; by_cases P a <;> simp [*]; grind
+  ext
+  simp only [extendDomain_apply, subtypeDomain_apply, dite_eq_ite, ite_eq_left_iff]
+  grind
 
 @[simp]
 theorem extendDomain_single (a : Subtype P) (m : M) :

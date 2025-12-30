@@ -271,9 +271,8 @@ theorem nextOr_infix_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLa
   · have ⟨_, _⟩ := l.dropLast_prefix
     grind
   by_cases hi₁ : i = 1
-  · subst hi₁
-    grind [next, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
-  grind [getElem?_idxOf, mem_of_mem_dropLast]
+  · grind [next, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
+  · grind [getElem?_idxOf, mem_of_mem_dropLast]
 
 theorem nextOr_getLast_of_notMem_dropLast {l : List α} (hl : l ≠ []) (h : l.getLast hl ∉ l.dropLast)
     (d : α) : l.nextOr (l.getLast hl) d = d := by
@@ -497,8 +496,6 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
 @[simp]
 theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''

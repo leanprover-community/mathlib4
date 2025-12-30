@@ -83,9 +83,6 @@ theorem notMem_of_mem_powerset_of_notMem {s t : Finset α} {a : α} (ht : t ∈ 
   apply mt _ h
   apply mem_powerset.1 ht
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_of_mem_powerset_of_not_mem := notMem_of_mem_powerset_of_notMem
-
 theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by
   ext t
