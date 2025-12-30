@@ -180,16 +180,26 @@ theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
             constructor
             · exact Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hi, rfl⟩
             · intro _ hm; exact (Finset.mem_filter.mp hm).2
+
+         -- TODO make it a thm
         have : CanonicalProjections h n (e i) = e i := by
-            have : i ∈ Finset.range n := by exact Finset.mem_range.mpr hi
+            have : i ∈ Finset.range n := Finset.mem_range.mpr hi
             calc
               CanonicalProjections h n (e i) = ∑ j ∈ Finset.range n, (bf j (e i)) • e j := by
                 rw [CanonicalProjections]; simp [bf];
               _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j +
                     ∑ j ∈ (Finset.range n).filter (fun j => j ≠ i), (bf j (e i))  • e j := by
                 rw [Finset.sum_filter_add_sum_filter_not];
+              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i)) • e j +
+                    ∑ j ∈ (Finset.range n).filter (fun j => j ≠ i), 0 := by
+                congr 1
+                apply Finset.sum_congr rfl
+                intro j hj
+                have hji: j ≠ i := (Finset.mem_filter.mp hj).2
+                rw [bf_eval h j i, if_neg hji]
+                exact zero_smul 𝕜 (e j)
               _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j + 0 := by
-                sorry
+                rw [Finset.sum_const_zero]
               _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j := by
                 rw [add_zero]
               _ = ∑ j ∈ {i}, (bf j (e i))  • e j := by rw [Finset.sum_congr z.symm fun _ _ => rfl]
@@ -198,7 +208,8 @@ theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
               _ = e i := by rw [one_smul]
 
         exact ⟨e i, this⟩
-    have basisofrange: range (CanonicalProjections h n) ≃ₗ[𝕜] Submodule.span 𝕜 ({ e i | i < n }) := by  sorry
+    have basisofrange: range (CanonicalProjections h n) ≃ₗ[𝕜]
+        Submodule.span 𝕜 ({ e i | i < n }) := by  sorry
     rw [LinearEquiv.finrank_eq basisofrange]
     have : Module.finrank 𝕜 (Submodule.span 𝕜 ({ e i | i < n })) = n := by sorry
     exact this
@@ -214,7 +225,6 @@ theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : �
         by_cases hij : i = j
         · rw [hij]; rw [bf_eval h j j]; simp
         · rw [bf_eval h i j]; simp
-
     calc
         (CanonicalProjections h n ∘ CanonicalProjections h m) x
             = CanonicalProjections h n (CanonicalProjections h m x) := by simp
@@ -229,7 +239,6 @@ theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : �
         _ = ∑ i ∈ Finset.range n, ∑ j ∈ Finset.range m, if i = j then (bf j x) • e i else 0 :=
             Finset.sum_congr rfl (fun j hj => Finset.sum_congr rfl (fun i hi => hinner j i))
         _ = ∑ i ∈ Finset.range (min n m), (bf i x) • e i := by
-            -- rw [Finset.sum_comm]
             by_cases hnm: n ≤ m
             · rw [min_eq_left hnm]
               apply Finset.sum_congr rfl
