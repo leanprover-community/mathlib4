@@ -31,6 +31,10 @@ variable [CommSemiring R]
 
 variable {p q : MvPolynomial σ R}
 
+section NoZeroDivisors
+
+variable [NoZeroDivisors R]
+
 section DegreeOf
 
 lemma degreeOf_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
@@ -39,7 +43,7 @@ lemma degreeOf_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
   simp_rw [degreeOf_eq_natDegree, map_mul, ← renameEquiv_apply]
   rw [Polynomial.natDegree_mul] <;> simpa [-renameEquiv_apply, EmbeddingLike.map_eq_zero_iff]
 
-lemma degreeOf_prod_eq [NoZeroDivisors R] {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R)
+lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R)
     (h : ∀ i ∈ s, f i ≠ 0) :
     degreeOf n (∏ i ∈ s, f i) = ∑ i ∈ s, degreeOf n (f i) := by
   by_cases nontrivial : Nontrivial (MvPolynomial σ R)
@@ -56,7 +60,7 @@ lemma degreeOf_prod_eq [NoZeroDivisors R] {ι : Type*} (s : Finset ι) (f : ι �
     have (x : MvPolynomial σ R) : x = 0 := Subsingleton.eq_zero x
     simp only [degreeOf_zero, Finset.sum_const_zero, this]
 
-theorem degreeOf_pow_eq [NoZeroDivisors R] (i : σ) (p : MvPolynomial σ R) (n : ℕ) (hp : p ≠ 0) :
+theorem degreeOf_pow_eq (i : σ) (p : MvPolynomial σ R) (n : ℕ) (hp : p ≠ 0) :
     degreeOf i (p ^ n) = n * degreeOf i p := by
   rw [Finset.pow_eq_prod_const, degreeOf_prod_eq (Finset.range n) (fun _ ↦ p) (fun _ _ ↦ hp)]
   simp
@@ -65,7 +69,7 @@ end DegreeOf
 
 section Degrees
 
-lemma degrees_mul_eq [NoZeroDivisors R] (hp : p ≠ 0) (hq : q ≠ 0) :
+lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
     degrees (p * q) = degrees p + degrees q := by
   classical
   apply Multiset.ext'
@@ -73,6 +77,45 @@ lemma degrees_mul_eq [NoZeroDivisors R] (hp : p ≠ 0) (hq : q ≠ 0) :
   simp_rw [Multiset.count_add, ← degreeOf_def, degreeOf_mul_eq hp hq]
 
 end Degrees
+
+theorem totalDegree_mul_of_isDomain {f g : MvPolynomial σ R}
+    (hf : f ≠ 0) (hg : g ≠ 0) :
+    totalDegree (f * g) = totalDegree f + totalDegree g := by
+  cases exists_wellOrder σ
+  rw [← degree_degLexDegree (σ := σᵒᵈ), ← degree_degLexDegree (σ := σᵒᵈ),
+    ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
+  simp
+
+theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
+    (h : f ∣ g) (hg : g ≠ 0) :
+    f.totalDegree ≤ g.totalDegree := by
+  obtain ⟨r, rfl⟩ := h
+  rw [totalDegree_mul_of_isDomain]
+  · exact Nat.le_add_right f.totalDegree r.totalDegree
+  · exact fun h ↦ hg (by simp [h])
+  · exact fun h ↦ hg (by simp [h])
+
+theorem dvd_C_iff_exists {f : MvPolynomial σ R}
+    {a : R} (ha : a ≠ 0) :
+    f ∣ C a ↔ ∃ b, b ∣ a ∧ f = C b := by
+  constructor
+  · intro hf
+    use MvPolynomial.coeff 0 f
+    suffices f.totalDegree = 0 by
+      rw [totalDegree_eq_zero_iff_eq_C] at this
+      refine ⟨?_, this⟩
+      rw [this, C_dvd_iff_dvd_coeff] at hf
+      convert hf 0
+      simp
+    apply Nat.eq_zero_of_le_zero
+    convert totalDegree_le_of_dvd_of_isDomain hf (by simp [ha])
+    simp
+  · rintro ⟨b, hab, rfl⟩
+    exact _root_.map_dvd MvPolynomial.C hab
+
+end NoZeroDivisors
+
+section nonZeroDivisors
 
 open nonZeroDivisors
 
@@ -102,40 +145,7 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) :
     simp only [coeff_C_mul] at h'
     exact hc.1 _ h'
 
-theorem totalDegree_mul_of_isDomain [NoZeroDivisors R] {f g : MvPolynomial σ R}
-    (hf : f ≠ 0) (hg : g ≠ 0) :
-    totalDegree (f * g) = totalDegree f + totalDegree g := by
-  cases exists_wellOrder σ
-  rw [← degree_degLexDegree (σ := σᵒᵈ), ← degree_degLexDegree (σ := σᵒᵈ),
-    ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
-  simp
-
-theorem totalDegree_le_of_dvd_of_isDomain [NoZeroDivisors R] {f g : MvPolynomial σ R}
-    (h : f ∣ g) (hg : g ≠ 0) :
-    f.totalDegree ≤ g.totalDegree := by
-  obtain ⟨r, rfl⟩ := h
-  rw [totalDegree_mul_of_isDomain]
-  · exact Nat.le_add_right f.totalDegree r.totalDegree
-  · exact fun h ↦ hg (by simp [h])
-  · exact fun h ↦ hg (by simp [h])
-
-theorem dvd_C_iff_exists [NoZeroDivisors R] {f : MvPolynomial σ R}
-    {a : R} (ha : a ≠ 0) :
-    f ∣ C a ↔ ∃ b, b ∣ a ∧ f = C b := by
-  constructor
-  · intro hf
-    use MvPolynomial.coeff 0 f
-    suffices f.totalDegree = 0 by
-      rw [totalDegree_eq_zero_iff_eq_C] at this
-      refine ⟨?_, this⟩
-      rw [this, C_dvd_iff_dvd_coeff] at hf
-      convert hf 0
-      simp
-    apply Nat.eq_zero_of_le_zero
-    convert totalDegree_le_of_dvd_of_isDomain hf (by simp [ha])
-    simp
-  · rintro ⟨b, hab, rfl⟩
-    exact _root_.map_dvd MvPolynomial.C hab
+end nonZeroDivisors
 
 end CommSemiring
 
