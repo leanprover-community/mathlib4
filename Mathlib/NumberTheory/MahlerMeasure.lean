@@ -183,7 +183,7 @@ include hz₀ hz h in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex nonzero roots are
 roots of unity. -/
 theorem pow_eq_one_of_mahlerMeasure_eq_one : ∃ n, 0 < n ∧ z ^ n = 1 := by
-/-We want to use NumberField.Embeddings.pow_eq_one_of_norm_le_one but it can only be applied to
+/- We want to use NumberField.Embeddings.pow_eq_one_of_norm_le_one but it can only be applied to
 elements of number fields. We thus first construct the number field K obtained by adjoining z to ℚ.
 -/
   let K := ℚ⟮z⟯
