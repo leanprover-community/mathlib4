@@ -47,7 +47,7 @@ lemma isMulIndecomposable_id_univ [Subsingleton Mˣ] {x : M} (hx : x ≠ 1) :
 In the case that `v` is the set of roots of a crystallographic root system, and `S = ℚ`, this is the
 base of the root system associated to `f`. -/]
 def IsMulIndecomposable.baseOf [Monoid S] (v : ι → M) (f : M →* S) : Set ι :=
-  IsMulIndecomposable v {i | 1 < f (v i)}
+  {j | IsMulIndecomposable v {i | 1 < f (v i)} j}
 
 @[to_additive]
 lemma IsMulIndecomposable.baseOf_subset_one_lt [Monoid S] (v : ι → M) (f : M →* S) :
