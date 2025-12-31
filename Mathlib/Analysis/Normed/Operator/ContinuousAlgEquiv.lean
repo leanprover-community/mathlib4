@@ -31,10 +31,13 @@ The proof follows the same idea as the non-continuous version.
 
 open ContinuousLinearMap ContinuousLinearEquiv
 
+section
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
+  [SeparatingDual 𝕜 W]
+
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
-public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv {𝕜 V W : Type*}
-    [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-    [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W]
+public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
     ∃ U : V ≃L[𝕜] W, f = U.conjContinuousAlgEquiv := by
   /- The proof goes as follows:
@@ -85,6 +88,29 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       suffices T'.toLinearMap = Tₗ.symm from this ▸ T'.continuous
       simp [LinearMap.ext_iff, ← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ] }
   exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
+
+variable (𝕜 V W) in
+public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_surjective :
+    Function.Surjective (conjContinuousAlgEquiv (𝕜 := 𝕜) (G := V) (H := W)) :=
+  fun f ↦ f.eq_continuousLinearEquivConjContinuousAlgEquiv.imp fun _ h ↦ h.symm
+
+end
+
+variable {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
+  [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
+  [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
+  [ContinuousSMul R V] [ContinuousSMul R W] in
+public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_inj_iff (f g : V ≃L[R] W) :
+    f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : R, ⇑f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
+    ← eq_toContinuousLinearMap_symm_comp, ← ContinuousLinearMap.comp_assoc,
+    eq_comp_toContinuousLinearMap_symm, ContinuousLinearMap.comp_assoc,
+    ← ContinuousLinearMap.comp_assoc _ f.toContinuousLinearMap, comp_coe,
+    ← ContinuousLinearMap.mul_def, ← Subalgebra.mem_center_iff (R := R),
+    Algebra.IsCentral.center_eq_bot, ← comp_coe, Algebra.mem_bot, Set.mem_range,
+    Algebra.algebraMap_eq_smul_one, eq_toLinearMap_symm_comp]
+  simp [ContinuousLinearMap.ext_iff, eq_comm]
 
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
