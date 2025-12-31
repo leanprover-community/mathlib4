@@ -19,8 +19,6 @@ showing that it is fully faithful and its (essential) image is the representable
 
 @[expose] public section
 
-assert_not_exists Field
-
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 namespace CategoryTheory

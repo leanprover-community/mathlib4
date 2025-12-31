@@ -231,27 +231,30 @@ lemma sub_succ (n : σ) (i : WithBot (α n)) (k : ℕ) :
 lemma sub_sub (n : σ) (i : WithBot (α n)) (k₁ k₂ k : ℕ) (h : k₁ + k₂ = k) :
     s.sub n (s.sub n i k₁) k₂ = s.sub n i k := by
   revert k₁ k h
-  induction' k₂ with k₂ hk₂
-  · intro k₁ k h
+  induction k₂ with
+  | zero =>
+    intro k₁ k h
     obtain rfl : k₁ = k := by simpa using h
     simp
-  · intro k₁ k h
+  | succ k₂ hk₂ =>
+    intro k₁ k h
     obtain rfl : k₁ + k₂ + 1 = k := by simpa only [Nat.succ_eq_add_one, add_assoc] using h
     simp only [sub_succ, hk₂ k₁ _ rfl]
 
 @[simp]
 lemma sub_bot (n : σ) (k : ℕ) :
     s.sub n ⊥ k = ⊥ := by
-  induction' k with k hk
-  · simp
-  · simp [hk, sub_succ]
+  induction k with
+  | zero => simp
+  | succ k hk => simp [hk, sub_succ]
 
 lemma sub_le_self (n : σ) (i : WithBot (α n)) (k : ℕ) :
     s.sub n i k ≤ i := by
   revert i
-  induction' k with k hk
-  · simp
-  · intro i
+  induction k with
+  | zero => simp
+  | succ k hk =>
+    intro i
     rw [sub_succ]
     exact (s.pred'_le n _).trans (hk _)
 
@@ -503,12 +506,14 @@ lemma isIso_filtration_map'_iff (i j : WithBot (α n)) (φ : j ⟶ i) (k : ℕ) 
           (pq : ι) (_ : s.position n j = pq),
         IsZero (E.pageInfinity pq) := by
   subst hk
-  induction' k with k hk
-  · simp only [Nat.zero_eq, ConvergenceStripes.sub_zero, not_lt_zero', forall_eq',
+  induction k with
+  | zero =>
+    simp only [ConvergenceStripes.sub_zero, not_lt_zero', forall_eq',
       IsEmpty.forall_iff, forall_const, iff_true]
     change IsIso (h.filtration.map (𝟙 _))
     infer_instance
-  · erw [h.isIso_filtration_map_comp_iff (s.sub n i (k + 1)) (s.sub n i k) i
+  | succ k hk =>
+    erw [h.isIso_filtration_map_comp_iff (s.sub n i (k + 1)) (s.sub n i k) i
       (homOfLE (s.sub_antitone _ _ _  _ (by linarith))) (homOfLE (s.sub_le_self n i k)), hk,
       h.isIso_filtration_map_from_pred'_iff _ _ _ (by rw [s.sub_succ])]
     constructor
@@ -694,8 +699,8 @@ noncomputable def isoFiltrationMap : h.filtration.obj i ≅ h.filtration.obj j :
 lemma isoFiltrationMap_hom_inv_id :
     h.filtration.map φ ≫ (h.isoFiltrationMap i j φ hij).inv = 𝟙 _ :=
   (h.isoFiltrationMap i j φ hij).hom_inv_id
-@[reassoc (attr := simp)]
 
+@[reassoc (attr := simp)]
 lemma isoFiltrationMap_inv_hom_id :
     (h.isoFiltrationMap i j φ hij).inv ≫ h.filtration.map φ = 𝟙 _ :=
   (h.isoFiltrationMap i j φ hij).inv_hom_id
@@ -764,7 +769,7 @@ lemma π_pageInfinityι :
 variable (hi' : IsIso (h.filtrationι i))
 
 @[reassoc (attr := simp)]
-lemma pageInfinityπ_ι  :
+lemma pageInfinityπ_ι :
     h.pageInfinityπ i pq hpq hi' ≫ h.pageInfinityι i pq hpq hi = 𝟙 _ := by
   simp [pageInfinityι, pageInfinityπ]
 
@@ -982,11 +987,13 @@ lemma Hom.isIso_τ_of_sub (i j : WithBot (α n)) (k : ℕ)
     (hk : s.sub n j k = i) (hi : IsIso (β.τ.app i)) :
     IsIso (β.τ.app j) := by
   revert i j hi
-  induction' k with k hk
-  · intro i j hij _
+  induction k with
+  | zero =>
+    intro i j hij _
     obtain rfl : j = i := by simpa using hij
     infer_instance
-  · intro i j hij _
+  | succ k hk =>
+    intro i j hij _
     have := hβ
     rw [← s.sub_sub n j 1 k _ (add_comm _ _)] at hij
     have := hk _ _ hij inferInstance
@@ -999,7 +1006,7 @@ lemma Hom.isIso_τ_of_sub (i j : WithBot (α n)) (k : ℕ)
           exact β.isIso_τ_succ l j hl _ rfl (hβ _ (by simp)) hl'
     exact this _ rfl inferInstance
 
-lemma Hom.isIso_τ_of_isIso_mapPageInfinity  :
+lemma Hom.isIso_τ_of_isIso_mapPageInfinity :
     IsIso β.τ := by
   suffices ∀ j, IsIso (β.τ.app j) from NatIso.isIso_of_isIso_app _
   intro j

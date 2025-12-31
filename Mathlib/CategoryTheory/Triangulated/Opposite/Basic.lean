@@ -366,45 +366,6 @@ lemma opShiftFunctorEquivalence_symm_homEquiv_left_inv
       (opShiftFunctorEquivalence_symm_homEquiv n X Y f).unop⟦n⟧' = f.unop :=
   Quiver.Hom.op_inj ((opShiftFunctorEquivalence_symm_homEquiv n X Y).left_inv f)
 
-namespace Opposite
-
-variable (C)
-
-namespace OpOpCommShift
-
-noncomputable def iso (n : ℤ) :
-    shiftFunctor C n ⋙ opOp C ≅ opOp C ⋙ shiftFunctor Cᵒᵖᵒᵖ n :=
-  NatIso.ofComponents
-    (fun X => ((shiftFunctorOpIso C _ _ (neg_add_cancel n)).app (Opposite.op X)).op ≪≫
-      (shiftFunctorOpIso Cᵒᵖ _ _ (add_neg_cancel n)).symm.app (Opposite.op (Opposite.op X))) (by
-      intros X Y f
-      dsimp
-      rw [assoc, ← (shiftFunctorOpIso Cᵒᵖ _ _ (add_neg_cancel n)).inv.naturality f.op.op]
-      dsimp
-      rw [← op_comp_assoc]
-      erw [← (shiftFunctorOpIso C _ _ (neg_add_cancel n)).hom.naturality f.op]
-      rw [op_comp, assoc])
-
-variable {C}
-
-lemma iso_hom_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
-    (iso C n).hom.app X =
-      ((shiftFunctorOpIso C m n (by omega)).hom.app (Opposite.op X)).op ≫
-        (shiftFunctorOpIso Cᵒᵖ _ _ hnm).inv.app (Opposite.op (Opposite.op X)) := by
-  obtain rfl : m = -n := by omega
-  rfl
-
-lemma iso_inv_app (X : C) (n m : ℤ) (hnm : n + m = 0) :
-    (iso C n).inv.app X =
-      (shiftFunctorOpIso Cᵒᵖ _ _ hnm).hom.app (Opposite.op (Opposite.op X)) ≫
-        ((shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op X)).op := by
-  obtain rfl : m = -n := by omega
-  rfl
-
-end OpOpCommShift
-
-
-end Opposite
 
 /-section
 
