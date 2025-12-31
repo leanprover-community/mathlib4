@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Iván Renison, Yue Sun, Jiayi Huang, Nick Adfor, Aristotle AI
+Authors: Iván Renison, Yue Sun, Nick Adfor, Aristotle AI
 -/
 module
 
