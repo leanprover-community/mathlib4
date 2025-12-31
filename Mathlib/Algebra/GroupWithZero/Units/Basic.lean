@@ -150,7 +150,7 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 
 /-- Class expressing the fact that a type has an inverse which behaves like
   `Ring.inverse`. -/
-class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] extends Inv M₀ where
+class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] [Inv M₀] where
   ringInverse_eq_inv (x : M₀) : Ring.inverse x = x⁻¹
 
 export LawfulInv (ringInverse_eq_inv)
@@ -158,7 +158,7 @@ attribute [simp, grind =] ringInverse_eq_inv
 
 namespace Ring
 
-variable [LawfulInv M₀]
+variable [Inv M₀] [LawfulInv M₀]
 
 /-- By definition, if `x` is not invertible then `x⁻¹ = 0`. -/
 @[simp]
@@ -433,6 +433,9 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 @[simp]
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
+
+instance : LawfulInv G₀ where
+  ringInverse_eq_inv a := Ring.inverse_eq_inv a
 
 end GroupWithZero
 

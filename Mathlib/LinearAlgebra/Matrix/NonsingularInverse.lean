@@ -194,6 +194,9 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
 
+instance : LawfulInv (Matrix n n α) where
+  ringInverse_eq_inv A := (nonsing_inv_eq_ringInverse A).symm
+
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 
@@ -485,16 +488,7 @@ end InvEqInv
 
 variable (A)
 
-@[simp]
-theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
-  rcases subsingleton_or_nontrivial α with ht | ht
-  · simp [eq_iff_true_of_subsingleton]
-  rcases (Fintype.card n).zero_le.eq_or_lt with hc | hc
-  · rw [eq_comm, Fintype.card_eq_zero_iff] at hc
-    subsingleton
-  · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
-    refine nonsing_inv_apply_not_isUnit _ ?_
-    simp
+theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := Ring.inv_zero
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
