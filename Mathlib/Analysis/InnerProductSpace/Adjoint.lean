@@ -713,17 +713,16 @@ theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductS
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
 
-open ContinuousLinearEquiv in
-theorem conjStarAlgEquiv_inj_iff (f g : H ≃ₗᵢ[𝕜] K) :
+open ContinuousLinearEquiv ContinuousLinearMap in
+theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
     f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : 𝕜, ⇑f = α • g := by
   conv_lhs => rw [eq_comm]
-  simp_rw [StarAlgEquiv.ext_iff, conjStarAlgEquiv_apply,
-    ← eq_toContinuousLinearMap_symm_comp, ← ContinuousLinearMap.comp_assoc,
-    toContinuousLinearEquiv_symm, eq_comp_toContinuousLinearMap_symm,
-    ContinuousLinearMap.comp_assoc, ← ContinuousLinearMap.comp_assoc _ (f : H →L[𝕜] K),
-    comp_coe, ← ContinuousLinearMap.mul_def, ← Subalgebra.mem_center_iff (R := 𝕜),
-    Algebra.IsCentral.center_eq_bot, ← comp_coe, Algebra.mem_bot, Set.mem_range,
-    Algebra.algebraMap_eq_smul_one, eq_toContinuousLinearMap_symm_comp]
+  simp_rw [StarAlgEquiv.ext_iff, conjStarAlgEquiv_apply, ← eq_toContinuousLinearMap_symm_comp,
+    ← comp_assoc, toContinuousLinearEquiv_symm, eq_comp_toContinuousLinearMap_symm, comp_assoc,
+    ← comp_assoc _ (f : H →L[𝕜] K), comp_coe, ← ContinuousLinearMap.mul_def,
+    ← Subalgebra.mem_center_iff (R := 𝕜), Algebra.IsCentral.center_eq_bot, ← comp_coe,
+    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
+    eq_toContinuousLinearMap_symm_comp]
   simp [ContinuousLinearMap.ext_iff, eq_comm, funext_iff]
 
 end LinearIsometryEquiv
