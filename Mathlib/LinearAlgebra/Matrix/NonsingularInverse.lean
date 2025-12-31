@@ -488,7 +488,7 @@ end InvEqInv
 
 variable (A)
 
-theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := Ring.inv_zero
+@[deprecated (since := "2025-12-31")] alias inv_zero := Ring.inv_zero
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
