@@ -18,8 +18,10 @@ Discrete convolution of `f : M → E` and `g : M → E'` over a monoid `M`:
 
 ## Main Definitions
 
-* `mulMap`: the multiplication map `(a, b) ↦ a * b`
-* `mulFiber x`: the set `{(a, b) | a * b = x}`
+* `mulFiber x`: the set `{(a, b) | a * b = x}`, an abbreviation for `Set.mulAntidiagonal`
+* `tripleFiber x`: the set `{(a, b, c) | a * b * c = x}`
+* `leftAssocEquiv`: equivalence `(Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x`
+* `rightAssocEquiv`: equivalence `(Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFiber x`
 * `convolution L f g`: convolution `f ⋆[L] g`
 * `mulConvolution f g`: ring multiplication convolution `f ⋆ₘ g`
 * `delta e`: identity element for convolution
@@ -46,30 +48,66 @@ section Fiber
 
 variable [Monoid M]
 
-/-- The multiplication map `(a, b) ↦ a * b`. -/
-@[to_additive /-- The addition map `(a, b) ↦ a + b`. -/]
-protected def mulMap : M × M → M := Function.uncurry (· * ·)
+/-- The fiber of multiplication at `x`: all pairs `(a, b)` with `a * b = x`.
+This is `Set.mulAntidiagonal Set.univ Set.univ x`. -/
+@[to_additive /-- The fiber of addition at `x`: all pairs `(a, b)` with `a + b = x`.
+This is `Set.addAntidiagonal Set.univ Set.univ x`. -/]
+abbrev mulFiber (x : M) : Set (M × M) := Set.mulAntidiagonal Set.univ Set.univ x
 
 @[to_additive (attr := simp)]
-theorem mulMap_apply (ab : M × M) : DiscreteConvolution.mulMap ab = ab.1 * ab.2 := rfl
-
-/-- The fiber of multiplication at `x`: all pairs `(a, b)` with `a * b = x`. -/
-@[to_additive /-- The fiber of addition at `x`: all pairs `(a, b)` with `a + b = x`. -/]
-def mulFiber (x : M) : Set (M × M) := DiscreteConvolution.mulMap ⁻¹' {x}
-
-@[to_additive (attr := simp)]
-theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := Iff.rfl
+theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := by simp
 
 @[to_additive]
-theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := mul_one 1
-
-/-- `mulFiber x` equals `Set.mulAntidiagonal Set.univ Set.univ x`. -/
-@[to_additive /-- `addFiber x` equals `Set.addAntidiagonal Set.univ Set.univ x`. -/]
-theorem mulFiber_eq_mulAntidiagonal_univ (x : M) :
-    mulFiber x = Set.mulAntidiagonal Set.univ Set.univ x := by
-  ext ⟨a, b⟩; simp [mem_mulFiber, Set.mem_mulAntidiagonal]
+theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by simp
 
 end Fiber
+
+/-! ### Triple Fiber and Associativity Equivalences -/
+
+section TripleFiber
+
+variable [Monoid M]
+
+/-- Fiber over `x` under triple multiplication: `{(a, b, c) | a * b * c = x}`. -/
+@[to_additive tripleAddFiber
+  /-- Fiber over `x` under triple addition: `{(a, b, c) | a + b + c = x}`. -/]
+def tripleFiber (x : M) : Set (M × M × M) := {abc | abc.1 * abc.2.1 * abc.2.2 = x}
+
+@[to_additive (attr := simp) mem_tripleAddFiber]
+theorem mem_tripleFiber {x : M} {abc : M × M × M} :
+    abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := Iff.rfl
+
+/-- Left association equivalence for associativity proof.
+Maps `((c, d), (a, b))` where `c * d = x` and `a * b = c` to `(a, b, d)` where `a * b * d = x`.
+This identifies the nested sum `∑' (cd : mulFiber x), ∑' (ab : mulFiber cd.1.1), f a * g b * h d`
+with a sum over the triple fiber. -/
+@[to_additive leftAddAssocEquiv /-- Left association equivalence for additive associativity. -/]
+def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x where
+  toFun := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ =>
+    ⟨⟨a, b, d⟩, by rw [mem_tripleFiber]; rw [mem_mulFiber] at hcd hab; rw [← hcd, ← hab, mul_assoc]⟩
+  invFun := fun ⟨⟨a, b, d⟩, habd⟩ =>
+    ⟨⟨⟨a * b, d⟩, by rw [mem_mulFiber]; rw [mem_tripleFiber] at habd; exact habd⟩,
+     ⟨⟨a, b⟩, by rw [mem_mulFiber]⟩⟩
+  left_inv := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ => by
+    simp only [mem_mulFiber] at hab; subst hab; rfl
+  right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
+
+/-- Right association equivalence for associativity proof.
+Maps `((a, e), (b, d))` where `a * e = x` and `b * d = e` to `(a, b, d)` where `a * b * d = x`.
+This identifies the nested sum `∑' (ae : mulFiber x), ∑' (bd : mulFiber ae.1.2), f a * g b * h d`
+with a sum over the triple fiber. -/
+@[to_additive rightAddAssocEquiv /-- Right association equivalence for additive associativity. -/]
+def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFiber x where
+  toFun := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ =>
+    ⟨⟨a, b, d⟩, by rw [mem_tripleFiber]; rw [mem_mulFiber] at hae hbd; rw [← hae, ← hbd, mul_assoc]⟩
+  invFun := fun ⟨⟨a, b, d⟩, habd⟩ =>
+    ⟨⟨⟨a, b * d⟩, by rw [mem_mulFiber]; rw [mem_tripleFiber] at habd; rw [← mul_assoc]; exact habd⟩,
+     ⟨⟨b, d⟩, by rw [mem_mulFiber]⟩⟩
+  left_inv := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ => by
+    simp only [mem_mulFiber] at hbd; subst hbd; rfl
+  right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
+
+end TripleFiber
 
 /-! ### Convolution Definition -/
 
@@ -174,8 +212,8 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : �
   ext x
   simp only [convolution_apply]
   let e : mulFiber x ≃ mulFiber x :=
-    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, DiscreteConvolution.mulMap, mul_comm]⟩,
-     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, DiscreteConvolution.mulMap, mul_comm]⟩,
+    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [Set.mem_mulAntidiagonal, mul_comm]⟩,
+     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [Set.mem_mulAntidiagonal, mul_comm]⟩,
      fun _ => by rfl, fun _ => by rfl⟩
   rw [← e.tsum_eq]; congr 1; funext ⟨⟨a, b⟩, _⟩; simp only [e, Equiv.coe_fn_mk, hL]
 
