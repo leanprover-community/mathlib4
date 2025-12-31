@@ -574,7 +574,7 @@ theorem card_sdiff : #(t \ s) = #t - #(s ∩ t) := by
 
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : #(t \ s) + #s = #t := by grind
 
-lemma eq_card_diff_of_sdiff (s t : Finset α) : #t - #s = #(t \ s) - #(s \ t) :=
+lemma card_sub_card_eq (s t : Finset α) : #t - #s = #(t \ s) - #(s \ t) :=
   calc
     #t - #s = #t - #(s ∩ t) - #(s \ t) := by grind
     _ = #(t \ (s ∩ t)) - #(s \ t) := by grind
