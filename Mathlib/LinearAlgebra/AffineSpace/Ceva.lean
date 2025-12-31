@@ -12,6 +12,10 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 This file proves various versions of Ceva's theorem.
 
+## References
+
+* https://en.wikipedia.org/wiki/Ceva%27s_theorem
+
 -/
 
 @[expose] public section
@@ -134,13 +138,15 @@ namespace Affine.Triangle
 
 section CommRing
 
-variable [CommRing k] [IsDomain k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable [CommRing k] [NoZeroDivisors k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- **Ceva's theorem** for a triangle, expressed in terms of multiplying weights. -/
 lemma prod_eq_prod_one_sub_of_mem_line_point_lineMap {t : Triangle k P} {r : Fin 3 → k} {p' : P}
     (hp' : ∀ i : Fin 3, p' ∈
       line[k, t.points i, AffineMap.lineMap (t.points (i + 1)) (t.points (i + 2)) (r i)]) :
     ∏ i, r i = ∏ i, (1 - r i) := by
+  rcases subsingleton_or_nontrivial k
+  · exact Subsingleton.elim _ _
   let w : ↑(Set.univ : Set (Fin 3)) → Fin 3 → k :=
     fun i ↦ Finset.affineCombinationLineMapWeights (i + 1) (i + 2) (r i)
   have hw : ∀ i, ∑ j, w i j = 1 := by simp [w]
@@ -201,7 +207,7 @@ end CommRing
 
 section Field
 
-variable [Field k] [IsDomain k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable [Field k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- **Ceva's theorem** for a triangle, expressed using division. -/
 lemma prod_div_one_sub_eq_one_of_mem_line_point_lineMap {t : Triangle k P} {r : Fin 3 → k}
