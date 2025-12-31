@@ -148,6 +148,60 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
 
+/-- Class expressing the fact that a type has an inverse which behaves like
+  `Ring.inverse`. -/
+class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] extends Inv M₀ where
+  ringInverse_eq_inv (x : M₀) : Ring.inverse x = x⁻¹
+
+export LawfulInv (ringInverse_eq_inv)
+attribute [simp, grind =] ringInverse_eq_inv
+
+namespace Ring
+
+variable [LawfulInv M₀]
+
+/-- By definition, if `x` is not invertible then `x⁻¹ = 0`. -/
+@[simp]
+theorem inv_non_unit (x : M₀) (h : ¬IsUnit x) : x⁻¹ = 0 := by
+  rw [← ringInverse_eq_inv x, inverse_non_unit x h]
+
+grind_pattern inv_non_unit => IsUnit x, x⁻¹
+
+@[grind →]
+theorem mul_inv_cancel (x : M₀) (h : IsUnit x) : x * x⁻¹ = 1 := by
+  rw [← ringInverse_eq_inv]
+  exact mul_inverse_cancel x h
+
+@[grind →]
+theorem inv_mul_cancel (x : M₀) (h : IsUnit x) : x⁻¹ * x = 1 := by
+  rw [← ringInverse_eq_inv]
+  exact inverse_mul_cancel x h
+
+theorem inv_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : x⁻¹ * y = z ↔ y = x * z := by
+  rw [← ringInverse_eq_inv]
+  exact inverse_mul_eq_iff_eq_mul x y z h
+
+theorem eq_mul_inv_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * z⁻¹ ↔ x * z = y := by
+  rw [← ringInverse_eq_inv]
+  exact eq_mul_inverse_iff_mul_eq x y z h
+
+@[simp, grind =]
+theorem inv_one : (1 : M₀)⁻¹ = 1 := by
+  rw [← ringInverse_eq_inv]
+  exact inverse_one M₀
+
+@[simp, grind =]
+theorem inv_zero : (0 : M₀)⁻¹ = 0 := by
+  rw [← ringInverse_eq_inv]
+  exact inverse_zero M₀
+
+@[simp, grind _=_]
+theorem isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a := by
+  rw [← ringInverse_eq_inv]
+  exact isUnit_ringInverse
+
+end Ring
+
 namespace Units
 
 variable [GroupWithZero G₀]
