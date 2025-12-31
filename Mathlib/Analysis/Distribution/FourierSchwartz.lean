@@ -294,8 +294,32 @@ theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
     _ = fderiv ℝ (𝓕 (f : V → E)) x := by simp [fourier_coe]
     _ = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) (f : V → E)) x := by
       rw [Real.fderiv_fourier f.integrable]
-      convert f.integrable_pow_mul (volume) 1
+      convert f.integrable_pow_mul volume 1
       simp
+
+open LineDeriv
+
+theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
+    ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (innerSL ℝ · m) f) := by
+  ext1 x
+  calc
+    _ = fderiv ℝ (𝓕 (f : V → E)) x m := by
+      rw [lineDerivOp_apply_eq_fderiv, fourier_coe]
+    _ = 𝓕 (fun y ↦ -(2 * π * Complex.I) • (innerSL ℝ y m) • (f y)) x := by
+      have : Integrable (fun v ↦ ‖v‖ * ‖f v‖) volume := by
+        convert f.integrable_pow_mul volume 1
+        simp
+      rw [Real.fderiv_fourier f.integrable this]
+      simp
+      sorry
+    _ = _ := by
+      rw [fourier_coe]
+      apply integral_congr_ae
+      have : (fun x ↦ inner ℝ x m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
+      simp [this]
+  --rw [lineDerivOp_apply_eq_fderiv, ← fderivCLM_apply (𝕜 := 𝕜), fderivCLM_fourier_eq]
+  --simp
+  --sorry
 
 end deriv
 
