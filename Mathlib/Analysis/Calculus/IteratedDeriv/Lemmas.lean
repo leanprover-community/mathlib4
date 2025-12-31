@@ -237,11 +237,7 @@ lemma iteratedDeriv_comp_add_const :
 
 lemma iteratedDeriv_comp_sub_const :
     iteratedDeriv n (fun z ↦ f (z - s)) = fun t ↦ iteratedDeriv n f (t - s) := by
-  induction n with
-  | zero => simp [iteratedDeriv_zero]
-  | succ n IH =>
-    simpa [iteratedDeriv_succ, IH] using funext <| fun _ ↦
-      deriv_comp_sub_const (iteratedDeriv n f) s _
+  simp [sub_eq_add_neg, iteratedDeriv_comp_add_const]
 
 lemma iteratedDeriv_comp_const_sub :
     iteratedDeriv n (fun z ↦ f (s - z)) = fun t ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (s - t) := by
