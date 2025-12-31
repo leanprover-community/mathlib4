@@ -212,7 +212,8 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
 section GroupWithZero
 variable [GroupWithZero G₀] {a : G₀}
 
-@[simp] lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
+@[simp high] -- should take priority over `Ring.inv_zero`
+lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
 
 @[simp high] -- should take priority over `IsUnit.mul_inv_cancel`
 lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
