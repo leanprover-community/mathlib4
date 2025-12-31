@@ -14,14 +14,14 @@ public import Batteries.Tactic.Lint.Misc
 `Bundled c` provides a uniform structure for bundling a type equipped with a type class.
 
 We provide `Category` instances for these in
-`Mathlib/CategoryTheory/HasForget/UnbundledHom.lean`
+`Mathlib/CategoryTheory/ConcreteCategory/UnbundledHom.lean`
 (for categories with unbundled homs, e.g. topological spaces)
-and in `Mathlib/CategoryTheory/HasForget/BundledHom.lean`
+and in `Mathlib/CategoryTheory/ConcreteCategory/BundledHom.lean`
 (for categories with bundled homs, e.g. monoids).
 
 Note: this structure will be deprecated in the future in favor of defining the category manually
-and then providing the `ConcreteCategory` instance on top of this. See `ConcreteCategory/Basic.lean`
-for more details.
+and then providing the `ConcreteCategory` instance on top of this. See
+`Mathlib/CategoryTheory/ConcreteCategory/Basic.lean` for more details.
 -/
 
 @[expose] public section

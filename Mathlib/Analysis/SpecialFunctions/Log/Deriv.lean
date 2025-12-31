@@ -272,7 +272,8 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
           ?_).const_mul _).sub (HasDerivAt.fun_sum fun i hi ↦ (hasDerivAt_pow _ _).div_const _))
         |>.congr_deriv ?_
   · simp only [id_eq, div_ne_zero_iff, Pi.div_apply]; grind
-  have : (∑ i ∈ range n, (2 * i + 1) * y ^ (2 * i) / (2 * i + 1)) = (∑ i ∈ range n, (y^2) ^ i) := by
+  have : (∑ i ∈ range n, (2 * i + 1) * y ^ (2 * i) / (2 * i + 1)) =
+      (∑ i ∈ range n, (y ^ 2) ^ i) := by
     congr with i
     simp [field, mul_comm, ← pow_mul]
   have hy₃ : y ^ 2 ≠ 1 := by simp [hy₁.ne', hy₂.ne]
@@ -307,7 +308,7 @@ lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
       _ ≤ (x ^ 2) ^ n / (1 - x ^ 2) := by gcongr ?_ ^ n / (1 - ?_); simpa [abs_lt] using h
       _ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := by simp [pow_mul]
   -- third step: apply the mean value inequality
-  have C : ‖F x - F 0‖ ≤ |x| ^ (2 * n) / (1 - x^2) * ‖x - 0‖ :=
+  have C : ‖F x - F 0‖ ≤ |x| ^ (2 * n) / (1 - x ^ 2) * ‖x - 0‖ :=
     (convex_Icc (-|x|) |x|).norm_image_sub_le_of_norm_hasDerivWithin_le
       (fun y hy ↦ (A _ (hI hy)).hasDerivWithinAt) B
       (by simp) (by simp [le_abs_self, neg_le, neg_le_abs x])
