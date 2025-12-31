@@ -109,7 +109,7 @@ public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_inj_iff (f g : V ≃
     ← ContinuousLinearMap.comp_assoc _ f.toContinuousLinearMap, comp_coe,
     ← ContinuousLinearMap.mul_def, ← Subalgebra.mem_center_iff (R := R),
     Algebra.IsCentral.center_eq_bot, ← comp_coe, Algebra.mem_bot, Set.mem_range,
-    Algebra.algebraMap_eq_smul_one, eq_toLinearMap_symm_comp]
+    Algebra.algebraMap_eq_smul_one, eq_toContinuousLinearMap_symm_comp]
   simp [ContinuousLinearMap.ext_iff, eq_comm]
 
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
