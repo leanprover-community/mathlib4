@@ -1241,6 +1241,7 @@ theorem toMatrix_innerSL_apply [Fintype n] [DecidableEq n] [Fintype m]
   ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
 
 end Matrix
+
 namespace InnerProductSpace
 variable {𝕜 E F ι ι' : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [Fintype ι] [Fintype ι'] [DecidableEq ι']
