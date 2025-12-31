@@ -5,10 +5,12 @@ Authors: Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+
+import Mathlib.Algebra.Central.Basic
+import Mathlib.Analysis.LocallyConvex.SeparatingDual
+
 
 /-!
 # Adjoint of operators on Hilbert spaces
