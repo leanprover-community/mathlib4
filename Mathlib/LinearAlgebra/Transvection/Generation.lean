@@ -733,6 +733,27 @@ theorem Set.mem_pow_iff_exists_fin_prod_eq
       · intro i
         simp [Fin.tail_def, hf]
 
+-- Generalizes Fin.prod_snoc
+#check Fin.prod_snoc
+theorem _root_.Fin.prod_snoc' {α : Type*} [Monoid α] {n : ℕ} (f : Fin n → α) (a : α) :
+    Fin.prod (Fin.snoc f a) = Fin.prod f * a := by
+  simp [Fin.prod_eq_prod_map_finRange, List.finRange_succ_last]
+
+
+example {n : ℕ} (f : Fin n → V ≃ₗ[K] V) :
+    iInf (fun i ↦ (f i).fixedSubmodule) ≤ (Fin.prod f).fixedSubmodule := by
+  induction n with
+  | zero => intro; simp
+  | succ n hind =>
+    intro x hx
+    simp only [mem_iInf] at hx
+    simp only [Fin.prod_eq_prod_map_finRange, List.finRange_succ,
+      List.map_cons, List.map_map, List.prod_cons]
+    apply inf_fixedSubmodule_le_fixedSubmodule_mul
+    rw [← Fin.prod_eq_prod_map_finRange]
+    simp only [mem_inf, hx 0, true_and]
+    apply hind
+    simp_all
 
 example
     (hV : 1 ≤ finrank K (V ⧸ e.fixedSubmodule))
@@ -745,12 +766,10 @@ example
   obtain ⟨l, hl⟩ := hf
   set l' := Fin.snoc (α := fun _ ↦ V ≃ₗ[K] V) l g with hl'
   have hl'e : Fin.prod l' = e := by
-    simp only [hl', ← hfg, ← hl.1]
-    simp only [Fin.prod, Fin.foldr_succ_last]
-    simp only [Fin.foldr_eq_foldrM]
-    -- missing theorem!
-    sorry
+    simp [hl', ← hfg, ← hl.1, List.finRange_succ_last]
   have : iInf (fun i ↦ (l' i).fixedSubmodule) ≤ e.fixedSubmodule := by
+    simp_rw [← hl'e]
+    generalize l' = l
     sorry
   have : iInf (fun i ↦ (l' i).fixedSubmodule) = e.fixedSubmodule := by
     apply Submodule.eq_of_le_of_finrank_le this
