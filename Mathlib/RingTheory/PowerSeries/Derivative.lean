@@ -136,14 +136,8 @@ theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
   | succ n =>
     rw [succ_sub_one, trunc_derivative]
 
-end CommutativeSemiring
-
-/- In the next lemma, we use `smul_right_inj`, which requires not only `IsAddTorsionFree R`, but
-also cancellation of addition in `R`. For this reason, the next lemma is stated in the case that `R`
-is a `CommRing`. -/
-
 /-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
-theorem derivative.ext {R} [CommRing R] [IsAddTorsionFree R] {f g} (hD : d⁄dX R f = d⁄dX R g)
+theorem derivative.ext [IsAddTorsionFree R] {f g} (hD : d⁄dX R f = d⁄dX R g)
     (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n
   cases n with
@@ -152,7 +146,9 @@ theorem derivative.ext {R} [CommRing R] [IsAddTorsionFree R] {f g} (hD : d⁄dX 
   | succ n =>
     have equ : coeff n (d⁄dX R f) = coeff n (d⁄dX R g) := by rw [hD]
     rwa [coeff_derivative, coeff_derivative, ← cast_succ, mul_comm, ← nsmul_eq_mul,
-      mul_comm, ← nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
+      mul_comm, ← nsmul_eq_mul, nsmul_right_inj n.succ_ne_zero] at equ
+
+end CommutativeSemiring
 
 @[simp] theorem derivative_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
     d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f := by
