@@ -36,3 +36,21 @@ public instance [IsCentral S R] : IsCentral S (End R M) where out T hT :=
   ⟨y, by aesop⟩
 
 end Algebra.IsCentral
+
+open LinearMap in
+theorem LinearEquiv.conjAlgEquiv_inj_iff {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
+    [Free R M₂] [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂]
+    [Algebra.IsCentral S R] (f g : M ≃ₗ[R] M₂) :
+    f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : S, ⇑f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← eq_toLinearMap_symm_comp, ← comp_assoc,
+    eq_comp_toLinearMap_symm, comp_assoc, ← comp_assoc _ _ g.symm.toLinearMap, comp_coe,
+    ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
+    ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
+    eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_coe,
+    smul_apply, End.one_apply]
+  constructor
+  all_goals
+    refine fun ⟨y, hy⟩ ↦ ⟨y, fun _ ↦ ?_⟩
+    simp_all only [EmbeddingLike.apply_eq_iff_eq, eq_comm (a := y • _), Pi.smul_apply]
+    exact LinearMapClass.map_smul_of_tower _ _ _
