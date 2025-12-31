@@ -57,7 +57,7 @@ theorem Set.Finite.dense_sInter {s : Set (Set X)} (hs : s.Finite)
 /-- A finite set is Baire. -/
 theorem baire_of_finite [Finite X] : BaireSpace X := by
   constructor
-  refine fun f hof hdf => (sInter_range f) ▸ Set.Finite.Dense_sInter
+  refine fun f hof hdf => (sInter_range f) ▸ Set.Finite.dense_sInter
     (Finite.subset Set.finite_univ (subset_univ (range f))) (fun _ h => ?_) (fun _ h => ?_)
   · obtain ⟨x, hx⟩ := h
     simpa [← hx] using hof x
