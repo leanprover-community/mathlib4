@@ -98,7 +98,7 @@ def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
 theorem orthogonalDecomposition_apply :
     K.orthogonalDecomposition x =
       .toLp 2 (K.orthogonalProjection x, Kᗮ.orthogonalProjection x) := by
-  simp [orthogonalDecomposition, orthogonalProjection_eq_linearProjOfIsCompl]
+  simp [orthogonalDecomposition, orthogonalProjection_apply_eq_linearProjOfIsCompl]
 
 theorem toLinearEquiv_orthogonalDecomposition :
     K.orthogonalDecomposition.toLinearEquiv =
