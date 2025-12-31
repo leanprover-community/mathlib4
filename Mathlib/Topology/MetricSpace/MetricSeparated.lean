@@ -46,6 +46,7 @@ lemma isSeparated_iff_setRelIsSeparated :
     IsSeparated ε s ↔ SetRel.IsSeparated {(x, y) | edist x y ≤ ε} s := by
   simp [IsSeparated, SetRel.IsSeparated]
 
+@[grind .]
 protected lemma IsSeparated.empty : IsSeparated ε (∅ : Set X) := pairwise_empty _
 protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton ..
 
