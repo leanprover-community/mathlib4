@@ -91,8 +91,8 @@ instance [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
   let w : (Φ₁.prod Φ₂).op.functor ⋙ (prodOpEquiv D₁ D₂).functor ≅
     E.functor ⋙ F := Iso.refl _
   rw [isRightDerivabilityStructure_iff (Φ₁.prod Φ₂).op (E.functor ⋙ L)
-    (E'.functor ⋙ L') _ (isoWhiskerLeft E.functor e)]
-  have : (isoWhiskerLeft E.functor e).hom = TwoSquare.vComp w.hom e.hom := by
+    (E'.functor ⋙ L') _ (Functor.isoWhiskerLeft E.functor e)]
+  have : (Functor.isoWhiskerLeft E.functor e).hom = TwoSquare.vComp w.hom e.hom := by
     ext ⟨X₁, X₂⟩ <;> simp [w, L']
   rw [this]
   infer_instance
