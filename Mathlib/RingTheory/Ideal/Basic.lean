@@ -303,8 +303,8 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)
     (not_field : ¬IsField R) : M ≠ ⊥ := by
   rintro rfl
-  obtain ⟨I, hIbot, hItop⟩ := exists_maximal_of_not_isField not_field
-  exact hIbot (max.eq_of_le hItop.ne_top bot_le).symm
+  obtain ⟨I, hIbot, hItop⟩ := not_isField_iff_exists_ideal_bot_lt_and_lt_top.mp not_field
+  exact hIbot.ne (max.eq_of_le hItop.ne bot_le)
 
 end Ring
 
