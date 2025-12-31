@@ -11,7 +11,6 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.Central.Basic
 import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
-
 /-!
 # Adjoint of operators on Hilbert spaces
 
