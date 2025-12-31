@@ -193,7 +193,7 @@ theorem free_shortExact_finrank_add' {n p : ℕ} (_ : Module.Free R S.X₁) (_ :
     (_ : Module.Free R S.X₃) (_ : Module.Finite R S.X₃)
     (hN : Module.finrank R S.X₁ = n)
     (hP : Module.finrank R S.X₃ = p)
-    [StrongRankCondition R]:
+    [StrongRankCondition R] :
     Module.finrank R S.X₂ = n + p :=
   free_shortExact_finrank_add hS' hN hP
 

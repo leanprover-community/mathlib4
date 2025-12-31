@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.EpiMono
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.CategoryTheory.Limits.EpiMono
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # The category of sheaves of types is balanced
@@ -21,6 +24,8 @@ in the category of sheaves of types for a Grothendieck topology `J` on a categor
 sheaves with values in concrete categories satisfying suitable assumptions.)
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 

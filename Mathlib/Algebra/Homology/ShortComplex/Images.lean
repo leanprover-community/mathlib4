@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Refinements
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Refinements
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Lemmas about images
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 -- Verdier, Des catégories dérivées des catégories abéliennes, II 4.2.7
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -27,7 +31,7 @@ noncomputable def image.lift {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y)
 
 @[reassoc (attr := simp)]
 lemma image.lift_ι {X Y : C} (f : X ⟶ Y) {A : C} (g : A ⟶ Y)
-    (hg : g ≫ cokernel.π f = 0 ) :
+    (hg : g ≫ cokernel.π f = 0) :
     Abelian.image.lift f g hg ≫ Abelian.image.ι f = g :=
   kernel.lift_ι _ _ _
 

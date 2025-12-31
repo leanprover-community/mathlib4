@@ -3,17 +3,21 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.SingleFunctors
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.SingleFunctors
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Lift of a "single functor" to a full subcategory
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
   {A : Type*} [AddMonoid A] [HasShift D A] [HasShift E A]

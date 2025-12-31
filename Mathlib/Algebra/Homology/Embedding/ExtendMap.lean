@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Extend
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Extend
 
 /-!
 # Extension of complexes and application of a functor
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 

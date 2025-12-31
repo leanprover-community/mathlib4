@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesThree
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesThree
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
 
 /-!
 # Deriving quadrifunctors using a derivability structure
 
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -57,7 +61,7 @@ lemma isIso_of_isLeftDerivabilityStructure
     (X₁ : C₁₀) (X₂ : C₂₀) (X₃ : C₃₀) (X₄ : C₄₀) [LF.IsLeftDerivedFunctor₄ α W₁ W₂ W₃ W₄] :
     IsIso ((((α.app (Φ₁.functor.obj X₁)).app (Φ₂.functor.obj X₂)).app
       (Φ₃.functor.obj X₃)).app (Φ₄.functor.obj X₄)) :=
-  Derives.isIso_of_isLeftDerivabilityStructure h (Functor.whiskeringLeft₄Equiv α) ⟨X₁, X₂, X₃, X₄⟩
+  h.isIso_of_isLeftDerivedFunctor (Functor.whiskeringLeft₄Equiv α) ⟨X₁, X₂, X₃, X₄⟩
 
 end Derives₄
 

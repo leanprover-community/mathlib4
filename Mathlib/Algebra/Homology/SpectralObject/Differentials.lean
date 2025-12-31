@@ -603,7 +603,6 @@ lemma opcyclesMap_opcyclesIso_hom :
   subst hγ
   rw [← cancel_epi (ShortComplex.pOpcycles _), ShortComplex.p_opcyclesMap_assoc,
     p_opcyclesIso_hom, p_opcyclesIso_hom_assoc, shortComplexEMap_τ₂]
-  simp only [shortComplexE_X₂, shortComplexEMap_τ₂]
   symm
   apply p_opcyclesMap
   rfl

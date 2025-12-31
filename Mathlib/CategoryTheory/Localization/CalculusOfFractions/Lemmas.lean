@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
+module
+
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 
 /-!
 # Lemmas about calculus of fractions
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

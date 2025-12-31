@@ -3,16 +3,20 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Subcategory
-import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
-import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
-import Mathlib.CategoryTheory.Localization.Triangulated
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Lemmas
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Subcategory
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
+public import Mathlib.CategoryTheory.Localization.Triangulated
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Lemmas
 
 /-!
 # Localizing subcategories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -33,7 +37,7 @@ class IsRightLocalizing [B.IsTriangulated] : Prop where
     ∃ (Y' : A) (_ : B (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
       a ≫ F.map b = φ
 
-class IsLeftLocalizing [B.IsTriangulated]: Prop where
+class IsLeftLocalizing [B.IsTriangulated] : Prop where
   fac {X : A} {Y : C} (φ : F.obj X ⟶ Y) (hY : B Y) :
     ∃ (Y' : A) (_ : B (F.obj Y')) (a : F.obj Y' ⟶ Y) (b : X ⟶ Y'),
       F.map b ≫ a = φ
@@ -214,7 +218,7 @@ variable {L : C ⥤ D} {L' : A ⥤ D'} {H : D' ⥤ D} (e : L' ⋙ H ≅ F ⋙ L)
   [IsTriangulated C] [B.IsClosedUnderIsomorphisms]
 
 include e in
-lemma isLocalization_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] [F.Faithful]:
+lemma isLocalization_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] [F.Faithful] :
     L'.IsLocalization (B.inverseImage F).trW := by
   have hL' : (B.inverseImage F).trW.IsInvertedBy L' := fun X₁ X₂ f hf => by
     rw [B.inverseImage_trW_iff] at hf
@@ -227,7 +231,7 @@ lemma isLocalization_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] [F.Fa
     Localization.Lifting.iso _ (B.inverseImage F).trW _ _
   have : Localization.Lifting (B.inverseImage F).trW.Q (B.inverseImage F).trW
     (F ⋙ L) (G ⋙ H) :=
-    ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight eG H ≪≫ e⟩
+    ⟨(Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight eG H ≪≫ e⟩
   have := full_of_isRightLocalizing B F L (B.inverseImage F).trW.Q (G ⋙ H)
   have := faithful_of_isRightLocalizing B F L (B.inverseImage F).trW.Q (G ⋙ H)
   have : G.EssSurj :=
@@ -242,7 +246,7 @@ lemma isLocalization_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] [F.Fa
 include e in
 lemma isLocalization_of_isLeftLocalizing [B.IsLeftLocalizing F] [F.Full] [F.Faithful] :
     L'.IsLocalization (B.inverseImage F).trW := by
-  rw [Functor.isLocalization_iff_op, ← trW_op]
+  rw [← Functor.IsLocalization.op_iff, ← trW_op]
   have : Functor.IsLocalization L.op (B.op.trW) := by
     rw [trW_op]
     infer_instance

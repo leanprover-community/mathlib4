@@ -3,16 +3,22 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Trifunctor
-import Mathlib.CategoryTheory.Functor.CurryingThree
-import Mathlib.CategoryTheory.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Functor.Trifunctor
+public import Mathlib.CategoryTheory.Functor.CurryingThree
+public import Mathlib.CategoryTheory.Whiskering
 
 /-!
 # Quatrifunctors
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
+
+open Functor
 
 variable {C₁ C₂ C₃ C₄ C₁₂₃ C₂₃₄ C D₁ D₂ D₃ D₄ E : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂₃]
@@ -143,7 +149,7 @@ def fullyFaithfulUncurry₄ :
 
 @[simp]
 lemma curry₄_obj_map_app_app_app (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
-    {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄):
+    {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((curry₄.obj F).map f).app X₂).app X₃).app X₄ = F.map ⟨f, 𝟙 X₂, 𝟙 X₃, 𝟙 X₄⟩ := rfl
 
 @[simp]

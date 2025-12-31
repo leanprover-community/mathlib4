@@ -88,7 +88,7 @@ are not obvious. -/
 def homMk {S₁ S₂ : ShortComplex₅ C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ₂ : S₁.X₂ ⟶ S₂.X₂)
     (τ₃ : S₁.X₃ ⟶ S₂.X₃) (τ₄ : S₁.X₄ ⟶ S₂.X₄) (τ₅ : S₁.X₅ ⟶ S₂.X₅)
     (commf : τ₁ ≫ S₂.f = S₁.f ≫ τ₂) (commg : τ₂ ≫ S₂.g = S₁.g ≫ τ₃)
-    (commh : τ₃ ≫ S₂.h = S₁.h ≫ τ₄) (commi : τ₄ ≫ S₂.i = S₁.i ≫ τ₅):
+    (commh : τ₃ ≫ S₂.h = S₁.h ≫ τ₄) (commi : τ₄ ≫ S₂.i = S₁.i ≫ τ₅) :
   S₁ ⟶ S₂ := ⟨τ₁, τ₂, τ₃, τ₄, τ₅, commf, commg, commh, commi⟩
 
 @[simp] lemma id_τ₁ : Hom.τ₁ (𝟙 S) = 𝟙 _ := rfl

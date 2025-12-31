@@ -134,8 +134,8 @@ noncomputable def lift {M : CochainComplex C α} (φ : M ⟶ F) (h : Homotopy (�
     apply biprod.hom_ext
     · simp
     · dsimp
-      simp only [ComplexShape.up_Rel, not_true, Preadditive.sub_comp, Preadditive.neg_comp,
-        biprod.inl_snd, comp_zero, neg_zero, biprod.inr_snd,
+      simp only [Preadditive.sub_comp, Preadditive.neg_comp,
+        biprod.inl_snd, comp_zero, biprod.inr_snd,
         comp_id, zero_sub, neg_add_rev, neg_neg, biprod.lift_snd,
         ← cancel_mono (G.prevXIso i (i + 1) rfl).hom,
         Preadditive.add_comp, assoc, Iso.inv_hom_id, comp_id, zero_f,

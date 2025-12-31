@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
-import Mathlib.CategoryTheory.Functor.CurryingThree
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
+public import Mathlib.CategoryTheory.Functor.CurryingThree
 
 /-!
 # Left derived trifunctors
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Spectral sequences
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 
@@ -368,11 +372,13 @@ lemma isIso_hom_of_GE (f : E ⟶ E') (r r' : ℤ) (hrr' : r ≤ r')
     (hf : IsIso (f.hom r)) : IsIso (f.hom r') := by
   obtain ⟨k, hk⟩ := Int.le.dest hrr'
   revert r' hrr'
-  induction' k with k hk
-  · intro r' _ _ _ hr'
+  induction k with
+  | zero =>
+    intro r' _ _ _ hr'
     obtain rfl : r = r' := by omega
     exact hf
-  · intro r' hrr' _ _ hr'
+  | succ k hk =>
+    intro r' hrr' _ _ hr'
     obtain rfl : r' = (r + k) + 1 := by omega
     exact isIso_hom_succ f (r + k) (hk (r + k) (by linarith) (by rfl))
 

@@ -3,12 +3,16 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.BifunctorFlip
+module
+
+public import Mathlib.Algebra.Homology.BifunctorFlip
 
 /-!
 # Evaluating bifunctors on a single complex
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits HomologicalComplex ZeroObject
 
@@ -147,17 +151,17 @@ variable [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ),
     HasMapBifunctor K₁ K₂ F (.up ℤ)]
 
 @[simps! hom_app inv_app]
-noncomputable def bifunctorMapHomologicalComplexObjSingleIso
+noncomputable def map₂HomologicalComplexObjSingleIso
     [HasZeroObject C₁] (X₁ : C₁) :
-    (F.bifunctorMapHomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).obj
+    (F.map₂HomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).obj
         ((single C₁ (.up ℤ) 0).obj X₁) ≅
           (F.obj X₁).mapHomologicalComplex (.up ℤ) :=
   NatIso.ofComponents (mapBifunctorSingle₁Iso F X₁)
 
 @[simps! hom_app inv_app]
-noncomputable def bifunctorMapHomologicalComplexFlipObjSingleIso
+noncomputable def map₂HomologicalComplexFlipObjSingleIso
     [HasZeroObject C₂] (X₂ : C₂) :
-    (F.bifunctorMapHomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).flip.obj
+    (F.map₂HomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).flip.obj
         ((single C₂ (.up ℤ) 0).obj X₂) ≅
           (F.flip.obj X₂).mapHomologicalComplex (.up ℤ) :=
   NatIso.ofComponents (mapBifunctorSingle₂Iso F X₂)

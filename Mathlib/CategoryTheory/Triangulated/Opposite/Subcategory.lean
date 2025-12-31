@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Opposite
-import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
 # The opposite of a triangulated subcategory
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -52,7 +56,7 @@ lemma trW_of_unop (S : ObjectProperty Cᵒᵖ) [S.IsTriangulated]
   rw [ObjectProperty.trW_iff']
   exact ⟨_, _, _, Pretriangulated.op_distinguished _ h₁, h₂⟩
 
-lemma trW_op_iff (S : ObjectProperty C) [S.IsTriangulated] {X Y : Cᵒᵖ } (f : X ⟶ Y) :
+lemma trW_op_iff (S : ObjectProperty C) [S.IsTriangulated] {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     S.op.trW f ↔ S.trW f.unop :=
   ⟨S.trW_of_op _, S.op.trW_of_unop _⟩
 

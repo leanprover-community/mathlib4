@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
-import Mathlib.CategoryTheory.Functor.Quadrifunctor
-import Mathlib.CategoryTheory.Localization.Prod
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Quadrifunctor
+public import Mathlib.CategoryTheory.Localization.Prod
 
 /-!
 # Left derived quadrifunctors
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -22,7 +26,7 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ H : Type*}
 
 set_option maxHeartbeats 800000 in
 -- this is slow
-@[simps]
+--@[simps!]
 def whiskeringLeft₄Equiv {F : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ H} {G : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ H}
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃} {L₄ : C₄ ⥤ D₄} :
     ((((((whiskeringLeft₄ H).obj L₁).obj L₂).obj L₃).obj L₄).obj F ⟶ G) ≃
@@ -35,7 +39,7 @@ def whiskeringLeft₄Equiv {F : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ H} {G : C₁
         have h₂ := congr_app (congr_app ((α.app Y₁).naturality f₂) X₃) X₄
         have h₃ := congr_app (((α.app Y₁).app Y₂).naturality f₃) X₄
         have h₄ := (((α.app Y₁).app Y₂).app Y₃).naturality f₄
-        dsimp at h₁ h₂ h₃ h₄ ⊢
+        dsimp [uncurry₄, currying₄, Prod.mkHom] at h₁ h₂ h₃ h₄ ⊢
         simp only [Category.assoc]
         rw [← reassoc_of% h₁, ← reassoc_of% h₂, ← reassoc_of% h₃, h₄] }
   invFun β :=

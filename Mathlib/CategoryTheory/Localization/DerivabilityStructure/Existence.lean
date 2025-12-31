@@ -40,7 +40,7 @@ variable (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂] (RF : D₂ ⥤ H) (α
 
 lemma isIso_app_of_isRightDerivedFunctor (X : C₁) : IsIso (α.app (Φ.functor.obj X)) := by
   have := Functor.hasPointwiseRightDerivedFunctor_of_inverts _ hF
-  rw [← isIso_α_iff_of_isRightDerivabilityStructure Φ W₁.Q L₂ F (Localization.lift _ hF W₁.Q)
+  rw [← isIso_iff_of_isRightDerivabilityStructure Φ W₁.Q L₂ F (Localization.lift _ hF W₁.Q)
     (Localization.fac _ hF W₁.Q).inv RF α]
   infer_instance
 

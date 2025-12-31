@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 
 /-!
 # Deriving bifunctors using a derivability structure
@@ -13,11 +15,13 @@ import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 
 -/
 
+@[expose] public section
+
 universe v₁₀ v₂₀ v₁ v₂ v₃ u₁₀ u₂₀ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Category
+open Limits Category Functor
 
 -- to be moved
 namespace MorphismProperty
@@ -95,7 +99,7 @@ lemma isIso_of_isLeftDerivabilityStructure
     (α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj LF ⟶ F)
     (X₁ : C₁₀) (X₂ : C₂₀) [LF.IsLeftDerivedFunctor₂ α W₁ W₂] :
     IsIso ((α.app (Φ₁.functor.obj X₁)).app (Φ₂.functor.obj X₂)) :=
-  Derives.isIso_of_isLeftDerivabilityStructure h (Functor.whiskeringLeft₂Equiv α) ⟨X₁, X₂⟩
+  h.isIso_of_isLeftDerivedFunctor (Functor.whiskeringLeft₂Equiv α) ⟨X₁, X₂⟩
 
 end Derives₂
 

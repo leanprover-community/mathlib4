@@ -3,17 +3,21 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.StupidFiltration
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
-import Mathlib.Algebra.Homology.HomologySequenceLemmas
-import Mathlib.Algebra.Homology.TotalComplex
-import Mathlib.Algebra.Homology.TotalComplexShift
-import Mathlib.Algebra.Homology.TotalComplexMap
-import Mathlib.CategoryTheory.Idempotents.Basic
+module
+
+public import Mathlib.Algebra.Homology.Embedding.StupidFiltration
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.Algebra.Homology.TotalComplexShift
+public import Mathlib.Algebra.Homology.TotalComplexMap
+public import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 # Columns of bicomplexes
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ComplexShape
 
@@ -372,7 +376,7 @@ namespace ComplexShape
 
 open Embedding
 
-lemma embeddingUpIntGE_monotone (a a' : ℤ) (h : a' ≤ a):
+lemma embeddingUpIntGE_monotone (a a' : ℤ) (h : a' ≤ a) :
     (embeddingUpIntGE a).Subset (embeddingUpIntGE a') where
   subset := by
     obtain ⟨k, rfl⟩ := Int.le.dest h
@@ -571,7 +575,7 @@ noncomputable abbrev rowFiltrationGEFunctor :
   CochainComplex.stupidFiltrationGEFunctor _
 
 instance (n : ℤᵒᵖ) {ι' : Type*} {c' : ComplexShape ι'}
-    (K : HomologicalComplex₂ C (up ℤ) c) [TotalComplexShape (up ℤ) c c'] [K.HasTotal c']:
+    (K : HomologicalComplex₂ C (up ℤ) c) [TotalComplexShape (up ℤ) c c'] [K.HasTotal c'] :
     (((rowFiltrationGEFunctor C _).obj n).obj K).HasTotal c' := by
   dsimp [rowFiltrationGEFunctor]
   infer_instance
@@ -582,7 +586,7 @@ noncomputable abbrev rowFiltrationGE (K : HomologicalComplex₂ C (up ℤ) c) :
     ℤᵒᵖ ⥤ HomologicalComplex₂ C (up ℤ) c :=
   rowFiltrationGEFunctor C c ⋙ ((evaluation _ _).obj K)
 
-instance (K : HomologicalComplex₂ C (up ℤ) c) (n : ℤ):
+instance (K : HomologicalComplex₂ C (up ℤ) c) (n : ℤ) :
     CochainComplex.IsStrictlyGE ((rowFiltrationGE K).obj ⟨n⟩) n := by
   dsimp
   infer_instance
@@ -594,7 +598,7 @@ instance (K : HomologicalComplex₂ C (up ℤ) c) (n x : ℤ) [CochainComplex.Is
 
 noncomputable abbrev rowFiltrationGEMap {K L : HomologicalComplex₂ C (up ℤ) c} (φ : K ⟶ L) :
     K.rowFiltrationGE ⟶ L.rowFiltrationGE :=
-  whiskerLeft _ ((evaluation _ _).map φ)
+  Functor.whiskerLeft _ ((evaluation _ _).map φ)
 
 variable (K : HomologicalComplex₂ C (up ℤ) (up ℤ))
 variable [K.HasTotal (up ℤ)]
@@ -612,7 +616,7 @@ instance (L : CochainComplex C ℤ) (i₂ : ℤ) :
     omega)
 
 @[simp]
-noncomputable def cofanSingleColumnObjTotal (L : CochainComplex C ℤ) (x y n : ℤ) (h : x + y = n):
+noncomputable def cofanSingleColumnObjTotal (L : CochainComplex C ℤ) (x y n : ℤ) (h : x + y = n) :
   GradedObject.CofanMapObjFun (((singleColumn C (up ℤ) (up ℤ) x).obj L).toGradedObject)
     (π (up ℤ) (up ℤ) (up ℤ)) n :=
   cofanOfIsZeroButOne  _ ⟨⟨x, y⟩, h⟩ (by
@@ -652,7 +656,8 @@ noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (
     (fun n => (singleColumnObjTotalXIso L _ _ _ (by dsimp; omega)).symm) (by
       intro y y' h
       dsimp at h ⊢
-      simp [singleColumnObjTotalXIso_inv, total_d]
+      simp only [singleColumnObjTotalXIso_inv, total_d, Preadditive.comp_add, Category.assoc, ι_D₁,
+        singleColumn_d₁, comp_zero, ι_D₂, zero_add, Linear.units_smul_comp]
       rw [singleColumn_d₂ _ _ _ _ _ _ _ (y' + x')
         (by dsimp; omega) _ (by dsimp; omega)]
       obtain rfl : x' = -x := by omega
@@ -845,9 +850,7 @@ lemma total.isIso_ιStupidTrunc_map_f
       dsimp at hi
       omega
     · apply IsZero.eq_of_src
-      dsimp
-      apply CochainComplex.isZero_of_isStrictlyLE _ y₀
-      omega
+      exact CochainComplex.isZero_of_isStrictlyLE _ y₀ _ (by lia)
 
 lemma total.quasiIsoAt_ιStupidTrunc_map
     (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) [K.HasTotal (up ℤ)] (y₀ x n : ℤ) (hn : x + y₀ < n)

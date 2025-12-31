@@ -3,16 +3,20 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.LeftResolutions.Basic
+module
+
+public import Mathlib.Algebra.Homology.LeftResolutions.Basic
 
 /-!
 # Transport left resolutions along equivalences
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Abelian
 
-open Category
+open Category Functor
 
 variable {A C : Type*} [Category C] [Category A]
   {A' C' : Type*} [Category C'] [Category A']

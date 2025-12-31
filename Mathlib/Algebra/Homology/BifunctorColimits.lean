@@ -28,8 +28,8 @@ variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
 
 instance (K₁ : HomologicalComplex C₁ c₁) [HasColimitsOfShape B C₂]
     [∀ i₁, PreservesColimitsOfShape B (F.obj (K₁.X i₁))] :
-    PreservesColimitsOfShape B ((bifunctorMapHomologicalComplex F c₁ c₂ c).obj K₁) := by
-  have e : (bifunctorMapHomologicalComplex F c₁ c₂ c).obj K₁ ⋙ HomologicalComplex.forget _ _ ≅
+    PreservesColimitsOfShape B ((map₂HomologicalComplex F c₁ c₂ c).obj K₁) := by
+  have e : (map₂HomologicalComplex F c₁ c₂ c).obj K₁ ⋙ HomologicalComplex.forget _ _ ≅
       HomologicalComplex.forget _ _ ⋙
         (GradedObject.mapBifunctorMap F (ComplexShape.π c₁ c₂ c)).obj K₁.X := Iso.refl _
   have := preservesColimitsOfShape_of_natIso (J := B) e.symm
@@ -38,8 +38,8 @@ instance (K₁ : HomologicalComplex C₁ c₁) [HasColimitsOfShape B C₂]
 
 instance (K₂ : HomologicalComplex C₂ c₂) [HasColimitsOfShape B C₁]
     [∀ i₂, PreservesColimitsOfShape B (F.flip.obj (K₂.X i₂))] :
-    PreservesColimitsOfShape B ((bifunctorMapHomologicalComplex F c₁ c₂ c).flip.obj K₂) := by
-  have e : (bifunctorMapHomologicalComplex F c₁ c₂ c).flip.obj K₂ ⋙ HomologicalComplex.forget _ _ ≅
+    PreservesColimitsOfShape B ((map₂HomologicalComplex F c₁ c₂ c).flip.obj K₂) := by
+  have e : (map₂HomologicalComplex F c₁ c₂ c).flip.obj K₂ ⋙ HomologicalComplex.forget _ _ ≅
       HomologicalComplex.forget _ _ ⋙
         (GradedObject.mapBifunctorMap F (ComplexShape.π c₁ c₂ c)).flip.obj K₂.X := Iso.refl _
   have := preservesColimitsOfShape_of_natIso (J := B) e.symm
@@ -48,15 +48,15 @@ instance (K₂ : HomologicalComplex C₂ c₂) [HasColimitsOfShape B C₁]
 
 instance [HasColimitsOfShape B C₁]
     [∀ X, PreservesColimitsOfShape B (F.flip.obj X)] :
-    PreservesColimitsOfShape B (bifunctorMapHomologicalComplex F c₁ c₂ c) where
+    PreservesColimitsOfShape B (map₂HomologicalComplex F c₁ c₂ c) where
   preservesColimit := ⟨fun hc ↦ ⟨evaluationJointlyReflectsColimits _ (fun K₂ ↦
-    isColimitOfPreserves ((bifunctorMapHomologicalComplex F c₁ c₂ c).flip.obj K₂) hc)⟩⟩
+    isColimitOfPreserves ((map₂HomologicalComplex F c₁ c₂ c).flip.obj K₂) hc)⟩⟩
 
 instance [HasColimitsOfShape B C₂]
     [∀ X, PreservesColimitsOfShape B (F.obj X)] :
-    PreservesColimitsOfShape B (bifunctorMapHomologicalComplex F c₁ c₂ c).flip where
+    PreservesColimitsOfShape B (map₂HomologicalComplex F c₁ c₂ c).flip where
   preservesColimit := ⟨fun hc ↦ ⟨evaluationJointlyReflectsColimits _ (fun K₁ ↦
-    isColimitOfPreserves ((bifunctorMapHomologicalComplex F c₁ c₂ c).obj K₁) hc)⟩⟩
+    isColimitOfPreserves ((map₂HomologicalComplex F c₁ c₂ c).obj K₁) hc)⟩⟩
 
 end Functor
 

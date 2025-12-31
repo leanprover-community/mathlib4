@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralSequence.Basic
+module
+
+public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 
 /-!
 # The infinity page of a spectral sequence
 
 -/
+
+@[expose] public section
 
 lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
     (hm₀ : ∀ (x : ℤ) (_ : x ∈ S), m₀ ≤ x) :
@@ -194,9 +198,10 @@ instance [E.HasEdgeMonoAtFrom pq 2] : E.HasEdgeMonoAtFrom pq 3 := by
 /-- Auxiliary definition for `edgeMonoSteps`. -/
 noncomputable def edgeMonoSteps' (k : ℕ) [E.HasPage r] :
     (E.page (r + k)).X pq ⟶ (E.page r).X pq := by
-  induction' k with k hk
-  · exact (E.pageXIsoOfEq pq _ _ (by simp)).hom
-  · exact E.edgeMonoStep pq (r + k) (r + ((k + 1) : ℕ))
+  induction k with
+  | zero => exact (E.pageXIsoOfEq pq _ _ (by simp)).hom
+  | succ k hk =>
+    exact E.edgeMonoStep pq (r + k) (r + ((k + 1) : ℕ))
       (by simp only [Nat.cast_add, Nat.cast_one]; linarith) ≫ hk
 
 @[simp]
@@ -209,10 +214,12 @@ lemma edgeMonoSteps'_succ (k : ℕ) [E.HasPage r] :
       (by simp only [Nat.cast_add, Nat.cast_one]; linarith) ≫ E.edgeMonoSteps' pq r k := rfl
 
 instance (k : ℕ) [E.HasPage r] : Mono (E.edgeMonoSteps' pq r k) := by
-  induction' k with k hk
-  · rw [edgeMonoSteps'_zero]
+  induction k with
+  | zero =>
+    rw [edgeMonoSteps'_zero]
     infer_instance
-  · rw [edgeMonoSteps'_succ]
+  | succ k Hk =>
+    rw [edgeMonoSteps'_succ]
     infer_instance
 
 noncomputable def edgeMonoSteps (r' : ℤ) (h : r ≤ r') [E.HasPage r] [E.HasPage r'] :
@@ -288,10 +295,11 @@ lemma edgeMonoSteps_comp (r' r'' : ℤ) (hr' : r ≤ r') (hr'' : r' ≤ r'')
     obtain ⟨k, rfl⟩ := Int.le.dest hr''
     apply this
   intro k
-  induction' k with k hk
-  · simp only [E.edgeMonoSteps_eq_of_eq pq r' (r' + Nat.zero) (by simp),
+  induction k with
+  | zero => simp only [E.edgeMonoSteps_eq_of_eq pq r' (r' + Nat.zero) (by simp),
       E.edgeMonoSteps_eq_pageXIsoOfEq_inv_comp_edgeMonoSteps pq r r' (r' + Nat.zero) hr' (by simp)]
-  · simp only [E.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r' (r' + k) (r' + k.succ)
+  | succ k hk =>
+    simp only [E.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r' (r' + k) (r' + k.succ)
       (by simp) (by simp only [Nat.cast_succ, add_assoc]), assoc, hk,
       E.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r (r' + k) (r' + k.succ) (by linarith)
       (by simp only [Nat.cast_succ, add_assoc])]
@@ -353,9 +361,10 @@ instance [E.HasEdgeEpiAtFrom pq 2] : E.HasEdgeEpiAtFrom pq 3 := by
 /-- Auxiliary definition for `edgeEpiSteps`. -/
 noncomputable def edgeEpiSteps' (k : ℕ) [E.HasPage r] :
     (E.page r).X pq ⟶ (E.page (r + k)).X pq := by
-  induction' k with k hk
-  · exact (E.pageXIsoOfEq pq _ _ (by simp)).inv
-  · exact hk ≫ E.edgeEpiStep pq (r + k) (r + ((k + 1) : ℕ))
+  induction k with
+  | zero => exact (E.pageXIsoOfEq pq _ _ (by simp)).inv
+  | succ k hk =>
+    exact hk ≫ E.edgeEpiStep pq (r + k) (r + ((k + 1) : ℕ))
       (by simp only [Nat.cast_add, Nat.cast_one]; linarith)
 
 @[simp]
@@ -369,11 +378,9 @@ lemma edgeEpiSteps'_succ (k : ℕ) [E.HasPage r] :
       (by simp only [Nat.cast_add, Nat.cast_one]; linarith) := rfl
 
 instance (k : ℕ) [E.HasPage r] : Epi (E.edgeEpiSteps' pq r k) := by
-  induction' k with k hk
-  · rw [edgeEpiSteps'_zero]
-    infer_instance
-  · rw [edgeEpiSteps'_succ]
-    infer_instance
+  induction k with
+  | zero => rw [edgeEpiSteps'_zero]; infer_instance
+  | succ => rw [edgeEpiSteps'_succ]; infer_instance
 
 noncomputable def edgeEpiSteps (r' : ℤ) (h : r ≤ r') [E.HasPage r] [E.HasPage r'] :
     (E.page r).X pq ⟶ (E.page r').X pq :=
@@ -448,10 +455,12 @@ lemma edgeEpiSteps_comp (r' r'' : ℤ) (hr' : r ≤ r') (hr'' : r' ≤ r'')
     obtain ⟨k, rfl⟩ := Int.le.dest hr''
     apply this
   intro k
-  induction' k with k hk
-  · simp only [E.edgeEpiSteps_eq_of_eq pq r' (r' + Nat.zero) (by simp),
+  induction k with
+  | zero =>
+    simp only [E.edgeEpiSteps_eq_of_eq pq r' (r' + Nat.zero) (by simp),
       E.edgeEpiSteps_eq_edgeEpiSteps_comp_pageXIsoOfEq_hom pq r r' (r' + Nat.zero) hr' (by simp)]
-  · simp only [E.edgeEpiSteps_eq_edgeEpiSteps_comp_edgeEpiStep pq r' (r' + k) (r' + k.succ)
+  | succ k hk =>
+    simp only [E.edgeEpiSteps_eq_edgeEpiSteps_comp_edgeEpiStep pq r' (r' + k) (r' + k.succ)
       (by simp) (by simp only [Nat.cast_succ, add_assoc]), reassoc_of% hk,
       E.edgeEpiSteps_eq_edgeEpiSteps_comp_edgeEpiStep pq r (r' + k) (r' + k.succ) (by linarith)
       (by simp only [Nat.cast_succ, add_assoc])]
@@ -468,10 +477,12 @@ lemma edgeEpiSteps_edgeMonoSteps (pq : ι) (r r' : ℤ) (hrr' : r ≤ r')
     obtain ⟨k, rfl⟩ := Int.le.dest hrr'
     apply this
   intro k
-  induction' k with k hk
-  · simp only [E.edgeEpiSteps_eq_of_eq pq r (r + Nat.zero) (by simp),
+  induction k with
+  | zero =>
+    simp only [E.edgeEpiSteps_eq_of_eq pq r (r + Nat.zero) (by simp),
       E.edgeMonoSteps_eq_of_eq pq r (r + Nat.zero) (by simp), Iso.hom_inv_id]
-  · simp only [E.edgeEpiSteps_eq_edgeEpiSteps_comp_edgeEpiStep pq r (r + k) (r + k.succ)
+  | succ k hk =>
+    simp only [E.edgeEpiSteps_eq_edgeEpiSteps_comp_edgeEpiStep pq r (r + k) (r + k.succ)
       (by simp) (by simp only [Nat.cast_succ, add_assoc]),
       E.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r (r + k) (r + k.succ)
         (by simp) (by simp only [Nat.cast_succ, add_assoc]),
@@ -487,10 +498,12 @@ lemma edgeMonoSteps_edgeEpiSteps (pq : ι) (r r' : ℤ) (hrr' : r ≤ r')
     obtain ⟨k, rfl⟩ := Int.le.dest hrr'
     apply this
   intro k
-  induction' k with k hk
-  · simp only [E.edgeEpiSteps_eq_of_eq pq r (r + Nat.zero) (by simp),
+  induction k with
+  | zero =>
+    simp only [E.edgeEpiSteps_eq_of_eq pq r (r + Nat.zero) (by simp),
       E.edgeMonoSteps_eq_of_eq pq r (r + Nat.zero) (by simp), Iso.inv_hom_id]
-  · simp only [E.edgeEpiSteps_eq_edgeEpiSteps_comp_edgeEpiStep pq r (r + k) (r + k.succ)
+  | succ k hk =>
+    simp only [E.edgeEpiSteps_eq_edgeEpiSteps_comp_edgeEpiStep pq r (r + k) (r + k.succ)
       (by simp) (by simp only [Nat.cast_succ, add_assoc]),
       E.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r (r + k) (r + k.succ)
         (by simp) (by simp only [Nat.cast_succ, add_assoc]), assoc, reassoc_of% hk,
@@ -770,11 +783,13 @@ lemma edgeMonoSteps_naturality (pq : ι)
       (f.hom r').f pq ≫ E'.edgeMonoSteps pq r r' hr := by
   obtain ⟨k, hk⟩ := Int.le.dest hr
   revert r'
-  induction' k with k hk
-  · intro r' hrr' _ _ hr'
+  induction k with
+  | zero =>
+    intro r' hrr' _ _ hr'
     obtain rfl : r = r' := by omega
     simp
-  · intro r' hrr' _ _ hr'
+  | succ k hk =>
+    intro r' hrr' _ _ hr'
     simp only [Nat.cast_succ, ← add_assoc] at hr'
     rw [E.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r (r + k) r'
       (by linarith) hr', assoc, hk (r + k) (by linarith) rfl,
@@ -866,7 +881,7 @@ lemma hasEdgeMonoAtFrom
     apply hasEdgeMonoAt
     linarith
 
-instance (p : ℕ) [E.HasPage 2]: E.HasEdgeEpiAtFrom ⟨p, 0⟩ 2 := by
+instance (p : ℕ) [E.HasPage 2] : E.HasEdgeEpiAtFrom ⟨p, 0⟩ 2 := by
   apply hasEdgeEpiAtFrom
   dsimp
   linarith
@@ -886,7 +901,7 @@ instance (q : ℕ) [E.HasPage 2] : E.HasEdgeMonoAtFrom ⟨1, q⟩ 2 := by
   dsimp
   linarith
 
-instance (q : ℕ) [E.HasPage 2]: E.HasEdgeMonoAtFrom ⟨2, q⟩ 3 := by
+instance (q : ℕ) [E.HasPage 2] : E.HasEdgeMonoAtFrom ⟨2, q⟩ 3 := by
   apply hasEdgeMonoAtFrom
   dsimp
   linarith

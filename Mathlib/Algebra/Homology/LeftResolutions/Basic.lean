@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.Algebra.Homology.Embedding.ExtendMap
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.SingleHomology
+public import Mathlib.Algebra.Homology.Embedding.ExtendMap
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 
 /-!
 # Left resolutions
@@ -23,6 +25,8 @@ This is used in order to construct a resolution functor
 This shall be used in order to construct functorial flat resolutions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Abelian
 
@@ -174,7 +178,7 @@ lemma chainComplexMap_comp :
   | succ n hn =>
       obtain _ | n := n
       all_goals
-        simp [-Functor.map_comp, ← Λ.F.map_comp_assoc, ← ι.map_comp]
+        simp [-Functor.map_comp, ← Λ.F.map_comp_assoc]
         congr 1
         simp [← cancel_mono (kernel.ι _), hn]
 

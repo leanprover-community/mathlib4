@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
 
 /-!
 # Deriving trifunctors using a derivability structure
@@ -12,9 +14,11 @@ import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open Limits Category
+open Limits Category Functor
 
 variable {C₁₀ C₂₀ C₃₀ C₁ C₂ C₃ D₁ D₂ D₃ H : Type*}
   [Category C₁₀] [Category C₂₀] [Category C₃₀]
@@ -51,7 +55,7 @@ lemma isIso_of_isLeftDerivabilityStructure
     (α : ((((whiskeringLeft₃ H).obj L₁).obj L₂).obj L₃).obj LF ⟶ F)
     (X₁ : C₁₀) (X₂ : C₂₀) (X₃ : C₃₀) [LF.IsLeftDerivedFunctor₃ α W₁ W₂ W₃] :
     IsIso (((α.app (Φ₁.functor.obj X₁)).app (Φ₂.functor.obj X₂)).app (Φ₃.functor.obj X₃)) :=
-  Derives.isIso_of_isLeftDerivabilityStructure h (Functor.whiskeringLeft₃Equiv α) ⟨X₁, X₂, X₃⟩
+  h.isIso_of_isLeftDerivedFunctor (Functor.whiskeringLeft₃Equiv α) ⟨X₁, X₂, X₃⟩
 
 end Derives₃
 
