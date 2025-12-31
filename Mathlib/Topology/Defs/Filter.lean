@@ -210,8 +210,8 @@ def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
 @[inherit_doc]
 infixl:300 " ⤳ " => Specializes
 
-/-- Two points `x` and `y` in a topological space are `Inseparable` or topologically
-indistinguishable if any of the following equivalent properties hold:
+/-- Two points `x` and `y` in a topological space are `Inseparable`, or *topologically
+indistinguishable*, if any of the following equivalent properties hold:
 
 - `𝓝 x = 𝓝 y`; we use this property as the definition;
 - for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_forall_isOpen`;
