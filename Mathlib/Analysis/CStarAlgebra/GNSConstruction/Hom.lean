@@ -69,9 +69,9 @@ noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpa
     induction x using Completion.induction_on with
     | hp =>
       exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
-        (continuous_map.const_smul _) -- fun_prop is failing on these goals for some reason
+        (continuous_map.const_smul _)
     | ih x =>
-      simp [Completion.map_coe, ← Completion.coe_smul, ContinuousLinearMap.uniformContinuous]
+      simp [map_coe, ← Completion.coe_smul, ContinuousLinearMap.uniformContinuous]
   cont := continuous_map
 
 @[simp]
@@ -93,47 +93,40 @@ noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f
     dsimp [π_ofA]
     simp only [map_zero]
     induction b using Completion.induction_on with
-    | hp => exact (isClosed_eq (by continuity) (by continuity))
+    | hp => apply isClosed_eq <;> fun_prop
     | ih b
     dsimp [A_mul_GNS, const_mul_GNS]
-    simp [Completion.map_coe, ContinuousLinearMap.uniformContinuous]
+    simp [map_coe, ContinuousLinearMap.uniformContinuous]
     rfl
   map_add' x y := by
     ext c
     simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, add_apply]
     induction c using Completion.induction_on with
-      | hp => exact (isClosed_eq (by continuity) (by continuity))
+      | hp => apply isClosed_eq <;> fun_prop
       | ih c
-    simp [Completion.map_coe, ContinuousLinearMap.uniformContinuous]
+    simp [map_coe, ContinuousLinearMap.uniformContinuous]
     norm_cast
   map_mul' a b := by
     ext c
     simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mul,
       Function.comp_apply]
     induction c using Completion.induction_on with
-      | hp => exact (isClosed_eq (by continuity)
-            (ContinuousLinearMap.continuous ((f.π_ofA a).comp (f.π_ofA b))))
+      | hp => apply isClosed_eq <;> fun_prop
       | ih c
     simp only [A_mul_GNS_prod_eq_comp, ContinuousLinearMap.uniformContinuous, map_coe]
-    rw [Completion.map_coe]
+    rw [map_coe]
     · simp
     exact ContinuousLinearMap.uniformContinuous ((f.A_mul_GNS a).comp (f.A_mul_GNS b))
   map_star' a := by
     refine (eq_adjoint_iff (π_ofA f (star a)) (π_ofA f a)).mpr ?_
     intro x y
-    induction x using Completion.induction_on with
-    | hp => exact (isClosed_eq (by continuity)
-      (Continuous.inner (continuous_id) (continuous_const)))
-    | ih x
-    induction y using Completion.induction_on with
-    | hp => exact (isClosed_eq (Continuous.inner (continuous_const) (continuous_id))
-        (Continuous.inner (by continuity) (by continuity)))
-    | ih y
-    simp_all only [π_ofA_apply]
-    rw [Completion.map_coe (ContinuousLinearMap.uniformContinuous (f.A_mul_GNS a)),
-      Completion.map_coe (ContinuousLinearMap.uniformContinuous (f.A_mul_GNS (star a)))]
-    simp_all [GNS_inner_def, A_mul_GNS]
-    group
+    induction x, y using Completion.induction_on₂ with
+    | hp => apply isClosed_eq <;> fun_prop
+    | ih x y
+    simp only [π_ofA_apply]
+    rw [map_coe (ContinuousLinearMap.uniformContinuous (f.A_mul_GNS a)),
+      map_coe (ContinuousLinearMap.uniformContinuous (f.A_mul_GNS (star a)))]
+    simp [GNS_inner_def, A_mul_GNS, mul_assoc]
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 variable (f : A →ₚ[ℂ] ℂ)
@@ -144,9 +137,9 @@ noncomputable def π_unital : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.G
     ext b
     dsimp [π, π_ofA]
     induction b using Completion.induction_on with
-    | hp => exact (isClosed_eq (by continuity) (by continuity))
+    | hp => apply isClosed_eq <;> fun_prop
     | ih b
-    rw [Completion.map_coe (ContinuousLinearMap.uniformContinuous (f.A_mul_GNS 1))]
+    rw [map_coe (ContinuousLinearMap.uniformContinuous (f.A_mul_GNS 1))]
     simp_all [A_mul_GNS, const_mul_GNS]
   commutes' r := by
     dsimp [π]
@@ -154,9 +147,9 @@ noncomputable def π_unital : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.G
     congr
     ext c
     simp [A_mul_GNS, const_mul_GNS]
-  map_mul' := MulHomClass.map_mul f.π
+  map_mul' := map_mul f.π
   map_zero' := map_zero f.π
-  map_add' := AddHomClass.map_add f.π
+  map_add' := map_add f.π
   map_star' := map_star f.π
 
 end PositiveLinearMap
