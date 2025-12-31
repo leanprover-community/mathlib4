@@ -7,15 +7,12 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
-public import Mathlib.Analysis.SpecialFunctions.Arcosh
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.SpecialFunctions.Arcosh
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # Chebyshev polynomials over the reals: roots and extrema
@@ -54,14 +51,14 @@ theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
   exact ⟨by norm_cast, by assumption⟩
 
 theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
-    1 ≤ (-1) ^ n * (T ℝ n).eval x := by
+    1 ≤ n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
   convert one_le_eval_T_real n (le_neg_of_le_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
 theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
-    1 < (-1) ^ n * (T ℝ n).eval x := by
+    1 < n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
   convert one_lt_eval_T_real hn (lt_neg_of_lt_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
@@ -69,29 +66,19 @@ theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx 
 
 theorem one_le_abs_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ |x|) :
     1 ≤ |(T ℝ n).eval x| := by
-  cases le_abs.mp hx with
-  | inl hx => exact one_le_eval_T_real n hx |> .inl |> le_abs.mpr
-  | inr hx =>
-    have := one_le_negOnePow_mul_eval_T_real n (le_neg_of_le_neg hx)
-    have : 1 ≤ |(-1) ^ n * (T ℝ n).eval x| := by grind
-    convert this using 1
-    simp [abs_mul, abs_zpow]
+  wlog! h : 0 ≤ x
+  · simpa [T_eval_neg, abs_mul, abs_unit_intCast] using @this n (-x) (by grind) (by grind)
+  · exact one_le_eval_T_real n (abs_of_nonneg h ▸ hx) |>.trans <| le_abs_self _
 
 theorem one_lt_abs_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < |x|) :
     1 < |(T ℝ n).eval x| := by
-  cases lt_abs.mp hx with
-  | inl hx => exact one_lt_eval_T_real hn hx |> .inl |> lt_abs.mpr
-  | inr hx =>
-    have := one_lt_negOnePow_mul_eval_T_real hn (lt_neg_of_lt_neg hx)
-    have : 1 < |(-1) ^ n * (T ℝ n).eval x| := by grind
-    convert this using 1
-    simp [abs_mul, abs_zpow]
+  wlog! h : 0 ≤ x
+  · simpa [T_eval_neg, abs_mul, abs_unit_intCast] using @this n hn (-x) (by grind) (by grind)
+  · exact one_lt_eval_T_real hn (abs_of_nonneg h ▸ hx) |>.trans_le <| le_abs_self _
 
 theorem abs_eval_T_real_le_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
-    |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 := by
-  constructor
-  · intro hx; exact abs_eval_T_real_le_one n hx
-  · intro hx; contrapose! hx; exact one_lt_abs_eval_T_real hn hx
+    |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 :=
+  ⟨abs_eval_T_real_le_one n, by simpa using mt <| one_lt_abs_eval_T_real hn⟩
 
 theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     |(T ℝ n).eval x| = 1 ↔ ∃ k ≤ n, x = cos (k * π / n) := by
@@ -99,37 +86,27 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
   · intro hTx
     have hx := (abs_eval_T_real_le_one_iff (Nat.cast_ne_zero.mpr hn) x).mpr (le_of_eq hTx)
     rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), T_real_cos,
-      Int.cast_natCast] at hTx
-    have : ∃ (k : ℤ), k * π = n * arccos x := by
-      cases (abs_eq zero_le_one).mp hTx
-      case inl h =>
-        obtain ⟨k, hk⟩ := (cos_eq_one_iff _).mp h
-        use 2 * k
-        grind
-      case inr h =>
-        obtain ⟨k, hk⟩ := cos_eq_neg_one_iff.mp h
-        use 2 * k + 1
-        grind
-    obtain ⟨k, hk⟩ := this
-    replace hk : arccos x = (k * π) / n := by aesop
-    have k_nonneg : 0 ≤ k := by
-      suffices 0 ≤ (k : ℝ) by norm_cast at this
-      have : 0 ≤ k * π / n := by grind [arccos_nonneg]
-      linear_combination (norm := field_simp) (n / π) * this
-      grind
-    have k_le_n : k ≤ n := by
-      suffices (k : ℝ) ≤ n by norm_cast at this
-      have : k * π / n ≤ π := by grind [arccos_le_pi]
-      linear_combination (norm := field_simp) (n / π) * this
-      grind
-    use k.toNat
-    refine ⟨Int.toNat_le.mpr k_le_n, ?_⟩
-    rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), hk]
-    congr
-    exact (Int.toNat_of_nonneg k_nonneg).symm
-  · rintro ⟨k, hk, hx⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hx, T_real_cos, this, cos_int_mul_pi, abs_neg_one_zpow]
+      Int.cast_natCast, abs_cos_eq_one_iff] at hTx
+    obtain ⟨k, hk⟩ := hTx
+    have hk' : k = n * (arccos x / π) := by simpa [field]
+    lift k to ℕ using (by rw [← Int.cast_nonneg_iff (R := ℝ), hk']; positivity [arccos_nonneg x])
+    simp only [Int.cast_natCast] at hk hk'
+    have hkn : (k : ℝ) ≤ n := by
+      rw [← mul_one (n : ℝ), hk']
+      gcongr
+      exact div_le_one_of_le₀ (arccos_le_pi x) (by positivity)
+    refine ⟨k, by simpa using hkn, ?_⟩
+    convert congr(cos ($hk.symm / n))
+    rw [mul_div_cancel_left₀ _ (by simpa), cos_arccos (by grind) (by grind)]
+  · rintro ⟨k, hk, rfl⟩
+    rw [T_real_cos, abs_cos_eq_one_iff]
+    exact ⟨k, by simp [field]⟩
+
+theorem eval_T_real_cos_int_mul_pi_div {k : ℕ} {n : ℕ} (hn : n ≠ 0) :
+    (T ℝ n).eval (cos (k * π / n)) = (k : ℤ).negOnePow := by
+  rw [T_real_cos, Int.cast_negOnePow]
+  convert Real.cos_int_mul_pi k using 2
+  simp [field]
 
 theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     (T ℝ n).eval x = 1 ↔ ∃ k ≤ n, Even k ∧ x = cos (k * π / n) := by
@@ -139,13 +116,11 @@ theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       ((abs_eq_abs.mpr (.inl hx)).trans abs_one)
     use k
     refine ⟨hk₁, ?_, hk₂⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hk₂, T_real_cos, this, cos_int_mul_pi, zpow_natCast] at hx
-    exact (neg_one_pow_eq_one_iff_even (by norm_num)).mp hx
+    rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
+    exact (neg_one_pow_eq_one_iff_even (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hx, T_real_cos, this, cos_int_mul_pi]
-    exact (neg_one_pow_eq_one_iff_even (by norm_num)).mpr hk₂
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_even k ((Int.even_coe_nat k).mpr hk₂)]
+    norm_cast
 
 theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     (T ℝ n).eval x = -1 ↔ ∃ k ≤ n, Odd k ∧ x = cos (k * π / n) := by
@@ -155,72 +130,72 @@ theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       ((abs_eq_abs.mpr (.inl hx)).trans ((abs_neg 1).trans abs_one))
     use k
     refine ⟨hk₁, ?_, hk₂⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hk₂, T_real_cos, this, cos_int_mul_pi, zpow_natCast] at hx
-    exact (neg_one_pow_eq_neg_one_iff_odd (by norm_num)).mp hx
+    rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
+    exact (neg_one_pow_eq_neg_one_iff_odd (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
-    rw [hx, T_real_cos, this, cos_int_mul_pi]
-    exact (neg_one_pow_eq_neg_one_iff_odd (by norm_num)).mpr hk₂
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_coe_nat k).mpr hk₂)]
+    norm_cast
+
+theorem roots_T_real_nodup (n : ℕ) :
+    (Multiset.map (fun k : ℕ ↦ cos ((2 * k + 1) * π / (2 * n))) (.range n)).Nodup := by
+  wlog! hn : n ≠ 0
+  · simp [hn]
+  refine (Finset.range n).nodup_map_iff_injOn.mpr ?_
+  refine injOn_cos.comp (by aesop) fun k hk => Set.mem_Icc.mpr ⟨by positivity, ?_⟩
+  field_simp
+  norm_cast
+  grind
 
 theorem roots_T_real (n : ℕ) :
     (T ℝ n).roots =
     ((Finset.range n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))).val := by
-  by_cases n = 0
-  case pos hn => simp [hn]
-  case neg =>
-  · refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
-    · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
-      rw [← hx, T_real_cos, cos_eq_zero_iff]
-      use k
-      field_simp
-      norm_cast
-    · rw [Finset.card_image_of_injOn, Finset.card_range, degree_T, Int.natAbs_natCast]
-      apply injOn_cos.comp (by aesop)
-      intro k hk
-      apply Set.mem_Icc.mpr
-      constructor
-      · positivity
-      · field_simp
-        norm_cast
-        grind
+  wlog! hn : n ≠ 0
+  · simp [hn]
+  refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
+  · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
+    rw [← hx, T_real_cos, cos_eq_zero_iff]
+    use k
+    field_simp
+    norm_cast
+  · rw [Finset.card_image_of_injOn, Finset.card_range, degree_T, Int.natAbs_natCast]
+    exact (Finset.range n).nodup_map_iff_injOn.mp (roots_T_real_nodup n)
 
 theorem rootMultiplicity_T_real {n k : ℕ} (hk : k < n) :
     (T ℝ n).rootMultiplicity (cos ((2 * k + 1) * π / (2 * n))) = 1 := by
   rw [← count_roots, roots_T_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
 
+theorem roots_U_real_nodup (n : ℕ) :
+    (Multiset.map (fun k : ℕ ↦ cos ((k + 1) * π / (n + 1))) (.range n)).Nodup := by
+  refine (Finset.range n).nodup_map_iff_injOn.mpr ?_
+  apply injOn_cos.comp
+  · intro x hx y hy hxy
+    field_simp at hxy
+    aesop
+  · refine fun k hk => Set.mem_Icc.mpr ⟨by positivity, ?_⟩
+    field_simp
+    norm_cast
+    grind
+
 theorem roots_U_real (n : ℕ) :
     (U ℝ n).roots =
     ((Finset.range n).image (fun (k : ℕ) => cos ((k + 1) * π / (n + 1)))).val := by
-  by_cases n = 0
-  case pos hn => simp [hn]
-  case neg =>
-  · refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
-    · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
-      suffices (U ℝ n).eval x * sin ((k + 1) * π / (n + 1)) = 0 by
-        apply (mul_eq_zero_iff_right (ne_of_gt ?_)).mp this
-        apply sin_pos_of_pos_of_lt_pi (by positivity)
-        field_simp
-        norm_cast
-        grind
-      rw [← hx, U_real_cos, sin_eq_zero_iff]
-      use k + 1
+  wlog! hn : n ≠ 0
+  · simp [hn]
+  refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
+  · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
+    suffices (U ℝ n).eval x * sin ((k + 1) * π / (n + 1)) = 0 by
+      refine (mul_eq_zero_iff_right (ne_of_gt (sin_pos_of_pos_of_lt_pi (by positivity) ?_))).mp this
       field_simp
       norm_cast
-      ring
-    · rw [Finset.card_image_of_injOn, Finset.card_range, degree_U_natCast]
-      apply injOn_cos.comp
-      · intro x hx y hy hxy
-        field_simp at hxy
-        aesop
-      · intro k hk
-        apply Set.mem_Icc.mpr
-        constructor
-        · positivity
-        · field_simp
-          norm_cast
-          grind
+      grind
+    rw [← hx, U_real_cos, sin_eq_zero_iff]
+    use k + 1
+    field_simp
+    norm_cast
+    ring
+  · rw [Finset.card_image_of_injOn, Finset.card_range, degree_U_natCast]
+    exact (Finset.range n).nodup_map_iff_injOn.mp (roots_U_real_nodup n)
 
 theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
     (U ℝ n).rootMultiplicity (cos ((k + 1) * π / (n + 1))) = 1 := by
