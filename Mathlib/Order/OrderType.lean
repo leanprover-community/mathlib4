@@ -53,28 +53,6 @@ universe u v w w'
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'}
 
-instance : LE PEmpty where
- le _ _ := False
-
-instance : LE Empty where
- le _ _ := False
-
-instance : LinearOrder PEmpty where
- le_refl x := x.elim
- le_trans x y z := x.elim
- le_antisymm x := x.elim
- le_total x y := x.elim
- toDecidableLE := Classical.decRel LE.le
-
-instance : LinearOrder Empty where
- le_refl x := x.elim
- le_trans x y z := x.elim
- le_antisymm x := x.elim
- le_total x y := x.elim
- toDecidableLE := Classical.decRel LE.le
-
-def PEmpty_iso : PEmpty ≃o PEmpty := by trivial
-
 def ordIsoOfIsEmpty (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β]
     [IsEmpty β] [IsEmpty α] : α ≃o β :=
   ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
@@ -85,21 +63,21 @@ def OrderType.ofUniqueOfIrrefl [LinearOrder α]
 
 /-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
-instance OrderType.isEquivalent : Setoid LinOrd where
+instance OrderType.instSetoid : Setoid LinOrd where
   r := fun lin_ord₁ lin_ord₂ ↦ Nonempty (lin_ord₁ ≃o lin_ord₂)
   iseqv := ⟨fun _ ↦ ⟨.refl _⟩, fun ⟨e⟩ ↦ ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ ↦ ⟨e₁.trans e₂⟩⟩
 
 /-- `OrderType.{u}` is the type of linear orders in `Type u`, up to order isomorphism. -/
 @[pp_with_univ]
 def OrderType : Type (u + 1) :=
-  Quotient OrderType.isEquivalent
+  Quotient OrderType.instSetoid
 
 namespace OrderType
 
 def toType (o : OrderType) : Type u :=
   o.out.carrier
 
-instance linearOrder_toType (o : OrderType) : LinearOrder o.toType :=
+instance (o : OrderType) : LinearOrder o.toType :=
   o.out.str
 
 /-! ### Basic properties of the order type -/
@@ -239,7 +217,7 @@ For `OrderType`:
 Less-than-or-equal is defined such that linear orders `r` on `α` and `s` on `β`
 satisfy `type α ≤ type β` if there exists an order embedding from `α` to `β`.
 -/
-instance preOrder : Preorder OrderType where
+instance : Preorder OrderType where
   le a b :=
     Quotient.liftOn₂ a b (fun r s ↦ Nonempty (r ↪o s))
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
@@ -365,7 +343,7 @@ open Classical in
 lemma add_assoc (o₁ o₂ o₃ : OrderType.{u}) : o₁ + o₂ + o₃ = o₁ + (o₂ + o₃) :=
   inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.sumLexAssoc α β γ))
 
-instance addMonoid : AddMonoid OrderType where
+instance : AddMonoid OrderType where
   add_assoc := add_assoc
   zero_add := zero_add
   add_zero := add_zero
@@ -407,6 +385,7 @@ lemma one_mul (o : OrderType) : 1 * o = o :=
 
 
 /-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
+@[simps! (attr := grind =)]
 def OrderIso.prodAssoc (α : Type u) (β : Type v) (γ : Type w) [LE α] [LE β] [LE γ] :
     (α × β) × γ ≃o α × (β × γ) :=
   { Equiv.prodAssoc α β γ with
@@ -417,14 +396,17 @@ def OrderIso.prodAssoc (α : Type u) (β : Type v) (γ : Type w) [LE α] [LE β]
 /-- `Equiv.prodAssoc` promoted to an order isomorphism of lexicographic products. -/
 def OrderIso.prodLexAssoc (α : Type u) (β : Type v) (γ : Type w)
     [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ :=
-  { Equiv.prodAssoc α β γ with
+  { OrderIso.prodAssoc α β γ with
     map_rel_iff' := fun {a b} ↦
       ⟨fun h ↦
         match a, b, h with
-        | ⟨⟨a1 , a2⟩ , a3⟩ , ⟨⟨b1, b2⟩ , b3⟩ , h => by sorry,
+        | ⟨⟨a1 , a2⟩ , a3⟩ , ⟨⟨b1, b2⟩ , b3⟩ , h1 => by
+          rw [Prod.Lex.le_iff] at *
+          sorry --should be so simple
+        ,
         fun h ↦
         match a, b, h with
-        | ⟨⟨_ , _⟩ , _⟩ , ⟨⟨_, _⟩ , _⟩ , h => by sorry⟩}
+        | ⟨⟨_ , _⟩ , _⟩ , ⟨⟨_, _⟩ , _⟩ , h1 => by sorry⟩}
 
 
 /-- `Equiv.prodSumDistrib` promoted to an order isomorphism of lexicographic products. -/
@@ -449,7 +431,7 @@ open Classical in
 lemma mul_assoc (o₁ o₂ o₃ : OrderType.{u}) : o₁ * o₂ * o₃ = o₁ * (o₂ * o₃) :=
   inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.prodLexAssoc α β γ))
 
-instance mulMonoid : Monoid OrderType where
+instance : Monoid OrderType where
   mul_assoc := mul_assoc
   one_mul := one_mul
   mul_one := mul_one
