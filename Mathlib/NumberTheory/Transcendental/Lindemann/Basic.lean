@@ -74,8 +74,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
     exact dvd_prod_of_mem _ (mem_univ _)
   -- The roots of `p j` in `ℂ` are simply the roots in `K` embedded into `ℂ`
   have aroots_K_eq_aroots_ℂ (j) (f : ℂ → ℂ) :
-      (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) =
-        (((p j).aroots ℂ).map f) := by
+      (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) = (((p j).aroots ℂ).map f) := by
     rw [← (splits_p j).aroots_map_algebraMap (B := ℂ), Multiset.map_map, Function.comp_def]
   simp_rw [← aroots_K_eq_aroots_ℂ] at h
   -- The following roughly matches Jacobson, p. 286.
@@ -196,12 +195,10 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- But `q` is prime and divides none of the factors, so we have our contradiction.
   simp_rw [Int.natAbs_mul, prime_q.dvd_mul, Int.natAbs_pow] at H
   obtain (H | H) | H := H
-  · have := Nat.le_of_dvd (Int.natAbs_pos.mpr k0) <| prime_q.dvd_of_dvd_pow H
-    order
+  · order [Nat.le_of_dvd (Int.natAbs_pos.mpr k0) <| prime_q.dvd_of_dvd_pow H]
   · rw [← Int.ofNat_dvd_left] at H
     contradiction
-  · have := Nat.le_of_dvd (Int.natAbs_pos.mpr w0) H
-    order
+  · order [Nat.le_of_dvd (Int.natAbs_pos.mpr w0) H]
 
 theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
     LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) :=
@@ -256,9 +253,5 @@ theorem transcendental_log {u : ℂ} (hu0 : Complex.log u ≠ 0) (hu : IsAlgebra
     Transcendental ℤ (Complex.log u) := by
   intro h
   have := transcendental_exp hu0 h
-  rw [Complex.exp_log] at this
-  · apply this
-    simpa using hu.algebraMap (A := ℂ)
-  · simp only [ne_eq]
-    rintro rfl
-    simp at hu0
+  rw [Complex.exp_log (by aesop)] at this
+  contradiction

@@ -254,8 +254,7 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
     replace hy : y.mapRangeAlgAut _ _ f i = y i := by rw [hy f]
     simpa using hy
-  obtain ⟨y', hy'⟩ :
-      y ∈ Set.range (AddMonoidAlgebra.mapRangeRingHom _ (algebraMap F K)) := by
+  obtain ⟨y', hy'⟩ : y ∈ Set.range (AddMonoidAlgebra.mapRangeRingHom _ (algebraMap F K)) := by
     simp [((IsGalois.tfae (F := F) (E := K)).out 0 1).mp (by infer_instance),
       IntermediateField.mem_bot] at y_mem
     rwa [AddMonoidAlgebra.coe_mapRangeRingHom, Finsupp.range_mapRange]
@@ -331,28 +330,19 @@ theorem linearIndependent_exp_aux_rat {K S : Type*}
     (h : ∑ i : ι, algebraMap K S (v' i) * φ (.ofAdd (u' i)) = 0) :
     ∃ (f : K[K]), f ≠ 0 ∧ AddMonoidAlgebra.lift _ _ _ φ f = 0 := by
   classical
-  let f : K[K] :=
-    Finsupp.onFinset (image u' univ)
-      (fun x =>
-        if hx : x ∈ image u' univ then
-          v' (u'_inj.invOfMemRange ⟨x, mem_image_univ_iff_mem_range.mp hx⟩)
-        else 0)
-      fun x => by contrapose!; intro hx; rw [dif_neg hx]
+  let f : K[K] := Finsupp.indicator (image u' univ) (fun x _ => u'.extend v' (fun _ ↦ 0) x)
   refine ⟨f, ?_, ?_⟩
   · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0; push_neg at v0
     obtain ⟨i, hv'i⟩ := v0
     have h : f (u' i) ≠ 0 := by
-      rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne]
+      rwa [Finsupp.indicator_apply, dif_pos, u'_inj.extend_apply]
       exact mem_image_of_mem _ (mem_univ _)
     intro f0
     rw [f0, Finsupp.zero_apply] at h
     exact absurd rfl h
-  · rw [AddMonoidAlgebra.lift_apply, ← h, Finsupp.onFinset_sum _ fun a => _]; swap
-    · intro _; rw [zero_smul]
-    rw [sum_image, sum_congr rfl]; swap; · exact fun i _ j _ hij => u'_inj hij
-    intro x _
-    rw [dif_pos, u'_inj.right_inv_of_invOfMemRange, Algebra.smul_def]
-    exact mem_image_of_mem _ (mem_univ _)
+  · rw [AddMonoidAlgebra.lift_apply, ← h, Finsupp.sum_indicator_index _ (by simp),
+      sum_image (by simpa)]
+    simp [u'_inj.extend_apply, Algebra.smul_def]
 
 theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]
