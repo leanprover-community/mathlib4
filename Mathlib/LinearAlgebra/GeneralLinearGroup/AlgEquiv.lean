@@ -56,6 +56,7 @@ public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K 
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (LinearMap.ext <| this A).symm⟩
 
+variable (K V W) in
 public theorem LinearEquiv.conjAlgEquiv_surjective :
     Function.Surjective (conjAlgEquiv K (S := K) (M₁ := V) (M₂ := W)) :=
   fun f ↦ f.eq_linearEquivConjAlgEquiv.imp fun _ h ↦ h.symm
