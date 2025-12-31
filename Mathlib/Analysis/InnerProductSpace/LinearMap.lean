@@ -298,7 +298,9 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpac
 open ContinuousLinearMap
 
 variable (𝕜) in
-/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`. -/
+/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`.
+
+This is also sometimes referred to as an outer product of vectors on a Hilbert space. -/
 noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
   .flip <| .comp (.smulRightL 𝕜 _ _) (innerSL 𝕜)
 
