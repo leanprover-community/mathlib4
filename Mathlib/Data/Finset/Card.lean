@@ -574,11 +574,13 @@ theorem card_sdiff : #(t \ s) = #t - #(s ∩ t) := by
 
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : #(t \ s) + #s = #t := by grind
 
-theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) :=
+lemma card_sub_card_eq (s t : Finset α) : #t - #s = #(t \ s) - #(s \ t) :=
   calc
-    #t - #s ≤ #t - #(s ∩ t) := by grind
-    _ = #(t \ (s ∩ t)) := by grind
-    _ ≤ #(t \ s) := by grind
+    #t - #s = #t - #(s ∩ t) - #(s \ t) := by grind
+    _ = #(t \ (s ∩ t)) - #(s \ t) := by grind
+    _ = #(t \ s) - #(s \ t) := by grind
+
+theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) := by grind
 
 grind_pattern le_card_sdiff => #(t \ s), #t
 grind_pattern le_card_sdiff => #(t \ s), #s
