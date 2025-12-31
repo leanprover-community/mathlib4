@@ -431,9 +431,7 @@ theorem nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=
 theorem isUnit_nonsing_inv_det_iff {A : Matrix n n α} : IsUnit A⁻¹.det ↔ IsUnit A.det := by
   rw [Matrix.det_nonsing_inv, isUnit_ringInverse]
 
-@[simp]
-theorem isUnit_nonsing_inv_iff {A : Matrix n n α} : IsUnit A⁻¹ ↔ IsUnit A := by
-  simp_rw [isUnit_iff_isUnit_det, isUnit_nonsing_inv_det_iff]
+@[deprecated (since := "2025-12-31")] alias isUnit_nonsing_inv_iff := Ring.isUnit_inv_iff
 
 -- `IsUnit.invertible` lifts the proposition `IsUnit A` to a constructive inverse of `A`.
 /-- A version of `Matrix.invertibleOfDetInvertible` with the inverse defeq to `A⁻¹` that is
