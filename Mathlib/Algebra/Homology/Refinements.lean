@@ -22,13 +22,8 @@ in the file `Mathlib/CategoryTheory/Abelian/Refinements.lean`.
 
 open CategoryTheory
 
-<<<<<<< HEAD
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
-  (K L : HomologicalComplex C c) (φ : K ⟶ L)
-=======
 variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
-  (K : HomologicalComplex C c)
->>>>>>> origin/master
+  (K L : HomologicalComplex C c) (φ : K ⟶ L)
 
 namespace HomologicalComplex
 
@@ -41,7 +36,7 @@ lemma eq_liftCycles_homologyπ_up_to_refinements {A : C} {i : ι} (γ : A ⟶ K.
 
 lemma liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
     {A : C} {i : ι} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j) (hk : k ≫ K.d i j = 0)
-      (i' : ι) (hi' : c.prev i = i'):
+      (i' : ι) (hi' : c.prev i = i') :
     K.liftCycles k j hj hk ≫ K.homologyπ i = 0 ↔
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (l : A' ⟶ K.X i'), π ≫ k = l ≫ K.d i' i := by
   subst hi'
@@ -50,7 +45,7 @@ lemma liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
 lemma liftCycles_comp_homologyπ_eq_iff_up_to_refinements
     {A : C} {i : ι} (k k' : A ⟶ K.X i) (j : ι) (hj : c.next i = j) (hk : k ≫ K.d i j = 0)
       (hk' : k' ≫ K.d i j = 0)
-      (i' : ι) (hi' : c.prev i = i'):
+      (i' : ι) (hi' : c.prev i = i') :
     K.liftCycles k j hj hk ≫ K.homologyπ i = K.liftCycles k' j hj hk' ≫ K.homologyπ i ↔
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (l : A' ⟶ K.X i'), π ≫ k = π ≫ k' + l ≫ K.d i' i := by
   subst hi'

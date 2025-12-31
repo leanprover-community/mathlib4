@@ -270,14 +270,10 @@ instance {I : Type*} [AddMonoid I] (c : ComplexShape I) [c.TensorSigns] :
 
 end ComplexShape
 
-<<<<<<< HEAD
-def TotalComplexShape.symm [TotalComplexShape c₁ c₂ c₁₂] : TotalComplexShape c₂ c₁ c₁₂ where
-=======
 /-- The total complex shape for `c₂`, `c₁` and `c₁₂` that is deduced
 from a total complex shape for `c₁`, `c₂` and `c₁₂`. -/
 def TotalComplexShape.symm [TotalComplexShape c₁ c₂ c₁₂] :
     TotalComplexShape c₂ c₁ c₁₂ where
->>>>>>> origin/master
   π := fun ⟨i₂, i₁⟩ ↦ ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
   ε₁ := fun ⟨i₂, i₁⟩ ↦ ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩
   ε₂ := fun ⟨i₂, i₁⟩ ↦ ComplexShape.ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩
@@ -299,11 +295,8 @@ class TotalComplexShapeSymmetry [TotalComplexShape c₁ c₂ c₁₂] [TotalComp
   σ_ε₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
     σ i₁ i₂ * ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ComplexShape.ε₁ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ i₁ i₂'
 
-<<<<<<< HEAD
-=======
 /-- The symmetry between the total complex shape for `c₁`, `c₂` and `c₁₂`,
 and its symmetric total complex shape. -/
->>>>>>> origin/master
 def TotalComplexShape.symmSymmetry [TotalComplexShape c₁ c₂ c₁₂] :
     letI := TotalComplexShape.symm c₁ c₂ c₁₂
     TotalComplexShapeSymmetry c₁ c₂ c₁₂ :=

@@ -23,14 +23,14 @@ open HomComplex
 section
 
 variable [Preadditive C₁] [HasBinaryBiproducts C₁]
-  [HasZeroMorphisms C₂] [Preadditive D] [HasBinaryBiproducts D]
+  [Preadditive C₂] [HasBinaryBiproducts C₂] [Preadditive D] [HasBinaryBiproducts D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive]
-  [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms]
+  [∀ (X₁ : C₁), (F.obj X₁).Additive]
   [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F]
 
-noncomputable def bifunctorMapCochainComplexFlipObjMapMappingConeTriangleIso
+noncomputable def map₂CochainComplexFlipObjMapMappingConeTriangleIso
     {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) (K₂ : CochainComplex C₂ ℤ) :
-    (F.bifunctorMapCochainComplex.flip.obj K₂).mapTriangle.obj (mappingCone.triangle f) ≅
+    (F.map₂CochainComplex.flip.obj K₂).mapTriangle.obj (mappingCone.triangle f) ≅
       mappingCone.triangle (HomologicalComplex.mapBifunctorMap f (𝟙 K₂) F (.up ℤ)) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapBifunctorMappingCone₁Iso f K₂ F)
     (by simp) (by simp) (by
@@ -41,23 +41,13 @@ noncomputable def bifunctorMapCochainComplexFlipObjMapMappingConeTriangleIso
         Cochain.rightShift_v _ _ _ (zero_add 1) n n (add_zero n) _ rfl,
         mapBifunctorMappingCone₁Iso.hom,
         mapBifunctorMappingCone₁Iso.ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl,
-        bifunctorMapCochainComplex_flip_obj_commShiftIso_hom_app,
+        map₂CochainComplex_flip_obj_commShiftIso_hom_app,
         mapBifunctorShift₁Iso, HomologicalComplex₂.totalShift₁Iso,
         HomologicalComplex₂.totalShift₁XIso])
 
-end
-
-section
-
-variable [HasZeroMorphisms C₁]
-  [Preadditive C₂] [HasBinaryBiproducts C₂] [Preadditive D] [HasBinaryBiproducts D]
-  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms]
-  [∀ (X₁ : C₁), (F.obj X₁).Additive]
-  [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F]
-
 noncomputable def bifunctorMapCochainComplexObjMapMappingConeTriangleIso
     (K₁ : CochainComplex C₁ ℤ) {K₂ L₂ : CochainComplex C₂ ℤ} (f : K₂ ⟶ L₂) :
-    (F.bifunctorMapCochainComplex.obj K₁).mapTriangle.obj (mappingCone.triangle f) ≅
+    (F.map₂CochainComplex.obj K₁).mapTriangle.obj (mappingCone.triangle f) ≅
       mappingCone.triangle (HomologicalComplex.mapBifunctorMap (𝟙 K₁) f F (.up ℤ)) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapBifunctorMappingCone₂Iso K₁ f F)
     (by simp) (by simp) (by
@@ -68,7 +58,7 @@ noncomputable def bifunctorMapCochainComplexObjMapMappingConeTriangleIso
         Cochain.rightShift_v _ _ _ (zero_add 1) n n (add_zero n) _ rfl,
         mapBifunctorMappingCone₂Iso.hom,
         mapBifunctorMappingCone₂Iso.ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl,
-        bifunctorMapCochainComplex_obj_commShiftIso_hom_app,
+        map₂CochainComplex_obj_commShiftIso_hom_app,
         mapBifunctorShift₂Iso, HomologicalComplex₂.totalShift₂Iso,
         HomologicalComplex₂.totalShift₂XIso])
 
@@ -110,7 +100,7 @@ instance (K₂ : HomotopyCategory C₂ (.up ℤ)) [HasZeroObject C₁] [HasBinar
         (Functor.mapTriangleIso
           (F.quotientCompBifunctorMapHomotopyFlipObjIso (.up ℤ) (.up ℤ) (.up ℤ) K₂)).app _ ≪≫
         (Functor.mapTriangleCompIso _ _).app _  ≪≫ (quotient D (.up ℤ)).mapTriangle.mapIso
-        (CochainComplex.bifunctorMapCochainComplexFlipObjMapMappingConeTriangleIso F f K₂))
+        (CochainComplex.map₂CochainComplexFlipObjMapMappingConeTriangleIso F f K₂))
 
 end
 

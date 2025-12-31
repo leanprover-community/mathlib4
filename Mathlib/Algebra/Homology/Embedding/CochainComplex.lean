@@ -3,18 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
-import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-=======
 module
 
+public import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
+public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 public import Mathlib.Algebra.Homology.Embedding.AreComplementary
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
->>>>>>> origin/master
 
 /-!
 # Truncations on cochain complexes indexed by the integers.
@@ -376,7 +371,6 @@ end
 
 end Preadditive
 
-<<<<<<< HEAD
 section HasZeroMorphisms
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
@@ -411,8 +405,6 @@ lemma acyclic_truncGE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₂_iff]
 
 end HasZeroMorphisms
-=======
->>>>>>> origin/master
 
 section Abelian
 
@@ -434,24 +426,17 @@ noncomputable abbrev shortComplexTruncLEX₃ToTruncGE :
   HomologicalComplex.shortComplexTruncLEX₃ToTruncGE K
     (Embedding.embeddingUpInt_areComplementary n₀ n₁ h)
 
-<<<<<<< HEAD
 @[reassoc (attr := simp)]
-=======
-@[reassoc]
->>>>>>> origin/master
 lemma g_shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE n₀).g ≫ K.shortComplexTruncLEX₃ToTruncGE n₀ n₁ h = K.πTruncGE n₁ := by
   apply HomologicalComplex.g_shortComplexTruncLEX₃ToTruncGE
 
-<<<<<<< HEAD
 lemma acyclic_truncLE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (K.truncLE n₀).Acyclic ↔ K.IsGE n₁ := by
   dsimp [truncLE]
   rw [acyclic_truncLE_iff_isSupportedOutside,
     (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₁_iff K]
 
-=======
->>>>>>> origin/master
 end Abelian
 
 end CochainComplex

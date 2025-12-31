@@ -251,12 +251,11 @@ abbrev overMapPullback {X Y : C} (f : X ⟶ Y) :
     Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
   (Over.map f).sheafPushforwardContinuous _ _ _
 
-<<<<<<< HEAD
 @[simp]
 lemma overMapPullback_map_overPullback_map {A : Type u'} [Category.{v'} A] {X Y : C} (f : X ⟶ Y)
     {F G : Sheaf J A} (φ : F ⟶ G) :
     (J.overMapPullback A f).map ((J.overPullback A Y).map φ) = (J.overPullback A X).map φ := rfl
-=======
+
 section
 
 variable {X Y : C} {f g : X ⟶ Y} (h : f = g)
@@ -329,7 +328,6 @@ lemma overMapPullback_assoc {X Y Z T : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶
   cat_disch
 
 end
->>>>>>> origin/master
 
 end GrothendieckTopology
 

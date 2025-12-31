@@ -3,12 +3,16 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Opposites of left/right Kan extensions
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

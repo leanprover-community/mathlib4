@@ -3,14 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-=======
 module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
->>>>>>> origin/master
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Functors from a category to a category with a shift
@@ -274,7 +270,7 @@ lemma postcomp_shiftIso_hom_app' :
   dsimp at eq
   rw [← cancel_mono ((e.hom.hom a).app X), eq]
   simp only [Functor.comp_obj, postcomp_functor, postcomp_shiftIso_hom_app, assoc,
-    ← NatTrans.comp_app, inv_hom_id_hom, id_hom, NatTrans.id_app, comp_id]
+    ← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app, comp_id]
 
 /-- Variant of `postcomp_shiftIso_inv_app'`. -/
 lemma postcomp_shiftIso_inv_app' :

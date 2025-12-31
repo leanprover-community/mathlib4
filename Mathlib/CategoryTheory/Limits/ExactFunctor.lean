@@ -41,6 +41,9 @@ variable {C D} in
 lemma leftExactFunctor_iff (F : C ⥤ D) :
     leftExactFunctor C D F ↔ PreservesFiniteLimits F := Iff.rfl
 
+instance : (leftExactFunctor C D).IsClosedUnderIsomorphisms where
+  of_iso e (_ : PreservesFiniteLimits _) := preservesFiniteLimits_of_natIso e
+
 /-- Bundled left-exact functors. -/
 abbrev LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
 
@@ -63,6 +66,9 @@ variable {C D} in
 @[simp]
 lemma rightExactFunctor_iff (F : C ⥤ D) :
     rightExactFunctor C D F ↔ PreservesFiniteColimits F := Iff.rfl
+
+instance : (rightExactFunctor C D).IsClosedUnderIsomorphisms where
+  of_iso e (_ : PreservesFiniteColimits _) := preservesFiniteColimits_of_natIso e
 
 /-- Bundled right-exact functors. -/
 abbrev RightExactFunctor := (rightExactFunctor C D).FullSubcategory
@@ -104,6 +110,18 @@ lemma exactFunctor_le_leftExactFunctor :
 lemma exactFunctor_le_rightExactFunctor :
     exactFunctor C D ≤ rightExactFunctor C D :=
   fun _ h ↦ h.2
+
+variable {C D} in
+lemma exactFunctor.preservesFiniteLimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteLimits F := hF.1
+
+variable {C D} in
+lemma exactFunctor.preservesFiniteColimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteColimits F := hF.2
+
+instance : (exactFunctor (C := C) (D := D)).IsClosedUnderIsomorphisms := by
+  dsimp only [exactFunctor]
+  infer_instance
 
 /-- Turn an exact functor into a left exact functor. -/
 abbrev LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=

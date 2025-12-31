@@ -48,13 +48,9 @@ and construct (pointwise) derived functors using this notion
 
 -/
 
-<<<<<<< HEAD
-universe v₁ v₂ v₃ v₄ v₁' v₂' v₃' v₄' u₁ u₂ u₃ u₄ u₁' u₂' u₃' u₄'
-=======
 @[expose] public section
 
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
->>>>>>> origin/master
+universe v₁ v₂ v₃ v₄ v₁' v₂' v₃' v₄' u₁ u₂ u₃ u₄ u₁' u₂' u₃' u₄'
 
 namespace CategoryTheory
 

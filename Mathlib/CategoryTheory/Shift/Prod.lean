@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.CategoryTheory.Shift.Basic
+module
+
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # The shift on the product category
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -22,7 +26,7 @@ lemma Prod.eqToHom_fst {X Y : C₁ × C₂} (h : X = Y) :
   rfl
 
 @[simp]
-lemma Prod.eqToHom_snd {X Y : C₁ ×  C₂} (h : X = Y) :
+lemma Prod.eqToHom_snd {X Y : C₁ × C₂} (h : X = Y) :
     (eqToHom h).2 = eqToHom (by rw [h]) := by
   subst h
   rfl

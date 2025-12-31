@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Bifunctor
-import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+module
+
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 
 /-!
 # Action of bifunctor on mapping cones
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits HomologicalComplex
 
@@ -72,8 +76,7 @@ lemma ι₁_p₁₀ : (ι₁ φ K₂ F).comp (p₁₀ φ K₂ F) (neg_add_cancel
   simp [Cochain.comp_v _ _ (neg_add_cancel 1) n (n - 1) n (by omega) (by omega),
     ι_ι₁_assoc _ _ _ p q n hpq (n - 1) (by omega) (p - 1) (by omega),
     ι_p₁₀_v _ _ _ (p - 1) q (n - 1) (by omega) n (by omega) p (by omega),
-    ← Functor.map_comp, ← Functor.map_comp_assoc,
-    ← NatTrans.comp_app_assoc, ← NatTrans.comp_app,]
+    ← Functor.map_comp, ← NatTrans.comp_app_assoc]
 
 @[simp]
 lemma inr_p₁₀ [HasMapBifunctor L₁ K₂ F (ComplexShape.up ℤ)] :
@@ -81,8 +84,8 @@ lemma inr_p₁₀ [HasMapBifunctor L₁ K₂ F (ComplexShape.up ℤ)] :
     (p₁₀ φ K₂ F) (zero_add 1) = 0 := by
   ext n _ rfl p q hpq
   dsimp at hpq
-  simp [ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl, ← Functor.map_comp, ← Functor.map_comp_assoc,
-      ← NatTrans.comp_app_assoc, ← NatTrans.comp_app]
+  simp [ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl, ← Functor.map_comp,
+      ← NatTrans.comp_app_assoc]
 
 @[simps!]
 noncomputable def p₁ : Cocycle (mapBifunctor (mappingCone φ) K₂ F (.up ℤ))
@@ -102,8 +105,7 @@ noncomputable def p₁ : Cocycle (mapBifunctor (mappingCone φ) K₂ F (.up ℤ)
       mapBifunctor.d₂_eq K₁ K₂ F (.up ℤ) (p + 1) h₂ (n + 2) (by dsimp; omega),
       mapBifunctor.d₁_eq (mappingCone φ) K₂ F (.up ℤ) h₃ q (n + 1) (by dsimp; omega),
       mapBifunctor.d₂_eq (mappingCone φ) K₂ F (.up ℤ) p h₂ (n + 1) (by dsimp; omega),
-      Int.negOnePow_succ, ← Functor.map_comp, ← Functor.map_comp_assoc,
-      ← NatTrans.comp_app_assoc, ← NatTrans.comp_app,
+      Int.negOnePow_succ, ← Functor.map_comp, ← NatTrans.comp_app_assoc,
       d_fst_v φ p (p + 1) (p + 2) rfl (by omega)]
     abel)
 
@@ -131,8 +133,7 @@ lemma inr_p₂ : (Cochain.ofHom (mapBifunctorMap (inr φ) (𝟙 K₂) F (.up ℤ
     (p₂ φ K₂ F) (zero_add 0) = Cochain.ofHom (𝟙 _) := by
   ext n p q hpq
   dsimp at hpq
-  simp [← Functor.map_comp, ← Functor.map_comp_assoc,
-    ← NatTrans.comp_app_assoc, ← NatTrans.comp_app]
+  simp [← Functor.map_comp, ← NatTrans.comp_app_assoc]
 
 @[simp]
 lemma ι₁_p₂ [HasMapBifunctor K₁ K₂ F (ComplexShape.up ℤ)] :
@@ -141,8 +142,7 @@ lemma ι₁_p₂ [HasMapBifunctor K₁ K₂ F (ComplexShape.up ℤ)] :
   obtain rfl : m = n - 1 := by omega
   dsimp at hpq
   simp [ι_ι₁_assoc _ _ _ p q n hpq (n - 1) (by omega) (p - 1) (by omega),
-    ← Functor.map_comp, ← Functor.map_comp_assoc,
-    ← NatTrans.comp_app_assoc, ← NatTrans.comp_app]
+    ← Functor.map_comp, ← NatTrans.comp_app_assoc]
 
 end
 
@@ -162,8 +162,7 @@ noncomputable def hom : mapBifunctor (mappingCone φ) K₂ F (.up ℤ) ⟶
       mapBifunctor.d₂_eq (mappingCone φ) K₂ F (.up ℤ) p h₁ (n + 1) (by dsimp; omega),
       mapBifunctor.d₁_eq L₁ K₂ F (.up ℤ) h₂ q (n + 1) (by dsimp; omega),
       mapBifunctor.d₂_eq L₁ K₂ F (.up ℤ) p h₁ (n + 1) (by dsimp; omega),
-      ← Functor.map_comp, ← Functor.map_comp_assoc,
-      ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, d_snd_v])
+      ← Functor.map_comp, ← NatTrans.comp_app_assoc, d_snd_v])
 
 noncomputable def inv :
     mappingCone (mapBifunctorMap φ (𝟙 K₂) F (.up ℤ)) ⟶
@@ -183,8 +182,7 @@ noncomputable def inv :
       ι_ι₁ _ _ _ (p + 1) q (n + 1) (by omega) n (by omega) p (by omega),
       ι_ι₁ _ _ _ p (q + 1) (n + 1) (by omega) n (by omega) (p - 1) (by omega),
       Int.negOnePow_sub, inl_v_d φ p (p - 1) (p + 1) (by omega) (by omega),
-      ← Functor.map_comp, ← Functor.map_comp_assoc,
-      ← NatTrans.comp_app_assoc, ← NatTrans.comp_app]
+      ← Functor.map_comp, ← NatTrans.comp_app_assoc, ]
     abel)
 
 @[reassoc (attr := simp)]
@@ -229,7 +227,7 @@ lemma inv_hom_id : inv φ K₂ F ≫ hom φ K₂ F = 𝟙 _ := by
     mappingCone.ext_cochain_to_iff _ (-1) 0 (neg_add_cancel 1)]
   dsimp
   simp only [Cochain.ofHom_comp, Cochain.comp_assoc_of_second_is_zero_cochain,
-    Cochain.comp_assoc_of_first_is_zero_cochain, hom_fst, Cochain.comp_id, inl_fst, hom_snd,
+    hom_fst, Cochain.comp_id, inl_fst, hom_snd,
     inl_snd, inr_fst, inr_snd]
   simp only [← Cochain.comp_assoc_of_second_is_zero_cochain, ← Cochain.ofHom_comp,
     inl_inv, inr_inv, inr_p₁₀, inr_p₂, ι₁_p₁₀, ι₁_p₂, and_self]
@@ -318,8 +316,7 @@ lemma ι₁_p₁₀ : (ι₁ K₁ φ F).comp (p₁₀ K₁ φ F) (neg_add_cancel
   simp [Cochain.comp_v _ _ (neg_add_cancel 1) n (n - 1) n (by omega) (by omega),
     ι_ι₁_assoc _ _ _ p q n hpq (n - 1) (by omega) (q - 1) (by omega),
     ι_p₁₀_v _ _ _ p (q - 1) (n - 1) (by omega) n (by omega) q (by omega),
-    ← Functor.map_comp, ← Functor.map_comp_assoc,
-    ← NatTrans.comp_app_assoc, ← NatTrans.comp_app, smul_smul]
+    ← Functor.map_comp_assoc, smul_smul]
 
 @[simp]
 lemma inr_p₁₀ [HasMapBifunctor K₁ L₂ F (ComplexShape.up ℤ)] :
@@ -327,8 +324,7 @@ lemma inr_p₁₀ [HasMapBifunctor K₁ L₂ F (ComplexShape.up ℤ)] :
     (p₁₀ K₁ φ F) (zero_add 1) = 0 := by
   ext n _ rfl p q hpq
   dsimp at hpq
-  simp [ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl, ← Functor.map_comp, ← Functor.map_comp_assoc,
-      ← NatTrans.comp_app_assoc, ← NatTrans.comp_app]
+  simp [ι_p₁₀_v _ _ _ p q n hpq _ rfl _ rfl, ← Functor.map_comp_assoc]
 
 @[simps!]
 noncomputable def p₁ : Cocycle (mapBifunctor K₁ (mappingCone φ) F (.up ℤ))
@@ -348,7 +344,7 @@ noncomputable def p₁ : Cocycle (mapBifunctor K₁ (mappingCone φ) F (.up ℤ)
       mapBifunctor.d₂_eq K₁ K₂ F (.up ℤ) p h₁ (n + 2) (by dsimp; omega),
       mapBifunctor.d₂_eq K₁ (mappingCone φ) F (.up ℤ) p h₃ (n + 1) (by dsimp; omega),
       mapBifunctor.d₁_eq K₁ (mappingCone φ) F (.up ℤ) h₂ q (n + 1) (by dsimp; omega),
-      ← Functor.map_comp, ← Functor.map_comp_assoc,
+      -Functor.map_comp, ← Functor.map_comp_assoc,
       d_fst_v φ q (q + 1) (q + 2) rfl (by omega), smul_smul,
       Int.negOnePow_succ]
     abel)
@@ -376,9 +372,7 @@ lemma ι_p₂_v (p q n : ℤ) (hpq : p + q = n) :
 lemma inr_p₂ : (Cochain.ofHom (mapBifunctorMap (𝟙 K₁) (inr φ) F (.up ℤ))).comp
     (p₂ K₁ φ F) (zero_add 0) = Cochain.ofHom (𝟙 _) := by
   ext n p q hpq
-  dsimp at hpq
-  simp [← Functor.map_comp, ← Functor.map_comp_assoc,
-    ← NatTrans.comp_app_assoc, ← NatTrans.comp_app]
+  simp [← Functor.map_comp_assoc]
 
 @[simp]
 lemma ι₁_p₂ [HasMapBifunctor K₁ K₂ F (ComplexShape.up ℤ)] :
@@ -387,8 +381,7 @@ lemma ι₁_p₂ [HasMapBifunctor K₁ K₂ F (ComplexShape.up ℤ)] :
   obtain rfl : m = n - 1 := by omega
   dsimp at hpq
   simp [ι_ι₁_assoc _ _ _ p q n hpq (n - 1) (by omega) (q - 1) (by omega),
-    ← Functor.map_comp, ← Functor.map_comp_assoc,
-    ← NatTrans.comp_app_assoc, ← NatTrans.comp_app]
+    ← Functor.map_comp_assoc]
 
 end
 
@@ -408,7 +401,7 @@ noncomputable def hom : mapBifunctor K₁ (mappingCone φ) F (.up ℤ) ⟶
       mapBifunctor.d₁_eq K₁ (mappingCone φ) F (.up ℤ) h₁ q (n + 1) (by dsimp; omega),
       mapBifunctor.d₂_eq K₁ L₂ F (.up ℤ) p h₂ (n + 1) (by dsimp; omega),
       mapBifunctor.d₁_eq K₁ L₂ F (.up ℤ) h₁ q (n + 1) (by dsimp; omega),
-      ← Functor.map_comp, ← Functor.map_comp_assoc, d_snd_v])
+      -Functor.map_comp, ← Functor.map_comp_assoc, d_snd_v])
 
 noncomputable def inv :
     mappingCone (mapBifunctorMap (𝟙 K₁) φ F (.up ℤ)) ⟶
@@ -429,7 +422,7 @@ noncomputable def inv :
       mapBifunctor.d₂_eq K₁ (mappingCone φ) F (.up ℤ) p h₃ n (by dsimp; omega),
       mapBifunctor.d₁_eq K₁ (mappingCone φ) F (.up ℤ) h₂ (q - 1) n (by dsimp; omega),
       inl_v_d φ q (q - 1) (q + 1) (by omega) (by omega),
-      smul_smul, ← Functor.map_comp, ← Functor.map_comp_assoc,
+      smul_smul, -Functor.map_comp, ← Functor.map_comp_assoc,
       Int.negOnePow_succ]
     abel)
 

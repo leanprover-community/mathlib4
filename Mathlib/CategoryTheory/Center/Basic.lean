@@ -46,13 +46,8 @@ lemma ext (x y : CatCenter C) (h : ∀ (X : C), x.app X = y.app X) : x = y :=
   NatTrans.ext (funext h)
 
 @[reassoc]
-<<<<<<< HEAD
-nonrec lemma naturality (z : CatCenter C) {X Y : C} (f : X ⟶ Y) :
-    f ≫ z.app Y = z.app X ≫ f := z.naturality f
-=======
 lemma naturality (z : CatCenter C) {X Y : C} (f : X ⟶ Y) :
     f ≫ z.app Y = z.app X ≫ f := NatTrans.naturality z f
->>>>>>> origin/master
 
 @[reassoc]
 lemma mul_app' (x y : CatCenter C) (X : C) : (x * y).app X = y.app X ≫ x.app X := rfl

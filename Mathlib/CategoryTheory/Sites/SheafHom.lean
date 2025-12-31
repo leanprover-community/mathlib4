@@ -5,13 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Sites.Over
-import Mathlib.CategoryTheory.Sites.CoversTop
-import Mathlib.CategoryTheory.JointlyReflect.Isomorphisms
-=======
 public import Mathlib.CategoryTheory.Sites.Over
->>>>>>> origin/master
+public import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.CategoryTheory.JointlyReflect.Isomorphisms
 
 /-! Internal hom of sheaves
 

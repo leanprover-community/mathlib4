@@ -5,12 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
-import Mathlib.Algebra.Homology.SingleHomology
-=======
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
->>>>>>> origin/master
+public import Mathlib.Algebra.Homology.SingleHomology
 
 /-!
 # The homology sequence

@@ -93,12 +93,7 @@ variable {Φ} {X₂ : C₂}
 structure Hom (R R' : Φ.RightResolution X₂) where
   /-- a morphism in the source category -/
   f : R.X₁ ⟶ R'.X₁
-<<<<<<< HEAD
-  --hf : W₁ f
-  comm : R.w ≫ Φ.functor.map f = R'.w := by aesop_cat
-=======
   comm : R.w ≫ Φ.functor.map f = R'.w := by cat_disch
->>>>>>> origin/master
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -106,10 +101,6 @@ attribute [reassoc (attr := simp)] Hom.comm
 @[simps]
 def Hom.id (R : Φ.RightResolution X₂) : Hom R R where
   f := 𝟙 _
-<<<<<<< HEAD
-  --hf := W₁.id_mem _
-=======
->>>>>>> origin/master
 
 /-- The composition of morphisms in `Φ.RightResolution X₂`. -/
 @[simps]
@@ -117,10 +108,6 @@ def Hom.comp {R R' R'' : Φ.RightResolution X₂}
     (φ : Hom R R') (ψ : Hom R' R'') :
     Hom R R'' where
   f := φ.f ≫ ψ.f
-<<<<<<< HEAD
-  --hf := W₁.comp_mem _ _ φ.hf ψ.hf
-=======
->>>>>>> origin/master
 
 instance : Category (Φ.RightResolution X₂) where
   Hom := Hom
@@ -163,12 +150,7 @@ variable {Φ} {X₂ : C₂}
 structure Hom (L L' : Φ.LeftResolution X₂) where
   /-- a morphism in the source category -/
   f : L.X₁ ⟶ L'.X₁
-<<<<<<< HEAD
-  --hf : W₁ f
-  comm : Φ.functor.map f ≫ L'.w = L.w := by aesop_cat
-=======
   comm : Φ.functor.map f ≫ L'.w = L.w := by cat_disch
->>>>>>> origin/master
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -176,10 +158,6 @@ attribute [reassoc (attr := simp)] Hom.comm
 @[simps]
 def Hom.id (L : Φ.LeftResolution X₂) : Hom L L where
   f := 𝟙 _
-<<<<<<< HEAD
-  --hf := W₁.id_mem _
-=======
->>>>>>> origin/master
 
 /-- The composition of morphisms in `Φ.LeftResolution X₂`. -/
 @[simps]
@@ -187,10 +165,6 @@ def Hom.comp {L L' L'' : Φ.LeftResolution X₂}
     (φ : Hom L L') (ψ : Hom L' L'') :
     Hom L L'' where
   f := φ.f ≫ ψ.f
-<<<<<<< HEAD
-  --hf := W₁.comp_mem _ _ φ.hf ψ.hf
-=======
->>>>>>> origin/master
 
 instance : Category (Φ.LeftResolution X₂) where
   Hom := Hom
@@ -313,10 +287,6 @@ def LeftResolution.opFunctor (X₂ : C₂) :
   obj L := L.unop.op
   map φ :=
     { f := φ.unop.f.op
-<<<<<<< HEAD
-      --hf := φ.unop.hf
-=======
->>>>>>> origin/master
       comm := Quiver.Hom.unop_inj φ.unop.comm }
 
 /-- The functor `(Φ.op.RightResolution X₂)ᵒᵖ ⥤ Φ.LeftResolution X₂.unop`. -/
@@ -326,10 +296,6 @@ def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
   obj R := R.unop.unop
   map φ :=
     { f := φ.unop.f.unop
-<<<<<<< HEAD
-      --hf := φ.unop.hf
-=======
->>>>>>> origin/master
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
 /-- The equivalence of categories

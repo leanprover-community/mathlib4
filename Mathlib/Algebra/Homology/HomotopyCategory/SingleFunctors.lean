@@ -79,9 +79,7 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
-<<<<<<< HEAD
-variable {C}
-
+variable {C} in
 lemma singleFunctors_shiftIso_hom_app_f
     (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
     (((singleFunctors C).shiftIso n a a' ha').hom.app X).f i =
@@ -90,6 +88,7 @@ lemma singleFunctors_shiftIso_hom_app_f
   dsimp [singleObjXIsoOfEq, singleFunctors]
   rw [eqToHom_trans]
 
+variable {C} in
 lemma singleFunctors_shiftIso_inv_app_f
     (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
     (((singleFunctors C).shiftIso n a a' ha').inv.app X).f i =
@@ -97,12 +96,11 @@ lemma singleFunctors_shiftIso_inv_app_f
       (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).inv := by
   dsimp [singleObjXIsoOfEq, singleFunctors]
   rw [eqToHom_trans]
-=======
+
 variable {C} in
 @[simp]
 lemma singleFunctor_obj_d (X : C) (n p q : ℤ) :
     ((singleFunctor C n).obj X).d p q = 0 := rfl
->>>>>>> origin/master
 
 instance (n : ℤ) : (singleFunctor C n).Full :=
   inferInstanceAs (single _ _ _).Full
@@ -129,8 +127,6 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
   infer_instance
 
-<<<<<<< HEAD
-=======
 -- The object level definitional equality underlying `singleFunctorsPostcompQuotientIso`.
 @[simp] theorem quotient_obj_singleFunctors_obj (n : ℤ) (X : C) :
     (HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj
@@ -138,7 +134,6 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
         (HomotopyCategory.singleFunctor C n).obj X :=
   rfl
 
->>>>>>> origin/master
 instance (R : Type*) [Ring R] [Linear R C] (n : ℤ) :
     Functor.Linear R (HomotopyCategory.singleFunctor C n) :=
   inferInstanceAs (Functor.Linear R (CochainComplex.singleFunctor C n ⋙

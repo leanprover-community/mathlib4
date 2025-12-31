@@ -309,74 +309,14 @@ end HomologicalComplex
 
 namespace CategoryTheory.Functor
 
-<<<<<<< HEAD
 open HomologicalComplex
 
 section
 
-variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
-  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
-  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
-  (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [DecidableEq J]
-  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
-
-@[simps]
-noncomputable def bifunctorMapHomologicalComplex :
-    HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex D c where
-  obj K₁ :=
-    { obj K₂ := mapBifunctor K₁ K₂ F c
-      map f₂ := mapBifunctorMap (𝟙 K₁) f₂ F c
-      map_id _ := by ext; dsimp; simp
-      map_comp _ _ := by ext; dsimp; simp }
-  map f₁ :=
-    { app K₂ := mapBifunctorMap f₁ (𝟙 K₂) F c
-      naturality _ _ _ := by ext; dsimp; simp }
-  map_id _ := by ext; dsimp; simp
-  map_comp _ _ := by ext; dsimp; simp
-
-noncomputable abbrev bifunctorMapCochainComplex
-  [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)] :
-    CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ :=
-  bifunctorMapHomologicalComplex F _ _ _
-
-end
-
-section
-
-variable [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
-  (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
-  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
-  (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [DecidableEq J]
-  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
-
-instance : (bifunctorMapHomologicalComplex F c₁ c₂ c).Additive where
-
-instance (K₂ : HomologicalComplex C₂ c₂) :
-    ((bifunctorMapHomologicalComplex F c₁ c₂ c).flip.obj K₂).Additive where
-
-end
-
-section
-
-variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
-  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).Additive]
-  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
-  (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [DecidableEq J]
-  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
-
-instance : (bifunctorMapHomologicalComplex F c₁ c₂ c).flip.Additive where
-
-instance (K₁ : HomologicalComplex C₁ c₁) :
-    ((bifunctorMapHomologicalComplex F c₁ c₂ c).obj K₁).Additive where
-
-end
-=======
 variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
   {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c : ComplexShape J)
   [DecidableEq J] [TotalComplexShape c₁ c₂ c]
-
-open HomologicalComplex
 
 /-- The bifunctor on homological complexes that is induced by a bifunctor. -/
 @[simps]
@@ -394,6 +334,42 @@ noncomputable abbrev map₂CochainComplex
     [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)] :
     CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ :=
   F.map₂HomologicalComplex _ _ _
->>>>>>> origin/master
+
+@[deprecated (since := "2025-12-31")] alias bifunctorMapHomologicalComplex :=
+  map₂HomologicalComplex
+@[deprecated (since := "2025-12-31")] alias bifunctorMapCochainComplex :=
+  map₂CochainComplex
+
+end
+
+section
+
+variable [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c : ComplexShape J)
+  [DecidableEq J] [TotalComplexShape c₁ c₂ c]
+  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
+
+instance : (map₂HomologicalComplex F c₁ c₂ c).Additive where
+
+instance (K₂ : HomologicalComplex C₂ c₂) :
+    ((map₂HomologicalComplex F c₁ c₂ c).flip.obj K₂).Additive where
+
+end
+
+section
+
+variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).Additive]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
+  (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [DecidableEq J]
+  [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂), HasMapBifunctor K₁ K₂ F c]
+
+instance : (map₂HomologicalComplex F c₁ c₂ c).flip.Additive where
+
+instance (K₁ : HomologicalComplex C₁ c₁) :
+    ((map₂HomologicalComplex F c₁ c₂ c).obj K₁).Additive where
+
+end
 
 end CategoryTheory.Functor

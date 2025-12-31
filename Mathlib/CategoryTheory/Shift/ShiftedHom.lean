@@ -3,17 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-=======
 module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
->>>>>>> origin/master
 
 /-! Shifted morphisms
 
@@ -228,34 +222,6 @@ variable [Preadditive D] [Linear R D]
 lemma map_smul (r : R) {a : M} (α : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] [F.Linear R] :
     (r • α).map F = r • (α.map F) := by
   simp [ShiftedHom.map, F.map_smul]
-
-end Linear
-
-section Linear
-
-variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]
-
-instance (X Y : C) (n : M) : Module R (ShiftedHom X Y n) := by
-  dsimp only [ShiftedHom]
-  infer_instance
-
-@[simp]
-lemma comp_smul [∀ (a : M), (shiftFunctor C a).Additive]
-    [∀ (a : M), Functor.Linear R (shiftFunctor C a)]
-    (r : R) {a b c : M} (α : ShiftedHom X Y a) (β : ShiftedHom Y Z b) (h : b + a = c) :
-    α.comp (r • β) h = r • α.comp β h := by
-  rw [comp, Functor.map_smul, comp, Linear.smul_comp, Linear.comp_smul]
-
-@[simp]
-lemma smul_comp
-    (r : R) {a b c : M} (α : ShiftedHom X Y a) (β : ShiftedHom Y Z b) (h : b + a = c) :
-    (r • α).comp β h = r • α.comp β h := by
-  rw [comp, comp, Linear.smul_comp]
-
-@[simp]
-lemma mk₀_smul (m₀ : M) (hm₀ : m₀ = 0) (r : R) {f : X ⟶ Y} :
-    mk₀ m₀ hm₀ (r • f) = r • mk₀ m₀ hm₀ f := by
-  simp [mk₀]
 
 end Linear
 

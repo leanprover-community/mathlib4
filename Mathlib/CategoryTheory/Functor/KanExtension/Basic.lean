@@ -3,18 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
---import Mathlib.CategoryTheory.Comma.Extra
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-=======
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
->>>>>>> origin/master
 
 /-!
 # Kan extensions
@@ -47,13 +40,8 @@ open Category Limits Functor
 
 namespace Functor
 
-<<<<<<< HEAD
 variable {C C' D D' H H' : Type*} [Category C] [Category D] [Category H] [Category H']
   [Category D'] [Category C']
-=======
-variable {C C' H D D' : Type*}
-  [Category* C] [Category* C'] [Category* H] [Category* D] [Category* D']
->>>>>>> origin/master
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : D ⥤ H` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -642,7 +630,6 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
 
 end
 
-<<<<<<< HEAD
 section
 
 variable {L₁ L₂ : C ⥤ H} {F₁ F₂ : C ⥤ D}
@@ -706,7 +693,7 @@ lemma isRightKanExtension_iff_of_iso₃
   · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
 
 end
-=======
+
 section transitivity
 
 /-- A variant of `LeftExtension.precomp` where we precompose, and then
@@ -849,7 +836,6 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
     exact IsInitial.ofIso h i
 
 end transitivity
->>>>>>> origin/master
 
 section Colimit
 
@@ -1006,10 +992,10 @@ namespace Equivalence
 variable {C D : Type*} [Category C] [Category D] (e : C ≌ D)
 
 def whiskeringLeft (E : Type _) [Category E] : (D ⥤ E) ≌ (C ⥤ E) where
-  functor := (CategoryTheory.whiskeringLeft C D E).obj e.functor
-  inverse := (CategoryTheory.whiskeringLeft D C E).obj e.inverse
-  unitIso := (CategoryTheory.whiskeringLeft D D E).mapIso e.counitIso.symm
-  counitIso := (CategoryTheory.whiskeringLeft C C E).mapIso e.unitIso.symm
+  functor := (Functor.whiskeringLeft C D E).obj e.functor
+  inverse := (Functor.whiskeringLeft D C E).obj e.inverse
+  unitIso := (Functor.whiskeringLeft D D E).mapIso e.counitIso.symm
+  counitIso := (Functor.whiskeringLeft C C E).mapIso e.unitIso.symm
   functor_unitIso_comp F := by
     ext Y
     dsimp

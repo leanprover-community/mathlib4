@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
-import Mathlib.CategoryTheory.Functor.KanExtension.Opposite
-import Mathlib.CategoryTheory.Localization.Opposite
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+public import Mathlib.CategoryTheory.Functor.KanExtension.Opposite
+public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Left and right derived functors and opposite categories
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

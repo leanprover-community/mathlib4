@@ -3,17 +3,21 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Localization
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Homology.DoubleHomology
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+module
+
+public import Mathlib.Algebra.Homology.Localization
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.DoubleHomology
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 
 /-!
 # Exact functors preserves quasi-isomorphisms
 
 -/
+
+@[expose] public section
 
 section
 
@@ -147,10 +151,10 @@ lemma exactFunctor_iff_preservesQuasiIso {C D : Type*} [Category C]
     [Category D] [Abelian C] [Abelian D] (F : C ⥤ D) [F.Additive]
     {ι : Type*} (c : ComplexShape ι)
     {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁) (hi₀₁' : i₀ ≠ i₁) :
-    ObjectProperty.exactFunctor F ↔
+    exactFunctor _ _ F ↔
       HomologicalComplex.preservesQuasiIso (F.mapHomologicalComplex c) := by
   rw [preservesQuasiIso_mapHomologicalComplex_iff _ c hi₀₁ hi₀₁',
-    ObjectProperty.exactFunctor]
+    exactFunctor_iff]
   exact ⟨fun ⟨_, _⟩ ↦ inferInstance,
     fun _ ↦ ⟨preservesFiniteLimits_of_preservesHomology _,
       preservesFiniteColimits_of_preservesHomology _⟩⟩

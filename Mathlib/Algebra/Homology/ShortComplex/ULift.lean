@@ -16,7 +16,7 @@ universe v v'
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 lemma isZero (X : Ab) (hX : ∀ (x : X), x = 0) :
     CategoryTheory.Limits.IsZero X := by
@@ -149,4 +149,4 @@ def arrow₂IsoMk : S ≅ S' :=
 
 end
 
-end AddCommGrp
+end AddCommGrpCat

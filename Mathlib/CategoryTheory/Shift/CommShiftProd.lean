@@ -3,12 +3,16 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.Algebra.Group.Prod
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.Algebra.Group.Prod
 
 /-!
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -31,9 +35,9 @@ noncomputable def mkProd
       isoAdd' (c := (m₁, m₂)) (by aesop) (iso₁ m₁) (iso₂ m₂) =
         isoAdd' (by aesop) (iso₂ m₂) (iso₁ m₁)) :
     F.CommShift (M₁ × M₂) where
-  iso m := isoAdd' (by aesop) (iso₁ m.1) (iso₂ m.2)
-  zero := by simp [zero₁, zero₂, isoAdd'_isoZero]
-  add := by
+  commShiftIso m := isoAdd' (by aesop) (iso₁ m.1) (iso₂ m.2)
+  commShiftIso_zero := by simp [zero₁, zero₂, isoAdd'_isoZero]
+  commShiftIso_add := by
     rintro ⟨m₁, m₂⟩ ⟨m₁', m₂'⟩
     dsimp
     rw [add₁, add₂, isoAdd'_assoc (bc := (m₁', m₂ + m₂'))

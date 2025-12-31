@@ -3,17 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Center.Preadditive
-=======
 module
 
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Center.Preadditive
->>>>>>> origin/master
 
 /-!
 # Center of a linear category
@@ -48,11 +42,7 @@ def toCatCenter [Linear R C] : R →+* CatCenter C where
     dsimp only [CatCenter.mul_app']
     rw [Linear.smul_comp, Linear.comp_smul, smul_smul]
     simp
-<<<<<<< HEAD
-  map_zero' := by aesop_cat
-=======
   map_zero' := by cat_disch
->>>>>>> origin/master
   map_add' a b := by ext X; simp [add_smul]
 
 section

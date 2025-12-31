@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Families of functors which jointly reflect isomorphisms
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -42,7 +46,7 @@ lemma isIso_iff {X Y : C} (f : X ⟶ Y) : IsIso f ↔ ∀ i, IsIso ((F i).map f)
 
 include h in
 lemma mono {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Mono ((F i).map f)]
-    [∀ i,  PreservesLimit (cospan f f) (F i)] [HasPullback f f] : Mono f := by
+    [∀ i, PreservesLimit (cospan f f) (F i)] [HasPullback f f] : Mono f := by
   have hc := pullbackIsPullback f f
   rw [mono_iff_isIso_fst hc, h.isIso_iff]
   intro i
@@ -57,7 +61,7 @@ lemma jointlyReflectMonomorphisms [∀ i, PreservesLimitsOfShape WalkingCospan (
 
 include h in
 lemma epi {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Epi ((F i).map f)]
-    [∀ i,  PreservesColimit (span f f) (F i)] [HasPushout f f] : Epi f := by
+    [∀ i, PreservesColimit (span f f) (F i)] [HasPushout f f] : Epi f := by
   have hc := pushoutIsPushout f f
   rw [epi_iff_isIso_inl hc, h.isIso_iff]
   intro i

@@ -156,7 +156,8 @@ noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X)
 @[simps!]
 noncomputable def mapBifunctorMapIso
     [∀ (j : K), HasColimitsOfShape (Discrete ↑(p ⁻¹' {j})) C₃] :
-    mapBifunctorMap F p ≅ mapBifunctor F I J ⋙ (whiskeringRight _ _ _).obj (map C₃ p) :=
+    mapBifunctorMap F p ≅
+      mapBifunctor F I J ⋙ (Functor.whiskeringRight _ _ _).obj (map C₃ p) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ Iso.refl _))
 
 end

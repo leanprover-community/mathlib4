@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
-import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
-import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
+module
+
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
+public import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 
 /-!
 # Truncations for a t-structure
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -3,20 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.Algebra.Homology.ShortComplex.Refinements
-import Mathlib.Tactic.Linarith
-=======
 module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.Algebra.Homology.ShortComplex.Refinements
 public import Mathlib.Tactic.Linarith
->>>>>>> origin/master
 
 /-!
 # The short complexes attached to homological complexes
@@ -32,13 +25,9 @@ abbreviated as `K.sc i`.
 
 -/
 
-<<<<<<< HEAD
-open CategoryTheory Category Limits ZeroObject
-=======
 @[expose] public section
 
 open CategoryTheory Category Limits
->>>>>>> origin/master
 
 namespace HomologicalComplex
 
@@ -640,7 +629,7 @@ lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (i j : ι) (hj : c.next i =
   subst hj
   exact ShortComplex.isIso_homologyMap_of_isIso_opcyclesMap_of_mono h₁ h₂
 
-lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i]:
+lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i] :
     IsZero (K.homology i) :=
   ShortComplex.isZero_homology_of_isZero_X₂ _ (by exact hi)
 
@@ -885,7 +874,6 @@ end ChainComplex
 
 namespace HomologicalComplex
 
-<<<<<<< HEAD
 variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
   (K : HomologicalComplex C c)
 
@@ -908,9 +896,6 @@ end HomologicalComplex
 namespace HomologicalComplex
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
-=======
-variable {C : Type*} [Category* C] [HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
->>>>>>> origin/master
   (K : HomologicalComplex C c)
   (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   [K.HasHomology j] [(K.sc' i j k).HasHomology]

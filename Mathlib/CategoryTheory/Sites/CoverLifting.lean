@@ -89,7 +89,7 @@ theorem Functor.isCocontinuous_comp (J : GrothendieckTopology C)
     (G ⋙ G').IsCocontinuous J L where
   cover_lift h := G.cover_lift J K (G'.cover_lift K L h)
 
-lemma Functor.isCocontinuous_of_iso {G : C ⥤ D}  {G' : C ⥤ D} (e : G ≅ G')
+lemma Functor.isCocontinuous_of_iso {G : C ⥤ D} {G' : C ⥤ D} (e : G ≅ G')
     (J : GrothendieckTopology C) (K : GrothendieckTopology D) [hG : G.IsCocontinuous J K] :
     G'.IsCocontinuous J K where
   cover_lift {U S} hS := by

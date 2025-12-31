@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 -/
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits Functor
 
 namespace CochainComplex
 

@@ -71,18 +71,11 @@ lemma mapBifunctorFlipIso_flip
     mapBifunctorFlipIso K₂ K₁ F.flip c = (mapBifunctorFlipIso K₁ K₂ F c).symm :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).flip_totalFlipIso c
 
-<<<<<<< HEAD
-=======
 variable {K₁ K₂ L₁ L₂} in
->>>>>>> origin/master
 @[reassoc (attr := simp)]
 lemma mapBifunctorFlipIso_hom_naturality :
       mapBifunctorMap φ₂ φ₁ F.flip c ≫ (mapBifunctorFlipIso L₁ L₂ F c).hom =
     (mapBifunctorFlipIso K₁ K₂ F c).hom ≫ mapBifunctorMap φ₁ φ₂ F c := by
-<<<<<<< HEAD
-  aesop
-=======
   cat_disch
->>>>>>> origin/master
 
 end HomologicalComplex

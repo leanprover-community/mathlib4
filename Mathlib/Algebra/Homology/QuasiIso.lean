@@ -338,7 +338,7 @@ end HomologicalComplex
 
 end
 
-namespace HomotopyEquiv
+section
 
 variable {C D : Type _} [Category C] [Preadditive C]
   [Category D] [Preadditive D] (F : C ⥤ D) [F.Additive]
@@ -360,8 +360,8 @@ instance CategoryTheory.Functor.map_quasiIso_of_preservesHomology
     [∀ n, ((F.mapHomologicalComplex c).obj L).HasHomology n]
     [QuasiIso f] : QuasiIso ((F.mapHomologicalComplex c).map f) where
 
-lemma CategoryTheory.Functor.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology
-    [F.PreservesHomology] [ReflectsIsomorphisms F] (n : ι)
+lemma _root_.CategoryTheory.Functor.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology
+    [F.PreservesHomology] [F.ReflectsIsomorphisms] (n : ι)
     [K.HasHomology n] [L.HasHomology n]
     [((F.mapHomologicalComplex c).obj K).HasHomology n]
     [((F.mapHomologicalComplex c).obj L).HasHomology n]
@@ -372,7 +372,7 @@ lemma CategoryTheory.Functor.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology
     F ((HomologicalComplex.shortComplexFunctor C c n).map f)).1  hf
 
 lemma CategoryTheory.Functor.quasiIso_of_map_quasiIso_of_preservesHomology
-    [F.PreservesHomology] [ReflectsIsomorphisms F] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]
+    [F.PreservesHomology] [F.ReflectsIsomorphisms] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]
     [∀ n, ((F.mapHomologicalComplex c).obj K).HasHomology n]
     [∀ n, ((F.mapHomologicalComplex c).obj L).HasHomology n]
     (_ : QuasiIso ((F.mapHomologicalComplex c).map f)) :
@@ -396,6 +396,8 @@ def HomotopyEquiv.toQuasiIso [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
   ⟨fun _ => inferInstance⟩
 
 end
+
+namespace HomotopyEquiv
 
 variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
   {c : ComplexShape ι} {K L : HomologicalComplex C c}

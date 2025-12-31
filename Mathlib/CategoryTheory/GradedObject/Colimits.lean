@@ -3,12 +3,16 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 /-!
 # Colimits in graded objects
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -25,7 +29,7 @@ section HasColimitsOfShape
 variable {I : Type*} {K : Type*} [Category K]
 
 def evalJointlyReflectsColimits {F : K ⥤ GradedObject I C} {c : Cocone F}
-    (hc : ∀ i, IsColimit ((eval i).mapCocone c)):
+    (hc : ∀ i, IsColimit ((eval i).mapCocone c)) :
     IsColimit c where
   desc s i := (hc i).desc ((eval i).mapCocone s)
   fac s k := by

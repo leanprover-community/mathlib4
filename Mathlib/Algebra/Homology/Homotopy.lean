@@ -3,18 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.Linear
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Tactic.Abel
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-=======
 module
 
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.Tactic.Abel
->>>>>>> origin/master
 
 /-!
 # Chain homotopies

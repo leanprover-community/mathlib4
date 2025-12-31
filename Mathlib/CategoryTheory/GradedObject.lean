@@ -3,19 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.Data.Set.Basic
-=======
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Algebra.Group.Int.Defs
->>>>>>> origin/master
 
 /-!
 # The category of graded objects
@@ -329,13 +323,8 @@ end GradedObject
 
 namespace GradedObject
 
-<<<<<<< HEAD
-variable {I J K : Type*} {C : Type*} [Category C]
-  (X Y Z : GradedObject I C) (φ φ' : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
-=======
 variable {I J K : Type*} {C : Type*} [Category* C]
-  (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
->>>>>>> origin/master
+  (X Y Z : GradedObject I C) (φ φ' : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
 for `i : I` such that `p i = j`. -/

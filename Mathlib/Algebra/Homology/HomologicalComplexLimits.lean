@@ -3,20 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.GradedObject.Colimits
-=======
 module
 
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
->>>>>>> origin/master
+public import Mathlib.CategoryTheory.GradedObject.Colimits
 
 /-!
 # Limits and colimits in the category of homological complexes
@@ -34,12 +27,8 @@ open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-<<<<<<< HEAD
 variable {C D ι J : Type*} [Category C] [Category D] [Category J] {c : ComplexShape ι}
   [HasZeroMorphisms C] [HasZeroMorphisms D]
-=======
-variable {C ι J : Type*} [Category* C] [Category* J] {c : ComplexShape ι} [HasZeroMorphisms C]
->>>>>>> origin/master
 
 section
 

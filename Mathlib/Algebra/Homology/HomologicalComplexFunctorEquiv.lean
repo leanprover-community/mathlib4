@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Homology.Additive
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.Additive
 
 /-!
 # Homological complexes in the category of functors
 -/
 
-open CategoryTheory Limits
+@[expose] public section
+
+open CategoryTheory Limits Functor
 
 namespace HomologicalComplex
 

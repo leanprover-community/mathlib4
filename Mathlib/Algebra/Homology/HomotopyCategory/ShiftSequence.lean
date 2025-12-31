@@ -3,13 +3,6 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Shift.InducedShiftSequence
-import Mathlib.CategoryTheory.Shift.Localization
-import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.PreservesQuasiIso
-=======
 module
 
 public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
@@ -17,7 +10,7 @@ public import Mathlib.CategoryTheory.Shift.Localization
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.QuasiIso
->>>>>>> origin/master
+public import Mathlib.Algebra.Homology.PreservesQuasiIso
 
 /-! # Compatibilities of the homology functor with the shift
 

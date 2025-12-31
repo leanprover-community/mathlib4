@@ -52,32 +52,6 @@ theorem Subfunctor.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSepa
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.isSeparated := Subfunctor.isSeparated
 
-instance : PartialOrder (Subpresheaf F) :=
-  PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
-
-instance : Top (Subpresheaf F) :=
-  ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by aesop_cat⟩⟩
-
-instance : OrderTop (Subpresheaf F) where
-  le_top _ := by tauto
-
-instance : SemilatticeSup (Subpresheaf F) where
-  sup F G :=
-    { obj := fun U => F.obj U ⊔ G.obj U
-      map := fun _ _ => by
-        rintro (h|h)
-        · exact Or.inl (F.map _ h)
-        · exact Or.inr (G.map _ h) }
-  le_sup_left _ _ _ := by simp
-  le_sup_right _ _ _ := by simp
-  sup_le F G H h₁ h₂ U := by
-    rintro x (h|h)
-    · exact h₁ _ h
-    · exact h₂ _ h
-
-instance : Nonempty (Subpresheaf F) :=
-  inferInstance
-
 /-- The sheafification of a subpresheaf as a subpresheaf.
 Note that this is a sheaf only when the whole presheaf is a sheaf. -/
 def Subfunctor.sheafify : Subfunctor F where

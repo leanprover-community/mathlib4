@@ -3,15 +3,19 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Double
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.Algebra.Homology.Refinements
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.Double
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.Refinements
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Homology of double complexes
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

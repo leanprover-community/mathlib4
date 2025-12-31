@@ -3,57 +3,15 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Shift.CommShiftProd
-import Mathlib.CategoryTheory.Shift.Prod
-import Mathlib.CategoryTheory.Shift.Twist
-import Mathlib.CategoryTheory.Shift.Pullback
-import Mathlib.Algebra.Ring.Int.Parity
-
-/-!
-# Commutation to shifts of functors in two variables
-
--/
-
-@[to_additive (attr := simps) AddMonoidHom.add₂]
-def MonoidHom.mul₂ (M : Type*) [CommMonoid M] : M × M →* M where
-  toFun m := m.1 * m.2
-  map_one' := by simp
-  map_mul' := by
-    rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
-    dsimp
-    rw [mul_assoc, ← mul_assoc y₁, mul_comm y₁, mul_assoc, mul_assoc]
-
-namespace CategoryTheory
-
-variable {C C₁ C₂ D : Type*}
-  [Category C] [Category C₁] [Category C₂] [Category D]
-
-section
-
-variable (D) (M : Type*)
-  [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
-
-structure CommShift₂Setup extends TwistShiftData (PullbackShift D (.add₂ M)) (M × M) where
-  z_zero₁ (m₁ m₂ : M) : z (0, m₁) (0, m₂) = 1 := by aesop
-  z_zero₂ (m₁ m₂ : M) : z (m₁, 0) (m₂, 0) = 1 := by aesop
-  ε (m n : M) : (CatCenter D)ˣ
-  hε (m n : M) : ε m n = (z (0, n) (m, 0))⁻¹ * z (m, 0) (0, n) := by aesop
-
-end
-
-namespace Functor
-
-class CommShift₂ (G : C₁ ⥤ C₂ ⥤ D) {M : Type*}
-    [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M] (h : CommShift₂Setup D M) where
-=======
 module
 
+public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Center.NegOnePow
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.Shift.Pullback
+public import Mathlib.CategoryTheory.Shift.CommShiftProd
+public import Mathlib.CategoryTheory.Shift.Prod
 
 /-!
 # Commutation with shifts of functors in two variables
@@ -125,25 +83,12 @@ a `CommShift₂Setup D M` structure. (In most cases, one should use the
 abbreviation `CommShift₂Int`.) -/
 class CommShift₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) where
->>>>>>> origin/master
   commShiftObj (X₁ : C₁) : (G.obj X₁).CommShift M := by infer_instance
   commShift_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) : NatTrans.CommShift (G.map f) M := by infer_instance
   commShiftFlipObj (X₂ : C₂) : (G.flip.obj X₂).CommShift M := by infer_instance
   commShift_flip_map {X₂ Y₂ : C₂} (g : X₂ ⟶ Y₂) : NatTrans.CommShift (G.flip.map g) M := by
     infer_instance
   comm (G h) (X₁ : C₁) (X₂ : C₂) (m n : M) :
-<<<<<<< HEAD
-      ((G.obj (X₁⟦m⟧)).commShiftIso n).hom.app X₂ ≫
-          (((G.flip.obj X₂).commShiftIso m).hom.app X₁)⟦n⟧' =
-        ((G.flip.obj (X₂⟦n⟧)).commShiftIso m).hom.app X₁ ≫
-          (((G.obj X₁).commShiftIso n).hom.app X₂)⟦m⟧' ≫
-          (shiftComm ((G.obj X₁).obj X₂) m n).inv ≫ (h.ε m n).val.app _
-
-namespace CommShift₂
-
-attribute [instance] commShiftObj commShiftFlipObj
-  commShift_map commShift_flip_map
-=======
     ((G.obj (X₁⟦m⟧)).commShiftIso n).hom.app X₂ ≫
       (((G.flip.obj X₂).commShiftIso m).hom.app X₁)⟦n⟧' =
         ((G.flip.obj (X₂⟦n⟧)).commShiftIso m).hom.app X₁ ≫
@@ -204,13 +149,56 @@ instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
 /- TODO : If `G : C₁ ⥤ C₂ ⥤ D` and `H : D ⥤ D'` and commute with shifts,
 and we have compatible "setups" on `D` and `D'`, show that `G ⋙ H` also commutes
 with shifts. -/
->>>>>>> origin/master
 
 end CommShift₂
 
 end Functor
 
-<<<<<<< HEAD
+namespace NatTrans
+
+section
+
+variable {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
+  {G₁ G₂ G₃ : C₁ ⥤ C₂ ⥤ D} (τ : G₁ ⟶ G₂) (τ' : G₂ ⟶ G₃) (h : CommShift₂Setup D M)
+  [G₁.CommShift₂ h] [G₂.CommShift₂ h] [G₃.CommShift₂ h]
+
+/-- If `τ : G₁ ⟶ G₂` is a natural transformation between two bifunctors
+which commute shifts on both variables, this typeclass asserts a compatibility of `τ`
+with these shifts. -/
+class CommShift₂ : Prop where
+  commShift_app (X₁ : C₁) : NatTrans.CommShift (τ.app X₁) M := by infer_instance
+  commShift_flipApp (X₂ : C₂) : NatTrans.CommShift (τ.flipApp X₂) M := by infer_instance
+
+namespace CommShift₂
+
+attribute [instance] commShift_app commShift_flipApp
+
+instance : CommShift₂ (𝟙 G₁) h where
+  commShift_app _ := by dsimp; infer_instance
+  commShift_flipApp _ := by
+    simp only [flipApp, flipFunctor_obj, Functor.map_id, id_app]
+    infer_instance
+
+instance [CommShift₂ τ h] [CommShift₂ τ' h] : CommShift₂ (τ ≫ τ') h where
+  commShift_app _ := by dsimp; infer_instance
+  commShift_flipApp _ := by
+    simp only [flipApp, flipFunctor_obj, Functor.map_comp, comp_app]
+    infer_instance
+
+end CommShift₂
+
+end
+
+/-- If `τ : G₁ ⟶ G₂` is a natural transformation between two bifunctors
+which commute shifts on both variables, this typeclass asserts a compatibility of `τ`
+with these shifts. -/
+abbrev CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
+    [∀ (n : ℤ), (shiftFunctor D n).Additive]
+    {G₁ G₂ : C₁ ⥤ C₂ ⥤ D} [G₁.CommShift₂Int] [G₂.CommShift₂Int] (τ : G₁ ⟶ G₂) : Prop :=
+  NatTrans.CommShift₂ τ .int
+
+end NatTrans
+
 variable {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
 variable (h : CommShift₂Setup D M)
 
@@ -264,6 +252,8 @@ lemma shiftFunctorAdd'_inv_app (m₁ m₂ m₃ : M) (hm : m₁ + m₂ = m₃)
     aesop)
 
 section
+
+open Functor
 
 variable (F : C₁ ⥤ C₂ ⥤ D) [F.CommShift₂ h]
 
@@ -320,8 +310,8 @@ lemma iso₁_add (m m' : M) :
     (add_zero m) (add_zero m') (by simp), Iso.inv_hom_id_app_assoc, h.z_zero₂,
     inv_one, Units.val_one, End.one_def,
     Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app]
-  simp only [Functor.flip_obj_obj, Functor.flip_obj_map, Functor.id_obj,
-    Category.assoc, Category.comp_id, NatTrans.naturality_assoc, Functor.map_comp_assoc,
+  simp only [Functor.flip_obj_obj, Functor.flip_obj_map,
+    Category.assoc, NatTrans.naturality_assoc, Functor.map_comp_assoc,
     shiftFunctorAdd'_add_zero_hom_app]
   nth_rw 1 [← Functor.map_comp_assoc]
   nth_rw 3 [← Functor.map_comp_assoc]
@@ -382,8 +372,11 @@ lemma isoAdd'_iso₁_iso₂ (m₁ m₂ : M) :
         (iso₁ h F m₁) (iso₂ h F m₂) =
       Functor.CommShift.isoAdd' (by aesop) (iso₂ h F m₂) (iso₁ h F m₁) := by
   ext ⟨X₁, X₂⟩
-  simp [shiftFunctorAdd'_add_zero_hom_app, shiftFunctorAdd'_zero_add_hom_app,
-    iso₁_hom_app, iso₂_hom_app]
+  simp only [shiftFunctor_prod, comp_obj, prod_obj, uncurry_obj_obj, CommShift.isoAdd'_hom_app,
+    shiftFunctorAdd'_prod, NatIso.prod_hom, uncurry_obj_map, NatTrans.prod_app_fst,
+    shiftFunctorAdd'_add_zero_hom_app, NatTrans.prod_app_snd, shiftFunctorAdd'_zero_add_hom_app,
+    id_obj, iso₂_hom_app, iso₁_hom_app, flip_obj_obj, map_comp, Category.assoc,
+    NatTrans.naturality_assoc, commShiftIso_hom_naturality_assoc]
   have h₁ := Functor.CommShift₂.comm F h X₁ X₂ m₁ m₂
   have h₂ := NatTrans.naturality_1 ((F.flip.obj (X₂⟦m₂⟧)).commShiftIso m₁).hom
     ((shiftFunctorZero C₁ M).app X₁)
@@ -421,6 +414,8 @@ end
 
 section
 
+open Functor
+
 variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
 
 protected abbrev curry : C₁ ⥤ C₂ ⥤ D := curry.obj G
@@ -444,8 +439,8 @@ lemma iso₁_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
 
 noncomputable instance (X₁ : C₁) :
     ((h.curry G).obj X₁).CommShift M where
-  iso m := (iso₁ h G m).app X₁
-  zero := by
+  commShiftIso m := (iso₁ h G m).app X₁
+  commShiftIso_zero := by
     ext X₂
     simp only [curry_obj_obj_obj, Functor.comp_obj, Functor.prod_obj, Functor.id_obj, Iso.app_hom,
       iso₁_hom_app_app, shiftFunctor_prod, Functor.CommShift.isoZero_hom_app, curry_obj_obj_map]
@@ -455,7 +450,7 @@ noncomputable instance (X₁ : C₁) :
       Category.comp_id, ← G.map_comp_assoc]
     congr 2
     aesop
-  add m n := by
+  commShiftIso_add m n := by
     ext X₂
     dsimp
     simp only [iso₁_hom_app_app, Functor.CommShift.isoAdd_hom_app,
@@ -517,8 +512,8 @@ lemma iso₂_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
   simp [iso₂, NatTrans.prod]
 
 noncomputable instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M where
-  iso m := ((flipFunctor _ _ _).mapIso (iso₂ h G m)).app X₂
-  zero := by
+  commShiftIso m := ((flipFunctor _ _ _).mapIso (iso₂ h G m)).app X₂
+  commShiftIso_zero := by
     ext X₁
     simp only [flipFunctor_obj, Functor.flip_obj_obj, curry_obj_obj_obj, Functor.comp_obj,
       Functor.prod_obj, Functor.id_obj, Iso.app_hom, Functor.mapIso_hom, flipFunctor_map_app_app,
@@ -530,13 +525,17 @@ noncomputable instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M w
       Category.comp_id, ← G.map_comp_assoc]
     congr 2
     aesop
-  add m n := by
+  commShiftIso_add m n := by
     ext X₁
-    simp [iso₂_hom_app_app,
+    simp only [flipFunctor_obj, flip_obj_obj, curry_obj_obj_obj, comp_obj, prod_obj, id_obj,
+      Iso.app_hom, mapIso_hom, flipFunctor_map_app_app, iso₂_hom_app_app, shiftFunctor_prod,
       G.commShiftIso_add' (show (m, (0 : M)) + (n, 0) = (m + n, 0) by aesop),
-      shiftFunctorAdd'_inv_app _ _ _ _ rfl _ _ _ (zero_add 0) _ _ _
-      (add_zero m) (add_zero n) (add_zero (m + n)),
-      ← shiftFunctorAdd'_eq_shiftFunctorAdd, h.z_zero₂]
+      CommShift.isoAdd'_hom_app, shiftFunctorAdd'_prod, NatIso.prod_hom,
+      shiftFunctorAdd'_inv_app _ _ _ _ rfl _ _ _ (zero_add 0) _ _ _ (add_zero m) (add_zero n)
+          (add_zero (m + n)),
+      h.z_zero₂, inv_one, Units.val_one, End.one_def, NatTrans.id_app, Category.comp_id,
+      NatTrans.naturality_assoc, Category.assoc, Iso.inv_hom_id_app, CommShift.isoAdd_hom_app,
+      ← shiftFunctorAdd'_eq_shiftFunctorAdd, flip_obj_map, curry_obj_map_app, map_comp]
     rw [← NatTrans.naturality_1_assoc (G.commShiftIso (n, (0 : M))).hom
       (Iso.prod (Iso.refl (X₁⟦m⟧)) ((shiftFunctorZero C₂ M).symm.app X₂))]
     dsimp
@@ -589,7 +588,7 @@ noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
           (zero_add n) rfl,
         Functor.comp_obj, shiftFunctor_prod, Functor.CommShift.isoAdd'_hom_app,
         Functor.prod_obj, shiftFunctorAdd'_prod, NatIso.prod_hom,
-        Functor.id_obj, NatTrans.naturality_assoc, Category.assoc]
+        NatTrans.naturality_assoc, Category.assoc]
       have := NatTrans.naturality_1 (G.commShiftIso ((0 : M), n)).hom
         (Iso.prod (Iso.refl (X₁⟦m⟧)) ((shiftFunctorZero C₂ M).symm.app X₂) )
       dsimp at this
@@ -605,15 +604,20 @@ noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
         · simp [shiftFunctorAdd'_add_zero_hom_app]
         · simp [shiftFunctorAdd'_zero_add_hom_app, ← Functor.map_comp]
     · rw [G.commShiftIso_add' (show (0, n) + (m, 0) = (m, n) by aesop)]
-      simp [shiftFunctorAdd'_inv_app _ _ _ _ (zero_add m) _ _ _ (add_zero n) _ _ _
-        (zero_add n) (add_zero m) rfl, shiftFunctorComm_eq _ _ _ _ rfl]
+      simp only [Functor.comp_obj, shiftFunctor_prod, Functor.CommShift.isoAdd'_hom_app,
+        Functor.prod_obj, shiftFunctorAdd'_prod, NatIso.prod_hom,
+        shiftFunctorAdd'_inv_app _ _ _ _ (zero_add m) _ _ _ (add_zero n) _ _ _ (zero_add n)
+          (add_zero m) rfl,
+        NatTrans.naturality_assoc, Category.assoc, shiftFunctorComm_eq _ _ _ _ rfl, Iso.trans_inv,
+        Iso.symm_inv, NatTrans.comp_app]
       have := NatTrans.naturality_1 (G.commShiftIso (m, (0 : M))).hom
         (Iso.prod ((shiftFunctorZero C₁ M).symm.app X₁) (Iso.refl (X₂⟦n⟧)))
-      dsimp at this
+      dsimp [Prod.mkHom] at this
       rw [← reassoc_of% this, ← G.map_comp_assoc,
         ← CatCenter.naturality_assoc, ← CatCenter.naturality_assoc, ← CatCenter.mul_app,
         ← Units.val_mul, ← h.hε, Iso.inv_hom_id_app_assoc,
         NatTrans.naturality_assoc]
+      dsimp
       congr 2
       · ext
         · simp [shiftFunctorAdd'_zero_add_hom_app, ← Functor.map_comp]
@@ -622,6 +626,8 @@ noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
 end
 
 section
+
+open Functor
 
 variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
 
@@ -632,92 +638,19 @@ instance : NatTrans.CommShift (h.uncurryCurryIso G).hom (M × M) where
   shift_comm := by
     rintro ⟨m, n⟩
     ext ⟨X₁, X₂⟩
-    conv_lhs => dsimp [Functor.commShiftIso, Functor.CommShift.iso, commShiftUncurry,
+    conv_lhs => dsimp [Functor.commShiftIso, Functor.CommShift.commShiftIso, commShiftUncurry,
       Functor.CommShift.mkProd]
     simp [iso₁_hom_app, iso₂_hom_app, commShift_curry_obj_hom_app,
       commShift_curry_flip_obj_hom_app, commShift₂Curry.iso₁_hom_app_app,
       commShift₂Curry.iso₂_hom_app_app,
       G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop)]
-    simp only [← Functor.map_comp_assoc, Category.assoc]
+    simp only [← Functor.map_comp_assoc]
     congr 4
     · aesop
     · simp [prod_comp, ← prod_id]
 
 end
 
-noncomputable def int
-    {D : Type*} [Category D] [Preadditive D] [HasShift D ℤ]
-    [∀ (n : ℤ), (shiftFunctor D n).Additive] :
-    CommShift₂Setup D ℤ where
-  z m n := (-1) ^ (m.1 * n.2)
-  assoc := by
-    rintro ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩
-    rw [← zpow_add, ← zpow_add]
-    congr 1
-    dsimp
-    rw [add_mul, mul_add]
-    abel
-  commShift := by
-    rintro ⟨a, b⟩ ⟨c, d⟩
-    constructor
-    rintro ⟨e, f⟩
-    ext X
-    dsimp
-    generalize hn : a * d = n
-    obtain ⟨n, rfl⟩ | ⟨n, rfl⟩ := Int.even_or_odd n
-    · simp [zpow_add, ← mul_zpow]
-    · rw [zpow_add, two_mul, zpow_add, ← mul_zpow, mul_neg, mul_one, neg_neg, one_zpow,
-        one_mul, zpow_one, Units.val_neg, Units.val_one, End.one_def, NatTrans.app_neg,
-        NatTrans.app_neg]
-      simp
-  ε p q := (-1) ^ (p * q)
-
 end CommShift₂Setup
-=======
-namespace NatTrans
-
-section
-
-variable {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
-  {G₁ G₂ G₃ : C₁ ⥤ C₂ ⥤ D} (τ : G₁ ⟶ G₂) (τ' : G₂ ⟶ G₃) (h : CommShift₂Setup D M)
-  [G₁.CommShift₂ h] [G₂.CommShift₂ h] [G₃.CommShift₂ h]
-
-/-- If `τ : G₁ ⟶ G₂` is a natural transformation between two bifunctors
-which commute shifts on both variables, this typeclass asserts a compatibility of `τ`
-with these shifts. -/
-class CommShift₂ : Prop where
-  commShift_app (X₁ : C₁) : NatTrans.CommShift (τ.app X₁) M := by infer_instance
-  commShift_flipApp (X₂ : C₂) : NatTrans.CommShift (τ.flipApp X₂) M := by infer_instance
-
-namespace CommShift₂
-
-attribute [instance] commShift_app commShift_flipApp
-
-instance : CommShift₂ (𝟙 G₁) h where
-  commShift_app _ := by dsimp; infer_instance
-  commShift_flipApp _ := by
-    simp only [flipApp, flipFunctor_obj, Functor.map_id, id_app]
-    infer_instance
-
-instance [CommShift₂ τ h] [CommShift₂ τ' h] : CommShift₂ (τ ≫ τ') h where
-  commShift_app _ := by dsimp; infer_instance
-  commShift_flipApp _ := by
-    simp only [flipApp, flipFunctor_obj, Functor.map_comp, comp_app]
-    infer_instance
-
-end CommShift₂
-
-end
-
-/-- If `τ : G₁ ⟶ G₂` is a natural transformation between two bifunctors
-which commute shifts on both variables, this typeclass asserts a compatibility of `τ`
-with these shifts. -/
-abbrev CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
-    [∀ (n : ℤ), (shiftFunctor D n).Additive]
-    {G₁ G₂ : C₁ ⥤ C₂ ⥤ D} [G₁.CommShift₂Int] [G₂.CommShift₂Int] (τ : G₁ ⟶ G₂) : Prop :=
-  NatTrans.CommShift₂ τ .int
-
-end NatTrans
->>>>>>> origin/master
 
 end CategoryTheory

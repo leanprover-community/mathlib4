@@ -3,24 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-import Mathlib.Algebra.Homology.PreservesQuasiIso
-import Mathlib.Algebra.Homology.HomologicalComplexFunctorEquiv
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-=======
 module
 
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
->>>>>>> origin/master
+
+public import Mathlib.Algebra.Homology.PreservesQuasiIso
+public import Mathlib.Algebra.Homology.HomologicalComplexFunctorEquiv
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Exactness of colimits
@@ -207,7 +201,7 @@ lemma quasiIso_functorCategory_iff {C : Type*} [Category C] [Abelian C]
       (((Functor.mapArrowFunctor _ _).mapIso
         (((evaluation J C).obj j).mapHomologicalComplexHomologyIso c i)).app f)).1
     dsimp
-    simp
+    simp only [MorphismProperty.isomorphisms.iff]
     infer_instance
 
 instance isStableUnderColimitsOfShape_quasiIso
@@ -237,14 +231,16 @@ lemma isStableUnderColimitsOfShape_preservesQuasiIso
     {ι₁ ι₂ : Type*} (c₁ : ComplexShape ι₁) (c₂ : ComplexShape ι₂)
     (J : Type*) [Category J]
     [HasColimitsOfShape J C₂] [HasExactColimitsOfShape J C₂] :
-    ClosedUnderColimitsOfShape J
-      (preservesQuasiIso (C₁ := C₁) (C₂ := C₂) (c₁ := c₁) (c₂ := c₂)) := by
-  intro F c hc hF K₁ L₁ f hf
-  simp only [MorphismProperty.inverseImage_iff]
-  let hcK := isColimitOfPreserves ((evaluation _ _).obj K₁) hc
-  let hcL := isColimitOfPreserves ((evaluation _ _).obj L₁) hc
-  exact MorphismProperty.colimitsOfShape_le _
-    (MorphismProperty.colimitsOfShape.mk' _ _ _ _ hcK hcL
-    ((whiskerLeft F ((evaluation _ _).map f))) (fun j ↦ hF j _ hf) _ (fun j ↦ by simp))
+    (preservesQuasiIso (C₁ := C₁) (C₂ := C₂)
+      (c₁ := c₁) (c₂ := c₂)).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro G ⟨p⟩ K₁ L₁ f hf
+    simp only [MorphismProperty.inverseImage_iff]
+    let hcK := isColimitOfPreserves ((evaluation _ _).obj K₁) p.isColimit
+    let hcL := isColimitOfPreserves ((evaluation _ _).obj L₁) p.isColimit
+    exact MorphismProperty.colimitsOfShape_le _
+      (MorphismProperty.colimitsOfShape.mk' _ _ _ _ hcK hcL
+      ((Functor.whiskerLeft p.diag ((evaluation _ _).map f)))
+      (fun j ↦ p.prop_diag_obj j _ hf) _ (fun j ↦ by simp))
 
 end HomologicalComplex

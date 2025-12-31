@@ -3,16 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.Localization.Predicate
-=======
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 public import Mathlib.CategoryTheory.Localization.Predicate
->>>>>>> origin/master
 
 /-!
 # Right derived functors
@@ -227,7 +222,7 @@ instance [IsIso α] : RF.IsRightDerivedFunctor α W where
           ext X
           dsimp
           simp only [Localization.liftNatTrans_app, comp_obj]
-          dsimp [Localization.Lifting.iso, Localization.Lifting.iso', lifting]
+          dsimp [Localization.Lifting.iso, lifting]
           simp only [NatIso.isIso_inv_app, comp_obj, comp_id, IsIso.hom_inv_id_assoc]))
       (fun G φ => by
         ext1
@@ -235,7 +230,7 @@ instance [IsIso α] : RF.IsRightDerivedFunctor α W where
         intro X
         dsimp
         simp only [Localization.liftNatTrans_app, comp_obj]
-        dsimp [Localization.Lifting.iso, Localization.Lifting.iso', lifting]
+        dsimp [Localization.Lifting.iso, lifting]
         simpa using NatTrans.congr_app φ.w.symm X)⟩⟩
 
 example (G : D ⥤ H) : G.IsRightDerivedFunctor (𝟙 (L ⋙ G)) W := inferInstance
@@ -309,6 +304,8 @@ lemma isRightDerivedFunctor_of_isLocalization
 end Functor
 
 namespace LocalizerMorphism
+
+open Functor
 
 variable {C₁ C₂ H₁ H₂ D : Type*} [Category C₁] [Category C₂] [Category D]
   [Category H₁] [Category H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}

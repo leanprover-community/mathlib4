@@ -3,22 +3,14 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.Linear
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.Shift.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
-=======
 module
 
+public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Shift.Quotient
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.Tactic.Linarith
->>>>>>> origin/master
 
 /-!
 # The shift on cochain complexes and on the homotopy category
@@ -126,16 +118,9 @@ instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
 
-<<<<<<< HEAD
-instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
-    (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).Linear R where
-
-variable {C}
-=======
 instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
     Functor.Linear R
       (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n) where
->>>>>>> origin/master
 
 end
 
@@ -458,12 +443,6 @@ noncomputable instance commShiftQuotient :
   Quotient.functor_commShift (homotopic C (ComplexShape.up ℤ)) ℤ
 
 instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
-<<<<<<< HEAD
-  have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive := by
-    have e := (quotient C (ComplexShape.up ℤ)).commShiftIso n
-    exact Functor.additive_of_iso e
-  apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
-=======
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _)
@@ -478,7 +457,6 @@ instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     dsimp at h₁ h₂
     rw [← Functor.map_smul, ← h₁, ← h₂]
     simp
->>>>>>> origin/master
 
 instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where

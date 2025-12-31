@@ -26,34 +26,11 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-<<<<<<< HEAD
-variable {C D : Type*} [Category C] [Preadditive C] [Category D] [Preadditive D]
-
-omit [Preadditive C] in
-@[simp]
-lemma CategoryTheory.Limits.biprod.is_zero_iff
-    [HasZeroMorphisms C] (A B : C)
-    [HasBinaryBiproduct A B] : IsZero (biprod A B) ↔ IsZero A ∧ IsZero B := by
-  constructor
-  · intro h
-    simp only [IsZero.iff_id_eq_zero]
-    constructor
-    · rw [← cancel_mono (biprod.inl : _ ⟶ A ⊞ B)]
-      apply h.eq_of_tgt
-    · rw [← cancel_mono (biprod.inr : _ ⟶ A ⊞ B)]
-      apply h.eq_of_tgt
-  · rintro ⟨hA, hB⟩
-    rw [IsZero.iff_id_eq_zero]
-    apply biprod.hom_ext
-    · apply hA.eq_of_tgt
-    · apply hB.eq_of_tgt
-=======
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe v v'
 
 variable {C D : Type*} [Category.{v} C] [Category.{v'} D] [Preadditive C] [Preadditive D]
->>>>>>> origin/master
 
 namespace CochainComplex
 
@@ -86,13 +63,8 @@ open HomComplex
 lemma isZero_X_iff (i : ℤ) :
     IsZero ((mappingCone φ).X i) ↔ IsZero (F.X (i + 1)) ∧ IsZero (G.X i) := by
   have := HasHomotopyCofiber.hasBinaryBiproduct φ i (i + 1) rfl
-<<<<<<< HEAD
-  erw [(homotopyCofiber.XIsoBiprod φ i (i + 1) rfl).isZero_iff,
-    CategoryTheory.Limits.biprod.is_zero_iff]
-=======
   rw [← biprod_isZero_iff]
   exact (homotopyCofiber.XIsoBiprod φ i (i + 1) rfl).isZero_iff
->>>>>>> origin/master
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
