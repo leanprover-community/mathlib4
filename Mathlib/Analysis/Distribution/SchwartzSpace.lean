@@ -764,8 +764,6 @@ theorem pairing_apply_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (
 theorem pairing_continuous_left (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
     Continuous (pairing B · g) := (pairing B.flip g).continuous
 
-end bilin
-
 open ContinuousLinearMap
 
 variable [NormedSpace 𝕜 F]
@@ -805,19 +803,15 @@ def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(
             simp [iteratedFDeriv_succ_eq_comp_right, iteratedFDeriv_succ_const]
           rw [← hn', Finset.sum_range_succ', this]
           simp
-      _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n (⇑f) x‖ +
-            ‖x‖ ^ k * ↑n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) (⇑f) x‖ := by ring
+      _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ +
+            ‖x‖ ^ k * n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖ := by ring
       _ ≤ ‖L‖ * 1 * (SchwartzMap.seminorm 𝕜 (k + 1) n) f +
             ‖L‖ * n * (SchwartzMap.seminorm 𝕜 k (n - 1) f) := by
         apply add_le_add
-        · grw [le_opNorm]
-          simp only [mul_one]
-          move_mul [‖L‖, ‖L‖]
-          gcongr
-          exact le_seminorm 𝕜 (k + 1) n f x
-        · move_mul [(n : ℝ), ‖L‖]
-          gcongr
-          exact le_seminorm 𝕜 k (n - 1) f x
+        · grw [le_opNorm, ← le_seminorm 𝕜 (k + 1) n f x]
+          ring_nf; exact le_refl _
+        · grw [← le_seminorm 𝕜 k (n - 1) f x]
+          ring_nf; exact le_refl _
       _ ≤ ‖L‖ * max 1 n *
           max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) +
           ‖L‖ * max 1 n *
