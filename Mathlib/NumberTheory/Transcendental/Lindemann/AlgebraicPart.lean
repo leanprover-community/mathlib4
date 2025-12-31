@@ -76,13 +76,13 @@ variable {F R K : Type*} [Field F] [CommSemiring R] [Algebra F R] [Field K] [Alg
 variable (F R K) in
 /-- The subalgebra of the `x : R[X]` fixed by `AddMonoidAlgebra.domCongrAut f` for all `f`. -/
 def mapDomainFixed : Subalgebra R R[K] where
-  carrier := {x | ∀ f : K ≃ₐ[F] K, x.domCongrAut F R f = x}
+  carrier := {x | ∀ f : Gal(K/F), x.domCongrAut F R f = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
   algebraMap_mem' r f := by simp
 
 theorem mem_mapDomainFixed_iff {x : R[K]} :
-    x ∈ mapDomainFixed F R K ↔ ∀ i j, i ∈ MulAction.orbit (K ≃ₐ[F] K) j → x i = x j := by
+    x ∈ mapDomainFixed F R K ↔ ∀ i j, i ∈ MulAction.orbit Gal(K/F) j → x i = x j := by
   simp? [MulAction.mem_orbit_iff, mapDomainFixed] says
     simp only [mapDomainFixed, AddMonoidAlgebra.domCongrAut_apply, Subalgebra.mem_mk,
       Subsemiring.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq,
@@ -94,9 +94,9 @@ theorem mem_mapDomainFixed_iff {x : R[K]} :
 
 variable (F R K) in
 /-- The equivalence between `mapDomainFixed F R K` and the `f : R[X]` with
-`Setoid.ker f ≥ MulAction.orbitRel (K ≃ₐ[F] K) K`. -/
+`Setoid.ker f ≥ MulAction.orbitRel Gal(K/F) K`. -/
 def mapDomainFixedEquivSubtype :
-    mapDomainFixed F R K ≃ { f : R[K] // MulAction.orbitRel (K ≃ₐ[F] K) K ≤ Setoid.ker f } where
+    mapDomainFixed F R K ≃ { f : R[K] // MulAction.orbitRel Gal(K/F) K ≤ Setoid.ker f } where
   toFun f := ⟨f, mem_mapDomainFixed_iff.mp f.2⟩
   invFun f := ⟨f, mem_mapDomainFixed_iff.mpr f.2⟩
   left_inv _ := rfl
@@ -119,7 +119,7 @@ def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
       right_inv := ?_ }
   · simp_rw [mem_biUnion, Set.mem_toFinset, ConjRootClass.mem_carrier, Finsupp.mem_support_iff,
       exists_eq_right']
-  · change ∀ i j, i ∈ MulAction.orbit (K ≃ₐ[F] K) j → f ⟦i⟧ = f ⟦j⟧
+  · change ∀ i j, i ∈ MulAction.orbit Gal(K/F) j → f ⟦i⟧ = f ⟦j⟧
     exact fun i j h => congr_arg f (Quotient.sound (isConjRoot_iff_exists_algEquiv.mpr h))
   · exact fun _ => Subtype.ext <| Finsupp.ext fun x => rfl
   · exact fun _ => Finsupp.ext fun x => Quot.inductionOn x fun i => rfl
@@ -234,8 +234,8 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     (x : K[G]) (x0 : x ≠ 0) (hfx : f x = 0) :
     ∃ (y : F[G]), y ≠ 0 ∧ f (y.mapRangeRingHom _ (algebraMap F K)) = 0 := by
   classical
-  let y := ∏ f : K ≃ₐ[F] K, x.mapRangeAlgAut _ _ f
-  have hy : ∀ f : K ≃ₐ[F] K, y.mapRangeAlgAut _ _ f = y := by
+  let y := ∏ f : Gal(K/F), x.mapRangeAlgAut _ _ f
+  have hy : ∀ f : Gal(K/F), y.mapRangeAlgAut _ _ f = y := by
     intro f; dsimp only [y]
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact (Group.mulLeft_bijective f).prod_comp fun g => x.mapRangeAlgAut _ _ g
@@ -247,9 +247,9 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     suffices
       f (x.mapRangeAlgAut _ _ 1 * ∏ f ∈ univ.erase 1, x.mapRangeAlgAut _ _ f) = 0 by
       convert this
-      exact (mul_prod_erase (univ : Finset (K ≃ₐ[F] K)) _ (mem_univ _)).symm
+      exact (mul_prod_erase (univ : Finset Gal(K/F)) _ (mem_univ _)).symm
     simp [map_one, hfx]
-  have y_mem : ∀ i : G, y i ∈ IntermediateField.fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
+  have y_mem : ∀ i : G, y i ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(K/F)) := by
     intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
     replace hy : y.mapRangeAlgAut _ _ f i = y i := by rw [hy f]
@@ -271,7 +271,7 @@ theorem linearIndependent_exp_aux2_1 {F K S : Type*}
     (x : F[K]) (x0 : x ≠ 0) (hfx : f x = 0) :
     ∃ (y : mapDomainFixed F F K) (_ : y ≠ 0), f y = 0 := by
   classical
-  refine ⟨⟨∏ f : K ≃ₐ[F] K, x.domCongrAut F _ (f : K ≃+ K), ?_⟩,
+  refine ⟨⟨∏ f : Gal(K/F), x.domCongrAut F _ (f : K ≃+ K), ?_⟩,
     fun h => absurd (Subtype.mk.inj h) ?_, ?_⟩
   · intro f
     rw [map_prod]
@@ -279,7 +279,7 @@ theorem linearIndependent_exp_aux2_1 {F K S : Type*}
     exact (Group.mulLeft_bijective f).prod_comp fun g ↦ x.domCongrAut F _ (g : K ≃+ K)
   · simpa [prod_eq_zero_iff]
   · dsimp only
-    rw [← mul_prod_erase univ _ (mem_univ 1), show ((1 : K ≃ₐ[F] K) : K ≃+ K) = 1 from rfl,
+    rw [← mul_prod_erase univ _ (mem_univ 1), show ((1 : Gal(K/F)) : K ≃+ K) = 1 from rfl,
       map_one, AlgEquiv.one_apply, map_mul, hfx, zero_mul]
 
 open Classical in
