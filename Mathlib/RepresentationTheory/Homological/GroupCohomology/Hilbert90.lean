@@ -174,7 +174,6 @@ lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers 
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization A K L B
   let η' : Lˣ := Units.mk0 (algebraMap B L η) (fun h ↦ by simp [h] at hη)
-  replace hη : Algebra.norm K η'.1 = 1 := hη
   obtain ⟨ε, hε⟩ := exists_div_of_norm_eq_one hg hη
   obtain ⟨a, b, h⟩ := IsLocalization.exists_mk'_eq (Algebra.algebraMapSubmonoid B A⁰) ε.1
   obtain ⟨t, ht, ht'⟩ := b.prop
@@ -189,9 +188,8 @@ lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers 
     rw [← h, eq_div_iff_mul_eq] at hε
     · replace hε := congr_arg (t • ·) hε
       simp only at hε
-      rw [Algebra.smul_def, mul_left_comm, ← Algebra.smul_def t] at hε
-      change (algebraMap B L) η * t • g.toAlgHom _ = _ at hε
-      rw [← AlgHom.map_smul_of_tower, this] at hε
+      rw [Algebra.smul_def, mul_left_comm, ← Algebra.smul_def t, ← g.toAlgHom_apply,
+        ← AlgHom.map_smul_of_tower, this] at hε
       apply IsIntegralClosure.algebraMap_injective B A L
       rw [map_mul, ← hε]
       congr 1
