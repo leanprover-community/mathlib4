@@ -96,8 +96,6 @@ lemma nsmul_notMem_range_root [CharZero R] [IsAddTorsionFree M] [P.IsReduced]
     lia
 
 @[deprecated (since := "2025-07-06")] alias two_smul_notMem_range_root := nsmul_notMem_range_root
-@[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
-
 lemma linearIndependent_of_add_mem_range_root
     [CharZero R] [IsAddTorsionFree M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :

@@ -70,6 +70,19 @@ lemma IsOpen.relPreimage [TopologicalSpace α] [TopologicalSpace β]
     {s : SetRel α β} (hs : IsOpen s) {t : Set β} : IsOpen (s.preimage t) :=
   hs.relInv.relImage
 
+lemma IsClosed.relInv [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) : IsClosed s.inv :=
+  hs.preimage continuous_swap
+
+lemma IsClosed.relImage_of_finite [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) {t : Set α} (ht : t.Finite) : IsClosed (s.image t) := by
+  simp_rw [SetRel.image, ← exists_prop, Set.setOf_exists]
+  exact ht.isClosed_biUnion fun _ _ => hs.preimage <| .prodMk_right _
+
+lemma IsClosed.relPreimage_of_finite [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) {t : Set β} (ht : t.Finite) : IsClosed (s.preimage t) :=
+  hs.relInv.relImage_of_finite ht
+
 section UniformSpace
 
 variable [UniformSpace α]
@@ -668,6 +681,9 @@ theorem UniformContinuousOn.continuousOn [UniformSpace α] [UniformSpace β] {f 
   rw [uniformContinuousOn_iff_restrict] at h
   rw [continuousOn_iff_continuous_restrict]
   exact h.continuous
+
+instance [UniformSpace α] [(𝓤 α).IsCountablyGenerated] (s : Set α) : (𝓤 s).IsCountablyGenerated :=
+  Filter.comap.isCountablyGenerated _ _
 
 @[to_additive]
 instance [UniformSpace α] : UniformSpace αᵐᵒᵖ :=

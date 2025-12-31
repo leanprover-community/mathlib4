@@ -462,7 +462,7 @@ private lemma diff_singleton_eventually_mem_nhds_left {s : Set 𝕜} {a : 𝕜}
   have : Ioo b a ⊆ s := h b (subset_closure hbs)
   apply eventually_of_mem (U := Ioo b a) ?_ fun x hx ↦ ?_
   · exact mem_nhdsWithin.2 ⟨Ioi b, isOpen_Ioi, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
-  · exact mem_nhds_iff.2 ⟨Ioo b a, subset_diff_singleton this right_mem_Ioo.mp, isOpen_Ioo, hx⟩
+  · exact mem_nhds_iff.2 ⟨Ioo b a, subset_diff_singleton this right_notMem_Ioo, isOpen_Ioo, hx⟩
 
 theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex 𝕜 s) (a : 𝕜) :
     ∀ᶠ x in 𝓝[s \ {a}] a, s \ {a} ∈ 𝓝 x := by
