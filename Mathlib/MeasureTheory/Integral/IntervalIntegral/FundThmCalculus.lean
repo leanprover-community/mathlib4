@@ -95,8 +95,8 @@ scheme as for the versions of FTC-1. They include:
 * `intervalIntegral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
   integral of a specific function
 
-Many applications of these theorems can be found in the file
-`Mathlib/Analysis/SpecialFunctions/Integrals.lean`.
+Many applications of these theorems can be found in the directory
+`Mathlib/Analysis/SpecialFunctions/Integrals/`.
 
 Note that the assumptions of FTC-2 are formulated in the form that `f'` is integrable. To use it in
 a context with the stronger assumption that `f'` is continuous, one can use
@@ -223,11 +223,11 @@ instance nhds (a : ℝ) : FTCFilter a (𝓝 a) (𝓝 a) where
 instance nhdsUniv (a : ℝ) : FTCFilter a (𝓝[univ] a) (𝓝 a) := by rw [nhdsWithin_univ]; infer_instance
 
 instance nhdsLeft (a : ℝ) : FTCFilter a (𝓝[≤] a) (𝓝[≤] a) where
-  pure_le := pure_le_nhdsWithin right_mem_Iic
+  pure_le := pure_le_nhdsWithin self_mem_Iic
   le_nhds := inf_le_left
 
 instance nhdsRight (a : ℝ) : FTCFilter a (𝓝[≥] a) (𝓝[>] a) where
-  pure_le := pure_le_nhdsWithin left_mem_Ici
+  pure_le := pure_le_nhdsWithin self_mem_Ici
   le_nhds := inf_le_left
 
 instance nhdsIcc {x a b : ℝ} [h : Fact (x ∈ Icc a b)] :
@@ -555,7 +555,7 @@ In this section we prove that for a measurable function `f` integrable on `a..b`
 
 * `integral_hasStrictFDerivAt_of_tendsto_ae`: the function `(u, v) ↦ ∫ x in u..v, f x` has
   derivative `(u, v) ↦ v • cb - u • ca` at `(a, b)` in the sense of strict differentiability
-  provided that `f` tends to `ca` and `cb` almost surely as `x` tendsto to `a` and `b`,
+  provided that `f` tends to `ca` and `cb` almost surely as `x` tends to `a` and `b`,
   respectively;
 
 * `integral_hasStrictFDerivAt`: the function `(u, v) ↦ ∫ x in u..v, f x` has
@@ -828,8 +828,8 @@ theorem integral_hasFDerivWithinAt (hf : IntervalIntegrable f volume a b)
 /-- An auxiliary tactic closing goals `UniqueDiffWithinAt ℝ s a` where
 `s ∈ {Iic a, Ici a, univ}`. -/
 macro "uniqueDiffWithinAt_Ici_Iic_univ" : tactic =>
-  `(tactic| (first | exact uniqueDiffOn_Ici _ _ left_mem_Ici |
-    exact uniqueDiffOn_Iic _ _ right_mem_Iic | exact uniqueDiffWithinAt_univ (𝕜 := ℝ) (E := ℝ)))
+  `(tactic| (first | exact uniqueDiffOn_Ici _ _ self_mem_Ici |
+    exact uniqueDiffOn_Iic _ _ self_mem_Iic | exact uniqueDiffWithinAt_univ (𝕜 := ℝ) (E := ℝ)))
 
 /-- Let `f` be a measurable function integrable on `a..b`. Choose `s ∈ {Iic a, Ici a, univ}`
 and `t ∈ {Iic b, Ici b, univ}`. Suppose that `f` tends to `ca` and `cb` almost surely at the filters

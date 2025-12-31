@@ -110,7 +110,7 @@ def oppositeEquivalence (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A wher
 /-- `Codiscrete.functorToCat` turns a type into a codiscrete category. -/
 def functorToCat : Type u ⥤ Cat.{0, u} where
   obj A := Cat.of (Codiscrete A)
-  map := functorOfFun
+  map f := (functorOfFun f).toCatHom
 
 open Adjunction Cat
 
@@ -124,9 +124,9 @@ def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
 /-- The functor that turns a type into a codiscrete category is right adjoint to the objects
 functor. -/
 def adj : objects ⊣ functorToCat := mkOfHomEquiv {
-  homEquiv := fun _ _ => equivFunctorToCodiscrete
-  homEquiv_naturality_left_symm := fun _ _ => rfl
-  homEquiv_naturality_right := fun _ _ => rfl }
+  homEquiv _ _ := equivFunctorToCodiscrete.trans (Functor.equivCatHom _ _)
+  homEquiv_naturality_left_symm _ _ := rfl
+  homEquiv_naturality_right _ _ := rfl }
 
 /-- Components of the unit of the adjunction `Cat.objects ⊣ Codiscrete.functorToCat`. -/
 def unitApp (C : Type u) [Category.{v} C] : C ⥤ Codiscrete C := functor id
@@ -135,7 +135,7 @@ def unitApp (C : Type u) [Category.{v} C] : C ⥤ Codiscrete C := functor id
 def counitApp (A : Type u) : Codiscrete A → A := Codiscrete.as
 
 lemma adj_unit_app (X : Cat.{0, u}) :
-    adj.unit.app X = unitApp X := rfl
+    adj.unit.app X = (unitApp X).toCatHom := rfl
 
 lemma adj_counit_app (A : Type u) :
     adj.counit.app A = counitApp A := rfl

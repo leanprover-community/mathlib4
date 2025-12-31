@@ -67,7 +67,7 @@ instance (i' : ι') : (K.truncLE e).HasHomology i' :=
 lemma quasiIsoAt_ιTruncLE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.ιTruncLE e) j' := by
   have := K.op.quasiIsoAt_πTruncGE e.op hj'
-  exact inferInstanceAs (QuasiIsoAt ((unopFunctor _ _ ).map (K.op.πTruncGE e.op).op) j')
+  exact inferInstanceAs (QuasiIsoAt ((unopFunctor _ _).map (K.op.πTruncGE e.op).op) j')
 
 instance (i : ι) : QuasiIsoAt (K.ιTruncLE e) (e.f i) := K.quasiIsoAt_ιTruncLE e rfl
 
