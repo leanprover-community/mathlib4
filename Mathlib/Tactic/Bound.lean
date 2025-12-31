@@ -240,7 +240,7 @@ by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_rig
 contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.  Conversely, `gcongr` can prove
 inequalities for more types of relations, supports all `positivity` functionality, and is likely
 faster since it is more specialized (not built atop `aesop`). -/
-syntax "bound " (" [" term,* "]")? : tactic
+syntax "bound" (" [" term,* "]")? : tactic
 
 -- Plain `bound` elaboration, with no hypotheses
 elab_rules : tactic
