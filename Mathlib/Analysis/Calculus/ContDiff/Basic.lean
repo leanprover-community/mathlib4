@@ -394,7 +394,7 @@ theorem HasFTaylorSeriesUpToOn.comp_add
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is affine, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term at `x` is given
 by `p (g x) k (g.contLinear v₁, ..., g.contLinear vₖ)` . -/
-theorem HasFTaylorSeriesUpToOn.compContinuousAffineMap
+theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
     (hf : HasFTaylorSeriesUpToOn n f p s) (g : G →ᴬ[𝕜] E) :
     HasFTaylorSeriesUpToOn n (f ∘ g)
       (fun x k => (p (g x) k).compContinuousLinearMap (fun _ ↦ g.contLinear)) (g ⁻¹' s) := by

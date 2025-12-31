@@ -434,7 +434,7 @@ theorem hasFTaylorSeriesOn_setIntegral_of_le_const {H' : Type*} [NormedAddCommGr
       linear := LinearMap.inl 𝕜 H H'
       map_vadd' p v := by simp
       cont := by fun_prop }
-    apply (hF.compContinuousAffineMap g).mono
+    apply (hF.comp_continuousAffineMap g).mono
     simp only [ContinuousAffineMap.coe_mk, AffineMap.coe_mk, g]
     grind
 
