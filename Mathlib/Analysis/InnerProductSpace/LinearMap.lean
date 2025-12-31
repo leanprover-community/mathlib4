@@ -323,6 +323,20 @@ theorem rankOne_eq_zero_iff {F : Type*} [NormedAddCommGroup F] [InnerProductSpac
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
     ext_iff_inner_right 𝕜 (E := F)]
 
+theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
+    IsIdempotentElem (rankOne 𝕜 x x) := by simp [IsIdempotentElem, mul_def, comp_rankOne, hx]
+
+theorem isIdempotentElem_rankOne_self_iff {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    {x : F} (hx : x ≠ 0) : IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
+  refine ⟨?_, isIdempotentElem_rankOne_self⟩
+  simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
+    map_smul, coe_smul', Pi.smul_apply]
+  nth_rw 2 [← one_smul 𝕜 (rankOne 𝕜 x x)]
+  rw [← sub_eq_zero, ← sub_smul]
+  simp only [smul_eq_zero, rankOne_eq_zero_iff, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
+    FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
+  grind [norm_nonneg]
+
 variable {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
 
 lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :

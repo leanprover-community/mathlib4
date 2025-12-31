@@ -223,6 +223,12 @@ end LinearMap
 @[simp] theorem InnerProductSpace.isSymmetric_rankOne_self (x : E) :
     (rankOne 𝕜 x x).IsSymmetric := fun _ _ ↦ by simp [inner_smul_left, inner_smul_right, mul_comm]
 
+open ContinuousLinearMap in
+theorem InnerProductSpace.isSymmetricProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
+    (rankOne 𝕜 x x).IsSymmetricProjection where
+  isSymmetric := isSymmetric_rankOne_self x
+  isIdempotentElem := isIdempotentElem_rankOne_self hx |>.toLinearMap
+
 end Seminormed
 
 section Normed
