@@ -109,6 +109,7 @@ namespace Prod
 
 /-- Recursion on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to recurse on the lexicographic order instead. -/
+@[elab_as_elim]
 def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
     C a b :=
@@ -122,6 +123,7 @@ theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : 
 
 /-- Induction on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to induct on the lexicographic order instead. -/
+@[elab_as_elim]
 theorem GameAdd.induction {C : α → β → Prop} :
     WellFounded rα →
       WellFounded rβ →
@@ -201,6 +203,7 @@ namespace Sym2
 attribute [local instance] Sym2.Rel.setoid
 
 /-- Recursion on the well-founded `Sym2.GameAdd` relation. -/
+@[elab_as_elim]
 def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
     C a b :=
@@ -215,6 +218,7 @@ theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
   WellFounded.fix_eq ..
 
 /-- Induction on the well-founded `Sym2.GameAdd` relation. -/
+@[elab_as_elim]
 theorem GameAdd.induction {C : α → α → Prop} :
     WellFounded rα →
       (∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) →
