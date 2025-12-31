@@ -149,12 +149,8 @@ theorem SSameSide.wSameSide {s : AffineSubspace R P} {x y : P} (h : s.SSameSide 
 theorem SSameSide.left_notMem {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) : x ∉ s :=
   h.2.1
 
-@[deprecated (since := "2025-05-23")] alias SSameSide.left_not_mem := SSameSide.left_notMem
-
 theorem SSameSide.right_notMem {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) : y ∉ s :=
   h.2.2
-
-@[deprecated (since := "2025-05-23")] alias SSameSide.right_not_mem := SSameSide.right_notMem
 
 theorem SOppSide.wOppSide {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     s.WOppSide x y :=
@@ -163,12 +159,8 @@ theorem SOppSide.wOppSide {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y
 theorem SOppSide.left_notMem {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) : x ∉ s :=
   h.2.1
 
-@[deprecated (since := "2025-05-23")] alias SOppSide.left_not_mem := SOppSide.left_notMem
-
 theorem SOppSide.right_notMem {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) : y ∉ s :=
   h.2.2
-
-@[deprecated (since := "2025-05-23")] alias SOppSide.right_not_mem := SOppSide.right_notMem
 
 theorem wSameSide_comm {s : AffineSubspace R P} {x y : P} : s.WSameSide x y ↔ s.WSameSide y x :=
   ⟨fun ⟨p₁, hp₁, p₂, hp₂, h⟩ => ⟨p₂, hp₂, p₁, hp₁, h.symm⟩,
@@ -622,9 +614,6 @@ theorem _root_.Sbtw.sOppSide_of_notMem_of_mem {s : AffineSubspace R P} {x y z : 
   rw [vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z, ← neg_one_smul R (z -ᵥ x), ← add_smul,
     ← sub_eq_add_neg, s.direction.smul_mem_iff (sub_ne_zero_of_ne ht)] at hy'
   rwa [vadd_mem_iff_mem_of_mem_direction (Submodule.smul_mem _ _ hy')] at hy
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Sbtw.sOppSide_of_not_mem_of_mem := _root_.Sbtw.sOppSide_of_notMem_of_mem
 
 theorem sSameSide_smul_vsub_vadd_left {s : AffineSubspace R P} {x p₁ p₂ : P} (hx : x ∉ s)
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : 0 < t) : s.SSameSide (t • (x -ᵥ p₁) +ᵥ p₂) x := by

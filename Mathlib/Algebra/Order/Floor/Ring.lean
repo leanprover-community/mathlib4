@@ -256,6 +256,9 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
 
+theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
+  (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
+
 section LinearOrderedRing
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a b : R}
 
@@ -451,6 +454,12 @@ theorem fract_eq_self {a : R} : fract a = a ↔ 0 ≤ a ∧ a < 1 :=
 @[simp]
 theorem fract_fract (a : R) : fract (fract a) = fract a :=
   fract_eq_self.2 ⟨fract_nonneg _, fract_lt_one _⟩
+
+theorem fract_eq_zero_iff {a : R} : fract a = 0 ↔ a ∈ range Int.cast := by
+  simp [fract_eq_iff, eq_comm]
+
+theorem fract_ne_zero_iff {a : R} : fract a ≠ 0 ↔ a ∉ range Int.cast :=
+  fract_eq_zero_iff.not
 
 theorem fract_neg {x : R} (hx : fract x ≠ 0) : fract (-x) = 1 - fract x := by
   rw [fract_eq_iff]
@@ -702,9 +711,6 @@ lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉
   · apply le_antisymm (Int.ceil_le_floor_add_one _)
     rw [Int.add_one_le_ceil_iff]
     exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
-
-@[deprecated (since := "2025-05-23")]
-alias ceil_eq_floor_add_one_iff_not_mem := ceil_eq_floor_add_one_iff_notMem
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
   rcases eq_or_ne (fract a) 0 with ha | ha

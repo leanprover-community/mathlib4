@@ -81,8 +81,6 @@ theorem notMem_of_lt_sInf {s : Set ℕ} {m : ℕ} (hm : m < sInf s) : m ∉ s :=
   | inl h => subst h; apply notMem_empty
   | inr h => rw [Nat.sInf_def h] at hm; exact Nat.find_min h hm
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_sInf := notMem_of_lt_sInf
-
 protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m := by
   classical
   rw [Nat.sInf_def ⟨m, hm⟩]

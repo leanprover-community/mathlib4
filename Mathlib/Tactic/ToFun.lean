@@ -33,17 +33,17 @@ will generate a new lemma `Differentiable.fun_mul` with conclusion
 
 Use the `to_fun (attr := ...)` syntax to add the same attribute to both declarations.
 -/
-syntax (name := to_fun) "to_fun" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
+syntax (name := to_fun) "to_fun" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `to_fun
   descr := "generate a copy of a lemma where point-free functions are expanded to their `fun` form"
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| to_fun $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| to_fun $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_fun` can only be used as a global attribute"
-    addRelatedDecl src "fun_" "" ref stx? (docstringPrefix? := s!"Eta-expanded form of `{src}`")
+    addRelatedDecl src "fun_" "" ref optAttr (docstringPrefix? := s!"Eta-expanded form of `{src}`")
       (hoverInfo := true) fun value levels => do
       let type ← inferType value
       let r ← Push.pullCore .lambda type none

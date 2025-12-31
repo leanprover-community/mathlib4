@@ -54,6 +54,4 @@ lemma mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 @[simp] lemma mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
 @[simp] lemma notMem_bot : x ∉ (⊥ : L) := by simp [← mem_subtype]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 end CompleteSublattice

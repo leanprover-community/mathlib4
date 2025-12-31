@@ -158,8 +158,6 @@ theorem denseRange_toMvPowerSeries [CommSemiring R] :
   classical
   exact mem_closure_of_tendsto (tendsto_trunc'_atTop f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
-@[deprecated (since := "2025-05-21")] alias toMvPowerSeries_denseRange := denseRange_toMvPowerSeries
-
 variable (σ R)
 
 /-- The semiring topology on `MvPowerSeries` of a topological semiring -/

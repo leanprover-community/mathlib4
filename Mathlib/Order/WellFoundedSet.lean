@@ -760,8 +760,6 @@ theorem exists_notMem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : 
   contrapose! this
   simpa [not_bddAbove_iff, and_comm]
 
-@[deprecated (since := "2025-05-23")] alias exists_not_mem_of_gt := exists_notMem_of_gt
-
 -- TODO: move this material to the main file on WQOs.
 
 /-- In the context of partial well-orderings, a bad sequence is a nonincreasing sequence

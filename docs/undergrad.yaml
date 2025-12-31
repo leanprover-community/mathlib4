@@ -612,7 +612,7 @@ Distribution calculus:
   Tempered distributions:
     definition: 'TemperedDistribution'
     derivation of tempered distributions: ''
-    multiplication by a function $C^\infty$ of slow growth: ''
+    multiplication by a function $C^\infty$ of slow growth: 'TemperedDistribution.smulLeftCLM'
     $L^2$ functions and Riesz representation: ''
     $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
     periodic functions: ''

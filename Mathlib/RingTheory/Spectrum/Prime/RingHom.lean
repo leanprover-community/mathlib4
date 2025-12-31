@@ -160,10 +160,6 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
   rw [eq] at this
   exact this (le ⟨.single i 1, rfl⟩)
 
-@[deprecated (since := "2025-05-24")]
-alias exists_maximal_nmem_range_sigmaToPi_of_infinite :=
-  exists_maximal_notMem_range_sigmaToPi_of_infinite
-
 theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
   have ⟨_, _, notMem⟩ := exists_maximal_notMem_range_sigmaToPi_of_infinite R
   (Set.range_eq_univ.mpr surj ▸ notMem) ⟨⟩
