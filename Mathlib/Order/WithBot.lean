@@ -896,16 +896,34 @@ protected def ofDual : WithBot αᵒᵈ ≃ WithTop α :=
   Equiv.refl _
 
 @[to_dual (attr := simp)]
+theorem toDual_symm : WithBot.toDual.symm = WithTop.ofDual (α := α) := rfl
+
+@[to_dual]
 theorem toDual_symm_apply (a : WithTop αᵒᵈ) : WithBot.toDual.symm a = WithTop.ofDual a := rfl
 
+attribute [deprecated toDual_symm (since := "2025-12-30")] toDual_symm_apply
+attribute [deprecated WithTop.toDual_symm (since := "2025-12-30")] WithTop.toDual_symm_apply
+
 @[to_dual (attr := simp)]
+theorem ofDual_symm : WithBot.ofDual.symm = WithTop.toDual (α := α) := rfl
+
+@[to_dual]
 theorem ofDual_symm_apply (a : WithTop α) : WithBot.ofDual.symm a = WithTop.toDual a := rfl
 
-@[to_dual (attr := simp)]
-theorem toDual_apply_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ := rfl
+attribute [deprecated ofDual_symm (since := "2025-12-30")] ofDual_symm_apply
+attribute [deprecated WithTop.ofDual_symm (since := "2025-12-30")] WithTop.ofDual_symm_apply
 
 @[to_dual (attr := simp)]
-theorem ofDual_apply_bot : WithBot.ofDual (⊥ : WithBot αᵒᵈ) = ⊤ := rfl
+theorem toDual_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ := rfl
+
+@[deprecated (since := "2025-12-30")] alias toDual_apply_bot := toDual_bot
+@[deprecated (since := "2025-12-30")] alias _root_.WithTop.toDual_apply_top := WithTop.toDual_top
+
+@[to_dual (attr := simp)]
+theorem ofDual_bot : WithBot.ofDual (⊥ : WithBot αᵒᵈ) = ⊤ := rfl
+
+@[deprecated (since := "2025-12-30")] alias ofDual_apply_bot := ofDual_bot
+@[deprecated (since := "2025-12-30")] alias _root_.WithTop.ofDual_apply_top := WithTop.ofDual_top
 
 open OrderDual
 

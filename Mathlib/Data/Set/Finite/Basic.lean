@@ -529,7 +529,7 @@ lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t �
   mp hsu := (hst.union hsu).subset (symmDiff_comm s t ▸ symmDiff_triangle ..)
   mpr htu := (hst.union htu).subset (symmDiff_triangle ..)
 
-@[simp]
+@[simp, grind .]
 theorem finite_empty : (∅ : Set α).Finite :=
   toFinite _
 
