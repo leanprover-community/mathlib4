@@ -426,7 +426,7 @@ theorem toIcoMod_zsmul_add (a b : α) (m : ℤ) : toIcoMod hp a (m • p + b) = 
   rw [add_comm, toIcoMod_add_zsmul]
 
 @[simp]
-theorem toIcoMod_nsmul_add (a b : α) (m : ℤ) : toIcoMod hp a (m • p + b) = toIcoMod hp a b :=
+theorem toIcoMod_nsmul_add (a b : α) (m : ℕ) : toIcoMod hp a (m • p + b) = toIcoMod hp a b :=
   mod_cast toIcoMod_zsmul_add hp a b m
 
 @[simp]
