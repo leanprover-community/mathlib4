@@ -134,9 +134,9 @@ def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFi
 
 end TripleFiber
 
-/-! ### Convolution Existence -/
+/-! ### Convolution Definition and Existence -/
 
-section Existence
+section Definition
 
 variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
 variable [Module S E] [Module S E'] [Module S F]
@@ -154,16 +154,6 @@ def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M �
   /-- Additive convolution exists when it exists at every point. -/]
 def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
   ∀ x, ConvolutionExistsAt L f g x
-
-end Existence
-
-/-! ### Convolution Definition -/
-
-section Definition
-
-variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
-variable [Module S E] [Module S E'] [Module S F]
-variable [TopologicalSpace F]
 
 /-- The discrete convolution of `f` and `g` using bilinear map `L`:
 `(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`. -/
