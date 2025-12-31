@@ -89,7 +89,7 @@ theorem continuousOn_floor (n : ℤ) :
     ContinuousOn (fun x => floor x : α → ℤ) (Ico n (n + 1) : Set α) :=
   (continuousOn_congr <| floor_eq_on_Ico n).mpr continuousOn_const
 
-theorem continuousOn_ceil [IsStrictOrderedRing α] (n : ℤ) :
+theorem continuousOn_ceil (n : ℤ) :
     ContinuousOn (fun x => ceil x : α → ℤ) (Ioc (n - 1) n : Set α) :=
   (continuousOn_congr <| ceil_eq_on_Ioc n).mpr continuousOn_const
 
