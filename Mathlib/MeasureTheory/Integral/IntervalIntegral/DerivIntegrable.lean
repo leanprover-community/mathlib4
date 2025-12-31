@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
