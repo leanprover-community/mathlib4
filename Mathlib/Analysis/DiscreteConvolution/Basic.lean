@@ -100,10 +100,8 @@ abbrev tripleFiber (x : M) : Set (M × M × M) :=
 theorem mem_tripleFiber {x : M} {abc : M × M × M} :
     abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := by simp [mulTripleAntidiagonal]
 
-/-- Left association equivalence for associativity proof.
-Maps `((c, d), (a, b))` where `c * d = x` and `a * b = c` to `(a, b, d)` where `a * b * d = x`.
-This identifies the nested sum `∑' (cd : mulFiber x), ∑' (ab : mulFiber cd.1.1), f a * g b * h d`
-with a sum over the triple fiber. -/
+/-- Left association equivalence: `((c, d), (a, b))` with `a * b = c`, `c * d = x` maps to
+`(a, b, d)` with `a * b * d = x`. Used for reindexing nested sums in associativity proofs. -/
 @[to_additive leftAddAssocEquiv /-- Left association equivalence for additive associativity. -/]
 def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x where
   toFun := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ =>
@@ -117,10 +115,8 @@ def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFib
     simp only [mem_mulFiber] at hab; subst hab; rfl
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
-/-- Right association equivalence for associativity proof.
-Maps `((a, e), (b, d))` where `a * e = x` and `b * d = e` to `(a, b, d)` where `a * b * d = x`.
-This identifies the nested sum `∑' (ae : mulFiber x), ∑' (bd : mulFiber ae.1.2), f a * g b * h d`
-with a sum over the triple fiber. -/
+/-- Right association equivalence: `((a, e), (b, d))` with `b * d = e`, `a * e = x` maps to
+`(a, b, d)` with `a * b * d = x`. Used for reindexing nested sums in associativity proofs. -/
 @[to_additive rightAddAssocEquiv /-- Right association equivalence for additive associativity. -/]
 def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFiber x where
   toFun := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ =>
