@@ -135,31 +135,30 @@ variable (f : 𝓢(E, F))
 
 /-- Auxiliary lemma, used in proving the more general result `isBigO_cocompact_rpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ (-k : ℤ) := by
+    f =O[cocompact E] (‖·‖ ^ (-k : ℤ)) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
-  refine (Filter.eventually_cofinite_ne 0).mono fun x hx => ?_
-  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff₀']
-  exacts [hd' x, zpow_pos (norm_pos_iff.mpr hx) _]
+  refine (Filter.eventually_cofinite_ne 0).mono fun x hx ↦ ?_
+  rw [Real.norm_of_nonneg (by positivity), zpow_neg, ← div_eq_mul_inv, le_div_iff₀' (by positivity)]
+  exact hd' x
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ s := by
+    f =O[cocompact E] (‖·‖ ^ s) := by
   let k := ⌈-s⌉₊
   have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
   refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
-  suffices (fun x : ℝ => x ^ (-k : ℤ)) =O[atTop] fun x : ℝ => x ^ s
+  suffices (fun x : ℝ ↦ x ^ (-k : ℤ)) =O[atTop] fun x : ℝ ↦ x ^ s
     from this.comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
-  refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => ?_⟩
-  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
-    Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_intCast, Int.cast_neg,
-    Int.cast_natCast]
+  refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx ↦ ?_⟩
+  rw [one_mul, Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity),
+    ← Real.rpow_intCast, Int.cast_neg, Int.cast_natCast]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
 
 theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ k := by
+    f =O[cocompact E] (‖·‖ ^ k) := by
   simpa only [Real.rpow_intCast] using isBigO_cocompact_rpow f k
 
 end IsBigO
@@ -641,7 +640,11 @@ section Multiplication
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup D] [NormedSpace ℝ D]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+
+section bilin
+
+variable [NormedSpace 𝕜 E]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -693,6 +696,47 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
 @[simp]
 theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
+
+end bilin
+
+section smul
+
+variable (F) in
+open Classical in
+/-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
+where `g` is a function of temperate growth. -/
+def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+  if hg : g.HasTemperateGrowth then
+    SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+  else 0
+
+@[simp]
+theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) (x : E) :
+    smulLeftCLM F g f x = g x • f x := by
+  simp [smulLeftCLM, hg]
+
+@[simp]
+theorem smulLeftCLM_const (c : 𝕜) (f : 𝓢(E, F)) : smulLeftCLM F (fun (_ : E) ↦ c) f = c • f := by
+  ext x
+  have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
+  simp [this]
+
+@[simp]
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F g₁ (smulLeftCLM F g₂ f) = smulLeftCLM F (g₁ * g₂) f := by
+  ext x
+  simp [smul_smul, hg₁, hg₂, hg₁.mul hg₂]
+
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F g₁ ∘L smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
+  ext1 f
+  exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
+
+end smul
+
+variable [NormedSpace 𝕜 E]
 
 /-- The bilinear pairing of Schwartz functions.
 
