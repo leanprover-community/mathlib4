@@ -256,7 +256,123 @@ theorem neg_smul : -g • z = g • z := by
 lemma denom_one : denom 1 z = 1 := by
   simp [denom]
 
+section J
+/-!
+## The anti-holomorphic involution `J`
+-/
+
+/-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
+`τ ↦ -conj τ`. -/
+def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
+
+lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
+  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
+
+@[simp] lemma val_J : J.val = !![-1, 0; 0, 1] := rfl
+
+@[simp] lemma J_sq : J ^ 2 = 1 := by ext; simp [J, sq, Matrix.one_fin_two]
+
+@[simp] lemma inv_J : J⁻¹ = J := by rw [inv_eq_iff_mul_eq_one, ← sq, J_sq]
+
+@[simp] lemma det_J : J.det = -1 := by ext; simp [J]
+
+@[simp] lemma sigma_J : σ J = starRingEnd ℂ := by simp [σ, J]
+
+@[simp] lemma denom_J (τ : ℍ) : denom J τ = 1 := by simp [J, denom]
+
+@[simp] lemma J_smul_pos_smul_I {t : ℝ} (ht : 0 < t) :
+    J • Subtype.mk t ht • I = Subtype.mk t ht • I := by
+  ext
+  simp [coe_J_smul]
+
+end J
+
+section Stabilizer
+/-!
+## Stabilizers and fixed points
+-/
+
+/-- The pointwise stabilizer of the vertical line `ℝ₊ • I` in `GL(2, ℝ)₊` is the scalar multiples
+of the identity. -/
+lemma forall_smul_pos_mul_I_eq_iff_of_det_pos {g : GL (Fin 2) ℝ} (hdet : 0 < g.det.val) :
+    (∀ (t : ℝ) (ht : 0 < t), g • (Subtype.mk t ht • I) = (Subtype.mk t ht • I))
+      ↔ ∃ r : ℝˣ, g = r • 1 where
+  mp hg := by
+    have (t : ℝ) (ht : 0 < t) : g 0 1 = -t ^ 2 * g 1 0 ∧ g 0 0 = g 1 1 := by
+      have := congr_arg UpperHalfPlane.coe <| hg t ht
+      simp only [coe_smul_of_det_pos hdet, coe_pos_real_smul, coe_I, Complex.real_smul] at this
+      rw [div_eq_iff (denom_ne_zero_of_im _ <| by simp [ht.ne']), Complex.ext_iff] at this
+      grind [num, denom, Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im,
+        Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]
+    have hbc : g 0 1 = 0 ∧ g 1 0 = 0 ∧ g 1 1 = g 0 0 := by grind [this 1 one_pos, this 2 two_pos]
+    have : g 0 0 ≠ 0 := by grind [Matrix.GeneralLinearGroup.val_det_apply, Matrix.det_fin_two]
+    use .mk0 _ this
+    ext i j
+    simp only [Fin.isValue, Units.val_smul, Units.val_one, Matrix.one_fin_two, Matrix.smul_apply,
+      Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_fin_one, Units.smul_mk0, smul_eq_mul]
+    fin_cases i <;> fin_cases j <;> simp [hbc]
+  mpr := by
+    rintro ⟨r, rfl⟩ t ht
+    ext
+    simp [coe_pos_real_smul, coe_smul_of_det_pos hdet, num, denom, Units.smul_def]
+
+/-- The pointwise stabilizer of the vertical line `ℝ₊ • I` in `GL(2, ℝ)` consists of the scalar
+multiples of the identity and of `J = [-1, 0; 0, 1]`. -/
+lemma forall_smul_pos_mul_I_eq_iff {g : GL (Fin 2) ℝ} :
+    (∀ (t : ℝ) (ht : 0 < t), g • (Subtype.mk t ht • I) = (Subtype.mk t ht • I)) ↔
+      (∃ r : ℝˣ, g = r • 1) ∨ (∃ r : ℝˣ, g = r • J) := by
+  by_cases h : 0 < g.det.val
+  · rw [forall_smul_pos_mul_I_eq_iff_of_det_pos h]
+    suffices ¬∃ r, g = r • J by tauto
+    contrapose! h
+    obtain ⟨r, rfl⟩ := h
+    simp [Units.smul_def, mul_self_nonneg r.val]
+  · -- If `det g < 0`, we show that `g * J⁻¹` also fixes the vertical line
+    have : ¬∃ r : ℝˣ, g = r • 1 := by
+      contrapose! h
+      rcases h with ⟨r, rfl⟩
+      refine lt_of_le_of_ne' ?_ (Units.ne_zero _)
+      simp [Units.smul_def, sq_nonneg]
+    rw [eq_false_intro this, false_or]
+    conv => enter [1, t, ht, 1]; rw [← J_smul_pos_smul_I, ← SemigroupAction.mul_smul, ← inv_J]
+    rw [forall_smul_pos_mul_I_eq_iff_of_det_pos]
+    · simp only [mul_inv_eq_iff_eq_mul (a := g), smul_one_mul]
+    · rw [map_mul, map_inv, det_J, inv_neg_one, mul_neg_one, Units.val_neg]
+      grind [g.det_ne_zero.lt_or_gt, Matrix.GeneralLinearGroup.val_det_apply]
+
+/-- The only elements of `GL(2, ℝ)` that act trivially on the whole upper half-plane are the
+scalar matrices. -/
+lemma forall_smul_eq_iff {g : GL (Fin 2) ℝ} : (∀ τ : ℍ, g • τ = τ) ↔ (∃ r : ℝˣ, g = r • 1) where
+  mp h := by
+    refine (forall_smul_pos_mul_I_eq_iff.mp (fun t ht ↦ h _)).resolve_right fun ⟨r, hr⟩ ↦ ?_
+    simpa [hr, UpperHalfPlane.ext_iff, coe_smul, σ, Units.smul_def, (mul_self_nonneg r.val).not_gt,
+      num, denom, div_eq_iff (Complex.ofReal_ne_zero.mpr r.ne_zero), Complex.ext_iff, neg_eq_self]
+      using h ((1 : ℝ) +ᵥ I)
+  mpr := fun ⟨r, hr⟩ τ ↦ ext <| by
+    simp [hr, coe_smul, σ, Units.smul_def, sq_pos_of_ne_zero r.ne_zero, num, denom]
+
+lemma forall_smul_eq_iff_of_det_eq_one {g : GL (Fin 2) ℝ} (hg : g.det = 1) :
+    (∀ τ : ℍ, g • τ = τ) ↔ g = 1 ∨ g = -1 := by
+  rw [UpperHalfPlane.forall_smul_eq_iff]
+  constructor
+  · rintro ⟨r, rfl⟩
+    simp_rw [Units.ext_iff, GeneralLinearGroup.val_det_apply, Units.val_smul, Units.val_one,
+      det_smul_of_tower, Fintype.card_fin, det_one, Units.smul_def _ (1 : ℝ), smul_eq_mul,
+      mul_one, Units.val_pow_eq_pow_val, sq_eq_one_iff, Units.val_eq_one,
+      ← Units.val_one (α := ℝ), ← Units.val_neg, ← Units.ext_iff] at hg
+    rcases hg with rfl | rfl
+    · left; ext; simp
+    · right; ext; simp
+  · rintro (rfl | rfl)
+    · exact ⟨1, by ext; simp⟩
+    · exact ⟨-1, by ext; simp⟩
+
+end Stabilizer
+
 section SLAction
+/-!
+## Action of the special linear group
+-/
 
 noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
@@ -387,6 +503,14 @@ theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z)
 theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
 
 @[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
+
+/-- No element of `SL(2, ℤ)` except `±1` acts trivially on `ℍ`. -/
+lemma forall_smul_eq_iff : (∀ τ : ℍ, g • τ = τ) ↔ g = 1 ∨ g = -1 := by
+  simp only [sl_moeb, forall_smul_eq_iff_of_det_eq_one <| coeToGL_det _, ← mapGL_inj (S := ℝ),
+    map_one]
+  congr!
+  ext
+  simp
 
 end SLModularAction
 
