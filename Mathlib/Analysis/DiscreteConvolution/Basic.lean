@@ -134,6 +134,29 @@ def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFi
 
 end TripleFiber
 
+/-! ### Convolution Existence -/
+
+section Existence
+
+variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F]
+variable [TopologicalSpace F]
+
+/-- The convolution of `f` and `g` with bilinear map `L` exists at `x` when the sum over
+the fiber is summable. -/
+@[to_additive (dont_translate := S E E' F) AddConvolutionExistsAt
+  /-- Additive convolution exists at `x` when the fiber sum is summable. -/]
+def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
+  Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
+
+/-- The convolution of `f` and `g` with bilinear map `L` exists when it exists at every point. -/
+@[to_additive (dont_translate := S E E' F) AddConvolutionExists
+  /-- Additive convolution exists when it exists at every point. -/]
+def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
+  ∀ x, ConvolutionExistsAt L f g x
+
+end Existence
+
 /-! ### Convolution Definition -/
 
 section Definition
