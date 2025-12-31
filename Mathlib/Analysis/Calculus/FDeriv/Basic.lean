@@ -402,17 +402,11 @@ as this statement is empty. -/
 theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
   .of_not_accPt (h ·.clusterPt.mem_closure)
 
-@[deprecated (since := "2025-05-23")]
-alias HasFDerivWithinAt.of_not_mem_closure := HasFDerivWithinAt.of_notMem_closure
-
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_not_accPt h)]
 
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
-
-@[deprecated (since := "2025-05-24")]
-alias fderivWithin_zero_of_nmem_closure := fderivWithin_zero_of_notMem_closure
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
