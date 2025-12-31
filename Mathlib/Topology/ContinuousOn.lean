@@ -89,9 +89,6 @@ theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
 
-@[deprecated (since := "2025-05-23")]
-alias continuousWithinAt_of_not_mem_closure := continuousWithinAt_of_notMem_closure
-
 /-!
 ## `ContinuousOn`
 -/

@@ -69,6 +69,11 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
   exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 
 @[to_additive]
+instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
+    IsCyclic (Subgroup.zpowers g) :=
+  (Subgroup.isCyclic_iff_exists_zpowers_eq_top _).mpr ⟨g, rfl⟩
+
+@[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
   ⟨⟨1, fun _ => ⟨0, Subsingleton.elim _ _⟩⟩⟩
 
@@ -307,6 +312,18 @@ theorem isCyclic_of_injective [IsCyclic G'] (f : G →* G') (hf : Function.Injec
 @[to_additive]
 lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H') [IsCyclic H'] : IsCyclic H :=
   isCyclic_of_injective (Subgroup.inclusion h) (Subgroup.inclusion_injective h)
+
+@[to_additive]
+theorem Subgroup.le_zpowers_iff (g : G) (H : Subgroup G) :
+    H ≤ Subgroup.zpowers g ↔ ∃ n : ℕ, H = Subgroup.zpowers (g ^ n) := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨x, rfl⟩ := (H.isCyclic_iff_exists_zpowers_eq_top).mp (isCyclic_of_le h)
+    obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp <| h (mem_zpowers x)
+    obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg k
+    · exact ⟨n, by rw [zpow_natCast]⟩
+    · exact ⟨n, by simp⟩
+  · rintro ⟨k, rfl⟩
+    exact zpowers_le_of_mem <| npow_mem_zpowers g k
 
 open Finset Nat
 

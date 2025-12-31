@@ -162,8 +162,6 @@ theorem fun_support_eq (f : α →₀ M) : Function.support f = f.support :=
 theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
   not_iff_comm.1 mem_support_iff.symm
 
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
-
 @[simp, norm_cast]
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 

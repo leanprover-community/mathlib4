@@ -542,17 +542,11 @@ theorem exists_notMem_null_le_average (hμ : μ ≠ 0) (hf : Integrable f μ) (h
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_le_average := exists_notMem_null_le_average
-
 /-- **First moment method**. The maximum of an integrable function is greater than its mean, while
 avoiding a null set. -/
 theorem exists_notMem_null_average_le (hμ : μ ≠ 0) (hf : Integrable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ⨍ a, f a ∂μ ≤ f x := by
   simpa [integral_neg, neg_div] using exists_notMem_null_le_average hμ hf.neg hN
-
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_average_le := exists_notMem_null_average_le
 
 end FiniteMeasure
 
@@ -587,18 +581,12 @@ theorem exists_notMem_null_le_integral (hf : Integrable f μ) (hN : μ N = 0) :
   simpa only [average_eq_integral] using
     exists_notMem_null_le_average (IsProbabilityMeasure.ne_zero μ) hf hN
 
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_le_integral := exists_notMem_null_le_integral
-
 /-- **First moment method**. The maximum of an integrable function is greater than its integral,
 while avoiding a null set. -/
 theorem exists_notMem_null_integral_le (hf : Integrable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ∫ a, f a ∂μ ≤ f x := by
   simpa only [average_eq_integral] using
     exists_notMem_null_average_le (IsProbabilityMeasure.ne_zero μ) hf hN
-
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_integral_le := exists_notMem_null_integral_le
 
 end ProbabilityMeasure
 end FirstMomentReal
@@ -680,9 +668,6 @@ theorem exists_notMem_null_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a : α, f
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_laverage_le := exists_notMem_null_laverage_le
-
 section FiniteMeasure
 variable [IsFiniteMeasure μ]
 
@@ -706,9 +691,6 @@ theorem exists_notMem_null_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ)
   rw [← measure_diff_null hN] at this
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
-
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_le_laverage := exists_notMem_null_le_laverage
 
 end FiniteMeasure
 
@@ -744,18 +726,12 @@ theorem exists_notMem_null_le_lintegral (hf : AEMeasurable f μ) (hN : μ N = 0)
   simpa only [laverage_eq_lintegral] using
     exists_notMem_null_le_laverage (IsProbabilityMeasure.ne_zero μ) hf hN
 
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_le_lintegral := exists_notMem_null_le_lintegral
-
 /-- **First moment method**. The maximum of a measurable function is greater than its integral,
 while avoiding a null set. -/
 theorem exists_notMem_null_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ∫⁻ a, f a ∂μ ≤ f x := by
   simpa only [laverage_eq_lintegral] using
     exists_notMem_null_laverage_le (IsProbabilityMeasure.ne_zero μ) hint hN
-
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_null_lintegral_le := exists_notMem_null_lintegral_le
 
 end ProbabilityMeasure
 end FirstMomentENNReal

@@ -202,18 +202,12 @@ lemma cochainsMap_f_0_comp_cochainsIso₀ :
 @[deprecated (since := "2025-06-25")]
 alias cochainsMap_f_0_comp_zeroCochainsIso := cochainsMap_f_0_comp_cochainsIso₀
 
-@[deprecated (since := "2025-05-09")]
-alias cochainsMap_f_0_comp_zeroCochainsLequiv := cochainsMap_f_0_comp_cochainsIso₀
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_1_comp_cochainsIso₁ :
     (cochainsMap f φ).f 1 ≫ (cochainsIso₁ B).hom = (cochainsIso₁ A).hom ≫ cochainsMap₁ f φ := rfl
 
 @[deprecated (since := "2025-06-25")]
 alias cochainsMap_f_1_comp_oneCochainsIso := cochainsMap_f_1_comp_cochainsIso₁
-
-@[deprecated (since := "2025-05-09")]
-alias cochainsMap_f_1_comp_oneCochainsLequiv := cochainsMap_f_1_comp_oneCochainsIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_2_comp_cochainsIso₂ :
@@ -226,9 +220,6 @@ lemma cochainsMap_f_2_comp_cochainsIso₂ :
 @[deprecated (since := "2025-06-25")]
 alias cochainsMap_f_2_comp_twoCochainsIso := cochainsMap_f_2_comp_cochainsIso₂
 
-@[deprecated (since := "2025-05-09")]
-alias cochainsMap_f_2_comp_twoCochainsLequiv := cochainsMap_f_2_comp_twoCochainsIso
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_3_comp_cochainsIso₃ :
     (cochainsMap f φ).f 3 ≫ (cochainsIso₃ B).hom = (cochainsIso₃ A).hom ≫ cochainsMap₃ f φ := by
@@ -239,9 +230,6 @@ lemma cochainsMap_f_3_comp_cochainsIso₃ :
 
 @[deprecated (since := "2025-06-25")]
 alias cochainsMap_f_3_comp_threeCochainsIso := cochainsMap_f_3_comp_cochainsIso₃
-
-@[deprecated (since := "2025-05-09")]
-alias cochainsMap_f_3_comp_threeCochainsLequiv := cochainsMap_f_3_comp_threeCochainsIso
 
 end
 
@@ -366,9 +354,6 @@ lemma coe_mapCocycles₁ (x) :
     ⇑(mapCocycles₁ f φ x) = cochainsMap₁ f φ x := rfl
 
 @[deprecated (since := "2025-06-25")] alias coe_mapOneCocycles := coe_mapCocycles₁
-
-@[deprecated (since := "2025-05-09")]
-alias mapOneCocycles_comp_subtype := mapOneCocycles_comp_i
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoCocycles₁_hom :
@@ -554,9 +539,6 @@ lemma coe_mapCocycles₂ (x) :
     ⇑(mapCocycles₂ f φ x) = cochainsMap₂ f φ x := rfl
 
 @[deprecated (since := "2025-06-25")] alias coe_mapTwoCocycles := coe_mapCocycles₂
-
-@[deprecated (since := "2025-05-09")]
-alias mapTwoCocycles_comp_subtype := mapTwoCocycles_comp_i
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoCocycles₂_hom :

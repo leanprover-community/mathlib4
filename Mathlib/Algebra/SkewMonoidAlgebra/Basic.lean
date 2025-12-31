@@ -203,8 +203,6 @@ theorem notMem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
     a ∉ f.support ↔ f.coeff a = 0 := by
   simp only [mem_support_iff, ne_eq, not_not]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
-
 theorem ext_iff {p q : SkewMonoidAlgebra k G} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : G →₀ k⟩
   rcases q with ⟨g : G →₀ k⟩

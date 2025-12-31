@@ -89,9 +89,6 @@ theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} =
 
 theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDivisors]
 
-@[deprecated (since := "2025-05-23")]
-alias properDivisors.not_self_mem := self_notMem_properDivisors
-
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [properDivisors]

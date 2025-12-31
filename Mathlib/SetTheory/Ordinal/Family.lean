@@ -558,8 +558,6 @@ theorem lsub_notMem_range {ι} (f : ι → Ordinal) :
     lsub f ∉ Set.range f := fun ⟨i, h⟩ =>
   h.not_lt (lt_lsub f i)
 
-@[deprecated (since := "2025-05-23")] alias lsub_not_mem_range := lsub_notMem_range
-
 theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
   ⟨_, lsub_notMem_range f⟩
 

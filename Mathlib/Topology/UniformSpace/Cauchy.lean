@@ -846,4 +846,47 @@ instance secondCountable_of_separable [SeparableSpace α] : SecondCountableTopol
     refine ⟨_, ⟨y, hys, k, rfl⟩, (t k).symm hxy, fun z hz => ?_⟩
     exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
 
+variable {α}
+
+theorem subset_countable_closure_of_almost_dense_set (s : Set α)
+    (hs : ∀ U ∈ 𝓤 α, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, ball x U) :
+    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
+  obtain ⟨B, hB, _⟩ := has_seq_basis α
+  replace hs (n : ℕ) := hs (B n) (hB.mem n)
+  choose t tC ht using hs
+  have := fun n => (tC n).to_subtype
+  choose o hox hos using fun (n : ℕ) (x : t n) (hx : (ball x.1 (B n) ∩ s).Nonempty) => hx
+  refine ⟨⋃ (n) (x), range (o n x), iUnion₂_subset fun _ _ => range_subset_iff.2 (hos _ _),
+    countable_iUnion fun _ => countable_iUnion fun _ => countable_range _, fun x hx => ?_⟩
+  rw [mem_closure_iff_ball]
+  intro U hU
+  obtain ⟨V, hV, hVU⟩ := comp_mem_uniformity_sets hU
+  obtain ⟨n, hn⟩ := hB.mem_iff.1 hV
+  specialize ht n hx
+  rw [mem_iUnion₂] at ht
+  obtain ⟨y, hy, hyx⟩ := ht
+  refine ⟨o n ⟨y, hy⟩ ⟨x, hyx, hx⟩, ?_, ?_⟩
+  · apply ball_mono ((SetRel.comp_subset_comp hn hn).trans hVU)
+    exact mem_ball_comp (mem_ball_symmetry.2 hyx) (hox n ⟨y, hy⟩ ⟨x, hyx, hx⟩)
+  · exact mem_iUnion₂_of_mem ⟨y, hy⟩ (mem_range_self ⟨x, hyx, hx⟩)
+
+theorem secondCountable_of_almost_dense_set
+    (hs : ∀ U ∈ 𝓤 α, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, ball x U = univ) :
+    SecondCountableTopology α := by
+  suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
+  have : ∀ U ∈ 𝓤 α, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, ball x U := by
+    simpa only [univ_subset_iff] using hs
+  rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
+  exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
+
+/-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
+from the more general `UniformSpace.subset_countable_closure_of_almost_dense_set`. -/
+lemma _root_.TotallyBounded.isSeparable {s : Set α} (h : TotallyBounded s) :
+    TopologicalSpace.IsSeparable s := by
+  obtain ⟨t, -, htc, hts⟩ := subset_countable_closure_of_almost_dense_set s fun U hU => by
+    obtain ⟨t, ht, hst⟩ := h (SetRel.inv U)
+      (mem_of_superset (symmetrize_mem_uniformity hU) SetRel.symmetrize_subset_inv)
+    exact ⟨t, ht.countable, hst⟩
+  exact ⟨t, htc, hts⟩
+
 end UniformSpace

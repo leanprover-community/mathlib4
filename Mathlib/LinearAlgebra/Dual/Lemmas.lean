@@ -322,9 +322,6 @@ theorem exists_dual_map_eq_bot_of_notMem
   rw [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply] at hx
   exact Projective.exists_dual_ne_zero R hx
 
-@[deprecated (since := "2025-05-24")]
-alias exists_dual_map_eq_bot_of_nmem := exists_dual_map_eq_bot_of_notMem
-
 theorem exists_dual_map_eq_bot_of_lt_top
     {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {p : Submodule R M}
     (hp : p < ⊤) (hp' : Projective R (M ⧸ p)) :

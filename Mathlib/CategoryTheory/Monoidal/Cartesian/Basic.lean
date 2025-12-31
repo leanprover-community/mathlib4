@@ -101,8 +101,6 @@ class CartesianMonoidalCategory (C : Type u) [Category.{v} C] extends
   /-- The monoidal product is the categorical product. -/
   tensorProductIsBinaryProduct (X Y : C) : IsLimit <| BinaryFan.mk (fst X Y) (snd X Y)
 
-@[deprecated (since := "2025-05-15")] alias ChosenFiniteProducts := CartesianMonoidalCategory
-
 namespace CartesianMonoidalCategory
 
 export SemiCartesianMonoidalCategory (isTerminalTensorUnit fst snd fst_def snd_def toUnit
@@ -223,8 +221,6 @@ omit 𝒯 in
 in `C`. -/
 noncomputable abbrev ofHasFiniteProducts [HasFiniteProducts C] : CartesianMonoidalCategory C :=
   .ofChosenFiniteProducts (getLimitCone (.empty C)) (getLimitCone <| pair · ·)
-
-@[deprecated (since := "2025-05-08")] alias ofFiniteProducts := ofHasFiniteProducts
 
 end OfChosenFiniteProducts
 
@@ -467,10 +463,6 @@ This is not an instance to prevent diamonds. -/
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
-@[deprecated (since := "2025-05-15")]
-alias _root_.CategoryTheory.BraidedCategory.ofChosenFiniteProducts :=
-  BraidedCategory.ofCartesianMonoidalCategory
-
 instance : Nonempty (BraidedCategory C) := ⟨.ofCartesianMonoidalCategory⟩
 
 instance : Subsingleton (BraidedCategory C) where
@@ -697,10 +689,6 @@ noncomputable def isLimitCartesianMonoidalCategoryOfPreservesLimits :
   mapIsLimitOfPreservesOfIsLimit F (fst _ _) (snd _ _) <|
     (tensorProductIsBinaryProduct A B).ofIsoLimit <|
       isoBinaryFanMk (BinaryFan.mk (fst A B) (snd A B))
-
-@[deprecated (since := "2025-05-15")]
-alias isLimitChosenFiniteProductsOfPreservesLimits :=
-  isLimitCartesianMonoidalCategoryOfPreservesLimits
 
 /-- If `F` preserves the limit of the pair `(A, B)`, then `prodComparison F A B` is an isomorphism.
 -/

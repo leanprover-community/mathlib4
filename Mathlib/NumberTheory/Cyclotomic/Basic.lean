@@ -90,12 +90,6 @@ namespace IsCyclotomicExtension
 
 section Basic
 
-variable {S B} in
-@[deprecated exists_isPrimitiveRoot (since := "2025-05-21")]
-theorem exists_prim_root [IsCyclotomicExtension S A B] {n : ℕ} (ha : n ∈ S) (ha' : n ≠ 0) :
-    ∃ r : B, IsPrimitiveRoot r n :=
-  exists_isPrimitiveRoot A B ha ha'
-
 /-- A reformulation of `IsCyclotomicExtension` that uses `⊤`. -/
 theorem iff_adjoin_eq_top :
     IsCyclotomicExtension S A B ↔

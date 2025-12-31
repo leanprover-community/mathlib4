@@ -196,9 +196,6 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
   classical
   exact nonneg_iff_posSemidef (A := A) |>.eq ▸ CStarAlgebra.nonneg_iff_eq_star_mul_self
 
-@[deprecated (since := "2025-05-07")]
-alias posSemidef_iff_eq_transpose_mul_self := CStarAlgebra.nonneg_iff_eq_star_mul_self
-
 theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
   refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩

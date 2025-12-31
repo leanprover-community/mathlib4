@@ -138,8 +138,6 @@ theorem encard_ne_add_one (a : α) :
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
-@[deprecated (since := "2025-05-23")] alias encard_insert_of_not_mem := encard_insert_of_notMem
-
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
   induction s, h using Set.Finite.induction_on with
   | empty => simp
@@ -669,8 +667,6 @@ section InsertErase
   rw [← Nat.cast_inj (R := ℕ∞), (hs.insert a).cast_ncard_eq, Nat.cast_add, Nat.cast_one,
     hs.cast_ncard_eq, encard_insert_of_notMem h]
 
-@[deprecated (since := "2025-05-23")] alias ncard_insert_of_not_mem := ncard_insert_of_notMem
-
 theorem ncard_insert_of_mem {a : α} (h : a ∈ s) : ncard (insert a s) = s.ncard := by
   rw [insert_eq_of_mem h]
 
@@ -1006,9 +1002,6 @@ theorem diff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard) (hs : s.Finite :
 theorem exists_mem_notMem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
     (hs : s.Finite := by toFinite_tac) : ∃ e, e ∈ t ∧ e ∉ s :=
   diff_nonempty_of_ncard_lt_ncard h hs
-
-@[deprecated (since := "2025-05-23")]
-alias exists_mem_not_mem_of_ncard_lt_ncard := exists_mem_notMem_of_ncard_lt_ncard
 
 @[simp] theorem ncard_inter_add_ncard_diff_eq_ncard (s t : Set α)
     (hs : s.Finite := by toFinite_tac) : (s ∩ t).ncard + (s \ t).ncard = s.ncard := by

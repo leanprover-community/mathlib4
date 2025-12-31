@@ -47,29 +47,9 @@ def uliftPowersHom (M : Type u) [Monoid M] : M ≃ (ULift.{u} (Multiplicative �
 
 namespace MonoidHom
 
-/-- The equivalence `(Multiplicative ℕ →* α) ≃ α` for any monoid `α`. -/
-@[deprecated powersHom (since := "2025-05-11")]
-def fromMultiplicativeNatEquiv (α : Type u) [Monoid α] : (Multiplicative ℕ →* α) ≃ α :=
-  (powersHom _).symm
-
-/-- The equivalence `(ULift (Multiplicative ℕ) →* α) ≃ α` for any monoid `α`. -/
-@[deprecated uliftPowersHom (since := "2025-05-11")]
-def fromULiftMultiplicativeNatEquiv (α : Type u) [Monoid α] :
-    (ULift.{u} (Multiplicative ℕ) →* α) ≃ α :=
-  (uliftPowersHom _).symm
-
 end MonoidHom
 
 namespace AddMonoidHom
-
-/-- The equivalence `(ℕ →+ α) ≃ α` for any additive monoid `α`. -/
-@[deprecated multiplesHom (since := "2025-05-11")]
-def fromNatEquiv (α : Type u) [AddMonoid α] : (ℕ →+ α) ≃ α := (multiplesHom _).symm
-
-/-- The equivalence `(ULift ℕ →+ α) ≃ α` for any additive monoid `α`. -/
-@[deprecated uliftMultiplesHom (since := "2025-05-11")]
-def fromULiftNatEquiv (α : Type u) [AddMonoid α] : (ULift.{u} ℕ →+ α) ≃ α :=
-  (uliftMultiplesHom _).symm
 
 end AddMonoidHom
 
