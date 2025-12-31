@@ -1013,15 +1013,15 @@ def mulLeft (a : A) : A →ₗ[R] A where
   map_add' := mul_add _
   map_smul' _ := mul_smul_comm _ _
 
-@[simp] theorem mulLeft_apply (a b : A) : mulLeft R a b = a * b := rfl
+@[simp]
+theorem mulLeft_apply (a b : A) : mulLeft R a b = a * b := rfl
 
 @[simp]
-theorem toAddMonoidHom_mulLeft (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a := rfl
-
-@[deprecated (since := "2025-12-30")] alias mulLeft_toAddMonoidHom := toAddMonoidHom_mulLeft
+theorem mulLeft_toAddMonoidHom (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a := rfl
 
 variable (A) in
-@[simp] theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext zero_mul
+@[simp]
+theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ => zero_mul _
 
 end left
 
@@ -1039,15 +1039,15 @@ def mulRight (b : A) : A →ₗ[R] A where
   map_add' _ _ := add_mul _ _ _
   map_smul' _ _ := smul_mul_assoc _ _ _
 
-@[simp] theorem mulRight_apply (a b : A) : mulRight R a b = b * a := rfl
+@[simp]
+theorem mulRight_apply (a b : A) : mulRight R a b = b * a := rfl
 
 @[simp]
-theorem toAddMonoidHom_mulRight (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a := rfl
-
-@[deprecated (since := "2025-12-30")] alias mulRight_toAddMonoidHom := toAddMonoidHom_mulRight
+theorem mulRight_toAddMonoidHom (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a := rfl
 
 variable (A) in
-@[simp] theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext mul_zero
+@[simp]
+theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext fun _ => mul_zero _
 
 end right
 
