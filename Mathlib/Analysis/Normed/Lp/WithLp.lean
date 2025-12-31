@@ -189,10 +189,6 @@ instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
     change toLp p (x • y • ofLp z) = toLp p (y • x • ofLp z)
     rw [smul_comm]
 
-section equiv
-
-end equiv
-
 variable (K V)
 
 /-- `WithLp.equiv` as a group isomorphism. -/

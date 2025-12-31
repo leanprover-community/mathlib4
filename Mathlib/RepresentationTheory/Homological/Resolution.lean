@@ -77,24 +77,6 @@ local notation "Gⁿ" => Fin n → G
 set_option quotPrecheck false
 local notation "Gⁿ⁺¹" => Fin (n + 1) → G
 
-namespace groupCohomology.resolution
-
-open Finsupp hiding lift
-open MonoidalCategory
-open Fin (partialProd)
-
-section Basis
-
-variable (k G n) [Group G]
-
-open scoped TensorProduct
-
-open Representation
-
-end Basis
-
-end groupCohomology.resolution
-
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/

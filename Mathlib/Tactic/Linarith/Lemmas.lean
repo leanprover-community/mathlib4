@@ -116,7 +116,3 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
   simp [h]
 
 end Mathlib.Tactic.Linarith
-
-section
-
-end
