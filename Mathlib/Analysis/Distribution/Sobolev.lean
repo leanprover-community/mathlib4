@@ -155,13 +155,11 @@ def toLpₗ (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
   map_add' f g := by
     apply_fun Lp.toTemperedDistributionCLM F (volume : Measure E) p
     · simp [map_add, ← sobFn_spec]
-    rw [injective_iff_map_eq_zero, ← LinearMap.ker_eq_bot']
-    exact Lp.ker_toTemperedDistributionCLM_eq_bot
+    exact LinearMap.ker_eq_bot.mp Lp.ker_toTemperedDistributionCLM_eq_bot
   map_smul' c f := by
     apply_fun Lp.toTemperedDistributionCLM F (volume : Measure E) p
     · simp [← sobFn_spec]
-    rw [injective_iff_map_eq_zero, ← LinearMap.ker_eq_bot']
-    exact Lp.ker_toTemperedDistributionCLM_eq_bot
+    exact LinearMap.ker_eq_bot.mp Lp.ker_toTemperedDistributionCLM_eq_bot
 
 theorem sobFn_add {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f g : Sobolev E F s p) :
     sobFn (f + g) = sobFn f + sobFn g := (toLpₗ E F s p).map_add f g

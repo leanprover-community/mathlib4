@@ -30,7 +30,7 @@ variable
   (𝕜 : Type*) [RCLike 𝕜]
   {W : Type*} [NormedAddCommGroup W]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
+  --{F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
@@ -148,6 +148,20 @@ lemma fourierTransformCLE_apply (f : 𝓢(V, E)) : fourierTransformCLE 𝕜 f = 
 lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) : (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := rfl
 
 end definition
+
+section eval
+
+variable {𝕜' : Type*} [NormedField 𝕜']
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+
+variable (𝕜') in
+theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
+    𝓕 (SchwartzMap.evalCLM 𝕜' F G m f) = SchwartzMap.evalCLM 𝕜' F G m (𝓕 f) := by
+  ext x
+  exact (fourier_continuousLinearMap_apply f.integrable).symm
+
+end eval
 
 section fubini
 
@@ -300,26 +314,17 @@ theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
 open LineDeriv
 
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
-    ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (innerSL ℝ · m) f) := by
-  ext1 x
-  calc
-    _ = fderiv ℝ (𝓕 (f : V → E)) x m := by
-      rw [lineDerivOp_apply_eq_fderiv, fourier_coe]
-    _ = 𝓕 (fun y ↦ -(2 * π * Complex.I) • (innerSL ℝ y m) • (f y)) x := by
-      have : Integrable (fun v ↦ ‖v‖ * ‖f v‖) volume := by
-        convert f.integrable_pow_mul volume 1
-        simp
-      rw [Real.fderiv_fourier f.integrable this]
-      simp
-      sorry
-    _ = _ := by
-      rw [fourier_coe]
-      apply integral_congr_ae
-      have : (fun x ↦ inner ℝ x m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
-      simp [this]
-  --rw [lineDerivOp_apply_eq_fderiv, ← fderivCLM_apply (𝕜 := 𝕜), fderivCLM_fourier_eq]
-  --simp
-  --sorry
+    ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := calc
+  _ = SchwartzMap.evalCLM 𝕜 V E m (fderivCLM 𝕜 (𝓕 f)) := rfl
+  _ = SchwartzMap.evalCLM 𝕜 V E m (𝓕 (fourierSMulRightCLM (innerSL ℝ) f)) := by
+    rw [fderivCLM_fourier_eq]
+  _ = 𝓕 (SchwartzMap.evalCLM 𝕜 V E m (fourierSMulRightCLM (innerSL ℝ) f)) := by
+    rw [fourier_evalCLM_eq 𝕜 (fourierSMulRightCLM (innerSL ℝ) f) m]
+  _ = _ := by
+    congr
+    ext x
+    have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
+    simp [this, innerSL_apply_apply ℝ]
 
 end deriv
 
