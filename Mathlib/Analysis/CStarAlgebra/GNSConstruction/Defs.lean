@@ -34,15 +34,20 @@ refence used here.
 -/
 
 @[expose] public section
+open Complex
 open scoped ComplexOrder
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] (f : A →ₚ[ℂ] ℂ)
 
 namespace PositiveLinearMap
+
+set_option linter.unusedVariables false in
 /-- The GNS space on a non-unital C⋆-algebra with a positive linear functional. This erases the norm
 on `A`, while remainaing structurally equivalent via the `LinearEquivalence`, `toGNS`.
 -/
-def GNS (_f : A →ₚ[ℂ] ℂ) := A
+@[nolint unusedArguments]
+def GNS (f : A →ₚ[ℂ] ℂ) := A
+
 instance : AddCommGroup f.GNS := inferInstanceAs (AddCommGroup A)
 instance : Module ℂ f.GNS := inferInstanceAs (Module ℂ A)
 
@@ -51,6 +56,20 @@ def toGNS : A ≃ₗ[ℂ] f.GNS := LinearEquiv.refl ℂ _
 
 /-- The map from the GNS space to the C⋆-algebra, as a linear equivalence. -/
 def ofGNS : f.GNS ≃ₗ[ℂ] A := (f.toGNS).symm
+
+@[simp]
+lemma toGNS_ofGNS (a : f.GNS) : f.toGNS (f.ofGNS a) = a := rfl
+
+@[simp]
+lemma ofGNS_toGNS (a : A) : f.ofGNS (f.toGNS a) = a := rfl
+
+@[simp]
+lemma symm_ofGNS : (f.ofGNS).symm = f.toGNS := rfl
+
+@[simp]
+lemma symm_toGNS : (f.toGNS).symm = f.ofGNS := rfl
+
+variable [StarOrderedRing A]
 
 def preInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
   inner a b := f (star (f.ofGNS a) * f.ofGNS b)
@@ -70,12 +89,16 @@ lemma GNS_inner_def (a b : f.GNS) :
 lemma GNS_norm_def (a : f.GNS) :
     ‖a‖ = (f (star (f.ofGNS a) * f.ofGNS a)).re.sqrt := rfl
 
-abbrev GNS_Quotient := SeparationQuotient f.GNS
+lemma GNS_norm_sq (a : f.GNS) :
+    ‖a‖ ^ 2 = (f (star (f.ofGNS a) * f.ofGNS a)) := by
+  have : 0 ≤ f (star (f.ofGNS a) * f.ofGNS a) := map_nonneg f <| star_mul_self_nonneg _
+  rw [GNS_norm_def, ← ofReal_pow, Real.sq_sqrt]
+  · rw [conj_eq_iff_re.mp this.star_eq]
+  · rwa [re_nonneg_iff_nonneg this.isSelfAdjoint]
 
 /--
-The Hilbert space constructed from `f` is `GNS_HilbertSpace`. It is the closure under the inner
-product-induced norm of `f.GNS_Quotient`.
+The Hilbert space constructed from a positive linear functional on a C⋆-algebra.
 -/
-abbrev GNS_HilbertSpace := UniformSpace.Completion (f.GNS_Quotient)
+abbrev GNS_HilbertSpace := UniformSpace.Completion f.GNS
 
 end PositiveLinearMap
