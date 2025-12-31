@@ -55,7 +55,7 @@ This is `Set.mulAntidiagonal Set.univ Set.univ x`. -/
 This is `Set.addAntidiagonal Set.univ Set.univ x`. -/]
 abbrev mulFiber (x : M) : Set (M × M) := Set.mulAntidiagonal Set.univ Set.univ x
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := by simp
 
 @[to_additive]
@@ -96,7 +96,7 @@ This is `mulTripleAntidiagonal Set.univ Set.univ Set.univ x`. -/
 abbrev tripleFiber (x : M) : Set (M × M × M) :=
   mulTripleAntidiagonal Set.univ Set.univ Set.univ x
 
-@[to_additive (attr := simp) mem_tripleAddFiber]
+@[to_additive mem_tripleAddFiber]
 theorem mem_tripleFiber {x : M} {abc : M × M × M} :
     abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := by simp [mulTripleAntidiagonal]
 
