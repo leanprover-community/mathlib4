@@ -8,7 +8,7 @@ module
 
 public import Mathlib.LinearAlgebra.Center
 public import Mathlib.LinearAlgebra.Transvection.Basic
-
+public import Mathlib.RingTheory.Finiteness.Prod
 /-!
 # Dilatransvections generate the special linear group
 
@@ -701,6 +701,23 @@ theorem reduce_mem_transvections {W : Submodule K V}
   obtain ⟨x, rfl⟩ := W.mkQ_surjective x
   simp [he, LinearMap.transvection.apply]
 
+theorem reduce_mem_dilatransvections {W : Submodule K V}
+    (hW : W ≤ e.fixedSubmodule) (he_mem : e ∈ dilatransvections K V) :
+    reduce W ⟨e, mem_stabilizer_submodule_of_le_fixedSubmodule hW⟩ ∈
+      dilatransvections K (V ⧸ W) := by
+  rw [mem_dilatransvections_iff_finrank, finrank_le_one_iff] at ⊢ he_mem
+  obtain ⟨⟨v, ⟨x, hx⟩⟩, hv⟩ := he_mem
+  use ⟨W.mkQ v, ?_⟩
+  · rintro ⟨_, ⟨y, rfl⟩⟩
+    obtain ⟨z, rfl⟩ := W.mkQ_surjective y
+    obtain ⟨c, hc⟩ := hv ⟨e z - z, ⟨z, by simp⟩⟩
+    use c
+    rw [← (Submodule.subtype_injective _).eq_iff, LinearMap.map_smul, subtype_apply] at hc
+    rw [← (Submodule.subtype_injective _).eq_iff]
+    simp [← Submodule.Quotient.mk_smul, hc]
+  · use W.mkQ x
+    simp [← hx]
+
 theorem Set.mem_pow_iff_exists_fin_prod_eq
     {α : Type*} [Monoid α] {a : α} {s : Set α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → α, Fin.prod f = a ∧ ∀ i, f i ∈ s := by
@@ -734,13 +751,13 @@ theorem Set.mem_pow_iff_exists_fin_prod_eq
         simp [Fin.tail_def, hf]
 
 -- Generalizes Fin.prod_snoc
-#check Fin.prod_snoc
 theorem _root_.Fin.prod_snoc' {α : Type*} [Monoid α] {n : ℕ} (f : Fin n → α) (a : α) :
     Fin.prod (Fin.snoc f a) = Fin.prod f * a := by
   simp [Fin.prod_eq_prod_map_finRange, List.finRange_succ_last]
 
-
-example {n : ℕ} (f : Fin n → V ≃ₗ[K] V) :
+omit [Module.Finite K V] in
+theorem iInf_fixedSubmodule_le_fixedSubmodule_prod
+    {n : ℕ} (f : Fin n → V ≃ₗ[K] V) :
     iInf (fun i ↦ (f i).fixedSubmodule) ≤ (Fin.prod f).fixedSubmodule := by
   induction n with
   | zero => intro; simp
@@ -755,7 +772,67 @@ example {n : ℕ} (f : Fin n → V ≃ₗ[K] V) :
     apply hind
     simp_all
 
-example
+theorem finrank_quotient_inf_le_finrank_quotient_add_finrank_quotient'
+    {R : Type*} [Ring R] [StrongRankCondition R]
+    {V : Type*} [AddCommGroup V] [Module R V] {P Q : Submodule R V}
+    [Module.Finite R (V ⧸ P)] [Module.Free R (V ⧸ P)]
+    [Module.Free R (V ⧸ Q)] [Module.Finite R (V ⧸ Q)] :
+    finrank R (V ⧸ P ⊓ Q) ≤ finrank R (V ⧸ P) + finrank R (V ⧸ Q) := by
+  suffices Function.Injective
+    ((factor inf_le_left).prod (factor inf_le_right) : V ⧸ P ⊓ Q →ₗ[R] _) by
+    convert finrank_le_finrank_of_injective this
+    rw [Module.finrank_prod]
+  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  intro x
+  obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
+  simp [mem_ker, mem_bot]
+
+theorem finrank_quotient_inf_le_finrank_quotient_add_finrank_quotient
+    {P Q : Submodule K V} :
+    finrank K (V ⧸ P ⊓ Q) ≤ finrank K (V ⧸ P) + finrank K (V ⧸ Q) := by
+  rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
+  rw [← finrank_quotient_add_finrank P, add_assoc, add_le_add_iff_left]
+  rw [add_comm, ← Nat.add_le_add_iff_right, add_assoc, finrank_quotient_add_finrank]
+  rw [← finrank_sup_add_finrank_inf_eq, add_comm]
+  simp only [add_le_add_iff_left, finrank_le]
+
+theorem finrank_quotient_iInf_le_sum_finrank_quotient
+    {ι : Type*} (s : Finset ι) (f : ι → Submodule K V) :
+    finrank K (V ⧸ ⨅ i ∈ s, f i) ≤ ∑ i ∈ s , finrank K (V ⧸ f i) := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    rw [iInf_eq_top.mpr (by simp), ← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
+    simp
+  | insert i s his hs =>
+    rw [Finset.iInf_insert]
+    apply le_trans finrank_quotient_inf_le_finrank_quotient_add_finrank_quotient
+    simp [hs, Finset.sum_insert his]
+
+theorem Fin.snoc_apply_of_val_lt {n : ℕ} {α : Fin (n + 1) → Sort*}
+    {g : (i : Fin n) → α i.castSucc} {a : α (Fin.last n)}
+    {i : Fin (n + 1)} (hi : i.val < n) :
+    Fin.snoc g a i = g ⟨i, hi⟩ := by
+  simp only [Fin.snoc, Fin.castSucc_castLT, cast_eq, dif_pos hi]
+  rfl
+  -- explicit proof:
+  -- apply congr_arg; rw [@Fin.eq_mk_iff_val_eq, Fin.val_castLT]
+
+theorem Fin.prod_cast {α : Type*} [Monoid α]
+    {m n : ℕ} {f : Fin m → α} {g : Fin n → α} (hmn : m = n)
+    (hfg : ∀ i, f i = g (i.cast hmn)) :
+    Fin.prod f = Fin.prod g := sorry
+
+theorem Fin.prod_congr {α : Type*} [Monoid α]
+    {m n : ℕ} {f : Fin m → α} {g : Fin n → α} (hmn : m ≤ n)
+    (hfg : ∀ i, f i = g (i.castLE hmn)) (hfg' : ∀ i, n ≤ i.val → g i = 1) :
+    Fin.prod f = Fin.prod g := sorry
+
+theorem Fin.prod_comp {α β : Type*} [Monoid α] [Monoid β]
+    {n : ℕ} (f : Fin n → α) (g : α →* β) :
+    Fin.prod (fun i ↦ g (f i)) = g (Fin.prod f) := sorry
+
+theorem fixedReduce_mem_dilatransvections_pow
     (hV : 1 ≤ finrank K (V ⧸ e.fixedSubmodule))
     (he : e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V) :
     e.fixedReduce ∈
@@ -767,35 +844,111 @@ example
   set l' := Fin.snoc (α := fun _ ↦ V ≃ₗ[K] V) l g with hl'
   have hl'e : Fin.prod l' = e := by
     simp [hl', ← hfg, ← hl.1, List.finRange_succ_last]
-  have : iInf (fun i ↦ (l' i).fixedSubmodule) ≤ e.fixedSubmodule := by
-    simp_rw [← hl'e]
-    generalize l' = l
-    sorry
-  have : iInf (fun i ↦ (l' i).fixedSubmodule) = e.fixedSubmodule := by
-    apply Submodule.eq_of_le_of_finrank_le this
-    sorry
-  have : ∀ i, e.fixedSubmodule = (m' i).fixedSubmodule := sorry
+  have hl'_mem_transvections (i) (hi : i ≠ Fin.last _) : l' i ∈ transvections K V := by
+    replace hi := Fin.val_lt_last hi
+    simp only [l', Fin.snoc_apply_of_val_lt hi, hl.right]
+  have hl'_mem_dilatransvections (i) : l' i ∈ dilatransvections K V := by
+    by_cases hi : i = Fin.last _
+    · simp [l', hi, hg]
+    · exact transvections_subset_dilatransvections (hl'_mem_transvections i hi)
+  have iInf_eq : iInf (fun i ↦ (l' i).fixedSubmodule) = e.fixedSubmodule := by
+    apply Submodule.eq_of_le_of_finrank_le
+    · simp_rw [← hl'e]
+      apply iInf_fixedSubmodule_le_fixedSubmodule_prod
+    · rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank]
+      rw [← finrank_quotient_add_finrank, Nat.add_le_add_iff_right]
+      -- Finset.iInf_univ
+      have : ⨅ i ∈ Finset.univ, (l' i).fixedSubmodule = ⨅ i, (l' i).fixedSubmodule := by
+        simp only [Finset.mem_univ, iInf_pos]
+      rw [← this]
+      --
+      apply le_trans (finrank_quotient_iInf_le_sum_finrank_quotient
+        Finset.univ (f := fun i ↦ (l' i).fixedSubmodule))
+      apply le_trans (Finset.sum_le_card_nsmul _ _ (n := 1) ?_)
+      · apply le_of_eq
+        simp [Nat.sub_add_cancel hV]
+      intro i _
+      rw [← mem_dilatransvections_iff_finrank_quotient]
+      apply hl'_mem_dilatransvections
+  suffices e.fixedReduce = Fin.prod (fun i ↦ reduce e.fixedSubmodule ⟨l' i, by
+    apply mem_stabilizer_submodule_of_le_fixedSubmodule
+    simp only [← iInf_eq, iInf_le]⟩) by
+    rw [this,  Set.mem_pow_iff_exists_fin_prod_eq]
+    use fun i ↦ reduce e.fixedSubmodule ⟨l' (Fin.cast (Nat.sub_add_cancel hV).symm i), by
+      apply mem_stabilizer_submodule_of_le_fixedSubmodule
+      simp only [← iInf_eq, iInf_le]⟩
+    constructor
+    · rw [Fin.prod_cast] <;> simp [Nat.sub_add_cancel hV]
+    · intro i
+      apply reduce_mem_dilatransvections
+      · simp only [← iInf_eq, iInf_le]
+      · apply hl'_mem_dilatransvections
+  simp only [fixedReduce, ← hl'e, Fin.prod_comp]
+  apply congr_arg
+  rw [← Subtype.coe_inj]
+  simp only [← Subgroup.subtype_apply, ← Fin.prod_comp]
+  congr
 
-
-
-
-
-sorry
-example (n : ℕ) (hn : 1 ≤ n) (hV : finrank K V = n + 1) (e : V ≃ₗ[K] V)
-    (a : K) (ha1 : a ≠ 1) (hea : ∀ x : V, e x = a • x) :
-    ¬ e ∈ transvections K V ^ n * dilatransvections K V := by
-  induction n with
-  | zero => simp at hn
-  | succ n hind =>
-  rw [pow_succ', mul_assoc]
-  rintro ⟨t, ht, f, hf, rfl⟩
-  simp only [mul_apply] at hea
-
-
-
-
-
-
+theorem fixedReduce_mem_transvections_pow_mul_dilatransvections
+    (hV : 1 ≤ finrank K (V ⧸ e.fixedSubmodule))
+    (he : e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V) :
+    e.fixedReduce ∈
+      transvections K (V ⧸ e.fixedSubmodule) ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) *
+        dilatransvections K (V ⧸ e.fixedSubmodule) := by
+  rw [Set.mem_mul] at he
+  obtain ⟨f, hf, g, hg, hfg⟩ := he
+  rw [Set.mem_pow_iff_exists_fin_prod_eq] at hf
+  obtain ⟨l, hf, hl⟩ := hf
+  have iInf_eq : iInf (fun i ↦ (l i).fixedSubmodule) ⊓ g.fixedSubmodule = e.fixedSubmodule := by
+    apply Submodule.eq_of_le_of_finrank_le
+    · simp_rw [← hfg, ← hf]
+      exact le_trans
+        (inf_le_inf (iInf_fixedSubmodule_le_fixedSubmodule_prod l) (le_refl _))
+        (inf_fixedSubmodule_le_fixedSubmodule_mul _ _)
+    · rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank]
+      rw [← finrank_quotient_add_finrank, Nat.add_le_add_iff_right]
+      apply le_trans finrank_quotient_inf_le_finrank_quotient_add_finrank_quotient
+      rw [mem_dilatransvections_iff_finrank_quotient] at hg
+      apply le_trans (add_le_add_right hg _)
+      rw [← le_tsub_iff_right hV]
+      -- Finset.iInf_univ
+      have : ⨅ i ∈ Finset.univ, (l i).fixedSubmodule = ⨅ i, (l i).fixedSubmodule := by
+        simp only [Finset.mem_univ, iInf_pos]
+      rw [← this]
+      --
+      have := finrank_quotient_iInf_le_sum_finrank_quotient
+        Finset.univ (f := fun i ↦ (l i).fixedSubmodule)
+      apply le_trans this
+      apply le_trans (Finset.sum_le_card_nsmul _ _ (n := 1) ?_)
+      · simp
+      intro i _
+      rw [← mem_dilatransvections_iff_finrank_quotient]
+      apply transvections_subset_dilatransvections (hl _)
+  have hg_mem_stabilizer : g ∈ stabilizer (V ≃ₗ[K] V) e.fixedSubmodule := by
+    apply mem_stabilizer_submodule_of_le_fixedSubmodule
+    simp only [← iInf_eq, inf_le_right]
+  have hl_mem_stabilizer (i) : l i ∈ stabilizer (V ≃ₗ[K] V) e.fixedSubmodule := by
+    apply mem_stabilizer_submodule_of_le_fixedSubmodule
+    simp only [← iInf_eq]
+    exact le_trans inf_le_left (iInf_le _ _)
+  rw [Set.mem_mul]
+  refine ⟨(Fin.prod fun i ↦ (reduce e.fixedSubmodule) ⟨l i, hl_mem_stabilizer i⟩),
+    ?_, (reduce e.fixedSubmodule) ⟨g, hg_mem_stabilizer⟩, ?_, ?_⟩
+  · rw [Set.mem_pow_iff_exists_fin_prod_eq]
+    refine ⟨fun i ↦ reduce e.fixedSubmodule ⟨l i, hl_mem_stabilizer i⟩, ?_, ?_⟩
+    · simp only [Fin.prod_comp]
+    · intro i
+      refine reduce_mem_transvections (l i) ?_ (hl i)
+      rw [← iInf_eq]
+      exact le_trans inf_le_left (iInf_le _ _)
+  · refine reduce_mem_dilatransvections g ?_ hg
+    simp [← iInf_eq]
+  simp only [fixedReduce, Fin.prod_comp, ← hfg, ← map_mul]
+  apply congr_arg
+  rw [← Subtype.coe_inj]
+  simp only [Subgroup.coe_mul, mul_left_inj]
+  simp only [← hf, ← Subgroup.subtype_apply, ← Fin.prod_comp]
+  congr
 
 /-- If an element of `SpecialLinearGroup K V` is a product of
 exactly `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections
