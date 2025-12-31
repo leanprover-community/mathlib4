@@ -39,7 +39,7 @@ end Algebra.IsCentral
 
 open LinearMap in
 public theorem LinearEquiv.conjAlgEquiv_inj_iff {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
-    [Free R M₂] [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂]
+    [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂]
     [Algebra.IsCentral S R] (f g : M ≃ₗ[R] M₂) :
     f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : S, ⇑f = α • g := by
   conv_lhs => rw [eq_comm]
