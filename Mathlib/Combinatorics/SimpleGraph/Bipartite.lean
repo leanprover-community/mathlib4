@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Horner
+Authors: Mitchell Horner,Yue Sun,Jiayi Huang,Nick Adfor
 -/
 module
 
@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Tactic
+public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 
 /-!
 # Bipartite graphs
@@ -63,6 +65,166 @@ relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/Double
 * Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
   I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
 -/
+
+/--
+A (finite) multigraph is bipartite if and only if every cycle has even length.
+
+More precisely, let `G` be a multigraph on a finite vertex type `V`.
+Then `G` is bipartite if and only if for every cycle `C` in `G`,
+the length of `C` is even.
+-/
+
+variable {V : Type*} (G : SimpleGraph V)
+
+lemma even_length_iff_same_color
+    {c : G.Coloring (Fin 2)}
+    {u v : V} (p : G.Walk u v) :
+    Even p.length ↔ c u = c v := by
+  classical
+  let c' : G.Coloring Bool :=
+    G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
+  simpa [c'] using
+    (SimpleGraph.Coloring.even_length_iff_congr (c := c') (p := p))
+
+theorem bipartite_implies_even_cycles (h : G.IsBipartite) :
+    ∀ (v : V) (w : G.Walk v v), w.IsCycle → Even w.length := by
+  rcases h with ⟨color⟩
+  intro v w hw
+  exact (even_length_iff_same_color (G := G) (c := color) (p := w)).2 rfl
+
+namespace SimpleGraph.Walk
+
+lemma bypass_eq_nil_of_closed {V : Type*} [DecidableEq V]
+    {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
+    w.bypass = SimpleGraph.Walk.nil := by
+  have h_nil : ∀ {u : V} {p : G.Walk u u}, p.IsPath → p = SimpleGraph.Walk.nil := by
+    aesop
+  exact h_nil (SimpleGraph.Walk.bypass_isPath _)
+lemma even_cycle_length_of_path {V : Type*} {G : SimpleGraph V}
+    (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
+    {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
+    Even (SimpleGraph.Walk.cons ha q).length := by
+  classical
+  by_cases h_edge : s(u, v) ∈ q.edges
+  · have h_len_one : q.length = 1 := by
+      have h_sym : s(v, u) ∈ q.edges := Sym2.eq_swap ▸ h_edge
+      cases q with
+      | nil => simp at h_sym
+      | cons h_adj q_tail =>
+        simp only [SimpleGraph.Walk.edges_cons, List.mem_cons] at h_sym
+        obtain h_eq | h_in_tail := h_sym
+        · rw [Sym2.eq_iff] at h_eq
+          obtain ⟨_, h_v_eq_u⟩ | ⟨h_v_eq_v, _⟩ := h_eq
+          · cases h_v_eq_u
+            have : q_tail = SimpleGraph.Walk.nil := by
+              by_contra h_ne
+              have h_supp_q := hq.support_nodup
+              rw [SimpleGraph.Walk.support_cons] at h_supp_q
+              have h_v_ne : v ≠ u := ha.ne.symm
+              cases q_tail with
+              | nil => contradiction
+              | cons h' tail' =>
+                have h_u_in_tail : u ∈ tail'.support :=
+                  SimpleGraph.Walk.end_mem_support _
+                have h_u_twice : ¬ List.Nodup (cons h' tail').support := by
+                  simp only [SimpleGraph.Walk.support_cons, List.nodup_cons]
+                  intro ⟨h_not_in, _⟩
+                  exact h_not_in h_u_in_tail
+                have h_cons_nodup : List.Nodup (cons h' tail').support := by
+                  have : List.Nodup (v :: (cons h' tail').support) := h_supp_q
+                  exact (List.nodup_cons.mp this).2
+                exact h_u_twice h_cons_nodup
+            simp [this, SimpleGraph.Walk.length]
+          · exact absurd h_v_eq_v h_adj.ne
+        · exfalso
+          have h_v_not_in : v ∉ q_tail.support := by
+            have := hq.support_nodup
+            simp only [SimpleGraph.Walk.support_cons, List.nodup_cons] at this
+            exact this.1
+          have : v ∈ q_tail.support := by
+            have h_v_in : v ∈ s(v, u) := Sym2.mem_mk_left v u
+            exact SimpleGraph.Walk.mem_support_of_mem_edges h_in_tail h_v_in
+          exact h_v_not_in this
+    simp [h_len_one, SimpleGraph.Walk.length_cons]
+  · have h_cycle : (SimpleGraph.Walk.cons ha q).IsCycle := by
+      rw [SimpleGraph.Walk.cons_isCycle_iff]
+      exact ⟨hq, h_edge⟩
+    exact h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle
+
+lemma even_length_iff_even_bypass_length {V : Type*} [DecidableEq V] {G : SimpleGraph V}
+    (hcycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
+    {u v : V} (p : G.Walk u v) :
+    Even p.length ↔ Even p.bypass.length := by
+  classical
+  induction p with
+  | nil =>
+      simp [SimpleGraph.Walk.bypass]
+  | cons h_adj p_tail ih =>
+      rename_i u' v' w
+      by_cases hu : u' ∈ p_tail.bypass.support
+      · have hbypass_len : p_tail.bypass.length =
+            (p_tail.bypass.takeUntil u' hu).length +
+            (p_tail.bypass.dropUntil u' hu).length := by
+          have h_spec := SimpleGraph.Walk.take_spec p_tail.bypass hu
+          have := congrArg SimpleGraph.Walk.length h_spec
+          rw [SimpleGraph.Walk.length_append] at this
+          exact this.symm
+        have hcons_even : Even (cons h_adj (p_tail.bypass.takeUntil u' hu)).length :=
+          even_cycle_length_of_path hcycles (p_tail.bypass.takeUntil u' hu)
+            ((bypass_isPath p_tail).takeUntil hu) h_adj
+        have h_prefix_not_even : ¬ Even (p_tail.bypass.takeUntil u' hu).length := by
+          have h_prefix_even : Even ((p_tail.bypass.takeUntil u' hu).length + 1) := by
+            simpa [length_cons, add_comm, add_left_comm, add_assoc] using hcons_even
+          exact (Nat.even_add_one).1 (by simpa [Nat.add_comm] using h_prefix_even)
+        have h_not_even_total_iff_even_drop :
+            (¬ Even p_tail.bypass.length) ↔ Even (p_tail.bypass.dropUntil u' hu).length := by
+          let A := (p_tail.bypass.takeUntil u' hu).length
+          let B := (p_tail.bypass.dropUntil u' hu).length
+          have h_even_total_iff : Even p_tail.bypass.length ↔ ¬ Even B := by
+            have h_even_sum : Even (A + B) ↔ (Even A ↔ Even B) := Nat.even_add
+            have h_even_total' : Even p_tail.bypass.length ↔ (Even A ↔ Even B) := by
+              rw [hbypass_len]; exact h_even_sum
+            constructor
+            · intro ht
+              have hEq : Even A ↔ Even B := h_even_total'.1 ht
+              intro hB
+              exact h_prefix_not_even (hEq.mpr hB)
+            · intro hnotB
+              apply h_even_total'.2
+              constructor
+              · intro hA; exact (h_prefix_not_even hA).elim
+              · intro hB; exact (hnotB hB).elim
+          have h' : ¬ Even p_tail.bypass.length ↔ ¬¬ Even B := not_congr h_even_total_iff
+          rw [h', Classical.not_not]
+        have h_step : Even (p_tail.length + 1) ↔ Even (p_tail.bypass.dropUntil u' hu).length := by
+          calc
+            Even (p_tail.length + 1) ↔ ¬ Even p_tail.length := by
+                simpa using (Nat.even_add_one (n := p_tail.length))
+            _ ↔ ¬ Even p_tail.bypass.length := not_congr ih
+            _ ↔ Even (p_tail.bypass.dropUntil u' hu).length :=
+                h_not_even_total_iff_even_drop
+        simpa [length_cons, bypass, hu] using h_step
+      · simp [length_cons, bypass, hu, Nat.even_add_one, not_congr ih]
+
+theorem bipartite_iff_all_cycles_even {V : Type*} {G : SimpleGraph V} :
+  G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+  classical
+  constructor
+  · intro h_bip
+    exact bipartite_implies_even_cycles (G := G) h_bip
+  · intro h
+    have h_colorable : G.Colorable 2 := by
+      apply (SimpleGraph.two_colorable_iff_forall_loop_even (G := G)).mpr
+      intro u w
+      have h_even_bypass : Even w.length ↔ Even w.bypass.length := by
+        apply even_length_iff_even_bypass_length (G := G)
+        exact h
+      rw [h_even_bypass]
+      rw [bypass_eq_nil_of_closed (G := G) w]
+      norm_num
+    exact h_colorable
+end SimpleGraph.Walk
+
 
 @[expose] public section
 
