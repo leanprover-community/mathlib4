@@ -217,9 +217,10 @@ end one_dimensional
 section shift_invariance
 
 variable {𝕜 F} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (n : ℕ) (f : 𝕜 → F) (s : 𝕜)
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
-lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+lemma iteratedDeriv_comp_const_add :
     iteratedDeriv n (fun z ↦ f (s + z)) = fun t ↦ iteratedDeriv n f (s + t) := by
   induction n with
   | zero => simp only [iteratedDeriv_zero]
@@ -227,11 +228,20 @@ lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_const_add _ s
 
 /-- The iterated derivative commutes with shifting the function by a constant on the right. -/
-lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+lemma iteratedDeriv_comp_add_const :
     iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
   induction n with
   | zero => simp only [iteratedDeriv_zero]
   | succ n IH =>
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
+
+lemma iteratedDeriv_comp_sub_const :
+    iteratedDeriv n (fun z ↦ f (z - s)) = fun t ↦ iteratedDeriv n f (t - s) := by
+  simp [sub_eq_add_neg, iteratedDeriv_comp_add_const]
+
+lemma iteratedDeriv_comp_const_sub :
+    iteratedDeriv n (fun z ↦ f (s - z)) = fun t ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (s - t) := by
+  simpa [funext_iff, neg_add_eq_sub, iteratedDeriv_comp_add_const] using
+    iteratedDeriv_comp_neg n (fun z => f (z + s))
 
 end shift_invariance
