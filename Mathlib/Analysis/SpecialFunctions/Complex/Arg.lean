@@ -110,13 +110,29 @@ theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ �
 theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (cos θ + sin θ * I) = θ := by
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 
+theorem arg_exp_eq_im_add_round (z : ℂ) :
+    arg (exp z) = z.im + round (-z.im / (2 * π)) * (2 * π) := by
+  convert arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re)
+    (θ := z.im + round (-z.im / (2 * π)) * (2 * π)) _ using 2
+  · rw [← exp_mul_I, ofReal_exp, ← exp_add, ofReal_add, add_mul, ← add_assoc, re_add_im,
+      exp_add]
+    push_cast [Complex.exp_int_mul_two_pi_mul_I, mul_assoc _ (2 * π : ℂ)]
+    rw [mul_one]
+  · constructor
+    · calc
+        -π = z.im + (-z.im / (2 * π) - 1 / 2) * (2 * π) := by field_simp; ring
+        _ < _ := by gcongr; apply sub_half_lt_round
+    · grw [round_le_add_half (-z.im / (2 * π))]
+      apply le_of_eq
+      field_simp
+      ring
+
 lemma arg_exp_mul_I (θ : ℝ) :
     arg (exp (θ * I)) = toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ := by
-  convert arg_cos_add_sin_mul_I (θ := toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ) _ using 2
-  · rw [← exp_mul_I, eq_sub_of_add_eq <| toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
-      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
-  · convert toIocMod_mem_Ioc _ _ _
-    ring
+  rw [arg_exp_eq_im_add_round, toIocMod_eq_sub_fract_mul, round_eq, Int.fract, mul_I_im, ofReal_re]
+  ring_nf
+  field_simp
+  ring_nf
 
 @[simp]
 theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]

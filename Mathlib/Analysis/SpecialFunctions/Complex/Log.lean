@@ -55,6 +55,54 @@ theorem log_exp {x : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) : log (exp 
   rw [log, norm_exp, Real.log_exp, exp_eq_exp_re_mul_sin_add_cos, ← ofReal_exp,
     arg_mul_cos_add_sin_mul_I (Real.exp_pos _) ⟨hx₁, hx₂⟩, re_add_im]
 
+theorem log_exp_eq_add_round_mul (x : ℂ) :
+    log (exp x) = x + round (-x.im / (2 * π)) * (2 * π * I) := by
+  rw [log, norm_exp, Real.log_exp, arg_exp_eq_im_add_round]
+  simp [add_mul, ← add_assoc, mul_assoc]
+
+/-- Complex exponential is a branched covering over `{0}ᶜ`.
+This partial equivalence gives a trivialization of this covering over `slitPlane`.
+
+Since these maps are inverse of each other on a larger sets,
+we define this equivalence on `ℂ` and `{0}ᶜ × ℤ`,
+even though it is not continuous on that set.
+
+See also `expPartialEquivProd` below for a version that is continuous. -/
+@[simps apply_fst source target, simps -isSimp apply apply_snd symm_apply]
+def expPartialEquivProd' : PartialEquiv ℂ (ℂ × ℤ) where
+  toFun z := (exp z, round (-z.im / (2 * π)))
+  invFun z := z.fst.log - z.snd * (2 * π * I)
+  source := Set.univ
+  target := {0}ᶜ ×ˢ Set.univ
+  map_source' z := by simp
+  map_target' z := by simp
+  left_inv' z _ := by simp [log_exp_eq_add_round_mul]
+  right_inv' z hz := by
+    ext
+    · simp [exp_sub, exp_log hz.1]
+    · simp (disch := positivity) [sub_eq_add_neg, add_div, le_div_iff₀, log_im, arg_le_pi,
+        div_lt_iff₀, neg_lt (a := z.1.arg), neg_pi_lt_arg]
+
+/-- Complex exponential is a branched covering over `{0}ᶜ`.
+This partial equivalence gives a trivialization of this covering over `slitPlane`.
+
+See also `expPartialEquivProd'` above for a discontinuous version with larger source and target. -/
+@[simps! apply_fst source target, simps! -isSimp apply apply_snd symm_apply]
+def expPartialEquivProd : PartialEquiv ℂ (ℂ × ℤ) where
+  __ := expPartialEquivProd'
+  source := exp ⁻¹' slitPlane
+  target := slitPlane ×ˢ Set.univ
+  map_source' z := by simp
+  map_target' z hz := by
+    simp [exp_log (slitPlane_ne_zero hz.1), expPartialEquivProd', exp_sub, hz.1]
+  left_inv' z _ := expPartialEquivProd'.leftInvOn trivial
+  right_inv' z hz := expPartialEquivProd'.rightInvOn ⟨slitPlane_ne_zero hz.1, trivial⟩
+
+@[simp]
+lemma exp_expPartialEquivProd_symm_apply {x : ℂ × ℤ} (h : x.1 ≠ 0) :
+    exp (expPartialEquivProd.symm x) = x.1 :=
+  congr($(expPartialEquivProd'.rightInvOn ⟨h, trivial⟩) |>.fst)
+
 theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) (hy₁ : -π < y.im)
     (hy₂ : y.im ≤ π) (hxy : exp x = exp y) : x = y := by
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]
