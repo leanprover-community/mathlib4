@@ -64,6 +64,23 @@ lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
 
+/-- The leading coefficient of a sum of polynomials with the same degree is
+the sum of the leading coefficients, provided that this sum is nonzero.
+-/
+theorem leadingCoeff_sum_of_degree_eq {f : ι → S[X]} {s : Finset ι} {d}
+    (hd : ∀ k ∈ s, (f k).degree = d) (hf : ∑ k ∈ s, (f k).leadingCoeff ≠ 0) :
+    (∑ k ∈ s, f k).leadingCoeff = ∑ k ∈ s, (f k).leadingCoeff := by
+  obtain d | d := d
+  · replace hd k (hk : k ∈ s) : f k = 0 := by simpa [← degree_eq_bot] using hd k hk
+    simp_all only [leadingCoeff_zero, Finset.sum_const_zero]
+  · replace hd k (hk : k ∈ s) : (f k).natDegree = d := by simp [natDegree, hd k hk]; rfl
+    simp only [leadingCoeff, finset_sum_coeff]
+    congr! 2 with k hk
+    rw [natDegree_eq_of_le_of_coeff_ne_zero]
+    · apply natDegree_sum_le_of_forall_le
+      simp_all only [le_refl, implies_true]
+    · simp_all only [leadingCoeff, ne_eq, finset_sum_coeff, not_false_eq_true]
+
 theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
     (n : WithBot ℕ) (hl : ∀ p ∈ l, degree p ≤ n) :
     degree l.sum ≤ n := by
