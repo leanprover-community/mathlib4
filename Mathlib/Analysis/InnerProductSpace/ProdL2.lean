@@ -123,11 +123,11 @@ theorem coe_orthogonalDecomposition_symm :
       K.subtypeL.coprod Kᗮ.subtypeL ∘L WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ :=
   rfl
 
-theorem fst_orthogonalDecomposition :
+theorem fst_orthogonalDecomposition_apply :
     (K.orthogonalDecomposition x).fst = K.orthogonalProjection x := by
   simp
 
-theorem snd_orthogonalDecomposition :
+theorem snd_orthogonalDecomposition_apply :
     (K.orthogonalDecomposition x).snd = Kᗮ.orthogonalProjection x := by
   simp
 
