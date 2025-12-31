@@ -108,8 +108,9 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
   f.smooth'.of_le (mod_cast le_top)
 
+/-- Every Schwartz function is smooth at any point. -/
 @[fun_prop]
-theorem contDiffAt (f : 𝓢(E, F)) (n : ℕ∞) (x : E) : ContDiffAt ℝ n f x :=
+theorem contDiffAt (f : 𝓢(E, F)) (n : ℕ∞) {x : E} : ContDiffAt ℝ n f x :=
   (f.smooth n).contDiffAt
 
 /-- Every Schwartz function is continuous. -/
