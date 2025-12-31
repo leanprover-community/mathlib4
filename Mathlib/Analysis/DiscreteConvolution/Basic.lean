@@ -48,17 +48,17 @@ variable [Monoid M]
 
 /-- The multiplication map `(a, b) ↦ a * b`. -/
 @[to_additive /-- The addition map `(a, b) ↦ a + b`. -/]
-def mulMap : M × M → M := Function.uncurry (· * ·)
+protected def mulMap : M × M → M := Function.uncurry (· * ·)
 
 @[to_additive (attr := simp)]
-theorem mulMap_apply (ab : M × M) : mulMap ab = ab.1 * ab.2 := rfl
+theorem mulMap_apply (ab : M × M) : DiscreteConvolution.mulMap ab = ab.1 * ab.2 := rfl
 
 /-- The fiber of multiplication at `x`: all pairs `(a, b)` with `a * b = x`. -/
 @[to_additive /-- The fiber of addition at `x`: all pairs `(a, b)` with `a + b = x`. -/]
-def mulFiber (x : M) : Set (M × M) := mulMap ⁻¹' {x}
+def mulFiber (x : M) : Set (M × M) := DiscreteConvolution.mulMap ⁻¹' {x}
 
 @[to_additive (attr := simp)]
-theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := Set.mem_preimage
+theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := Iff.rfl
 
 @[to_additive]
 theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := mul_one 1
@@ -174,8 +174,8 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : �
   ext x
   simp only [convolution_apply]
   let e : mulFiber x ≃ mulFiber x :=
-    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, mulMap, mul_comm]⟩,
-     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, mulMap, mul_comm]⟩,
+    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, DiscreteConvolution.mulMap, mul_comm]⟩,
+     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [mulFiber, DiscreteConvolution.mulMap, mul_comm]⟩,
      fun _ => by rfl, fun _ => by rfl⟩
   rw [← e.tsum_eq]; congr 1; funext ⟨⟨a, b⟩, _⟩; simp only [e, Equiv.coe_fn_mk, hL]
 
