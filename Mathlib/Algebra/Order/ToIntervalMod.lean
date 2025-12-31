@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Circular
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Reducing to an interval modulo its length

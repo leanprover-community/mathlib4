@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Units
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Data.Int.LeastGreatest
 public import Mathlib.Data.Rat.Floor
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Archimedean groups and fields.
