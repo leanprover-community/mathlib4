@@ -295,11 +295,9 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)
     (not_field : ¬IsField R) : M ≠ ⊥ := by
-  rintro h
-  rw [h] at max
-  rcases max with ⟨⟨_h1, h2⟩⟩
+  rintro rfl
   obtain ⟨I, hIbot, hItop⟩ := not_isField_iff_exists_ideal_bot_lt_and_lt_top.mp not_field
-  exact ne_of_lt hItop (h2 I hIbot)
+  exact hIbot.ne (max.eq_of_le hItop.ne bot_le)
 
 end Ring
 
@@ -307,13 +305,7 @@ namespace Ideal
 
 variable {R : Type*} [CommSemiring R] [Nontrivial R]
 
-theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
-  rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩
-  constructor; · simp
-  intro mle
-  apply lt_irrefl (⊤ : Ideal R)
-  have : M = ⊥ := eq_bot_iff.mpr mle
-  rw [← this] at Ibot
-  rwa [hm.1.2 I Ibot] at Itop
+theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M :=
+  (Ring.ne_bot_of_isMaximal_of_not_isField hm non_field).bot_lt
 
 end Ideal
