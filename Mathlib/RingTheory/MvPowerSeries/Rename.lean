@@ -85,18 +85,16 @@ theorem coeff_renameFun (p : MvPowerSeries σ R) (x : τ →₀ ℕ) :
   rw [← mem_range_embDomain_iff, Set.mem_range] at h
   exact Function.extend_apply' p (0 : (τ →₀ ℕ) → R) x h
 
-lemma renameFun_monomial (x) (r : R) :
+theorem renameFun_monomial (x) (r : R) :
     renameFun f (monomial x r) = monomial (embDomain f x) r := by
   classical
   ext y
   rw [coeff_monomial]
   split_ifs with h
   · simp [h]
-  simp only [coeff_renameFun, ← mem_range_embDomain_iff, Set.mem_range, ite_eq_right_iff,
+  rw [coeff_renameFun, ← mem_range_embDomain_iff, Set.mem_range, ite_eq_right_iff,
     forall_exists_index]
-  intro _ h
-  simp only [← h, comapDomain_embDomain, coeff_monomial, ite_eq_right_iff]
-  grind only
+  grind only [!comapDomain_embDomain, coeff_monomial]
 
 theorem renameFun_mul (p q : MvPowerSeries σ R) :
     renameFun f (p * q) = renameFun f p * renameFun f q := by
@@ -105,42 +103,39 @@ theorem renameFun_mul (p q : MvPowerSeries σ R) :
   simp only [coeff_renameFun, coeff_mul, mul_ite, ite_mul, zero_mul, mul_zero, sum_ite,
     sum_const_zero, add_zero, filter_filter]
   split_ifs with h
-  · have : ∀ x_1 ∈ antidiagonal x, ↑x_1.2.support ⊆ Set.range ⇑f ∧ ↑x_1.1.support ⊆
+  · simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range] at h
+    have : ∀ x_1 ∈ antidiagonal x, ↑x_1.2.support ⊆ Set.range ⇑f ∧ ↑x_1.1.support ⊆
       Set.range ⇑f := by
-      simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range,
-        mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply, Prod.forall] at h ⊢
+      simp only [mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply, Set.subset_def,
+        SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range, Prod.forall]
       grind only
     rw [filter_true_of_mem this]
     replace this : antidiagonal (comapDomain f x f.injective.injOn) = image (fun (x, y) ↦
       (comapDomain f x f.injective.injOn, comapDomain f y f.injective.injOn)) (antidiagonal x) := by
-      simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range,
-        Finset.ext_iff, mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply,
+      simp only [Finset.ext_iff, mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply,
         comapDomain_apply, mem_image, Prod.exists, Prod.forall, Prod.mk.injEq] at h ⊢
       refine fun a b ↦ ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩
       · use mapDomain f a, mapDomain f b
         simp only [mapDomain_apply f.injective, implies_true, and_self, and_true]
-        intro t
-        by_cases! h'' : x t = 0
-        · simp only [h'', Nat.add_eq_zero_iff]
+        intro t; by_cases! h'' : x t = 0
+        · rw [h'', Nat.add_eq_zero_iff]
           constructor; all_goals
           rw [← notMem_support_iff, mapDomain_support_of_injective f.injective]
-          simp only [mem_image, mem_support_iff, ne_eq, not_exists, not_and]
-          grind only
+          grind only [= mem_image, = mem_support_iff]
         obtain ⟨s, hs⟩ := h _ h''
         simp [← hs, mapDomain_apply f.injective, h' s]
       grind only
     rw [this, sum_image]
-    · simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range, Set.InjOn,
-        mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply, Prod.mk.injEq,
-        comapDomain_apply, and_imp, Prod.forall] at h ⊢
+    · simp only [Set.InjOn, SetLike.mem_coe, mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add,
+        Pi.add_apply, Prod.mk.injEq, comapDomain_apply, and_imp, Prod.forall]
       grind only
-  have : filter (fun x ↦ SetLike.coe x.2.support ⊆ Set.range f ∧
-    SetLike.coe x.1.support ⊆ Set.range f) (antidiagonal x) = ∅ := by
+  have : filter (fun x ↦ ↑x.2.support ⊆ Set.range f ∧ ↑x.1.support ⊆ Set.range f)
+    (antidiagonal x) = ∅ := by
     simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range,
       not_forall, not_exists, Finset.ext_iff, mem_filter, mem_antidiagonal, Finsupp.ext_iff,
       Finsupp.coe_add, Pi.add_apply, notMem_empty, iff_false, not_and, Prod.forall] at h ⊢
     grind only
-  simp [this]
+  rw [this, sum_empty]
 
 /-- Rename all the variables in a multivariable power series by an embedding, as an `AlgHom`. -/
 def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
@@ -234,33 +229,32 @@ theorem killComplFun_monomial (x) (r : R) : killComplFun f (monomial x r) =
 theorem killComplFun_mul (p q : MvPowerSeries τ R) :
     killComplFun f (p * q) = killComplFun f p * killComplFun f q := by
   classical
-  simp only [MvPowerSeries.ext_iff, coeff_killComplFun, coeff_mul, embDomain_eq_mapDomain]
-  intro x
+  ext x; simp only [coeff_killComplFun, coeff_mul]
   let e : (σ →₀ ℕ) × (σ →₀ ℕ) → (τ →₀ ℕ) × (τ →₀ ℕ) := fun (a, b) ↦
-    (mapDomain f a, mapDomain f b)
-  have img_e : antidiagonal (mapDomain f x) = image e (antidiagonal x) := by
+    (embDomain f a, embDomain f b)
+  have img_e : antidiagonal (embDomain f x) = image e (antidiagonal x) := by
     simp only [Finset.ext_iff, mem_antidiagonal, mem_image, Prod.exists, Prod.forall,
       Prod.mk.injEq, e]
     refine fun a b ↦ ⟨fun h ↦ ?_, fun ⟨a', b', h1, h2, h3⟩ ↦ ?_⟩
     · use comapDomain f a f.injective.injOn, comapDomain f b f.injective.injOn
-      have : mapDomain f (comapDomain f a f.injective.injOn) = a ∧
-        mapDomain f (comapDomain f b f.injective.injOn) = b := by
+      have : embDomain f (comapDomain f a f.injective.injOn) = a ∧
+        embDomain f (comapDomain f b f.injective.injOn) = b := by
         constructor; all_goals
-        apply mapDomain_comapDomain f f.injective
+        rw [embDomain_comapDomain]
         simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range]
         intro t _
         simp only [Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply] at h
-        specialize h t
-        replace h : (mapDomain f x) t ≠ 0 := by omega
-        rw [← mem_support_iff, mapDomain_support_of_injective f.injective] at h
-        grind only [= mem_image]
-      refine ⟨mapDomain_injective f.injective ?_, this.left, this.right⟩
-      simp [mapDomain_add, ← h, this]
-    rw [← h2, ← h3, ← mapDomain_add, h1]
+        replace h : (embDomain f x) t ≠ 0 := by
+          specialize h t; omega
+        rw [← mem_support_iff, support_embDomain] at h
+        grind only [= mem_map]
+      refine ⟨embDomain_injective f ?_, this.left, this.right⟩
+      rw [embDomain_add, ← h, this.left, this.right]
+    rw [← h2, ← h3, ← embDomain_add, h1]
   rw [img_e, sum_image]
   · apply Function.Injective.injOn
     simp only [Function.Injective, Prod.mk.injEq, and_imp, Prod.forall, e]
-    grind only [!mapDomain_injective f.injective]
+    grind only [!embDomain_injective f]
 
 /-- The `AlgHom` version of `killComplFun`. -/
 def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
@@ -301,13 +295,13 @@ theorem killCompl_comp_rename : (killCompl f).comp (rename f) = AlgHom.id R _ :=
   ext p x
   simp only [AlgHom.coe_comp, Function.comp_apply, rename_apply, killCompl_apply,
     coeff_killComplFun, coeff_renameFun, Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq,
-    Set.mem_range, AlgHom.coe_id, id_eq, embDomain_eq_mapDomain]
+    Set.mem_range, AlgHom.coe_id, id_eq]
   split_ifs with h
-  · rw [comapDomain_mapDomain f f.injective]
+  · rw [comapDomain_embDomain f]
   simp only [not_forall, exists_prop, not_exists] at h
   rcases h with ⟨_, h, _⟩
-  rw [← ne_eq, ← mem_support_iff, mapDomain_support_of_injective f.injective] at h
-  grind only [= mem_image]
+  rw [← ne_eq, ← mem_support_iff, support_embDomain] at h
+  grind only [= mem_map]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl f (rename f p) = p :=
