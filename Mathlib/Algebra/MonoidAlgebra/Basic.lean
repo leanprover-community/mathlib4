@@ -226,7 +226,7 @@ between their additive magma algebras. -/]
 def mapDomainNonUnitalAlgHom (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
     [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
   __ := mapDomainNonUnitalRingHom A f
-  map_mul' :=  mapDomain_mul f
+  map_mul' := mapDomain_mul f
   map_smul' _ _ := mapDomain_smul ..
 
 variable (A) in
