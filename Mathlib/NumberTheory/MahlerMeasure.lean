@@ -34,7 +34,7 @@ open Int
 
 lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
     1 ≤ (p.map (castRingHom ℂ)).mahlerMeasure := by
-  apply le_trans _ (p.map (castRingHom ℂ)).leading_coeff_le_mahlerMeasure
+  apply le_trans _ (p.map (castRingHom ℂ)).leadingCoeff_le_mahlerMeasure
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast]
   norm_cast
   exact one_le_abs <| leadingCoeff_ne_zero.mpr hp
