@@ -41,7 +41,11 @@ section LinearOrderedRing
 
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
-/-- `round` rounds a number to the nearest integer. `round (1 / 2) = 1` -/
+/--
+`round x` rounds `x` to the nearest integer, breaking ties towards positive infinity.
+
+`round (0.5 : ℚ) = 1`.
+-/
 def round (x : α) : ℤ :=
   if 2 * fract x < 1 then ⌊x⌋ else ⌈x⌉
 
