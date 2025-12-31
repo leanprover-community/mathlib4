@@ -213,6 +213,11 @@ theorem toLinearMap_starProjection_eq_isComplProjection [K.HasOrthogonalProjecti
 @[deprecated (since := "2025-12-26")] alias starProjection_coe_eq_isCompl_projection :=
   toLinearMap_starProjection_eq_isComplProjection
 
+open Submodule in
+theorem starProjection_apply_eq_isComplProjection [K.HasOrthogonalProjection] (x : E) :
+    K.starProjection x = K.isCompl_orthogonal_of_hasOrthogonalProjection.projection x :=
+  congr($toLinearMap_starProjection_eq_isComplProjection x)
+
 end Submodule
 
 namespace Dense
