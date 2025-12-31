@@ -121,8 +121,6 @@ theorem preimage_const_of_mem {b : β} {s : Set β} (h : b ∈ s) : (fun _ : α 
 theorem preimage_const_of_notMem {b : β} {s : Set β} (h : b ∉ s) : (fun _ : α => b) ⁻¹' s = ∅ :=
   eq_empty_of_subset_empty fun _ hx => h hx
 
-@[deprecated (since := "2025-05-23")] alias preimage_const_of_not_mem := preimage_const_of_notMem
-
 theorem preimage_const (b : β) (s : Set β) [Decidable (b ∈ s)] :
     (fun _ : α => b) ⁻¹' s = if b ∈ s then univ else ∅ := by grind
 
@@ -747,7 +745,7 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
   IsCompl.of_le
     (by
       rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
-      exact Sum.noConfusion h)
+      exact Sum.noConfusion rfl rfl (heq_of_eq h))
     (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 
 @[simp]

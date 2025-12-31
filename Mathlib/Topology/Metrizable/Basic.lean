@@ -14,7 +14,7 @@ In this file we define metrizable topological spaces, i.e., topological spaces f
 exists a metric space structure that generates the same topology.
 We define it without any reference to metric spaces in order to avoid importing the real numbers.
 For the proof that metrizable spaces admit a compatible metric,
-see `Mathlib/Topology/Metrizable/Uniformity`.
+see `Mathlib/Topology/Metrizable/Uniformity.lean`.
 -/
 
 -- don't import the real numbers
@@ -22,7 +22,7 @@ assert_not_exists AddMonoidWithOne
 
 @[expose] public section
 
-open Filter Set Topology Uniformity
+open Filter Set Topology Uniformity UniformSpace SetRel
 
 namespace TopologicalSpace
 
@@ -31,7 +31,7 @@ variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSp
 
 /-- A topological space is *pseudometrizable* if there exists a pseudometric space structure
 compatible with the topology. To minimize imports, we implement this class in terms of the
-existence of a countably generated unifomity inducing the topology, which is mathematically
+existence of a countably generated uniformity inducing the topology, which is mathematically
 equivalent.
 To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.
@@ -109,7 +109,7 @@ instance PseudoMetrizableSpace.regularSpace [PseudoMetrizableSpace X] : RegularS
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
 topology. To minimize imports, we implement this class in terms of the existence of a
-countably generated unifomity inducing the topology, which is mathematically
+countably generated uniformity inducing the topology, which is mathematically
 equivalent.
 To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.
@@ -153,24 +153,49 @@ theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X
       Subtype.dense_iff.2 <| by rw [← Set.range_comp, Set.val_comp_inclusion, Subtype.range_coe]⟩
   let := pseudoMetrizableSpaceUniformity (closure u)
   have := pseudoMetrizableSpaceUniformity_countably_generated (closure u)
-  have := UniformSpace.secondCountable_of_separable (closure u)
+  have := secondCountable_of_separable (closure u)
   (Topology.IsEmbedding.inclusion hs).secondCountableTopology
 
 instance (X : Type*) [TopologicalSpace X] [LindelofSpace X] [PseudoMetrizableSpace X] :
     SecondCountableTopology X := by
   let := pseudoMetrizableSpaceUniformity X
   have := pseudoMetrizableSpaceUniformity_countably_generated X
-  suffices _ : SeparableSpace X from UniformSpace.secondCountable_of_separable X
-  obtain ⟨V, hVb, hVs⟩ := UniformSpace.has_seq_basis X
+  suffices _ : SeparableSpace X from secondCountable_of_separable X
+  obtain ⟨V, hVb, hVs⟩ := has_seq_basis X
   choose U hUc hUu using fun n =>
-    LindelofSpace.elim_nhds_subcover (fun x => UniformSpace.ball x (V n))
-      (fun x => UniformSpace.ball_mem_nhds x (hVb.mem n))
+    LindelofSpace.elim_nhds_subcover (fun x => ball x (V n))
+      (fun x => ball_mem_nhds x (hVb.mem n))
   refine ⟨Set.iUnion U, Set.countable_iUnion hUc, fun x => ?_⟩
   rw [mem_closure_iff_frequently, nhds_eq_comap_uniformity, frequently_comap, hVb.frequently_iff]
   intro n _
   obtain ⟨i, hi, hx⟩ := Set.mem_iUnion₂.1 (Set.eq_univ_iff_forall.1 (hUu n) x)
-  rw [UniformSpace.ball_eq_of_symmetry] at hx
+  rw [ball_eq_of_symmetry] at hx
   exact ⟨(x, i), hx, i, rfl, Set.mem_iUnion_of_mem n hi⟩
+
+/-- If a set `s` is separable in a pseudo metrizable space, then it admits a countable dense
+subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
+of separability does not need in general to be contained in `s`. -/
+theorem IsSeparable.exists_countable_dense_subset [PseudoMetrizableSpace X]
+    {s : Set X} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
+  let := pseudoMetrizableSpaceUniformity X
+  have := pseudoMetrizableSpaceUniformity_countably_generated X
+  apply subset_countable_closure_of_almost_dense_set
+  intro U hU
+  obtain ⟨t, htc, hst⟩ := hs
+  refine ⟨t, htc, fun x hx => ?_⟩
+  obtain ⟨y, hyx, hyt⟩ := mem_closure_iff_ball.1 (hst hx) (symmetrize_mem_uniformity hU)
+  exact mem_biUnion hyt (ball_mono SetRel.symmetrize_subset_inv x hyx)
+
+/-- If a set `s` is separable, then the corresponding subtype is separable in a
+pseudo metrizable space.
+This is not obvious, as the countable set whose closure covers `s` does not need in
+general to be contained in `s`. -/
+theorem IsSeparable.separableSpace [PseudoMetrizableSpace X] {s : Set X} (hs : IsSeparable s) :
+    SeparableSpace s := by
+  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
+  lift t to Set s using hts
+  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
+  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
 
 instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology X] :
     MetrizableSpace X where

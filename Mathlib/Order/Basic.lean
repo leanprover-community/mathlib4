@@ -23,8 +23,6 @@ classes and allows to transfer order instances.
 ## Type synonyms
 
 * `OrderDual α` : A type synonym reversing the meaning of all inequalities, with notation `αᵒᵈ`.
-* `AsLinearOrder α`: A type synonym to promote `PartialOrder α` to `LinearOrder α` using
-  `IsTotal α (≤)`.
 
 ### Transferring orders
 
@@ -133,8 +131,6 @@ theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
 lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
   simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
 
-@[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
-
 @[simp, to_dual self]
 lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
@@ -157,7 +153,6 @@ lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim
 
 @[to_dual not_gt] protected lemma Eq.not_lt (hab : a = b) : ¬a < b := fun h' ↦ h'.ne hab
 
-@[deprecated (since := "2025-05-11")] alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
 @[deprecated (since := "2025-06-07")] alias LT.lt.not_lt := LT.lt.not_gt
 
 @[to_dual ne_of_not_ge]
@@ -341,10 +336,6 @@ lemma ge_or_lt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp 
 @[to_dual le_or_ge]
 lemma ge_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.gt_or_le c).imp le_of_lt id
 
-@[deprecated (since := "2025-05-11")] alias lt_or_le := gt_or_le
-@[deprecated (since := "2025-05-11")] alias le_or_lt := ge_or_lt
-@[deprecated (since := "2025-05-11")] alias le_or_le := ge_or_le
-
 end LE.le
 
 namespace LT.lt
@@ -355,9 +346,6 @@ lemma gt_or_lt (h : a < b) (c : α) : a < c ∨ c < b := (le_or_gt b c).imp h.tr
 @[deprecated (since := "2025-06-07")] alias lt_or_lt := gt_or_lt
 
 end LT.lt
-
-@[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
-@[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
 
 @[to_dual gt_or_lt]
 theorem Ne.lt_or_gt (h : a ≠ b) : a < b ∨ b < a :=
@@ -566,11 +554,9 @@ instance (α : Type*) [LT α] : LT αᵒᵈ :=
 instance instOrd (α : Type*) [Ord α] : Ord αᵒᵈ where
   compare := fun (a b : α) ↦ compare b a
 
+@[to_dual]
 instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
   ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨((· ⊔ ·) : α → α → α)⟩
 
 instance instIsTransLE [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
   trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
@@ -1245,16 +1231,20 @@ instance Prop.partialOrder : PartialOrder Prop where
 
 end «Prop»
 
-/-! ### Linear order from a total partial order -/
+/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)`.
 
-
-/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)` -/
+**Do not use this**: instead, build a `LinearOrder` instance directly. -/
+@[deprecated "build a `LinearOrder` instance directly instead" (since := "2025-10-28")]
 def AsLinearOrder (α : Type*) :=
   α
 
+set_option linter.deprecated false in
+@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
   ⟨(default : α)⟩
 
+set_option linter.deprecated false in
+@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)

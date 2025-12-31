@@ -16,8 +16,10 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 
 This file shows that given any algebra equivalence `f : End K V ≃ₐ[K] End K W`,
 there exists a linear equivalence `T : V ≃ₗ[K] W` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
-This means that, when `V = W`, the map `MulSemiringAction.toAlgEquiv`
-from `GeneralLinearGroup K V` to `End K V ≃ₐ[K] End K V` is surjective.
+In other words, for `V = W`, the map `MulSemiringAction.toAlgEquiv` from
+`GeneralLinearGroup K V` to `End K V ≃ₐ[K] End K V` is surjective.
+
+For the continuous versions, see `Mathlib/Analysis/Normed/Operator/ContinuousAlgEquiv.lean`.
 -/
 
 open Module LinearMap LinearEquiv

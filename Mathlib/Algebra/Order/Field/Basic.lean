@@ -661,20 +661,25 @@ open Lean Meta Qq
 section LinearOrderedSemifield
 variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α}
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   div_nonneg ha.le hb
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
   div_nonneg ha hb.le
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 omit [IsStrictOrderedRing α] in
 private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
   div_ne_zero ha.ne' hb
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 omit [IsStrictOrderedRing α] in
 private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
   div_ne_zero ha hb.ne'
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private lemma zpow_zero_pos (a : α) : 0 < a ^ (0 : ℤ) := zero_lt_one.trans_eq (zpow_zero a).symm
 
 end LinearOrderedSemifield

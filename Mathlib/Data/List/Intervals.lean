@@ -131,8 +131,6 @@ alias chain'_succ := isChain_succ
 
 theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
-
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
   filter_eq_self.2 fun k hk => by
