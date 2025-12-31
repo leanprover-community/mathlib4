@@ -234,17 +234,22 @@ section Commutative
 
 variable [CommMonoid M] [CommSemiring S] [AddCommMonoid E] [Module S E] [TopologicalSpace E]
 
+/-- Swap equivalence for `mulFiber`: `(a, b) ↦ (b, a)` is an equivalence on the fiber. -/
+@[to_additive /-- Swap equivalence for `addFiber`. -/]
+def mulFiber_swapEquiv (x : M) : mulFiber x ≃ mulFiber x where
+  toFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mul_comm]⟩
+  invFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mul_comm]⟩
+  left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
+  right_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
+
 /-- Commutativity for symmetric bilinear maps on commutative monoids. -/
 @[to_additive (dont_translate := S E) addConvolution_comm]
 theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : ∀ x y, L x y = L y x) :
     f ⋆[L] g = g ⋆[L] f := by
-  ext x
-  simp only [convolution_apply]
-  let e : mulFiber x ≃ mulFiber x :=
-    ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [Set.mem_mulAntidiagonal, mul_comm]⟩,
-     fun ⟨⟨a, b⟩, h⟩ => ⟨⟨b, a⟩, by simp_all [Set.mem_mulAntidiagonal, mul_comm]⟩,
-     fun _ => by rfl, fun _ => by rfl⟩
-  rw [← e.tsum_eq]; congr 1; funext ⟨⟨a, b⟩, _⟩; simp only [e, Equiv.coe_fn_mk, hL]
+  ext x; simp only [convolution_apply]
+  rw [← (mulFiber_swapEquiv x).tsum_eq]
+  congr 1; funext ⟨⟨a, b⟩, _⟩
+  exact hL (f b) (g a)
 
 end Commutative
 
