@@ -268,6 +268,16 @@ theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.I
     innerSL 𝕜 x ∘L f = innerSL 𝕜 (f x) := by
   ext; simp [hf]
 
+@[simp] lemma _root_.InnerProductSpace.adjoint_rankOne (x : E) (y : F) :
+    adjoint (rankOne 𝕜 x y) = rankOne 𝕜 y x := by
+  simp [rankOne_def', adjoint_comp, ← adjoint_innerSL_apply]
+
+lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [CompleteSpace G]
+    (x : E) (y : F) (f : G →L[𝕜] F) :
+    rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
+  simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
+
 end ContinuousLinearMap
 
 /-! ### Self-adjoint operators -/

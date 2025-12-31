@@ -508,3 +508,9 @@ theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection = V.starProjection ↔ U = V := by
   simp only [le_antisymm_iff, ← starProjection_le_starProjection_iff]
+
+lemma InnerProductSpace.isPositive_outerProduct_self (x : E) :
+    (rankOne 𝕜 x x).IsPositive := by
+  simp_rw [ContinuousLinearMap.isPositive_iff, isSymmetric_rankOne_self, rankOne_apply,
+    inner_smul_left, RCLike.conj_mul, ← RCLike.ofReal_pow, RCLike.ofReal_nonneg]
+  simp

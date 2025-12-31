@@ -298,9 +298,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpac
 open ContinuousLinearMap
 
 variable (𝕜) in
-/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`.
-
-See `rankOneₗ` for the non-continuous version. -/
+/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`. -/
 noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
   .flip <| .comp (.smulRightL 𝕜 _ _) (innerSL 𝕜)
 
@@ -308,13 +306,34 @@ lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 x y = (innerSL 𝕜 y).smulRigh
 
 lemma rankOne_def' (x : E) (y : F) : rankOne 𝕜 x y = .toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y := rfl
 
-theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
+@[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
   rw [rankOne_def, norm_smulRight_apply, innerSL_apply_norm, mul_comm]
+
+@[simp] theorem nnnorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
+  NNReal.eq <| norm_rankOne _ _
 
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 
 lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
     (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
+
+theorem rankOne_eq_zero_iff {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    (x : E) (y : F) : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
+  simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
+    ext_iff_inner_right 𝕜 (E := F)]
+
+variable {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+
+lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
+    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
+
+lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :
+    inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
+  simp [inner_smul_left, inner_conj_symm]
+
+lemma inner_right_rankOne_apply (x y : F) (z w : G) :
+    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
+  simp [inner_smul_right, mul_comm]
 
 end InnerProductSpace

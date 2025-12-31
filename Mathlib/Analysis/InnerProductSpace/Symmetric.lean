@@ -220,6 +220,9 @@ theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommG
 
 end LinearMap
 
+@[simp] theorem InnerProductSpace.isSymmetric_rankOne_self (x : E) :
+    (rankOne 𝕜 x x).IsSymmetric := fun _ _ ↦ by simp [inner_smul_left, inner_smul_right, mul_comm]
+
 end Seminormed
 
 section Normed
