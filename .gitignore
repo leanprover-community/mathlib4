@@ -4,4 +4,3 @@
 .cache
 # `lake` stores its files here:
 .lake
-.vscode/c_cpp_properties.json
