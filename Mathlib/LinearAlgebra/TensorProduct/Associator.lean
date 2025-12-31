@@ -343,8 +343,9 @@ lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
 end LinearMap
 
 namespace Equiv
-variable {R A A' B B' C C' : Type*} [CommSemiring R]
-  [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C'] [Module R A'] [Module R B'] [Module R C']
+variable {R A A' B B' C C' : Type*}
+variable [CommSemiring R] [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C']
+variable [Module R A'] [Module R B'] [Module R C']
 
 variable (R) in
 open TensorProduct in
