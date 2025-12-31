@@ -267,14 +267,15 @@ theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a *
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
   simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
 
-theorem two_mul_fract_eq_one_iff_exists_int {x : R} :
-    2 * fract x = 1 ↔ ∃ n : ℤ, 2 * x = 2 * n + 1 := by
+theorem mul_fract_eq_one_iff_exists_int {x : R} {k : R} (hk : 1 < k) :
+    k * fract x = 1 ↔ ∃ n : ℤ, k * x = k * n + 1 := by
   rw [fract, mul_sub, sub_eq_iff_eq_add']
   refine ⟨fun hx ↦ ⟨⌊x⌋, hx⟩, ?_⟩
   rintro ⟨n, hn⟩
   convert hn
-  rw [floor_eq_iff, ← mul_le_mul_iff_right₀ two_pos, ← mul_lt_mul_iff_right₀ two_pos, hn]
-  simp [mul_add]
+  have hk0 : 0 < (k : R) := zero_le_one.trans_lt hk
+  rw [floor_eq_iff, ← mul_le_mul_iff_right₀ hk0, ← mul_lt_mul_iff_right₀ hk0, hn]
+  simp [mul_add, hk]
 
 end LinearOrderedRing
 
