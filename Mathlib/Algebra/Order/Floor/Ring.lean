@@ -267,6 +267,21 @@ theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a *
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
   simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
 
+/-- Three characterizations of the points of discontinuity of `round`. -/
+theorem two_mul_fract_eq_one_tfae (x : R) :
+    [2 * fract x = 1,
+      2 * x = 2 * ⌊x⌋ + 1,
+      ∃ n : ℤ, 2 * x = 2 * n + 1].TFAE := by
+  tfae_have 1 ↔ 2 := by
+    rw [fract, mul_sub, sub_eq_iff_eq_add']
+  tfae_have 2 → 3 := fun h ↦ ⟨_, h⟩
+  tfae_have 3 → 2 := by
+    rintro ⟨n, hn⟩
+    convert hn
+    rw [floor_eq_iff, ← mul_le_mul_iff_right₀ two_pos, ← mul_lt_mul_iff_right₀ two_pos, hn]
+    simp [mul_add]
+  tfae_finish
+
 end LinearOrderedRing
 
 section LinearOrderedCommRing
@@ -628,17 +643,34 @@ theorem ceil_add_intCast (a : R) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
   rw [← neg_inj, neg_add', ← floor_neg, ← floor_neg, neg_add', floor_sub_intCast]
 
 @[simp]
+theorem ceil_intCast_add (z : ℤ) (a : R) : ⌈z + a⌉ = z + ⌈a⌉ := by
+  rw [add_comm, ceil_add_intCast, add_comm]
+
+@[simp]
 theorem ceil_add_natCast (a : R) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by
   rw [← Int.cast_natCast, ceil_add_intCast]
+
+@[simp]
+theorem ceil_natCast_add (n : ℕ) (a : R) : ⌈n + a⌉ = n + ⌈a⌉ :=
+  mod_cast ceil_intCast_add n a
 
 @[simp]
 theorem ceil_add_one (a : R) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
   rw [← ceil_add_intCast a (1 : ℤ), cast_one]
 
 @[simp]
+theorem ceil_one_add (a : R) : ⌈1 + a⌉ = 1 + ⌈a⌉ :=
+  mod_cast ceil_natCast_add 1 a
+
+@[simp]
 theorem ceil_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
     ⌈a + ofNat(n)⌉ = ⌈a⌉ + ofNat(n) :=
   ceil_add_natCast a n
+
+@[simp]
+theorem ceil_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : R) :
+    ⌈ofNat(n) + a⌉ = ofNat(n) + ⌈a⌉ :=
+  ceil_natCast_add n a
 
 @[simp]
 theorem ceil_sub_intCast (a : R) (z : ℤ) : ⌈a - z⌉ = ⌈a⌉ - z :=
