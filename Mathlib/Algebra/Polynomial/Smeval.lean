@@ -10,8 +10,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
-# Scalar-multiple polynomial evaluation
-
+# Scalar-multiple polynomial evaluation over commutative semirings
 This file defines polynomial evaluation via scalar multiplication.  Our polynomials have
 coefficients in a semiring `R`, and we evaluate at a weak form of `R`-algebra, namely an additive
 commutative monoid with an action of `R` and a notion of natural number power.  This
@@ -157,6 +156,9 @@ theorem smeval_neg : (-p).smeval x = -p.smeval x := by
 @[simp]
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
   rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
+
+theorem _root_.Int.cast_neg_nat (G : Type*) [AddGroupWithOne G] (m : ℕ) : -(m : G) = (-m : ℤ) := by
+  rw [neg_eq_iff_add_eq_zero, Int.cast_neg, add_neg_eq_zero, ← AddGroupWithOne.intCast_ofNat]
 
 theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by

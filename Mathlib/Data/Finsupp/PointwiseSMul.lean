@@ -5,20 +5,20 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
 # Scalar multiplication by finitely supported functions.
-Given sets `G` and `P`, with a left-cancellative vector-addition of `G` on `P`, we define an
-antidiagonal function that assigns, for any element `a` in `P`, finite subset `s` of `G`, and subset
-`t` in `P`, the `Set` of all pairs of an element in `s` and an element in `t` that vector-add to
-`a`. When `R` is a ring and `V` is an `R`-module, we obtain a convolution-type action of the ring of
-finitely supported `R`-valued functions on `G` on the space of `V`-valued functions on `P`.
+
+Given sets `G` and `P`, with a left-cancellative vector-addition of `G` on `P`, we construct, for
+any element `a` in `P`, finite subset `s` of `G`, and subset `t` in `P`, the `Set` of all pairs of
+an element in `s` and an element in `t` that vector-add to `a`. When `R` is a ring and `V` is an
+`R`-module, we obtain an action of the ring of finitely supported `R`-valued functions on `G` on the
+space of 'V'-valued functions on `P`, when `V` is an `R`-module.
 
 ## Definitions
+
 * Finsupp.vaddAntidiagonal : The finset of pairs that vector-add to a given element.
 
 -/
@@ -36,7 +36,7 @@ namespace Finsupp
 theorem finite_vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V]
     (f : G →₀ R) (x : P → V) (p : P) :
     Set.Finite (Set.vaddAntidiagonal (SetLike.coe f.support) x.support p) := by
-  refine Set.Finite.of_injOn (f := Prod.fst) (t := (SetLike.coe f.support)) ?_ ?_
+  refine Set.Finite.of_injOn (f := Prod.fst) (t := SetLike.coe f.support) ?_ ?_
     f.support.finite_toSet
   · intro _ ⟨h, _⟩
     exact h
@@ -62,11 +62,39 @@ theorem mem_vaddAntidiagonal_of_addGroup [AddGroup G] [AddAction G P] [Zero R] [
 /-- A convolution-type scalar multiplication of finitely supported functions on formal functions. -/
 scoped instance [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SMulWithZero R V] :
     SMul (G →₀ R) (P → V) where
-  smul f x p := ∑ G ∈ f.vaddAntidiagonal x p, f G.1 • x G.2
+  smul f x p := ∑ G ∈ f.vaddAntidiagonal x p, (f G.1) • x G.2
 
 theorem smul_eq [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SMulWithZero R V]
     (f : G →₀ R) (x : P → V) (p : P) :
-    (f • x) p = ∑ G ∈ f.vaddAntidiagonal x p, f G.1 • x G.2 := rfl
+    (f • x) p = ∑ G ∈ f.vaddAntidiagonal x p, (f G.1) • x G.2 := rfl
+
+/-- A convolution-type scalar multiplication of the monoid algebra on the function space. -/
+scoped instance [AddCancelMonoid G] [Semiring R] :
+    SMul (AddMonoidAlgebra R G) (G → R) := Finsupp.instSMulForallOfIsLeftCancelVAddOfSMulWithZero
+
+theorem smul_eq_addMonoidAlgebra_mul [Semiring R] [AddCancelMonoid G] (a b : AddMonoidAlgebra R G) :
+    a • ⇑b = (a * b : AddMonoidAlgebra R G) := by
+  ext g
+  classical
+  rw [smul_eq, AddMonoidAlgebra.mul_apply, sum]
+  simp_rw [sum]
+  rw [Finset.sum_sigma', Finset.sum_of_injOn]
+  · exact fun (x, y) ↦ ⟨x, y⟩
+  · simp
+  · intro gh h
+    rw [mem_coe, mem_vaddAntidiagonal_iff] at h
+    have : b gh.2 ≠ 0 := h.2.1
+    simp [h.1, this]
+  · intro gh _ h
+    simp only [Set.mem_image, mem_coe, Prod.exists, not_exists, not_and] at h
+    contrapose! h
+    use gh.fst, gh.snd
+    rw [mem_vaddAntidiagonal_iff]
+    simp only [ne_eq, ite_eq_right_iff, Classical.not_imp] at h
+    exact ⟨⟨(by simp [left_ne_zero_of_mul h.2]), right_ne_zero_of_mul h.2, h.1⟩, rfl⟩
+  · intro _ h
+    rw [mem_vaddAntidiagonal_iff, vadd_eq_add] at h
+    simp [h.2.2]
 
 theorem smul_apply_addAction [AddGroup G] [AddAction G P] [Zero R] [AddCommMonoid V]
     [SMulWithZero R V] (f : G →₀ R) (x : P → V) (p : P) :
