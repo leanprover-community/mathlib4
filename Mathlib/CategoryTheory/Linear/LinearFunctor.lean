@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Module.LinearMap.Rat
+module
+
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Module.LinearMap.Rat
 
 /-!
 # Linear Functors
@@ -21,10 +23,12 @@ for every two objects `X` and `Y`, the map
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-variable (R : Type*) [Semiring R] {C D : Type*} [Category C] [Category D]
+variable (R : Type*) [Semiring R] {C D : Type*} [Category* C] [Category* D]
   [Preadditive C] [Preadditive D] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D]
   (F : C ⥤ D)
 
@@ -60,7 +64,7 @@ theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r �
 
 instance : Linear R (𝟭 C) where
 
-instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
+instance {E : Type*} [Category* E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
     [Linear R G] : Linear R (F ⋙ G) where
 
 variable (R) [F.Additive]
@@ -87,7 +91,7 @@ instance inducedFunctorLinear (F : C → D) : Functor.Linear R (inducedFunctor F
 
 end InducedCategory
 
-instance fullSubcategoryInclusionLinear {C : Type*} [Category C] [Preadditive C]
+instance fullSubcategoryInclusionLinear {C : Type*} [Category* C] [Preadditive C]
     [CategoryTheory.Linear R C] (Z : ObjectProperty C) : Z.ι.Linear R where
 
 section

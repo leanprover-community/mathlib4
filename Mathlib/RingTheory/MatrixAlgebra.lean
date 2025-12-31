@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Composition
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Composition
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Algebra isomorphisms between tensor products and matrices
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.TensorProduct.Maps
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
 -/
+
+@[expose] public section
 
 open TensorProduct Algebra.TensorProduct Matrix
 
@@ -67,9 +71,6 @@ theorem kroneckerTMulAlgEquiv_symm_single_tmul
       single ia ja a ⊗ₜ single ib jb b := by
   rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul,
     single_kroneckerTMul_single]
-
-@[deprecated (since := "2025-05-05")]
-alias kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul := kroneckerTMulAlgEquiv_symm_single_tmul
 
 @[simp]
 theorem kroneckerTMulLinearEquiv_one [Module S A] [IsScalarTower R S A] :
@@ -224,9 +225,6 @@ theorem matrixEquivTensor_apply_single (i j : n) (x : A) :
     matrixEquivTensor n R A (single i j x) = x ⊗ₜ single i j 1 := by
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
   simp [ite_tmul, t, single]
-
-@[deprecated (since := "2025-05-05")]
-alias matrixEquivTensor_apply_stdBasisMatrix := matrixEquivTensor_apply_single
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :

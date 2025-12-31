@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-! # Functions integrable on a set and at a filter
 
@@ -17,6 +19,8 @@ at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` 
 at `l`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -404,18 +408,11 @@ theorem IntegrableOn.integrable_of_ae_notMem_eq_zero
   apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
   filter_upwards [h't] with x hx h'x using hx h'x.2
 
-@[deprecated (since := "2025-05-23")]
-alias IntegrableOn.integrable_of_ae_not_mem_eq_zero := IntegrableOn.integrable_of_ae_notMem_eq_zero
-
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
     {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
   hf.integrable_of_ae_notMem_eq_zero (Eventually.of_forall fun x hx => h't x hx)
-
-@[deprecated (since := "2025-05-23")]
-alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
-  IntegrableOn.integrable_of_forall_notMem_eq_zero
 
 theorem IntegrableOn.of_inter_support {f : α → ε'}
     (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
@@ -480,15 +477,13 @@ protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) 
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
   Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
 
-theorem integrableAtFilter_atBot_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≥ x2]
-    [Nonempty α] :
+theorem integrableAtFilter_atBot_iff [Preorder α] [IsCodirectedOrder α] [Nonempty α] :
     IntegrableAtFilter f atBot μ ↔ ∃ a, IntegrableOn f (Iic a) μ := by
   refine ⟨fun ⟨s, hs, hi⟩ ↦ ?_, fun ⟨a, ha⟩ ↦ ⟨Iic a, Iic_mem_atBot a, ha⟩⟩
   obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
   exact ⟨t, hi.mono_set fun _ hx ↦ ht _ hx⟩
 
-theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≤ x2]
-    [Nonempty α] :
+theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirectedOrder α] [Nonempty α] :
     IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
   integrableAtFilter_atBot_iff (α := αᵒᵈ)
 

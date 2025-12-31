@@ -3,9 +3,11 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Util.Notation3
 
 /-!
 # (Strict) monotonicity of multiplication by nonnegative (positive) elements
@@ -70,6 +72,8 @@ See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notatio
 for a discussion about this notation, and whether to enable it globally (note that the notation is
 currently global but broken, hence actually only works locally).
 -/
+
+@[expose] public section
 
 assert_not_exists MulZeroClass
 
@@ -282,29 +286,21 @@ theorem mul_lt_mul_iff_right₀ [PosMulStrictMono α] [PosMulReflectLT α] (a0 :
   mp h := lt_of_mul_lt_mul_left h a0.le
   mpr h := mul_lt_mul_of_pos_left h a0
 
-@[deprecated (since := "2025-09-25")] alias mul_lt_mul_left := mul_lt_mul_iff_right₀
-
 @[simp]
 theorem mul_lt_mul_iff_left₀ [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 0 < a) :
     b * a < c * a ↔ b < c where
   mp h := lt_of_mul_lt_mul_right h a0.le
   mpr h := mul_lt_mul_of_pos_right h a0
 
-@[deprecated (since := "2025-09-25")] alias mul_lt_mul_right := mul_lt_mul_iff_left₀
-
 @[simp]
 theorem mul_le_mul_iff_right₀ [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) :
     a * b ≤ a * c ↔ b ≤ c :=
   @rel_iff_cov α>0 α (fun x y => x * y) (· ≤ ·) _ _ ⟨a, a0⟩ _ _
 
-@[deprecated (since := "2025-08-19")] alias mul_le_mul_left := mul_le_mul_iff_right₀
-
 @[simp]
 theorem mul_le_mul_iff_left₀ [MulPosMono α] [MulPosReflectLE α] (a0 : 0 < a) :
     b * a ≤ c * a ↔ b ≤ c :=
   @rel_iff_cov α>0 α (fun x y => y * x) (· ≤ ·) _ _ ⟨a, a0⟩ _ _
-
-@[deprecated (since := "2025-08-19")] alias mul_le_mul_right := mul_le_mul_iff_left₀
 
 alias mul_le_mul_iff_of_pos_left := mul_le_mul_iff_right₀
 alias mul_le_mul_iff_of_pos_right := mul_le_mul_iff_left₀

@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Insert
-import Mathlib.Data.Multiset.Range
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Multiset.Range
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Finite sets made of a range of elements.
@@ -23,6 +25,8 @@ import Mathlib.Order.Interval.Set.Defs
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -75,8 +79,6 @@ theorem range_add_one : range (n + 1) = insert n (range n) := by grind
 theorem range_succ : range (succ n) = insert n (range n) := range_add_one
 
 theorem notMem_range_self : n ∉ range n := by grind
-
-@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) := by grind
 

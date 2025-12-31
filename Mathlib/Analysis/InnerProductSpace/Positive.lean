@@ -3,8 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.Analysis.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators
@@ -35,6 +38,8 @@ of requiring self adjointness in the definition.
 
 Positive operator
 -/
+
+@[expose] public section
 
 open InnerProductSpace RCLike LinearMap ContinuousLinearMap
 
@@ -125,6 +130,11 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
 open ComplexOrder in
+theorem IsPositive.ne_zero_iff {T : E →ₗ[𝕜] E} (hT : T.IsPositive) :
+    T ≠ 0 ↔ ∃ x, 0 < inner 𝕜 (T x) x := by
+  simp [← hT.isSymmetric.inner_map_self_eq_zero, lt_iff_le_and_ne', hT.inner_nonneg_left]
+
+open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive := by
@@ -133,6 +143,14 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
   refine ⟨hT.left.smul hc', fun x => ?_⟩
   rw [smul_apply, inner_smul_left, hc', mul_re, conj_eq_iff_im.mp hc', zero_mul, sub_zero]
   exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
+
+open scoped ComplexOrder in
+theorem IsPositive.isPositive_smul_iff {T : E →ₗ[𝕜] E} (hT : T.IsPositive) (hT' : T ≠ 0) {α : 𝕜} :
+    (α • T).IsPositive ↔ 0 ≤ α := by
+  refine ⟨fun h ↦ ?_, hT.smul_of_nonneg⟩
+  obtain ⟨x, hx⟩ := by simpa only [hT.1 _] using hT.ne_zero_iff.mp hT'
+  have := by simpa [inner_smul_right] using h.inner_nonneg_right x
+  exact le_of_smul_le_smul_of_pos_right (by simpa) hx
 
 theorem IsPositive.nonneg_eigenvalues [FiniteDimensional 𝕜 E]
     {T : E →ₗ[𝕜] E} {n : ℕ} (hT : T.IsPositive)
@@ -185,7 +203,7 @@ open scoped ComplexOrder in
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
   simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
     EuclideanSpace.inner_eq_star_dotProduct, Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
-    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff,
+    dotProduct_comm (A.mulVec _), Matrix.posSemidef_iff_dotProduct_mulVec, and_congr_right_iff,
     RCLike.nonneg_iff (K := 𝕜)]
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
   simp [hA.im_star_dotProduct_mulVec_self]
@@ -224,7 +242,7 @@ theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
   simp_rw [sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
     hp.isIdempotentElem.mem_range_iff.mp ha, sub_nonneg, sq_le_sq, abs_norm] at h2
   obtain ⟨U, _, rfl⟩ := isSymmetricProjection_iff_eq_coe_starProjection.mp hq
-  simpa [Submodule.starProjection_coe_eq_isCompl_projection] using
+  simpa [Submodule.toLinearMap_starProjection_eq_isComplProjection] using
     U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
 
 end LinearMap
@@ -465,7 +483,7 @@ theorem IsPositive.of_isStarProjection [CompleteSpace E] {p : E →L[𝕜] E}
 * `p` is self-adjoint
 * `p` is positive -/
 theorem IsIdempotentElem.TFAE [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
-    [(LinearMap.range p)ᗮ = LinearMap.ker p,
+    [p.rangeᗮ = p.ker,
       IsStarNormal p,
       IsSelfAdjoint p,
       p.IsPositive].TFAE := by
@@ -483,7 +501,7 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
   simp_rw [← coe_le_coe_iff, isSymmetricProjection_starProjection _
       |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
-    starProjection_coe_eq_isCompl_projection, IsCompl.projection_range]
+    toLinearMap_starProjection_eq_isComplProjection, IsCompl.projection_range]
 
 /-- `U.starProjection = V.starProjection` iff `U = V`. -/
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}

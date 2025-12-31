@@ -3,7 +3,9 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 
 /-!
 # Topological entropy of subsets: monotonicity, closure, union
@@ -32,51 +34,50 @@ generalization of the lemmas on closures.
 closure, entropy, subset, union
 -/
 
+@[expose] public section
+
 namespace Dynamics
 
 open ExpGrowth Set UniformSpace
 open scoped SetRel Uniformity
 
-variable {X : Type*}
+variable {X : Type*} {T : X → X} {F G s t : Set X} {U V : SetRel X X} {n : ℕ}
 
 /-! ### Monotonicity of entropy as a function of the subset -/
 
 section Subset
 
-lemma IsDynCoverOf.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G) {U : Set (X × X)} {n : ℕ}
-    {s : Set X} (h : IsDynCoverOf T G U n s) :
+lemma IsDynCoverOf.monotone_subset (F_G : F ⊆ G) (h : IsDynCoverOf T G U n s) :
     IsDynCoverOf T F U n s :=
   F_G.trans h
 
-lemma IsDynNetIn.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G) {U : Set (X × X)} {n : ℕ}
-    {s : Set X} (h : IsDynNetIn T F U n s) :
-    IsDynNetIn T G U n s :=
+lemma IsDynNetIn.monotone_subset (F_G : F ⊆ G) (h : IsDynNetIn T F U n s) : IsDynNetIn T G U n s :=
   ⟨h.1.trans F_G, h.2⟩
 
-lemma coverMincard_monotone_subset (T : X → X) (U : Set (X × X)) (n : ℕ) :
+lemma coverMincard_monotone_subset (T : X → X) (U : SetRel X X) (n : ℕ) :
     Monotone fun F : Set X ↦ coverMincard T F U n :=
   fun _ _ F_G ↦ biInf_mono fun _ h ↦ h.monotone_subset F_G
 
-lemma netMaxcard_monotone_subset (T : X → X) (U : Set (X × X)) (n : ℕ) :
+lemma netMaxcard_monotone_subset (T : X → X) (U : SetRel X X) (n : ℕ) :
     Monotone fun F : Set X ↦ netMaxcard T F U n :=
   fun _ _ F_G ↦ biSup_mono fun _ h ↦ h.monotone_subset F_G
 
-lemma coverEntropyInfEntourage_monotone (T : X → X) (U : Set (X × X)) :
+lemma coverEntropyInfEntourage_monotone (T : X → X) (U : SetRel X X) :
     Monotone fun F : Set X ↦ coverEntropyInfEntourage T F U := by
   refine fun F G F_G ↦ ExpGrowth.expGrowthInf_monotone fun n ↦ ?_
   exact ENat.toENNReal_mono (coverMincard_monotone_subset T U n F_G)
 
-lemma coverEntropyEntourage_monotone (T : X → X) (U : Set (X × X)) :
+lemma coverEntropyEntourage_monotone (T : X → X) (U : SetRel X X) :
     Monotone fun F : Set X ↦ coverEntropyEntourage T F U := by
   refine fun F G F_G ↦ ExpGrowth.expGrowthSup_monotone fun n ↦ ?_
   exact ENat.toENNReal_mono (coverMincard_monotone_subset T U n F_G)
 
-lemma netEntropyInfEntourage_monotone (T : X → X) (U : Set (X × X)) :
+lemma netEntropyInfEntourage_monotone (T : X → X) (U : SetRel X X) :
     Monotone fun F : Set X ↦ netEntropyInfEntourage T F U := by
   refine fun F G F_G ↦ ExpGrowth.expGrowthInf_monotone fun n ↦ ?_
   exact ENat.toENNReal_mono (netMaxcard_monotone_subset T U n F_G)
 
-lemma netEntropyEntourage_monotone (T : X → X) (U : Set (X × X)) :
+lemma netEntropyEntourage_monotone (T : X → X) (U : SetRel X X) :
     Monotone fun F : Set X ↦ netEntropyEntourage T F U := by
   refine fun F G F_G ↦ ExpGrowth.expGrowthSup_monotone fun n ↦ ?_
   exact ENat.toENNReal_mono (netMaxcard_monotone_subset T U n F_G)
@@ -95,45 +96,43 @@ end Subset
 
 section Closure
 
-variable [UniformSpace X] {T : X → X}
+variable [UniformSpace X]
 
-lemma IsDynCoverOf.closure (h : Continuous T) {F : Set X} {U V : Set (X × X)}
-    (V_uni : V ∈ 𝓤 X) {n : ℕ} {s : Set X} (s_cover : IsDynCoverOf T F U n s) :
-    IsDynCoverOf T (closure F) (U ○ V) n s := by
+lemma IsDynCoverOf.closure (h : Continuous T)
+    (V_uni : V ∈ 𝓤 X) (s_cover : IsDynCoverOf T F U n s) :
+    IsDynCoverOf T (closure F) (V ○ U) n s := by
   rcases (hasBasis_symmetric.mem_iff' V).1 V_uni with ⟨W, ⟨W_uni, W_symm⟩, W_V⟩
-  refine IsDynCoverOf.of_entourage_subset (SetRel.comp_subset_comp_right W_V) fun x x_clos ↦ ?_
-  obtain ⟨y, y_x, y_F⟩ := mem_closure_iff_nhds.1 x_clos _ (ball_dynEntourage_mem_nhds h W_uni n x)
-  obtain ⟨z, z_s, y_z⟩ := mem_iUnion₂.1 (s_cover y_F)
-  refine mem_iUnion₂.2 ⟨z, z_s, ?_⟩
-  rw [mem_ball_symmetry] at y_x
-  exact ball_mono (dynEntourage_comp_subset T U W n) z (mem_ball_comp y_z y_x)
+  refine IsDynCoverOf.of_entourage_subset (SetRel.comp_subset_comp_left W_V) fun x hx ↦ ?_
+  obtain ⟨y, hxy, hy⟩ := mem_closure_iff_nhds.1 hx _ (ball_dynEntourage_mem_nhds h W_uni n x)
+  obtain ⟨z, hz, hyz⟩ := s_cover hy
+  exact ⟨z, hz, dynEntourage_comp_subset _ _ _ _ ⟨y, hxy, hyz⟩⟩
 
-lemma coverMincard_closure_le (h : Continuous T) (F : Set X) (U : Set (X × X)) {V : Set (X × X)}
+lemma coverMincard_closure_le (h : Continuous T) (F : Set X) (U : SetRel X X)
     (V_uni : V ∈ 𝓤 X) (n : ℕ) :
-    coverMincard T (closure F) (U ○ V) n ≤ coverMincard T F U n := by
+    coverMincard T (closure F) (V ○ U) n ≤ coverMincard T F U n := by
   rcases eq_top_or_lt_top (coverMincard T F U n) with h' | h'
   · exact h' ▸ le_top
   obtain ⟨s, s_cover, s_coverMincard⟩ := (coverMincard_finite_iff T F U n).1 h'
   exact s_coverMincard ▸ (s_cover.closure h V_uni).coverMincard_le_card
 
-lemma coverEntropyInfEntourage_closure (h : Continuous T) (F : Set X) (U : Set (X × X))
-    {V : Set (X × X)} (V_uni : V ∈ 𝓤 X) :
-    coverEntropyInfEntourage T (closure F) (U ○ V) ≤ coverEntropyInfEntourage T F U :=
+lemma coverEntropyInfEntourage_closure (h : Continuous T) (F : Set X) (U : SetRel X X)
+    (V_uni : V ∈ 𝓤 X) :
+    coverEntropyInfEntourage T (closure F) (V ○ U) ≤ coverEntropyInfEntourage T F U :=
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_closure_le h F U V_uni n)
 
-lemma coverEntropyEntourage_closure (h : Continuous T) (F : Set X) (U : Set (X × X))
-    {V : Set (X × X)} (V_uni : V ∈ 𝓤 X) :
-    coverEntropyEntourage T (closure F) (U ○ V) ≤ coverEntropyEntourage T F U :=
+lemma coverEntropyEntourage_closure (h : Continuous T) (F : Set X) (U : SetRel X X)
+    (V_uni : V ∈ 𝓤 X) :
+    coverEntropyEntourage T (closure F) (V ○ U) ≤ coverEntropyEntourage T F U :=
   expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_closure_le h F U V_uni n)
 
-lemma coverEntropyInf_closure (h : Continuous T) {F : Set X} :
+lemma coverEntropyInf_closure (h : Continuous T) :
     coverEntropyInf T (closure F) = coverEntropyInf T F := by
   refine (iSup₂_le fun U U_uni ↦ ?_).antisymm (coverEntropyInf_monotone T subset_closure)
   obtain ⟨V, V_uni, V_U⟩ := comp_mem_uniformity_sets U_uni
   exact le_iSup₂_of_le V V_uni ((coverEntropyInfEntourage_antitone T (closure F) V_U).trans
     (coverEntropyInfEntourage_closure h F V V_uni))
 
-theorem coverEntropy_closure (h : Continuous T) {F : Set X} :
+theorem coverEntropy_closure (h : Continuous T) :
     coverEntropy T (closure F) = coverEntropy T F := by
   refine (iSup₂_le fun U U_uni ↦ ?_).antisymm (coverEntropy_monotone T subset_closure)
   obtain ⟨V, V_uni, V_U⟩ := comp_mem_uniformity_sets U_uni
@@ -146,13 +145,10 @@ end Closure
 
 section Union
 
-lemma IsDynCoverOf.union {T : X → X} {F G : Set X} {U : Set (X × X)} {n : ℕ} {s t : Set X}
-    (hs : IsDynCoverOf T F U n s) (ht : IsDynCoverOf T G U n t) :
-    IsDynCoverOf T (F ∪ G) U n (s ∪ t) :=
-  union_subset (hs.trans (biUnion_subset_biUnion_left subset_union_left))
-    (ht.trans (biUnion_subset_biUnion_left subset_union_right))
+lemma IsDynCoverOf.union (hs : IsDynCoverOf T F U n s) (ht : IsDynCoverOf T G U n t) :
+    IsDynCoverOf T (F ∪ G) U n (s ∪ t) := SetRel.IsCover.union hs ht
 
-lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : Set (X × X)) (n : ℕ) :
+lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T (F ∪ G) U n ≤ coverMincard T F U n + coverMincard T G U n := by
   classical
   rcases eq_top_or_lt_top (coverMincard T F U n) with hF | hF
@@ -166,7 +162,7 @@ lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : Set (X × X)) (n : 
   rw [s.coe_union t]
   exact s_cover.union t_cover
 
-lemma coverEntropyEntourage_union {T : X → X} {F G : Set X} {U : Set (X × X)} :
+lemma coverEntropyEntourage_union :
     coverEntropyEntourage T (F ∪ G) U
       = max (coverEntropyEntourage T F U) (coverEntropyEntourage T G U) := by
   refine le_antisymm ?_ ?_
@@ -178,7 +174,7 @@ lemma coverEntropyEntourage_union {T : X → X} {F G : Set X} {U : Set (X × X)}
 
 variable {ι : Type*} [UniformSpace X]
 
-lemma coverEntropy_union {T : X → X} {F G : Set X} :
+lemma coverEntropy_union :
     coverEntropy T (F ∪ G) = max (coverEntropy T F) (coverEntropy T G) := by
   simp only [coverEntropy, ← iSup_sup_eq]
   exact biSup_congr fun _ _ ↦ coverEntropyEntourage_union

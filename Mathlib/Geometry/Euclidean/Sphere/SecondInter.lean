@@ -3,7 +3,11 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+module
+
+public import Mathlib.Analysis.Convex.Side
+public import Mathlib.Analysis.Convex.StrictCombination
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
 # Second intersection of a sphere and a line
@@ -18,6 +22,8 @@ through a point on that sphere.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -27,6 +33,8 @@ namespace EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable [NormedAddTorsor V₂ P₂]
 
 /-- The second intersection of a sphere with a line through a point on that sphere; that point
 if it is the only point of intersection of the line with the sphere. The intended use of this
@@ -34,6 +42,16 @@ definition is when `p ∈ s`; the definition does not use `s.radius`, so in gene
 the second intersection with the sphere through `p` and with center `s.center`. -/
 def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
   (-2 * ⟪v, p -ᵥ s.center⟫ / ⟪v, v⟫) • v +ᵥ p
+
+@[simp] lemma Sphere.secondInter_map (s : Sphere P) (p : P) (v : V) (f : P →ᵃⁱ[ℝ] P₂) :
+    Sphere.secondInter ⟨f s.center, s.radius⟩ (f p) (f.linearIsometry v) =
+      f (s.secondInter p v) := by
+  simp [secondInter, ← AffineIsometry.map_vsub]
+
+lemma Sphere.coe_secondInter (as : AffineSubspace ℝ P) [Nonempty as] (s : Sphere as)
+    (p : as) (v : as.direction) :
+    s.secondInter p v = Sphere.secondInter ⟨(s.center : P), s.radius⟩ (p : P) (v : V) :=
+  rfl
 
 /-- The distance between `secondInter` and the center equals the distance between the original
 point and the center. -/
@@ -86,6 +104,17 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
     rw [mem_sphere] at h hp
     rw [← hp, dist_smul_vadd_eq_dist _ _ hv] at h
     rcases h with (h | h) <;> simp [h]
+
+/-- A point on a line through a point on a sphere and a second point equals that point or
+`secondInter`. -/
+lemma Sphere.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair {s : Sphere P} {p q : P}
+    (hp : p ∈ s) {p' : P} (hp' : p' ∈ line[ℝ, p, q]) :
+    p' = p ∨ p' = s.secondInter p (q -ᵥ p) ↔ p' ∈ s := by
+  convert s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
+  convert hp'
+  rw [AffineSubspace.eq_iff_direction_eq_of_mem (AffineSubspace.self_mem_mk' p _)
+    (left_mem_affineSpan_pair _ _ _)]
+  simp [direction_affineSpan, vectorSpan_pair_rev]
 
 /-- `secondInter` is unchanged by multiplying the vector by a nonzero real. -/
 @[simp]
@@ -163,5 +192,55 @@ theorem Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
   · rintro h
     rw [h, mem_sphere.1 ((Sphere.secondInter_mem _).2 hp)] at hp'
     exact lt_irrefl _ hp'
+
+/-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
+vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
+subtraction involving that vertex and a point in the interior of the opposite face, the given
+vertex and the result of `secondInter` are on opposite sides of that face. -/
+lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite {s : Sphere P}
+    {n : ℕ} [NeZero n] {sx : Affine.Simplex ℝ P n} {i : Fin (n + 1)} (hi : sx.points i ∈ s)
+    (hsx : ∀ j, dist (sx.points j) s.center ≤ s.radius) {p : P}
+    (hp : p ∈ (sx.faceOpposite i).interior) :
+    (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p -ᵥ (sx.points i))) :=
+  Sbtw.sOppSide_of_notMem_of_mem
+    (s.sbtw_secondInter hi ((sx.faceOpposite i).dist_lt_of_mem_interior_of_strictConvexSpace hp
+      (fun j ↦ hsx _)))
+    (by simp)
+    (Set.mem_of_mem_of_subset hp ((sx.faceOpposite i).interior_subset_closedInterior.trans
+      (sx.faceOpposite i).closedInterior_subset_affineSpan))
+
+attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
+
+/-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
+vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
+subtraction involving that vertex and a point in the interior of the simplex, the given vertex
+and the result of `secondInter` are on opposite sides of the face opposite that vertex. -/
+lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior {s : Sphere P}
+    {n : ℕ} [Nat.AtLeastTwo n] {sx : Affine.Simplex ℝ P n} {i : Fin (n + 1)} (hi : sx.points i ∈ s)
+    (hsx : ∀ j, dist (sx.points j) s.center ≤ s.radius) {p : P}
+    (hp : p ∈ sx.interior) :
+    (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p -ᵥ (sx.points i))) := by
+  obtain ⟨w, hw, hw01, rfl⟩ := hp
+  let r : ℝ := (1 - w i)⁻¹
+  have hrpos : 0 < r := by simp [inv_pos, sub_pos, r, (hw01 i).2]
+  let p' : P := AffineMap.lineMap (sx.points i) (Finset.univ.affineCombination ℝ sx.points w) r
+  have hp' : (p' -ᵥ (sx.points i)) =
+      r • (Finset.univ.affineCombination ℝ sx.points w -ᵥ (sx.points i)) := by simp [p']
+  suffices (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p' -ᵥ (sx.points i))) by
+    rwa [hp', s.secondInter_smul _ _ hrpos.ne'] at this
+  refine s.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite hi hsx ?_
+  simp_rw [p', ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ (sx.points)
+    (Finset.mem_univ i), AffineMap.lineMap_apply, Finset.affineCombination_vsub,
+    ← LinearMap.map_smul, Finset.weightedVSub_vadd_affineCombination,
+    Affine.Simplex.faceOpposite]
+  rw [Affine.Simplex.affineCombination_mem_interior_face_iff_pos]
+  · simp only [Finset.mem_compl, Finset.mem_singleton, Pi.add_apply, Pi.smul_apply, Pi.sub_apply,
+      smul_eq_mul, Decidable.not_not, forall_eq, Finset.affineCombinationSingleWeights_apply_self]
+    refine ⟨fun j hj ↦ ?_, by grind⟩
+    simp [hj, hrpos, (hw01 j).1]
+  · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw]
 
 end EuclideanGeometry

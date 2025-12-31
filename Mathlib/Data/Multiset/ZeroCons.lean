@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Defs
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Data.Multiset.Defs
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Definition of `0` and `::ₘ`
@@ -30,6 +32,8 @@ It also defines the following predicates on multisets:
 
 * `Multiset.rec`: recursion on adding one element to a multiset at a time.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid OrderHom
@@ -188,17 +192,11 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
 theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil
 
-@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
-
 theorem eq_zero_of_forall_notMem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 :=
   Quot.inductionOn s fun l H => by rw [eq_nil_iff_forall_not_mem.mpr H]; rfl
 
-@[deprecated (since := "2025-05-23")] alias eq_zero_of_forall_not_mem := eq_zero_of_forall_notMem
-
 theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
   ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
-
-@[deprecated (since := "2025-05-23")] alias eq_zero_iff_forall_not_mem := eq_zero_iff_forall_notMem
 
 theorem exists_mem_of_ne_zero {s : Multiset α} : s ≠ 0 → ∃ a : α, a ∈ s :=
   Quot.inductionOn s fun l hl =>
@@ -378,14 +376,10 @@ theorem le_cons_of_notMem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
     perm_middle.subperm_left.2
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
 
-@[deprecated (since := "2025-05-23")] alias le_cons_of_not_mem := le_cons_of_notMem
-
 theorem cons_le_of_notMem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s ≤ t := by
   apply Iff.intro (fun h ↦ ⟨subset_of_le h (mem_cons_self a s), le_trans (le_cons_self s a) h⟩)
   rintro ⟨h₁, h₂⟩; rcases exists_cons_of_mem h₁ with ⟨_, rfl⟩
   exact cons_le_cons _ ((le_cons_of_notMem hs).mp h₂)
-
-@[deprecated (since := "2025-05-23")] alias cons_le_of_not_mem := cons_le_of_notMem
 
 @[simp]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
@@ -630,8 +624,6 @@ theorem Nodup.of_cons (h : Nodup (a ::ₘ s)) : Nodup s :=
 
 theorem Nodup.notMem (h : Nodup (a ::ₘ s)) : a ∉ s :=
   (nodup_cons.1 h).1
-
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
 
 end Nodup
 

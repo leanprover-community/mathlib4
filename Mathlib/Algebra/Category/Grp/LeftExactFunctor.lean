@@ -3,11 +3,13 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.CartesianMonoidal
-import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.CommGrp_
+module
+
+public import Mathlib.Algebra.Category.Grp.CartesianMonoidal
+public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Preadditive.CommGrp_
 
 /-!
 # The forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is an equivalence
@@ -26,6 +28,8 @@ can be shown that this construction gives a quasi-inverse to the whiskering oper
 `(C ⥤ₗ AddCommGrpCat.{v}) ⥤ (C ⥤ₗ Type v)`.
 -/
 
+@[expose] public section
+
 open CategoryTheory MonoidalCategory Limits
 
 
@@ -42,8 +46,10 @@ namespace leftExactFunctorForgetEquivalence
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
 attribute [local instance] AddCommGrpCat.cartesianMonoidalCategoryAddCommGrp
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : CartesianMonoidalCategory C := .ofHasFiniteProducts
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidalCategory
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
@@ -61,7 +67,7 @@ instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :=
-  ObjectProperty.lift _ inverseAux inferInstance
+  ObjectProperty.lift _ inverseAux (by simp only [leftExactFunctor_iff]; infer_instance)
 
 open scoped MonObj
 

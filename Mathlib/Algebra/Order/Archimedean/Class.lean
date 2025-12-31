@@ -3,15 +3,17 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Data.Finset.Max
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.Hom.WithTopBot
-import Mathlib.Order.UpperLower.CompleteLattice
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.UpperLower.CompleteLattice
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Archimedean classes of a linearly ordered group
@@ -20,7 +22,10 @@ This file defines archimedean classes of a given linearly ordered group. Archime
 measure to what extent the group fails to be Archimedean. For additive group, elements `a` and `b`
 in the same class are "equivalent" in the sense that there exist two natural numbers
 `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`. An element `a` in a higher class than `b`
-is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural number `n`.
+is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural numbers `n`.
+
+If `a` and `b` are in the same equivalence class, they're sometimes referred to as "commensurate"
+elements.
 
 ## Main definitions
 
@@ -52,16 +57,18 @@ the order.
 
 -/
 
+@[expose] public section
+
 section ArchimedeanOrder
 variable {M : Type*}
 
 variable (M) in
-/-- Type synonym to equip a ordered group with a new `Preorder` defined by the infinitesimal order
+/-- Type synonym to equip an ordered group with a new `Preorder` defined by the infinitesimal order
 of elements. `a` is said less than `b` if `b` is infinitesimal comparing to `a`, or more precisely,
 `∀ n, |b|ₘ ^ n < |a|ₘ`. If `a` and `b` are neither infinitesimal to each other, they are equivalent
 in this order. -/
 @[to_additive ArchimedeanOrder
-/-- Type synonym to equip a ordered group with a new `Preorder` defined by the infinitesimal order
+/-- Type synonym to equip an ordered group with a new `Preorder` defined by the infinitesimal order
 of elements. `a` is said less than `b` if `b` is infinitesimal comparing to `a`, or more precisely,
 `∀ n, n • |b| < |a|`. If `a` and `b` are neither infinitesimal to each other, they are equivalent
 in this order. -/]
@@ -391,12 +398,12 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
     have hminmem : s.min' hs ∈ (Finset.cons i s hi) :=
       Finset.mem_cons_of_mem (Finset.min'_mem _ _)
     have hne : mk (a i) ≠ mk (a (s.min' hs)) := by
-      by_contra!
-      obtain eq := hmono.injOn (by simp) hminmem this
+      by_contra h
+      obtain eq := hmono.injOn (by simp) hminmem h
       rw [eq] at hi
       exact hi (Finset.min'_mem _ hs)
     rw [← ih] at hne
-    obtain hlt|hlt := lt_or_gt_of_ne hne
+    obtain hlt | hlt := lt_or_gt_of_ne hne
     · rw [mk_mul_eq_mk_left hlt]
       congr
       apply le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ (by simp))
@@ -556,7 +563,7 @@ variable {s : UpperSet (MulArchimedeanClass M)}
 
 @[to_additive]
 theorem subsemigroup_eq_subgroup_of_ne_top (hs : s ≠ ⊤) :
-    subsemigroup s = (subgroup s : Set M)  := by
+    subsemigroup s = (subgroup s : Set M) := by
   simp [subgroup, hs]
 
 variable (M) in

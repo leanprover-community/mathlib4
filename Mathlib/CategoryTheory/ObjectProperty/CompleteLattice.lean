@@ -3,13 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.Order.CompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # ObjectProperty is a complete lattice
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -44,6 +49,13 @@ instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     (P ⊔ Q).IsClosedUnderIsomorphisms := by
   simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self, isoClosure_sup, isoClosure_eq_self]
 
+instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
+    IsClosedUnderIsomorphisms (P ⊓ Q) where
+  of_iso e h := ⟨IsClosedUnderIsomorphisms.of_iso e h.1, IsClosedUnderIsomorphisms.of_iso e h.2⟩
+
+instance : IsClosedUnderIsomorphisms (⊤ : ObjectProperty C) where
+  of_iso := by simp
+
 end
 
 section
@@ -71,5 +83,15 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     isoClosure_iSup, isoClosure_eq_self]
 
 end
+
+@[simp]
+lemma ι_map_top (P : ObjectProperty C) :
+    (⊤ : ObjectProperty _).map P.ι = P.isoClosure := by
+  ext X
+  constructor
+  · rintro ⟨⟨Y, hY⟩, _, ⟨e⟩⟩
+    exact ⟨Y, hY, ⟨e.symm⟩⟩
+  · rintro ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨⟨Y, hY⟩, by simp, ⟨e.symm⟩⟩
 
 end CategoryTheory.ObjectProperty

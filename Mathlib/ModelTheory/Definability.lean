@@ -3,8 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.ModelTheory.Semantics
+module
+
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.ModelTheory.Semantics
 
 /-!
 # Definable Sets
@@ -29,6 +31,8 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 
 -/
+
+@[expose] public section
 
 
 universe u v w u₁
@@ -326,8 +330,6 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
 @[simp]
 theorem notMem_bot {x : α → M} : x ∉ (⊥ : L.DefinableSet A α) :=
   notMem_empty x
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup : x ∈ s ⊔ t ↔ x ∈ s ∨ x ∈ t :=

@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Separation.Profinite
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Clopen subsets in Cartesian products
@@ -29,6 +31,8 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 - [engelking1989]: *General Topology*, 1989.
 
 -/
+
+@[expose] public section
 
 open Function Set Filter TopologicalSpace
 open scoped Topology
@@ -82,7 +86,7 @@ lemma countable_iff_secondCountable [T2Space X]
     [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
   refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
-    exact (injective_of_le_imp_le f fun a ↦ a).countable
+    exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
   · apply IsTopologicalBasis.eq_generateFrom
     exact loc_compact_Haus_tot_disc_of_zero_dim
   · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=

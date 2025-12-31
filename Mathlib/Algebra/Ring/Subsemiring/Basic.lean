@@ -3,14 +3,16 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Ring.Action.Subobjects
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.GroupTheory.Submonoid.Centralizer
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Module.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Ring.Action.Subobjects
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.GroupTheory.Submonoid.Centralizer
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.Module.Defs
 
 /-!
 # Bundled subsemirings
@@ -18,6 +20,8 @@ import Mathlib.Algebra.Module.Defs
 We define some standard constructions on bundled subsemirings: `CompleteLattice` structure,
 subsemiring `map`, `comap` and range (`rangeS`) of a `RingHom` etc.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -170,6 +174,10 @@ theorem mem_rangeS_self (f : R →+* S) (x : R) : f x ∈ f.rangeS :=
 theorem map_rangeS : f.rangeS.map g = (g.comp f).rangeS := by
   simpa only [rangeS_eq_map] using (⊤ : Subsemiring R).map_map g f
 
+variable {f} in
+theorem rangeS_eq_top : f.rangeS = ⊤ ↔ Function.Surjective f := by
+  simp [← Set.range_eq_univ, SetLike.ext'_iff]
+
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`. -/
@@ -203,6 +211,7 @@ instance : InfSet (Subsemiring R) :=
 theorem coe_sInf (S : Set (Subsemiring R)) : ((sInf S : Subsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -210,7 +219,8 @@ theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ 
 theorem coe_iInf {ι : Sort*} {S : ι → Subsemiring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
@@ -361,8 +371,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subsemiring `S` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -700,6 +708,18 @@ def codRestrict (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) : R →+* s :=
 theorem codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : R) :
     (f.codRestrict s h x : S) = f x :=
   rfl
+
+theorem injective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
+    Function.Injective (f.codRestrict s h) ↔ Function.Injective f :=
+  Set.injective_codRestrict h
+
+theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
+    rangeS (codRestrict f s h) = Subsemiring.comap (SubsemiringClass.subtype s) f.rangeS :=
+  SetLike.coe_injective <| Set.range_codRestrict h
+
+theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
+    Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s :=
+  (Set.surjective_codRestrict h).trans <| .symm <| SetLike.coe_set_eq.symm
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=

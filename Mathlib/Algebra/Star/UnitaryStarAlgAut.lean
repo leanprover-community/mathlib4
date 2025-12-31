@@ -3,9 +3,11 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Algebra.Star.Unitary
+module
+
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Algebra.Star.Unitary
 
 /-!
 # The ⋆-algebra automorphism given by a unitary element
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Star.Unitary
 This file defines the ⋆-algebra automorphism on `R` given by a unitary `u`,
 which is `Unitary.conjStarAlgAut S R u`, defined to be `x ↦ u * x * star u`.
 -/
+
+@[expose] public section
 
 namespace Unitary
 variable {S R : Type*} [Semiring R] [StarMul R]

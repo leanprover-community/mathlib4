@@ -3,8 +3,10 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 
 /-!
 # Colimits on Grothendieck constructions preserving limits
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 We characterize the condition in which colimits on Grothendieck constructions preserve limits: By
 preserving limits on the Grothendieck construction's base category as well as on each of its fibers.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄

@@ -3,13 +3,17 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Fintype instances for pi types
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -29,7 +33,7 @@ def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
   (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
     by simp +contextual [funext_iff]⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by
   constructor
   · simp only [piFinset, mem_map, and_imp, forall_prop_of_true, mem_univ, exists_imp,
@@ -71,7 +75,7 @@ lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s =
 
 @[simp]
 theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
-  ext fun _ => by simp only [funext_iff, Fintype.mem_piFinset, mem_singleton]
+  ext fun _ => by grind
 
 theorem piFinset_subsingleton {f : ∀ i, Finset (δ i)} (hf : ∀ i, (f i : Set (δ i)).Subsingleton) :
     (Fintype.piFinset f : Set (∀ i, δ i)).Subsingleton := fun _ ha _ hb =>
@@ -107,29 +111,16 @@ variable [∀ a, DecidableEq (δ a)]
 
 lemma filter_piFinset_of_notMem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
     {f ∈ piFinset t | f a = x} = ∅ := by
-  simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
+  grind
 
-@[deprecated (since := "2025-05-23")] alias filter_piFinset_of_not_mem := filter_piFinset_of_notMem
-
--- TODO: This proof looks like a good example of something that `aesop` can't do but should
 lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
     (hts : t ⊆ s i) : piFinset (Function.update s i t) = {f ∈ piFinset s | f i ∈ t} := by
-  ext f
-  simp only [mem_piFinset, mem_filter]
-  refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
-  · have := by simpa using h i
-    refine ⟨fun j ↦ ?_, this⟩
-    obtain rfl | hji := eq_or_ne j i
-    · exact hts this
-    · simpa [hji] using h j
-  · obtain rfl | hji := eq_or_ne j i
-    · simpa using h.2
-    · simpa [hji] using h.1 j
+  grind
 
 lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i)) (i : α) {a : δ i}
     (ha : a ∈ s i) :
     piFinset (Function.update s i {a}) = {f ∈ piFinset s | f i = a} := by
-  simp [piFinset_update_eq_filter_piFinset_mem, ha]
+  grind
 
 end Fintype
 

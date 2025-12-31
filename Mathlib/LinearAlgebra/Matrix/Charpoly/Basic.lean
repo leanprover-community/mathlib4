@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.MatrixPolynomialAlgebra
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.RingTheory.MatrixPolynomialAlgebra
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -24,6 +26,8 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -112,7 +116,7 @@ lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
   simp only [charmatrix]
-  ext (i|i) (j|j) : 2 <;> simp [diagonal]
+  ext (i | i) (j | j) : 2 <;> simp [diagonal]
 
 -- TODO: importing block triangular here is somewhat expensive, if more lemmas about it are added
 -- to this file, it may be worth extracting things out to Charpoly/Block.lean
@@ -154,7 +158,7 @@ theorem charpoly_natCast (k : ℕ) :
   simp [charpoly]
 
 theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
-    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
+    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n :=
   charpoly_natCast _
 
 @[simp]
@@ -281,7 +285,7 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
   charpoly_units_conj M⁻¹ N
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
-    (M - scalar n μ).charpoly  = M.charpoly.comp (X + C μ) := by
+    (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
   congr! with σ _ i _
   by_cases hi : σ i = i <;> simp [hi]

@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
@@ -337,3 +341,29 @@ lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
   simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
 
 end LinearMap
+
+namespace Equiv
+variable {R A A' B B' C C' : Type*}
+variable [CommSemiring R] [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C']
+variable [Module R A'] [Module R B'] [Module R C']
+
+variable (R) in
+open TensorProduct in
+lemma tensorProductAssoc_def (eA : A ≃ A') (eB : B ≃ B') (eC : C ≃ C') :
+    letI := eA.addCommMonoid
+    letI := eB.addCommMonoid
+    letI := eC.addCommMonoid
+    letI := eA.module R
+    letI := eB.module R
+    letI := eC.module R
+    TensorProduct.assoc R A B C = .trans
+      (congr (congr (eA.linearEquiv R) (eB.linearEquiv R)) (eC.linearEquiv R)) (.trans
+      (TensorProduct.assoc R A' B' C') <| congr (eA.linearEquiv R).symm <|
+        congr (eB.linearEquiv R).symm (eC.linearEquiv R).symm) := by
+  ext x
+  induction x with
+  | zero => simp
+  | add => simp [*]
+  | tmul x a => induction x <;> simp [*, add_tmul]
+
+end Equiv

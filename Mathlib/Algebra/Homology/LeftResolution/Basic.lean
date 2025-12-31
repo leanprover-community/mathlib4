@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # Left resolutions
@@ -21,11 +23,13 @@ This shall be used in order to construct functorial flat resolutions.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Abelian
 
 open Category Limits Preadditive ZeroObject
 
-variable {A C : Type*} [Category C] [Category A] (ι : C ⥤ A)
+variable {A C : Type*} [Category* C] [Category* A] (ι : C ⥤ A)
 
 /-- Given a fully faithful functor `ι : C ⥤ A`, this structure contains the data
 of a functor `F : A ⥤ C` and a functorial epimorphism
@@ -95,7 +99,7 @@ attribute [irreducible] chainComplex
 lemma exactAt_map_chainComplex_succ (n : ℕ) :
     ((ι.mapHomologicalComplex _).obj (Λ.chainComplex X)).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n
-    (ComplexShape.prev_eq' _ (by dsimp; omega)) (by simp),
+    (ComplexShape.prev_eq' _ (by dsimp; lia)) (by simp),
     ShortComplex.exact_iff_epi_kernel_lift]
   convert epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
   rw [← cancel_mono (kernel.ι _), kernel.lift_ι]
@@ -160,7 +164,7 @@ lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
   ext n
   induction n with
   | zero => simp
-  | succ n hn => obtain _|n := n <;> simp [hn]
+  | succ n hn => obtain _ | n := n <;> simp [hn]
 
 @[reassoc, simp]
 lemma chainComplexMap_comp :

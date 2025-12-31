@@ -3,13 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Eric Wieser
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.Star
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.Star
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Topological properties of matrices
@@ -36,6 +38,8 @@ This file is a place to collect topological results about matrices.
   * `Matrix.blockDiagonal_tsum`: block diagonal commutes with infinite sums
   * `Matrix.blockDiagonal'_tsum`: non-uniform block diagonal commutes with infinite sums
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -139,9 +143,6 @@ protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [C
     Continuous fun x => A x ⬝ᵥ B x := by
   dsimp only [dotProduct]
   fun_prop
-
-@[deprecated (since := "2025-05-09")]
-alias Continuous.matrix_dotProduct := Continuous.dotProduct
 
 /-- For square matrices the usual `continuous_mul` can be used. -/
 @[continuity, fun_prop]
@@ -262,7 +263,7 @@ lemma IsOpenEmbedding.matrix_map [Finite m] [Finite n] (hf : IsOpenEmbedding f) 
 
 end Topology
 
--- lemmas about functions in `Data/Matrix/Block.lean`
+-- lemmas about functions in `Mathlib/Data/Matrix/Block.lean`
 section BlockMatrices
 
 @[continuity, fun_prop]
