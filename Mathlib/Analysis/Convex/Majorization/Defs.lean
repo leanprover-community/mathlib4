@@ -22,6 +22,17 @@ docstring).
 * `y` supermajorizes `x` (`x ≼ˢ y`) if `∀ k, ∑ i ≤ k, y↑ i ≤ ∑ i ≤ k, x↑ i`.
 * `y` majorizes `x` (`x ≼ y`) if `x ≼ₛ y` and `∑ i, x i = ∑ i, y i`.
 
+This file provides the bare definitions for the above, as well as for increasing and
+decreasing sums.
+
+## Main definitions
+
+* `incSum k x`: The sum of the `k` smallest elements of `x`.
+* `decSum k x`: The sum of the `k` largest elements of `x`.
+* `IsSubmajorizedBy x y`, `x` is submajorized by `y` (notation: `x ≼ₛ y`)
+* `IsSupermajorizedBy x y`, `x` is supermajorized by `y` (notation: `x ≼ˢ y`)
+* `IsMajorizedBy x y`, `x` is majorized by `y` (notation: `x ≼ y`)
+
 ## Implementation notes
 
 There are several characterizations of this notion, and one that is more amenable to

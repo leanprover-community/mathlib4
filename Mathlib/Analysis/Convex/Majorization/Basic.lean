@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 public import Mathlib.Analysis.Convex.Majorization.Defs
 
 /-!
-# Majorization
+# Basic facts about majorization
 
 Given two vectors `x y : n → R` (with `n` finite), we say that
 
@@ -18,6 +18,14 @@ the values of `x` sorted in decreasing order (this notation is not used here, on
 docstring).
 * `y` supermajorizes `x` (`x ≼ˢ y`) if `∀ k, ∑ i ≤ k, y↑ i ≤ ∑ i ≤ k, x↑ i`.
 * `y` majorizes `x` (`x ≼ y`) if `x ≼ₛ y` and `∑ i, x i = ∑ i, y i`.
+
+This file develops basic API for these notions, and shows that a matrix `A` is doubly stochastic
+iff `A *ᵥ x ≼ x` for all `x`.
+
+## Main statements
+
+* `mem_doublyStochastic_iff_forall_mulVec_isMajorizedBy`: A matrix `A` is doubly stochastic iff
+  `A *ᵥ x ≼ x` for all `x`.
 
 ## Implementation notes
 
@@ -307,65 +315,6 @@ lemma decSum_comp_equiv (k : ℕ) (x : n → R) (e : m ≃ n) : decSum k (x ∘ 
       decSum_of_ge_card (k := k) (x := x ∘ e) (by grind)]
     exact sum_equiv e (x ∘ ⇑e) x (congrFun rfl)
 
-lemma decSum_of_antitone [IsOrderedRing R] {n : ℕ} (k : ℕ) (x : Fin n → R) (hx : Antitone x)
-    (hk0 : 0 < k) (hkn : k < n) : decSum k x = ∑ i ≤ ⟨k - 1, by grind⟩, x i := by
-  let s : Finset (Fin n) := Iic ⟨k - 1, by grind⟩
-  rw [decSum_of_le_card (by grind)]
-  rw [max'_eq_iff]
-  refine ⟨?_, ?_⟩
-  · rw [mem_image]
-    refine ⟨s, ?_, rfl⟩
-    rw [mem_powersetCard_univ]
-    grind [Fin.card_Iic]
-  · intro b hb
-    rw [mem_image] at hb
-    obtain ⟨a, ha₁, ha₂⟩ := hb
-    rw [← ha₂]
-    change ∑ i ∈ a, x i ≤ ∑ i ∈ s, x i
-    by_cases has : a = s
-    · simp [has]
-    have ha : a = (a ∩ s) ∪ (a \ s) := by grind
-    have hs : s = (a ∩ s) ∪ (s \ a) := by grind
-    have hcard : (a \ s).card = (s \ a).card := by
-      rw [card_sdiff_eq_card_sdiff_iff]; grind [Fin.card_Iic]
-    rw [ha, sum_union (by grind [Finset.disjoint_iff_ne])]
-    conv_rhs => rw [hs, sum_union (by grind [Finset.disjoint_iff_ne])]
-    gcongr ?_ + ?_
-    let K := ((a \ s).image x).max' <| by grind [Finset.image_nonempty]
-    calc _ ≤ (a \ s).card • K := by
-              apply Finset.sum_le_card_nsmul
-              intro i hi
-              apply le_max'
-              grind
-      _ = (s \ a).card • K := by rw [hcard]
-      _ ≤ ∑ i ∈ (s \ a), x i := by
-              apply card_nsmul_le_sum
-              intro i hi
-              apply max'_le
-              intro y hy
-              rw [mem_image] at hy
-              obtain ⟨j, hj₁, hj₂⟩ := hy
-              rw [← hj₂]
-              have hij : i < j := by grind
-              exact hx (by grind)
-
-lemma decSum_one_of_antitone {n : ℕ} [NeZero n] (x : Fin n → R) (hx : Antitone x) :
-    decSum 1 x = x 0 := by
-  have hcard : 1 ≤ card (Fin n) := by simp [NeZero.one_le]
-  rw [decSum_of_le_card hcard]
-  rw [max'_eq_iff]
-  refine ⟨?_, ?_⟩
-  · rw [mem_image]
-    exact ⟨{0}, by simp, by simp⟩
-  · intro b hb
-    rw [mem_image] at hb
-    obtain ⟨s, hs₁, hs₂⟩ := hb
-    simp only [mem_powersetCard, subset_univ, true_and, card_eq_one] at hs₁
-    obtain ⟨i, hi⟩ := hs₁
-    simp only [hi, sum_singleton] at hs₂
-    rw [← hs₂]
-    exact hx <| Fin.zero_le i
-
 end incdecsum
 
 section majorization
@@ -382,24 +331,6 @@ lemma isSubmajorizedBy_iff_forall_pos (x : m → R) (y : n → R) :
   by_cases hk : k = 0
   · simp [hk]
   · exact h k (by grind)
-
-lemma isSubmajorizedBy_of_sum_le_sum_antitone [IsOrderedRing R] {n : ℕ} [NeZero n] (x y : Fin n → R)
-    (hx : Antitone x) (hmaj : ∀ k, ∑ i ≤ k, x i ≤ ∑ i ≤ k, y i) : x ≼ₛ y := by
-  rw [isSubmajorizedBy_iff_forall_pos]
-  intro k hk
-  by_cases hk' : n ≤ k
-  · rw [decSum_of_ge_card (by simp [hk']), decSum_of_ge_card (by simp [hk'])]
-    let nmax : Fin n := ⟨n - 1, by grind [neZero_iff]⟩
-    specialize hmaj nmax
-    have hIic : Iic nmax = univ := by grind
-    simpa [hIic] using hmaj
-  let km1 : Fin n := ⟨k - 1, by grind⟩
-  rw [decSum_of_antitone k x hx hk (by grind)]
-  apply (hmaj km1).trans
-  rw [decSum_of_le_card (by grind)]
-  apply le_max'
-  rw [mem_image]
-  exact ⟨Iic km1, by grind [Fin.card_Iic], rfl⟩
 
 lemma isSubmajorizedBy_iff_isSupermajorizedBy [IsStrictOrderedRing R] {x : m → R} {y : n → R}
     (h : ∑ i, x i = ∑ i, y i) (hcard : card m = card n) : x ≼ₛ y ↔ x ≼ˢ y := by
@@ -516,14 +447,7 @@ lemma IsSupermajorizedBy.forall_nonneg [IsOrderedRing R] {x y : n → R}
     have h₂ : IsEmpty n := card_eq_zero_iff.mp h₁
     exact h₂.elim
 
-lemma IsSubmajorizedBy.apply_zero_le_of_antitone {n : ℕ} [NeZero n] {x y : Fin n → R}
-    (hx : Antitone x) (hy : Antitone y) (hxy : x ≼ₛ y) : x 0 ≤ y 0 := by
-  rw [isSubmajorizedBy_def] at hxy
-  specialize hxy 1
-  rw [decSum_one_of_antitone x hx, decSum_one_of_antitone y hy] at hxy
-  exact hxy
-
-lemma mem_doublyStochastic_of_forall_isMajorizedBy [DecidableEq n] [IsStrictOrderedRing R]
+lemma mem_doublyStochastic_of_forall_mulVec_isMajorizedBy [DecidableEq n] [IsStrictOrderedRing R]
     (A : Matrix n n R) (ha : ∀ x, A *ᵥ x ≼ x) : A ∈ doublyStochastic R n := by
   rw [mem_doublyStochastic]
   refine ⟨?_, ?_, ?_⟩
@@ -542,8 +466,8 @@ lemma mem_doublyStochastic_of_forall_isMajorizedBy [DecidableEq n] [IsStrictOrde
     simpa using ha
 
 lemma mulVec_isSubmajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R]
-    (A : Matrix n n R) (hA : A ∈ doublyStochastic R n) : ∀ x, A *ᵥ x ≼ₛ x := by
+    [CanonicallyOrderedAdd R] (A : Matrix n n R) (hA : A ∈ doublyStochastic R n) :
+    ∀ x, A *ᵥ x ≼ₛ x := by
   intro x k
   by_cases hcard : k ≤ card n
   · by_cases htriv : k = 0
@@ -612,17 +536,14 @@ lemma mulVec_isSubmajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictO
     apply le_of_eq
     exact sum_mulVec_of_mem_doublyStochastic hA
 
-lemma isMajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R]
-    (A : Matrix n n R) (hA : A ∈ doublyStochastic R n) : ∀ x, A *ᵥ x ≼ x := by
-  intro x
-  refine ⟨mulVec_isSubmajorizedBy_of_mem_doublyStochastic A hA x, ?_⟩
-  exact sum_mulVec_of_mem_doublyStochastic hA
+lemma mulVec_isMajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictOrderedRing R]
+    [CanonicallyOrderedAdd R] (A : Matrix n n R) (hA : A ∈ doublyStochastic R n) (x : n → R) :
+    A *ᵥ x ≼ x :=
+  ⟨mulVec_isSubmajorizedBy_of_mem_doublyStochastic A hA x, sum_mulVec_of_mem_doublyStochastic hA⟩
 
-lemma mem_doublyStochastic_iff_forall_isMajorizedBy [DecidableEq n] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R]
-    {A : Matrix n n R} : A ∈ doublyStochastic R n ↔ ∀ x, A *ᵥ x ≼ x :=
-  ⟨fun hA => isMajorizedBy_of_mem_doublyStochastic A hA,
-    fun ha => mem_doublyStochastic_of_forall_isMajorizedBy A ha⟩
+lemma mem_doublyStochastic_iff_forall_mulVec_isMajorizedBy [DecidableEq n] [IsStrictOrderedRing R]
+    [CanonicallyOrderedAdd R] {A : Matrix n n R} : A ∈ doublyStochastic R n ↔ ∀ x, A *ᵥ x ≼ x :=
+  ⟨fun hA => mulVec_isMajorizedBy_of_mem_doublyStochastic A hA,
+    fun ha => mem_doublyStochastic_of_forall_mulVec_isMajorizedBy A ha⟩
 
 end majorization
