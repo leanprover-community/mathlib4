@@ -52,9 +52,11 @@ def toIcoDiv (a b : α) : ℤ :=
 theorem sub_toIcoDiv_zsmul_mem_Ico (a b : α) : b - toIcoDiv hp a b • p ∈ Set.Ico a (a + p) :=
   (existsUnique_sub_zsmul_mem_Ico hp b a).choose_spec.1
 
-theorem toIcoDiv_eq_of_sub_zsmul_mem_Ico (h : b - n • p ∈ Set.Ico a (a + p)) :
-    toIcoDiv hp a b = n :=
-  ((existsUnique_sub_zsmul_mem_Ico hp b a).choose_spec.2 _ h).symm
+theorem toIcoDiv_eq_iff : toIcoDiv hp a b = n ↔ b - n • p ∈ Set.Ico a (a + p) :=
+  have := (existsUnique_sub_zsmul_mem_Ico hp b a).choose_spec
+  ⟨fun h ↦ h ▸ this.1, fun h ↦ .symm <| this.2 _ h⟩
+
+alias ⟨_, toIcoDiv_eq_of_sub_zsmul_mem_Ico⟩ := toIcoDiv_eq_iff
 
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ioc a (a + p)`. -/
