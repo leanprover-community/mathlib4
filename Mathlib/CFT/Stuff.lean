@@ -1,5 +1,9 @@
-import Mathlib.RingTheory.Idempotents
-import Mathlib.RingTheory.Unramified.LocalRing
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.RingTheory.Unramified.LocalRing
+
+@[expose] public section
 
 open TensorProduct
 
@@ -8,30 +12,6 @@ attribute [local instance] RingHom.ker_isPrime
 open scoped nonZeroDivisors
 
 attribute [ext high] Ideal.Quotient.algHom_ext
-
--- noncomputable
--- instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
---     Algebra (S ⧸ p.map (algebraMap R S)) (S ⊗[R] p.ResidueField) :=
---   (Ideal.Quotient.lift _ (algebraMap _ _) ((Ideal.map_le_iff_le_comap (K := RingHom.ker _)).mpr (by
---     rw [RingHom.comap_ker, ← IsScalarTower.algebraMap_eq,
---       ← Algebra.TensorProduct.includeRight.comp_algebraMap, ← RingHom.comap_ker]
---     refine (Ideal.ker_algebraMap_residueField _).symm.trans_le (Ideal.ker_le_comap _)))).toAlgebra
-
--- noncomputable
--- instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
---     IsScalarTower S (S ⧸ p.map (algebraMap R S)) (S ⊗[R] p.ResidueField) :=
---   .of_algebraMap_eq' rfl
-
--- noncomputable
--- instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
---     IsScalarTower R (S ⧸ p.map (algebraMap R S)) (S ⊗[R] p.ResidueField) :=
---   .of_algebraMap_eq' rfl
-
--- @[simp]
--- lemma algebraMap_quotient_tensorProduct_residueField_mk
---     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] (s : S) :
---     algebraMap (S ⧸ p.map (algebraMap R S)) (S ⊗[R] p.ResidueField) (Ideal.Quotient.mk _ s) =
---       s ⊗ₜ 1 := rfl
 
 instance {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
     {e : S} (he : IsIdempotentElem e) : Algebra R he.Corner where

@@ -202,7 +202,7 @@ lemma of_restrictScalars [QuasiFinite R T] : QuasiFinite S T := by
     Algebra.TensorProduct.lift (Algebra.ofId _ _)
       (Algebra.TensorProduct.includeRight.restrictScalars R) fun _ _ ↦ .all _ _
   have hf : Function.Surjective f := by
-    rw [← AlgHom.coe_restrictScalars' (R := S), ← LinearMap.range_eq_top,
+    rw [← AlgHom.coe_restrictScalars' (R := S), ← AlgHom.coe_toLinearMap, ← LinearMap.range_eq_top,
       ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
     rintro _ ⟨a, b, rfl⟩
     exact ⟨a ⊗ₜ b, by simp [f]⟩

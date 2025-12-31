@@ -1,12 +1,12 @@
 module
+
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.CFT.NewNo
+
+
 @[expose] public section
 
 open TensorProduct
@@ -85,3 +85,7 @@ theorem Algebra.IsUnramifiedAt.residueField
     Algebra.TensorProduct.lift (Algebra.ofId _ _) f₀ fun _ _ ↦ .all _ _
   have hf : Function.Surjective f := hf₀.forall.mpr fun x ↦ ⟨1 ⊗ₜ x, by simp [f]⟩
   exact .of_surjective _ hf
+
+lemma PrimeSpectrum.toPiLocalization_bijective {R : Type*} [CommRing R]
+    [DiscreteTopology (PrimeSpectrum R)] : Function.Bijective (PrimeSpectrum.toPiLocalization R) :=
+  PrimeSpectrum.discreteTopology_iff_toPiLocalization_bijective.mp inferInstance
