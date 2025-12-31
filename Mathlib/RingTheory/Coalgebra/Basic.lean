@@ -491,7 +491,8 @@ lemma coalgebraIsCocomm [AddCommMonoid B] [Module R B] [Coalgebra R B] [IsCocomm
   letI := e.module R
   letI := e.coalgebra R
   { comm_comp_comul := by
-      -- TODO: `reassoc` for `LinearMap`
+      -- TODO: Implement a version of `reassoc` for `LinearMap`.
+      -- This would be useful for `TensorProduct.map_map` to trigger.
       have (f : A →ₗ[R] B ⊗[R] B) :
         TensorProduct.map (e.linearEquiv R) (e.linearEquiv R) ∘ₗ
           TensorProduct.map (e.linearEquiv R).symm.toLinearMap (e.linearEquiv R).symm.toLinearMap
