@@ -33,6 +33,10 @@ decreasing sums.
 * `IsSupermajorizedBy x y`, `x` is supermajorized by `y` (notation: `x ≼ˢ y`)
 * `IsMajorizedBy x y`, `x` is majorized by `y` (notation: `x ≼ y`)
 
+## Notation
+
+The above notation is available in the scope `Majorization`.
+
 ## Implementation notes
 
 There are several characterizations of this notion, and one that is more amenable to
