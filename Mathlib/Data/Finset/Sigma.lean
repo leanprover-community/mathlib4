@@ -178,16 +178,10 @@ theorem notMem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (
   rw [mem_sigmaLift]
   exact fun H => h H.fst
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_left := notMem_sigmaLift_of_ne_left
-
 theorem notMem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
     (b : Sigma β) {x : Sigma γ} (h : b.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.snd.fst
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_right := notMem_sigmaLift_of_ne_right
 
 variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {b : Σ i, β i}
 

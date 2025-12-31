@@ -114,9 +114,6 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, sum_apply, mul_apply]
 
-@[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_mem_jacobson_matricesOver := single_mem_jacobson_matrix
-
 @[deprecated (since := "2025-07-28")] alias single_mem_jacobson_matricesOver :=
 single_mem_jacobson_matrix
 
@@ -168,8 +165,6 @@ theorem matrix_apply_single [DecidableEq n] {c : RingCon R} {i j : n} {x y : R} 
   obtain hj | rfl := ne_or_eq j j'
   · simpa [hj] using c.refl _
   simpa using h
-
-@[deprecated (since := "2025-05-05")] alias matrix_apply_stdBasisMatrix := matrix_apply_single
 
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
   fun _ _ hc _ _ h _ _ ↦ hc (h _ _)
