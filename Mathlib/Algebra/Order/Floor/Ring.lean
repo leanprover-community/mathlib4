@@ -267,20 +267,14 @@ theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a *
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
   simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
 
-/-- Three characterizations of the points of discontinuity of `round`. -/
-theorem two_mul_fract_eq_one_tfae (x : R) :
-    [2 * fract x = 1,
-      2 * x = 2 * ⌊x⌋ + 1,
-      ∃ n : ℤ, 2 * x = 2 * n + 1].TFAE := by
-  tfae_have 1 ↔ 2 := by
-    rw [fract, mul_sub, sub_eq_iff_eq_add']
-  tfae_have 2 → 3 := fun h ↦ ⟨_, h⟩
-  tfae_have 3 → 2 := by
-    rintro ⟨n, hn⟩
-    convert hn
-    rw [floor_eq_iff, ← mul_le_mul_iff_right₀ two_pos, ← mul_lt_mul_iff_right₀ two_pos, hn]
-    simp [mul_add]
-  tfae_finish
+theorem two_mul_fract_eq_one_iff_exists_int {x : R} :
+    2 * fract x = 1 ↔ ∃ n : ℤ, 2 * x = 2 * n + 1 := by
+  rw [fract, mul_sub, sub_eq_iff_eq_add']
+  refine ⟨fun hx ↦ ⟨⌊x⌋, hx⟩, ?_⟩
+  rintro ⟨n, hn⟩
+  convert hn
+  rw [floor_eq_iff, ← mul_le_mul_iff_right₀ two_pos, ← mul_lt_mul_iff_right₀ two_pos, hn]
+  simp [mul_add]
 
 end LinearOrderedRing
 

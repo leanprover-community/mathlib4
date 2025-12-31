@@ -89,8 +89,7 @@ theorem round_eq_half_ceil_two_mul {x : α} (hx : 2 * fract x ≠ 1) : round x =
     · obtain rfl : m = x := mul_left_cancel₀ two_ne_zero <| by simp [← hm, ← two_mul]
       rw [round_intCast, ← two_mul, Int.mul_ediv_cancel_left _ two_ne_zero]
     · refine absurd ?_ hx
-      refine (two_mul_fract_eq_one_tfae x).out 0 2 |>.mpr ?_
-      exact ⟨m, mod_cast hm.symm⟩
+      exact two_mul_fract_eq_one_iff_exists_int.mpr ⟨m, mod_cast hm.symm⟩
   · rw [round_eq', (ceil_eq_floor_add_one_iff_notMem _).mpr hx']
 
 @[simp]
