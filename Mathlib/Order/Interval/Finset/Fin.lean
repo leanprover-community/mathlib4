@@ -864,34 +864,34 @@ end rev
 
 section card
 
-@[simp]
+@[simp, grind =]
 lemma card_Icc : #(Icc a b) = b + 1 - a := by rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
 
-@[simp]
+@[simp, grind =]
 lemma card_Ico : #(Ico a b) = b - a := by rw [← Nat.card_Ico, ← map_valEmbedding_Ico, card_map]
 
-@[simp]
+@[simp, grind =]
 lemma card_Ioc : #(Ioc a b) = b - a := by rw [← Nat.card_Ioc, ← map_valEmbedding_Ioc, card_map]
 
-@[simp]
+@[simp, grind =]
 lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valEmbedding_Ioo, card_map]
 
-@[simp]
+@[simp, grind =]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_valEmbedding_uIcc, card_map]
 
-@[simp]
+@[simp, grind =]
 theorem card_Ici : #(Ici a) = n - a := by
   rw [← attachFin_Ico_eq_Ici, card_attachFin, Nat.card_Ico]
 
-@[simp]
+@[simp, grind =]
 theorem card_Ioi : #(Ioi a) = n - 1 - a := by
   rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioo, Nat.sub_right_comm]
 
-@[simp]
+@[simp, grind =]
 theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
 
-@[simp]
+@[simp, grind =]
 theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
 end card

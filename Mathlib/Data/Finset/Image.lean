@@ -322,7 +322,7 @@ theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
 theorem coe_image : ↑(s.image f) = f '' ↑s :=
   Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
 
-@[simp]
+@[simp, grind =]
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 

@@ -482,7 +482,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
 
 section Fin
 
-@[simp]
+@[simp, grind =]
 theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
   List.length_finRange
 
