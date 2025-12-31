@@ -65,9 +65,6 @@ lemma eventually_notMem_thickening_of_infEdist_pos {E : Set α} {x : α} (h : x 
   simp only [thickening, mem_setOf_eq, not_lt]
   exact (ENNReal.ofReal_le_ofReal hδ.le).trans ε_lt.le
 
-@[deprecated (since := "2025-05-23")]
-alias eventually_not_mem_thickening_of_infEdist_pos := eventually_notMem_thickening_of_infEdist_pos
-
 /-- The (open) thickening equals the preimage of an open interval under `EMetric.infEdist`. -/
 theorem thickening_eq_preimage_infEdist (δ : ℝ) (E : Set α) :
     thickening δ E = (infEdist · E) ⁻¹' Iio (ENNReal.ofReal δ) :=
@@ -198,10 +195,6 @@ lemma eventually_notMem_cthickening_of_infEdist_pos {E : Set α} {x : α} (h : x
   filter_upwards [eventually_lt_nhds ε_pos] with δ hδ
   simp only [cthickening, mem_setOf_eq, not_le]
   exact ((ofReal_lt_ofReal_iff ε_pos).mpr hδ).trans ε_lt
-
-@[deprecated (since := "2025-05-23")]
-alias eventually_not_mem_cthickening_of_infEdist_pos :=
-  eventually_notMem_cthickening_of_infEdist_pos
 
 theorem mem_cthickening_of_edist_le (x y : α) (δ : ℝ) (E : Set α) (h : y ∈ E)
     (h' : edist x y ≤ ENNReal.ofReal δ) : x ∈ cthickening δ E :=
