@@ -145,17 +145,34 @@ end
 section
 
 /-- The identity morphisms `𝟙 _` are exponentiable. -/
-@[simps]
 def id (I : C) [ChosenPullbacksAlong (𝟙 I)] : ExponentiableMorphism (𝟙 I) :=
   ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
+
+theorem id_pushforward (I : C) [ChosenPullbacksAlong (𝟙 I)] :
+    (id I).pushforward = 𝟭 (Over I) := by
+  dsimp only [id]
 
 /-- Any pushforward of the identity morphism is naturally isomorphic to the identity functor. -/
 def pushforwardId (I : C) [ChosenPullbacksAlong (𝟙 I)] [ExponentiableMorphism (𝟙 I)] :
     pushforward (𝟙 I) ≅ 𝟭 (Over I) :=
   Adjunction.rightAdjointUniq (pullbackAdjPushforward (𝟙 I)) (id I).pullbackAdjPushforward
 
+@[reassoc (attr := simp)]
+theorem unit_pushforwardId_hom (I : C) [ChosenPullbacksAlong (𝟙 I)] [ExponentiableMorphism (𝟙 I)] :
+    (pullbackAdjPushforward (𝟙 I)).unit ≫
+      (pullback (𝟙 I)).whiskerLeft (pushforwardId I).hom =
+      (id I).pullbackAdjPushforward.unit := by
+  rw [pushforwardId, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pushforwardId_hom_counit (I : C) [ChosenPullbacksAlong (𝟙 I)]
+    [ExponentiableMorphism (𝟙 I)] :
+    Functor.whiskerRight (pushforwardId I).hom (pullback (𝟙 I)) ≫
+      (id I).pullbackAdjPushforward.counit =
+      (pullbackAdjPushforward (𝟙 I)).counit := by
+  rw [pushforwardId, Adjunction.rightAdjointUniq_hom_counit]
+
 /-- The composition of exponentiable morphisms is exponentiable. -/
-@[simps]
 def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
@@ -164,6 +181,12 @@ def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     ofNatIsoLeft (pullbackAdjPushforward g |>.comp <| pullbackAdjPushforward f)
     (pullbackComp f g).symm⟩
 
+theorem comp_pushforward {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
+    [ExponentiableMorphism f] [ExponentiableMorphism g] :
+    (comp f g).pushforward = pushforward f ⋙ pushforward g := by
+  dsimp only [comp]
+
 /-- The natural isomorphism between pushforward of the composition and the composition of
 pushforward functors. -/
 def pushforwardComp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
@@ -171,6 +194,24 @@ def pushforwardComp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ExponentiableMorphism f] [ExponentiableMorphism g] [ExponentiableMorphism (f ≫ g)] :
     pushforward (C:= C) (f ≫ g) ≅ pushforward f ⋙ pushforward g :=
   Adjunction.rightAdjointUniq (pullbackAdjPushforward (f ≫ g)) ((comp f g).pullbackAdjPushforward)
+
+@[reassoc (attr := simp)]
+theorem unit_pushforwardComp_hom {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
+    [ExponentiableMorphism f] [ExponentiableMorphism g] [ExponentiableMorphism (f ≫ g)] :
+    (pullbackAdjPushforward (f ≫ g)).unit ≫
+      (pullback (f ≫ g)).whiskerLeft (pushforwardComp f g).hom =
+      (comp f g).pullbackAdjPushforward.unit := by
+  rw [pushforwardComp, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pushforwardComp_hom_counit {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
+    [ExponentiableMorphism f] [ExponentiableMorphism g] [ExponentiableMorphism (f ≫ g)] :
+    Functor.whiskerRight (pushforwardComp f g).hom (pullback (f ≫ g)) ≫
+      (comp f g).pullbackAdjPushforward.counit =
+      (pullbackAdjPushforward (f ≫ g)).counit := by
+  rw [pushforwardComp, Adjunction.rightAdjointUniq_hom_counit]
 
 end
 
