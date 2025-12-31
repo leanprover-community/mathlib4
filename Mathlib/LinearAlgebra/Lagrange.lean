@@ -449,39 +449,21 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 
-omit [DecidableEq ι] in
-private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.degree = ↑(#s - 1) := by
-  cases h : P.degree
-  case bot => simp_all
-  case coe d =>
-    rw [Nat.cast_withBot] at hP ⊢
-    suffices #s = d + 1 by grind
-    rw [h] at hP
-    simp [← WithBot.coe_inj, hP]
-
-omit [DecidableEq ι] in
-private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.natDegree = #s
-     - 1 := natDegree_eq_of_degree_eq_some (degree_eq_of_card_eq hP)
-
-omit [DecidableEq ι] in
-private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.degree < #s := by
-  lift P.degree to ℕ with n hn
-  · contrapose hP
-    simp [hP]
-  simp [hP, ← WithBot.coe_one, ← WithBot.coe_add]
-
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
-  rw [leadingCoeff, natDegree_eq_of_card_eq hP]
-  rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
-  rw [interpolate_apply, finset_sum_coeff]
-  congr! with i hi
-  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
-  field_simp
+  lift P.degree to ℕ using (by contrapose! hP; rw [hP]; simp) with deg hdeg
+  rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
+  replace hP := WithBot.coe_eq_coe.mp hP
+  have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
+  rw [leadingCoeff, natDegree_eq_of_degree_eq_some hdegree]
+  rw (occs := [1]) [eq_interpolate (f := P) hvs]
+  · rw [interpolate_apply, finset_sum_coeff]
+    congr! with i hi
+    rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+    field_simp
+  · exact lt_of_eq_of_lt hdeg.symm (WithBot.coe_lt_coe.mpr <|
+      lt_of_lt_of_eq (lt_add_one deg) hP.symm)
 
 end Interpolate
 
