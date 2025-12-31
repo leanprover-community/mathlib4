@@ -6935,6 +6935,7 @@ public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Algebra.Star
+public import Mathlib.Topology.Algebra.Star.LinearMap
 public import Mathlib.Topology.Algebra.Star.Real
 public import Mathlib.Topology.Algebra.Star.Unitary
 public import Mathlib.Topology.Algebra.StarSubalgebra
