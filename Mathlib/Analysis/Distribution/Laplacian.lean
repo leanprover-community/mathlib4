@@ -49,27 +49,17 @@ open Classical in
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → 𝓢(E, F)) (x : E) :
     (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
   apply Finset.induction_on (motive := fun s ↦ (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x)
-  · simp
+  · simp only [Finset.sum_empty, zero_apply]
   · intro i s his h
-    simp [his, h]
+    simp only [his, not_false_eq_true, Finset.sum_insert, add_apply, h]
 
-theorem coe_laplacian (f : 𝓢(E, F)) : ((Δ f : 𝓢(E, F)) : E → F) = Δ (f : E → F) := by
+theorem laplacian_coe (f : 𝓢(E, F)) : Δ f = Δ (f : E → F) := by
   rw [InnerProductSpace.laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, laplacian_eq_sum]
   ext x
   rw [sum_apply]
   congr 1
   ext i
-  rw [iteratedFDeriv_two_apply]
-  rw [lineDerivOp_apply_eq_fderiv]
-  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
-  congr
-  ext v
-
-  --rw [Finset.sum_apply]
-  sorry
-
-variable (f : Finset.range 4 → 𝓢(E, F))
-
-theorem sum_apply (x : E) : (∑ i, f i) x = ∑ i, f i x := by rfl
+  rw [← iteratedLineDerivOp_eq_iteratedFDeriv]
+  rfl
 
 end SchwartzMap

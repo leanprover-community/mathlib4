@@ -30,7 +30,6 @@ variable
   (𝕜 : Type*) [RCLike 𝕜]
   {W : Type*} [NormedAddCommGroup W]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  --{F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
@@ -237,7 +236,7 @@ def fourierSMulRightCLM : 𝓢(V, E) →L[ℂ] 𝓢(V, W →L[ℝ] E) :=
       _ = ‖x‖ ^ k * (2 * π * ‖iteratedFDeriv ℝ n (fun x ↦ (L x).smulRight (f x)) x‖) := by
         congr 1
         unfold VectorFourier.fourierSMulRight
-        have : ContDiffAt ℝ n f x := f.contDiffAt n x
+        have : ContDiffAt ℝ n f x := f.contDiffAt n
         rw [iteratedFDeriv_const_smul_apply' (by fun_prop), norm_smul]
         have : 0 ≤ π := by positivity
         simp [this]
@@ -315,11 +314,11 @@ open LineDeriv
 
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := calc
-  _ = SchwartzMap.evalCLM 𝕜 V E m (fderivCLM 𝕜 (𝓕 f)) := rfl
-  _ = SchwartzMap.evalCLM 𝕜 V E m (𝓕 (fourierSMulRightCLM (innerSL ℝ) f)) := by
+  _ = SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ (𝓕 f)) := rfl
+  _ = SchwartzMap.evalCLM ℝ V E m (𝓕 (fourierSMulRightCLM (innerSL ℝ) f)) := by
     rw [fderivCLM_fourier_eq]
-  _ = 𝓕 (SchwartzMap.evalCLM 𝕜 V E m (fourierSMulRightCLM (innerSL ℝ) f)) := by
-    rw [fourier_evalCLM_eq 𝕜 (fourierSMulRightCLM (innerSL ℝ) f) m]
+  _ = 𝓕 (SchwartzMap.evalCLM ℝ V E m (fourierSMulRightCLM (innerSL ℝ) f)) := by
+    rw [fourier_evalCLM_eq ℝ (fourierSMulRightCLM (innerSL ℝ) f) m]
   _ = _ := by
     congr
     ext x

@@ -264,10 +264,7 @@ theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁
 
 
 /- What needs to be done for the Laplacian:
-* Laplacian notation type class
-* Laplacian on 𝓢 and 𝓢' via FT
-* Proof that for 𝓢 this is equal to derivative version (need good characterization of derivative
-  version)
+* Characterization of Laplacian on 𝓢 and 𝓢' via FT
   use
   -- Real.iteratedFDeriv_fourier
   -- InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis
