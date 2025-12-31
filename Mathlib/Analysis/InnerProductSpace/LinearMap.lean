@@ -339,6 +339,11 @@ theorem isIdempotentElem_rankOne_self_iff {F : Type*} [NormedAddCommGroup F] [In
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
   grind [norm_nonneg]
 
+@[simp] theorem rankOne_one_right_eq_toSpanSingleton (x : F) :
+    rankOne 𝕜 x 1 = toSpanSingleton 𝕜 x := by ext; simp
+
+@[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
+
 variable {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
 
 lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
