@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Topology.Basic
 
 /-!
 # Interior, closure and frontier of a set
@@ -23,6 +25,8 @@ endowed with a topology.
 
 interior, closure, frontier
 -/
+
+@[expose] public section
 
 open Set
 
@@ -183,8 +187,6 @@ theorem subset_closure : s ⊆ closure s :=
 
 theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 
 /-!
 # Closure, interior, and frontier of preimages under `re` and `im`
@@ -30,6 +32,8 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 
 complex, real part, imaginary part, closure, interior, frontier
 -/
+
+@[expose] public section
 
 open Set Topology
 

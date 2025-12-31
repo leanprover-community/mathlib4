@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Dirac measure
@@ -15,6 +17,8 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 In this file we define the Dirac measure `MeasureTheory.Measure.dirac a`
 and prove some basic facts about it.
 -/
+
+@[expose] public section
 
 open Function Set
 open scoped ENNReal
@@ -78,6 +82,7 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
 @[simp] lemma dirac_ne_zero : dirac a ≠ 0 :=
   fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
 
+@[simp]
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
   classical
   exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]

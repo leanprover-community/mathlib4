@@ -3,12 +3,14 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Adam Topaz
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
-import Mathlib.Geometry.Manifold.Sheaf.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+public import Mathlib.Geometry.Manifold.Sheaf.Basic
 
 /-! # The sheaf of smooth functions on a manifold
 
@@ -36,7 +38,7 @@ functions from `M` to `𝕜` is a sheaf of commutative rings, the *structure she
   abelian Lie groups `A`, `A'`, the 'postcomposition-by-`φ`' morphism of sheaves from
   `smoothSheafCommGroup IM I M A` to `smoothSheafCommGroup IM I' M A'`
 
-# Main results
+## Main results
 
 * `smoothSheaf.eval_surjective`: `smoothSheaf.eval` is surjective.
 * `smoothSheafCommRing.eval_surjective`: `smoothSheafCommRing.eval` is surjective.
@@ -61,6 +63,8 @@ typeclass, and some (but not all) of the underlying category theory construction
 generalized by this method: see https://github.com/leanprover-community/mathlib4/pull/5724,
 https://github.com/leanprover-community/mathlib4/pull/5726.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -114,7 +118,7 @@ open CategoryTheory Limits
 /-- Given manifolds `M`, `N` and an open neighbourhood `U` of a point `x : M`, the evaluation-at-`x`
 map to `N` from smooth functions from  `U` to `N`. -/
 def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
-    (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.obj)) : N :=
+    (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.val)) : N :=
   i.1 ⟨x, U.2⟩
 
 @[simp, reassoc, elementwise] lemma smoothSheaf.ι_evalHom (x : TopCat.of M) (U) :

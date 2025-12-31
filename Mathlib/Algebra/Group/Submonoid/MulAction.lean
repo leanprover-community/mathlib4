@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Group.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Actions by `Submonoid`s
@@ -15,6 +17,8 @@ the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s �
 These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
 `s • m` as an alias for `↑s * m`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -29,6 +33,14 @@ variable {S' : Type*} [SetLike S' M'] (s : S')
 @[to_additive]
 instance (priority := low) [SMul M' α] : SMul s α where
   smul m a := (m : M') • a
+
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsLeftCancelSMul M' α] : IsLeftCancelSMul s α where
+  left_cancel' x _ _ := IsLeftCancelSMul.left_cancel x.1 _ _
+
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsCancelSMul M' α] : IsCancelSMul s α where
+  right_cancel' _ _ _ eq := Subtype.ext <| IsCancelSMul.right_cancel _ _ _ eq
 
 section MulOneClass
 

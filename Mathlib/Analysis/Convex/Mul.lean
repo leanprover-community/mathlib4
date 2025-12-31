@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monovary
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Order.Monovary
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Product of convex functions
@@ -18,6 +20,8 @@ As corollaries, we also prove that `x ↦ x ^ n` is convex
 * `convexOn_pow`: over $[0, +∞)$ for `n : ℕ`.
 * `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
 -/
+
+@[expose] public section
 
 open Set
 

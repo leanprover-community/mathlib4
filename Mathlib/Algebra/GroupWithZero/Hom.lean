@@ -3,8 +3,10 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
+module
+
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Monoid with zero and group with zero homomorphisms
@@ -30,6 +32,8 @@ can be inferred from the type it is faster to use this method than to use type c
 
 monoid homomorphism
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Ring
 

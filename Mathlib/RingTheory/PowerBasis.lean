@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.LinearAlgebra.SModEq.Basic
-import Mathlib.RingTheory.Ideal.BigOperators
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Power basis
@@ -39,6 +41,8 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 power basis, powerbasis
 
 -/
+
+@[expose] public section
 
 open Finsupp Module Polynomial
 
@@ -261,7 +265,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
   rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => ?_
   rw [Finset.mem_range] at hi
-  rw [LinearMap.map_smul]
+  rw [map_smul]
   congr
   rw [← Fin.val_mk hi, ← pb.basis_eq_pow ⟨i, hi⟩, Basis.constr_basis]
 
@@ -288,8 +292,8 @@ See `PowerBasis.liftEquiv` for a bundled equiv sending `⟨y, hy⟩` to the alge
 noncomputable def lift (pb : PowerBasis A S) (y : S') (hy : aeval y (minpoly A pb.gen) = 0) :
     S →ₐ[A] S' :=
   { pb.basis.constr A fun i => y ^ (i : ℕ) with
-    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [RingHom.map_one]
-    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [RingHom.map_zero]
+    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [map_one]
+    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [map_zero]
     map_mul' := pb.constr_pow_mul hy
     commutes' := pb.constr_pow_algebraMap hy }
 

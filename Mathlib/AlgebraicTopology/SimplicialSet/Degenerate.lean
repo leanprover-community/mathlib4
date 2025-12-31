@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Degenerate simplices
@@ -17,6 +19,8 @@ for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y
 `unique_nonDegenerate_simplex` and `unique_nonDegenerate_map`).
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -52,19 +56,13 @@ variable {n : ℕ}
 lemma mem_nonDegenerate_iff_notMem_degenerate (x : X _⦋n⦌) :
     x ∈ X.nonDegenerate n ↔ x ∉ X.degenerate n := Iff.rfl
 
-@[deprecated (since := "2025-05-23")]
-alias mem_nonDegenerate_iff_not_mem_degenerate := mem_nonDegenerate_iff_notMem_degenerate
-
 lemma mem_degenerate_iff_notMem_nonDegenerate (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ x ∉ X.nonDegenerate n := by
   simp [nonDegenerate]
 
-@[deprecated (since := "2025-05-23")]
-alias mem_degenerate_iff_not_mem_nonDegenerate := mem_degenerate_iff_notMem_nonDegenerate
-
 lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
-  ⟨n, by cutsat, SimplexCategory.σ i, Set.mem_range_self x⟩
+  ⟨n, by lia, SimplexCategory.σ i, Set.mem_range_self x⟩
 
 lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
@@ -73,7 +71,7 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
   · rintro ⟨m, hm, f, y, hy⟩
     rw [← image.fac f, op_comp] at hy
     have : _ ≤ m := SimplexCategory.len_le_of_mono (image.ι f)
-    exact ⟨(image f).len, by cutsat, factorThruImage f, inferInstance, by aesop⟩
+    exact ⟨(image f).len, by lia, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
 
@@ -87,7 +85,7 @@ lemma degenerate_eq_iUnion_range_σ :
     obtain ⟨i, θ, rfl⟩ := SimplexCategory.eq_σ_comp_of_not_injective f (fun hf ↦ by
       rw [← SimplexCategory.mono_iff_injective] at hf
       have := SimplexCategory.le_of_mono f
-      cutsat)
+      lia)
     aesop
   · intro hx
     simp only [Set.mem_iUnion, Set.mem_range] at hx
@@ -116,8 +114,8 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
   obtain ⟨x, hx⟩ := x
   induction m using SimplexCategory.rec with | _ m
   rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
-  by_contra!
-  refine hx ⟨_, not_le.1 (fun h ↦ this ?_), f, y, hy⟩
+  by_contra hf
+  refine hx ⟨_, not_le.1 (fun h ↦ hf ?_), f, y, hy⟩
   rw [SimplexCategory.isIso_iff_of_epi]
   exact le_antisymm h (SimplexCategory.len_le_of_epi f)
 
@@ -234,7 +232,7 @@ lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
   have hα₂ : Monotone α := by
     rintro y₁ y₂ h
     by_contra! h'
-    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by cutsat] at h'
+    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by lia] at h'
     simpa only [hα₁] using f₁.toOrderHom.monotone h'.le
   exact ⟨{ section_ := SimplexCategory.Hom.mk ⟨α, hα₂⟩, id := by ext : 3; apply hα₁ },
     by simp [α]⟩
@@ -270,8 +268,8 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
   · rintro h ⟨n⟩ x hx
     induction n using SimplexCategory.rec with | _ n =>
     obtain ⟨m, f, _, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
-    simp only [Subpresheaf.toPresheaf_obj, Subtype.ext_iff,
-      Subpresheaf.toPresheaf_map_coe] at ha'
+    simp only [Subfunctor.toFunctor_obj, Subtype.ext_iff,
+      Subfunctor.toFunctor_map_coe] at ha'
     subst ha'
     rw [mem_nonDegenerate_iff] at ha
     exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
@@ -298,7 +296,7 @@ lemma iSup_ofSimplex_nonDegenerate_eq_top :
     ⨆ (x : Σ (p : ℕ), X.nonDegenerate p), ofSimplex x.2.val = ⊤ := by
   rw [eq_top_iff_contains_nonDegenerate]
   intro n x hx
-  simp only [Subpresheaf.iSup_obj, Set.mem_iUnion, Sigma.exists,
+  simp only [Subfunctor.iSup_obj, Set.mem_iUnion, Sigma.exists,
     Subtype.exists, exists_prop]
   exact ⟨n, x, hx, mem_ofSimplex_obj x⟩
 
@@ -314,11 +312,11 @@ lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n
   exact ⟨m, hm, g, f.app _ y, by rw [FunctorToTypes.naturality]⟩
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
-    X.degenerate n ⊆ (f.app _)⁻¹' (Y.degenerate n) :=
+    X.degenerate n ⊆ (f.app _) ⁻¹' (Y.degenerate n) :=
   fun _ hx ↦ degenerate_app_apply hx f
 
 lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
-    (f.app _)'' (X.degenerate n) ⊆ Y.degenerate n := by
+    (f.app _) '' (X.degenerate n) ⊆ Y.degenerate n := by
   simpa using degenerate_le_preimage f n
 
 lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :

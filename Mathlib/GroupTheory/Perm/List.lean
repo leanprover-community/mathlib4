@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Support
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Support
 
 /-!
 # Permutations from a list
@@ -26,6 +28,8 @@ the resulting permutation is cyclic (if `l` has at least two elements).
 The presence of duplicates in a particular placement can lead `List.formPerm` to produce a
 nontrivial permutation that is noncyclic.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -99,8 +103,6 @@ theorem mem_of_formPerm_apply_ne (h : l.formPerm x ≠ x) : x ∈ l := by
 
 theorem formPerm_apply_of_notMem (h : x ∉ l) : formPerm l x = x :=
   not_imp_comm.1 mem_of_formPerm_apply_ne h
-
-@[deprecated (since := "2025-05-23")] alias formPerm_apply_of_not_mem := formPerm_apply_of_notMem
 
 theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
   rcases l with - | ⟨y, l⟩
@@ -323,9 +325,6 @@ alias mem_of_formPerm_ne_self := mem_of_formPerm_apply_ne
 
 @[deprecated (since := "2025-10-06")]
 alias formPerm_eq_self_of_notMem := List.formPerm_apply_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := List.formPerm_apply_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

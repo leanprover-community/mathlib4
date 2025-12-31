@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Topology
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Topology
 
 /-!
 # Integral over an interval
@@ -44,6 +46,8 @@ three possible intervals with the same endpoints for two reasons:
 
 integral
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -384,7 +388,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
     integrable_smul_measure (by simpa : ENNReal.ofReal |c⁻¹| ≠ 0) ENNReal.ofReal_ne_top,
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
   convert hf using 1
-  · ext; simp only [comp_apply]; congr 1; field_simp
+  · ext; simp only [comp_apply]; congr 1; field
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp
 
 -- Note that `h'` is **not** implied by `h` if `c` is negative.

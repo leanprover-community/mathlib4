@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
 
@@ -25,13 +26,16 @@ In this file we define strong transformations, which require the 2-morphism to b
 * `Pseudofunctor.StrongTrans.vcomp η θ`: the vertical composition of strong transformations `η`
   and `θ`.
 
-Using this we obtain a `CategoryStruct` on pseudofunctors, where the arrows are given by
-strong transformations. See `Pseudofunctor.categoryStruct`.
+Using this we obtain a (scoped) `CategoryStruct` on pseudofunctors, where the arrows are given by
+strong transformations. To access this instance, run `open scoped Pseudofunctor.StrongTrans`.
+See `Pseudofunctor.StrongTrans.categoryStruct`.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
 
@@ -78,7 +82,8 @@ namespace StrongTrans
 
 variable {F G : B ⥤ᵖ C}
 
-/-- The underlying oplax transformation of a strong transformation. -/
+/-- The strong transformation of oplax functors induced by a strong transformation of
+pseudofunctors. -/
 @[simps]
 def toOplax (η : StrongTrans F G) : Oplax.StrongTrans F.toOplax G.toOplax where
   app := η.app
@@ -184,7 +189,7 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (α_ _ _ _).hom :=
   η.toOplax.whiskerRight_naturality_id _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma naturality_id_hom (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).hom = (F.mapId a).hom ▷ α.app a ≫
       (λ_ (α.app a)).hom ≫ (ρ_ (α.app a)).inv ≫ α.app a ◁ (G.mapId a).inv := by
@@ -196,13 +201,13 @@ lemma naturality_id_iso (α : F ⟶ G) (a : B) :
   ext
   simp [naturality_id_hom]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma naturality_id_inv (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).inv = α.app a ◁ (G.mapId a).hom ≫ (ρ_ (α.app a)).hom ≫
       (λ_ (α.app a)).inv ≫ (F.mapId a).inv ▷ α.app a := by
   simp [naturality_id_iso]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma naturality_naturality_hom (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
     (α.naturality g).hom =
      (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
@@ -220,7 +225,7 @@ lemma naturality_naturality_inv (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f
       α.app a ◁ G.map₂ η.inv ≫ (α.naturality f).inv ≫ F.map₂ η.hom ▷ α.app b := by
   simp [naturality_naturality_iso α η]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma naturality_comp_hom (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).hom =
       (F.mapComp f g).hom ▷ α.app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).hom ≫
@@ -236,10 +241,10 @@ lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c)
   ext
   simp [naturality_comp_hom α f g]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).inv =
-      α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫
+      α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫ (α.naturality f).inv ▷ G.map g ≫
       (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).inv ≫ (α_ _ _ _).inv ≫
       (F.mapComp f g).inv ▷ α.app c := by
   simp [naturality_comp_iso α f g]

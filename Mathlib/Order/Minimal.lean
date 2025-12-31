@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Peter Nelson
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
 
 /-!
 # Minimality and Maximality
@@ -38,6 +40,8 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
 * API for `MinimalFor`/`MaximalFor`
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice
 
@@ -358,9 +362,6 @@ theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x �
 
 theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
   fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
-
-@[deprecated (since := "2025-05-23")]
-alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_singleton
 
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=

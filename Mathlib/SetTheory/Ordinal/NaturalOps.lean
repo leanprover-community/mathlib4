@@ -3,9 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.NatOrdinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -43,6 +45,8 @@ between both types, we attempt to prove and state most results on `Ordinal`.
 - Prove the characterizations of natural addition and multiplication in terms of the Cantor normal
   form.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -111,11 +115,11 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 
 @[simp]
-theorem zero_le (o : NatOrdinal) : 0 ≤ o :=
-  Ordinal.zero_le o
+protected theorem zero_le (o : NatOrdinal) : 0 ≤ o :=
+  _root_.zero_le (α := Ordinal) o
 
 theorem not_lt_zero (o : NatOrdinal) : ¬ o < 0 :=
-  Ordinal.not_lt_zero o
+  _root_.not_lt_zero (α := Ordinal)
 
 @[simp]
 theorem lt_one_iff_zero {o : NatOrdinal} : o < 1 ↔ o = 0 :=
@@ -422,12 +426,12 @@ theorem nadd_left_cancel_iff : ∀ {a b c}, a ♯ b = a ♯ c ↔ b = c :=
 theorem nadd_right_cancel_iff : ∀ {a b c}, b ♯ a = c ♯ a ↔ b = c :=
   @add_right_cancel_iff NatOrdinal _ _
 
-theorem le_nadd_self {a b} : a ≤ b ♯ a := by simpa using nadd_le_nadd_right (Ordinal.zero_le b) a
+theorem le_nadd_self {a b} : a ≤ b ♯ a := by simpa using nadd_le_nadd_right (zero_le _) a
 
 theorem le_nadd_left {a b c} (h : a ≤ c) : a ≤ b ♯ c :=
   le_nadd_self.trans (nadd_le_nadd_left h b)
 
-theorem le_self_nadd {a b} : a ≤ a ♯ b := by simpa using nadd_le_nadd_left (Ordinal.zero_le b) a
+theorem le_self_nadd {a b} : a ≤ a ♯ b := by simpa using nadd_le_nadd_left (zero_le _) a
 
 theorem le_nadd_right {a b c} (h : a ≤ b) : a ≤ b ♯ c :=
   le_self_nadd.trans (nadd_le_nadd_right h c)
@@ -483,10 +487,7 @@ theorem nmul_comm (a b) : a ⨳ b = b ⨳ a := by
     exact H _ hd _ hc
 termination_by (a, b)
 
-@[simp]
-theorem nmul_zero (a) : a ⨳ 0 = 0 := by
-  rw [← Ordinal.le_zero, nmul_le_iff]
-  exact fun _ _ a ha => (Ordinal.not_lt_zero a ha).elim
+@[simp] lemma nmul_zero (a) : a ⨳ 0 = 0 := by simp [← nonpos_iff_eq_zero, nmul_le_iff]
 
 @[simp]
 theorem zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]
@@ -510,16 +511,17 @@ theorem nmul_lt_nmul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c ⨳ a < c ⨳
 theorem nmul_lt_nmul_of_pos_right (h₁ : a < b) (h₂ : 0 < c) : a ⨳ c < b ⨳ c :=
   lt_nmul_iff.2 ⟨a, h₁, 0, h₂, by simp⟩
 
-@[gcongr]
-theorem nmul_le_nmul_left (h : a ≤ b) (c) : c ⨳ a ≤ c ⨳ b := by
+theorem nmul_le_nmul_right (h : a ≤ b) (c) : c ⨳ a ≤ c ⨳ b := by
   rcases lt_or_eq_of_le h with (h₁ | rfl) <;> rcases (eq_zero_or_pos c).symm with (h₂ | rfl)
   · exact (nmul_lt_nmul_of_pos_left h₁ h₂).le
   all_goals simp
 
-@[gcongr]
-theorem nmul_le_nmul_right (h : a ≤ b) (c) : a ⨳ c ≤ b ⨳ c := by
+theorem nmul_le_nmul_left (h : a ≤ b) (c) : a ⨳ c ≤ b ⨳ c := by
   rw [nmul_comm, nmul_comm b]
-  exact nmul_le_nmul_left h c
+  exact nmul_le_nmul_right h c
+
+@[gcongr] lemma nmul_le_nmul (hab : a ≤ b) (hcd : c ≤ d) : a ⨳ c ≤ b ⨳ d :=
+  (nmul_le_nmul_left hab _).trans (nmul_le_nmul_right hcd _)
 
 theorem nmul_nadd (a b c : Ordinal) : a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c := by
   refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)

@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
-import Mathlib.RingTheory.Spectrum.Maximal.Defs
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 
 /-!
 
@@ -15,14 +17,15 @@ We prove basic properties of the maximal ideal of a local ring.
 
 -/
 
-variable {R S K : Type*}
-section CommSemiring
-
-variable [CommSemiring R]
+@[expose] public section
 
 namespace IsLocalRing
 
-variable [IsLocalRing R]
+variable {R S K : Type*}
+
+section CommSemiring
+
+variable [CommSemiring R] [IsLocalRing R]
 
 @[simp]
 theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
@@ -80,24 +83,16 @@ iff it is a unit.
 theorem notMem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
   simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_maximalIdeal := notMem_maximalIdeal
-
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp
     ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h =>
       Ring.not_isField_iff_exists_prime.mpr ⟨_, h, Ideal.IsMaximal.isPrime' _⟩⟩
 
-end IsLocalRing
-
 end CommSemiring
 
 section CommRing
 
-variable [CommRing R]
-
-namespace IsLocalRing
-
-variable [IsLocalRing R]
+variable [CommRing R] [IsLocalRing R]
 
 theorem maximalIdeal_le_jacobson (I : Ideal R) :
     IsLocalRing.maximalIdeal R ≤ I.jacobson :=
@@ -108,11 +103,11 @@ theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
   le_antisymm (sInf_le ⟨le_maximalIdeal h, maximalIdeal.isMaximal R⟩)
               (maximalIdeal_le_jacobson I)
 
-end IsLocalRing
+variable (R) in
+theorem ringJacobson_eq_maximalIdeal : Ring.jacobson R = maximalIdeal R :=
+  Ideal.jacobson_bot.symm.trans (jacobson_eq_maximalIdeal _ top_ne_bot.symm)
 
 end CommRing
-
-namespace IsLocalRing
 
 section
 
@@ -124,10 +119,10 @@ theorem ker_eq_maximalIdeal [DivisionRing K] (φ : R →+* K) (hφ : Function.Su
 
 end
 
-end IsLocalRing
-
-theorem IsLocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
+theorem maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
   IsLocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
+
+end IsLocalRing
 
 lemma Subsemiring.isLocalRing_of_unit {R : Type*} [Semiring R] [IsLocalRing R] (S : Subsemiring R)
     (h_unit : ∀ (x : R) (hx : x ∈ S), IsUnit x → IsUnit (⟨x, hx⟩ : S)) :

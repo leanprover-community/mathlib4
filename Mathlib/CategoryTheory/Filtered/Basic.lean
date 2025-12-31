@@ -3,7 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Filtered categories
@@ -14,6 +16,12 @@ We give a simple characterisation of this condition as
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal, and
 3. there exists some object.
+
+An important example of filtered category is given by nonempty directed types;
+actually, filtered categories may be considered as a generalization of nonempty directed types.
+In the file `CategoryTheory.Presentable.Directed`, we show that "conversely"
+if `C` is a filtered category, there exists a final functor `α ⥤ C` from
+a nonempty directed type (`IsFiltered.isDirected`).
 
 Filtered colimits are often better behaved than arbitrary colimits.
 See `CategoryTheory/Limits/Types` for some details.
@@ -49,6 +57,8 @@ functor from a finite category, there is `X : C` such that `Nonempty (limit (F.o
 This is shown in `CategoryTheory.Limits.Filtered`.
 
 -/
+
+@[expose] public section
 
 
 open Function
@@ -94,14 +104,14 @@ instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [
     [Nonempty α] : IsFiltered α where
 
 instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preorder α]
-    [IsDirected α (· ≤ ·)] : IsFilteredOrEmpty α where
+    [IsDirectedOrder α] : IsFilteredOrEmpty α where
   cocone_objs X Y :=
     let ⟨Z, h1, h2⟩ := exists_ge_ge X Y
     ⟨Z, homOfLE h1, homOfLE h2, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by subsingleton⟩
 
 instance (priority := 100) isFiltered_of_directed_le_nonempty (α : Type u) [Preorder α]
-    [IsDirected α (· ≤ ·)] [Nonempty α] : IsFiltered α where
+    [IsDirectedOrder α] [Nonempty α] : IsFiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by infer_instance
@@ -161,6 +171,10 @@ theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' �
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose_spec
 
 end AllowEmpty
+
+lemma isDirectedOrder (α : Type u) [Preorder α] [IsFiltered α] :
+    IsDirectedOrder α where
+  directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
 
 end IsFiltered
 
@@ -241,12 +255,7 @@ theorem sup_exists :
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply coeq_condition
-      · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        grind
+      grind [coeq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -513,7 +522,7 @@ instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u)
     [Nonempty α] : IsCofiltered α where
 
 instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Preorder α]
-    [IsDirected α (· ≥ ·)] : IsCofilteredOrEmpty α where
+    [IsCodirectedOrder α] : IsCofilteredOrEmpty α where
   cone_objs X Y :=
     let ⟨Z, hX, hY⟩ := exists_le_le X Y
     ⟨Z, homOfLE hX, homOfLE hY, trivial⟩
@@ -522,7 +531,7 @@ instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Pre
     subsingleton⟩
 
 instance (priority := 100) isCofiltered_of_directed_ge_nonempty (α : Type u) [Preorder α]
-    [IsDirected α (· ≥ ·)] [Nonempty α] : IsCofiltered α where
+    [IsCodirectedOrder α] [Nonempty α] : IsCofiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by infer_instance
@@ -697,12 +706,7 @@ theorem inf_exists :
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply eq_condition
-      · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        grind
+      grind [eq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h

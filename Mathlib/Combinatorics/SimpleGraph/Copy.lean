@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Containment of graphs
@@ -56,6 +58,8 @@ The following notation is declared in scope `SimpleGraph`:
 * Count induced copies of a graph inside another.
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
+
+@[expose] public section
 
 open Finset Function
 open Fintype (card)
@@ -482,12 +486,15 @@ to get a graph `H'` that doesn't contain `G`.
 than `G`.
 -/
 
+set_option backward.privateInPublic true in
 private lemma aux (hH : H ≠ ⊥) {G' : G.Subgraph} :
     Nonempty (H ≃g G'.coe) → G'.edgeSet.Nonempty := by
   obtain ⟨e, he⟩ := edgeSet_nonempty.2 hH
   rw [← Subgraph.image_coe_edgeSet_coe]
   exact fun ⟨f⟩ ↦ Set.Nonempty.image _ ⟨_, f.map_mem_edgeSet_iff.2 he⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `G.killCopies H` is a subgraph of `G` where an *arbitrary* edge was removed from each copy of
 `H` in `G`. By construction, it doesn't contain `H` (unless `H` had no edges) and has at most the
 number of copies of `H` edges less than `G`. See `free_killCopies` and

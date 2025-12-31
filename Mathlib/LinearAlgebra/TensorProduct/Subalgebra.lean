@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 
@@ -31,6 +33,8 @@ mainly used in the definition of linearly disjointness.
   They are `Subalgebra` versions of `Submodule.lTensorOne` and `Submodule.rTensorOne`.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -137,7 +141,7 @@ def linearEquivIncludeRange :
       (includeRight : T →ₐ[R] S ⊗[R] T).range := .ofLinear
   (_root_.TensorProduct.map
     includeLeft.toLinearMap.rangeRestrict includeRight.toLinearMap.rangeRestrict)
-  ((LinearMap.range includeLeft).mulMap (LinearMap.range includeRight))
+  (includeLeft.toLinearMap.range.mulMap includeRight.toLinearMap.range)
   (_root_.TensorProduct.ext' <| by
     rintro ⟨x', x, rfl : x ⊗ₜ 1 = x'⟩ ⟨y', y, rfl : 1 ⊗ₜ y = y'⟩
     rw [LinearMap.comp_apply, LinearMap.id_apply]
@@ -157,7 +161,7 @@ theorem linearEquivIncludeRange_toLinearMap :
 
 theorem linearEquivIncludeRange_symm_toLinearMap :
     (linearEquivIncludeRange R S T).symm.toLinearMap =
-      (LinearMap.range includeLeft).mulMap (LinearMap.range includeRight) := rfl
+      includeLeft.toLinearMap.range.mulMap includeRight.toLinearMap.range := rfl
 
 @[simp]
 theorem linearEquivIncludeRange_tmul (x y) :

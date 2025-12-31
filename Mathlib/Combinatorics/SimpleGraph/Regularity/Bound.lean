@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.Order.Chebyshev
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Order.Partition.Equipartition
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.Order.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Numerical bounds for Szemerédi Regularity Lemma
@@ -27,6 +29,8 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset Fintype Function Real
@@ -64,10 +68,12 @@ local notation3 "a" => (card α / #P.parts - m * 4 ^ #P.parts : ℕ)
 
 namespace SzemerediRegularity.Positivity
 
+set_option backward.privateInPublic true in
 private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by decide)).mp
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by simp).trans_le h) (by positivity))
 
+set_option backward.privateInPublic true in
 private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α) : 0 < m :=
   Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; simp) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
@@ -233,7 +239,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.initialBound` is always positive. -/
 @[positivity SzemerediRegularity.initialBound _ _]
-def evalInitialBound : PositivityExt where eval {u α} _ _ e := do
+meta def evalInitialBound : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.initialBound $ε $l) =>
     assertInstancesCommute
@@ -245,7 +251,7 @@ example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by p
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.bound` is always positive. -/
 @[positivity SzemerediRegularity.bound _ _]
-def evalBound : PositivityExt where eval {u α} _ _ e := do
+meta def evalBound : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
     assertInstancesCommute

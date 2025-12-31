@@ -3,7 +3,9 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Split coequalizers
@@ -26,6 +28,8 @@ This file has been adapted to `Mathlib/CategoryTheory/Limits/Shapes/SplitEqualiz
 to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

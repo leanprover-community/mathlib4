@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.IsometricSMul
-import Mathlib.Tactic.Finiteness
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.IsometricSMul
+public import Mathlib.Tactic.Finiteness
 
 /-!
 # Hausdorff distance
@@ -48,6 +50,8 @@ This file introduces:
 ## Tags
 metric space, Hausdorff distance
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -170,25 +174,15 @@ theorem infEdist_pos_iff_notMem_closure {x : α} {E : Set α} :
     0 < infEdist x E ↔ x ∉ closure E := by
   rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
 
-@[deprecated (since := "2025-05-23")]
-alias infEdist_pos_iff_not_mem_closure := infEdist_pos_iff_notMem_closure
-
 theorem infEdist_closure_pos_iff_notMem_closure {x : α} {E : Set α} :
     0 < infEdist x (closure E) ↔ x ∉ closure E := by
   rw [infEdist_closure, infEdist_pos_iff_notMem_closure]
-
-@[deprecated (since := "2025-05-23")]
-alias infEdist_closure_pos_iff_not_mem_closure := infEdist_closure_pos_iff_notMem_closure
 
 theorem exists_real_pos_lt_infEdist_of_notMem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
     ∃ ε : ℝ, 0 < ε ∧ ENNReal.ofReal ε < infEdist x E := by
   rw [← infEdist_pos_iff_notMem_closure, ENNReal.lt_iff_exists_real_btwn] at h
   rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
-
-@[deprecated (since := "2025-05-23")]
-alias exists_real_pos_lt_infEdist_of_not_mem_closure :=
-  exists_real_pos_lt_infEdist_of_notMem_closure
 
 theorem disjoint_closedBall_of_lt_infEdist {r : ℝ≥0∞} (h : r < infEdist x s) :
     Disjoint (closedBall x r) s := by
@@ -249,6 +243,11 @@ theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : D
     pos_iff_ne_zero.2 fun H => hst.le_bot ⟨hx, (mem_iff_infEdist_zero_of_closed ht).mpr H⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 this with ⟨r, h₀, hr⟩
   exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEdist.1 (h hy) z hz⟩
+
+theorem infEdist_prod (x : α × β) (s : Set α) (t : Set β) :
+    infEdist x (s ×ˢ t) = max (infEdist x.1 s) (infEdist x.2 t) := by
+  simp_rw +singlePass [infEdist, Prod.edist_eq, iInf_prod, Set.mem_prod, iInf_and, iInf_sup_eq,
+    sup_iInf_eq, iInf_sup_eq, sup_iInf_eq]
 
 end InfEdist
 
@@ -422,6 +421,24 @@ theorem hausdorffEdist_singleton : hausdorffEdist {x} {y} = edist x y := by
   nth_rw 2 [edist_comm]
   exact max_self _
 
+theorem hausdorffEdist_iUnion_le {ι : Sort*} {s t : ι → Set α} :
+    hausdorffEdist (⋃ i, s i) (⋃ i, t i) ≤ ⨆ i, hausdorffEdist (s i) (t i) := by
+  simp_rw [hausdorffEdist, max_le_iff, iSup_iUnion, iSup_le_iff, infEdist_iUnion]
+  constructor <;> refine fun i x hx => (iInf_le _ i).trans <| le_iSup_of_le i ?_
+  · exact le_max_of_le_left <| le_iSup₂_of_le x hx le_rfl
+  · exact le_max_of_le_right <| le_iSup₂_of_le x hx le_rfl
+
+theorem hausdorffEdist_union_le {s₁ s₂ t₁ t₂ : Set α} :
+    hausdorffEdist (s₁ ∪ s₂) (t₁ ∪ t₂) ≤ max (hausdorffEdist s₁ t₁) (hausdorffEdist s₂ t₂) := by
+  simp_rw [union_eq_iUnion, sup_eq_iSup]
+  convert hausdorffEdist_iUnion_le with (_ | _)
+
+theorem hausdorffEdist_prod_le {s₁ t₁ : Set α} {s₂ t₂ : Set β} :
+    hausdorffEdist (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) ≤ max (hausdorffEdist s₁ t₁) (hausdorffEdist s₂ t₂) := by
+  refine le_of_forall_ge fun _ _ => ?_
+  simp_all only [hausdorffEdist, infEdist_prod, max_le_iff, iSup_le_iff, mem_prod, true_and,
+    implies_true]
+
 end HausdorffEdist
 
 -- section
@@ -509,8 +526,6 @@ theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := 
 theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
   h.not_ge <| infDist_le_dist_of_mem hy
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_dist_lt_infDist := notMem_of_dist_lt_infDist
-
 theorem disjoint_ball_infDist : Disjoint (ball x (infDist x s)) s :=
   disjoint_left.2 fun _y hy => notMem_of_dist_lt_infDist <| mem_ball'.1 hy
 
@@ -564,9 +579,6 @@ theorem infDist_pos_iff_notMem_closure (hs : s.Nonempty) :
     x ∉ closure s ↔ 0 < infDist x s :=
   (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.lt_iff_ne'.symm
 
-@[deprecated (since := "2025-05-23")]
-alias infDist_pos_iff_not_mem_closure := infDist_pos_iff_notMem_closure
-
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes -/
 theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) :
     x ∈ s ↔ infDist x s = 0 := by rw [← mem_closure_iff_infDist_zero hs, h.closure_eq]
@@ -575,9 +587,6 @@ theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) 
 theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty) :
     x ∉ s ↔ 0 < infDist x s := by
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.lt_iff_ne']
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.IsClosed.not_mem_iff_infDist_pos := _root_.IsClosed.notMem_iff_infDist_pos
 
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by

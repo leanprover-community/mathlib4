@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Complete lattice structure of subalgebras
@@ -13,6 +15,8 @@ In this file we define `Algebra.adjoin` and the complete lattice structure on su
 
 More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Polynomial
 
@@ -47,6 +51,12 @@ instance : CompleteLattice (Subalgebra R A) where
   __ := GaloisInsertion.liftCompleteLattice Algebra.gi
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
+
+instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+  Algebra ↑(min S₁ S₂) S₁ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_left).toRingHom
+
+instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+  Algebra ↑(S₁ ⊓ S₂) S₂ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_right).toRingHom
 
 theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
 
@@ -126,6 +136,7 @@ theorem sup_toSubsemiring (S T : Subalgebra R A) :
 theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (Subalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -159,7 +170,8 @@ theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
 theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →ₐ[R] B) (hf : Function.Injective f)
@@ -213,7 +225,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x
     (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
     (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
-    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem (⨆ i, S i) ‹_›)) :
     motive x mem := by
   refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
   exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
@@ -230,6 +242,11 @@ theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
 
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
+
+@[simp]
+theorem toSubring_bot (A : Type*) [CommRing A] (R : Subring A) :
+    (⊥ : Subalgebra R A).toSubring = R := by
+  aesop (add norm Subalgebra.mem_carrier.symm)
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by
@@ -281,7 +298,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
@@ -668,6 +685,7 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
 
 variable (R)
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 
@@ -744,7 +762,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
     (hs : s.EqOn φ₁ φ₂) : φ₁ = φ₂ :=
   ext fun _x => adjoin_le_equalizer φ₁ φ₂ hs <| h.symm ▸ trivial
 
-/-- Two algebra morphisms are equal on `Algebra.span s`iff they are equal on s -/
+/-- Two algebra morphisms are equal on `Algebra.span s` iff they are equal on `s`. -/
 theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl

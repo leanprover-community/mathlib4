@@ -3,10 +3,12 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
-import Mathlib.FieldTheory.Extension
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.FieldTheory.Normal.Defs
+module
+
+public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Normal.Defs
 
 /-!
 # Conjugate roots
@@ -35,6 +37,8 @@ over `K` if they have the same minimal polynomial over `K`.
 ## Tags
 conjugate root, minimal polynomial
 -/
+
+@[expose] public section
 
 
 open Polynomial minpoly IntermediateField
@@ -126,7 +130,7 @@ theorem isConjRoot_algHom_iff_of_injective {x y : A} {f : A →ₐ[R] B}
   rw [isConjRoot_def, isConjRoot_def, algHom_eq f hf, algHom_eq f hf]
 
 /--
-If `y` is a conjugate root of `x` in some division ring and `f` is a `R`-algebra homomorphism, then
+If `y` is a conjugate root of `x` in some division ring and `f` is an `R`-algebra homomorphism, then
 `f y` is a conjugate root of `f x`.
 -/
 theorem isConjRoot_algHom_iff {A} [DivisionRing A] [Algebra R A]
@@ -197,7 +201,7 @@ conjugate root of `x` if and only if `x` and `y` falls in the same orbit of the 
 group.
 -/
 theorem isConjRoot_iff_orbitRel [Normal K L] {x y : L} :
-    IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y:=
+    IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y :=
   (isConjRoot_iff_exists_algEquiv)
 
 variable [IsDomain S]
@@ -365,7 +369,7 @@ of `x` splits in `L`, then `x` is not in `K` if and only if there exists a conju
 root of `x` over `K` in `L` which is not equal to `x` itself.
 -/
 theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
-    (sp : (minpoly K x).Splits (algebraMap K L)) :
+    (sp : ((minpoly K x).map (algebraMap K L)).Splits) :
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ y : L, x ≠ y ∧ IsConjRoot K x y := by
   calc
     _ ↔ 2 ≤ (minpoly K x).natDegree := (minpoly.two_le_natDegree_iff h.isIntegral).symm
@@ -381,6 +385,3 @@ theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mpr hy⟩⟩,
           fun ⟨y, hne, hy⟩ => ⟨⟨y,
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mp hy⟩, hne.symm⟩⟩
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_iff_exists_ne_and_isConjRoot := notMem_iff_exists_ne_and_isConjRoot

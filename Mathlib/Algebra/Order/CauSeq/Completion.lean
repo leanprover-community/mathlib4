@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Algebra.Ring.Action.Rat
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.CauSeq.Basic
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Cauchy completion
@@ -13,6 +15,8 @@ import Mathlib.Tactic.FastInstance
 This file generalizes the Cauchy completion of `(ℚ, abs)` to the completion of a ring
 with absolute value.
 -/
+
+@[expose] public section
 
 
 namespace CauSeq.Completion
@@ -137,12 +141,18 @@ theorem ofRat_mul (x y : β) :
 theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem zero_def : 0 = mk (abv := abv) 0 :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem one_def : 1 = mk (abv := abv) 1 :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
   Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
@@ -171,6 +181,8 @@ section
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
   Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
