@@ -105,8 +105,11 @@ def IsSupermajorizedBy (x : m → R) (y : n → R) :=
 /-- `x` is majorized by `y` if `x` is submajorized by `y` and they have equal sums. -/
 def IsMajorizedBy (x : m → R) (y : n → R) := IsSubmajorizedBy x y ∧ ∑ i, x i = ∑ i, y i
 
+/-- The supermajorization relation on vectors. -/
 scoped[Majorization] infixl:50 " ≼ˢ " => IsSupermajorizedBy
+/-- The submajorization relation on vectors. -/
 scoped[Majorization] infixl:50 " ≼ₛ " => IsSubmajorizedBy
+/-- The majorization relation on vectors. -/
 scoped[Majorization] infixl:50 " ≼ " => IsMajorizedBy
 
 open scoped Majorization

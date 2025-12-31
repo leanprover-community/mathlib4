@@ -69,7 +69,7 @@ lemma card_incSumSet (k : ℕ) (x : n → R) (hk : k ≤ card n) : (incSumSet k 
 
 grind_pattern card_incSumSet => incSumSet k x
 
-lemma incSum_eq_sum_incSumSet (k : ℕ) (x : n → R) (hk : k ≤ card n) :
+lemma incSum_eq_sum_incSumSet {k : ℕ} {x : n → R} (hk : k ≤ card n) :
     incSum k x = ∑ i ∈ incSumSet k x, x i := by
   obtain ⟨hs₁, hs₂⟩ := Classical.choose_spec (exists_min'_image (powersetCard k (univ : Finset n))
         (fun s => ∑ i ∈ s, x i) (by grind))
@@ -116,7 +116,7 @@ lemma card_decSumSet (k : ℕ) (x : n → R) (hk : k ≤ card n) : (decSumSet k 
 
 grind_pattern card_decSumSet => decSumSet k x
 
-lemma decSum_eq_sum_decSumSet (k : ℕ) (x : n → R) (hk : k ≤ card n) :
+lemma decSum_eq_sum_decSumSet {k : ℕ} {x : n → R} (hk : k ≤ card n) :
     decSum k x = ∑ i ∈ decSumSet k x, x i := by
   obtain ⟨hs₁, hs₂⟩ := Classical.choose_spec (exists_max'_image (powersetCard k (univ : Finset n))
         (fun s => ∑ i ∈ s, x i) (by grind))
@@ -158,26 +158,14 @@ lemma exists_eq_incSum (k : ℕ) (x : n → R) (hk : k ≤ card n) :
     ∃ s : Finset n, s.card = k
       ∧ incSum k x = ∑ i ∈ s, x i
       ∧ ∀ t : Finset n, t.card = k → ∑ i ∈ s, x i ≤ ∑ i ∈ t, x i := by
-  rw [incSum_of_le_card hk]
-  obtain ⟨s, hs₁, hs₂⟩ := exists_min'_image (powersetCard k (univ : Finset n))
-      (fun s => ∑ i ∈ s, x i) (by grind)
-  refine ⟨s, ?_, hs₂, ?_⟩
-  · exact mem_powersetCard_univ.mp hs₁
-  · intro t ht
-    rw [← hs₂]
-    exact Finset.min'_le _ _ (by grind)
+  exact ⟨incSumSet k x, card_incSumSet k x hk, incSum_eq_sum_incSumSet hk,
+    fun t a ↦ sum_incSumSet_le k x hk t a⟩
 
 lemma exists_eq_decSum (k : ℕ) (x : n → R) (hk : k ≤ card n) :
     ∃ s : Finset n, s.card = k ∧ decSum k x = ∑ i ∈ s, x i
       ∧ ∀ t : Finset n, t.card = k → ∑ i ∈ t, x i ≤ ∑ i ∈ s, x i := by
-  rw [decSum_of_le_card hk]
-  obtain ⟨s, hs₁, hs₂⟩ := exists_max'_image (powersetCard k (univ : Finset n))
-      (fun s => ∑ i ∈ s, x i) (by grind)
-  refine ⟨s, ?_, hs₂, ?_⟩
-  · exact mem_powersetCard_univ.mp hs₁
-  · intro t ht
-    rw [← hs₂]
-    exact Finset.le_max' _ _ (by grind)
+  exact ⟨decSumSet k x, card_decSumSet k x hk, decSum_eq_sum_decSumSet hk,
+    fun t a ↦ sum_decSumSet_le k x hk t a⟩
 
 open Finset in
 lemma incSum_of_ge_card {k : ℕ} {x : n → R} (hk : card n ≤ k) : incSum k x = ∑ i, x i := by
@@ -397,8 +385,8 @@ lemma IsMajorizedBy.equiv_right {o : Type*} [Fintype o] {x : m → R} {y : n →
     simp [this]
 
 open Function in
-lemma le_const_of_isSubmajorizedBy_const [IsOrderedRing R] {x : n → R} {a : R}
-    (h : x ≼ₛ const n a) : ∀ i, x i ≤ a := by
+lemma le_const_of_isSubmajorizedBy_const {x : n → R} {a : R} (h : x ≼ₛ const n a) :
+    ∀ i, x i ≤ a := by
   by_cases hcard : 1 ≤ card n
   · intro i
     rw [isSubmajorizedBy_def] at h
@@ -412,8 +400,8 @@ lemma le_const_of_isSubmajorizedBy_const [IsOrderedRing R] {x : n → R} {a : R}
     exact hempty.elim
 
 open Function in
-lemma const_le_of_isSupermajorizedBy_const [IsOrderedRing R] {x : n → R} {a : R}
-    (h : x ≼ˢ const n a) : ∀ i, a ≤ x i := by
+lemma const_le_of_isSupermajorizedBy_const {x : n → R} {a : R} (h : x ≼ˢ const n a) :
+    ∀ i, a ≤ x i := by
   by_cases hcard : 1 ≤ card n
   · intro i
     rw [isSupermajorizedBy_def] at h
@@ -433,8 +421,8 @@ lemma eq_const_of_isMajorizedBy_const [IsStrictOrderedRing R] {x : n → R} {a :
   have h₂ := const_le_of_isSupermajorizedBy_const <| h.isSupermajorizedBy rfl
   grind
 
-lemma IsSupermajorizedBy.forall_nonneg [IsOrderedRing R] {x y : n → R}
-    (hy : ∀ i, 0 ≤ y i) (hxy : x ≼ˢ y) : ∀ i, 0 ≤ x i := by
+lemma IsSupermajorizedBy.forall_nonneg {x y : n → R} (hy : ∀ i, 0 ≤ y i) (hxy : x ≼ˢ y) :
+    ∀ i, 0 ≤ x i := by
   by_cases hcard : 1 ≤ card n
   · intro i
     have h₁ : incSum 1 x ≤ x i := incSum_one_le _
@@ -448,7 +436,7 @@ lemma IsSupermajorizedBy.forall_nonneg [IsOrderedRing R] {x y : n → R}
     exact h₂.elim
 
 lemma mem_doublyStochastic_of_forall_mulVec_isMajorizedBy [DecidableEq n] [IsStrictOrderedRing R]
-    (A : Matrix n n R) (ha : ∀ x, A *ᵥ x ≼ x) : A ∈ doublyStochastic R n := by
+    {A : Matrix n n R} (ha : ∀ x, A *ᵥ x ≼ x) : A ∈ doublyStochastic R n := by
   rw [mem_doublyStochastic]
   refine ⟨?_, ?_, ?_⟩
   · intro i j
@@ -466,17 +454,16 @@ lemma mem_doublyStochastic_of_forall_mulVec_isMajorizedBy [DecidableEq n] [IsStr
     simpa using ha
 
 lemma mulVec_isSubmajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R] (A : Matrix n n R) (hA : A ∈ doublyStochastic R n) :
-    ∀ x, A *ᵥ x ≼ₛ x := by
-  intro x k
+    [CanonicallyOrderedAdd R] {A : Matrix n n R} (hA : A ∈ doublyStochastic R n) {x : n → R} :
+    A *ᵥ x ≼ₛ x := by
+  rw [isSubmajorizedBy_iff_forall_pos]
+  intro k hk
   by_cases hcard : k ≤ card n
-  · by_cases htriv : k = 0
-    · simp [htriv]
-    let s := decSumSet k x
+  · let s := decSumSet k x
     let t := decSumSet k (A *ᵥ x)
     have hs₁ := card_decSumSet k x hcard
     have ht₁ := card_decSumSet k (A *ᵥ x) (by grind)
-    rw [decSum_eq_sum_decSumSet _ _ (by grind), decSum_eq_sum_decSumSet _ _ (by grind)]
+    rw [decSum_eq_sum_decSumSet (by grind), decSum_eq_sum_decSumSet (by grind)]
     simp only [Matrix.mulVec, dotProduct]
     let z i := ∑ j ∈ t, A j i
     have hz : ∑ i, z i = k := by
@@ -537,13 +524,13 @@ lemma mulVec_isSubmajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictO
     exact sum_mulVec_of_mem_doublyStochastic hA
 
 lemma mulVec_isMajorizedBy_of_mem_doublyStochastic [DecidableEq n] [IsStrictOrderedRing R]
-    [CanonicallyOrderedAdd R] (A : Matrix n n R) (hA : A ∈ doublyStochastic R n) (x : n → R) :
+    [CanonicallyOrderedAdd R] {A : Matrix n n R} (hA : A ∈ doublyStochastic R n) {x : n → R} :
     A *ᵥ x ≼ x :=
-  ⟨mulVec_isSubmajorizedBy_of_mem_doublyStochastic A hA x, sum_mulVec_of_mem_doublyStochastic hA⟩
+  ⟨mulVec_isSubmajorizedBy_of_mem_doublyStochastic hA, sum_mulVec_of_mem_doublyStochastic hA⟩
 
 lemma mem_doublyStochastic_iff_forall_mulVec_isMajorizedBy [DecidableEq n] [IsStrictOrderedRing R]
     [CanonicallyOrderedAdd R] {A : Matrix n n R} : A ∈ doublyStochastic R n ↔ ∀ x, A *ᵥ x ≼ x :=
-  ⟨fun hA => mulVec_isMajorizedBy_of_mem_doublyStochastic A hA,
-    fun ha => mem_doublyStochastic_of_forall_mulVec_isMajorizedBy A ha⟩
+  ⟨fun hA _ => mulVec_isMajorizedBy_of_mem_doublyStochastic hA,
+    fun ha => mem_doublyStochastic_of_forall_mulVec_isMajorizedBy ha⟩
 
 end majorization
