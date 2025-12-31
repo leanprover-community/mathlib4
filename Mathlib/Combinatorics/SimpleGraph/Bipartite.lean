@@ -11,7 +11,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Tactic
-public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 
 /-!
 # Bipartite graphs
@@ -75,25 +74,40 @@ the length of `C` is even.
 -/
 
 variable {V : Type*} (G : SimpleGraph V)
-
 lemma even_length_iff_same_color
     {c : G.Coloring (Fin 2)}
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ c u = c v := by
-  classical
-  let c' : G.Coloring Bool :=
-    G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
-  simpa [c'] using
-    (SimpleGraph.Coloring.even_length_iff_congr (c := c') (p := p))
-
+  induction p with
+  | nil =>
+    simp
+  | cons h_adj p_tail ih =>
+    have h_first_step_diff := c.valid h_adj
+    rw [SimpleGraph.Walk.length_cons]
+    rw [Nat.even_add_one]
+    rw [ih]
+    constructor
+    · intro h_next_ne_end
+      have h_cases : c u = 0 ∨ c u = 1 := by
+        match c u with
+        | 0 => left; rfl
+        | 1 => right; rfl
+      cases h_cases
+      · simp_all
+        omega
+      · simp_all
+        omega
+    · intro h_start_eq_end
+      rw [h_start_eq_end] at h_first_step_diff
+      exact h_first_step_diff.symm
 theorem bipartite_implies_even_cycles (h : G.IsBipartite) :
-    ∀ (v : V) (w : G.Walk v v), w.IsCycle → Even w.length := by
+    ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
   rcases h with ⟨color⟩
-  intro v w hw
-  exact (even_length_iff_same_color (G := G) (c := color) (p := w)).2 rfl
-
+  intro v c hc
+  have h_color_eq : color v = color v := rfl
+  rw [even_length_iff_same_color]
+  exact color
 namespace SimpleGraph.Walk
-
 lemma bypass_eq_nil_of_closed {V : Type*} [DecidableEq V]
     {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
     w.bypass = SimpleGraph.Walk.nil := by
@@ -150,7 +164,6 @@ lemma even_cycle_length_of_path {V : Type*} {G : SimpleGraph V}
       rw [SimpleGraph.Walk.cons_isCycle_iff]
       exact ⟨hq, h_edge⟩
     exact h_cycles u (SimpleGraph.Walk.cons ha q) h_cycle
-
 lemma even_length_iff_even_bypass_length {V : Type*} [DecidableEq V] {G : SimpleGraph V}
     (hcycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (p : G.Walk u v) :
@@ -205,7 +218,6 @@ lemma even_length_iff_even_bypass_length {V : Type*} [DecidableEq V] {G : Simple
                 h_not_even_total_iff_even_drop
         simpa [length_cons, bypass, hu] using h_step
       · simp [length_cons, bypass, hu, Nat.even_add_one, not_congr ih]
-
 theorem bipartite_iff_all_cycles_even {V : Type*} {G : SimpleGraph V} :
   G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
   classical
@@ -224,8 +236,6 @@ theorem bipartite_iff_all_cycles_even {V : Type*} {G : SimpleGraph V} :
       norm_num
     exact h_colorable
 end SimpleGraph.Walk
-
-
 @[expose] public section
 
 
