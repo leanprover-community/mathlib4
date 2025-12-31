@@ -204,7 +204,7 @@ theorem continuousAt_fract [OrderClosedTopology α] [IsTopologicalAddGroup α]
 
 theorem tendsto_round_nhdsGE_pure [IsStrictOrderedRing α] [OrderClosedTopology α] [ContinuousAdd α]
     (x : α) : Tendsto round (𝓝[≥] x) (pure (round x)) := by
-  rw [funext round_eq']
+  rw [funext round_eq_div]
   have : Tendsto (2 * ·) (𝓝[≥] x) (𝓝[≥] (2 * x)) := by
     simp only [two_mul]
     refine (tendsto_id.add tendsto_id).inf (tendsto_principal_principal.2 ?_)
@@ -214,7 +214,7 @@ theorem tendsto_round_nhdsGE_pure [IsStrictOrderedRing α] [OrderClosedTopology 
 
 theorem tendsto_round_nhdsLT_pure_half_ceil [IsStrictOrderedRing α] [OrderClosedTopology α]
     [ContinuousAdd α] (x : α) : Tendsto round (𝓝[<] x) (pure (⌈2 * x⌉ / 2)) := by
-  rw [funext round_eq', tendsto_pure]
+  rw [funext round_eq_div, tendsto_pure]
   have : Tendsto (2 * ·) (𝓝[<] x) (𝓝[<] (2 * x)) := by
     simp only [two_mul]
     refine (tendsto_id.add tendsto_id).inf (tendsto_principal_principal.2 ?_)

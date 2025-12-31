@@ -48,7 +48,7 @@ def round (x : α) : ℤ :=
 /-- Formula for `round` in terms of `Int.floor`, a version that works over any ring.
 
 TODO: decide if we want to use this as a definition. It may be slightly faster over `ℚ`. -/
-theorem round_eq' (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
+theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
   rw [← floor_add_fract x, round, fract_intCast_add, fract_fract, floor_intCast_add, mul_add,
     ← Int.cast_ofNat, ← Int.cast_mul, floor_intCast_add, ceil_intCast_add, add_assoc,
     Int.mul_add_ediv_left _ _ two_ne_zero, Int.cast_ofNat]
@@ -89,8 +89,8 @@ theorem round_eq_half_ceil_two_mul {x : α} (hx : 2 * fract x ≠ 1) : round x =
     · obtain rfl : m = x := mul_left_cancel₀ two_ne_zero <| by simp [← hm, ← two_mul]
       rw [round_intCast, ← two_mul, Int.mul_ediv_cancel_left _ two_ne_zero]
     · refine absurd ?_ hx
-      exact two_mul_fract_eq_one_iff_exists_int.mpr ⟨m, mod_cast hm.symm⟩
-  · rw [round_eq', (ceil_eq_floor_add_one_iff_notMem _).mpr hx']
+      exact (mul_fract_eq_one_iff_exists_int one_lt_two).mpr ⟨m, mod_cast hm.symm⟩
+  · rw [round_eq_div, (ceil_eq_floor_add_one_iff_notMem _).mpr hx']
 
 @[simp]
 theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
@@ -171,7 +171,7 @@ section LinearOrderedField
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
-  rw [← cast_mul_floor_div_cancel_of_pos two_pos, round_eq']
+  rw [← cast_mul_floor_div_cancel_of_pos two_pos, round_eq_div]
   simp [mul_add]
 
 theorem round_eq_iff {x : α} {n : ℤ} : round x = n ↔ x ∈ Ico (n - 1 / 2 : α) (n + 1 / 2) := by
