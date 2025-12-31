@@ -45,7 +45,7 @@ section BaireTheorem
 variable [TopologicalSpace X]
 
 /-- The intersection of finitely many open dense sets is dense. -/
-theorem Set.Finite.Dense_sInter {s : Set (Set X)} (hs : s.Finite)
+theorem Set.Finite.dense_sInter {s : Set (Set X)} (hs : s.Finite)
     (ho : ∀ t ∈ s, IsOpen t) (hd : ∀ t ∈ s, Dense t) : Dense (⋂₀ s) := by
   induction s, hs using Set.Finite.induction_on with
   | empty => simp [sInter_empty]
