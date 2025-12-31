@@ -133,6 +133,70 @@ lemma linearIndepOn_root_baseOf [Module ℚ M] [Module ℚ N]
   rw [linearIndependent_iff_card_eq_finrank_span, Set.finrank, hv, finrank_top, ← h_card,
     Fintype.card_eq_nat_card]
 
+/-- A set of linearly independent roots whose cone span over `ℕ` contains all the roots is a basis
+for the ambient space. -/
+noncomputable def basisOfBase
+    (s : Set ι)
+    (hli : LinearIndepOn R P.root s)
+    (hsp : ∀ i, P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
+               -P.root i ∈ AddSubmonoid.closure (P.root '' s)) :
+    Basis s R M := Basis.mk hli <| by
+      rw [← IsRootSystem.span_root_eq_top (P := P), span_le, ← span_span_of_tower (R := ℤ)]
+      rintro - ⟨i, rfl⟩
+      apply subset_span
+      rcases hsp i with hi | hi <;>
+        simpa [SetLike.mem_coe, ← Submodule.mem_toAddSubgroup, span_int_eq_addSubgroupClosure,
+          ← image_eq_range] using AddSubgroup.le_closure_toAddSubmonoid (P.root '' s) hi
+
+lemma exists_dual_baseOf_eq [Module ℚ M] [Module ℚ N]
+    (s : Set ι)
+    (hli : LinearIndepOn R P.root s)
+    (hsp : ∀ i, P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
+               -P.root i ∈ AddSubmonoid.closure (P.root '' s)) :
+    ∃ f : Dual ℚ M, baseOf P.root (f : M →+ ℚ) = s ∧ ∀ i ∈ s, f (P.root i) = 1 := by
+  classical
+  have _i : Fintype ι := Fintype.ofFinite _
+  letI _i := P.indexNeg
+  obtain ⟨f, hf⟩ : ∃ f : Dual ℚ M, ∀ i ∈ s, f (P.root i) = 1 := by
+    replace hli : LinearIndepOn ℚ id (P.root '' s) :=
+      LinearIndepOn.id_image (hli.restrict_scalars' ℚ)
+    let b : Basis _ ℚ M := .mk (hli.linearIndepOn_extend (subset_univ _)) <| by
+      simpa using hli.span_extend_eq_span <| subset_univ _
+    refine ⟨b.constr ℚ 1, fun i hi ↦ ?_⟩
+    replace hi : P.root i ∈ hli.extend (subset_univ _) :=
+      hli.subset_extend _ <| mem_image_of_mem P.root hi
+    let ri : hli.extend (subset_univ _) := ⟨P.root i, hi⟩
+    have : b ri = P.root i := by simp [b, ri]
+    simp [← this]
+  refine ⟨f, ?_, hf⟩
+  have h_card : (baseOf P.root (f : M →+ ℚ)).ncard = s.ncard := by
+    have hf' (i : ι) : f (P.root i) ≠ 0 := AddSubmonoid.apply_ne_zero_of_mem_or_neg_mem_closure
+      P.root (fun i ↦ P.ne_zero i) (by simp) (f : M →+ ℚ) s hsp (by aesop) i
+    set b₁ := P.basisOfBase s hli hsp
+    set b₂ := P.basisOfBase (baseOf P.root (f : M →+ ℚ)) (P.linearIndepOn_root_baseOf f hf')
+      (mem_or_neg_mem_closure_baseOf P.root (by simp) (f : M →+ ℚ) hf')
+    rw [ncard_eq_toFinset_card, ncard_eq_toFinset_card]
+    simpa [Module.finrank_eq_card_basis b₂] using Module.finrank_eq_card_basis b₁
+  suffices s ⊆ baseOf P.root (f : M →+ ℚ) from (eq_of_subset_of_ncard_le this (by rw [h_card])).symm
+  replace hsp (i : ι) : ∃ z : ℤ, f (P.root i) = z := by
+    rcases hsp i with hi | hi
+    · exact AddSubmonoid.closure_induction (fun x ⟨j, hj, hx⟩ ↦ ⟨1, by simp [hf _ hj, ← hx]⟩)
+        ⟨0, by simp⟩ (fun x y hx hy ⟨n, hn⟩ ⟨m, hm⟩ ↦ ⟨n + m, by simp [hn, hm]⟩) hi
+    · suffices ∃ z : ℤ, f (P.root (-i)) = z by obtain ⟨z, hz⟩ := this; exact ⟨-z, by simp [← hz]⟩
+      replace hi : P.root (-i) ∈ AddSubmonoid.closure (P.root '' s) := by simpa
+      exact AddSubmonoid.closure_induction (fun x ⟨j, hj, hx⟩ ↦ ⟨1, by simp [hf _ hj, ← hx]⟩)
+        ⟨0, by simp⟩ (fun x y hx hy ⟨n, hn⟩ ⟨m, hm⟩ ↦ ⟨n + m, by simp [hn, hm]⟩) hi
+  intro i hi
+  refine ⟨by aesop, fun j hj k hk contra ↦ ?_⟩
+  obtain ⟨n, hn⟩ := hsp j
+  obtain ⟨m, hm⟩ := hsp k
+  replace hj : 0 < n := by simpa [hn] using hj
+  replace hk : 0 < m := by simpa [hm] using hk
+  replace contra : 1 = n + m := by
+    replace contra := congr(f $contra)
+    rwa [hf i hi, map_add, hn, hm, ← Int.cast_add, ← Int.cast_one, Int.cast_inj] at contra
+  lia
+
 end Field
 
 end RootPairing
