@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.Algebra.Order.Round
 public import Mathlib.Order.Filter.AtTopBot.Floor
 public import Mathlib.Topology.Algebra.Order.Group
 
@@ -58,6 +59,8 @@ theorem tendsto_pow_div_factorial_atTop (c : K) :
 
 end FloorSemiring
 
+section Ring
+
 variable {α β γ : Type*} [Ring α] [LinearOrder α] [FloorRing α]
 
 section
@@ -83,21 +86,44 @@ end
 variable [TopologicalSpace α]
 
 theorem continuousOn_floor (n : ℤ) :
-    ContinuousOn (fun x => floor x : α → α) (Ico n (n + 1) : Set α) :=
-  (continuousOn_congr <| floor_eq_on_Ico' n).mpr continuousOn_const
+    ContinuousOn (fun x => floor x : α → ℤ) (Ico n (n + 1) : Set α) :=
+  (continuousOn_congr <| floor_eq_on_Ico n).mpr continuousOn_const
 
 theorem continuousOn_ceil [IsStrictOrderedRing α] (n : ℤ) :
-    ContinuousOn (fun x => ceil x : α → α) (Ioc (n - 1) n : Set α) :=
-  (continuousOn_congr <| ceil_eq_on_Ioc' n).mpr continuousOn_const
+    ContinuousOn (fun x => ceil x : α → ℤ) (Ioc (n - 1) n : Set α) :=
+  (continuousOn_congr <| ceil_eq_on_Ioc n).mpr continuousOn_const
 
 section OrderClosedTopology
 
-variable [IsStrictOrderedRing α] [OrderClosedTopology α]
+variable [OrderClosedTopology α]
 
-omit [IsStrictOrderedRing α] in
+@[fun_prop]
+theorem continuousAt_floor {x : α} (hx : x ≠ ⌊x⌋) : ContinuousAt floor x :=
+  (continuousOn_floor ⌊x⌋).continuousAt <|
+    Ico_mem_nhds ((floor_le x).lt_of_ne hx.symm) (lt_floor_add_one x)
+
+@[fun_prop]
+theorem continuousOn_floor_compl_range : ContinuousOn (floor : α → ℤ) (range Int.cast)ᶜ := by
+  intro x hx
+  refine (continuousAt_floor ?_).continuousWithinAt
+  simp_all [eq_comm]
+
 theorem tendsto_floor_right_pure_floor (x : α) : Tendsto (floor : α → ℤ) (𝓝[≥] x) (pure ⌊x⌋) :=
   tendsto_pure.2 <| mem_of_superset (Ico_mem_nhdsGE <| lt_floor_add_one x) fun _y hy =>
     floor_eq_on_Ico _ _ ⟨(floor_le x).trans hy.1, hy.2⟩
+
+variable [IsStrictOrderedRing α]
+
+theorem continuousAt_ceil {x : α} (hx : x ≠ ⌊x⌋) : ContinuousAt ceil x :=
+  (continuousOn_ceil ⌈x⌉).continuousAt <|
+    Ioc_mem_nhds (sub_lt_iff_lt_add.mpr <| ceil_lt_add_one _) <| (le_ceil x).lt_of_ne fun h ↦
+      hx <| by rw [h, floor_intCast]
+
+@[fun_prop]
+theorem continuousOn_ceil_compl_range : ContinuousOn (ceil : α → ℤ) (range Int.cast)ᶜ := by
+  intro x hx
+  refine (continuousAt_ceil ?_).continuousWithinAt
+  simp_all [eq_comm]
 
 theorem tendsto_floor_right_pure (n : ℤ) : Tendsto (floor : α → ℤ) (𝓝[≥] n) (pure n) := by
   simpa only [floor_intCast] using tendsto_floor_right_pure_floor (n : α)
@@ -169,12 +195,45 @@ end OrderClosedTopology
 
 theorem continuousOn_fract [IsTopologicalAddGroup α] (n : ℤ) :
     ContinuousOn (fract : α → α) (Ico n (n + 1) : Set α) :=
-  continuousOn_id.sub (continuousOn_floor n)
+  continuousOn_id.sub (continuous_of_discreteTopology.comp_continuousOn (continuousOn_floor n))
 
 theorem continuousAt_fract [OrderClosedTopology α] [IsTopologicalAddGroup α]
     {x : α} (h : x ≠ ⌊x⌋) : ContinuousAt fract x :=
-  (continuousOn_fract ⌊x⌋).continuousAt <|
-    Ico_mem_nhds ((floor_le _).lt_of_ne h.symm) (lt_floor_add_one _)
+  continuousAt_id.sub <| continuous_of_discreteTopology.continuousAt.comp <|
+    continuousAt_floor h
+
+theorem tendsto_round_nhdsGE_pure [IsStrictOrderedRing α] [OrderClosedTopology α] [ContinuousAdd α]
+    (x : α) : Tendsto round (𝓝[≥] x) (pure (round x)) := by
+  rw [funext round_eq']
+  have : Tendsto (2 * ·) (𝓝[≥] x) (𝓝[≥] (2 * x)) := by
+    simp only [two_mul]
+    refine (tendsto_id.add tendsto_id).inf (tendsto_principal_principal.2 ?_)
+    exact fun a ha ↦ add_le_add ha ha
+  exact (tendsto_pure_pure (fun n ↦ (n + 1) / 2) _).comp <|
+    (tendsto_floor_right_pure_floor (2 * x)).comp this
+
+theorem tendsto_round_nhdsLT_pure_half_ceil [IsStrictOrderedRing α] [OrderClosedTopology α]
+    [ContinuousAdd α] (x : α) : Tendsto round (𝓝[<] x) (pure (⌈2 * x⌉ / 2)) := by
+  rw [funext round_eq', tendsto_pure]
+  have : Tendsto (2 * ·) (𝓝[<] x) (𝓝[<] (2 * x)) := by
+    simp only [two_mul]
+    refine (tendsto_id.add tendsto_id).inf (tendsto_principal_principal.2 ?_)
+    exact fun a ha ↦ add_lt_add ha ha
+  filter_upwards [tendsto_pure.mp ((tendsto_floor_left_pure_ceil_sub_one (2 * x)).comp this)]
+    using by simp +contextual
+
+theorem continuousAt_round [IsStrictOrderedRing α] [OrderClosedTopology α] [ContinuousAdd α]
+    {x : α} (hx : 2 * fract x ≠ 1) : ContinuousAt round x := by
+  rw [continuousAt_iff_continuous_left'_right']
+  refine ⟨(tendsto_round_nhdsLT_pure_half_ceil x).mono_right (pure_le_nhds_iff.mpr ?_),
+    (tendsto_round_nhdsGE_pure x).mono_left ?_ |>.mono_right (pure_le_nhds _)⟩
+  · rw [round_eq_half_ceil_two_mul hx]
+  · gcongr
+    apply Ioi_subset_Ici_self
+
+theorem continuousOn_round [IsStrictOrderedRing α] [OrderClosedTopology α] [ContinuousAdd α] :
+    ContinuousOn round {x : α | 2 * fract x ≠ 1} :=
+  fun _x hx ↦ (continuousAt_round hx).continuousWithinAt
 
 variable [IsStrictOrderedRing α]
 
@@ -233,3 +292,5 @@ theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f
     Continuous (f ∘ fract) :=
   ContinuousOn.comp_fract (h.comp continuousOn_snd fun _x hx => (mem_prod.mp hx).2) continuous_id
     fun _ => hf
+
+end Ring
