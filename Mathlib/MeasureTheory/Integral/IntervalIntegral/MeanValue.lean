@@ -8,23 +8,18 @@ module
 public import Mathlib.MeasureTheory.Integral.IntervalAverage
 
 /-!
-# First mean value theorem for integrals
+# First mean value theorem for interval integrals
 
-We prove versions of the first mean value theorem for (unordered) interval integrals
-w.r.t. an arbitrary measure in `ℝ`
+We prove versions of the first mean value theorem for interval integrals.
 
-One assuming almost-everywhere nonnegativity of `g` under an arbitrary measure,
-and one assuming pointwise nonnegativity together with continuity of `g`.
+## Main results
 
-## Main statements
-
-- `exists_eq_const_mul_integral_of_ae_nonneg`:
-    **First mean value theorem for integrals** for (unordered) interval integrals when
-    `g` is interval integrable on `a..b` w.r.t. an arbitrary measure `μ` and satisfies
-    `g ≥ 0` almost everywhere on `uIoc a b`.
-- `exists_eq_const_mul_integral_of_nonneg`:
-    **First mean value theorem for integrals** for (unordered) interval integrals when
-    `g` is continuous on `uIoc a b` and nonnegative there (Lebesgue measure).
+* `exists_eq_const_mul_intervalIntegral_of_ae_nonneg`:
+    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
+* `exists_eq_const_mul_intervalIntegral_of_nonneg'`:
+    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
+* `exists_eq_const_mul_intervalIntegral_of_nonneg`:
+    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x) = f c * (∫ x in a..b, g x)`.
 
 ## References
 
@@ -34,30 +29,33 @@ and one assuming pointwise nonnegativity together with continuity of `g`.
 
 ## Tags
 
-mean value theorem, interval integral, measure, nonnegative, continuous, integrable
+mean value theorem, interval integral
 -/
 
 @[expose] public section
 
 open MeasureTheory Set intervalIntegral
 
-/-- **First mean value theorem for integrals (interval integral, arbitrary measure).**
-Let `μ` be a measure on `ℝ`. If `f : ℝ → ℝ` is continuous on `uIcc a b` and
-`g : ℝ → ℝ` is interval integrable on `a..b` w.r.t. `μ`, and `g ≥ 0` almost
-everywhere on `uIoc a b`, then there exists `c ∈ uIcc a b` such that
-`∫ x in a..b, f x * g x ∂μ = f c * ∫ x in a..b, g x ∂μ`. -/
-theorem exists_eq_const_mul_integral_of_ae_nonneg
-    {a b : ℝ} {f g : ℝ → ℝ} {μ : Measure ℝ}
+open scoped Interval
+
+variable {a b : ℝ} {f g : ℝ → ℝ} {μ : Measure ℝ}
+
+/-- **First mean value theorem for interval integrals (arbitrary measure, a.e. nonnegativity).**
+Let `f g : ℝ → ℝ` and let `μ` be a measure on `ℝ`. Assume that `f` is continuous on `uIcc a b`,
+that `g` is interval integrable on `a..b` w.r.t. `μ`, and that `g ≥ 0` a.e. on `Ι a b` w.r.t.
+`μ.restrict (Ι a b)`. Then
+`∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`. -/
+theorem exists_eq_const_mul_intervalIntegral_of_ae_nonneg
     (hf : ContinuousOn f (uIcc a b))
     (hg : IntervalIntegrable g μ a b)
-    (hg0 : ∀ᵐ x ∂(μ.restrict (uIoc a b)), 0 ≤ g x) :
+    (hg0 : ∀ᵐ x ∂(μ.restrict (Ι a b)), 0 ≤ g x) :
     ∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ) := by
   wlog hle : a ≤ b generalizing a b
   · simp at hle
     obtain ⟨c, c_in_uIcc, that⟩ :=
       this (a := b) (b := a) (by rwa [uIcc_comm]) hg.symm (by rwa [uIoc_comm]) hle.le
     refine ⟨c, by rwa [uIcc_comm], by simpa [integral_symm b a]⟩
-  let s := uIoc a b
+  let s := Ι a b
   have hs : s = Ioc a b := uIoc_of_le hle
   have hs_meas : MeasurableSet s := measurableSet_uIoc
   let ρ := fun x ↦ ENNReal.ofReal (g x)
@@ -129,18 +127,26 @@ theorem exists_eq_const_mul_integral_of_ae_nonneg
         field_simp
       _ = _ := by simp [hg1]
 
-/-- **First mean value theorem for integrals (interval integral).**
-Let `f g : ℝ → ℝ` be continuous on `uIcc a b`. If `g ≥ 0` on `uIoc a b`,
-then there exists `c ∈ uIcc a b` such that
-`∫ x in a..b, f x * g x = f c * ∫ x in a..b, g x`. -/
-theorem exists_eq_const_mul_integral_of_nonneg
-    {a b : ℝ} {f g : ℝ → ℝ}
+/-- **First mean value theorem for interval integrals (arbitrary measure, nonnegativity).**
+Let `f g : ℝ → ℝ` and let `μ` be a measure on `ℝ`. Assume that `f` is continuous on `uIcc a b`,
+that `g` is interval integrable on `a..b` w.r.t. `μ`, and that `g ≥ 0` on `Ι a b`. Then
+`∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`. -/
+theorem exists_eq_const_mul_intervalIntegral_of_nonneg'
+    (hf : ContinuousOn f (uIcc a b))
+    (hg : IntervalIntegrable g μ a b)
+    (hg0 : ∀ x ∈ Ι a b, 0 ≤ g x) :
+    ∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ) := by
+  have hg0_ae : ∀ᵐ x ∂(μ.restrict (Ι a b)), 0 ≤ g x := by
+    rw [ae_restrict_iff' measurableSet_uIoc]
+    exact ae_of_all μ hg0
+  exact exists_eq_const_mul_intervalIntegral_of_ae_nonneg hf hg hg0_ae
+
+/-- **First mean value theorem for interval integrals (Lebesgue measure, nonnegativity).**
+Let `f g : ℝ → ℝ` be continuous on `uIcc a b`. If `g ≥ 0` on `Ι a b`, then
+`∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x) = f c * (∫ x in a..b, g x)`. -/
+theorem exists_eq_const_mul_intervalIntegral_of_nonneg
     (hf : ContinuousOn f (uIcc a b))
     (hg : ContinuousOn g (uIcc a b))
-    (hg0 : ∀ x ∈ uIoc a b, 0 ≤ g x) :
+    (hg0 : ∀ x ∈ Ι a b, 0 ≤ g x) :
     ∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x) = f c * (∫ x in a..b, g x) := by
-  have hg0_ae : ∀ᵐ x ∂(volume.restrict (uIoc a b)), 0 ≤ g x := by
-    rw [ae_restrict_iff' measurableSet_uIoc]
-    exact ae_of_all volume hg0
-  exact exists_eq_const_mul_integral_of_ae_nonneg
-    hf hg.intervalIntegrable hg0_ae
+  exact exists_eq_const_mul_intervalIntegral_of_nonneg' hf hg.intervalIntegrable hg0
