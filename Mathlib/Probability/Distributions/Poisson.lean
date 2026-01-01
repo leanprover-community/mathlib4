@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Analysis.SpecialFunctions.Choose
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 
 /-! # Poisson distributions over ℕ
 
@@ -108,81 +111,57 @@ lemma h_choose_mul_pk (hlam : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (�
       (fun n : ℕ => ((n.choose k : ℕ) : ℝ))
         ~[atTop] (fun n : ℕ => (n : ℝ) ^ k / (k.factorial : ℝ)) := by
     simpa using (isEquivalent_choose k)
-
   set f : ℕ → ℝ := fun n => ((n.choose k : ℕ) : ℝ) * (p n) ^ k with hf
   set g : ℕ → ℝ := fun n => (((n : ℝ) * p n) ^ k) / (k.factorial : ℝ) with hg
-
   have hfg : f ~[atTop] g := by
-    have h1 : f ~[atTop] (fun n : ℕ => ((n : ℝ) ^ k / (k.factorial : ℝ)) * (p n) ^ k) := by
-      refine Asymptotics.IsEquivalent.mul ?_ ?_
-      · exact hchoose_equiv
-      · exact IsEquivalent.refl
+    have h1 : f ~[atTop] (fun n : ℕ => ((n : ℝ) ^ k / (k.factorial : ℝ)) * (p n) ^ k) :=
+      hchoose_equiv.mul IsEquivalent.refl
     refine h1.congr_right ?_
     have : (fun n ↦ ↑n ^ k / ↑k.factorial * p n ^ k)
           = fun n ↦ (↑n * p n) ^ k / ↑k.factorial := by
       ext n
-      simp [field]
-      ring
+      simp [field, mul_pow]
     simp [hg, this]
   have hg : Tendsto g atTop (𝓝 (lam ^ k / (k.factorial : ℝ))) := by
-    have hpow :
-        Tendsto (fun n : ℕ => ((n : ℝ) * p n) ^ k)
-          atTop (𝓝 (lam ^ k)) :=
-      hlam.pow k
-    simpa [g, div_eq_mul_inv] using hpow.mul_const ((k.factorial : ℝ)⁻¹)
-  have hf : Tendsto f atTop (𝓝 (lam ^ k / (k.factorial : ℝ))) := by
-    exact (hfg.tendsto_nhds_iff).2 hg
-  simpa [f] using hf
+    simpa [g, div_eq_mul_inv] using (hlam.pow k).mul_const ((k.factorial : ℝ)⁻¹)
+  simpa [f] using (hfg.tendsto_nhds_iff).2 hg
 
-theorem poisson_limit
-    (hlam : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (𝓝 lam)) :
+theorem poisson_limit (hlam : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (𝓝 lam)) :
     Tendsto (fun n : ℕ => ((n.choose k : ℕ) : ℝ) * (p n) ^ k * (1 - p n) ^ (n - k))
     atTop (𝓝 (Real.exp (-lam) * (lam ^ k) / (k.factorial : ℝ))) := by
   have h_one_sub_pow : Tendsto (fun n : ℕ => (1 - p n) ^ (n - k)) atTop (𝓝 (Real.exp (-lam))) := by
     have hneg : Tendsto (fun n : ℕ => (n : ℝ) * (-p n)) atTop (𝓝 (-lam)) := by
       simpa [mul_neg] using hlam.neg
     have hpow_n : Tendsto (fun n : ℕ => (1 - p n) ^ n) atTop (𝓝 (Real.exp (-lam))) := by
-      simpa [sub_eq_add_neg] using
-        (Real.tendsto_one_add_pow_exp_of_tendsto hneg)
-
+      simpa [sub_eq_add_neg] using Real.tendsto_one_add_pow_exp_of_tendsto hneg
     have h1 : Tendsto (fun n : ℕ => 1 - p n) atTop (𝓝 (1 : ℝ)) := by
-      have : Tendsto (fun n : ℕ => (1 : ℝ) - p n) atTop (𝓝 ((1 : ℝ) - 0)) :=
-        (tendsto_const_nhds.sub (hp0 p lam hlam))
-      simpa using this
+      simpa using tendsto_const_nhds.sub (hp0 p lam hlam)
     have hpow_k : Tendsto (fun n : ℕ => (1 - p n) ^ k) atTop (𝓝 (1 : ℝ)) := by
-      simpa using (h1.pow k)
-
+      simpa using h1.pow k
     have hinv_k : Tendsto (fun n : ℕ => ((1 - p n) ^ k)⁻¹) atTop (𝓝 (1 : ℝ)) := by
       simpa using (hpow_k.inv₀ (by norm_num : (1 : ℝ) ≠ 0))
-
     have hp_lt_half : ∀ᶠ n in atTop, p n < (1 / 2 : ℝ) :=
       (hp0 p lam hlam).eventually (Iio_mem_nhds (by norm_num))
     have hone_ne : ∀ᶠ n in atTop, (1 - p n) ≠ 0 := by
       filter_upwards [hp_lt_half] with n hn
       exact ne_of_gt (sub_pos.2 (lt_trans hn (by norm_num)))
     have hk_le : ∀ᶠ n in atTop, k ≤ n := eventually_ge_atTop k
-
-    have hEq :
-        (fun n : ℕ => (1 - p n) ^ (n - k))
+    have hEq : (fun n : ℕ => (1 - p n) ^ (n - k))
           =ᶠ[atTop] (fun n : ℕ => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
       filter_upwards [hk_le, hone_ne] with n hn hne
       simpa using (pow_sub₀ (a := (1 - p n)) hne hn)
-
     have hprod : Tendsto (fun n : ℕ => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹)
           atTop (𝓝 (Real.exp (-lam))) := by
       simpa [mul_assoc] using (hpow_n.mul hinv_k)
     simpa using (hprod.congr' hEq.symm)
-
   simpa [mul_assoc, mul_left_comm, mul_comm, div_eq_mul_inv] using
     (h_choose_mul_pk p lam k hlam).mul h_one_sub_pow
-
 
 lemma _PMF (hpos : lam ≥ 0)
     (hlam : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (𝓝 lam)) :
     Tendsto (fun n : ℕ => ((n.choose k : ℕ) : ℝ) * (p n) ^ k * (1 - p n) ^ (n - k))
     atTop (𝓝 (ProbabilityTheory.poissonPMFReal ⟨lam, by simp [hpos]⟩ k)) := by
-  simp [ProbabilityTheory.poissonPMFReal]
+  dsimp [poissonPMFReal]
   exact poisson_limit p lam k hlam
-
 
 end ProbabilityTheory
