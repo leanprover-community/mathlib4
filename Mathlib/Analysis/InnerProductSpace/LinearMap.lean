@@ -329,8 +329,8 @@ lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
     (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
 
-theorem rankOne_eq_zero_iff {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-    (x : E) (y : F) : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
+@[simp] theorem rankOne_eq_zero {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
     ext_iff_inner_right 𝕜 (E := F)]
 
@@ -344,7 +344,7 @@ theorem isIdempotentElem_rankOne_self_iff {F : Type*} [NormedAddCommGroup F] [In
     map_smul, coe_smul', Pi.smul_apply]
   nth_rw 2 [← one_smul 𝕜 (rankOne 𝕜 x x)]
   rw [← sub_eq_zero, ← sub_smul]
-  simp only [smul_eq_zero, rankOne_eq_zero_iff, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
+  simp only [smul_eq_zero, rankOne_eq_zero, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
   grind [norm_nonneg]
 
