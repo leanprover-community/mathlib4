@@ -280,6 +280,12 @@ theorem symm_eq' {f : Dual R V} {v : V}
     (transvection hf).symm = transvection hf' := by
   ext; simp [LinearEquiv.symm_apply_eq, comp_of_right_eq_apply hf]
 
+@[simp]
+theorem symm_apply {f : Dual R V} {v : V}
+    (hv : f v = 0) (x : V) :
+    (transvection hv).symm x = x - f x • v := by
+  rw [symm_eq, LinearEquiv.transvection.apply, smul_neg, ← sub_eq_add_neg]
+
 end transvection
 
 theorem mem_fixedSubmodule_transvection_iff {f : Dual R V} {v : V} {hfv : f v = 0} {x : V} :

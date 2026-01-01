@@ -99,6 +99,14 @@ theorem le_one_add_finrank_fixedSubmodule_dilatransvection_mul (hf : f ∈ dilat
     finrank_le _
   linarith
 
+theorem le_one_add_finrank_fixedSubmodule_dilatransvection_mul' (hf : f ∈ dilatransvections K V) :
+    finrank K e.fixedSubmodule ≤ 1 + finrank K (e * f).fixedSubmodule := by
+  have := finrank_fixedSubmodule_add_le e f
+  have := finrank_le_one_add_finrank_fixedSubmodule_dilatransvection f hf
+  have : finrank K ↥(e.fixedSubmodule ⊔ f.fixedSubmodule) ≤ finrank K V :=
+    finrank_le _
+  linarith
+
 theorem finrank_fixedSubmodule_dilatransvection_mul_le (hf : f ∈ dilatransvections K V) :
      finrank K (f * e).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
   conv_rhs => rw [show e = f⁻¹ * (f * e) from by aesop]
@@ -119,7 +127,24 @@ theorem finrank_fixedSubmodule_mul_dilatransvection_le (hf : f ∈ dilatransvect
   rw [← inv_mem_dilatransvections_iff] at hf
   exact le_one_add_finrank_fixedSubmodule_mul_dilatransvection (e * f) f⁻¹ hf
 
-
+theorem finrank_quotient_fixedSubmodule_of_mem_dilatransvections_pow
+    {n : ℕ} (he : e ∈ dilatransvections K V ^ n) :
+    finrank K (V ⧸ e.fixedSubmodule) ≤ n := by
+  induction n generalizing e with
+  | zero =>
+    simp only [pow_zero, Set.mem_one, ← fixedSubmodule_eq_top_iff] at he
+    rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank, zero_add]
+    rw [he, finrank_top]
+  | succ n hind =>
+    rw [pow_succ] at he
+    obtain ⟨f, hf, g, hg, rfl⟩ := he
+    specialize hind f hf
+    rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank] at hind
+    simp only
+    rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
+    apply le_trans hind
+    simp only [add_assoc, add_le_add_iff_left]
+    exact le_one_add_finrank_fixedSubmodule_dilatransvection_mul' f g hg
 
 theorem fixedSubmodule_transvection_mul
     {f : Dual K V} {v : V} {e : V ≃ₗ[K] V}
@@ -151,7 +176,6 @@ theorem fixedSubmodule_transvection_mul
     simp only [mem_fixedSubmodule_iff, LinearEquiv.mul_apply,
       transvection.apply]
     simp [hfv']
-
 
 /-- A linear equivalence `u : V ≃ₗ[K] V` is exceptional if
 it is a nontrivial homothety modulo `u.fixedSubmodule`. -/
@@ -923,6 +947,40 @@ theorem fixedReduce_mem_transvections_pow_mul_dilatransvections
   apply congr_arg
   rw [← Subtype.coe_inj]
   aesop
+
+theorem not_mem_transvections_mul_dilatransvections_pow
+  (hV : 1 ≤ finrank K V) (a : K) (ha : a ≠ 1) (hea : ∀ x, e x = a • x) :
+    e ∉ transvections K V * dilatransvections K V ^ (finrank K V - 1) := by
+  rw [Set.mem_mul]
+  rintro ⟨f, hf, g, hg, he⟩
+  have : g.fixedSubmodule ≠ ⊥ := by
+    rw [ne_eq, ← Submodule.finrank_eq_zero, ← Nat.lt_one_iff, not_lt]
+    rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank, Nat.add_one_le_iff]
+    apply lt_of_le_of_lt (finrank_quotient_fixedSubmodule_of_mem_dilatransvections_pow g hg)
+    exact Nat.sub_one_lt_of_lt hV
+  apply this
+  rw [eq_bot_iff]
+  intro x hx
+  simp only [mem_bot]
+  simp only [mem_fixedSubmodule_iff] at hx
+  obtain ⟨l, v, hlv, hf⟩ := hf
+  rw [← eq_inv_mul_iff_mul_eq, LinearEquiv.ext_iff] at he
+  specialize he x
+  replace he : g x = a • x - a • l x • v := by
+    simp [he, hf, mul_apply, hea, ← smul_sub]
+  rw [← sub_ne_zero] at ha
+  rw [← IsUnit.smul_eq_zero (Ne.isUnit ha), sub_smul, one_smul, sub_eq_zero, eq_comm]
+  suffices x ∈ K ∙ v by
+    simp only [mem_span_singleton] at this
+    obtain ⟨c, hc⟩ := this
+    nth_rewrite 3 [← hc] at he
+    simpa [hx, hlv] using he
+  suffices a • x - x = a • l x • v by
+    rw [← Submodule.smul_mem_iff _ ha, sub_smul, one_smul, this,
+      ← mul_smul]
+    simp [mem_span_singleton]
+  rw [eq_sub_iff_add_eq, hx] at he
+  rwa [sub_eq_iff_eq_add, add_comm, eq_comm]
 
 /-- If an element of `SpecialLinearGroup K V` is a product of
 exactly `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections
