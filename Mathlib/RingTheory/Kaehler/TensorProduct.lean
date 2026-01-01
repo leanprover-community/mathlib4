@@ -216,6 +216,8 @@ lemma tensorKaehlerEquivBase_tmul [Algebra.IsPushout R S A B] (a b) :
     tensorKaehlerEquivBase R S A B (a ⊗ₜ b) = a • map R S A B b :=
   LinearMap.liftBaseChange_tmul _ _ _ _
 
+@[deprecated (since := "2026-01-01")] alias tensorKaehlerEquiv_tmul := tensorKaehlerEquivBase_tmul
+
 /--
 If `B` is the tensor product of `S` and `A` over `R`,
 then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.
@@ -242,7 +244,7 @@ instance isLocalizedModule_of_isLocalizedModule (p : Submonoid R) [IsLocalizatio
   inferInstance
 
 /-- The canonical isomorphism `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
-Also see `KaehlerDifferential.tensorKaehlerEquiv` for the version with `S ⊗[R] Ω[A⁄R]`. -/
+Also see `KaehlerDifferential.tensorKaehlerEquivBase` for the version with `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
 def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
     B ⊗[A] Ω[A⁄R] ≃ₗ[B] Ω[B⁄S] := by
@@ -297,7 +299,7 @@ lemma tensorKaehlerEquiv_symm_D_tmul (s a) :
   apply (tensorKaehlerEquiv R S A _).symm_apply_eq.mpr ?_
   simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     tensorKaehlerEquiv_tmul_D]
-  rw [show s ⊗ₜ 1 = algebraMap S (S ⊗ A) s by rfl, show algebraMap A (S ⊗ A) a = 1 ⊗ₜ a by rfl,
+  rw [show s ⊗ₜ 1 = algebraMap S (S ⊗ A) s by simp, Algebra.TensorProduct.right_algebraMap_apply,
     algebraMap_smul, ← Derivation.map_smul, smul_tmul', smul_eq_mul, mul_one]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
