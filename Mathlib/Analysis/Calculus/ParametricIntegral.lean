@@ -60,16 +60,13 @@ integral, derivative
 
 noncomputable section
 
-open TopologicalSpace MeasureTheory Filter Metric Set
+open TopologicalSpace MeasureTheory Filter Metric
 
 open scoped Topology Filter
 
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
-  {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
-  {H' : Type*} [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H']
-  [OpensMeasurableSpace H']
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [RCLike 𝕜] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*}
+  [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 
 variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {s : Set H}
 
@@ -124,7 +121,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       ‖∫ a, ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀)) ∂μ‖ := by
     apply mem_of_superset (ball_mem_nhds _ ε_pos)
     intro x x_in; simp only
-    rw [mem_setOf_eq, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub, integral_sub,
+    rw [Set.mem_setOf_eq, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub, integral_sub,
       ← ContinuousLinearMap.integral_apply hF'_int]
     exacts [hF_int' x x_in, hF_int, (hF_int' x x_in).sub hF_int,
       hF'_int.apply_continuousLinearMap _]
