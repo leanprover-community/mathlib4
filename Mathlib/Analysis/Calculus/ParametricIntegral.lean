@@ -464,7 +464,7 @@ lemma ContDiffOn.parametric_integral
       apply hs _ inter_subset_left
       exact hk.measurableSet.inter (measurableSet_toMeasurable _ _)
     convert this using 3
-    apply (restrict_inter_toMeasurable _ hk.measurableSet hs₀).symm
+    apply (Measure.restrict_inter_toMeasurable _ hk.measurableSet hs₀).symm
     exact ((measure_mono hs₀).trans_lt hk.measure_lt_top).ne
   apply IsCompact.induction_on (s := k)
     (p := fun s₀ ↦ ∃ s, k ∩ s₀ ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
