@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Monad.Adjunction
 
 /-! # The monads and comonads associated to the pullback and pushforward adjunctions
 
-- `mapPullbackMonad_η_app` shows that the unit of the `mapPullbackMonad` is a relative graph map.
+
 -/
 
 
@@ -21,16 +21,28 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Adjunction MonoidalCategory ChosenPullbacksAlong
+open Category Adjunction MonoidalCategory ChosenPullbacksAlong ExponentiableMorphism
 
+
+#check Over.pullback
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {I J : C} (g : I ⟶ J) [ChosenPullbacksAlong g]
+variable {I J : C} (g : I ⟶ J)
 
-abbrev mapPullbackMonad : Monad (Over I) := mapPullbackAdj g |>.toMonad
+#check Over.pullback
 
-theorem mapPullbackMonad_η :
-    (mapPullbackMonad g).η = (mapPullbackAdj g |>.unit) := by
-  rfl
+abbrev mapPullbackMonad [ChosenPullbacksAlong g] : Monad (Over I) := mapPullbackAdj g |>.toMonad
+
+abbrev pullbackPushforwardMonad [ChosenPullbacksAlong g] [ExponentiableMorphism g] :
+    Monad (Over J) := pullbackAdjPushforward g |>.toMonad
+
+-- without appealing to the comonadicity theorem we show that the functor
+-- `Over.map g : Over I ⥤ Over J` is comonadic.
+
+instance [ChosenPullbacksAlong g] : ComonadicLeftAdjoint (Over.map g) where
+  R := pullback g
+  adj := mapPullbackAdj g
+  eqv := sorry
+
 
 end CategoryTheory

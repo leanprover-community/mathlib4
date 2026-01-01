@@ -99,6 +99,11 @@ theorem coev_ev (Y : Over I) :
     𝟙 (pushforward f |>.obj Y) :=
   pullbackAdjPushforward f |>.right_triangle_components Y
 
+@[reassoc (attr := simp)]
+theorem ev_comp_hom_eq_snd {Y : Over I} :
+    ((ev f).app Y).left ≫ Y.hom = snd _ _ := by
+  cat_disch
+
 variable {f}
 
 /-- The currying of `(pullback f).obj A ⟶ X` in `Over I` to a morphism `A ⟶ (pushforward f).obj X`
