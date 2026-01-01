@@ -1159,22 +1159,9 @@ lemma g_bilin_eq (i b : B)
       rw [if_neg hhc, if_neg hhb]
 
 theorem g_bilin_symm_1 (i b : B)
-  (ha : b ∈ (extChartAt IB i).source)
   (α β : TangentSpace IB b) :
     (g_bilin_1 (IB := IB) i b).snd.toFun α β =
     (g_bilin_1 (IB := IB) i b).snd.toFun β α := by
-  have h1 : (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-              (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).baseSet =
-            (extChartAt IB i).source := baseSet_eq_extChartAt_source i
-  have h2 : b ∈ (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-                (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).baseSet ↔
-    b ∈ (extChartAt IB i).source := Eq.to_iff (congrFun h1 b)
-  have h3 : (extChartAt IB i).source = (trivializationAt EB (TangentSpace IB) i).baseSet := by
-    simp
-  have hc : b ∈ (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-                (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).baseSet :=
-    h2.mpr ha
-  have hb : b ∈ (trivializationAt EB (TangentSpace IB) i).baseSet := Set.mem_of_mem_inter_left ha
   calc
     (g_bilin_1 i b).snd.toFun α β = (g_bilin_2 i b).toFun α β := g_bilin_eq i b α β
     _ = (g_bilin_2 i b).toFun β α := g_bilin_symm_2 i b α β
@@ -1332,7 +1319,7 @@ lemma h_need_1 (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace I
 
   have h1 : ∀ (i : B) (α β : TangentSpace IB b),
     (g_bilin_1 (IB := IB) i b).snd.toFun α β =
-    (g_bilin_1 (IB := IB) i b).snd.toFun β α := sorry
+    (g_bilin_1 (IB := IB) i b).snd.toFun β α := fun i α β ↦ g_bilin_symm_1 i b α β
 
 
   exact sorry
@@ -1342,7 +1329,11 @@ lemma riemannian_metric_symm_1
   (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
   ((g_global_bilin_1 f b).toFun v).toFun w = ((g_global_bilin_1 f b).toFun w).toFun v := by
   unfold g_global_bilin_1
-  simp
+
+  have h1 : ∀ (i : B),
+    (g_bilin_1 (IB := IB) i b).snd.toFun v w =
+    (g_bilin_1 (IB := IB) i b).snd.toFun w v := fun i ↦ g_bilin_symm_1 i b v w
+
   exact sorry
 
 noncomputable
