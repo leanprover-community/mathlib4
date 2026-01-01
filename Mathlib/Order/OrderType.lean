@@ -12,7 +12,7 @@ import Mathlib.Logic.Equiv.Prod
 /-!
 # OrderTypes
 
-OrderTypes are defined as equivalences of linear orders under order isomorphism. They are endowed
+Order types are defined as the quotient of linear orders under order isomorphism. They are endowed
 with a preorder, where an OrderType is smaller than another one there is an order embedding
 into it.
 
@@ -21,11 +21,12 @@ into it.
 * `OrderType`: the type of OrderTypes (in a given universe)
 * `OrderType.type α`: given a type `α` with a linear order, this is the corresponding OrderType,
 * `OrderType.card o`: the cardinality of an OrderType `o`.
-* `OrderType.addMonoid`: the additive monoid of OrderTypes.
+* `o₁ + o₂`: the lexicographic sum of order types, which forms an `AddMonoid`
+* `o₁ * o₂`: the lexicographic product of order types (which surely forms a monoid as well?)
 * `OrderType.mul o₁ o₂`: the product of two OrderTypes `o₁` and `o₂`.
 
-A pre order with a bottom element is registered on OrderTypes, where `⊥` is
-`0`, the OrderType corresponding to the empty type.
+A preorder with a bottom element is registered on order types, where `⊥` is
+`0`, the order type corresponding to the empty type.
 
 ## Notation
 
@@ -74,7 +75,9 @@ def OrderType : Type (u + 1) :=
 
 namespace OrderType
 
-def toType (o : OrderType) : Type u :=
+/-- A "canonical" type order-isomorphic to the order type o, living in the same universe.
+This is defined through the axiom of choice. -/
+def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
 instance (o : OrderType) : LinearOrder o.toType :=
@@ -112,19 +115,20 @@ theorem _root_.RelIso.ordertype_congr {α β} [LinearOrder α]
     [LinearOrder β] (h : α ≃o β) : type α = type β :=
   type_eq.2 ⟨h⟩
 
-theorem type_eq_zero_of_empty [LinearOrder α] [IsEmpty α] : type α = 0 := by
+@[simp]
+theorem type_eq_zero [LinearOrder α] [IsEmpty α] : type α = 0 := by
  convert (ordIsoOfIsEmpty α PEmpty).ordertype_congr
 
 @[simp]
-theorem type_eq_zero_iff_isEmpty [LinearOrder α] : type α = 0 ↔ IsEmpty α :=
+theorem type_eq_zero_iff [LinearOrder α] : type α = 0 ↔ IsEmpty α :=
   ⟨fun h ↦
     let ⟨s⟩ := type_eq.1 h
     s.toEquiv.isEmpty,
     @type_eq_zero_of_empty α _⟩
 
-theorem type_ne_zero_iff_nonempty [LinearOrder α] : type α ≠ 0 ↔ Nonempty α := by simp
+theorem type_ne_zero_iff [LinearOrder α] : type α ≠ 0 ↔ Nonempty α := by simp
 
-theorem type_ne_zero_of_nonempty [LinearOrder α] [h : Nonempty α] : type α ≠ 0 :=
+theorem type_ne_zero [LinearOrder α] [h : Nonempty α] : type α ≠ 0 :=
   type_ne_zero_iff_nonempty.2 h
 
 theorem type_pEmpty : type PEmpty = 0 :=
@@ -133,12 +137,13 @@ theorem type_pEmpty : type PEmpty = 0 :=
 theorem type_empty : type Empty = 0 :=
   type_eq_zero_of_empty
 
-theorem type_eq_one_of_unique [LinearOrder α] [Nonempty α] [Subsingleton α] : type α = 1 := by
+@[simp]
+theorem type_eq_one [LinearOrder α] [Nonempty α] [Subsingleton α] : type α = 1 := by
   cases nonempty_unique α
   exact (@ofUniqueOfIrrefl _).ordertype_congr
 
 @[simp]
-theorem type_eq_one_iff_unique [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
+theorem type_eq_one_iff [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
     fun ⟨_⟩ ↦ type_eq_one_of_unique⟩
 
@@ -149,14 +154,14 @@ theorem type_unit : type Unit = 1 :=
   rfl
 
 @[simp]
-theorem toType_empty_iff_eq_zero {o : OrderType} : IsEmpty o.toType ↔ o = 0 := by
+theorem isEmpty_toType_iff {o : OrderType} : IsEmpty o.toType ↔ o = 0 := by
   rw [← @type_eq_zero_iff_isEmpty o.toType, type_ordtoType]
 
 instance isEmpty_toType_zero : IsEmpty (toType 0) :=
   toType_empty_iff_eq_zero.2 rfl
 
 @[simp]
-theorem toType_nonempty_iff_ne_zero {o : OrderType} : Nonempty o.toType ↔ o ≠ 0 := by
+theorem nonempty_toType_iff {o : OrderType} : Nonempty o.toType ↔ o ≠ 0 := by
   rw [← @type_ne_zero_iff_nonempty o.toType, type_ordtoType]
 
 protected theorem one_ne_zero : (1 : OrderType) ≠ 0 :=
@@ -193,9 +198,9 @@ theorem inductionOnLinOrd {C : OrderType → Prop} (o : OrderType)
   inductionOn o fun α ↦ H α
 
 open Classical in
-/-- To define a function on OrderTypes, it suffices to define them on all linear order isomorphisms.
+/-- To define a function on `OrderType`, it suffices to define it on all linear orders.
 -/
-def liftOnLinOrd {δ : Sort v} (o : OrderType) (f : ∀ (α) [LinearOrder α], δ)
+def liftOn {δ : Sort v} (o : OrderType) (f : ∀ (α) [LinearOrder α], δ)
     (c : ∀ (α) [LinearOrder α] (β) [LinearOrder β],
       type α = type β → f α = f β) : δ :=
   Quotient.liftOn o (fun w ↦ f w)
@@ -209,13 +214,10 @@ theorem liftOnLinOrd_type {δ : Sort v} (f : ∀ (α) [LinearOrder α], δ)
   change Quotient.liftOn' ⟦_⟧ _ _ = _
   rw [Quotient.liftOn'_mk]
 
-/-! ### The order on OrderTypes -/
+/-! ### The order on `OrderType` -/
 
 /--
-For `OrderType`:
-
-Less-than-or-equal is defined such that linear orders `r` on `α` and `s` on `β`
-satisfy `type α ≤ type β` if there exists an order embedding from `α` to `β`.
+The order is defined so that `type α ≤ type β` iff there exists an order embedding `α ↪o β`.
 -/
 instance : Preorder OrderType where
   le a b :=
@@ -427,12 +429,10 @@ def OrderIso.prodSumDistrib (α : Type u) (β : Type v) (γ : Type w)
         | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry
         | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry⟩ }
 
-open Classical in
-lemma mul_assoc (o₁ o₂ o₃ : OrderType.{u}) : o₁ * o₂ * o₃ = o₁ * (o₂ * o₃) :=
-  inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.prodLexAssoc α β γ))
-
 instance : Monoid OrderType where
-  mul_assoc := mul_assoc
+  mul_assoc o₁ o₂ o₃ := by
+    classical
+    exact inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.prodLexAssoc α β γ))
   one_mul := one_mul
   mul_one := mul_one
 
