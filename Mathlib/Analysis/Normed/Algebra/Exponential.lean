@@ -74,13 +74,13 @@ open Real
 #time example (x : ℝ) : 0 < exp x      := exp_pos _ -- 250ms
 #time example (x : ℝ) : 0 < Real.exp x := exp_pos _ -- 2ms
 ```
-This is because `exp x` tries the `NormedSpace.exp 𝕂 (x : 𝔸)` function previously defined here,
+This is because `exp x` tries the `NormedSpace.exp 𝕂 : 𝔸 → 𝔸` function previously defined here,
 and generates a slow coercion search from `Real` to `Type`, to fit the first argument here.
 We will resolve this slow coercion separately,
 but we want to move `exp` out of the root namespace in any case to avoid this ambiguity.
 
 To avoid explicitly passing the base field `𝕂`, we currently fix `𝕂 = ℚ` in the definition of
-`NormedSpace.exp (x : 𝔸)`. If `𝔸` can be equipped with a `ℚ`-algebra structure, we use
+`NormedSpace.exp : 𝔸 → 𝔸`. If `𝔸` can be equipped with a `ℚ`-algebra structure, we use
 `Classical.choice` to pick the unique `Algebra ℚ 𝔸` instead of requiring an instance argument.
 This eliminates the need to provide `Algebra ℚ 𝔸` every time `exp` is used. If `𝔸` can't be equipped
 with a `ℚ`-algebra structure, we use the junk value `1`.
