@@ -256,47 +256,47 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 
 open Classical in
 @[to_additive]
-noncomputable instance : SupSet (GroupSeminorm E) :=
-  ⟨fun s =>
+noncomputable instance : SupSet (GroupSeminorm E) where
+  sSup s :=
     if h : BddAbove s then
-      { toFun := fun x => ⨆ p : s, p.1 x
-        map_one' := by
-          simp only [map_one_eq_zero]
-          by_cases hs : s.Nonempty
-          · haveI : Nonempty s := hs.to_subtype
-            rw [ciSup_const]
-          · rw [not_nonempty_iff_eq_empty] at hs
-            subst hs
-            simp only [iSup, range_eq_empty, Real.sSup_empty]
-        mul_le' := fun x y => by
-          by_cases hs : s.Nonempty
-          · haveI : Nonempty s := hs.to_subtype
-            apply ciSup_le
-            intro p
-            apply le_trans (map_mul_le_add p.1 x y)
-            apply add_le_add
-            · have : BddAbove (range fun p : s => p.1 x) := by
-                 rw [bddAbove_def] at h
-                 rcases h with ⟨q, hq⟩
-                 use q x
-                 rintro r ⟨p', rfl⟩
-                 exact hq p' p'.2 x
-              refine le_ciSup this p
-            · have : BddAbove (range fun p : s => p.1 y) := by
-                 rw [bddAbove_def] at h
-                 rcases h with ⟨q, hq⟩
-                 use q y
-                 rintro r ⟨p', rfl⟩
-                 exact hq p' p'.2 y
-              refine le_ciSup this p
-          · rw [not_nonempty_iff_eq_empty] at hs
-            subst hs
-            simp only [iSup, range_eq_empty, Real.sSup_empty, add_zero, le_refl]
-        inv' := fun x => by
-          congr
-          ext p
-          exact map_inv_eq_map p.1 x }
-    else 0⟩
+      { toFun x := ⨆ p : s, p.1 x
+        map_one' := by simp
+        mul_le' x y := by
+          obtain (rfl | hs) := eq_empty_or_nonempty s
+          · simp
+          · have : Nonempty s := hs.to_subtype
+            refine ciSup_le fun p ↦ (map_mul_le_add p.1 x y).trans ?_
+            gcongr
+            all_goals
+              apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p
+              simpa [Set.range_comp] using Monotone.map_bddAbove (fun _ _ h' ↦ by exact h' _) h
+        inv' x := by simp }
+    else 0
+
+@[to_additive]
+lemma sSup_of_not_bddAbove {s : Set (GroupSeminorm E)} (hs : ¬BddAbove s) :
+    sSup s = 0 := by
+  simp [SupSet.sSup, hs]
+
+@[to_additive]
+lemma coe_sSup_apply {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = ⨆ p : s, (p : GroupSeminorm E) x := by
+  simp [SupSet.sSup, hs]
+  rfl
+
+@[to_additive]
+lemma coe_sSup_apply' {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = sSup ((· x) '' s) := by
+  rw [coe_sSup_apply hs, ← sSup_range]
+  congr
+  ext
+  simp
+
+@[to_additive]
+lemma coe_iSup_apply {ι : Type*} (f : ι → GroupSeminorm E) (h : BddAbove (range f)) {x : E} :
+    ⇑(⨆ i, f i) x = ⨆ i, (f i : GroupSeminorm E) x := by
+  rw [← sSup_range, coe_sSup_apply h]
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
 
 @[to_additive]
 instance : Max (GroupSeminorm E) :=
@@ -531,47 +531,43 @@ instance : Inhabited (NonarchAddGroupSeminorm E) :=
   ⟨0⟩
 
 open Classical in
-noncomputable instance : SupSet (NonarchAddGroupSeminorm E) :=
-  ⟨fun s =>
+noncomputable instance : SupSet (NonarchAddGroupSeminorm E) where
+  sSup s :=
     if h : BddAbove s then
-      { toFun := fun x => ⨆ p : s, p.1 x
-        map_zero' := by
-          simp only [map_zero]
-          by_cases hs : s.Nonempty
-          · haveI : Nonempty s := hs.to_subtype
-            rw [ciSup_const]
-          · rw [not_nonempty_iff_eq_empty] at hs
-            subst hs
-            simp only [iSup, range_eq_empty, Real.sSup_empty]
-        add_le_max' := fun x y => by
-          by_cases hs : s.Nonempty
-          · haveI : Nonempty s := hs.to_subtype
-            apply ciSup_le
-            intro p
-            apply le_trans (map_add_le_max p.1 x y)
-            apply max_le_max
-            · have : BddAbove (range fun p : s => p.1 x) := by
-                 rw [bddAbove_def] at h
-                 rcases h with ⟨q, hq⟩
-                 use q x
-                 rintro r ⟨p', rfl⟩
-                 exact hq p' p'.2 x
-              refine le_ciSup this p
-            · have : BddAbove (range fun p : s => p.1 y) := by
-                 rw [bddAbove_def] at h
-                 rcases h with ⟨q, hq⟩
-                 use q y
-                 rintro r ⟨p', rfl⟩
-                 exact hq p' p'.2 y
-              refine le_ciSup this p
-          · rw [not_nonempty_iff_eq_empty] at hs
-            subst hs
-            simp only [iSup, range_eq_empty, Real.sSup_empty, max_self, le_refl]
-        neg' := fun x => by
-          congr
-          ext p
-          exact map_neg_eq_map p.1 x }
-    else 0⟩
+      { toFun x := ⨆ p : s, p.1 x
+        map_zero' := by simp
+        add_le_max' x y := by
+          obtain (rfl | hs) := eq_empty_or_nonempty s
+          · simp
+          · have : Nonempty s := hs.to_subtype
+            refine ciSup_le fun p ↦ (map_add_le_max p.1 x y).trans ?_
+            gcongr
+            all_goals
+              apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p
+              simpa [Set.range_comp] using Monotone.map_bddAbove (fun _ _ h' ↦ by exact h' _) h
+        neg' := by simp }
+    else 0
+
+lemma sSup_of_not_bddAbove {s : Set (NonarchAddGroupSeminorm E)} (hs : ¬BddAbove s) :
+    sSup s = 0 := by
+  simp [SupSet.sSup, hs]
+
+lemma coe_sSup_apply {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = ⨆ p : s, (p : NonarchAddGroupSeminorm E) x := by
+  simp [SupSet.sSup, hs]
+  rfl
+
+lemma coe_sSup_apply' {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = sSup ((· x) '' s) := by
+  rw [coe_sSup_apply hs, ← sSup_range]
+  congr
+  ext
+  simp
+
+lemma coe_iSup_apply {ι : Type*} (f : ι → NonarchAddGroupSeminorm E) (h : BddAbove (range f))
+    {x : E} : ⇑(⨆ i, f i) x = ⨆ i, (f i : NonarchAddGroupSeminorm E) x := by
+  rw [← sSup_range, coe_sSup_apply h]
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
 
 instance : Max (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
@@ -781,7 +777,7 @@ theorem coe_add : ⇑(p + q) = p + q :=
 theorem add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 
--- Note: SupSet for GroupNorm requires a canonical "bottom" norm for sSup ∅.
+-- Note: To define an instance SupSet (GroupNorm E) requires a canonical "bottom" norm for sSup ∅.
 -- The zero function fails definiteness; the discrete norm needs complex proofs.
 -- See https://github.com/leanprover-community/mathlib/pull/11329 for context.
 @[to_additive]
