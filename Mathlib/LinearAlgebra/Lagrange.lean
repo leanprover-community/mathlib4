@@ -460,7 +460,7 @@ theorem iterate_derivative_interpolate
     (hvs : Set.InjOn v s) {k : ℕ} (hk : k ≤ #s - 1) :
     derivative^[k] (interpolate s v r) = k.factorial *
       ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) *
-      ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (X - C (v a)) := by
   classical
   simp_rw [interpolate_eq_sum, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
@@ -471,88 +471,71 @@ theorem iterate_derivative_interpolate
     derivative^[k] (∏ j ∈ s.erase i, (X - C (v j))) =
     derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by
       rw [Finset.prod_image hvs']
-    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powerset with #t = #s - (k + 1),
+    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
       ∏ va ∈ t, (X - C va) := by
       have hcard : #((s.erase i).image v) = #s - 1 := by
         rw [card_image_of_injOn hvs', card_erase_of_mem hi]
-      have : k ≤ #((s.erase i).image v) := by rwa [hcard]
-      rw [iterate_derivative_prod_X_sub_C this]
-      congr! 5
+      rw [iterate_derivative_prod_X_sub_C (by rwa [hcard])]
+      congr! 3
       omega
-    _ = k.factorial * ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+    _ = k.factorial * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (X - C (v a)) := by
-      rw [powerset_image, sum_nbij (fun (t : Finset ι) => t.image v)]
+      rw [powersetCard_eq_filter, powerset_image, sum_nbij (fun (t : Finset ι) => t.image v)]
       case hi =>
         intro a ha
-        rw [mem_filter, mem_powerset] at ha
+        rw [mem_powersetCard] at ha
         rw [mem_filter, mem_image]
-        constructor
-        · use a; simp [ha.1]
-        · rw [card_image_of_injOn (hvs'.mono (coe_subset.mpr ha.1))]
-          exact ha.2
-      case i_inj =>
-        refine (image_injOn_powerset_of_injOn hvs').mono (coe_subset.mpr ?_)
-        simp
+        refine ⟨⟨a, by simp [ha.1]⟩, ?_⟩
+        rw [card_image_of_injOn (hvs'.mono (by grind))]
+        exact ha.2
+      case i_inj => exact (image_injOn_powerset_of_injOn hvs').mono (by grind)
       case i_surj =>
         intro t ht
         rw [mem_coe, mem_filter, mem_image] at ht
         obtain ⟨a, ha⟩ := ht.1
-        simp_rw [Set.mem_image, mem_coe, mem_filter]
-        use a
-        refine ⟨⟨ha.1, ?_⟩, ha.2⟩
-        rw [← ht.2, ← ha.2, card_image_of_injOn (hvs'.mono (coe_subset.mpr (mem_powerset.mp ha.1)))]
+        simp_rw [Set.mem_image, mem_coe, mem_powersetCard]
+        refine ⟨a, ⟨⟨mem_powerset.mp ha.1, ?_⟩, ha.2⟩⟩
+        rw [← ht.2, ← ha.2, card_image_of_injOn (hvs'.mono (by grind))]
       case h =>
         intro a ha
-        rw [mem_filter, mem_powerset] at ha
-        rw [prod_image (hvs'.mono (coe_subset.mpr ha.1))]
-
-omit [DecidableEq ι] in
-private theorem degree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.degree = ↑(s.card - 1) := by
-  cases h : P.degree
-  case bot => simp_all
-  case coe d =>
-    rw [Nat.cast_withBot] at hP ⊢
-    suffices #s = d + 1 by grind
-    rw [h] at hP
-    simp [← WithBot.coe_inj, hP]
-
-omit [DecidableEq ι] in
-private theorem natDegree_eq_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some (degree_eq_of_card_eq hP)
-
-omit [DecidableEq ι] in
-private theorem degree_lt_of_card_eq {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.degree < s.card := by
-  have := degree_eq_of_card_eq hP
-  have := natDegree_eq_of_card_eq hP
-  have s_card : s.card > 0 := by by_contra! h; simp_all
-  grind [Nat.cast_lt]
+        convert (prod_image (hvs'.mono (coe_subset.mpr (mem_powersetCard.mp ha).1))).symm
+        rfl
 
 theorem eval_iterate_derivative_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1)
     {k : ℕ} (hk : k ≤ P.degree) (x : F) :
     (derivative^[k] P).eval x = k.factorial *
       ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, ((v i) - (v j))) *
-      ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (x - v a) := by
-  rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
-  rw [iterate_derivative_interpolate, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul, eval_finset_sum]
-  · congr! 2 with i hi
-    simp_rw [eval_C_mul, eval_finset_sum, eval_prod, eval_sub, eval_X, eval_C]
-  · exact hvs
-  · rw [degree_eq_of_card_eq hP] at hk
-    exact WithBot.coe_le_coe.mp hk
+  lift P.degree to ℕ using (by contrapose! hP; rw [hP]; simp) with deg hdeg
+  rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
+  replace hP := WithBot.coe_eq_coe.mp hP
+  have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
+  rw (occs := [1]) [eq_interpolate hvs (f := P)]
+  · rw [iterate_derivative_interpolate, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul, eval_finset_sum]
+    · congr! 2 with i hi
+      simp_rw [eval_C_mul, eval_finset_sum, eval_prod, eval_sub, eval_X, eval_C]
+    · exact hvs
+    · exact WithBot.coe_le_coe.mp (le_of_le_of_eq hk (by rwa [hdeg]))
+  · exact lt_of_eq_of_lt hdeg.symm (WithBot.coe_lt_coe.mpr <|
+      lt_of_lt_of_eq (lt_add_one deg) hP.symm)
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
-  rw [leadingCoeff, natDegree_eq_of_card_eq hP]
-  rw (occs := [1]) [eq_interpolate hvs (degree_lt_of_card_eq hP)]
-  rw [interpolate_apply, finset_sum_coeff]
-  congr! with i hi
-  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
-  field_simp
+  lift P.degree to ℕ using (by contrapose! hP; rw [hP]; simp) with deg hdeg
+  rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
+  replace hP := WithBot.coe_eq_coe.mp hP
+  have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
+  rw [leadingCoeff, natDegree_eq_of_degree_eq_some hdegree]
+  rw (occs := [1]) [eq_interpolate (f := P) hvs]
+  · rw [interpolate_apply, finset_sum_coeff]
+    congr! with i hi
+    rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+    field_simp
+  · exact lt_of_eq_of_lt hdeg.symm (WithBot.coe_lt_coe.mpr <|
+      lt_of_lt_of_eq (lt_add_one deg) hP.symm)
 
 end Interpolate
 

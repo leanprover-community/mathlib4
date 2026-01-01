@@ -652,55 +652,36 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
 
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
     derivative^[k] (∏ a ∈ S, (X - C a)) =
-    k.factorial * ∑ T ∈ S.powerset with #T = #S - k, ∏ a ∈ T, (X - C a):= by
+    k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a):= by
   classical
   induction k
-  case zero =>
-    suffices {T ∈ S.powerset | #T = #S} = {S} by simp [this]
-    refine eq_singleton_iff_unique_mem.mpr ⟨by simp, fun T hT => ?_⟩
-    simp only [mem_filter, mem_powerset] at hT
-    exact Finset.eq_of_subset_of_card_le hT.1 (ge_of_eq hT.2)
+  case zero => simp
   case succ k ind =>
-    replace ind := ind (Nat.le_of_succ_le hk)
+    specialize ind (Nat.le_of_succ_le hk)
     nth_rewrite 1 [add_comm]
     rw [Function.iterate_add_apply, Function.iterate_one, ind, ← nsmul_eq_mul, derivative_smul,
       nsmul_eq_mul, derivative_sum, Nat.factorial_succ, mul_comm (k + 1), Nat.cast_mul, mul_assoc]
     congr 1
-    set r₁ : Set ((Finset R) × R) :=
-      { p : (Finset R) × R | p.1 ∈ S.powerset ∧ #(p.1) = #S - k ∧ p.2 ∈ p.1 } with hr₁
-    have : Fintype r₁ := by
-      refine Set.Finite.fintype (Set.finite_image_fst_and_snd_iff.mp ⟨?_, ?_⟩)
-      · exact Set.Finite.subset (Finite.of_fintype S.powerset) (by grind)
-      · exact Set.Finite.subset (Finite.of_fintype S) (by grind)
-    set r₂ : Set ((Finset R) × R) :=
-      {p : (Finset R) × R | p.1 ∈ S.powerset ∧ #(p.1) = #S - (k + 1) ∧ p.2 ∈ S \ p.1} with hr₂
-    have : Fintype r₂ := by
-      refine Set.Finite.fintype (Set.finite_image_fst_and_snd_iff.mp ⟨?_, ?_⟩)
-      · exact Set.Finite.subset (Finite.of_fintype S.powerset) (by grind)
-      · exact Set.Finite.subset (Finite.of_fintype S) (by grind)
     calc
-      ∑ T ∈ S.powerset with #T = #S - k, derivative (∏ a ∈ T, (X - C a)) =
-      ∑ T ∈ S.powerset with #T = #S - k, ∑ i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
+      ∑ T ∈ S.powersetCard (#S - k), derivative (∏ a ∈ T, (X - C a)) =
+      ∑ T ∈ S.powersetCard (#S - k), ∑ i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
         congr! with T hT
         simp_rw [derivative_prod_finset, derivative_X_sub_C, mul_one]
-      _ = ∑ p ∈ r₁.toFinset, ∏ a ∈ p.1.erase p.2, (X - C a) := by
+      _ = ∑ (T ∈ S.powersetCard (#S - k)) (i ∈ S) with i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
         rw [← sum_finset_product']
         grind
-      _ = ∑ p ∈ r₂.toFinset, ∏ a ∈ p.1, (X - C a) := by
-        apply sum_bij' (fun p hp => ⟨p.1.erase p.2, p.2⟩) (fun p hp => ⟨insert p.2 p.1, p.2⟩)
-        · intro r hr; congr 1; grind
-        · intro r hr; congr 1; grind
-        · simp
-        · grind
-        · grind
-      _ = ∑ T ∈ S.powerset with #T = #S - (k + 1), ∑ i ∈ S \ T, ∏ a ∈ T, (X - C a) := by
+      _ = ∑ (T ∈ S.powersetCard (#S - (k + 1))) (i ∈ S) with i ∉ T, ∏ a ∈ T, (X - C a) := by
+        apply sum_bij' (fun ⟨T, i⟩ _ => ⟨T.erase i, i⟩) (fun ⟨T, i⟩ _ => ⟨insert i T, i⟩)
+        · intro r hr; dsimp at hr ⊢; congr 1; grind
+        · intro r hr; dsimp at hr ⊢; congr 1; grind
+        all_goals grind
+      _ = ∑ T ∈ S.powersetCard (#S - (k + 1)), ∑ i ∈ S \ T, ∏ a ∈ T, (X - C a) := by
         rw [← sum_finset_product']
         grind
-      _ = (k + 1) * ∑ T ∈ S.powerset with #T = #S - (k + 1), ∏ a ∈ T, (X - C a) := by
+      _ = (k + 1) * ∑ T ∈ S.powersetCard (#S - (k + 1)), ∏ a ∈ T, (X - C a) := by
         rw [mul_sum]
         congr! 1 with T hT
-        have : #(S \ T) = k + 1 := by grind
-        simp [sum_const, this]
+        simp [sum_const, show #(S \ T) = k + 1 by grind]
       _ = _ := by grind
 
 end CommRing
