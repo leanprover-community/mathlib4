@@ -1380,5 +1380,3 @@ end TStructure
 end Triangulated
 
 end CategoryTheory
-
-set_option linter.style.longFile 1700
