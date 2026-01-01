@@ -23,6 +23,7 @@ and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
   * `Commute.isNilpotent_mul_left`
   * `Commute.isNilpotent_mul_right`
   * `nilpotencyClass`
+  * `IsUnipotent`
 
 -/
 
@@ -255,3 +256,13 @@ theorem isNilpotent_mul_left (h_comm : Commute x y) (h : IsNilpotent y) : IsNilp
 end Semiring
 
 end Commute
+
+-- An element is said to be unipotent if one less than it is a nilpotent element.
+def IsUnipotent [Zero R] [Pow R ℕ] [One R] [Sub R] (r : R) := IsNilpotent (r - 1)
+
+theorem IsUnipotent.one [Ring R] : IsUnipotent (1 : R) := by
+  rw [IsUnipotent, sub_self]
+  exact IsNilpotent.zero
+
+lemma add_one_isUnipotent_iff_isNilpotent [Ring R] (r : R) :
+    IsUnipotent (r + 1) ↔ IsNilpotent r := by rw [IsUnipotent, add_sub_cancel_right]

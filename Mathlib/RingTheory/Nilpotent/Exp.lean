@@ -199,6 +199,18 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
     exp (g • a) = g • exp a :=
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
 
+theorem exp_isUnipotent {a : A} (ha : IsNilpotent a) : IsUnipotent (exp a) := by
+  cases subsingleton_or_nontrivial A; · exact isNilpotent_of_subsingleton
+  rw [exp, ← Nat.sub_add_cancel (pos_nilpotencyClass_iff.mpr ha), Finset.sum_range_succ',
+    Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul,
+    add_one_isUnipotent_iff_isNilpotent]
+  exact Commute.isNilpotent_sum (by intros; apply smul; exact pow_of_pos ha (by positivity)) (by
+    intros
+    have h (n : ℕ) : (n.factorial : ℚ)⁻¹ ≠ 0 := by norm_num; exact Nat.factorial_ne_zero n
+    simp only [Commute.refl, Commute.smul_left_iff₀ (h _), Commute.smul_right_iff₀ (h _),
+      Commute.pow_left, Commute.pow_right]
+  )
+
 end IsNilpotent
 
 namespace Module.End
