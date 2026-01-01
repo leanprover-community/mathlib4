@@ -460,7 +460,7 @@ theorem iterate_derivative_interpolate
     (hvs : Set.InjOn v s) {k : ℕ} (hk : k ≤ #s - 1) :
     derivative^[k] (interpolate s v r) = k.factorial *
       ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) *
-      ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (X - C (v a)) := by
   classical
   simp_rw [interpolate_eq_sum, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
@@ -471,35 +471,31 @@ theorem iterate_derivative_interpolate
     derivative^[k] (∏ j ∈ s.erase i, (X - C (v j))) =
     derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by
       rw [Finset.prod_image hvs']
-    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powerset with #t = #s - (k + 1),
+    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
       ∏ va ∈ t, (X - C va) := by
       have hcard : #((s.erase i).image v) = #s - 1 := by
         rw [card_image_of_injOn hvs', card_erase_of_mem hi]
-      have : k ≤ #((s.erase i).image v) := by rwa [hcard]
-      rw [iterate_derivative_prod_X_sub_C this]
-      congr! 5
+      rw [iterate_derivative_prod_X_sub_C (by rwa [hcard])]
+      congr! 3
       omega
-    _ = k.factorial * ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+    _ = k.factorial * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (X - C (v a)) := by
-      rw [powerset_image, sum_nbij (fun (t : Finset ι) => t.image v)]
+      rw [powersetCard_eq_filter, powersetCard_eq_filter, powerset_image,
+        sum_nbij (fun (t : Finset ι) => t.image v)]
       case hi =>
         intro a ha
         rw [mem_filter, mem_powerset] at ha
         rw [mem_filter, mem_image]
-        constructor
-        · use a; simp [ha.1]
-        · rw [card_image_of_injOn (hvs'.mono (coe_subset.mpr ha.1))]
-          exact ha.2
-      case i_inj =>
-        refine (image_injOn_powerset_of_injOn hvs').mono (coe_subset.mpr ?_)
-        simp
+        refine ⟨⟨a, by simp [ha.1]⟩, ?_⟩
+        rw [card_image_of_injOn (hvs'.mono (coe_subset.mpr ha.1))]
+        exact ha.2
+      case i_inj => exact (image_injOn_powerset_of_injOn hvs').mono (coe_subset.mpr (by simp))
       case i_surj =>
         intro t ht
         rw [mem_coe, mem_filter, mem_image] at ht
         obtain ⟨a, ha⟩ := ht.1
         simp_rw [Set.mem_image, mem_coe, mem_filter]
-        use a
-        refine ⟨⟨ha.1, ?_⟩, ha.2⟩
+        refine ⟨a, ⟨⟨ha.1, ?_⟩, ha.2⟩⟩
         rw [← ht.2, ← ha.2, card_image_of_injOn (hvs'.mono (coe_subset.mpr (mem_powerset.mp ha.1)))]
       case h =>
         intro a ha
