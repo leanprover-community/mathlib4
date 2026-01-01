@@ -506,7 +506,7 @@ theorem eval_iterate_derivative_eq_sum
     {k : ℕ} (hk : k ≤ P.degree) (x : F) :
     (derivative^[k] P).eval x = k.factorial *
       ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, ((v i) - (v j))) *
-      ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (x - v a) := by
   lift P.degree to ℕ using (by contrapose! hP; rw [hP]; simp) with deg hdeg
   rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
