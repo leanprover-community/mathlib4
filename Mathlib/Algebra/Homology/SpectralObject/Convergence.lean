@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
-import Mathlib.Algebra.Homology.SpectralObject.Images
+module
+
+public import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
+public import Mathlib.Algebra.Homology.SpectralObject.Images
 
 /-!
 # Convergence
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -91,8 +95,8 @@ lemma abutmentFiltrationMap_ι (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
 @[simps]
 noncomputable def abutmentFiltrationFunctor (n : ℤ) :
     ι ⥤ MonoOver (X.abutment n) where
-  obj j := MonoOver.mk' (X.abutmentFiltrationι n j)
-  map {j₁ j₂} h := Over.homMk (X.abutmentFiltrationMap n j₁ j₂ (leOfHom h)) (by simp)
+  obj j := MonoOver.mk (X.abutmentFiltrationι n j)
+  map {j₁ j₂} h := MonoOver.homMk (X.abutmentFiltrationMap n j₁ j₂ (leOfHom h)) (by simp)
 
 instance (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
     Mono (X.abutmentFiltrationMap n j₁ j₂ h) :=
@@ -185,22 +189,22 @@ def mapWithBot (_ : data.CompatibleWithConvergenceStripes s) (n : σ) : WithBot 
 
 omit [OrderTop ι] in
 @[simp]
-lemma mapWithBot_none (n : σ):
+lemma mapWithBot_none (n : σ) :
     hdata.mapWithBot n none = ⊥ := rfl
 
 omit [OrderTop ι] in
 @[simp]
-lemma mapWithBot_bot (n : σ):
+lemma mapWithBot_bot (n : σ) :
     hdata.mapWithBot n ⊥ = ⊥ := rfl
 
 omit [OrderTop ι] in
 @[simp]
-lemma mapWithBot_some (n : σ) (i : α n):
+lemma mapWithBot_some (n : σ) (i : α n) :
     hdata.mapWithBot n (some i) = data.i₂ (s.position n i) := rfl
 
 omit [OrderTop ι] in
 @[simp]
-lemma mapWithBot_some' (n : σ) (i : α n):
+lemma mapWithBot_some' (n : σ) (i : α n) :
     hdata.mapWithBot n (WithBot.some i) = data.i₂ (s.position n i) := rfl
 
 omit [OrderTop ι] in
@@ -292,7 +296,7 @@ def mkDataE₂HomologicalNatCompatibility :
   deg n := -n
   deg_stripe pq := by
     dsimp
-    simp only [Nat.cast_add, neg_add_rev]
+    simp only [neg_add_rev]
     linarith
   i₂_monotone := by
     rintro n ⟨i, hi⟩ ⟨j, hj⟩ h
@@ -633,8 +637,7 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
       dsimp at hpq hij h ⊢
       obtain _|j := j
       · simp at hij
-      · simp at hij
-        obtain rfl : j = i := by
+      · obtain rfl : j = i := by
           change some _ = _ at hij
           simpa using hij
         rw [← hpq]

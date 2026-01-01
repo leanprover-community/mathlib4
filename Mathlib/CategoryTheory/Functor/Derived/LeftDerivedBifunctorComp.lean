@@ -3,14 +3,20 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
 
 /-!
 # Composition of left derived bifunctor
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
+
+open Functor
 
 variable {C₁ C₂ C₃ C₁₂ C₂₃ C D₁ D₂ D₃ D₁₂ D₂₃ D : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃] [Category C]

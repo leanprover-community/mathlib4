@@ -3,20 +3,24 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
-import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
-import Mathlib.Algebra.Homology.PreservesQuasiIso
-import Mathlib.Algebra.Homology.ObjectProperty
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.ObjectProperty.ColimitOfShape
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
+module
+
+public import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
+public import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
+public import Mathlib.Algebra.Homology.PreservesQuasiIso
+public import Mathlib.Algebra.Homology.ObjectProperty
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
 /-!
 # Resolutions of unbounded complexes
 
 -/
 
-open CategoryTheory Limits
+@[expose] public section
+
+open CategoryTheory Limits Functor
 
 namespace CochainComplex
 
@@ -27,22 +31,17 @@ variable {A : Type*} [Category A] [Abelian A]
 noncomputable def leftResolution : CochainComplex A ℤ ⥤ CochainComplex A ℤ :=
   filtrationLEMinusFunctor A ⋙ (whiskeringRight _ _ _).obj L ⋙ colim
 
-@[simps!]
-noncomputable def colimitOfShapeLeftResolutionObj (K : CochainComplex A ℤ) :
-    ColimitOfShape ℤ ((leftResolution L).obj K) :=
-  ColimitOfShape.colimit _
-
 noncomputable def objectPropertyColimitOfShapeLeftResolutionObj
     (P : ObjectProperty (CochainComplex A ℤ)) (hP : L.essImage ≤ P)
     (K : CochainComplex A ℤ) :
     P.ColimitOfShape ℤ ((leftResolution L).obj K) where
-  toColimitOfShape := colimitOfShapeLeftResolutionObj L K
-  hF _ := hP _ (L.obj_mem_essImage _)
+  toColimitPresentation := .colimit _
+  prop_diag_obj _ := hP _ (L.obj_mem_essImage _)
 
 lemma objectPropertyColimitOfShape_leftResolution_obj
     (P : ObjectProperty (CochainComplex A ℤ)) (hP : L.essImage ≤ P)
     (K : CochainComplex A ℤ) :
-    P.colimitOfShape ℤ ((leftResolution L).obj K) :=
+    P.colimitsOfShape ℤ ((leftResolution L).obj K) :=
   ⟨objectPropertyColimitOfShapeLeftResolutionObj L P hP K⟩
 
 variable {L} (α : L ⟶ Minus.ι _)

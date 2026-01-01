@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralSequence.Convergence
-import Mathlib.Algebra.Homology.ConnectShortExact
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.Homology.SpectralSequence.Convergence
+public import Mathlib.Algebra.Homology.ConnectShortExact
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The low degree exact sequence of a spectral sequence
 
 -/
+
+@[expose] public section
 
 namespace HomologicalComplex
 
@@ -134,7 +138,7 @@ instance : Epi (πE₃ZeroOne hE) := by
 
 lemma ιE₂OneZero_πE₃ZeroOne : ιE₂OneZero hE ≫ πE₃ZeroOne hE = 0 := by
   dsimp [ιE₂OneZero, πE₃ZeroOne]
-  simp
+  simp only [assoc, Preadditive.IsIso.comp_left_eq_zero]
   rw [(hE 1).pageInfinityι_π_eq_zero_assoc 0 1 (by apply @zero_lt_one ℕ), zero_comp]
 
 lemma ιE₂OneZero_πE₃ZeroOne_exact :

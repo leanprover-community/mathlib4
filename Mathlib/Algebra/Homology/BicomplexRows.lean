@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.BicomplexColumns
+module
+
+public import Mathlib.Algebra.Homology.BicomplexColumns
 
 /-!
 # Rows
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits ComplexShape Category
 
@@ -75,7 +79,7 @@ end
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
 
 @[simp]
-noncomputable def cofanSingleRowObjTotal (K : CochainComplex C ℤ) (x y n : ℤ) (h : x + y = n):
+noncomputable def cofanSingleRowObjTotal (K : CochainComplex C ℤ) (x y n : ℤ) (h : x + y = n) :
   GradedObject.CofanMapObjFun (((singleRow C (up ℤ) (up ℤ) y).obj K).toGradedObject)
     (π (up ℤ) (up ℤ) (up ℤ)) n :=
   cofanOfIsZeroButOne  _ ⟨⟨x, y⟩, h⟩ (by
@@ -119,7 +123,10 @@ noncomputable def singleRowObjTotal (L : CochainComplex C ℤ) (y y' : ℤ) (h :
     (fun n => (Int.negOnePow (n • y) • singleRowObjTotalXIso L _ _ _ (by dsimp; omega)).symm) (by
       intro x x' h'
       dsimp at h' ⊢
-      simp [singleRowObjTotalXIso_inv, total_d]
+      simp only [Int.units_inv_eq_self, singleRowObjTotalXIso_inv,
+        Functor.mapHomologicalComplex_obj_X, total_d, Preadditive.comp_add, Linear.units_smul_comp,
+        Category.assoc, ι_D₁, ι_D₂, singleRow_d₂, comp_zero, smul_zero, add_zero,
+        Linear.comp_units_smul]
       rw [singleRow_d₁ _ _ _ _ _ _ _ (x' + y') (by dsimp; omega) _ (by dsimp; omega)]
       dsimp
       obtain rfl : y = -y' := by omega

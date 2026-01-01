@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
-import Mathlib.CategoryTheory.Shift.Localization
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+public import Mathlib.CategoryTheory.Shift.Localization
 
 /-!
 # The right derived functor commutes with the shift
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -79,9 +83,9 @@ instance :
 variable (A)
 
 noncomputable def commShift : RF.CommShift A where
-  iso a := rightDerivedNatIso _ _ (precomposeShiftNatTrans RF α a)
+  commShiftIso a := rightDerivedNatIso _ _ (precomposeShiftNatTrans RF α a)
     (postcomposeShiftNatTrans RF α a) W (F.commShiftIso a)
-  zero := by
+  commShiftIso_zero := by
     ext1
     apply rightDerived_ext _ (precomposeShiftNatTrans RF α 0) W
     ext X
@@ -97,7 +101,7 @@ noncomputable def commShift : RF.CommShift A where
     rw [RF.map_id, id_comp]
     erw [← NatTrans.naturality]
     dsimp
-  add a b := by
+  commShiftIso_add a b := by
     ext1
     apply rightDerived_ext _ (precomposeShiftNatTrans RF α (a + b)) W
     ext X
@@ -107,13 +111,11 @@ noncomputable def commShift : RF.CommShift A where
     rw [precomposeShiftNatTrans_app, CommShift.isoAdd_hom_app, rightDerivedNatIso_hom,
       rightDerivedNatIso_hom, assoc]
     dsimp
-
     have ha := (shiftFunctor D b).congr_map
       (rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α a)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom X)
     rw [precomposeShiftNatTrans_app, postcomposeShiftNatTrans_app,
       Functor.map_comp, Functor.map_comp, Functor.map_comp, assoc] at ha
-
     have hb := rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α b)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom (X⟦a⟧)
         =≫ (RF.map ((L.commShiftIso a).hom.app X))⟦b⟧'
@@ -121,7 +123,6 @@ noncomputable def commShift : RF.CommShift A where
     erw [← NatTrans.naturality] at hb
     rw [precomposeShiftNatTrans_app] at hb
     dsimp at ha hb
-
     rw [L.commShiftIso_add a b, CommShift.isoAdd_hom_app, map_comp, assoc,
       ← RF.map_comp_assoc, ← RF.map_comp_assoc, assoc, assoc, assoc, Iso.inv_hom_id_app]
     dsimp
@@ -133,7 +134,7 @@ noncomputable def commShift : RF.CommShift A where
     rfl
 
 @[reassoc (attr := simp)]
-lemma comp_commShiftIso_hom (a : A) (X : C):
+lemma comp_commShiftIso_hom (a : A) (X : C) :
     letI := commShift RF α W A
     α.app (X⟦a⟧) ≫ RF.map ((L.commShiftIso a).hom.app X) ≫ (RF.commShiftIso a).hom.app (L.obj X) =
       (F.commShiftIso a).hom.app X ≫ ((shiftFunctor D a).map (α.app X)) := by

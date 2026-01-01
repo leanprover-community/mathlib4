@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Convergence of spectral sequences
 
 -/
+
+@[expose] public section
 
 universe w₁ w₂ w₃ v u
 

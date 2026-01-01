@@ -3,15 +3,21 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Functor.Quadrifunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 
 /-!
 # The pentagon identity as an equality of natural transformations
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
+
+open Functor
 
 variable {C : Type*} [Category C]
 

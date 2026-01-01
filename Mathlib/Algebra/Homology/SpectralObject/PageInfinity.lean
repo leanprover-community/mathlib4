@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
-import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
+module
+
+public import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
+public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 
 /-!
 # The infinity page
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -295,7 +299,7 @@ lemma spectralSequence_edgeMonoStep_compatibility
       pq _ rfl rfl H.left)
   congr 1
   dsimp [SpectralSequence.edgeMonoStep]
-  simp
+  simp only [homOfLE_leOfHom, Iso.hom_inv_id_assoc]
   obtain rfl : n₀ = n₁ - 1 := by linarith
   subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
   rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
@@ -333,7 +337,7 @@ lemma spectralSequence_edgeEpiStep_compatibility
   congr 1
   simp only [← assoc]
   congr 1
-  simp
+  simp only [homOfLE_leOfHom, assoc]
   obtain rfl : n₀ = n₁ - 1 := by linarith
   subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
   rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
@@ -379,14 +383,16 @@ lemma spectralSequence_edgeMonoSteps_compatibility
         i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv := by
   obtain ⟨k, hk⟩ := Int.le.dest hrr'
   revert r r' i₀' i₀ i₁ i₂ i₃ i₃'
-  induction' k with k hk
-  · intro r r' hrr'  _ _ _ i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' h
+  induction k with
+  | zero =>
+    intro r r' hrr'  _ _ _ i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' h
     obtain rfl : r' = r := by simpa using h.symm
     obtain rfl : i₀' = i₀ := by rw [hi₀, hi₀']
     obtain rfl : i₃' = i₃ := by rw [hi₃, hi₃']
     simp only [SpectralSequence.edgeMonoSteps_eq_id, comp_id]
     rfl
-  · intro r r'' hrr'' _ _ _ i₀'' i₀ i₁ i₂ i₃ i₃'' hi₀'' hi₀ hi₁ hi₂ hi₃ hi₃'' h
+  | succ k hk =>
+    intro r r'' hrr'' _ _ _ i₀'' i₀ i₁ i₂ i₃ i₃'' hi₀'' hi₀ hi₁ hi₂ hi₃ hi₃'' h
     simp only [Nat.cast_succ] at h
     rw [← (X.spectralSequence data).edgeMonoSteps_comp pq r (r + k) r''
         (by linarith) (by linarith),
@@ -425,14 +431,16 @@ lemma spectralSequence_edgeEpiSteps_compatibility
           (X.monotone_i₃ data r r' hrr' pq hi₃ hi₃') := by
   obtain ⟨k, hk⟩ := Int.le.dest hrr'
   revert r r' i₀' i₀ i₁ i₂ i₃ i₃'
-  induction' k with k hk
-  · intro r r' hrr'  _ _ _ i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' h
+  induction k with
+  | zero =>
+    intro r r' hrr'  _ _ _ i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' h
     obtain rfl : r' = r := by simpa using h.symm
     obtain rfl : i₀' = i₀ := by rw [hi₀, hi₀']
     obtain rfl : i₃' = i₃ := by rw [hi₃, hi₃']
     simp only [SpectralSequence.edgeEpiSteps_eq_id, id_comp]
     rfl
-  · intro r r'' hrr'' _ _ _ i₀'' i₀ i₁ i₂ i₃ i₃'' hi₀'' hi₀ hi₁ hi₂ hi₃ hi₃'' h
+  | succ k hk =>
+    intro r r'' hrr'' _ _ _ i₀'' i₀ i₁ i₂ i₃ i₃'' hi₀'' hi₀ hi₁ hi₂ hi₃ hi₃'' h
     simp only [Nat.cast_succ] at h
     rw [← (X.spectralSequence data).edgeEpiSteps_comp pq r (r + k) r''
       (by linarith) (by linarith),
@@ -598,14 +606,14 @@ instance (pq : ℕ × ℕ) : Y.StationaryAt mkDataE₂CohomologicalNat pq where
       apply isZero₁_of_isFirstQuadrant
       refine hj.trans ?_
       dsimp
-      simp only [Nat.cast_add, Nat.cast_ofNat, ℤt.mk_le_mk_iff]
+      simp only [ℤt.mk_le_mk_iff]
       linarith⟩
   exists_isZero₃ :=
     ⟨pq.1 + 1, fun i j hij hi => by
       apply isZero₂_of_isFirstQuadrant
       refine lt_of_lt_of_le ?_ hi
       dsimp
-      simp only [Nat.cast_add, Nat.cast_one, ℤt.mk_lt_mk_iff]
+      simp only [ℤt.mk_lt_mk_iff]
       linarith⟩
 
 instance (pq : ℤ × ℤ) : Y.StationaryAt mkDataE₂Cohomological pq where

@@ -3,20 +3,24 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Monoidal.Pentagon
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedBifunctorComp
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTrifunctorComp
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Pentagon
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedBifunctorComp
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTrifunctorComp
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # The derived monoidal category structure
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open MonoidalCategory
+open MonoidalCategory Functor
 
 variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]

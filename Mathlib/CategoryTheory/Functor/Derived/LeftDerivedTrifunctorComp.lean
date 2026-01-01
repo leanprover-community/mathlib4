@@ -3,14 +3,20 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
-import Mathlib.CategoryTheory.Functor.Quadrifunctor
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
+public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 
 /-!
 # Composition with a left derived trifunctor
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
+
+open Functor
 
 variable {C₁ C₂ C₃ C₄ C₂₃₄ C D₁ D₂ D₃ D₄ D₂₃₄ D : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₂₃₄] [Category C]
@@ -21,7 +27,6 @@ variable {C₁ C₂ C₃ C₄ C₂₃₄ C D₁ D₂ D₃ D₄ D₂₃₄ D : Ty
   (α : ((((whiskeringLeft₃ D₂₃₄).obj L₂).obj L₃).obj L₄).obj LG₂₃₄ ⟶ G₂₃₄ ⋙
     Functor.postcompose₂.obj L₂₃₄)
   (β : (((whiskeringLeft₂ D).obj L₁).obj L₂₃₄).obj LF ⟶ F ⋙ (whiskeringRight _ _ _).obj L)
-
 
 set_option maxHeartbeats 3200000 in
 -- this is slow

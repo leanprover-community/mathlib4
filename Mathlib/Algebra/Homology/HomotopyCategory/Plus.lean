@@ -3,17 +3,21 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
+public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 
 /-!
 # The triangulated subcategory K^+
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
 
@@ -137,11 +141,15 @@ instance : (F.mapHomotopyCategoryPlus).IsTriangulated := by
   infer_instance
 
 noncomputable instance [Full F] [Faithful F] : Full F.mapHomotopyCategoryPlus where
-  map_surjective f := ⟨(F.mapHomotopyCategory _).preimage f,
-    (F.mapHomotopyCategory _).map_preimage f⟩
+  map_surjective f :=
+    ⟨ObjectProperty.homMk ((F.mapHomotopyCategory _).preimage f.hom), by
+      ext : 1
+      exact (F.mapHomotopyCategory _).map_preimage f.hom⟩
 
 noncomputable instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
-  map_injective h := (F.mapHomotopyCategory _).map_injective h
+  map_injective h := by
+    ext : 1
+    exact (F.mapHomotopyCategory _).map_injective ((ObjectProperty.ι _).congr_map h)
 
 def mapHomotopyCategoryPlusCompIso {E : Type*} [Category E] [Preadditive E] [HasZeroObject E]
     [HasBinaryBiproducts E]

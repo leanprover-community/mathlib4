@@ -3,15 +3,19 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.LeftResolutions.Basic
-import Mathlib.Algebra.Homology.BicomplexRows
-import Mathlib.Algebra.Homology.CochainComplexMinus
-import Mathlib.Algebra.Homology.TotalComplexMap
+module
+
+public import Mathlib.Algebra.Homology.LeftResolutions.Basic
+public import Mathlib.Algebra.Homology.BicomplexRows
+public import Mathlib.Algebra.Homology.CochainComplexMinus
+public import Mathlib.Algebra.Homology.TotalComplexMap
 
 /-!
 # Resolutions of bounded above complexes
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -61,7 +65,7 @@ instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i] :
   dsimp [bicomplexFunctor, Functor.mapHomologicalComplex₂]
   infer_instance
 
-instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i]:
+instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i] :
     IsStrictlyLE ((bicomplexFunctor Λ ⋙
       Functor.mapHomologicalComplex₂ ι (ComplexShape.up ℤ) (ComplexShape.up ℤ)).obj K) i := by
   dsimp
@@ -115,7 +119,7 @@ instance (K : CochainComplex C ℤ) :
     exact h rfl)
 
 instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i]
-    [(Λ.bicomplexFunctor.obj K).HasTotal (ComplexShape.up ℤ)]:
+    [(Λ.bicomplexFunctor.obj K).HasTotal (ComplexShape.up ℤ)] :
     CochainComplex.IsStrictlyLE ((Λ.bicomplexFunctor.obj K).total (ComplexShape.up ℤ)) i where
   isZero n hn := by
     rw [IsZero.iff_id_eq_zero]
@@ -125,7 +129,7 @@ instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i]
     by_cases hi₂ : 0 < i₂
     · exact CochainComplex.isZero_of_isStrictlyLE _ 0 _ hi₂
     · have : IsZero (((Λ.bicomplexFunctor).obj K).X i₁) := by
-        apply CochainComplex.isZero_of_isStrictlyLE _ i
+        refine CochainComplex.isZero_of_isStrictlyLE _ i _ ?_
         by_contra!
         obtain ⟨k, hk⟩ := Int.le.dest (show n ≤ i by omega)
         exact hn k (by omega)
@@ -153,17 +157,17 @@ variable {K L} in
 lemma totalπ'_naturality :
     (HomologicalComplex₂.total.map
       ((ι.mapHomologicalComplex₂ (ComplexShape.up ℤ) (ComplexShape.up ℤ)).map
-        (Λ.bicomplexFunctor.map φ)) (ComplexShape.up ℤ)) ≫ Λ.totalπ' L =
+        (Λ.bicomplexFunctor.map φ.hom)) (ComplexShape.up ℤ)) ≫ Λ.totalπ' L =
       Λ.totalπ' K ≫ HomologicalComplex₂.total.map
         ((HomologicalComplex₂.singleRow A (ComplexShape.up ℤ)
-          (ComplexShape.up ℤ) 0).map φ) (ComplexShape.up ℤ) := by
+          (ComplexShape.up ℤ) 0).map φ.hom) (ComplexShape.up ℤ) := by
   dsimp [totalπ']
   simp only [← HomologicalComplex₂.total.map_comp]
   congr 1
   ext x y
   by_cases hy : y = 0
   · subst hy
-    have eq := Λ.π.naturality (φ.f x)
+    have eq := Λ.π.naturality (φ.hom.f x)
     dsimp at eq
     dsimp [cochainComplexπ, bicomplexFunctor, cochainComplexFunctor]
     simp only [HomologicalComplex.mkHomToSingle_f, Functor.mapHomologicalComplex_obj_X, assoc,
@@ -206,7 +210,8 @@ noncomputable def minusResolutionFunctor : CochainComplex.Minus A ⥤ CochainCom
   obj K := ⟨((Λ.bicomplexFunctor.obj K.obj).total (ComplexShape.up ℤ)), by
     obtain ⟨i, hi⟩ := K.2
     exact ⟨i, inferInstance⟩⟩
-  map {K L} φ := HomologicalComplex₂.total.map (Λ.bicomplexFunctor.map φ) (ComplexShape.up ℤ)
+  map {K L} φ := ObjectProperty.homMk
+    (HomologicalComplex₂.total.map (Λ.bicomplexFunctor.map φ.hom) (ComplexShape.up ℤ))
   map_id K := by
     erw [Λ.bicomplexFunctor.map_id, HomologicalComplex₂.total.map_id]
     rfl
@@ -216,8 +221,9 @@ noncomputable def minusResolutionFunctor : CochainComplex.Minus A ⥤ CochainCom
 
 noncomputable def minusResolutionNatTrans :
     Λ.minusResolutionFunctor ⋙ ι.mapCochainComplexMinus ⟶ 𝟭 _ where
-  app _ := Λ.totalπ _
+  app _ := ObjectProperty.homMk (Λ.totalπ _)
   naturality {K L} f := by
+    ext : 1
     dsimp [minusResolutionFunctor, totalπ]
     erw [HomologicalComplex₂.mapTotalIso_inv_naturality_assoc]
     rw [totalπ'_naturality_assoc]
@@ -234,7 +240,7 @@ instance (K : CochainComplex.Minus A) :
 
 
 instance (K : Minus A) :
-    QuasiIso ((whiskerRight Λ.minusResolutionNatTrans (Minus.ι A)).app K) := by
+    QuasiIso ((Functor.whiskerRight Λ.minusResolutionNatTrans (Minus.ι A)).app K) := by
   dsimp; infer_instance
 
 lemma quasiIso_minusResolutionFunctor_map {K L : CochainComplex.Minus A} (f : K ⟶ L)

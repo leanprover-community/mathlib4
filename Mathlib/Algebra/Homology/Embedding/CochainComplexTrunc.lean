@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
-import Mathlib.Algebra.Homology.CochainComplexMinus
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+module
+
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.CochainComplexMinus
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 /-!
 # Filtration of a cochain complex
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits Functor
 
