@@ -45,6 +45,11 @@ theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass �
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
 
+@[to_additive (attr := simp) enorm_map]
+theorem enorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+    ‖f x‖ₑ = ‖x‖ₑ := by
+  simp [enorm]
+
 @[to_additive (attr := simp) IsometryClass.isComplete_image_iff]
 theorem IsometryClass.isComplete_image_iff' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F]
     (f : 𝓕) {s : Set E} :
