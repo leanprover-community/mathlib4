@@ -328,8 +328,6 @@ end Fourier
 
 section FourierMultiplier
 
-section multiplier
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace ℝ E] [NormedSpace ℂ F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
@@ -360,8 +358,6 @@ theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → ℂ}
     fourierMultiplierCLM F g₂ (fourierMultiplierCLM F g₁ f) =
     fourierMultiplierCLM F (g₁ * g₂) f := by
   simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
-
-end multiplier
 
 end FourierMultiplier
 

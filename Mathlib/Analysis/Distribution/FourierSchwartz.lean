@@ -301,7 +301,7 @@ theorem fourierSMulRightCLM_apply_apply (f : 𝓢(V, E)) (x : V) :
     fourierSMulRightCLM L f x = -(2 * π * Complex.I) • (L x).smulRight (f x) := rfl
 
 theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
-    fderivCLM 𝕜 (𝓕 f) = 𝓕 (fourierSMulRightCLM (innerSL ℝ) f) := by
+    fderivCLM 𝕜 V E (𝓕 f) = 𝓕 (fourierSMulRightCLM (innerSL ℝ) f) := by
   ext1 x
   calc
     _ = fderiv ℝ (𝓕 (f : V → E)) x := by simp [fourier_coe]
@@ -314,7 +314,7 @@ open LineDeriv
 
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := calc
-  _ = SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ (𝓕 f)) := rfl
+  _ = SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E (𝓕 f)) := rfl
   _ = SchwartzMap.evalCLM ℝ V E m (𝓕 (fourierSMulRightCLM (innerSL ℝ) f)) := by
     rw [fderivCLM_fourier_eq]
   _ = 𝓕 (SchwartzMap.evalCLM ℝ V E m (fourierSMulRightCLM (innerSL ℝ) f)) := by
