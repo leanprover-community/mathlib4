@@ -45,7 +45,7 @@ def eqToHom {C : Type u₁} [CategoryStruct.{v₁} C] {X Y : C} (p : X = Y) :
   rw [p]
   exact 𝟙 _
 
-@[simp]
+@[simp, grind =]
 theorem eqToHom_refl {C : Type u₁} [CategoryStruct.{v₁} C] (X : C) (p : X = X) :
     eqToHom p = 𝟙 X :=
   rfl
