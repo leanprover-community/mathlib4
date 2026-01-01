@@ -59,11 +59,6 @@ lemma supNorm_def' : p.supNorm =
     rw [this]
   · simp [supNorm, gaussNorm, h]
 
-lemma exists_eq_supNorm : ∃ i : ℕ, p.supNorm = ‖p.coeff i‖ := by
-  obtain ⟨i, hi⟩ := p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1
-  use i
-  simpa using hi
-
 @[simp]
 lemma supNorm_zero : (0 : A[X]).supNorm = 0 := gaussNorm_zero _ _
 
@@ -89,6 +84,26 @@ lemma supNorm_X [NormOneClass A] : (X : A[X]).supNorm = 1 := by
 lemma le_supNorm (i : ℕ) : ‖p.coeff i‖ ≤ p.supNorm := by
   have := le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by norm_num : (0 : ℝ) ≤ 1) i
   simpa using this
+
+lemma exists_eq_supNorm : ∃ i : ℕ, p.supNorm = ‖p.coeff i‖ := by
+  obtain ⟨i, hi⟩ := p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1
+  use i
+  simpa using hi
+
+/-- The supNorm can also be defined with an iSup. Note that this uses the fact that `norm` is both
+a `ZeroHom` and `NonnegHom` so is not _a priori_ true from the `gaussNorm` definition. -/
+lemma supNorm_eq_iSup : p.supNorm = ⨆ i, ‖p.coeff i‖ := by
+  apply le_antisymm
+  · obtain ⟨i, hi⟩ := exists_eq_supNorm p
+    calc p.supNorm
+      _ = ‖p.coeff i‖ := hi
+      _ ≤ ⨆ j, ‖p.coeff j‖ := le_ciSup ⟨p.supNorm, by
+          intro x hx
+          obtain ⟨j, rfl⟩ := hx
+          exact le_supNorm p j⟩ i
+  · apply ciSup_le
+    intro i
+    exact le_supNorm p i
 
 end Polynomial
 end supnorm_seminorm
