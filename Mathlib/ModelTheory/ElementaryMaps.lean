@@ -194,6 +194,20 @@ theorem comp_assoc (f : M ↪ₑ[L] N) (g : N ↪ₑ[L] P) (h : P ↪ₑ[L] Q) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 
+def liftWithConstants (f : M ↪ₑ[L] N) (A : Set M) :
+    @ElementaryEmbedding (L[[A]]) M N _ (f.toEmbedding.withConstantsStructure A) := by
+  letI : L[[A]].Structure N := f.toEmbedding.withConstantsStructure A
+  refine ⟨f,?_⟩
+  intro n φ x
+  simp only [Formula.Realize,
+← BoundedFormula.realize_constantsVarsEquiv]
+  have h: @Sum.elim (↑A) (Fin n) N (fun a ↦ ↑(L.con a)) (⇑f ∘ x) =
+    f ∘ @Sum.elim (↑A) (Fin n) M (fun a ↦ ↑(L.con a)) x := by
+    rw [Sum.comp_elim]
+    congr 1
+  have h': (default : Fin 0 → N) = f ∘ (default : Fin 0 → M) := List.ofFn_inj.mp rfl
+  simp only [h, coe_con, h', map_boundedFormula]
+
 end ElementaryEmbedding
 
 variable (L) (M)

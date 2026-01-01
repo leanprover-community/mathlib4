@@ -499,6 +499,35 @@ instance map_constants_inclusion_isExpansionOn :
     (L.lhomWithConstantsMap (Set.inclusion h)).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ _
 
+variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
+
+def Embedding.withConstantsStructure : L[[A]].Structure N :=
+  letI : (constantsOn A).Structure N := constantsOn.structure fun a => f a
+  L.withConstantsStructure A
+
+def Embedding.liftWithConstants :
+    @Embedding (L[[A]]) M N _ (f.withConstantsStructure A) := by
+  letI : L[[A]].Structure N := f.withConstantsStructure A
+  refine ⟨f.toEmbedding,?_,?_⟩
+  · intro n g x
+    cases g with
+    | inl g =>
+      simp only [withConstants_funMap_sumInl]
+      exact f.map_fun' g x
+    | inr c =>
+      cases n with
+      | succ n => exact isEmptyElim c
+      | zero =>
+        simp only [withConstants_funMap_sumInr, constantMap]
+        rfl
+  · intro n R x
+    cases R with
+    | inl R =>
+      simp only [withConstants_relMap_sumInl]
+      exact f.map_rel' R x
+    | inr r =>
+      exact isEmptyElim r
+
 end WithConstants
 
 end Language
