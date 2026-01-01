@@ -169,7 +169,7 @@ theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E}
       norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
     _ = 0 := by rw [gronwallBound_ε0_δ0]
 
-/-- Let `f : [a, b] → E` be a differentiable function such that `f a = 0`
+/-- Let `f : [a, b] → E` be a differentiable function such that `f b = 0`
 and `‖f'(x)‖ ≤ K ‖f(x)‖` for some constant `K`. Then `f = 0` on `[a, b]`. -/
 theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_left {f f' : ℝ → E} {K a b : ℝ}
     (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ioc a b, HasDerivWithinAt f (f' x) (Iic x) x)
