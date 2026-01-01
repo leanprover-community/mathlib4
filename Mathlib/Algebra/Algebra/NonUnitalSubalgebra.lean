@@ -725,21 +725,17 @@ theorem top_toSubring {R A : Type*} [CommRing R] [NonUnitalNonAssocRing A] [Modu
     (⊤ : NonUnitalSubalgebra R A).toNonUnitalSubring = ⊤ :=
   rfl
 
-@[simp]
-lemma toAddSubmonoid_eq_top {S : NonUnitalSubalgebra R A} : S.toAddSubmonoid = ⊤ ↔ S = ⊤ := by
-  simp [← SetLike.coe_set_eq]
+@[simp] lemma toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
+    S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ := by simp [← SetLike.coe_set_eq]
 
 lemma toSubmodule_eq_top {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊤ ↔ S = ⊤ := by simp
 
 @[simp]
-theorem toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
-    S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ :=
-  NonUnitalSubalgebra.toNonUnitalSubsemiring_injective.eq_iff' top_toNonUnitalSubsemiring
-
-@[simp]
-theorem to_subring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+theorem toSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
     {S : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = ⊤ ↔ S = ⊤ :=
   NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_toSubring
+
+@[deprecated (since := "2026-01-01")] alias to_subring_eq_top := toSubring_eq_top
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
   rw [← SetLike.le_def]
