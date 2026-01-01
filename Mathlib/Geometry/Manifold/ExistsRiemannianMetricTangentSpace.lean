@@ -1180,6 +1180,93 @@ theorem g_bilin_symm_1 (i b : B)
     _ = (g_bilin_2 i b).toFun β α := g_bilin_symm_2 i b α β
     _ = (g_bilin_1 i b).snd.toFun β α := (g_bilin_eq i b β α).symm
 
+lemma g_bilin_1_smooth_on_chart (i : B) :
+  ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (g_bilin_1 (EB := EB) (IB := IB) i)
+    (extChartAt IB i).source := by
+  unfold g_bilin_1
+  simp
+  intro b hb
+  have h0 : ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ =
+            (chartAt HB i).source ×ˢ (Set.univ : Set (EB →L[ℝ] EB →L[ℝ] ℝ)) := by
+    simp
+  rw [h0]
+  have h1 :
+    (b, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈
+    (chartAt HB i).source ×ˢ Set.univ := Set.mk_mem_prod hb trivial
+
+  classical
+
+  let ψ := trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+    (fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i
+
+  have heq : ∀ x ∈ (chartAt HB i).source,
+    (if (x, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈ (chartAt HB i).source ×ˢ Set.univ
+      then
+        ψ.invFun (x, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ)))
+      else
+        ⟨x, 0⟩)
+    =
+    ψ.invFun (x, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) := by
+    intro x hx
+    have : (x, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈
+      (chartAt HB i).source ×ˢ Set.univ := Set.mk_mem_prod hx trivial
+    exact if_pos this
+
+  have hrev :
+    ∀ x ∈ (chartAt HB i).source,
+      ψ.invFun (x, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) =
+        (if (x, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈
+            (chartAt HB i).source ×ˢ Set.univ
+        then
+           ψ.invFun (x, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ)))
+        else
+           ⟨x, 0⟩) :=
+    by
+      intro x hx
+      exact (heq x hx).symm
+
+  have h2 : ContMDiffOn (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    ψ.toPartialEquiv.symm ψ.target := Trivialization.contMDiffOn_symm _
+
+  let innerAtP : B → EB →L[ℝ] EB →L[ℝ] ℝ := fun x ↦ innerSL ℝ
+
+  have h4 : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (fun c => (c, innerAtP c)) (extChartAt IB i).source := by
+      apply ContMDiffOn.prodMk
+      · exact contMDiffOn_id
+      · exact contMDiffOn_const
+
+  have hmem : ∀ c ∈ (extChartAt IB i).source, (c, innerAtP c) ∈ ψ.target := by
+    intro c hc
+    rw [ψ.target_eq, baseSet_eq_extChartAt_source i]
+    exact ⟨hc, trivial⟩
+
+  have h5 : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (ψ.toPartialEquiv.symm ∘ fun c ↦ (c, innerAtP c)) (extChartAt IB i).source:= h2.comp h4 hmem
+
+  have h6 : (extChartAt IB i).source = (chartAt HB i).source := extChartAt_source IB i
+  rw [<-h6]
+
+  have h7 : b ∈ (chartAt HB i).source := hb
+  have : b ∈ (extChartAt IB i).source := by
+    rw [<-h6] at h7
+    exact h7
+
+  refine (ContMDiffOn.congr h5 ?_) b this
+  intro y hy
+  simp only [Function.comp_apply]
+  rw [h6] at hy
+  convert heq y hy using 1
+  · congr 1
+    have : (chartAt HB i).source = (extChartAt IB i).source := h6.symm
+    have : ((y, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈ (extChartAt IB i).source ×ˢ Set.univ)
+            =
+           ((y, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈ (chartAt HB i).source ×ˢ Set.univ) := by
+      exact congrFun (congrArg Membership.mem (congrFun (congrArg SProd.sprod h6) Set.univ))
+            (y, innerSL ℝ)
+    exact this
+
 noncomputable
 def g_global_bilin_1 (f : SmoothPartitionOfUnity B IB B) (p : B) :
     W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p :=
@@ -1196,21 +1283,21 @@ lemma g_global_bilin_1_smooth (f : SmoothPartitionOfUnity B IB B)
     (F_fiber := EB →L[ℝ] (EB →L[ℝ] ℝ))
     (n := (⊤ : ℕ∞)) (ι := B)
     (ρ := f)
-    (s_loc := fun i b => (g_bilin_1 i b).snd)
+    (s_loc := fun i b => (g_bilin_1 (IB := IB) i b).snd)
     (U := fun x ↦ (extChartAt IB x).source)
     (hU_isOpen := by intro i; exact isOpen_extChartAt_source i)
     (hρ_subord := h_sub)
     (h_smooth_s_loc := by
       intro i
-      let urk := g_bilin_1 (IB := IB) i
-      let baz : B → TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
-                  (fun b => TangentSpace IB b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) :=
-        (fun x ↦ TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilin_1 (IB := IB) i x).snd)
-      have : urk = baz := rfl
-      have : ContMDiffOn IB (ModelWithCorners.prod IB 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
-        baz (extChartAt IB i).source := sorry
-      exact this)
-
+      apply ContMDiffOn.congr
+      · have : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞  (g_bilin_1 (IB := IB) i)
+                           ((fun x ↦ (extChartAt IB x).source) i) :=
+          g_bilin_1_smooth_on_chart (IB := IB) i
+        exact this
+      · have : ∀ y ∈ (fun x ↦ (extChartAt IB x).source) i,
+          TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) y ((fun i b ↦ (g_bilin_1 (IB := IB) i b).snd) i y) =
+          g_bilin_1 (IB := IB) i y := by exact sorry
+        exact this)
   exact h1
 
 noncomputable
@@ -1250,7 +1337,7 @@ lemma h_need_1 (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace I
 
   exact sorry
 
--- In theory we can prove this from the abov
+-- In theory we can prove this from the above
 lemma riemannian_metric_symm_1
   (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
   ((g_global_bilin_1 f b).toFun v).toFun w = ((g_global_bilin_1 f b).toFun w).toFun v := by
