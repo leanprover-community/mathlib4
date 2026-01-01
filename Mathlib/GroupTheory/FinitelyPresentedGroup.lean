@@ -62,7 +62,7 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       intro ⟨n, f, hfsurj, hkernel⟩
       use Fin n, inferInstance, f
     · -- mpr
-      intro ⟨α, instα, f, hfsurj, hkernel⟩
+      intro ⟨α, instα, f, hfsurj, hfkernel⟩
       let n := Fintype.card α
       let e := Fintype.equivFin α
       let iso : FreeGroup (Fin n) ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
@@ -71,25 +71,16 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       have hf'surj := hfsurj.comp iso.surjective
       constructor
       · exact hf'surj
-      · have hf'ker := IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hkernel
-        sorry /-       · obtain ⟨ S, hSfinite, hS ⟩ := hkernel;
-        refine' ⟨ iso.symm '' S, hSfinite.image _, _ ⟩;
-        convert congr_arg ( Subgroup.map iso.symm.toMonoidHom ) hS using 1;
-        · refine' le_antisymm _ _;
-          · simp +decide [ Subgroup.normalClosure ];
-            simp +decide [ Group.conjugatesOfSet, Set.subset_def ];
-            simp +decide [ conjugatesOf ];
-            -- Since iso is an equivalence, we can take x_3 = y * x_1 * y⁻¹.
-            intro x y hy z hz
-            use iso z * y * (iso z)⁻¹;
-            exact ⟨ Subgroup.subset_closure ( Set.mem_iUnion₂.2 ⟨ y, hy, ⟨ iso z, rfl ⟩ ⟩ ), by simpa [ mul_assoc ] using hz ⟩;
-          · rw [ Subgroup.map_le_iff_le_comap ];
-            refine' Subgroup.normalClosure_le_normal _;
-            intro x hx;
-            exact Subgroup.subset_normalClosure ( Set.mem_image_of_mem _ hx );
-        · ext; simp [f'];
-          exact ⟨ fun hx => ⟨ _, hx, by simp +decide ⟩, by rintro ⟨ x, hx, rfl ⟩ ; simpa using hx ⟩ -/
-
+      · convert IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel
+        ext x
+        simp only [Subgroup.mem_map, MonoidHom.mem_ker, f', MonoidHom.comp_apply]
+        constructor
+        · intro hx
+          use iso x, hx
+          simp
+        · intro ⟨y, hy, hyx⟩
+          rw [← hyx]
+          simpa using hy
 
 variable (G : Type) [Group G] (g : G)
 
