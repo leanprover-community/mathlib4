@@ -104,11 +104,17 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 
 /-- Every Schwartz function is smooth. -/
+@[fun_prop]
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
   f.smooth'.of_le (mod_cast le_top)
 
+/-- Every Schwartz function is smooth at any point. -/
+@[fun_prop]
+theorem contDiffAt (f : 𝓢(E, F)) (n : ℕ∞) {x : E} : ContDiffAt ℝ n f x :=
+  (f.smooth n).contDiffAt
+
 /-- Every Schwartz function is continuous. -/
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 
@@ -116,10 +122,12 @@ instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
   map_continuous := SchwartzMap.continuous
 
 /-- Every Schwartz function is differentiable. -/
+@[fun_prop]
 protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
   (f.smooth 1).differentiable one_ne_zero
 
 /-- Every Schwartz function is differentiable at any point. -/
+@[fun_prop]
 protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt ℝ f x :=
   f.differentiable.differentiableAt
 
@@ -870,8 +878,6 @@ section Derivatives
 variable (𝕜)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
-open LineDeriv
-
 variable (F) in
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
@@ -892,6 +898,9 @@ theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
 
 variable [SMulCommClass ℝ 𝕜 F]
 
+open LineDeriv
+
+variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
   mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
@@ -902,7 +911,7 @@ def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
         one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
 
 @[simp]
-theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
+theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 E F f x = fderiv ℝ f x :=
   rfl
 
 theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
@@ -911,21 +920,21 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜) f
+  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F) f
 
 instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).map_add
+  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).map_add
 
 instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).map_smul
+  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_smul
 
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).continuous
+  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).continuous
 
 open LineDeriv
 
 theorem lineDerivOpCLM_eq (m : E) :
-    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜) := rfl
+    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F) := rfl
 
 @[deprecated (since := "2025-11-25")]
 alias pderivCLM := lineDerivOpCLM
