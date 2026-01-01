@@ -308,6 +308,9 @@ lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 x y = (innerSL 𝕜 y).smulRigh
 
 lemma rankOne_def' (x : E) (y : F) : rankOne 𝕜 x y = .toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y := rfl
 
+lemma toLinearMap_rankOne (x : E) (y : F) :
+    (rankOne 𝕜 x y).toLinearMap = (innerₛₗ 𝕜 y).smulRight x := rfl
+
 @[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
   rw [rankOne_def, norm_smulRight_apply, innerSL_apply_norm, mul_comm]
 
