@@ -346,8 +346,6 @@ def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } 
     rw [map_le_iff_le_comap,
       comap_map_eq_of_injective (show Injective p.subtype from Subtype.coe_injective) p₂]
 
-@[deprecated (since := "2025-06-03")] alias MapSubtype.relIso := MapSubtype.orderIso
-
 /-- If `p ⊆ M` is a submodule, the ordering of submodules of `p` is embedded in the ordering of
 submodules of `M`. -/
 def MapSubtype.orderEmbedding : Submodule R p ↪o Submodule R M :=

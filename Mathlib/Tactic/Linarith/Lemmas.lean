@@ -116,13 +116,3 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
   simp [h]
 
 end Mathlib.Tactic.Linarith
-
-section
-
-@[deprecated GT.gt.lt (since := "2025-06-16")]
-theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
-
-@[deprecated GE.ge.le (since := "2025-06-16")]
-theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-end

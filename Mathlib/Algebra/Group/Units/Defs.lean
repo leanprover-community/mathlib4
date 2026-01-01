@@ -121,8 +121,6 @@ theorem ext {u v : αˣ} (huv : u.val = v.val) : u = v := val_injective huv
 theorem val_inj {a b : αˣ} : (a : α) = b ↔ a = b :=
   val_injective.eq_iff
 
-@[to_additive (attr := deprecated val_inj (since := "2025-06-21"))] alias eq_iff := val_inj
-
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive /-- Additive units have decidable equality
 if the base `AddMonoid` has decidable equality. -/]

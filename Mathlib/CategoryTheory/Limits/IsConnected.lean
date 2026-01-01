@@ -98,9 +98,6 @@ theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
   | symm _ _ _ ih => exact zigzag_symmetric ih
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
-@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
-  zigzag_of_eqvGen_colimitTypeRel
-
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/
 theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit

@@ -92,12 +92,7 @@ lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_no
 @[to_dual self] alias LT.lt.not_ge := not_le_of_gt
 @[to_dual self] alias LE.le.not_gt := not_lt_of_ge
 
-@[deprecated (since := "2025-06-07")] alias LT.lt.not_le := LT.lt.not_ge
-@[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
-
 @[to_dual self] lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
-
-@[deprecated (since := "2025-06-07")] alias gt_irrefl := lt_irrefl
 
 @[to_dual lt_of_lt_of_le']
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
@@ -106,9 +101,6 @@ lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
 @[to_dual lt_of_le_of_lt']
 lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
   lt_of_le_not_ge (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_gt hbc (le_trans hca hab)
-
-@[deprecated (since := "2025-06-07")] alias gt_of_gt_of_ge := lt_of_lt_of_le'
-@[deprecated (since := "2025-06-07")] alias gt_of_ge_of_gt := lt_of_le_of_lt'
 
 @[to_dual gt_trans]
 lemma lt_trans : a < b → b < c → a < c := fun h₁ h₂ => lt_of_lt_of_le h₁ (le_of_lt h₂)
@@ -196,8 +188,6 @@ lemma ge_antisymm : b ≤ a → a ≤ b → a = b := flip le_antisymm
 
 @[to_dual eq_of_ge_of_le]
 alias eq_of_le_of_ge := le_antisymm
-
-@[deprecated (since := "2025-06-07")] alias eq_of_le_of_le := eq_of_le_of_ge
 
 @[to_dual ge_antisymm_iff]
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=

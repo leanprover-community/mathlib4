@@ -77,10 +77,6 @@ def graphFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
   map f := .ofRel f.graph
 
-@[deprecated rel_graphFunctor_map (since := "2025-06-08")]
-theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
-    x ~[(graphFunctor.map f).rel] y ↔ f x = y := .rfl
-
 instance graphFunctor_faithful : graphFunctor.Faithful where
   map_injective h := Function.graph_injective congr(($h).rel)
 

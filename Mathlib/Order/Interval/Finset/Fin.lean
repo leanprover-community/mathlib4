@@ -92,10 +92,6 @@ theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_l
 theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
   ext; simp
 
-section deprecated
-
-end deprecated
-
 section val
 
 /-!

@@ -563,8 +563,6 @@ structure SeminormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [Ad
   norm_smul (c : 𝕜) (x : E) : ‖c • x‖ = ‖c‖ * ‖x‖
   norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖
 
-@[deprecated (since := "2025-06-03")] alias SeminormedAddCommGroup.Core := SeminormedSpace.Core
-
 /-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new uniformity and
 topology on the type. See note [reducible non-instances]. -/
@@ -590,9 +588,6 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField �
     exact core.norm_triangle _ _
   edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
-@[deprecated (since := "2025-06-03")]
-alias PseudoMetricSpace.ofSeminormedAddCommGroupCore := PseudoMetricSpace.ofSeminormedSpaceCore
-
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new uniformity and
 topology on the type. See note [reducible non-instances]. -/
@@ -600,9 +595,6 @@ abbrev PseudoEMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField �
     [AddCommGroup E] [Norm E] [Module 𝕜 E]
     (core : SeminormedSpace.Core 𝕜 E) : PseudoEMetricSpace E :=
   (PseudoMetricSpace.ofSeminormedSpaceCore core).toPseudoEMetricSpace
-
-@[deprecated (since := "2025-06-03")]
-alias PseudoEMetricSpace.ofSeminormedAddCommGroupCore := PseudoEMetricSpace.ofSeminormedSpaceCore
 
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing uniform space structure. This requires a proof that the uniformity induced
@@ -614,10 +606,6 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity {𝕜 E : Type*}
         (self := PseudoEMetricSpace.ofSeminormedSpaceCore core)]) :
     PseudoMetricSpace E :=
   .replaceUniformity (.ofSeminormedSpaceCore core) H
-
-@[deprecated (since := "2025-06-03")]
-alias PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity :=
-  PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity
 
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing topology. This requires a proof that the topology induced
@@ -644,10 +632,6 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceAll {𝕜 E : Type*} [Norme
       ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedSpaceCore core).toBornology s) :
     PseudoMetricSpace E :=
   .replaceBornology (.replaceUniformity (.ofSeminormedSpaceCore core) HU) HB
-
-@[deprecated (since := "2025-06-03")]
-alias PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceAll :=
-  PseudoMetricSpace.ofSeminormedSpaceCoreReplaceAll
 
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new distance measure from the

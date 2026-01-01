@@ -415,8 +415,6 @@ def toNormedSpace : NormedSpace 𝕜 F where
     · simp [sqrt_normSq_eq_norm]
     · positivity
 
-@[deprecated (since := "2025-06-03")] alias toSeminormedSpace := toNormedSpace
-
 omit c in
 /-- Seminormed space core structure constructed from a `PreInnerProductSpace.Core` structure -/
 lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
