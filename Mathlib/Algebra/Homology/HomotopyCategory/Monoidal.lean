@@ -3,17 +3,21 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.BifunctorHomotopy
-import Mathlib.Algebra.Homology.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Pentagon
-import Mathlib.CategoryTheory.QuotientThree
+module
+
+public import Mathlib.Algebra.Homology.BifunctorHomotopy
+public import Mathlib.Algebra.Homology.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Pentagon
+public import Mathlib.CategoryTheory.QuotientThree
 
 /-!
 # The homotopy category is monoidal
 
 -/
 
-open CategoryTheory Category Limits MonoidalCategory HomologicalComplex
+@[expose] public section
+
+open CategoryTheory Category Limits MonoidalCategory HomologicalComplex Functor
 
 namespace HomotopyCategory
 
@@ -78,7 +82,10 @@ variable {C c}
 lemma bifunctorComp₁₂Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₁₂Iso C c).hom.app K₁).app K₂).app K₃ = 𝟙 _ := by
   dsimp only [bifunctorComp₁₂Iso]
-  simp
+  simp only [whiskeringLeft₃_obj_obj_obj_obj_obj_obj_obj, bifunctorComp₁₂_obj,
+    bifunctorComp₁₂Obj_obj_obj, postcompose₃_obj_obj_obj_obj_obj, curriedTensor_obj_obj,
+    Quotient.bifunctorComp₁₂Iso_hom_app_app_app, bifunctorIso_hom_app_app,
+    whiskeringLeft₂_obj_obj_obj_obj_obj]
   erw [comp_id, (bifunctor C c).map_id]
   rfl
 
@@ -86,7 +93,10 @@ lemma bifunctorComp₁₂Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComple
 lemma bifunctorComp₁₂Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₁₂Iso C c).inv.app K₁).app K₂).app K₃ = 𝟙 _ := by
   dsimp only [bifunctorComp₁₂Iso]
-  simp
+  simp only [postcompose₃_obj_obj_obj_obj_obj, bifunctorComp₁₂_obj, bifunctorComp₁₂Obj_obj_obj,
+    curriedTensor_obj_obj, whiskeringLeft₃_obj_obj_obj_obj_obj_obj_obj,
+    Quotient.bifunctorComp₁₂Iso_inv_app_app_app, bifunctorIso_inv_app_app, comp_obj,
+    whiskeringRight_obj_obj]
   erw [id_comp, (bifunctor C c).map_id]
   rfl
 
@@ -94,7 +104,10 @@ lemma bifunctorComp₁₂Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComple
 lemma bifunctorComp₂₃Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₂₃Iso C c).hom.app K₁).app K₂).app K₃ = 𝟙 _ := by
   dsimp only [bifunctorComp₂₃Iso]
-  simp
+  simp only [whiskeringLeft₃_obj_obj_obj_obj_obj_obj_obj, bifunctorComp₂₃_obj,
+    bifunctorComp₂₃Obj_obj_obj, postcompose₃_obj_obj_obj_obj_obj, curriedTensor_obj_obj,
+    Quotient.bifunctorComp₂₃Iso_hom_app_app_app, bifunctorIso_hom_app_app,
+    whiskeringLeft₂_obj_obj_obj_obj_obj]
   erw [comp_id, ((bifunctor C c).obj _).map_id]
   rfl
 
@@ -102,7 +115,10 @@ lemma bifunctorComp₂₃Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComple
 lemma bifunctorComp₂₃Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
     (((bifunctorComp₂₃Iso C c).inv.app K₁).app K₂).app K₃ = 𝟙 _ := by
   dsimp only [bifunctorComp₂₃Iso]
-  simp
+  simp only [postcompose₃_obj_obj_obj_obj_obj, bifunctorComp₂₃_obj, bifunctorComp₂₃Obj_obj_obj,
+    curriedTensor_obj_obj, whiskeringLeft₃_obj_obj_obj_obj_obj_obj_obj,
+    Quotient.bifunctorComp₂₃Iso_inv_app_app_app, bifunctorIso_inv_app_app, comp_obj,
+    whiskeringRight_obj_obj]
   erw [id_comp, ((bifunctor C c).obj _).map_id]
   rfl
 

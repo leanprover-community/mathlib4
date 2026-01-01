@@ -3,14 +3,19 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
-import Mathlib.CategoryTheory.Localization.Prod
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
+public import Mathlib.CategoryTheory.Localization.Prod
 
 /-!
 #
 
 -/
+
+@[expose] public section
+
 universe v₁ v₂ v₁' v₂' v₃ v₄ v u₁ u₂ u₁' u₂' u₃ u₄ u
 
 -- Part of this should be moved to `CategoryTheory.Functor.Derived`,
@@ -19,7 +24,7 @@ universe v₁ v₂ v₁' v₂' v₃ v₄ v u₁ u₂ u₁' u₂' u₃ u₄ u
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 variable
     (C₁ : Type u₁) (C₂ : Type u₂) (H : Type u)

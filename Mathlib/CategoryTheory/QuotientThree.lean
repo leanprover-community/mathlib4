@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Functor.CurryingThree
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Functor.CurryingThree
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Trifunctors from quotient categories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Quotient
 

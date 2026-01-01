@@ -3,15 +3,21 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesFour
-import Mathlib.CategoryTheory.Monoidal.Derived
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesFour
+public import Mathlib.CategoryTheory.Monoidal.Derived
 
 /-!
 # Deriving a monoidal structure using a left derivability structure
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
+
+open Functor
 
 namespace NatTrans
 
@@ -71,13 +77,13 @@ lemma hasDerivedMonoidalCategory : L.HasDerivedMonoidalCategory W := by
       apply isLeftDerivedFunctor₃_of_isLeftDerivabilityStructure Φ Φ Φ
       intro X₁₀ X₂₀ X₃₀
       have := isIso _ (Φ.functor.obj X₃₀) (μIso Φ.functor X₁₀ X₂₀) (Iso.refl _)
-      dsimp
+      dsimp [counit₁₂]
       infer_instance
     trifunctor₂₃_isLeftDerivedFunctor₃ := by
       apply isLeftDerivedFunctor₃_of_isLeftDerivabilityStructure Φ Φ Φ
       intro X₁₀ X₂₀ X₃₀
       have := isIso (Φ.functor.obj X₁₀) _ (Iso.refl _) (μIso Φ.functor X₂₀ X₃₀)
-      dsimp
+      dsimp [counit₂₃]
       infer_instance
     quadrifunctorRight_isLeftDerivedFunctor₄ := by
       apply isLeftDerivedFunctor₄_of_isLeftDerivabilityStructure Φ Φ Φ Φ

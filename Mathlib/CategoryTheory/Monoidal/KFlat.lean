@@ -3,20 +3,24 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Subcategory
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Subcategory
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # K-flat objects
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 variable {C D : Type*} [Category C] [MonoidalCategory C] [Category D]
 
-open MonoidalCategory
+open MonoidalCategory Functor
 
 namespace MorphismProperty
 

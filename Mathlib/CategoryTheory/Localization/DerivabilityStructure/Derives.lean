@@ -162,6 +162,8 @@ end
 
 end Derives
 
+variable {F}
+
 lemma isRightDerivedFunctor_of_isRightDerivabilityStructure
     [Φ.IsRightDerivabilityStructure]
     {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H}
