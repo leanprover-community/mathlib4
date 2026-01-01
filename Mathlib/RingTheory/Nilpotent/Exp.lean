@@ -199,7 +199,7 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
     exp (g • a) = g • exp a :=
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
 
-theorem exp_sub_one_isNilpotent {a : A} (ha : IsNilpotent a) : IsNilpotent ((exp a) - 1) := by
+theorem isNilpotent_exp_sub_one {a : A} (ha : IsNilpotent a) : IsNilpotent ((exp a) - 1) := by
   cases subsingleton_or_nontrivial A; · exact isNilpotent_of_subsingleton
   rw [exp, ← Nat.sub_add_cancel (pos_nilpotencyClass_iff.mpr ha), Finset.sum_range_succ',
     Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul, add_sub_cancel_right]
