@@ -642,16 +642,16 @@ theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddCommGroup E] [Module S E]
     (LinearMap.range_le_ker_iff.mpr hp.one_sub_mul_self)
     fun x hx ↦ ⟨x, by simpa [sub_eq_zero, eq_comm (a := x)] using hx⟩
 
-theorem IsIdempotentElem.range_eq_ker' {E : Type*} [AddCommGroup E] [Module S E]
+theorem IsIdempotentElem.range_eq_ker_one_sub {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
   range_eq_ker hp
 
 open LinearMap in
 theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (id - p) := by
-  simpa using hp.one_sub.range_eq_ker'.symm
+  simpa using hp.one_sub.range_eq_ker_one_sub.symm
 
-theorem IsIdempotentElem.ker_eq_range' {E : Type*} [AddCommGroup E] [Module S E]
+theorem IsIdempotentElem.ker_eq_range_one_sub {E : Type*} [AddCommGroup E] [Module S E]
     {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) :=
   ker_eq_range hp
 
