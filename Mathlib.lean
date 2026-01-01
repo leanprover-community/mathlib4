@@ -4955,7 +4955,6 @@ public import Mathlib.MeasureTheory.Group.Prod
 public import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Integral.Average.MeanValue
-public import Mathlib.MeasureTheory.Integral.Bochner
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
@@ -4984,6 +4983,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.MeanValue
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule
