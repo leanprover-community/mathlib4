@@ -139,6 +139,23 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
   le_gronwallBound_of_liminf_deriv_right_le (continuous_norm.comp_continuousOn hf)
     (fun x hx _r hr => (hf' x hx).liminf_right_slope_norm_le hr) ha bound
 
+theorem norm_le_gronwallBound_of_norm_deriv_left_le {f f' : ℝ → E} {δ K ε : ℝ} {a b : ℝ}
+    (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ioc a b, HasDerivWithinAt f (f' x) (Iic x) x)
+    (ha : ‖f b‖ ≤ δ) (bound : ∀ x ∈ Ioc a b, ‖f' x‖ ≤ K * ‖f x‖ + ε) :
+    ∀ x ∈ Icc a b, ‖f x‖ ≤ gronwallBound δ K ε (b - x) := by
+  set F : ℝ → E := fun x => f (a + b - x) with F_def
+  set F' : ℝ → E := fun x => f' (a + b - x) with F'_def
+  have hF : ContinuousOn F (Icc a b) :=
+    hf.comp (continuous_sub_left (a + b)).continuousOn (by simp [Set.mapsTo_iff_image_subset])
+  have hF' (x : ℝ) (hx : x ∈ Ico a b) : HasDerivWithinAt F (- F' x) (Ici x) x := by
+    simpa using (hf' (a + b  - x) (by grind)).scomp x
+      ((hasDerivAt_id' x).const_sub _).hasDerivWithinAt (by simp [Set.mapsTo_iff_image_subset])
+  have bound (x : ℝ) (hx : x ∈ Ico a b) : ‖-F' x‖ ≤ K * ‖F x‖ + ε := by grind [norm_neg]
+  intro x hx
+  have ha : ‖F a‖ ≤ δ := by simpa [F_def, sub_zero]
+  have := norm_le_gronwallBound_of_norm_deriv_right_le hF hF' ha bound (a + b - x) (by grind)
+  grind
+
 /-- Let `f : [a, b] → E` be a differentiable function such that `f a = 0`
 and `‖f'(x)‖ ≤ K ‖f(x)‖` for some constant `K`. Then `f = 0` on `[a, b]`. -/
 theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E} {K a b : ℝ}
@@ -151,6 +168,25 @@ theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E}
     _ ≤ gronwallBound 0 K 0 (x - a) :=
       norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
     _ = 0 := by rw [gronwallBound_ε0_δ0]
+
+/-- Let `f : [a, b] → E` be a differentiable function such that `f a = 0`
+and `‖f'(x)‖ ≤ K ‖f(x)‖` for some constant `K`. Then `f = 0` on `[a, b]`. -/
+theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_left {f f' : ℝ → E} {K a b : ℝ}
+    (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ioc a b, HasDerivWithinAt f (f' x) (Iic x) x)
+    (hb : f b = 0) (bound : ∀ x ∈ Ioc a b, ‖f' x‖ ≤ K * ‖f x‖) :
+    ∀ x ∈ Set.Icc a b, f x = 0 := by
+  set g := f ∘ (fun x ↦ a + b - x) with g_def
+  set g' := f' ∘ (fun x ↦ a + b - x) with g'_def
+  have hg : ContinuousOn g (Icc a b) :=
+    hf.comp (continuous_sub_left (a + b)).continuousOn (by simp [mapsTo_iff_image_subset])
+  have hg' (x : ℝ) (hx : x ∈ Ico a b) : HasDerivWithinAt g ((-g') x) (Ici x) x := by
+    simpa using (hf' (a + b - x) (by grind)).scomp x
+      ((hasDerivAt_id' x).const_sub _).hasDerivWithinAt (by simp [mapsTo_iff_image_subset])
+  have ha : g a = 0 := by simp [g_def, hb]
+  have bound (x : ℝ) (hx : x ∈ Ico a b) : ‖(-g') x‖ ≤ K * ‖g x‖ := by grind [Pi.neg_apply, norm_neg]
+  intro x hx
+  simpa [g_def] using
+    eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right hg hg' ha bound (a + b - x) (by grind)
 
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
 
