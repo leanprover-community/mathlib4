@@ -219,9 +219,10 @@
   authors: mathlib
 53:
   title  : Pi is Transcendental
-  authors: Zhao Yuyang
+  authors: Yuyang Zhao
   links  :
-    result: https://github.com/leanprover-community/mathlib4/blob/e11e5b0028cb6d8119922c3d4855bc05963f4aa3/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L261-L273
+    PR: https://github.com/leanprover-community/mathlib4/pull/28013
+    result: https://github.com/leanprover-community/mathlib4/blob/13b7d6bbf9dd44a2cd6bb8f5542bce923354a403/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L238-L250
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
@@ -232,9 +233,10 @@
   authors: Manuel Candales
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
-  authors: Zhao Yuyang
+  authors: Yuyang Zhao
   links  :
-    result: https://github.com/leanprover-community/mathlib4/blob/e11e5b0028cb6d8119922c3d4855bc05963f4aa3/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L233-L241
+    PR: https://github.com/leanprover-community/mathlib4/pull/28013
+    result: https://github.com/leanprover-community/mathlib4/blob/13b7d6bbf9dd44a2cd6bb8f5542bce923354a403/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L203-L208
 57:
   title  : Heron’s Formula
   decl   : Theorems100.heron
@@ -255,9 +257,10 @@
   authors: mathlib
 61:
   title  : Theorem of Ceva
-  authors: Aristotle (Harmonic)
+  authors: Mantas Bakšys
   links  :
-    result: https://github.com/plby/lean-proofs/blob/main/100Theorems/61.md
+    Lean 3: https://github.com/leanprover-community/mathlib3/pull/10632
+    Lean 4 by another author: https://github.com/plby/lean-proofs/blob/main/100Theorems/61.md
 62:
   title  : Fair Games Theorem
   decl   : MeasureTheory.submartingale_iff_expected_stoppedValue_mono
