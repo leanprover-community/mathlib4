@@ -3593,6 +3593,11 @@ Q7200963:
 
 Q7208500:
   title: Poisson limit theorem
+  decls:
+    - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
+    - ProbabilityTheory.tendsto_poissonPMFReal_pow_of_tendsto_mul_atTop
+  authors: Yi Yuan
+  date: 2026
 
 Q7239984:
   title: Preimage theorem

@@ -44,6 +44,7 @@ lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 
   simp only [mul_one]
   have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / ↑(Nat.factorial i))) =
       fun i ↦ r ^ i / ↑(Nat.factorial i) := by
+  have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / Nat.factorial i)) =
     ext n
     rw [mul_div_assoc, exp_neg, ← mul_assoc, ← div_eq_mul_inv, div_self (exp_ne_zero r), one_mul]
   rw [this, exp_eq_exp_ℝ]
@@ -87,15 +88,16 @@ open Asymptotics
 
 variable {p : ℕ → ℝ} {r : ℝ} (k : ℕ)
 
-lemma hp0 (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) : Tendsto p atTop (𝓝 0) := by
-  have hEq : (fun n => (n * p n) * (1 / n)) =ᶠ[atTop] p := by
+lemma tendsto_zero_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
+    Tendsto p atTop (𝓝 0) := by
+  have : (fun n => (n * p n) * (1 / n)) =ᶠ[atTop] p := by
     filter_upwards [eventually_ge_atTop 1] with n hn
     calc
       _ = p n * (n * (1 / n)) := by ac_rfl
       _ = p n := by simp [field]
-  simpa using (hr.mul tendsto_one_div_atTop_nhds_zero_nat).congr' hEq
+  simpa using (hr.mul tendsto_one_div_atTop_nhds_zero_nat).congr' this
 
-lemma h_choose_mul_pk (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
+lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n => n.choose k * (p n) ^ k) atTop (𝓝 (r ^ k / k.factorial)) := by
   set f : ℕ → ℝ := fun n => n.choose k * (p n) ^ k with hf
   set g : ℕ → ℝ := fun n => ((n * p n) ^ k) / k.factorial with hg
@@ -109,7 +111,12 @@ lemma h_choose_mul_pk (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     simpa [g, div_eq_mul_inv] using (hr.pow k).mul_const ((k.factorial : ℝ)⁻¹)
   simpa [f] using (hfg.tendsto_nhds_iff).2 hg
 
-theorem poisson_limit (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
+/-- **Poisson limit Theorem** : Assume `n * p n → r` as `n → ∞`. Then the `k`-th term of the
+binomial pmf converges to the `k`-th term of `Poisson r`:
+
+`(n.choose k) * (p n)^k * (1 - p n)^(n - k) → exp (-r) * r^k / k!`.
+-/
+theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k))
     atTop (𝓝 (rexp (-r) * (r ^ k) / k.factorial)) := by
   have h_one_sub_pow : Tendsto (fun n => (1 - p n) ^ (n - k)) atTop (𝓝 (rexp (-r))) :=
@@ -118,12 +125,13 @@ theorem poisson_limit (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     have hpow_n : Tendsto (fun n => (1 - p n) ^ n) atTop (𝓝 (rexp (-r))) := by
       simpa [sub_eq_add_neg] using Real.tendsto_one_add_pow_exp_of_tendsto hneg
     have h1 : Tendsto (fun n => 1 - p n) atTop (𝓝 1) := by
-      simpa using tendsto_const_nhds.sub (hp0 hr)
+      simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
     have hpow_k : Tendsto (fun n => (1 - p n) ^ k) atTop (𝓝 1) := by
       simpa using h1.pow k
     have hinv_k : Tendsto (fun n => ((1 - p n) ^ k)⁻¹) atTop (𝓝 1) := by
       simpa using (hpow_k.inv₀ (by norm_num))
-    have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 := (hp0 hr).eventually (Iio_mem_nhds (by norm_num))
+    have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
+      (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by norm_num))
     have hone_ne : ∀ᶠ n in atTop, (1 - p n) ≠ 0 := by
       filter_upwards [hp_lt_half] with n hn
       exact ne_of_gt (sub_pos.2 (lt_trans hn (by norm_num)))
@@ -131,16 +139,15 @@ theorem poisson_limit (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
           =ᶠ[atTop] (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
       filter_upwards [eventually_ge_atTop k, hone_ne] with n hn hne
       exact pow_sub₀ (1 - p n) hne hn
-    have hprod : Tendsto (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹)
-        atTop (𝓝 (rexp (-r))) := by
+    have hprod : Tendsto (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) atTop (𝓝 (rexp (-r))) := by
       simpa [mul_assoc] using (hpow_n.mul hinv_k)
     Tendsto.congr' (EventuallyEq.symm hEq) hprod
   simpa [mul_assoc, mul_left_comm, mul_comm, div_eq_mul_inv] using
-    (h_choose_mul_pk k hr).mul h_one_sub_pow
+    (tendsto_choose_mul_pow_atTop k hr).mul h_one_sub_pow
 
-lemma _PMF (hpos : r ≥ 0) (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
-    Tendsto (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k))
-    atTop (𝓝 (ProbabilityTheory.poissonPMFReal ⟨r, by simp [hpos]⟩ k)) :=
-  poisson_limit k hr
+lemma tendsto_poissonPMFReal_pow_of_tendsto_mul_atTop (r : ℝ≥0)
+    (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) : Tendsto
+    (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k)) atTop (𝓝 (poissonPMFReal r k)) :=
+  tendsto_choose_mul_pow_of_tendsto_mul_atTop k hr
 
 end ProbabilityTheory
