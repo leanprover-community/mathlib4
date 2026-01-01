@@ -3,15 +3,19 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralObject.Homology
-import Mathlib.Algebra.Homology.SpectralSequence.Basic
-import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
-import Batteries.Data.Fin.Basic
+module
+
+public import Mathlib.Algebra.Homology.SpectralObject.Homology
+public import Mathlib.Algebra.Homology.SpectralSequence.Basic
+public import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
+public import Batteries.Data.Fin.Basic
 
 /-!
 # The spectral sequence of a spectral object
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 
@@ -204,7 +208,7 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
   le₀₁ r hr pq := by simpa [Fin.le_iff_val_le_val] using hr
   le₁₂ pq := by simp [Fin.le_iff_val_le_val]
   le₂₃ r hr pq := by
-    simp only [Fin.le_iff_val_le_val, Fin.val_succ, ge_iff_le, Int.toNat_le,
+    simp only [Fin.le_iff_val_le_val, Fin.val_succ,
       le_min_iff, Fin.clamp]
     constructor
     · rw [Int.le_toNat (by omega)]
@@ -228,7 +232,7 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     dsimp at h₁ h₂ ⊢
     have : b₂ + (r - 1) = a₂ := by omega
     rw [this]
-    simp only [Int.toNat_natCast, Fin.clamp]
+    simp only [Int.toNat_natCast]
     apply le_antisymm
     · simp only [le_min_iff, le_refl, true_and]
       omega
@@ -636,8 +640,12 @@ noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
         _ _ _ _ rfl rfl rfl rfl) ?_ ?_
   · dsimp
     rw [paged_eq X data r hr pq pq' hpq, assoc, assoc, Iso.inv_hom_id, comp_id]
+    · exact (data.hc₀₂ r hr pq' pq'' hpq').symm
+    · exact (data.hc₁₃ r hr pq' pq'' hpq').symm
   · dsimp
     rw [paged_eq X data r hr pq' pq'' hpq', assoc, assoc, Iso.inv_hom_id, comp_id]
+    · rfl
+    · rfl
 
 section
 
@@ -766,6 +774,8 @@ lemma ksSc_exact : (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂
         (f₁ data r r' hrr' hr pq' i₀' i₀ hi₀' hi₀) (f₂ data r hr pq' i₀ i₁ hi₀ hi₁)
         (f₃ data pq' i₁ i₂ hi₁ hi₂) (f₄ data r hr pq' i₂ i₃ hi₂ hi₃), assoc, assoc,
         Iso.inv_hom_id, comp_id]
+      · rfl
+      · rw [hi₀', data.i₀_prev r r' hrr' hr _ _ h]
   · rw [ShortComplex.exact_iff_epi]; swap
     · exact (page X data r hr).shape _ _ h
     have := isIso_EMapFourδ₁Toδ₀' X data r r' hrr' hr pq' pq'' hpq' n₀ n₁ n₂ hn₁ hn₂
@@ -848,6 +858,8 @@ lemma ccSc_exact :
         (f₂ data r hr pq' i₀ i₁ hi₀ hi₁) (f₃ data pq' i₁ i₂ hi₁ hi₂)
         (f₄ data r hr pq' i₂ i₃ hi₂ hi₃) (f₅ data r r' hrr' hr pq' i₃ i₃' hi₃ hi₃'),
         assoc, assoc, Iso.inv_hom_id, comp_id]
+      · exact hi₀
+      · exact hi₁
     · dsimp
       rw [comp_id, Iso.cancel_iso_hom_left]
       rfl

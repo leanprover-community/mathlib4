@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.Order.WithBot
 
 /-!
 # ℤ with bot and top
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

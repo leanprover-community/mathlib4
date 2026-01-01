@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.SpectralObject.Basic
-import Mathlib.CategoryTheory.Abelian.Refinements
+module
+
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # Differentials of a spectral object
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -569,20 +573,22 @@ end
 
 section
 
+set_option backward.proofsInPublic true
+
 variable (n₀ n₁ n₂ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   {i₀ i₁ i₂ i₃ : ι}
   (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   {i₀' i₁' i₂' i₃' : ι}
   (f₁' : i₀' ⟶ i₁') (f₂' : i₁' ⟶ i₂') (f₃' : i₂' ⟶ i₃')
-  (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
-  (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2))
-  (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃')
-  (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2) (naturality' α 2 3))
+  (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃')
 
-include hβ in
+
 @[reassoc]
-lemma cyclesIso_inv_cyclesMap :
+lemma cyclesIso_inv_cyclesMap
+    (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
+    (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1 (by lia) (by lia))
+    (naturality' α 1 2 (by lia) (by lia))) :
     (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
       ShortComplex.cyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) =
       X.cyclesMap n₁ n₂ hn₂ f₁ f₂ f₁' f₂' β ≫
@@ -594,9 +600,10 @@ lemma cyclesIso_inv_cyclesMap :
   apply cyclesMap_i
   rfl
 
-include hγ in
 @[reassoc]
-lemma opcyclesMap_opcyclesIso_hom :
+lemma opcyclesMap_opcyclesIso_hom
+    (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃')
+    (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2) (naturality' α 2 3)) :
     ShortComplex.opcyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) ≫
       (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃').hom =
     (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.opcyclesMap n₀ n₁ hn₁ f₂ f₃ f₂' f₃' γ := by
@@ -607,18 +614,20 @@ lemma opcyclesMap_opcyclesIso_hom :
   apply p_opcyclesMap
   rfl
 
-include hβ in
 @[reassoc]
-lemma πE_EMap :
+lemma πE_EMap (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
+    (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1 (by lia) (by lia))
+    (naturality' α 1 2 (by lia) (by lia))) :
     X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α =
       X.cyclesMap n₁ n₂ hn₂ f₁ f₂ f₁' f₂' β ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' := by
   dsimp [πE, EMap]
   simp only [assoc, ShortComplex.homologyπ_naturality,
     X.cyclesIso_inv_cyclesMap_assoc n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α β hβ]
 
-include hγ in
 @[reassoc]
-lemma EMap_ιE :
+lemma EMap_ιE
+    (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃')
+    (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2) (naturality' α 2 3)) :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' =
       X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.opcyclesMap n₀ n₁ hn₁ f₂ f₃ f₂' f₃' γ := by
   dsimp [ιE, EMap]
