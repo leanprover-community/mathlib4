@@ -293,7 +293,7 @@ section
 variable [FunLike F α β] [IsometryClass F α β] (f : F)
 
 @[simp]
-theorem _root_.edist_map (x y : α) : edist (f x) (f y) = edist x y :=
+theorem edist_map (x y : α) : edist (f x) (f y) = edist x y :=
   (IsometryClass.isometry f).edist_eq x y
 
 @[deprecated (since := "2026-01-01")] protected alias edist_eq := edist_map
@@ -328,11 +328,11 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β] [IsometryClass F α β] (f : F)
 
 @[simp]
-theorem _root_.dist_map (x y : α) : dist (f x) (f y) = dist x y :=
+theorem dist_map (x y : α) : dist (f x) (f y) = dist x y :=
   (IsometryClass.isometry f).dist_eq x y
 
 @[simp]
-theorem _root_.nndist_map (x y : α) : nndist (f x) (f y) = nndist x y :=
+theorem nndist_map (x y : α) : nndist (f x) (f y) = nndist x y :=
   (IsometryClass.isometry f).nndist_eq x y
 
 @[deprecated (since := "2026-01-01")] protected alias dist_eq := dist_map

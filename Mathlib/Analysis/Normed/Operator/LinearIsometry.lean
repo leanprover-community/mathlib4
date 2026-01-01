@@ -206,9 +206,9 @@ instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [Com
     CompleteSpace (p.map (f : E →ₛₗ[σ₁₂] E₂)) :=
   ((isComplete_map_iff f).2 <| completeSpace_coe_iff_isComplete.1 ‹_›).completeSpace_coe
 
-theorem dist_map (x y : E) : dist (f x) (f y) = dist x y := _root_.dist_map f x y
+theorem dist_map (x y : E) : dist (f x) (f y) = dist x y := IsometryClass.dist_map f x y
 
-theorem edist_map (x y : E) : edist (f x) (f y) = edist x y := _root_.edist_map f x y
+theorem edist_map (x y : E) : edist (f x) (f y) = edist x y := IsometryClass.edist_map f x y
 
 protected theorem injective : Injective f₁ :=
   Isometry.injective (LinearIsometry.isometry f₁)
