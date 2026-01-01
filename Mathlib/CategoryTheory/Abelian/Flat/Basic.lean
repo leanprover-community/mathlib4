@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.Preadditive
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
-public import Mathlib.Algebra.Homology.LeftResolutions.Basic
+public import Mathlib.Algebra.Homology.LeftResolution.Basic
 
 /-!
 # Flat objects
@@ -82,16 +82,14 @@ end ObjectProperty
 namespace Abelian
 
 variable (A) in
-abbrev HasFunctorialFlatResolutions : Prop :=
-  Nonempty (LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A))
+abbrev HasFunctorialFlatResolution : Prop :=
+  Nonempty (LeftResolution (ObjectProperty.flat.ι : _ ⥤ A))
 
-lemma HasFunctorialFlatResolutions.mk {C : Type*} [Category C] {ι : C ⥤ A}
-    [ι.Full] [ι.Faithful] (Λ : LeftResolutions ι) (hι : ι.essImage ≤ ObjectProperty.flat) :
-    HasFunctorialFlatResolutions A := ⟨{
+lemma HasFunctorialFlatResolution.mk {C : Type*} [Category C] {ι : C ⥤ A}
+    [ι.Full] [ι.Faithful] (Λ : LeftResolution ι) (hι : ι.essImage ≤ ObjectProperty.flat) :
+    HasFunctorialFlatResolution A := ⟨{
         F := ObjectProperty.lift _ (Λ.F ⋙ ι) (fun _ ↦ hι _ (ι.obj_mem_essImage _))
-        π := Λ.π
-        hπ := Λ.hπ
-    }⟩
+        π := Λ.π }⟩
 
 end Abelian
 

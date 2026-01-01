@@ -11,8 +11,8 @@ public import Mathlib.Algebra.Homology.BifunctorColimits
 public import Mathlib.Algebra.Homology.HomotopyCategory.MonoidalTriangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 public import Mathlib.Algebra.Homology.HomotopyCategory.PreservesQuasiIso
-public import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
-public import Mathlib.Algebra.Homology.LeftResolutions.Reduced
+public import Mathlib.Algebra.Homology.LeftResolution.CochainComplex
+public import Mathlib.Algebra.Homology.LeftResolution.Reduced
 public import Mathlib.Algebra.Homology.DerivedCategory.Monoidal
 public import Mathlib.CategoryTheory.Abelian.Flat.Basic
 public import Mathlib.CategoryTheory.Monoidal.KFlat
@@ -353,11 +353,11 @@ namespace CategoryTheory.Abelian
 
 variable {A} {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasFiniteCoproducts C]
   {ι : C ⥤ A} [ι.Full] [ι.Faithful] [ι.Additive]
-  (Λ : LeftResolutions ι) [Λ.F.PreservesZeroMorphisms]
+  (Λ : LeftResolution ι) [Λ.F.PreservesZeroMorphisms]
   (hι : ι.essImage ≤ ObjectProperty.flat)
 
 
-namespace LeftResolutions
+namespace LeftResolution
 
 namespace kFlatLocalizerSquare
 
@@ -507,23 +507,23 @@ lemma homotopyCategory_kFlat_isLeftDerivabilityStructure :
   exact LocalizerMorphism.isLeftDerivabilityStructure_of_isLocalizedEquivalence
     (kFlatLocalizerSquare.iso A)
 
-end LeftResolutions
+end LeftResolution
 
 variable [HasColimitsOfShape ℤ A] [HasExactColimitsOfShape ℤ A]
   [∀ (X : A), PreservesColimitsOfShape ℤ ((curriedTensor A).flip.obj X)]
   [∀ (X : A), PreservesColimitsOfShape ℤ ((curriedTensor A).obj X)]
 
-instance [HasFunctorialFlatResolutions A] :
+instance [HasFunctorialFlatResolution A] :
     (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := by
-  let Λ : LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
+  let Λ : LeftResolution (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
   exact Λ.reduced.cochainComplex_kFlat_isLeftDerivabilityStructure (by simp)
 
-instance [HasFunctorialFlatResolutions A] :
+instance [HasFunctorialFlatResolution A] :
     (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure := by
-  let Λ : LeftResolutions (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
+  let Λ : LeftResolution (ObjectProperty.flat.ι : _ ⥤ A) := Classical.arbitrary _
   exact Λ.reduced.homotopyCategory_kFlat_isLeftDerivabilityStructure (by simp)
 
-noncomputable example [HasFunctorialFlatResolutions A] [HasDerivedCategory A] :
+noncomputable example [HasFunctorialFlatResolution A] [HasDerivedCategory A] :
     MonoidalCategory (DerivedCategory A) := inferInstance
 
 end CategoryTheory.Abelian

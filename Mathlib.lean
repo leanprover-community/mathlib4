@@ -163,7 +163,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Images
 public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
-public import Mathlib.Algebra.Category.ModuleCat.LeftResolutions
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
@@ -647,13 +646,10 @@ public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.HomotopyFiber
 public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.Algebra.Homology.LeftResolution.Basic
+public import Mathlib.Algebra.Homology.LeftResolution.CochainComplex
+public import Mathlib.Algebra.Homology.LeftResolution.CochainComplexMinus
 public import Mathlib.Algebra.Homology.LeftResolution.Reduced
 public import Mathlib.Algebra.Homology.LeftResolution.Transport
-public import Mathlib.Algebra.Homology.LeftResolutions.Basic
-public import Mathlib.Algebra.Homology.LeftResolutions.CochainComplex
-public import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
-public import Mathlib.Algebra.Homology.LeftResolutions.Reduced
-public import Mathlib.Algebra.Homology.LeftResolutions.Transport
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.LocalCohomology
 public import Mathlib.Algebra.Homology.Localization

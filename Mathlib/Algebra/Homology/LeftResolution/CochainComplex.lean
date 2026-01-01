@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.LeftResolutions.CochainComplexMinus
+public import Mathlib.Algebra.Homology.LeftResolution.CochainComplexMinus
 public import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
 public import Mathlib.Algebra.Homology.PreservesQuasiIso
 public import Mathlib.Algebra.Homology.ObjectProperty
@@ -73,12 +73,12 @@ open CochainComplex
 
 namespace Abelian
 
-namespace LeftResolutions
+namespace LeftResolution
 
 variable {A C : Type*} [Category C] [Category A]
   [Preadditive C] [HasZeroObject C] [Abelian A] {ι : C ⥤ A}
   [ι.Full] [ι.Faithful] [ι.Additive]
-  (Λ : LeftResolutions ι) [Λ.F.PreservesZeroMorphisms]
+  (Λ : LeftResolution ι) [Λ.F.PreservesZeroMorphisms]
   [HasFiniteCoproducts C] [HasColimitsOfShape ℤ A]
 
 noncomputable def resolutionFunctor : CochainComplex A ℤ ⥤ CochainComplex A ℤ :=
@@ -102,7 +102,7 @@ noncomputable def colimitOfShapeResolutionFunctorObj (K : CochainComplex A ℤ) 
     rw [← ι.essImage.cochainComplexMinus.prop_iff_of_iso e]
     exact ⟨fun _ ↦ Functor.obj_mem_essImage _ _, ObjectProperty.prop_ι_obj _ _⟩) K
 
-end LeftResolutions
+end LeftResolution
 
 end Abelian
 

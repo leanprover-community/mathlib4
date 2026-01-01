@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.LeftResolutions.Basic
+public import Mathlib.Algebra.Homology.LeftResolution.Basic
 public import Mathlib.Algebra.Homology.BicomplexRows
 public import Mathlib.Algebra.Homology.CochainComplexMinus
 public import Mathlib.Algebra.Homology.TotalComplexMap
@@ -23,11 +23,11 @@ open Category Limits CochainComplex
 
 namespace Abelian
 
-namespace LeftResolutions
+namespace LeftResolution
 
 variable {A C : Type*} [Category C] [Category A] {ι : C ⥤ A}
   [ι.Full] [ι.Faithful] [Preadditive C] [HasZeroObject C]
-  [Abelian A] (Λ : LeftResolutions ι)
+  [Abelian A] (Λ : LeftResolution ι)
 
 variable [Λ.F.PreservesZeroMorphisms]
 
@@ -256,7 +256,7 @@ lemma quasiIso_minusResolutionFunctor_map {K L : CochainComplex.Minus A} (f : K 
 
 end
 
-end LeftResolutions
+end LeftResolution
 
 end Abelian
 

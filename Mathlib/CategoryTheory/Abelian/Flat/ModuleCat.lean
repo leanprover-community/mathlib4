@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Abelian.Flat.KFlat
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-public import Mathlib.Algebra.Category.ModuleCat.LeftResolutions
+public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
@@ -48,10 +48,9 @@ lemma objectPropertyFlat_iff_moduleFlat (M : ModuleCat.{u} R) :
   · intro hM
     exact And.left (((Functor.exact_tfae (tensorLeft M)).out 1 3).1 hM)
 
-instance : HasFunctorialFlatResolutions (ModuleCat.{u} R) :=
-  .mk (ModuleCat.projectiveResolutions R) (by
+instance : HasFunctorialFlatResolution (ModuleCat.{u} R) :=
+  .mk (ModuleCat.projectiveResolution R) (by
     rintro M ⟨⟨P, hP⟩, ⟨e : P ≅ M⟩⟩
-    rw [← IsProjective.iff_projective] at hP
     apply ObjectProperty.prop_of_iso _ e
     rw [objectPropertyFlat_iff_moduleFlat]
     infer_instance)
