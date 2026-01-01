@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Louis (Yiyang) Liu
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.Average.MeanValue
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # Integral average over an interval
@@ -17,9 +17,12 @@ formulas for this average:
 
 * `interval_average_eq`: `⨍ x in a..b, f x = (b - a)⁻¹ • ∫ x in a..b, f x`;
 * `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`;
-* `exists_eq_interval_average_of_measure`: `∃ c, f c = ⨍ x in (uIoc a b), f x ∂μ`.
-* `exists_eq_interval_average_of_NoAtoms`: `∃ c, f c = ⨍ x in (uIoc a b), f x ∂μ`.
-* `exists_eq_interval_average`: `∃ c, f c = ⨍ (x : ℝ) in a..b, f x`.
+* `exists_eq_interval_average_of_measure`:
+    `∃ c ∈ uIcc a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
+* `exists_eq_interval_average_of_noAtoms`:
+    `∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
+* `exists_eq_interval_average`:
+    `∃ c ∈ uIoo a b, f c = ⨍ (x : ℝ) in a..b, f x`.
 
 We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_average_symm`.
 
@@ -32,7 +35,7 @@ We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_aver
 @[expose] public section
 
 
-open MeasureTheory Set TopologicalSpace
+open MeasureTheory Set
 
 open scoped Interval
 
@@ -41,7 +44,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 /-- `⨍ x in a..b, f x` is the average of `f` over the interval `Ι a b` w.r.t. the Lebesgue
 measure. -/
 notation3 "⨍ "(...)" in "a".."b",
-  "r:60:(scoped f => average (Measure.restrict volume (uIoc a b)) f) => r
+  "r:60:(scoped f => average (Measure.restrict volume (Ι a b)) f) => r
 
 theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
   rw [setAverage_eq, setAverage_eq, uIoc_comm]
@@ -65,15 +68,16 @@ theorem intervalAverage_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → 
   rw [interval_average_eq, intervalIntegral.integral_congr_codiscreteWithin hf,
     ← interval_average_eq]
 
+variable {f : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
+
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-then there exists `c ∈ uIcc a b` such that 
-`f c = ⨍ x in (uIoc a b), f x ∂μ`. -/
+then there exists `c ∈ uIcc a b` such that
+`f c = ⨍ x in (Ι a b), f x ∂μ`. -/
 theorem exists_eq_interval_average_of_measure
-    {f : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
     (hf : ContinuousOn f (uIcc a b))
-    (hμfin : μ (uIoc a b) ≠ ⊤)
-    (hμ0 : μ (uIoc a b) ≠ 0) :
-    ∃ c ∈ uIcc a b, f c = ⨍ x in (uIoc a b), f x ∂μ := by
+    (hμfin : μ (Ι a b) ≠ ⊤)
+    (hμ0 : μ (Ι a b) ≠ 0) :
+    ∃ c ∈ uIcc a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
   wlog h : a ≤ b generalizing a b
   · simp at h
     specialize this
@@ -82,11 +86,8 @@ theorem exists_eq_interval_average_of_measure
       (h.le)
     rcases this with ⟨c, hc, hEq⟩
     refine ⟨c, by rwa [uIcc_comm], by rwa [uIoc_comm]⟩
-  let ave := average (μ.restrict (uIoc a b)) f
-  let S₁ := {x | x ∈ uIoc a b ∧ f x ≤ ave}
-  let S₂ := {x | x ∈ uIoc a b ∧ ave ≤ f x}
-  have hint : IntegrableOn f (uIoc a b) μ := by
-    have hsubset : uIoc a b ⊆ uIcc a b := uIoc_subset_uIcc
+  have hint : IntegrableOn f (Ι a b) μ := by
+    have hsubset : Ι a b ⊆ uIcc a b := uIoc_subset_uIcc
     have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
     obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc (hf.norm)
     apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
@@ -99,42 +100,21 @@ theorem exists_eq_interval_average_of_measure
       intro m hm
       apply hmax
       exact hsubset hm
-  have hS₁ : 0 < μ S₁ := measure_le_setAverage_pos hμ0 hμfin hint
-  have hS₂ : 0 < μ S₂ := measure_setAverage_le_pos hμ0 hμfin hint
-  have hS₁nonempty : S₁.Nonempty := nonempty_of_measure_ne_zero hS₁.ne'
-  have hS₂nonempty : S₂.Nonempty := nonempty_of_measure_ne_zero hS₂.ne'
-  rw [nonempty_def] at *
-  rcases hS₁nonempty with ⟨c₁, hc₁⟩
-  rcases hS₂nonempty with ⟨c₂, hc₂⟩
-  have hc₁Ioc : c₁ ∈ Ioc a b := by
-    simpa [h] using hc₁.1
-  have hc₂Ioc : c₂ ∈ Ioc a b := by
-    simpa [h] using hc₂.1
-  have h_subset : uIcc c₁ c₂ ⊆ Icc a b := by
-    intro x hx
-    rw [mem_uIcc] at hx
-    grind
-  have h_ivt : ∃ c ∈ uIcc c₁ c₂, f c = ave := by
-    apply intermediate_value_uIcc
-    · refine ContinuousOn.mono hf ?_
-      rwa [uIcc_of_le h]
-    · rw [mem_uIcc]
-      grind
-  rcases h_ivt with ⟨c, hc_mem, hfc⟩
-  refine ⟨c, ?_, hfc⟩
-  rw [mem_uIcc]
-  grind
+  have hs_prec : IsPreconnected (Ι a b) := by simpa [h] using isPreconnected_Ioc
+  have hs_nemp : (Ι a b).Nonempty := by exact nonempty_of_measure_ne_zero hμ0
+  rcases exists_eq_setAverage
+    ⟨hs_nemp, hs_prec⟩ (hf.mono uIoc_subset_uIcc) hint hμfin hμ0 with ⟨c, hc, hfc⟩
+  exact ⟨c, uIoc_subset_uIcc hc, hfc⟩
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-and `μ` has no atoms, then there exists `c ∈ uIoo a b` such that 
-`f c = ⨍ x in (uIoc a b), f x ∂μ`. -/
-theorem exists_eq_interval_average_of_NoAtoms
-    {f : ℝ → ℝ} {a b : ℝ}
-    {μ : Measure ℝ} [NoAtoms μ]
+and `μ` has no atoms, then there exists `c ∈ uIoo a b` such that
+`f c = ⨍ x in (Ι a b), f x ∂μ`. -/
+theorem exists_eq_interval_average_of_noAtoms
+    [NoAtoms μ]
     (hf : ContinuousOn f (uIcc a b))
-    (hμfin : μ (uIoc a b) ≠ ⊤)
-    (hμ0 : μ (uIoc a b) ≠ 0) :
-    ∃ c ∈ uIoo a b, f c = ⨍ x in (uIoc a b), f x ∂μ := by
+    (hμfin : μ (Ι a b) ≠ ⊤)
+    (hμ0 : μ (Ι a b) ≠ 0) :
+    ∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
   wlog h : a ≤ b generalizing a b
   · simp at h
     specialize this
@@ -145,11 +125,11 @@ theorem exists_eq_interval_average_of_NoAtoms
     · simpa [uIoo_comm] using hc
     · have hswap : Ι a b = Ι b a := uIoc_comm a b
       rwa [hswap]
-  let ave := average (μ.restrict (uIoc a b)) f
-  let S₁ := {x | x ∈ uIoc a b ∧ f x ≤ ave}
-  let S₂ := {x | x ∈ uIoc a b ∧ ave ≤ f x}
-  have hint : IntegrableOn f (uIoc a b) μ := by
-    have hsubset : uIoc a b ⊆ uIcc a b := uIoc_subset_uIcc
+  let ave := ⨍ x in (Ι a b), f x ∂μ
+  let S₁ := {x | x ∈ Ι a b ∧ f x ≤ ave}
+  let S₂ := {x | x ∈ Ι a b ∧ ave ≤ f x}
+  have hint : IntegrableOn f (Ι a b) μ := by
+    have hsubset : Ι a b ⊆ uIcc a b := uIoc_subset_uIcc
     have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
     obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc hf.norm
     apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
@@ -202,14 +182,14 @@ theorem exists_eq_interval_average_of_NoAtoms
 There exists a point in an interval such that the mean of a continuous function over the interval
 equals the value of the function at the point. -/
 theorem exists_eq_interval_average
-    {f : ℝ → ℝ} {a b : ℝ} (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
+    (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
     ∃ c ∈ uIoo a b, f c = ⨍ (x : ℝ) in a..b, f x := by
   wlog hle : a ≤ b generalizing a b
   · rw [uIoo_comm, uIoc_comm]
     apply this hab.symm ?_ (by grind)
     rwa [uIcc_comm]
   have : Ι a b = Ioc a b := uIoc_of_le hle
-  apply exists_eq_interval_average_of_NoAtoms hf
+  apply exists_eq_interval_average_of_noAtoms hf
   · simp [this]
   · apply ne_of_gt
     rw [this, Real.volume_Ioc, ENNReal.ofReal_pos]
