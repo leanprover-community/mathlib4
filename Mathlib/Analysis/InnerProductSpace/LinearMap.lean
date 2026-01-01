@@ -334,6 +334,10 @@ lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
     ext_iff_inner_right 𝕜 (E := F)]
 
+lemma rankOne_ne_zero {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
+    rankOne 𝕜 x y ≠ 0 := by grind [rankOne_eq_zero]
+
 theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
     IsIdempotentElem (rankOne 𝕜 x x) := by simp [IsIdempotentElem, mul_def, comp_rankOne, hx]
 
