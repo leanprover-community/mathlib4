@@ -74,6 +74,7 @@ def Digraph.mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
 instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).Adj :=
   inferInstanceAs <| DecidableRel (fun v w ↦ adj v w)
 
+
 -- instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) :=
 --   Fintype.ofBijective Digraph.mk' <| by
 --     classical
@@ -132,10 +133,13 @@ def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
-theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) :=
-  fun _ _ ↦ Digraph.ext
+-- Note : `adj_injective is no longer true
+-- theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) :=
+--  fun G₁ G₂ ↦ Digraph.ext
 
-@[simp] theorem adj_inj {G H : Digraph V} : G.Adj = H.Adj ↔ G = H := Digraph.ext_iff.symm
+
+@[simp] theorem adj_inj {G H : Digraph V} : verts G = verts H ∧ G.Adj = H.Adj  ↔ G = H :=
+  Digraph.ext_iff.symm
 
 section Order
 
@@ -223,11 +227,34 @@ theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w �
 
 instance supSet : SupSet (Digraph V) where
   sSup s := {
-
-    Adj := fun a b ↦ ∃ G ∈ s, Adj G a b }
+      verts := {v | ∃ G ∈ s, v ∈ G.verts}
+      Adj := fun a b ↦ ∃ G ∈ s, Adj G a b
+      edge_verts := by
+        intro v w ⟨G, G_in_s, G_Adj⟩
+        simp only [Set.mem_setOf_eq]
+        constructor
+        all_goals
+          use G
+          constructor <;> try exact G_in_s
+        · exact (G.edge_verts v w G_Adj).left
+        · exact (G.edge_verts v w G_Adj).right
+      }
 
 instance infSet : InfSet (Digraph V) where
-  sInf s := { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
+  sInf s := {
+    verts := {v | ∀ G ∈ s, v ∈ G.verts}
+    Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b)
+    edge_verts := by
+      intro v w hG
+      simp only [Set.mem_setOf_eq]
+      constructor
+      all_goals
+        intro G G_in_s
+        specialize hG G_in_s
+      · exact (G.edge_verts v w hG).left
+      · exact (G.edge_verts v w hG).right
+  }
+
 
 @[simp]
 theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
@@ -251,8 +278,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
   bot := Digraph.emptyDigraph V
   le_top _ _ _ _ := trivial
   bot_le _ _ _ h := h.elim
-  inf_compl_le_bot _ _ _ h := absurd h.1 h.2
-  top_le_sup_compl G v w _ := by tauto
+  inf_compl_le_bot G v w h := absurd h.2.2.2 (by simp [h.1])
+  top_le_sup_compl G v w h := by
+    sorry
   le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
   sSup_le s G hG a b := by
     rintro ⟨H, hH, hab⟩
