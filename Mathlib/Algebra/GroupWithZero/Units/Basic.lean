@@ -195,7 +195,7 @@ theorem inv_zero : (0 : M₀)⁻¹ = 0 := by
   rw [← ringInverse_eq_inv]
   exact inverse_zero M₀
 
-@[simp, grind _=_]
+@[simp, grind =]
 theorem isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a := by
   rw [← ringInverse_eq_inv]
   exact isUnit_ringInverse
