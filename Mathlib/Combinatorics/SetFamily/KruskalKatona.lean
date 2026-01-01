@@ -282,6 +282,9 @@ theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞�
   · exact (eq_of_subset_of_card_le h𝒞ℬ hcard.le).symm
   · exact eq_of_subset_of_card_le hℬ𝒞 hcard.ge
 
+set_option linter.style.commandStart false -- Linter false positive related to
+-- iterated differential; disable for now.
+
 /-- An iterated form of the Kruskal-Katona theorem. In particular, the minimum possible iterated
 shadow size is attained by initial segments. -/
 theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞 ≤ #𝒜) (h₃ : IsInitSeg 𝒞 r) :
@@ -324,7 +327,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩
         rw [← Ah.2, ← card_sdiff_i, add_comm, card_sdiff_add_card_eq_card hBA]
-    _ ≤ #(∂ ^[i] 𝒜) := by
+    _ ≤ #(∂^[i] 𝒜) := by
       refine iterated_kk h₁ ?_ ⟨‹_›, ?_⟩
       · rwa [card_powersetCard, card_attachFin, card_range]
       simp_rw [𝒞, mem_powersetCard]
@@ -340,6 +343,8 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
 
 end KK
 
+-- Linter false positive related to iterated differential; disable for now.
+set_option linter.style.commandStart false in
 /-- The **Erdős–Ko–Rado theorem**.
 
 The maximum size of an intersecting family in `α` where all sets have size `r` is bounded by

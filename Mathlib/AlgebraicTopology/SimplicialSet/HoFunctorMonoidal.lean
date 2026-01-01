@@ -51,7 +51,7 @@ lemma tensor_surjective {x x' : X _⦋0⦌₂} {y y' : Y _⦋0⦌₂}
 
 @[simp]
 lemma id_tensor_id (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
-    (id x).tensor (id y) = id (X := X ⊗ Y) (x, y):= rfl
+    (id x).tensor (id y) = id (X := X ⊗ Y) (x, y) := rfl
 
 @[simp]
 lemma map_tensorHom {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂}

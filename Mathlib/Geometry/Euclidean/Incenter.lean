@@ -953,7 +953,7 @@ lemma touchpointWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finse
   rw [eq_comm, ← affineCombination_eq_touchpoint_iff]
   · rw [touchpoint_reindex, ← affineCombination_touchpointWeights, reindex]
     dsimp only
-    rw [←Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
+    rw [← Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
     simp
   · rw [Finset.sum_comp_equiv]
     simp

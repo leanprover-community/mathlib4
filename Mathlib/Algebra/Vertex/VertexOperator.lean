@@ -62,7 +62,7 @@ scoped[VertexOperator] notation A "[[" n "]]" => ncoeff A n
 
 @[simp]
 theorem coeff_eq_ncoeff (A : VertexOperator R V)
-    (n : ℤ) : HVertexOperator.coeff A n = A [[-n - 1]] := by
+    (n : ℤ) : HVertexOperator.coeff A n = A[[-n - 1]] := by
   rw [ncoeff_apply, neg_sub, Int.sub_neg, add_sub_cancel_left]
 
 @[deprecated (since := "2025-08-30")] alias ncoeff_add := map_add

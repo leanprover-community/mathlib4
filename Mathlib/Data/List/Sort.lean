@@ -191,6 +191,7 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
   induction xs <;> grind
 
+set_option linter.style.commandStart false in -- TODO decide!
 theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : ∀ a' ∈ c, a ≼ a') :
     a :: c <+ orderedInsert r a l := by
   induction l <;> grind
@@ -249,6 +250,7 @@ alias sorted_insertionSort := pairwise_insertionSort
 
 end TotalAndTransitive
 
+set_option linter.style.commandStart false in -- manual alignment is not recognised
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
 -/
@@ -274,6 +276,7 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
 
 variable [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
 
+set_option linter.style.commandStart false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
 additionally requires `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.

@@ -220,14 +220,14 @@ theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℂ) :
 
 lemma one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw : w ≠ x) :
     HasFPowerSeriesOnBall (fun z ↦ 1 / (z - w) ^ 2 - 1 / w ^ 2) (.ofScalars ℂ
-      fun i ↦ (i + 1) * (w - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) x ‖w - x‖ₑ := by
+      fun i ↦ (i + 1) * (w - x) ^ (-↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) x ‖w - x‖ₑ := by
   rw [← Pi.sub_def, ← Pi.sub_def, FormalMultilinearSeries.ofScalars_sub]
   refine .sub ?_ ?_
   · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
       using (one_div_sub_sq_hasFPowerSeriesOnBall_zero
         (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
   · convert hasFPowerSeriesOnBall_const.mono _ le_top
-    · ext (_|_) <;> simp [zpow_ofNat]
+    · ext (_ | _) <;> simp [zpow_ofNat]
     · simpa [sub_eq_zero]
 
 end Complex
