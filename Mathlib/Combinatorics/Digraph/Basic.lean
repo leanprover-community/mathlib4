@@ -113,7 +113,7 @@ Note that `⊥` is called the empty digraph because it has no edges.
 -/
 protected def emptyDigraph (V : Type*) : Digraph V where
   Adj _ _ := False
-  verts := ∅
+  verts := Set.univ
   edge_verts := by
     intro v w a
     simp_all only
@@ -133,10 +133,10 @@ def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
--- Note : `adj_injective is no longer true
--- theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) :=
---  fun G₁ G₂ ↦ Digraph.ext
-
+-- Note `adj_injective` is no longer true
+-- theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := by
+--   intro G₁ G₂ h
+--   ext
 
 @[simp] theorem adj_inj {G H : Digraph V} : verts G = verts H ∧ G.Adj = H.Adj  ↔ G = H :=
   Digraph.ext_iff.symm
@@ -269,17 +269,103 @@ theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).
 theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by simp [iInf]
 
 /-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
-instance distribLattice : DistribLattice (Digraph V) :=
-  { adj_injective.distribLattice Digraph.Adj (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
-    le := fun G H ↦ ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+instance distribLattice : DistribLattice (Digraph V) where
+    le := fun G H ↦  (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
+    le_refl := by
+      intro G
+      tauto
+    le_trans := by
+      intro G₁ G₂ G₃ h₁₂ h₂₃
+      tauto
+    le_antisymm := by
+      intro G H h h'
+      ext v w <;> tauto
+    sup := max
+    inf := min
+    le_sup_left := by
+      intro G H
+      constructor
+      · simp only [max, SemilatticeSup.sup, Set.subset_union_left]
+      · intro v w adj
+        simp only [max, SemilatticeSup.sup]
+        left; assumption
+    le_sup_right := by
+      intro G H
+      constructor
+      · simp only [max, SemilatticeSup.sup, Set.subset_union_right]
+      · intro v w adj
+        simp only [max, SemilatticeSup.sup]
+        right; assumption
+
+    inf_le_left := by
+      intro G H
+      constructor
+      · simp only [min, SemilatticeInf.inf, Lattice.inf, Set.inter_subset_left]
+      · intro v w adj
+        simp only [min, SemilatticeInf.inf, Lattice.inf] at adj
+        tauto
+
+    inf_le_right := by
+      intro G H
+      constructor
+      · simp only [min, SemilatticeInf.inf, Lattice.inf, Set.inter_subset_right]
+      · intro v w adj
+        simp only [min, SemilatticeInf.inf, Lattice.inf] at adj
+        tauto
+
+    sup_le := by
+      intro G H supG hG hH
+      constructor
+      · simp only [max, SemilatticeSup.sup, Set.union_subset_iff]
+        tauto
+      · simp only [max, SemilatticeSup.sup]
+        tauto
+
+    le_inf := by
+      intro G H infG hG hH
+      constructor
+      · simp only [min, SemilatticeInf.inf, Lattice.inf, Set.subset_inter_iff]
+        tauto
+      · simp only [min, SemilatticeInf.inf, Lattice.inf]
+        tauto
+
+    le_sup_inf := by
+      intro G H I
+      simp only [min, SemilatticeInf.inf,
+        Lattice.inf, max, SemilatticeSup.sup, and_imp]
+      constructor
+      · rw [←Set.union_inter_distrib_left]
+      · intro v w hGH gGI
+        tauto
+
+
+
 
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) where
   top := Digraph.completeDigraph V
   bot := Digraph.emptyDigraph V
-  le_top _ _ _ _ := trivial
-  bot_le _ _ _ h := h.elim
-  inf_compl_le_bot G v w h := absurd h.2.2.2 (by simp [h.1])
-  top_le_sup_compl G v w h := by
+  le_top G := by
+    simp [Digraph.completeDigraph,LE.le]
+
+  bot_le G := by
+    simp [Digraph.emptyDigraph, LE.le]
+
+  inf_compl_le_bot := by
+    intro H
+    simp only [LE.le, min, SemilatticeInf.inf, Lattice.inf,
+      Digraph.emptyDigraph, imp_false, not_and]
+    constructor
+    · simp
+    · simp only [hasCompl, not_and, not_not]
+      intros
+      assumption
+      done
+  top_le_sup_compl  := by
+    intro G
+    simp [Digraph.completeDigraph, max, hasCompl, LE.le,
+      SemilatticeSup.sup]
+
+
     sorry
   le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
   sSup_le s G hG a b := by
@@ -293,7 +379,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
 
 @[simp] theorem bot_adj (v w : V) : (⊥ : Digraph V).Adj v w ↔ False := Iff.rfl
 
-@[simp] theorem completeDigraph_eq_top (V : Type*) : Digraph.completeDigraph V = ⊤ := rfl
+@[simp] theorem completeDigraph_eq_top (V : Type*) : Digraph.completeDigraph V = ⊤ := by
+  simp [Digraph.completeDigraph]
+
 
 @[simp] theorem emptyDigraph_eq_bot (V : Type*) : Digraph.emptyDigraph V = ⊥ := rfl
 
