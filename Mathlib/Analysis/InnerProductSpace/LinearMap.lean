@@ -333,6 +333,22 @@ lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
     IsIdempotentElem (rankOne 𝕜 x x) := by simp [IsIdempotentElem, mul_def, comp_rankOne, hx]
 
+@[simp] theorem rankOne_one_right_eq_toSpanSingleton (x : F) :
+    rankOne 𝕜 x 1 = toSpanSingleton 𝕜 x := by ext; simp
+
+@[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
+
+lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
+    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
+
+lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :
+    inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
+  simp [inner_smul_left, inner_conj_symm]
+
+lemma inner_right_rankOne_apply (x y : F) (z w : G) :
+    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
+  simp [inner_smul_right, mul_comm]
+
 section Normed
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
@@ -355,21 +371,5 @@ theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
   grind [norm_nonneg]
 
 end Normed
-
-@[simp] theorem rankOne_one_right_eq_toSpanSingleton (x : F) :
-    rankOne 𝕜 x 1 = toSpanSingleton 𝕜 x := by ext; simp
-
-@[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
-
-lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
-    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
-
-lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :
-    inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
-  simp [inner_smul_left, inner_conj_symm]
-
-lemma inner_right_rankOne_apply (x y : F) (z w : G) :
-    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
-  simp [inner_smul_right, mul_comm]
 
 end InnerProductSpace
