@@ -3,19 +3,24 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
-import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
-import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
-import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
+public import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 /-!
 # R^+F
 
 -/
+
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 def HomotopyCategory.Plus.mk {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
-    [HasBinaryBiproducts C] (K : CochainComplex C ℤ) (hK : ∃ n, K.IsStrictlyGE n):
+    [HasBinaryBiproducts C] (K : CochainComplex C ℤ) (hK : ∃ n, K.IsStrictlyGE n) :
     HomotopyCategory.Plus C :=
   ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, hK.choose, hK.choose_spec⟩
 
@@ -205,7 +210,6 @@ lemma isIso_rightDerivedFunctorPlusUnit_app
     t.isIso_homologyFunctor_map_mor₂_of_isGE _
       ((DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus).map_distinguished _ hT')
       n (n + 2) (by omega) (by dsimp; infer_instance)
-
   have e'' : Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map
     ((F.rightDerivedFunctorPlusUnit).app K')) ≅
       Arrow.mk ((DerivedCategory.Plus.homologyFunctor D n).map

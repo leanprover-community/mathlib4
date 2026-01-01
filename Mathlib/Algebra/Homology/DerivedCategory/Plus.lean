@@ -3,16 +3,21 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Plus
-import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
-import Mathlib.Algebra.Homology.DerivedCategory.TStructure
-import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
-import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
+public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
+public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 
 /-!
 # The category D^+
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Triangulated Limits
 
@@ -63,8 +68,11 @@ instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   infer_instance
 
 lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
-    (_ : CochainComplex.IsKInjective L.1.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) :=
-  CochainComplex.Qh_map_bijective_of_isKInjective K.1 L.1.as
+    (_ : CochainComplex.IsKInjective L.1.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
+  have := CochainComplex.IsKInjective.Qh_map_bijective K.1 L.1.as
+  rw [← Function.Bijective.of_comp_iff _
+    ((HomotopyCategory.Plus.fullyFaithfulι C).map_bijective _ _)] at this
+  rwa [← Function.Bijective.of_comp_iff' (t.plus.fullyFaithfulι.map_bijective _ _)]
 
 instance : (HomotopyCategory.subcategoryAcyclic C).IsRightLocalizing (HomotopyCategory.Plus.ι C)
      where
@@ -88,8 +96,8 @@ instance : (HomotopyCategory.subcategoryAcyclic C).IsRightLocalizing (HomotopyCa
       rw [CochainComplex.isIso_πTruncGE_iff]
       infer_instance
     refine ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.πTruncGE n),
-      (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
-        (CochainComplex.truncGEMap φ n ≫ inv (L.πTruncGE n)), ?_⟩
+      ObjectProperty.homMk ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
+        (CochainComplex.truncGEMap φ n ≫ inv (L.πTruncGE n))), ?_⟩
     erw [← (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_comp]
     congr 1
     rw [← cancel_mono (L.πTruncGE n), CochainComplex.πTruncGE_naturality_assoc,

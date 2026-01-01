@@ -138,9 +138,9 @@ def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
   have : t₂.IsGE (F.mapTriangle.obj ((t₁.triangleLEGE a b h).obj X)).obj₃ b := by
     dsimp
     apply F.isGE_obj t₁ t₂
-  obtain ⟨e, h₂⟩ := t₂.triangle_iso_exists a b (by linarith) _ _
+  obtain ⟨e, h₂⟩ := t₂.triangle_iso_exists
     (t₂.triangleLEGE_distinguished a b h (F.obj X))
-    (F.map_distinguished _ (t₁.triangleLEGE_distinguished a b h X)) (Iso.refl _)
+    (F.map_distinguished _ (t₁.triangleLEGE_distinguished a b h X)) (Iso.refl _) a b
     (by dsimp; infer_instance) (by dsimp; infer_instance) inferInstance inferInstance
   dsimp at h₂
   have h₂' : e.inv.hom₂ = 𝟙 _ := by

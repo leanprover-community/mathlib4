@@ -3,19 +3,23 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Plus
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.Algebra.Homology.Factorizations.CM5a
-import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Plus
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.Algebra.Homology.Factorizations.CM5a
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 /-!
 # The injective derivability structure
 
 -/
+
+@[expose] public section
 
 universe w₁ w₂
 
@@ -31,23 +35,24 @@ abbrev Injectives := ObjectProperty.FullSubcategory (fun (X : C) => Injective X)
 
 namespace Injectives
 
-def closedUnderLimitsOfShapeDiscrete (J : Type*) :
-    ClosedUnderLimitsOfShape (Discrete J) (fun (X : C) => Injective X) := by
-  intro F c hc H
-  have : HasLimit F := ⟨_, hc⟩
-  let X := fun j => F.obj ⟨j⟩
-  let e := @Discrete.natIsoFunctor _ _ _ F
-  have : HasProduct X := hasLimit_of_iso e
-  have : HasLimit (Discrete.functor (F.obj ∘ Discrete.mk)) := by
-    change HasProduct X
-    infer_instance
-  have : ∀ j, Injective (X j) := fun j => H ⟨j⟩
-  have e' : ∏ᶜ X ≅ c.pt := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-    ((IsLimit.postcomposeHomEquiv e c).symm hc)
-  exact Injective.of_iso e' inferInstance
+instance closedUnderLimitsOfShapeDiscrete (J : Type*) :
+    ObjectProperty.IsClosedUnderLimitsOfShape (fun (X : C) => Injective X) (Discrete J) where
+  limitsOfShape_le := by
+    rintro Y ⟨p⟩
+    have : HasLimit p.diag := ⟨_, p.isLimit⟩
+    let X := fun j => p.diag.obj ⟨j⟩
+    let e := Discrete.natIsoFunctor (F := p.diag)
+    have : HasProduct X := hasLimit_of_iso e
+    have : HasLimit (Discrete.functor (p.diag.obj ∘ Discrete.mk)) := by
+      change HasProduct X
+      infer_instance
+    have : ∀ j, Injective (X j) := fun j => p.prop_diag_obj ⟨j⟩
+    have e' : ∏ᶜ X ≅ Y := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+      ((IsLimit.postcomposeHomEquiv e _).symm p.isLimit)
+    exact Injective.of_iso e' inferInstance
 
-instance : HasFiniteProducts (Injectives C) :=
-  ⟨fun _ => hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShapeDiscrete _ _)⟩
+instance : HasFiniteProducts (Injectives C) where
+  out n := by infer_instance
 
 instance : HasFiniteBiproducts (Injectives C) := HasFiniteBiproducts.of_hasFiniteProducts
 
@@ -57,6 +62,7 @@ instance : HasZeroObject (Injectives C) where
   zero := by
     refine ⟨⟨0, inferInstance⟩, ?_⟩
     rw [IsZero.iff_id_eq_zero]
+    ext : 1
     apply id_zero
 
 abbrev ι : Injectives C ⥤ C := ObjectProperty.ι _
@@ -73,17 +79,19 @@ variable {C}
 def liftHomotopyCategoryPlusOfInjective (K : HomotopyCategory.Plus C)
   [∀ (n : ℤ), Injective (K.obj.as.X n)] : HomotopyCategory.Plus (Injectives C) :=
     { obj :=
-       ⟨{ X := fun n => ⟨K.obj.as.X n, inferInstance⟩
-          d := fun i j => K.obj.as.d i j
-          shape := fun i j hij => K.obj.as.shape i j hij
-          d_comp_d' := fun i j hij => K.obj.as.d_comp_d' i j hij }⟩
+       ⟨{ X n := ⟨K.obj.as.X n, inferInstance⟩
+          d i j := ObjectProperty.homMk (K.obj.as.d i j)
+          shape i j hij := by ext : 1; exact K.obj.as.shape i j hij
+          d_comp_d' i j k _ _ := by ext : 1; exact K.obj.as.d_comp_d i j k }⟩
       property := by
         obtain ⟨n, hn⟩ := K.2
         refine ⟨n, ?_⟩
         rw [CochainComplex.isStrictlyGE_iff]
         intro i hi
-        simpa only [IsZero.iff_id_eq_zero] using
-          CochainComplex.isZero_of_isStrictlyGE K.obj.as n i hi }
+        have := CochainComplex.isZero_of_isStrictlyGE K.obj.as n i hi
+        rw [IsZero.iff_id_eq_zero] at this ⊢
+        ext : 1
+        exact this }
 
 def isoMapHomotopyCategoryPlusιObj (K : HomotopyCategory.Plus C)
     [∀ (n : ℤ), Injective (K.obj.as.X n)] :
@@ -179,7 +187,7 @@ noncomputable def rightResolution_localizerMorphism
     (localizerMorphism C).RightResolution
       (⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, hK⟩) where
   X₁ := liftHomotopyCategoryPlusOfInjective ⟨⟨K.injectiveResolution n⟩, ⟨n, inferInstance⟩⟩
-  w := (HomotopyCategory.quotient _ _).map (K.ιInjectiveResolution n)
+  w := ObjectProperty.homMk ((HomotopyCategory.quotient _ _).map (K.ιInjectiveResolution n))
   hw := by
     dsimp [HomotopyCategory.Plus.quasiIso, MorphismProperty.inverseImage,
       HomotopyCategory.Plus.ι]

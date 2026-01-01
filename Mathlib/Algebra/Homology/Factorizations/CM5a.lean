@@ -3,17 +3,21 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Factorizations.CM5b
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.DerivedCategory.TStructure
-import Mathlib.Algebra.Homology.Single
-import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
-import Mathlib.CategoryTheory.Functor.OfSequence
+module
+
+public import Mathlib.Algebra.Homology.Factorizations.CM5b
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
+public import Mathlib.CategoryTheory.Functor.OfSequence
 
 /-!
 # Factorization lemma
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
@@ -48,11 +52,13 @@ def functorNat (H : ∀ (n : ℕ), F.map (homOfLE (by linarith)) ≫ app (n + 1)
       obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (leOfHom φ)
       exact this k i _ rfl
     intro k
-    induction' k with k hk
-    · intro i j h
+    induction k with
+    | zero =>
+      intro i j h
       obtain rfl : j = i := by linarith
       erw [F.map_id, G.map_id, id_comp, comp_id]
-    · intro i j h
+    | succ k hk =>
+      intro i j h
       obtain rfl : j = i + k + 1 := by linarith
       simp only [← homOfLE_comp (show i ≤ i + k by linarith) (show i + k ≤ i + k + 1 by linarith),
         Functor.map_comp, assoc, H (i + k), reassoc_of% (hk i _ rfl)]
@@ -210,7 +216,7 @@ lemma homology_exact₁_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
     (-((((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀ (by linarith)).app T.obj₃)))
     (Iso.refl _) (Iso.refl _) ?_ ?_
   · dsimp [homologyδOfDistinguished]
-    simp only [neg_smul, one_smul, neg_comp, homologyMap_neg, comp_id, neg_inj]
+    simp only [neg_comp, homologyMap_neg, comp_id, neg_inj]
     erw [← NatTrans.naturality_assoc]
     rw [homologyMap_comp]
     congr 1
@@ -317,7 +323,8 @@ noncomputable def toDouble : K ⟶ double _ _ h h' f where
       by_cases h₁ : j = n₁
       · subst h₁
         simp [dif_neg h', comm]
-      · simp [double_d_eq_zero₁ _ _ h h' f i j h₁]
+      · simp only [HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp,
+          double_d_eq_zero₁ _ _ h h' f i j h₁, comp_zero]
         by_cases hij' : j = i
         · subst hij'
           rw [K.shape, zero_comp]
@@ -395,10 +402,9 @@ lemma inl_snd (p q : ℤ) (hpq : p + (-1) = q) :
 lemma inr_snd (p q : ℤ) (hpq : p + 1 = q) :
     (inr f).1.v p q hpq ≫ (snd f).v q p (by linarith) = 𝟙 _ := by
   dsimp [inr, snd]
-  have : ((1 : ℤ) + 1)/2 = 1 := rfl
   rw [Cochain.rightShift_v _ (-1) 1 _ p q _ p (by linarith),
     Cochain.leftShift_v _ (-1) (-1) _ q p _ p (by linarith)]
-  simp [this, Int.negOnePow_succ, show Int.negOnePow 2 = 1 by rfl]
+  simp [show Int.negOnePow 2 = 1 by rfl]
 
 @[reassoc (attr := simp)]
 lemma inl_fst (p : ℤ) : (inl f).v p p (add_zero _) ≫ (fst f).f p = 𝟙 _ := by
@@ -406,7 +412,10 @@ lemma inl_fst (p : ℤ) : (inl f).v p p (add_zero _) ≫ (fst f).f p = 𝟙 _ :=
   have : ((1 : ℤ) + 1)/2 = 1 := rfl
   rw [Cochain.rightShift_v _ (-1) 0 _ p p _ (p-1) (by linarith),
     Cochain.leftShift_v _ (-1) 0 _ p p _ (p-1) (by linarith)]
-  simp [this]
+  simp only [Int.reduceNeg, shiftFunctor_obj_X, shiftFunctorObjXIso,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, mul_zero, Int.reduceSub, mul_neg, neg_mul,
+    one_mul, neg_neg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, EuclideanDomain.div_self,
+    zero_add, Int.negOnePow_one, Iso.refl_hom, id_comp, Units.neg_smul, one_smul, assoc]
   erw [id_comp]
   simp
 
@@ -418,7 +427,10 @@ lemma id (p q : ℤ) (hpq : p + (-1) = q) : (fst f).f p ≫ (inl f).v p p (add_z
       Cochain.rightShift_v _ (-1) 1 _ q p _ q (by linarith),
       Cochain.leftShift_v _ (-1) 0 _ p p _ q (by linarith),
       Cochain.leftShift_v _ (-1) (-1) _ p q _ q (by linarith)]
-    simp [this, Int.negOnePow_succ, show Int.negOnePow 2 = 1 by rfl]
+    simp only [Int.reduceNeg, shiftFunctor_obj_X, mul_zero, Int.reduceSub, mul_neg, neg_mul,
+      one_mul, neg_neg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, EuclideanDomain.div_self,
+      zero_add, Int.negOnePow_one, shiftFunctorObjXIso, Units.neg_smul, one_smul, assoc, mul_one,
+      Int.reduceAdd, show Int.negOnePow 2 = 1 by rfl, Cochain.ofHom_v]
     rw [← comp_add]
     conv_lhs =>
       congr
@@ -442,11 +454,14 @@ noncomputable def triangleIso : triangle f ≅ (mappingCone.triangle f).invRotat
     ext n
     have : ((1 : ℤ) + 1) / 2 = 1 := rfl
     dsimp [mappingCone.triangle]
-    simp only [comp_id, neg_smul, one_smul, Cochain.rightShift_neg, Cochain.neg_v,
-      neg_comp, neg_neg, id_comp, neg_inj]
+    simp only [comp_id, Cochain.rightShift_neg, Cochain.neg_v,
+      neg_comp, neg_neg, id_comp]
     rw [Cochain.leftShift_v _ (-1) 0 _ n n _ (n-1) (by linarith),
       Cochain.rightShift_v _ 1 0 _ _ _ _ n (by linarith)]
-    simp [this]
+    simp only [Int.reduceNeg, shiftFunctor_obj_X, mul_zero, Int.reduceSub, mul_neg, neg_mul,
+      one_mul, neg_neg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, EuclideanDomain.div_self,
+      zero_add, Int.negOnePow_one, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl,
+      Iso.refl_hom, id_comp, Units.neg_smul, one_smul, assoc]
     dsimp [shiftFunctorCompIsoId]
     rw [shiftFunctorAdd'_inv_app_f', shiftFunctorZero_hom_app_f]
     simp only [HomologicalComplex.XIsoOfEq_hom_comp_XIsoOfEq_hom, Iso.inv_hom_id, comp_id]
@@ -768,11 +783,10 @@ instance (p : ℤ) : Injective ((I f n).X p) := by
 noncomputable def π' : (cokernel f).truncGE n ⟶ I f n :=
   (toSingleEquiv _ _ (n-1) n (by simp)).symm ⟨Injective.ι _, by
     apply IsZero.eq_of_src
-    apply isZero_of_isStrictlyGE _ n
-    omega⟩
+    exact isZero_of_isStrictlyGE _ n _ (by omega)⟩
 
 instance : Mono ((π' f n).f n) := by
-  simp [π', toSingleEquiv]
+  simp only [π', toSingleEquiv, Equiv.coe_fn_symm_mk, mkHomToSingle_f, mono_comp_iff_of_mono]
   infer_instance
 
 omit [Mono (homologyMap f n)] [Mono f] in
@@ -858,7 +872,10 @@ lemma fac : i f n ≫ p f n = f := by
   have : ((1 : ℤ) + 1) / 2 = 1 := rfl
   rw [Cochain.rightShift_v _ (-1) 0 _ q q _ (q-1) (by linarith),
     Cochain.leftShift_v _ (-1) 0 _ q q _ (q-1) (by linarith)]
-  simp [this, i']
+  simp only [Int.reduceNeg, shiftFunctor_obj_X, i', mappingCone.liftCocycle_coe, Cocycle.ofHom_coe,
+    shiftFunctorObjXIso, XIsoOfEq_rfl, Iso.refl_inv, mul_zero, Int.reduceSub, mul_neg, neg_mul,
+    one_mul, neg_neg, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, EuclideanDomain.div_self,
+    zero_add, Int.negOnePow_one, Iso.refl_hom, id_comp, Units.neg_smul, one_smul, assoc]
   erw [id_comp]
   simp
 
@@ -1018,11 +1035,11 @@ lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
 lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (F : CofFibFactorizationQuasiIsoLE f n₀) :
     ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (f : F'.1 ⟶ F.1),
-      ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (f.φ.f i) := by
+      ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (f.hom.φ.f i) := by
   obtain ⟨F₁₂, h, _⟩ := step₁₂ F.1.1.i n₀ n₁ hn₁ (F.1.quasiIsoAt_of_quasiIsoLE n₀)
   have fac : F₁₂.obj.i ≫ F₁₂.obj.p ≫ F.1.1.p = f := by rw [F₁₂.1.fac_assoc, F.1.1.fac]
   exact ⟨⟨CofFibFactorization.mk fac (MorphismProperty.comp_mem _ _ _ F₁₂.2.hp F.1.2.hp),
-    ⟨F₁₂.quasiIsoAt_of_quasiIsoLE n₁⟩⟩, { φ := F₁₂.1.p }, h⟩
+    ⟨F₁₂.quasiIsoAt_of_quasiIsoLE n₁⟩⟩, ObjectProperty.homMk { φ := F₁₂.1.p }, h⟩
 
 namespace CofFibFactorizationQuasiIsoLE
 
@@ -1057,7 +1074,7 @@ noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n�
 
 lemma isIso_fromNext_φ_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) (i : ℤ) (hi : i ≤ n₀) :
-    IsIso ((F.fromNext n₁ hn₁).φ.f i) :=
+    IsIso ((F.fromNext n₁ hn₁).hom.φ.f i) :=
   (step' f _ _ hn₁ F).choose_spec.choose_spec i hi
 
 variable (f)
@@ -1088,7 +1105,7 @@ lemma isIso_inverseSystemI_map_succ (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) :
   simp only [Functor.comp_obj, Functor.leftOp_obj, Opposite.unop_op, Functor.ofSequence_obj,
     HomFactorization.forget_obj, Functor.comp_map, Functor.leftOp_map, Quiver.Hom.unop_op,
     HomFactorization.forget_map, Functor.ofSequence_map_homOfLE_succ]
-  change IsIso ((CofFibFactorizationQuasiIsoLE.sequenceFromNext f n₀ n).1.f q)
+  change IsIso ((CofFibFactorizationQuasiIsoLE.sequenceFromNext f n₀ n).hom.1.f q)
   apply CofFibFactorizationQuasiIsoLE.isIso_fromNext_φ_f
   simpa only [Nat.add_eq, add_zero] using hq
 
@@ -1100,14 +1117,16 @@ lemma isIso_inverseSystemI_map' (n n' : ℕ) (h : n ≤ n')
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
     exact this k n _ rfl q hq
   intro k
-  induction' k with k hk
-  · intro n n' h
+  induction k with
+  | zero =>
+    intro n n' h
     obtain rfl : n = n' := by linarith
     intro q _
     have : homOfLE (show n ≤ n by rfl) = 𝟙 _ := rfl
     rw [this, op_id, (inverseSystemI f n₀).map_id, id_f]
     infer_instance
-  · intro n n'' h q hq
+  | succ k hk =>
+    intro n n'' h q hq
     let n' := n + k
     have := hk n n' rfl q hq
     rw [← homOfLE_comp (show n ≤ n' by omega) (show n' ≤ n'' by omega), op_comp,
@@ -1148,7 +1167,7 @@ noncomputable def cone : Cone (inverseSystemI f n₀) where
       naturality := fun i j φ => by
         dsimp
         rw [id_comp]
-        exact ((inverseSystem f n₀).map φ).commi.symm }
+        exact ((inverseSystem f n₀).map φ).hom.commi.symm }
 
 noncomputable def i : K ⟶ I f n₀ := limit.lift (inverseSystemI f n₀) (cone f n₀)
 
@@ -1170,7 +1189,7 @@ lemma p'_zero : p' f n₀ 0 = 𝟙 _ := rfl
 /-- `w_p'` -/
 lemma w_p' (n n' : ℕ) (h : n ≤ n') :
     ((inverseSystemI f n₀).map (homOfLE h).op) ≫ p' f n₀ n = p' f n₀ n' :=
-  ((inverseSystem f n₀).map (homOfLE h).op).commp
+  ((inverseSystem f n₀).map (homOfLE h).op).hom.commp
 
 /-- `π_comp_p'` -/
 lemma π_comp_p' (n : ℕ) : limit.π _ (Opposite.op n) ≫ p' f n₀ n = p f n₀ := by
@@ -1233,7 +1252,7 @@ end CM5aCof
 
 section
 
-lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
+lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
   let n₀ := n - 1
@@ -1250,11 +1269,11 @@ lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
 
 end
 
-lemma CM5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
+lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
-  obtain ⟨L', _, i₁, p₁, _, hp₁, _, rfl⟩ := CM5b f n
-  obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := CM5a_cof i₁ n
+  obtain ⟨L', _, i₁, p₁, _, hp₁, _, rfl⟩ := cm5b f n
+  obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := cm5a_cof i₁ n
   refine ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
     MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩
 
@@ -1267,7 +1286,7 @@ lemma exists_injective_resolution' (n : ℤ) [K.IsStrictlyGE n] :
   have : K.IsStrictlyGE (n - 1 + 1) := by
     simp only [sub_add_cancel]
     infer_instance
-  obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := CM5a (0 : K ⟶ 0) (n - 1)
+  obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := cm5a (0 : K ⟶ 0) (n - 1)
   have hp₀ : p = 0 := (isZero_zero _).eq_of_tgt _ _
   refine ⟨L, i, hi, hi', fun n => Injective.of_iso ?_ ((hp n).2), hL⟩
   exact
@@ -1299,8 +1318,7 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
         exact L.isZero_of_isGE n (n-1) (by linarith)
       apply hT.mono_g
       apply IsZero.eq_of_src
-      apply L.isZero_of_isStrictlyGE (n-1)
-      linarith
+      exact L.isZero_of_isStrictlyGE (n - 1) _
     have hS : S.ShortExact :=
       { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
     exact Injective.direct_factor (hS.splittingOfInjective).s_g

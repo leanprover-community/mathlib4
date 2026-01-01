@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Constructor for abelian categories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

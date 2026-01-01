@@ -267,29 +267,29 @@ lemma isIso_homologyFunctor_map_truncGEπ_app (X : DerivedCategory C) (a n : ℤ
 variable (C)
 
 lemma isIso_whiskerRight_truncLEι_homologyFunctor (a n : ℤ) (hn : n ≤ a) :
-    IsIso (whiskerRight (t.truncLEι a) (homologyFunctor C n)) :=
+    IsIso (Functor.whiskerRight (t.truncLEι a) (homologyFunctor C n)) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _
     (fun X => isIso_homologyFunctor_map_truncLEι_app X a n hn)
 
 noncomputable def truncLECompHomologyFunctorIso (a n : ℤ) (hn : n ≤ a) :
     t.truncLE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
   have := isIso_whiskerRight_truncLEι_homologyFunctor C a n hn
-  exact asIso (whiskerRight (t.truncLEι a) (homologyFunctor C n))
+  exact asIso (Functor.whiskerRight (t.truncLEι a) (homologyFunctor C n))
 
 lemma isIso_whiskerRight_truncGEπ_homologyFunctor (a n : ℤ) (hn : a ≤ n) :
-  IsIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n)) :=
+  IsIso (Functor.whiskerRight (t.truncGEπ a) (homologyFunctor C n)) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _
     (fun X => isIso_homologyFunctor_map_truncGEπ_app X a n hn)
 
 noncomputable def truncGECompHomologyFunctorIso (a n : ℤ) (hn : a ≤ n) :
     t.truncGE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
   have := isIso_whiskerRight_truncGEπ_homologyFunctor C a n hn
-  exact (asIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n))).symm
+  exact (asIso (Functor.whiskerRight (t.truncGEπ a) (homologyFunctor C n))).symm
 
-noncomputable def truncGELECompHomologyFunctorIso (a b n : ℤ) (ha : a ≤ n) (hb : n ≤ b):
+noncomputable def truncGELECompHomologyFunctorIso (a b n : ℤ) (ha : a ≤ n) (hb : n ≤ b) :
   t.truncGELE a b ⋙ homologyFunctor C n ≅ homologyFunctor C n :=
     Functor.associator _ _ _ ≪≫
-      isoWhiskerLeft (t.truncLE b) (truncGECompHomologyFunctorIso C a n ha) ≪≫
+      Functor.isoWhiskerLeft (t.truncLE b) (truncGECompHomologyFunctorIso C a n ha) ≪≫
       truncLECompHomologyFunctorIso C b n hb
 
 variable {C}
@@ -306,14 +306,14 @@ variable (C)
 noncomputable def homologyFunctorIsotruncLE₀GE₀ToHeart :
     homologyFunctor C 0 ≅ truncLE₀GE₀ToHeart :=
   (truncGELECompHomologyFunctorIso C 0 0 0 (by rfl) (by rfl)).symm ≪≫
-    isoWhiskerRight truncLE₀GE₀ToHeartιHeart.symm _ ≪≫
+    Functor.isoWhiskerRight truncLE₀GE₀ToHeartιHeart.symm _ ≪≫
     Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (singleFunctorCompHomologyFunctorIso C 0) ≪≫
+    Functor.isoWhiskerLeft _ (singleFunctorCompHomologyFunctorIso C 0) ≪≫
     truncLE₀GE₀ToHeart.rightUnitor
 
 noncomputable instance : (t : TStructure (DerivedCategory C)).HasHomology₀ where
   homology₀ := homologyFunctor C 0
-  iso := isoWhiskerRight (homologyFunctorIsotruncLE₀GE₀ToHeart C) _ ≪≫
+  iso := Functor.isoWhiskerRight (homologyFunctorIsotruncLE₀GE₀ToHeart C) _ ≪≫
     truncLE₀GE₀ToHeartιHeart
 
 noncomputable instance : (t : TStructure (DerivedCategory C)).homology₀.ShiftSequence ℤ :=

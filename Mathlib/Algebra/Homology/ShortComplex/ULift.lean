@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Ulift
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Ulift
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Change of universe
 
 -/
+
+@[expose] public section
 
 universe v v'
 

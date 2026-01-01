@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
-import Mathlib.Algebra.Homology.HomotopyCategory.Plus
-import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
+public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
+public import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 
 /-!
 # Dévissage
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

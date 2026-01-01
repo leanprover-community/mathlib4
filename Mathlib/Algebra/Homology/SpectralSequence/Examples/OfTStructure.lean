@@ -3,13 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
-import Mathlib.Algebra.Homology.SpectralObject.Convergence
-import Mathlib.Algebra.Homology.SpectralObject.FirstPage
+module
+
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+public import Mathlib.Algebra.Homology.SpectralObject.Convergence
+public import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 
 /-!
 # The spectral sequence of a t-structure
 -/
+
+@[expose] public section
+
 open CategoryTheory Category Limits Pretriangulated Triangulated ZeroObject Preadditive
 
 variable {C A : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
@@ -71,7 +76,7 @@ instance [t.IsGE X 0] :
       ((t.truncGEt.obj i ⋙ H.shift n).mapIso ((t.isZero_truncLTt_obj_obj X 0 j hj).isoZero))
     rw [IsZero.iff_id_eq_zero]
     dsimp
-    simp only [Functor.comp_obj, ← Functor.map_id, id_zero,
+    simp only [← Functor.map_id, id_zero,
       (t.truncGEt.obj i).map_zero, (H.shift n).map_zero]
   isZero₂ i j hij n hi := by
     dsimp

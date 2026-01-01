@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.SpectralObject
+module
+
+public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 
 /-!
 # "Abstract" spectral object of truncations
 
 -/
 
-open CategoryTheory Category Limits Pretriangulated
+@[expose] public section
+
+open CategoryTheory Category Limits Pretriangulated Functor
 
 variable (C : Type _) [Category C] [HasShift C ℤ]
 
@@ -257,7 +261,6 @@ noncomputable def truncGELTLTIsoTruncGELT :
         (Arrow₂.δ₂.map φ)) ((F.truncLT.obj D₂.X₂).obj X)
       have eq' := (F.truncLTGEIsoTruncGELT.inv.app (Arrow.mk D₁.f)).naturality
         ((F.truncLT.map φ.τ₂).app X)
-      simp only [NatTrans.naturality_assoc, assoc, Functor.map_comp, NatTrans.naturality]
       dsimp [truncGELT, truncLTGE] at eq eq' ⊢
       simp only [assoc] at eq eq' ⊢
       rw [eq, reassoc_of% eq']

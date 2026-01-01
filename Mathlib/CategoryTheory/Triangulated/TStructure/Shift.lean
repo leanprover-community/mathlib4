@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+module
+
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 
 /-!
 # Truncations and shifts
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -165,7 +169,7 @@ noncomputable def iso : (t.truncGE a).obj (X⟦n⟧) ≅ ((t.truncGE a').obj X)�
     have := t.isGE_shift (((t.truncGE a').obj X)⟦n⟧) a (-n) a' (by linarith)
     apply from_truncGE_obj_ext
     dsimp
-    simp only [Adjunction.homEquiv_unit, Functor.id_obj, Functor.comp_obj,
+    simp only [Adjunction.homEquiv_unit, Functor.comp_obj,
       Equivalence.toAdjunction_unit, Functor.map_comp, Functor.map_id, comp_id]
     erw [shift_inv_assoc t X h]
     rw [← Functor.map_comp, π_hom]
@@ -211,9 +215,9 @@ lemma π_shiftTruncGE_inv_app :
 noncomputable def shiftTruncGELE :
     t.truncGELE a' b' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncGELE a b :=
   Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft (t.truncLE b') (t.shiftTruncGE n a a' h) ≪≫
+    Functor.isoWhiskerLeft (t.truncLE b') (t.shiftTruncGE n a a' h) ≪≫
     (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (t.shiftTruncLE n b b' h') (t.truncGE a) ≪≫ Functor.associator _ _ _
+    Functor.isoWhiskerRight (t.shiftTruncLE n b b' h') (t.truncGE a) ≪≫ Functor.associator _ _ _
 
 end TStructure
 

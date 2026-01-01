@@ -163,6 +163,43 @@ instance isGE_triangleFunctor_obj_obj₃ :
   dsimp [triangleFunctor]
   infer_instance
 
+noncomputable def triangleMapOfLE (a b : ℤ) (h : a ≤ b) : triangle t a A ⟶ triangle t b A :=
+  have H := triangle_map_exists t (triangle_distinguished t a A)
+    (triangle_distinguished t b A) (𝟙 _) (a-1) b inferInstance inferInstance
+  { hom₁ := H.choose.hom₁
+    hom₂ := 𝟙 _
+    hom₃ := H.choose.hom₃
+    comm₁ := by rw [← H.choose.comm₁, H.choose_spec]
+    comm₂ := by rw [H.choose.comm₂, H.choose_spec]
+    comm₃ := H.choose.comm₃ }
+
+noncomputable def triangleFunctorNatTransOfLE (a b : ℤ) (h : a ≤ b) :
+    triangleFunctor t a ⟶ triangleFunctor t b where
+  app X := triangleMapOfLE t X a b h
+  naturality {X₁ X₂} φ :=
+    triangle_map_ext t (triangleFunctor_obj_distinguished _ _ _)
+      (triangleFunctor_obj_distinguished _ _ _) (a - 1) b inferInstance inferInstance
+        (by simp [triangleMapOfLE])
+
+@[simp]
+lemma triangleFunctorNatTransOfLE_app_hom₂ (a b : ℤ) (h : a ≤ b) (X : C) :
+    ((triangleFunctorNatTransOfLE t a b h).app X).hom₂ = 𝟙 X := rfl
+
+lemma triangleFunctorNatTransOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    triangleFunctorNatTransOfLE t a b hab ≫ triangleFunctorNatTransOfLE t b c hbc =
+      triangleFunctorNatTransOfLE t a c (hab.trans hbc) := by
+  apply NatTrans.ext
+  ext1 X
+  exact triangle_map_ext t (triangleFunctor_obj_distinguished _ _ _)
+    (triangleFunctor_obj_distinguished _ _ _) (a - 1) c inferInstance inferInstance (by simp)
+
+lemma triangleFunctorNatTransOfLE_refl (a : ℤ) :
+    triangleFunctorNatTransOfLE t a a (by rfl) = 𝟙 _ := by
+  apply NatTrans.ext
+  ext1 X
+  exact triangle_map_ext t (triangleFunctor_obj_distinguished _ _ _)
+    (triangleFunctor_obj_distinguished _ _ _) (a - 1) a inferInstance inferInstance (by simp)
+
 instance : (triangleFunctor t n).Additive where
 
 end TruncAux
@@ -233,6 +270,135 @@ instance (X : C) (n : ℤ) : t.IsLE ((t.triangleLTGE n).obj X).obj₁ (n - 1) :=
 instance (X : C) (n : ℤ) : t.IsGE ((t.triangleLTGE n).obj X).obj₃ n := by
   dsimp
   infer_instance
+
+@[reassoc (attr := simp)]
+lemma truncLTι_comp_truncGEπ_app (n : ℤ) (X : C) :
+    (t.truncLTι n).app X ≫ (t.truncGEπ n).app X = 0 :=
+  comp_distTriang_mor_zero₁₂ _ ((t.triangleLTGE_distinguished n X))
+
+@[reassoc (attr := simp)]
+lemma truncGEπ_comp_truncGEδLT_app (n : ℤ) (X : C) :
+    (t.truncGEπ n).app X ≫ (t.truncGEδLT n).app X = 0 :=
+  comp_distTriang_mor_zero₂₃ _ ((t.triangleLTGE_distinguished n X))
+
+@[reassoc (attr := simp)]
+lemma truncGEδLT_comp_truncLTι_app (n : ℤ) (X : C) :
+    (t.truncGEδLT n).app X ≫ ((t.truncLTι n).app X)⟦(1 : ℤ)⟧' = 0 :=
+  comp_distTriang_mor_zero₃₁ _ ((t.triangleLTGE_distinguished n X))
+
+@[reassoc (attr := simp)]
+lemma truncLTι_comp_truncGEπ (n : ℤ) :
+    t.truncLTι n ≫ t.truncGEπ n = 0 := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma truncGEπ_comp_truncGEδLT (n : ℤ) :
+    t.truncGEπ n ≫ t.truncGEδLT n = 0 := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma truncGEδLT_comp_truncLTι (n : ℤ) :
+    t.truncGEδLT n ≫ Functor.whiskerRight (t.truncLTι n) (shiftFunctor C (1 : ℤ)) = 0 := by
+  aesop_cat
+
+noncomputable def natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b) :
+    t.truncLT a ⟶ t.truncLT b :=
+  Functor.whiskerRight (TruncAux.triangleFunctorNatTransOfLE t a b h) Triangle.π₁
+
+noncomputable def natTransTruncGEOfLE (a b : ℤ) (h : a ≤ b) :
+    t.truncGE a ⟶ t.truncGE b :=
+  Functor.whiskerRight (TruncAux.triangleFunctorNatTransOfLE t a b h) Triangle.π₃
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLTOfLE_ι_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    (t.natTransTruncLTOfLE a b h).app X ≫ (t.truncLTι b).app X = (t.truncLTι a).app X := by
+  simpa using ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₁.symm
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLTOfLE_ι (a b : ℤ) (h : a ≤ b) :
+    t.natTransTruncLTOfLE a b h ≫ t.truncLTι b = t.truncLTι a := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma π_natTransTruncGEOfLE_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    (t.truncGEπ a).app X ≫ (t.natTransTruncGEOfLE a b h).app X = (t.truncGEπ b).app X := by
+  simpa only [TruncAux.triangleFunctor_obj, TruncAux.triangle_obj₂,
+    TruncAux.triangleFunctorNatTransOfLE_app_hom₂, Category.id_comp] using
+    ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₂
+
+@[reassoc]
+lemma truncGEδLT_comp_natTransTruncLTOfLE_app (a b : ℤ) (h : a ≤ b) (X : C) :
+  (t.truncGEδLT a).app X ≫ ((natTransTruncLTOfLE t a b h).app X)⟦(1 :ℤ)⟧' =
+    (t.natTransTruncGEOfLE a b h).app X ≫ (t.truncGEδLT b).app X :=
+  ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₃
+
+@[reassoc]
+lemma truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b) :
+  t.truncGEδLT a ≫ Functor.whiskerRight (natTransTruncLTOfLE t a b h) (shiftFunctor C (1 : ℤ)) =
+    t.natTransTruncGEOfLE a b h ≫ t.truncGEδLT b := by
+  ext X
+  exact t.truncGEδLT_comp_natTransTruncLTOfLE_app a b h X
+
+@[reassoc (attr := simp)]
+lemma π_natTransTruncGEOfLE (a b : ℤ) (h : a ≤ b) :
+    t.truncGEπ a ≫ t.natTransTruncGEOfLE a b h = t.truncGEπ b := by aesop_cat
+
+noncomputable def natTransTriangleLTGEOfLE (a b : ℤ) (h : a ≤ b) :
+    t.triangleLTGE a ⟶ t.triangleLTGE b := by
+  refine Triangle.functorHomMk' (t.natTransTruncLTOfLE a b h) (𝟙 _)
+    ((t.natTransTruncGEOfLE a b h)) ?_ ?_ ?_
+  · simp
+  · simp
+  · exact t.truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE a b h
+
+@[simp]
+lemma natTransTriangleLTGEOfLE_refl (a : ℤ) :
+    t.natTransTriangleLTGEOfLE a a (by rfl) = 𝟙 _ :=
+  TruncAux.triangleFunctorNatTransOfLE_refl t a
+
+lemma natTransTriangleLTGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    t.natTransTriangleLTGEOfLE a b hab ≫ t.natTransTriangleLTGEOfLE b c hbc =
+      t.natTransTriangleLTGEOfLE a c (hab.trans hbc) :=
+  TruncAux.triangleFunctorNatTransOfLE_trans t a b c hab hbc
+
+@[simp]
+lemma natTransTruncLTOfLE_refl (a : ℤ) :
+    t.natTransTruncLTOfLE a a (by rfl) = 𝟙 _ :=
+  congr_arg (fun x ↦ Functor.whiskerRight x (Triangle.π₁)) (t.natTransTriangleLTGEOfLE_refl a)
+
+@[simp]
+lemma natTransTruncLTOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    t.natTransTruncLTOfLE a b hab ≫ t.natTransTruncLTOfLE b c hbc =
+      t.natTransTruncLTOfLE a c (hab.trans hbc) :=
+  congr_arg (fun x ↦ Functor.whiskerRight x Triangle.π₁)
+    (t.natTransTriangleLTGEOfLE_trans a b c hab hbc)
+
+@[simp]
+lemma natTransTruncGEOfLE_refl (a : ℤ) :
+    t.natTransTruncGEOfLE a a (by rfl) = 𝟙 _ :=
+  congr_arg (fun x ↦ Functor.whiskerRight x (Triangle.π₃)) (t.natTransTriangleLTGEOfLE_refl a)
+
+@[simp]
+lemma natTransTruncGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    t.natTransTruncGEOfLE a b hab ≫ t.natTransTruncGEOfLE b c hbc =
+      t.natTransTruncGEOfLE a c (hab.trans hbc) :=
+  congr_arg (fun x ↦ Functor.whiskerRight x Triangle.π₃)
+    (t.natTransTriangleLTGEOfLE_trans a b c hab hbc)
+
+lemma natTransTruncLTOfLE_refl_app (a : ℤ) (X : C) :
+    (t.natTransTruncLTOfLE a a (by rfl)).app X = 𝟙 _ :=
+  congr_app (t.natTransTruncLTOfLE_refl a) X
+
+lemma natTransTruncLTOfLE_trans_app (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) (X : C) :
+    (t.natTransTruncLTOfLE a b hab).app X ≫ (t.natTransTruncLTOfLE b c hbc).app X =
+      (t.natTransTruncLTOfLE a c (hab.trans hbc)).app X :=
+  congr_app (t.natTransTruncLTOfLE_trans a b c hab hbc) X
+
+lemma natTransTruncGEOfLE_refl_app (a : ℤ) (X : C) :
+    (t.natTransTruncGEOfLE a a (by rfl)).app X = 𝟙 _ :=
+  congr_app (t.natTransTruncGEOfLE_refl a) X
+
+lemma natTransTruncGEOfLE_trans_app (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) (X : C) :
+    (t.natTransTruncGEOfLE a b hab).app X ≫ (t.natTransTruncGEOfLE b c hbc).app X =
+      (t.natTransTruncGEOfLE a c (hab.trans hbc)).app X :=
+  congr_app (t.natTransTruncGEOfLE_trans a b c hab hbc) X
 
 end
 

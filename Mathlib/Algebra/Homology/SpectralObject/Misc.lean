@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Homology.ExactSequence
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.ArrowSeven
+public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.Subobject.Lattice
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
@@ -244,26 +246,6 @@ abbrev mapδ {n : ℕ} (S : ComposableArrows C (n + 1)) (i j : Fin (n + 2)) (hij
     S.δ j ⟶ S.δ i :=
   (natTransδ C i j hij).app S
 
-variable (C)
-
-@[simps]
-noncomputable def functorArrows (i j n : ℕ) (hij : i ≤ j := by linarith)
-      (hj : j ≤ n := by linarith) :
-    ComposableArrows C n ⥤ ComposableArrows C 1 where
-  obj S := mk₁ (S.map' i j)
-  map {S S'} φ := homMk₁ (φ.app _) (φ.app _) (φ.naturality _)
-  map_comp φ φ' := hom_ext₁ rfl rfl
-
-@[simps]
-noncomputable def mapFunctorArrows (i j i' j' n : ℕ)
-    (hij : i ≤ j := by linarith) (_ : j ≤ n := by linarith)
-    (hij' : i' ≤ j' := by linarith) (_ : j' ≤ n := by linarith)
-    (hi : i ≤ i' := by linarith) (_ : j ≤ j' := by linarith) :
-    functorArrows C i j n ⟶ functorArrows C i' j' n where
-  app S := homMk₁ (S.map' i i') (S.map' j j')
-    (by dsimp; simp only [← Functor.map_comp, homOfLE_comp])
-
-variable {C}
 variable {D : Type*} [Category D] {n : ℕ} (S : ComposableArrows C n) (F : C ⥤ D)
 
 @[simps!]
@@ -312,36 +294,6 @@ lemma ComposableArrows.exact_iff_exact_evaluation
           exact (hS i).exact k }
 
 namespace ComposableArrows
-
-section
-
-variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k) (h : f ≫ g = fg)
-
-def twoδ₂Toδ₁ :
-    mk₁ f ⟶ mk₁ fg :=
-  homMk₁ (𝟙 _) g (by simpa using h)
-
-@[simp]
-lemma twoδ₂Toδ₁_app_zero :
-    (twoδ₂Toδ₁ f g fg h).app 0 = 𝟙 _ := rfl
-
-@[simp]
-lemma twoδ₂Toδ₁_app_one :
-    (twoδ₂Toδ₁ f g fg h).app 1 = g := rfl
-
-def twoδ₁Toδ₀ :
-    mk₁ fg ⟶ mk₁ g :=
-  homMk₁ f (𝟙 _) (by simpa using h.symm)
-
-@[simp]
-lemma twoδ₁Toδ₀_app_zero :
-    (twoδ₁Toδ₀ f g fg h).app 0 = f := rfl
-
-@[simp]
-lemma twoδ₁Toδ₀_app_one :
-    (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
-
-end
 
 section
 

@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
-import Mathlib.CategoryTheory.Abelian.Constructor
-import Mathlib.CategoryTheory.Shift.SingleFunctors
+module
+
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+public import Mathlib.CategoryTheory.Abelian.Constructor
+public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
 /-!
 # Abelian subcategories of triangulated categories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -228,15 +232,18 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
       distTriang C := by
     refine isomorphic_distinguished _ (inv_rot_of_distTriang _
       (contractible_distinguished (ι.obj X₃))) _ ?_
-    refine Triangle.isoMk _ _ (IsZero.iso ?_ ?_) (Iso.refl _) (Iso.refl _) (by
-      dsimp
-      simp only [comp_id, comp_neg, zero_eq_neg, IsIso.comp_left_eq_zero, IsIso.comp_right_eq_zero]
-      rw [Functor.map_zero]) (by simp) (by simp)
+    refine Triangle.isoMk _ _ (IsZero.iso ?_ ?_) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
     · dsimp
       rw [IsZero.iff_id_eq_zero, ← Functor.map_id, ← Functor.map_id, id_zero,
         Functor.map_zero, Functor.map_zero]
     · dsimp
       rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
+    · dsimp
+      simp only [comp_id, comp_neg, zero_eq_neg, IsIso.comp_left_eq_zero,
+        IsIso.comp_right_eq_zero]
+      rw [Functor.map_zero]
+    · simp
+    · simp
   refine IsColimit.ofIsoColimit (AbelianSubcategory.isColimitCokernelCofork hι
     hT hT') ?_
   exact Cofork.ext (Iso.refl _) (ι.map_injective (by simp))

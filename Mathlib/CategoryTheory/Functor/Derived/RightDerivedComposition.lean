@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 
 /-!
 # Comparison morphism for the composition of right derived functors
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -85,7 +85,7 @@ def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
 
 @[reassoc]
 lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
-    (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0):
+    (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0) :
     X.ω₁.map β ≫ X.δ f' g' = X.δ f g ≫ (X.ω₁.map α)⟦(1 : ℤ)⟧' := by
   let φ : mk₂ f g ⟶ mk₂ f' g' := homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
     (by simpa only [hαβ] using naturality' β 0 1)
@@ -95,23 +95,15 @@ lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
   convert h <;> aesop_cat
 
 
-<<<<<<< HEAD
-
-section
-
-=======
-
 /-- The distinguished triangle attached to a spectral object `E : SpectralObjet C ι`
 and composable morphisms `f : i ⟶ j` and `g : j ⟶ k` in `ι`. -/
->>>>>>> origin/master
 @[simps!]
 def triangle : Triangle C :=
   Triangle.mk (X.ω₁.map (twoδ₂Toδ₁ f g _ rfl))
     (X.ω₁.map (twoδ₁Toδ₀ f g _ rfl)) (X.δ f g)
 
 lemma triangle_distinguished : X.triangle f g ∈ distTriang C :=
-<<<<<<< HEAD
-  X.distinguished' (mk₂ f g)
+  X.ω₂_obj_distinguished (mk₂ f g)
 
 section
 
@@ -128,8 +120,7 @@ noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
     simp only [← X.ω₁.map_comp]
     congr 1
     ext
-    · dsimp
-      erw [id_comp, comp_id]
+    · simp
     · exact naturality' φ 1 2
   comm₂ := by
     dsimp
@@ -137,8 +128,7 @@ noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
     congr 1
     ext
     · exact naturality' φ 0 1
-    · dsimp
-      erw [id_comp, comp_id]
+    · simp
   comm₃ := by
     symm
     apply X.δ_naturality
@@ -147,55 +137,6 @@ noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
 end
 
 end
-=======
-  X.ω₂_obj_distinguished (mk₂ f g)
->>>>>>> origin/master
-
-end
-
-section
-
-<<<<<<< HEAD
-variable (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ]
-
-@[simps]
-noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
-  H n := X.ω₁ ⋙ F.shift n
-  δ' n₀ n₁ h :=
-    { app := fun D => F.homologySequenceδ (X.triangle (D.map' 0 1) (D.map' 1 2)) n₀ n₁ h
-      naturality := fun D₁ D₂ φ => by
-        obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D₁
-        obtain ⟨_, _, _, f', g', rfl⟩ := mk₂_surjective D₂
-        exact F.homologySequenceδ_naturality (X.mapTriangle φ) n₀ n₁ h
-        }
-  exact₁' n₀ n₁ h D := by
-    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
-    exact (F.homologySequence_exact₁ _
-      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
-  exact₂' n D := by
-    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
-    exact (F.homologySequence_exact₂ _ (X.triangle_distinguished f g) n).exact_toComposableArrows
-  exact₃' n₀ n₁ h D := by
-    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
-    exact (F.homologySequence_exact₃ _
-      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
-
-@[simp]
-lemma mapHomologicalFunctor_δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
-    (X.mapHomologicalFunctor F).δ n₀ n₁ h f g =
-      F.homologySequenceδ (X.triangle f g) n₀ n₁ h := by
-  rfl
-
-end
-
-noncomputable def mapTriangulatedFunctor (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] :
-    SpectralObject D ι where
-  ω₁ := X.ω₁ ⋙ F
-  δ' := whiskerRight X.δ' F ≫
-      whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
-  distinguished' D := F.map_distinguished _ (X.distinguished' D)
-
-=======
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
 attribute [local simp] Precomp.map Precomp.obj δ in
@@ -237,8 +178,6 @@ def precomp : SpectralObject C ι' where
       convert this.symm using 3
       · congr; cat_disch
       · cat_disch
-
-end
 
 section
 
@@ -292,13 +231,46 @@ lemma comp_hom (α : X ⟶ Y) (β : Y ⟶ Z) :
 
 end
 
->>>>>>> origin/master
+
+section
+
+variable {A : Type*} [Category A] [Abelian A]
+  (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ]
+
+@[simps]
+noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
+  H n := X.ω₁ ⋙ F.shift n
+  δ' n₀ n₁ h :=
+    { app := fun D => F.homologySequenceδ (X.triangle (D.map' 0 1) (D.map' 1 2)) n₀ n₁ h
+      naturality := fun D₁ D₂ φ => by
+        obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D₁
+        obtain ⟨_, _, _, f', g', rfl⟩ := mk₂_surjective D₂
+        exact F.homologySequenceδ_naturality (X.mapTriangle φ) n₀ n₁ h
+        }
+  exact₁' n₀ n₁ h D := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
+    exact (F.homologySequence_exact₁ _
+      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
+  exact₂' n D := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
+    exact (F.homologySequence_exact₂ _ (X.triangle_distinguished f g) n).exact_toComposableArrows
+  exact₃' n₀ n₁ h D := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
+    exact (F.homologySequence_exact₃ _
+      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
+
+@[simp]
+lemma mapHomologicalFunctor_δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
+    (X.mapHomologicalFunctor F).δ n₀ n₁ h f g =
+      F.homologySequenceδ (X.triangle f g) n₀ n₁ h := by
+  rfl
+
+end
+
 end SpectralObject
 
 end Triangulated
 
-<<<<<<< HEAD
-=======
 namespace Functor
 
 variable {C}
@@ -318,5 +290,4 @@ def mapTriangulatedSpectralObject (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangula
 
 end Functor
 
->>>>>>> origin/master
 end CategoryTheory

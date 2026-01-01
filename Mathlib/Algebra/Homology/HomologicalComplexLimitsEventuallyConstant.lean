@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.Algebra.Homology.QuasiIso
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Limits of eventually constant systems
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 

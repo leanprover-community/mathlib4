@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.TStructure
-import Mathlib.Algebra.Homology.HomotopyCategory.Minus
-import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+public import Mathlib.Algebra.Homology.HomotopyCategory.Minus
+public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 
 /-!
 # D^-
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Triangulated Limits
 
@@ -83,8 +87,8 @@ instance : (HomotopyCategory.subcategoryAcyclic C).IsLeftLocalizing (HomotopyCat
       rw [CochainComplex.isIso_ιTruncLE_iff]
       infer_instance
     refine ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.ιTruncLE n),
-      (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
-        (inv (L.ιTruncLE n) ≫ CochainComplex.truncLEMap φ n), ?_⟩
+      ObjectProperty.homMk ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
+        (inv (L.ιTruncLE n) ≫ CochainComplex.truncLEMap φ n)), ?_⟩
     erw [← (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_comp]
     simp
 
