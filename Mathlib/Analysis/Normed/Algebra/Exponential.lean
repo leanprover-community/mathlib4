@@ -74,13 +74,19 @@ open Real
 #time example (x : ℝ) : 0 < exp x      := exp_pos _ -- 250ms
 #time example (x : ℝ) : 0 < Real.exp x := exp_pos _ -- 2ms
 ```
-This is because `exp x` tries the `NormedSpace.exp` function defined here,
+This is because `exp x` tries the `NormedSpace.exp 𝕂 (x : 𝔸)` function previously defined here,
 and generates a slow coercion search from `Real` to `Type`, to fit the first argument here.
 We will resolve this slow coercion separately,
 but we want to move `exp` out of the root namespace in any case to avoid this ambiguity.
 
-In the long term is may be possible to replace `Real.exp` and `Complex.exp` with this one.
+To avoid explicitly passing the base field `𝕂`, we currently fix `𝕂 = ℚ` in the definition of
+`NormedSpace.exp (x : 𝔸)`. If `𝔸` can be equipped with a `ℚ`-algebra structure, we use
+`Classical.choice` to pick the unique `Algebra ℚ 𝔸` instead of requiring an instance argument.
+This eliminates the need to provide `Algebra ℚ 𝔸` every time `exp` is used. If `𝔸` can't be equipped
+with a `ℚ`-algebra structure, we use the junk value `1`.
 
+In the long term it may be possible to replace `Real.exp` and `Complex.exp` with `NormedSpace.exp`
+and move it back to the root namespace.
 -/
 
 @[expose] public section
@@ -110,6 +116,9 @@ variable {𝕂 𝔸}
 open scoped Classical in
 /-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map. It is defined as the sum of the
 `FormalMultilinearSeries` `expSeries ℚ 𝔸`.
+
+If `𝔸` can't be equipped with a `ℚ`-algebra structure, we use the junk value `1`. For details on why
+this approach is taken, see the module documentation for `Analysis.Normed.Algebra.Exponential`.
 
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
 [`MatrixExponential`](./Mathlib/Analysis/Normed/Algebra/MatrixExponential) for lemmas
