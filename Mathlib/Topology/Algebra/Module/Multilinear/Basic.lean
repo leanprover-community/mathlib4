@@ -594,7 +594,7 @@ variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Topologi
 `m` the product of all the `m i`.
 
 See also: `ContinuousMultilinearMap.mkPiAlgebra`. -/
-protected def mkPiAlgebraFin : A[×n]→L[R] A where
+protected def mkPiAlgebraFin : A [×n]→L[R] A where
   cont := by
     change Continuous fun m => (List.ofFn m).prod
     simp_rw [List.ofFn_eq_map]

@@ -23,6 +23,7 @@ namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
+set_option linter.style.commandStart false -- linter false positive, TODO fix!
 variable (X) in
 /-- Abbreviation for an unbundled commutative group object. It is a group object that is a
 commutative monoid object. -/
