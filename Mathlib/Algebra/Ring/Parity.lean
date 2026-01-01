@@ -202,7 +202,7 @@ lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
   rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 
 @[simp]
-lemma even_add_one {R : Type*} [Ring R] {r : R} : Even (r + 1) ↔ Odd r :=
+lemma even_add_one : Even (a + 1) ↔ Odd a :=
   ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
 
 @[simp]
