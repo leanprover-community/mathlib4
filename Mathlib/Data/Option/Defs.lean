@@ -55,19 +55,4 @@ abbrev iget [Inhabited α] : Option α → α
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 
-@[deprecated commutative_merge (since := "2025-06-03")]
-theorem merge_isCommutative (f : α → α → α) [Std.Commutative f] :
-    Std.Commutative (merge f) := commutative_merge f
-
-@[deprecated associative_merge (since := "2025-06-03")]
-theorem merge_isAssociative (f : α → α → α) [Std.Associative f] :
-    Std.Associative (merge f) := associative_merge f
-
-@[deprecated idempotentOp_merge (since := "2025-06-03")]
-theorem merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
-    Std.IdempotentOp (merge f) := idempotentOp_merge f
-
-@[deprecated lawfulIdentity_merge (since := "2025-06-03")]
-theorem merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none := lawfulIdentity_merge f
-
 end Option

@@ -806,8 +806,6 @@ instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
 
 end
 
-@[deprecated (since := "2025-06-08")] alias prod_comp_fst := CategoryTheory.prod_comp_fst
-@[deprecated (since := "2025-06-08")] alias prod_comp_snd := CategoryTheory.prod_comp_snd
 -- TODO: when clearing these deprecations, remove the `CategoryTheory.` in the proof below.
 
 /-- The functor `C ⥤ D × E` obtained from two monoidal functors is monoidal. -/

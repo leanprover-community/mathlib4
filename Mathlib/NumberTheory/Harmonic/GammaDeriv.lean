@@ -167,9 +167,6 @@ lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
     eq_neg_iff_add_eq_zero]
   positivity
 
-@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
-  differentiableAt_Gamma_nat_add_one
-
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
   exact_mod_cast HasDerivAt.complex_of_real

@@ -719,8 +719,6 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
 theorem differentiableAt_fun_id : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
 
-@[deprecated (since := "2025-06-25")] alias differentiableAt_id' := differentiableAt_fun_id
-
 @[fun_prop]
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
@@ -736,8 +734,6 @@ theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => diffe
 /-- Variant with `fun x => x` rather than `id` -/
 @[simp, fun_prop]
 theorem differentiable_fun_id : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
-
-@[deprecated (since := "2025-06-25")] alias differentiable_id' := differentiable_fun_id
 
 @[fun_prop]
 theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
