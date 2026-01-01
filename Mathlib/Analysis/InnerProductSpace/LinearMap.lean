@@ -292,8 +292,9 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
 end ReApplyInnerSelf_Seminormed
 
 namespace InnerProductSpace
-variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E F G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
 
 open ContinuousLinearMap
 
@@ -329,20 +330,21 @@ lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
     (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
 
-@[simp] theorem rankOne_eq_zero {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-    {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
-  simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
-    ext_iff_inner_right 𝕜 (E := F)]
-
-lemma rankOne_ne_zero {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-    {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
-    rankOne 𝕜 x y ≠ 0 := by grind [rankOne_eq_zero]
-
 theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
     IsIdempotentElem (rankOne 𝕜 x x) := by simp [IsIdempotentElem, mul_def, comp_rankOne, hx]
 
-theorem isIdempotentElem_rankOne_self_iff {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-    {x : F} (hx : x ≠ 0) : IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
+section Normed
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+@[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
+  simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
+    ext_iff_inner_right 𝕜 (E := F)]
+
+lemma rankOne_ne_zero {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
+  grind [rankOne_eq_zero]
+
+theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
+    IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
   refine ⟨?_, isIdempotentElem_rankOne_self⟩
   simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
     map_smul, coe_smul', Pi.smul_apply]
@@ -352,12 +354,12 @@ theorem isIdempotentElem_rankOne_self_iff {F : Type*} [NormedAddCommGroup F] [In
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
   grind [norm_nonneg]
 
+end Normed
+
 @[simp] theorem rankOne_one_right_eq_toSpanSingleton (x : F) :
     rankOne 𝕜 x 1 = toSpanSingleton 𝕜 x := by ext; simp
 
 @[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
-
-variable {G : Type*} [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
 
 lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
     rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
