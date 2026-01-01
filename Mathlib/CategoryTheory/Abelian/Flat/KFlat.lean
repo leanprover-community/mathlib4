@@ -92,14 +92,12 @@ instance : (quasiIso A (.up ℤ)).kFlat.IsStableUnderShift ℤ where
   isStableUnderShiftBy n := ⟨fun K hK ↦ by
     rw [ObjectProperty.prop_shift_iff, kFlat_iff_preservesQuasiIso]
     constructor
-    · sorry
-    · sorry⟩
-    /-· exact (preservesQuasiIso.prop_iff_of_iso
-        (bifunctorMapHomologicalComplexObjShiftIso (curriedTensor A) K n)).2
-          (hK.1.comp (preservesQuasiIso_shiftFunctor A n))
     · exact (preservesQuasiIso.prop_iff_of_iso
-        (bifunctorMapHomologicalComplexFlipObjShiftIso (curriedTensor A) K n)).2
-          (hK.2.comp (preservesQuasiIso_shiftFunctor A n))⟩-/
+        ((curriedTensor A).map₂CochainComplexObjShiftIso _ _)).2
+        (hK.1.comp (preservesQuasiIso_shiftFunctor A n))
+    · exact (preservesQuasiIso.prop_iff_of_iso
+        ((curriedTensor A).map₂CochainComplexFlipObjShiftIso _ _)).2
+        (hK.2.comp (preservesQuasiIso_shiftFunctor A n))⟩
 
 lemma kFlat_shift_iff (K : CochainComplex A ℤ) (n : ℤ) :
     (quasiIso A (.up ℤ)).kFlat (K⟦n⟧) ↔ (quasiIso A (.up ℤ)).kFlat K := by
@@ -110,20 +108,24 @@ instance closedUnderColimitsOfShape_kFlat (J : Type*) [Category J]
     [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
     [∀ (X : A), PreservesColimitsOfShape J ((curriedTensor A).flip.obj X)]
     [∀ (X : A), PreservesColimitsOfShape J ((curriedTensor A).obj X)] :
-    (quasiIso A (.up ℤ)).kFlat.IsClosedUnderColimitsOfShape J  := by
-  sorry /-
-  intro F c hc hF
-  rw [kFlat_iff_preservesQuasiIso]
-  have hJ := isStableUnderColimitsOfShape_preservesQuasiIso A A (.up ℤ) (.up ℤ) J
-  constructor
-  · have : PreservesColimitsOfShape J (curriedTensor (CochainComplex A ℤ)) :=
-      inferInstanceAs (PreservesColimitsOfShape _
-        (Functor.bifunctorMapHomologicalComplex _ _ _ _))
-    exact hJ (isColimitOfPreserves (curriedTensor _) hc) (fun j ↦ (hF j).1)
-  · have : PreservesColimitsOfShape J (curriedTensor (CochainComplex A ℤ)).flip :=
-      inferInstanceAs (PreservesColimitsOfShape _
-        (Functor.bifunctorMapHomologicalComplex _ _ _ _).flip)
-    exact hJ (isColimitOfPreserves (curriedTensor _).flip hc) (fun j ↦ (hF j).2)-/
+    (quasiIso A (.up ℤ)).kFlat.IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro X ⟨p⟩
+    rw [kFlat_iff_preservesQuasiIso]
+    have hJ := isStableUnderColimitsOfShape_preservesQuasiIso A A (.up ℤ) (.up ℤ) J
+    constructor
+    · have : PreservesColimitsOfShape J (curriedTensor (CochainComplex A ℤ)) :=
+        inferInstanceAs (PreservesColimitsOfShape _
+          (Functor.map₂CochainComplex _))
+      exact ObjectProperty.prop_of_isColimit _
+        ((isColimitOfPreserves (curriedTensor _) p.isColimit))
+        (fun j ↦ (p.prop_diag_obj j).1)
+    · have : PreservesColimitsOfShape J (curriedTensor (CochainComplex A ℤ)).flip :=
+        inferInstanceAs (PreservesColimitsOfShape _
+          (Functor.map₂CochainComplex _).flip)
+      exact ObjectProperty.prop_of_isColimit _
+        ((isColimitOfPreserves (curriedTensor _).flip p.isColimit))
+        (fun j ↦ (p.prop_diag_obj j).2)
 
 end CochainComplex
 
@@ -206,23 +208,20 @@ instance : (quasiIso A (.up ℤ)).kFlat.IsStableUnderRetracts where
 
 variable (A) in
 instance closedUnderLimitsOfShape_discrete_kFlat (J : Type) [Finite J] :
-    (quasiIso A (.up ℤ)).kFlat.IsClosedUnderLimitsOfShape (Discrete J)  := by
-  sorry
-  /-intro F c hc hF
-  rw [← HomotopyCategory.kFlat_quotient_obj_iff]
-  apply HomotopyCategory.closedUnderLimitsOfShape_discrete_kFlat A J
-    (isLimitOfPreserves (HomotopyCategory.quotient _ _) hc)
-  rintro j
-  dsimp
-  rw [HomotopyCategory.kFlat_quotient_obj_iff]
-  exact hF j-/
+    (quasiIso A (.up ℤ)).kFlat.IsClosedUnderLimitsOfShape (Discrete J) where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    rw [← HomotopyCategory.kFlat_quotient_obj_iff]
+    refine ObjectProperty.prop_of_isLimit _
+      ((isLimitOfPreserves (HomotopyCategory.quotient _ _) p.isLimit)) (fun j ↦ ?_)
+    dsimp
+    rw [HomotopyCategory.kFlat_quotient_obj_iff]
+    apply p.prop_diag_obj
 
 lemma kFlat_prod {K L : CochainComplex A ℤ} (hK : (quasiIso A (.up ℤ)).kFlat K)
     (hL : (quasiIso A (.up ℤ)).kFlat L) :
     (quasiIso A (.up ℤ)).kFlat (K ⨯ L) :=
-  sorry
-  --closedUnderLimitsOfShape_discrete_kFlat A WalkingPair (limit.isLimit (pair K L))
-  --  (by rintro (_ | _) <;> assumption)
+  ObjectProperty.prop_of_isLimit _ (limit.isLimit (pair K L)) (by rintro (_ | _) <;> assumption)
 
 lemma kFlat_biprod {K L : CochainComplex A ℤ} (hK : (quasiIso A (.up ℤ)).kFlat K)
     (hL : (quasiIso A (.up ℤ)).kFlat L) :
@@ -238,12 +237,10 @@ lemma kFlat_single_obj_iff_flat (X : A) (n : ℤ) :
   · simp only [kFlat_iff_preservesQuasiIso, ObjectProperty.flat,
       Functor.exactFunctor_iff_preservesQuasiIso _ (.up ℤ) (i₀ := 0) rfl (by simp)]
     apply and_congr
-    · sorry
-    · sorry
-    /-· exact preservesQuasiIso.prop_iff_of_iso
-        (bifunctorMapHomologicalComplexObjSingleIso (curriedTensor A) X)
     · exact preservesQuasiIso.prop_iff_of_iso
-        (bifunctorMapHomologicalComplexFlipObjSingleIso (curriedTensor A) X)-/
+        (map₂HomologicalComplexObjSingleIso (curriedTensor A) X)
+    · exact preservesQuasiIso.prop_iff_of_iso
+        (map₂HomologicalComplexFlipObjSingleIso (curriedTensor A) X)
 
 instance : (ObjectProperty.flat (A := A)).ContainsZero where
   exists_zero := ⟨0, isZero_zero A, by
@@ -254,13 +251,13 @@ instance : (ObjectProperty.flat (A := A)).ContainsZero where
 
 variable (A) in
 instance closedUnderLimitsOfShape_discrete_flat (J : Type) [Finite J] :
-    (ObjectProperty.flat (A := A)).IsClosedUnderLimitsOfShape (Discrete J)  := by
-  sorry
-  /-intro F c hc hF
-  simp only [← kFlat_single_obj_iff_flat _ 0] at hF ⊢
-  apply closedUnderLimitsOfShape_discrete_kFlat A J
-    (isLimitOfPreserves (single _ (.up ℤ) 0) hc)
-  exact hF-/
+    (ObjectProperty.flat (A := A)).IsClosedUnderLimitsOfShape (Discrete J) where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    rw [← kFlat_single_obj_iff_flat _ 0]
+    refine ObjectProperty.prop_of_isLimit _
+      (isLimitOfPreserves (single _ (.up ℤ) 0) p.isLimit) (fun j ↦ ?_)
+    simpa only [← kFlat_single_obj_iff_flat _ 0] using p.prop_diag_obj j
 
 instance : HasFiniteProducts (ObjectProperty.flat (A := A)).FullSubcategory where
   out n := by
@@ -279,12 +276,13 @@ lemma closedUnderColimitsOfShape_flat (J : Type*) [Category J]
     [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
     [∀ (X : A), PreservesColimitsOfShape J ((curriedTensor A).flip.obj X)]
     [∀ (X : A), PreservesColimitsOfShape J ((curriedTensor A).obj X)] :
-    (ObjectProperty.flat (A := A)).IsClosedUnderColimitsOfShape J  := by
-  sorry
-  /-intro F c hc hF
-  simp only [← kFlat_single_obj_iff_flat _ 0] at hF ⊢
-  apply closedUnderColimitsOfShape_kFlat A J (isColimitOfPreserves (single _ (.up ℤ) 0) hc)
-  exact hF-/
+    (ObjectProperty.flat (A := A)).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro X ⟨p⟩
+    simp only [← kFlat_single_obj_iff_flat _ 0]
+    refine ObjectProperty.prop_of_isColimit _
+      (isColimitOfPreserves (single _ (.up ℤ) 0) p.isColimit) (fun j ↦ ?_)
+    simpa only [← kFlat_single_obj_iff_flat _ 0] using p.prop_diag_obj j
 
 lemma kFlat_of_bounded_of_flat (K : CochainComplex A ℤ) (a b : ℤ)
     [K.IsStrictlyGE a] [K.IsStrictlyLE b]
@@ -325,13 +323,10 @@ lemma kFlat_of_isStrictlyLE_of_flat (b : ℤ) [K.IsStrictlyLE b]
     [HasColimitsOfShape ℤ A] [HasExactColimitsOfShape ℤ A]
     (hK : ∀ n, ObjectProperty.flat (K.X n)) :
     (quasiIso A (.up ℤ)).kFlat K := by
-  sorry
-  /-apply (closedUnderColimitsOfShape_kFlat A ℤ)
-    (K.isColimitCoconeStupidFiltrationGE.whiskerEquivalence
-      Int.opEquivalence.symm)
-  intro i
-  apply kFlat_of_bounded_of_flat (K.stupidTrunc (ComplexShape.embeddingUpIntGE (-i))) (-i) b
-  intro n
+  refine ObjectProperty.prop_of_isColimit _
+    (K.isColimitCoconeStupidFiltrationGE.whiskerEquivalence Int.opEquivalence.symm)
+    (fun i ↦ kFlat_of_bounded_of_flat
+      (K.stupidTrunc (ComplexShape.embeddingUpIntGE (-i))) (-i) b (fun n ↦ ?_))
   by_cases hn : -i ≤ n
   · obtain ⟨k, hk⟩ := Int.le.dest hn
     let φ := (ιStupidTrunc K (ComplexShape.embeddingUpIntGE (-i))).f n
@@ -341,7 +336,7 @@ lemma kFlat_of_isStrictlyLE_of_flat (b : ℤ) [K.IsStrictlyLE b]
     apply isZero_stupidTrunc_X K (ComplexShape.embeddingUpIntGE (-i)) n
     intro
     dsimp
-    omega-/
+    lia
 
 variable (A) in
 lemma cochainComplexMinus_flat_le_kFlat
@@ -426,14 +421,16 @@ instance : (L A).functor.IsLocalization (WL A) :=
         (HomotopyCategory.quotient_inverts_homotopyEquivalences _ _ _ hf)
       dsimp only [Functor.comp_map] at this
       apply isIso_of_reflects_iso _ ((B A).functor)) (by
-      sorry
-      /-rintro ⟨K₁, hK₁⟩ ⟨K₂, _⟩ (f₀ f₁ : K₁ ⟶ K₂) hf
-      exact ⟨⟨K₁.cylinder, kFlat_cylinder _ hK₁⟩,
-        cylinder.ι₀ _, cylinder.ι₁ _, cylinder.π _,
+      rintro ⟨K₁, hK₁⟩ ⟨K₂, hK₂⟩ (f₀ f₁) hf
+      refine ⟨⟨K₁.cylinder, kFlat_cylinder _ hK₁⟩,
+        ObjectProperty.homMk (cylinder.ι₀ _),
+        ObjectProperty.homMk (cylinder.ι₁ _),
+        ObjectProperty.homMk (cylinder.π _),
         ⟨cylinder.homotopyEquiv K₁ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩,
-        cylinder.ι₀_π _, cylinder.ι₁_π _, cylinder.desc f₀ f₁
-          (HomotopyCategory.homotopyOfEq _ _ hf),
-        cylinder.ι₀_desc _ _ _, cylinder.ι₁_desc _ _ _⟩-/)
+        by cat_disch, by cat_disch,
+        ObjectProperty.homMk (cylinder.desc f₀.hom f₁.hom
+          (HomotopyCategory.homotopyOfEq _ _ ((ObjectProperty.ι _).congr_map hf))),
+        by cat_disch, by cat_disch⟩)
 
 instance : (L A).IsLocalizedEquivalence :=
   (L A).isLocalizedEquivalence_of_isLocalization (WL A)
@@ -441,12 +438,11 @@ instance : (L A).IsLocalizedEquivalence :=
       rintro ⟨K, hK⟩ ⟨L, hL⟩ f hf
       obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
       obtain ⟨L, rfl⟩ := HomotopyCategory.quotient_obj_surjective L
-      sorry
-      /-obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
       rw [HomotopyCategory.kFlat_quotient_obj_iff] at hK hL
-      simp only [MorphismProperty.WKFlat, MorphismProperty.inverseImage_iff, ObjectProperty.ι_obj,
-        ObjectProperty.ι_map, HomotopyCategory.quotient_map_mem_quasiIso_iff] at hf
-      exact ⟨⟨K, hK⟩, ⟨L, hL⟩, f, hf, ⟨Iso.refl _⟩⟩-/)
+      obtain ⟨f, rfl⟩ := ObjectProperty.homMk_surjective f
+      obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
+      refine ⟨⟨K, hK⟩, ⟨L, hL⟩, ObjectProperty.homMk f, ?_, ⟨Iso.refl _⟩⟩
+      simpa [MorphismProperty.WKFlat, HomotopyCategory.quotient_map_mem_quasiIso_iff] using hf)
 
 instance : (R A).IsLocalizedEquivalence := by
   have : (HomologicalComplex.quasiIso A (ComplexShape.up ℤ)).HasLocalization := .standard _
@@ -484,8 +480,7 @@ lemma kFlat_resolutionFunctor_obj (K : CochainComplex A ℤ) :
   let e := (Λ.colimitOfShapeResolutionFunctorObj K).ofLE
     ((ObjectProperty.monotone_cochainComplexMinus hι).trans
       (CochainComplex.cochainComplexMinus_flat_le_kFlat A))
-  sorry
-  --exact CochainComplex.closedUnderColimitsOfShape_kFlat A ℤ e.isColimit e.hF
+  exact ObjectProperty.prop_of_isColimit _ e.isColimit e.prop_diag_obj
 
 noncomputable def kFlatResolutionFunctor : CochainComplex A ℤ ⥤ CochainComplex.KFlat A :=
   ObjectProperty.lift _ Λ.resolutionFunctor (Λ.kFlat_resolutionFunctor_obj hι)
@@ -501,10 +496,9 @@ instance (K : CochainComplex A ℤ) : QuasiIso ((Λ.kFlatResolutionNatTrans hι)
 include Λ hι in
 lemma cochainComplex_kFlat_isLeftDerivabilityStructure :
     (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat.IsLeftDerivabilityStructure :=
-  sorry
-  /-LocalizerMorphism.isLeftDerivabilityStructure_of_functorial_resolutions
+  LocalizerMorphism.isLeftDerivabilityStructure_of_functorial_resolutions
     (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat (Λ.kFlatResolutionNatTrans hι)
-    (fun _ ↦ by rw [HomologicalComplex.mem_quasiIso_iff]; dsimp; infer_instance)-/
+    (fun _ ↦ by rw [HomologicalComplex.mem_quasiIso_iff]; dsimp; infer_instance) rfl
 
 include Λ hι in
 lemma homotopyCategory_kFlat_isLeftDerivabilityStructure :
