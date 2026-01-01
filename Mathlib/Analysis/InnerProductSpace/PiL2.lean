@@ -1242,18 +1242,21 @@ theorem toMatrix_innerSL_apply [Fintype n] [DecidableEq n] [Fintype m]
 
 end Matrix
 
-namespace InnerProductSpace
-variable {𝕜 E F ι ι' : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [Fintype ι] [Fintype ι'] [DecidableEq ι']
-
-open ContinuousLinearMap LinearMap
-
-theorem toMatrix_rankOne (x : E) (y : F) (b : Module.Basis ι 𝕜 E) (b' : OrthonormalBasis ι' 𝕜 F) :
-    (rankOne 𝕜 x y).toMatrix b'.toBasis b = Matrix.vecMulVec (b.repr x) (star (b'.repr y)) := by
+open ContinuousLinearMap LinearMap in
+theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    [Fintype ι] [Fintype ι'] [DecidableEq ι'] (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
+    (b' : OrthonormalBasis ι' 𝕜 F) :
+    (rankOne 𝕜 x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by
   rw [rankOne_def', ContinuousLinearMap.coe_comp, toLinearMap_toSpanSingleton,
     toMatrix_comp _ (OrthonormalBasis.singleton Unit 𝕜).toBasis, toMatrix_toSpanSingleton,
     toMatrix_innerSL_apply, OrthonormalBasis.toBasis_singleton, Basis.coe_singleton,
     Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one, Matrix.one_vecMulVec,
     Matrix.vecMulVec_eq Unit]
 
-end InnerProductSpace
+theorem Matrix.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m] [Fintype n]
+    [DecidableEq n] (x : m → 𝕜) (y : n → 𝕜) :
+    toEuclideanLin.symm (InnerProductSpace.rankOne 𝕜 (toLp 2 x) (toLp 2 y)) =
+      vecMulVec x (star y) := by
+  simp [toEuclideanLin, LinearMap.toMatrix', ← ext_iff, vecMulVec_apply,
+    EuclideanSpace.inner_single_right, mul_comm]
