@@ -342,7 +342,7 @@ Some lemmas require the `RingHom` to also preserve the norm on the base ring, e.
 
 namespace Polynomial
 
-variable {A F : Type*} [Semiring A] (p : A[X]) (v : RingHom A ℂ)
+variable {A F : Type*} [Semiring A] (p : A[X]) (v : A →+* ℂ)
 
 noncomputable def mahlerMeasure' := (p.map v).mahlerMeasure
 
