@@ -200,7 +200,7 @@ theorem eval_iterate_derivative_eq_sum_chebyshevNode {n k : ℕ} (hk : k ≤ n) 
       ∑ i ≤ n, P.eval (chebyshevNode n i) *
         (k.factorial *
         (∏ j ∈ (Finset.range (n + 1)).erase i, ((chebyshevNode n i) - (chebyshevNode n j)))⁻¹ *
-        ∑ t ∈ ((Finset.range (n + 1)).erase i).powerset with t.card = n - k,
+        ∑ t ∈ ((Finset.range (n + 1)).erase i).powersetCard (n - k),
         ∏ a ∈ t, (x - chebyshevNode n a)) := by
   rw [Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_chebyshevNode n).injOn (by simp [hP])
     (le_of_le_of_eq (Nat.cast_le.mpr hk) hP.symm) x, Finset.mul_sum, Finset.card_range,
@@ -213,7 +213,7 @@ theorem eval_iterate_derivative_eq_sum_chebyshevNode_coeff_pos
     0 < (-1) ^ i *
       (k.factorial *
       (∏ j ∈ (Finset.range (n + 1)).erase i, ((chebyshevNode n i) - (chebyshevNode n j)))⁻¹ *
-      ∑ t ∈ ((Finset.range (n + 1)).erase i).powerset with t.card = n - k,
+      ∑ t ∈ ((Finset.range (n + 1)).erase i).powersetCard (n - k),
       ∏ a ∈ t, (x - chebyshevNode n a)) := by
   rw [← mul_assoc]
   refine mul_pos ?_ (Finset.sum_pos' ?_ ?_)
