@@ -94,7 +94,7 @@ jobs:
 
       # Checkout the master branch into a subdirectory
       - name: Checkout master branch
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
@@ -104,7 +104,7 @@ jobs:
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: "${{ github.sha }}"
           path: pr-branch
@@ -381,7 +381,7 @@ jobs:
 
       - name: upload artifact containing contents of pr-branch
         # temporary measure for debugging no-build failures
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: mathlib4_artifact
           include-hidden-files: true
@@ -568,7 +568,7 @@ jobs:
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: "${{ github.sha }}"
 
@@ -616,7 +616,7 @@ jobs:
           lake exe graph
 
       - name: upload the import graph
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: import-graph
           path: import_graph.dot
@@ -720,7 +720,7 @@ jobs:
         # unfortunately we cannot query only for 'auto-merge-after-CI' events
         # so we have to process this with jq in the next step
         id: get-timeline
-        uses: octokit/graphql-action@abaeca7ba4f0325d63b8de7ef943c2418d161b93 # v3.0.0
+        uses: octokit/graphql-action@ddde8ebb2493e79f390e6449c725c21663a67505 # v3.0.2
         with:
           query: |
             query($owner: String!, $name: String!, $number: Int!) {
