@@ -1255,8 +1255,7 @@ theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike �
     Matrix.vecMulVec_eq Unit]
 
 theorem Matrix.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m] [Fintype n]
-    [DecidableEq n] (x : m → 𝕜) (y : n → 𝕜) :
-    toEuclideanLin.symm (InnerProductSpace.rankOne 𝕜 (toLp 2 x) (toLp 2 y)) =
-      vecMulVec x (star y) := by
+    [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
+    toEuclideanLin.symm (InnerProductSpace.rankOne 𝕜 x y) = vecMulVec x (star y) := by
   simp [toEuclideanLin, LinearMap.toMatrix', ← ext_iff, vecMulVec_apply,
     EuclideanSpace.inner_single_right, mul_comm]
