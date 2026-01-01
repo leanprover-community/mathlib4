@@ -256,6 +256,9 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
 
+theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
+  (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
+
 section LinearOrderedRing
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a b : R}
 
@@ -267,14 +270,15 @@ theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a *
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
   simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
 
-theorem two_mul_fract_eq_one_iff_exists_int {x : R} :
-    2 * fract x = 1 ↔ ∃ n : ℤ, 2 * x = 2 * n + 1 := by
+theorem mul_fract_eq_one_iff_exists_int {x : R} {k : R} (hk : 1 < k) :
+    k * fract x = 1 ↔ ∃ n : ℤ, k * x = k * n + 1 := by
   rw [fract, mul_sub, sub_eq_iff_eq_add']
   refine ⟨fun hx ↦ ⟨⌊x⌋, hx⟩, ?_⟩
   rintro ⟨n, hn⟩
   convert hn
-  rw [floor_eq_iff, ← mul_le_mul_iff_right₀ two_pos, ← mul_lt_mul_iff_right₀ two_pos, hn]
-  simp [mul_add]
+  have hk0 : 0 < (k : R) := zero_le_one.trans_lt hk
+  rw [floor_eq_iff, ← mul_le_mul_iff_right₀ hk0, ← mul_lt_mul_iff_right₀ hk0, hn]
+  simp [mul_add, hk]
 
 end LinearOrderedRing
 
@@ -460,6 +464,12 @@ theorem fract_eq_self {a : R} : fract a = a ↔ 0 ≤ a ∧ a < 1 :=
 @[simp]
 theorem fract_fract (a : R) : fract (fract a) = fract a :=
   fract_eq_self.2 ⟨fract_nonneg _, fract_lt_one _⟩
+
+theorem fract_eq_zero_iff {a : R} : fract a = 0 ↔ a ∈ range Int.cast := by
+  simp [fract_eq_iff, eq_comm]
+
+theorem fract_ne_zero_iff {a : R} : fract a ≠ 0 ↔ a ∉ range Int.cast :=
+  fract_eq_zero_iff.not
 
 theorem fract_neg {x : R} (hx : fract x ≠ 0) : fract (-x) = 1 - fract x := by
   rw [fract_eq_iff]

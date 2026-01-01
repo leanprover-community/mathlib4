@@ -55,10 +55,14 @@ theorem log_exp {x : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) : log (exp 
   rw [log, norm_exp, Real.log_exp, exp_eq_exp_re_mul_sin_add_cos, ← ofReal_exp,
     arg_mul_cos_add_sin_mul_I (Real.exp_pos _) ⟨hx₁, hx₂⟩, re_add_im]
 
-theorem log_exp_eq_add_round_mul (x : ℂ) :
-    log (exp x) = x + round (-x.im / (2 * π)) * (2 * π * I) := by
-  rw [log, norm_exp, Real.log_exp, arg_exp_eq_im_add_round]
-  simp [add_mul, ← add_assoc, mul_assoc]
+theorem log_exp_eq_re_add_toIocMod (x : ℂ) :
+    log (exp x) = x.re + (toIocMod Real.two_pi_pos (-π) x.im) * I := by
+  rw [log, norm_exp, Real.log_exp, arg_exp]
+
+theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
+    log (exp x) = x - (toIocDiv Real.two_pi_pos (-π) x.im) * (2 * π * I) := by
+  rw [log_exp_eq_re_add_toIocMod, toIocMod, ofReal_sub, sub_mul, ← add_sub_assoc]
+  simp [mul_assoc]
 
 /-- Complex exponential is a branched covering over `{0}ᶜ`.
 This partial equivalence gives a trivialization of this covering over `slitPlane`.
@@ -70,18 +74,17 @@ even though it is not continuous on that set.
 See also `expPartialEquivProd` below for a version that is continuous. -/
 @[simps apply_fst source target, simps -isSimp apply apply_snd symm_apply]
 def expPartialEquivProd' : PartialEquiv ℂ (ℂ × ℤ) where
-  toFun z := (exp z, round (-z.im / (2 * π)))
+  toFun z := (exp z, -toIocDiv Real.two_pi_pos (-π) z.im)
   invFun z := z.fst.log - z.snd * (2 * π * I)
   source := Set.univ
   target := {0}ᶜ ×ˢ Set.univ
   map_source' z := by simp
   map_target' z := by simp
-  left_inv' z _ := by simp [log_exp_eq_add_round_mul]
+  left_inv' z _ := by simp [log_exp_eq_sub_toIocDiv]
   right_inv' z hz := by
     ext
     · simp [exp_sub, exp_log hz.1]
-    · simp (disch := positivity) [sub_eq_add_neg, add_div, le_div_iff₀, log_im, arg_le_pi,
-        div_lt_iff₀, neg_lt (a := z.1.arg), neg_pi_lt_arg]
+    · simpa [toIocDiv_eq_iff, log_im, two_mul] using z.1.arg_mem_Ioc
 
 /-- Complex exponential is a branched covering over `{0}ᶜ`.
 This partial equivalence gives a trivialization of this covering over `slitPlane`.

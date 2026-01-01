@@ -37,17 +37,14 @@ def expOpenPartialHomeomorphProd : OpenPartialHomeomorph ℂ (ℂ × ℤ) where
   open_source := isOpen_slitPlane.preimage continuous_exp
   open_target := isOpen_slitPlane.prod isOpen_univ
   continuousOn_toFun := by
-    refine .prodMk (by fun_prop) <| continuousOn_round.comp (by fun_prop) ?_
-    rintro x hx h
-    refine slitPlane_arg_ne_pi hx ?_
-    obtain ⟨n, hn⟩ : ∃ n : ℤ, x.im = -(2 * n + 1) * π := by
-      rw [Int.two_mul_fract_eq_one_iff_exists_int] at h
-      refine h.imp fun n hn ↦ ?_
-      simp [← hn, field]
-    rw [arg_exp_eq_im_add_round, hn, round_eq]
-    field_simp
-    ring_nf
-    norm_num [add_mul]
+    refine .prodMk (by fun_prop) <| .neg <| ?_
+    refine (continuousOn_toIocDiv Real.two_pi_pos _).comp continuous_im.continuousOn ?_
+    suffices ∀ z, exp z ∈ slitPlane → ¬z.im ≡ -π [PMOD (2 * π)] by
+      simpa [MapsTo, AddCommGroup.modEq_iff_eq_mod_zmultiples] using this
+    intro z hz₁ hz₂
+    apply slitPlane_arg_ne_pi hz₁
+    rw [AddCommGroup.ModEq, ← toIocMod_eq_toIocMod Real.two_pi_pos] at hz₂
+    rw [arg_exp, hz₂, toIocMod_apply_left, two_mul, neg_add_cancel_left]
   continuousOn_invFun :=
     continuousOn_fst.clog (by simp) |>.sub (Continuous.continuousOn <| by fun_prop)
 
