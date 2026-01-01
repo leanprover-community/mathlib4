@@ -62,9 +62,6 @@ theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [NoAt
     ∀ᵐ x ∂μ, x ∉ s := by
   simpa only [ae_iff, Classical.not_not] using h.measure_zero μ
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Set.Countable.ae_not_mem := _root_.Set.Countable.ae_notMem
-
 lemma Measure.ae_ne (μ : Measure α) [NoAtoms μ] (a : α) : ∀ᵐ x ∂μ, x ≠ a :=
   (countable_singleton a).ae_notMem μ
 

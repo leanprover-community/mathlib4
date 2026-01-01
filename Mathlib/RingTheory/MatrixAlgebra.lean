@@ -72,9 +72,6 @@ theorem kroneckerTMulAlgEquiv_symm_single_tmul
   rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul,
     single_kroneckerTMul_single]
 
-@[deprecated (since := "2025-05-05")]
-alias kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul := kroneckerTMulAlgEquiv_symm_single_tmul
-
 @[simp]
 theorem kroneckerTMulLinearEquiv_one [Module S A] [IsScalarTower R S A] :
     kroneckerTMulLinearEquiv m m n n R S A B 1 = 1 := by simp [Algebra.TensorProduct.one_def]
@@ -228,9 +225,6 @@ theorem matrixEquivTensor_apply_single (i j : n) (x : A) :
     matrixEquivTensor n R A (single i j x) = x ⊗ₜ single i j 1 := by
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
   simp [ite_tmul, t, single]
-
-@[deprecated (since := "2025-05-05")]
-alias matrixEquivTensor_apply_stdBasisMatrix := matrixEquivTensor_apply_single
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :

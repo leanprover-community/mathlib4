@@ -494,9 +494,6 @@ lemma _root_.IsGLB.isPredPrelimit_of_notMem {s : Set α} (hs : IsGLB s a) (ha : 
     IsPredPrelimit a := by
   simpa using (IsGLB.dual hs).isSuccPrelimit_of_notMem ha
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.IsGLB.isPredPrelimit_of_not_mem := _root_.IsGLB.isPredPrelimit_of_notMem
-
 lemma _root_.IsGLB.mem_of_not_isPredPrelimit {s : Set α} (hs : IsGLB s a) (ha : ¬IsPredPrelimit a) :
     a ∈ s :=
   ha.imp_symm hs.isPredPrelimit_of_notMem
@@ -504,9 +501,6 @@ lemma _root_.IsGLB.mem_of_not_isPredPrelimit {s : Set α} (hs : IsGLB s a) (ha :
 lemma _root_.IsGLB.isPredLimit_of_notMem {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : a ∉ s) : IsPredLimit a := by
   simpa using (IsGLB.dual hs).isSuccLimit_of_notMem hs' ha
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.IsGLB.isPredLimit_of_not_mem := _root_.IsGLB.isPredLimit_of_notMem
 
 lemma _root_.IsGLB.mem_of_not_isPredLimit {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : ¬IsPredLimit a) : a ∈ s :=

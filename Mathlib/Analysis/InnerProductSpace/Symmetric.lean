@@ -229,6 +229,12 @@ theorem InnerProductSpace.isSymmetricProjection_rankOne_self {x : E} (hx : ‖x�
   isSymmetric := isSymmetric_rankOne_self x
   isIdempotentElem := isIdempotentElem_rankOne_self hx |>.toLinearMap
 
+theorem LinearMap.IsSymmetric.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    T.symm.IsSymmetric := fun x y ↦ by simpa using hT (T.symm x) (T.symm y) |>.symm
+
+@[simp] theorem LinearEquiv.isSymmetric_symm_iff {T : E ≃ₗ[𝕜] E} :
+    T.symm.IsSymmetric ↔ T.IsSymmetric := ⟨.toLinearMap_symm, .toLinearMap_symm⟩
+
 end Seminormed
 
 section Normed
