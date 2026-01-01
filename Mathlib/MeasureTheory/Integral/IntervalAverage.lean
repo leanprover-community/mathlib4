@@ -44,7 +44,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 /-- `⨍ x in a..b, f x` is the average of `f` over the interval `Ι a b` w.r.t. the Lebesgue
 measure. -/
 notation3 "⨍ "(...)" in "a".."b",
-  "r:60:(scoped f => average (Measure.restrict volume (Ι a b)) f) => r
+  "r:60:(scoped f => average (Measure.restrict volume (uIoc a b)) f) => r
 
 theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
   rw [setAverage_eq, setAverage_eq, uIoc_comm]
