@@ -920,16 +920,16 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F) f
+  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F) f
 
 instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_add
+  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).map_add
 
 instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_smul
 
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).continuous
+  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).continuous
 
 open LineDeriv
 
