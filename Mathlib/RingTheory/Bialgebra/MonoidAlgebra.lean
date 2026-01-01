@@ -52,6 +52,7 @@ instance instBialgebra : Bialgebra R A[M] where
       LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
+-- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
 variable (R) [AddMonoid M] [AddMonoid N] in
 /-- If `f : M → N` is a monoid hom, then `AddMonoidAlgebra.mapDomain f` is a bialgebra hom between
 their additive monoid algebras. -/
