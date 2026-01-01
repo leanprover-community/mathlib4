@@ -415,6 +415,10 @@ theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
+theorem _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
+    IsStarProjection (rankOne 𝕜 x x) :=
+  isStarProjection_iff_isSymmetricProjection.mpr (isSymmetricProjection_rankOne_self hx)
+
 end ContinuousLinearMap
 
 /-- `U.starProjection` is a star projection. -/
