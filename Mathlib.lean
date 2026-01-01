@@ -1078,6 +1078,7 @@ public import Mathlib.Algebra.Polynomial.Eval.Subring
 public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.Algebra.Polynomial.Factors
 public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.FreeMonic
 public import Mathlib.Algebra.Polynomial.GroupRingAction
 public import Mathlib.Algebra.Polynomial.HasseDeriv
 public import Mathlib.Algebra.Polynomial.Homogenize

@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.Algebra.Polynomial.FreeMonic
 
 
 /-!
@@ -41,47 +42,6 @@ variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [A
 variable (n m k : ℕ) (hn : n = m + k)
 
 noncomputable section
-
-namespace Polynomial
-
-/-- The free monic polynomial of degree `n`, as a polynomial in `R[X₁,...,Xₙ][X]`. -/
-def freeMonic : (MvPolynomial (Fin n) R)[X] :=
-  .X ^ n + ∑ i : Fin n, .C (.X i) * .X ^ (i : ℕ)
-
-lemma coeff_freeMonic :
-    (freeMonic R n).coeff k = if h : k < n then .X ⟨k, h⟩ else if k = n then 1 else 0 := by
-  simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finset_sum_coeff,
-    Polynomial.coeff_C_mul, mul_ite, mul_one, mul_zero]
-  by_cases h : k < n
-  · simp +contextual [Finset.sum_eq_single (ι := Fin n) (a := ⟨k, h⟩),
-      Fin.ext_iff, @eq_comm _ k, h, h.ne']
-  · rw [Finset.sum_eq_zero fun x _ ↦ if_neg (by cases x; lia), add_zero, dif_neg h]
-
-lemma degree_freeMonic [Nontrivial R] : (freeMonic R n).degree = n :=
-  Polynomial.degree_eq_of_le_of_coeff_ne_zero ((Polynomial.degree_le_iff_coeff_zero _ _).mpr
-    (by simp +contextual [coeff_freeMonic, LT.lt.not_gt, LT.lt.ne']))
-    (by simp [coeff_freeMonic])
-
-lemma natDegree_freeMonic [Nontrivial R] : (freeMonic R n).natDegree = n :=
-  natDegree_eq_of_degree_eq_some (degree_freeMonic R n)
-
-lemma monic_freeMonic : (freeMonic R n).Monic := by
-  nontriviality R
-  simp [Polynomial.Monic, ← Polynomial.coeff_natDegree, natDegree_freeMonic, coeff_freeMonic]
-
-omit [Algebra R S] in
-lemma map_map_freeMonic (f : R →+* S) :
-    (freeMonic R n).map (MvPolynomial.map f) = freeMonic S n := by
-  simp [freeMonic, Polynomial.map_sum]
-
-open Polynomial (MonicDegreeEq)
-
-/-- The free monic polynomial of degree `n`, as a `MonicDegreeEq` in `R[X₁,...,Xₙ][X]`. -/
-@[simps]
-def MonicDegreeEq.freeMonic : MonicDegreeEq (MvPolynomial (Fin n) R) n :=
-  ⟨.freeMonic R n, by simp +contextual [coeff_freeMonic, not_lt_of_gt, LT.lt.ne']⟩
-
-end Polynomial
 
 namespace MvPolynomial
 
@@ -135,15 +95,15 @@ def universalFactorizationMap (hn : n = m + k) :
     nontriviality R
     nontriviality MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R
     refine (MonicDegreeEq.mk _ ?_ ?_).2
-    · exact ((monic_freeMonic R m).map _).mul ((monic_freeMonic R _).map _)
+    · exact ((monic_freeMonic R _).map _).mul ((monic_freeMonic R _).map _)
     dsimp [mapEquivMonic]
-    rw [((monic_freeMonic R m).map _).natDegree_mul ((monic_freeMonic R k).map _)]
+    rw [((monic_freeMonic R _).map _).natDegree_mul ((monic_freeMonic R _).map _)]
     simp_rw [(monic_freeMonic R _).natDegree_map, natDegree_freeMonic, hn]⟩
 
 lemma universalFactorizationMap_freeMonic :
-    (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
-      (freeMonic R m).map (algebraMap _ _) *
-        (freeMonic R k).map (toRingHom <| Algebra.TensorProduct.includeRight) := by
+    (freeMonic R id).map (toRingHom <| universalFactorizationMap R n m k hn) =
+      (freeMonic R (n := m) id).map (algebraMap _ _) *
+        (freeMonic R id).map (toRingHom <| Algebra.TensorProduct.includeRight) := by
   change (mapEquivMonic _ _ _ (universalFactorizationMap R n m k hn)).1 = _
   simp [universalFactorizationMap]
   rfl
@@ -287,8 +247,8 @@ lemma universalFactorizationMapPresentation_jacobiMatrix :
     letI := (universalFactorizationMap R n m k hn).toAlgebra
     (universalFactorizationMapPresentation R n m k hn).jacobiMatrix =
     -((Polynomial.sylvester
-      ((freeMonic R m).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inl)).toRingHom))
-      ((freeMonic R k).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inr)).toRingHom))
+      ((freeMonic R id).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inl)).toRingHom))
+      ((freeMonic R id).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inr)).toRingHom))
       m k).reindex (finCongr (by lia)) (finCongr (by lia))).transpose := by
   letI := (universalFactorizationMap R n m k hn).toAlgebra
   subst hn
@@ -304,8 +264,8 @@ lemma universalFactorizationMapPresentation_jacobian :
     letI := (universalFactorizationMap R n m k hn).toAlgebra
     (universalFactorizationMapPresentation R n m k hn).jacobian =
     (-1) ^ n * (Polynomial.resultant
-      ((freeMonic R m).map Algebra.TensorProduct.includeLeftRingHom)
-      ((freeMonic R k).map Algebra.TensorProduct.includeRight.toRingHom)) := by
+      ((freeMonic R id).map Algebra.TensorProduct.includeLeftRingHom)
+      ((freeMonic R id).map Algebra.TensorProduct.includeRight.toRingHom)) := by
   cases subsingleton_or_nontrivial R
   · exact Subsingleton.elim _ _
   letI := (universalFactorizationMap R n m k hn).toAlgebra
@@ -520,8 +480,8 @@ lemma UniversalFactorizationRing.jacobian_resentation :
   change fromTensor _ _ _ _ _ = _
   rw [MvPolynomial.universalFactorizationMapPresentation_jacobian]
   rw [map_mul, map_pow, map_neg, map_one, ← AlgHom.coe_toRingHom, ← Polynomial.resultant_map_map,
-    Polynomial.map_map, Polynomial.map_map, (monic_freeMonic R k).natDegree_map,
-    (monic_freeMonic R m).natDegree_map, MonicDegreeEq.natDegree,
+    Polynomial.map_map, Polynomial.map_map, (monic_freeMonic R _).natDegree_map,
+    (monic_freeMonic R _).natDegree_map, MonicDegreeEq.natDegree,
     MonicDegreeEq.natDegree, natDegree_freeMonic, natDegree_freeMonic]
   rfl
 
