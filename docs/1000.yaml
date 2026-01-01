@@ -226,6 +226,9 @@ Q211981:
 
 Q213603:
   title: Ceva's theorem
+  url: https://github.com/leanprover-community/mathlib3/pull/10632
+  date: 2021
+  authors: Mantas Bakšys
 
 Q220680:
   title: Banach fixed-point theorem
@@ -780,6 +783,9 @@ Q730222:
 
 Q733081:
   title: Impossibility of angle trisection
+  url: https://github.com/plby/lean-proofs/blob/main/100Theorems/8.md
+  date: 2025
+  authors: Aristotle (Harmonic)
   # first part of problem 8 in 100.yaml
 
 Q737851:
@@ -911,6 +917,9 @@ Q837551:
 
 Q841893:
   title: Desargues's theorem
+  url: https://github.com/plby/lean-proofs/blob/main/100Theorems/28.md
+  date: 2025
+  authors: Aristotle (Harmonic)
   # in 100.yaml also
 
 Q842953:
@@ -1009,6 +1018,9 @@ Q897769:
 
 Q899002:
   title: Pascal's theorem
+  url: https://github.com/plby/lean-proofs/blob/main/100Theorems/28.md
+  date: 2025
+  authors: Aristotle (Harmonic)
   # in 100.yaml also
 
 Q899853:
@@ -1031,6 +1043,10 @@ Q909517:
 
 Q913447:
   title: Morley's trisector theorem
+  url: https://github.com/plby/lean-proofs/blob/main/100Theorems/84.md
+  date: 2025
+  authors: Aristotle (Harmonic)
+  # in 100.yaml also
 
 Q913849:
   title: Minimax theorem
@@ -1743,6 +1759,9 @@ Q1568811:
 
 Q1572474:
   title: Lindemann–Weierstrass theorem
+  url: https://github.com/leanprover-community/mathlib4/pull/6718
+  date: 2025
+  authors: Yuyang Zhao
   # WIP PR: https://github.com/leanprover-community/mathlib4/pull/6718
 
 Q1576235:
