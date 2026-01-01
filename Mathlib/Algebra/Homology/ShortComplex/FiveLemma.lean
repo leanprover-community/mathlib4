@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFive
-import Mathlib.Algebra.Homology.ShortComplex.FourLemma
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFive
+public import Mathlib.Algebra.Homology.ShortComplex.FourLemma
 
 /-!
 # Five lemma
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

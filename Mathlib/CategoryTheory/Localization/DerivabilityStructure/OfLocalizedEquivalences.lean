@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 
 /-!
 # Derivability structures deduced from localized equivalences
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

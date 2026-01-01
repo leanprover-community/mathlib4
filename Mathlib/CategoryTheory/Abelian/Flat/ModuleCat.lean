@@ -3,21 +3,25 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Flat.KFlat
-import Mathlib.Algebra.Category.ModuleCat.AB
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.Algebra.Category.ModuleCat.LeftResolutions
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.RingTheory.Flat.CategoryTheory
-import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+module
+
+public import Mathlib.CategoryTheory.Abelian.Flat.KFlat
+public import Mathlib.Algebra.Category.ModuleCat.AB
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.LeftResolutions
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.RingTheory.Flat.CategoryTheory
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 /-!
 # Flat objects in ModuleCat
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -30,7 +34,8 @@ variable {R : Type u} [CommRing R]
 lemma objectPropertyFlat_iff_preservesFiniteLimits_tensorLeft (M : ModuleCat.{u} R) :
     ObjectProperty.flat M ↔ PreservesFiniteLimits (tensorLeft M) := by
   refine ⟨fun h ↦ h.tensorLeft.1, fun h ↦ ?_⟩
-  have : ObjectProperty.exactFunctor (tensorLeft M) := ⟨h, inferInstance⟩
+  have : exactFunctor _ _ (tensorLeft M) :=
+    ⟨h, by simp only [rightExactFunctor_iff]; infer_instance⟩
   exact ⟨this, ObjectProperty.prop_of_iso _ (BraidedCategory.tensorLeftIsoTensorRight M) this⟩
 
 lemma objectPropertyFlat_iff_moduleFlat (M : ModuleCat.{u} R) :
@@ -38,8 +43,7 @@ lemma objectPropertyFlat_iff_moduleFlat (M : ModuleCat.{u} R) :
   rw [objectPropertyFlat_iff_preservesFiniteLimits_tensorLeft]
   rw [Module.Flat.iff_lTensor_preserves_shortComplex_exact]
   constructor
-  · intro
-    intro S hS
+  · intro _ S hS
     exact hS.map _
   · intro hM
     exact And.left (((Functor.exact_tfae (tensorLeft M)).out 1 3).1 hM)

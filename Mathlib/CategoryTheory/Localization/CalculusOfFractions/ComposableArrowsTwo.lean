@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ComposableArrows.Basic
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-! # Essential surjectivity of the functor induced on tuples of composable arrows
 
@@ -14,6 +16,8 @@ that the functor `L.mapComposableArrows 2 : ComposableArrows C 2 ⥤ ComposableA
 is essentially surjective.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

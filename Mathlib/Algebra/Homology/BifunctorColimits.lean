@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Colimits
-import Mathlib.Algebra.Homology.Bifunctor
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Colimits
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Commutation with colimits of bifunctors on homological complexes
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits HomologicalComplex
 

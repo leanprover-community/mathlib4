@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
-import Mathlib.Algebra.Homology.BifunctorTriangulated
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
+public import Mathlib.Algebra.Homology.BifunctorTriangulated
 
 /-!
 # The tensor product is triangulated
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits MonoidalCategory HomologicalComplex
 

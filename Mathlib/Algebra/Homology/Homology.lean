@@ -3,9 +3,11 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.Algebra.Homology.ImageToKernel
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.CategoryTheory.GradedObject
 
 
 /-!
@@ -27,6 +29,8 @@ new homology API of homological complex (starting from
 shall be removed and replaced by the new API.
 
 -/
+
+@[expose] public section
 
 /- redundant with the new homology API
 

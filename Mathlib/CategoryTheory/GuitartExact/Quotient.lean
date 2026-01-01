@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GuitartExact.Basic
+module
+
+public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
 # Guitart exact squares given by quotient categories
@@ -35,6 +37,8 @@ full subcategory of `C`. In that case, `Cyl` can be chosen to be
 the cylinder object of `X₀`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

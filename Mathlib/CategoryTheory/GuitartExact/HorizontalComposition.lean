@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GuitartExact.Opposite
+module
+
+public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 /-!
 # Horizontal composition of Guitart exact squares
@@ -12,6 +14,8 @@ In this file, we show that the horizontal composition of Guitart exact squares
 is Guitart exact.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

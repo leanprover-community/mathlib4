@@ -3,12 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 /-!
 # Functors which reflect exact sequences
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

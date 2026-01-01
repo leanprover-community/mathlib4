@@ -3,14 +3,18 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ExactCategory.Basic
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
+module
+
+public import Mathlib.CategoryTheory.ExactCategory.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 /-!
 # Abelian categories are exact
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

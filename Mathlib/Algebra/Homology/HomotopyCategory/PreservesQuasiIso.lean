@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
 /-!
 # Functors between homotopy categories which preserves quasi-isomorphisms
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits ZeroObject Pretriangulated
 
