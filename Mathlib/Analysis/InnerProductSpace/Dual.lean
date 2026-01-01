@@ -230,7 +230,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     ext y
     simp
 
-/-- A rank-one operator has rank one. -/
+/-- A nonzero rank-one operator has rank one. -/
 lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
     (rankOne 𝕜 x y).rank = 1 := by
