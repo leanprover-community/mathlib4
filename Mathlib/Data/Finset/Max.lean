@@ -44,7 +44,7 @@ theorem max_eq_sup_withBot (s : Finset α) : s.max = sup s (↑) :=
 theorem max_empty : (∅ : Finset α).max = ⊥ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 
@@ -73,15 +73,7 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
   induction s using Finset.induction_on with
   | empty => intro _ H; cases H
-  | insert b s _ ih =>
-    intro a h
-    by_cases p : b = a
-    · induction p
-      exact mem_insert_self b s
-    · rcases max_choice (↑b) s.max with q | q <;> rw [max_insert, q] at h
-      · cases h
-        cases p rfl
-      · exact mem_insert_of_mem (ih h)
+  | _ => grind [WithBot.coe_eq_coe]
 
 theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
   le_sup as
@@ -89,15 +81,11 @@ theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
 theorem notMem_of_max_lt_coe {a : α} {s : Finset α} (h : s.max < a) : a ∉ s :=
   mt le_max h.not_ge
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_max_lt_coe := notMem_of_max_lt_coe
-
 theorem le_max_of_eq {s : Finset α} {a b : α} (h₁ : a ∈ s) (h₂ : s.max = b) : a ≤ b :=
   WithBot.coe_le_coe.mp <| (le_max h₁).trans h₂.le
 
 theorem notMem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.max = ↑b) : a ∉ s :=
   Finset.notMem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_max_lt := notMem_of_max_lt
 
 theorem max_union {s t : Finset α} : (s ∪ t).max = s.max ⊔ t.max := sup_union
 
@@ -163,15 +151,11 @@ theorem min_le {a : α} {s : Finset α} (as : a ∈ s) : s.min ≤ a :=
 theorem notMem_of_coe_lt_min {a : α} {s : Finset α} (h : ↑a < s.min) : a ∉ s :=
   mt min_le h.not_ge
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_coe_lt_min := notMem_of_coe_lt_min
-
 theorem min_le_of_eq {s : Finset α} {a b : α} (h₁ : b ∈ s) (h₂ : s.min = a) : a ≤ b :=
   WithTop.coe_le_coe.mp <| h₂.ge.trans (min_le h₁)
 
 theorem notMem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.min = ↑b) : a ∉ s :=
   Finset.notMem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_min := notMem_of_lt_min
 
 theorem min_union {s t : Finset α} : (s ∪ t).min = s.min ⊓ t.min := inf_union
 

@@ -74,17 +74,6 @@ lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
   bijective_left := p.restrict_aux i j hi hj hij
   bijective_right := p.flip.restrict_aux j i hj hi hij.flip
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-set_option linter.deprecated false in
-/-- The restriction of a perfect pairing to submodules (expressed as injections to provide
-definitional control). -/
-@[deprecated IsPerfPair.restrict (since := "2025-05-28")]
-def _root_.PerfectPairing.restrict : PerfectPairing R M' N' where
-  toLinearMap := p.compl₁₂ i j
-  bijective_left := p.restrict_aux i j hi hj hij
-  bijective_right := p.flip.restrict_aux j i hj hi hij.flip
-
 end Restrict
 
 section RestrictScalars
@@ -149,28 +138,6 @@ lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)
     p.restrictScalars_surjective_aux i j h₁ hp⟩
   bijective_right := ⟨p.flip.restrictScalars_injective_aux j i hj hM fun m n ↦ hp n m,
     p.flip.restrictScalars_surjective_aux j i h₂ fun m n ↦ hp n m⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-set_option linter.deprecated false in
-/-- Restriction of scalars for a perfect pairing taking values in a subring. -/
-@[deprecated IsPerfPair.restrictScalars (since := "2025-05-28")]
-def _root_.PerfectPairing.restrictScalars
-    (hi : Injective i) (hj : Injective j)
-    (hM : span R (LinearMap.range i : Set M) = ⊤)
-    (hN : span R (LinearMap.range j : Set N) = ⊤)
-    (h₁ : ∀ g : Module.Dual S N', ∃ m,
-      (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
-    (h₂ : ∀ g : Module.Dual S M', ∃ n,
-      (p.flip.toPerfPair (j n)).restrictScalars S ∘ₗ i = Algebra.linearMap S R ∘ₗ g)
-    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
-    PerfectPairing S M' N' :=
-  { toLinearMap := LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
-      (FaithfulSMul.algebraMap_injective S R) p hp
-    bijective_left := ⟨p.restrictScalars_injective_aux i j hi hN hp,
-      p.restrictScalars_surjective_aux i j h₁ hp⟩
-    bijective_right := ⟨p.flip.restrictScalars_injective_aux j i hj hM (fun m n ↦ hp n m),
-      p.flip.restrictScalars_surjective_aux j i h₂ (fun m n ↦ hp n m)⟩}
 
 end RestrictScalars
 

@@ -554,6 +554,24 @@ instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace
     IsLocallyFiniteMeasure (volume : Measure (∀ i, X i)) :=
   pi.isLocallyFiniteMeasure
 
+instance _root_.IsUnifLocDoublingMeasure.pi {ι : Type*} [Fintype ι] {X : ι → Type*}
+    [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasurableSpace (X i)] (μ : ∀ i, Measure (X i))
+    [∀ i, SigmaFinite (μ i)] [∀ i, IsUnifLocDoublingMeasure (μ i)] :
+    IsUnifLocDoublingMeasure (Measure.pi μ) := by
+  use ∏ i, IsUnifLocDoublingMeasure.doublingConstant (μ i)
+  filter_upwards [Filter.eventually_all.mpr fun i ↦
+      IsUnifLocDoublingMeasure.eventually_measure_le_doublingConstant_mul (μ i),
+    eventually_mem_nhdsWithin] with r hr (hr₀ : 0 < r) x
+  simpa (disch := positivity) [Finset.prod_mul_distrib, closedBall_pi, pi_pi]
+    using Fintype.prod_mono' fun i ↦ hr i (x i)
+
+instance IsUnifLocDoublingMeasure.volume_pi {ι : Type*} [Fintype ι] {X : ι → Type*}
+    [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasureSpace (X i)]
+    [∀ i, SigmaFinite (volume : Measure (X i))]
+    [∀ i, IsUnifLocDoublingMeasure (volume : Measure (X i))] :
+    IsUnifLocDoublingMeasure (volume : Measure (∀ i, X i)) :=
+  .pi _
+
 variable (μ)
 
 @[to_additive]

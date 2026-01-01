@@ -59,7 +59,7 @@ namespace QuaternionGroup
 variable {n : ℕ}
 
 set_option backward.privateInPublic true in
-/-- Multiplication of the dihedral group.
+/-- Multiplication of the quaternion group.
 -/
 private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
   | a i, a j => a (i + j)
