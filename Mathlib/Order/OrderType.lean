@@ -1,5 +1,7 @@
 /-
-Copyright (c) _
+Copyright (c) 2024 Yan Yablonovskiy. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yan Yablonovskiy.
 -/
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.Ordinal.Basic
