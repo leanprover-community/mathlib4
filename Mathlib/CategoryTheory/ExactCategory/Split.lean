@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ExactCategory.Basic
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+module
+
+public import Mathlib.CategoryTheory.ExactCategory.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 /-!
 # Split exact categories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -17,9 +21,12 @@ open Category Limits ZeroObject
 
 variable {C : Type _} [Category C] [Preadditive C]
 
-namespace ExactCategory
+attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts in
+instance [HasBinaryBiproducts C] : HasBinaryBiproducts Cᵒᵖ := by
+  have : HasBinaryProducts Cᵒᵖ := by sorry
+  infer_instance
 
-attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
+namespace ExactCategory
 
 variable (C)
 

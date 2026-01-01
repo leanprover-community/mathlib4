@@ -3,16 +3,20 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Refinements
-import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.CategoryTheory.Sites.Balanced
-import Mathlib.CategoryTheory.Sites.Limits
+module
+
+public import Mathlib.CategoryTheory.Abelian.Refinements
+public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
+public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+public import Mathlib.CategoryTheory.Sites.Balanced
+public import Mathlib.CategoryTheory.Sites.Limits
 
 /-!
 # Additional refinements lemmas
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -188,8 +192,7 @@ lemma epi_iff_isLocallySurjective_yoneda_map {C : Type u} [Category.{v} C] [Abel
     intro U (y : U ⟶ Y)
     obtain ⟨A', π, hπ, x, fac⟩ := hf y
     exact ⟨A', π, hπ, x, fac.symm⟩
-  · intro hf
-    intro A y
+  · intro hf A y
     obtain ⟨A', π, hπ, x, fac⟩ := Presheaf.imageSieve_mem (refinementsTopology C)
       ((refinementsTopology C).yoneda.map f).val y
     exact ⟨A', π, hπ, x, fac.symm⟩

@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
 # Operations on elements in a concrete category
 
 -/
+
+@[expose] public section
 
 universe w v u v' u'
 

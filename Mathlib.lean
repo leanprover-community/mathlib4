@@ -2621,10 +2621,6 @@ public import Mathlib.CategoryTheory.Idempotents.Karoubi
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 public import Mathlib.CategoryTheory.InducedCategory
-public import Mathlib.CategoryTheory.Internal.AddCommGroup
-public import Mathlib.CategoryTheory.Internal.Basic
-public import Mathlib.CategoryTheory.Internal.ObjOperation
-public import Mathlib.CategoryTheory.Internal.Preadditive
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.IsomorphismClasses

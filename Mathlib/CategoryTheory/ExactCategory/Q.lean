@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ExactCategory.Basic
-import Mathlib.CategoryTheory.Subobject.Basic
+module
+
+public import Mathlib.CategoryTheory.ExactCategory.Basic
+public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
 # Quillen's Q-construction
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 
@@ -80,7 +84,7 @@ lemma Hom.ext' {X Y : Q C} {Z₁ Z₂ : C}
     simp only [assoc, Subobject.underlyingIso_arrow, ← comm₁,
       Subobject.underlyingIso_hom_comp_eq_mk]
   · dsimp [mk']
-    simp only [assoc, Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left, comm₂]
+    simp only [assoc, Iso.inv_hom_id_assoc, comm₂]
 
 noncomputable def Hom.id (X : Q C) : Hom X X :=
   Hom.mk' X X (𝟙 _) (𝟙 _)
@@ -91,7 +95,7 @@ noncomputable def Hom.comp {X Y Z : Q C} (α : Hom X Y) (β : Hom Y Z) : Hom X Z
 lemma Hom.comp_eq {X₁ X₂ X₃ : Q C} {Z₁₂ Z₂₃ Z₁₃ : C} (j₁ : Z₁₂ ⟶ X₁.obj) (i₁ : Z₁₂ ⟶ X₂.obj)
     (j₂ : Z₂₃ ⟶ X₂.obj) (i₂ : Z₂₃ ⟶ X₃.obj) [AdmissibleMono i₁] [AdmissibleMono i₂]
     [AdmissibleEpi j₁] [AdmissibleEpi j₂] (j₂' : Z₁₃ ⟶ Z₁₂) (i₁' : Z₁₃ ⟶ Z₂₃)
-    [AdmissibleEpi j₂'] [AdmissibleMono i₁'] (H : IsPullback j₂' i₁' i₁ j₂):
+    [AdmissibleEpi j₂'] [AdmissibleMono i₁'] (H : IsPullback j₂' i₁' i₁ j₂) :
     (Hom.mk' X₁ X₂ j₁ i₁).comp (Hom.mk' X₂ X₃ j₂ i₂) = Hom.mk' X₁ X₃ (j₂' ≫ j₁) (i₁' ≫ i₂) := by
   let φ : Z₁₃ ⟶ pullback (Subobject.arrow (mk' X₁ X₂ j₁ i₁).i) (mk' X₂ X₃ j₂ i₂).j :=
     pullback.lift (j₂' ≫ (Subobject.underlyingIso i₁).inv)
