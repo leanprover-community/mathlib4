@@ -80,7 +80,7 @@ This is defined through the axiom of choice. -/
 def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
-instance (o : OrderType) : LinearOrder o.toType :=
+instance (o : OrderType) : LinearOrder o.ToType :=
   o.out.str
 
 /-! ### Basic properties of the order type -/
@@ -104,7 +104,7 @@ instance : One OrderType where
 lemma one_def : (1 : OrderType) = type PUnit := rfl
 
 @[simp]
-theorem type_ordtoType (o : OrderType) : type o.toType = o :=
+theorem type_ordtoType (o : OrderType) : type o.ToType = o :=
   o.out_eq
 
 theorem type_eq {α β} [LinearOrder α] [LinearOrder β] :
@@ -124,18 +124,18 @@ theorem type_eq_zero_iff [LinearOrder α] : type α = 0 ↔ IsEmpty α :=
   ⟨fun h ↦
     let ⟨s⟩ := type_eq.1 h
     s.toEquiv.isEmpty,
-    @type_eq_zero_of_empty α _⟩
+    @type_eq_zero α _⟩
 
 theorem type_ne_zero_iff [LinearOrder α] : type α ≠ 0 ↔ Nonempty α := by simp
 
 theorem type_ne_zero [LinearOrder α] [h : Nonempty α] : type α ≠ 0 :=
-  type_ne_zero_iff_nonempty.2 h
+  type_ne_zero_iff.2 h
 
 theorem type_pEmpty : type PEmpty = 0 :=
   rfl
 
 theorem type_empty : type Empty = 0 :=
-  type_eq_zero_of_empty
+  type_eq_zero
 
 @[simp]
 theorem type_eq_one [LinearOrder α] [Nonempty α] [Subsingleton α] : type α = 1 := by
@@ -145,7 +145,7 @@ theorem type_eq_one [LinearOrder α] [Nonempty α] [Subsingleton α] : type α =
 @[simp]
 theorem type_eq_one_iff [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
-    fun ⟨_⟩ ↦ type_eq_one_of_unique⟩
+    fun ⟨_⟩ ↦ type_eq_one⟩
 
 theorem type_pUnit : type PUnit = 1 :=
   rfl
@@ -154,18 +154,18 @@ theorem type_unit : type Unit = 1 :=
   rfl
 
 @[simp]
-theorem isEmpty_toType_iff {o : OrderType} : IsEmpty o.toType ↔ o = 0 := by
-  rw [← @type_eq_zero_iff_isEmpty o.toType, type_ordtoType]
+theorem isEmpty_toType_iff {o : OrderType} : IsEmpty o.ToType ↔ o = 0 := by
+  rw [← @type_eq_zero_iff o.ToType, type_ordtoType]
 
-instance isEmpty_toType_zero : IsEmpty (toType 0) :=
-  toType_empty_iff_eq_zero.2 rfl
+instance isEmpty_toType_zero : IsEmpty (ToType 0) :=
+ isEmpty_toType_iff.2 rfl
 
 @[simp]
-theorem nonempty_toType_iff {o : OrderType} : Nonempty o.toType ↔ o ≠ 0 := by
-  rw [← @type_ne_zero_iff_nonempty o.toType, type_ordtoType]
+theorem nonempty_toType_iff {o : OrderType} : Nonempty o.ToType ↔ o ≠ 0 := by
+  rw [← @type_ne_zero_iff o.ToType, type_ordtoType]
 
 protected theorem one_ne_zero : (1 : OrderType) ≠ 0 :=
-  type_ne_zero_of_nonempty
+  type_ne_zero
 
 instance nontrivial : Nontrivial OrderType.{u} :=
   ⟨⟨1, 0, OrderType.one_ne_zero⟩⟩
@@ -210,7 +210,7 @@ def liftOn {δ : Sort v} (o : OrderType) (f : ∀ (α) [LinearOrder α], δ)
 theorem liftOnLinOrd_type {δ : Sort v} (f : ∀ (α) [LinearOrder α], δ)
     (c : ∀ (α) [LinearOrder α] (β) [LinearOrder β],
       type α = type β → f α = f β) {γ} [LinearOrder γ] :
-    liftOnLinOrd (type γ) f c = f γ := by
+    liftOn (type γ) f c = f γ := by
   change Quotient.liftOn' ⟦_⟧ _ _ = _
   rw [Quotient.liftOn'_mk]
 
