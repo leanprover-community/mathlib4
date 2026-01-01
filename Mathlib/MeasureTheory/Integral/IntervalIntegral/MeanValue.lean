@@ -121,7 +121,8 @@ theorem exists_eq_const_mul_intervalIntegral_of_ae_nonneg
       _ = f c * ∫ x in s, (1 : ℝ) ∂ν := by
         rw [havg]
         refold_let s
-        simp [setAverage_eq]
+        simp only [setAverage_eq, smul_eq_mul, MeasureTheory.integral_const, MeasurableSet.univ,
+          measureReal_restrict_apply, univ_inter, mul_one]
         rw [measureReal_def]
         have hreal0 : (ν s).toReal ≠ 0 := ENNReal.toReal_ne_zero.mpr ⟨hν0, hνfin⟩
         field_simp

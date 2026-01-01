@@ -108,7 +108,8 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
       _ = ∫ x in s, f x ∂ν := heq
       _ = f c * ∫ x in s, (1 : ℝ) ∂ν := by
         rw [h_ave]
-        simp [setAverage_eq]
+        simp only [setAverage_eq, smul_eq_mul, integral_const, MeasurableSet.univ,
+          measureReal_restrict_apply, Set.univ_inter, mul_one]
         rw [measureReal_def]
         field_simp
       _ = _ := by simp [hg1]
