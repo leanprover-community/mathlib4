@@ -206,13 +206,9 @@ instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [Com
     CompleteSpace (p.map (f : E →ₛₗ[σ₁₂] E₂)) :=
   ((isComplete_map_iff f).2 <| completeSpace_coe_iff_isComplete.1 ‹_›).completeSpace_coe
 
-@[simp]
-theorem dist_map (x y : E) : dist (f x) (f y) = dist x y :=
-  f.isometry.dist_eq x y
+theorem dist_map (x y : E) : dist (f x) (f y) = dist x y := _root_.dist_map f x y
 
-@[simp]
-theorem edist_map (x y : E) : edist (f x) (f y) = edist x y :=
-  f.isometry.edist_eq x y
+theorem edist_map (x y : E) : edist (f x) (f y) = edist x y := _root_.edist_map f x y
 
 protected theorem injective : Injective f₁ :=
   Isometry.injective (LinearIsometry.isometry f₁)
@@ -841,7 +837,6 @@ theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.1.map_smul c x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
 theorem nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ :=
   _root_.nnnorm_map e x
 
