@@ -85,7 +85,7 @@ instance isProbabilityMeasurePoisson (r : ℝ≥0) :
 
 open Asymptotics
 
-variable (p : ℕ → ℝ) (r : ℝ) (k : ℕ)
+variable {p : ℕ → ℝ} {r : ℝ} (k : ℕ)
 
 lemma hp0 (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) : Tendsto p atTop (𝓝 0) := by
   have hEq : (fun n => (n * p n) * (1 / n)) =ᶠ[atTop] p := by
@@ -118,13 +118,12 @@ theorem poisson_limit (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     have hpow_n : Tendsto (fun n => (1 - p n) ^ n) atTop (𝓝 (rexp (-r))) := by
       simpa [sub_eq_add_neg] using Real.tendsto_one_add_pow_exp_of_tendsto hneg
     have h1 : Tendsto (fun n => 1 - p n) atTop (𝓝 1) := by
-      simpa using tendsto_const_nhds.sub (hp0 p r hr)
+      simpa using tendsto_const_nhds.sub (hp0 hr)
     have hpow_k : Tendsto (fun n => (1 - p n) ^ k) atTop (𝓝 1) := by
       simpa using h1.pow k
     have hinv_k : Tendsto (fun n => ((1 - p n) ^ k)⁻¹) atTop (𝓝 1) := by
       simpa using (hpow_k.inv₀ (by norm_num))
-    have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
-      (hp0 p r hr).eventually (Iio_mem_nhds (by norm_num))
+    have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 := (hp0 hr).eventually (Iio_mem_nhds (by norm_num))
     have hone_ne : ∀ᶠ n in atTop, (1 - p n) ≠ 0 := by
       filter_upwards [hp_lt_half] with n hn
       exact ne_of_gt (sub_pos.2 (lt_trans hn (by norm_num)))
@@ -137,11 +136,11 @@ theorem poisson_limit (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
       simpa [mul_assoc] using (hpow_n.mul hinv_k)
     Tendsto.congr' (EventuallyEq.symm hEq) hprod
   simpa [mul_assoc, mul_left_comm, mul_comm, div_eq_mul_inv] using
-    (h_choose_mul_pk p r k hr).mul h_one_sub_pow
+    (h_choose_mul_pk k hr).mul h_one_sub_pow
 
 lemma _PMF (hpos : r ≥ 0) (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k))
     atTop (𝓝 (ProbabilityTheory.poissonPMFReal ⟨r, by simp [hpos]⟩ k)) :=
-  poisson_limit p r k hr
+  poisson_limit k hr
 
 end ProbabilityTheory
