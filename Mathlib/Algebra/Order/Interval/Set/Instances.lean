@@ -16,7 +16,8 @@ public import Mathlib.Tactic.FastInstance
 
 For suitably structured underlying type `α`, we exhibit the structure of
 the unit intervals (`Set.Icc`, `Set.Ioc`, `Set.Ioc`, and `Set.Ioo`) from `0` to `1`.
-Note: Instances for the interval `Ici 0` are dealt with in `Algebra/Order/Nonneg.lean`.
+Note: Instances for the interval `Ici 0` are dealt with in
+`Mathlib/Algebra/Order/Nonneg/Basic.lean`.
 
 ## Main definitions
 
