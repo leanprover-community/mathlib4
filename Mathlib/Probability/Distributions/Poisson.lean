@@ -87,71 +87,61 @@ open Asymptotics
 
 variable (p : ℕ → ℝ) (r : ℝ) (k : ℕ)
 
-lemma hp0 (hr : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (𝓝 r)) :
-    Tendsto p atTop (𝓝 (0 : ℝ)) := by
-  have hinv : Tendsto (fun n : ℕ => (1 : ℝ) / (n : ℝ)) atTop (𝓝 (0 : ℝ)) :=
-    tendsto_one_div_atTop_nhds_zero_nat
-  have hmul : Tendsto (fun n : ℕ => ((n : ℝ) * p n) * ((1 : ℝ) / (n : ℝ))) atTop (𝓝 (r * 0)) :=
-    hr.mul hinv
-  have hEq : (fun n : ℕ => ((n : ℝ) * p n) * ((1 : ℝ) / (n : ℝ))) =ᶠ[atTop] p := by
-    filter_upwards [eventually_ge_atTop (1 : ℕ)] with n hn
+lemma hp0 (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) : Tendsto p atTop (𝓝 0) := by
+  have hEq : (fun n => (n * p n) * (1 / n)) =ᶠ[atTop] p := by
+    filter_upwards [eventually_ge_atTop 1] with n hn
     calc
-      _ = p n * ((n : ℝ) * ((1 : ℝ) / (n : ℝ))) := by ac_rfl
+      _ = p n * (n * (1 / n)) := by ac_rfl
       _ = p n := by simp [field]
-  simpa using hmul.congr' hEq
+  simpa using (hr.mul tendsto_one_div_atTop_nhds_zero_nat).congr' hEq
 
-lemma h_choose_mul_pk (hr : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (𝓝 r)) :
-      Tendsto (fun n : ℕ => ((n.choose k : ℕ) : ℝ) * (p n) ^ k)
-        atTop (𝓝 (r ^ k / (k.factorial : ℝ))) := by
-  set f : ℕ → ℝ := fun n => ((n.choose k : ℕ) : ℝ) * (p n) ^ k with hf
-  set g : ℕ → ℝ := fun n => (((n : ℝ) * p n) ^ k) / (k.factorial : ℝ) with hg
+lemma h_choose_mul_pk (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
+    Tendsto (fun n => n.choose k * (p n) ^ k) atTop (𝓝 (r ^ k / k.factorial)) := by
+  set f : ℕ → ℝ := fun n => n.choose k * (p n) ^ k with hf
+  set g : ℕ → ℝ := fun n => ((n * p n) ^ k) / k.factorial with hg
   have hfg : f ~[atTop] g := by
-    have h1 : f ~[atTop] (fun n : ℕ => ((n : ℝ) ^ k / (k.factorial : ℝ)) * (p n) ^ k) :=
+    have h1 : f ~[atTop] (fun n => (n ^ k / k.factorial) * (p n) ^ k) :=
       (isEquivalent_choose k).mul IsEquivalent.refl
-    refine h1.congr_right ?_
-    have : (fun n ↦ ↑n ^ k / ↑k.factorial * p n ^ k)
-          = fun n ↦ (↑n * p n) ^ k / ↑k.factorial := by
-      ext n
-      simp [field, mul_pow]
-    simp [hg, this]
-  have hg : Tendsto g atTop (𝓝 (r ^ k / (k.factorial : ℝ))) := by
+    refine h1.congr_right (EventuallyEq.of_eq ?_)
+    ext n
+    simp [field, mul_pow]
+  have hg : Tendsto g atTop (𝓝 (r ^ k / k.factorial)) := by
     simpa [g, div_eq_mul_inv] using (hr.pow k).mul_const ((k.factorial : ℝ)⁻¹)
   simpa [f] using (hfg.tendsto_nhds_iff).2 hg
 
-theorem poisson_limit (hr : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (𝓝 r)) :
-    Tendsto (fun n : ℕ => ((n.choose k : ℕ) : ℝ) * (p n) ^ k * (1 - p n) ^ (n - k))
-    atTop (𝓝 (Real.exp (-r) * (r ^ k) / (k.factorial : ℝ))) := by
-  have h_one_sub_pow : Tendsto (fun n : ℕ => (1 - p n) ^ (n - k)) atTop (𝓝 (Real.exp (-r))) :=
-    have hneg : Tendsto (fun n : ℕ => (n : ℝ) * (-p n)) atTop (𝓝 (-r)) := by
+theorem poisson_limit (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
+    Tendsto (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k))
+    atTop (𝓝 (rexp (-r) * (r ^ k) / k.factorial)) := by
+  have h_one_sub_pow : Tendsto (fun n => (1 - p n) ^ (n - k)) atTop (𝓝 (rexp (-r))) :=
+    have hneg : Tendsto (fun n => n * (-p n)) atTop (𝓝 (-r)) := by
       simpa [mul_neg] using hr.neg
-    have hpow_n : Tendsto (fun n : ℕ => (1 - p n) ^ n) atTop (𝓝 (Real.exp (-r))) := by
+    have hpow_n : Tendsto (fun n => (1 - p n) ^ n) atTop (𝓝 (rexp (-r))) := by
       simpa [sub_eq_add_neg] using Real.tendsto_one_add_pow_exp_of_tendsto hneg
-    have h1 : Tendsto (fun n : ℕ => 1 - p n) atTop (𝓝 (1 : ℝ)) := by
+    have h1 : Tendsto (fun n => 1 - p n) atTop (𝓝 1) := by
       simpa using tendsto_const_nhds.sub (hp0 p r hr)
-    have hpow_k : Tendsto (fun n : ℕ => (1 - p n) ^ k) atTop (𝓝 (1 : ℝ)) := by
+    have hpow_k : Tendsto (fun n => (1 - p n) ^ k) atTop (𝓝 1) := by
       simpa using h1.pow k
-    have hinv_k : Tendsto (fun n : ℕ => ((1 - p n) ^ k)⁻¹) atTop (𝓝 (1 : ℝ)) := by
-      simpa using (hpow_k.inv₀ (by norm_num : (1 : ℝ) ≠ 0))
-    have hp_lt_half : ∀ᶠ n in atTop, p n < (1 / 2 : ℝ) :=
+    have hinv_k : Tendsto (fun n => ((1 - p n) ^ k)⁻¹) atTop (𝓝 1) := by
+      simpa using (hpow_k.inv₀ (by norm_num))
+    have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
       (hp0 p r hr).eventually (Iio_mem_nhds (by norm_num))
     have hone_ne : ∀ᶠ n in atTop, (1 - p n) ≠ 0 := by
       filter_upwards [hp_lt_half] with n hn
       exact ne_of_gt (sub_pos.2 (lt_trans hn (by norm_num)))
-    have hEq : (fun n : ℕ => (1 - p n) ^ (n - k))
-          =ᶠ[atTop] (fun n : ℕ => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
+    have hEq : (fun n => (1 - p n) ^ (n - k))
+          =ᶠ[atTop] (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
       filter_upwards [eventually_ge_atTop k, hone_ne] with n hn hne
       exact pow_sub₀ (1 - p n) hne hn
-    have hprod : Tendsto (fun n : ℕ => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹)
-        atTop (𝓝 (Real.exp (-r))) := by
+    have hprod : Tendsto (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹)
+        atTop (𝓝 (rexp (-r))) := by
       simpa [mul_assoc] using (hpow_n.mul hinv_k)
     Tendsto.congr' (EventuallyEq.symm hEq) hprod
   simpa [mul_assoc, mul_left_comm, mul_comm, div_eq_mul_inv] using
     (h_choose_mul_pk p r k hr).mul h_one_sub_pow
 
-lemma _PMF (hpos : r ≥ 0) (hr : Tendsto (fun n : ℕ => (n : ℝ) * p n) atTop (𝓝 r)) :
-    Tendsto (fun n : ℕ => ((n.choose k : ℕ) : ℝ) * (p n) ^ k * (1 - p n) ^ (n - k))
-    atTop (𝓝 (ProbabilityTheory.poissonPMFReal ⟨r, by simp [hpos]⟩ k)) := by
-  dsimp [poissonPMFReal]
-  exact poisson_limit p r k hr
+lemma _PMF (hpos : r ≥ 0) (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
+    Tendsto (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k))
+    atTop (𝓝 (ProbabilityTheory.poissonPMFReal ⟨r, by simp [hpos]⟩ k)) :=
+  poisson_limit p r k hr
 
 end ProbabilityTheory
