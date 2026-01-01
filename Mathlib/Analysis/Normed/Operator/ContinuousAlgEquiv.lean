@@ -96,22 +96,6 @@ public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_surjective :
 
 end
 
-open ContinuousLinearMap in
-variable {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
-  [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
-  [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
-  [ContinuousSMul R V] [ContinuousSMul R W] in
-public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff (f g : V ≃L[R] W) :
-    f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : R, ⇑f = α • g := by
-  conv_lhs => rw [eq_comm]
-  simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
-    ← eq_toContinuousLinearMap_symm_comp, ← comp_assoc, eq_comp_toContinuousLinearMap_symm,
-    comp_assoc, ← comp_assoc _ f.toContinuousLinearMap, comp_coe, ← mul_def,
-    ← Subalgebra.mem_center_iff (R := R), Algebra.IsCentral.center_eq_bot, ← comp_coe,
-    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
-    eq_toContinuousLinearMap_symm_comp]
-  simp [ContinuousLinearMap.ext_iff, eq_comm]
-
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
 
