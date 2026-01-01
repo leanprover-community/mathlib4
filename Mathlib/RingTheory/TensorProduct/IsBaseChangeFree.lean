@@ -88,7 +88,7 @@ variable {ι : Type*} (b : Module.Basis ι R V)
 
 theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
   classical
-  let j := TensorProduct.finsuppScalarRight' A R ι R
+  let j := TensorProduct.finsuppScalarRight A R R ι
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Finsupp.linearCombination R b ∘ₗ j)
     rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, j.bijective.of_comp_iff]
