@@ -480,27 +480,26 @@ theorem iterate_derivative_interpolate
       omega
     _ = k.factorial * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (X - C (v a)) := by
-      rw [powersetCard_eq_filter, powersetCard_eq_filter, powerset_image,
-        sum_nbij (fun (t : Finset ι) => t.image v)]
+      rw [powersetCard_eq_filter, powerset_image, sum_nbij (fun (t : Finset ι) => t.image v)]
       case hi =>
         intro a ha
-        rw [mem_filter, mem_powerset] at ha
+        rw [mem_powersetCard] at ha
         rw [mem_filter, mem_image]
         refine ⟨⟨a, by simp [ha.1]⟩, ?_⟩
-        rw [card_image_of_injOn (hvs'.mono (coe_subset.mpr ha.1))]
+        rw [card_image_of_injOn (hvs'.mono (by grind))]
         exact ha.2
-      case i_inj => exact (image_injOn_powerset_of_injOn hvs').mono (coe_subset.mpr (by simp))
+      case i_inj => exact (image_injOn_powerset_of_injOn hvs').mono (by grind)
       case i_surj =>
         intro t ht
         rw [mem_coe, mem_filter, mem_image] at ht
         obtain ⟨a, ha⟩ := ht.1
-        simp_rw [Set.mem_image, mem_coe, mem_filter]
-        refine ⟨a, ⟨⟨ha.1, ?_⟩, ha.2⟩⟩
-        rw [← ht.2, ← ha.2, card_image_of_injOn (hvs'.mono (coe_subset.mpr (mem_powerset.mp ha.1)))]
+        simp_rw [Set.mem_image, mem_coe, mem_powersetCard]
+        refine ⟨a, ⟨⟨mem_powerset.mp ha.1, ?_⟩, ha.2⟩⟩
+        rw [← ht.2, ← ha.2, card_image_of_injOn (hvs'.mono (by grind))]
       case h =>
         intro a ha
-        rw [mem_filter, mem_powerset] at ha
-        rw [prod_image (hvs'.mono (coe_subset.mpr ha.1))]
+        convert (prod_image (hvs'.mono (coe_subset.mpr (mem_powersetCard.mp ha).1))).symm
+        rfl
 
 theorem eval_iterate_derivative_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1)
