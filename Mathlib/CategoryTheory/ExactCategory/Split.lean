@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ExactCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 /-!
@@ -21,10 +22,7 @@ open Category Limits ZeroObject
 
 variable {C : Type _} [Category C] [Preadditive C]
 
-attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts in
-instance [HasBinaryBiproducts C] : HasBinaryBiproducts Cᵒᵖ := by
-  have : HasBinaryProducts Cᵒᵖ := by sorry
-  infer_instance
+attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
 namespace ExactCategory
 
