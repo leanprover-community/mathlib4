@@ -449,6 +449,11 @@ lemma ContDiffOn.parametric_integral
     {s₀ k : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
     (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) :
     ContDiffOn 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) u := by
+  /- Locally, this is already proved in `hasFTaylorSeriesOn_setIntegral_of_le_const` (which moreover
+  gives a formula for the successive derivatives). To globalize, one covers the compact set `k`
+  with finitely many sets on which the local property golds. Technically, this is more conveniently
+  done using the induction principle `IsCompact.induction_on` in which one only needs to check
+  the property locally, and invariance under binary union. -/
   intro x hx
   apply contDiffWithinAt_iff_forall_nat_le.2 (fun m hm ↦ ?_)
   suffices ∃ s, k ∩ k ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
@@ -467,7 +472,8 @@ lemma ContDiffOn.parametric_integral
   · simp only [inter_empty, empty_subset, true_and]
     exact ⟨∅, by simpa using contDiffWithinAt_const⟩
   · grind
-  · rintro s s' ⟨t, kt, tk, tmeas, ht⟩ ⟨t', kt', t'k, t'meas, ht'⟩
+  · -- check invariance of the property under binary union
+    rintro s s' ⟨t, kt, tk, tmeas, ht⟩ ⟨t', kt', t'k, t'meas, ht'⟩
     refine ⟨t ∪ t', by grind, by grind, tmeas.union t'meas, fun v hv vmeas ↦ ?_⟩
     let v₁ := v ∩ t
     let v₂ := v \ v₁
@@ -481,6 +487,7 @@ lemma ContDiffOn.parametric_integral
     rw [show v = v₁ ∪ v₂ by grind, setIntegral_union disjoint_sdiff_left.symm v₂meas]
     · exact I.mono (by grind) le_rfl
     · exact I.mono (by grind) le_rfl
+  -- check the property locally using `hasFTaylorSeriesOn_setIntegral_of_le_const`
   intro y hy
   obtain ⟨v, v_mem, p, hp⟩ : ∃ v ∈ 𝓝[insert (x, y) (u ×ˢ k)] (x, y), ∃ p,
     HasFTaylorSeriesUpToOn m (Function.uncurry f) p v := hf (x, y) ⟨hx, hy⟩ m hm
