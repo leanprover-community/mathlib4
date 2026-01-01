@@ -63,9 +63,9 @@ def univEquiv : (⨂[R] i, M i) ≃ₗ[R] ⨂[R] i : ↥univ, M i.val := reindex
 theorem univEquiv_tprod (f : (i : ι) → M i) : univEquiv (⨂ₜ[R] i, f i) = ⨂ₜ[R] i : ↥univ, f i.val :=
   reindex_tprod (Equiv.Set.univ ι).symm f
 
-@[simp]
-theorem univEquiv_symm_tprod (f : (i : ι) → M i) :
-  univEquiv.symm (⨂ₜ[R] i : ↥univ, f i) = (⨂ₜ[R] i, f i) := by simp [LinearEquiv.symm_apply_eq]
+theorem univEquiv_symm_tprod (f : (i : univ) → M i.val) :
+    univEquiv.symm (⨂ₜ[R] i : ↥univ, f i) = (⨂ₜ[R] i, f ⟨i, by simp⟩) := by
+  simp [LinearEquiv.symm_apply_eq]
 
 /-- The tensor product of a family `M` of modules indexed by a singleton set `{i₀}` is isomorphic
 to `M i₀` -/
@@ -74,7 +74,7 @@ def singletonSetEquiv (i₀ : ι) : (⨂[R] i : ({i₀} : Set ι), M i) ≃ₗ[R
 
 @[simp]
 theorem singletonEquiv_tprod (i₀ : ι) (f : (i : ({i₀} : Set ι)) → M i) :
-  singletonSetEquiv i₀ (⨂ₜ[R] i, f i) = f ⟨i₀, by simp⟩ := by simp [singletonSetEquiv]
+    singletonSetEquiv i₀ (⨂ₜ[R] i, f i) = f ⟨i₀, by simp⟩ := by simp [singletonSetEquiv]
 
 @[simp]
 theorem singletonEquiv_symm_tprod (i₀ : ι) (x : M i₀) :
