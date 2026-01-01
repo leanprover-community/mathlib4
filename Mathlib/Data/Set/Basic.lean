@@ -190,30 +190,11 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
-@[deprecated forall_swap (since := "2025-06-10")]
-theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b := by
-  tauto
-
 theorem setOf_injective : Function.Injective (@setOf α) := injective_id
 
 theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
 
 /-! ### Lemmas about `mem` and `setOf` -/
-
-@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
-If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
-theorem setOf_set {s : Set α} : setOf s = s :=
-  rfl
-
-@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
-If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
-theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
-  Iff.rfl
-
-@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
-If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
-theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
-  Iff.rfl
 
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
   bijective_id
