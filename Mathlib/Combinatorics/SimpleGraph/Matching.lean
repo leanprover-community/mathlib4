@@ -377,8 +377,6 @@ lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
 
-@[deprecated (since := "2025-06-08")] alias IsCycles.induce_supp := IsCycles.toSimpleGraph
-
 lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.spanningCoe.IsCycles := by
   intro v hv

@@ -175,8 +175,6 @@ lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
   congr with x
   ring
 
-@[deprecated (since := "2025-06-25")] alias covariance_same := covariance_self
-
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
 
