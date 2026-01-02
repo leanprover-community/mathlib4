@@ -350,16 +350,17 @@ lemma inner_right_rankOne_apply (x y : F) (z w : G) :
   simp [inner_smul_right, mul_comm]
 
 section Normed
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable {H I : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+  [NormedAddCommGroup I] [InnerProductSpace 𝕜 I]
 
-@[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
+@[simp] theorem rankOne_eq_zero {x : E} {y : H} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
-    ext_iff_inner_right 𝕜 (E := F)]
+    ext_iff_inner_right 𝕜 (E := H)]
 
-lemma rankOne_ne_zero {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
+lemma rankOne_ne_zero {x : E} {y : H} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
   grind [rankOne_eq_zero]
 
-theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
+theorem isIdempotentElem_rankOne_self_iff {x : H} (hx : x ≠ 0) :
     IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
   refine ⟨?_, isIdempotentElem_rankOne_self⟩
   simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
@@ -369,6 +370,32 @@ theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
   simp only [smul_eq_zero, rankOne_eq_zero, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
   grind [norm_nonneg]
+
+theorem rankOne_eq_rankOne_iff_comm {a c : H} {b d : I} :
+    rankOne 𝕜 a b = rankOne 𝕜 c d ↔ rankOne 𝕜 b a = rankOne 𝕜 d c := by
+  simp_rw [ContinuousLinearMap.ext_iff, ext_iff_inner_left 𝕜 (E := H),
+    ext_iff_inner_right 𝕜 (E := I)]
+  rw [forall_comm]
+  simp [inner_smul_left, inner_smul_right, mul_comm]
+
+theorem exists_of_rankOne_eq_rankOne {a c : H} {b d : I}
+    (ha : a ≠ 0) (hb : b ≠ 0) (h : rankOne 𝕜 a b = rankOne 𝕜 c d) :
+    ∃ α β : 𝕜ˣ, a = (α : 𝕜) • c ∧ b = (α * β : 𝕜) • d := by
+  have h₂ := rankOne_eq_rankOne_iff_comm.mp h
+  simp only [ContinuousLinearMap.ext_iff, rankOne_apply] at h h₂
+  have h₃ := calc
+    a = (⟪b, b⟫_𝕜 / ⟪b, b⟫_𝕜) • a := by rw [div_self, one_smul]; simpa
+    _ = (1 / ⟪b, b⟫_𝕜) • (⟪b, b⟫_𝕜 • a) := by simp only [smul_smul]; ring_nf
+    _ = (⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) • c := by simp only [h, smul_smul]; ring_nf
+  have h₄ := calc
+    b = (⟪a, a⟫_𝕜 / ⟪a, a⟫_𝕜) • b := by rw [div_self (by simpa), one_smul]
+    _ = (1 / ⟪a, a⟫_𝕜) • (⟪a, a⟫_𝕜 • b) := by simp only [smul_smul]; ring_nf
+    _ = ((⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) * (⟪c, c⟫_𝕜 / (⟪a, a⟫_𝕜))) • d := by
+      simp_rw [h₂, h₃, inner_smul_right, smul_smul]; ring_nf
+  have h₅ : ⟪d, b⟫_𝕜 ≠ 0 := fun h ↦ by simp [h, hb] at h₄
+  have h₆ : c ≠ 0 := fun h ↦ by simp [h, ha] at h₃
+  exact ⟨.mk0 _ (div_ne_zero h₅ <| by simpa),
+    .mk0 (⟪c, c⟫_𝕜 / ⟪a, a⟫_𝕜) <| div_ne_zero (by simpa) <| by simpa, h₃, h₄⟩
 
 end Normed
 
