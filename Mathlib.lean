@@ -5589,6 +5589,7 @@ public import Mathlib.Order.Nucleus
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.OrderType
 public import Mathlib.Order.PFilter
 public import Mathlib.Order.Part
 public import Mathlib.Order.PartialSups
