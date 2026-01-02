@@ -102,7 +102,7 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
       ext
       simp [Finset.smul_sum, ← smul_assoc, mul_comm r] }
 
-variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+variable [Group G] (A : Rep k G) (n : ℕ)
 
 theorem d_eq :
     d A n =
