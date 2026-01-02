@@ -129,9 +129,8 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   rw [add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
-theorem IsPositive.sum {ι : Type*} [Fintype ι] {T : ι → (E →ₗ[𝕜] E)} {s : Finset ι}
-    (hT : ∀ i ∈ s, (T i).IsPositive) :
-    (∑ i ∈ s, T i).IsPositive := by
+theorem isPositive_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} {s : Finset ι}
+    (hT : ∀ i ∈ s, (T i).IsPositive) : (∑ i ∈ s, T i).IsPositive := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -342,10 +341,9 @@ theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPosi
     (T + S).IsPositive :=
   (isPositive_toLinearMap_iff _).mp (hT.toLinearMap.add hS.toLinearMap)
 
-theorem IsPositive.sum {ι : Type*} [Fintype ι] {T : ι → (E →L[𝕜] E)} {s : Finset ι}
-    (hT : ∀ i ∈ s, (T i).IsPositive) :
-    (∑ i ∈ s, T i).IsPositive :=
-  (isPositive_toLinearMap_iff _).mp <| by simp [LinearMap.IsPositive.sum hT]
+theorem isPositive_sum {ι : Type*} {T : ι → (E →L[𝕜] E)} {s : Finset ι}
+    (hT : ∀ i ∈ s, (T i).IsPositive) : (∑ i ∈ s, T i).IsPositive :=
+  (isPositive_toLinearMap_iff _).mp <| by simp [LinearMap.isPositive_sum hT]
 
 open ComplexOrder in
 @[aesop safe apply]
@@ -541,7 +539,7 @@ theorem LinearMap.IsPositive.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsP
 of rank-one operators. -/
 theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional 𝕜 E] {T : E →L[𝕜] E} :
     T.IsPositive ↔ ∃ (m : ℕ) (u : Fin m → E), T = ∑ i : Fin m, rankOne 𝕜 (u i) (u i) := by
-  refine ⟨fun hT ↦ ?_, fun ⟨m, u, hT⟩ ↦ hT ▸ .sum fun _ _ ↦ isPositive_rankOne_self _⟩
+  refine ⟨fun hT ↦ ?_, fun ⟨m, u, hT⟩ ↦ hT ▸ isPositive_sum fun _ _ ↦ isPositive_rankOne_self _⟩
   let a (i : Fin (Module.finrank 𝕜 E)) : E :=
     ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
   refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
