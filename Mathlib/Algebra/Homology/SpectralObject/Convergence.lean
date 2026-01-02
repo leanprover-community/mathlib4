@@ -337,10 +337,12 @@ class ConvergesInDegree (n : σ) : Prop where
 variable (n : σ) [hX : X.ConvergesInDegree hdata n]
 
 include hX in
+omit [X.HasSpectralSequence data] in
 lemma hasPageInfinityAt_of_convergesInDegree (pq : κ)
     (hpq : s.stripe pq = n) : X.StationaryAt data pq :=
   hX.stationnaryAt pq hpq
 
+omit [X.HasSpectralSequence data] in
 lemma isIso₁_of_convergesInDegree
     (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : κ) (hpq : s.position n j = pq)
       (i₁ i₂ i₂' : ι) (hi₁ : data.i₁ pq = i₁) (hi₂ : hdata.mapWithBot n i = i₂)
@@ -365,6 +367,7 @@ lemma isIso₁_of_convergesInDegree
       simp only [← hi₂, not_lt_bot] at h₁₂
     · exact hX.isIso₁ i j hij pq hpq i₁ i₂ i₂' hi₁ hi₂ hi₂' h₁₂ _ _ _ _ _ hn₁'
 
+omit [X.HasSpectralSequence data] in
 lemma isIso₂_of_convergesInDegree
     (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : κ) (hpq : s.position n j = pq)
       (i₁ i₂ i₂' : ι) (hi₁ : data.i₁ pq = i₁) (hi₂ : hdata.mapWithBot n i = i₂)
@@ -379,6 +382,7 @@ lemma isIso₂_of_convergesInDegree
     infer_instance
   · exact hX.isIso₂ i j hij pq hpq i₁ i₂ i₂' hi₁ hi₂ hi₂' h₁₂ _ _ _ _ _ hn₁'
 
+omit [X.HasSpectralSequence data] in
 lemma isZero₁_of_convergesInDegree :
     ∃ (i : α n),
       IsZero ((X.H (hdata.deg n)).obj
@@ -397,6 +401,7 @@ lemma isZero₁_of_convergesInDegree :
     rw [h]
     rfl
 
+omit [X.HasSpectralSequence data] in
 lemma isZero₂_of_convergesInDegree :
     ∃ (i : α n),
       IsZero ((X.H (hdata.deg n)).obj (mk₁ (homOfLE' (data.i₂ (s.position n i)) ⊤ le_top))) :=

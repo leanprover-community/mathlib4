@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.Tactic.Linarith
 
 /-!
 # Spectral sequences
@@ -22,10 +21,10 @@ def spectralSequenceNat (u : ℤ × ℤ) : ComplexShape (ℕ × ℕ) where
   Rel a b := a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2
   next_eq {a b b'} := by
     rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> linarith
+    ext <;> lia
   prev_eq {a a' b} := by
     rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> linarith
+    ext <;> lia
 
 instance (u : ℤ × ℤ) : DecidableRel (spectralSequenceNat u).Rel := fun a b => by
   dsimp [spectralSequenceNat]
@@ -39,10 +38,10 @@ def spectralSequenceFin (l : ℕ) (u : ℤ × ℤ) : ComplexShape (ℤ × Fin l)
   Rel a b := a.1 + u.1 = b.1 ∧ a.2.1 + u.2 = b.2.1
   next_eq := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩⟨b₁', ⟨b₂', _⟩⟩ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> linarith
+    ext <;> lia
   prev_eq := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨a₁', ⟨a₂', _⟩⟩⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> linarith
+    ext <;> lia
 
 end ComplexShape
 
@@ -54,9 +53,9 @@ variable (C : Type*) [Category C] [Abelian C]
   {ι : Type*} (c : ℤ → ComplexShape ι) (r₀ : ℤ)
 
 structure SpectralSequence where
-  page' (r : ℤ) (hr : r₀ ≤ r) : HomologicalComplex C (c r)
-  iso' (r r' : ℤ) (hrr' : r + 1 = r') (pq : ι) (hr : r₀ ≤ r) :
-    (page' r hr).homology pq ≅ (page' r' (by omega)).X pq
+  page (r : ℤ) (hr : r₀ ≤ r := by lia) : HomologicalComplex C (c r)
+  iso (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
+    (page r).homology pq ≅ (page r').X pq
 
 namespace SpectralSequence
 
@@ -65,71 +64,31 @@ variable (E E' E'' : SpectralSequence C c r₀)
 
 @[ext]
 structure Hom where
-  hom' (r : ℤ) (hr : r₀ ≤ r) : E.page' r hr ⟶ E'.page' r (by linarith)
-  comm' (r r' : ℤ) (hrr' : r + 1 = r') (pq : ι) (hr : r₀ ≤ r) :
-    HomologicalComplex.homologyMap (hom' r hr) pq ≫ (E'.iso' r r' hrr' pq hr).hom =
-      (E.iso' r r' hrr' pq hr).hom ≫ (hom' r' (by linarith)).f pq := by aesop_cat
+  hom (r : ℤ) (hr : r₀ ≤ r := by lia) : E.page r ⟶ E'.page r
+  comm (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
+    HomologicalComplex.homologyMap (hom r) pq ≫ (E'.iso r r' pq).hom =
+      (E.iso r r' pq).hom ≫ (hom r').f pq := by aesop_cat
 
-class HasPage (E : SpectralSequence C c r₀) (r : ℤ) : Prop where
-  le : r₀ ≤ r := by linarith
-
-lemma le_of_hasPage (r : ℤ) [h : E.HasPage r] : r₀ ≤ r := h.le
-
-lemma hasPage_of_LE (r r' : ℤ) (le : r ≤ r') [E.HasPage r] : E.HasPage r' where
-  le := by linarith [E.le_of_hasPage r]
-
-instance : E.HasPage r₀ where
-
-instance [E.HasPage 0] : E.HasPage 1 := E.hasPage_of_LE 0 1 (by linarith)
-instance [E.HasPage 1] : E.HasPage 2 := E.hasPage_of_LE 1 2 (by linarith)
-instance [E.HasPage 2] : E.HasPage 3 := E.hasPage_of_LE 2 3 (by linarith)
-instance [E.HasPage 3] : E.HasPage 4 := E.hasPage_of_LE 3 4 (by linarith)
-instance [E.HasPage 4] : E.HasPage 5 := E.hasPage_of_LE 4 5 (by linarith)
-
-instance (r : ℤ) [E.HasPage r] : E.HasPage (r + 1) :=
-  E.hasPage_of_LE r _ (by linarith)
-
-instance (r r' : ℤ) [E.HasPage r] : E.HasPage (max r r') :=
-    E.hasPage_of_LE r _ (le_max_left _ _)
-
-instance (r r' : ℤ) [E.HasPage r'] : E.HasPage (max r r') :=
-    E.hasPage_of_LE r' _ (le_max_right _ _)
-
-instance (r : ℤ) [E.HasPage r] (k : ℕ) : E.HasPage (r + k) :=
-  E.hasPage_of_LE r (r + k) (by linarith)
-
-def page (r : ℤ) [E.HasPage r] :
-    HomologicalComplex C (c r) :=
-  E.page' r (E.le_of_hasPage r)
-
-def iso (r r' : ℤ) (hrr' : r + 1 = r') (pq : ι) [E.HasPage r] [E.HasPage r'] :
-    (E.page r).homology pq ≅ (E.page r').X pq :=
-  E.iso' r r' hrr' pq (E.le_of_hasPage r)
-
-def pageXIsoOfEq (pq : ι) (r r' : ℤ) (h : r = r') [E.HasPage r] [E.HasPage r'] :
+def pageXIsoOfEq (pq : ι) (r r' : ℤ) (h : r = r') (hr : r₀ ≤ r := by lia) :
     (E.page r).X pq ≅ (E.page r').X pq :=
   eqToIso (by subst h; rfl)
 
 namespace Hom
 
-attribute [reassoc] comm'
+attribute [reassoc] comm
 
 @[simps]
 def id : Hom E E where
-  hom' r hr := 𝟙 _
+  hom r hr := 𝟙 _
 
 variable {E E' E''}
 
 @[simps]
 def comp (f : Hom E E') (g : Hom E' E'') : Hom E E'' where
-  hom' r hr := f.hom' r hr ≫ g.hom' r hr
-  comm' r r' hrr' pq hr := by
+  hom r hr := f.hom r ≫ g.hom r
+  comm r r' hrr' pq hr := by
     dsimp
-    rw [HomologicalComplex.homologyMap_comp, assoc, g.comm' r r', f.comm'_assoc r r']
-
-def hom (f : Hom E E') (r : ℤ) [E.HasPage r] [E'.HasPage r] :
-    E.page r ⟶ E'.page r :=
-  f.hom' r (E.le_of_hasPage r)
+    rw [HomologicalComplex.homologyMap_comp, assoc, g.comm r r', f.comm_assoc r r']
 
 end Hom
 
@@ -141,162 +100,169 @@ instance : Category (SpectralSequence C c r₀) where
 variable {E E'}
 
 lemma hom_ext {f f' : E ⟶ E'}
-    (h : ∀ (r : ℤ) (_ : E.HasPage r) (_ : E'.HasPage r), f.hom r = f'.hom r) :
+    (h : ∀ (r : ℤ) (hr : r₀ ≤ r), f.hom r = f'.hom r) :
     f = f' := by
   apply Hom.ext
   ext r hr : 2
-  exact h r ⟨hr⟩ ⟨hr⟩
+  exact h r hr
 
 variable (E)
 
 @[simp]
-lemma id_hom (r : ℕ) [E.HasPage r] :
+lemma id_hom (r : ℕ) (hr : r₀ ≤ r := by lia) :
     Hom.hom (𝟙 E) r = 𝟙 _ := rfl
 
 variable {E E''}
 
 @[reassoc, simp]
-lemma comp_hom (f : E ⟶ E') (g : E' ⟶ E'') (r : ℕ) [E.HasPage r] [E'.HasPage r] [E''.HasPage r] :
+lemma comp_hom (f : E ⟶ E') (g : E' ⟶ E'') (r : ℕ) (hr : r₀ ≤ r := by lia) :
     (f ≫ g).hom r = f.hom r ≫ g.hom r := rfl
-
-@[reassoc (attr := simp)]
-lemma Hom.comm (f : E ⟶ E') (r r' : ℤ) (hrr' : r + 1 = r') (pq : ι)
-    [E.HasPage r] [E'.HasPage r] [E.HasPage r'] [E'.HasPage r'] :
-    HomologicalComplex.homologyMap (f.hom r) pq ≫ (E'.iso r r' hrr' pq).hom =
-      (E.iso r r' hrr' pq).hom ≫ (f.hom r').f pq := by
-  apply f.comm'
 
 variable (C c r₀)
 
 @[simps]
-def pageFunctor (r : ℤ) [∀ (E : SpectralSequence C c r₀), E.HasPage r] :
+def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
     SpectralSequence C c r₀ ⥤ HomologicalComplex C (c r) where
   obj E := E.page r
   map f := f.hom r
 
 @[simps!]
 noncomputable def pageHomologyNatIso
-    (r r' : ℤ) (hrr' : r + 1 = r') (pq : ι)
-    [∀ (E : SpectralSequence C c r₀), E.HasPage r]
-    [∀ (E : SpectralSequence C c r₀), E.HasPage r'] :
+    (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     pageFunctor C c r₀ r ⋙ HomologicalComplex.homologyFunctor _ _ pq ≅
       pageFunctor C c r₀ r' ⋙ HomologicalComplex.eval _ _ pq :=
-  NatIso.ofComponents (fun E => E.iso r r' hrr' pq) (by aesop_cat)
+  NatIso.ofComponents (fun E => E.iso r r' pq) (fun _ ↦ Hom.comm _ _ _ _ (by lia))
 
 variable {C c r₀}
 
 /-- This means that the differential to an object E_r^{p,q} is zero (both r and (p,q) fixed) -/
-class HasEdgeMonoAt (pq : ι) (r : ℤ) [E.HasPage r] : Prop where
-  zero : ∀ (pq' : ι), (E.page r).d pq' pq = 0
+class HasEdgeMonoAt (pq : ι) (r : ℤ) : Prop where
+  le : r₀ ≤ r := by lia
+  zero (pq' : ι) : (E.page r).d pq' pq = 0
+
+lemma le₀_of_hasEdgeMonoAt (pq : ι) (r : ℤ) [E.HasEdgeMonoAt pq r] :
+    r₀ ≤ r :=
+  HasEdgeMonoAt.le (E := E) (pq := pq)
 
 @[simp]
-lemma d_eq_zero_of_hasEdgeMonoAt (pq' pq : ι) (r : ℤ) [E.HasPage r] [E.HasEdgeMonoAt pq r] :
-    (E.page r).d pq' pq = 0 := by
-  apply HasEdgeMonoAt.zero
+lemma d_eq_zero_of_hasEdgeMonoAt (pq' pq : ι) (r : ℤ) [E.HasEdgeMonoAt pq r] :
+    (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).d pq' pq = 0 :=
+  HasEdgeMonoAt.zero _
 
-noncomputable def edgeMonoStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] :
-  (E.page r').X pq ⟶ (E.page r).X pq :=
-    (E.iso r r' hr pq).inv ≫ ((E.page r).isoHomologyπ _ pq rfl (by simp)).inv ≫
-      (E.page r).iCycles pq
+noncomputable def edgeMonoStep (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+  (E.page r' (by have := E.le₀_of_hasEdgeMonoAt pq r; lia)).X pq ⟶
+    (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).X pq :=
+  (E.iso r r' pq hrr' (E.le₀_of_hasEdgeMonoAt pq r)).inv ≫
+    ((E.page r (E.le₀_of_hasEdgeMonoAt pq r)).isoHomologyπ _ pq rfl (by simp)).inv ≫
+    (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).iCycles pq
 
-instance (pq : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] :
-    Mono (E.edgeMonoStep pq r r' hr) := by
+instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeMonoAt pq r] :
+    Mono (E.edgeMonoStep pq r r' hrr') := by
   dsimp [edgeMonoStep]
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma edgeMonoStep_comp_d (pq pq' : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] :
-    E.edgeMonoStep pq r r' hr ≫ (E.page r).d pq pq' = 0 := by
+lemma edgeMonoStep_comp_d (pq pq' : ι) (r r' : ℤ)
+    (hrr' : r + 1 = r' := by lia)
+    [E.HasEdgeMonoAt pq r] :
+    E.edgeMonoStep pq r r' hrr' ≫ (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).d pq pq' = 0 := by
   simp [edgeMonoStep]
 
 @[reassoc (attr := simp)]
-lemma iso_hom_comp_edgeMonoStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] :
-    (E.iso r r' hr pq).hom ≫ E.edgeMonoStep pq r r' hr =
-      ((E.page r).isoHomologyπ _ pq rfl (by simp)).inv ≫ (E.page r).iCycles pq := by
+lemma iso_hom_comp_edgeMonoStep (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+    (E.iso r r' pq hrr' (E.le₀_of_hasEdgeMonoAt pq r)).hom ≫ E.edgeMonoStep pq r r' =
+      ((E.page r (E.le₀_of_hasEdgeMonoAt pq r)).isoHomologyπ _ pq rfl (by simp)).inv ≫
+        (E.page r (E.le₀_of_hasEdgeMonoAt pq r)).iCycles pq := by
   simp [edgeMonoStep]
 
 @[simps]
-noncomputable def edgeMonoStepShortComplex (pq pq' : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] : ShortComplex C :=
-  ShortComplex.mk _ _ (E.edgeMonoStep_comp_d pq pq' r r' hr)
+noncomputable def edgeMonoStepShortComplex (pq pq' : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
+    (hr' : r + 1 = r' := by lia) : ShortComplex C :=
+  ShortComplex.mk _ _ (E.edgeMonoStep_comp_d pq pq' r r')
 
-lemma edgeMonoStepShortComplex_exact (pq pq' : ι) (r r' : ℤ) (hr : r + 1 = r')
+lemma edgeMonoStepShortComplex_exact (pq pq' : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r]
     (hpq' : (c r).next pq = pq')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] :
-    (E.edgeMonoStepShortComplex pq pq' r r' hr).Exact := by
+    (hrr' : r + 1 = r' := by lia) :
+    (E.edgeMonoStepShortComplex pq pq' r r' hrr').Exact := by
   subst hpq'
   apply ShortComplex.exact_of_f_is_kernel
-  refine IsLimit.ofIsoLimit (((E.page r).sc pq).cyclesIsKernel) ?_
-  exact (Fork.ext (((E.page r).isoHomologyπ _ pq rfl (by simp)) ≪≫ E.iso r r' hr pq)
-    (by simp; rfl))
+  refine IsLimit.ofIsoLimit (((E.page r (E.le₀_of_hasEdgeMonoAt pq r)).sc pq).cyclesIsKernel) ?_
+  exact (Fork.ext (((E.page r (E.le₀_of_hasEdgeMonoAt pq r)).isoHomologyπ _ pq rfl (by simp)) ≪≫
+    E.iso r r' pq hrr' (E.le₀_of_hasEdgeMonoAt pq r)) (by simp; rfl))
 
 /-- This means that the differential from an object E_r^{p,q} is zero (both r and (p,q) fixed) -/
-class HasEdgeEpiAt (pq : ι) (r : ℤ) [E.HasPage r] : Prop where
-  zero : ∀ (pq' : ι), (E.page r).d pq pq' = 0
+class HasEdgeEpiAt (pq : ι) (r : ℤ) : Prop where
+  le : r₀ ≤ r := by lia
+  zero (pq' : ι) : (E.page r).d pq pq' = 0
+
+lemma le₀_of_hasEdgeEpiAt (pq : ι) (r : ℤ) [E.HasEdgeEpiAt pq r] :
+    r₀ ≤ r :=
+  HasEdgeEpiAt.le (E := E) (pq := pq)
 
 @[simp]
-lemma d_eq_zero_of_hasEdgeEpiAt (pq pq' : ι) (r : ℤ) [E.HasPage r] [E.HasEdgeEpiAt pq r] :
-    (E.page r).d pq pq' = 0 := by
-  apply HasEdgeEpiAt.zero
+lemma d_eq_zero_of_hasEdgeEpiAt (pq pq' : ι) (r : ℤ) [E.HasEdgeEpiAt pq r] :
+    (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).d pq pq' = 0 :=
+  HasEdgeEpiAt.zero _
 
-noncomputable def edgeEpiStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeEpiAt pq r] :
-  (E.page r).X pq ⟶ (E.page r').X pq :=
-    (E.page r).pOpcycles pq ≫ ((E.page r).isoHomologyι pq _ rfl (by simp)).inv ≫
-      (E.iso r r' hr pq).hom
+noncomputable def edgeEpiStep (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+  (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).X pq ⟶ (E.page r'
+    (by have := E.le₀_of_hasEdgeEpiAt pq r; lia)).X pq :=
+    (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).pOpcycles pq ≫
+      ((E.page r (E.le₀_of_hasEdgeEpiAt pq r) ).isoHomologyι pq _ rfl (by simp)).inv ≫
+      (E.iso r r' pq hrr' (E.le₀_of_hasEdgeEpiAt pq r)).hom
 
-attribute [local instance] epi_comp
-
-instance (pq : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeEpiAt pq r] :
-    Epi (E.edgeEpiStep pq r r' hr) := by
+instance (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r') [E.HasEdgeEpiAt pq r] :
+    Epi (E.edgeEpiStep pq r r' hrr') := by
   dsimp [edgeEpiStep]
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma d_comp_edgeEpiStep (pq pq' : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeEpiAt pq' r] :
-    (E.page r).d pq pq' ≫ E.edgeEpiStep pq' r r' hr = 0 := by
+lemma d_comp_edgeEpiStep (pq pq' : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq' r]
+    (hrr' : r + 1 = r' := by lia) :
+    (E.page r (E.le₀_of_hasEdgeEpiAt pq' r)).d pq pq' ≫ E.edgeEpiStep pq' r r' hrr' = 0 := by
   simp [edgeEpiStep]
 
 @[reassoc (attr := simp)]
-lemma edgeEpiStep_comp_iso_inv (pq : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeEpiAt pq r] :
-    E.edgeEpiStep pq r r' hr ≫ (E.iso r r' hr pq).inv =
-      (E.page r).pOpcycles pq ≫ ((E.page r).isoHomologyι pq _ rfl (by simp)).inv := by
+lemma edgeEpiStep_comp_iso_inv (pq : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+    E.edgeEpiStep pq r r' hrr' ≫ (E.iso r r' pq hrr' (E.le₀_of_hasEdgeEpiAt pq r)).inv =
+      (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).pOpcycles pq ≫
+        ((E.page r (E.le₀_of_hasEdgeEpiAt pq r)).isoHomologyι pq _ rfl (by simp)).inv := by
   simp [edgeEpiStep]
 
 @[simps]
-noncomputable def edgeEpiStepShortComplex (pq pq' : ι) (r r' : ℤ) (hr : r + 1 = r')
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeEpiAt pq' r] : ShortComplex C :=
-  ShortComplex.mk _ _ (E.d_comp_edgeEpiStep pq pq' r r' hr)
+noncomputable def edgeEpiStepShortComplex (pq pq' : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq' r]
+    (hrr' : r + 1 = r' := by lia) : ShortComplex C :=
+  ShortComplex.mk _ _ (E.d_comp_edgeEpiStep pq pq' r r' hrr')
 
-lemma edgeEpiStepShortComplex_exact (pq pq' : ι) (r r' : ℤ) (hr : r + 1 = r')
-    (hpq' : (c r).prev pq' = pq)
-    [E.HasPage r] [E.HasPage r'] [E.HasEdgeEpiAt pq' r] :
-    (E.edgeEpiStepShortComplex pq pq' r r' hr).Exact := by
+lemma edgeEpiStepShortComplex_exact (pq pq' : ι) (r r' : ℤ) [E.HasEdgeEpiAt pq' r]
+    (hpq' : (c r).prev pq' = pq) (hrr' : r + 1 = r' := by lia) :
+    (E.edgeEpiStepShortComplex pq pq' r r' hrr').Exact := by
   subst hpq'
   apply ShortComplex.exact_of_g_is_cokernel
-  refine IsColimit.ofIsoColimit (((E.page r).sc pq').opcyclesIsCokernel) (Iso.symm ?_)
-  exact Cofork.ext ((E.iso r r' hr pq').symm ≪≫ (E.page r).isoHomologyι pq' _ rfl (by simp))
+  refine IsColimit.ofIsoColimit
+    (((E.page r (E.le₀_of_hasEdgeEpiAt pq' r)).sc pq').opcyclesIsCokernel) (Iso.symm ?_)
+  exact Cofork.ext ((E.iso r r' pq' hrr' (E.le₀_of_hasEdgeEpiAt pq' r)).symm ≪≫
+    (E.page r (E.le₀_of_hasEdgeEpiAt pq' r)).isoHomologyι pq' _ rfl (by simp))
     (by simp; rfl)
 
 @[reassoc (attr := simp)]
-lemma edgeMonoStep_edgeEpiStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
-    [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r] :
-        E.edgeMonoStep pq r r' hr ≫ E.edgeEpiStep pq r r' hr = 𝟙 _ := by
-  simp only [edgeMonoStep, edgeEpiStep, assoc, ← (E.page r).homology_π_ι_assoc pq,
+lemma edgeMonoStep_edgeEpiStep (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+        E.edgeMonoStep pq r r' hrr' ≫ E.edgeEpiStep pq r r' hrr' = 𝟙 _ := by
+  simp only [edgeMonoStep, edgeEpiStep, assoc,
+    ← (E.page r (E.le₀_of_hasEdgeEpiAt pq r)).homology_π_ι_assoc pq,
     HomologicalComplex.isoHomologyι_hom_inv_id_assoc,
     HomologicalComplex.isoHomologyπ_inv_hom_id_assoc, Iso.inv_hom_id]
 
 @[reassoc (attr := simp)]
-lemma edgeEpiStep_edgeMonoStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
-    [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r] :
-        E.edgeEpiStep pq r r' hr ≫ E.edgeMonoStep pq r r' hr = 𝟙 _ := by
+lemma edgeEpiStep_edgeMonoStep (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E.HasEdgeEpiAt pq r]
+    (hrr' : r + 1 = r' := by lia) :
+    E.edgeEpiStep pq r r' hrr' ≫ E.edgeMonoStep pq r r' hrr' = 𝟙 _ := by
+  have := E.le₀_of_hasEdgeEpiAt pq r
   simp only [edgeEpiStep, edgeMonoStep,
     ← cancel_mono ((E.page r).isoHomologyπ _ pq rfl (by simp)).hom,
     ← cancel_mono ((E.page r).isoHomologyι pq _ rfl (by simp)).hom,
@@ -309,78 +275,82 @@ lemma edgeEpiStep_edgeMonoStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r') [E.HasPa
 
 section
 
-variable (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
-  (pq pq' pq'' : ι) (hpq : (c r).prev pq' = pq) (hpq'' : (c r).next pq' = pq'')
-  (left : ((E.page r).sc' pq pq' pq'').LeftHomologyData)
-  (right : ((E.page r).sc' pq pq' pq'').RightHomologyData)
+variable (r r' : ℤ) (pq pq' pq'' : ι)
+  (hpq : (c r).prev pq' = pq) (hpq'' : (c r).next pq' = pq'')
+  {hr : r₀ ≤ r}
+  (left : ((E.page r hr).sc' pq pq' pq'').LeftHomologyData)
+  (right : ((E.page r hr).sc' pq pq' pq'').RightHomologyData)
 
-@[reassoc (attr := simp)]
-lemma leftHomologyData_π_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r] :
+@[reassoc]
+lemma leftHomologyData_π_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
+    (hrr' : r + 1 = r' := by lia) :
     left.π ≫ left.homologyIso.inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
-      (E.iso r r' hr pq').hom ≫ E.edgeMonoStep pq' r r' hr = left.i := by
-  simp [edgeMonoStep]
+      (E.iso r r' pq' hrr').hom ≫ E.edgeMonoStep pq' r r' hrr' = left.i := by
+  simp
 
 @[reassoc (attr := simp)]
-lemma rightHomologyData_p_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r] :
-      E.edgeMonoStep pq' r r' hr ≫ right.p =
-       (E.iso r r' hr pq').inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
+lemma rightHomologyData_p_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r]
+    (hrr' : r + 1 = r' := by lia) :
+      E.edgeMonoStep pq' r r' hrr' ≫ right.p =
+       (E.iso r r' pq' hrr' hr).inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
        right.homologyIso.hom ≫ right.ι := by
-  rw [← cancel_epi (E.iso r r' hr pq').hom,
+  rw [← cancel_epi (E.iso r r' pq').hom,
     ← cancel_epi ((E.page r).isoHomologyπ  _ pq' rfl (by apply d_eq_zero_of_hasEdgeMonoAt)).hom]
   simp [edgeMonoStep]
 
 @[reassoc (attr := simp)]
-lemma leftHomologyData_i_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r] :
-    left.i ≫ E.edgeEpiStep pq' r r' hr =
+lemma leftHomologyData_i_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r]
+    (hrr' : r + 1 = r' := by lia) :
+    left.i ≫ E.edgeEpiStep pq' r r' hrr' =
       left.π ≫ left.homologyIso.inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
-        (E.iso r r' hr pq').hom := by
-  rw [← cancel_mono (E.iso r r' hr pq').inv,
+        (E.iso r r' pq' hrr' hr).hom := by
+  rw [← cancel_mono (E.iso r r' pq').inv,
     ← cancel_mono ((E.page r).isoHomologyι  pq' pq'' hpq''
       (by apply d_eq_zero_of_hasEdgeEpiAt)).hom]
   simp [edgeEpiStep]
 
-@[reassoc (attr := simp)]
-lemma rightHomologyData_ι_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r] :
-    E.edgeEpiStep pq' r r' hr ≫ (E.iso r r' hr pq').inv ≫
+@[reassoc]
+lemma rightHomologyData_ι_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r]
+      (hrr' : r + 1 = r' := by lia) :
+    E.edgeEpiStep pq' r r' hrr' ≫ (E.iso r r' pq' hrr' hr).inv ≫
       ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
         right.homologyIso.hom ≫ right.ι = right.p := by
-  simp [edgeEpiStep]
+  simp
 
 end
 
 
 def hasEdgeMonoSet (pq : ι) : Set ℤ  :=
-  fun r => ∀ (r' : ℤ) (_ : r ≤ r'), ∃ (_ : E.HasPage r'), E.HasEdgeMonoAt pq r'
+  fun r => r₀ ≤ r ∧ ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeMonoAt pq r'
 
 def hasEdgeEpiSet (pq : ι) : Set ℤ :=
-  fun r => ∀ (r' : ℤ) (_ : r ≤ r'), ∃ (_ : E.HasPage r'), E.HasEdgeEpiAt pq r'
+  fun r => r₀ ≤ r ∧ ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeEpiAt pq r'
 
 section
 
-lemma isIso_hom_succ (f : E ⟶ E') (r : ℤ) [E.HasPage r] [E'.HasPage r]
-    (hf : IsIso (f.hom r)) : IsIso (f.hom (r + 1)) := by
+lemma isIso_hom_succ (f : E ⟶ E') (r : ℤ) {hr : r₀ ≤ r}
+    (hf : IsIso (f.hom r hr)) : IsIso (f.hom (r + 1)) := by
   have : ∀ (pq : ι), IsIso ((f.hom (r + 1)).f pq) := fun pq => by
     have : IsIso (HomologicalComplex.homologyMap (Hom.hom f r) pq) := by
       -- this should already be an instance
       change IsIso ((HomologicalComplex.homologyFunctor _ _ pq).map (Hom.hom f r))
       infer_instance
-    exact IsIso.of_isIso_fac_left (Hom.comm f r _ rfl pq).symm
+    exact IsIso.of_isIso_fac_left (Hom.comm f r (r + 1) pq).symm
   apply HomologicalComplex.Hom.isIso_of_components
 
-lemma isIso_hom_of_GE (f : E ⟶ E') (r r' : ℤ) (hrr' : r ≤ r')
-    [E.HasPage r] [E'.HasPage r] [E.HasPage r'] [E'.HasPage r']
-    (hf : IsIso (f.hom r)) : IsIso (f.hom r') := by
+lemma isIso_hom_of_GE (f : E ⟶ E') (r r' : ℤ) (hrr' : r ≤ r') {hr : r₀ ≤ r}
+    (hf : IsIso (f.hom r hr)) : IsIso (f.hom r') := by
   obtain ⟨k, hk⟩ := Int.le.dest hrr'
   revert r' hrr'
   induction k with
   | zero =>
-    intro r' _ _ _ hr'
-    obtain rfl : r = r' := by omega
+    intro r' _ hrr'
+    obtain rfl : r = r' := by lia
     exact hf
   | succ k hk =>
-    intro r' hrr' _ _ hr'
+    intro r' _ hrr'
     obtain rfl : r' = (r + k) + 1 := by omega
-    exact isIso_hom_succ f (r + k) (hk (r + k) (by linarith) (by rfl))
+    exact isIso_hom_succ f (r + k) (hk (r + k) (by lia) (by rfl))
 
 end
 
