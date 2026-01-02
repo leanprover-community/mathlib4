@@ -250,12 +250,12 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 
 @[to_additive (attr := simp)]
 lemma mk_eq_top (toSubsemigroup : Subsemigroup M) (one_mem') :
-    mk toSubsemigroup one_mem' = ⊤ ↔ toSubsemigroup = ⊤ := by simp [← SetLike.coe_injective'.eq_iff]
+    mk toSubsemigroup one_mem' = ⊤ ↔ toSubsemigroup = ⊤ := by simp [← SetLike.coe_set_eq]
 
 @[to_additive (attr := simp)]
 lemma mk_eq_bot (toSubsemigroup : Subsemigroup M) (one_mem') :
     mk toSubsemigroup one_mem' = ⊥ ↔ (toSubsemigroup : Set M) = {1} := by
-  simp [← SetLike.coe_injective'.eq_iff]
+  simp [← SetLike.coe_set_eq]
 
 /-- The inf of two submonoids is their intersection. -/
 @[to_additive /-- The inf of two `AddSubmonoid`s is their intersection. -/]

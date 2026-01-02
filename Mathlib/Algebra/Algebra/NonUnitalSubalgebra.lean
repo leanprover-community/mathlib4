@@ -728,14 +728,16 @@ theorem top_toSubring {R A : Type*} [CommRing R] [NonUnitalNonAssocRing A] [Modu
 @[simp] lemma toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
     S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ := by simp [← SetLike.coe_set_eq]
 
+-- This lemma isn't simp because `NonUnitalSubalgebra.toSubmodule` is a "fake" projection,
+-- which is syntactically a composition of two other projections.
 lemma toSubmodule_eq_top {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊤ ↔ S = ⊤ := by simp
 
 @[simp]
-theorem toSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+theorem toNonUnitalSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
     {S : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = ⊤ ↔ S = ⊤ :=
   NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_toSubring
 
-@[deprecated (since := "2026-01-01")] alias to_subring_eq_top := toSubring_eq_top
+@[deprecated (since := "2026-01-01")] alias to_subring_eq_top := toNonUnitalSubring_eq_top
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
   rw [← SetLike.le_def]

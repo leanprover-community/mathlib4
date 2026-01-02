@@ -260,7 +260,7 @@ theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubsemiring R) :=
 theorem coe_top : ((⊤ : NonUnitalSubsemiring R) : Set R) = Set.univ :=
   rfl
 
-@[simp] lemma toAddSubmonoid_top : (⊤ : NonUnitalSubsemiring R) = ⊤ := rfl
+@[simp] lemma toAddSubmonoid_top : (⊤ : NonUnitalSubsemiring R).toAddSubmonoid = ⊤ := rfl
 
 @[simp]
 lemma toAddSubmonoid_eq_top {S : NonUnitalSubsemiring R} : S.toAddSubmonoid = ⊤ ↔ S = ⊤ := by

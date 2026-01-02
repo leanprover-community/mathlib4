@@ -109,6 +109,18 @@ theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubring R) :=
 theorem coe_top : ((⊤ : NonUnitalSubring R) : Set R) = Set.univ :=
   rfl
 
+@[simp]
+lemma toNonUnitalSubsemiring_top : (⊤ : NonUnitalSubring R).toNonUnitalSubsemiring = ⊤ := rfl
+
+@[simp] lemma toAddSubgroup_top : (⊤ : NonUnitalSubring R).toAddSubgroup = ⊤ := rfl
+
+@[simp]
+lemma toNonUnitalSubsemiring_eq_top {S : NonUnitalSubring R} :
+    S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ := by simp [← SetLike.coe_set_eq]
+
+@[simp] lemma toAddSubgroup_eq_top {S : NonUnitalSubring R} : S.toAddSubgroup = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
 /-- The ring equiv between the top element of `NonUnitalSubring R` and `R`. -/
 @[simps!]
 def topEquiv : (⊤ : NonUnitalSubring R) ≃+* R := NonUnitalSubsemiring.topEquiv
