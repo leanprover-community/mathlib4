@@ -45,15 +45,13 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
     IsDedekindFiniteMonoid α ↔ IsDedekindFiniteMonoid β where
   mp _ := let e := MulEquivClass.toMulEquiv f
     let g : β →* α := ⟨⟨e.symm, e.injective <| (e.right_inv ..).trans (map_one f).symm⟩, map_mul _⟩
-    MonoidHom.isDedekindFiniteMonoid_of_injective g e.symm.injective
+    .of_injective g e.symm.injective
   mpr _ := let g : α →* β := ⟨⟨f, map_one f⟩, map_mul f⟩
-    MonoidHom.isDedekindFiniteMonoid_of_injective g (EquivLike.injective f)
+    .of_injective g (EquivLike.injective f)
 
 namespace MulEquiv
 section Mul
 variable [Mul M] [Mul N] [Mul P]
-
-section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive /-- The `AddEquiv` between two `AddMonoid`s with a unique element. -/]
@@ -67,7 +65,13 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
-end unique
+variable (α M) in
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/
+@[to_additive (attr := simps!)
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/]
+def funUnique [Unique α] : (α → M) ≃* M where
+  toEquiv := .funUnique ..
+  map_mul' := by simp
 
 end Mul
 

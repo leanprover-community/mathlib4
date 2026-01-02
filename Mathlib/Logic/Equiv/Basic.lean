@@ -17,8 +17,9 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
 a lot of equivalences between various types and operations on these equivalences.
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 

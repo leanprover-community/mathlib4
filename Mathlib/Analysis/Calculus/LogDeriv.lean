@@ -87,7 +87,7 @@ lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 
   rcases eq_or_ne n 0 with rfl | hn; · simp
   rcases eq_or_ne (f x) 0 with hf | hf
   · simp [logDeriv_apply, zero_zpow, *]
-  · rw [logDeriv_apply, ← comp_def (·^n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
+  · rw [logDeriv_apply, ← comp_def (· ^ n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
       deriv_zpow, logDeriv_apply]
     simp [field, zpow_sub_one₀ hf]
 

@@ -13,6 +13,11 @@ public import Mathlib.CategoryTheory.Filtered.Basic
 Typically forgetful functors from algebraic categories preserve filtered colimits
 (although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
 
+Note also that using the results in the file `CategoryTheory.Presentable.Directed`,
+in order to show that a functor preserves filtered colimits, it would be
+sufficient to check that it preserves colimits indexed by nonempty directed
+types.
+
 -/
 
 @[expose] public section

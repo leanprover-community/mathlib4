@@ -158,10 +158,6 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' | hij' | hij' <;>
   rw [hji, hij'] at aux₂ <;> lia
 
-@[deprecated (since := "2025-05-23")]
-alias RootPositiveForm.rootLength_lt_of_pairingIn_nmem :=
-  RootPositiveForm.rootLength_lt_of_pairingIn_notMem
-
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
     (len_eq : B.form (α i) (α i) = B.form (α j) (α j)) :

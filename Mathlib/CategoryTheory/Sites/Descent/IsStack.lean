@@ -20,7 +20,7 @@ is required for stacks is expressed by saying that the functors `toDescentData`
 attached to covering sieves are essentially surjective. Together with the
 `IsPrestack` assumption, we get that these functors are actually equivalences of
 categories (see `isEquivalence_toDescentData`). Conversely, we provide a
-constructor `IsStack.of_isEquivalence` which assumes that these functors are
+constructor `IsStack.of_isStackFor` which assumes that these functors are
 equivalences of categories.
 
 ## References
@@ -52,6 +52,7 @@ class IsStack (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}) (J : Grothendiec
 
 variable (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}) {J : GrothendieckTopology C}
 
+/-- Version of `isStackFor` for a sieve instead of a presieve. -/
 lemma isStackFor' [F.IsStack J] {S : C} (R : Sieve S) (hR : R ∈ J S) :
     F.IsStackFor R.arrows := by
   rw [isStackFor_iff]

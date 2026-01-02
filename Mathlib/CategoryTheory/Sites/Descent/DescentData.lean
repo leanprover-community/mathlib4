@@ -20,9 +20,9 @@ when we replace `S` by an isomorphic object, or the family `f i : X i ⟶ S`
 by another family which generates the same sieve
 (see `Pseudofunctor.DescentData.pullFunctorEquivalence`).
 
-Given a presieve `R`, we introduce predicates `F.IsPrestackFor R` and `F.IsStackFor`
+Given a presieve `R`, we introduce predicates `F.IsPrestackFor R` and `F.IsStackFor R`
 saying the functor `F.DescentData (fun (f : R.category) ↦ f.obj.hom)` attached
-to `R` are respectively fully faithful or equivalences. We show that
+to `R` is respectively fully faithful or an equivalence. We show that
 `F` satisfies `F.IsPrestack J` for a Grothendieck topology `J` iff it
 satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
 
@@ -261,7 +261,7 @@ def toDescentDataCompPullFunctorIso :
         (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc)).symm.app M)
       (fun Y q i₁ i₂ f₁ f₂ hf₁ hf₂ ↦ by
         dsimp
-        rw [F.isoMapOfCommSq_eq _ _  rfl, F.isoMapOfCommSq_eq _ _  rfl]
+        rw [F.isoMapOfCommSq_eq _ _ rfl, F.isoMapOfCommSq_eq _ _ rfl]
         dsimp
         simp only [Functor.map_comp, Category.assoc]
         rw [← F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app_assoc p.op.toLoc
@@ -337,7 +337,7 @@ def pullFunctorCompIso
     (fun D ↦ isoMk (fun _ ↦ (Cat.Hom.toNatIso (F.mapComp' _ _ _ (by grind))).symm.app _) (by
       intro Y s k₁ k₂ f₁ f₂ hf₁ hf₂
       dsimp
-      rw [pullFunctorObjHom_eq _ _ _ _ _  (s ≫ r) _ _ rfl,
+      rw [pullFunctorObjHom_eq _ _ _ _ _ (s ≫ r) _ _ rfl,
         pullFunctorObjHom_eq _ _ _ _ _ (s ≫ q) (f₁ ≫ q' k₁) (f₂ ≫ q' k₂)]
       dsimp
       rw [pullFunctorObjHom_eq _ _ _ _ _ (s ≫ r) (f₁ ≫ r' k₁) (f₂ ≫ r' k₂)
@@ -445,12 +445,10 @@ def subtypeCompatibleHomEquiv {M N : F.obj (.mk (op S))} :
 lemma subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
     {M N : F.obj (.mk (op S))} (φ : M ⟶ N) :
     subtypeCompatibleHomEquiv F f (Presieve.Arrows.toCompatible _ _
-      (F.presheafHomObjHomEquiv φ)) =
-      (F.toDescentData f).map φ := by
+      (F.presheafHomObjHomEquiv φ)) = (F.toDescentData f).map φ := by
   ext i
   simp [subtypeCompatibleHomEquiv, presheafHomObjHomEquiv, pullHom,
-    Category.assoc, ← Functor.map_comp,
-    Pseudofunctor.mapComp'_id_comp_hom_app_assoc,
+    ← Functor.map_comp, Pseudofunctor.mapComp'_id_comp_hom_app_assoc,
     Pseudofunctor.mapComp'_id_comp_inv_app]
 
 end DescentData

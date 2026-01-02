@@ -800,15 +800,14 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
     exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
 /-- If `P` is a presheaf of types and `π : (i : I) → X i ⟶ B` is a family
-of morphism, this is the map from `P.obj (op B)` to the subtype of compatible
+of morphisms, this is the map from `P.obj (op B)` to the subtype of compatible
 families in `P.obj (op (X i))`. -/
 @[simps]
 def Arrows.toCompatible (s : P.obj (op B)) :
     Subtype (Arrows.Compatible P π) where
   val i := P.map (π i).op s
   property i j Z gi gj h := by
-    dsimp
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp, h]
+    simp [← FunctorToTypes.map_comp_apply, ← op_comp, h]
 
 theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
     IsSheafFor P (ofArrows X π) ↔
@@ -853,7 +852,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
     IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows _ f) ↔
-      IsSheafFor P ((Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i)))) := by
+      IsSheafFor P (Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i))) := by
   let e : Subtype (Arrows.Compatible ((Over.map p).op ⋙ P) f) ≃
       Subtype (Arrows.Compatible P (fun i ↦ (Over.map p).map (f i))) :=
     { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦ by
