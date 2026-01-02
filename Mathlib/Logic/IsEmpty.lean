@@ -241,7 +241,7 @@ theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
 theorem Function.Surjective.of_isEmpty [IsEmpty β] (f : α → β) :
     Function.Surjective f := IsEmpty.elim ‹_›
 
-theorem Function.Surjective_iff_IsEmpty [IsEmpty α] (f : α → β) :
+theorem Function.surjective_iff_isEmpty [IsEmpty α] (f : α → β) :
     Function.Surjective f ↔ IsEmpty β :=
 ⟨fun h_surj ↦ Surjective.isEmpty h_surj, fun _ ↦ Surjective.of_isEmpty f ⟩
 
