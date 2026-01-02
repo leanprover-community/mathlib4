@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
-public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Affine
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
-public import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 
 /-!
 # Higher differentiability of composition
@@ -350,6 +349,37 @@ theorem ContinuousLinearEquiv.comp_contDiffOn_iff (e : F ≃L[𝕜] G) :
 theorem ContinuousLinearEquiv.comp_contDiff_iff (e : F ≃L[𝕜] G) :
     ContDiff 𝕜 n (e ∘ f) ↔ ContDiff 𝕜 n f := by
   simp only [← contDiffOn_univ, e.comp_contDiffOn_iff]
+
+#check ContinuousLinearMap.hasFDerivWithinAt
+
+/-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `f ∘ g` admits a Taylor
+series in `g ⁻¹' s`, whose `k`-th term at `x` is given by `p (g x) k (g v₁, ..., g vₖ)` . -/
+theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap
+    (hf : HasFTaylorSeriesUpToOn n f p s) (g : G →ᴬ[𝕜] E) :
+    HasFTaylorSeriesUpToOn n (f ∘ g)
+      (fun x k => (p (g x) k).compContinuousLinearMap fun _ => g.contLinear) (g ⁻¹' s) := by
+  let A : ∀ m : ℕ, (E[×m]→L[𝕜] F) → G[×m]→L[𝕜] F :=
+    fun m h => h.compContinuousLinearMap fun _ => g.contLinear
+  have hA : ∀ m, IsBoundedLinearMap 𝕜 (A m) := fun m =>
+    isBoundedLinearMap_continuousMultilinearMap_comp_linear g.contLinear
+  constructor
+  · intro x hx
+    simp only [(hf.zero_eq (g x) hx).symm, Function.comp_apply]
+    change (p (g x) 0 fun _ : Fin 0 => g.contLinear 0) = p (g x) 0 0
+    rw [map_zero]
+    rfl
+  · intro m hm x hx
+    convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
+        ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
+    ext y v
+    change p (g x) (Nat.succ m) (g ∘ cons y v) = p (g x) m.succ (cons (g y) (g ∘ v))
+    rw [comp_cons]
+  · intro m hm
+    exact (hA m).continuous.comp_continuousOn <| (hf.cont m hm).comp g.continuous.continuousOn <|
+      Subset.refl _
+
+
+#exit
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term at `x` is given by `p (g x) k (g v₁, ..., g vₖ)` . -/
