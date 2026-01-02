@@ -335,119 +335,126 @@ end FinitePlace
 
 end NumberField
 
-namespace IsDedekindDomain.HeightOneSpectrum
+open UniqueFactorizationMonoid in
+theorem Ideal.IsDedekindDomain.emultiplicity_eq_zero_of_ne {R : Type*} [CommRing R]
+    [IsDedekindDomain R] {a b : Ideal R} (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b)
+    (h_bot : b ≠ ⊥) : emultiplicity a b = 0 := by
+  classical
+  rw [emultiplicity_eq_count_normalizedFactors ha hb.ne_zero, normalize_eq, Nat.cast_eq_zero,
+    Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff h_bot, not_and]
+  intro _ h_le
+  exact h ((((Ideal.prime_iff_isPrime hb.ne_zero).1 hb.prime).isMaximal hb.ne_zero).eq_of_le
+    (by exact IsPrime.ne_top') h_le).symm
 
-section LiesOver
+namespace IsDedekindDomain
 
 variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Field L]
     [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A] [Algebra A L]
     [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L] [IsScalarTower A K L]
     (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
 
-lemma mk_count_factors_map
+variable {A B} in
+open UniqueFactorizationMonoid Ideal.IsDedekindDomain in
+theorem emultiplicity_map_right_eq
     (hAB : Function.Injective (algebraMap A B))
-    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) (I : Ideal A)
-    [DecidableEq (Ideal B)]
-    [DecidableEq (Associates (Ideal A))] [DecidableEq (Associates (Ideal B))]
-    [∀ p : Associates (Ideal A), Decidable (Irreducible p)]
-    [∀ p : Associates (Ideal B), Decidable (Irreducible p)]
-    [w.asIdeal.LiesOver v.asIdeal] :
-    (Associates.mk w.asIdeal).count (Associates.mk (I.map (algebraMap A B))).factors =
-    Ideal.ramificationIdx (algebraMap A B) v.asIdeal w.asIdeal *
-      (Associates.mk v.asIdeal).count (Associates.mk I).factors := by
-  induction I using UniqueFactorizationMonoid.induction_on_prime with
-  | h₁ =>
-    rw [Associates.mk_zero, Ideal.zero_eq_bot, Ideal.map_bot, ← Ideal.zero_eq_bot,
-      Associates.mk_zero]
-    simp [Associates.count, Associates.factors_zero, w.associates_irreducible,
-      associates_irreducible v, Associates.bcount]
+    {v : Ideal A} {w : Ideal B} {I : Ideal A} (h : I ≠ ⊥)
+    (hv : Irreducible v) (hw : Irreducible w) (hw_ne_bot : w ≠ ⊥)
+    [w.LiesOver v] :
+    emultiplicity w (I.map (algebraMap A B)) =
+      v.ramificationIdx (algebraMap A B) w * emultiplicity v I := by
+  classical
+  induction I using induction_on_prime with
+  | h₁ => aesop
   | h₂ I hI =>
     obtain rfl : I = ⊤ := by simpa using hI
-    simp only [Ideal.map_top]
-    simp only [← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one]
-    rw [Associates.count_zero (associates_irreducible _),
-      Associates.count_zero (associates_irreducible _), mul_zero]
+    simp_rw [Ideal.map_top, emultiplicity_eq_count_normalizedFactors hw top_ne_bot,
+      emultiplicity_eq_count_normalizedFactors hv h, ← Ideal.one_eq_top, normalizedFactors_one]
+    simp
   | h₃ I p hI hp IH =>
-    simp only [Ideal.map_mul, ← Associates.mk_mul_mk]
-    have hp_bot : p ≠ ⊥ := hp.ne_zero
-    have hp_bot' := (Ideal.map_eq_bot_iff_of_injective hAB).not.mpr hp_bot
-    have hI_bot := (Ideal.map_eq_bot_iff_of_injective hAB).not.mpr hI
-    rw [Associates.count_mul (Associates.mk_ne_zero.mpr hp_bot) (Associates.mk_ne_zero.mpr hI)
-      (associates_irreducible _), Associates.count_mul (Associates.mk_ne_zero.mpr hp_bot')
-      (Associates.mk_ne_zero.mpr hI_bot) (associates_irreducible _)]
-    simp only [IH, mul_add]
-    congr 1
-    by_cases hw : v.asIdeal = p
-    · have : Irreducible (Associates.mk p) := Associates.irreducible_mk.mpr hp.irreducible
-      rw [hw, Associates.factors_self this, Associates.count_some this]
-      simp only [Multiset.nodup_singleton, Multiset.mem_singleton, Multiset.count_eq_one_of_mem,
-        mul_one]
-      rw [count_associates_factors_eq hp_bot' w.2 w.3,
-        Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hp_bot' w.2 w.3]
-    · have : (Associates.mk v.asIdeal).count (Associates.mk p).factors = 0 :=
-        Associates.count_eq_zero_of_ne (associates_irreducible _)
-          (Associates.irreducible_mk.mpr hp.irreducible)
-          (by rwa [ne_eq, Associates.mk_eq_mk_iff_associated, associated_iff_eq])
-      rw [this, mul_zero, eq_comm]
-      by_contra H
-      rw [eq_comm, ← ne_eq, Associates.count_ne_zero_iff_dvd hp_bot' (irreducible w),
-        Ideal.dvd_iff_le, Ideal.map_le_iff_le_comap, ← under_def,
-        ← Ideal.over_def w.asIdeal v.asIdeal] at H
-      apply hw (((Ideal.isPrime_of_prime hp).isMaximal hp_bot).eq_of_le v.2.ne_top H).symm
+    simp only [Ideal.map_mul]
+    have hp_bot' := (Ideal.map_eq_bot_iff_of_injective hAB).not.mpr hp.ne_zero
+    rw [emultiplicity_mul hw.prime, emultiplicity_mul hv.prime, IH hI, mul_add]
+    congr
+    by_cases hvp : v = p
+    · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self, mul_one,
+        ramificationIdx_eq_normalizedFactors_count hp_bot' ((Ideal.prime_iff_isPrime hw_ne_bot).1
+          hw.prime) hw_ne_bot, emultiplicity_eq_count_normalizedFactors hw hp_bot']
+    · have h₀ := emultiplicity_eq_zero_of_ne hv hp.irreducible hvp hp.ne_zero
+      rw [h₀, mul_zero, emultiplicity_eq_count_normalizedFactors hw hp_bot', normalize_eq,
+        Nat.cast_eq_zero, Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff hp_bot', not_and]
+      intro _ H
+      rw [Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at H
+      exact hvp ((((Ideal.prime_iff_isPrime hp.ne_zero).1 hp).isMaximal hp.ne_zero).eq_of_le
+        (fun h ↦ by simp [h, emultiplicity] at h₀) H).symm
+
+namespace HeightOneSpectrum
+
+lemma intValuation_eq_coe_neg_multiplicity {A : Type*} [CommRing A] [IsDedekindDomain A]
+    (v : HeightOneSpectrum A) {a : A} (hnz : a ≠ 0) :
+    v.intValuation a = WithZero.exp (-(multiplicity v.asIdeal (Ideal.span {a}) : ℤ)) := by
+  classical
+  have hnb : Ideal.span {a} ≠ ⊥ := by rwa [ne_eq, Ideal.span_singleton_eq_bot]
+  rw [intValuation_if_neg _ hnz, count_associates_factors_eq hnb v.isPrime v.ne_bot]
+  nth_rw 1 [← normalize_eq v.asIdeal]
+  congr
+  symm
+  apply multiplicity_eq_of_emultiplicity_eq_some
+  rw [← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors v.irreducible hnb]
 
 lemma intValuation_comap [NoZeroSMulDivisors A B] (hAB : Function.Injective (algebraMap A B))
-    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) (x : A)
-    [w.asIdeal.LiesOver v.asIdeal] :
-    v.intValuation x ^ (Ideal.ramificationIdx (algebraMap A B) v.asIdeal w.asIdeal) =
+    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) (x : A) [w.asIdeal.LiesOver v.asIdeal] :
+    v.intValuation x ^ (v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal) =
       w.intValuation (algebraMap A B x) := by
-  classical
-  by_cases hx : x = 0
-  · simp [hx, ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
-  simp only [intValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-  change (ite _ _ _) ^ _ = ite _ _ _
-  rw [map_eq_zero_iff _ hAB, if_neg hx, if_neg hx, ← Set.image_singleton, ← Ideal.map_span,
-    mk_count_factors_map _ _ hAB v w, mul_comm]
-  simp [mul_comm]
+  rcases eq_or_ne x 0 with rfl | hx; · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
+  rw [intValuation_eq_coe_neg_multiplicity v hx, intValuation_eq_coe_neg_multiplicity w (by simpa),
+    ← Set.image_singleton, ← Ideal.map_span, exp_neg, exp_neg, inv_pow, ← exp_nsmul,
+    Int.nsmul_eq_mul, inv_inj, exp_inj, ← Nat.cast_mul, Nat.cast_inj]
+  refine multiplicity_eq_of_emultiplicity_eq_some ?_ |>.symm
+  rw [emultiplicity_map_right_eq hAB (by simp [hx]) v.irreducible w.irreducible w.ne_bot,
+    Nat.cast_mul]
+  congr
+  exact (FiniteMultiplicity.of_prime_left v.prime (by simp [hx])).emultiplicity_eq_multiplicity
 
+theorem _root_.WithVal.algebraMap_apply {K Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    [Field K] {A : Type*} [CommSemiring A] [Algebra A K] (v : Valuation K Γ₀) (x : A) :
+    algebraMap A (WithVal v) x = algebraMap A K x := rfl
+
+theorem _root_.WithVal.algebraMap_apply' {K Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    [Field K] {A : Type*} [Field A] [Algebra K A] (v : Valuation K Γ₀) (x : K) :
+    algebraMap (WithVal v) A x = algebraMap K A x := rfl
+
+variable {A K B} in
 open scoped algebraMap in
 lemma valuation_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
     (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
     [w.asIdeal.LiesOver v.asIdeal] (x : WithVal (v.valuation K)) :
-    let e := Ideal.ramificationIdx (algebraMap A B) v.asIdeal w.asIdeal
-    v.valuation K x ^ e = w.valuation L (algebraMap K L x) := by
+    v.valuation K x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
+      w.valuation L (algebraMap K L x) := by
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-  simp only [map_div₀]
-  erw [valuation_of_algebraMap, valuation_of_algebraMap]
-  erw [div_pow, ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L]
-  rw [valuation_of_algebraMap]
-  rw [← intValuation_comap A B (algebraMap_injective_of_field_isFractionRing A B K L) v w]
-  erw [← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L]
-  rw [valuation_of_algebraMap]
-  rw [← intValuation_comap A B (algebraMap_injective_of_field_isFractionRing A B K L) v w]
+  simp [WithVal.algebraMap_apply, valuation_of_algebraMap, div_pow,
+    ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L,
+    intValuation_comap A B (algebraMap_injective_of_field_isFractionRing A B K L) v w]
 
 variable {A K B L v w} in
 theorem uniformContinuous_algebraMap [IsFractionRing B L] [NoZeroSMulDivisors A B]
     [w.asIdeal.LiesOver v.asIdeal] :
     UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
-  simp only [ContinuousAt, map_zero]
-  rw [(Valued.hasBasis_nhds_zero _ _).tendsto_iff (Valued.hasBasis_nhds_zero _ _)]
+  rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _)]
   intro γ _
-  let e := Ideal.ramificationIdx (algebraMap A B) v.asIdeal w.asIdeal
-  use WithZero.expEquiv ((WithZero.log γ) / e)
+  use WithZero.expEquiv ((WithZero.log γ) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)
   simp only [adicValued_apply', coe_expEquiv_apply, Set.mem_setOf_eq, true_and]
   intro x hx
   change (w.valuation L (algebraMap K L x)) < γ
-  rw [← valuation_liesOver A K L B]
-  rcases eq_or_ne x 0 with (rfl | hx₀);
+  rw [← valuation_liesOver L]
+  rcases eq_or_ne x 0 with rfl | hx₀
   · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
-  · rw [← WithZero.log_lt_log (by simp_all) (by simp)] at hx
-    rw [← WithZero.log_lt_log (by simp_all) (by simp)]
-    simp only [log_exp, log_pow, Int.nsmul_eq_mul] at hx ⊢
-    have := Int.mul_lt_of_lt_ediv (by
-      simpa using Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
+  · rw [← WithZero.log_lt_log (by simp_all) (by simp)] at hx ⊢
+    simp_rw [log_exp, log_pow, Int.nsmul_eq_mul] at hx ⊢
     rw [mul_comm]
-    exact this
+    exact Int.mul_lt_of_lt_ediv
+      (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
 
 noncomputable
 instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal] :
@@ -462,20 +469,17 @@ theorem algebraMap_coe [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.
   rw [UniformSpace.Completion.map_coe uniformContinuous_algebraMap]
 
 open WithZeroTopology in
-theorem valued_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal]
-    (x : v.adicCompletion K) :
-    letI e := Ideal.ramificationIdx (algebraMap A B) v.asIdeal w.asIdeal
-    Valued.v x ^ e = Valued.v (algebraMap _ (w.adicCompletion L) x) := by
+theorem valued_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
+    [w.asIdeal.LiesOver v.asIdeal] (x : v.adicCompletion K) :
+    Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
+      Valued.v (algebraMap _ (w.adicCompletion L) x) := by
   induction x using UniformSpace.Completion.induction_on with
   | hp =>
-    apply isClosed_eq
-    · apply Continuous.pow Valued.continuous_valuation
-    · apply Continuous.comp Valued.continuous_valuation
-      apply UniformSpace.Completion.continuous_map
+    exact isClosed_eq (Valued.continuous_valuation.pow _)
+      (Valued.continuous_valuation.comp UniformSpace.Completion.continuous_map)
   | ih a =>
-    rw [valuedAdicCompletion_eq_valuation', algebraMap_coe, valuedAdicCompletion_eq_valuation']
-    rw [valuation_liesOver A K L]
-    rfl
+    rw [valuedAdicCompletion_eq_valuation', algebraMap_coe, valuedAdicCompletion_eq_valuation',
+      valuation_liesOver L, WithVal.algebraMap_apply, WithVal.algebraMap_apply']
 
 theorem exists_liesOver [Algebra.IsIntegral A B] :
     ∃ v : HeightOneSpectrum A, w.asIdeal.LiesOver v.asIdeal := by
@@ -484,8 +488,7 @@ theorem exists_liesOver [Algebra.IsIntegral A B] :
     isPrime := IsPrime.under A w.asIdeal
     ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
   }
-  use v
-  exact ⟨rfl⟩
+  exact ⟨v, ⟨rfl⟩⟩
 
 lemma absNorm_eq_pow_inertiaDeg' [Module.Free ℤ B] [Module.Free ℤ A] [Module.Finite A B]
     (P : Ideal B) (p : Ideal A) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
@@ -496,18 +499,13 @@ lemma absNorm_eq_pow_inertiaDeg' [Module.Free ℤ B] [Module.Free ℤ A] [Module
   rw [Module.natCard_eq_pow_finrank (K := A ⧸ p)]
 
 instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal] :
-  (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
-    (Valued.v : Valuation (w.adicCompletion L) _) where
+    (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
+      (Valued.v : Valuation (w.adicCompletion L) _) where
   val_isEquiv_comap := by
-    rw [Valuation.isEquiv_iff_val_eq_one]
-    simp only [Valuation.comap_apply]
-    simp_rw [← valued_liesOver]
+    simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
     intro x
-    apply Iff.intro
-    · intro a
-      simp_all only [one_pow]
-    · intro a
-      rwa [pow_eq_one_iff (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)] at a
+    exact ⟨by simp_all, fun h ↦ by
+      rwa [pow_eq_one_iff (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)] at h⟩
 
 -- Only doesn't cause diamonds because I.LiesOver I doesn't exist yet ...
 noncomputable
@@ -542,8 +540,6 @@ instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asI
 noncomputable instance {v : HeightOneSpectrum A}
     [(Valued.v : Valuation (v.adicCompletion K) _).RankOne] :
     NontriviallyNormedField (v.adicCompletion K) := Valued.toNontriviallyNormedField
-
-end LiesOver
 
 open NumberField.FinitePlace NumberField.RingOfIntegers
   NumberField.RingOfIntegers.HeightOneSpectrum
@@ -631,7 +627,7 @@ def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
       v.asIdeal.inertiaDeg w.asIdeal
     ‖x‖ ^ (e : ℝ)⁻¹
   map_zero' := by
-    simp only [norm_zero, Nat.cast_mul, mul_inv_rev, le_refl]
+    simp only [norm_zero, Nat.cast_mul, mul_inv_rev]
     rw [← mul_inv]
     rw [Real.rpow_inv_eq le_rfl le_rfl
       (by rw [← Nat.cast_mul, Nat.cast_ne_zero]; exact inertiaDeg_mul_ramificationIdx_ne_zero v w)]
