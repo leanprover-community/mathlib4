@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee
+Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee, Julien Michel
 -/
 module
 
@@ -36,6 +36,8 @@ with integral coefficients.
 * `Polynomial.Chebyshev.T_mul`, the `(m * n)`-th Chebyshev polynomial of the first kind is the
   composition of the `m`-th and `n`-th Chebyshev polynomials of the first kind. There is a similar
   statement `Polynomial.Chebyshev.C_mul` for the `C` polynomials.
+* `Polynomial.Chebyshev.T_eq_sum_of_nat`, an explicit formula for the `n`-th Chebyshev polynomial of
+  the first kind.
 
 ## Implementation details
 
@@ -903,7 +905,6 @@ theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
 
 open Finset in
-/-- An explicit formula for the Chebyshev polynomials of the first kind. -/
 theorem T_eq_sum_of_nat (n : ℕ) : T R n = ∑ k ∈ Icc 0 (n / 2),
     Polynomial.C (n.choose (2 * k) : R) * ((X ^ 2 - 1) ^ k * X ^ (n - 2 * k)) := by
   induction n using Nat.twoStepInduction with
