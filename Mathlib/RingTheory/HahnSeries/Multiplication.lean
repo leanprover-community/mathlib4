@@ -473,6 +473,16 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ�
       simp [hx]
   · simp
 
+theorem coeff_single_mul [NonUnitalNonAssocSemiring R] [PartialOrder Γ'] [AddCommGroup Γ']
+    [IsOrderedAddMonoid Γ'] {r : R} {x : R⟦Γ'⟧} {a b : Γ'} :
+    (single b r * x).coeff a = r * x.coeff (a - b) := by
+  simpa using coeff_single_mul_add (a := a - b) (b := b)
+
+theorem coeff_mul_single [NonUnitalNonAssocSemiring R] [PartialOrder Γ'] [AddCommGroup Γ']
+    [IsOrderedAddMonoid Γ'] {r : R} {x : R⟦Γ'⟧} {a b : Γ'} :
+    (x * single b r).coeff a = x.coeff (a - b) * r := by
+  simpa using coeff_mul_single_add (a := a - b) (b := b)
+
 @[simp]
 theorem coeff_mul_single_zero [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ⟧} {a : Γ} :
     (x * single 0 r).coeff a = x.coeff a * r := by rw [← add_zero a, coeff_mul_single_add, add_zero]
