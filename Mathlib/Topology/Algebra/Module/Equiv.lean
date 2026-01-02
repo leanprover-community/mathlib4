@@ -1053,6 +1053,9 @@ for calculus. -/
 noncomputable def inverse : (M →L[R] M₂) → M₂ →L[R] M := fun f =>
   if h : f.IsInvertible then ((Classical.choose h).symm : M₂ →L[R] M) else 0
 
+noncomputable instance : Inv (M →L[R] M) where
+  inv := inverse
+
 @[simp] lemma isInvertible_equiv {f : M ≃L[R] M₂} : IsInvertible (f : M →L[R] M₂) := ⟨f, rfl⟩
 
 /-- By definition, if `f` is invertible then `inverse f = f.symm`. -/
@@ -1203,6 +1206,9 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
+
+instance : LawfulInv (M →L[R] M) where
+  ringInverse_eq_inv f := by rw [ringInverse_eq_inverse]; rfl
 
 namespace IsInvertible
 
