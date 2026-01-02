@@ -12,10 +12,6 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
   (T : E →ₗ[𝕜] F)
 
--- This cluster of theorems should be moved to other files.
-recall LinearMap.isPositive_self_comp_adjoint
-recall LinearMap.isPositive_adjoint_comp_self
-
 public theorem isSymmetric_self_comp_adjoint
   : (T ∘ₗ adjoint T).IsSymmetric := T.isPositive_self_comp_adjoint.isSymmetric
 
@@ -32,10 +28,6 @@ public theorem eigenvalues_adjoint_comp_self_nonneg
 /--
 The singular values of a finite dimensional linear map, ordered in descending order.
 This definition accounts for the multiplicity of a singular value.
-
-This definition is not public, but there are different characterizations depending on the use-case:
-- `LinearMap.singularValues_fin` and `LinearMap.singularValues_of_finrank_le` for
-a characterization similar in spirit to `LinearMap.IsSymmetric.eigenvalues`.
 
 Suppose `T : E →ₗ[𝕜] F` where `dim(E) = n`, `dim(F) = m`.
 In mathematical literature, the number of singular values varies, with popular choices including
@@ -77,22 +69,10 @@ public theorem singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i 
   subst hn
   exact Finsupp.embDomain_apply_self _ _ i
 
-
-/--
-`LinearMap.singularValues_fin` when combined with this characterizes the singular values.
-
-This theorem is strictly weaker than (TODO: A theorem which states that the singular values after
-rank(T) are 0).
--/
 public theorem singularValues_of_finrank_le {i : ℕ}
   (hi : Module.finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
-  -- Unlike the `rank(T)` lemma, this should follow directly from the definition.
-  -- You shouldn't have to do anything with eigenvalues, just the way the `Finsupp.embDomain` works.
   apply Finsupp.embDomain_notin_range
   simp [hi]
-
-/- `T.singularValues i ^ 2` means `(↑(T.singularValues i)) ^ 2`, which  complies with the simp lemma
-`NNReal.coe_pow`. -/
 
 public theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
@@ -110,9 +90,6 @@ public theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
   simp [← T.sq_singularValues_fin rfl ⟨n, hn⟩]
 
 public theorem singularValues_antitone : Antitone T.singularValues := by
-  -- Use `LinearMap.IsSymmetric.eigenvalues_antitone`, and either
-  -- a) both of `LinearMap.singularValues_fin` and `LinearMap.eigenvalues_adjoint_comp_self_nonneg`
-  -- or b) `LinearMap.sq_singularValues_fin` and some order lemmas about squaring and `NNReal`
   intro i j hij
   by_cases hi : Module.finrank 𝕜 E ≤ i
   · rw [T.singularValues_of_finrank_le hi, T.singularValues_of_finrank_le (hi.trans hij)]
@@ -144,14 +121,11 @@ public theorem singularValues_rank
 
 public theorem singularValues_le_rank {n : ℕ}
   (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 :=
-  -- This should follow directly from `LinearMap.singularValues_rank`,
-  -- `LinearMap.singularValues_antitone`, and order properties of `ℝ≥0`.
   le_antisymm (T.singularValues_rank ▸ T.singularValues_antitone hn) (zero_le _)
 
 @[simp]
 public theorem support_singularValues
   : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
-  -- Follows from `singularValues_lt_rank` and `singularValues_le_rank`.
   ext n
   simp only [Finsupp.mem_support_iff, Finset.mem_range, ne_eq]
   constructor
