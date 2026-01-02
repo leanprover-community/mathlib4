@@ -152,7 +152,7 @@ section AddMonoid
 variable [PartialOrder Γ] [AddMonoid R] [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
-/-- The `κ`-bounded submonoid of Hahn series with cardinal less than `κ`. -/
+/-- The `κ`-bounded submonoid of Hahn series with less than `κ` terms. -/
 @[simps!]
 def cardSuppLTAddSubmonoid : AddSubmonoid R⟦Γ⟧ where
   carrier := {x | x.cardSupp < κ}
@@ -169,7 +169,7 @@ section AddGroup
 variable [PartialOrder Γ] [AddGroup R] [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
-/-- The `κ`-bounded subgroup of Hahn series with cardinal less than `κ`. -/
+/-- The `κ`-bounded subgroup of Hahn series with less than `κ` terms. -/
 @[simps!]
 def cardSuppLTAddSubgroup : AddSubgroup R⟦Γ⟧ where
   neg_mem' := by simp
@@ -186,7 +186,7 @@ variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Rin
   [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
-/-- The `κ`-bounded subring of Hahn series with cardinal less than `κ`. -/
+/-- The `κ`-bounded subring of Hahn series with less than `κ` terms. -/
 def cardSuppLTSubring : Subring R⟦Γ⟧ where
   one_mem' := cardSupp_one_le.trans_lt <| one_lt_aleph0.trans_le hκ.out
   mul_mem' hx hy := (cardSupp_mul_le ..).trans_lt <| mul_lt_of_lt hκ.out hx hy
@@ -202,7 +202,7 @@ section Subfield
 variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] [hκ : Fact (ℵ₀ < κ)]
 
 variable (Γ R) in
-/-- The `κ`-bounded subfield of Hahn series with cardinal less than `κ`. -/
+/-- The `κ`-bounded subfield of Hahn series with less than `κ` terms. -/
 @[simps!]
 def cardSuppLTSubfield : Subfield R⟦Γ⟧ where
   inv_mem' _ _ := (cardSupp_inv_le _).trans_lt <| by simpa [hκ.out]
