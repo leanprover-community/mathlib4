@@ -563,12 +563,7 @@ theorem isBigO_logb_const_mul_log_atTop (c : ℝ) : (logb b ∘ (c * ·)) =O[atT
     rw [div_eq_mul_inv, mul_comm]
     simp
   rw [this, comp_assoc]
-  by_cases hb : (log b)⁻¹ = 0
-  · apply Asymptotics.IsBigO.of_bound 1
-    filter_upwards with a
-    simp [hb]
-  · apply Asymptotics.IsBigO.const_mul_left
-    exact isBigO_log_const_mul_log_atTop c
+  exact Asymptotics.IsBigO.const_mul_left (isBigO_log_const_mul_log_atTop c) _
 
 theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (logb b ∘ (· * c)) =O[atTop] log := by
   conv_lhs => ext x; rw [Function.comp_apply, mul_comm]
