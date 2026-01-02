@@ -46,23 +46,20 @@ lemma degreeOf_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
 lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R)
     (h : ∀ i ∈ s, f i ≠ 0) :
     degreeOf n (∏ i ∈ s, f i) = ∑ i ∈ s, degreeOf n (f i) := by
-  by_cases nontrivial : Nontrivial (MvPolynomial σ R)
+  rcases subsingleton_or_nontrivial (MvPolynomial σ R) with nontrivial | nontrivial
+  · simp [Subsingleton.eq_zero]
   · classical
     induction s using Finset.induction_on with
     | empty => simp
     | insert a s a_not_mem ih =>
-      simp only [Finset.mem_insert, ne_eq, forall_eq_or_imp] at h
+      simp only [mem_insert, ne_eq, forall_eq_or_imp] at h
       obtain ⟨ha, hs⟩ := h
-      specialize ih hs
-      simp only [a_not_mem, not_false_eq_true, Finset.prod_insert, Finset.sum_insert]
-      rw [degreeOf_mul_eq ha (by rw [Finset.prod_ne_zero_iff]; exact hs), ih]
-  · push_neg at nontrivial
-    have (x : MvPolynomial σ R) : x = 0 := Subsingleton.eq_zero x
-    simp only [degreeOf_zero, Finset.sum_const_zero, this]
+      simp [a_not_mem, not_false_eq_true, prod_insert, sum_insert, degreeOf_mul_eq ha
+        (by rw [prod_ne_zero_iff]; exact hs), ih hs]
 
 theorem degreeOf_pow_eq (i : σ) (p : MvPolynomial σ R) (n : ℕ) (hp : p ≠ 0) :
     degreeOf i (p ^ n) = n * degreeOf i p := by
-  rw [Finset.pow_eq_prod_const, degreeOf_prod_eq (Finset.range n) (fun _ ↦ p) (fun _ _ ↦ hp)]
+  rw [pow_eq_prod_const, degreeOf_prod_eq (range n) (fun _ ↦ p) (fun _ _ ↦ hp)]
   simp
 
 end DegreeOf
@@ -82,9 +79,7 @@ theorem totalDegree_mul_of_isDomain {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
   cases exists_wellOrder σ
-  rw [← degree_degLexDegree (σ := σᵒᵈ), ← degree_degLexDegree (σ := σᵒᵈ),
-    ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
-  simp
+  simp [← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
 
 theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     (h : f ∣ g) (hg : g ≠ 0) :
@@ -105,13 +100,12 @@ theorem dvd_C_iff_exists {f : MvPolynomial σ R}
       rw [totalDegree_eq_zero_iff_eq_C] at this
       refine ⟨?_, this⟩
       rw [this, C_dvd_iff_dvd_coeff] at hf
-      convert hf 0
-      simp
+      simpa using hf 0
     apply Nat.eq_zero_of_le_zero
     convert totalDegree_le_of_dvd_of_isDomain hf (by simp [ha])
     simp
   · rintro ⟨b, hab, rfl⟩
-    exact _root_.map_dvd C hab
+    exact map_dvd C hab
 
 end NoZeroDivisors
 
