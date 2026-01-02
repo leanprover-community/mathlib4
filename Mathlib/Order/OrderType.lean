@@ -1,16 +1,12 @@
 /-
-Copyright (c) 2024 Yan Yablonovskiy. All rights reserved.
+Copyright (c) 2025 Yan Yablonovskiy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yan Yablonovskiy.
 -/
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Order.Category.LinOrd
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Sum.Order
-import Mathlib.Data.Prod.Lex
-import Mathlib.Logic.Equiv.Prod
+import Mathlib.Order.Category.LinOrd
+import Mathlib.SetTheory.Ordinal.Basic
+
 /-!
 # OrderTypes
 
@@ -364,29 +360,20 @@ def OrderIso.prodLexCongr [LinearOrder α] [LinearOrder β]
 
 open Classical in
 instance : Mul OrderType where
-  mul := Quotient.map₂ (fun r s ↦ ⟨(r ×ₗ s)⟩)
-   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.prodLexCongr (choice ha) (choice hb)⟩)
+  mul := Quotient.map₂ (fun r s ↦ ⟨(s ×ₗ r)⟩)
+   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.prodLexCongr (choice hb) (choice ha)⟩)
 
 open Classical in
 instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
-  hMul := Quotient.map₂ (fun r s ↦ ⟨(r ×ₗ s)⟩)
-   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.prodLexCongr (choice ha) (choice hb)⟩)
+  hMul := Quotient.map₂ (fun r s ↦ ⟨(s ×ₗ r)⟩)
+   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.prodLexCongr (choice hb) (choice ha)⟩)
 
 @[simp]
 lemma type_mul (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
-    type (α ×ₗ β) = (type α) * (type β) := rfl
+    type (α ×ₗ β) = type β * type α := rfl
 
 def Prod.Lex.unique_prod_symm_equiv [PartialOrder α] [Preorder β] [Unique β] : (β ×ₗ α) ≃o α ×ₗ β :=
    (Prod.Lex.uniqueProd β α).trans (Prod.Lex.prodUnique α β).symm
-
-open Classical in
-lemma mul_one (o : OrderType) : o * 1 = o :=
-  inductionOn o (fun α _ ↦ RelIso.ordertype_congr (Prod.Lex.prodUnique α PUnit))
-
-open Classical in
-lemma one_mul (o : OrderType) : 1 * o = o :=
-  inductionOn o (fun α _ ↦ RelIso.ordertype_congr (Prod.Lex.uniqueProd PUnit α))
-
 
 /-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
 @[simps! (attr := grind =)]
@@ -402,51 +389,58 @@ def OrderIso.prodLexAssoc (α : Type u) (β : Type v) (γ : Type w)
     [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ :=
   { OrderIso.prodAssoc α β γ with
     map_rel_iff' := fun {a b} ↦
-      ⟨fun h ↦
-        match a, b, h with
-        | ⟨⟨a1 , a2⟩ , a3⟩ , ⟨⟨b1, b2⟩ , b3⟩ , h1 => by
-          rw [Prod.Lex.le_iff] at *
-          sorry --should be so simple
-        ,
-        fun h ↦
-        match a, b, h with
-        | ⟨⟨_ , _⟩ , _⟩ , ⟨⟨_, _⟩ , _⟩ , h1 => by sorry⟩}
+      ⟨fun h ↦ match a,b with
+      | ⟨ ⟨ _, _ ⟩, _ ⟩ , ⟨ ⟨ _, _ ⟩, _ ⟩ => by
+        simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff] at *
+        aesop,
+      fun h ↦ match a, b with
+      | ⟨ ⟨ _, _ ⟩, _ ⟩ , ⟨ ⟨ _, _ ⟩, _ ⟩  => by
+         simp only [Prod.Lex.le_iff] at *
+         match h with
+         | Or.inl h => cases h <;> aesop
+         | Or.inr ⟨ h₁, h₂ ⟩ => cases h₁ ; aesop
+      ⟩
+   }
 
-
-/-- `Equiv.prodSumDistrib` promoted to an order isomorphism of lexicographic products. -/
-def OrderIso.prodSumDistrib (α : Type u) (β : Type v) (γ : Type w)
-    [LinearOrder α] [LinearOrder β] [LinearOrder γ] : α ×ₗ (β ⊕ₗ γ) ≃o (α ×ₗ β) ⊕ₗ (α ×ₗ γ) :=
-  { Equiv.prodSumDistrib α β γ with
-    map_rel_iff' := fun {a b} ↦
-      ⟨fun h ↦
-        match a, b, h with
-        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
-        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
-        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry
-        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry,
-        fun h ↦
-        match a, b, h with
-        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
-        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
-        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry
-        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry⟩ }
+/-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products. -/
+def OrderIso.sumProdDistrib (α : Type u) (β : Type v) (γ : Type w)
+    [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ :=
+  { Equiv.sumProdDistrib α β γ with
+    map_rel_iff' := fun {a b} ↦ ⟨
+    fun h ↦ match a, b with
+    | ⟨.inlₗ a, c₁⟩ , ⟨.inlₗ b, c₂⟩ => by
+      cases h;
+      cases (by assumption);
+      · exact Prod.Lex.left _ _ (Sum.Lex.inl ‹a < b›)
+      · exact Prod.Lex.right _ ‹(Sum.inlₗ a, c₁).2 ≤ (Sum.inlₗ a, c₂).2›
+    | ⟨.inlₗ a, c₁⟩ , ⟨.inrₗ b, c₂⟩ => Prod.Lex.left _ _ ( Sum.Lex.sep _ _ )
+    | ⟨.inrₗ a, c₁⟩ , ⟨.inlₗ b, c₂⟩ => by cases h
+    | ⟨.inrₗ a, c₁⟩ , ⟨.inrₗ b, c₂⟩ => by
+      cases h;
+      cases (by assumption);
+      · exact Prod.Lex.left _ _ ( Sum.Lex.inr ‹a < b› )
+      · exact Prod.Lex.right _ ‹(Sum.inrₗ a, c₁).2 ≤ (Sum.inrₗ a, c₂).2›
+    , fun h ↦ by
+      cases h;
+      · cases (by assumption)
+        · exact Sum.Lex.inl ( Prod.Lex.left _ _ ‹_ < _›)
+        · exact Sum.Lex.inr ( Prod.Lex.left _ _ ‹_ < _›)
+        · exact Sum.Lex.sep _ _
+      · cases ‹Lex ( α ⊕ β )›
+        cases ‹α ⊕ β› <;> simp only [ge_iff_le]
+        · exact Sum.Lex.inl ( Prod.Lex.right _ ‹_ ≤ _› )
+        · exact Sum.Lex.inr ( Prod.Lex.right _ ‹_ ≤ _› )⟩
+    }
 
 instance : Monoid OrderType where
-  mul_assoc o₁ o₂ o₃ := by
-    classical
-    exact inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.prodLexAssoc α β γ))
-  one_mul := one_mul
-  mul_one := mul_one
+  mul_assoc o₁ o₂ o₃ :=
+    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦
+      RelIso.ordertype_congr (OrderIso.prodLexAssoc γ β α).symm)
+  one_mul o := inductionOn o (fun α _ ↦ RelIso.ordertype_congr (Prod.Lex.prodUnique α PUnit))
+  mul_one o := inductionOn o (fun α _ ↦ RelIso.ordertype_congr (Prod.Lex.uniqueProd PUnit α))
 
 instance : LeftDistribClass OrderType where
   left_distrib := fun o₁ o₂ o₃ ↦
-    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.prodSumDistrib α β γ))
-
-section Ordinal
-
-def LinearOrder.toWellOrder (α : Type u) [LinearOrder α] [IsWellOrder α (· < ·)] : WellOrder :=
-  ⟨α, (· < ·), inferInstance⟩
-
-end Ordinal
+    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.sumProdDistrib β γ α))
 
 end OrderType
