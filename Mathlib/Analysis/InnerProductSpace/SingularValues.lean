@@ -76,18 +76,14 @@ public theorem singularValues_of_finrank_le {i : ℕ}
 
 public theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
-  -- Should follow from `LinearMap.singularValues_fin` and
-  -- `LinearMap.eigenvalues_adjoint_comp_self_nonneg`.
-  simp [T.singularValues_fin hn i, Real.sq_sqrt (T.eigenvalues_adjoint_comp_self_nonneg hn i)]
-
-
+  simp [T.singularValues_fin hn, T.eigenvalues_adjoint_comp_self_nonneg hn]
 
 public theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
   {n : ℕ} (hn : n < Module.finrank 𝕜 E)
   : Module.End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
   have hT := T.isSymmetric_adjoint_comp_self
   convert hT.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
-  simp [← T.sq_singularValues_fin rfl ⟨n, hn⟩]
+  simp [← T.sq_singularValues_fin]
 
 public theorem singularValues_antitone : Antitone T.singularValues := by
   intro i j hij
@@ -135,3 +131,5 @@ public theorem support_singularValues
     exact hn (T.singularValues_le_rank h)
   · intro hn
     exact (T.singularValues_lt_rank hn).ne'
+
+end LinearMap
