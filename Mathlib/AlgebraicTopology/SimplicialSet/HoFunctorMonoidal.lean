@@ -399,7 +399,7 @@ instance : hoFunctor₂.{u}.Monoidal :=
       associativity _ _ _ := by ext; apply associativity }
 
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
-instance hofunctor.monoidal : hoFunctor.{u}.Monoidal :=
+instance hoFunctor.monoidal : hoFunctor.{u}.Monoidal :=
   inferInstanceAs (truncation 2 ⋙ hoFunctor₂).Monoidal
 
 open MonoidalCategory
