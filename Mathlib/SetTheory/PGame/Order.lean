@@ -562,7 +562,7 @@ scoped infixl:50 " ‖ " => PGame.Fuzzy
 theorem Fuzzy.swap {x y : PGame} : x ‖ y → y ‖ x :=
   And.symm
 
-instance : IsSymm _ (· ‖ ·) :=
+instance : Std.Symm (· ‖ ·) :=
   ⟨fun _ _ => Fuzzy.swap⟩
 
 theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
