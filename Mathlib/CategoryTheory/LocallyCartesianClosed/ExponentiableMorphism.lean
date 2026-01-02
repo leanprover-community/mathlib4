@@ -76,6 +76,7 @@ theorem ev_def : ev f = (pullbackPushforwardAdj f).counit :=
 theorem coev_def : coev f = (pullbackPushforwardAdj f).unit :=
   rfl
 
+@[reassoc]
 theorem ev_naturality {X Y : Over I} (g : X ⟶ Y) :
     (pullback f).map ((pushforward f).map g) ≫ (ev f).app Y = (ev f).app X ≫ g :=
   ev f |>.naturality g
