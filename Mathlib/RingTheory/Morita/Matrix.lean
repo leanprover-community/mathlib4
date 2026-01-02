@@ -55,8 +55,8 @@ def toModuleCatObj : Submodule R M :=
       map_smul' r x := by
         dsimp
         rw [← smul_assoc r, Matrix.smul_eq_diagonal_mul, show (diagonal fun x : ι ↦ r) *
-          single _ _ 1 = single default default 1 * diagonal (fun _ ↦ r) by ext; simp [Matrix.single],
-          SemigroupAction.mul_smul, ← Matrix.smul_one_eq_diagonal]
+          single _ _ 1 = single default default 1 * diagonal (fun _ ↦ r) by
+          ext; simp [Matrix.single], SemigroupAction.mul_smul, ← Matrix.smul_one_eq_diagonal]
         nth_rw 1 [← one_smul (Matrix ι ι R) x]
         rw [smul_assoc] }
 
@@ -119,8 +119,9 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
   map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
   invFun x := ⟨Function.update 0 default x, Function.const ι x, by
     ext i
-    simp only [DistribMulAction.toAddMonoidHom_apply, smul_def, Function.const_apply,
-      Function.update_apply, Pi.zero_apply]
+    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, LinearMap.coe_mk, AddHom.coe_mk,
+      DistribMulAction.toAddMonoidHom_apply, Module.smul_apply, Function.const_apply,
+      Function.update_apply, Pi.ofNat_apply]
     split_ifs with h
     · simp [h, single]
     · simp [Ne.symm h]⟩
