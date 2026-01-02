@@ -189,7 +189,7 @@ namespace End
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
 
 theorem mem_center_iff {f : End R M} :
-    f ∈ Set.center (End R M) ↔ ∃ α ∈ Set.center R, ∀ x : M, f x = α • x := by
+    f ∈ Set.center (End R M) ↔ ∃ (α : R) (hα : α ∈ Set.center R), f = smulLeft α hα := by
   simp only [Semigroup.mem_center_iff, LinearMap.ext_iff, mul_apply]
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases! Subsingleton M
@@ -200,11 +200,12 @@ theorem mem_center_iff {f : End R M} :
   exact ⟨b.coord i <| f <| b i, fun r ↦ by simpa using congr(b.coord i $(H <| r • b i)), H⟩
 
 theorem mem_submonoidCenter_iff {f : End R M} :
-    f ∈ Submonoid.center (End R M) ↔ ∃ α ∈ Submonoid.center R, ∀ x : M, f x = α • x :=
+    f ∈ Submonoid.center (End R M) ↔ ∃ (α : R) (hα : α ∈ Submonoid.center R), f = smulLeft α hα :=
   mem_center_iff
 
 theorem mem_subsemigroupCenter_iff {f : End R M} :
-    f ∈ Subsemigroup.center (End R M) ↔ ∃ α ∈ Subsemigroup.center R, ∀ x : M, f x = α • x :=
+    f ∈ Subsemigroup.center (End R M) ↔
+      ∃ (α : R) (hα : α ∈ Subsemigroup.center R), f = smulLeft α hα :=
   mem_center_iff
 
 end Module.End
