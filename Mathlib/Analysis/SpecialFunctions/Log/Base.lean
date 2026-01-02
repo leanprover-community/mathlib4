@@ -548,9 +548,7 @@ theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (log ∘ (c * ·)) =O[atTop] 
           filter_upwards [eventually_gt_atTop 0] with a ha
           rw [Function.comp_apply, log_mul hc (by linarith)]
       _ =O[atTop] log := by
-          apply Asymptotics.IsBigO.add
-          · exact isLittleO_const_log_atTop.isBigO
-          · exact Asymptotics.isBigO_refl _ _
+          Asymptotics.IsBigO.add isLittleO_const_log_atTop.isBigO (Asymptotics.isBigO_refl _ _)
 
 theorem isBigO_log_mul_const_log_atTop (c : ℝ) : (log ∘ (· * c)) =O[atTop] log := by
   conv_lhs => ext x; rw [Function.comp_apply, mul_comm]
