@@ -238,6 +238,18 @@ theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
 theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
   simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]
 
-lemma Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective :=
+theorem Function.Surjective.of_isEmpty [IsEmpty β] (f : α → β) :
+    Function.Surjective f := IsEmpty.elim ‹_›
+
+theorem Function.Surjective_iff_IsEmpty [IsEmpty α] (f : α → β) :
+    Function.Surjective f ↔ IsEmpty β :=
+⟨fun h_surj ↦ Surjective.isEmpty h_surj, fun _ ↦ Surjective.of_isEmpty f ⟩
+
+theorem Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective :=
   have := f.isEmpty
-  ⟨injective_of_subsingleton _, IsEmpty.elim ‹_›⟩
+  ⟨injective_of_subsingleton _, Function.Surjective.of_isEmpty _⟩
+
+theorem Function.not_Surjective_of_isEmpty_Nonempty [IsEmpty α] [Nonempty β] (f : α → β) :
+    ¬Function.Surjective f := by
+  rw [Surjective_iff_IsEmpty]
+  exact not_isEmpty_of_nonempty β
