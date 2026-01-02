@@ -1328,6 +1328,20 @@ lemma riemannian_metric_symm_1 (f : SmoothPartitionOfUnity B IB B)
   rw [<-hy] at hz
   exact hz
 
+lemma riemannian_metric_pos_def_1 (f : SmoothPartitionOfUnity B IB B)
+  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
+  (b : B) (v : TangentSpace IB b) :
+  v ≠ 0 → 0 < ((g_global_bilin_1 f b).toFun v).toFun v := by
+
+  have hz : v ≠ 0 → 0 < ((g_global_bilin_2 f b).toFun v).toFun v :=
+    riemannian_metric_pos_def f h_sub b v
+
+  have hy : g_global_bilin_1 f b = g_global_bilin_2 f b :=
+    g_global_bilin_eq f b
+
+  rw [<-hy] at hz
+  exact hz
+
 noncomputable
 def riemannian_metric_exists_1
     (f : SmoothPartitionOfUnity B IB B)
@@ -1337,7 +1351,7 @@ def riemannian_metric_exists_1
   { inner := g_global_bilin_1 f
     symm := by
       exact riemannian_metric_symm_1 f
-    pos := sorry
+    pos := riemannian_metric_pos_def_1 f h_sub
     isVonNBounded := sorry
     contMDiff := (g_global_bilin_1_smooth f h_sub)
      }
