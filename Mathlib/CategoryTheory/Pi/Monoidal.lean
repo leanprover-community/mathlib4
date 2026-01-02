@@ -172,14 +172,16 @@ instance [∀ i, BraidedCategory (C i)] (i : I) : (Pi.eval C i).Braided where
 
 @[simps]
 instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ i : I, D ⥤ C i)
-    [∀ i, (F i).LaxMonoidal] : (Functor.pi' F).LaxMonoidal where
+    [∀ i, (F i).LaxMonoidal] :
+    (Functor.pi' F).LaxMonoidal where
   ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) X Y
 
 @[simps]
 instance opLaxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
     (F : ∀ i : I, D ⥤ C i)
-    [∀ i, (F i).OplaxMonoidal] : (Functor.pi' F).OplaxMonoidal where
+    [∀ i, (F i).OplaxMonoidal] :
+    (Functor.pi' F).OplaxMonoidal where
   η := fun i ↦ Functor.OplaxMonoidal.η (F i)
   δ X Y := fun i ↦ Functor.OplaxMonoidal.δ (F i) X Y
   oplax_left_unitality X := by ext; simp
@@ -204,7 +206,8 @@ instance [∀ i, BraidedCategory (C i)]
 @[simps]
 instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
-    [∀ i, (F i).LaxMonoidal] : (Functor.pi F).LaxMonoidal where
+    [∀ i, (F i).LaxMonoidal] :
+    (Functor.pi F).LaxMonoidal where
   ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) (X i) (Y i)
 
