@@ -31,7 +31,7 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 namespace PositiveLinearMap
 
 @[simps!]
-noncomputable def const_mul_GNS (a : A) : f.GNS →L[ℂ] f.GNS :=
+noncomputable def GNS_op (a : A) : f.GNS →L[ℂ] f.GNS :=
   (f.toGNS.toLinearMap ∘ₗ LinearMap.mul ℂ A a ∘ₗ f.ofGNS.toLinearMap).mkContinuous ‖a‖ fun x ↦ by
     rw [← sq_le_sq₀ (by positivity) (by positivity), mul_pow, ← RCLike.ofReal_le_ofReal (K := ℂ),
       RCLike.ofReal_pow, RCLike.ofReal_eq_complex_ofReal, GNS_norm_sq]
@@ -45,14 +45,11 @@ noncomputable def const_mul_GNS (a : A) : f.GNS →L[ℂ] f.GNS :=
       _ = _ := by simp [← Complex.coe_smul, GNS_norm_sq, smul_mul_assoc]
 
 @[simps!]
-noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace :=
-  mapCLM (f.const_mul_GNS a)
+noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace := mapCLM (f.GNS_op a)
 
 @[simp]
-lemma const_mul_GNS_prod_eq_comp (a b : A) :
-    f.const_mul_GNS (a * b) = f.const_mul_GNS (a) ∘ f.const_mul_GNS (b) := by
-  ext c
-  simp [mul_assoc]
+lemma const_mul_GNS_prod_eq_comp (a b : A) : f.GNS_op (a * b) = f.GNS_op (a) ∘ f.GNS_op (b) := by
+  ext c; simp [mul_assoc]
 
 noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
   toFun := f.π_ofA
@@ -80,12 +77,9 @@ noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c
-    simp only [π_ofA, mapCLM, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mul,
-      Function.comp_apply, const_mul_GNS_prod_eq_comp, ContinuousLinearMap.uniformContinuous,
-      map_coe, const_mul_GNS_apply, ofGNS_toGNS]
-    rw [map_coe]
-    · simp
-    exact ContinuousLinearMap.uniformContinuous ((f.const_mul_GNS a).comp (f.const_mul_GNS b))
+    have := map_coe (ContinuousLinearMap.uniformContinuous ((f.GNS_op a).comp
+      (f.GNS_op b)))
+    simp_all [ContinuousLinearMap.uniformContinuous, map_coe]
   map_star' a := by
     refine (eq_adjoint_iff (π_ofA f (star a)) (π_ofA f a)).mpr ?_
     intro x y
@@ -93,9 +87,9 @@ noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y
     simp only [π_ofA_apply]
-    rw [map_coe (ContinuousLinearMap.uniformContinuous (f.const_mul_GNS a)),
-      map_coe (ContinuousLinearMap.uniformContinuous (f.const_mul_GNS (star a)))]
-    simp [GNS_inner_def, const_mul_GNS, mul_assoc]
+    rw [map_coe (ContinuousLinearMap.uniformContinuous (f.GNS_op a)),
+      map_coe (ContinuousLinearMap.uniformContinuous (f.GNS_op (star a)))]
+    simp [GNS_inner_def, mul_assoc]
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
@@ -107,14 +101,12 @@ noncomputable def π_unital : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.G
     | hp => apply isClosed_eq <;> fun_prop
     | ih b
     dsimp [π, π_ofA]
-    rw [map_coe (ContinuousLinearMap.uniformContinuous (f.const_mul_GNS 1))]
-    simp [const_mul_GNS, const_mul_GNS]
+    rw [map_coe (ContinuousLinearMap.uniformContinuous (f.GNS_op 1))]
+    simp
   commutes' r := by
     dsimp [π]
     simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_ofA, mapCLM]
-    congr
-    ext c
-    simp [const_mul_GNS, const_mul_GNS]
+    congr; ext c; simp
   map_mul' := map_mul f.π
   map_zero' := map_zero f.π
   map_add' := map_add f.π
