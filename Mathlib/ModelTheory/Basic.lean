@@ -71,9 +71,6 @@ abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 /-- A language is algebraic when it has no relation symbols. -/
 abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
-/-- A language is countable when the set of symbols are countable. -/
-abbrev IsCountable : Prop := ∀ n : ℕ, Countable (L.Functions n) ∧ Countable (L.Relations n)
-
 /-- The empty language has no symbols. -/
 protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
   deriving IsAlgebraic, IsRelational
