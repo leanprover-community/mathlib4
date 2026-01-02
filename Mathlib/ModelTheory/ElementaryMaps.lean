@@ -194,6 +194,8 @@ theorem comp_assoc (f : M ↪ₑ[L] N) (g : N ↪ₑ[L] P) (h : P ↪ₑ[L] Q) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 
+/-- Lifts an elementary embedding `f : M ↪ₑ[L] N` to an `L[[A]]`-elementary embedding, where
+  `N` is equipped with the `L[[A]]`-structure induced by `f.toEmbedding.withConstantsStructure A`. -/
 def liftWithConstants (f : M ↪ₑ[L] N) (A : Set M) :
     @ElementaryEmbedding (L[[A]]) M N _ (f.toEmbedding.withConstantsStructure A) := by
   letI : L[[A]].Structure N := f.toEmbedding.withConstantsStructure A

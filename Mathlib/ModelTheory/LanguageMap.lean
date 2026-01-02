@@ -501,10 +501,14 @@ instance map_constants_inclusion_isExpansionOn :
 
 variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
 
+/-- Given an `L`-embedding `f : M ↪[L] N` and a set `A` in `M`, constructs an `L[[A]]`-structure
+  on `N` where each constant `a ∈ A` is interpreted as `f a`. -/
 def Embedding.withConstantsStructure : L[[A]].Structure N :=
   letI : (constantsOn A).Structure N := constantsOn.structure fun a => f a
   L.withConstantsStructure A
 
+/-- Lifts an `L`-embedding `f : M ↪[L] N` to an `L[[A]]`-embedding, where `N` is equipped with
+  the `L[[A]]`-structure induced by `f.withConstantsStructure A`. -/
 def Embedding.liftWithConstants :
     @Embedding (L[[A]]) M N _ (f.withConstantsStructure A) := by
   letI : L[[A]].Structure N := f.withConstantsStructure A
