@@ -105,7 +105,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
     · apply IsRefl.refl
     · exact H hx hy hne
   · rintro ⟨z, hz⟩ x hx y hy _
-    exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (IsSymm.symm _ _ <| hz _ hy)
+    exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (symm <| hz _ hy)
 
 /-- For a nonempty set `s`, a function `f` takes pairwise equal values on `s` if and only if
 for some `z` in the codomain, `f` takes value `z` on all `x ∈ s`. See also
