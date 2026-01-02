@@ -32,14 +32,14 @@ A preorder with a bottom element is registered on order types, where `⊥` is
 
 * `ω` is a notation for the order type of `ℕ` with its natural order.
 * `η` is a notation for the order type of `ℚ` with its natural order.
-* `θ` is a notation for the order type of the real numbers on the interval `(0,1)`.
+* `θ` is a notation for the order type of `ℝ` with its natural order.
 
 ## References
 
 * <https://en.wikipedia.org/wiki/Order_type>
 * Dauben, J. W. Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
   NJ: Princeton University Press, 1990.
-* Enderton, Herbert B.. Elements of Set Theory. United Kingdom: Academic Press, 1977.
+* Enderton, Herbert B. Elements of Set Theory. United Kingdom: Academic Press, 1977.
 
 ## Tags
 
@@ -383,7 +383,7 @@ def OrderIso.prodAssoc (α : Type u) (β : Type v) (γ : Type w) [LE α] [LE β]
     (α × β) × γ ≃o α × (β × γ) :=
   { Equiv.prodAssoc α β γ with
     map_rel_iff' := fun {a b} ↦ by
-      rcases a with ⟨⟨_ , _⟩ , _⟩ ; rcases b with ⟨⟨_, _⟩ , _⟩ ;
+      rcases a with ⟨⟨_ , _⟩ , _⟩ ; rcases b with ⟨⟨_, _⟩ , _⟩
       simp [Equiv.prodAssoc, and_assoc] }
 
 /-- `Equiv.prodAssoc` promoted to an order isomorphism of lexicographic products. -/
@@ -400,39 +400,16 @@ def OrderIso.prodLexAssoc (α : Type u) (β : Type v) (γ : Type w)
          simp only [Prod.Lex.le_iff] at *
          match h with
          | Or.inl h => cases h <;> aesop
-         | Or.inr ⟨ h₁, h₂ ⟩ => cases h₁ ; aesop
+         | Or.inr ⟨ h₁, h₂ ⟩ => cases h₁; aesop
       ⟩
    }
 
 /-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products. -/
 def OrderIso.sumProdDistrib (α : Type u) (β : Type v) (γ : Type w)
-    [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ :=
-  { Equiv.sumProdDistrib α β γ with
-    map_rel_iff' := fun {a b} ↦ ⟨
-    fun h ↦ match a, b with
-    | ⟨.inlₗ a, c₁⟩ , ⟨.inlₗ b, c₂⟩ => by
-      cases h;
-      cases (by assumption);
-      · exact Prod.Lex.left _ _ (Sum.Lex.inl ‹a < b›)
-      · exact Prod.Lex.right _ ‹(Sum.inlₗ a, c₁).2 ≤ (Sum.inlₗ a, c₂).2›
-    | ⟨.inlₗ a, c₁⟩ , ⟨.inrₗ b, c₂⟩ => Prod.Lex.left _ _ ( Sum.Lex.sep _ _ )
-    | ⟨.inrₗ a, c₁⟩ , ⟨.inlₗ b, c₂⟩ => by cases h
-    | ⟨.inrₗ a, c₁⟩ , ⟨.inrₗ b, c₂⟩ => by
-      cases h;
-      cases (by assumption);
-      · exact Prod.Lex.left _ _ ( Sum.Lex.inr ‹a < b› )
-      · exact Prod.Lex.right _ ‹(Sum.inrₗ a, c₁).2 ≤ (Sum.inrₗ a, c₂).2›
-    , fun h ↦ by
-      cases h;
-      · cases (by assumption)
-        · exact Sum.Lex.inl ( Prod.Lex.left _ _ ‹_ < _›)
-        · exact Sum.Lex.inr ( Prod.Lex.left _ _ ‹_ < _›)
-        · exact Sum.Lex.sep _ _
-      · cases ‹Lex ( α ⊕ β )›
-        cases ‹α ⊕ β› <;> simp only [ge_iff_le]
-        · exact Sum.Lex.inl ( Prod.Lex.right _ ‹_ ≤ _› )
-        · exact Sum.Lex.inr ( Prod.Lex.right _ ‹_ ≤ _› )⟩
-    }
+    [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ where
+  toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
+    .trans (.sumProdDistrib α β γ) <| .trans (.sumCongr toLex toLex) toLex
+  map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 instance : Monoid OrderType where
   mul_assoc o₁ o₂ o₃ :=
