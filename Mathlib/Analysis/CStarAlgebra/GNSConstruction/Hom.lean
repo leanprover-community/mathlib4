@@ -5,10 +5,8 @@ Authors: Gregory Wickham
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs
-public import Mathlib.Analysis.CStarAlgebra.Hom
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # The *-homomorphism of the GNS construction
@@ -21,13 +19,6 @@ In this file we define the unital ⋆-homomorphism from our C⋆-algebra `A` int
 - `f.π` : The unital *-homomorphism from `A` into the bounded linear operators on
   `f.GNS_HilbertSpace`.
 
-## References
-
-Most of this work follows from private course notes prepared by Professor Konrad Aguilar at Pomona
-College.
-
-For another, similar approach, see "A Primer on Spectral Theory" by Bernard Aupetit, the other main
-refence used here.
 -/
 @[expose] public section
 open scoped ComplexOrder
@@ -57,22 +48,9 @@ def A_mul_GNS : A →ₗ[ℂ] f.GNS →L[ℂ] f.GNS where
   map_add' _ _ := by ext b; simp [const_mul_GNS]
   map_smul' _ _ := by ext b; simp [const_mul_GNS]
 
-@[simps]
-noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace where
-  toFun := Completion.map <| f.A_mul_GNS a
-  map_add' x y := by
-    induction x, y using Completion.induction_on₂ with
-    | hp => exact isClosed_eq (by fun_prop) (by fun_prop)
-    | ih x y =>
-      simp [Completion.map_coe, ← Completion.coe_add, ContinuousLinearMap.uniformContinuous]
-  map_smul' r x := by
-    induction x using Completion.induction_on with
-    | hp =>
-      exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
-        (continuous_map.const_smul _)
-    | ih x =>
-      simp [map_coe, ← Completion.coe_smul, ContinuousLinearMap.uniformContinuous]
-  cont := continuous_map
+@[simps!]
+noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace :=
+  mapCLM (f.A_mul_GNS a)
 
 @[simp]
 lemma A_mul_GNS_prod_eq_comp (a b : A) :
@@ -100,7 +78,7 @@ noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f
     rfl
   map_add' x y := by
     ext c
-    simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, add_apply]
+    simp only [π_ofA, add_apply]
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c
@@ -108,7 +86,7 @@ noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f
     norm_cast
   map_mul' a b := by
     ext c
-    simp only [π_ofA, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mul,
+    simp only [π_ofA, mapCLM, coe_mk', LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mul,
       Function.comp_apply]
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
@@ -143,7 +121,7 @@ noncomputable def π_unital : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.G
     simp_all [A_mul_GNS, const_mul_GNS]
   commutes' r := by
     dsimp [π]
-    simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_ofA]
+    simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_ofA, mapCLM]
     congr
     ext c
     simp [A_mul_GNS, const_mul_GNS]

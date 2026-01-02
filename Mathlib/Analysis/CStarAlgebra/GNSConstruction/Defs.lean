@@ -24,13 +24,6 @@ but they are described below for the sake of clarity and completeness.
   linear functional `f` so that we can construct an inner product and inner product-induced norm.
 - `f.GNS_HilbertSpace` : the Hilbert space that we construct as the completion of `f.GNS_Quotient`.
 
-## References
-
-Most of this work follows from private course notes prepared by Professor Konrad Aguilar at Pomona
-College.
-
-For another, similar approach, see "A Primer on Spectral Theory" by Bernard Aupetit, the other main
-refence used here.
 -/
 
 @[expose] public section
