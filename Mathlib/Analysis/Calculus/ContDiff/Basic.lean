@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 public import Mathlib.Analysis.Calculus.FDeriv.Affine
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
-public import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 
 /-!
 # Higher differentiability of composition
