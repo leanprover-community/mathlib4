@@ -199,7 +199,7 @@ lemma reverse_divisorsAntidiagonalList (n : ℕ) :
   have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
   refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
     (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
-  simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
+  simp [List.reverse_perm_iff, List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
     (nodup_divisorsAntidiagonalList.map Prod.swap_injective), mul_comm]
 
 lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
