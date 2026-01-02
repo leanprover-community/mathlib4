@@ -277,15 +277,6 @@ lemma spanFinrank_map_le_of_fg {σ : R →+* S} [RingHomSurjective σ]
 
 variable {M₁ : Submodule R M} {N₁ : Submodule S N}
 
-lemma spanRank_le_spanRank_of_map_eq {σ : R →+* S} [RingHomSurjective σ]
-  (f : M →ₛₗ[σ] N) (h_map : map f M₁ = N₁) : N₁.spanRank ≤ M₁.spanRank := by
-  rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
-  rw [FG.spanRank_le_iff_exists_span_set_card_le]
-  use f '' s
-  constructor
-  · rw [← hscard]; exact Cardinal.mk_image_le
-  · rw [span_image, hsspan, h_map]
-
 lemma spanRank_le_spanRank_of_range_eq {σ : R →+* S} [RingHomSurjective σ]
     (f : M₁ →ₛₗ[σ] N) (h_range : LinearMap.range f = N₁) : N₁.spanRank ≤ M₁.spanRank := by
   -- obtain the spanning set of submodule `M₁`
@@ -303,6 +294,11 @@ lemma spanRank_le_spanRank_of_range_eq {σ : R →+* S} [RingHomSurjective σ]
   constructor
   · grw [Cardinal.mk_image_le]; rw [hscard]
   · rw [span_image, hsspan, map_top, h_range]
+
+lemma spanRank_le_spanRank_of_map_eq {σ : R →+* S} [RingHomSurjective σ]
+  (f : M →ₛₗ[σ] N) (h_map : map f M₁ = N₁) : N₁.spanRank ≤ M₁.spanRank := by
+  apply spanRank_le_spanRank_of_range_eq (f.comp M₁.subtype)
+  rw [LinearMap.range_comp, range_subtype, h_map]
 
 lemma spanRank_le_spanRank_of_surjective {σ : R →+* S} [RingHomSurjective σ]
     (f : M₁ →ₛₗ[σ] N₁) (h_surj : Function.Surjective f) : N₁.spanRank ≤ M₁.spanRank := by
