@@ -400,19 +400,11 @@ lemma Monic.one_le_mahlerMeasure' [NormOneClass A] (hp : p.Monic) :
 
 variable {p} in
 theorem mahlerMeasure'_pos_of_ne_zero (hp : p ≠ 0) : 0 < p.mahlerMeasure' v := by
-  unfold mahlerMeasure'
-  refine mahlerMeasure_pos_of_ne_zero ?_
-  intro h
+  refine mahlerMeasure_pos_of_ne_zero fun h ↦ ?_
   apply hp
-  have hinj : Function.Injective (v : A → ℂ) := (IsometryClass.isometry v).injective
   ext i
-  simp only [Polynomial.coeff_zero]
-  have hi : (Polynomial.map v p).coeff i = (0 : ℂ) := by
-    have : Polynomial.map v p = (0 : ℂ[X]) := h
-    rw [this]
-    exact Polynomial.coeff_zero i
-  rw [Polynomial.coeff_map] at hi
-  exact hinj (by simpa using hi)
+  have := h ▸ Polynomial.coeff_zero i
+  exact (IsometryClass.isometry v).injective (by simpa using this)
 
 theorem mahlerMeasure'_le_sum_norm_coeff : p.mahlerMeasure' v ≤ p.sum fun _ a ↦ ‖a‖ := by
   have hinj : Function.Injective (v : A → ℂ) := (IsometryClass.isometry v).injective
