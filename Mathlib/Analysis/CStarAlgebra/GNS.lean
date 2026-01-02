@@ -59,6 +59,10 @@ lemma ofGNS_toGNS (a : A) : f.ofGNS (f.toGNS a) = a := rfl
 
 variable [StarOrderedRing A]
 
+/--
+The (semi-)inner product space whose elements are the elements of `A`, but which has an
+inner product-induced norm induced by `f` which is different from the norm on `A`.
+-/
 @[simps]
 def GNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
   inner a b := f (star (f.ofGNS a) * f.ofGNS b)
