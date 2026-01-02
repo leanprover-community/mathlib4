@@ -19,6 +19,8 @@ that hold when the coefficient (semi)ring has no zero divisors.
 
 @[expose] public section
 
+open Finset
+
 variable {R : Type*}
 
 namespace MvPolynomial
