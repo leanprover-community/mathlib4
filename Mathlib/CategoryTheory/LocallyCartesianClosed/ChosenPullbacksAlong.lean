@@ -67,15 +67,34 @@ noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong
   mapPullbackAdj := Over.mapPullbackAdj f
 
 /-- The identity morphism has a functorial choice of pullbacks. -/
-@[simps]
 def id (X : C) : ChosenPullbacksAlong (𝟙 X) where
   pullback := 𝟭 _
   mapPullbackAdj := (Adjunction.id).ofNatIsoLeft (Over.mapId _).symm
 
-attribute [local instance] ChosenPullbacksAlong.id in
-/-- The chosen pullback functor of the identity morphism is naturally isomorphic to the
-identity functor. -/
-def pullbackId (X : C) : pullback (𝟙 X) ≅ 𝟭 (Over X) := Iso.refl _
+/-- Any chosen pullback functor of the identity morphism is naturally isomorphic to the identity
+functor. -/
+def pullbackId (X : C) [ChosenPullbacksAlong (𝟙 X)] :
+    pullback (𝟙 X) ≅ 𝟭 (Over X) :=
+  (mapPullbackAdj (𝟙 X)).rightAdjointUniq (id X).mapPullbackAdj
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackId_hom_app (X : C) [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
+  (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
+    (id X).mapPullbackAdj.unit.app Y := by
+  rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom_app]
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackId_hom (X : C) [ChosenPullbacksAlong (𝟙 X)] :
+  (mapPullbackAdj (𝟙 X)).unit ≫ (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
+    (id X).mapPullbackAdj.unit := by
+  rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
+  Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
+    (mapPullbackAdj (𝟙 X)).counit := by
+  have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
+  rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps]
@@ -90,20 +109,33 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
 def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.inv := iso f.symm
 
 /-- The composition of morphisms with chosen pullbacks has a chosen pullback. -/
-@[simps]
-def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
-    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] : ChosenPullbacksAlong (g ≫ f) where
-  pullback := pullback f ⋙ pullback g
-  mapPullbackAdj := ((mapPullbackAdj g).comp (mapPullbackAdj f)).ofNatIsoLeft
-    (Over.mapComp g f).symm
+def comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] : ChosenPullbacksAlong (f ≫ g) where
+  pullback := pullback g ⋙ pullback f
+  mapPullbackAdj := ((mapPullbackAdj f).comp (mapPullbackAdj g)).ofNatIsoLeft
+    (Over.mapComp f g).symm
 
-attribute [local instance] ChosenPullbacksAlong.comp in
-/-- The chosen pullback functor of a composition of morphisms is naturally isomorphic to
-the composition of the chosen pullback functors. -/
+/-- Any chosen pullback of a composite of morphisms is naturally isomorphic to the composition of
+chosen pullback functors. -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] :
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
-  Iso.refl _
+  Adjunction.rightAdjointUniq (mapPullbackAdj (f ≫ g)) ((comp f g).mapPullbackAdj)
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackComp_hom {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
+    (mapPullbackAdj (f ≫ g)).unit ≫ (Over.map (f ≫ g)).whiskerLeft (pullbackComp f g).hom =
+      (comp f g).mapPullbackAdj.unit := by
+  rw [pullbackComp, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
+    Functor.whiskerRight (pullbackComp f g).hom (Over.map (f ≫ g)) ≫
+      (comp f g).mapPullbackAdj.counit =
+      (mapPullbackAdj (f ≫ g)).counit := by
+  rw [pullbackComp, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
 choice of pullbacks. -/
