@@ -249,7 +249,7 @@ theorem Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective
   have := f.isEmpty
   ⟨injective_of_subsingleton _, Function.Surjective.of_isEmpty _⟩
 
-theorem Function.not_Surjective_of_isEmpty_Nonempty [IsEmpty α] [Nonempty β] (f : α → β) :
+theorem Function.not_Surjective_of_isEmpty_of_nonempty [IsEmpty α] [Nonempty β] (f : α → β) :
     ¬Function.Surjective f := by
   rw [Surjective_iff_IsEmpty]
   exact not_isEmpty_of_nonempty β
