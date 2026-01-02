@@ -300,7 +300,7 @@ instance instFunLikeZero : FunLikeZero 𝓢(E, F) E F where
   zero_apply _ := rfl
 
 theorem seminormAux_zero (k n : ℕ) : (0 : 𝓢(E, F)).seminormAux k n = 0 :=
-  le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by simp [Pi.zero_def])
+  le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by norm_cast; simp [Pi.zero_def])
     (seminormAux_nonneg _ _ _)
 
 end Zero
@@ -358,19 +358,19 @@ instance instFunLikeSub : FunLikeSub 𝓢(E, F) E F where
 
 end Sub
 
---section AddCommGroup
+section AddCommGroup
 
 /-instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) fun _ _ => rfl-/
 
 variable (E F)
 
 /-- Coercion as an additive homomorphism. -/
 def coeHom : 𝓢(E, F) →+ E → F where
   toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+  map_zero' := FunLike.coe_zero
+  map_add' := FunLike.coe_add
 
 variable {E F}
 
@@ -391,8 +391,6 @@ instance instModule : Module 𝕜 𝓢(E, F) :=
   coeHom_injective.module 𝕜 (coeHom E F) fun _ _ => rfl
 
 end Module
-
-#exit-/
 
 section Seminorms
 

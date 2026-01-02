@@ -82,12 +82,13 @@ If the continuous linear image of any element of `𝔖` is bounded, this makes `
 topological vector space. -/
 @[nolint unusedArguments]
 def UniformConvergenceCLM [TopologicalSpace F] (_ : Set (Set E)) := E →SL[σ] F
+  deriving Zero, FunLike
 
 namespace UniformConvergenceCLM
 
-instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
+/-instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
-  ContinuousLinearMap.funLike
+  ContinuousLinearMap.funLike-/
 
 @[ext]
 theorem ext [TopologicalSpace F] {𝔖 : Set (Set E)} {f g : UniformConvergenceCLM σ F 𝔖}
@@ -146,6 +147,22 @@ theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Se
 
 instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
+
+instance instFunLikeZero [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    FunLikeZero (UniformConvergenceCLM σ F 𝔖) E F where
+  zero_apply _ := rfl
+
+instance instFunLikeNeg [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    FunLikeNeg (UniformConvergenceCLM σ F 𝔖) E F where
+  neg_apply _ _ := rfl
+
+instance instFunLikeAdd [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    FunLikeAdd (UniformConvergenceCLM σ F 𝔖) E F where
+  add_apply _ _ _ := rfl
+
+instance instFunLikeSub [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    FunLikeSub (UniformConvergenceCLM σ F 𝔖) E F where
+  sub_apply _ _ _ := rfl
 
 @[simp]
 theorem neg_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
@@ -366,8 +383,7 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul �
 /-- The linear equivalence that maps a continuous linear map to the type copy endowed with the
 uniform convergence topology. -/
 def _root_.ContinuousLinearMap.toUniformConvergenceCLM :
-    (E →SL[σ] F) ≃ₗ[𝕜₂] UniformConvergenceCLM σ F 𝔖 where
-  __ := LinearEquiv.refl _ _
+    (E →SL[σ] F) ≃ₗ[𝕜₂] UniformConvergenceCLM σ F 𝔖 := LinearEquiv.refl _ _
 
 variable {σ F 𝔖}
 
