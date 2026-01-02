@@ -117,15 +117,9 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p)
   simp_rw [degreeOf_eq_natDegree, map_mul, ← renameEquiv_apply]
   rw [Polynomial.natDegree_mul']
   · simp
-  · have hp' :
-        ((optionEquivLeft R { b // ¬b = j })
-          ((rename (Equiv.optionSubtypeNe j).symm) p)).leadingCoeff ≠ 0 := by
-      simp only [ne_eq, Polynomial.leadingCoeff_ne_zero, EmbeddingLike.map_eq_zero_iff]
+  · have hp' : (optionEquivLeft R _ ((rename (optionSubtypeNe j).symm) p)).leadingCoeff ≠ 0 := by
       intro h
-      exact
-        hp
-          (rename_injective (⇑(Equiv.optionSubtypeNe j).symm)
-            (Equiv.injective (Equiv.optionSubtypeNe j).symm) h)
+      exact hp (rename_injective _ (Equiv.injective _) (by simpa using h))
     simp_rw [ne_eq, renameEquiv_apply, algHom_C, algebraMap_eq, optionEquivLeft_C,
       Polynomial.leadingCoeff_C]
     contrapose! hp'
