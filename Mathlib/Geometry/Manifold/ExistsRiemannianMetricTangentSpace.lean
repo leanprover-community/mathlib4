@@ -1303,45 +1303,30 @@ def g_global_smooth_section_1
   { toFun := g_global_bilin_1 f
     contMDiff_toFun := g_global_bilin_1_smooth f h_sub}
 
-lemma h_need_1 (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b)
-  (h_fin : (Function.support (M := W (TangentSpace IB) b)
-     fun j ↦ ((f j) b • (g_bilin_1 (IB := IB) j b).snd : W (TangentSpace IB) b)).Finite) :
-  ∑ j ∈ h_fin.toFinset, (f j) b • (g_bilin_1 (IB := IB) j b).snd.toFun v w =
-  ∑ j ∈ h_fin.toFinset, (f j) b • (g_bilin_1 (IB := IB) j b).snd.toFun w v:= by
+lemma g_global_bilin_eq (f : SmoothPartitionOfUnity B IB B) (p : B) :
+    g_global_bilin_1 f p = g_global_bilin_2 f p := by
+  unfold g_global_bilin_1 g_global_bilin_2
+  congr 1
+  ext j
+  congr 2
+  ext α β
+  have h1 : (((g_bilin_1 j p).snd).toFun α) β =
+            (((g_bilin_2 j p)).toFun α) β := g_bilin_eq (IB := IB) j p α β
+  simp
+  exact congrArg (HMul.hMul ((f j) p)) h1
 
-  let h : (j : B) → W ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) b :=
-      fun j ↦ (f j) b • (g_bilin_1 (IB := IB) j b).snd
-
-  have h_inc : (Function.support h) ⊆ h_fin.toFinset :=
-      Set.Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
-
-  have hb :  ∑ᶠ (j : B),  (f j) b • (g_bilin_1 j b).snd.toFun v w =
-          ∑ j ∈ h_fin.toFinset, (f j) b • (g_bilin_1 j b).snd.toFun v w :=
-  finsum_image_eq_sum (evalAt b v w) h h_fin.toFinset h_inc
-
-  have hb' :  ∑ᶠ (j : B),  (f j) b • (g_bilin_1 j b).snd.toFun w v =
-          ∑ j ∈ h_fin.toFinset, (f j) b • (g_bilin_1 j b).snd.toFun w v :=
-  finsum_image_eq_sum (evalAt b w v) h h_fin.toFinset h_inc
-
-
-  have h1 : ∀ (i : B) (α β : TangentSpace IB b),
-    (g_bilin_1 (IB := IB) i b).snd.toFun α β =
-    (g_bilin_1 (IB := IB) i b).snd.toFun β α := fun i α β ↦ g_bilin_symm_1 i b α β
-
-
-  exact sorry
-
--- In theory we can prove this from the above
-lemma riemannian_metric_symm_1
-  (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
+lemma riemannian_metric_symm_1 (f : SmoothPartitionOfUnity B IB B)
+   (b : B) (v w : TangentSpace IB b) :
   ((g_global_bilin_1 f b).toFun v).toFun w = ((g_global_bilin_1 f b).toFun w).toFun v := by
-  unfold g_global_bilin_1
 
-  have h1 : ∀ (i : B),
-    (g_bilin_1 (IB := IB) i b).snd.toFun v w =
-    (g_bilin_1 (IB := IB) i b).snd.toFun w v := fun i ↦ g_bilin_symm_1 i b v w
+  have hz : ((g_global_bilin_2 f b).toFun v).toFun w = ((g_global_bilin_2 f b).toFun w).toFun v :=
+    riemannian_metric_symm f b v w
 
-  exact sorry
+  have hy : g_global_bilin_1 f b = g_global_bilin_2 f b :=
+    g_global_bilin_eq f b
+
+  rw [<-hy] at hz
+  exact hz
 
 noncomputable
 def riemannian_metric_exists_1
