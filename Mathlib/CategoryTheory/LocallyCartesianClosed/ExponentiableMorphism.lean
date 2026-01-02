@@ -80,6 +80,7 @@ theorem ev_naturality {X Y : Over I} (g : X ⟶ Y) :
     (pullback f).map ((pushforward f).map g) ≫ (ev f).app Y = (ev f).app X ≫ g :=
   ev f |>.naturality g
 
+@[reassoc]
 theorem coev_naturality {X Y : Over J} (g : X ⟶ Y) :
     g ≫ (coev f).app Y = (coev f).app X ≫ (pushforward f).map ((pullback f).map g) :=
   coev f |>.naturality g
