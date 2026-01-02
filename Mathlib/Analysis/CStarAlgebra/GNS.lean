@@ -12,14 +12,14 @@ public import Mathlib.Analysis.InnerProductSpace.Completion
 /-!
 # The GNS (Gelfand-Naimark-Segal) construction
 
-In this file we do the "construction" part of the GNS construction. We construct a Hilbert space
-from an arbitrary C*-algebra so that it is *-isomorphic to a subalgebra of the bounded operators on
-the Hilbert space.
+This file contains the constructions and definitions that produce a *-homomorphism from an arbitrary
+C*-algebra into the algebra of bounded linear operators on some Hilbert space.
 
 ## Main results
 
-- `f.GNS` : a type synonym of `A` that "forgets" the norm of `A` and bundles in a fixed
-  linear functional `f` so that we can construct an inner product and inner product-induced norm.
+- `f.GNS` : a type synonym of `NonUnitalCStarAlgebra` `A` that "forgets" the norm of `A` and bundles
+  in a fixed linear functional `f` so that we can construct an inner product and inner
+  product-induced norm.
 - `f.GNS_HilbertSpace` : the Hilbert space completion of `f.GNS`.
 - `f.π` : The non-unital *-homomorphism from a non-unital `A` into the bounded linear operators on
   `f.GNS_HilbertSpace`.
