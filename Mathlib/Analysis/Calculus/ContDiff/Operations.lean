@@ -12,7 +12,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 /-!
 # Higher differentiability of usual operations
 
-We prove that the usual operations (addition, multiplication, difference, composition, and
+We prove that the usual operations (addition, multiplication, difference, and
 so on) preserve `C^n` functions.
 
 ## Notation
