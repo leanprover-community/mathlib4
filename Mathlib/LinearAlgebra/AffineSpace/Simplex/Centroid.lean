@@ -73,7 +73,7 @@ theorem centroid_eq_affineCombination (s : Simplex k P n) :
 theorem centroid_notMem_affineSpan_compl [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := by
   intro h
-  rw [s.centroid_eq_affine_combination] at h
+  rw [s.centroid_eq_affineCombination] at h
   set w := (centroidWeights k (univ : Finset (Fin (n + 1)))) with wdef
   have hw : ∑ i, w i = 1 := by
     rw [sum_centroidWeights_eq_one_of_card_ne_zero]
@@ -205,7 +205,7 @@ theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Modul
     [AffineSpace V₂ P₂] {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) :
     (s.map f hf).centroid = f (s.centroid) := by
-  rw [centroid, map_points, centroid_eq_affine_combination, Finset.map_affineCombination]
+  rw [centroid, map_points, centroid_eq_affineCombination, Finset.map_affineCombination]
   · rw [Finset.centroid]
   · rw [sum_centroidWeights_eq_one_of_card_ne_zero]
     simp
@@ -214,7 +214,7 @@ theorem centroid_reindex {m n : ℕ} (s : Simplex k P m)
     (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).centroid = s.centroid := by
   rw [centroid, centroid]
-  simp only [centroid_eq_affine_combination]
+  simp only [centroid_eq_affineCombination]
   simp only [reindex]
   have h_eq : m = n := by simpa using Fintype.card_eq.2 ⟨e⟩
   subst h_eq
@@ -404,7 +404,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
     [Module k V₂] [AffineSpace V₂ P₂] {n : ℕ} [NeZero n] (s : Simplex k P n) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) {i : Fin (n + 1)} :
     (s.map f hf).faceOppositeCentroid i = f (s.faceOppositeCentroid i) := by
-  simp only [faceOppositeCentroid, faceOpposite_map, centroid_eq_affine_combination, map_points]
+  simp only [faceOppositeCentroid, faceOpposite_map, centroid_eq_affineCombination, map_points]
   rw [Finset.map_affineCombination]
   rw [sum_centroidWeights_eq_one_of_card_ne_zero]
   simp

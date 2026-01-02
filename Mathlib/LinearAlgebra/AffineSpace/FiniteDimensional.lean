@@ -785,8 +785,8 @@ variable (k)
 theorem coplanar_triple (p₁ p₂ p₃ : P) : Coplanar k ({p₁, p₂, p₃} : Set P) :=
   (collinear_pair k p₂ p₃).coplanar_insert p₁
 
-/-- For a simplex, the centroid, a vertex, and the corresponding `faceOppositeCentroid` are collinear.
--/
+/-- For a simplex, the centroid, a vertex, and the corresponding `faceOppositeCentroid` are
+collinear. -/
 theorem Affine.Simplex.collinear_point_centroid_faceOppositeCentroid [CharZero k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) (i : Fin (n + 1)) :
     Collinear k {s.points i, s.centroid, s.faceOppositeCentroid i} := by
