@@ -10,7 +10,7 @@ public import Mathlib.Order.Category.LinOrd
 public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
-# OrderTypes
+# Order types
 
 Order types are defined as the quotient of linear orders under order isomorphism. They are endowed
 with a preorder, where an OrderType is smaller than another one there is an order embedding
@@ -29,6 +29,8 @@ A preorder with a bottom element is registered on order types, where `⊥` is
 `0`, the order type corresponding to the empty type.
 
 ## Notation
+
+The following are scoped notations in the `OrderType` namespace:
 
 * `ω` is a notation for the order type of `ℕ` with its natural order.
 * `η` is a notation for the order type of `ℚ` with its natural order.
@@ -58,7 +60,7 @@ def ordIsoOfIsEmpty (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β
     [IsEmpty β] [IsEmpty α] : α ≃o β :=
   ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
 
-def OrderType.ofUniqueOfIrrefl [LinearOrder α]
+def OrderIso.ofUnique [LinearOrder α]
     [LinearOrder β] [Unique α] [Unique β] : α ≃o β :=
   ⟨Equiv.ofUnique α β, by simp⟩
 
@@ -99,7 +101,7 @@ instance inhabited : Inhabited OrderType :=
   ⟨0⟩
 
 instance : One OrderType where
- one := ⟦LinOrd.of PUnit⟧
+  one := type PUnit
 
 lemma one_def : (1 : OrderType) = type PUnit := rfl
 
@@ -170,7 +172,7 @@ protected theorem one_ne_zero : (1 : OrderType) ≠ 0 :=
 instance nontrivial : Nontrivial OrderType.{u} :=
   ⟨⟨1, 0, OrderType.one_ne_zero⟩⟩
 
-/-- `Quotient.inductionOn` specialized to OrderTypes. -/
+/-- `Quotient.inductionOn` specialized to `OrderType`. -/
 @[elab_as_elim]
 theorem inductionOn {C : OrderType → Prop} (o : OrderType)
     (H : ∀ α [LinearOrder α], C (type α)) : C o :=
@@ -323,7 +325,7 @@ in instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
 
 @[simp]
 lemma type_add (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
-    type (α ⊕ₗ β) = (type α) + (type β) := rfl
+    type (α ⊕ₗ β) = type α + type β := rfl
 
 lemma OrderIso.sumLexEmpty (α : Type u) [LinearOrder α] : Nonempty (Lex (α ⊕ PEmpty) ≃o α) :=
   ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := α) (β := PEmpty)).symm.trans
