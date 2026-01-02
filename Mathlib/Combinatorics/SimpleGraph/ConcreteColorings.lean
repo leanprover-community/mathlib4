@@ -213,28 +213,9 @@ lemma even_length_iff_same_color
     {c : G.Coloring (Fin 2)}
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ c u = c v := by
-  induction p with
-  | nil =>
-    simp
-  | cons h_adj p_tail ih =>
-    have h_first_step_diff := c.valid h_adj
-    rw [SimpleGraph.Walk.length_cons]
-    rw [Nat.even_add_one]
-    rw [ih]
-    constructor
-    · intro h_next_ne_end
-      have h_cases : c u = 0 ∨ c u = 1 := by
-        match c u with
-        | 0 => left; rfl
-        | 1 => right; rfl
-      cases h_cases
-      · simp_all
-        omega
-      · simp_all
-        omega
-    · intro h_start_eq_end
-      rw [h_start_eq_end] at h_first_step_diff
-      exact h_first_step_diff.symm
+  let c' : G.Coloring Bool := G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
+  rw [Coloring.even_length_iff_congr c']
+  simp [c']
 
 @[simp]
 lemma bypass_eq_nil
