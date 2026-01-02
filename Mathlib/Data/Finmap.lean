@@ -3,13 +3,17 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.AList
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Part
+module
+
+public import Mathlib.Data.List.AList
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Part
 
 /-!
 # Finite maps over `Multiset`
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -72,6 +76,8 @@ structure Finmap (β : α → Type v) : Type max u v where
 def AList.toFinmap (s : AList β) : Finmap β :=
   ⟨s.entries, s.nodupKeys⟩
 
+-- Setting `priority := high` means that Lean will prefer this notation to the identical one
+-- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
@@ -202,8 +208,6 @@ theorem toFinmap_nil [DecidableEq α] : ([].toFinmap : Finmap β) = ∅ :=
 
 theorem notMem_empty {a : α} : a ∉ (∅ : Finmap β) :=
   Multiset.notMem_zero a
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem keys_empty : (∅ : Finmap β).keys = ∅ :=
@@ -391,8 +395,6 @@ theorem notMem_erase_self {a : α} {s : Finmap β} : a ∉ erase a s := by
   left
   rfl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_erase_self := notMem_erase_self
-
 @[simp]
 theorem lookup_erase (a) (s : Finmap β) : lookup a (erase a s) = none :=
   induction_on s <| AList.lookup_erase a
@@ -431,8 +433,6 @@ theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
     a ∉ s → (insert a b s).entries = ⟨a, b⟩ ::ₘ s.entries :=
   induction_on s fun s h => by
     simp [AList.entries_insert_of_notMem (mt mem_toFinmap.1 h), -entries_insert]
-
-@[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
 
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=

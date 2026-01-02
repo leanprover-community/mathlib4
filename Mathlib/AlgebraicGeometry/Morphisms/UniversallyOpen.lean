@@ -3,10 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-import Mathlib.AlgebraicGeometry.Morphisms.Flat
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.RingTheory.Spectrum.Prime.Chevalley
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
 /-!
 # Universally open morphism
@@ -18,6 +20,8 @@ We show that being universally open is local at the target, and is stable under 
 base changes.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -38,8 +42,8 @@ along any morphism `Y' ⟶ Y` is (topologically) an open map.
 class UniversallyOpen (f : X ⟶ Y) : Prop where
   out : universally (topologically @IsOpenMap) f
 
-lemma Scheme.Hom.isOpenMap {X Y : Scheme} (f : X.Hom Y) [UniversallyOpen f] :
-    IsOpenMap f.base := UniversallyOpen.out _ _ _ IsPullback.of_id_snd
+lemma Scheme.Hom.isOpenMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyOpen f] :
+    IsOpenMap f := UniversallyOpen.out _ _ _ IsPullback.of_id_snd
 
 namespace UniversallyOpen
 
@@ -59,7 +63,7 @@ instance : IsStableUnderBaseChange @UniversallyOpen :=
   eq.symm ▸ inferInstance
 
 instance : IsStableUnderComposition (topologically @IsOpenMap) where
-  comp_mem f g hf hg := IsOpenMap.comp (f := f.base) (g := g.base) hg hf
+  comp_mem f g hf hg := IsOpenMap.comp (f := f) (g := g) hg hf
 
 instance : IsStableUnderComposition @UniversallyOpen := by
   rw [eq]
@@ -98,7 +102,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 /-- A generalizing morphism, locally of finite presentation is open. -/
 @[stacks 01U1]
 lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
-    (hf : GeneralizingMap f.base) : IsOpenMap f.base := by
+    (hf : GeneralizingMap f) : IsOpenMap f := by
   change topologically IsOpenMap f
   wlog hY : ∃ R, Y = Spec R
   · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := topologically IsOpenMap) Y.affineCover]
@@ -121,7 +125,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
   · apply (HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation)).mp inferInstance
 
 /-- Any flat morphism is generalizing. -/
-lemma Flat.generalizingMap [Flat f] : GeneralizingMap f.base := by
+lemma Flat.generalizingMap [Flat f] : GeneralizingMap f := by
   have := HasRingHomProperty.of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget.{u}
     (topologically GeneralizingMap)
   change topologically GeneralizingMap f

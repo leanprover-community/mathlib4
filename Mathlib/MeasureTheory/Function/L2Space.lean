@@ -3,15 +3,18 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+module
+
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-! # `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
-(defined in `Mathlib/MeasureTheory/Function/LpSpace.lean`)
+(defined in `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -22,6 +25,8 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
   `fun x ↦ ⟪f x, g x⟫` is integrable.
 * `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -148,18 +153,17 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_enorm]
   norm_cast
 
+set_option backward.privateInPublic true in
 private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
   rw [inner_def, integral_inner_eq_sq_eLpNorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
-    ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.eLpNorm_ne_top f)) _]
+    ENNReal.toReal_eq_toReal_iff' (ENNReal.pow_ne_top (Lp.eLpNorm_ne_top f)) _]
   · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top, eLpNorm', ←
       ENNReal.rpow_mul, one_div, h_two]
     simp [enorm_eq_nnnorm]
   · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε := E) ?_).ne
     rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top]
-    exact Lp.eLpNorm_lt_top f
-
-@[deprecated (since := "2025-04-22")] alias norm_sq_eq_inner' := norm_sq_eq_re_inner
+    finiteness
 
 theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
@@ -173,18 +177,22 @@ theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪
           ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)))).mp
     (AEEqFun.integrable_iff_mem_L1.mpr (mem_L1_inner f g))
 
+set_option backward.privateInPublic true in
 private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = ⟪f, g⟫ + ⟪f', g⟫ := by
   simp_rw [inner_def, ← integral_add (integrable_inner (𝕜 := 𝕜) f g) (integrable_inner f' g),
     ← inner_add_left]
   refine integral_congr_ae ((coeFn_add f f').mono fun x hx => ?_)
   simp only [hx, Pi.add_apply]
 
+set_option backward.privateInPublic true in
 private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * ⟪f, g⟫ := by
   rw [inner_def, inner_def, ← smul_eq_mul, ← integral_smul]
   refine integral_congr_ae ((coeFn_smul r f).mono fun x hx => ?_)
   simp only
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
   norm_sq_eq_re_inner := norm_sq_eq_re_inner
   conj_inner_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
@@ -282,8 +290,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 /-- For bounded continuous functions `f`, `g` on a finite-measure topological space `α`, the L^2
 inner product is the integral of their pointwise inner product. -/
 theorem BoundedContinuousFunction.inner_toLp (f g : α →ᵇ 𝕜) :
-    ⟪BoundedContinuousFunction.toLp 2 μ 𝕜 f,
-        BoundedContinuousFunction.toLp 2 μ 𝕜 g⟫ =
+    ⟪BoundedContinuousFunction.toLp 2 μ 𝕜 f, BoundedContinuousFunction.toLp 2 μ 𝕜 g⟫ =
       ∫ x, g x * conj (f x) ∂μ := by
   apply integral_congr_ae
   have hf_ae := f.coeFn_toLp 2 μ 𝕜

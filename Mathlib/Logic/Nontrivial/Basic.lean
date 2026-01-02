@@ -3,18 +3,22 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Prod.Basic
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Logic.Unique
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Tactic.Attr.Register
+module
+
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Unique
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nontrivial types
 
 Results about `Nontrivial`.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {β : Type*}
 
@@ -48,21 +52,6 @@ noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
 instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
   exact ⟨none, some default, nofun⟩
-
-/-- Pushforward a `Nontrivial` instance along an injective function. -/
-protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
-    (hf : Function.Injective f) : Nontrivial β :=
-  let ⟨x, y, h⟩ := exists_pair_ne α
-  ⟨⟨f x, f y, hf.ne h⟩⟩
-
-/-- An injective function from a nontrivial type has an argument at
-which it does not take a given value. -/
-protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
-    (hf : Function.Injective f) (y : β) : ∃ x, f x ≠ y := by
-  rcases exists_pair_ne α with ⟨x₁, x₂, hx⟩
-  by_cases h : f x₂ = y
-  · exact ⟨x₁, (hf.ne_iff' h).2 hx⟩
-  · exact ⟨x₂, h⟩
 
 instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α × β) :=
   Prod.snd_surjective.nontrivial

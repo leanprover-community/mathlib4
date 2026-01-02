@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.SetSemiring
-import Mathlib.MeasureTheory.OuterMeasure.Induced
+module
+
+public import Mathlib.MeasureTheory.SetSemiring
+public import Mathlib.MeasureTheory.OuterMeasure.Induced
 
 /-!
 # Additive Contents
@@ -50,6 +52,8 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
   σ-additive on a set ring, then it is σ-subadditive.
 
 -/
+
+@[expose] public section
 
 open Set Finset Function Filter
 
@@ -228,7 +232,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hf_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
-  refine  ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
+  refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
   classical
   rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
@@ -348,7 +352,7 @@ lemma addContent_diff_of_ne_top (m : AddContent C) (hC : IsSetRing C)
 
 lemma addContent_accumulate (m : AddContent C) (hC : IsSetRing C)
     {s : ℕ → Set α} (hs_disj : Pairwise (Disjoint on s)) (hsC : ∀ i, s i ∈ C) (n : ℕ) :
-      m (Set.Accumulate s n) = ∑ i ∈ Finset.range (n + 1), m (s i) := by
+      m (Set.accumulate s n) = ∑ i ∈ Finset.range (n + 1), m (s i) := by
   induction n with
   | zero => simp
   | succ n hn =>
@@ -392,7 +396,7 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
     (h_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (set.accumulate f n)`
-  let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.Accumulate f n
+  let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.accumulate f n
   have hCs n : s n ∈ C := hC.diff_mem hUf (hC.accumulate_mem hf n)
   have h_tendsto : Tendsto (fun n ↦ m (s n)) atTop (𝓝 0) := by
     refine hm_tendsto hCs ?_ ?_
@@ -424,7 +428,7 @@ theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum (hC : IsSet
       (disjoint_disjointed f)]
   have h n : m (f n) = ∑ i ∈ range (n + 1), m (disjointed f i) := by
     nth_rw 1 [← addContent_accumulate _ hC (disjoint_disjointed f) (hC.disjointed_mem hf),
-    ← hf_mono.partialSups_eq, ← partialSups_disjointed, partialSups_eq_biSup, Accumulate]
+    ← hf_mono.partialSups_eq, ← partialSups_disjointed, partialSups_eq_biSup, accumulate]
     rfl
   simp_rw [h]
   refine (tendsto_add_atTop_iff_nat (f := (fun k ↦ ∑ i ∈ range k, m (disjointed f i))) 1).2 ?_

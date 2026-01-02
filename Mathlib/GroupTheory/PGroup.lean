@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2018 . All rights reserved.
+Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # p-groups
@@ -13,6 +15,8 @@ This file contains a proof that if `G` is a `p`-group acting on a finite set `α
 then the number of fixed points of the action is congruent mod `p` to the cardinality of `α`.
 It also contains proofs of some corollaries of this lemma about existence of fixed points.
 -/
+
+@[expose] public section
 
 open Fintype MulAction
 
@@ -172,14 +176,14 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
-            Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
+            Subtype.ext (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
           (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk
     have : k = 0 := by
       contrapose! hb
-      simp [-Quotient.eq, key, hk, hb]
+      simp [key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩
@@ -279,7 +283,7 @@ theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsP
     to_sup_of_normal_right (hH.of_equiv (Subgroup.subgroupOfEquivOfLe hHK).symm)
       (hK.of_equiv (Subgroup.subgroupOfEquivOfLe Subgroup.le_normalizer).symm)
   ((congr_arg (fun H : Subgroup K.normalizer => IsPGroup p H)
-            (Subgroup.sup_subgroupOf_eq hHK Subgroup.le_normalizer)).mp
+            ((Subgroup.subgroupOf_sup hHK Subgroup.le_normalizer).symm)).mp
         hHK').of_equiv
     (Subgroup.subgroupOfEquivOfLe (sup_le hHK Subgroup.le_normalizer))
 

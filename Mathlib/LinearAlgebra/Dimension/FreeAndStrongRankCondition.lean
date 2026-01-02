@@ -3,19 +3,23 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
 # Some results on free modules over rings satisfying strong rank condition
 
 This file contains some results on free modules over rings satisfying strong rank condition.
-Most of them are generalized from the same result assuming the base ring being division ring,
+Most of them are generalized from the same result assuming the base ring being a division ring,
 and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
-and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
+and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 open Cardinal Module Module Set Submodule
 
@@ -83,13 +87,13 @@ theorem rank_le_one_iff [Module.Free K V] :
       intro v
       simp [h' v]
     · use b i
-      have h' : (K ∙ b i) = ⊤ :=
+      have h' : K ∙ b i = ⊤ :=
         (subsingleton_range b).eq_singleton_of_mem (mem_range_self i) ▸ b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
   · rintro ⟨v₀, hv₀⟩
-    have h : (K ∙ v₀) = ⊤ := by
+    have h : K ∙ v₀ = ⊤ := by
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
@@ -170,7 +174,8 @@ theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 
 /-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
--/
+
+See also `Module.Basis.nonempty_unique_index_of_finrank_eq_one` -/
 theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor

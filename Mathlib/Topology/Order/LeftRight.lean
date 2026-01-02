@@ -3,8 +3,10 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Order.Antichain
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Antichain
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Left and right continuity
@@ -22,6 +24,8 @@ In this file we prove a few lemmas about left and right continuous functions:
 
 left continuous, right continuous
 -/
+
+@[expose] public section
 
 
 open Set Filter Topology
@@ -130,9 +134,6 @@ theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
 lemma nhdsGT_sup_nhdsWithin_singleton (a : α) :
     𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
   simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]
-
-@[deprecated (since := "2025-06-15")]
-alias nhdsWithin_right_sup_nhds_singleton := nhdsGT_sup_nhdsWithin_singleton
 
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iic a) a ∧ ContinuousWithinAt f (Ici a) a := by

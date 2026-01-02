@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
 # Preservation of multicoequalizers
@@ -20,11 +22,13 @@ then `c.map F` also is (see `Multicofork.isColimitMapOfPreserves`).
 
 -/
 
+@[expose] public section
+
 universe w w' v u
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace Limits
 

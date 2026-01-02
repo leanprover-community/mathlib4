@@ -4,13 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Additional lemmas about monoid and group homomorphisms
 
 -/
+
+@[expose] public section
 
 -- `NeZero` cannot be additivised, hence its theory should be developed outside of the
 -- `Algebra.Group` folder.
@@ -59,11 +63,15 @@ def invMonoidHom : α →* α where
   map_one' := inv_one
   map_mul' := mul_inv
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem invMonoidHom_comp_invMonoidHom : (invMonoidHom (α := α)).comp invMonoidHom = .id _ := by
+  ext; simp
 
 end DivisionCommMonoid
 

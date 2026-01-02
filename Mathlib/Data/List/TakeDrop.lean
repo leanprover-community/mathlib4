@@ -3,14 +3,18 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
 
 /-!
 # `Take` and `Drop` lemmas for lists
 
 This file provides lemmas about `List.take` and `List.drop` and related functions.
 -/
+
+@[expose] public section
 
 assert_not_exists GroupWithZero
 assert_not_exists Lattice

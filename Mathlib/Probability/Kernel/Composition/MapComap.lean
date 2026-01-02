@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.Probability.Kernel.Basic
 
 /-!
 # Map of a kernel by a measurable function
@@ -25,6 +27,8 @@ Kernels built from other kernels:
   a kernel.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
@@ -161,10 +165,10 @@ theorem comap_apply' (κ : Kernel α β) (hg : Measurable g) (c : γ) (s : Set �
 
 @[simp]
 lemma comap_zero (hg : Measurable g) : Kernel.comap (0 : Kernel α β) g hg = 0 := by
-  ext; rw [Kernel.comap_apply]; simp
+  ext; simp
 
 @[simp]
-lemma comap_id (κ : Kernel α β) : comap κ id measurable_id = κ := by ext a; rw [comap_apply]; simp
+lemma comap_id (κ : Kernel α β) : comap κ id measurable_id = κ := by ext; simp
 
 @[simp]
 lemma comap_id' (κ : Kernel α β) : comap κ (fun a ↦ a) measurable_id = κ := comap_id κ

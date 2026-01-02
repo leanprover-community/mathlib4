@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Independence.Conditional
+module
+
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Independence.Conditional
 
 /-!
 # Kolmogorov's 0-1 law
@@ -18,6 +20,8 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   measurable with respect to the tail σ-algebra `limsup s atTop` of an independent sequence of
   σ-algebras `s` has probability 0 or 1.
 -/
+
+@[expose] public section
 
 open MeasureTheory MeasurableSpace
 
@@ -66,7 +70,7 @@ theorem condExp_eq_zero_or_one_of_condIndepSet_self
     [StandardBorelSpace Ω]
     (hm : m ≤ m0) [hμ : IsFiniteMeasure μ] {t : Set Ω} (ht : MeasurableSet t)
     (h_indep : CondIndepSet m hm t t μ) :
-    ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
+    ∀ᵐ ω ∂μ, (μ⟦t|m⟧) ω = 0 ∨ (μ⟦t|m⟧) ω = 1 := by
   -- TODO: Why is not inferred?
   have (a : _) : IsFiniteMeasure (condExpKernel μ m a) := inferInstance
   have h := ae_of_ae_trim hm (Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep)
@@ -225,7 +229,7 @@ theorem condExp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
-    ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
+    ∀ᵐ ω ∂μ, (μ⟦t|m⟧) ω = 0 ∨ (μ⟦t|m⟧) ω = 1 := by
   have h := ae_of_ae_trim hm
     (Kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ ht_tail)
   have ht : MeasurableSet t := limsup_le_iSup.trans (iSup_le h_le) t ht_tail
@@ -282,7 +286,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atTop
 theorem condExp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ] (h_le : ∀ n, s n ≤ m0)
     (h_indep : iCondIndep m hm s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
-    ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
+    ∀ᵐ ω ∂μ, (μ⟦t|m⟧) ω = 0 ∨ (μ⟦t|m⟧) ω = 1 :=
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atTop_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
 
@@ -340,7 +344,7 @@ conditionally independent sequence of sub-σ-algebras has conditional probabilit
 theorem condExp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ] (h_le : ∀ n, s n ≤ m0)
     (h_indep : iCondIndep m hm s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atBot] t) :
-    ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
+    ∀ᵐ ω ∂μ, (μ⟦t|m⟧) ω = 0 ∨ (μ⟦t|m⟧) ω = 1 :=
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atBot_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
 

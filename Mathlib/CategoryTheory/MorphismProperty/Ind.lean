@@ -3,11 +3,13 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Comma.LocallySmall
-import Mathlib.CategoryTheory.Limits.Preserves.Over
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.ObjectProperty.Ind
+module
+
+public import Mathlib.CategoryTheory.Comma.LocallySmall
+public import Mathlib.CategoryTheory.Limits.Preserves.Over
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.ObjectProperty.Ind
 
 /-!
 # Ind and pro-properties
@@ -32,6 +34,8 @@ We show that `ind P` inherits stability properties from `P`.
 - Dualise to obtain `pro P`.
 - Show `ind P` is stable under composition if `P` spreads out (Christian).
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -126,5 +130,23 @@ lemma ind_ind (hp : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
   have : P.underObj ≤ ObjectProperty.isFinitelyPresentable.{w} (Under X) := fun f hf ↦ hp _ hf
   simpa [ind_iff_ind_underMk, underObj_ind_eq_ind_underObj,
     ObjectProperty.ind_ind.{w} this] using hf
+
+lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C) {X Y : C} (f : X ⟶ Y)
+    [IsFinitelyAccessibleCategory.{w} (Under X)] :
+    ind.{w} P f ↔ ∀ {Z : C} (p : X ⟶ Z) (g : Z ⟶ Y),
+      isFinitelyPresentable.{w} _ p → p ≫ g = f →
+      ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ Y), u ≫ v = g ∧ P (p ≫ u) := by
+  rw [ind_iff_ind_underMk, ObjectProperty.ind_iff_exists]
+  · refine ⟨fun H Z p g hp hpg ↦ ?_, fun H Z g hZ ↦ ?_⟩
+    · have : IsFinitelyPresentable (CategoryTheory.Under.mk p) := hp
+      obtain ⟨W, u, v, huv, hW⟩ := H (CategoryTheory.Under.homMk (U := CategoryTheory.Under.mk p)
+        (V := CategoryTheory.Under.mk f) g hpg)
+      use W.right, u.right, v.right, congr($(huv).right)
+      rwa [show p ≫ u.right = W.hom from CategoryTheory.Under.w u]
+    · obtain ⟨W, u, v, huv, hW⟩ := H Z.hom g.right hZ (CategoryTheory.Under.w g)
+      exact ⟨CategoryTheory.Under.mk (Z.hom ≫ u), CategoryTheory.Under.homMk u,
+          CategoryTheory.Under.homMk v, by ext; simpa, hW⟩
+  · intro Y hY
+    exact H _ hY
 
 end CategoryTheory.MorphismProperty

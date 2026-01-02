@@ -3,13 +3,17 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Sums.Basic
+module
+
+public import Mathlib.CategoryTheory.Sums.Basic
 
 /-!
 # Associator for binary disjoint union of categories.
 
 The associator functor `((C ⊕ D) ⊕ E) ⥤ (C ⊕ (D ⊕ E))` and its inverse form an equivalence.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃

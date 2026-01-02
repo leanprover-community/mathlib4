@@ -3,9 +3,11 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Rigid (autonomous) monoidal categories
@@ -56,6 +58,8 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 rigid category, monoidal category
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory MonoidalCategory
@@ -359,7 +363,7 @@ This has to be a definition rather than an instance to avoid diamonds, for examp
 `category_theory.monoidal_closed.functor_closed` and
 `CategoryTheory.Monoidal.functorHasLeftDual`. Moreover, in concrete applications there is often
 a more useful definition of the internal hom object than `ᘁY ⊗ X`, in which case the closed
-structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`, it is more
+structure shouldn't come from `HasLeftDual` (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/

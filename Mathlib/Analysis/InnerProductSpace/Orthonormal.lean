@@ -3,10 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Orthonormal sets
@@ -24,6 +25,8 @@ This file defines orthonormal sets in inner product spaces.
 For the existence of orthonormal bases, Hilbert bases, etc., see the file
 `Analysis.InnerProductSpace.projection`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -84,7 +87,8 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
   · intro h
     constructor
     · intro i
-      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by simp [@norm_sq_eq_re_inner 𝕜, h i i]
+      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by
+        rw [@norm_sq_eq_re_inner 𝕜, h i i]; simp
       have h₁ : 0 ≤ ‖v i‖ := norm_nonneg _
       have h₂ : (0 : ℝ) ≤ 1 := zero_le_one
       rwa [sq_eq_sq₀ h₁ h₂] at h'
@@ -222,7 +226,7 @@ theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Or
       neg_eq_zero] using hv
 
 /- The material that follows, culminating in the existence of a maximal orthonormal subset, is
-adapted from the corresponding development of the theory of linearly independents sets.  See
+adapted from the corresponding development of the theory of linearly independent sets. See
 `exists_linearIndependent` in particular. -/
 variable (𝕜 E)
 
