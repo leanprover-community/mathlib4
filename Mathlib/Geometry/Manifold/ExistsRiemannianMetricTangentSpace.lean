@@ -1283,7 +1283,14 @@ lemma g_global_bilin_1_smooth (f : SmoothPartitionOfUnity B IB B)
         exact this
       · have : ∀ y ∈ (fun x ↦ (extChartAt IB x).source) i,
           TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) y ((fun i b ↦ (g_bilin_1 (IB := IB) i b).snd) i y) =
-          g_bilin_1 (IB := IB) i y := by exact sorry
+          g_bilin_1 (IB := IB) i y := by
+          unfold g_bilin_1
+          intro y hy
+          simp
+          split_ifs with hh1
+          · rw [if_pos hh1]
+            exact rfl
+          · rw [if_neg hh1]
         exact this)
   exact h1
 
