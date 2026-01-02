@@ -428,7 +428,7 @@ variable (k G) in
 abbrev free : Rep k G :=
   Rep.of (V := (α →₀ G →₀ k)) (Representation.free k G α)
 
-variable {α} [DecidableEq α]
+variable {α}
 
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
@@ -462,7 +462,6 @@ def freeLiftLEquiv :
 
 variable {A}
 
-omit [DecidableEq α] in
 @[ext]
 lemma free_ext (f g : free k G α ⟶ A)
     (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g := by
@@ -511,6 +510,8 @@ def leftRegularTensorTrivialIsoFree :
         simp [Action_ρ_eq_ρ, tensorObj_carrier, ModuleCat.endRingEquiv]
 
 variable {α}
+
+omit [DecidableEq α]
 
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
@@ -584,8 +585,6 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
   · intro a b x _ _ hx
     simpa [-Action.tensorObj_V, map_add, hx, TensorProduct.add_tmul] using
       diagonalSuccIsoTensorTrivial_inv_hom_single_single ..
-
-variable [DecidableEq (Fin n → G)]
 
 variable (k G n) in
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is

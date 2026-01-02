@@ -96,7 +96,7 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
       ext
       simp [Finset.smul_sum, ← smul_assoc, mul_comm r] }
 
-variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+variable [Group G] (A : Rep k G) (n : ℕ)
 
 theorem d_eq :
     d A n =
@@ -141,7 +141,7 @@ theorem inhomogeneousCochains.d_comp_d :
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousCochainsIso [DecidableEq G] :
+def inhomogeneousCochainsIso :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
     (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
@@ -197,7 +197,7 @@ theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
-def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
+def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm
@@ -205,7 +205,7 @@ def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hⁿ(Hom(P, A))`, where `P` is any projective resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
-def groupCohomologyIso [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+def groupCohomologyIso [Group G] (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupCohomology A n ≅ (P.complex.linearYonedaObj k A).homology n :=
   groupCohomologyIsoExt A n ≪≫ P.isoExt _ _

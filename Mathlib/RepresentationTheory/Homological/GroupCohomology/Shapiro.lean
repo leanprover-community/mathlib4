@@ -53,7 +53,7 @@ noncomputable def linearYonedaObjResProjectiveResolutionIso
 
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hⁿ(G, Coind_S^G(A)) ≅ Hⁿ(S, A).` -/
-noncomputable def coindIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
+noncomputable def coindIso (A : Rep k S) (n : ℕ) :
     groupCohomology (coind S.subtype A) n ≅ groupCohomology A n :=
   (HomologicalComplex.homologyFunctor _ _ _).mapIso
     (inhomogeneousCochainsIso (coind S.subtype A) ≪≫

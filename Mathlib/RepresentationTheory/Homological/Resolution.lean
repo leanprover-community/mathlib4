@@ -312,7 +312,6 @@ namespace barComplex
 
 open Rep Finsupp
 
-variable [DecidableEq G]
 variable (n)
 
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
@@ -343,8 +342,6 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
 end barComplex
 
 open barComplex
-
-variable [DecidableEq G]
 
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
