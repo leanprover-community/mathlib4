@@ -130,9 +130,7 @@ public theorem support_singularValues
 @[simp]
 theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
   apply singularValues_le_rank
-  have : Module.finrank 𝕜 (range (0 : E →ₗ[𝕜] F)) = 0 := by
-    simp [LinearMap.range_zero]
-  omega
+  trans 0 <;> simp
 
 /--
 Use `LinearMap.singularValues_of_finrank_le` for the rest of the characterization of the singular
