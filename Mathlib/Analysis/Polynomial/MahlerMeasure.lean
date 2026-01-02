@@ -351,8 +351,8 @@ lemma mahlerMeasure'_mul (f g : A[X]) :
   unfold mahlerMeasure'
   rw [Polynomial.map_mul, mahlerMeasure_mul]
 
-lemma mahlerMeasure'_nonneg : 0 ≤ p.mahlerMeasure' v := by
-  exact Polynomial.mahlerMeasure_nonneg _
+lemma mahlerMeasure'_nonneg : 0 ≤ p.mahlerMeasure' v :=
+  Polynomial.mahlerMeasure_nonneg _
 
 @[simp]
 lemma mahlerMeasure'_zero : (0 : A[X]).mahlerMeasure' v = 0 := by
