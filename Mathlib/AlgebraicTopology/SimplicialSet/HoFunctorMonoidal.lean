@@ -313,7 +313,7 @@ lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
   rfl
 
 lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
-    CategoryTheory.Prod.fst _ _ = (Functor.prod (𝟭 _) (isoTerminal Y).inv.toFunctor) ⋙
+    CategoryTheory.Prod.fst _ _ = Functor.prod (𝟭 _) (isoTerminal Y).inv.toFunctor ⋙
       inverse X Y ⋙ mapHomotopyCategory (fst _ _) := by
   rw [inverse_comp_mapHomotopyCategory_fst]
   rfl
