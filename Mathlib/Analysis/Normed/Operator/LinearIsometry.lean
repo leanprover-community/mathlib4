@@ -877,10 +877,10 @@ theorem nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ :=
   _root_.nnnorm_map e x
 
 theorem dist_map (x y : E) : dist (e x) (e y) = dist x y :=
-  IsometryClass.dist_map f x y
+  IsometryClass.dist_map e x y
 
 theorem edist_map (x y : E) : edist (e x) (e y) = edist x y :=
-  IsometryClass.edist_map f x y
+  IsometryClass.edist_map e x y
 
 protected theorem bijective : Bijective e :=
   e.1.bijective
