@@ -578,20 +578,15 @@ theorem order_lt_iff_exists [Zero Γ] {x : R⟦Γ⟧} {i : Γ} (h : x ≠ 0) :
 
 variable [LocallyFiniteOrder Γ]
 
-theorem isPWO_support_of_bddBelow {f : Γ → R} (hf : BddBelow (Function.support f)) :
-    (Function.support f).IsPWO :=
-  hf.isWF.isPWO
-
-@[deprecated isPWO_support_of_bddBelow (since := "2026-01-02")]
+@[deprecated BddBelow.isWF (since := "2026-01-02")]
 theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO :=
   hf.isWF.isPWO
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
-def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ where
-  coeff := f
-  isPWO_support' := isPWO_support_of_bddBelow hf
+def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ :=
+  ⟨f, hf.isWF.isPWO⟩
 
 @[simp]
 theorem ofSuppBddBelow_zero [Nonempty Γ] : ofSuppBddBelow 0 (by simp) = (0 : R⟦Γ⟧) :=
