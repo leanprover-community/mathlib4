@@ -71,8 +71,7 @@ section Degrees
 lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
     degrees (p * q) = degrees p + degrees q := by
   classical
-  apply Multiset.ext'
-  intro s
+  ext s
   simp_rw [Multiset.count_add, ← degreeOf_def, degreeOf_mul_eq hp hq]
 
 end Degrees
