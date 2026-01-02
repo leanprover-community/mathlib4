@@ -571,7 +571,7 @@ theorem isBigO_logb_const_mul_log_atTop (c : ℝ) : (logb b ∘ (c * ·)) =O[atT
     exact isBigO_log_const_mul_log_atTop c
 
 theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (logb b ∘ (· * c)) =O[atTop] log := by
-  conv_lhs => { ext x; rw [Function.comp_apply, mul_comm] }
+  conv_lhs => ext x; rw [Function.comp_apply, mul_comm]
   exact isBigO_logb_const_mul_log_atTop c
 
 end Real
