@@ -20,6 +20,7 @@ public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.Algebra.Ring.Subring.IntPolynomial
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
+public import Mathlib.NumberTheory.Padics.ProperSpace
 
 /-!
 # Finite places of number fields
@@ -749,7 +750,7 @@ instance instFiniteIntegers [w.asIdeal.LiesOver v.asIdeal] :
 instance : IsDiscreteValuationRing (Valued.integer (v.adicCompletion K)) :=
   inferInstanceAs (IsDiscreteValuationRing (v.adicCompletionIntegers K))
 
-open Valued integer in
+open Valued integer Rat.HeightOneSpectrum in
 theorem compact_adicCompletionIntegers :
     CompactSpace (v.adicCompletionIntegers K) := by
   apply CompactSpace.mk
@@ -759,7 +760,7 @@ theorem compact_adicCompletionIntegers :
     obtain ⟨𝔭, _⟩ := exists_liesOver (𝓞 ℚ) _ v
     have : Finite (IsLocalRing.ResidueField (𝔭.adicCompletionIntegers ℚ)) := by
       have : CompactSpace (𝔭.adicCompletionIntegers ℚ) :=
-        𝔭.adicCompletionIntegersEquivPadicInt.toHomeomorph.symm.compactSpace
+        (adicCompletionIntegers.padicIntEquiv 𝔭).toHomeomorph.symm.compactSpace
       erw [compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField]
         at this
       exact this.2.2
