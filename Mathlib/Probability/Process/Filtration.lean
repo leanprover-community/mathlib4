@@ -256,7 +256,7 @@ open scoped Classical in
 - Otherwise, `𝓕₊ i := ⨅ j > i, 𝓕 j`.
 It is sometimes simply defined as `𝓕₊ i := ⨅ j > i, 𝓕 j` when the index type is `ℝ`. In the
 general case this is not ideal however. If `i` is maximal for instance, then `𝓕₊ i = ⊤`, which
-is inconvenient because `𝓕₊` is not  a `Filtration ι m` anymore. If the index type
+is inconvenient because `𝓕₊` is not a `Filtration ι m` anymore. If the index type
 is discrete (such as `ℕ`), then we would have `𝓕 = 𝓕₊` (i.e. `𝓕` is right-continuous) only if
 `𝓕` is constant.
 
@@ -264,13 +264,12 @@ To avoid requiring a `TopologicalSpace` instance on `ι` in the definition, we e
 the order topology `Preorder.topology` inside the definition. Say you write a statement about
 `𝓕₊` which does not require a `TopologicalSpace` structure on `ι`,
 but you wish to use a statement which requires a topology (such as `rightCont_def`).
-Then you can endow `ι` with
-the order topology by writing
+Then you can endow `ι` with the order topology by writing
 ```lean
   letI := Preorder.topology ι
   haveI : OrderTopology ι := ⟨rfl⟩
 ``` -/
-noncomputable def rightCont [PartialOrder ι] (𝓕 : Filtration ι m) : Filtration ι m :=
+noncomputable irreducible_def rightCont [PartialOrder ι] (𝓕 : Filtration ι m) : Filtration ι m :=
   letI : TopologicalSpace ι := Preorder.topology ι
   { seq i := if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i
     mono' i j hij := by
@@ -336,7 +335,7 @@ lemma rightCont_eq_of_not_isMax [LinearOrder ι] [DenselyOrdered ι]
   have : (𝓝[>] i).NeBot := nhdsGT_neBot_of_exists_gt (not_isMax_iff.mp hi)
   exact rightCont_eq_of_neBot_nhdsGT _ _
 
-/-- If `ι` is a densely ordered linear order with no maximal elements, then no point is isolated
+/-- If `ι` is a densely ordered linear order with no maximal element, then no point is isolated
 on the right, so that `𝓕₊ i = ⨅ j > i, 𝓕 j` holds for all `i`. This is in particular the
 case when `ι := ℝ≥0`. -/
 lemma rightCont_eq [LinearOrder ι] [DenselyOrdered ι] [NoMaxOrder ι]
@@ -353,7 +352,7 @@ lemma le_rightCont (𝓕 : Filtration ι m) : 𝓕 ≤ 𝓕₊ := by
     exact le_iInf₂ fun _ he => 𝓕.mono he.le
   · rw [rightCont_def, if_neg hne]
 
-lemma rightCont_self (𝓕 : Filtration ι m) : 𝓕₊₊ = 𝓕₊ := by
+@[simp] lemma rightCont_self (𝓕 : Filtration ι m) : 𝓕₊₊ = 𝓕₊ := by
   letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
   apply le_antisymm _ 𝓕₊.le_rightCont
   intro i
@@ -375,8 +374,8 @@ lemma rightCont_self (𝓕 : Filtration ι m) : 𝓕₊₊ = 𝓕₊ := by
 
 /-- A filtration `𝓕` is right continuous if it is equal to its right continuation `𝓕₊`. -/
 class IsRightContinuous (𝓕 : Filtration ι m) where
-    /-- The right continuity property. -/
-    RC : 𝓕₊ ≤ 𝓕
+  /-- The right continuity property. -/
+  RC : 𝓕₊ ≤ 𝓕
 
 lemma IsRightContinuous.eq {𝓕 : Filtration ι m} [h : IsRightContinuous 𝓕] :
     𝓕 = 𝓕₊ := le_antisymm 𝓕.le_rightCont h.RC
