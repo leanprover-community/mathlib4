@@ -145,15 +145,6 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
       rw [IsSelfAdjoint.star_eq (map_nonneg f (hy_nonneg x)).isSelfAdjoint]
     simp [hy, hy', hy'']
 
-@[coe]
-def toCLM (f : A₁ →ₚ[ℂ] A₂) : A₁ →L[ℂ] A₂ where
-  toFun := f
-  map_add' := by simp
-  map_smul' := by simp
-
-instance : Coe (A₁ →ₚ[ℂ] A₂) (A₁ →L[ℂ] A₂) where
-  coe f := toCLM f
-
 end PositiveLinearMap
 
 end CStarAlgebra
