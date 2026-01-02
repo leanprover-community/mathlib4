@@ -24,6 +24,8 @@ tempered distribution.
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
 map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
+* `TemperedDistribution.mulLeftCLM`: Multiplication with temperate growth function as a continuous
+linear map.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -39,7 +41,7 @@ open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {E F : Type*}
+variable {E F F₁ F₂ : Type*}
 
 section definition
 
@@ -173,6 +175,15 @@ instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     CoeDep (Lp F p μ) f 𝓢'(E, F) where
   coe := toTemperedDistribution f
 
+@[simp]
+theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
+    (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
+  ext g
+  simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
+  apply integral_congr_ae
+  filter_upwards [f.coeFn_toLp p μ] with x hf
+  rw [hf]
+
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
@@ -196,8 +207,8 @@ theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (
 variable [FiniteDimensional ℝ E] [IsLocallyFiniteMeasure μ]
 
 theorem ker_toTemperedDistributionCLM_eq_bot {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
-    LinearMap.ker (MeasureTheory.Lp.toTemperedDistributionCLM F μ p) = ⊥ := by
-  rw [LinearMap.ker_eq_bot']
+    (MeasureTheory.Lp.toTemperedDistributionCLM F μ p).ker = ⊥ := by
+  rw [LinearMap.ker_eq_bot', ContinuousLinearMap.coe_coe]
   intro f hf
   rw [eq_zero_iff_ae_eq_zero]
   apply ae_eq_zero_of_integral_contDiff_smul_eq_zero
@@ -214,6 +225,39 @@ end MeasureTheory.Lp
 end Embeddings
 
 namespace TemperedDistribution
+
+section Multiplication
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℂ F]
+
+variable (F) in
+/-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`. -/
+def smulLeftCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  PointwiseConvergenceCLM.precomp _ (SchwartzMap.smulLeftCLM ℂ g)
+
+@[simp]
+theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, ℂ)) :
+    smulLeftCLM F g f f' = f (SchwartzMap.smulLeftCLM ℂ g f') := by
+  rfl
+
+@[simp]
+theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦  c) f = c • f := by
+  ext1; simp
+
+@[simp]
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
+    smulLeftCLM F g₂ (smulLeftCLM F g₁ f) = smulLeftCLM F (g₁ * g₂) f := by
+  ext; simp [hg₁, hg₂]
+
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F g₂ ∘L smulLeftCLM F g₁ = smulLeftCLM F (g₁ * g₂) := by
+  ext1 f
+  simp [hg₁, hg₂]
+
+end Multiplication
 
 /-! ### Fourier transform -/
 
@@ -260,6 +304,25 @@ instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
 
 instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
+
+variable [CompleteSpace F]
+
+/-- The distributional Fourier transform and the classical Fourier transform coincide on
+`𝓢(E, F)`. -/
+theorem fourierTransform_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕 (f : 𝓢'(E, F)) = 𝓕 f := by
+  ext g
+  simpa using integral_fourier_smul_eq g f
+
+/-- The distributional inverse Fourier transform and the classical inverse Fourier transform
+coincide on `𝓢(E, F)`. -/
+theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    𝓕⁻ (f : 𝓢'(E, F)) = 𝓕⁻ f := calc
+  _ = 𝓕⁻ (toTemperedDistributionCLM E F volume (𝓕 (𝓕⁻ f))) := by
+    congr; exact (fourier_fourierInv_eq f).symm
+  _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
+    rw [fourierTransform_toTemperedDistributionCLM_eq]
+  _ = _ := fourierInv_fourier_eq _
 
 end Fourier
 

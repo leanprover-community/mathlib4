@@ -63,12 +63,6 @@ theorem meas_ge_le_mul_pow_eLpNorm_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p �
       ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
     exact mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top hf ε
 
-@[deprecated meas_ge_le_mul_pow_eLpNorm_enorm (since := "2025-05-01")]
-theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    {f : α → E} (hf : AEStronglyMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    μ { x | ε ≤ ‖f x‖₊ } ≤ ε⁻¹ ^ p.toReal * eLpNorm f p μ ^ p.toReal :=
-  meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top hf hε (by simp)
-
 theorem MemLp.meas_ge_lt_top'_enorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) (hε' : ε = ∞ → μ {x | ‖f x‖ₑ = ⊤} = 0) :
