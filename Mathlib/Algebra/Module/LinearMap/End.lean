@@ -6,6 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
+public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
@@ -176,6 +177,15 @@ theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjectiv
     Surjective f' := by
   rw [← Nat.succ_pred_eq_of_pos (Nat.pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
+
+/-- Scalar multiplication on the left, as a linear map. -/
+@[simps] def smulLeft (α : R) (hα : α ∈ Set.center R) : End R M where
+  toFun x := α • x
+  map_add' := smul_add _
+  map_smul' β _ := by simp [smul_smul, ((Set.mem_center_iff.mp hα).comm β).eq]
+
+@[simp] lemma smulLeft_eq {R : Type*} [CommSemiring R] [Module R M] (α : R)
+    (hα : α ∈ Set.center R := by simp) : smulLeft α hα = α • .id (M := M) := rfl
 
 end
 
