@@ -732,8 +732,8 @@ theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
 A version of `MonoidHom.restrict` as an homomorphism.
 -/
 @[to_additive (attr := simps apply) /--A version of `AddMonoidHom.restrict` as an homomorphism. -/]
-def restrictHom (A : Type*) {S : Type*} [CommMonoid A] [SetLike S M] [SubmonoidClass S M]
-    (M' : S) : (M →* A) →* (M' →* A) where
+def restrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
+    [CommMonoid A] : (M →* A) →* (M' →* A) where
   toFun f := f.restrict M'
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp

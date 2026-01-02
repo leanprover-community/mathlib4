@@ -89,8 +89,8 @@ Let `G` be a finite commutative group and let `H` be a subgroup. If `M` is a com
 such that `G →* Mˣ` and `H →* Mˣ` are both finite (this is the case for example if `M` is a
 commutative domain), then any homomorphism `H →* Mˣ` can be extended to an homomorphism `G →* Mˣ`.
 -/
-theorem MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* Mˣ)] [Finite (H →* Mˣ)] :
-    Function.Surjective (MonoidHom.restrictHom Mˣ H) := by
+theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* Mˣ)]
+    [Finite (H →* Mˣ)] : Function.Surjective (MonoidHom.restrictHom H Mˣ) := by
   have : Fintype H := Fintype.ofFinite H
   have : HasEnoughRootsOfUnity M (Monoid.exponent H) :=
     hM.of_dvd M <| Monoid.exponent_dvd_of_submonoid H.toSubmonoid
