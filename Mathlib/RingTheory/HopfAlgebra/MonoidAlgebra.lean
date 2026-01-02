@@ -36,15 +36,17 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [Group G]
 
 variable (R A G) in
+@[to_additive (dont_translate := R) (relevant_arg := G)]
 instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
   antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma antipode_single (g : G) (a : A) :
     antipode R (single g a) = single g⁻¹ (antipode R a) := by
   simp [MonoidAlgebra, antipode]
 
 open Coalgebra in
+@[to_additive (dont_translate := R A) (relevant_arg := G)]
 instance instHopfAlgebra : HopfAlgebra R A[G] where
   mul_antipode_rTensor_comul := by
     ext a b : 2
@@ -56,33 +58,6 @@ instance instHopfAlgebra : HopfAlgebra R A[G] where
       $(sum_mul_antipode_eq_algebraMap_counit (ℛ R b)))
 
 end MonoidAlgebra
-
-namespace AddMonoidAlgebra
-
-variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
-variable {G : Type*} [AddGroup G]
-
-variable (R A G) in
-instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
-  antipode := Finsupp.lsum R fun g => Finsupp.lsingle (-g) ∘ₗ antipode R
-
-@[simp]
-lemma antipode_single (g : G) (a : A) :
-    antipode R (single g a) = single (-g) (antipode R a) := by
-  simp [AddMonoidAlgebra, antipode]
-
-open Coalgebra in
-instance instHopfAlgebra : HopfAlgebra R A[G] where
-  mul_antipode_rTensor_comul := by
-    ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single] using congr(lsingle (R := R) (0 : G)
-      $(sum_antipode_mul_eq_algebraMap_counit (ℛ R b)))
-  mul_antipode_lTensor_comul := by
-    ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single] using congr(lsingle (R := R) (0 : G)
-      $(sum_mul_antipode_eq_algebraMap_counit (ℛ R b)))
-
-end AddMonoidAlgebra
 
 namespace LaurentPolynomial
 
