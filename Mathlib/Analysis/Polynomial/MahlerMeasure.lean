@@ -394,9 +394,7 @@ lemma leadingCoeff_le_mahlerMeasure' :
 variable {p} in
 lemma Monic.one_le_mahlerMeasure' [NormOneClass A] (hp : p.Monic) :
     1 ≤ p.mahlerMeasure' v := by
-  calc 1 = ‖(1 : A)‖ := norm_one.symm
-    _ = ‖p.leadingCoeff‖ := by rw [hp.leadingCoeff]
-    _ ≤ p.mahlerMeasure' v := p.leadingCoeff_le_mahlerMeasure' _
+  grw [← p.leadingCoeff_le_mahlerMeasure' _, hp.leadingCoeff, norm_one]
 
 variable {p} in
 theorem mahlerMeasure'_pos_of_ne_zero (hp : p ≠ 0) : 0 < p.mahlerMeasure' v := by
