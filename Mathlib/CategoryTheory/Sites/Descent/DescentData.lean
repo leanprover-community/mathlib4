@@ -427,6 +427,7 @@ lemma isEquivalence_toDescentData_iff_of_sieve_eq
 identify to compatible families of sections of the presheaf `F.presheafHom M N` on
 the object `Over.mk (𝟙 S)`, relatively to the family of morphisms in `Over S`
 corresponding to the family `f`. -/
+@[simps!]
 def subtypeCompatibleHomEquiv {M N : F.obj (.mk (op S))} :
     Subtype (Presieve.Arrows.Compatible (F.presheafHom M N)
       (X := fun i ↦ Over.mk (f i)) (B := Over.mk (𝟙 S)) (fun i ↦ Over.homMk (f i))) ≃
