@@ -66,12 +66,6 @@ theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 
   · simp_rw [insert_eq_of_mem hm]
   · rw [prod_insert hm, h hm, one_mul]
 
-@[deprecated (since := "2025-05-23")]
-alias sum_insert_of_eq_zero_if_not_mem := sum_insert_of_eq_zero_if_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias prod_insert_of_eq_one_if_not_mem := prod_insert_of_eq_one_if_notMem
-
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/
 @[to_additive /-- The sum of `f` over `insert a s` is the same as
@@ -205,12 +199,6 @@ theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
-
-@[deprecated (since := "2025-06-11")]
-alias sum_disj_sum := sum_disjSum
-
-@[to_additive existing, deprecated (since := "2025-06-11")]
-alias prod_disj_sum := prod_disjSum
 
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
@@ -522,10 +510,8 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
 
 @[to_additive]
 theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s, f a ≠ 1 := by
-  classical
-    rw [← prod_filter_ne_one] at h
-    rcases nonempty_of_prod_ne_one h with ⟨x, hx⟩
-    exact ⟨x, (mem_filter.1 hx).1, by simpa using (mem_filter.1 hx).2⟩
+  contrapose! h
+  exact prod_eq_one h
 
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
