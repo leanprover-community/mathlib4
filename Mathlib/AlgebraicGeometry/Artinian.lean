@@ -91,7 +91,7 @@ theorem IsNoetherianRing.discreteTopololgy_of_isArtinianRing
   isArtinianRing_iff_krullDimLE_zero.mpr
     (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp h).2
 
-lemma IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero
+lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     {X : Scheme} [IsLocallyNoetherian X] (h : topologicalKrullDim X ≤ 0) :
     IsLocallyArtinian X := by
   refine { isArtinianRing_presheaf_obj := ?_ }
