@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
@@ -179,10 +180,12 @@ theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjectiv
   exact Surjective.of_comp h
 
 /-- Scalar multiplication on the left, as a linear map. -/
-@[simps] def smulLeft (α : R) (hα : α ∈ Set.center R) : End R M where
-  toFun x := α • x
-  map_add' := smul_add _
-  map_smul' β x := by simp [smul_smul, ((Set.mem_center_iff.mp hα).comm β).eq]
+@[simps!] def smulLeft (α : R) (hα : α ∈ Set.center R) : End R M where
+  __ := AddMonoidHom.smulLeft α
+  map_smul' β _ := by simp [smul_smul, ((Set.mem_center_iff.mp hα).comm β).eq]
+
+@[simp] lemma toAddMonoidHom_smulLeft (α : R) (hα : α ∈ Set.center R) :
+    (smulLeft α hα (M := M)).toAddMonoidHom = AddMonoidHom.smulLeft α := rfl
 
 @[simp] lemma smulLeft_eq {R : Type*} [CommSemiring R] [Module R M] (α : R)
     (hα : α ∈ Set.center R := by simp) : smulLeft α hα = α • .id (M := M) := rfl
