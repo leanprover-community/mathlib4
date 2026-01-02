@@ -384,11 +384,11 @@ theorem exists_of_rankOne_eq_rankOne {a c : H} {b d : I}
   have h₂ := rankOne_eq_rankOne_iff_comm.mp h
   simp only [ContinuousLinearMap.ext_iff, rankOne_apply] at h h₂
   have h₃ := calc
-    a = (⟪b, b⟫_𝕜 / ⟪b, b⟫_𝕜) • a := by rw [div_self, one_smul]; simpa
+    a = (⟪b, b⟫_𝕜 / ⟪b, b⟫_𝕜) • a := by simp_all
     _ = (1 / ⟪b, b⟫_𝕜) • (⟪b, b⟫_𝕜 • a) := by simp only [smul_smul]; ring_nf
     _ = (⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) • c := by simp only [h, smul_smul]; ring_nf
   have h₄ := calc
-    b = (⟪a, a⟫_𝕜 / ⟪a, a⟫_𝕜) • b := by rw [div_self (by simpa), one_smul]
+    b = (⟪a, a⟫_𝕜 / ⟪a, a⟫_𝕜) • b := by simp_all
     _ = (1 / ⟪a, a⟫_𝕜) • (⟪a, a⟫_𝕜 • b) := by simp only [smul_smul]; ring_nf
     _ = ((⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) * (⟪c, c⟫_𝕜 / (⟪a, a⟫_𝕜))) • d := by
       simp_rw [h₂, h₃, inner_smul_right, smul_smul]; ring_nf
