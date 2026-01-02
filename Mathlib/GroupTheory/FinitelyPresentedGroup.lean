@@ -77,7 +77,7 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
         constructor
         · intro hx
           use iso x, hx
-          simp
+          simp only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe, MulEquiv.symm_apply_apply]
         · intro ⟨y, hy, hyx⟩
           rw [← hyx]
           simpa using hy
