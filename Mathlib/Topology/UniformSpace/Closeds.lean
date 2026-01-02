@@ -230,6 +230,18 @@ theorem isUniformInducing_closure : IsUniformInducing (closure (X := α)) := by
 theorem nhds_closure (s : Set α) : 𝓝 (closure s) = 𝓝 s := by
   simp_rw +singlePass [isUniformInducing_closure.isInducing.nhds_eq_comap, closure_closure]
 
+theorem isClosed_setOf_totallyBounded : IsClosed {s : Set α | TotallyBounded s} := by
+  simp_rw [isClosed_iff_frequently, nhds_eq_comap_uniformity]
+  intro s hs U hU
+  obtain ⟨V : SetRel α α, hV, hVU⟩ := comp_mem_uniformity_sets hU
+  rw [(𝓤 α).basis_sets.uniformity_hausdorff.comap _ |>.frequently_iff] at hs
+  obtain ⟨t, ⟨hst : s ⊆ V.preimage t, -⟩, ht⟩ := hs V hV
+  obtain ⟨u, hu, htu⟩ := ht V hV
+  refine ⟨u, hu, ?_⟩
+  grw [hst, htu, ← hVU]
+  simp [Set.subset_def]
+  grind
+
 instance [DiscreteUniformity α] : DiscreteUniformity (Set α) := by
   rw [discreteUniformity_iff_setRelId_mem_uniformity]
   convert Filter.mem_lift' (DiscreteUniformity.relId_mem_uniformity α)
@@ -346,6 +358,9 @@ theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBound
     TotallyBounded {F : Closeds α | ↑F ⊆ t} :=
   totallyBounded_preimage isUniformEmbedding_coe.isUniformInducing ht.powerset_hausdorff
 
+theorem isClosed_setOf_totallyBounded : IsClosed {s : Closeds α | TotallyBounded (s : Set α)} :=
+  UniformSpace.hausdorff.isClosed_setOf_totallyBounded.preimage uniformContinuous_coe.continuous
+
 instance [DiscreteUniformity α] : DiscreteUniformity (Closeds α) :=
   isUniformEmbedding_coe.discreteUniformity
 
@@ -455,6 +470,16 @@ theorem isEmbedding_toCloseds [T2Space α] : IsEmbedding (toCloseds (α := α)) 
 theorem continuous_toCloseds [T2Space α] : Continuous (toCloseds (α := α)) :=
   uniformContinuous_toCloseds.continuous
 
+@[fun_prop]
+theorem isClosedEmbedding_toCloseds [T2Space α] [CompleteSpace α] :
+    IsClosedEmbedding (toCloseds (α := α)) where
+  __ := isEmbedding_toCloseds
+  isClosed_range := by
+    convert Closeds.isClosed_setOf_totallyBounded
+    exact subset_antisymm
+      (Set.range_subset_iff.mpr fun K => K.isCompact.totallyBounded)
+      (fun K hK => ⟨⟨K, hK.isCompact_of_isClosed K.isClosed⟩, rfl⟩)
+
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
     TotallyBounded {K : Compacts α | ↑K ⊆ t} :=
   totallyBounded_preimage isUniformEmbedding_coe.isUniformInducing ht.powerset_hausdorff
@@ -536,6 +561,11 @@ theorem isEmbedding_toCloseds [T2Space α] : IsEmbedding (toCloseds (α := α)) 
 @[fun_prop]
 theorem continuous_toCloseds [T2Space α] : Continuous (toCloseds (α := α)) :=
   uniformContinuous_toCloseds.continuous
+
+@[fun_prop]
+theorem isClosedEmbedding_toCloseds [T2Space α] [CompleteSpace α] :
+    IsClosedEmbedding (toCloseds (α := α)) :=
+  Compacts.isClosedEmbedding_toCloseds.comp isClosedEmbedding_toCompacts
 
 theorem isUniformEmbedding_toCompacts : IsUniformEmbedding (toCompacts (α := α)) where
   injective := toCompacts_injective
