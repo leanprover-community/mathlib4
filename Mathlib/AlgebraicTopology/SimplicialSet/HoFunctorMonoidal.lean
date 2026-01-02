@@ -114,14 +114,14 @@ def isoTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X 
     Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal :=
   IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
 
+namespace BinaryProduct
+
 lemma square {X Y : Truncated.{u} 2}
     {x₀ x₁ : X _⦋0⦌₂} (ex : Edge x₀ x₁) {y₀ y₁ : Y _⦋0⦌₂} (ey : Edge y₀ y₁) :
     homMk (ex.tensor (.id y₀)) ≫ homMk (Edge.tensor (.id x₁) ey) =
       homMk (Edge.tensor (.id x₀) ey) ≫ homMk (ex.tensor (.id y₁)) := by
   rw [homMk_comp_homMk ((Edge.CompStruct.idComp ex).tensor (Edge.CompStruct.compId ey)),
     homMk_comp_homMk ((Edge.CompStruct.compId ex).tensor (Edge.CompStruct.idComp ey))]
-
-namespace BinaryProduct
 
 variable {X X' Y Y' Z : Truncated.{u} 2}
 
@@ -320,7 +320,6 @@ lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
 
 variable (Z)
 
-set_option maxHeartbeats 800000 in -- this is slow
 /-- Auxiliary defininition for `associativityIso`. -/
 def associativity'Iso :
     (prod.associativity ..).inverse ⋙ (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙
