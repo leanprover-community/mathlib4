@@ -196,10 +196,7 @@ variable (X Y) in
 /-- Auxiliary definition for `equivalence`. -/
 def inverseCompFunctorIso : inverse X Y ⋙ functor X Y ≅ 𝟭 _ :=
   Functor.fullyFaithfulCurry.preimageIso
-    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)
-      (fun y₀ y₁ e ↦ by
-        dsimp
-        cat_disch))
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _))
       (fun x₀ x₁ e ↦ by
         ext y : 2
         obtain ⟨y, rfl⟩ := y.mk_surjective
