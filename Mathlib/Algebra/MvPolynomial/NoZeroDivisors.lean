@@ -130,9 +130,8 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p)
       Polynomial.leadingCoeff_C]
     contrapose! hp'
     ext m
-    have h' := congr_arg (coeff m) hp'
-    simp only [coeff_C_mul] at h'
-    exact hc.1 _ h'
+    apply hc.1
+    simpa using congr_arg (coeff m) hp'
 
 end nonZeroDivisors
 
