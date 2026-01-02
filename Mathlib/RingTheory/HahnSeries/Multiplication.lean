@@ -524,7 +524,7 @@ theorem coeff_mul_order_add_order (x y : R⟦Γ⟧) :
   simp only [← of_symm_smul_of_eq_mul]
   exact HahnModule.coeff_smul_order_add_order x y
 
-theorem orderTop_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
+theorem orderTop_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).orderTop = x.orderTop + y.orderTop := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
@@ -537,11 +537,22 @@ theorem orderTop_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadin
     ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
+@[deprecated (since := "2026-01-02")]
+alias orderTop_mul_of_nonzero := orderTop_mul_of_ne_zero
+
+@[simp]
+theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
+    (x * y).orderTop = x.orderTop + y.orderTop := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  apply orderTop_mul_of_ne_zero
+  simp_all
+
 theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
   exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
 
-theorem order_mul_of_nonzero {x y : R⟦Γ⟧}
+theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
   have hx : x.leadingCoeff ≠ 0 := by aesop
   have hy : y.leadingCoeff ≠ 0 := by aesop
@@ -553,9 +564,23 @@ theorem order_mul_of_nonzero {x y : R⟦Γ⟧}
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
-theorem leadingCoeff_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
+@[deprecated (since := "2026-01-02")]
+alias order_mul_of_nonzero := order_mul_of_ne_zero
+
+theorem leadingCoeff_mul_of_ne_zero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
-  simp only [leadingCoeff_eq, order_mul_of_nonzero h, coeff_mul_order_add_order]
+  simp only [leadingCoeff_eq, order_mul_of_ne_zero h, coeff_mul_order_add_order]
+
+@[deprecated (since := "2026-01-02")]
+alias leadingCoeff_mul_of_nonzero := leadingCoeff_mul_of_ne_zero
+
+@[simp]
+theorem leadingCoeff_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
+    (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  apply leadingCoeff_mul_of_ne_zero
+  simp_all
 
 theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
     {x : R⟦Γ⟧} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
@@ -563,7 +588,7 @@ theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
   · exact (hx <| Subsingleton.eq_zero x).elim
   have hrx : ((single g) r).leadingCoeff * x.leadingCoeff ≠ 0 := by
     rwa [leadingCoeff_of_single, ne_eq, hr.left.mul_left_eq_zero_iff, leadingCoeff_eq_zero]
-  rw [order_mul_of_nonzero hrx, order_single <| IsRegular.ne_zero hr]
+  rw [order_mul_of_ne_zero hrx, order_single <| IsRegular.ne_zero hr]
 
 end orderLemmas
 
@@ -664,8 +689,8 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
     · simp_all only [Set.mem_setOf_eq, orderTop_self_sub_one_pos_iff]
       have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
       constructor
-      · rw [Units.val_mul, orderTop_mul_of_nonzero (by simp [h1]), hx.1, hy.1, add_zero]
-      · rw [Units.val_mul, leadingCoeff_mul_of_nonzero (h1 ▸ one_ne_zero), h1]
+      · rw [Units.val_mul, orderTop_mul_of_ne_zero (by simp [h1]), hx.1, hy.1, add_zero]
+      · rw [Units.val_mul, leadingCoeff_mul_of_ne_zero (h1 ▸ one_ne_zero), h1]
   one_mem' := by simp
   inv_mem' {y} h := by
     suffices 0 < (y.inv - 1).orderTop by exact this
@@ -677,8 +702,8 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
         rw [this.2, one_mul]
         exact leadingCoeff_ne_zero.mpr (by simp)
       refine y.inv.orderTop_self_sub_one_pos_iff.mpr ⟨?_, ?_⟩
-      · simpa [this.1, y.val_inv] using (orderTop_mul_of_nonzero nz).symm
-      · simpa [this.2, y.val_inv] using (leadingCoeff_mul_of_nonzero nz).symm
+      · simpa [this.1, y.val_inv] using (orderTop_mul_of_ne_zero nz).symm
+      · simpa [this.2, y.val_inv] using (leadingCoeff_mul_of_ne_zero nz).symm
 
 @[simp]
 theorem mem_orderTopSubOnePos_iff [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
