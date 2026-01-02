@@ -11,12 +11,14 @@ public import Mathlib.Analysis.InnerProductSpace.Adjoint
 /-!
 # The *-homomorphism of the GNS construction
 
-In this file we define the unital ⋆-homomorphism from our C⋆-algebra `A` into the Hilbert space
-`f.GNS_HilbertSpace` that is constructed in Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs.
+In this file we define both the unital and non-unital ⋆-homomorphisms from a C⋆-algebra `A`
+into the algebra of bounded operators on a Hilbert space.
 
 ## Main results
 
-- `f.π` : The unital *-homomorphism from `A` into the bounded linear operators on
+- `f.π` : The non-unital *-homomorphism from a non-unital `A` into the bounded linear operators on
+  `f.GNS_HilbertSpace`.
+- `f.π_unital` : The unital *-homomorphism from a unital `A` into the bounded linear operators on
   `f.GNS_HilbertSpace`.
 
 -/

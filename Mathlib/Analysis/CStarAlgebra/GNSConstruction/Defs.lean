@@ -11,18 +11,15 @@ public import Mathlib.Analysis.InnerProductSpace.Completion
 /-!
 # Definitions of structures for the GNS (Gelfand-Naimark-Segal) construction
 
-In this file we do the "construction" part of the GNS construction. We define a Hilbert space
-as the completion of a quotient of A after we mod out by an appropriately constructed subspace.
-The inner product is induced by a fixed positive linear functional `f`.
-
-Most of the structures, theorems, and definitions in this file should not be referenced directly,
-but they are described below for the sake of clarity and completeness.
+In this file we do the "construction" part of the GNS construction. We construct a Hilbert space
+from an arbitrary C*-algebra so that it is *-isomorphic to a subalgebra of the bounded operators on
+the Hilbert space.
 
 ## Main results
 
 - `f.GNS` : a type synonym of `A` that "forgets" the norm of `A` and bundles in a fixed
   linear functional `f` so that we can construct an inner product and inner product-induced norm.
-- `f.GNS_HilbertSpace` : the Hilbert space that we construct as the completion of `f.GNS_Quotient`.
+- `f.GNS_HilbertSpace` : the Hilbert space completion of `f.GNS`.
 
 -/
 

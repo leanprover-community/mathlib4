@@ -27,6 +27,9 @@ the main constructions deal with continuous group morphisms.
 * `AddMonoidHom.completion`: promotes a continuous group morphism
   from `G` to `H` into a continuous group morphism
   from `Completion G` to `Completion H`.
+* `UniformSpace.Completion.mapCLM`: promotes a continuous semilinear map
+  from `G` to `H` into a continuous semilinear map
+  from `Completion G` to `Completion H`.
 -/
 
 @[expose] public section
@@ -215,8 +218,12 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
 
+/--
+Constructs a continuous semilinear map between completions of `AddCommGroup`s from a continuous
+semilinear map between the `AddCommGroup`s.
+-/
 @[simps]
-noncomputable def mapCLM {R₁ R₂ : Type*} [Semiring R₁] [Module R₁ α]
+def mapCLM {R₁ R₂ : Type*} [Semiring R₁] [Module R₁ α]
   [UniformContinuousConstSMul R₁ α] [Semiring R₂] [UniformSpace β] [AddCommGroup β]
   [IsUniformAddGroup β] [Module R₂ β] [UniformContinuousConstSMul R₂ β] {σ : R₁ →+* R₂}
   (f : α →SL[σ] β) : (Completion α) →SL[σ] (Completion β) where
