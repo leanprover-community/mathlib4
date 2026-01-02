@@ -101,8 +101,7 @@ theorem dvd_C_iff_exists {f : MvPolynomial σ R}
       rw [this, C_dvd_iff_dvd_coeff] at hf
       simpa using hf 0
     apply Nat.eq_zero_of_le_zero
-    convert totalDegree_le_of_dvd_of_isDomain hf (by simp [ha])
-    simp
+    simpa using totalDegree_le_of_dvd_of_isDomain hf (by simp [ha])
   · rintro ⟨b, hab, rfl⟩
     exact map_dvd C hab
 
