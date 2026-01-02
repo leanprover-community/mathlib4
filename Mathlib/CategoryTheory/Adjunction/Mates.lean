@@ -449,7 +449,6 @@ theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
     (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).natTrans =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
-  unfold conjugateEquiv mateEquiv Adjunction.comp
   simp
 
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : TwoSquare U₂ R₂ R₁ U₁) :
@@ -472,7 +471,6 @@ theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ α (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerLeft_comp, assoc, mateEquiv_apply, whiskerLeft_twice,
     Iso.hom_inv_id_assoc, whiskerRight_comp, comp_app, Functor.whiskerLeft_app,
@@ -490,7 +488,6 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) β
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerRight_comp, assoc, mateEquiv_apply, whiskerLeft_comp,
     whiskerLeft_twice, comp_app, Functor.whiskerLeft_app, Functor.whiskerRight_app,

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Circular
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Reducing to an interval modulo its length
@@ -546,9 +547,6 @@ variable {a b}
 theorem modEq_iff_forall_notMem_Ioo_mod :
     a ≡ b [PMOD p] ↔ ∀ z : ℤ, b - z • p ∉ Set.Ioo a (a + p) :=
   (tfae_modEq hp a b).out 0 1
-
-@[deprecated (since := "2025-05-23")]
-alias modEq_iff_not_forall_mem_Ioo_mod := modEq_iff_forall_notMem_Ioo_mod
 
 theorem modEq_iff_toIcoMod_ne_toIocMod : a ≡ b [PMOD p] ↔ toIcoMod hp a b ≠ toIocMod hp a b :=
   (tfae_modEq hp a b).out 0 2
