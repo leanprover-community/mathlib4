@@ -594,17 +594,19 @@ def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ�
   isPWO_support' := isPWO_support_of_bddBelow hf
 
 @[simp]
-theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 (by simp) = (0 : R⟦Γ⟧) :=
+theorem ofSuppBddBelow_zero [Nonempty Γ] : ofSuppBddBelow 0 (by simp) = (0 : R⟦Γ⟧) :=
   rfl
 
-@[simp]
-theorem coeff_ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) :
-    (ofSuppBddBelow f hf).coeff = f :=
-  rfl
+@[deprecated (since := "2026-01-02")]
+alias zero_ofSuppBddBelow := ofSuppBddBelow_zero
 
 @[simp]
 theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔ f = 0 :=
   HahnSeries.ext_iff
+
+@[simp]
+theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff = f :=
+  rfl
 
 set_option linter.deprecated false in
 @[deprecated le_order_iff_forall (since := "2026-01-02")]
