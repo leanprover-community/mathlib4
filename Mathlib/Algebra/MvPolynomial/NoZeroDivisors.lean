@@ -19,7 +19,7 @@ that hold when the coefficient (semi)ring has no zero divisors.
 
 @[expose] public section
 
-open Finset
+open Finset Equiv
 
 variable {R : Type*}
 
@@ -86,7 +86,7 @@ theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     (h : f ∣ g) (hg : g ≠ 0) :
     f.totalDegree ≤ g.totalDegree := by
   obtain ⟨r, rfl⟩ := h
-    rw [totalDegree_mul_of_isDomain (by aesop) (by aesop)]
+  rw [totalDegree_mul_of_isDomain (by aesop) (by aesop)]
   lia
 
 theorem dvd_C_iff_exists {f : MvPolynomial σ R} {a : R} (ha : a ≠ 0) :
