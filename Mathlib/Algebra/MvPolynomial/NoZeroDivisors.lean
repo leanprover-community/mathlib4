@@ -105,7 +105,7 @@ theorem dvd_C_iff_exists {f : MvPolynomial σ R}
     convert totalDegree_le_of_dvd_of_isDomain hf (by simp [ha])
     simp
   · rintro ⟨b, hab, rfl⟩
-    exact _root_.map_dvd C hab
+    exact map_dvd C hab
 
 end NoZeroDivisors
 
