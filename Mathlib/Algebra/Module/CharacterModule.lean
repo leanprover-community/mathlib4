@@ -44,19 +44,21 @@ variable (B : Type uB) [AddCommGroup B]
 The character module of an abelian group `A` in the unit rational circle is `A⋆ := Hom_ℤ(A, ℚ ⧸ ℤ)`.
 -/
 def CharacterModule : Type uA := A →+ AddCircle (1 : ℚ)
+  deriving Zero, Add, Sub, Neg, SMul ℕ, SMul ℤ,
+  FunLike, FunLikeZero, FunLikeAdd, FunLikeSub, FunLikeNeg, FunLikeSMul ℕ, FunLikeSMul ℤ
 
 namespace CharacterModule
 
-instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
+/-instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
-  coe_injective' _ _ _ := by simp_all
+  coe_injective' _ _ _ := by simp_all-/
 
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]
   map_smulₛₗ _ _ _ := by rw [AddMonoidHom.map_zsmul, RingHom.id_apply]
 
-instance : AddCommGroup (CharacterModule A) :=
-  inferInstanceAs (AddCommGroup (A →+ _))
+--instance : AddCommGroup (CharacterModule A) :=
+  --inferInstanceAs (AddCommGroup (A →+ _))
 
 @[ext] theorem ext {c c' : CharacterModule A} (h : ∀ x, c x = c' x) : c = c' := DFunLike.ext _ _ h
 
@@ -118,7 +120,10 @@ Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ 
 @[simps] noncomputable def uncurry :
     (A →ₗ[R] CharacterModule B) →ₗ[R] CharacterModule (A ⊗[R] B) where
   toFun c := TensorProduct.liftAddHom c.toAddMonoidHom fun r a b ↦ congr($(c.map_smul r a) b)
-  map_add' c c' := DFunLike.ext _ _ fun x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
+  map_add' c c' := DFunLike.ext _ _ fun x ↦ by
+    refine x.induction_on (by aesop) (by aesop) (by
+      simp only [FunLikeAdd.add_apply, map_add]
+      aesop)
   map_smul' r c := DFunLike.ext _ _ fun x ↦ x.induction_on
     (by simp_rw [map_zero]) (fun a b ↦ congr($(c.map_smul r a) b).symm) (by aesop)
 
