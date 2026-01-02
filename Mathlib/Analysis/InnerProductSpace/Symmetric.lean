@@ -349,11 +349,8 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
 
 end LinearMap
 
-open ContinuousLinearMap in
-/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
-theorem ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
-    {T : E →L[𝕜] E} (h : IsIdempotentElem T) :
-    T.IsSymmetric ↔ T.rangeᗮ = T.ker :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
+@[deprecated (since := "2025-12-28")] alias
+  ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
 
 end Normed
