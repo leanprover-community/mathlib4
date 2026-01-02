@@ -116,7 +116,7 @@ theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
 @[mk_iff]
 class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
 
-/-- Artinian Schemes are finite -/
+/-- The underlying type of an Artinian Scheme is finite -/
 instance IsArtinianScheme.finite [IsArtinianScheme X] :
     Finite X := finite_of_compact_of_discrete
 
