@@ -369,15 +369,15 @@ open Classical in
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
   nonzero coefficient, the order of 0 is 0. -/
 def order (x : R⟦Γ⟧) : Γ :=
-  if h : x = 0 then 0 else x.isWF_support.min (support_nonempty_iff.2 h)
+  x.orderTop.untopD 0
 
 @[simp]
-theorem order_zero : order (0 : R⟦Γ⟧) = 0 :=
-  dif_pos rfl
+theorem order_zero : order (0 : R⟦Γ⟧) = 0 := by
+  simp [order]
 
 theorem order_of_ne {x : R⟦Γ⟧} (hx : x ≠ 0) :
-    order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
-  dif_neg hx
+    order x = x.isWF_support.min (support_nonempty_iff.2 hx) := by
+  rw [order, orderTop_of_ne_zero hx, WithTop.untopD_coe]
 
 theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne_zero hx]
@@ -534,17 +534,15 @@ end Domain
 
 end Zero
 
-section LocallyFiniteLinearOrder
+section BddBelow
 
 variable [Zero R] [LinearOrder Γ]
 
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ m, m < n → f m = 0) :
     BddBelow (Function.support f) := by
-  simp only [BddBelow, Set.Nonempty, lowerBounds]
-  use n
-  intro m hm
-  rw [Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
+  refine ⟨n, fun _ ↦ ?_⟩
+  contrapose
+  simp_all
 
 theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
   simp only [Function.support_zero, bddBelow_empty]
@@ -566,19 +564,17 @@ theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 
   rfl
 
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
-    (hn : ∀ (m : Γ), m < n → f m = 0) :
+    (hn : ∀ m, m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
-  dsimp only [order]
-  by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
-  cases h
-  · exact (hf rfl).elim
-  simp_all only [dite_false]
-  rw [Set.IsWF.le_min_iff]
-  intro m hm
-  rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
+  rw [order_of_ne, Set.IsWF.le_min_iff]
+  · intro m hm
+    rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
+    exact not_lt.mp (mt (hn m) hm)
+  · contrapose hf
+    cases hf
+    rfl
 
-end LocallyFiniteLinearOrder
+end BddBelow
 
 section Truncate
 variable [Zero R]
