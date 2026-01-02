@@ -103,6 +103,10 @@ lemma homMk_eta {U V : Over X} (f : U ⟶ V) (h) :
     homMk f.left h = f :=
   rfl
 
+/-- This is useful when `homMk (𝟙 _)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_id (U : Over X) (w) : Over.homMk (𝟙 U.left) w = 𝟙 U := by
+  rfl
+
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) :
     homMk (f ≫ g) (by simp_all) = homMk f w_f ≫ homMk g w_g := by
@@ -562,6 +566,10 @@ def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := 
 @[simp]
 lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
     homMk f.right h = f :=
+  rfl
+
+/-- This is useful when `homMk (𝟙 _)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_id (U : Over X) (w) : Over.homMk (𝟙 U.left) w = 𝟙 U := by
   rfl
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
