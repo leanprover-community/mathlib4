@@ -323,10 +323,9 @@ variable (Z)
 set_option maxHeartbeats 800000 in -- this is slow
 /-- Auxiliary defininition for `associativityIso`. -/
 def associativity'Iso :
-    (prod.associativity _ _ _).inverse ⋙ (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙
+    (prod.associativity ..).inverse ⋙ (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙
       mapHomotopyCategory (α_ _ _ _).hom ≅
-       Functor.prod (𝟭 _) (inverse Y Z) ⋙
-        inverse X (Y ⊗ Z) :=
+    Functor.prod (𝟭 _) (inverse Y Z) ⋙ inverse X (Y ⊗ Z) :=
   Functor.fullyFaithfulCurry₃.preimageIso
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _)
       (fun z₀ z₁ e ↦ by
