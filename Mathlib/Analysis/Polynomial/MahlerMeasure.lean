@@ -239,6 +239,9 @@ lemma leadingCoeff_le_mahlerMeasure (p : ℂ[X]) : ‖p.leadingCoeff‖ ≤ p.ma
   gcongr
   exact one_le_prod_max_one_norm_roots p
 
+@[deprecated (since := "2026-01-02")] alias leading_coeff_le_mahlerMeasure :=
+  leadingCoeff_le_mahlerMeasure
+
 lemma prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff {p : ℂ[X]}
     (hlc : 1 ≤ ‖p.leadingCoeff‖) : (p.roots.map (fun a ↦ max 1 ‖a‖)).prod ≤ p.mahlerMeasure := by
   rw [← one_mul (Multiset.prod _), mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
