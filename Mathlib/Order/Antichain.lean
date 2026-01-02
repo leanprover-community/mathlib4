@@ -330,10 +330,10 @@ protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s
   let ⟨_, hac, hbc⟩ := directed_of r a b
   h.eq ha hb hac hbc
 
-protected theorem flip [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
+protected theorem flip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
   fun _ ha _ hb h c => (hs ha hb h c).imp (mt <| symm_of r) (mt <| symm_of r)
 
-theorem swap [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
+theorem swap [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
   hs.flip
 
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)
