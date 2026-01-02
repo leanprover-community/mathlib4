@@ -49,14 +49,16 @@ variable [Inhabited ι] {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M]
 
 variable (M) in
 /-- The image of `E₁₁` (the elementary matrix) acting on all elements in `M`. -/
-def toModuleCatObj : Submodule R M where
-  __ := DistribMulAction.toAddMonoidHom M (single default default 1 : Matrix ι ι R)|>.range
-  smul_mem' r {m} := by simpa using fun x h ↦ ⟨r • x, by
-    rw [← h, ← smul_assoc r, Matrix.smul_eq_diagonal_mul, show (diagonal fun x : ι ↦ r) *
-      single _ _ 1 = single default default 1 * diagonal (fun _ ↦ r) by ext; simp [Matrix.single],
-      SemigroupAction.mul_smul, ← Matrix.smul_one_eq_diagonal]
-    nth_rw 1 [← one_smul (Matrix ι ι R) x]
-    rw [smul_assoc]⟩
+def toModuleCatObj : Submodule R M :=
+  LinearMap.range (τ₁₂ := .id _) <|
+    { __ := DistribMulAction.toAddMonoidHom M (single default default 1 : Matrix ι ι R)
+      map_smul' r x := by
+        dsimp
+        rw [← smul_assoc r, Matrix.smul_eq_diagonal_mul, show (diagonal fun x : ι ↦ r) *
+          single _ _ 1 = single default default 1 * diagonal (fun _ ↦ r) by ext; simp [Matrix.single],
+          SemigroupAction.mul_smul, ← Matrix.smul_one_eq_diagonal]
+        nth_rw 1 [← one_smul (Matrix ι ι R) x]
+        rw [smul_assoc] }
 
 variable {R ι} in
 @[simp]
