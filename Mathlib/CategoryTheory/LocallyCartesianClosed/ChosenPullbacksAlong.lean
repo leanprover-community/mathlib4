@@ -146,10 +146,26 @@ abbrev pullbackObj : C := ((pullback g).obj (Over.mk f)).left
 abbrev fst' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ Over.mk f :=
   (mapPullbackAdj g).counit.app <| Over.mk f
 
+@[reassoc (attr := simp)]
+theorem fst'_naturality {U V : Over X} (p : V ⟶ U) :
+    (Over.map g).map ((pullback g).map p) ≫ fst' U.hom g = fst' V.hom g ≫ p := by
+  have := (mapPullbackAdj g).counit.naturality p
+  rw [fst', fst']
+  simp only [Functor.id_map, Functor.comp_map] at this
+  exact this
+
 /-- The first projection from the chosen pullback along `g` of `f` to the domain of `f`. -/
 abbrev fst : pullbackObj f g ⟶ Y := fst' f g |>.left
 
 theorem fst'_left : (fst' f g).left = fst f g := rfl
+
+@[reassoc (attr := simp)]
+theorem pullback_map_left_fst {U V : Over X} (p : V ⟶ U) :
+    ((pullback g).map p).left ≫ fst U.hom g = fst V.hom g ≫ p.left := by
+  rw [← fst'_left, ← fst'_left]
+  have H := congr_arg CommaMorphism.left <| fst'_naturality g p
+  simp only [Functor.id_obj, Functor.const_obj_obj] at H
+  exact H
 
 /-- The second projection from the chosen pullback along `g` of `f` to the domain of `g`. -/
 abbrev snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
@@ -159,6 +175,12 @@ abbrev snd' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ (Over.mk g) :=
   Over.homMk (snd f g)
 
 theorem snd'_left : (snd' f g).left = snd f g := rfl
+
+@[reassoc (attr := simp)]
+theorem pullback_map_left_snd {U V : Over X} (f : V ⟶ U) :
+    ((pullback g).map f).left ≫ ChosenPullbacksAlong.snd U.hom g =
+      ChosenPullbacksAlong.snd V.hom g :=
+  Over.w ((pullback g).map f)
 
 variable {f g}
 
