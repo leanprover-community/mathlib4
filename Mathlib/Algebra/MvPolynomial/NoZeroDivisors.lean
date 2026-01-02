@@ -110,8 +110,7 @@ section nonZeroDivisors
 
 open nonZeroDivisors
 
-theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) :
-    degreeOf j (C c * p) = degreeOf j p := by
+theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p) = degreeOf j p := by
   by_cases hp : p = 0
   · simp [hp]
   classical
