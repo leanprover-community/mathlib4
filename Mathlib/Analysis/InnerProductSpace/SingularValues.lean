@@ -127,4 +127,26 @@ public theorem support_singularValues
   · intro hn
     exact (T.singularValues_lt_rank hn).ne'
 
+@[simp]
+theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
+  apply singularValues_le_rank
+  have : Module.finrank 𝕜 (range (0 : E →ₗ[𝕜] F)) = 0 := by
+    simp [LinearMap.range_zero]
+  omega
+
+/--
+Use `LinearMap.singularValues_of_finrank_le` for the rest of the characterization of the singular
+values of the identity map.
+
+TODO: Not sure if should be phrased in terms of `1` or `id` or `LinearEquiv.refl`.
+-/
+public theorem singularValues_one_of_lt_finrank {i : ℕ} (hi : i < Module.finrank 𝕜 E)
+  : (1 : E →ₗ[𝕜] E).singularValues i = 1 := sorry
+
+@[simp]
+public theorem singularValues_smul (c : 𝕜) (i : ℕ)
+  : (c • T).singularValues i = ‖c‖ * T.singularValues i := by
+  -- This one might require some facts about complex numbers
+  sorry
+
 end LinearMap
