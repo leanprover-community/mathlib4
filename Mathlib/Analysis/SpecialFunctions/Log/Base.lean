@@ -541,7 +541,7 @@ theorem isBigO_logb_log : logb b =O[⊤] log := by
 
 theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (log ∘ (c * ·)) =O[atTop] log := by
   by_cases hc : c = 0
-  · conv_lhs => { ext x; simp [hc] }
+  · conv_lhs => ext x; simp [hc]
     exact isLittleO_const_log_atTop.isBigO
   · calc (log ∘ (c * ·))
       =ᶠ[atTop] (fun x => log c + log x) := by
