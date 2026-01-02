@@ -9969,6 +9969,7 @@ public import Mathlib.CategoryTheory.Localization.StructuredArrow
 public import Mathlib.CategoryTheory.Localization.Triangulated
 public import Mathlib.CategoryTheory.Localization.Trifunctor
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.ExponentiableMorphism
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 public import Mathlib.CategoryTheory.LocallyDirected
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
