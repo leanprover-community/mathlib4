@@ -5,12 +5,15 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Module.Pi
 
 /-! # Module structure for `FunLike` -/
 
 @[expose] public section
+
+variable {M M' F α β : Type*} [FunLike F α β]
+
+namespace FunLike
 
 section SMulInstances
 
@@ -36,19 +39,3 @@ instance instModule : Module M F :=
 end ModuleInstance
 
 end FunLike
-
-section AddZero
-
-variable {F α β : Type*} [FunLike F α β] [CommMonoid β] [Mul F] [One F] [Pow F ℕ]
-  [FunLikeOne F α β] [FunLikeMul F α β] [FunLikePow ℕ F α β]
-
-open Classical in
-@[to_additive]
-theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
-    (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
-  apply Finset.induction_on (motive := fun s ↦ (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x)
-  · simp
-  · intro i s his h
-    simp [his, h]
-
-end AddZero

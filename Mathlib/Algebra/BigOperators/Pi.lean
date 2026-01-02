@@ -230,3 +230,19 @@ theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
   convert eqOn_finsetProd h v <;> simp
 
 end EqOn
+
+section FunLike
+
+variable {F α β : Type*} [FunLike F α β] [CommMonoid β] [Mul F] [One F] [Pow F ℕ]
+  [FunLikeOne F α β] [FunLikeMul F α β] [FunLikePow ℕ F α β]
+
+open Classical in
+@[to_additive]
+theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
+    (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  apply Finset.induction_on (motive := fun s ↦ (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x)
+  · simp
+  · intro i s his h
+    simp [his, h]
+
+end FunLike
