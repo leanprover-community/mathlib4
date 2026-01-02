@@ -89,8 +89,7 @@ theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     rw [totalDegree_mul_of_isDomain (by aesop) (by aesop)]
   lia
 
-theorem dvd_C_iff_exists {f : MvPolynomial σ R}
-    {a : R} (ha : a ≠ 0) :
+theorem dvd_C_iff_exists {f : MvPolynomial σ R} {a : R} (ha : a ≠ 0) :
     f ∣ C a ↔ ∃ b, b ∣ a ∧ f = C b := by
   constructor
   · intro hf
