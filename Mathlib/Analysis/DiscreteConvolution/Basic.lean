@@ -231,7 +231,7 @@ def delta (e : E) : M → E := Pi.single 1 e
 @[to_additive addDelta_zero, simp]
 theorem delta_one (e : E) : delta e 1 = e := rfl
 
-@[to_additive addDelta_ne]
+@[to_additive addDelta_ne, simp]
 theorem delta_ne (e : E) {x : M} (hx : x ≠ 1) : delta e x = 0 :=
   Pi.single_eq_of_ne (M := fun _ => E) hx e
 
