@@ -57,12 +57,6 @@ lemma toGNS_ofGNS (a : f.GNS) : f.toGNS (f.ofGNS a) = a := rfl
 @[simp]
 lemma ofGNS_toGNS (a : A) : f.ofGNS (f.toGNS a) = a := rfl
 
-@[simp]
-lemma symm_ofGNS : (f.ofGNS).symm = f.toGNS := rfl
-
-@[simp]
-lemma symm_toGNS : (f.toGNS).symm = f.ofGNS := rfl
-
 variable [StarOrderedRing A]
 
 def preInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
@@ -95,6 +89,10 @@ The Hilbert space constructed from a positive linear functional on a C⋆-algebr
 -/
 abbrev GNS_HilbertSpace := UniformSpace.Completion f.GNS
 
+/--
+The bounded operator on `f.GNS` that will be extended to a bounded operator on `f.GNS_HilbertSpace`.
+The map is defined as left multiplication by a fixed element `a : A`.
+-/
 @[simps!]
 noncomputable def GNS_op (a : A) : f.GNS →L[ℂ] f.GNS :=
   (f.toGNS.toLinearMap ∘ₗ LinearMap.mul ℂ A a ∘ₗ f.ofGNS.toLinearMap).mkContinuous ‖a‖ fun x ↦ by
@@ -109,6 +107,10 @@ noncomputable def GNS_op (a : A) : f.GNS →L[ℂ] f.GNS :=
       _ ≤ f (‖a‖ ^ 2 • star (f.ofGNS x) * f.ofGNS x) := by simpa using OrderHomClass.mono f this
       _ = _ := by simp [← Complex.coe_smul, GNS_norm_sq, smul_mul_assoc]
 
+/--
+The bounded operator on `f.GNS_HilbertSpace` constructed from left multiplication of elements of
+`f.GNS` by an element `a : A`.
+-/
 @[simps!]
 noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace := mapCLM (f.GNS_op a)
 
@@ -116,6 +118,10 @@ noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpa
 lemma GNS_op_prod_eq_comp (a b : A) : f.GNS_op (a * b) = f.GNS_op (a) ∘ f.GNS_op (b) := by
   ext c; simp [mul_assoc]
 
+/--
+The non-unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
+that is constructed from a linear functional `f` on a possibly non-unital C⋆-algebra.
+-/
 noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
   toFun := f.π_ofA
   map_smul' r a := by
@@ -158,6 +164,10 @@ noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
+/--
+The unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
+that is constructed from a linear functional `f` on a unital C⋆-algebra.
+-/
 noncomputable def π_unital : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
   toFun := f.π
   map_one' := by
