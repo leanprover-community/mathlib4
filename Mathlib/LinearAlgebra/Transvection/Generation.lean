@@ -1007,7 +1007,7 @@ theorem notIsExceptional_of_mem_transvections_mul_dilatransvections_pow
   contrapose he_reduce
   ext; simp [hec, he_reduce]
 
-/-- If an element of `V ≃ₗ[K] V` is a product of
+/-- If an element of `V ≃ₗ[K] V` is a product of
 exactly `finrank K (V ⧸ e.fixedSubmodule) - 1` transvections
 and one dilatransvection, then it is not exceptional.
 
