@@ -52,6 +52,7 @@ class IsStack (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}) (J : Grothendiec
 
 variable (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}) {J : GrothendieckTopology C}
 
+/-- Version of `isStackFor` for a sieve instead of a presieve. -/
 lemma isStackFor' [F.IsStack J] {S : C} (R : Sieve S) (hR : R ∈ J S) :
     F.IsStackFor R.arrows := by
   rw [isStackFor_iff]
