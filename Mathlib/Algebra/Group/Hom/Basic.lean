@@ -346,7 +346,7 @@ variable [MulOneClass M] [CommMonoid N]
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
 @[to_additive]
-instance mul : Mul (M →* N) :=
+instance instMul : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_one' := by simp,
@@ -355,7 +355,13 @@ instance mul : Mul (M →* N) :=
 
 /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
 `f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
-add_decl_doc AddMonoidHom.add
+add_decl_doc AddMonoidHom.instAdd
+
+@[deprecated (since := "2026-01-02")]
+alias _root_.AddMonoidHom.add := AddMonoidHom.instAdd
+
+@[deprecated (since := "2026-01-02")]
+alias mul := MonoidHom.instMul
 
 @[to_additive]
 instance instFunLikeMul [Mul M] [CommSemigroup N] : FunLikeMul (M →* N) M N where
@@ -433,3 +439,25 @@ def commGroupOfSurjective [CommGroup G] [Group H] (f : G →* H) (hf : Function.
   ⟨by simp_rw [hf.forall₂, ← map_mul, mul_comm, implies_true]⟩
 
 end MonoidHom
+
+namespace AddMonoid.End
+
+instance instAdd [AddCommMonoid M] : Add (AddMonoid.End M) :=
+  AddMonoidHom.instAdd
+
+instance instFunLikeAdd [AddCommMonoid M] : FunLikeAdd (AddMonoid.End M) M M :=
+  AddMonoidHom.instFunLikeAdd
+
+instance instNeg [AddCommGroup M] : Neg (AddMonoid.End M) :=
+  AddMonoidHom.instNeg
+
+instance instFunLikeNeg [AddCommGroup M] : FunLikeNeg (AddMonoid.End M) M M :=
+  AddMonoidHom.instFunLikeNeg
+
+instance instSub [AddCommGroup M] : Sub (AddMonoid.End M) :=
+  AddMonoidHom.instSub
+
+instance instFunLikeSub [AddCommGroup M] : FunLikeSub (AddMonoid.End M) M M :=
+  AddMonoidHom.instFunLikeSub
+
+end AddMonoid.End

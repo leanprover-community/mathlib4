@@ -29,7 +29,7 @@ assert_not_exists AddMonoidWithOne Ring
 
 universe uM uN uP uQ
 
-variable {R : Type*} {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
+variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
 instance ZeroHom.instNatSMul [Zero M] [AddMonoid N] : SMul ℕ (ZeroHom M N) where
   smul a f :=
