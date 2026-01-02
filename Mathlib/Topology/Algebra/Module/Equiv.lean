@@ -1173,7 +1173,6 @@ lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M �
     (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
   simp only [hf.inverse_comp_of_right, coe_comp', Function.comp_apply]
 
-@[simp]
 theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M →L[R] M) := by
   suffices Ring.inverse ((ContinuousLinearEquiv.unitsEquiv _ _).symm e : M →L[R] M) = inverse ↑e by
     convert this
@@ -1189,7 +1188,7 @@ theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     rw [← he']
     change _ = Ring.inverse (e'.trans e.symm : M →L[R] M) ∘L (e.symm : M₂ →L[R] M)
     ext
-    simp
+    simp [ringInverse_equiv]
   · suffices ¬IsUnit ((e.symm : M₂ →L[R] M).comp f) by simp [this, h₁]
     contrapose! h₁
     rcases h₁ with ⟨F, hF⟩
@@ -1209,6 +1208,11 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
 
 instance : LawfulInv (M →L[R] M) where
   ringInverse_eq_inv f := by rw [ringInverse_eq_inverse]; rfl
+
+@[simp]
+theorem inv_equiv (e : M ≃L[R] M) : (e : M →L[R] M)⁻¹ = e.symm := by
+  rw [← ringInverse_eq_inv, ringInverse_equiv]
+  simp
 
 namespace IsInvertible
 
