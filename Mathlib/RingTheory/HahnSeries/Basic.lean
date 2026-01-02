@@ -371,6 +371,8 @@ open Classical in
 def order (x : R⟦Γ⟧) : Γ :=
   x.orderTop.untopD 0
 
+theorem order_def (x : R⟦Γ⟧) : order x = (orderTop x).untopD 0 := rfl
+
 @[simp]
 theorem order_zero : order (0 : R⟦Γ⟧) = 0 := by
   simp [order]
