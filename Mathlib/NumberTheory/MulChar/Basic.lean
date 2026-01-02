@@ -357,11 +357,7 @@ as a multiplicative equivalence. -/
 noncomputable
 def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
   { equivToUnitHom with
-    map_mul' := by
-      intro χ ψ
-      ext
-      simp only [Equiv.toFun_as_coe, coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply,
-        MonoidHom.mul_apply, Units.val_mul]
+    map_mul' := by intros; ext; simp
   }
 
 end Group
