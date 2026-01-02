@@ -263,7 +263,7 @@ is discrete (such as `ℕ`), then we would have `𝓕 = 𝓕₊` (i.e. `𝓕` is
 To avoid requiring a `TopologicalSpace` instance on `ι` in the definition, we endow `ι` with
 the order topology `Preorder.topology` inside the definition. Say you write a statement about
 `𝓕₊` which does not require a `TopologicalSpace` structure on `ι`,
-but you wish to use a statement which requires a topology (such as `rightCont_def`).
+but you wish to use a statement which requires a topology (such as `rightCont_apply`).
 Then you can endow `ι` with the order topology by writing
 ```lean
   letI := Preorder.topology ι
@@ -290,7 +290,7 @@ noncomputable irreducible_def rightCont [PartialOrder ι] (𝓕 : Filtration ι 
 @[inherit_doc] scoped postfix:max "₊" => rightCont
 
 open scoped Classical in
-lemma rightCont_def [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
+lemma rightCont_apply [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) :
     𝓕₊ i = if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i := by
   simp only [rightCont, OrderTopology.topology_eq_generate_intervals]
@@ -298,10 +298,10 @@ lemma rightCont_def [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 lemma rightCont_eq_of_nhdsGT_eq_bot [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : 𝓝[>] i = ⊥) :
     𝓕₊ i = 𝓕 i := by
-  rw [rightCont_def, hi, neBot_iff, ne_self_iff_false, if_false]
+  rw [rightCont_apply, hi, neBot_iff, ne_self_iff_false, if_false]
 
 /-- If the index type is a `SuccOrder`, then `𝓕₊ = 𝓕`. -/
-lemma rightCont_eq_self [LinearOrder ι] [SuccOrder ι] (𝓕 : Filtration ι m) :
+@[simp] lemma rightCont_eq_self [LinearOrder ι] [SuccOrder ι] (𝓕 : Filtration ι m) :
     𝓕₊ = 𝓕 := by
   letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
   ext _
@@ -326,7 +326,7 @@ topology, see `rightCont_eq`. -/
 lemma rightCont_eq_of_neBot_nhdsGT [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) [(𝓝[>] i).NeBot] :
     𝓕₊ i = ⨅ j > i, 𝓕 j := by
-  rw [rightCont_def, if_pos ‹(𝓝[>] i).NeBot›]
+  rw [rightCont_apply, if_pos ‹(𝓝[>] i).NeBot›]
 
 lemma rightCont_eq_of_not_isMax [LinearOrder ι] [DenselyOrdered ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : ¬IsMax i) :
@@ -350,7 +350,7 @@ lemma le_rightCont (𝓕 : Filtration ι m) : 𝓕 ≤ 𝓕₊ := by
   by_cases hne : (𝓝[>] i).NeBot
   · rw [rightCont_eq_of_neBot_nhdsGT]
     exact le_iInf₂ fun _ he => 𝓕.mono he.le
-  · rw [rightCont_def, if_neg hne]
+  · rw [rightCont_apply, if_neg hne]
 
 @[simp] lemma rightCont_self (𝓕 : Filtration ι m) : 𝓕₊₊ = 𝓕₊ := by
   letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
@@ -367,10 +367,10 @@ lemma le_rightCont (𝓕 : Filtration ι m) : 𝓕 ≤ 𝓕₊ := by
       have hle₂ : 𝓕₊ v ≤ 𝓕 u := by
         by_cases hnv : (𝓝[>] v).NeBot
         · simpa [rightCont_eq_of_neBot_nhdsGT] using iInf₂_le_of_le u hv.2 le_rfl
-        · simpa [rightCont_def, hnv] using 𝓕.mono hv.2.le
+        · simpa [rightCont_apply, hnv] using 𝓕.mono hv.2.le
       exact hle₁.trans hle₂
     simpa [rightCont_eq_of_neBot_nhdsGT] using hineq
-  · rw [rightCont_def, if_neg hne]
+  · rw [rightCont_apply, if_neg hne]
 
 /-- A filtration `𝓕` is right continuous if it is equal to its right continuation `𝓕₊`. -/
 class IsRightContinuous (𝓕 : Filtration ι m) where
@@ -378,32 +378,13 @@ class IsRightContinuous (𝓕 : Filtration ι m) where
   RC : 𝓕₊ ≤ 𝓕
 
 lemma IsRightContinuous.eq {𝓕 : Filtration ι m} [h : IsRightContinuous 𝓕] :
-    𝓕 = 𝓕₊ := le_antisymm 𝓕.le_rightCont h.RC
+    𝓕₊ = 𝓕 := (le_antisymm 𝓕.le_rightCont h.RC).symm
 
-lemma isRightContinuous_rightCont (𝓕 : Filtration ι m) : 𝓕₊.IsRightContinuous :=
-  ⟨(rightCont_self 𝓕).le⟩
+instance {𝓕 : Filtration ι m} : 𝓕₊.IsRightContinuous := ⟨(rightCont_self 𝓕).le⟩
 
 lemma IsRightContinuous.measurableSet {𝓕 : Filtration ι m} [IsRightContinuous 𝓕] {i : ι}
     {s : Set Ω} (hs : MeasurableSet[𝓕₊ i] s) :
     MeasurableSet[𝓕 i] s := IsRightContinuous.eq (𝓕 := 𝓕) ▸ hs
-
-/-- A filtration `𝓕` is said to satisfy the usual conditions if it is right continuous and `𝓕 0`
-  and consequently `𝓕 t` is complete (i.e. contains all null sets) for all `t`. -/
-class HasUsualConditions [OrderBot ι] (𝓕 : Filtration ι m) (μ : Measure Ω := by volume_tac)
-    extends IsRightContinuous 𝓕 where
-    /-- `𝓕 ⊥` contains all the null sets. -/
-    IsComplete ⦃s : Set Ω⦄ (hs : μ s = 0) : MeasurableSet[𝓕 ⊥] s
-
-variable [OrderBot ι]
-
-instance {𝓕 : Filtration ι m} {μ : Measure Ω} [u : HasUsualConditions 𝓕 μ] {i : ι} :
-    @Measure.IsComplete Ω (𝓕 i) (μ.trim <| 𝓕.le _) :=
-  ⟨fun _ hs ↦ 𝓕.mono bot_le _ <| u.2 (measure_eq_zero_of_trim_eq_zero (Filtration.le 𝓕 _) hs)⟩
-
-lemma HasUsualConditions.measurableSet_of_null
-    (𝓕 : Filtration ι m) {μ : Measure Ω} [u : HasUsualConditions 𝓕 μ] (s : Set Ω) (hs : μ s = 0) :
-    MeasurableSet[𝓕 ⊥] s :=
-  u.2 hs
 
 end IsRightContinuous
 
