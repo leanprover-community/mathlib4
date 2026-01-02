@@ -87,18 +87,14 @@ public theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
 
 public theorem singularValues_antitone : Antitone T.singularValues := by
   intro i j hij
-  by_cases hi : Module.finrank 𝕜 E ≤ i
+  by_cases! hi : Module.finrank 𝕜 E ≤ i
   · rw [T.singularValues_of_finrank_le hi, T.singularValues_of_finrank_le (hi.trans hij)]
-  by_cases hj : Module.finrank 𝕜 E ≤ j
-  · simp [T.singularValues_of_finrank_le hj, zero_le _]
-  push_neg at hi hj
+  by_cases! hj : Module.finrank 𝕜 E ≤ j
+  · simp [T.singularValues_of_finrank_le hj]
   have : (T.singularValues j : ℝ) ^ 2 ≤ (T.singularValues i : ℝ) ^ 2 := by
     rw [T.sq_singularValues_fin rfl ⟨j, hj⟩, T.sq_singularValues_fin rfl ⟨i, hi⟩]
     exact T.isSymmetric_adjoint_comp_self.eigenvalues_antitone rfl hij
-  have h1 := Real.sqrt_le_sqrt this
-  simp only [Real.sqrt_sq (NNReal.coe_nonneg _)] at h1
-  exact NNReal.coe_le_coe.1 h1
-
+  simpa using Real.sqrt_le_sqrt this
 
 public theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
@@ -123,11 +119,10 @@ public theorem singularValues_le_rank {n : ℕ}
 public theorem support_singularValues
   : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
   ext n
-  simp only [Finsupp.mem_support_iff, Finset.mem_range, ne_eq]
+  simp only [Finsupp.mem_support_iff, Finset.mem_range]
   constructor
   · intro hn
-    by_contra h
-    push_neg at h
+    by_contra! h
     exact hn (T.singularValues_le_rank h)
   · intro hn
     exact (T.singularValues_lt_rank hn).ne'
