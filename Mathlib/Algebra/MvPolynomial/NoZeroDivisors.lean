@@ -115,8 +115,7 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) :
   by_cases hp : p = 0
   · simp [hp]
   classical
-  simp_rw [degreeOf_eq_natDegree, map_mul]
-  simp only [← renameEquiv_apply]
+  simp_rw [degreeOf_eq_natDegree, map_mul, ← renameEquiv_apply]
   rw [Polynomial.natDegree_mul']
   · simp
   · have hp' :
