@@ -200,7 +200,23 @@ def g_bilin_2 (i p : B) :
   · exact 0
 
 lemma g_nonneg' (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
-  0 ≤ ((((g_bilin_2 j b)).toFun v)).toFun v := sorry
+  0 ≤ ((((g_bilin_2 j b)).toFun v)).toFun v := by
+    unfold g_bilin_2
+    simp
+    split_ifs with h
+    · have : b ∈ (chartAt HB j).source := h
+      simp
+      let χ := (trivializationAt EB (TangentSpace IB) j)
+      have h1 : ((innerSL ℝ).comp (Trivialization.continuousLinearMapAt ℝ χ b)).flip.comp
+                               (Trivialization.continuousLinearMapAt ℝ χ b) v v =
+             innerSL ℝ ((Trivialization.continuousLinearMapAt ℝ χ b) v)
+                       ((Trivialization.continuousLinearMapAt ℝ χ b) v) := rfl
+      have h2 : 0 ≤ innerSL ℝ ((Trivialization.continuousLinearMapAt ℝ χ b) v)
+                       ((Trivialization.continuousLinearMapAt ℝ χ b) v) := by
+        exact @inner_self_nonneg ℝ _ _ _ _ _
+      rw [<-h1] at h2
+      exact h2
+    · simp
 
 lemma g_pos' (i p : B) (hp : p ∈ (extChartAt IB i).source)
             (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) (hv : v ≠ 0) :
