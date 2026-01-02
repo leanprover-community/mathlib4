@@ -293,7 +293,7 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
     _ ≤ log (2 ^ 3) * (69 / 50) := by
       gcongr
       · field_simp
-        simp (disch := positivity) [show 2 < Real.exp 1 from lt_trans (by norm_num1) exp_one_gt_d9]
+        simp (disch := positivity) [exp_one_gt_two]
       · norm_num1
         exact two_div_one_sub_two_div_e_le_eight
     _ ≤ √(log (2 ^ 12)) := by
@@ -319,7 +319,7 @@ theorem div_lt_floor {x : ℝ} (hx : 2 / (1 - 2 / exp 1) ≤ x) : x / exp 1 < (�
   apply lt_of_le_of_lt _ (sub_one_lt_floor _)
   have : 0 < 1 - 2 / exp 1 := by
     rw [sub_pos, div_lt_one (exp_pos _)]
-    exact lt_of_le_of_lt (by norm_num) exp_one_gt_d9
+    exact exp_one_gt_two
   rwa [le_sub_comm, div_eq_mul_one_div x, div_eq_mul_one_div x, ← mul_sub, div_sub', ←
     div_eq_mul_one_div, mul_div_assoc', one_le_div, ← div_le_iff₀ this]
   · exact zero_lt_two
@@ -414,7 +414,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
     exact hN.trans_lt' (by norm_num1)
   · refine div_pos zero_lt_two ?_
     rw [sub_pos, div_lt_one (exp_pos _)]
-    exact lt_of_le_of_lt (by norm_num1) exp_one_gt_d9
+    exact exp_one_gt_two
   positivity
 
 theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :

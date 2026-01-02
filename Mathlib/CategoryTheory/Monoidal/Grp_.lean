@@ -83,8 +83,6 @@ def trivial : Grp C :=
 instance : Inhabited (Grp C) where
   default := trivial C
 
-@[deprecated (since := "2025-06-15")] alias mk' := mk
-
 instance : Category (Grp C) :=
   inferInstanceAs (Category (InducedCategory _ Grp.toMon))
 

@@ -98,10 +98,6 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
   exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
     (Group.mulLeft_bijective g) _ _ (fun i => rfl))
 
-@[deprecated (since := "2025-06-26")]
-alias isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units :=
-  isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
-
 end
 variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
