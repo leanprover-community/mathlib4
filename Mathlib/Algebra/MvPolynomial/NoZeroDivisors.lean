@@ -59,7 +59,7 @@ lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ 
 
 theorem degreeOf_pow_eq (i : σ) (p : MvPolynomial σ R) (n : ℕ) (hp : p ≠ 0) :
     degreeOf i (p ^ n) = n * degreeOf i p := by
-  rw [Finset.pow_eq_prod_const, degreeOf_prod_eq (Finset.range n) (fun _ ↦ p) (fun _ _ ↦ hp)]
+  rw [pow_eq_prod_const, degreeOf_prod_eq (range n) (fun _ ↦ p) (fun _ _ ↦ hp)]
   simp
 
 end DegreeOf
