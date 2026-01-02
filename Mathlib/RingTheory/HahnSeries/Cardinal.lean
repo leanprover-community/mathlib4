@@ -154,13 +154,13 @@ variable [PartialOrder Γ] [AddMonoid R] [hκ : Fact (ℵ₀ ≤ κ)]
 variable (Γ R) in
 /-- The `κ`-bounded submonoid of Hahn series with cardinal less than `κ`. -/
 @[simps!]
-def cardLTAddSubmonoid : AddSubmonoid R⟦Γ⟧ where
+def cardSuppLTAddSubmonoid : AddSubmonoid R⟦Γ⟧ where
   carrier := {x | x.cardSupp < κ}
   zero_mem' := by simpa using aleph0_pos.trans_le hκ.out
-  add_mem' hx hy := (card_add_le ..).trans_lt <| add_lt_of_lt hκ.out hx hy
+  add_mem' hx hy := (cardSupp_add_le ..).trans_lt <| add_lt_of_lt hκ.out hx hy
 
 @[simp]
-theorem mem_cardLTAddSubmonoid {x : R⟦Γ⟧} : x ∈ cardLTAddSubmonoid Γ R κ ↔ x.cardSupp < κ :=
+theorem mem_cardSuppLTAddSubmonoid {x : R⟦Γ⟧} : x ∈ cardSuppLTAddSubmonoid Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end AddMonoid
@@ -171,12 +171,12 @@ variable [PartialOrder Γ] [AddGroup R] [hκ : Fact (ℵ₀ ≤ κ)]
 variable (Γ R) in
 /-- The `κ`-bounded subgroup of Hahn series with cardinal less than `κ`. -/
 @[simps!]
-def cardLTAddSubgroup : AddSubgroup R⟦Γ⟧ where
+def cardSuppLTAddSubgroup : AddSubgroup R⟦Γ⟧ where
   neg_mem' := by simp
-  __ := cardLTAddSubmonoid Γ R κ
+  __ := cardSuppLTAddSubmonoid Γ R κ
 
 @[simp]
-theorem mem_cardLTAddSubgroup {x : R⟦Γ⟧} : x ∈ cardLTAddSubgroup Γ R κ ↔ x.cardSupp < κ :=
+theorem mem_cardSuppLTAddSubgroup {x : R⟦Γ⟧} : x ∈ cardSuppLTAddSubgroup Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end AddGroup
@@ -187,13 +187,13 @@ variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Rin
 
 variable (Γ R) in
 /-- The `κ`-bounded subring of Hahn series with cardinal less than `κ`. -/
-def cardLTSubring : Subring R⟦Γ⟧ where
-  one_mem' := card_one_le.trans_lt <| one_lt_aleph0.trans_le hκ.out
-  mul_mem' hx hy := (card_mul_le ..).trans_lt <| mul_lt_of_lt hκ.out hx hy
-  __ := cardLTAddSubgroup Γ R κ
+def cardSuppLTSubring : Subring R⟦Γ⟧ where
+  one_mem' := cardSupp_one_le.trans_lt <| one_lt_aleph0.trans_le hκ.out
+  mul_mem' hx hy := (cardSupp_mul_le ..).trans_lt <| mul_lt_of_lt hκ.out hx hy
+  __ := cardSuppLTAddSubgroup Γ R κ
 
 @[simp]
-theorem mem_cardLTSubring {x : R⟦Γ⟧} : x ∈ cardLTSubring Γ R κ ↔ x.cardSupp < κ :=
+theorem mem_cardSuppLTSubring {x : R⟦Γ⟧} : x ∈ cardSuppLTSubring Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end Subring
@@ -204,12 +204,12 @@ variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] [h
 variable (Γ R) in
 /-- The `κ`-bounded subfield of Hahn series with cardinal less than `κ`. -/
 @[simps!]
-def cardLTSubfield : Subfield R⟦Γ⟧ where
-  inv_mem' _ _ := (card_inv_le _).trans_lt <| by simpa [hκ.out]
-  __ := have : Fact (ℵ₀ ≤ κ) := ⟨hκ.out.le⟩; cardLTSubring Γ R κ
+def cardSuppLTSubfield : Subfield R⟦Γ⟧ where
+  inv_mem' _ _ := (cardSupp_inv_le _).trans_lt <| by simpa [hκ.out]
+  __ := have : Fact (ℵ₀ ≤ κ) := ⟨hκ.out.le⟩; cardSuppLTSubring Γ R κ
 
 @[simp]
-theorem mem_cardLTSubfield {x : R⟦Γ⟧} : x ∈ cardLTSubfield Γ R κ ↔ x.cardSupp < κ :=
+theorem mem_cardSuppLTSubfield {x : R⟦Γ⟧} : x ∈ cardSuppLTSubfield Γ R κ ↔ x.cardSupp < κ :=
   .rfl
 
 end Subfield
