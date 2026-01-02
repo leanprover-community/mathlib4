@@ -131,6 +131,13 @@ def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
   map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
 
+/-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
+@[simps! -isSimp]
+def presheafHomObjHomEquiv {M N : (F.obj (.mk (op S)))} :
+    (M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S))) :=
+  Iso.homCongr ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app M)
+    ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app N)
+
 /-- Compatibility isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
     (Over.map q).op ⋙ F.presheafHom M N ≅
@@ -157,7 +164,7 @@ satisfies the descent property for morphisms, i.e. is a prestack.
 (See the terminological note in the introduction of the file `Sites.Descent.IsPrestack`.) -/
 @[stacks 026F "(2)"]
 class IsPrestack (J : GrothendieckTopology C) : Prop where
-  isSheaf {S : C} (M N : F.obj (.mk (op S))) :
+  isSheaf (J) {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
 
 /-- If `F` is a prestack from `Cᵒᵖ` to `Cat` relatively to a Grothendieck topology `J`,
@@ -169,7 +176,7 @@ def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :
     Sheaf (J.over S) (Type v') where
   val := F.presheafHom M N
-  cond := IsPrestack.isSheaf _ _
+  cond := IsPrestack.isSheaf _ _ _
 
 end Pseudofunctor
 
