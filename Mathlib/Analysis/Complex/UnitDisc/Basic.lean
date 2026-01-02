@@ -84,6 +84,9 @@ of `𝔻` instead of `↥Metric.ball (0 : ℂ) 1`. -/
 def mk (z : ℂ) (hz : ‖z‖ < 1) : 𝔻 :=
   ⟨z, mem_ball_zero_iff.2 hz⟩
 
+instance : CanLift ℂ 𝔻 (↑) (‖·‖ < 1) where
+  prf z hz := ⟨mk z hz, rfl⟩
+
 /-- A cases eliminator that makes `cases z` use `UnitDisc.mk` instead of `Subtype.mk`. -/
 @[elab_as_elim, cases_eliminator]
 protected def casesOn {motive : 𝔻 → Sort*} (mk : ∀ z hz, motive (.mk z hz)) (z : 𝔻) :
@@ -102,6 +105,10 @@ theorem coe_mk (z : ℂ) (hz : ‖z‖ < 1) : (mk z hz : ℂ) = z :=
 @[simp]
 theorem mk_coe (z : 𝔻) (hz : ‖(z : ℂ)‖ < 1 := z.norm_lt_one) : mk z hz = z :=
   Subtype.eta _ _
+
+@[simp]
+theorem mk_inj {z w : ℂ} (hz : ‖z‖ < 1) (hw : ‖w‖ < 1) : mk z hz = mk w hw ↔ z = w :=
+  Subtype.mk_eq_mk
 
 @[simp]
 theorem mk_neg (z : ℂ) (hz : ‖-z‖ < 1) : mk (-z) hz = -mk z (norm_neg z ▸ hz) :=
