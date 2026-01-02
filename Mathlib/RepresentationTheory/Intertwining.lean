@@ -29,6 +29,7 @@ variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMon
 /-- An intertwining map between two representations `ρ` and `σ` of the same monoid `G` is a map
   between underlying modules which commutes with the `G`-actions. -/
 @[ext] structure IntertwiningMap where
+  /-- An underlying `A`-linear map of the underlying `A`-modules. -/
   toLinearMap : V →ₗ[A] W
   isIntertwining (g : G) (v : V) : toLinearMap (ρ g v) = σ g (toLinearMap v)
 
