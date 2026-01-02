@@ -243,7 +243,7 @@ theorem Function.Surjective.of_isEmpty [IsEmpty β] (f : α → β) :
 
 theorem Function.surjective_iff_isEmpty [IsEmpty α] (f : α → β) :
     Function.Surjective f ↔ IsEmpty β :=
-⟨fun h_surj ↦ Surjective.isEmpty h_surj, fun _ ↦ Surjective.of_isEmpty f ⟩
+  ⟨.isEmpty, fun _ ↦ Surjective.of_isEmpty f ⟩
 
 theorem Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective :=
   have := f.isEmpty
