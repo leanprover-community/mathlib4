@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2025 Yan Yablonovskiy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yan Yablonovskiy.
+Authors: Yan Yablonovskiy
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.Category.LinOrd
-import Mathlib.SetTheory.Ordinal.Basic
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Category.LinOrd
+public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # OrderTypes
@@ -68,7 +70,7 @@ instance OrderType.instSetoid : Setoid LinOrd where
 
 /-- `OrderType.{u}` is the type of linear orders in `Type u`, up to order isomorphism. -/
 @[pp_with_univ]
-def OrderType : Type (u + 1) :=
+public def OrderType : Type (u + 1) :=
   Quotient OrderType.instSetoid
 
 namespace OrderType
@@ -292,13 +294,13 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 end Cardinal
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
-def omega0 : OrderType := type ℕ
+public def omega0 : OrderType := type ℕ
 
 /-- The order type of the rational numbers. -/
-def eta : OrderType := type ℚ
+public def eta : OrderType := type ℚ
 
 /-- The order type of the real numbers on the interval `(0,1)`. -/
-def theta : OrderType := type (Set.Ioo (0 : ℝ) 1)
+public def theta : OrderType := type (Set.Ioo (0 : ℝ) 1)
 
 @[inherit_doc]
 scoped notation "ω" => OrderType.omega0
