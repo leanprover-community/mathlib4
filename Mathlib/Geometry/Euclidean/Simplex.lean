@@ -76,8 +76,8 @@ theorem dist_point_centroid [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
 /-- The distance from a vertex to its `faceOppositeCentroid` equals `(n + 1)` times the distance
  from the `centroid` to that `faceOppositeCentroid`. -/
 theorem dist_point_faceOppositeCentroid [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
-    dist (s.points i) (s.faceOppositeCentroid i) = (n+1)
-    * dist s.centroid (s.faceOppositeCentroid i) := by
+    dist (s.points i) (s.faceOppositeCentroid i) =
+    (n + 1) * dist s.centroid (s.faceOppositeCentroid i) := by
   simp_rw [dist_eq_norm_vsub, s.point_vsub_faceOppositeCentroid_eq_smul_vsub i,
     norm_smul]
   norm_cast

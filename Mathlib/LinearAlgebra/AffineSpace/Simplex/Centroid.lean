@@ -66,7 +66,7 @@ theorem centroid_mem_affineSpan [CharZero k] {n : ℕ} (s : Simplex k P n) :
   centroid_mem_affineSpan_of_card_eq_add_one k _ (card_fin (n + 1))
 
 /-- The centroid is equal to the affine combination of the points with `centroidWeights`. -/
-theorem centroid_eq_affine_combination (s : Simplex k P n) :
+theorem centroid_eq_affineCombination (s : Simplex k P n) :
     s.centroid = affineCombination k univ s.points (centroidWeights k univ) := by rfl
 
 /-- The centroid does not lie in the affine span of the simplex's points with one vertex removed. -/
