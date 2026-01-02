@@ -118,7 +118,7 @@ noncomputable def existentialOfFormula (φ : L'[[Fin n]].Sentence) : L'[[Fin n]]
   exact ((L').lhomWithConstants (Fin n)).onSentence φ
 
 /-- Replaces variables in a formula from a complete type in the expanded language with constants
-    from the expanded language -/
+    from the expanded language. Fin n → ℕ represents a tuple of constants -/
 def replaceWithConstant (φ : L'[[Fin n]].Sentence) (c : Fin n → ℕ) : (L').Sentence :=
   (Formula.equivSentence.2 φ).subst (β := Empty) (fun i ↦ Constants.term (Sum.inr (c i)))
 
