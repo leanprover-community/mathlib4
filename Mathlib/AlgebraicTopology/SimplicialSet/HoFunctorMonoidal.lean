@@ -307,7 +307,7 @@ lemma inverse_comp_mapHomotopyCategory_snd :
   Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
 
 lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
-    CategoryTheory.Prod.snd _ _ = (Functor.prod (isoTerminal X).inv.toFunctor (𝟭 _)) ⋙
+    CategoryTheory.Prod.snd _ _ = Functor.prod (isoTerminal X).inv.toFunctor (𝟭 _) ⋙
       inverse X Y ⋙ mapHomotopyCategory (snd _ _) := by
   rw [inverse_comp_mapHomotopyCategory_snd]
   rfl
