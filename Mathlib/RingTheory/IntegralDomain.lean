@@ -182,7 +182,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       rintro rfl
       apply hf
       ext g
-      rw [MonoidHom.one_apply]
+      rw [FunLikeOne.one_apply]
       obtain ⟨n, hn⟩ := hx ⟨f.toHomUnits g, g, rfl⟩
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
