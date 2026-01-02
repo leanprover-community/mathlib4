@@ -86,10 +86,8 @@ theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     (h : f ∣ g) (hg : g ≠ 0) :
     f.totalDegree ≤ g.totalDegree := by
   obtain ⟨r, rfl⟩ := h
-  rw [totalDegree_mul_of_isDomain]
-  · exact Nat.le_add_right f.totalDegree r.totalDegree
-  · exact fun h ↦ hg (by simp [h])
-  · exact fun h ↦ hg (by simp [h])
+    rw [totalDegree_mul_of_isDomain (by aesop) (by aesop)]
+  lia
 
 theorem dvd_C_iff_exists {f : MvPolynomial σ R}
     {a : R} (ha : a ≠ 0) :
