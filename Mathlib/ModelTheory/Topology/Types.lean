@@ -98,3 +98,36 @@ instance : CompactSpace (T.CompleteType α) := by
 instance : BaireSpace (T.CompleteType α) := BaireSpace.of_t2Space_locallyCompactSpace
 
 end CompleteType
+
+namespace OmittingTypes
+
+variable {L : Language} {T : L.Theory} {n : ℕ}
+
+/-- A language with ω extra constants is abbreviated as ExpandedLanguage -/
+abbrev ExpandedLanguage := L[[ℕ]]
+local notation "L'" => @ExpandedLanguage L
+def toL' : L →ᴸ L' := L.lhomWithConstants ℕ
+local notation "T'" => toL'.onTheory T
+
+/-- Existentially quantifies over the variables in formulas from a complete type in
+    the expanded language -/
+noncomputable def existentialOfFormula (φ : L'[[Fin n]].Sentence) : L'[[Fin n]].Sentence := by
+  replace φ := ((L').lhomWithConstantsMap (fun i ↦ Sum.inr i) (β := Empty ⊕ (Fin n))).onSentence φ
+  replace φ := Formula.equivSentence.2 φ
+  replace φ := Formula.iExs (α := Empty) (β := Fin n) (L := L') φ
+  exact ((L').lhomWithConstants (Fin n)).onSentence φ
+
+/-- Replaces variables in a formula from a complete type in the expanded language with constants
+    from the expanded language -/
+def replaceWithConstant (φ : L'[[Fin n]].Sentence) (c : Fin n → ℕ) : (L').Sentence :=
+  (Formula.equivSentence.2 φ).subst (β := Empty) (fun i ↦ Constants.term (Sum.inr (c i)))
+
+/-- The set of complete types in the expanded language such that it contains all witnesses -/
+def henkinWitnessSet (φ : L[[Fin n]].Sentence) : Set ((T').CompleteType (Fin n)) := by
+  replace φ : L'[[Fin n]].Sentence := (toL'.addConstants (L := L) (Fin n)).onSentence φ
+  have φe : L'[[Fin n]].Sentence := existentialOfFormula φ
+  have φc (c : Fin n → ℕ) : L'[[Fin n]].Sentence :=
+    ((L').lhomWithConstants (Fin n)).onSentence (replaceWithConstant φ c)
+  exact { p : (T').CompleteType (Fin n) | φe ∈ p → ∃ c : (Fin n → ℕ),  (φc c) ∈ p }
+
+end OmittingTypes
