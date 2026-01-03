@@ -460,6 +460,16 @@ lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq
 
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
+lemma zero_lt_height {x : α} [OrderBot α] (h : ⊥ < x) : 0 < height x := by
+  rw [← Order.height_bot (α := α)]
+  apply Order.height_strictMono h
+  simp [ENat.top_pos]
+
+lemma zero_lt_coheight {x : α} [OrderTop α] (h : x < ⊤) : 0 < coheight x := by
+  rw [← Order.coheight_top (α := α)]
+  apply Order.coheight_strictAnti h
+  simp [ENat.top_pos]
+
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
   mp h := by
