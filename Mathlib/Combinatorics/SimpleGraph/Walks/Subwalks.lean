@@ -156,6 +156,11 @@ protected lemma IsSubwalk.map {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk
     (h : p₂.IsSubwalk p₁) (f : G →g G') : (p₂.map f).IsSubwalk (p₁.map f) := by
   simp [isSubwalk_iff_support_isInfix, isSubwalk_iff_support_isInfix.mp h, List.IsInfix.map]
 
+protected lemma IsSubwalk.copy {u v u' v' x y x' y'} {p : G.Walk x y} {q : G.Walk u v}
+    (h : p.IsSubwalk q) (hx : x = x') (hy : y = y') (hu : u = u') (hv : v = v') :
+    (p.copy hx hy).IsSubwalk (q.copy hu hv) := by
+  simp [isSubwalk_iff_support_isInfix, isSubwalk_iff_support_isInfix.mp h]
+
 protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) : p.dropLast.IsSubwalk q := by
   obtain ⟨r₁, r₂, rfl⟩ := hpq
@@ -170,6 +175,35 @@ protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
   cases h' : p
   · grind [getVert_nil, append_nil, tail_nil, nil_isSubwalk_iff_exists]
   · exact ⟨r₁.concat (Walk.adj_snd (by simp)), r₂, by simp [concat_append]⟩
+
+theorem take_isSubwalk_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.take n).IsSubwalk (p.take (n + 1)) := by
+  cases p
+  · exact isSubwalk_take _ _
+  · cases n
+    · exact isSubwalk_of_append_left rfl
+    simp [getVert_cons_succ, take, isSubwalk_iff_support_isInfix, support_cons,
+      take_support_eq_support_take_succ, ← List.take_succ_cons, List.IsPrefix.isInfix]
+
+theorem take_isSubwalk_take {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.take n).IsSubwalk (p.take k) := by
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
+  induction t with
+  | zero => rfl
+  | succ t ih => exact (ih (n.le_add_right t)).trans <| p.take_isSubwalk_take_succ (n + t)
+
+theorem drop_succ_isSubwalk_drop {u v} (p : G.Walk u v) (n : ℕ) :
+    (p.drop (n + 1)).IsSubwalk (p.drop n) := by
+  induction n generalizing p u with
+  | zero => exact p.drop_zero ▸ (p.isSubwalk_rfl.copy rfl rfl p.getVert_zero.symm rfl).tail
+  | succ _ ih => cases p <;> simp [drop, ih]
+
+theorem drop_isSubwalk_drop {u v n k} (p : G.Walk u v) (h : n ≤ k) :
+    (p.drop k).IsSubwalk (p.drop n) := by
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
+  induction t with
+  | zero => rfl
+  | succ t ih => exact (drop_succ_isSubwalk_drop p (n + t)).trans <| ih (n.le_add_right t)
 
 end Walk
 
