@@ -432,6 +432,9 @@ theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Fin
 @[simp]
 theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ := mod_cast Set.image_eq_empty (f := f) (s := s)
 
+@[simp]
+theorem empty_eq_image : ∅ = s.image f ↔ s = ∅ := by rw [eq_comm, image_eq_empty]
+
 theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff hf s t
