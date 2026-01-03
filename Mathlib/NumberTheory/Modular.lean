@@ -64,7 +64,7 @@ those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_r
 @[expose] public section
 
 
-open Complex
+open Complex hiding I
 
 open Matrix hiding mul_smul
 
@@ -374,13 +374,25 @@ scoped[Modular] notation "𝒟" => ModularGroup.fd
 @[inherit_doc ModularGroup.fdo]
 scoped[Modular] notation "𝒟ᵒ" => ModularGroup.fdo
 
+def fd' : Set ℍ := {z | 1 < normSq (z : ℂ) ∧ |z.re| ≤ (1 : ℝ) / 2}
+scoped[Modular] notation "𝒟'" => ModularGroup.fd'
+
+lemma fdo_sub_fd' : fdo ≤ fd' := fun _ hτ ↦ ⟨hτ.1, hτ.2.le⟩
+
+lemma fd'_sub_fd : fd' ≤ fd := fun _ hτ ↦ ⟨hτ.1.le, hτ.2⟩
+
 open scoped Modular
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
   rw [abs_mul, abs_two, ← lt_div_iff₀' (zero_lt_two' ℝ)]
   exact h.2
 
-theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 2 := by
+/-- non-strict variant of `ModularGroup.abs_two_mul_re_lt_one_of_mem_fdo` -/
+theorem abs_two_mul_re_le_one_of_mem_fd (h : z ∈ 𝒟) : |2 * z.re| ≤ 1 := by
+  rw [abs_mul, abs_two, ← le_div_iff₀' (zero_lt_two' ℝ)]
+  exact h.2
+
+theorem three_lt_four_mul_im_sq_of_mem_fd' (h : z ∈ 𝒟') : 3 < 4 * z.im ^ 2 := by
   have : 1 < z.re * z.re + z.im * z.im := by simpa [Complex.normSq_apply] using h.1
   have := h.2
   cases abs_cases z.re <;> nlinarith
@@ -390,11 +402,12 @@ theorem three_le_four_mul_im_sq_of_mem_fd {τ : ℍ} (h : τ ∈ 𝒟) : 3 ≤ 4
   have : 1 ≤ τ.re * τ.re + τ.im * τ.im := by simpa [Complex.normSq_apply] using h.1
   cases abs_cases τ.re <;> nlinarith [h.2]
 
-/-- If `z ∈ 𝒟ᵒ`, and `n : ℤ`, then `|z + n| > 1`. -/
-theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
+/-- If `z ∈ 𝒟'`, and `n : ℤ`, then `|z + n| > 1`. -/
+theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟') (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   rw [coe_T_zpow_smul_eq]
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1
-  have hzn := Int.nneg_mul_add_sq_of_abs_le_one n (abs_two_mul_re_lt_one_of_mem_fdo hz).le
+  have hzn := Int.nneg_mul_add_sq_of_abs_le_one n
+    (abs_two_mul_re_le_one_of_mem_fd <| fd'_sub_fd hz)
   have : 1 < (z.re + ↑n) * (z.re + ↑n) + z.im * z.im := by linarith
   simpa [normSq, num, denom]
 
@@ -420,9 +433,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   refine ⟨g, ?_⟩
   -- `g` has same max im property as `g₀`
   have hg₀' : ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
-    have hg'' : (g • z).im = (g₀ • z).im := by
-      rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
-        denom_apply, denom_apply, hg]
+    have hg'' : (g • z).im = (g₀ • z).im := by simp only [im_smul_eq_div_normSq, denom_apply, hg]
     simpa only [hg''] using hg₀
   constructor
   · -- Claim: `1 ≤ ⇑norm_sq ↑(g • z)`. If not, then `S•g•z` has larger imaginary part
@@ -443,10 +454,36 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
       rw [mul_smul, re_T_inv_smul]
       cases abs_cases ((g • z).re - 1) <;> cases abs_cases (g • z).re <;> linarith
 
+section Stabilizers
+
+lemma smul_I_eq_iff : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) where
+  mp hg := by
+    obtain ⟨hb, ha⟩ : g 0 1 = -g 1 0 ∧ g 0 0 = g 1 1 := by
+      have := congr_arg UpperHalfPlane.coe hg
+      rw [sl_moeb, coe_smul_of_det_pos (by simp), div_eq_iff (denom_ne_zero g I)] at this
+      simp [num, denom, mul_add, mul_comm _ (Complex.I), ← mul_assoc, Complex.ext_iff] at this
+      norm_cast at this
+    have := g.det_coe
+    rw [Matrix.det_fin_two, hb, ha, ← sq, neg_mul, ← sq, sub_neg_eq_add] at this
+    have hd : g 1 1 ^ 2 ≤ 1 := by nlinarith
+    have hc : g 1 0 ^ 2 ≤ 1 := by nlinarith
+    rw [sq_le_one_iff_abs_le_one, Int.abs_le_one_iff] at hc hd
+    -- do as much `simp` as possible before the `rcases` split
+    simp only [S, Int.reduceNeg, Finset.mem_insert, SpecialLinearGroup.ext_iff,
+      SpecialLinearGroup.coe_one, Fin.forall_fin_two, Fin.isValue, one_apply_eq, ne_eq, zero_ne_one,
+      not_false_eq_true, one_apply_ne, one_ne_zero, coe_neg, neg_apply, neg_zero, of_apply,
+      cons_val', cons_val_fin_one, cons_val_zero, cons_val_one, Finset.mem_singleton, neg_neg]
+    rcases hc with hc | hc | hc <;> grind
+  mpr := by
+    simp only [Finset.mem_insert, Finset.mem_singleton, UpperHalfPlane.ext_iff, S]
+    rintro (rfl | rfl | rfl | rfl) <;> simp [coe_smul, σ, num, denom]
+
+end Stabilizers
+
 section UniqueRepresentative
 
 /-- An auxiliary result en route to `ModularGroup.c_eq_zero`. -/
-theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| ≤ 1 := by
+theorem abs_c_le_one (hz : z ∈ 𝒟') (hg : g • z ∈ 𝒟') : |g 1 0| ≤ 1 := by
   let c' : ℤ := g 1 0
   let c := (c' : ℝ)
   suffices 3 * c ^ 2 < 4 by
@@ -455,13 +492,11 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
-    · rw [hc]; simp
-    · refine (abs_lt_of_sq_lt_sq' ?_ (by simp)).2
-      specialize this hc
-      linarith
+    · grind
+    · exact lt_of_pow_lt_pow_left₀ 2 (by positivity) (by grind)
   intro hc
   have h₁ : 3 * 3 * c ^ 4 < 4 * (g • z).im ^ 2 * (4 * z.im ^ 2) * c ^ 4 := by
-    gcongr <;> apply three_lt_four_mul_im_sq_of_mem_fdo <;> assumption
+    gcongr <;> apply three_lt_four_mul_im_sq_of_mem_fd' <;> assumption
   have h₂ : (c * z.im) ^ 4 / normSq (denom (↑g) z) ^ 2 ≤ 1 :=
     div_le_one_of_le₀
       (pow_four_le_pow_two_of_pow_two_le (z.c_mul_im_sq_le_normSq_denom g))
@@ -475,8 +510,8 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
     _ ≤ 16 := by rw [← mul_pow]; linarith
 
 /-- An auxiliary result en route to `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. -/
-theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by
-  have hp : ∀ {g' : SL(2, ℤ)}, g' • z ∈ 𝒟ᵒ → g' 1 0 ≠ 1 := by
+theorem c_eq_zero (hz : z ∈ 𝒟') (hg : g • z ∈ 𝒟') : g 1 0 = 0 := by
+  have hp : ∀ {g' : SL(2, ℤ)}, g' • z ∈ 𝒟' → g' 1 0 ≠ 1 := by
     intro g' hg'
     by_contra hc
     let a := g' 0 0
@@ -487,23 +522,37 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 :=
       group
     let w := T ^ (-a) • g' • z
     have h₁ : w = S • T ^ d • z := by simp only [w, ← mul_smul, had]
-    replace h₁ : normSq w < 1 := h₁.symm ▸ normSq_S_smul_lt_one (one_lt_normSq_T_zpow_smul hz d)
+    replace h₁ : normSq w < 1 := h₁.symm ▸ normSq_S_smul_lt_one
+      (one_lt_normSq_T_zpow_smul hz d)
     have h₂ : 1 < normSq w := one_lt_normSq_T_zpow_smul hg' (-a)
     linarith
   have hn : g 1 0 ≠ -1 := by
     intro hc
     replace hc : (-g) 1 0 = 1 := by simp [← neg_eq_iff_eq_neg.mpr hc]
-    replace hg : -g • z ∈ 𝒟ᵒ := (SL_neg_smul g z).symm ▸ hg
+    replace hg : -g • z ∈ 𝒟' := (SL_neg_smul g z).symm ▸ hg
     exact hp hg hc
-  specialize hp hg
-  rcases Int.abs_le_one_iff.mp <| abs_c_le_one hz hg with ⟨⟩ <;> tauto
+  grind [abs_c_le_one hz hg]
 
 /-- Second Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
 where `z : ℍ` and `g : SL(2,ℤ)`, then `z = g • z`. -/
 theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z := by
-  obtain ⟨n, hn⟩ := exists_eq_T_zpow_of_c_eq_zero (c_eq_zero hz hg)
+  obtain ⟨n, hn⟩ := exists_eq_T_zpow_of_c_eq_zero (c_eq_zero (fdo_sub_fd' hz) (fdo_sub_fd' hg))
   rw [hn] at hg ⊢
   simp [eq_zero_of_mem_fdo_of_T_zpow_mem_fdo hz hg, one_smul]
+
+/-- If `z` is in the set `𝒟'`, then any element of `SL(2, ℤ)` which stabilizes `z` stabilizes
+the whole of `ℍ`. -/
+lemma forall_smul_eq_of_smul_eq_of_mem_fd' (hg : g • z = z) (hz : z ∈ 𝒟') :
+    ∀ w : ℍ, g • w = w := by
+  obtain ⟨n, hn⟩ := exists_eq_T_zpow_of_c_eq_zero (c_eq_zero hz (hg ▸ hz))
+  obtain rfl : n = 0 := by
+    simpa [left_eq_add, Int.cast_eq_zero, re_T_zpow_smul, -sl_moeb] using
+      (congr_arg UpperHalfPlane.re <| hg ▸ hn z :)
+  simpa using hn
+
+@[deprecated three_lt_four_mul_im_sq_of_mem_fd' (since := "2025-12-28")]
+theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 2 :=
+  three_lt_four_mul_im_sq_of_mem_fd' (fdo_sub_fd' h)
 
 end UniqueRepresentative
 
@@ -549,7 +598,6 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
       exact hz.2.2.1
     · rw [sq_le_sq₀ hz.1 (hz.1.trans hz.2.1)]
       exact hz.2.1
-
 
 end Truncated
 

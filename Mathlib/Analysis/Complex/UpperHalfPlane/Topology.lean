@@ -180,4 +180,14 @@ lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
 
 end ofComplex
 
+section J
+
+open scoped ComplexConjugate
+
+lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
+  ext
+  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos), coe_mk_subtype]
+
+end J
+
 end UpperHalfPlane

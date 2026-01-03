@@ -50,6 +50,9 @@ namespace GeneralLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v}
 
+instance [CommSemiring R] : IsScalarTower Rˣ (GL n R) (GL n R) where
+  smul_assoc r g h := by ext; simp
+
 section CoeFnInstance
 
 instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where
