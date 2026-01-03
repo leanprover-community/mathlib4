@@ -421,7 +421,8 @@ where /-- Implementation of `applyReplacementFun`. -/
               let args := numeralArgs.foldl (·.modify · changeNumeral) args
               return mkAppN f (← args.mapM r)
       let some n₁ := findTranslation? env t n₀ <|> do
-        let n₁ := findPrefixTranslation env n₀ t; guard (n₀ != n₁); some n₁
+        let n₁ := findPrefixTranslation env n₀ t
+        guard (n₀ != n₁ && (isReservedName env n₁ || env.contains n₁)); some n₁
         | return mkAppN f (← args.mapM r)
       let { reorder, relevantArg } := t.argInfoAttr.find? env n₀ |>.getD {}
       -- Use `relevantArg` to test if the head should be translated.
