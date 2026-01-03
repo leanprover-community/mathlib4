@@ -266,7 +266,7 @@ lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
 
-private lemma H_le_invtSubmoduleToLieIdeal_top_aux :
+private lemma cartan_le_invtSubmoduleToLieIdeal_top_aux :
     (H.toLieSubmodule : Submodule K L) ≤
       invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) := by
   have h_span : Submodule.span K (Set.range (coroot : Weight K H L → H)) = ⊤ :=
@@ -294,14 +294,15 @@ private lemma H_le_invtSubmoduleToLieIdeal_top_aux :
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
   set I := invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp)
-  have h₁ := H_le_invtSubmoduleToLieIdeal_top_aux (H := H)
+  have h₁ := cartan_le_invtSubmoduleToLieIdeal_top_aux (H := H)
   have h₂ : ∀ α : H.root, (rootSpace H α : Submodule K L) ≤ (I : Submodule K L) := fun ⟨α, hα⟩ =>
     (le_of_le_of_eq (le_sup_of_le_left le_sup_left) (sl2SubmoduleOfRoot_eq_sup α _).symm).trans
       (le_iSup_of_le ⟨α, trivial, (Finset.mem_filter.mp hα).2⟩ le_rfl)
   have h₃ : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) ≤ I :=
     sup_le h₁ (iSup_le h₂)
   have h₄ : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) = ⊤ := by
-    simpa using congrArg (↑· : LieSubmodule K H L → Submodule K L) (iSup_rootSpace_eq_top H)
+    simpa using congrArg
+      (↑· : LieSubmodule K H L → Submodule K L) (cartan_sup_iSup_rootSpace_eq_top H)
   rw [h₄, top_le_iff] at h₃
   exact eq_top_iff.mpr fun x _ => by
     change x ∈ (I : Submodule K L); rw [h₃]; exact Submodule.mem_top
