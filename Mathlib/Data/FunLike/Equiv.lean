@@ -214,9 +214,6 @@ TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
 theorem apply_inv_apply (e : E) (b : β) : e (inv e b) = b := right_inv _ _
 
-@[deprecated inv_apply_eq (since := "2025-06-20")]
-lemma inv_apply_eq_iff_eq_apply {e : E} {b : β} {a : α} : inv e b = a ↔ b = e a := inv_apply_eq
-
 theorem comp_injective (f : α → β) (e : F) : Function.Injective (e ∘ f) ↔ Function.Injective f :=
   EmbeddingLike.comp_injective f e
 

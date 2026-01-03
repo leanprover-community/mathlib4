@@ -5,8 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
-public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.RingTheory.HahnSeries.Summable
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 
 /-!
 # Cardinality of Hahn series
@@ -16,7 +18,6 @@ for the cardinalities of different operations.
 
 ## Todo
 
-- Bound the cardinality of the inverse.
 - Build the subgroups, subrings, etc. of Hahn series with support less than a given infinite
   cardinal.
 -/
@@ -27,9 +28,12 @@ open Cardinal
 
 namespace HahnSeries
 
-variable {Γ R S : Type*} [PartialOrder Γ]
+variable {Γ R S α : Type*}
 
 /-! ### Cardinality function -/
+
+section PartialOrder
+variable [PartialOrder Γ]
 
 section Zero
 variable [Zero R]
@@ -55,6 +59,14 @@ theorem cardSupp_single_of_ne (a : Γ) {r : R} (h : r ≠ 0) : cardSupp (single 
 
 theorem cardSupp_single_le (a : Γ) (r : R) : cardSupp (single a r) ≤ 1 :=
   (mk_le_mk_of_subset support_single_subset).trans_eq (mk_singleton a)
+
+@[simp]
+theorem cardSupp_one_le [Zero Γ] [One R] : cardSupp (1 : R⟦Γ⟧) ≤ 1 :=
+  cardSupp_single_le ..
+
+@[simp]
+theorem cardSupp_one [Zero Γ] [One R] [NeZero (1 : R)] : cardSupp (1 : R⟦Γ⟧) = 1 :=
+  cardSupp_single_of_ne _ one_ne_zero
 
 theorem cardSupp_map_le [Zero S] (x : R⟦Γ⟧) (f : ZeroHom R S) : (x.map f).cardSupp ≤ x.cardSupp :=
   cardSupp_mono <| support_map_subset ..
@@ -85,4 +97,53 @@ theorem cardSupp_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [NonUni
     (x y : R⟦Γ⟧) : (x * y).cardSupp ≤ x.cardSupp * y.cardSupp :=
   (mk_le_mk_of_subset (support_mul_subset ..)).trans mk_add_le
 
+theorem cardSupp_single_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [NonUnitalNonAssocSemiring R] (x : R⟦Γ⟧) (a : Γ) (r : R) :
+    (single a r * x).cardSupp ≤ x.cardSupp := by
+  simpa using (cardSupp_mul_le ..).trans (mul_le_mul_left (cardSupp_single_le ..) _)
+
+theorem cardSupp_mul_single_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [NonUnitalNonAssocSemiring R] (x : R⟦Γ⟧) (a : Γ) (r : R) :
+    (x * single a r).cardSupp ≤ x.cardSupp := by
+  simpa using (cardSupp_mul_le ..).trans (mul_le_mul_right (cardSupp_single_le ..) _)
+
+theorem cardSupp_pow_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Semiring R]
+    (x : R⟦Γ⟧) (n : ℕ) : (x ^ n).cardSupp ≤ x.cardSupp ^ n := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simpa [pow_succ] using (cardSupp_mul_le ..).trans <| mul_le_mul_left IH _
+
+theorem cardSupp_hsum_le [AddCommMonoid R] (s : SummableFamily Γ R α) :
+    lift s.hsum.cardSupp ≤ sum fun a ↦ (s a).cardSupp :=
+  (lift_le.2 <| mk_le_mk_of_subset (SummableFamily.support_hsum_subset ..)).trans
+    mk_iUnion_le_sum_mk_lift
+
+end PartialOrder
+
+section LinearOrder
+variable [LinearOrder Γ]
+
+theorem cardSupp_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+    (x : R⟦Γ⟧) : (SummableFamily.powers x).hsum.cardSupp ≤ max ℵ₀ x.cardSupp := by
+  grw [← lift_uzero (cardSupp _), ← sum_pow_le_max_aleph0, cardSupp_hsum_le, sum_le_sum]
+  intro i
+  rw [SummableFamily.powers_toFun]
+  split_ifs
+  · exact cardSupp_pow_le ..
+  · cases i <;> simp
+
+theorem cardSupp_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x : R⟦Γ⟧) :
+    x⁻¹.cardSupp ≤ max ℵ₀ x.cardSupp := by
+  obtain rfl | hx := eq_or_ne x 0; · simp
+  apply (cardSupp_single_mul_le ..).trans <| (cardSupp_hsum_powers_le ..).trans _
+  gcongr
+  refine (cardSupp_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| cardSupp_mono fun _ ↦ ?_
+  aesop (add simp [coeff_single_mul])
+
+theorem cardSupp_div_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x y : R⟦Γ⟧) :
+    (x / y).cardSupp ≤ x.cardSupp * max ℵ₀ y.cardSupp :=
+  (cardSupp_mul_le ..).trans <| mul_le_mul_right (cardSupp_inv_le y) _
+
+end LinearOrder
 end HahnSeries

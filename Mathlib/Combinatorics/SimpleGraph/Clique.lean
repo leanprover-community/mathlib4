@@ -89,8 +89,6 @@ lemma isClique_insert_of_notMem (ha : a ∉ s) :
     G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, G.Adj a b :=
   Set.pairwise_insert_of_symmetric_of_notMem G.symm ha
 
-@[deprecated (since := "2025-05-23")] alias isClique_insert_of_not_mem := isClique_insert_of_notMem
-
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
     G.IsClique (insert a s) := hs.insert_of_symmetric G.symm h
 
