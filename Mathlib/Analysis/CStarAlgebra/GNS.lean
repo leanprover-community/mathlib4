@@ -64,7 +64,7 @@ The (semi-)inner product space whose elements are the elements of `A`, but which
 inner product-induced norm induced by `f` which is different from the norm on `A`.
 -/
 @[simps]
-def GNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
+instance GNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
   inner a b := f (star (f.ofGNS a) * f.ofGNS b)
   conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
   re_inner_nonneg _ := RCLike.nonneg_iff.mp (f.map_nonneg (star_mul_self_nonneg _)) |>.1
@@ -109,13 +109,6 @@ noncomputable def GNS_op (a : A) : f.GNS →L[ℂ] f.GNS :=
       _ ≤ f (‖a‖ ^ 2 • star (f.ofGNS x) * f.ofGNS x) := by simpa using OrderHomClass.mono f this
       _ = _ := by simp [← Complex.coe_smul, GNS_norm_sq, smul_mul_assoc]
 
-/--
-The bounded operator on `f.GNS_HilbertSpace` constructed from left multiplication of elements of
-`f.GNS` by an element `a : A`.
--/
-@[simps!]
-noncomputable def π_ofA (a : A) : f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace := mapCLM (f.GNS_op a)
-
 @[simp]
 lemma GNS_op_prod_eq_comp (a b : A) : f.GNS_op (a * b) = f.GNS_op (a) ∘ f.GNS_op (b) := by
   ext c; simp [mul_assoc]
@@ -125,7 +118,7 @@ The non-unital ⋆-homomorphism/⋆-representation of A into the bounded operato
 that is constructed from a linear functional `f` on a possibly non-unital C⋆-algebra.
 -/
 noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
-  toFun := f.π_ofA
+  toFun a := mapCLM (f.GNS_op a)
   map_smul' r a := by
     ext x
     induction x using Completion.induction_on with
@@ -154,12 +147,12 @@ noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f
       (f.GNS_op b)))
     simp_all
   map_star' a := by
-    refine (eq_adjoint_iff (π_ofA f (star a)) (π_ofA f a)).mpr ?_
+    refine (eq_adjoint_iff (mapCLM (f.GNS_op (star a))) (mapCLM (f.GNS_op a))).mpr ?_
     intro x y
     induction x, y using Completion.induction_on₂ with
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y
-    simp [π_ofA_apply, mul_assoc]
+    simp [mul_assoc]
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
@@ -174,10 +167,10 @@ noncomputable def π_unital : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.G
     induction b using Completion.induction_on with
     | hp => apply isClosed_eq <;> fun_prop
     | ih b
-    simp [π, π_ofA]
+    simp [π]
   commutes' r := by
     dsimp [π]
-    simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_ofA, mapCLM]
+    simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, mapCLM]
     congr; ext c; simp
   map_mul' := map_mul f.π
   map_zero' := map_zero f.π
