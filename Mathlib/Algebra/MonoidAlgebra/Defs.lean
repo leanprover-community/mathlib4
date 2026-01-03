@@ -722,24 +722,34 @@ def uniqueRingEquiv [Unique M] : R[M] ≃+* R where
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
 /-- An additive product monoid algebra is a nested additive monoid algebra. -/]
+def curryAddEquiv : R[M × N] ≃+ R[N][M] :=
+  coeffAddEquiv.trans <| .trans Finsupp.curryAddEquiv <| .trans
+    (Finsupp.mapRange.addEquiv coeffAddEquiv.symm) coeffAddEquiv.symm
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma curryAddEquiv_single (m : M) (n : N) (r : R) :
+    curryAddEquiv (single (m, n) r) = single m (single n r) := by simp [curryAddEquiv]
+
+@[to_additive (attr := simp)]
+lemma curryAddEquiv_symm_single (m : M) (n : N) (r : R) :
+    curryAddEquiv.symm (single m <| single n r) = (single (m, n) r) := by simp [curryAddEquiv]
+
+/-- A product monoid algebra is a nested monoid algebra. -/
+@[to_additive (dont_translate := R)
+/-- An additive product monoid algebra is a nested additive monoid algebra. -/]
 def curryRingEquiv : R[M × N] ≃+* R[N][M] where
   toAddEquiv := curryAddEquiv
-  map_mul' := by
-    let f : R[M × N] →+ R[N][M] := curryAddEquiv.toAddMonoidHom
-    have {mn r} : f (single mn r) = single mn.1 (single mn.2 r) := Finsupp.curry_single _ _
-    refine f.map_mul_iff.2 ?_
-    ext ⟨m₁, n₁⟩ r₁ ⟨m₂, n₂⟩ r₂
-    simp [this]
+  map_mul' := curryAddEquiv (M := M) (N := N).toAddMonoidHom.map_mul_iff.2 <| by
+    ext ⟨m₁, n₁⟩ r₁ ⟨m₂, n₂⟩ r₂; simp
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma curryRingEquiv_single (m : M) (n : N) (r : R) :
-    curryRingEquiv (single (m, n) r) = single m (single n r) := by
-  simp [curryRingEquiv, RingEquiv.symm_apply_eq]
+    curryRingEquiv (single (m, n) r) = single m (single n r) := by simp [curryRingEquiv]
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma curryRingEquiv_symm_single (m : M) (n : N) (r : R) :
     curryRingEquiv.symm (single m <| single n r) = (single (m, n) r) := by
-  simp [curryRingEquiv]
+  simp [curryRingEquiv, RingEquiv.symm_apply_eq]
 
 variable [IsCancelMul M]
 
