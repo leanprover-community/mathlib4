@@ -66,41 +66,19 @@ theorem topologicalKrullDim_subspace_le (X : Type*) [TopologicalSpace X] (Y : Se
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
   IsInducing.topologicalKrullDim_le IsInducing.subtypeVal
 
-lemma DiscreteTopology.singleton_of_isIrreducible
-    {X : Type*} {S : Set X} [TopologicalSpace X] [DiscreteTopology X] (h : IsIrreducible S)
-    (s : X) (hs : s ∈ S) :
-    S = {s} := by
-  ext x
-  constructor
-  · intro hx
-    let S' := (S : Set X) \ {x}
-    have h1 : ¬(S'.Nonempty) := by
-      by_contra hc
-      have := h.2 S' {x} (isOpen_discrete S') (isOpen_discrete {x})
-      have hS' : S ∩ S' = S' := by aesop
-      have _ : (S ∩ (S' ∩ {x})) = ∅ := by aesop
-      rw[hS'] at this
-      aesop
-    have hxS : {x} = S := Subset.antisymm (singleton_subset_iff.mpr hx)
-      (diff_eq_empty.mp (not_nonempty_iff_eq_empty.mp h1))
-    subst hxS
-    aesop
-  intro hx
-  rw[hx]
-  exact hs
-
 theorem topologicalKrullDim_zero_of_discreteTopology
     (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     topologicalKrullDim X ≤ 0 := by
   apply krullDim_nonpos_iff_forall_isMax.mpr
   intro Z Y h
   change Y.1 ≤ Z.1
-  obtain ⟨y, hy⟩ := Y.2.1
-  obtain ⟨z, hz⟩ := Z.2.1
-  have h2 := DiscreteTopology.singleton_of_isIrreducible Y.2 y hy
-  have h3 := DiscreteTopology.singleton_of_isIrreducible Z.2 z hz
-  rw[h2,h3]
-  have : y = z := by
-    have : Z.1 ≤ Y.1 := h
-    aesop
-  rw[this]
+  have hYZ : Z.1 = Y.1 := by
+    have hZY := IsDiscrete.subsingleton_of_isPreirreducible DiscreteTopology.isDiscrete Y.2.2
+    ext x
+    constructor
+    · exact fun hx ↦ h hx
+    intro hx
+    obtain ⟨z, hz⟩ := Z.2.1
+    rw[hZY hx (h hz)]
+    exact hz
+  rw[hYZ]
