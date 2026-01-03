@@ -124,7 +124,7 @@ private lemma fourierCoeff_zero (p : ℂ[X]) (n : ℤ) :
 
 /-- **Parseval's Identity** for polynomials -/
 theorem sum_sq_norm_coeff_eq_circleAverage : ∑ i ∈ p.support, ‖p.coeff i‖ ^ 2 =
-    Real.circleAverage ((· ^ 2) ∘ norm ∘ p.eval) 0 1 := by
+    Real.circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1 := by
   -- The Fourier coefficients match the polynomial coefficients
   have coeff_match : ∑ i ∈ p.support, ‖p.coeff i‖ ^ 2 =
     ∑' (n : ℤ), ‖fourierCoeffOn Real.two_pi_pos (fun t => p.eval (circleMap 0 1 t)) n‖ ^ 2 := by
