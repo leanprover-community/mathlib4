@@ -70,7 +70,7 @@ open scoped Pointwise
 
 variable {G X ιₚ : Type*} [Group G] [MulAction G X]
 
-variable (G X)
+variable (G X) in
 
 /-- A `Prototile G X` describes a tile in `X`, copies of which under elements of `G` may be used in
 tilings. Two copies related by an element of `symmetries` are considered the same; two copies not so
@@ -95,7 +95,7 @@ instance : CoeOut (Prototile G X) (Set X) where
 attribute [coe] carrier
 
 instance : Membership X (Prototile G X) where
-  mem := fun p x ↦ x ∈ (p : Set X)
+  mem p x := x ∈ (p : Set X)
 
 lemma coe_mk (c s) : (⟨c, s⟩ : Prototile G X) = c := rfl
 
@@ -196,7 +196,7 @@ lemma ext_iff_of_preimage {pt₁ pt₂ : PlacedTile ps} :
 
 /-- Coercion from a `PlacedTile` to a set of points. Use the coercion rather than using `coeSet`
 directly. -/
-@[coe] def coeSet : PlacedTile ps → Set X :=
+@[coe] def coeSet (pt : PlacedTile ps) : Set X :=
   fun pt ↦ Quotient.liftOn' pt.groupElts (fun g ↦ g • (ps pt.index : Set X))
     fun a b r ↦ by
       rw [QuotientGroup.leftRel_eq] at r
@@ -244,7 +244,7 @@ instance : MulAction G (PlacedTile ps) where
       rw [QuotientGroup.leftRel_eq] at r
       refine PlacedTile.ext rfl ?_
       simpa [QuotientGroup.eq, ← mul_assoc] using r
-  one_smul := fun pt ↦ by
+  one_smul pt := by
     simp only [HSMul.hSMul]
     induction pt using PlacedTile.induction_on
     simp
