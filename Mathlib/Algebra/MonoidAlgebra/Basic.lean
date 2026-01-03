@@ -217,17 +217,17 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : k[G]) :
     rw [lift_unique' F]
     simp [lift_apply]
 
-/-- If `f : G → H` is a homomorphism between two magmas, then
-`Finsupp.mapDomain f` is a non-unital algebra homomorphism between their magma algebras. -/
-@[to_additive (dont_translate := k) (attr := simps apply) /--
-If `f : G → H` is a homomorphism between two additive magmas, then `Finsupp.mapDomain f` is a
-non-unital algebra homomorphism between their additive magma algebras. -/]
-def mapDomainNonUnitalAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A]
-    {G H F : Type*} [Mul G] [Mul H] [FunLike F G H] [MulHomClass F G H] (f : F) :
-    A[G] →ₙₐ[k] A[H] :=
-  { (Finsupp.mapDomain.addMonoidHom f : A[G] →+ A[H]) with
-    map_mul' := fun x y => mapDomain_mul f x y
-    map_smul' := fun r x => mapDomain_smul r x }
+/-- If `f : M → N` is a homomorphism between two magmas, then `MonoidAlgebra.mapDomain f`
+is a non-unital algebra homomorphism between their magma algebras. -/
+@[to_additive (dont_translate := R A) (attr := simps apply)
+/-- If `f : M → N` is a homomorphism between two additive magmas,
+then `AddMonoidAlgebra.mapDomain f` is a non-unital algebra homomorphism
+between their additive magma algebras. -/]
+def mapDomainNonUnitalAlgHom (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+    [Mul M] [Mul N] (f : M →ₙ* N) : A[M] →ₙₐ[R] A[N] where
+  __ := mapDomainNonUnitalRingHom A f
+  map_mul' := mapDomain_mul f
+  map_smul' _ _ := mapDomain_smul ..
 
 variable (A) in
 @[to_additive]
@@ -235,15 +235,15 @@ theorem mapDomain_algebraMap {F : Type*} [FunLike F G H] [MonoidHomClass F G H] 
     mapDomain f (algebraMap k A[G] r) = algebraMap k A[H] r := by
   simp only [coe_algebraMap, mapDomain_single, map_one, (· ∘ ·)]
 
-/-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
-`Finsupp.mapDomain f` is an algebra homomorphism between their monoid algebras. -/
-@[to_additive (attr := simps!) /--
-If `f : G → H` is an additive homomorphism between two additive monoids, then
-`Finsupp.mapDomain f` is an algebra homomorphism between their additive monoid algebras. -/]
-def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H F : Type*}
-    [Monoid H] [FunLike F G H] [MonoidHomClass F G H] (f : F) :
-    A[G] →ₐ[k] A[H] :=
-  { mapDomainRingHom A f with commutes' := mapDomain_algebraMap A f }
+/-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra
+homomorphism between their monoid algebras. -/
+@[to_additive (dont_translate := R A) (attr := simps! apply)
+/-- If `f : M → N` is an additive monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an
+algebra homomorphism between their additive monoid algebras. -/]
+def mapDomainAlgHom (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
+    (f : M →* N) : A[M] →ₐ[R] A[N] where
+  toRingHom := mapDomainRingHom A f
+  commutes' := by simp
 
 @[to_additive (attr := simp)]
 lemma mapDomainAlgHom_id (k A) [CommSemiring k] [Semiring A] [Algebra k A] :
@@ -263,28 +263,24 @@ variable (k A)
 @[to_additive (dont_translate := A)
 /-- If `e : G ≃+ H` is an additive equivalence between two additive monoids, then
 `AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
-def domCongr (e : G ≃* H) : A[G] ≃ₐ[k] A[H] :=
-  .ofLinearEquiv
-    (Finsupp.domLCongr e)
-    (by ext; simp [one_def, MonoidAlgebra])
-    (fun f g ↦ by
-      classical ext; simp [mul_def]; simp [MonoidAlgebra, Finsupp.single_apply, e.eq_symm_apply])
+def domCongr (e : G ≃* H) : A[G] ≃ₐ[k] A[H] where
+  toRingEquiv := mapDomainRingEquiv A e
+  commutes' _ := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma domCongr_apply (e : G ≃* H) (x : A[G]) (h : H) : domCongr k A e x h = x (e.symm h) := by
+  simp [domCongr]
 
 @[to_additive]
-theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
-  AlgHom.ext fun _ => equivMapDomain_eq_mapDomain _ _
+theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e := rfl
 
 @[to_additive (attr := simp)]
-theorem domCongr_apply (e : G ≃* H) (f : A[G]) (h : H) : domCongr k A e f h = f (e.symm h) := rfl
-
-@[to_additive (attr := simp)]
-theorem domCongr_support (e : G ≃* H) (f : A[G]) : (domCongr k A e f).support = f.support.map e :=
-  rfl
+lemma domCongr_support (e : G ≃* H) (f : A[G]) : (domCongr k A e f).support = f.support.map e := by
+  ext; simp
 
 @[to_additive (attr := simp)]
 theorem domCongr_single (e : G ≃* H) (g : G) (a : A) :
-    domCongr k A e (single g a) = single (e g) a :=
-  Finsupp.equivMapDomain_single _ _ _
+    domCongr k A e (single g a) = single (e g) a := by simp [domCongr]
 
 @[to_additive (attr := simp)]
 lemma domCongr_comp_lsingle (e : G ≃* H) (g : G) :
@@ -407,15 +403,21 @@ That's why it is not a global instance. -/]
 noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
 
-attribute [local instance] algebraMonoidAlgebra
+scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
+  AddMonoidAlgebra.algebraAddMonoidAlgebra
+
+open scoped AlgebraMonoidAlgebra
 
 @[to_additive (attr := simp)]
 lemma algebraMap_def : algebraMap R[M] S[M] = mapRangeRingHom M (algebraMap R S) := rfl
 
 @[to_additive (dont_translate := R)]
-instance [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
-    IsScalarTower R S[M] T[M] :=
+lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] : IsScalarTower R S[M] T[M] :=
   .of_algebraMap_eq' (mapRangeAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
+
+scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.isScalarTower_monoidAlgebra
+  AddMonoidAlgebra.vaddAssocClass_addMonoidAlgebra
 
 end MonoidAlgebra
 

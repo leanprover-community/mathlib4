@@ -15,7 +15,7 @@ import Mathlib.Probability.Independence.InfinitePi
 
 * `IdentDistrib.prodMk`: if `X` and `Y` are independent random variables on `Ω`, `Z` and `W` are
   independent random variables on `Ω'`, such that `X` and `Z` are identically distributed
-  and `Y` and `W` are identically distributed, then the pairs `(X, Y)`  and `(Z, W)` are
+  and `Y` and `W` are identically distributed, then the pairs `(X, Y)` and `(Z, W)` are
   identically distributed.
 * `IdentDistrib.pi`: if `(X i)` and `(Y i)` are families of independent random variables indexed by
   a countable type `ι`, such that for each `i`, `X i` and `Y i` are identically distributed, then

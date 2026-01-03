@@ -351,7 +351,7 @@ lemma leftDerivedZeroIsoSelf_hom_inv_id :
 
 @[reassoc (attr := simp)]
 lemma leftDerivedZeroIsoSelf_inv_hom_id :
-    F.leftDerivedZeroIsoSelf.inv ≫ F.fromLeftDerivedZero =  𝟙 _ :=
+    F.leftDerivedZeroIsoSelf.inv ≫ F.fromLeftDerivedZero = 𝟙 _ :=
   F.leftDerivedZeroIsoSelf.inv_hom_id
 
 @[reassoc (attr := simp)]

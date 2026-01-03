@@ -309,7 +309,7 @@ theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ central
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 
 theorem centralizer_toSubalgebra (s : Set A) :
-    (centralizer R s).toSubalgebra = Subalgebra.centralizer R (s ∪ star s):=
+    (centralizer R s).toSubalgebra = Subalgebra.centralizer R (s ∪ star s) :=
   rfl
 
 theorem coe_centralizer_centralizer (s : Set A) :
@@ -440,6 +440,7 @@ theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin <| Set.mem_union_left _ (Set.mem_singleton x)
 
@@ -684,6 +685,7 @@ theorem inf_toSubalgebra (S T : StarSubalgebra R A) :
 theorem coe_sInf (S : Set (StarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (StarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -696,8 +698,9 @@ theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
 theorem coe_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →⋆ₐ[R] B) (hf : Function.Injective f)
     (s : ι → StarSubalgebra R A) : map f (iInf s) = ⨅ (i : ι), map f (s i) := by

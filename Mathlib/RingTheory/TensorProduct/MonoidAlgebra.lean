@@ -70,14 +70,14 @@ lemma scalarTensorEquiv_tmul (a : A) (p : R[M]) :
 lemma scalarTensorEquiv_symm_single (m : M) (a : A) :
     (scalarTensorEquiv R A).symm (single m a) = a ⊗ₜ single m 1 := by simp [scalarTensorEquiv]
 
-attribute [local instance] algebraMonoidAlgebra in
+open scoped AlgebraMonoidAlgebra
+
 instance [Algebra S B] [Algebra A B] [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
     [Algebra.IsPushout R S A B] : Algebra.IsPushout R S A[M] B[M] where
   out := .of_equiv ((tensorEquiv (M := M) R S A).trans <|
       mapRangeAlgEquiv S M <| Algebra.IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
     induction x using Finsupp.induction_linear <;> simp_all [Algebra.IsPushout.equiv_tmul]
 
-attribute [local instance] algebraMonoidAlgebra in
 instance [Algebra S B] [Algebra A B] [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
     [Algebra.IsPushout R A S B] : Algebra.IsPushout R A[M] S B[M] :=
   have : Algebra.IsPushout R S A B := .symm ‹_›

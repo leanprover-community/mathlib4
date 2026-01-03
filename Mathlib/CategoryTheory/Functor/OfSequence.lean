@@ -140,7 +140,7 @@ def ofSequence : F ⟶ G where
     | succ k hk =>
         intro i j hk'
         obtain rfl : j = i + k + 1 := by lia
-        simp only [← homOfLE_comp (show i ≤ i + k by omega) (show i + k ≤ i + k + 1 by omega),
+        simp only [← homOfLE_comp (show i ≤ i + k by lia) (show i + k ≤ i + k + 1 by lia),
           Functor.map_comp, assoc, naturality, reassoc_of% (hk rfl)]
 
 end NatTrans
