@@ -101,6 +101,22 @@ theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filte
   filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
   simp [← Real.mul_rpow (le_of_lt hφ_pos) (hv x), huv']
 
+theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → ℝ} (hfg : f ~[l] g)
+    (g_tendsto : Tendsto g l atTop) :
+    (fun n ↦ Real.log (f n)) ~[l] (fun n ↦ Real.log (g n)) := by
+  have hg := g_tendsto.eventually_ne_atTop 0
+  have hf := hfg.symm.tendsto_atTop g_tendsto|>.eventually_ne_atTop 0
+  rw [isEquivalent_iff_tendsto_one hg] at hfg
+  have := hfg.log (by norm_num)
+  simp only [Pi.div_apply, Real.log_one] at this
+  apply IsLittleO.isEquivalent
+  have := this.congr' (f₂ := (fun n ↦ Real.log (f n) - Real.log (g n))) ?_
+  swap
+  · filter_upwards [hf, hg] with n hf hg using Real.log_div hf hg
+  apply IsLittleO.trans <| (isLittleO_one_iff ℝ).mpr this
+  rw [isLittleO_one_left_iff]
+  exact tendsto_abs_atTop_atTop.comp <| Real.tendsto_log_atTop|>.comp g_tendsto
+
 open Finset
 
 theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
