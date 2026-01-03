@@ -46,6 +46,8 @@ structure Encoding (α : Type u) where
   /-- Decoding and encoding are inverses of each other. -/
   decode_encode : ∀ x, decode (encode x) = some x
 
+attribute [simp] Encoding.decode_encode
+
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
   refine fun _ _ h => Option.some_injective _ ?_
   rw [← e.decode_encode, ← e.decode_encode, h]
@@ -143,7 +145,7 @@ def encodingNatBool : Encoding ℕ where
   decode n := some (decodeNat n)
   decode_encode n := congr_arg _ (decode_encodeNat n)
 
-/-- A binary fin_encoding of ℕ in bool. -/
+/-- A binary finEncoding of ℕ in bool. -/
 def finEncodingNatBool : FinEncoding ℕ :=
   ⟨encodingNatBool, Bool.fintype⟩
 
@@ -170,7 +172,7 @@ def unaryDecodeNat : List Bool → Nat :=
 @[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
   Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
 
-/-- A unary fin_encoding of ℕ. -/
+/-- A unary finEncoding of ℕ. -/
 def unaryFinEncodingNat : FinEncoding ℕ where
   Γ := Bool
   encode := unaryEncodeNat
@@ -188,7 +190,7 @@ def decodeBool : List Bool → Bool
 
 @[simp] theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
 
-/-- A fin_encoding of bool in bool. -/
+/-- A finEncoding of bool in bool. -/
 def finEncodingBoolBool : FinEncoding Bool where
   Γ := Bool
   encode := encodeBool
@@ -213,5 +215,28 @@ theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Countabl
 
 theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
   e.toEncoding.card_le_aleph0
+
+/-- A finEncoding of `List Bool` in `Bool`. -/
+def finEncodingListBool : FinEncoding (List Bool) where
+  Γ := Bool
+  encode := id
+  decode := Option.some
+  decode_encode _ := rfl
+  ΓFin := inferInstance
+
+/--
+Given `finEncoding` of `α` and `β`,
+constructs a `finEncoding` of `α × β` by concatenating the encodings,
+mapping the symbols from the first encoding with `Sum.inl`
+and those from the second with `Sum.inr`.
+-/
+def finEncodingPair {α β : Type*} (ea : FinEncoding α) (eb : FinEncoding β) :
+    FinEncoding (α × β) where
+  Γ := ea.Γ ⊕ eb.Γ
+  encode x := (ea.encode x.1).map .inl ++ (eb.encode x.2).map .inr
+  decode x := Option.map₂ Prod.mk (ea.decode (x.filterMap Sum.getLeft?))
+      (eb.decode (x.filterMap Sum.getRight?))
+  decode_encode x := by simp [List.filterMap_append]
+  ΓFin := inferInstance
 
 end Computability
