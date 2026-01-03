@@ -97,6 +97,7 @@ lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n
   simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
 
 /-- Any permutation matrix is doubly stochastic. -/
+@[simp, grind .]
 lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
     σ.permMatrix R ∈ doublyStochastic R n := by
   rw [mem_doublyStochastic_iff_sum]
@@ -104,6 +105,64 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+
+/-- The tranpose of a doubly stochastic matrix is doubly stochastic. -/
+@[aesop safe apply]
+lemma transpose_mem_doublyStochastic {M : Matrix n n R} (hM : M ∈ doublyStochastic R n) :
+    M.transpose ∈ doublyStochastic R n := by
+  refine ⟨?_, ?_, ?_⟩
+  · simp only [transpose_apply]
+    exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
+  · simp only [mulVec_one, transpose_transpose]
+    ext i
+    simp only [Finset.sum_apply, Pi.one_apply]
+    exact sum_col_of_mem_doublyStochastic hM i
+  · simp only [one_vecMul]
+    ext i
+    simp only [Finset.sum_apply, transpose_apply, Pi.one_apply]
+    exact sum_row_of_mem_doublyStochastic hM i
+
+/-- A matrix is doubly stochastic iff its transpose is doubly stochastic. -/
+@[grind =]
+lemma transpose_mem_doublyStochastic_iff {M : Matrix n n R} :
+    M.transpose ∈ doublyStochastic R n ↔ M ∈ doublyStochastic R n := by
+  refine ⟨fun h => ?_, transpose_mem_doublyStochastic⟩
+  have : M = Mᵀᵀ := by simp
+  rw [this]
+  exact transpose_mem_doublyStochastic h
+
+/-- Reindexing a matrix preserves double stochasticity. -/
+@[aesop safe apply]
+lemma reindex_mem_doublyStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} (hM : M ∈ doublyStochastic R n) : M.reindex e₁ e₂ ∈ doublyStochastic R m := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro i j
+    simp only [reindex_apply, submatrix_apply]
+    exact nonneg_of_mem_doublyStochastic hM
+  · simp [submatrix_mulVec_equiv, hM.2.1]
+  · simp only [reindex_apply, one_vecMul]
+    ext j
+    simp only [Finset.sum_apply, submatrix_apply, Pi.one_apply]
+    have : ∑ x, M (e₁.symm x) (e₂.symm j) = ∑ x, M x (e₂.symm j) :=
+      Finset.sum_equiv e₁.symm (by simp) (fun i _ => rfl)
+    rw [this]
+    exact sum_col_of_mem_doublyStochastic hM (e₂.symm j)
+
+/-- Reindexing a matrix preserves double stochasticity. -/
+@[grind =]
+lemma reindex_mem_doublyStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} : M.reindex e₁ e₂ ∈ doublyStochastic R m ↔ M ∈ doublyStochastic R n := by
+  refine ⟨fun h => ?_, reindex_mem_doublyStochastic⟩
+  have : M = (M.reindex e₁ e₂).reindex e₁.symm e₂.symm := by simp
+  rw [this]
+  exact reindex_mem_doublyStochastic h
+
+/-- Applying a doubly stochastic matrix to a vector preserves its sum. -/
+lemma sum_mulVec_of_mem_doublyStochastic {M : Matrix n n R} {x : n → R}
+    (hA : M ∈ doublyStochastic R n) : ∑ i, (M *ᵥ x) i = ∑ i, x i := by
+  simp only [Matrix.mulVec, dotProduct]
+  rw [Finset.sum_comm]
+  simp [sum_col_of_mem_doublyStochastic hA, ← Finset.sum_mul]
 
 end OrderedSemiring
 
