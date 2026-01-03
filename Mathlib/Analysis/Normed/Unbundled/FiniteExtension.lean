@@ -123,8 +123,8 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
       IsNonarchimedean.finset_image_add hna'
         (fun i ↦ (B.repr x i • ∑ i_1 : ι, B.repr y i_1 • B.repr (B i * B i_1)) ixy)
         (univ : Finset ι)
-    simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, Finset.sum_apply,
-      smul_eq_mul, norm_mul] at hk ⊢
+    simp only [Finsupp.coe_smul, Finsupp.coe_finset_sum, Pi.smul_apply, sum_apply, smul_eq_mul,
+      norm_mul] at hk ⊢
     apply le_trans hk
     -- We use the above property again.
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),
