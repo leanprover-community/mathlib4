@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 
-# Valuations on finite field algebras
+# Valuations on algebras over finite fields
 
 Basic results on valuations over `Fq`-algebras. -/
 
@@ -33,7 +33,8 @@ lemma algebraMap_eq_one (a : Fq) (ha : a ≠ 0) : v (algebraMap Fq A a) = 1 := b
 lemma algebraMap_le_one (v : Valuation A Γ₀) (a : Fq) : v (algebraMap Fq A a) ≤ 1 := by
   by_cases a = 0 <;> grind [zero_le']
 
-instance : IsTrivialOnConstants Fq v where eq_one a ha := FiniteField.algebraMap_eq_one v a ha
+instance (priority := low) : v.IsTrivialOn Fq where
+  eq_one a ha := FiniteField.algebraMap_eq_one v a ha
 
 end FiniteField
 

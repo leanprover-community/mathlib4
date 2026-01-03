@@ -541,7 +541,7 @@ end Field
 
 end IsNontrivial
 
-section IsTrivialOnConstants
+section IsTrivialOn
 
 variable [LinearOrderedCommGroupWithZero Γ₀]
 
@@ -549,21 +549,21 @@ variable [LinearOrderedCommGroupWithZero Γ₀]
   base ring `A` are mapped to `1`.
 
   This is true, for example, when `A` is a finite field.
-  See `Valuation.FiniteField.instIsTrivialOnConstants`. -/
-class IsTrivialOnConstants {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
+  See `Valuation.FiniteField.instIsTrivialOn`. -/
+class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
   (v : Valuation B Γ₀) where eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
 
-attribute [grind =>] IsTrivialOnConstants.eq_one
+attribute [grind =>] Valuation.IsTrivialOn.eq_one
 
 variable {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
-  [IsTrivialOnConstants A v]
+  [v.IsTrivialOn A]
 
 @[simp]
-theorem IsTrivialOnConstants.valuation_map_le_one : ∀ a : A, v (algebraMap A B a) ≤ 1 := by
+theorem IsTrivialOn.valuation_algebraMap_le_one : ∀ a : A, v (algebraMap A B a) ≤ 1 := by
   intro a
   by_cases a = 0 <;> grind [zero_le']
 
-end IsTrivialOnConstants
+end IsTrivialOn
 
 namespace IsEquiv
 
