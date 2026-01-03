@@ -1482,6 +1482,7 @@ public import Mathlib.Analysis.Asymptotics.ExpGrowth
 public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Analysis.Asymptotics.LinearGrowth
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+public import Mathlib.Analysis.Asymptotics.Subpolynomial
 public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 public import Mathlib.Analysis.Asymptotics.TVS
 public import Mathlib.Analysis.Asymptotics.Theta
