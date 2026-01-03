@@ -303,7 +303,8 @@ lemma full_pullFunctor :
 /-- Let `F` be a prestack for a Grothendieck topology `J`,
 `f : X i ⟶ S` and `f' : X' j ⟶ S` be two families of morphisms.
 Assume that `f'` is a covering family for `J`, then
-functors `F.pullFunctor .. : F.DescentData f ⥤ F.DescentData f'`. -/
+functors `F.pullFunctor .. : F.DescentData f ⥤ F.DescentData f'`
+are fully faithful. -/
 noncomputable def fullyFaithfulPullFunctor :
     (pullFunctor F (f := f) (p := 𝟙 _) (f' := f') (p' := p') (by cat_disch)).FullyFaithful := by
   have := F.faithful_pullFunctor w hf'
