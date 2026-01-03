@@ -820,7 +820,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Produce an `AlternatingMap` out of a `MultilinearMap`, by summing over all argument
 permutations. -/
-def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
+irreducible_def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
   toFun m :=
     { ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ with
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
@@ -835,17 +835,19 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
     simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply,
       zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
 
-theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
-    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
+theorem alternatization_coeFn (m : MultilinearMap R (fun _ : ι => M) N') :
+    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) := by
+  rw [alternatization_def]
   rfl
 
 theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
-    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
-  coe_injective rfl
+    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) := by
+  rw [alternatization_def]
+  exact coe_injective rfl
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
-  simp only [alternatization_def, smul_apply, sum_apply]
+  simp only [alternatization_coeFn, smul_apply, sum_apply]
 
 end MultilinearMap
 
@@ -857,7 +859,7 @@ theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : M [⋀^ι]→ₗ[
     MultilinearMap.alternatization (a : MultilinearMap R (fun _ => M) N')
     = Nat.factorial (Fintype.card ι) • a := by
   apply AlternatingMap.coe_injective
-  simp_rw [MultilinearMap.alternatization_def, ← coe_domDomCongr, domDomCongr_perm, coe_smul,
+  simp_rw [MultilinearMap.alternatization_coeFn, ← coe_domDomCongr, domDomCongr_perm, coe_smul,
     smul_smul, Int.units_mul_self, one_smul, Finset.sum_const, Finset.card_univ, Fintype.card_perm,
     ← coe_multilinearMap, coe_smul]
 
@@ -873,7 +875,7 @@ theorem compMultilinearMap_alternatization (g : N' →ₗ[R] N'₂)
     MultilinearMap.alternatization (g.compMultilinearMap f)
       = g.compAlternatingMap (MultilinearMap.alternatization f) := by
   ext
-  simp [MultilinearMap.alternatization_def]
+  simp [MultilinearMap.alternatization_coeFn]
 
 end LinearMap
 
