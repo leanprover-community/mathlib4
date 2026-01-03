@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Order.SuccPred.IntervalSucc
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Absolutely Continuous Functions
@@ -43,8 +44,10 @@ We use the `ε`-`δ` definition to prove that
 
 We conclude that
 * absolutely continuous functions are a.e. differentiable -
-`AbsolutelyContinuousOnInterval.ae_differentiableAt`.
-
+`AbsolutelyContinuousOnInterval.ae_differentiableAt`;
+* if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
+is absolutely continuous on `uIcc a b` -
+`IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
 ## Tags
 absolutely continuous
 -/
@@ -53,7 +56,7 @@ absolutely continuous
 
 variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
 
-open Set Filter Function
+open Set Filter Function MeasureTheory
 
 open scoped Topology NNReal
 
@@ -96,6 +99,19 @@ lemma disjWithin_comm (a b : ℝ) : disjWithin a b = disjWithin b a := by
 lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
     disjWithin c d ⊆ disjWithin a b := by
   grind [disjWithin]
+
+lemma subset_of_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b)
+      {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
+    simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
+    have := hnI.left i hi
+    dsimp only [uIoc]; gcongr 1
+    · simp only [le_inf_iff]; tauto
+    · simp only [sup_le_iff]; tauto
+
+lemma union_subset_of_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b) :
+    (⋃ i ∈ Finset.range n, uIoc (I i).1 (I i).2) ⊆ uIoc a b := by
+  simp only [iUnion_subset_iff, Finset.mem_range]
+  exact fun i hi ↦ subset_of_disjWithin hnI hi
 
 /-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
@@ -349,5 +365,77 @@ theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) :
     ∀ᵐ (x : ℝ), x ∈ uIcc a b → DifferentiableAt ℝ f x :=
   hf.boundedVariationOn.ae_differentiableAt_of_mem_uIcc
+
+/-- If `f` is interval integrable on `a..b` and `c ∈ uIcc a b`, then `fun x ↦ ∫ v in c..x, f v` is
+absolute continuous on `uIcc a b`. -/
+theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral {f : ℝ → ℝ}
+    {a b c : ℝ} (h : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
+    AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
+  -- Step 1: Show that the function sending `E : ℕ × (ℕ → ℝ × ℝ)` to the total length of
+  -- `s E = ⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2` tends to `0` along
+  -- `totalLengthFilter ⊓ 𝓟 (disjWithin a b)`.
+  let s := fun E : ℕ × (ℕ → ℝ × ℝ) ↦ ⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2
+  have : Tendsto (⇑(volume.restrict (uIoc a b)) ∘ s) (totalLengthFilter ⊓ 𝓟 (disjWithin a b))
+      (𝓝 0) := by
+    rw [(hasBasis_totalLengthFilter.inf_principal _).tendsto_iff ENNReal.nhds_zero_basis_Iic]
+    intro ε hε
+    by_cases hε_top : ε = ⊤
+    · exact ⟨1, by simp, by simp [hε_top]⟩
+    replace hε := ENNReal.toReal_pos (hε.ne.symm) hε_top
+    refine ⟨ε.toReal, hε, fun (n, I) hnI ↦ ?_⟩
+    rw [mem_inter_iff] at hnI
+    simp only [comp_apply, mem_Iic, s]
+    rw [Measure.restrict_eq_self (h := union_subset_of_disjWithin hnI.right)]
+    simp only [disjWithin, mem_setOf_eq] at hnI
+    obtain ⟨hnI₁, hnI₂, hnI₃⟩ := hnI
+    rw [measure_biUnion_finset hnI₃ (by simp [uIoc])]
+    calc ∑ i ∈ Finset.range n, volume (uIoc (I i).1 (I i).2)
+      _ = ∑ i ∈ Finset.range n, ENNReal.ofReal ((dist (I i).1 (I i).2)) := by
+        apply Finset.sum_congr rfl
+        simp [uIoc, Real.dist_eq, max_sub_min_eq_abs']
+      _ = ENNReal.ofReal (∑ i ∈ Finset.range n, (dist (I i).1 (I i).2)) := by
+        simp [ENNReal.ofReal_sum_of_nonneg]
+      _ ≤ ENNReal.ofReal ε.toReal :=
+        ENNReal.ofReal_lt_ofReal_iff hε |>.mpr hnI₁ |>.le
+      _ ≤ ε := ENNReal.ofReal_toReal_le
+  -- Step 2: Use `MeasureTheory.tendsto_setLIntegral_zero` to conclude that the function sending
+  -- `E` to `∫⁻ (x : ℝ) in s E, ‖f x‖ₑ ∂volume.restrict (uIoc a b))` tends to `0` along
+  -- `totalLengthFilter ⊓ 𝓟 (disjWithin a b)`.
+  have := tendsto_setLIntegral_zero
+    (ne_of_lt <| intervalIntegrable_iff.mp h |>.hasFiniteIntegral)
+    (s := s)
+    (l := totalLengthFilter ⊓ 𝓟 (disjWithin a b))
+    this
+  -- Step 3: Use the lintegral in Step 2 to bound the sum of the distances between
+  -- `∫ v in c..(E.2 i).2, f v` and `∫ v in c..(E.2 i).2, f v` that occurs in the definition
+  -- of absolutely continuous.
+  have := ENNReal.toReal_zero ▸ (ENNReal.continuousAt_toReal (by simp)).tendsto.comp this
+  refine squeeze_zero' ?_ ?_ this
+  · filter_upwards with (n, I)
+    exact Finset.sum_nonneg (fun _ _ ↦ dist_nonneg)
+  simp only [comp_apply, s]
+  have : ∀ᶠ (E : ℕ × (ℕ → ℝ × ℝ)) in totalLengthFilter ⊓ 𝓟 (disjWithin a b),
+      E ∈ disjWithin a b :=
+    eventually_inf_principal.mpr (by simp)
+  filter_upwards [this] with (n, I) hnI
+  obtain ⟨hnI1, hnI2⟩ := mem_setOf_eq ▸ hnI
+  simp only
+  rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_uIoc.restrict),
+      integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
+  · refine Finset.sum_le_sum (fun i hi ↦ ?_)
+    rw [Real.dist_eq,
+        intervalIntegral.integral_interval_sub_left
+          (by apply IntervalIntegrable.mono_set' h; grind [uIoc, uIcc])
+          (by apply IntervalIntegrable.mono_set' h; grind [uIoc, uIcc]),
+        Measure.restrict_restrict_of_subset
+          (subset_of_disjWithin hnI (Finset.mem_range.mp hi)),
+        intervalIntegral.integral_symm, abs_neg,
+        intervalIntegral.abs_intervalIntegral_eq]
+    exact abs_integral_le_integral_abs
+  · intro i hi
+    unfold IntegrableOn
+    have h_subset := subset_of_disjWithin hnI (Finset.mem_range.mp hi)
+    rw [Measure.restrict_restrict_of_subset h_subset]
+    exact IntegrableOn.mono_set h.def'.norm h_subset |>.integrable
 
 end AbsolutelyContinuousOnInterval
