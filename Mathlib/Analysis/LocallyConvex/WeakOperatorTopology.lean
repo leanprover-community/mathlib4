@@ -124,9 +124,11 @@ instance instFunLike : FunLike (E →SWOT[σ] F) E F where
   coe f :=  ((ContinuousLinearMap.toWOT σ E F).symm f : E → F)
   coe_injective' := by intro; simp
 
-instance instContinuousLinearMapClass : ContinuousSemilinearMapClass (E →SWOT[σ] F) σ E F where
+instance instSemilinearMapClass : SemilinearMapClass (E →SWOT[σ] F) σ E F where
   map_add f x y := by simp only [DFunLike.coe]; simp
   map_smulₛₗ f r x := by simp only [DFunLike.coe]; simp
+
+instance instContinuousMapClass : ContinuousMapClass (E →SWOT[σ] F) E F where
   map_continuous f := ContinuousLinearMap.continuous ((ContinuousLinearMap.toWOT σ E F).symm f)
 
 @[simp]
