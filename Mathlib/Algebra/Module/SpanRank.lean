@@ -327,25 +327,21 @@ end Linear
 
 section RestrictScalars
 
-variable {S R : Type*} {M : Type u} [CommSemiring S] [Semiring R] [AddCommMonoid M]
-  [Algebra S R] [Module R M] [Module S M] [IsScalarTower S R M] [RingHomSurjective (algebraMap S R)]
+variable {R S : Type*} {M : Type u} [CommSemiring R] [Semiring S] [AddCommMonoid M]
+  [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
 
-lemma spanRank_restrictScalars_eq_spanRank (M₁ : Submodule R M) :
-    (M₁.restrictScalars S).spanRank = M₁.spanRank := by
-  apply le_antisymm
-  · rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
-    rw [FG.spanRank_le_iff_exists_span_set_card_le]
-    use s
-    constructor
-    · rw [hscard]
-    · rw [← hsspan, ← span_coe_eq_restrictScalars,
-        coe_span_eq_span_of_surjective S R <| RingHom.surjective (algebraMap S R)]
-      simp
-  · let f : M₁.restrictScalars S →ₛₗ[algebraMap S R] M₁ := {
-      AddEquiv.refl M₁ with
-      map_smul' := by simp
-    }
-    apply spanRank_le_spanRank_of_surjective f Function.surjective_id
+lemma le_spanRank_restrictScalars
+    (N : Submodule S M) : N.spanRank ≤ (N.restrictScalars R).spanRank := by
+  obtain ⟨s, hs, e⟩ := (N.restrictScalars R).exists_span_set_card_eq_spanRank
+  obtain rfl : span S s = N :=
+    le_antisymm (span_le.mpr (span_le.mp e.le:)) (e.ge.trans (span_le_restrictScalars R S s))
+  grw [← hs, spanRank_span_le_card]
+
+lemma spanRank_restrictScalars_eq (H : Function.Surjective (algebraMap R S))
+    (N : Submodule S M) : (N.restrictScalars R).spanRank = N.spanRank := by
+  refine N.le_spanRank_restrictScalars.antisymm' ?_
+  obtain ⟨s, hs, rfl⟩ := N.exists_span_set_card_eq_spanRank
+  grw [restrictScalars_span R S H s, ← hs, spanRank_span_le_card]
 
 end RestrictScalars
 
