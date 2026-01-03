@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Circular
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Reducing to an interval modulo its length
@@ -52,8 +53,7 @@ theorem sub_toIcoDiv_zsmul_mem_Ico (a b : α) : b - toIcoDiv hp a b • p ∈ Se
   (existsUnique_sub_zsmul_mem_Ico hp b a).choose_spec.1
 
 theorem toIcoDiv_eq_iff : toIcoDiv hp a b = n ↔ b - n • p ∈ Set.Ico a (a + p) :=
-  have := (existsUnique_sub_zsmul_mem_Ico hp b a).choose_spec
-  ⟨fun h ↦ h ▸ this.1, fun h ↦ .symm <| this.2 _ h⟩
+  (existsUnique_sub_zsmul_mem_Ico hp b a).choose_eq_iff
 
 alias ⟨_, toIcoDiv_eq_of_sub_zsmul_mem_Ico⟩ := toIcoDiv_eq_iff
 
@@ -66,8 +66,7 @@ theorem sub_toIocDiv_zsmul_mem_Ioc (a b : α) : b - toIocDiv hp a b • p ∈ Se
   (existsUnique_sub_zsmul_mem_Ioc hp b a).choose_spec.1
 
 theorem toIocDiv_eq_iff : toIocDiv hp a b = n ↔ b - n • p ∈ Set.Ioc a (a + p) :=
-  have := (existsUnique_sub_zsmul_mem_Ioc hp b a).choose_spec
-  ⟨fun h ↦ h ▸ this.1, fun h ↦ .symm <| this.2 _ h⟩
+  (existsUnique_sub_zsmul_mem_Ioc hp b a).choose_eq_iff
 
 alias ⟨_, toIocDiv_eq_of_sub_zsmul_mem_Ioc⟩ := toIocDiv_eq_iff
 
@@ -952,7 +951,8 @@ end LinearOrderedAddCommGroup
 ### `simp` confluence lemmas for rings
 
 In rings, we simplify `(m : ℤ) • x` to `↑m * x`, so we need to restate some lemmas
-using `↑m * x` instead of `m • x`.
+using `↑m * x` instead of `m • x`. In some lemmas, `m` is a variable,
+in other lemmas `m = toIcoDiv _ _ _` or `m = `toIocDiv _ _ _`.
 -/
 
 section Ring
