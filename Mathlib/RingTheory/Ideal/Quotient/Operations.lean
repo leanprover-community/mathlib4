@@ -780,11 +780,16 @@ lemma comap_map_mk {I J : Ideal R} [I.IsTwoSided] (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J := by
   simpa
 
-lemma isPrime_map_quotientMk_of_isPrime {I : Ideal R} [I.IsTwoSided] {p : Ideal R}
-    [p.IsPrime] (hIP : I ≤ p) : (p.map (Ideal.Quotient.mk I)).IsPrime := by
-  apply Ideal.map_isPrime_of_surjective
+lemma isCompletelyPrime_map_quotientMk_of_isCompletelyPrime {I : Ideal R} [I.IsTwoSided]
+    {p : Ideal R} [p.IsCompletelyPrime] (hIP : I ≤ p) :
+    (p.map (Ideal.Quotient.mk I)).IsCompletelyPrime := by
+  apply Ideal.map_isCompletelyPrime_of_surjective
   · exact Quotient.mk_surjective
   · simpa
+
+lemma isPrime_map_quotientMk_of_isPrime {R} [CommRing R] {I : Ideal R} {p : Ideal R}
+    [p.IsPrime] (hIP : I ≤ p) : (p.map (Ideal.Quotient.mk I)).IsPrime :=
+  (isCompletelyPrime_map_quotientMk_of_isCompletelyPrime hIP).isPrime
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange

@@ -142,12 +142,22 @@ theorem pointwise_smul_subset_iff {a : M} {S T : Ideal R} : a • S ≤ T ↔ S 
 theorem subset_pointwise_smul_iff {a : M} {S T : Ideal R} : S ≤ a • T ↔ a⁻¹ • S ≤ T := by
   rw [← pointwise_smul_le_pointwise_smul_iff (a := a⁻¹), inv_smul_smul]
 
-instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime := by
+instance IsCompletelyPrime.smul {I : Ideal R} [H : I.IsCompletelyPrime] (g : M) :
+    (g • I).IsCompletelyPrime := by
   rw [I.pointwise_smul_eq_comap]
   apply H.comap
 
+instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime := by
+  rw [I.pointwise_smul_eq_comap]
+  apply H.comap_of_equiv
+
 @[simp]
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
+  ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
+
+@[simp]
+theorem IsCompletelyPrime.smul_iff {I : Ideal R} (g : M) :
+    (g • I).IsCompletelyPrime ↔ I.IsCompletelyPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :

@@ -123,7 +123,7 @@ variable {A : Type*} [CommRing A] [IsDomain A]
 
 /-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
 -/
-instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
+instance isDomain_of_local_atPrime {P : Ideal A} [P.IsPrime] :
     IsDomain (Localization.AtPrime P) :=
   isDomain_localization P.primeCompl_le_nonZeroDivisors
 
