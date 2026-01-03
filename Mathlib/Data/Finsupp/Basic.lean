@@ -953,6 +953,8 @@ def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   left_inv := uncurry_curry
   right_inv := curry_uncurry
 
+@[deprecated (since := "2026-01-03")] alias finsuppProdEquiv := curryEquiv
+
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
   ext a b

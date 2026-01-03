@@ -282,9 +282,14 @@ noncomputable def curryLinearEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β 
   toAddEquiv := curryAddEquiv
   map_smul' c f := by ext; simp
 
+@[deprecated (since := "2026-01-03")] alias finsuppProdLEquiv := curryLinearEquiv
+
 theorem curryLinearEquiv_symm_apply_apply (f : α →₀ β →₀ M) (xy) :
     (curryLinearEquiv R).symm f xy = f xy.1 xy.2 :=
   rfl
+
+@[deprecated (since := "2026-01-03")]
+alias finsuppProdLEquiv_symm_apply_apply := curryLinearEquiv_symm_apply_apply
 
 end Prod
 
