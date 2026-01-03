@@ -3,10 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Real.Archimedean
-import Mathlib.NumberTheory.Zsqrtd.Basic
+module
+
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Gaussian integers
@@ -36,6 +38,8 @@ Gaussian integers are implemented using the more general definition `Zsqrtd`, th
 adjoined a square root of `d`, in this case `-1`. The definition is reducible, so that properties
 and definitions about `Zsqrtd` can easily be used.
 -/
+
+@[expose] public section
 
 
 open Zsqrtd Complex

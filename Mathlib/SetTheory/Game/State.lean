@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.SetTheory.Game.Short
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.SetTheory.Game.Short
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.ConcreteGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -25,6 +27,8 @@ relying on general well-foundedness seems to be poisonous to computation?
 
 See `SetTheory/Game/Domineering` for an example using this construction.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -61,7 +65,7 @@ theorem turnBound_ne_zero_of_left_move {s t : S} (m : t ∈ l s) : turnBound s �
 theorem turnBound_ne_zero_of_right_move {s t : S} (m : t ∈ r s) : turnBound s ≠ 0 := by
   intro h
   have t := right_bound m
-  cutsat
+  lia
 
 theorem turnBound_of_left {s t : S} (m : t ∈ l s) (n : ℕ) (h : turnBound s ≤ n + 1) :
     turnBound t ≤ n :=

@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
@@ -11,6 +13,8 @@ import Mathlib.Data.ENNReal.Operations
 This file defines basic scalar actions on extended nonnegative reals, showing that
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
+
+@[expose] public section
 
 open Set NNReal ENNReal
 
@@ -48,7 +52,6 @@ noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Mod
 
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
 noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
-  smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ≥0∞) x, smul_def]
   algebraMap := (algebraMap ℝ≥0∞ A).comp (ofNNRealHom : ℝ≥0 →+* ℝ≥0∞)
@@ -89,10 +92,10 @@ theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.
 
 instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
   smul_lt_smul_of_pos_left _r hr _a _b hab :=
-    ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
+    ENNReal.mul_lt_mul_right (coe_pos.2 hr).ne' coe_ne_top hab
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
-  smul_le_smul_of_nonneg_right _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
+  smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
 
 end Actions
 

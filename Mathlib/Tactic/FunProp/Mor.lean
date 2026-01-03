@@ -3,7 +3,10 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.CoeAttr
 
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
@@ -19,6 +22,8 @@ expression changes. For example in:
 ```
 the head of expression is considered to be `f` and not `coe`.
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta

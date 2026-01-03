@@ -3,9 +3,11 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.Tactic.ApplyFun
 /-!
 
 # Effective epimorphic families and coproducts
@@ -15,11 +17,13 @@ the coproduct exists, and the converse under some more conditions on the coprodu
 interacts well with pullbacks).
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /--
 Given an `EffectiveEpiFamily X π` and a corresponding coproduct cocone, the family descends to an

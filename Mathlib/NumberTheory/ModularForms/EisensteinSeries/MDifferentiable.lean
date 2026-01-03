@@ -3,11 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
-import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
 # Holomorphicity of Eisenstein series
@@ -16,6 +17,8 @@ We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence c
 `a : Fin 2 → ZMod N` are holomorphic on the upper half plane, which is stated as being
 MDifferentiable.
 -/
+
+@[expose] public section
 
 noncomputable section
 

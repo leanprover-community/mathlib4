@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Convex sets are null-measurable
@@ -14,6 +16,8 @@ Let `E` be a finite-dimensional real vector space, let `μ` be a Haar measure on
 convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaar_frontier`), hence
 `s` is a `NullMeasurableSet` (see `Convex.nullMeasurableSet`).
 -/
+
+@[expose] public section
 
 
 open MeasureTheory MeasureTheory.Measure Set Metric Filter Bornology

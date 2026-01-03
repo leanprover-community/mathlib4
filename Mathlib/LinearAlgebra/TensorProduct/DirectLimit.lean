@@ -3,9 +3,10 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor product and direct limits commute with each other.
@@ -20,6 +21,8 @@ as `R`-modules.
 * `TensorProduct.directLimitRight : M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f)`
 
 -/
+
+@[expose] public section
 
 open TensorProduct Module Module.DirectLimit
 
@@ -86,7 +89,7 @@ noncomputable def directLimitLeft :
 
 lemma directLimitLeft_rTensor_of {i : ι} (x : G i ⊗[R] M) :
     directLimitLeft f M (LinearMap.rTensor M (of ..) x) = of _ _ _ (f ▷ M) _ x :=
-  x.induction_on (by simp) (by simp+contextual) (by simp+contextual)
+  x.induction_on (by simp) (by simp +contextual) (by simp +contextual)
 
 /--
 `M ⊗ (limᵢ Gᵢ)` and `limᵢ (M ⊗ Gᵢ)` are isomorphic as modules

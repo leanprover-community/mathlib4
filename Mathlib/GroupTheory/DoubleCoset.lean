@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.Coset.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Double cosets
@@ -19,6 +21,8 @@ this is the usual left or right quotient of a group by a subgroup.
 * `setoid`: The double coset relation defined by two subgroups `H K` of `G`.
 * `DoubleCoset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

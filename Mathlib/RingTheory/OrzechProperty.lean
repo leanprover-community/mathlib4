@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.RingTheory.Finiteness.Cardinality
+module
+
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 
@@ -42,6 +44,8 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
+@[expose] public section
+
 universe u v w
 
 open Function
@@ -61,6 +65,12 @@ class OrzechProperty : Prop where
     [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
 
 namespace OrzechProperty
+
+instance [Finite R] : OrzechProperty R where
+  injective_of_surjective_of_submodule' {M} _ _ _ {N} _f hf :=
+    have : Finite M := Module.finite_of_finite R
+    have ⟨_g, hg⟩ := N.subtype_injective.hasLeftInverse
+    .of_comp (hg.surjective.comp hf).bijective_of_finite.1
 
 variable {R}
 

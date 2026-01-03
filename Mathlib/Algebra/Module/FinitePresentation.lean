@@ -3,13 +3,15 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.Projective
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Finiteness.Projective
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -51,6 +53,8 @@ In particular,
 For finitely presented algebras, see `Algebra.FinitePresentation`
 in file `Mathlib/RingTheory/FinitePresentation.lean`.
 -/
+
+@[expose] public section
 
 open Finsupp
 
@@ -166,7 +170,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   obtain ⟨t, ht⟩ := hl'
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → M)) :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hs])
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
@@ -183,7 +187,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hs])
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
     choose f hf using show _ from hl
     exact ⟨Finsupp.linearCombination R (fun i ↦ f i), by ext; simp [hf]⟩
@@ -216,7 +220,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hs])
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
     constructor
     rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
@@ -363,7 +367,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   let π := Finsupp.linearCombination R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hσ])
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=
@@ -447,15 +451,13 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
   refine ⟨s₀ * s₁ * s₂, (s₀ * s₁ * s₂).2, fun t ht ↦ ?_⟩
   let Rₛ := Localization (.powers t)
   let lₛ := LocalizedModule.map (.powers t) l
+  have hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩
   have hu₀ : IsUnit (algebraMap R Rₛ s₀) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₁ * s₂, by simp [mul_assoc]⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₁ * s₂, by simp [mul_assoc]⟩ ht)) hu
   have hu₁ : IsUnit (algebraMap R Rₛ s₁) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₂, by ring⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₂, by ring⟩ ht)) hu
   have hu₂ : IsUnit (algebraMap R Rₛ s₂) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₁, by ring⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₁, by ring⟩ ht)) hu
   let lₛ' := LocalizedModule.map (.powers t) l'
   have H_left : ((hu₀.unit⁻¹).1 • lₛ') ∘ₗ lₛ = LinearMap.id := by
     apply ((Module.End.isUnit_iff _).mp (hu₂.map (algebraMap Rₛ (Module.End Rₛ _)))).1
@@ -561,7 +563,7 @@ instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
     (Rₛ) [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
     [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
     [Module.FinitePresentation R M] :
-      IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
+    IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
   IsLocalizedModule.of_linearEquiv _ _ _
 
 instance [Module.FinitePresentation R M] :
@@ -569,7 +571,7 @@ instance [Module.FinitePresentation R M] :
   Module.FinitePresentation.isLocalizedModule_mapExtendScalars _ _ _ _
 
 /--
-Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+Let `M` be a finitely presented `R`-module, `N` an `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
 `LocalizedModule S M →ₗ[R] LocalizedModule S N`
 -/
@@ -591,7 +593,7 @@ lemma Module.FinitePresentation.linearEquivMap_symm_apply [Module.FinitePresenta
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
 /--
-Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+Let `M` be a finitely presented `R`-module, `N` an `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
 `LocalizedModule S M →ₗ[Localization S] LocalizedModule S N`
 -/

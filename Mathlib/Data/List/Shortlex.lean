@@ -3,10 +3,11 @@ Copyright (c) 2024 Hannah Fechtner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hannah Fechtner
 -/
+module
 
-import Mathlib.Data.List.Lex
-import Mathlib.Tactic.Linarith
-import Mathlib.Order.RelClasses
+public import Mathlib.Data.List.Lex
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Order.RelClasses
 
 /-!
 # Shortlex ordering of lists.
@@ -26,6 +27,8 @@ Related files are:
 * `Mathlib/Data/DFinsupp/WellFounded.lean`: Well-foundedness of lexicographic orders on `DFinsupp`
   and `Pi`.
 -/
+
+@[expose] public section
 
 /-! ### shortlex ordering -/
 
@@ -96,7 +99,7 @@ theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s�
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append]
-    cutsat
+    lia
   cases t with
   | nil =>
     rw [List.append_nil]
@@ -104,14 +107,14 @@ theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s�
   | cons head tail =>
     apply of_length_lt
     rw [List.length_append, List.length_cons]
-    cutsat
+    lia
 
 theorem append_left {t₁ t₂ : List α} (h : Shortlex r t₁ t₂) (s : List α) :
     Shortlex r (s ++ t₁) (s ++ t₂) := by
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append, List.length_append]
-    cutsat
+    lia
   cases s with
   | nil =>
     rw [List.nil_append, List.nil_append]

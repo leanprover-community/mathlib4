@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.PFunctor.Univariate.M
+module
+
+public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
 
@@ -36,6 +38,8 @@ The present theory focuses on the univariate case for qpfs
   Functors*][avigad-carneiro-hudon2019]
 
 -/
+
+@[expose] public section
 
 
 universe u u' v

@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
+module
+
+public import Mathlib.Algebra.Exact
 
 /-!
 
@@ -18,6 +20,8 @@ categories, but for definitional equality and universe issues we reprove them he
 - `SnakeLemma.exact_δ_right`: The connecting homomorphism is exact on the left.
 
 -/
+
+@[expose] public section
 
 open LinearMap hiding id
 open Function

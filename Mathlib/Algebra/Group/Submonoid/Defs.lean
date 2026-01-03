@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Tactic.FastInstance
-import Mathlib.Data.Set.Insert
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Defs
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Submonoids: definition
@@ -45,6 +47,8 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 ## Tags
 submonoid, submonoids
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 
@@ -366,6 +370,9 @@ instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} 
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
+instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
+  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.1) eq)
+
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
@@ -460,24 +467,6 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_in
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
-
-/-- A submonoid of a left cancellative unital magma inherits left cancellation. -/
-@[to_additive
-  /-- An `AddSubmonoid` of a left cancellative unital additive magma inherits left cancellation. -/]
-instance isLeftCancelMul [IsLeftCancelMul M] (S : Submonoid M) : IsLeftCancelMul S :=
-  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
-
-/-- A submonoid of a right cancellative unital magma inherits right cancellation. -/
-@[to_additive
-  /-- An `AddSubmonoid` of a right cancellative unital additive magma inherits right
-  cancellation. -/]
-instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancelMul S :=
-  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
-
-/-- A submonoid of a cancellative unital magma inherits cancellation. -/
-@[to_additive
-/-- An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation. -/]
-instance isCancelMul [IsCancelMul M] (S : Submonoid M) : IsCancelMul S where
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]

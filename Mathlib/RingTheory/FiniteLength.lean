@@ -3,7 +3,9 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Modules of finite length
@@ -18,6 +20,8 @@ We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsA
 
 Finite length, Composition series
 -/
+
+@[expose] public section
 
 variable (R : Type*) [Ring R]
 

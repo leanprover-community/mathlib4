@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.LeftDerived
-import Mathlib.CategoryTheory.Monoidal.Preadditive
+module
+
+public import Mathlib.CategoryTheory.Abelian.LeftDerived
+public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 # Tor, the left-derived functor of tensor product
@@ -21,6 +23,8 @@ Possibly it's best to axiomatize delta functors, and obtain a unique characteris
 
 -/
 
+@[expose] public section
+
 
 assert_not_exists ModuleCat.abelian
 
@@ -32,7 +36,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] [MonoidalCategory C]
+variable (C : Type*) [Category* C] [MonoidalCategory C]
   [Abelian C] [MonoidalPreadditive C] [HasProjectiveResolutions C]
 
 /-- We define `Tor C n : C ⥤ C ⥤ C` by left-deriving in the second factor of `(X, Y) ↦ X ⊗ Y`. -/

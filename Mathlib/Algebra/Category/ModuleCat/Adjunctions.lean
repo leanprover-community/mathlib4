@@ -3,16 +3,20 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
 is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
+
+@[expose] public section
 
 
 assert_not_exists Cardinal
@@ -92,7 +96,7 @@ lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
     (adj R).homEquiv X M = freeHomEquiv := by
   simp only [adj, Adjunction.mkOfHomEquiv_homEquiv]
 
-instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
+instance : (forget (ModuleCat.{u} R)).IsRightAdjoint :=
   (adj R).isRightAdjoint
 
 end
@@ -208,7 +212,7 @@ namespace CategoryTheory
 
 universe v u
 
-/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category C]`,
+/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category* C]`,
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/
@@ -238,9 +242,7 @@ instance categoryFree : Category (Free R C) where
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
     -- This imitates the proof of associativity for `MonoidAlgebra`.
-    simp only [sum_sum_index, sum_single_index, single_zero, single_add,
-      forall_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
-      zero_mul, mul_zero, sum_zero, sum_add]
+    simp [sum_sum_index, add_mul, mul_add, Category.assoc, mul_assoc]
 
 namespace Free
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
-import Mathlib.RingTheory.Bialgebra.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 /-!
 # Hopf algebras
@@ -12,7 +14,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toHopfAlgebra`
 
-# Main definitions
+## Main definitions
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode` : The `R`-linear map `A →ₗ[R] A`.
@@ -39,6 +41,8 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 
 -/
+
+@[expose] public section
 
 open Bialgebra
 
@@ -92,16 +96,10 @@ lemma sum_antipode_mul_eq_algebraMap_counit (repr : Repr R a) :
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
 
-@[deprecated (since := "2025-05-29")]
-alias sum_antipode_mul_eq := sum_antipode_mul_eq_algebraMap_counit
-
 lemma sum_mul_antipode_eq_algebraMap_counit (repr : Repr R a) :
     ∑ i ∈ repr.index, repr.left i * antipode R (repr.right i) =
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
-
-@[deprecated (since := "2025-05-29")]
-alias sum_mul_antipode_eq := sum_mul_antipode_eq_algebraMap_counit
 
 lemma sum_antipode_mul_eq_smul (repr : Repr R a) :
     ∑ i ∈ repr.index, antipode R (repr.left i) * repr.right i =

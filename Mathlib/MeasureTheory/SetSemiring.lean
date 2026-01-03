@@ -3,10 +3,12 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
 
@@ -48,6 +50,8 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 
 -/
 
+@[expose] public section
+
 open Finset Set
 
 namespace MeasureTheory
@@ -84,8 +88,6 @@ lemma empty_notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t 
   simp only [disjointOfDiff, mem_sdiff, Finset.mem_singleton,
     not_true, and_false, not_false_iff]
 
-@[deprecated (since := "2025-05-24")] alias empty_nmem_disjointOfDiff := empty_notMem_disjointOfDiff
-
 lemma subset_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ↑(hC.disjointOfDiff hs ht) ⊆ C := by
   classical
@@ -117,8 +119,6 @@ lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     rwa [← h]
   rw [← hC.sUnion_disjointOfDiff hs ht]
   exact subset_sUnion_of_mem hs_mem
-
-@[deprecated (since := "2025-05-24")] alias nmem_disjointOfDiff := notMem_disjointOfDiff
 
 lemma sUnion_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C)
     (ht : t ∈ C) (hst : t ⊆ s) :
@@ -229,9 +229,6 @@ lemma empty_notMem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
   classical
   simp only [disjointOfDiffUnion, mem_sdiff, Finset.mem_singleton,
     not_true, and_false, not_false_iff]
-
-@[deprecated (since := "2025-05-24")]
-alias empty_nmem_disjointOfDiffUnion := empty_notMem_disjointOfDiffUnion
 
 lemma disjointOfDiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ↑(hC.disjointOfDiffUnion hs hI) ⊆ C := by
@@ -435,9 +432,6 @@ lemma empty_notMem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj 
     ∅ ∉ hC.disjointOfUnion hJ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.1 j hj
 
-@[deprecated (since := "2025-05-24")]
-alias empty_nmem_disjointOfUnion := empty_notMem_disjointOfUnion
-
 lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
@@ -494,12 +488,7 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
 lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
     (hs : ∀ i ∈ t, s i ∈ C) :
     t.sup s ∈ C := by
-  classical
-  induction t using Finset.induction_on with
-  | empty => exact hC.empty_mem
-  | insert m t hm ih =>
-    simpa only [sup_insert] using
-      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
+  simpa using biUnion_mem hC _ hs
 
 lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :
@@ -524,7 +513,7 @@ theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n �
   | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
 
 theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
-    Accumulate s n ∈ C := by
+    accumulate s n ∈ C := by
   induction n with
   | zero => simp [hs 0]
   | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)

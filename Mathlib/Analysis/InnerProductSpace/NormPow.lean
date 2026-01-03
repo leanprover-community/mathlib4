@@ -3,8 +3,10 @@ Copyright (c) 2024 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Properties about the powers of the norm
@@ -16,6 +18,8 @@ an inner product space and for a real number `p > 1`.
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
 
 -/
+
+@[expose] public section
 
 section ContDiffNormPow
 
@@ -123,6 +127,6 @@ theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp :
 
 theorem Differentiable.norm_rpow {f : F → E} (hf : Differentiable ℝ f) {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x ↦ ‖f x‖ ^ p) :=
-  contDiff_norm_rpow hp |>.differentiable le_rfl |>.comp hf
+  contDiff_norm_rpow hp |>.differentiable one_ne_zero |>.comp hf
 
 end ContDiffNormPow

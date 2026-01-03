@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Prime.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Coeff
+public import Mathlib.Algebra.Polynomial.Eval.Degree
+public import Mathlib.Algebra.Prime.Defs
 
 /-!
 # Mapping irreducible polynomials
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Prime.Defs
 * `Monic.irreducible_of_irreducible_map`: we can prove a monic polynomial is irreducible
   by mapping it to another integral domain and checking for irreducibility there.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -46,7 +50,7 @@ lemma Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
   refine (h_irr.isUnit_or_isUnit <|
     (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
       apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
-    apply isUnit_of_mul_eq_one
+    apply IsUnit.of_mul_eq_one
   · exact q
   · rw [mul_comm]
     exact q

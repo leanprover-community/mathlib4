@@ -3,11 +3,13 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Subobject
-import Mathlib.CategoryTheory.Limits.EssentiallySmall
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-import Mathlib.CategoryTheory.Generator.Preadditive
-import Mathlib.CategoryTheory.Abelian.Opposite
+module
+
+public import Mathlib.CategoryTheory.Abelian.Subobject
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator
@@ -21,6 +23,8 @@ import Mathlib.CategoryTheory.Abelian.Opposite
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
@@ -33,7 +37,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
     ∃ G : C, Injective G ∧ IsCoseparator G := by
   haveI : WellPowered.{v} C := wellPowered_of_isDetector G hG.isDetector
-  haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
+  haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small.{v} _ _
   let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
   refine ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => ?_⟩
   refine (Preadditive.isSeparator_iff _).1 hG _ fun h => ?_

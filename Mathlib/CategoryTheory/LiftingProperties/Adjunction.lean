@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -18,12 +20,14 @@ has the left lifting property in `C` with respect to `F.map p`.
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 open Category
 
-variable {C D : Type*} [Category C] [Category D] {G : C ⥤ D} {F : D ⥤ C}
+variable {C D : Type*} [Category* C] [Category* D] {G : C ⥤ D} {F : D ⥤ C}
 
 namespace CommSq
 

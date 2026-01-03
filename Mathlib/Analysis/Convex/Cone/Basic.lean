@@ -3,11 +3,13 @@ Copyright (c) 2022 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Closure
-import Mathlib.Geometry.Convex.Cone.Pointed
-import Mathlib.Topology.Algebra.Module.ClosedSubmodule
-import Mathlib.Topology.Algebra.Order.Module
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.Analysis.Convex.Cone.Closure
+public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Order.Module
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Proper cones
@@ -40,9 +42,11 @@ The next steps are:
 
 -/
 
+@[expose] public section
+
 open ContinuousLinearMap Filter Function Set
 
-variable {R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
+variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
 variable [AddCommMonoid F] [TopologicalSpace F] [Module R F]
 variable [AddCommMonoid G] [TopologicalSpace G] [Module R G]
@@ -78,12 +82,8 @@ instance : SetLike (ProperCone R E) E where
 
 @[simp] lemma mem_toPointedCone : x ∈ C.toPointedCone ↔ x ∈ C := .rfl
 
-@[deprecated (since := "2025-06-11")] alias mem_coe := mem_toPointedCone
-
 lemma pointed_toConvexCone (C : ProperCone R E) : (C : ConvexCone R E).Pointed :=
   C.toPointedCone.pointed_toConvexCone
-
-@[deprecated (since := "2025-06-11")] protected alias pointed := pointed_toConvexCone
 
 protected lemma nonempty (C : ProperCone R E) : (C : Set E).Nonempty := C.toSubmodule.nonempty
 protected lemma isClosed (C : ProperCone R E) : IsClosed (C : Set E) := C.isClosed'
@@ -100,13 +100,9 @@ lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
 @[simp, norm_cast] lemma coe_bot : (⊥ : ProperCone R E) = ({0} : Set E) := rfl
 @[simp, norm_cast] lemma toPointedCone_bot : (⊥ : ProperCone R E).toPointedCone = ⊥ := rfl
 
-@[deprecated (since := "2025-06-11")] alias mem_zero := mem_bot
-@[deprecated (since := "2025-06-11")] alias coe_zero := coe_bot
-@[deprecated (since := "2025-06-11")] alias pointed_zero := pointed_toConvexCone
-
 end T1Space
 
-/-- The closure of image of a proper cone under a `R`-linear map is a proper cone. We
+/-- The closure of image of a proper cone under an `R`-linear map is a proper cone. We
 use continuous maps here so that the comap of f is also a map between proper cones. -/
 abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
   ClosedSubmodule.comap (f.restrictScalars R≥0) C
@@ -161,11 +157,23 @@ end ProperCone
 ### Topological properties of convex cones
 
 This section proves topological results about convex cones.
+
+#### TODO
+
+This result generalises to G-submodules.
 -/
 
 namespace ConvexCone
-variable {𝕜 E : Type*} [TopologicalSpace 𝕜] [Semifield 𝕜] [LinearOrder 𝕜] [OrderTopology 𝕜]
-  [DenselyOrdered 𝕜] [NoMaxOrder 𝕜] [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E] {s : Set E}
+
+-- FIXME: This is necessary for the proof below but triggers the `unusedSectionVars` linter.
+-- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M] in
+/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
+doesn't support that use case. See
+https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
+proof_wanted isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set E)
+
+variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [DenselyOrdered 𝕜] [NoMaxOrder 𝕜]
   [ContinuousSMul 𝕜 E] {C : ConvexCone 𝕜 E}
 
 lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsClosed (C : Set E)) :
@@ -180,9 +188,6 @@ lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsCl
     (continuous_id.smul continuous_const).continuousWithinAt
   -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`
   simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
-
-@[deprecated (since := "2025-04-18")]
-alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
 
 variable [IsOrderedRing 𝕜]
 

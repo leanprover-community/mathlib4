@@ -3,8 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
@@ -16,6 +18,8 @@ relation to decidable propositions.
 bool, boolean, Bool, De Morgan
 
 -/
+
+@[expose] public section
 
 namespace Bool
 
@@ -178,8 +182,8 @@ theorem ofNat_zero : ofNat 0 = false := rfl
 theorem ofNat_add_one {n : Nat} : ofNat (n + 1) = true := rfl
 
 @[simp] lemma toNat_beq_zero (b : Bool) : (b.toNat == 0) = !b := by grind
-@[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) =  b := by simp [bne]
-@[simp] lemma toNat_beq_one (b : Bool) : (b.toNat == 1) =  b := by cases b <;> rfl
+@[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) = b := by simp [bne]
+@[simp] lemma toNat_beq_one (b : Bool) : (b.toNat == 1) = b := by cases b <;> rfl
 @[simp] lemma toNat_bne_one (b : Bool) : (b.toNat != 1) = !b := by simp [bne]
 
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by

@@ -3,11 +3,13 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
-import Mathlib.CategoryTheory.Abelian.Projective.Basic
-import Mathlib.CategoryTheory.Generator.Preadditive
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+public import Mathlib.CategoryTheory.Abelian.Projective.Basic
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 /-!
 # Fullness of restrictions of `preadditiveCoyonedaObj`
@@ -16,6 +18,8 @@ In this file we give a sufficient criterion for a restriction of the functor
 `preadditiveCoyonedaObj G` to be full: this is the case if `C` is an abelian category and `G : C`
 is a projective separator such that every object in the relevant subcategory is a quotient of `G`.
 -/
+
+@[expose] public section
 
 open CategoryTheory Opposite Limits
 
@@ -32,8 +36,8 @@ attribute [local instance] preservesFiniteLimits_op
 theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSeparator G) {X : C}
     (p : G ⟶ X) [Epi p] {Y : C} :
     Function.Surjective ((preadditiveCoyonedaObj G).map : (X ⟶ Y) → _) := by
-  rw [← Functor.coe_mapAddHom, ← AddCommGrp.hom_ofHom (preadditiveCoyonedaObj G).mapAddHom,
-    ← AddCommGrp.epi_iff_surjective]
+  rw [← Functor.coe_mapAddHom, ← AddCommGrpCat.hom_ofHom (preadditiveCoyonedaObj G).mapAddHom,
+    ← AddCommGrpCat.epi_iff_surjective]
   let cm : ShortComplex C := ⟨kernel.ι p, p, by simp⟩
   have exact : cm.Exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _)
   have mono : Mono cm.op.f := by dsimp [cm]; infer_instance
@@ -43,9 +47,9 @@ theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSep
   · exact exact.op.map_of_mono_of_preservesKernel _ mono inferInstance
   · simp only [ShortComplex.map_f]
     infer_instance
-  · suffices φ.map.Surjective by simpa [AddCommGrp.epi_iff_surjective, Functor.coe_mapAddHom]
+  · suffices φ.map.Surjective by simpa [AddCommGrpCat.epi_iff_surjective, Functor.coe_mapAddHom]
     exact fun f => ⟨f (𝟙 G), by cat_disch⟩
-  · simp [AddCommGrp.mono_iff_injective, Functor.coe_mapAddHom, Functor.map_injective]
+  · simp [AddCommGrpCat.mono_iff_injective, Functor.coe_mapAddHom, Functor.map_injective]
 
 end
 

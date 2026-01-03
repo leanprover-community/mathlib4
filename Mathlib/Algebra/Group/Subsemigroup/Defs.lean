@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Subsemigroups: definition
@@ -45,6 +47,8 @@ numbers.
 ## Tags
 subsemigroup, subsemigroups
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 
@@ -177,11 +181,6 @@ instance : Inhabited (Subsemigroup M) :=
 theorem notMem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
   Set.notMem_empty x
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubsemigroup.not_mem_bot := AddSubsemigroup.notMem_bot
-
-@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 @[to_additive (attr := simp)]
 theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
   Set.mem_univ x
@@ -284,6 +283,22 @@ instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMem
 instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S := fast_instance%
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+
+/-- A submagma of a left cancellative magma inherits left cancellation. -/
+@[to_additive
+/-- An additive submagma of a left cancellative additive magma inherits left cancellation. -/]
+instance isLeftCancelMul [IsLeftCancelMul M] (S : A) : IsLeftCancelMul S :=
+  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a right cancellative magma inherits right cancellation. -/
+@[to_additive
+/-- An additive submagma of a right cancellative additive magma inherits right cancellation. -/]
+instance isRightCancelMul [IsRightCancelMul M] (S : A) : IsRightCancelMul S :=
+  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a cancellative magma inherits cancellation. -/
+@[to_additive /-- An additive submagma of a cancellative additive magma inherits cancellation. -/]
+instance isCancelMul [IsCancelMul M] (S : A) : IsCancelMul S where
 
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive /-- The natural semigroup hom from an `AddSubsemigroup` of

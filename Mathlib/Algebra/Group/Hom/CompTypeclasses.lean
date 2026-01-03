@@ -3,10 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-
-import Mathlib.Logic.Function.CompTypeclasses
-import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Function.CompTypeclasses
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Propositional typeclasses on several monoid homs
@@ -34,6 +34,8 @@ TODO :
 
 -/
 
+@[expose] public section
+
 section MonoidHomCompTriple
 
 namespace MonoidHom
@@ -57,7 +59,7 @@ class IsId (σ : M →* M) : Prop where
 instance instIsId {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
   eq_id := rfl
 
-instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ  where
+instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ where
   eq_id := by ext; exact congr_fun h.eq_id _
 
 instance instComp_id {N P : Type*} [Monoid N] [Monoid P]

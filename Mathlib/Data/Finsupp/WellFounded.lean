@@ -3,8 +3,10 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.Data.Finsupp.Lex
+module
+
+public import Mathlib.Data.DFinsupp.WellFounded
+public import Mathlib.Data.Finsupp.Lex
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `Finsupp`
@@ -21,6 +23,8 @@ order `(· < ·)`, but without the ordering conditions on `α`.
 
 All results are transferred from `DFinsupp` via `Finsupp.toDFinsupp`.
 -/
+
+@[expose] public section
 
 
 variable {α N : Type*}

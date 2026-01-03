@@ -3,12 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.List.MinMax
-import Mathlib.Data.Multiset.Fold
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -17,36 +18,39 @@ This file contains the results concerning the interaction of multiset big operat
 groups.
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 variable {ι α β : Type*}
 
 namespace Multiset
 section OrderedCommMonoid
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] {s t : Multiset α} {a : α}
+variable [CommMonoid α] [PartialOrder α] {s t : Multiset α} {a : α}
 
 @[to_additive sum_nonneg]
-lemma one_le_prod_of_one_le : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
+lemma one_le_prod_of_one_le [MulLeftMono α] : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
   Quotient.inductionOn s fun l hl => by simpa using List.one_le_prod_of_one_le hl
 
 @[to_additive]
-lemma single_le_prod : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.prod :=
+lemma single_le_prod [IsOrderedMonoid α] : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.prod :=
   Quotient.inductionOn s fun l hl x hx => by simpa using List.single_le_prod hl x hx
 
 @[to_additive sum_le_card_nsmul]
-lemma prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s := by
+lemma prod_le_pow_card [MulLeftMono α] (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
+    s.prod ≤ n ^ card s := by
   induction s using Quotient.inductionOn
   simpa using List.prod_le_pow_card _ _ h
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
-lemma all_one_of_le_one_le_of_prod_eq_one :
+lemma all_one_of_le_one_le_of_prod_eq_one [IsOrderedMonoid α] :
     (∀ x ∈ s, (1 : α) ≤ x) → s.prod = 1 → ∀ x ∈ s, x = (1 : α) :=
   Quotient.inductionOn s (by
     simp only [quot_mk_to_coe, prod_coe, mem_coe]
     exact fun l => List.all_one_of_le_one_le_of_prod_eq_one)
 
 @[to_additive]
-lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
+lemma prod_le_prod_of_rel_le [MulLeftMono α] (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
   induction h with
   | zero => rfl
   | cons rh _ rt =>
@@ -54,20 +58,22 @@ lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
     exact mul_le_mul' rh rt
 
 @[to_additive]
-lemma prod_map_le_prod_map {s : Multiset ι} (f : ι → α) (g : ι → α) (h : ∀ i, i ∈ s → f i ≤ g i) :
-    (s.map f).prod ≤ (s.map g).prod :=
+lemma prod_map_le_prod_map [MulLeftMono α] {s : Multiset ι} (f : ι → α) (g : ι → α)
+    (h : ∀ i, i ∈ s → f i ≤ g i) : (s.map f).prod ≤ (s.map g).prod :=
   prod_le_prod_of_rel_le <| rel_map.2 <| rel_refl_of_refl_on h
 
 @[to_additive]
-lemma prod_map_le_prod (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) : (s.map f).prod ≤ s.prod :=
+lemma prod_map_le_prod [MulLeftMono α] (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) :
+    (s.map f).prod ≤ s.prod :=
   prod_le_prod_of_rel_le <| rel_map_left.2 <| rel_refl_of_refl_on h
 
 @[to_additive]
-lemma prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.prod ≤ (s.map f).prod :=
+lemma prod_le_prod_map [MulLeftMono α] (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) :
+    s.prod ≤ (s.map f).prod :=
   prod_map_le_prod (α := αᵒᵈ) f h
 
 @[to_additive card_nsmul_le_sum]
-lemma pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
+lemma pow_card_le_prod [MulLeftMono α] (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
   rw [← Multiset.prod_replicate, ← Multiset.map_const]
   exact prod_map_le_prod _ h
 
@@ -78,45 +84,32 @@ variable [CommMonoid α] [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β]
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)
-    (p : α → Prop) (h_one : f 1 = 1) (hp_one : p 1)
+    (p : α → Prop) (h_one : f 1 ≤ 1) (hp_one : p 1)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
-  revert s
-  refine Multiset.induction ?_ ?_
-  · simp [le_of_eq h_one]
-  intro a s hs hpsa
-  have hps : ∀ x, x ∈ s → p x := fun x hx => hpsa x (mem_cons_of_mem hx)
-  have hp_prod : p s.prod := prod_induction p s hp_mul hp_one hps
-  rw [prod_cons, map_cons, prod_cons]
-  exact (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans (mul_le_mul_left' (hs hps) _)
+  induction s using Quotient.inductionOn with
+  | h l => simp [l.le_prod_of_submultiplicative_on_pred f p h_one hp_one h_mul hp_mul (by simpa)]
 
 @[to_additive le_sum_of_subadditive]
-lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 = 1)
-    (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (s : Multiset α) : f s.prod ≤ (s.map f).prod :=
-  le_prod_of_submultiplicative_on_pred f (fun _ => True) h_one trivial (fun x y _ _ => h_mul x y)
-    (by simp) s (by simp)
+lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 ≤ 1)
+    (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (s : Multiset α) : f s.prod ≤ (s.map f).prod := by
+  induction s using Quotient.inductionOn with
+  | h l => simp [l.le_prod_of_submultiplicative f h_one h_mul]
 
 @[to_additive le_sum_nonempty_of_subadditive_on_pred]
 lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → Prop)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hs_nonempty : s ≠ ∅) (hs : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
-  revert s
-  refine Multiset.induction ?_ ?_
-  · simp
-  rintro a s hs - hsa_prop
-  rw [prod_cons, map_cons, prod_cons]
-  by_cases hs_empty : s = ∅
-  · simp [hs_empty]
-  have hsa_restrict : ∀ x, x ∈ s → p x := fun x hx => hsa_prop x (mem_cons_of_mem hx)
-  have hp_sup : p s.prod := prod_induction_nonempty p hp_mul hs_empty hsa_restrict
-  have hp_a : p a := hsa_prop a (mem_cons_self a s)
-  exact (h_mul a _ hp_a hp_sup).trans (mul_le_mul_left' (hs hs_empty hsa_restrict) _)
+  induction s using Quotient.inductionOn with
+  | h l =>
+    simp [l.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul
+      (by simpa using hs_nonempty) (by simpa)]
 
 @[to_additive le_sum_nonempty_of_subadditive]
 lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
-    (s : Multiset α) (hs_nonempty : s ≠ ∅) : f s.prod ≤ (s.map f).prod :=
-  le_prod_nonempty_of_submultiplicative_on_pred f (fun _ => True) (by simp [h_mul]) (by simp) s
-    hs_nonempty (by simp)
+    (s : Multiset α) (hs_nonempty : s ≠ ∅) : f s.prod ≤ (s.map f).prod := by
+  induction s using Quotient.inductionOn with
+  | h l => simp [l.le_prod_nonempty_of_submultiplicative f h_mul (by simpa using hs_nonempty)]
 
 end
 
@@ -174,6 +167,21 @@ lemma prod_min_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
 
 lemma abs_sum_le_sum_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
-  le_sum_of_subadditive _ abs_zero abs_add_le s
+  le_sum_of_subadditive _ abs_zero.le abs_add_le s
+
+section ProdSum
+
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β] (m : Multiset α) (f : α → β)
+
+lemma apply_prod_le_sum_map (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a * b) ≤ f a + f b) :
+    f m.prod ≤ (m.map f).sum := by
+  induction m using Quotient.inductionOn with
+  | h l => simp [l.apply_prod_le_sum_map _ h_one h_mul]
+
+lemma sum_map_le_apply_prod (h_one : 0 ≤ f 1) (h_mul : ∀ (a b : α), f a + f b ≤ f (a * b)) :
+    (m.map f).sum ≤ f m.prod :=
+  m.apply_prod_le_sum_map (β := βᵒᵈ) f h_one h_mul
+
+end ProdSum
 
 end Multiset

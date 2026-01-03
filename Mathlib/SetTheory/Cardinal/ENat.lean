@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Data.ENat.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
@@ -27,6 +29,8 @@ Since it is not registered as a coercion, the argument about delaboration does n
 
 set theory, cardinals, extended natural numbers
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -267,7 +271,7 @@ theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
   | inr ha => simp [toENat_eq_top.2, ha]
 
 theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
-  rw [← toENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toENat_lift]
+  rw [← toENat_lift, lift_mk_eq.{_, _, v}.mpr ⟨e⟩, toENat_lift]
 
 lemma toENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
     toENat c ≤ toENat c' ↔ c ≤ c' := by
