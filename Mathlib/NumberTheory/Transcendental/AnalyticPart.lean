@@ -62,9 +62,8 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
     refine ⟨0, ?_⟩
     · simp only [Function.iterate_zero, id_eq, tsub_zero, Pi.zero_apply, mul_zero, add_zero]
       refine ⟨fun z ↦ Differentiable.analyticAt (differentiable_zero) z, fun z ↦ ?_⟩
-      · rw [hR₁ z, mul_eq_mul_left_iff, pow_eq_zero_iff']
-        left
-        rw [div_self (h:= mod_cast Nat.factorial_ne_zero r)]
+      · rw [hR₁ z, mul_eq_mul_left_iff, pow_eq_zero_iff',
+          div_self (h:= mod_cast Nat.factorial_ne_zero r)]
         grind
   | succ k IH =>
     have change_deriv (R : ℂ → ℂ) (z : ℂ) :
@@ -116,17 +115,14 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) {z₀ : ℂ} {R R₁ : �
         rw [H2, this]
         have : (↑(r - k) * r.factorial / ↑(r - k).factorial : ℂ) =
           ↑r.factorial / ↑(r - (k + 1)).factorial := by
-            nth_rw 2 [← Nat.mul_factorial_pred]
+            nth_rw 2 [← Nat.mul_factorial_pred (hn := by grind)]
             · rw [H2]
               ring_nf
-              simp only [Nat.cast_mul, mul_inv_rev]
               nth_rw 2 [mul_comm]; nth_rw 3 [mul_comm]
-              simp only [← mul_assoc, mul_eq_mul_right_iff, inv_eq_zero, Nat.cast_eq_zero]
-              left
-              rw [mul_assoc, mul_inv_cancel₀]
+              simp only [Nat.cast_mul, mul_inv_rev,
+                ← mul_assoc, mul_eq_mul_right_iff, inv_eq_zero, Nat.cast_eq_zero]
+              rw [mul_assoc, mul_inv_cancel₀ (h := by simp; grind)]
               · grind
-              · simp only [ne_eq, Nat.cast_eq_zero]; grind
-            · grind
         simp only [← mul_assoc, mul_div]
         rw [this]
         simp only [add_assoc]
@@ -143,29 +139,24 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (z₀ : ℂ) n :
     refine fun f hf hfin ↦ ⟨fun ⟨hz, hnz⟩ ↦ ?_, ?_⟩
     · have IH' := IH (deriv f) (AnalyticAt.deriv hf) ?_
       · suffices analyticOrderAt (deriv f) z₀ = (n : ℕ) by
-          refine analyticOrderAt_eq_succ_iff_deriv_order_eq_pred f z₀ hf
+          exact analyticOrderAt_eq_succ_iff_deriv_order_eq_pred f z₀ hf
             (n + 1) (hz 0 (by grind)) this (by simp)
         rw [← IH']
         refine ⟨fun k hk ↦ hz (k + 1) (by grind), hnz⟩
       · obtain ⟨r, hr⟩ := (WithTop.ne_top_iff_exists).mp hfin
         specialize hz 0 (by grind)
-        have r0 : r > 0 :=
-            ENat.coe_lt_coe.mp (
-            (lt_of_lt_of_eq
-            (pos_of_ne_zero (analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩)) (id (Eq.symm hr))))
-        rw [Complex.analyticOrderAt_deriv_of_pos (n:= r) hf hr.symm (by grind)]
+        have r0 : r > 0 := ENat.coe_lt_coe.mp ((lt_of_lt_of_eq
+          (pos_of_ne_zero (analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩)) (id (Eq.symm hr))))
+        rw [Complex.analyticOrderAt_deriv_of_pos (n := r) hf hr.symm (by grind)]
         exact ENat.coe_ne_top (r - 1)
-    · refine fun ho ↦ ⟨fun k hk ↦ ?_, ?_⟩
-      · have : analyticOrderAt (deriv^[k] f) z₀ ≠ 0 := by
-          rw [(Complex.analyticOrderAt_iterated_deriv f hf k (n+1)
-            ho.symm (by grind) hk.le), @Nat.cast_ne_zero]
-          exact Nat.sub_ne_zero_iff_lt.mpr hk
-        rw [analyticOrderAt_ne_zero] at this
-        exact this.2
+    · refine fun ho ↦ ⟨fun k hk ↦ (analyticOrderAt_ne_zero.mp ?_).2, ?_⟩
+      · grind [(Complex.analyticOrderAt_iterated_deriv f hf k (n+1)
+          ho.symm (by grind) hk.le), @Nat.cast_ne_zero]
       · have := Complex.analyticOrderAt_iterated_deriv f hf (n + 1) (n + 1)
           ho.symm (by grind) (by grind)
-        rwa [tsub_self, CharP.cast_eq_zero,
-          AnalyticAt.analyticOrderAt_eq_zero (hf := iterated_deriv hf (n + 1))] at this
+        grind [tsub_self, CharP.cast_eq_zero,
+          AnalyticAt.analyticOrderAt_eq_zero (hf := iterated_deriv hf (n + 1))]
+#exit
 
 lemma analyticOrderAt_eq_nat_imp_iteratedDeriv_eq_zero
     z₀ (n : ℕ) (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) :
