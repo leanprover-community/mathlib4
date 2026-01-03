@@ -72,9 +72,23 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [NonUnitalNonAssocSemiring C]
 variable [Module R A] [Module R B] [Module R C]
 
+lemma toNonUnitalSubsemiring_injective :
+    (toNonUnitalSubsemiring : NonUnitalSubalgebra R A → NonUnitalSubsemiring A).Injective :=
+  fun ⟨s, hs⟩ t ↦ by congr!
+
+@[simp] lemma toNonUnitalSubsemiring_inj {s t : NonUnitalSubalgebra R A} :
+    s.toNonUnitalSubsemiring = t.toNonUnitalSubsemiring ↔ s = t :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
 instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective' := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
+
+lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodule R A).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
+
+lemma toSubmodule_inj {s t : NonUnitalSubalgebra R A} : s.toSubmodule = t.toSubmodule ↔ s = t :=
+  toSubmodule_injective.eq_iff
 
 /-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `SMulMemClass`. -/
@@ -125,29 +139,12 @@ theorem coe_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R A) :
     (↑S.toNonUnitalSubsemiring : Set A) = S :=
   rfl
 
-theorem toNonUnitalSubsemiring_injective :
-    Function.Injective
-      (toNonUnitalSubsemiring : NonUnitalSubalgebra R A → NonUnitalSubsemiring A) :=
-  fun S T h =>
-  ext fun x => by rw [← mem_toNonUnitalSubsemiring, ← mem_toNonUnitalSubsemiring, h]
-
-theorem toNonUnitalSubsemiring_inj {S U : NonUnitalSubalgebra R A} :
-    S.toNonUnitalSubsemiring = U.toNonUnitalSubsemiring ↔ S = U :=
-  toNonUnitalSubsemiring_injective.eq_iff
-
 theorem mem_toSubmodule (S : NonUnitalSubalgebra R A) {x} : x ∈ S.toSubmodule ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
 theorem coe_toSubmodule (S : NonUnitalSubalgebra R A) : (↑S.toSubmodule : Set A) = S :=
   rfl
-
-theorem toSubmodule_injective :
-    Function.Injective (toSubmodule : NonUnitalSubalgebra R A → Submodule R A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
-
-theorem toSubmodule_inj {S U : NonUnitalSubalgebra R A} : S.toSubmodule = U.toSubmodule ↔ S = U :=
-  toSubmodule_injective.eq_iff
 
 /-- Copy of a non-unital subalgebra with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
