@@ -1037,6 +1037,7 @@ public import Mathlib.Algebra.Order.SuccPred.PartialSups
 public import Mathlib.Algebra.Order.SuccPred.TypeTags
 public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Order.Sum
+public import Mathlib.Algebra.Order.Support
 public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Algebra.Order.UpperLower
 public import Mathlib.Algebra.Order.WithTop.Untop0

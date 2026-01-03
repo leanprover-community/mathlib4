@@ -5,7 +5,6 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.Tactic.FieldSimp
@@ -95,14 +94,14 @@ section ne_top
 
 variable (P)
 
-theorem one_notMem_supportAddSubgroup : 1 ∉ P.supportAddSubgroup :=
+theorem one_notMem_supportAddSubgroup : 1 ∉ P.toAddSubmonoid.support :=
   fun h => RingPreordering.neg_one_notMem P h.2
 
 theorem one_notMem_support [P.HasIdealSupport] : 1 ∉ P.support := by
   simpa using one_notMem_supportAddSubgroup P
 
-theorem supportAddSubgroup_ne_top : P.supportAddSubgroup ≠ ⊤ :=
-  fun h => RingPreordering.neg_one_notMem P (by simp [h] : 1 ∈ P.supportAddSubgroup).2
+theorem supportAddSubgroup_ne_top : P.toAddSubmonoid.support ≠ ⊤ :=
+  fun h => RingPreordering.neg_one_notMem P (by simp [h] : 1 ∈ P.toAddSubmonoid.support).2
 
 theorem support_ne_top [P.HasIdealSupport] : P.support ≠ ⊤ := by
   apply_fun Submodule.toAddSubgroup
@@ -116,30 +115,21 @@ theorem IsOrdering.mk' [HasMemOrNegMem P]
 
 end ne_top
 
-namespace HasIdealSupport
+@[deprecated (since := "2025-12-15")]
+alias HasIdealSupport.smul_mem := Subsemiring.smul_mem
 
-theorem smul_mem [P.HasIdealSupport]
-    (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : x * a ∈ P := by
-  rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
-  simp [*]
+@[deprecated (since := "2025-12-15")]
+alias HasIdealSupport.neg_smul_mem := Subsemiring.neg_smul_mem
 
-theorem neg_smul_mem [P.HasIdealSupport]
-    (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : -(x * a) ∈ P := by
-  rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
-  simp [*]
-
-end HasIdealSupport
-
-theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport := by
-  rw [hasIdealSupport_iff]
-  intro x a _ _
-  rcases h.exists_right_inv with ⟨half, h2⟩
-  set y := (1 + x) * half
-  set z := (1 - x) * half
-  rw [show x = y ^ 2 - z ^ 2 by
-    linear_combination (-x - x * half * 2) * h2]
-  ring_nf
-  aesop (add simp sub_eq_add_neg)
+theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport where
+  smul_mem_support x a _ := by
+    rcases h.exists_right_inv with ⟨half, h2⟩
+    set y := (1 + x) * half
+    set z := (1 - x) * half
+    rw [show x = y ^ 2 - z ^ 2 by
+      linear_combination (- x - x * half * 2) * h2]
+    ring_nf
+    aesop (add simp sub_eq_add_neg)
 
 instance [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport := hasIdealSupport_of_isUnit_two h.out
 
@@ -155,8 +145,8 @@ protected theorem eq_zero_of_mem_of_neg_mem {x} (h : x ∈ P) (h2 : -x ∈ P) : 
   field_simp at mem
   exact RingPreordering.neg_one_notMem P mem
 
-theorem supportAddSubgroup_eq_bot : P.supportAddSubgroup = ⊥ := by
-  ext; aesop (add simp mem_supportAddSubgroup)
+theorem supportAddSubgroup_eq_bot : P.toAddSubmonoid.support = ⊥ := by
+  ext; aesop
 
 instance : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
@@ -174,8 +164,8 @@ theorem isOrdering_iff :
   · by_contra
     have : a * b ∈ P := by simpa using mul_mem (by aesop : -a ∈ P) (by aesop : -b ∈ P)
     have : a ∈ P.support ∨ b ∈ P.support :=
-      Ideal.IsPrime.mem_or_mem inferInstance (by simp_all [mem_support])
-    simp_all [mem_support]
+      Ideal.IsPrime.mem_or_mem inferInstance (by aesop)
+    aesop
   · have : HasMemOrNegMem P := ⟨by simp [h]⟩
     refine IsOrdering.mk' P (fun {x y} _ => ?_)
     by_contra
@@ -183,5 +173,5 @@ theorem isOrdering_iff :
     have := h (-x) (-y)
     have := h x y
     have := h x (-y)
-    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [mem_support]
+    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> aesop
 end RingPreordering
