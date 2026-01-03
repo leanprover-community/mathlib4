@@ -30,6 +30,7 @@ universe v u
 
 open AlgebraicGeometry
 
+unseal KaehlerDifferential in
 /-- If `S` is a formally unramified `R`-algebra, essentially of finite type, the diagonal is an
 open immersion. -/
 instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} [CommRing R]
@@ -63,6 +64,7 @@ instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified whe
 instance : MorphismProperty.IsStableUnderComposition @FormallyUnramified :=
   HasRingHomProperty.stableUnderComposition RingHom.FormallyUnramified.stableUnderComposition
 
+unseal KaehlerDifferential in
 /-- `f : X ⟶ S` is formally unramified if `X ⟶ X ×ₛ X` is an open immersion.
 In particular, monomorphisms (e.g. immersions) are formally unramified.
 The converse is true if `f` is locally of finite type. -/

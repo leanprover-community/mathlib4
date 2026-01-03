@@ -399,6 +399,8 @@ noncomputable def KaehlerDifferential.endEquiv :
             (KaehlerDifferential.ideal R S).cotangentIdeal_square).trans <|
         KaehlerDifferential.endEquivAuxEquiv R S
 
+attribute [irreducible] KaehlerDifferential
+
 section Finiteness
 
 theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
