@@ -116,26 +116,27 @@ end tmulUnionEquiv
 
 section tmulBipartitionEquiv
 
-variable {S : Set ι} [(i : ι) → Decidable (i ∈ S)]
+variable {S T : Set ι} (hST : IsCompl S T) [(i : ι) → Decidable (i ∈ S)]
 
 /-- Consider a family of modules indexed by `ι` and a set `S : Set ι`.
 `tmulBipartitionEquiv` is the equivalence between the binary tensor product of
-`PiTensorProduct`s indexed by `S` and its complement `Sᶜ`, and the
+`PiTensorProduct`s indexed by `S` and its complement `T = Sᶜ`, and the
 `PiTensorProduct` indexed by `ι`. -/
-def tmulBipartitionEquiv : (⨂[R] i₁ : S, M i₁) ⊗[R] (⨂[R] i₂ : ↥Sᶜ, M i₂) ≃ₗ[R] ⨂[R] i, M i :=
-  (tmulUnionEquiv (disjoint_compl_right)) ≪≫ₗ (reindex R (fun i : ↥(S ∪ Sᶜ) ↦ M i)
-    (Equiv.trans (Equiv.subtypeEquivProp (Set.union_compl_self S)) (Equiv.Set.univ ι)))
+def tmulBipartitionEquiv :
+    (⨂[R] i₁ : S, M i₁) ⊗[R] (⨂[R] i₂ : T, M i₂) ≃ₗ[R] ⨂[R] i, M i :=
+  tmulUnionEquiv hST.disjoint ≪≫ₗ
+    (reindex _ _ ((Equiv.subtypeEquivProp hST.sup_eq_top).trans (Equiv.Set.univ _)))
 
 @[simp]
-theorem tmulBipartitionEquiv_tprod (lv : (i : S) → M i) (rv : (i : ↥Sᶜ) → M i) :
-    tmulBipartitionEquiv ((⨂ₜ[R] i : S, lv i) ⊗ₜ (⨂ₜ[R] i : ↥Sᶜ, rv i)) =
-      ⨂ₜ[R] j, if h : j ∈ S then lv ⟨j, h⟩ else rv ⟨j, by grind⟩ := by
+theorem tmulBipartitionEquiv_tprod (lv : (i : S) → M i) (rv : (i : T) → M i) :
+    tmulBipartitionEquiv hST ((⨂ₜ[R] i : S, lv i) ⊗ₜ (⨂ₜ[R] i : T, rv i)) =
+    ⨂ₜ[R] j, if h : j ∈ S then lv ⟨j, h⟩ else rv ⟨j, by aesop (add safe forward hST.compl_eq)⟩ := by
   rw [tmulBipartitionEquiv, LinearEquiv.trans_apply, tmulUnionEquiv_tprod]
   apply reindex_tprod
 
 @[simp]
 theorem tmulBipartition_symm_tprod (f : (i : ι) → M i) :
-    tmulBipartitionEquiv.symm (⨂ₜ[R] i, f i) = (⨂ₜ[R] i : S, f i) ⊗ₜ (⨂ₜ[R] i : ↥Sᶜ, f i) := by
+    (tmulBipartitionEquiv hST).symm (⨂ₜ[R] i, f i) = (⨂ₜ[R] i : S, f i) ⊗ₜ (⨂ₜ[R] i : T, f i) := by
   simp [LinearEquiv.symm_apply_eq]
 
 end tmulBipartitionEquiv
