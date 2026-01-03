@@ -97,8 +97,6 @@ theorem iteratedDerivWithin_fun_neg :
     iteratedDerivWithin n (fun z => -f z) s x = -iteratedDerivWithin n f s x :=
   iteratedDerivWithin_neg f
 
-@[deprecated (since := "2025-06-24")] alias iteratedDerivWithin_neg' := iteratedDerivWithin_fun_neg
-
 include h hx
 
 theorem iteratedDerivWithin_sub
