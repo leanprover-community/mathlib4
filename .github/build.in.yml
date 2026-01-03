@@ -501,7 +501,7 @@ jobs:
         id: lint
         run: |
           cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_lint.json lake exe runLinter Mathlib
+          env LEAN_ABORT_ON_PANIC=1 ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_lint.json lake exe runLinter --trace Mathlib
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
