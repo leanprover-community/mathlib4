@@ -326,4 +326,39 @@ theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
 
 end Fourier
 
+section FourierMultiplier
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [InnerProductSpace ℝ E] [NormedSpace ℂ F]
+  [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+open FourierTransform
+
+variable (F) in
+def fourierMultiplierCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  fourierTransformInvCLM E F ∘L (smulLeftCLM F g) ∘L fourierTransformCLM E F
+
+theorem fourierMultiplierCLM_apply (g : E → ℂ) (f : 𝓢'(E, F)) :
+    fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
+  rfl
+
+@[simp]
+theorem fourierMultiplierCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) :
+    fourierMultiplierCLM F g f u = f (𝓕 (SchwartzMap.smulLeftCLM ℂ g (𝓕⁻ u))) := by
+  rfl
+
+@[simp]
+theorem fourierMultiplierCLM_const_apply (f : 𝓢'(E, F)) (c : ℂ) :
+    fourierMultiplierCLM F (fun _ ↦ c) f = c • f := by
+  ext
+  simp
+
+theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → ℂ}
+    (hg₁ : g₁.HasTemperateGrowth) (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
+    fourierMultiplierCLM F g₂ (fourierMultiplierCLM F g₁ f) =
+    fourierMultiplierCLM F (g₁ * g₂) f := by
+  simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
+
+end FourierMultiplier
+
 end TemperedDistribution

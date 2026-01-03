@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
@@ -14,7 +13,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Topology.Algebra.UniformFilterBasis
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
@@ -622,10 +620,12 @@ end CLM
 
 section EvalCLM
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormedField 𝕜]
+variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
+variable (𝕜 F G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
-protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
+protected def evalCLM (m : F) : 𝓢(E, F →L[ℝ] G) →L[𝕜] 𝓢(E, G) :=
   mkCLM (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
     (fun f => ContDiff.clm_apply f.2 contDiff_const) <| by
   rintro ⟨k, n⟩
@@ -640,6 +640,10 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
       move_mul [‖m‖]
       gcongr
       apply le_seminorm
+
+@[simp]
+theorem evalCLM_apply_apply (f : 𝓢(E, F →L[ℝ] G)) (m : F) (x : E) :
+    SchwartzMap.evalCLM 𝕜 F G m f x = f x m := rfl
 
 end EvalCLM
 
@@ -920,21 +924,21 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F) f
+  lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F) f
 
 instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).map_add
+  lineDerivOp_add m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).map_add
 
 instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_smul
+  lineDerivOp_smul m := (SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F).map_smul
 
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).continuous
+  continuous_lineDerivOp m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).continuous
 
 open LineDeriv
 
 theorem lineDerivOpCLM_eq (m : E) :
-    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F) := rfl
+    lineDerivOpCLM 𝕜 𝓢(E, F) m = SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F := rfl
 
 @[deprecated (since := "2025-11-25")]
 alias pderivCLM := lineDerivOpCLM
