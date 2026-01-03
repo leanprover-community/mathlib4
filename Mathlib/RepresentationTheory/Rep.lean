@@ -815,8 +815,8 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
     (r : k[G]) (x : V) :
-    f (MonoidAlgebra.lift k G (V →ₗ[k] V) ρ r x) =
-      MonoidAlgebra.lift k G (W →ₗ[k] W) σ r (f x) := by
+    f (MonoidAlgebra.lift k (V →ₗ[k] V) G ρ r x) =
+      MonoidAlgebra.lift k (W →ₗ[k] W) G σ r (f x) := by
   apply MonoidAlgebra.induction_on r
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
