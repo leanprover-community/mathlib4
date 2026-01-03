@@ -131,15 +131,14 @@ theorem map_vadd (p : P) (v : V) : f (v +ᵥ p) = f.linearIsometry v +ᵥ f p :=
 theorem map_vsub (p1 p2 : P) : f.linearIsometry (p1 -ᵥ p2) = f p1 -ᵥ f p2 :=
   f.toAffineMap.linearMap_vsub p1 p2
 
-@[simp]
-theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by
-  rw [dist_eq_norm_vsub V₂, dist_eq_norm_vsub V, ← map_vsub, f.linearIsometry.norm_map]
+instance instIsometryClass : IsometryClass (P →ᵃⁱ[𝕜] P₂) P P₂ where
+  isometry f x y := by simp [edist_dist, dist_eq_norm_vsub, ← map_vsub]
 
-@[simp]
-theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist]
+theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := IsometryClass.dist_map f x y
 
-@[simp]
-theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]
+theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := IsometryClass.nndist_map f x y
+
+theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := IsometryClass.edist_map f x y
 
 protected theorem isometry : Isometry f :=
   f.edist_map

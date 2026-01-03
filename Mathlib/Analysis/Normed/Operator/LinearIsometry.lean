@@ -69,17 +69,21 @@ See also `LinearIsometryClass F R E E₂` for the case where `σ` is the identit
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R] [Semiring R₂]
+@[deprecated "Use `[SemilinearMapClass 𝓕 σ E E₂] [IsometryClass 𝓕 E E₂]` instead."
+  (since := "2026-01-01")]
+structure SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R] [Semiring R₂]
     (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
     [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] : Prop
     extends SemilinearMapClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
+set_option linter.deprecated false in
 /-- `LinearIsometryClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
 `M → M₂`.
 
-This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
--/
+This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`. -/
+@[deprecated "Use `[LinearMapClass 𝓕 R E E₂] [IsometryClass 𝓕 E E₂]` instead."
+  (since := "2026-01-01")]
 abbrev LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [FunLike 𝓕 E E₂] :=
@@ -89,43 +93,15 @@ namespace SemilinearIsometryClass
 
 variable [FunLike 𝓕 E E₂]
 
-protected theorem isometry [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Isometry f :=
-  AddMonoidHomClass.isometry_of_norm _ (norm_map _)
-
-@[continuity]
-protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Continuous f :=
-  (SemilinearIsometryClass.isometry f).continuous
-
--- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
-theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_map f x
-
-protected theorem lipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).lipschitz
-
-protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
-    AntilipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).antilipschitz
-
-theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
-    EMetric.diam (f '' s) = EMetric.diam s :=
-  (SemilinearIsometryClass.isometry f).ediam_image s
-
-theorem ediam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
-    EMetric.diam (range f) = EMetric.diam (univ : Set E) :=
-  (SemilinearIsometryClass.isometry f).ediam_range
-
-theorem diam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
-    Metric.diam (f '' s) = Metric.diam s :=
-  (SemilinearIsometryClass.isometry f).diam_image s
-
-theorem diam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
-    Metric.diam (range f) = Metric.diam (univ : Set E) :=
-  (SemilinearIsometryClass.isometry f).diam_range
-
-instance (priority := 100) toContinuousSemilinearMapClass
-    [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
-  map_continuous := SemilinearIsometryClass.continuous
+@[deprecated (since := "2026-01-01")] protected alias isometry := IsometryClass.isometry
+@[deprecated (since := "2026-01-01")] protected alias continuous := IsometryClass.continuous
+@[deprecated (since := "2026-01-01")] alias nnnorm_map := nnnorm_map
+@[deprecated (since := "2026-01-01")] protected alias lipschitz := IsometryClass.lipschitz
+@[deprecated (since := "2026-01-01")] protected alias antilipschitz := IsometryClass.antilipschitz
+@[deprecated (since := "2026-01-01")] alias ediam_image := IsometryClass.ediam_image
+@[deprecated (since := "2026-01-01")] alias ediam_range := IsometryClass.ediam_range
+@[deprecated (since := "2026-01-01")] alias diam_image := IsometryClass.diam_image
+@[deprecated (since := "2026-01-01")] alias diam_range := IsometryClass.diam_range
 
 end SemilinearIsometryClass
 
@@ -144,10 +120,12 @@ instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
 
-instance instSemilinearIsometryClass : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance instSemilinearMapClass : SemilinearMapClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
-  norm_map f := f.norm_map'
+
+instance instIsometryClass : IsometryClass (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
+  isometry f := AddMonoidHomClass.isometry_of_norm f f.norm_map'
 
 @[simp]
 theorem coe_toLinearMap : ⇑f.toLinearMap = f :=
@@ -193,36 +171,33 @@ protected theorem map_smulₛₗ (c : R) (x : E) : f (c • x) = σ₁₂ c • 
 protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x : E) : f (c • x) = c • f x :=
   f.toLinearMap.map_smul c x
 
-@[simp]
 theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
-  SemilinearIsometryClass.norm_map f x
+  _root_.norm_map f x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_map f x
+  _root_.nnnorm_map f x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.enorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
-theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by
-  simp [enorm]
+theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ :=
+  _root_.enorm_map f x
 
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
 lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
 
-@[simp]
-theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
+@[deprecated IsometryClass.isComplete_image_iff (since := "2026-01-01")]
+theorem isComplete_image_iff [IsometryClass 𝓕 E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
+  IsometryClass.isComplete_image_iff f
 
-@[deprecated LinearIsometry.isComplete_image_iff (since := "2025-12-25")]
+@[deprecated IsometryClass.isComplete_image_iff (since := "2025-12-25")]
 theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  LinearIsometry.isComplete_image_iff _
+  IsometryClass.isComplete_image_iff _
 
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
-  isComplete_image_iff f
+  IsometryClass.isComplete_image_iff f
 
 @[deprecated (since := "2025-12-25")]
 alias isComplete_map_iff' := isComplete_map_iff
@@ -231,13 +206,9 @@ instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [Com
     CompleteSpace (p.map (f : E →ₛₗ[σ₁₂] E₂)) :=
   ((isComplete_map_iff f).2 <| completeSpace_coe_iff_isComplete.1 ‹_›).completeSpace_coe
 
-@[simp]
-theorem dist_map (x y : E) : dist (f x) (f y) = dist x y :=
-  f.isometry.dist_eq x y
+theorem dist_map (x y : E) : dist (f x) (f y) = dist x y := IsometryClass.dist_map f x y
 
-@[simp]
-theorem edist_map (x y : E) : edist (f x) (f y) = edist x y :=
-  f.isometry.edist_eq x y
+theorem edist_map (x y : E) : edist (f x) (f y) = edist x y := IsometryClass.edist_map f x y
 
 protected theorem injective : Injective f₁ :=
   Isometry.injective (LinearIsometry.isometry f₁)
@@ -444,18 +415,22 @@ See also `LinearIsometryEquivClass F R E E₂` for the case where `σ` is the id
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R]
+@[deprecated "Use `[SemilinearEquivClass F σ E E₂] [IsometryClass F E E₂]` instead."
+  (since := "2026-01-01")]
+structure SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R]
   [Semiring R₂] (σ₁₂ : outParam <| R →+* R₂) {σ₂₁ : outParam <| R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂] : Prop
   extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
+set_option linter.deprecated false in
 /-- `LinearIsometryEquivClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
 `M → M₂`.
 
-This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
--/
+This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`. -/
+@[deprecated "Use `[LinearEquivClass F R E E₂] [IsometryClass F E E₂]` instead."
+  (since := "2026-01-01")]
 abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [EquivLike 𝓕 E E₂] :=
@@ -464,11 +439,6 @@ abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semi
 namespace SemilinearIsometryEquivClass
 
 variable (𝓕)
-
--- `σ₂₁` becomes a metavariable, but it's OK since it's an outparam
-instance (priority := 100) toSemilinearIsometryClass [EquivLike 𝓕 E E₂]
-    [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] : SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
-  { s with }
 
 end SemilinearIsometryEquivClass
 
@@ -496,11 +466,14 @@ instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   left_inv e := e.left_inv
   right_inv e := e.right_inv
 
-instance instSemilinearIsometryEquivClass :
-    SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance instSemilinearEquivClass :
+    SemilinearEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
-  norm_map e := e.norm_map'
+
+instance instIsometryClass :
+    IsometryClass (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
+  isometry e := AddMonoidHomClass.isometry_of_norm e e.norm_map'
 
 /-- Shortcut instance, saving 8.5% of compilation time in
 `Mathlib/Analysis/InnerProductSpace/Adjoint.lean`.
@@ -537,7 +510,6 @@ def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x�
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
   ⟨e, fun x => le_antisymm (h₁ x) <| by simpa only [e.symm_apply_apply] using h₂ (e x)⟩
 
-@[simp]
 theorem norm_map (x : E) : ‖e x‖ = ‖x‖ :=
   e.norm_map' x
 
@@ -865,9 +837,8 @@ theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.1.map_smul c x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
 theorem nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ :=
-  SemilinearIsometryClass.nnnorm_map e x
+  _root_.nnnorm_map e x
 
 @[simp]
 theorem dist_map (x y : E) : dist (e x) (e y) = dist x y :=

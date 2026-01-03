@@ -265,14 +265,13 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
 lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
   exact_mod_cast nnnorm_apply_le φ a
 
-/-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous linear maps.
+/-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous maps.
 See note [lower instance priority] -/
-lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
-  { NonUnitalAlgHomClass.instLinearMapClass with
-    map_continuous := fun φ =>
-      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using nnnorm_apply_le φ) }
+lemma instContinuousMapClassComplex : ContinuousMapClass F A B where
+  map_continuous := fun φ =>
+    AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using nnnorm_apply_le φ)
 
-scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousLinearMapClassComplex
+scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousMapClassComplex
 
 end NonUnitalStarAlgHom
 
