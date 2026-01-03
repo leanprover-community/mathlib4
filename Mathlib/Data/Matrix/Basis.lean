@@ -34,12 +34,6 @@ and zeroes elsewhere.
 def single (i : m) (j : n) (a : α) : Matrix m n α :=
   of <| fun i' j' => if i = i' ∧ j = j' then a else 0
 
-@[deprecated (since := "2025-05-05")] alias stdBasisMatrix := single
-
-lemma single_def (i : m) (j : n) (a : α) :
-    single i j a = of (fun i' j' => if i = i' ∧ j = j' then a else 0) :=
-  rfl
-
 /-- See also `single_eq_updateRow_zero` and `single_eq_updateCol_zero`. -/
 theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
     single i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
