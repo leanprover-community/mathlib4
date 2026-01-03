@@ -289,7 +289,7 @@ private theorem mu_property (n : ℕ) : μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ
   (Classical.choose_spec (hn n)).2
 
 private theorem mu_le (n : ℕ) : mu μ hn n ≤ n := by
-  simpa [mu, ← Nat.lt_succ_iff] using (Classical.choose_spec (hn n)).1
+  simpa [mu] using (Classical.choose_spec (hn n)).1
 
 private theorem mu_bdd (n : ℕ) : (mu μ hn n : ℝ) / n ∈ Set.Icc (0 : ℝ) 1 := by
   refine Set.mem_Icc.mpr ⟨div_nonneg (cast_nonneg (mu μ hn n)) (cast_nonneg n), ?_⟩

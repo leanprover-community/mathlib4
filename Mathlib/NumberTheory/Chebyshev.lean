@@ -128,7 +128,7 @@ theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := 
   unfold theta primorial
   rw [cast_prod, log_prod (fun p hp ↦ mod_cast (mem_filter.mp hp).2.pos.ne')]
   congr 1 with p
-  simp_all [Nat.Prime.pos, Nat.lt_add_one_iff]
+  simp_all [Nat.Prime.pos]
 
 /-- Chebyshev's upper bound: `θ x ≤ c x` with the constant `c = log 4`. -/
 theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by

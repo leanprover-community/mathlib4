@@ -73,7 +73,7 @@ theorem HasTemperateGrowth.isBigO_uniform {f : E → F}
   rw [Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity)]
   gcongr
   · simp
-  · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
+  · exact Finset.le_sup (by simpa using hn)
 
 theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
