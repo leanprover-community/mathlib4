@@ -100,6 +100,28 @@ instance (J : Type u') [Category.{v'} J] :
           (by simp [h]) }),
       p.isColimit.hom_ext (fun j ↦ by simp [p.isColimit.fac_assoc, h])⟩
 
+attribute [local simp] isLocal_iff in
+@[simp]
+lemma isLocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
+    (⨆ (i : ι), W i).isLocal = ⨅ (i : ι), (W i).isLocal := by
+  aesop
+
+attribute [local simp] isColocal_iff in
+@[simp]
+lemma isColocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
+    (⨆ (i : ι), W i).isColocal = ⨅ (i : ι), (W i).isColocal := by
+  aesop
+
+lemma isLocal_single_iff_bijective {X Y : C} (f : X ⟶ Y) (Z : C) :
+    (MorphismProperty.single f).isLocal Z ↔
+      (Function.Bijective (fun (g : _ ⟶ Z) ↦ f ≫ g)) :=
+  ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
+
+lemma isColocal_single_iff_bijective {X Y : C} (f : X ⟶ Y) (Z : C) :
+    (MorphismProperty.single f).isColocal Z ↔
+      (Function.Bijective (fun (g : Z ⟶ _) ↦ g ≫ f)) :=
+  ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
+
 end MorphismProperty
 
 end CategoryTheory
