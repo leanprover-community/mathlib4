@@ -6,14 +6,16 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Data.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.Module
-
 /-!
 # Morita Equivalece between `R` and `Mₙ(R)`
 
 ## Main definitions
 - `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
+- `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
+  the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix.
 
 ## TODO (Edison)
 - Prove `R` and `Mₙ(R)` are morita-equivalent.
@@ -21,9 +23,9 @@ public import Mathlib.LinearAlgebra.Matrix.Module
 
 @[expose] public section
 
-universe u
+universe u v
 
-variable (R ι : Type*) [Ring R] [Fintype ι] [DecidableEq ι]
+variable (R : Type u) (ι : Type v) [Ring R] [Fintype ι] [DecidableEq ι]
 
 open CategoryTheory Matrix.Module
 
@@ -35,3 +37,110 @@ def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
   map f := ModuleCat.ofHom <| f.hom.mapMatrixModule ι
   map_id _ := ModuleCat.hom_ext <| LinearMap.mapMatrixModule_id
   map_comp f g := ModuleCat.hom_ext (LinearMap.mapMatrixModule_comp f.hom g.hom)
+
+namespace MatrixModCat
+
+open Matrix
+
+variable [Inhabited ι] {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
+  [IsScalarTower R (Matrix ι ι R) M]
+
+variable (M) in
+/-- The image of `E₁₁` (the elementary matrix) acting on all elements in `M`. -/
+def toModuleCatObj : Submodule R M :=
+  LinearMap.range (τ₁₂ := .id _) <|
+    { __ := DistribMulAction.toAddMonoidHom M (single default default 1 : Matrix ι ι R)
+      map_smul' r x := by
+        dsimp
+        rw [← smul_assoc r, Matrix.smul_eq_diagonal_mul, show (diagonal fun x : ι ↦ r) *
+          single _ _ 1 = single default default 1 * diagonal (fun _ ↦ r) by
+          ext; simp [Matrix.single], SemigroupAction.mul_smul, ← Matrix.smul_one_eq_diagonal]
+        nth_rw 1 [← one_smul (Matrix ι ι R) x]
+        rw [smul_assoc] }
+
+variable {R ι} in
+@[simp]
+lemma mem_toModuleCatObj {x : M} : x ∈ toModuleCatObj R ι M ↔ ∃ y : M,
+    (single default default 1 : Matrix ι ι R) • y = x :=
+  Iff.rfl
+
+variable {R ι} in
+/-- An `R`-linear map between `E₁₁ • M` and `E₁₁ • N` induced by an `Mₙ(R)`-linear map
+  from `M` to `N` -/
+@[simps]
+def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N]
+    [Module R N] [IsScalarTower R (Matrix ι ι R) N] [Module R M] [IsScalarTower R (Matrix ι ι R) M]
+    (f : M →ₗ[Matrix ι ι R] N) : (toModuleCatObj R ι M) →ₗ[R] (toModuleCatObj R ι N) where
+  toFun x := ⟨f x.1, by obtain ⟨y, hy⟩ := mem_toModuleCatObj.1 x.2; simp [← hy]⟩
+  map_add' := by simp
+  map_smul' := by simp
+
+
+end MatrixModCat
+
+variable [Inhabited ι]
+
+universe w
+
+/-- the functor from Module Cat of `Mₙ(R)` to Module Cat of `R` induced by sending `M` to
+  the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix -/
+@[simps]
+def MatrixModCat.toModuleCat : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
+  letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
+  haveI (M : ModuleCat (Matrix ι ι R)) : IsScalarTower R (Matrix ι ι R) M :=
+    { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
+        rw [← mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
+  { obj M := ModuleCat.of R (MatrixModCat.toModuleCatObj R ι M)
+    map {M N} f := ModuleCat.ofHom <| fromMatrixLinear f.hom
+    map_id _ := rfl
+    map_comp _ _ := rfl }
+
+open MatrixModCat Matrix
+
+/-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = E₁₁ • Mⁿ` -/
+def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup M] [Module R M] :
+    (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι).obj (.of R M) ≃ₗ[R]
+    MatrixModCat.toModuleCatObj R ι (ι → M) where
+  __ := AddEquiv.refl _
+  map_smul' r x := by
+    dsimp at x ⊢
+    ext i
+    change (Matrix.scalar ι r • x.1) i = r • x.1 i
+    simp [Matrix.scalar_apply, Matrix.diagonal_apply]
+
+/-- auxilary isomorphism showing that compose two functors gives `id` on objects. -/
+@[simps]
+def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M] :
+    MatrixModCat.toModuleCatObj R ι (ι → M) ≃ₗ[R] M where
+  toFun x := ∑ i : ι, x.1 i
+  map_add' := by simp [Finset.sum_add_distrib]
+  map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
+  invFun x := ⟨Function.update 0 default x, Function.const ι x, by
+    ext i
+    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, LinearMap.coe_mk, AddHom.coe_mk,
+      DistribMulAction.toAddMonoidHom_apply, Module.smul_apply, Function.const_apply,
+      Function.update_apply, Pi.ofNat_apply]
+    split_ifs with h
+    · simp [h, single]
+    · simp [Ne.symm h]⟩
+  left_inv := fun ⟨x, hx⟩ ↦ by
+    obtain ⟨y, hy⟩ := mem_toModuleCatObj.1 hx
+    ext i
+    simp only [Function.update_apply, Pi.zero_apply]
+    split_ifs with h
+    · simp only [← hy, single, smul_def, of_apply, ite_smul, one_smul, zero_smul, h,
+      true_and, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+      rw [Finset.sum_eq_single default (by
+        simpa using fun b hb ↦ Finset.sum_eq_zero (ι := ι) (by grind)) (by simp)]
+      simp
+    · simp [← hy, single, Ne.symm h]
+  right_inv x := by simp [Function.update_apply]
+
+/-- the natural isomorphism showing that `toModuleCat` is the left inverse of `toMatrixModCat` -/
+def MatrixModCat.unitIso :
+    ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι ≅ 𝟭 (ModuleCat R) :=
+  NatIso.ofComponents (fun X ↦ (fromModuleCatToModuleCatLinearEquivtoModuleCatObj R ι X ≪≫ₗ
+    (fromModuleCatToModuleCatLinearEquiv R ι X)).toModuleIso) <| by
+    intros
+    ext
+    simp [fromModuleCatToModuleCatLinearEquivtoModuleCatObj]
