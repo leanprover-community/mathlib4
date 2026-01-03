@@ -131,6 +131,15 @@ lemma forall_iff (P : Over X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
   aesop
 
+lemma mk_surjective {S : T} (X : Over S) :
+    ∃ (Y : T) (f : Y ⟶ S), Over.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Over S} (f : X ⟶ Y) :
+    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
+  ⟨f.left, by simp⟩
+
 section
 
 variable (X)
@@ -591,6 +600,15 @@ lemma inv_right_hom_right {f g : Under X} (e : f ≅ g) :
 lemma forall_iff (P : Under X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : X ⟶ Y), P (.mk f)) := by
   aesop
+
+lemma mk_surjective {S : T} (X : Under S) :
+    ∃ (Y : T) (f : S ⟶ Y), Under.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Under S} (f : X ⟶ Y) :
+    ∃ (g : X.right ⟶ Y.right) (hg : X.hom ≫ g = Y.hom), Under.homMk g = f :=
+  ⟨f.right, by simp⟩
 
 section
 

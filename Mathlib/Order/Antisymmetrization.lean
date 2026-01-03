@@ -65,7 +65,7 @@ alias Eq.antisymmRel := AntisymmRel.of_eq
 theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
   And.symm
 
-instance : IsSymm α (AntisymmRel r) where
+instance : Std.Symm (AntisymmRel r) where
   symm _ _ := AntisymmRel.symm
 
 theorem antisymmRel_comm : AntisymmRel r a b ↔ AntisymmRel r b a :=

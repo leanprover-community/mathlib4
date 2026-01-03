@@ -31,6 +31,8 @@ monoids, expressing that an element is a primitive root of unity.
   a primitive `k`-th root of unity is equal to the `k`-th roots of unity.
 * `IsPrimitiveRoot.card_primitiveRoots`: if an integral domain
   has a primitive `k`-th root of unity, then it has `φ k` of them.
+* `primitiveRootsPowEquivOfCoprime`: An equivalence between `primitiveRoots k R` that takes each
+  root to a coprime power `a`.
 
 ## Implementation details
 
@@ -691,6 +693,35 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0), h.isPrimitiveRoot_iff] at hξ
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
+
+/-- Equivalence of coprime powers of primitive roots. If a * b ≡ 1 (mod n), then x ↦ x ^ a and
+    x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
+@[simps]
+def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
+    primitiveRoots n R ≃ primitiveRoots n R where
+  toFun x := ⟨x.1 ^ a,
+    have hr : 0 < n := by by_contra! h; cases x; simp_all
+    have hr' : a.Coprime n := by
+      simpa [(a.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right a n)
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+  invFun x := ⟨x.1 ^ b,
+    have hr : 0 < n := by by_contra! h; cases x; simp_all
+    have hr' : b.Coprime n := by
+      simpa [(b.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right b n)
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+  left_inv x := by ext; simp [← pow_mul,
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+  right_inv x := by ext; simp [← pow_mul, mul_comm b,
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+
+/-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
+    `a`-th power given that `n` and `a` are coprime. -/
+@[simps! apply_coe]
+def primitiveRootsPowEquivOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
+    primitiveRoots n R ≃ primitiveRoots n R :=
+  haveI h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
+  haveI h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]
+  primitiveRootsPowEquiv h3
 
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=

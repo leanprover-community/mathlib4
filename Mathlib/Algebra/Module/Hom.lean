@@ -112,7 +112,9 @@ end AddMonoid.End
 
 namespace AddMonoidHom
 
-/-- Scalar multiplication on the left as an additive monoid homomorphism. -/
+/-- Scalar multiplication on the left as an additive monoid homomorphism.
+
+See also the linear map version of this `Module.End.smulLeft`. -/
 @[simps! -fullyApplied]
 protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A :=
   DistribMulAction.toAddMonoidHom _ c

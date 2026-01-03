@@ -82,6 +82,9 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
+
+When troubleshooting, you can see what `to_dual` is doing by replacing it with `to_dual?` and/or
+by using `set_option trace.translate_detail true`.
  -/
 syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 

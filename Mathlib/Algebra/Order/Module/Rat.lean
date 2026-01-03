@@ -39,10 +39,6 @@ variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
   obtain ha | ha := le_total a 0 <;>
     simp [*, abs_of_nonneg, abs_of_nonpos, smul_nonneg, smul_nonpos_of_nonneg_of_nonpos]
 
-@[deprecated abs_smul (since := "2025-06-24")]
-lemma abs_qsmul [Module ℚ α] [PosSMulMono ℚ α] (q : ℚ) (a : α) :
-    |q • a| = |q| • |a| := abs_smul q a
-
 end LinearOrderedAddCommGroup
 
 section LinearOrderedSemifield

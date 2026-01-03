@@ -92,8 +92,8 @@ theorem coe_inclusionEmbedding (r : α → α → Prop) {s t : Set α} (h : s �
 instance (r : α → α → Prop) [IsRefl α r] (p : α → Prop) : IsRefl _ (Subrel r p) :=
   ⟨fun x => @IsRefl.refl α r _ x⟩
 
-instance (r : α → α → Prop) [IsSymm α r] (p : α → Prop) : IsSymm _ (Subrel r p) :=
-  ⟨fun x y => @IsSymm.symm α r _ x y⟩
+instance (r : α → α → Prop) [Std.Symm r] (p : α → Prop) : Std.Symm (Subrel r p) :=
+  ⟨fun x y => @Std.Symm.symm α r _ x y⟩
 
 instance (r : α → α → Prop) [IsAsymm α r] (p : α → Prop) : IsAsymm _ (Subrel r p) :=
   ⟨fun x y => @IsAsymm.asymm α r _ x y⟩

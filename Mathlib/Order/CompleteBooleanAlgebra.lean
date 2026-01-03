@@ -623,14 +623,6 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α] {s : Set α} {f : ι → α}
 
-@[deprecated "use `inf_sSup_eq.le` instead" (since := "2025-06-15")]
-theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
-  gc_inf_himp.l_sSup.le
-
-@[deprecated "use `sup_sInf_eq.ge` instead" (since := "2025-06-15")]
-theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
-  gc_sdiff_sup.u_sInf.ge
-
 theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
     (compl_le_of_compl_le <| le_iInf fun i => compl_le_of_compl_le <|

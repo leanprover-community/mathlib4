@@ -180,8 +180,6 @@ instance selfLeftAction [MonoidalCategory C] : MonoidalLeftAction C C where
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]
 
-@[deprecated (since := "2025-06-13")] alias selfAction := selfLeftAction
-
 namespace MonoidalLeftAction
 
 open Category
