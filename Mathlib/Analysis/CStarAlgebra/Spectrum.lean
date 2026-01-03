@@ -42,6 +42,8 @@ we can still establish a form of spectral permanence.
   to its norm.
 + `IsStarNormal.spectralRadius_eq_nnnorm`: The spectral radius of a normal element is equal to
   its norm.
++ `spectralRadius_toReal_star_self_mul_self_eq_normSq`: The spectral radius of `a⋆ * a` is equal to
+  the square of the norm of `a`.
 + `IsSelfAdjoint.mem_spectrum_eq_re`: Any element of the spectrum of a selfadjoint element is real.
 * `StarSubalgebra.coe_isUnit`: for `x : S` in a C⋆-Subalgebra `S` of `A`, then `↑x : A` is a Unit
   if and only if `x` is a unit.
@@ -148,6 +150,28 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
   rw [← heq] at h₂
   convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
+
+namespace CStarAlgebra
+
+theorem toReal_spectralRadius_star_mul_self_eq_norm_sq (a : A) :
+    (spectralRadius ℂ (a⋆ * a)).toReal = ‖a‖ ^ 2 := by
+  rw [(IsSelfAdjoint.star_mul_self a).toReal_spectralRadius_complex_eq_norm,
+    CStarRing.norm_star_mul_self, ← pow_two]
+
+theorem toReal_spectralRadius_self_mul_star_eq_norm_sq (a : A) :
+    (spectralRadius ℂ (a * a⋆)).toReal = ‖a‖ ^ 2 := by
+  rw [pow_two, ← norm_star, ← CStarRing.norm_star_mul_self (x := a⋆),
+    ← (IsSelfAdjoint.star_mul_self a⋆).toReal_spectralRadius_complex_eq_norm, star_star]
+
+theorem sqrt_toReal_spectralRadius_star_mul_self_eq_norm (a : A) :
+    (spectralRadius ℂ (a⋆ * a)).toReal.sqrt = ‖a‖ := by
+  simp [toReal_spectralRadius_star_mul_self_eq_norm_sq]
+
+theorem sqrt_toReal_spectralRadius_self_mul_star_eq_norm (a : A) :
+    (spectralRadius ℂ (a * a⋆)).toReal.sqrt = ‖a‖ := by
+  simp [toReal_spectralRadius_self_mul_star_eq_norm_sq]
+
+end CStarAlgebra
 
 variable [StarModule ℂ A]
 
