@@ -388,6 +388,11 @@ protected theorem rightInvOn : RightInvOn I.symm I (range I) :=
 protected theorem right_inv {x : E} (hx : x ∈ range I) : I (I.symm x) = x :=
   I.rightInvOn hx
 
+lemma rightInverse_restrict :
+    RightInverse ((range I).restrict I.symm) (Set.codRestrict I (range I) (by simp)) := by
+  intro ⟨x, hx⟩
+  simp [restrict_apply, Subtype.ext_iff, I.right_inv hx]
+
 theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
   I.injective.preimage_image s
 
@@ -402,6 +407,13 @@ theorem isClosedEmbedding : IsClosedEmbedding I :=
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
 
+lemma isClosedEmbedding_symm_restrict [T2Space H] : IsClosedEmbedding ((range I).restrict I.symm) :=
+  I.rightInverse_restrict.isClosedEmbedding (I.continuous.codRestrict (by simp))
+    I.continuousOn_symm.restrict
+
+lemma isEmbedding_symm_restrict : IsEmbedding ((range I).restrict I.symm) :=
+  IsEmbedding.of_leftInverse I.rightInverse_restrict (I.continuous.codRestrict (by simp))
+    I.continuousOn_symm.restrict
 
 theorem range_eq_closure_interior : range I = closure (interior (range I)) :=
   Subset.antisymm I.range_subset_closure_interior I.isClosed_range.closure_interior_subset
