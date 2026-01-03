@@ -209,6 +209,10 @@ theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
 
 @[to_additive (attr := simp)]
+theorem smul_finset_eq_univ [Fintype β] : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_finset_univ]
+
+@[to_additive (attr := simp)]
 theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     push_cast
