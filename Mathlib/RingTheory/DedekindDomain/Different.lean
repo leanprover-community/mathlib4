@@ -447,8 +447,7 @@ theorem dual_eq_dual_mul_dual :
     IsLocalization.algebraMap_apply_eq_map_map_submonoid B⁰ C L M x
   refine le_antisymm ?_ ?_
   · intro x hx
-    dsimp only [val_eq_coe] at hx ⊢
-    rw [mem_coe, ← spanSingleton_le_iff_mem, ← mul_inv_le_iff₀ (bot_lt_iff_ne_bot.mpr
+    rw [← spanSingleton_le_iff_mem, ← mul_inv_le_iff₀ (bot_lt_iff_ne_bot.mpr
       (by simp [-extendedHom_apply])), ← map_inv₀, ← FractionalIdeal.coe_le_coe,
         extendedHom_apply, coe_mul, coe_spanSingleton, coe_extended_eq_span, coe_dual_one,
         span_mul_span, span_le]
@@ -489,8 +488,7 @@ lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
   have := FractionalIdeal.dual_inv_le (A := A) (K := FractionRing A)
     (1 : FractionalIdeal B⁰ (FractionRing B))
   have : _ ≤ ((1 : FractionalIdeal B⁰ (FractionRing B)) : Submodule B (FractionRing B)) := this
-  simp only [← one_div, FractionalIdeal.val_eq_coe] at this
-  rw [FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _ _ _),
+  rw [← one_div, FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _ _ _),
     FractionalIdeal.coe_dual] at this
   · simpa only [FractionalIdeal.coe_one, Submodule.one_eq_range] using this
   · exact one_ne_zero
