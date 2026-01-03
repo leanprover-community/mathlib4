@@ -38,6 +38,7 @@ public meta import Mathlib.Tactic.ByCases
 public meta import Mathlib.Tactic.ByContra
 public meta import Mathlib.Tactic.CasesM
 public meta import Mathlib.Tactic.Check
+public meta import Mathlib.Tactic.CheckEqualities
 public meta import Mathlib.Tactic.Choose
 public meta import Mathlib.Tactic.ClearExclamation
 public meta import Mathlib.Tactic.ClearExcept
