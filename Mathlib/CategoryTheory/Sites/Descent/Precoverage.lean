@@ -93,6 +93,7 @@ noncomputable def a : Z ⟶ X' (idx hq) := (exists_fac hq).choose_spec.choose
 lemma fac : a hq ≫ f' (idx hq) = q ≫ f i := (exists_fac hq).choose_spec.choose_spec
 
 end sieve
+
 /-- Given two family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S`,
 two objects `D₁ D₂ : F.DescentData f`, a morphism `φ` between the images in
 `F.DescentData f'` of `D₁` and `D₂` by a functor `pullFunctor`, and a factorization
