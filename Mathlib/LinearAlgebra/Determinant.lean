@@ -266,7 +266,7 @@ theorem det_zero [Module.Free A M] :
   simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, map_one]
 
 theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[R] M) : f.det = 1 := by
-  rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
+  rw [LinearMap.det, dif_neg, FunLikeOne.one_apply]
   exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
 
 @[nontriviality]
@@ -304,7 +304,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
         contrapose! H
         rcases H with ⟨s, ⟨b⟩⟩
         exact ⟨_, ⟨(b.map e.symm).reindexFinsetRange⟩⟩
-      simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg, not_false_eq_true]
+      simp only [coe_det, H, H', FunLikeOne.one_apply, dif_neg, not_false_eq_true]
 
 /-- If a linear map is invertible, so is its determinant. -/
 theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :

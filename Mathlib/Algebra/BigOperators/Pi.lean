@@ -192,8 +192,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
     exact Fintype.prod_pi_mulSingle' ..
   map_mul' φ ψ := by
     ext
-    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.mul_apply, mul_apply]
+    simp
 
 end MulEquiv
 
@@ -231,3 +230,19 @@ theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
   convert eqOn_finsetProd h v <;> simp
 
 end EqOn
+
+section FunLike
+
+variable {F α β : Type*} [FunLike F α β] [CommMonoid β] [Mul F] [One F] [Pow F ℕ]
+  [FunLikeOne F α β] [FunLikeMul F α β] [FunLikePow ℕ F α β]
+
+open Classical in
+@[to_additive (attr := simp)]
+theorem Funlike.prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
+    (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  apply Finset.induction_on (motive := fun s ↦ (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x)
+  · simp
+  · intro i s his h
+    simp [his, h]
+
+end FunLike

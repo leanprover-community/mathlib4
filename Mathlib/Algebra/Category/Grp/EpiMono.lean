@@ -51,7 +51,7 @@ theorem range_eq_top_of_cancel {f : A →* B}
     (h : ∀ u v : B →* B ⧸ f.range, u.comp f = v.comp f → u = v) : f.range = ⊤ := by
   specialize h 1 (QuotientGroup.mk' _) _
   · ext1 x
-    simp only [one_apply, coe_comp, coe_mk', Function.comp_apply]
+    simp only [one_comp, FunLikeOne.one_apply, coe_comp, coe_mk', Function.comp_apply]
     rw [show (1 : B ⧸ f.range) = (1 : B) from QuotientGroup.mk_one _, QuotientGroup.eq, inv_one,
       one_mul]
     exact ⟨x, rfl⟩

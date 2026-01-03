@@ -243,15 +243,14 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
           gcongr
           apply f.le_seminormAux }⟩
 
-@[simp]
-theorem smul_apply {f : 𝓢(E, F)} {c : 𝕜} {x : E} : (c • f) x = c • f x :=
-  rfl
+instance instFunLikeSMul : FunLikeSMul 𝕜 𝓢(E, F) E F where
+  smul_apply _ _ _ := rfl
 
-instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' F] : IsScalarTower 𝕜 𝕜' 𝓢(E, F) :=
+/-instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' F] : IsScalarTower 𝕜 𝕜' 𝓢(E, F) :=
   ⟨fun a b f => ext fun x => smul_assoc a b (f x)⟩
 
 instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 𝕜' 𝓢(E, F) :=
-  ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
+  ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩-/
 
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
@@ -266,11 +265,17 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
       smooth' := (f.smooth _).const_smul c
       decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
+instance instFunLikeNSMul : FunLikeSMul ℕ 𝓢(E, F) E F where
+  smul_apply _ _ _ := rfl
+
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
       decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using ((c : ℝ) • f).decay' }⟩
+
+instance instFunLikeZSMul : FunLikeSMul ℤ 𝓢(E, F) E F where
+  smul_apply _ _ _ := rfl
 
 end SMul
 
@@ -284,19 +289,18 @@ instance instZero : Zero 𝓢(E, F) :=
 instance instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
 
-theorem coe_zero : DFunLike.coe (0 : 𝓢(E, F)) = (0 : E → F) :=
+/-theorem coe_zero : DFunLike.coe (0 : 𝓢(E, F)) = (0 : E → F) :=
   rfl
 
 @[simp]
 theorem coeFn_zero : ⇑(0 : 𝓢(E, F)) = (0 : E → F) :=
-  rfl
+  rfl-/
 
-@[simp]
-theorem zero_apply {x : E} : (0 : 𝓢(E, F)) x = 0 :=
-  rfl
+instance instFunLikeZero : FunLikeZero 𝓢(E, F) E F where
+  zero_apply _ := rfl
 
 theorem seminormAux_zero (k n : ℕ) : (0 : 𝓢(E, F)).seminormAux k n = 0 :=
-  le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by simp [Pi.zero_def])
+  le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by norm_cast; simp [Pi.zero_def])
     (seminormAux_nonneg _ _ _)
 
 end Zero
@@ -308,8 +312,11 @@ instance instNeg : Neg 𝓢(E, F) :=
     ⟨-f, (f.smooth _).neg, fun k n =>
       ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
 
-@[simp]
-theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
+instance instFunLikeNeg : FunLikeNeg 𝓢(E, F) E F where
+  neg_apply _ _ := rfl
+
+/-@[simp]
+theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl-/
 
 end Neg
 
@@ -322,9 +329,8 @@ instance instAdd : Add 𝓢(E, F) :=
         (decay_add_le_aux k n f g x).trans
           (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))⟩⟩⟩
 
-@[simp]
-theorem add_apply {f g : 𝓢(E, F)} {x : E} : (f + g) x = f x + g x :=
-  rfl
+instance instFunLikeAdd : FunLikeAdd 𝓢(E, F) E F where
+  add_apply _ _ _ := rfl
 
 theorem seminormAux_add_le (k n : ℕ) (f g : 𝓢(E, F)) :
     (f + g).seminormAux k n ≤ f.seminormAux k n + g.seminormAux k n :=
@@ -347,25 +353,24 @@ instance instSub : Sub 𝓢(E, F) :=
       rw [← decay_neg_aux k n g x]
       exact decay_add_le_aux k n f (-g) x⟩⟩
 
-@[simp]
-theorem sub_apply {f g : 𝓢(E, F)} {x : E} : (f - g) x = f x - g x :=
-  rfl
+instance instFunLikeSub : FunLikeSub 𝓢(E, F) E F where
+  sub_apply _ _ _ := rfl
 
 end Sub
 
 section AddCommGroup
 
-instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
+/-instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) fun _ _ => rfl-/
 
 variable (E F)
 
 /-- Coercion as an additive homomorphism. -/
 def coeHom : 𝓢(E, F) →+ E → F where
   toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+  map_zero' := FunLike.coe_zero
+  map_add' := FunLike.coe_add
 
 variable {E F}
 
@@ -1078,8 +1083,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
 def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
-  mkCLMtoNormedSpace toBoundedContinuousFunction (by intro f g; ext; exact add_apply)
-    (by intro a f; ext; exact smul_apply)
+  mkCLMtoNormedSpace toBoundedContinuousFunction (by intros; ext; simp) (by intros; ext; simp)
     (⟨{0}, 1, zero_le_one, by
       simpa [BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
 
@@ -1155,8 +1159,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
 def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
-  mkCLMtoNormedSpace toZeroAtInfty (by intro f g; ext; exact add_apply)
-    (by intro a f; ext; exact smul_apply)
+  mkCLMtoNormedSpace toZeroAtInfty (by intros; ext; simp) (by intros; ext; simp)
     (⟨{0}, 1, zero_le_one, by simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
       BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
 

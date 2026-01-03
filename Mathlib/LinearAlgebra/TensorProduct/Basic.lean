@@ -177,15 +177,13 @@ def liftAddHom (f : M →+ N →+ P)
     AddCon.addConGen_le fun x y hxy =>
       match x, y, hxy with
       | _, _, .of_zero_left n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
-          AddMonoidHom.zero_apply]
+        (AddCon.ker_rel _).2 <| by simp [map_zero]
       | _, _, .of_zero_right m =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero]
+        (AddCon.ker_rel _).2 <| by simp [map_zero]
       | _, _, .of_add_left m₁ m₂ n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add,
-          AddMonoidHom.add_apply]
+        (AddCon.ker_rel _).2 <| by simp [map_add]
       | _, _, .of_add_right m n₁ n₂ =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add]
+        (AddCon.ker_rel _).2 <| by simp [map_add]
       | _, _, .of_smul s m n =>
         (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
       | _, _, .add_comm x y =>

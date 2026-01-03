@@ -163,7 +163,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
       ((LinearMap.toMatrix b b).toLinearMap.comp
           (ContinuousLinearMap.coeLM 𝕜)).continuous_of_finiteDimensional
   · rw [LinearMap.det]
-    simpa only [h, MonoidHom.one_apply, dif_neg, not_false_iff] using continuous_const
+    simpa only [h, FunLikeOne.one_apply, dif_neg, not_false_iff] using continuous_const
 
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
