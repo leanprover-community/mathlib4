@@ -263,6 +263,12 @@ theorem one_le_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMo
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 
+/-- A version of `one_le_finprod'` for `PosMulMono` in place of `MulLeftMono`. -/
+lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneClass M]
+    [PosMulMono M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
+    1 ≤ ∏ᶠ i, f i :=
+  finprod_induction _ le_rfl (fun _ _ ↦ one_le_mul_of_one_le_of_one_le) hf
+
 @[to_additive]
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : (mulSupport <| g ∘ PLift.down).Finite) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by

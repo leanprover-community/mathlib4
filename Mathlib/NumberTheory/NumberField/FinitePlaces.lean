@@ -169,6 +169,17 @@ noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv v x := rfl
 
+/-- A predicate singling out finite places among the absolute values on a number field `K`. -/
+def IsFinitePlace (w : AbsoluteValue K ℝ) : Prop :=
+  ∃ v : IsDedekindDomain.HeightOneSpectrum (𝓞 K), place (FinitePlace.embedding v) = w
+
+lemma FinitePlace.isFinitePlace (v : FinitePlace K) : IsFinitePlace v.val := by
+  simp [IsFinitePlace, v.prop]
+
+lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
+    IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
+  ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
+
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by
@@ -237,6 +248,8 @@ instance : NonnegHomClass (FinitePlace K) K ℝ where
 
 @[simp]
 theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
+
+lemma coe_apply (v : FinitePlace K) (x : K) : v x = v.val x := rfl
 
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
 noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose
@@ -308,6 +321,18 @@ theorem mulSupport_finite {x : K} (h_x_nezero : x ≠ 0) :
   simp only [Function.mem_mulSupport, ne_eq, Set.mem_union]
   contrapose!
   simp +contextual only [ne_eq, one_ne_zero, not_false_eq_true, div_self, implies_true]
+
+protected
+lemma add_le (v : FinitePlace K) (x y : K) :
+    v (x + y) ≤ max (v x) (v y) := by
+  obtain ⟨w, hw⟩ := v.prop
+  have H x : v x = RingOfIntegers.HeightOneSpectrum.adicAbv w x := by
+    rw [show v x = v.val x from rfl]
+    grind only [place_apply, norm_def]
+  simpa only [H] using RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max w x y
+
+instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
+  map_add_le_max v a b := FinitePlace.add_le v a b
 
 end FinitePlace
 
