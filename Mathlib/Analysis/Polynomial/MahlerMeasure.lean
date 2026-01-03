@@ -384,15 +384,10 @@ lemma leadingCoeff_le_mahlerMeasure' :
     ‖p.leadingCoeff‖ ≤ p.mahlerMeasure' v := by
   by_cases hp : p.leadingCoeff = 0
   · simp [hp, mahlerMeasure'_nonneg]
-  · have := calc ‖v p.leadingCoeff‖ = ‖p.leadingCoeff‖ := (norm_map v p.leadingCoeff)
-      _ ≠ 0 := (not_iff_not.mpr norm_eq_zero).mpr hp
-    have : v p.leadingCoeff ≠ 0 := by exact (not_iff_not.mpr norm_eq_zero).mp this
-    have : (v p.leadingCoeff) = (p.map v).leadingCoeff := by
-      exact (leadingCoeff_map_of_leadingCoeff_ne_zero (R := A) (S := ℂ) v this).symm
-    calc ‖p.leadingCoeff‖ = ‖v p.leadingCoeff‖ := (norm_map v p.leadingCoeff).symm
-      _ = ‖(p.map v).leadingCoeff‖ := by rw [this]
-      _ ≤ (p.map v).mahlerMeasure := by exact leadingCoeff_le_mahlerMeasure _
-      _ = p.mahlerMeasure' v := by rfl
+  · have : v p.leadingCoeff = (p.map v).leadingCoeff := by
+      refine leadingCoeff_map_of_leadingCoeff_ne_zero (R := A) (S := ℂ) v ?_ |>.symm
+      simp [norm_map, leadingCoeff_ne_zero.mp hp, (not_iff_not.mpr norm_eq_zero).mp]
+    grw [← norm_map v, this, leading_coeff_le_mahlerMeasure, mahlerMeasure']
 
 variable {p} in
 lemma Monic.one_le_mahlerMeasure' [NormOneClass A] (hp : p.Monic) :
