@@ -18,6 +18,11 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 * If, moreover, `f v = 0`, then `LinearEquiv.transvection` shows that it is
   a linear equivalence.
 
+* `LinearMap.transvections R V`: the set of transvections.
+
+* `LinearEquiv.dilatransvections R V`: the set of linear equivalences
+whose associated linear map is of the form `LinearMap.transvection f v`.
+
 ## Note on terminology
 
 In the mathematical litterature, linear maps of the form `LinearMap.transvection f v`
@@ -170,10 +175,22 @@ theorem symm_eq {f : Dual R V} {v : V}
   ext;
   simp [LinearEquiv.symm_apply_eq, comp_of_left_eq_apply hv']
 
+theorem inv_eq {f : Dual R V} {v : V}
+    (hv : f v = 0) (hv' : f (-v) = 0 := by simp [hv]) :
+    (transvection hv)⁻¹ = transvection hv' :=
+  symm_eq hv
+
 theorem symm_eq' {f : Dual R V} {v : V}
     (hf : f v = 0) (hf' : (-f) v = 0 := by simp [hf]) :
     (transvection hf).symm = transvection hf' := by
   ext; simp [LinearEquiv.symm_apply_eq, comp_of_right_eq_apply hf]
+
+theorem inv_eq' {f : Dual R V} {v : V}
+    (hf : f v = 0) (hf' : (-f) v = 0 := by simp [hf]) :
+    (transvection hf)⁻¹ = transvection hf' :=
+  symm_eq' hf
+
+end transvection
 
 variable (R V) in
 /-- The set of transvections in the group of linear equivalences -/
@@ -189,22 +206,29 @@ theorem mem_transvections_iff {e : V ≃ₗ[R] V} :
     transvection hfv ∈ transvections R V :=
   ⟨f, v, hfv, rfl⟩
 
+@[simp] theorem refl_mem_transvections :
+    refl R V ∈ transvections R V :=
+  ⟨0, 0, by simp, by aesop⟩
+
 @[simp] theorem one_mem_transvections :
     1 ∈ transvections R V :=
-  ⟨0, 0, by simp, by aesop⟩
+  refl_mem_transvections
+
+@[simp]
+theorem symm_mem_transvections_iff {e : V ≃ₗ[R] V} :
+    e.symm ∈ transvections R V ↔ e ∈ transvections R V := by
+  suffices ∀ e ∈ transvections R V, e.symm ∈ transvections R V by
+    refine ⟨fun h ↦ ?_, this e⟩
+    rw [← symm_symm e]
+    exact this _ h
+  rintro _ ⟨f, v, hv, rfl⟩
+  rw [transvection.symm_eq]
+  apply mem_transvections
 
 @[simp]
 theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
-    e⁻¹ ∈ transvections R V ↔ e ∈ transvections R V := by
-  suffices ∀ e ∈ transvections R V, e⁻¹ ∈ transvections R V by
-    refine ⟨fun h ↦ ?_, this e⟩
-    rw [← inv_inv e]
-    exact this _ h
-  rintro _ ⟨f, v, hv, rfl⟩
-  have : (LinearEquiv.transvection hv)⁻¹ = (LinearEquiv.transvection hv).symm := by
-    rfl
-  rw [this, LinearEquiv.transvection.symm_eq]
-  apply mem_transvections
+    e.symm ∈ transvections R V ↔ e ∈ transvections R V :=
+  symm_mem_transvections_iff
 
 open Pointwise in
 theorem transvections_pow_mono :
@@ -212,29 +236,43 @@ theorem transvections_pow_mono :
   Set.pow_right_monotone one_mem_transvections
 
 variable (R V) in
-/-- Dilatransvections are linear equivalences which differ
-from the identity map by a linear map of rank at most 1. -/
-def dilatransvections :=
+/-- Dilatransvections are linear equivalences `V ≃ₗ[R] V` whose associated linear map are given by
+`LinearMap.transvection`, ie, are of the form `x ↦ x + f x • v` for `f : Dual R V` and `v : V`.
+
+Over a division ring, `LinearEquiv.mem_dilatransvections_iff_rank` shows that they correspond
+to the linear equivalences which differ from the identity map by a linear map of rank at most 1. -/
+def dilatransvections : Set (V ≃ₗ[R] V) :=
   { e : V ≃ₗ[R] V | ∃ (f : Dual R V) (v : V), e = LinearMap.transvection f v }
 
 theorem transvections_subset_dilatransvections :
     transvections R V ⊆ dilatransvections R V := by
   rintro e ⟨f, v, hfv, rfl⟩
-  exact ⟨f, v, by rw [@coe_toLinearMap]⟩
+  exact ⟨f, v, by simp⟩
 
-theorem one_mem_dilatransvections : 1 ∈ dilatransvections R V :=
+@[simp]
+theorem refl_mem_dilatransvections : refl R V ∈ dilatransvections R V :=
   transvections_subset_dilatransvections one_mem_transvections
 
-theorem inv_mem_dilatransvections_iff (e : V ≃ₗ[R] V) :
-    e ∈ dilatransvections R V ↔ e⁻¹ ∈ dilatransvections R V := by
-  suffices ∀ e ∈ dilatransvections R V, e⁻¹ ∈ dilatransvections R V by
-    refine ⟨this e, by simpa using this e⁻¹⟩
+@[simp]
+theorem one_mem_dilatransvections : 1 ∈ dilatransvections R V :=
+  refl_mem_dilatransvections
+
+@[simp]
+theorem symm_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
+    e.symm ∈ dilatransvections R V ↔ e ∈ dilatransvections R V := by
+  suffices ∀ e ∈ dilatransvections R V, e.symm ∈ dilatransvections R V by
+    refine ⟨by simpa using this e.symm, this e⟩
   rintro e ⟨f, v, he⟩
-  use f, - e⁻¹ v
+  use f, - e.symm v
   ext x
-  simp only [coe_coe, coe_inv, LinearMap.transvection.apply, smul_neg, ← sub_eq_add_neg,
+  simp only [coe_coe, LinearMap.transvection.apply, smul_neg, ← sub_eq_add_neg,
     symm_apply_eq, map_sub, _root_.map_smul, apply_symm_apply]
   rw [eq_comm, sub_eq_iff_eq_add, ← coe_coe, he, LinearMap.transvection.apply]
+
+@[simp]
+theorem inv_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
+    e⁻¹ ∈ dilatransvections R V ↔ e ∈ dilatransvections R V :=
+  symm_mem_dilatransvections_iff
 
 open Pointwise in
 theorem dilatransvections_pow_mono :
@@ -242,7 +280,9 @@ theorem dilatransvections_pow_mono :
   Set.pow_right_monotone one_mem_dilatransvections
 
 /-- Over a division ring, `dilatransvections` correspond to linear
-equivalences `e` such that the linear map `e - id` has rank at most 1. -/
+equivalences `e` such that the linear map `e - id` has rank at most 1.
+
+See also `LinearEquiv.mem_dilatransvections_iff_finrank`. -/
 theorem mem_dilatransvections_iff_rank {K : Type*} [DivisionRing K] [Module K V] {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
       Module.rank K (range ((e : V →ₗ[K] V)- LinearMap.id (R := K))) ≤ 1 := by
@@ -282,7 +322,9 @@ theorem mem_dilatransvections_iff_rank {K : Type*} [DivisionRing K] [Module K V]
 
 open Cardinal in
 /-- Over a division ring, `dilatransvections` correspond to linear
-equivalences `e` such that the linear map `e - id` has rank at most 1. -/
+equivalences `e` such that the linear map `e - id` has rank at most 1.
+
+See also `LinearEquiv.mem_dilatransvections_iff_rank`. -/
 theorem mem_dilatransvections_iff_finrank
     {K : Type*} [DivisionRing K] [Module K V] [Module.Finite K V]
     {e : V ≃ₗ[K] V} :
@@ -291,13 +333,15 @@ theorem mem_dilatransvections_iff_finrank
   rw [mem_dilatransvections_iff_rank, finrank, ← one_toNat,
     toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K _) one_lt_aleph0]
 
-end LinearEquiv.transvection
+end LinearEquiv
 
 section baseChange
 
 open IsBaseChange LinearMap LinearEquiv Module
 
 open scoped TensorProduct
+
+section
 
 variable
     {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
@@ -319,14 +363,31 @@ theorem IsBaseChange.transvection (f : Dual R V) (v : V) :
   | smul a w hw => simp [hw]
   | tmul x => simp [LinearMap.transvection.apply, endHom_comp_apply, toDual_comp_apply]
 
-theorem LinearEquiv.transvection.baseChange
-    {R V A : Type*} [CommRing R] [AddCommGroup V]
+end
+
+section
+
+variable {R V A : Type*} [CommRing R] [AddCommGroup V]
     [Module R V] [CommRing A] [Algebra R A]
     {f : Module.Dual R V} {v : V} (h : f v = 0)
+    {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
+  [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
+
+
+theorem LinearEquiv.transvection.baseChange
     (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
     (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
   simp [← toLinearMap_inj, coe_baseChange,
     LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
+
+theorem LinearEquiv.dilatransvection.baseChange (e : V ≃ₗ[R] V)
+    (he : e ∈ LinearEquiv.dilatransvections R V) :
+    e.baseChange R A V V ∈ LinearEquiv.dilatransvections A (A ⊗[R] V) := by
+  obtain ⟨f, v, he⟩ := he
+  use (f.baseChange A), (1 ⊗ₜ[R] v)
+  simp [he, LinearMap.transvection.baseChange]
+
+end
 
 end baseChange
 
