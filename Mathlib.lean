@@ -155,6 +155,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
@@ -6252,6 +6253,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.ReesAlgebra
+public import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
