@@ -8,15 +8,17 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Geometry.Manifold.Orientable
 
 /-!
 # Constructing examples of manifolds over ℝ
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x, y}`
-whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
-has boundary `M × {x, y}`.
+boundary structure on the real interval `[x, y]`, and prove that it is orientable and its boundary
+is indeed `{x,  y}` whenever `x < y`.
+As a corollary, a product `M × [x, y]` with a manifold `M` without boundary has
+boundary `M × {x, y}`.
 
 More specifically, we introduce
 * `modelWithCornersEuclideanHalfSpace n :
@@ -504,13 +506,57 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
+open Classical in
+def IccOrientation [Fact (x < y)] : atlas (EuclideanHalfSpace 1) (Icc x y) → SignType :=
+  fun t ↦ if t.val.source = {⟨y, ⟨Fact.out, le_refl y⟩⟩} then -1 else 1 -- needs decidability
+
+-- Dies ist der alte Code: der ist noch nicht richtig,
+-- weil EuclideanHalfSpace kein normierter Raum ist.
+
+/-- The manifold structure on `[x, y]` is orientable. -/
+instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
+    IsOrientedManifold (𝓡∂ 1) (Icc x y) IccOrientation where
+  compatible {e₁ e₂} he₁ he₂ := by
+    simp only [atlas, mem_singleton_iff, mem_insert_iff] at he₁ he₂
+    rcases he₁ with (rfl | rfl) <;> rcases he₂ with (rfl | rfl)
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccLeftChart x y)
+    · constructor
+      · constructor
+        · rintro z ⟨hz₁, s, ⟨hs₁, hs₂⟩, hz₂⟩
+          -- Notation, for ease of reading
+          set F := (𝓡∂ 1) ∘ ((IccLeftChart x y).symm ≫ₕ IccRightChart x y) ∘ (𝓡∂ 1).symm
+          let S := (𝓡∂ 1).symm ⁻¹' ((IccLeftChart x y).symm ≫ₕ IccRightChart x y).source
+            ∩ range (𝓡∂ 1)
+          -- Recall, this was proven above.
+          have : ContDiffOn ℝ ⊤ F S := sorry
+          show 0 < LinearMap.det (fderiv ℝ F z).toLinearMap
+          -- Choose a basis of EuclideanSpace ℝ (Fin 1), using eg. `stdOrthonormalBasis`
+          -- and OrthonormalBasis.toBasis
+          let basis : Basis (Fin 1) ℝ (EuclideanSpace ℝ (Fin 1)) := sorry
+          let Fder := fderiv ℝ F z
+          let Flin := LinearMap.toMatrix basis basis Fder.toLinearMap
+          rw [← LinearMap.det_toMatrix basis Fder,
+            Matrix.det_eq_elem_of_card_eq_one (by rw [Fintype.card_ofSubsingleton]) 0]
+          -- Next: compute the derivative of the resulting function ℝ → ℝ and prove it is positive.
+          sorry
+
+        · sorry
+      · sorry -- inverse result
+    · sorry -- similar, with left and right swapped
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
+  oriented x y := sorry
+  reversing x y := sorry
+
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
 `instIccChartedSpace` and `instIsManifoldIcc`. -/
-
 section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
+
+instance : IsOrientedManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) IccOrientation := by infer_instance
 
 end
