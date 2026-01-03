@@ -585,7 +585,8 @@ instance projective_unit (I : (Submodule R A)ˣ) : Projective R I := by
       rw [← one_eq_range, ← I.mul_inv]; exact mul_mem_mul hx (I⁻¹.1.smul_mem _ <| hT <| ha i)
   let g : (S → R) →ₗ[R] I := .lsum _ _ ℕ fun i ↦ .toSpanSingleton _ _ ⟨b i, hT' <| hb i⟩
   refine .of_split f g (LinearMap.ext fun x ↦ Subtype.ext ?_)
-  simp only [f, g, lsum_apply, comp_apply, sum_apply, toSpanSingleton_apply, proj_apply, pi_apply]
+  simp only [f, g, lsum_apply, comp_apply, LinearMap.sum_apply, toSpanSingleton_apply, proj_apply,
+    pi_apply]
   simp_rw [restrict_apply, mulRight_apply, id_apply, coe_sum, coe_smul, Algebra.smul_def,
     ← Algebra.coe_linearMap, LinearEquiv.coe_toLinearMap, LinearEquiv.ofInjective_symm_apply,
     mul_assoc, Algebra.coe_linearMap, ← Algebra.smul_def, ← Finset.mul_sum, eq,
