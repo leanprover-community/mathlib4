@@ -42,6 +42,16 @@ example {a : ℝ≥0∞} : 2 * a⁻¹ * a ≠ ∞ := by rw [mul_assoc]; finitene
 example {a : ℝ≥0∞} (ha : a ≠ ∞) : max a 37 ≠ ∞ := by finiteness
 example {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : max a b < ∞ := by finiteness
 
+-- finiteness can split on a condition by proving each branch individually.
+example {p : Prop} [Decidable p] {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) :
+  (if c ≠ 37 ∨ ¬p then c + a else b + 1) < ∞ := by finiteness
+
+-- finiteness can use the condition to help prove the goal. Test dite and ite versions:
+example {a b c : ℝ≥0∞} (hb : b ≠ ∞) (hc : c ≠ ∞) :
+  (if _ : a ≠ ∞ then c + a else b + 1) < ∞ := by finiteness
+example {a b c : ℝ≥0∞} (hb : b ≠ ∞) (hc : c ≠ ∞) :
+  (if a ≠ ∞ then c + a else b + 1) < ∞ := by finiteness
+
 /--
 Test that `finiteness_nonterminal` makes progress but does not fail on not
 closing the goal.
