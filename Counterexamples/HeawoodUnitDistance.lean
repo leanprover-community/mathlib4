@@ -54,6 +54,8 @@ lemma heawoodGraph_neighborFinset (i : Fin 14) :
 
 /-- The Heawood graph is 3-regular. -/
 lemma isRegularOfDegree_heawoodGraph : heawoodGraph.IsRegularOfDegree 3 := fun i ↦ by
+  rw [← show heawoodGraph.degree i = heawoodGraph.edegree i from
+    ENat.coe_toNat <| Set.encard_ne_top_iff.mpr <| Set.toFinite _]
   rw [← card_neighborFinset_eq_degree, heawoodGraph_neighborFinset]; revert i; decide
 
 /-! ### A key number -/
