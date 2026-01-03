@@ -217,6 +217,14 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : k[G]) :
     rw [lift_unique' F]
     simp [lift_apply]
 
+theorem lift_mapRangeRingHom_algebraMap [CommSemiring R] [CommSemiring S]
+    [Algebra R A] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
+    (f : G →* A) (x : R[G]) :
+    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+  induction x using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ ih => simp [ih]
+
 /-- If `f : M → N` is a homomorphism between two magmas, then `MonoidAlgebra.mapDomain f`
 is a non-unital algebra homomorphism between their magma algebras. -/
 @[to_additive (dont_translate := R A) (attr := simps apply)
@@ -520,6 +528,14 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : k[G]) :
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
+
+theorem lift_mapRangeRingHom_algebraMap [CommSemiring R] [CommSemiring S]
+    [Algebra R A] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
+    (f : Multiplicative G →* A) (x : R[G]) :
+    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+  induction x using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ ih => simp [ih]
 
 lemma algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
