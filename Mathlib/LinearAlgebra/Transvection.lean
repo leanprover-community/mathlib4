@@ -225,7 +225,7 @@ theorem transvections_subset_dilatransvections :
 theorem one_mem_dilatransvections : 1 ∈ dilatransvections R V :=
   transvections_subset_dilatransvections one_mem_transvections
 
-theorem inv.mem_dilatransvections_iff (e : V ≃ₗ[R] V) :
+theorem inv_mem_dilatransvections_iff (e : V ≃ₗ[R] V) :
     e ∈ dilatransvections R V ↔ e⁻¹ ∈ dilatransvections R V := by
   suffices ∀ e ∈ dilatransvections R V, e⁻¹ ∈ dilatransvections R V by
     refine ⟨this e, by simpa using this e⁻¹⟩
