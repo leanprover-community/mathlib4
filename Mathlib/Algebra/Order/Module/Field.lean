@@ -77,12 +77,15 @@ section PosSMulMono
 variable [Zero α] [Zero β] [SMulZeroClass α β] [Preorder α] [Preorder β] [PosSMulMono α β] {a : α}
   {b : β}
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem smul_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b :=
   smul_nonneg ha.le hb
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem smul_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b :=
   smul_nonneg ha hb.le
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem smul_nonneg_of_pos_of_pos (ha : 0 < a) (hb : 0 < b) : 0 ≤ a • b :=
   smul_nonneg ha.le hb.le
 
@@ -91,9 +94,11 @@ end PosSMulMono
 section NoZeroSMulDivisors
 variable [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] {a : α} {b : β}
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem smul_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 :=
   smul_ne_zero ha.ne' hb
 
+set_option backward.privateInPublic true in -- used by the positivity tactic
 private theorem smul_ne_zero_of_ne_zero_of_pos [Preorder β] (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 :=
   smul_ne_zero ha hb.ne'
 

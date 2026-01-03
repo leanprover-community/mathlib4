@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {J C : Type*} [Category J] [Category C] (F : J ⥤ C)
+variable {J C : Type*} [Category* J] [Category* C] (F : J ⥤ C)
 
 namespace Functor
 
@@ -182,7 +182,7 @@ noncomputable def coconeιApp (j : J) : F.obj j ⟶ F.obj i₀ :=
   F.map (rightToMax i₀ j) ≫ (h.isoMap (leftToMax i₀ j) ⟨𝟙 _⟩).inv
 
 lemma coconeιApp_eq (j j' : J) (α : j ⟶ j') (β : i₀ ⟶ j') :
-    h.coconeιApp j = F.map α ≫ (h.isoMap β ⟨𝟙 _⟩).inv  := by
+    h.coconeιApp j = F.map α ≫ (h.isoMap β ⟨𝟙 _⟩).inv := by
   obtain ⟨s, γ, δ, h₁, h₂⟩ := IsFiltered.bowtie
     (IsFiltered.leftToMax i₀ j) β (IsFiltered.rightToMax i₀ j) α
   dsimp [coconeιApp]

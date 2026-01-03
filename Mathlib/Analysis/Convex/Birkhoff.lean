@@ -143,7 +143,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
   split <;> simp [add_nonneg, hw, hM.1]
 
 /--
-If M is a doubly stochastic matrix, then it is an convex combination of permutation matrices. Note
+If M is a doubly stochastic matrix, then it is a convex combination of permutation matrices. Note
 `doublyStochastic_eq_convexHull_permMatrix` shows `doublyStochastic n` is exactly the convex hull of
 the permutation matrices, and this lemma is instead most useful for accessing the coefficients of
 each permutation matrices directly.

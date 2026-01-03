@@ -135,7 +135,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by simp), h 1 (by simp)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
   obtain (_ | _ | m) := m
-  exacts [h0, h1, by cutsat]
+  exacts [h0, h1, by lia]
 
 end CommRing
 
@@ -192,7 +192,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
-  cutsat
+  lia
 
 section NormalizationMonoid
 
@@ -308,6 +308,7 @@ def div (p q : R[X]) :=
 def mod (p q : R[X]) :=
   p %ₘ (q * C (leadingCoeff q)⁻¹)
 
+set_option backward.privateInPublic true in
 private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
   by_cases h : q = 0
   · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
@@ -316,6 +317,7 @@ private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + m
       rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
     rw [div, mod, add_comm, mul_assoc]
 
+set_option backward.privateInPublic true in
 private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
   rw [← degree_mul_leadingCoeff_inv q hq]
   exact degree_modByMonic_lt p (monic_mul_leadingCoeff_inv hq)
@@ -347,6 +349,8 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with

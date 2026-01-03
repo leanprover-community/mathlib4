@@ -90,8 +90,8 @@ theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : ((minpoly K pb.gen).map (algebraMap K F)).Splits) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
   rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, map_neg,
-    ← nextCoeff_map_eq, nextCoeff_eq_neg_sum_roots_of_monic_of_splits
-      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _) hf,
+    ← nextCoeff_map_eq, hf.nextCoeff_eq_neg_sum_roots_of_monic
+      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _),
     neg_neg]
 
 namespace IntermediateField.AdjoinSimple
@@ -169,7 +169,7 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
     use minpoly R x, minpoly.monic hx
     rw [← aeval_def] at hy ⊢
     exact minpoly.aeval_of_isScalarTower R x y hy
-  · apply IsAlgClosed.splits_codomain
+  · apply IsAlgClosed.splits
 
 lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
     [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
@@ -253,7 +253,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   have hx := Algebra.IsSeparable.isIntegral K x
   let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, map_mul, ← adjoin.powerBasis_gen hx,
-    trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _), ← Algebra.smul_def,
+    trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits _), ← Algebra.smul_def,
     algebraMap_smul]
   · exact (sum_embeddings_eq_finrank_mul L E pb).symm
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
@@ -298,7 +298,7 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
         rw [one_pow, IntermediateField.finrank_eq_one_iff_eq_top, separableClosure.eq_top_iff] at hn
         cases H hn
       | prime hprime =>
-        rw [hn, pow_succ', MulAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
+        rw [hn, pow_succ', SemigroupAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
           CharP.cast_eq_zero, zero_mul, LinearMap.zero_apply]
   · rw [trace_eq_finrank_mul_minpoly_nextCoeff]
     obtain ⟨g, hg₁, m, hg₂⟩ :=
@@ -363,7 +363,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   rw [Matrix.mul_apply, sum_mul]
   congr; ext y
   rw [map_apply, traceForm_apply, mul_comm (b y), ← smul_def]
-  simp only [id.smul_eq_mul, RingHom.id_apply, map_apply, transpose_apply, map_smulₛₗ,
+  simp only [smul_eq_mul, RingHom.id_apply, map_apply, transpose_apply, map_smulₛₗ,
     Algebra.smul_mul_assoc]
   rw [mul_comm (b x), ← smul_def]
   ring_nf
@@ -627,8 +627,5 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   intro σ _
   simp only [map_mul, map_div₀, map_pow]
   ring
-
-@[deprecated (since := "2025-06-25")] alias traceForm_dualBasis_powerBasis_eq :=
-  Module.Basis.traceDual_powerBasis_eq
 
 end Basis

@@ -559,7 +559,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
 
 /-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
 instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
-| 0     => Finite.of_fintype ℤˣ
+| 0 => Finite.of_fintype ℤˣ
 | _ + 1 => inferInstance
 
 open FiniteField
@@ -743,7 +743,7 @@ theorem Subfield.splits_bot :
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
-      Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+      (splits_bot F p).map_roots (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield

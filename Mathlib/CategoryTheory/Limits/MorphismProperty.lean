@@ -23,11 +23,11 @@ namespace CategoryTheory
 
 open Limits MorphismProperty.Comma
 
-variable {T : Type*} [Category T] (P : MorphismProperty T)
+variable {T : Type*} [Category* T] (P : MorphismProperty T)
 
 namespace MorphismProperty.Comma
 
-variable {A B J : Type*} [Category A] [Category B] [Category J] {L : A ⥤ T} {R : B ⥤ T}
+variable {A B J : Type*} [Category* A] [Category* B] [Category* J] {L : A ⥤ T} {R : B ⥤ T}
 variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
@@ -94,7 +94,7 @@ end MorphismProperty.Comma
 
 section
 
-variable {A : Type*} [Category A] {L : A ⥤ T}
+variable {A : Type*} [Category* A] {L : A ⥤ T}
 
 instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] [L.Full] {Y : A}
     [P.ContainsIdentities] [P.RespectsIso] :
@@ -107,6 +107,25 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
     rw [MorphismProperty.costructuredArrowObj_iff,
       P.costructuredArrow_iso_iff e]
     simpa using P.id_mem (L.obj Y)
+
+lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
+    {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
+    (c : ∀ (D : J ⥤ T) [HasColimit D], Cocone D)
+    (hc : ∀ (D : J ⥤ T) [HasColimit D], IsColimit (c D))
+    (H : ∀ (D : J ⥤ T) [HasColimit D] {X : T} (s : D ⟶ (Functor.const J).obj X),
+      (∀ j, P (s.app j)) → P ((hc D).desc (Cocone.mk X s))) (X : T) :
+    (P.costructuredArrowObj L (X := X)).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le Y := by
+    intro ⟨d⟩
+    let hd : IsColimit ((CategoryTheory.CostructuredArrow.proj L X ⋙ L).mapCocone d.cocone) :=
+      isColimitOfPreserves _ d.isColimit
+    have heq : Y.hom = hd.desc { pt := X, ι := { app j := (d.diag.obj j).hom } } := by
+      refine hd.hom_ext fun j ↦ ?_
+      simp only [Functor.const_obj_obj, IsColimit.fac]
+      simp
+    rw [P.costructuredArrowObj_iff, heq, ← hd.coconePointUniqueUpToIso_hom_desc (hc _),
+      P.cancel_left_of_respectsIso]
+    exact H _ _ d.prop_diag_obj
 
 end
 
