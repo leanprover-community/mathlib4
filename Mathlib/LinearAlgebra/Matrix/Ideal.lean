@@ -108,11 +108,11 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
   intro i j
   obtain rfl | qj := eq_or_ne q j
   · by_cases iq : i = q
-    · simp [iq, N, zMx, single, mul_apply, Matrix.sum_apply, ite_and, sub_mul]
+    · simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
     · convert I.mul_mem_left (-M i p * x) zMx
-      simp [iq, N, single, mul_apply, Matrix.sum_apply, ite_and, sub_mul]
+      simp [iq, N, single, mul_apply, sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
-  · simp [N, qj, Matrix.sum_apply, mul_apply]
+  · simp [N, qj, sum_apply, mul_apply]
 
 @[deprecated (since := "2025-07-28")] alias single_mem_jacobson_matricesOver :=
 single_mem_jacobson_matrix
