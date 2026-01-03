@@ -374,7 +374,7 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
 -/
 theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
-  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+  h.lift F.obj <| Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
