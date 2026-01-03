@@ -414,7 +414,7 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
       simp at Hprop
       simp_all [LE.le]
 
-  
+
 
 
 
