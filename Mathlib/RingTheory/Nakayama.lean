@@ -185,38 +185,23 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   | add _ _ _ _ hx hy => exact N.add_mem hx hy
   | zero => exact N.zero_mem
 
-/--
-If `N` is a finitely generated `R`-submodule of `M`,
-`I` is an ideal contained in the Jacobson radical of `R`,
-`t` is a set of `M` whose span image under the quotient map `M → M / (I • N)`
-contains the image of `N`, then `N` is contained in the span of `t`.
--/
-lemma le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
-    {I : Ideal R} {N : Submodule R M} {t : Set M}
-    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ N ≤ map (I • N).mkQ (span R t)) :
-    N ≤ span R t := by
+lemma le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)
+    (hmaple : map (I • N).mkQ N ≤ map (I • N).mkQ N') : N ≤ N' := by
   apply le_of_le_smul_of_le_jacobson_bot hN hIjac
-  apply_fun comap (I • N).mkQ at htspan
+  apply_fun comap (I • N).mkQ at hmaple
   on_goal 2 => apply Submodule.comap_mono
-  simp only [comap_map_mkQ] at htspan
-  grw [sup_comm, ← htspan]
-  simp only [le_sup_right]
+  simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
+  grw [sup_comm, ← hmaple]
 
-/--
-If `N` is a finitely generated `R`-submodule of `M`,
-`I` is an ideal contained in the Jacobson radical of `R`,
-`t` is a set of `M` whose span image under the quotient map `M → M / (I • N)`
-is the image of `N`, then `t` spans `N`.
--/
 lemma span_eq_of_map_mkQ_span_eq_map_mkQ_of_le_jacobson_bot
-    {I : Ideal R} {N : Submodule R M} {t : Set M}
-    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ (span R t) = map (I • N).mkQ N) :
-    span R t = N := by
+    {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)
+    (hmaple : map (I • N).mkQ N = map (I • N).mkQ N') : N = N' := by
   apply le_antisymm
-  · apply_fun comap (I • N).mkQ at htspan
-    simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at htspan
-    rw [← htspan]; apply le_sup_right
-  · exact le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot hN hIjac htspan.ge
+  · exact le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot hN hIjac hmaple.le
+  · apply_fun comap (I • N).mkQ at hmaple
+    simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
+    rw [hmaple]; apply le_sup_right
 
 /--
 **Nakayama's Lemma** - Statement (8) in
@@ -236,7 +221,7 @@ theorem exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot
   split_ands
   · simp [Set.InjOn]
   · simp [Set.image_image]
-  · apply span_eq_of_map_mkQ_span_eq_map_mkQ_of_le_jacobson_bot hN hIjac
+  · symm; apply span_eq_of_map_mkQ_span_eq_map_mkQ_of_le_jacobson_bot hN hIjac
     simp [← hsspan, map_span, Set.image_image]
 
 end Submodule
