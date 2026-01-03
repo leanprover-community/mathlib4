@@ -275,7 +275,7 @@ theorem ext_trunc' {f g : MvPowerSeries σ R} : f = g ↔ ∀ n, trunc' R n f = 
   simp_rw [this, h]
 
 open Filter in
-theorem ext'_trunc' {f g : MvPowerSeries σ R} :
+theorem eq_iff_frequently_trunc'_eq {f g : MvPowerSeries σ R} :
     f = g ↔ ∃ᶠ m in atTop, trunc' R m f = trunc' R m g := by
   refine ⟨fun h => by simp [h, atTop_neBot], fun h => ?_⟩
   ext n

@@ -203,7 +203,7 @@ variable [ExpChar R p]
 theorem map_frobenius_expand {f : MvPowerSeries σ R} :
     (f.expand p hp).map (frobenius R p) = f ^ p := by
   classical
-  rw [ext'_trunc', Filter.frequently_atTop]
+  rw [eq_iff_frequently_trunc'_eq, Filter.frequently_atTop]
   intro n
   use (p • n)
   refine ⟨le_self_nsmul (zero_le n) hp, ?_⟩
