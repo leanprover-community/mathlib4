@@ -35,27 +35,29 @@ namespace Polynomial
 
 variable (p : ℂ[X])
 
-lemma fourierCoeffOn_cexp (n k : ℤ) :
-    fourierCoeffOn Real.two_pi_pos (fun t ↦ Complex.exp (k * (t * Complex.I))) n =
-    if n = k then 1 else 0 := by
+lemma fourierCoeffOn_cexp (k : ℤ) :
+    fourierCoeffOn Real.two_pi_pos (fun t ↦ Complex.exp (k * (t * Complex.I))) =
+    Pi.single k 1 := by
+  ext n
   rw [fourierCoeffOn_eq_integral]
   simp only [fourier_coe_apply]
   have : ∀ x : ℝ, 2 * Real.pi * I * ↑(-n) * ↑x / ↑(2 * Real.pi - 0) + k * (x * I)
       = ((k - n) * Complex.I) * x := by
     intros x; norm_num; field_simp; ring
   simp_rw [smul_eq_mul, ← Complex.exp_add, this]
-  split_ifs with h
+  by_cases h : n = k
   · subst h
-    simp only [sub_zero, one_div, mul_inv_rev, sub_self, zero_mul, exp_zero,
+    simp only [sub_zero, one_div, mul_inv_rev, sub_self, zero_mul, exp_zero, Pi.single_eq_same,
       intervalIntegral.integral_const, real_smul, ofReal_mul, ofReal_ofNat, mul_one, ofReal_inv]
     field_simp
   · -- Case k ≠ n: orthogonality gives 0
     rw [integral_exp_mul_complex]
     · simp only [sub_zero, one_div, mul_inv_rev, ofReal_mul, ofReal_ofNat, ofReal_zero, mul_zero,
-        exp_zero, real_smul, ofReal_inv, mul_eq_zero, inv_eq_zero, ofReal_eq_zero, Real.pi_ne_zero,
-        OfNat.ofNat_ne_zero, or_self, div_eq_zero_iff, I_ne_zero, or_false, false_or]
+        exp_zero, real_smul, ofReal_inv, Pi.single_eq_of_ne h, mul_eq_zero, inv_eq_zero,
+        ofReal_eq_zero, Real.pi_ne_zero, OfNat.ofNat_ne_zero, or_self, div_eq_zero_iff, I_ne_zero,
+        or_false, false_or]
       norm_cast
-      conv => arg 1; arg 1; arg 1; arg 1; rw [mul_assoc]; arg 2; rw [mul_comm]
+      conv => enter [1, 1, 1, 1]; rw [mul_assoc]; arg 2; rw [mul_comm]
       rw [Complex.exp_int_mul_two_pi_mul_I]
       simp only [sub_self, true_or]
     simp only [ne_eq, mul_eq_zero, I_ne_zero, or_false];
@@ -74,37 +76,37 @@ lemma fourierCoeffOn_circleMap (p : ℂ[X]) (n : ℤ) :
     simp_rw [fourierCoeffOn.const_mul]
     conv_lhs => {
       arg 2; ext k; arg 2;
-      rw [show (k : ℂ) = ((k : ℤ) : ℂ) by norm_num, fourierCoeffOn_cexp n k] }
+      rw [show (k : ℂ) = ((k : ℤ) : ℂ) by norm_num, fourierCoeffOn_cexp k] }
     -- Now we have a sum of scaled Fourier coefficients
     -- Use orthogonality: fourierCoeffOn of exp(k*θ*I) is nonzero only when k relates to n
     split_ifs with hn
     · rw [Finset.sum_eq_single n.natAbs]
-      · simp [Int.ofNat_natAbs_of_nonneg hn]
+      · rw [Int.ofNat_natAbs_of_nonneg hn]
+        simp
       · intros b hb hbn
-        simp only [mul_ite, mul_one, mul_zero, ite_eq_right_iff]
-        intros hbn'
-        exfalso
-        rw [hbn'] at hbn
-        norm_num at hbn
+        rw [mul_eq_zero]
+        right
+        apply Pi.single_eq_of_ne
+        omega
       · intros hn'
         have := mem_support_iff.not.mp hn'
         push_neg at this
-        simp [Int.ofNat_natAbs_of_nonneg hn, this]
+        simp [this]
     · -- Case: n < 0
       -- All Fourier coefficients vanish for negative n
       push_neg at hn
       apply Finset.sum_eq_zero
       intro i hi
-      simp only [mul_ite, mul_one, mul_zero, ite_eq_right_iff]
-      intros hn'
-      exfalso
-      linarith [hn']
+      rw [mul_eq_zero]
+      right
+      apply Pi.single_eq_of_ne
+      omega
   · intros i hi
     apply Continuous.intervalIntegrable
     continuity
 
 private lemma fourierCoeff_zero (p : ℂ[X]) (n : ℤ) :
-    n ∉ p.support.map ⟨Int.ofNat, Int.ofNat_injective⟩ →
+    n ∉ p.support.map ⟨Nat.cast, Int.ofNat_injective⟩ →
     (fourierCoeffOn Real.two_pi_pos (fun t => p.eval (circleMap 0 1 t)) n) = 0 := by
   intros hn
   by_cases hn' : n < 0
