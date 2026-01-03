@@ -197,6 +197,13 @@ theorem primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span (hp : ¬ p ∣ exp
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span,
     span_union, span_eq, map_span, Set.image_singleton, map_natCast, ← span_insert]
 
+example (hp : ¬ p ∣ exponent θ) {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
+    ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
+        span {(p : (𝓞 K))} := by
+  let e : (ZMod p)[X] → ℤ[X] := by
+    exact?
+  sorry
+
 theorem liesOver_primesOverSpanEquivMonicFactorsMod_symm (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
     LiesOver (span {(p : (𝓞 K)), aeval θ Q}) (span {(p : ℤ)}) := by

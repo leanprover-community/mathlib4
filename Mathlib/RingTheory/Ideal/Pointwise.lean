@@ -114,6 +114,10 @@ variable [Group M] [Semiring R] [MulSemiringAction M R]
 
 open Pointwise
 
+theorem pointwise_smul_def' {a : M} (S : Ideal R) :
+    a • S = S.map (MulSemiringAction.toRingAut _ _ a) :=
+  rfl
+
 theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
     a • S = S.comap (MulSemiringAction.toRingAut _ _ a).symm := by
   ext
@@ -148,6 +152,14 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 
 @[simp]
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
+  ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
+
+instance IsMaximal.smul {I : Ideal R} [I.IsMaximal] (g : M) : (g • I).IsMaximal := by
+  rw [pointwise_smul_def']
+  exact map_isMaximal_of_equiv _
+
+@[simp]
+theorem IsMaximal.smul_iff {I : Ideal R} (g : M) : (g • I).IsMaximal ↔ I.IsMaximal :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :

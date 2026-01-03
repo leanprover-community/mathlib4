@@ -266,6 +266,10 @@ lemma algebraMap_mk_of_liesOver (x : A) :
     algebraMap (A ⧸ p) (B ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (algebraMap _ _ x) :=
   rfl
 
+lemma algebraMap_mk_of_liesOver' :
+    (algebraMap (A ⧸ p) (B ⧸ P)).comp (Ideal.Quotient.mk p) =
+      (Ideal.Quotient.mk P).comp (algebraMap _ _) := rfl
+
 instance isScalarTower_of_liesOver : IsScalarTower R (A ⧸ p) (B ⧸ P) :=
   IsScalarTower.of_algebraMap_eq' <|
     congrArg (algebraMap B (B ⧸ P)).comp (IsScalarTower.algebraMap_eq R A B)
