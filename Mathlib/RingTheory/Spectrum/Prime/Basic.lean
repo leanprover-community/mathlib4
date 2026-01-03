@@ -389,6 +389,9 @@ instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
 
+@[simp]
+theorem asIdeal_bot [IsDomain R] : (⊥ : PrimeSpectrum R).asIdeal = ⊥ := rfl
+
 instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
   uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)

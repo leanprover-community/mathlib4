@@ -490,7 +490,7 @@ theorem IsIdempotentElem.TFAE [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsIde
   tfae_have 2 ↔ 3 := hp.isSelfAdjoint_iff_isStarNormal.symm
   tfae_have 3 ↔ 4 := hp.isPositive_iff_isSelfAdjoint.symm
   tfae_have 3 ↔ 1 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
-    (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
+    (LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp.toLinearMap)
   tfae_finish
 
 end ContinuousLinearMap
