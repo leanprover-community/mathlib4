@@ -39,12 +39,21 @@ def horn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
+lemma stdSimplex.mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ}
+    (x : (Δ[n] : SSet.{u}).obj m) :
+    x ∈ (horn n i).obj m ↔ Set.range (stdSimplex.asOrderHom x) ∪ {i} ≠ Set.univ := Iff.rfl
+
 lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
     horn.{u} n i =
       ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
   ext m j
   simp [stdSimplex.face_obj, horn, Set.eq_univ_iff_forall]
   rfl
+
+instance {n : ℕ} (i : Fin (n + 1)) : HasDimensionLT (horn.{u} n i) n := by
+  rw [horn_eq_iSup, hasDimensionLT_iSup_iff]
+  intro i
+  exact stdSimplex.hasDimensionLT_face _ _ (by simp [Finset.card_compl])
 
 lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
     stdSimplex.face.{u} {i}ᶜ ≤ horn n j := by
