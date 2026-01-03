@@ -518,7 +518,7 @@ theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrder
   · simp +contextual
 
 @[to_additive finsum_pos]
-theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
   rw [← finprod_mem_univ]
@@ -526,6 +526,9 @@ theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCa
 
 @[deprecated (since := "2026-01-03")]
 alias finsum_pos' := finsum_pos
+
+@[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
+alias one_lt_finprod' := one_lt_finprod
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
