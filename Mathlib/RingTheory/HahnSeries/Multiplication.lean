@@ -978,7 +978,7 @@ instance : Algebra R A⟦Γ⟧ where
   algebraMap := C.comp (algebraMap R A)
   smul_def' r x := by
     ext
-    simp
+    simp [← single_zero]
   commutes' r x := by
     ext
     simp only [coeff_smul, single_zero_mul_eq_smul, RingHom.coe_comp, C_apply,
