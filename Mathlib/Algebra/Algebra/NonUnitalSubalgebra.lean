@@ -731,7 +731,7 @@ theorem toNonUnitalSubring_top {R A : Type*} [CommRing R] [NonUnitalNonAssocRing
     S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ := by simp [← SetLike.coe_set_eq]
 
 -- This lemma isn't simp because `NonUnitalSubalgebra.toSubmodule` is a "fake" projection,
--- which is syntactically a composition of two other projections.
+-- which is syntactically a constructor application.
 lemma toSubmodule_eq_top {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊤ ↔ S = ⊤ := by simp
 
 @[simp]
