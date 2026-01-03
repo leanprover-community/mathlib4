@@ -214,6 +214,9 @@ lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
   · intro hf
     exact ⟨(⟨f, hf⟩ : P.toSet)⟩
 
+/-- The class of morphisms containing a single morphism. -/
+abbrev single {X Y : C} (f : X ⟶ Y) : MorphismProperty C := .ofHoms (fun (_ : Unit) ↦ f)
+
 end
 
 section
