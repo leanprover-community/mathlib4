@@ -81,7 +81,7 @@ theorem Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
 
 lemma Coloring.injective_comp_of_pairwise_adj (C : G.Coloring α) (f : ι → V)
     (hf : Pairwise fun i j ↦ G.Adj (f i) (f j)) : (C ∘ f).Injective :=
-  Function.injective_iff_pairwise_ne.2 fun _i _j hij ↦ C.valid <| hf hij
+  Function.injective_iff_pairwise_ne.2 <| hf.mono fun _ _ ↦ C.valid
 
 /-- Construct a term of `SimpleGraph.Coloring` using a function that
 assigns vertices to colors and a proof that it is as proper coloring.
@@ -137,13 +137,13 @@ variable (G) in
 /-- Whether a graph can be colored by at most `n` colors. -/
 def Colorable (n : ℕ) : Prop := Nonempty (G.Coloring (Fin n))
 
-variable (G) in
 /-- The coloring of an empty graph. -/
-def coloringOfIsEmpty [IsEmpty V] : G.Coloring α :=
-  Coloring.mk isEmptyElim fun {v} => isEmptyElim v
+def Coloring.ofIsEmpty [IsEmpty V] : G.Coloring α := .mk isEmptyElim fun {v} => isEmptyElim v
 
-theorem colorable_of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n :=
-  ⟨G.coloringOfIsEmpty⟩
+theorem Colorable.of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n := ⟨.ofIsEmpty⟩
+
+@[deprecated (since := "2026-01-03")] alias coloringOfIsEmpty := Coloring.ofIsEmpty
+@[deprecated (since := "2026-01-03")] alias colorableOfIsEmpty := Colorable.of_isEmpty
 
 theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
   constructor
@@ -153,12 +153,11 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
 
 @[simp]
 lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
-  ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
+  ⟨isEmpty_of_colorable_zero, fun _ ↦ .of_isEmpty 0⟩
 
 /-- If `G` is `n`-colorable, then mapping the vertices of `G` produces an `n`-colorable simple
 graph. -/
-theorem Colorable.map {β : Type*} (f : V ↪ β) [NeZero n] (hc : G.Colorable n) :
-    (G.map f).Colorable n := by
+theorem Colorable.map (f : V ↪ β) [NeZero n] (hc : G.Colorable n) : (G.map f).Colorable n := by
   obtain ⟨C⟩ := hc
   use extend f C (const β default)
   intro a b ⟨_, _, hadj, ha, hb⟩
@@ -192,12 +191,14 @@ lemma le_chromaticNumber_of_pairwise_adj (hn : n ≤ Nat.card ι) (f : ι → V)
     (hf : Pairwise fun i j ↦ G.Adj (f i) (f j)) : n ≤ G.chromaticNumber :=
   le_chromaticNumber_iff_colorable.2 fun _m hm ↦ hn.trans <| hm.card_le_of_pairwise_adj f hf
 
+variable (G) in
 lemma chromaticNumber_eq_biInf : G.chromaticNumber = ⨅ n ∈ setOf G.Colorable, (n : ℕ∞) := rfl
 
+variable (G) in
 lemma chromaticNumber_eq_iInf : G.chromaticNumber = ⨅ n : {m | G.Colorable m}, (n : ℕ∞) := by
   rw [chromaticNumber, iInf_subtype]
 
-lemma Colorable.chromaticNumber_eq_sInf {G : SimpleGraph V} {n} (h : G.Colorable n) :
+lemma Colorable.chromaticNumber_eq_sInf (h : G.Colorable n) :
     G.chromaticNumber = sInf {n' : ℕ | G.Colorable n'} := by
   rw [ENat.coe_sInf, chromaticNumber]
   exact ⟨_, h⟩
@@ -366,8 +367,7 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
   exact colorable_chromaticNumber hn
 
 theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
-  rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]
-  apply colorable_of_isEmpty
+  rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]; exact .of_isEmpty _
 
 @[deprecated (since := "2025-09-15")]
 alias chromaticNumber_eq_zero_of_isempty := chromaticNumber_eq_zero_of_isEmpty
@@ -526,13 +526,12 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
 
 /-! ### Cliques -/
 
-theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) {n : ℕ}
-    (hc : G.Colorable n) : s.card ≤ n := by
+theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) (hc : G.Colorable n) :
+    s.card ≤ n := by
   simpa using hc.card_le_of_pairwise_adj (Subtype.val : s → V) <| by simpa [Pairwise] using h
 
 theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
-    (C : G.Coloring α) : s.card ≤ Fintype.card α := by
-  simpa using h.card_le_of_colorable C.colorable
+    (C : G.Coloring α) : s.card ≤ Fintype.card α := h.card_le_of_colorable C.colorable
 
 theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber :=
