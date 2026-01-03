@@ -499,8 +499,8 @@ theorem expMapBasis_apply' (x : realSpace K) :
          ∏ i : {w // w ≠ w₀}, w (fundSystem K (equivFinRank.symm i)) ^ x i := by
   simp_rw [expMapBasis_apply, Basis.equivFun_symm_apply, Fintype.sum_eq_add_sum_subtype_ne _ w₀,
     expMap_add, expMap_smul, expMap_basis_of_eq, Pi.pow_def, Real.exp_one_rpow, Pi.mul_def,
-    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply,
-    normAtAllPlaces_mixedEmbedding]
+    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, Finset.prod_apply,
+    Pi.pow_apply, normAtAllPlaces_mixedEmbedding]
 
 open scoped Classical in
 theorem expMapBasis_apply'' (x : realSpace K) :
@@ -544,10 +544,10 @@ theorem logMap_expMapBasis (x : realSpace K) :
   conv_lhs =>
     enter [2, 1, 2, w, 2, i]
     rw [if_neg i.prop]
-  simp_rw [sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
+  simp_rw [Finset.sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
     completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
     ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finset_sum, Finsupp.coe_smul,
-    sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
+    Finset.sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
     smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
 
