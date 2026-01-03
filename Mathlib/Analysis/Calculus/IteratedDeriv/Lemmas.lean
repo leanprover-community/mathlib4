@@ -243,3 +243,37 @@ lemma iteratedDeriv_comp_const_sub :
     iteratedDeriv_comp_neg n (fun z => f (z + s))
 
 end shift_invariance
+
+section mul
+
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField E] [NormedAlgebra 𝕜 E]
+
+lemma iteratedDerivWithin_mul {f g : 𝕜 → E} {s : Set 𝕜} (hs : IsOpen s) {x : 𝕜} (hx : x ∈ s) (m : ℕ)
+    (hf : ContDiffOn 𝕜 m f s) (hg : ContDiffOn 𝕜 m g s) : iteratedDerivWithin m (f * g) s x =
+    ∑ i ∈ Finset.range m.succ, (m.choose i) * (iteratedDerivWithin i f s x) *
+    (iteratedDerivWithin (m - i) g s x) := by
+  induction m generalizing f g with
+  | zero => simp
+  | succ m hm =>
+    have h1 :=
+      derivWithin_mul_restrict (hf.differentiableOn (by aesop)) (hg.differentiableOn (by aesop))
+    have hset : s.EqOn (derivWithin (f * g) s) (derivWithin f s * g + f * derivWithin g s) := by
+      aesop
+    rw [iteratedDerivWithin_succ', iteratedDerivWithin_congr hset hx,
+      iteratedDerivWithin_add hx hs.uniqueDiffOn, hm hf.of_succ
+      (ContDiffOn.derivWithin hg hs.uniqueDiffOn (by grind)), hm
+      (ContDiffOn.derivWithin hf hs.uniqueDiffOn (by grind)) hg.of_succ]
+    · have := Finset.sum_choose_succ_mul (fun i j =>
+        ((iteratedDerivWithin i f s x) * (iteratedDerivWithin j g s x))) m
+      simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, Set.restrict_eq_restrict_iff,
+        ← mul_assoc, ← iteratedDerivWithin_succ'] at *
+      rw [this, add_comm]
+      congr 1
+      apply Finset.sum_congr rfl
+      grind
+    · exact ContDiffOn.mul (ContDiffOn.derivWithin hf hs.uniqueDiffOn (m := m)
+        (by grind)) (hg.of_le (by aesop)) _ hx
+    · exact ContDiffOn.mul (hf.of_le (by aesop))
+        (ContDiffOn.derivWithin hg hs.uniqueDiffOn (m := m) (by grind)) _ hx
+
+end mul
