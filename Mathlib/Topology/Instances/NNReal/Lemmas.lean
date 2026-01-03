@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 public import Mathlib.Data.NNReal.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
@@ -220,30 +221,73 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
 
 section Monotone
 
-/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
-theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
-    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range_nonempty f) h_bdd
-  exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
+variable {ι : Type*} [Preorder ι] [Nonempty ι]
 
-/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
-theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
-    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isGLB (Set.range_nonempty f) h_bdd
-  exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
+/-- A monotone, bounded above function `f : ι → ℝ` has the finite limit `iSup f`. -/
+theorem _root_.Real.tendsto_ciSup_of_bddAbove_monotone {f : ι → ℝ}
+    (h_bdd : BddAbove (range f)) (h_mon : Monotone f) :
+    Tendsto f atTop (𝓝 (iSup f)) :=
+  tendsto_atTop_isLUB h_mon <| Real.isLUB_sSup (range_nonempty f) h_bdd
 
-/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
-theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
-    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
-  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
-    rintro r ⟨n, hn⟩
-    simp_rw [← hn]
-    exact NNReal.coe_nonneg _
-  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
-  have hL0 : 0 ≤ L :=
-    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
-    (le_isGLB_iff h_glb).mpr h_bdd_0
-  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
+/-- An antitone, bounded below function `f : ι → ℝ` has the finite limit `iInf f`. -/
+theorem _root_.Real.tendsto_ciInf_of_bddBelow_antitone {f : ι → ℝ}
+    (h_bdd : BddBelow (range f)) (h_ant : Antitone f) :
+    Tendsto f atTop (𝓝 (iInf f)) :=
+  tendsto_atTop_isGLB h_ant <| Real.isGLB_sInf (range_nonempty f) h_bdd
+
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` on `Ici k` has the finite
+limit `sSup (f '' Ici k)`. -/
+theorem _root_.Real.tendsto_csSup_of_bddAbove_monotoneOn_Ici {f : ℕ → ℝ} {k : ℕ}
+    (h_bdd : BddAbove (f '' Ici k)) (h_mon : MonotoneOn f (Ici k)) :
+    Tendsto f atTop (𝓝 (sSup (f '' Ici k))) := by
+  rw [← range_add_eq_image_Ici] at h_bdd
+  rw [Ici, ← monotone_add_nat_iff_monotoneOn_nat_Ici] at h_mon
+  rw [← tendsto_add_atTop_iff_nat k, ← range_add_eq_image_Ici, sSup_range]
+  exact Real.tendsto_ciSup_of_bddAbove_monotone h_bdd h_mon
+
+/-- An antitone, bounded below sequence `f : ℕ → ℝ` on `Ici k` has the finite
+limit `sInf (f '' Ici k)`. -/
+theorem _root_.Real.tendsto_csInf_of_bddBelow_antitoneOn_Ici {f : ℕ → ℝ} {k : ℕ}
+    (h_bdd : BddBelow (f '' Ici k)) (h_ant : AntitoneOn f (Ici k)) :
+    Tendsto f atTop (𝓝 (sInf (f '' Ici k))) := by
+  rw [← range_add_eq_image_Ici] at h_bdd
+  rw [Ici, ← antitone_add_nat_iff_antitoneOn_nat_Ici] at h_ant
+  rw [← tendsto_add_atTop_iff_nat k, ← range_add_eq_image_Ici, sInf_range]
+  exact Real.tendsto_ciInf_of_bddBelow_antitone h_bdd h_ant
+
+variable [IsDirected ι fun i₁ i₂ ↦ i₁ ≤ i₂]
+
+/-- The limit of a monotone, bounded above function `f : ι → ℝ` is a least upper bound
+of the sequence. -/
+theorem _root_.Real.isLUB_of_bddAbove_monotone_tendsto {f : ι → ℝ}
+    (h_bdd : BddAbove (range f)) (h_mon : Monotone f)
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x)) : IsLUB (range f) x := by
+  rw [tendsto_nhds_unique h_tto (Real.tendsto_ciSup_of_bddAbove_monotone h_bdd h_mon)]
+  exact isLUB_ciSup h_bdd
+
+/-- The limit of an antitone, bounded below function `f : ι → ℝ` is a greatest lower bound
+of the sequence. -/
+theorem _root_.Real.isGLB_of_bddBelow_antitone_tendsto {f : ι → ℝ}
+    (h_bdd : BddBelow (range f)) (h_ant : Antitone f)
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x)) : IsGLB (range f) x := by
+  rw [tendsto_nhds_unique h_tto (Real.tendsto_ciInf_of_bddBelow_antitone h_bdd h_ant)]
+  exact isGLB_ciInf h_bdd
+
+/-- The limit of an antitone, bounded below sequence `f : ℕ → ℝ` on `Ici k` is a least
+upper bound of the sequence. -/
+theorem _root_.Real.isLUB_of_bddAbove_monotoneOn_Ici_tendsto {f : ℕ → ℝ} {k : ℕ}
+    (h_bdd : BddAbove (f '' Ici k)) (h_mon : MonotoneOn f (Ici k))
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x)) : IsLUB (f '' Ici k) x := by
+  rw [tendsto_nhds_unique h_tto (Real.tendsto_csSup_of_bddAbove_monotoneOn_Ici h_bdd h_mon)]
+  exact isLUB_csSup (image_nonempty.mpr nonempty_Ici) h_bdd
+
+/-- The limit of an antitone, bounded below sequence `f : ℕ → ℝ` on `Ici k` is a greatest
+lower bound of the sequence. -/
+theorem _root_.Real.isGLB_of_bddBelow_antitoneOn_Ici_tendsto {f : ℕ → ℝ} {k : ℕ}
+    (h_bdd : BddBelow (f '' Ici k)) (h_ant : AntitoneOn f (Ici k))
+    {x : ℝ} (h_tto : Tendsto f atTop (𝓝 x)) : IsGLB (f '' Ici k) x := by
+  rw [tendsto_nhds_unique h_tto (Real.tendsto_csInf_of_bddBelow_antitoneOn_Ici h_bdd h_ant)]
+  exact isGLB_csInf (image_nonempty.mpr nonempty_Ici) h_bdd
 
 end Monotone
 
