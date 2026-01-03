@@ -379,7 +379,8 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     { __ := IsLocalization.ringEquivOfRingEquiv _ _ _ H,
       commutes' r := by
         simp [IsScalarTower.algebraMap_apply R S' (Localization.Away _),
-          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ] }
+          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ,
+          -algebraMap_comp_algebraMap] }
   exact .of_equiv (e₁.trans e₂)
 
 /-- If `T` is an etale algebra, and a standard etale algebra surjects onto `T`, then
