@@ -357,7 +357,7 @@ Analysis:
     approximation by convolution: 'ContDiffBump.convolution_tendsto_right'
     regularization by convolution: 'HasCompactSupport.contDiff_convolution_left'
     change of variables formula: 'MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul'
-    divergence theorem: 'MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable'
+    divergence theorem: 'MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable'
 
   Complex analysis:
     Cauchy integral formula: 'DiffContOnCl.circleIntegral_sub_inv_smul'
