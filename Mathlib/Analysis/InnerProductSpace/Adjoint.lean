@@ -795,8 +795,7 @@ theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
   · exact ⟨.mk0 y hy, by simpa using this, fun x ↦ congr($hfg x)⟩
   · have : ((-(1 : ℝ) : ℝ) : 𝕜) = -1 := by grind
     grind [norm_nonneg, ofReal_inj]
-  · refine ⟨1, IsAbsoluteValue.abv_one norm, fun x ↦ ?_⟩
-    simp [by simpa using congr($this x)]
+  · exact ⟨1, IsAbsoluteValue.abv_one norm, fun x ↦ by simp [by simpa using congr($this x)]⟩
 
 end LinearIsometryEquiv
 end linearIsometryEquiv
