@@ -75,21 +75,11 @@ instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).A
   inferInstanceAs <| DecidableRel (fun v w ↦ adj v w)
 
 
--- instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) :=
---   Fintype.ofBijective Digraph.mk' <| by
---     classical
---     refine ⟨Embedding.injective _, ?_⟩
---     intro G
---     use fun v w ↦ G.Adj v w
---     -- ext v w
---     -- · simp
---     --   constructor
---     --   · rintro ⟨w, (h | h)⟩
---     --     · exact (G.edge_verts v w h).1
---     --     · exact (G.edge_verts w v h).2
---     --   ·
---     --     done
---     -- · sorry
+  -- Fintype.ofBijective Digraph.mk' <| by
+  --    classical
+  --    refine ⟨Embedding.injective _, ?_⟩
+
+instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) := sorry
 
 
 namespace Digraph
@@ -113,7 +103,7 @@ Note that `⊥` is called the empty digraph because it has no edges.
 -/
 protected def emptyDigraph (V : Type*) : Digraph V where
   Adj _ _ := False
-  verts := Set.univ
+  verts := ∅
   edge_verts := by
     intro v w a
     simp_all only
@@ -339,41 +329,54 @@ instance distribLattice : DistribLattice (Digraph V) where
         tauto
 
 
-
-
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) where
+instance : Top (Digraph V) where
   top := Digraph.completeDigraph V
+
+instance : Bot (Digraph V) where
   bot := Digraph.emptyDigraph V
-  le_top G := by
-    simp [Digraph.completeDigraph,LE.le]
 
-  bot_le G := by
-    simp [Digraph.emptyDigraph, LE.le]
-
-  inf_compl_le_bot := by
-    intro H
-    simp only [LE.le, min, SemilatticeInf.inf, Lattice.inf,
-      Digraph.emptyDigraph, imp_false, not_and]
+instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
+  sup H₁ H₂ := by
+    cases H₁ with | mk H₁ H₁_prop
+    cases H₂ with | mk H₂ H₂_prop
     constructor
-    · simp
-    · simp only [hasCompl, not_and, not_not]
-      intros
-      assumption
-      done
-  top_le_sup_compl  := by
-    intro G
-    simp [Digraph.completeDigraph, max, hasCompl, LE.le,
-      SemilatticeSup.sup]
+    case val =>
+      exact (max H₁ H₂)
+    case property =>
+      simp_all
+  le_sup_left := by
+    intro a b
+    simp_all only
+    apply distribLattice.le_sup_left
+  le_sup_right := by
+    intro a b
+    simp_all only
+    apply distribLattice.le_sup_right
+  sup_le := by
+    intro a b c
+    simp_all only
+    apply distribLattice.sup_le
+
+  inf H₁ H₂ := by
+    cases H₁ with | mk H₁ H₁_prop
+    cases H₂ with | mk H₂ H₂_prop
+    constructor
+    case val =>
+      exact (min H₁ H₂)
+    case property =>
+      simp_all [Set.mem_Iic, distribLattice.le_inf]
 
 
-    sorry
-  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
-  sSup_le s G hG a b := by
-    rintro ⟨H, hH, hab⟩
-    exact hG _ hH hab
-  sInf_le _ _ hG _ _ hab := hab hG
-  le_sInf _ _ hG _ _ hab _ hH := hG _ hH hab
-  iInf_iSup_eq f := by ext; simp [Classical.skolem]
+
+
+
+  inf_le_left := by
+    intro H₁ H₂
+    simp_all only
+    apply distribLattice.inf_le_left
+
+
+
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
 
@@ -387,9 +390,12 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
 
 @[simps] instance (V : Type*) : Inhabited (Digraph V) := ⟨⊥⟩
 
-instance [IsEmpty V] : Unique (Digraph V) where
+instance [iE : IsEmpty V] : Unique (Digraph V) where
   default := ⊥
-  uniq G := by ext1; congr!
+  uniq G := by
+    ext1
+    · sorry
+    · congr!
 
 instance [Nonempty V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
