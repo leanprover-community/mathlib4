@@ -275,12 +275,12 @@ lemma property (h : IsImmersionAtOfComplement F I J n f x) :
 If `f` is an immersion at `x`, it maps its domain chart's target `(h.domChart.extend I).target`
 to its codomain chart's target `(h.domChart.extend J).target`.
 
-Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
+Roig and Domingues' [roigdomingues2012] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
+but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.
@@ -517,12 +517,12 @@ lemma property (h : IsImmersionAt I J n f x) :
 If `f` is an immersion at `x`, it maps its domain chart's target to its codomain chart's target:
 `(h.domChart.extend I).target` to `(h.domChart.extend J).target`.
 
-Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
+Roig and Domingues' [roigdomingues2012] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
+but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.

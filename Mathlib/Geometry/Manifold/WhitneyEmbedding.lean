@@ -25,7 +25,7 @@ for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.
 
 ## Tags
 
-partition of unity, smooth bump function, whitney theorem
+partition of unity, smooth bump function, Whitney theorem
 -/
 
 @[expose] public section

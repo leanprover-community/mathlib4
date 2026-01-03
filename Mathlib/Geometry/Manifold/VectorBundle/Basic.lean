@@ -41,7 +41,7 @@ fields, etc.
   belongs to `WithTop ℕ∞`.
 
 * `ContMDiffFiberwiseLinear.hasGroupoid`: For a `C^n` vector bundle `E` over `B` with fiber
-  modelled on `F`, the change-of-co-ordinates between two trivializations `e`, `e'` for `E`,
+  modelled on `F`, the change-of-coordinates between two trivializations `e`, `e'` for `E`,
   considered as charts to `B × F`, is `C^n` and fiberwise linear, in the sense of belonging to the
   structure groupoid `contMDiffFiberwiseLinear`.
 
@@ -418,7 +418,7 @@ theorem Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F
 end ContMDiffCoordChange
 
 variable [IsManifold IB n B] in
-/-- For a `C^n` vector bundle `E` over `B` with fiber modelled on `F`, the change-of-co-ordinates
+/-- For a `C^n` vector bundle `E` over `B` with fiber modelled on `F`, the change-of-coordinates
 between two trivializations `e`, `e'` for `E`, considered as charts to `B × F`, is `C^n` and
 fiberwise linear. -/
 instance ContMDiffFiberwiseLinear.hasGroupoid :

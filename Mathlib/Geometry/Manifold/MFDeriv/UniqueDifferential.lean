@@ -18,7 +18,7 @@ In this file, we prove various properties of unique derivative sets in manifolds
 * `uniqueDiffOn_target_inter`: the unique differential property is preserved by
   pullbacks of extended charts
 * `tangentBundle_proj_preimage`: if `s` has the unique differential property,
-  its preimage under the tangent bundle projection also has
+  its preimage under the tangent bundle projection also has the unique differential property.
 -/
 
 @[expose] public section
