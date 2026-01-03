@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Constructions
 
@@ -41,7 +42,23 @@ variable {X α : Type*} {ι : Sort*}
 
 section BaireTheorem
 
-variable [TopologicalSpace X] [BaireSpace X]
+variable [TopologicalSpace X]
+
+/-- The intersection of finitely many open dense sets is dense. -/
+theorem Set.Finite.dense_sInter {s : Set (Set X)} (hs : s.Finite)
+    (ho : ∀ t ∈ s, IsOpen t) (hd : ∀ t ∈ s, Dense t) : Dense (⋂₀ s) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [sInter_empty]
+  | insert ha hsf ih =>
+    simp only [sInter_insert, forall_mem_insert] at hd ⊢
+    refine hd.1.inter_of_isOpen_right ?_ (hsf.isOpen_sInter (fun y hy => ho y (Or.inr hy)))
+    exact ih ((fun y hy => ho y (Or.inr hy))) (fun y hy => hd.2 y hy)
+
+/-- A finite set is Baire. -/
+theorem baire_of_finite [Finite X] : BaireSpace X where
+  baire_property f _ _ := sInter_range f ▸ (toFinite (range f)).dense_sInter (by grind) (by grind)
+
+variable [BaireSpace X]
 
 /-- Definition of a Baire space. -/
 theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n))
