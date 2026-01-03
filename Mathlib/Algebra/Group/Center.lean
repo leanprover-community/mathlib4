@@ -65,6 +65,13 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
 
 attribute [mk_iff] IsMulCentral IsAddCentral
 attribute [to_additive existing] isMulCentral_iff
+@[to_additive]
+instance decidableIsMulCentral {M : Type*} [Mul M] (a : M)
+    [Decidable (∀ b : M, Commute a b)]
+    [Decidable (∀ b c : M, a * (b * c) = (a * b) * c)]
+    [Decidable (∀ b c : M, (b * c) * a = b * (c * a))] :
+    Decidable (IsMulCentral a) :=
+  decidable_of_iff' _ (isMulCentral_iff a)
 
 namespace IsMulCentral
 
