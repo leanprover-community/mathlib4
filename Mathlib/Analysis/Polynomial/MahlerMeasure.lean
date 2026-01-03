@@ -400,7 +400,7 @@ theorem mahlerMeasure'_pos_of_ne_zero (hp : p ≠ 0) : 0 < p.mahlerMeasure' v :=
   apply hp
   ext i
   have := h ▸ Polynomial.coeff_zero i
-  exact (IsometryClass.isometry v).injective (by simpa using this)
+  exact (IsometryClass.isometry v).injective (by simpa)
 
 theorem mahlerMeasure'_le_sum_norm_coeff : p.mahlerMeasure' v ≤ p.sum fun _ a ↦ ‖a‖ := by
   have hinj : Function.Injective (v : A → ℂ) := (IsometryClass.isometry v).injective
