@@ -298,7 +298,6 @@ lemma compProd_fst_borelMarkovFromReal (κ : Kernel α (β × Ω)) [IsSFiniteKer
     MeasurableEmbedding.id.prodMap he
   have : κ = comapRight κ' h_prod_embed := by
     ext c t : 2
-    unfold κ'
     rw [comapRight_apply, map_apply _ (by fun_prop), h_prod_embed.comap_map]
   conv_rhs => rw [this, ← hη']
   exact compProd_fst_borelMarkovFromReal_eq_comapRight_compProd κ η hη

@@ -91,9 +91,7 @@ lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ 
   exact h
 
 lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J) :
-    I.primeHeight + 1 ≤ J.primeHeight := by
-  unfold primeHeight
-  exact Order.height_add_one_le h
+    I.primeHeight + 1 ≤ J.primeHeight := Order.height_add_one_le h
 
 @[simp]
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by

@@ -193,9 +193,8 @@ def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac) : ℝ≥0�
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
 lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X s ℙ μ) :
-    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ := by
-  unfold uniformPDF
-  exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
+    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ := Filter.EventuallyEq.trans
+  (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
 
 open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
