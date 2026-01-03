@@ -36,26 +36,30 @@ variable [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
 
 theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
-  unfold degree neighborFinset neighborSet
+  rw [← card_neighborFinset_eq_degree]
+  unfold neighborFinset neighborSet
   rw [sum_boole, Set.toFinset_setOf]
 
 variable [DecidableEq V]
 
 /-- The diagonal matrix consisting of the degrees of the vertices in the graph. -/
-def degMatrix [AddMonoidWithOne R] : Matrix V V R := Matrix.diagonal (G.degree ·)
+noncomputable def degMatrix [AddMonoidWithOne R] : Matrix V V R := Matrix.diagonal (G.degree ·)
 
 /-- The *Laplacian matrix* `lapMatrix G R` of a graph `G`
 is the matrix `L = D - A` where `D` is the degree and `A` the adjacency matrix of `G`. -/
-def lapMatrix [AddGroupWithOne R] : Matrix V V R := G.degMatrix R - G.adjMatrix R
+noncomputable def lapMatrix [AddGroupWithOne R] : Matrix V V R := G.degMatrix R - G.adjMatrix R
 
 variable {R}
 
+omit [Fintype V] [DecidableRel G.Adj] in
 theorem isSymm_degMatrix [AddMonoidWithOne R] : (G.degMatrix R).IsSymm :=
   isSymm_diagonal _
 
+omit [Fintype V] in
 theorem isSymm_lapMatrix [AddGroupWithOne R] : (G.lapMatrix R).IsSymm :=
   (isSymm_degMatrix _).sub (isSymm_adjMatrix _)
 
+omit [DecidableRel G.Adj] in
 theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
     (G.degMatrix R *ᵥ vec) v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
@@ -70,6 +74,7 @@ theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] :
   rw [lapMatrix_mulVec_apply]
   simp
 
+omit [DecidableRel G.Adj] in
 theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
   simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]

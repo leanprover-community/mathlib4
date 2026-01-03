@@ -488,8 +488,10 @@ lemma isTree_iff_connected_and_card [Finite V] :
   exact Finset.card_lt_card <| by simpa [deleteEdges]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
-lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
-    [DecidableRel G.Adj] : G.minDegree = 1 := by
+lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Finite V] [Nontrivial V] :
+    G.minDegree = 1 := by
+  classical
+  have := Fintype.ofFinite V
   by_cases q : 2 ≤ G.minDegree
   · have := h.card_edgeFinset
     have := G.sum_degrees_eq_twice_card_edges
@@ -502,8 +504,8 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
     lia
 
 /-- A nontrivial tree has a vertex of degree one. -/
-lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
-    (h : G.IsTree) : ∃ v, G.degree v = 1 := by
+lemma IsTree.exists_vert_degree_one_of_nontrivial [Finite V] [Nontrivial V] (h : G.IsTree) :
+    ∃ v, G.degree v = 1 := by
   obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
   use v
   rw [← hv]

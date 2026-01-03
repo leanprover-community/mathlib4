@@ -230,7 +230,8 @@ theorem neighborFinset_boxProd (x : α × β)
 theorem degree_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
-  rw [degree, degree, degree, neighborFinset_boxProd, Finset.card_disjUnion]
+  rw [← card_neighborFinset_eq_degree, ← card_neighborFinset_eq_degree,
+    ← card_neighborFinset_eq_degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 
 lemma reachable_boxProd {x y : α × β} :

@@ -243,8 +243,10 @@ lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
     (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
   simp [degree_pos_iff_mem_support, h.support_eq_univ]
 
-lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : SimpleGraph V}
-    [DecidableRel G.Adj] (h : G.Preconnected) : 0 < G.minDegree := by
+lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Finite V] {G : SimpleGraph V}
+    (h : G.Preconnected) : 0 < G.minDegree := by
+  classical
+  have := Fintype.ofFinite V
   obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
   rw [hv]
   exact h.degree_pos_of_nontrivial v
