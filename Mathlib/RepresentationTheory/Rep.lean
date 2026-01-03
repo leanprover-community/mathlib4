@@ -261,12 +261,6 @@ theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   simp
 
-@[deprecated "Use `Rep.linearization_single` instead" (since := "2025-06-02")]
-theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
-    ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
-      = Finsupp.single (X.ρ g x) (1 : k) := by
-  simp
-
 variable {X Y : Action (Type u) G} (f : X ⟶ Y)
 
 @[simp]
@@ -645,22 +639,6 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
       A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
   simp [diagonalHomEquiv, Linear.homCongr_symm_apply, diagonalSuccIsoFree_hom_hom_single (k := k)]
 
-/-- Auxiliary lemma for defining group cohomology, used to show that the isomorphism
-`diagonalHomEquiv` commutes with the differentials in two complexes which compute
-group cohomology. -/
-@[deprecated "We no longer use `diagonalHomEquiv` to define group cohomology"
-(since := "2025-06-08")]
-theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
-    (a : Fin (n + 1)) :
-    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
-      = f (Fin.contractNth a (· * ·) g) := by
-  rw [diagonalHomEquiv_symm_apply]
-  simp only [Function.comp_apply, Fin.succ_succAbove_zero, Fin.partialProd_zero, map_one,
-    Fin.succ_succAbove_succ, Module.End.one_apply, Fin.partialProd_succ]
-  congr
-  ext
-  rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
-
 section
 
 variable [Fintype G] (A : Rep k G)
@@ -837,8 +815,8 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
     (r : k[G]) (x : V) :
-    f (MonoidAlgebra.lift k G (V →ₗ[k] V) ρ r x) =
-      MonoidAlgebra.lift k G (W →ₗ[k] W) σ r (f x) := by
+    f (MonoidAlgebra.lift k (V →ₗ[k] V) G ρ r x) =
+      MonoidAlgebra.lift k (W →ₗ[k] W) G σ r (f x) := by
   apply MonoidAlgebra.induction_on r
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
