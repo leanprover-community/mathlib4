@@ -183,7 +183,7 @@ theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R)
     dist (f z) (f c) ≤ dist z c := by
   simpa [(nonempty_ball.1 ⟨z, hz⟩).ne'] using dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
 
-/-- The **Schwarz Lemma**: if `f : E → F` sends an open disk with center at the origin
+/-- The **Schwarz Lemma**: if `f : E → F` sends an open ball with center at the origin
 to the closed ball with center `0` of the same radius and `f 0 = 0`,
 then for any point `z` of this disk we have `‖f z‖ ≤ ‖z‖`. -/
 theorem norm_le_norm_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball 0 R))
