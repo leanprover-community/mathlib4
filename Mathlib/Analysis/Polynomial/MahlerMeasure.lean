@@ -348,7 +348,7 @@ namespace Polynomial
 variable {A F : Type*} [Semiring A] (p : A[X]) (v : A →+* ℂ)
 
 /-- The Mahler measure for polynomials on rings other than `ℂ`. Most theorems
-will require `A` to be a `NormedRing` and `v` to be an isometry. See, e.g., 
+will require `A` to be a `NormedRing` and `v` to be an isometry. See, e.g.,
 `mahlerMeasure'_const` -/
 noncomputable def mahlerMeasure' := (p.map v).mahlerMeasure
 
