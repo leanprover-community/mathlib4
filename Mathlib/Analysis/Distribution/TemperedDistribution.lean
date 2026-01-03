@@ -35,8 +35,6 @@ linear map.
 
 @[expose] public noncomputable section
 
-noncomputable section
-
 open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
@@ -325,5 +323,55 @@ theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
   _ = _ := fourierInv_fourier_eq _
 
 end Fourier
+
+section DiracDelta
+
+variable [NormedAddCommGroup E]
+
+section definition
+
+variable [NormedSpace ℝ E]
+
+/-- The Dirac delta distribution -/
+def delta (x : E) : 𝓢'(E, ℂ) :=
+  toPointwiseConvergenceCLM _ _ _ _  <|
+    (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
+
+@[deprecated (since := "2025-12-23")]
+noncomputable alias _root_.SchwartzMap.delta := delta
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
+  rfl
+
+@[deprecated (since := "2025-12-23")]
+alias _root_.SchwartzMap.delta_apply := delta_apply
+
+open MeasureTheory MeasureTheory.Measure
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- Dirac measure considered as a tempered distribution is the delta distribution. -/
+@[simp]
+theorem toTemperedDistribution_dirac_eq_delta (x : E) :
+  (dirac x).toTemperedDistribution = delta x := by aesop
+
+@[deprecated (since := "2025-12-23")]
+alias _root_.SchwartzMap.integralCLM_dirac_eq_delta := toTemperedDistribution_dirac_eq_delta
+
+end definition
+
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+open FourierTransform
+
+/-- The Fourier transform of the delta distribution is equal to the volume.
+
+Informally, this is usually represented as `𝓕 δ = 1`. -/
+theorem fourier_delta_zero : 𝓕 (delta (0 : E)) = volume.toTemperedDistribution := by
+  ext f
+  simp [SchwartzMap.fourier_coe, Real.fourier_eq]
+
+end DiracDelta
 
 end TemperedDistribution
