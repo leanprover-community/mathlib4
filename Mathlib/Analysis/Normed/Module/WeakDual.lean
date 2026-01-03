@@ -5,13 +5,18 @@ Authors: Kalle Kytölä, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Convex.Uniform
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Analysis.LocallyConvex.WeakDual --minimize imports
 public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
-
+public import Mathlib.Analysis.LocallyConvex.Separation
 /-!
 # Weak dual of normed space
+-- **ADD SOMETHING?**
 
 Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
@@ -76,6 +81,7 @@ give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a su
 
 * https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
 * https://en.wikipedia.org/wiki/Banach%E2%80%93Alaoglu_theorem
+* [H. Brezis, *Functional Analysis, Sobolev spaces, and partial differential equations*][brezis2011]
 
 ## Tags
 
@@ -313,3 +319,129 @@ theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
     (isClosed_closedBall x' r)
 
 end WeakDual
+
+end
+section Goldstine
+
+variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜₁ : Type*) [NontriviallyNormedField 𝕜₁]
+variable {E₁ : Type*} [SeminormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
+
+open Metric NormedSpace Function ContinuousLinearMap Pointwise Topology
+
+open scoped BigOperators Topology
+
+lemma IsClosed_image_ball [CompleteSpace E] : IsClosed
+    ((inclusionInDoubleDual 𝕜 E) '' closedBall 0 1) :=
+  inclusionInDoubleDualLi 𝕜 (E := E).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
+
+lemma WeakClosure_subset_closedBall {s : Set (StrongDual 𝕜₁ (StrongDual 𝕜₁ E₁))}
+    {c : (StrongDual 𝕜₁ (StrongDual 𝕜₁ E₁))} {ε : ℝ} (hs : s ⊆ closedBall c ε) :
+    letI 𝒯 : TopologicalSpace (WeakDual 𝕜₁ (StrongDual 𝕜₁ E₁)) := inferInstance
+    (closure[𝒯] s) ⊆ closedBall (α := ((StrongDual 𝕜₁ (StrongDual 𝕜₁ E₁)))) c ε :=
+  closure_minimal hs (WeakDual.isClosed_closedBall ..)
+
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+/- Using `RCLike.geometric_hahn_banach_closed_point` can be extended to `RCLike`-/
+theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual ℝ F) (γ : I → ℝ)
+    (H : ∀ β : I → ℝ, ‖∑ i : I, β i * γ i‖ ≤ ‖∑ i : I, β i • f i‖) :
+    ∀ {ε : ℝ} (_ : 0 < ε), ∃ x : F, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - γ i‖ < ε := by
+  classical
+  let φ : F →ₗ[ℝ] (I → ℝ) :=
+    { toFun := fun x ↦ (fun i ↦ f i x)
+      map_add' (x y) := by simp [Pi.add_def]
+      map_smul' := by simp [Pi.smul_def] }
+  suffices hφ : γ ∈ closure (φ '' closedBall 0 1) by
+    intro ε hε
+    rw [Metric.mem_closure_iff] at hφ
+    obtain ⟨t, ⟨x, hx_mem, rfl⟩, ht_dist⟩ := hφ ε hε
+    refine ⟨x, mem_closedBall_zero_iff.mp hx_mem, fun i ↦ ?_⟩
+    rw [dist_pi_lt_iff hε] at ht_dist
+    specialize ht_dist i
+    rw [dist_comm] at ht_dist
+    congr
+  by_contra h_abs
+  obtain ⟨g, α, hg, hα⟩ := geometric_hahn_banach_closed_point
+    ((convex_closedBall 0 1).linear_image φ).closure isClosed_closure h_abs
+  let β : I → ℝ := fun i ↦ g (Pi.single i 1)
+  have hleft (x : _) (hx : x ∈ closedBall 0 1) : (∑ i, β i • f i) x ≤ α := by
+    apply le_of_lt <| lt_of_eq_of_lt _ <| hg (φ x) (subset_closure ⟨x, hx, rfl⟩)
+    simp only [coe_sum', coe_smul', Finset.sum_apply, Pi.smul_apply, LinearMap.coe_mk,
+      AddHom.coe_mk, β, φ]
+    simp_rw [smul_eq_mul, mul_comm, ← smul_eq_mul]
+    have h1 (i : I) : f i x • g ((Pi.single i 1) : I → ℝ) =
+      g ((f i) x • ((Pi.single i 1) : I → ℝ)) := by simp
+    simp_rw [h1, ← Pi.single_smul, smul_eq_mul, mul_one, ← map_sum,
+      Finset.univ_sum_single fun i ↦ (f i) x]
+  have hright : α < ∑ i, β i • γ i := by
+    apply lt_of_lt_of_eq hα
+    simp_rw [β, smul_eq_mul, mul_comm, ← smul_eq_mul, ← map_smul, ← map_sum]
+    congr
+    exact pi_eq_sum_univ' γ
+  replace hleft (x : _) (hx : x ∈ closedBall 0 1) : ‖(∑ i, β i • f i) x‖ ≤ α := by
+    rw [Real.norm_eq_abs, abs_eq_max_neg]
+    apply max_le
+    · exact hleft x hx
+    · rw [← map_neg]
+      apply hleft (-x)
+      simp_all
+  replace hleft : ‖∑ i, β i • f i‖ ≤ α := by
+    refine ContinuousLinearMap.opNorm_le_of_unit_norm ?_ (fun x hx ↦ ?_)
+    · apply le_trans (norm_nonneg _) <| hleft 0 (mem_closedBall_self (zero_le_one))
+    · apply le_trans (hleft x (mem_closedBall_zero_iff.mpr (le_of_eq hx))) (by rfl)
+  have h : ‖∑ i, β i • f i‖ < ∑ i, β i • γ i := lt_of_le_of_lt hleft hright
+  replace h : _ < _ := lt_of_lt_of_le h <| Real.le_norm_self (∑ i, β i • γ i)
+  exact not_le_of_gt h (H β)
+
+theorem Helly' (I : Type*) [Fintype I] {φ : StrongDual ℝ (StrongDual ℝ F)} (hφ : ‖φ‖ ≤ 1)
+    {ε : ℝ} (hε : 0 < ε)
+    (f : I → StrongDual ℝ F) : ∃ x : F, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
+  apply Helly f (fun i ↦ φ (f i)) _ hε
+  intro β
+  calc ‖∑ i, β i * φ (f i)‖ = ‖φ (∑ i, β i • f i)‖ := by simp
+                          _ ≤ ‖φ‖ * ‖∑ i, β i • f i‖ := ContinuousLinearMap.le_opNorm ..
+                          _ ≤ ‖∑ i, β i • f i‖ := by grw [hφ, one_mul]
+
+open LinearMap in
+/-- Goldstine Lemma: the image along `inclusionInDoubleDual` of the (unit) ball of `E` is dense in
+the unit sphere of the double dual. The result below is somewhat stronger, and it would be better
+to move the inclusion back to `Normed.Module.Dual` and to keep here the full equality.
+
+See Chapter 3.5, Lemma 3.4 in [brezis2011]. -/
+
+theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ F)) := inferInstance
+    closure[𝒯] (inclusionInDoubleDual ℝ F '' closedBall 0 1)
+    = closedBall (0 : StrongDual ℝ (StrongDual ℝ F)) 1 := by
+  have : (inclusionInDoubleDualLi ℝ (E := F)) '' closedBall 0 1 ⊆ closedBall 0 1 := by
+    rw [Set.image_subset_iff]
+    intro _ hx
+    simp_all
+  /- Since the weak* topology is weaker than the strong one, the above inclusion suffices to reduce
+    the claim to proving that the weak*-closure of the image is contained in the unit ball. Observe
+    that the above inclusion depends on the inclusion in the double dual being an isometry (or a
+    contraction, at least). -/
+  apply (WeakClosure_subset_closedBall _ this).antisymm
+  have h_WithSeminorms : WithSeminorms (𝕜 := ℝ) (E := WeakDual ℝ (StrongDual ℝ F))
+    (toSeminormFamily <| topDualPairing ℝ (StrongDual ℝ F)) := weakBilin_withSeminorms ..
+  intro ξ hξ
+  rw [mem_closure_iff_nhds_basis' (X := WeakDual ℝ (StrongDual ℝ F))
+    (t := (inclusionInDoubleDualLi ℝ '' closedBall 0 1)) <| h_WithSeminorms.hasBasis_ball (x := ξ)]
+  /- The weak*-topology has a basis of neighboroods of `0` defined by finitely many seminorms (this
+    is `h_WithSeminorms`) so that `ξ` lies in the closure can be checked on those seminorms. -/
+  rintro ⟨I, ε⟩ hε
+  simp only [mem_closedBall] at hξ
+  /- Using Helly's lemma, we obtain from `ξ` an element `y` that
+    is `ε`-close to `ξ` in all seminorms defining the neighborood we're looking at. -/
+  obtain ⟨y, hy_le, hy_eq⟩ := Helly' I hξ hε (·)
+  refine ⟨inclusionInDoubleDual ℝ F y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
+  simp only [Seminorm.mem_ball]
+  apply Seminorm.finset_sup_apply_lt hε
+  intro i hi
+  replace hy_eq := sub_zero (a := ξ) ▸ hy_eq ⟨i, hi⟩
+  simpa
+
+
+
+end Goldstine
