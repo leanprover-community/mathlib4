@@ -194,6 +194,10 @@ lemma le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
   simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
   grw [sup_comm, ← hmaple]
 
+@[deprecated (since := "2026-01-03")]
+alias le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot :=
+  le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
+
 lemma eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot
     {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)
     (hmaple : map (I • N).mkQ N = map (I • N).mkQ N') : N = N' := by
