@@ -102,6 +102,11 @@ theorem IsLinearSet.image (hs : IsLinearSet s) (f : F) : IsLinearSet (f '' s) :=
 def IsSemilinearSet (s : Set M) : Prop :=
   ∃ (S : Set (Set M)), S.Finite ∧ (∀ t ∈ S, IsLinearSet t) ∧ s = ⋃₀ S
 
+/-- An equivalent expression of `IsSemilinearSet` in terms of `Finset` instead of `Set.Finite`. -/
+theorem isSemilinearSet_iff :
+    IsSemilinearSet s ↔ ∃ (S : Finset (Set M)), (∀ t ∈ S, IsLinearSet t) ∧ s = ⋃₀ S :=
+  Set.exists_finite_iff_finset
+
 theorem IsLinearSet.isSemilinearSet (h : IsLinearSet s) : IsSemilinearSet s :=
   ⟨{s}, by simpa⟩
 
@@ -256,6 +261,7 @@ protected theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) :
 def IsProperLinearSet (s : Set M) : Prop :=
   ∃ (a : M) (t : Set M), t.Finite ∧ LinearIndepOn ℕ id t ∧ s = a +ᵥ (closure t : Set M)
 
+/-- An equivalent expression of `IsProperLinearSet` in terms of `Finset` instead of `Set.Finite`. -/
 theorem isProperLinearSet_iff :
     IsProperLinearSet s ↔ ∃ (a : M) (t : Finset M),
       LinearIndepOn ℕ id (t : Set M) ∧ s = a +ᵥ (closure (t : Set M) : Set M) :=
@@ -273,6 +279,12 @@ theorem IsProperLinearSet.singleton (a : M) : IsProperLinearSet {a} :=
 /-- A semilinear set is proper if it is a finite union of proper linear sets. -/
 def IsProperSemilinearSet (s : Set M) : Prop :=
   ∃ (S : Set (Set M)), S.Finite ∧ (∀ t ∈ S, IsProperLinearSet t) ∧ s = ⋃₀ S
+
+/-- An equivalent expression of `IsProperSemilinearSet` in terms of `Finset` instead of
+`Set.Finite`. -/
+theorem isProperSemilinearSet_iff :
+    IsProperSemilinearSet s ↔ ∃ (S : Finset (Set M)), (∀ t ∈ S, IsProperLinearSet t) ∧ s = ⋃₀ S :=
+  Set.exists_finite_iff_finset
 
 theorem IsProperSemilinearSet.isSemilinearSet (hs : IsProperSemilinearSet s) :
     IsSemilinearSet s := by
