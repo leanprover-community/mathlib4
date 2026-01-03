@@ -103,6 +103,14 @@ lemma one_eq_sum_single {R : Type*} [AddCommMonoid R] [One R] {ι : Type*} [Fint
     [DecidableEq ι] : ∑ i : ι, single i i 1 = 1 :=
   diagonal_eq_sum_single _
 
+lemma natCast_eq_sum_single (n : ℕ) {R : Type*} [AddCommMonoid R] [One R] {ι : Type*} [Fintype ι]
+    [DecidableEq ι] : ∑ i : ι, single i i n = n :=
+  diagonal_eq_sum_single _
+
+lemma intCast_eq_sum_single (n : ℤ) {R : Type*} [AddCommMonoid R] [One R] {ι : Type*}
+    [Fintype ι] [DecidableEq ι] : ∑ i : ι, single i i n = n :=
+  diagonal_eq_sum_single _
+
 theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, single i j (x i j) := by
   ext i j
