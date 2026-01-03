@@ -53,10 +53,18 @@ noncomputable def extEquivCohomologyClass :
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle R.cochainComplex ((singleFunctor C 0).obj Y) n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =
-      (ShiftedHom.mk₀ _ rfl (inv (DerivedCategory.Q.map R.π'))).comp
-        (ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q) (add_zero _) := by
+    (ShiftedHom.mk₀ _ rfl ((DerivedCategory.singleFunctorIsoCompQ C 0).hom.app X ≫
+      inv (DerivedCategory.Q.map R.π'))).comp
+        ((ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q).comp
+          (.mk₀ _ rfl ((DerivedCategory.singleFunctorIsoCompQ C 0).inv.app Y))
+            (zero_add _)) (add_zero _) := by
   change SmallShiftedHom.equiv _ _ (.comp _ (CohomologyClass.mk x).toSmallShiftedHom _) = _
-  simp [SmallShiftedHom.equiv_comp, isoOfHom]
+  simp only [SmallShiftedHom.equiv_comp, SmallShiftedHom.equiv_mk₀Inv, isoOfHom, asIso_inv,
+    CohomologyClass.equiv_toSmallShiftedHom_mk, Functor.comp_obj,
+    DerivedCategory.singleFunctorIsoCompQ, Iso.refl_hom, NatTrans.id_app, Category.id_comp,
+    Iso.refl_inv]
+  congr
+  exact (ShiftedHom.comp_mk₀_id ..).symm
 
 @[simp]
 lemma extEquivCohomologyClass_symm_add
@@ -213,7 +221,10 @@ lemma extMk_comp_mk₀ {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1
     Cocycle.equivHomShift_symm_postcomp,
     ← ShiftedHom.comp_mk₀ _ 0 rfl,
     ShiftedHom.map_comp, ShiftedHom.map_mk₀,
-    ShiftedHom.comp_assoc _ _ _ (add_zero _) (zero_add _) (by simp)]
-  rfl
+    ShiftedHom.comp_assoc _ _ _ (add_zero _) (zero_add _) (by simp),
+    ShiftedHom.comp_assoc _ _ _ (zero_add _) (zero_add _) (by simp),
+    ShiftedHom.comp_assoc _ _ _ (zero_add _) (zero_add _) (by simp),
+    ShiftedHom.mk₀_comp_mk₀, ShiftedHom.mk₀_comp_mk₀, ← NatTrans.naturality]
+  dsimp
 
 end CategoryTheory.ProjectiveResolution
