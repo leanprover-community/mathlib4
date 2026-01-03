@@ -961,9 +961,8 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
 end Curry
 
 section
-variable [AddZeroClass M]
+variable [AddZeroClass M] [DecidableEq α]
 
-open scoped Classical in
 /-- The additive monoid isomorphism between `α × β →₀ M` and `α →₀ β →₀ M` given by
 currying/uncurrying. -/
 @[simps! symm_apply]
@@ -971,11 +970,7 @@ noncomputable def curryAddEquiv : (α × β →₀ M) ≃+ (α →₀ β →₀ 
   __ := curryEquiv
   map_add' _ _ := by ext; simp
 
-variable [DecidableEq α]
-
-@[simp] lemma coe_curryAddEquiv :
-    (curryAddEquiv : (α × β →₀ M) → α →₀ β →₀ M) = .curry := by
-  dsimp [curryAddEquiv, curryEquiv]; convert rfl
+@[simp] lemma coe_curryAddEquiv : (curryAddEquiv : (α × β →₀ M) → α →₀ β →₀ M) = .curry := rfl
 
 end
 
