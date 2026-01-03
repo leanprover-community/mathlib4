@@ -225,10 +225,9 @@ theorem symm_mem_transvections_iff {e : V ≃ₗ[R] V} :
   rw [transvection.symm_eq]
   apply mem_transvections
 
-@[simp]
 theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
-    e.symm ∈ transvections R V ↔ e ∈ transvections R V :=
-  symm_mem_transvections_iff
+    e.symm ∈ transvections R V ↔ e ∈ transvections R V := by
+  simp
 
 open Pointwise in
 theorem transvections_pow_mono :
