@@ -29,25 +29,6 @@ open Set
 
 namespace Complex
 
-/-- Complex exponential function is a branched covering map.
-
-This partial homeomorph gives an explicit trivialization of this covering over `slitPlane`. -/
-def expOpenPartialHomeomorphProd : OpenPartialHomeomorph ℂ (ℂ × ℤ) where
-  toPartialEquiv := expPartialEquivProd
-  open_source := isOpen_slitPlane.preimage continuous_exp
-  open_target := isOpen_slitPlane.prod isOpen_univ
-  continuousOn_toFun := by
-    refine .prodMk (by fun_prop) <| .neg <| ?_
-    refine (continuousOn_toIocDiv Real.two_pi_pos _).comp continuous_im.continuousOn ?_
-    suffices ∀ z, exp z ∈ slitPlane → ¬z.im ≡ -π [PMOD (2 * π)] by
-      simpa [MapsTo, AddCommGroup.modEq_iff_eq_mod_zmultiples] using this
-    intro z hz₁ hz₂
-    apply slitPlane_arg_ne_pi hz₁
-    rw [AddCommGroup.ModEq, ← toIocMod_eq_toIocMod Real.two_pi_pos] at hz₂
-    rw [arg_exp, hz₂, toIocMod_apply_left, two_mul, neg_add_cancel_left]
-  continuousOn_invFun :=
-    continuousOn_fst.clog (by simp) |>.sub (Continuous.continuousOn <| by fun_prop)
-
 theorem isEvenlyCovered_exp {x : ℂ} (hx : x ≠ 0) :
     IsEvenlyCovered exp x ℤ := by
   -- We have an explicit trivialization over `slitPlane`.
@@ -58,10 +39,14 @@ theorem isEvenlyCovered_exp {x : ℂ} (hx : x ≠ 0) :
     · ext z
       simp [exp_add, exp_neg, exp_log, hx]
     · simp
-  exact ⟨inferInstance, slitPlane, one_mem_slitPlane, isOpen_slitPlane,
-    isOpen_slitPlane.preimage continuous_exp,
-    expOpenPartialHomeomorphProd.toHomeomorphSourceTarget.trans <|
-      (Homeomorph.Set.prod _ _).trans <| .prodCongr (.refl _) (Homeomorph.Set.univ _), fun _ ↦ rfl⟩
+  refine ⟨inferInstance, slitPlane, one_mem_slitPlane, isOpen_slitPlane,
+    isOpen_slitPlane.preimage continuous_exp, ?_, ?_⟩
+  · refine Homeomorph.setCongr ?_ |>.trans <|
+      expOpenPartialHomeomorphProd.toHomeomorphSourceTarget.trans <|
+        (Homeomorph.Set.prod _ _).trans <| .prodCongr (.refl _) (Homeomorph.Set.univ _)
+    ext
+    simp [exp_mem_slitPlane]
+  · exact fun _ ↦ rfl
 
 /-- Complex exponential function is a covering map on `{0}ᶜ`. -/
 theorem isCoveringMapOn_exp : IsCoveringMapOn exp {0}ᶜ := fun _x hx ↦
