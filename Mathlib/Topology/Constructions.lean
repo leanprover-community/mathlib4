@@ -1262,6 +1262,22 @@ lemma Topology.isOpenEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i �
   simp only [isOpenEmbedding_iff_isEmbedding_isOpenMap, isOpenMap_sigma_map, isEmbedding_sigmaMap h,
     forall_and]
 
+lemma Topology.IsQuotientMap.sigmaMap {f₁ : ι → κ} {f₂ : (i : ι) → σ i → τ (f₁ i)}
+    (h₁ : f₁.Surjective) (h₂ : ∀ i, IsQuotientMap (f₂ i)) :
+    IsQuotientMap (Sigma.map f₁ f₂) := by
+  fconstructor
+  · rintro ⟨k, t⟩
+    obtain ⟨i, rfl⟩ := h₁ k
+    obtain ⟨s, rfl⟩ := (h₂ i).surjective t
+    use ⟨i, s⟩
+    simp [Sigma.map]
+  · simp_rw [instTopologicalSpaceSigma, coinduced_iSup, coinduced_compose, Function.comp_def,
+    Sigma.map_mk, ← Function.comp_def, ← coinduced_compose, ← (h₂ · |>.eq_coinduced)]
+    conv_lhs => enter [1, k]
+    rw [← range_eq_univ] at h₁
+    rw [← iSup_univ (β := ι), ← iSup_image (g := (fun k ↦ coinduced (Sigma.mk k) _))]
+    simp_rw [image_univ, h₁, iSup_univ]
+
 end Sigma
 
 section ULift
