@@ -44,9 +44,8 @@ theorem isQuotientMap_mk (N : Subgroup G) : IsQuotientMap (mk : G → G ⧸ N) :
 theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
   continuous_quot_mk
 
-section ContinuousMul
-
-variable [ContinuousMul G] {N : Subgroup G}
+section ContinuousMulConst
+variable [ContinuousConstSMul Gᵐᵒᵖ G] {N : Subgroup G}
 
 @[to_additive]
 theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := isOpenMap_quotient_mk'_mul
@@ -117,6 +116,21 @@ theorem discreteTopology (hN : IsOpen (N : Set G)) :
 instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace
+
+end ContinuousMulConst
+
+section ContinuousMul
+
+variable [ContinuousConstSMul Gᵐᵒᵖ G] {N : Subgroup G}
+
+-- @[to_additive]
+-- instance instContinuousSMul : ContinuousSMul G (G ⧸ N) where
+--   continuous_smul := by
+--     rw [← (IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
+--     exact continuous_mk.comp continuous_mul
+
+-- @[to_additive]
+-- instance instContinuousConstSMul : ContinuousConstSMul G (G ⧸ N) := inferInstance
 
 variable (N)
 
