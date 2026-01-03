@@ -848,7 +848,7 @@ section NonAssocSemiring
 variable [NonAssocSemiring R]
 
 /-- `C a` is the constant Hahn Series `a`. `C` is provided as a ring homomorphism. -/
-@[simps]
+@[simps -isSimp]
 def C : R →+* R⟦Γ⟧ where
   toFun := single 0
   map_zero' := single_eq_zero
@@ -857,6 +857,8 @@ def C : R →+* R⟦Γ⟧ where
     ext a
     by_cases h : a = 0 <;> simp [h]
   map_mul' x y := by rw [single_mul_single, zero_add]
+
+@[simp] theorem single_zero (r : R) : single 0 r = C r := rfl
 
 theorem C_zero : C (0 : R) = (0 : R⟦Γ⟧) :=
   C.map_zero
@@ -867,7 +869,7 @@ theorem C_one : C (1 : R) = (1 : R⟦Γ⟧) :=
 theorem map_C [NonAssocSemiring S] (a : R) (f : R →+* S) :
     ((C a).map f : S⟦Γ⟧) = C (f a) := by
   ext g
-  by_cases h : g = 0 <;> simp [h]
+  by_cases h : g = 0 <;> simp [h, C]
 
 theorem C_injective : Function.Injective (C : R → R⟦Γ⟧) := by
   intro r s rs
@@ -878,10 +880,15 @@ theorem C_injective : Function.Injective (C : R → R⟦Γ⟧) := by
 theorem C_ne_zero {r : R} (h : r ≠ 0) : (C r : R⟦Γ⟧) ≠ 0 :=
   C_injective.ne_iff' C_zero |>.mpr h
 
+@[simp]
 theorem order_C {r : R} : order (C r : R⟦Γ⟧) = 0 := by
   by_cases h : r = 0
   · rw [h, C_zero, order_zero]
   · exact order_single h
+
+@[simp]
+theorem smul_one (r : R) : r • (1 : R⟦Γ⟧) = C r := by
+  aesop
 
 end NonAssocSemiring
 
