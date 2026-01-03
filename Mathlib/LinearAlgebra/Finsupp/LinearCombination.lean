@@ -405,6 +405,17 @@ theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
   · rw [← hx]
     exact sum_smul_mem (span R (v '' s)) c fun a _ ↦ subset_span <| by aesop
 
+theorem _root_.Submodule.mem_span_range_iff_exists' {α M R : Type*}
+    [Semiring R] [AddCommMonoid M] [Module R M] {v : α → M} {x : M} :
+    x ∈ Submodule.span R (Set.range v) ↔ ∃ (s : Finset α) (c : α → R), ∑ i ∈ s, c i • v i = x := by
+  classical
+  rw [← Set.image_univ, Submodule.mem_span_image_iff_exists_fun]
+  simp only [Set.subset_univ, Finset.univ_eq_attach, true_and, ← Finset.sum_attach (ι := α)]
+  refine ⟨fun ⟨s, c, hsc⟩ ↦ ⟨s, fun x ↦ if h : x ∈ s then c ⟨x, h⟩ else 0, ?_⟩,
+    fun ⟨s, c, hsc⟩ ↦ ⟨s, c ∘ Subtype.val, by simpa⟩⟩
+  convert hsc
+  grind
+
 theorem Fintype.mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
     x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
   rw [← mem_span_range_iff_exists_fun, image_eq_range]

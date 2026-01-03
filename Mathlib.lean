@@ -6338,7 +6338,6 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Instances
 public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
-public import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
