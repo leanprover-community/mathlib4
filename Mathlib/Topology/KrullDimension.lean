@@ -65,3 +65,20 @@ ambient space. -/
 theorem topologicalKrullDim_subspace_le (X : Type*) [TopologicalSpace X] (Y : Set X) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
   IsInducing.topologicalKrullDim_le IsInducing.subtypeVal
+
+theorem topologicalKrullDim_zero_of_discreteTopology
+    (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
+    topologicalKrullDim X ≤ 0 := by
+  apply krullDim_nonpos_iff_forall_isMax.mpr
+  intro Z Y h
+  change Y.1 ≤ Z.1
+  have hYZ : Z.1 = Y.1 := by
+    have hZY := IsDiscrete.subsingleton_of_isPreirreducible DiscreteTopology.isDiscrete Y.2.2
+    ext x
+    constructor
+    · exact fun hx ↦ h hx
+    intro hx
+    obtain ⟨z, hz⟩ := Z.2.1
+    rw[hZY hx (h hz)]
+    exact hz
+  rw[hYZ]
