@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.ModelTheory.ElementaryMaps
+public import Mathlib.ModelTheory.Definability
 
 /-!
 # Elementary Substructures
@@ -140,6 +141,68 @@ def toElementarySubstructure (S : L.Substructure M)
   ⟨S, S.isElementary_of_exists htv⟩
 
 end Substructure
+
+/-- A set satisfies the Tarski-Vaught property if it meets every nonempty definable subset. -/
+def TarskiVaught (A : Set M) : Prop :=
+  ∀ (D : Set M), D.Nonempty → A.Definable₁ L D → (D ∩ A).Nonempty
+
+namespace TarskiVaught
+
+open Set Substructure
+
+variable {A : Set M}
+
+/-- The closure of a set with the Tarski-Vaught property equals to itself. -/
+theorem closure_eq_self (hA : L.TarskiVaught A) :
+    closure L A = A := by
+  refine Eq.symm (Subset.antisymm ?_ ?_)
+  · exact subset_closure
+  · intro x hx
+    simp only [SetLike.mem_coe, mem_closure_iff_exists_term] at hx
+    obtain ⟨t,ht⟩ := hx
+    let D : Set M := {x}
+    have : A.Definable₁ L D := by
+      simp only [Definable₁, Definable]
+      exists (Term.var 0).equal (t.relabel Sum.inl).varsToConstants
+      ext v
+      simp only [Fin.isValue, mem_singleton_iff, mem_setOf_eq, Formula.realize_equal,
+        Term.realize_var, D, ←ht]
+      refine Eq.congr_right ?_
+      simp only [Term.realize_varsToConstants, coe_con, Term.realize_relabel, Sum.elim_comp_inl]
+    specialize hA D (singleton_nonempty x) this
+    exact singleton_inter_nonempty.mp hA
+
+/-- The closure of a set with the Tarski-Vaught property is an elementary substructure. -/
+theorem isElementary_closure (hA : L.TarskiVaught A) :
+    (closure L A).IsElementary := by
+  refine isElementary_of_exists ((closure L).toFun A) ?_
+  intro n φ x a hφ
+  let D : Set M := {y : M | φ.Realize default (Fin.snoc (Subtype.val ∘ x) y)}
+  have hD_ne : D.Nonempty := ⟨a,hφ⟩
+  have hD : A.Definable₁ L D := by
+    simp only [Definable₁, Definable, Fin.isValue]
+    refine ⟨((L.lhomWithConstants A).onBoundedFormula φ).toFormula.relabel
+      (Sum.elim Empty.elim id) |>.subst (fun i => Fin.lastCases (Term.var 0)
+        (fun j => (L.con ⟨x j, by
+        nth_rw 1 [← hA.closure_eq_self]
+        simp only [Subtype.coe_prop]
+        ⟩).term) i), ?_⟩
+    ext v
+    simp only [Fin.isValue, mem_setOf_eq, Formula.relabel, Formula.Realize,
+      BoundedFormula.realize_subst, BoundedFormula.realize_relabel, Nat.add_zero, Fin.castAdd_zero,
+      Fin.cast_refl, Function.comp_id, Fin.natAdd_zero, D]
+    rw [← Formula.Realize, BoundedFormula.realize_toFormula, LHom.realize_onBoundedFormula]
+    exact Iff.of_eq <| congrArg₂ _ (funext fun e => e.elim)
+      (funext fun i => by cases i using Fin.lastCases <;> simp)
+  obtain ⟨b, hbD, hbA⟩ := hA D hD_ne hD
+  exact ⟨⟨b, by rwa [← hA.closure_eq_self] at hbA⟩, hbD⟩
+
+/-- Bundles the closure of a set with the Tarski-Vaught property as an elementary substructure. -/
+def toElementarySubstructure (hA : L.TarskiVaught A) :
+    L.ElementarySubstructure M :=
+  ⟨closure L A, hA.isElementary_closure⟩
+
+end TarskiVaught
 
 end Language
 
