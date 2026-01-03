@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Integral.CircleAverage
 /-!
 # Fourier Coefficients of Polynomials
 
-We compute the Fourier coefficient of a polyhnomial over the circle. We also provide a
+We compute the Fourier coefficient of a polynomial over the circle. We also provide a
 specialization of Parseval's identity, which in the case of polynomials states that the sum
 of the squares of the norms of the coefficients of the polynomial is equal to the average over the
 circle of the norm square of the polynomial.
