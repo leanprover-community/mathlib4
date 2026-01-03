@@ -329,11 +329,7 @@ instance distribLattice : DistribLattice (Digraph V) where
         tauto
 
 
-instance : Top (Digraph V) where
-  top := Digraph.completeDigraph V
 
-instance : Bot (Digraph V) where
-  bot := Digraph.emptyDigraph V
 
 instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
   sup H₁ H₂ := by
@@ -364,16 +360,35 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
     case val =>
       exact (min H₁ H₂)
     case property =>
-      simp_all [Set.mem_Iic, distribLattice.le_inf]
-
-
-
-
+      simp_all only [Set.mem_Iic]
+      apply le_trans
+      apply inf_le_left
+      exact H₁_prop
 
   inf_le_left := by
     intro H₁ H₂
     simp_all only
     apply distribLattice.inf_le_left
+
+  inf_le_right := by
+    intro H₁ H₂
+    simp_all only
+    apply distribLattice.inf_le_right
+
+  le_inf := by
+    intros H₁ H₂ H₃ H₁_le_H₂ H₂_le_H₃
+    simp_all only
+    apply distribLattice.le_inf
+    all_goals
+      simp only [Subtype.coe_le_coe]
+      assumption
+  top := ⟨G, by apply distribLattice.le_refl⟩
+
+  bot := ⟨Digraph.emptyDigraph V, h⟩
+    where
+      h := by
+        simp [Digraph.emptyDigraph,
+          LE.le]
 
 
 
