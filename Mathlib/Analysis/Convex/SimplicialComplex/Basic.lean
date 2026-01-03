@@ -11,15 +11,16 @@ public import Mathlib.LinearAlgebra.AffineSpace.Independent
 /-!
 # Simplicial complexes
 
-In this file, we define simplicial complexes in `𝕜`-modules. A simplicial complex is a collection
-of simplices closed by inclusion (of vertices) and intersection (of underlying sets).
-
-We model them by a downward-closed set of affine independent finite sets whose convex hulls "glue
-nicely", each finite set and its convex hull corresponding respectively to the vertices and the
-underlying set of a simplex.
+In this file, we define simplicial complexes, both abstractly and in `𝕜`-modules.
+An abstract simplicial complex is a downwards-closed collection of nonempty finte sets,
+and a simplicial complex is such a collection identified with simplices
+closed by inclusion (of vertices) and intersection (of underlying sets)
+whose convex hulls "glue nicely", each finite set and its convex hull corresponding respectively
+to the vertices and the underlying set of a simplex.
 
 ## Main declarations
 
+* `AbstractSimplicialComplex ι`: An abstract simplicial complex with vertices of type `ι`.
 * `SimplicialComplex 𝕜 E`: A simplicial complex in the `𝕜`-module `E`.
 * `SimplicialComplex.vertices`: The zero-dimensional faces of a simplicial complex.
 * `SimplicialComplex.facets`: The maximal faces of a simplicial complex.
@@ -47,6 +48,42 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 open Finset Set
 
+section Abstract
+
+variable (ι : Type*)
+
+/-- An abstract simplicial complex is a collection of nonempty finite sets of points ("faces")
+which is downwards closed, i.e., any nonempty subset of a face is also a face.
+-/
+@[ext]
+structure AbstractSimplicialComplex where
+  /-- the faces of this simplicial complex: currently, given by their spanning vertices -/
+  faces : Set (Finset ι)
+  /-- the empty set is not a face: hence, all faces are non-empty -/
+  empty_notMem : ∅ ∉ faces
+  /-- faces are downward closed: a non-empty subset of its spanning vertices spans another face -/
+  down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces
+
+namespace AbstractSimplicialComplex
+
+/-- The complex consisting of only the faces present in both of its arguments. -/
+instance : Min (AbstractSimplicialComplex ι) :=
+  ⟨fun K L =>
+    { faces := K.faces ∩ L.faces
+      empty_notMem := fun h => K.empty_notMem (Set.inter_subset_left h)
+      down_closed := fun hs hst ht => ⟨K.down_closed hs.1 hst ht, L.down_closed hs.2 hst ht⟩ }⟩
+
+instance : SemilatticeInf (AbstractSimplicialComplex ι) :=
+  { PartialOrder.lift faces (fun _ _ => AbstractSimplicialComplex.ext) with
+    inf := (· ⊓ ·)
+    inf_le_left := fun _ _ _ hs => hs.1
+    inf_le_right := fun _ _ _ hs => hs.2
+    le_inf := fun _ _ _ hKL hKM _ hs => ⟨hKL hs, hKM hs⟩ }
+
+end AbstractSimplicialComplex
+
+end Abstract
+
 variable (𝕜 E : Type*) [Ring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Geometry
@@ -57,15 +94,9 @@ Note that the textbook meaning of "glue nicely" is given in
 `Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull`. It is mostly useless, as
 `Geometry.SimplicialComplex.convexHull_inter_convexHull` is enough for all purposes. -/
 @[ext]
-structure SimplicialComplex where
-  /-- the faces of this simplicial complex: currently, given by their spanning vertices -/
-  faces : Set (Finset E)
-  /-- the empty set is not a face: hence, all faces are non-empty -/
-  empty_notMem : ∅ ∉ faces
+structure SimplicialComplex extends AbstractSimplicialComplex E where
   /-- the vertices in each face are affine independent: this is an implementation detail -/
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
-  /-- faces are downward closed: a non-empty subset of its spanning vertices spans another face -/
-  down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces
   inter_subset_convexHull : ∀ {s t}, s ∈ faces → t ∈ faces →
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
 
@@ -215,7 +246,7 @@ instance : Min (SimplicialComplex 𝕜 E) :=
       inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩
 
 instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
-  { PartialOrder.lift faces (fun _ _ => SimplicialComplex.ext) with
+  { PartialOrder.lift (fun K => K.faces) (fun _ _ => SimplicialComplex.ext) with
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ hs => hs.1
     inf_le_right := fun _ _ _ hs => hs.2
