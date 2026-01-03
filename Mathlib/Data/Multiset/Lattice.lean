@@ -88,6 +88,33 @@ theorem nodup_sup_iff {α : Type*} [DecidableEq α] {m : Multiset (Multiset α)}
 
 end Sup
 
+section SupMem
+
+variable {α : Type*} [LinearOrder α] [OrderBot α]
+
+/-- If a multiset `s` is nonempty (`s ≠ 0`), then its supremum `s.sup` belongs to `s`. -/
+theorem sup_mem_of_ne_zero (s : Multiset α) (hs : s ≠ 0) : s.sup ∈ s := by
+  classical
+  induction s using Multiset.induction_on with
+  | empty =>
+      cases hs rfl
+  | @cons a s ih =>
+      by_cases h0 : s = 0
+      · subst h0
+        simp
+      · have hmem : s.sup ∈ s := ih h0
+        cases le_total a s.sup with
+        | inl hle =>
+            have hsup : a ⊔ s.sup = s.sup := sup_eq_right.2 hle
+            have : s.sup ∈ a ::ₘ s := (Multiset.mem_cons).2 (Or.inr hmem)
+            simpa [Multiset.sup_cons, hsup] using this
+        | inr hge =>
+            have hsup : a ⊔ s.sup = a := sup_eq_left.2 hge
+            have : a ∈ a ::ₘ s := Multiset.mem_cons_self a s
+            simp [Multiset.sup_cons, hsup]
+
+end SupMem
+
 /-! ### inf -/
 
 
