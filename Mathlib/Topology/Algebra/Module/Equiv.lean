@@ -651,6 +651,11 @@ theorem eq_comp_toContinuousLinearMap_symm (e₁₂ : M₁ ≃SL[σ₁₂] M₂)
     f = g.comp e₁₂.symm.toContinuousLinearMap ↔ f.comp e₁₂.toContinuousLinearMap = g := by
   aesop
 
+theorem eq_toContinuousLinearMap_symm_comp {e₁₂ : M₁ ≃SL[σ₁₂] M₂} [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂]
+    (f : M₃ →SL[σ₃₁] M₁) (g : M₃ →SL[σ₃₂] M₂) :
+    f = e₁₂.symm.toContinuousLinearMap.comp g ↔ e₁₂.toContinuousLinearMap.comp f = g := by
+  aesop
+
 variable (M₁)
 
 /-- The continuous linear equivalences from `M` to itself form a group under composition. -/
@@ -1368,4 +1373,32 @@ def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
 
 end MulOpposite
 
+section smul
+variable {S R V W : Type*} [Semiring R] [Semiring S]
+  [AddCommMonoid V] [Module R V] [TopologicalSpace V] [Module S V] [ContinuousConstSMul S V]
+  [AddCommMonoid W] [Module R W] [TopologicalSpace W] [Module S W] [ContinuousConstSMul S W]
+  [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
+
+/-- Left scalar multiplication of a unit and a continuous linear equivalence,
+as a continuous linear equivalence. -/
+@[simps! apply]
+def ContinuousLinearEquiv.units_smul (e : V ≃L[R] W) (α : Sˣ) : V ≃L[R] W where
+  __ := e.toLinearEquiv.units_smul α
+  continuous_toFun := by
+    dsimp [LinearEquiv.units_smul]
+    refine α.isUnit.continuous_const_smul_iff.mpr e.continuous
+  continuous_invFun := by
+    dsimp [LinearEquiv.units_smul]
+    refine α⁻¹.isUnit.continuous_const_smul_iff.mpr e.symm.continuous
+
+theorem ContinuousLinearEquiv.symm_units_smul_apply (e : V ≃L[R] W) (α : Sˣ) (x : W) :
+    (e.units_smul α).symm x = (↑α⁻¹ : S) • e.symm x := rfl
+
+@[simp] theorem ConitnuousLinearEquiv.symm_units_smul [SMulCommClass R S V]
+    (e : V ≃L[R] W) (α : Sˣ) : (e.units_smul α).symm = e.symm.units_smul α⁻¹ := rfl
+
+@[simp] theorem ContinuousLinearEquiv.toLinearEquiv_units_smul (e : V ≃L[R] W) (α : Sˣ) :
+    (e.units_smul α).toLinearEquiv = e.toLinearEquiv.units_smul α := rfl
+
+end smul
 end
