@@ -162,6 +162,8 @@ instance : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+instance : PartialOrder (Subring R) := .ofSetLike (Subring R) R
+
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
 /-- The actual `Subring` obtained from an element of a `SubringClass`. -/

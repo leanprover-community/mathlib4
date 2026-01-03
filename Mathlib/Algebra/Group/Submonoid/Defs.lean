@@ -131,6 +131,8 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
+
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 

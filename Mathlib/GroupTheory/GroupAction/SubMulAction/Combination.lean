@@ -65,6 +65,8 @@ theorem mem_iff {s : Finset α} :
 
 instance : SetLike (n.Combination α) α := SetLike.instSubtype
 
+instance : PartialOrder (n.Combination α) := .ofSetLike (n.Combination α) α :=
+
 @[simp]
 theorem coe_coe {s : n.Combination α} :
     ((s : Finset α) : Set α) = s := rfl

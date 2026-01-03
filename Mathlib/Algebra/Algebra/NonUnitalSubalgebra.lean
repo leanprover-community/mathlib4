@@ -76,6 +76,8 @@ instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+instance : PartialOrder (NonUnitalSubalgebra R A) := .ofSetLike (NonUnitalSubalgebra R A) A
+
 /-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `SMulMemClass`. -/
 @[simps]
