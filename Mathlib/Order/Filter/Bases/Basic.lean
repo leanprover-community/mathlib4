@@ -535,9 +535,6 @@ theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f
 theorem notMem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
   (not_congr mem_iff_inf_principal_compl).trans neBot_iff.symm
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_iff_inf_principal_compl := notMem_iff_inf_principal_compl
-
 @[simp]
 theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟 s) ↔ sᶜ ∈ f := by
   rw [mem_iff_inf_principal_compl, compl_compl, disjoint_iff]
