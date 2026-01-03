@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Closure
+public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Data.Set.Notation
+import Mathlib.Topology.Constructions
 
 /-!
 # `Gδ` sets
@@ -183,7 +186,7 @@ end residual
 
 section IsMeagre
 open Function TopologicalSpace Set
-variable {X : Type*} [TopologicalSpace X]
+variable [TopologicalSpace X]
 
 /-- A set is called **nowhere dense** iff its closure has empty interior. -/
 def IsNowhereDense (s : Set X) := interior (closure s) = ∅
@@ -192,6 +195,11 @@ def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 @[simp]
 lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
   rw [IsNowhereDense, closure_empty, interior_empty]
+
+/-- A subset of a nowhere dense set is nowhere dense. -/
+@[gcongr]
+lemma IsNowhereDense.mono {s t : Set X} (ht : t ⊆ s) (hs : IsNowhereDense s) : IsNowhereDense t :=
+  Set.eq_empty_of_subset_empty <| by grw [ht]; rw [hs]
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
@@ -213,6 +221,21 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
+
+/-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
+lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y]
+    (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
+  rw [IsNowhereDense.eq_1] at *
+  contrapose! h
+  rw [hf.closure_eq_preimage_closure_image]
+  obtain ⟨y, o, ⟨isOpen_o, ho⟩, y_mem_o⟩ := h
+  obtain ⟨_, hx, x, x_mem_s, rfl⟩ := mem_closure_iff.mp (ho y_mem_o) o isOpen_o y_mem_o
+  refine ⟨x, f⁻¹' o, ⟨hf.continuous.isOpen_preimage o isOpen_o, by grw [ho]⟩, hx⟩
+
+/-- A set is nowhere dense if it is nowhere dense in some subspace. -/
+lemma IsNowhereDense.image_val {Y : Set X} {s : Set Y}
+    (hs : IsNowhereDense s) : IsNowhereDense (s : Set X) :=
+  Topology.IsInducing.subtypeVal.isNowhereDense_image hs
 
 /-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
@@ -260,5 +283,40 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
 lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := by
   contrapose! hs
   simpa [hs] using IsMeagre.empty
+
+/-- A nowhere dense set is meagre. -/
+lemma IsNowhereDense.isMeagre {s : Set X} (h : IsNowhereDense s) : IsMeagre s := by
+  rw [isMeagre_iff_countable_union_isNowhereDense]
+  exact ⟨{s}, by simpa, by simp, by simp⟩
+
+lemma exists_of_not_isMeagre_biUnion {I : Set ι}
+    (c : I.Countable) {A : ι → Set X} (h : ¬IsMeagre (⋃ i ∈ I, A i)) :
+    ∃ i ∈ I, ¬IsMeagre (A i) := by
+  contrapose! h
+  suffices IsMeagre (⋃ i : I, A i) by
+    convert this
+    simp
+  have : Countable I := c
+  apply isMeagre_iUnion
+  intro ⟨i, hi⟩
+  exact h i hi
+
+/-- The image of a meagre set through an inducing map is meagre. -/
+lemma Topology.IsInducing.isMeagre_image {f : X → Y} [TopologicalSpace Y]
+    (hf : Topology.IsInducing f) {s : Set X} (h : IsMeagre s) : IsMeagre (f '' s) := by
+  rw [isMeagre_iff_countable_union_isNowhereDense] at *
+  obtain ⟨T, isNowhereDense, countable, cover⟩ := h
+  refine ⟨(Set.image f) '' T, ?isNowhereDense, countable.image _, ?cover⟩
+  case isNowhereDense =>
+    intro u ⟨t, tT, tu⟩
+    rw [← tu]
+    apply hf.isNowhereDense_image (isNowhereDense t tT)
+  case cover =>
+    rw [← Set.image_sUnion]
+    grw [cover]
+
+/-- A set is meagre if it is meagre in some subspace. -/
+lemma IsMeagre.image_val {s : Set X} {m : Set s} (h : IsMeagre (m : Set s)) :
+    IsMeagre (m : Set X) := Topology.IsInducing.subtypeVal.isMeagre_image h
 
 end IsMeagre
