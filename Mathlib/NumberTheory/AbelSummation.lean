@@ -61,7 +61,7 @@ private theorem sumlocc {m : ℕ} (n : ℕ) :
   rw [Nat.floor_eq_on_Ico _ _ (h.mpr ht)]
 
 open scoped Interval in
-private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
+private theorem integralmulsum (hf_diff : DifferentiableOn ℝ f (Set.Icc a b))
     (hf_int : IntegrableOn (deriv f) (Set.Icc a b)) (t₁ t₂ : ℝ) (n : ℕ) (h : t₁ ≤ t₂)
     (h₁ : n ≤ t₁) (h₂ : t₂ ≤ n + 1) (h₃ : a ≤ t₁) (h₄ : t₂ ≤ b) :
     ∫ t in t₁..t₂, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k =
@@ -69,7 +69,7 @@ private theorem integralmulsum (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableA
   have h_inc₁ : Ι t₁ t₂ ⊆ Set.Icc n (n + 1) :=
     Set.uIoc_of_le h ▸ Set.Ioc_subset_Icc_self.trans <| Set.Icc_subset_Icc h₁ h₂
   have h_inc₂ : Set.uIcc t₁ t₂ ⊆ Set.Icc a b := Set.uIcc_of_le h ▸ Set.Icc_subset_Icc h₃ h₄
-  rw [← integral_deriv_eq_sub (fun t ht ↦ hf_diff t (h_inc₂ ht)),
+  rw [← integral_deriv_eq_sub (hf_diff.mono h_inc₂),
       ← intervalIntegral.integral_mul_const]
   · refine integral_congr_ae ?_
     filter_upwards [sumlocc c n] with t h h'
@@ -127,7 +127,7 @@ theorem _root_.integrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → �
 
 /-- Abel's summation formula. -/
 theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
-    (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Icc a b))
     (hf_int : IntegrableOn (deriv f) (Set.Icc a b)) :
     ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - f a * (∑ k ∈ Icc 0 ⌊a⌋₊, c k) -
@@ -173,7 +173,7 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
 
 /-- A version of `sum_mul_eq_sub_sub_integral_mul` where the endpoints are `Nat`. -/
 theorem _root_.sum_mul_eq_sub_sub_integral_mul' {n m : ℕ} (h : n ≤ m)
-    (hf_diff : ∀ t ∈ Set.Icc (n : ℝ) m, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Icc (n : ℝ) m))
     (hf_int : IntegrableOn (deriv f) (Set.Icc (n : ℝ) m)) :
     ∑ k ∈ Ioc n m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) - f n * (∑ k ∈ Icc 0 n, c k) -
@@ -187,7 +187,7 @@ section specialversions
 
 /-- Specialized version of `sum_mul_eq_sub_sub_integral_mul` for the case `a = 0` -/
 theorem sum_mul_eq_sub_integral_mul {b : ℝ} (hb : 0 ≤ b)
-    (hf_diff : ∀ t ∈ Set.Icc 0 b, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Icc 0 b))
     (hf_int : IntegrableOn (deriv f) (Set.Icc 0 b)) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 0 b, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
@@ -198,7 +198,7 @@ theorem sum_mul_eq_sub_integral_mul {b : ℝ} (hb : 0 ≤ b)
 
 /-- A version of `sum_mul_eq_sub_integral_mul` where the endpoint is a `Nat`. -/
 theorem sum_mul_eq_sub_integral_mul' (m : ℕ)
-    (hf_diff : ∀ t ∈ Set.Icc (0 : ℝ) m, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Icc (0 : ℝ) m))
     (hf_int : IntegrableOn (deriv f) (Set.Icc (0 : ℝ) m)) :
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
@@ -209,7 +209,7 @@ theorem sum_mul_eq_sub_integral_mul' (m : ℕ)
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when the first coefficient of the sequence
 `c` is equal to `0`. -/
 theorem sum_mul_eq_sub_integral_mul₀ (hc : c 0 = 0) (b : ℝ)
-    (hf_diff : ∀ t ∈ Set.Icc 1 b, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Icc 1 b))
     (hf_int : IntegrableOn (deriv f) (Set.Icc 1 b)) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 1 b, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
@@ -227,7 +227,7 @@ theorem sum_mul_eq_sub_integral_mul₀ (hc : c 0 = 0) (b : ℝ)
 
 /-- A version of `sum_mul_eq_sub_integral_mul₀` where the endpoint is a `Nat`. -/
 theorem sum_mul_eq_sub_integral_mul₀' (hc : c 0 = 0) (m : ℕ)
-    (hf_diff : ∀ t ∈ Set.Icc (1 : ℝ) m, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Icc (1 : ℝ) m))
     (hf_int : IntegrableOn (deriv f) (Set.Icc (1 : ℝ) m)) :
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
@@ -279,7 +279,7 @@ theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → �
     exact integrableOn_empty
 
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral
-    (hf_diff : ∀ t ∈ Set.Ici 0, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Ici 0))
     (hf_int : LocallyIntegrableOn (deriv f) (Set.Ici 0)) {l : 𝕜}
     (h_lim : Tendsto (fun n : ℕ ↦ f n * ∑ k ∈ Icc 0 n, c k) atTop (𝓝 l))
     {g : ℝ → 𝕜} (hg_dom : (fun t ↦ deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k) =O[atTop] g)
@@ -294,11 +294,11 @@ theorem tendsto_sum_mul_atTop_nhds_one_sub_integral
       <| (locallyIntegrableOn_mul_sum_Icc c le_rfl hf_int).integrableOn_of_isBigO_atTop
         hg_dom hg_int
   refine (h_lim.sub h_lim').congr (fun _ ↦ ?_)
-  rw [sum_mul_eq_sub_integral_mul' _ _ (fun t ht ↦ hf_diff _ ht.1)]
+  rw [sum_mul_eq_sub_integral_mul' _ _ (hf_diff.mono Set.Icc_subset_Ici_self)]
   exact hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc
 
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (hc : c 0 = 0)
-    (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ f t)
+    (hf_diff : DifferentiableOn ℝ f (Set.Ici 1))
     (hf_int : LocallyIntegrableOn (deriv f) (Set.Ici 1)) {l : 𝕜}
     (h_lim : Tendsto (fun n : ℕ ↦ f n * ∑ k ∈ Icc 0 n, c k) atTop (𝓝 l))
     {g : ℝ → ℝ} (hg_dom : (fun t ↦ deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k) =O[atTop] g)
@@ -316,7 +316,7 @@ theorem tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (hc : c 0 = 0)
       <| (locallyIntegrableOn_mul_sum_Icc c zero_le_one hf_int).integrableOn_of_isBigO_atTop
         hg_dom hg_int
   refine (h_lim.sub h_lim').congr (fun _ ↦ ?_)
-  rw [sum_mul_eq_sub_integral_mul₀' _ hc _ (fun t ht ↦ hf_diff _ ht.1)]
+  rw [sum_mul_eq_sub_integral_mul₀' _ hc _ (hf_diff.mono Set.Icc_subset_Ici_self)]
   exact hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc
 
 end limit
@@ -367,19 +367,19 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
           hg₁ hg₂
 
 theorem summable_mul_of_bigO_atTop
-    (hf_diff : ∀ t ∈ Set.Ici 0, DifferentiableAt ℝ (fun x ↦ ‖f x‖) t)
+    (hf_diff : DifferentiableOn ℝ (fun x ↦ ‖f x‖) (Set.Ici 0))
     (hf_int : LocallyIntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici 0))
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
     {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
     (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
   refine summable_mul_of_bigO_atTop_aux c 0 h_bdd (by rwa [Nat.cast_zero]) (fun n ↦ ?_) hg₁ hg₂
-  exact_mod_cast sum_mul_eq_sub_integral_mul' _ _ (fun _ ht ↦ hf_diff _ ht.1)
+  exact_mod_cast sum_mul_eq_sub_integral_mul' _ _ (hf_diff.mono Set.Icc_subset_Ici_self)
     (hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc)
 
 /-- A version of `summable_mul_of_bigO_atTop` that can be useful to avoid difficulties near zero. -/
 theorem summable_mul_of_bigO_atTop'
-    (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ (fun x ↦ ‖f x‖) t)
+    (hf_diff : DifferentiableOn ℝ (fun x ↦ ‖f x‖) (Set.Ici 1))
     (hf_int : LocallyIntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici 1))
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 1 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
     {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 1 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
@@ -394,7 +394,7 @@ theorem summable_mul_of_bigO_atTop'
   refine Summable.congr_atTop (summable_mul_of_bigO_atTop_aux (fun n ↦ if n = 0 then 0 else c n) 1
     h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂) ?_
   · exact_mod_cast sum_mul_eq_sub_integral_mul₀' _ (by simp only [reduceIte, norm_zero]) n
-      (fun _ ht ↦ hf_diff _ ht.1)
+      (hf_diff.mono Set.Icc_subset_Ici_self)
       (hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc)
   · filter_upwards [eventually_ne_atTop 0] with k hk
     simp_rw [if_neg hk]
