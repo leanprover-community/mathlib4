@@ -42,6 +42,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 `Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
+    ⟨`linter.unusedVariables, false⟩,
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
