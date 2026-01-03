@@ -195,13 +195,19 @@ theorem down'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α)
 def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
+instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
+  DecidableRel (up α).Rel := fun _ _ => by dsimp; infer_instance
+
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
 @[simps!]
 def down (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   down' 1
 
-theorem down_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : j + 1 = i) :
+instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
+  DecidableRel (down α).Rel := fun _ _ => by dsimp; infer_instance
+
+theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
     (down α).Rel i j :=
   down'_mk (1 : α) i j h
 

@@ -36,6 +36,16 @@ variable {C D : Type*} [Category* C] [Category* D]
 
 open Category
 
+namespace Functor
+
+lemma congr_map_conjugate {C D : Type _} [Category C] [Category D] {F₁ F₂ : C ⥤ D}
+    (h : F₁ = F₂) {X Y : C} (f : X ⟶ Y) :
+    F₁.map f = eqToHom (by congr) ≫ F₂.map f ≫ eqToHom (by symm; congr) := by
+  subst h
+  simp
+
+end Functor
+
 namespace MorphismProperty
 
 /-- A left fraction from `X : C` to `Y : C` for `W : MorphismProperty C` consists of the
@@ -481,7 +491,7 @@ noncomputable def Q : C ⥤ Localization W where
   map_comp {X Y Z} f g := by
     change _ = Hom.comp _ _
     rw [Hom.comp_eq, comp_eq (ofHom W f) (ofHom W g) (ofHom W g) (by simp)]
-    simp only [ofHom, comp₀, comp_id]
+    simp [ofHom]
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
 noncomputable abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y :=
@@ -491,7 +501,8 @@ lemma homMk_eq_hom_mk {X Y : C} (f : W.LeftFraction X Y) : homMk f = Hom.mk f :=
 
 variable (W)
 
-lemma Q_map {X Y : C} (f : X ⟶ Y) : (Q W).map f = homMk (ofHom W f) := rfl
+lemma Q_map {X Y : C} (f : X ⟶ Y) :
+    (Q W).map f = homMk (ofHom W f) := rfl
 
 variable {W}
 
@@ -501,8 +512,8 @@ lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFra
   change Hom.comp _ _ = _
   rw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
 
-lemma homMk_eq_of_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y)
-    (h : LeftFractionRel z₁ z₂) :
+lemma homMk_eq_of_leftFractionRel
+    {X Y : C} (z₁ z₂ : W.LeftFraction X Y) (h : LeftFractionRel z₁ z₂) :
     homMk z₁ = homMk z₂ :=
   Quot.sound h
 
@@ -521,7 +532,6 @@ lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
   rw [homMk_comp_homMk (ofHom W f) (ofInv s hs) (ofHom W (𝟙 _)) (by simp)]
   simp
 
-/-- The isomorphism in `Localization W` that is induced by a morphism in `W`. -/
 @[simps]
 noncomputable def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
   hom := (Q W).map s
@@ -551,7 +561,6 @@ section
 
 variable {E : Type*} [Category* E]
 
-/-- The image by a functor which inverts `W` of an equivalence class of left fractions. -/
 noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     F.obj X ⟶ F.obj Y :=
   Quot.lift (fun f => f.map F hF) (by
@@ -575,8 +584,6 @@ lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs =>
 
 variable {W}
 
-/-- The functor `Localization W ⥤ E` that is induced by a functor `C ⥤ E` which inverts `W`,
-when `W` has a left calculus of fractions. -/
 noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     Localization W ⥤ E where
   obj X := F.obj X
@@ -607,28 +614,30 @@ lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 
-lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ :=
-  Functor.ext (fun X => Functor.congr_obj h X) (by
-    rintro (X Y : C) f
-    obtain ⟨f, rfl⟩ := Hom.mk_surjective f
-    rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
-      ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
-    erw [Functor.congr_hom h f.f]
-    rw [assoc, assoc]
-    congr 2
-    have := inverts W _ f.hs
-    rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
-      Qiso_hom_inv_id, Functor.map_id, id_comp]
-    erw [Functor.congr_hom h.symm f.s]
-    dsimp
-    rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
-      Qiso_hom_inv_id]
-    dsimp
-    rw [F₁.map_id, comp_id])
+lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ := by
+  let hobj : ∀ (X : C), F₁.obj X = F₂.obj X := fun X => Functor.congr_obj h X
+  refine Functor.ext hobj ?_
+  rintro (X Y : C) f
+  obtain ⟨f, rfl⟩ := Hom.mk_surjective f
+  rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
+    ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
+  erw [Functor.congr_map_conjugate h f.f]
+  rw [assoc, assoc]
+  congr 2
+  have := inverts W _ f.hs
+  rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
+    Qiso_hom_inv_id, Functor.map_id, id_comp]
+  erw [Functor.congr_map_conjugate h.symm f.s]
+  dsimp
+  rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
+    Qiso_hom_inv_id]
+  dsimp
+  rw [F₁.map_id, comp_id]
 
 end StrictUniversalPropertyFixedTarget
 
 variable (W)
+
 
 open StrictUniversalPropertyFixedTarget in
 /-- The universal property of the localization for the constructed localized category
@@ -650,8 +659,10 @@ end
 lemma homMk_eq {X Y : C} (f : LeftFraction W X Y) :
     homMk f = f.map (Q W) (Localization.inverts _ W) := by
   have := Localization.inverts (Q W) W f.s f.hs
-  rw [← Q_map_comp_Qinv f.f f.s f.hs, ← cancel_mono ((Q W).map f.s),
+  erw [← Q_map_comp_Qinv f.f f.s f.hs]
+  rw [← cancel_mono ((Q W).map f.s),
     assoc, Qiso_inv_hom_id, comp_id, map_comp_map_s]
+
 
 lemma map_eq_iff {X Y : C} (f g : LeftFraction W X Y) :
     f.map (LeftFraction.Localization.Q W) (Localization.inverts _ _) =
@@ -782,7 +793,6 @@ lemma Localization.essSurj_mapArrow :
       MorphismProperty.LeftFraction.map_comp_map_s]
 
 end
-
 
 namespace MorphismProperty
 

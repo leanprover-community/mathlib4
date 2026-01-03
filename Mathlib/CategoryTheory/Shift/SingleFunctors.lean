@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Functors from a category to a category with a shift
@@ -254,6 +255,57 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
     simp [NatTrans.shift_app e.hom n])
+
+section
+
+variable {F} (G : D ⥤ E) [G.CommShift A] {F' : SingleFunctors C E A}
+  (e : F' ≅ F.postcomp G) (n a a' : A) (ha' : n + a = a') (X : C)
+
+/-- Variant of `postcomp_shiftIso_hom_app'`. -/
+lemma postcomp_shiftIso_hom_app' :
+    (F'.shiftIso n a a' ha').hom.app X =
+      ((e.hom.hom a').app X)⟦n⟧' ≫ (G.commShiftIso n).inv.app ((F.functor a').obj X) ≫
+        G.map ((F.shiftIso n a a' ha').hom.app X) ≫ (e.inv.hom a).app X := by
+  have eq := congr_app (e.hom.comm n a a' ha') X
+  dsimp at eq
+  rw [← cancel_mono ((e.hom.hom a).app X), eq]
+  simp only [Functor.comp_obj, postcomp_functor, postcomp_shiftIso_hom_app, assoc,
+    ← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app, comp_id]
+
+/-- Variant of `postcomp_shiftIso_inv_app'`. -/
+lemma postcomp_shiftIso_inv_app' :
+    (F'.shiftIso n a a' ha').inv.app X =
+        (e.hom.hom a).app X ≫
+        G.map ((F.shiftIso n a a' ha').inv.app X) ≫
+      (G.commShiftIso n).hom.app ((F.functor a').obj X) ≫
+      ((e.inv.hom a').app X)⟦n⟧' := by
+  rw [← cancel_mono ((F'.shiftIso n a a' ha').hom.app X), Iso.inv_hom_id_app,
+    postcomp_shiftIso_hom_app' G e]
+  simp only [assoc, ← Functor.map_comp_assoc, ← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app,
+    postcomp_functor, Functor.comp_obj, Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
+    Iso.inv_hom_id, hom_inv_id_hom]
+
+lemma map_shiftIso_inv_app :
+    G.map ((F.shiftIso n a a' ha').inv.app X) =
+      (e.inv.hom a).app X ≫ (F'.shiftIso n a a' ha').inv.app X ≫
+        ((e.hom.hom a').app X)⟦n⟧' ≫ (G.commShiftIso n).inv.app ((F.functor a').obj X) := by
+  simp only [postcomp_shiftIso_inv_app' G e, Functor.comp_obj, postcomp_functor, assoc,
+    inv_hom_id_hom_app_assoc, ← Functor.map_comp_assoc, inv_hom_id_hom_app,
+    Functor.map_id, id_comp, Iso.hom_inv_id_app, comp_id]
+
+lemma map_shiftIso_hom_app :
+    G.map ((F.shiftIso n a a' ha').hom.app X) =
+      (G.commShiftIso n).hom.app ((F.functor a').obj X) ≫ ((e.inv.hom a').app X)⟦n⟧' ≫
+      (F'.shiftIso n a a' ha').hom.app X ≫ (e.hom.hom a).app X := by
+  simp only [postcomp_shiftIso_hom_app' G e, assoc, ← Functor.map_comp_assoc,
+    inv_hom_id_hom_app, postcomp_functor, Functor.comp_obj, Functor.map_id, id_comp,
+    Iso.hom_inv_id_app_assoc, comp_id]
+
+end
+
+@[simps!]
+def evaluationIso {F G : SingleFunctors C D A} (e : F ≅ G) (n : A) : F.functor n ≅ G.functor n :=
+  (evaluation C D n).mapIso e
 
 end SingleFunctors
 

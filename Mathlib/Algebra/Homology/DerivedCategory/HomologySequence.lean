@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.SingleHomology
 
 /-!
 # The homology sequence
@@ -56,6 +57,25 @@ lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X �
     dsimp
     infer_instance
   · exact Localization.inverts Qh (HomotopyCategory.quasiIso _ _) _
+
+lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
+    IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
+  constructor
+  · intro hf n
+    infer_instance
+  · intro hf
+    let g := (Functor.mapArrow Qh).objPreimage (Arrow.mk f)
+    refine ((MorphismProperty.isomorphisms (DerivedCategory C)).arrow_iso_iff
+      ((Functor.mapArrow Qh).objObjPreimageIso (Arrow.mk f))).1 ?_
+    change IsIso (Qh.map g.hom)
+    rw [isIso_Qh_map_iff, HomotopyCategory.mem_quasiIso_iff]
+    intro n
+    have e : Arrow.mk ((homologyFunctor C n).map f) ≅
+        Arrow.mk ((HomotopyCategory.homologyFunctor _ _ n).map g.hom) :=
+      ((homologyFunctor C n).mapArrow.mapIso
+        (((Functor.mapArrow Qh).objObjPreimageIso (Arrow.mk f)).symm)) ≪≫
+        ((Functor.mapArrowFunctor _ _).mapIso (homologyFunctorFactorsh C n)).app (Arrow.mk g.hom)
+    exact ((MorphismProperty.isomorphisms C).arrow_iso_iff e).1 (hf n)
 
 instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh
@@ -116,6 +136,16 @@ lemma epi_homologyMap_mor₂_iff :
 lemma mono_homologyMap_mor₂_iff :
     Mono ((homologyFunctor C n₀).map T.mor₂) ↔ (homologyFunctor C n₀).map T.mor₁ = 0 :=
   (homologyFunctor C 0).homologySequence_mono_shift_map_mor₂_iff _ hT n₀
+
+lemma isIso_homologyMap_mor₁_iff :
+    IsIso ((homologyFunctor C n₁).map T.mor₁) ↔
+      δ T n₀ n₁ h  = 0 ∧ (homologyFunctor C n₁).map T.mor₂ = 0 :=
+  (homologyFunctor C 0).homologySequence_isIso_shift_map_mor₁_iff _ hT _ _ h
+
+lemma isIso_homologyMap_mor₂_iff :
+    IsIso ((homologyFunctor C n₀).map T.mor₂) ↔
+      δ T n₀ n₁ h  = 0 ∧ (homologyFunctor C n₀).map T.mor₁ = 0 :=
+  (homologyFunctor C 0).homologySequence_isIso_shift_map_mor₂_iff _ hT _ _ h
 
 end HomologySequence
 

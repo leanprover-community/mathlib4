@@ -182,6 +182,10 @@ lemma over_forget_coverPreserving (X : C) :
     CoverPreserving (J.over X) J (Over.forget X) where
   cover_preserve hS := hS
 
+instance over_forget_coverLifting (X : C) :
+    (Over.forget X).IsCocontinuous (J.over X) J where
+  cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
+
 lemma over_forget_compatiblePreserving (X : C) :
     CompatiblePreserving J (Over.forget X) where
   compatible {_ Z _ _ hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
@@ -246,6 +250,11 @@ by a morphism `f : X ⟶ Y`. -/
 abbrev overMapPullback {X Y : C} (f : X ⟶ Y) :
     Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
   (Over.map f).sheafPushforwardContinuous _ _ _
+
+@[simp]
+lemma overMapPullback_map_overPullback_map {A : Type u'} [Category.{v'} A] {X Y : C} (f : X ⟶ Y)
+    {F G : Sheaf J A} (φ : F ⟶ G) :
+    (J.overMapPullback A f).map ((J.overPullback A Y).map φ) = (J.overPullback A X).map φ := rfl
 
 section
 

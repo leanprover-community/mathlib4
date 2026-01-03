@@ -376,6 +376,36 @@ def Arrow.isoOfNatIso {F G : C ⥤ D} (e : F ≅ G)
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
   Arrow.isoMk (e.app f.left) (e.app f.right)
 
+lemma isIso_iff_of_arrow_iso {C : Type*} [Category C] {f g : Arrow C} (e : f ≅ g) :
+  IsIso f.hom ↔ IsIso g.hom := by
+  constructor
+  · intro
+    haveI : IsIso (e.hom.left ≫ g.hom) := by
+      erw [e.hom.w]
+      infer_instance
+    apply IsIso.of_isIso_comp_left e.hom.left
+  · intro
+    haveI : IsIso (e.inv.left ≫ f.hom) := by
+      erw [e.inv.w]
+      infer_instance
+    apply IsIso.of_isIso_comp_left e.inv.left
+
+lemma isIso_iff_of_arrow_mk_iso {C : Type*} [Category C] {X₁ X₂ Y₁ Y₂ : C}
+  {f : X₁ ⟶ X₂} {g : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk g) :
+  IsIso f ↔ IsIso g := isIso_iff_of_arrow_iso e
+
+namespace NatTrans
+
+@[simps]
+def functorArrow {C D : Type*} [Category C] [Category D] {F G : C ⥤ D} (τ : F ⟶ G) :
+    C ⥤ Arrow D where
+  obj X := Arrow.mk (τ.app X)
+  map f :=
+    { left := F.map f
+      right := G.map f }
+
+end NatTrans
+
 variable (T)
 
 /-- `Arrow T` is equivalent to a sigma type. -/

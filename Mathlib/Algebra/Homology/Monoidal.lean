@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Homology.BifunctorAssociator
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.GradedObject.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 # The monoidal category structure on homological complexes
@@ -324,6 +325,24 @@ noncomputable def Monoidal.inducingFunctorData :
 
 noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
   Monoidal.induced _ (Monoidal.inducingFunctorData C c)
+
+instance (K : HomologicalComplex C c) :
+    ((curriedTensor (HomologicalComplex C c)).obj K).Additive :=
+  inferInstanceAs
+    ((Functor.map₂HomologicalComplex (curriedTensor C) c c c).obj K).Additive
+
+instance (K : HomologicalComplex C c) :
+    ((curriedTensor (HomologicalComplex C c)).flip.obj K).Additive :=
+  inferInstanceAs
+    ((Functor.map₂HomologicalComplex (curriedTensor C) c c c).flip.obj K).Additive
+
+instance : MonoidalPreadditive (HomologicalComplex C c) where
+  whiskerLeft_zero {_ _ _} := ((curriedTensor (HomologicalComplex C c)).obj _).map_zero _ _
+  zero_whiskerRight {_ _ _} := ((curriedTensor (HomologicalComplex C c)).flip.obj _).map_zero _ _
+  whiskerLeft_add _ _ :=
+    ((curriedTensor (HomologicalComplex C c)).obj _).map_add
+  add_whiskerRight _ _ :=
+    ((curriedTensor (HomologicalComplex C c)).flip.obj _).map_add
 
 noncomputable example {D : Type*} [Category* D] [Preadditive D] [MonoidalCategory D]
     [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]

@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 public import Mathlib.CategoryTheory.Triangulated.Functor
@@ -114,6 +115,25 @@ variable [F.IsHomological]
 instance : F.homologicalKernel.IsClosedUnderIsomorphisms where
   of_iso e hX n := (hX n).of_iso ((shiftFunctor C n ⋙ F).mapIso e.symm)
 
+
+-- to be moved
+lemma _root_.CategoryTheory.Retract.isZero {C : Type*} [Category C] {X Y : C}
+    (e : Retract X Y) (hY : IsZero Y) : IsZero X := by
+  constructor
+  · intro Z
+    rw [unique_iff_existsUnique]
+    refine ⟨e.i ≫ hY.to_ Z, by simp, fun f _ ↦ ?_⟩
+    rw [← cancel_epi e.r]
+    apply hY.eq_of_src
+  · intro Z
+    rw [unique_iff_existsUnique]
+    refine ⟨hY.from_ Z ≫ e.r, by simp, fun f _ ↦ ?_⟩
+    rw [← cancel_mono e.i]
+    apply hY.eq_of_tgt
+
+instance : F.homologicalKernel.IsStableUnderRetracts where
+  of_retract e h n := (e.map (shiftFunctor _ n ⋙ F)).isZero (h n)
+
 instance : F.homologicalKernel.IsTriangulated where
   exists_zero := ⟨0, isZero_zero C,
     fun n ↦ (shiftFunctor C n ⋙ F).map_isZero (isZero_zero C)⟩
@@ -178,7 +198,7 @@ variable {T T'}
 
 @[reassoc]
 lemma homologySequenceδ_naturality
-    [F.ShiftSequence ℤ] (T T' : Triangle C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    [F.ShiftSequence ℤ] {T T' : Triangle C} (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h =
       F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
   dsimp only [homologySequenceδ]
@@ -250,6 +270,29 @@ lemma homologySequence_epi_shift_map_mor₂_iff :
 lemma homologySequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
+
+lemma homologySequence_isIso_shift_map_mor₁_iff :
+    IsIso ((F.shift n₁).map T.mor₁) ↔
+      F.homologySequenceδ T n₀ n₁ h = 0 ∧ (F.shift n₁).map T.mor₂ = 0 := by
+  rw [← F.homologySequence_mono_shift_map_mor₁_iff T hT n₀ n₁ h,
+    ← F.homologySequence_epi_shift_map_mor₁_iff T hT n₁]
+  constructor
+  · intro
+    constructor <;> infer_instance
+  · rintro ⟨_, _⟩
+    apply isIso_of_mono_of_epi
+
+lemma homologySequence_isIso_shift_map_mor₂_iff :
+    IsIso ((F.shift n₀).map T.mor₂) ↔
+      F.homologySequenceδ T n₀ n₁ h = 0 ∧ (F.shift n₀).map T.mor₁ = 0 := by
+  rw [← F.homologySequence_mono_shift_map_mor₂_iff T hT n₀,
+    ← F.homologySequence_epi_shift_map_mor₂_iff T hT n₀ n₁ h]
+  constructor
+  · intro
+    constructor <;> infer_instance
+  · rintro ⟨_, _⟩
+    apply isIso_of_mono_of_epi
+
 end
 
 lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :

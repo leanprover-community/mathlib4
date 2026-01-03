@@ -110,7 +110,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
   inv_hom_id := by
     subst hpq
     have h := (σ (p + 1)).id
-    dsimp at h ⊢
+    dsimp [ShortComplex.map] at h ⊢
     simp only [id_comp, Cochain.ofHom_v, comp_sub, sub_comp, assoc, mappingCone.inl_v_fst_v_assoc,
       mappingCone.inr_f_fst_v_assoc, shiftFunctor_obj_X', zero_comp, comp_zero, sub_zero,
       mappingCone.inl_v_snd_v_assoc, mappingCone.inr_f_snd_v_assoc, zero_sub, sub_neg_eq_add, ← h]
@@ -247,5 +247,11 @@ lemma distinguished_iff_iso_trianglehOfDegreewiseSplit
       ((rotate _ ⋙ rotate _).mapIso e ≪≫
         CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
     exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+
+lemma trianglehOfDegreewiseSplit_distinguished (S : ShortComplex (CochainComplex C ℤ))
+  (σ : ∀ n, (S.map (HomologicalComplex.eval C _ n)).Splitting) :
+    CochainComplex.trianglehOfDegreewiseSplit S σ ∈ distTriang _ := by
+  rw [distinguished_iff_iso_trianglehOfDegreewiseSplit]
+  exact ⟨S, σ, ⟨Iso.refl _⟩⟩
 
 end HomotopyCategory

@@ -126,6 +126,9 @@ def objPreimage (Y : D) : C :=
 def objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 
+lemma exists_of_essSurj (Y : D) : ∃ (X : C), Nonempty (F.obj X ≅ Y) :=
+  ⟨_, ⟨F.objObjPreimageIso Y⟩⟩
+
 /-- The induced functor of a faithful functor is faithful. -/
 instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage := by
   dsimp only [Functor.toEssImage]
@@ -185,5 +188,11 @@ factor through `essImage.liftFunctor G F hG`. -/
     (fun i ↦ F.essImage.ι.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))
 
 end Functor
+
+@[simp]
+lemma ObjectProperty.essImage_ι (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms] :
+    P.ι.essImage = P := by
+  ext X
+  exact ⟨fun ⟨⟨Y, hY⟩, ⟨e⟩⟩ ↦ P.prop_of_iso e hY, fun hX ↦ ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩⟩
 
 end CategoryTheory

@@ -208,6 +208,10 @@ lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
     (by simp) (by simp) (by simp)
   exact (inferInstance : IsIso e.hom)
 
+/-instance Triangle.instIsIso_of_isIso {A B : Triangle C} (f : A ⟶ B)
+    [IsIso f.hom₁] [IsIso f.hom₂] [IsIso f.hom₃] : IsIso f :=
+  Triangle.isIso_of_isIsos f inferInstance inferInstance inferInstance-/
+
 @[reassoc (attr := simp)]
 lemma _root_.CategoryTheory.Iso.hom_inv_id_triangle_hom₁ {A B : Triangle C} (e : A ≅ B) :
     e.hom.hom₁ ≫ e.inv.hom₁ = 𝟙 _ := by rw [← comp_hom₁, e.hom_inv_id, id_hom₁]
@@ -331,14 +335,10 @@ def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBipro
     Triangle C :=
   Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
 
-/-- The obvious triangle `X₁ ⟶ X₁ ⨯ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
-def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] :
-    Triangle C :=
-  Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
+def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] : Triangle C :=
+  Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0 )) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
-/-- The canonical isomorphism of triangles
-`binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
 @[simps!]
 def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
@@ -394,7 +394,10 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
     intro s m hm
     ext1
     all_goals
-      exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
+    · dsimp
+      ext1 j
+      dsimp
+      simp [← hm])
 
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
@@ -470,6 +473,8 @@ end
 
 section
 
+open Functor
+
 variable {J : Type*} [Category* J]
 
 /-- Constructor for functors to the category of triangles. -/
@@ -482,6 +487,74 @@ def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
     { hom₁ := obj₁.map φ
       hom₂ := obj₂.map φ
       hom₃ := obj₃.map φ }
+
+@[simps]
+def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
+    (hom₂ : A ⋙ π₂ ⟶ B ⋙ π₂) (hom₃ : A ⋙ π₃ ⟶ B ⋙ π₃)
+    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ hom₂ = hom₁ ≫ whiskerLeft B π₁Toπ₂)
+    (comm₂ : whiskerLeft A π₂Toπ₃ ≫ hom₃ = hom₂ ≫ whiskerLeft B π₂Toπ₃)
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) =
+      hom₃ ≫ whiskerLeft B π₃Toπ₁) : A ⟶ B where
+  app j :=
+    { hom₁ := hom₁.app j
+      hom₂ := hom₂.app j
+      hom₃ := hom₃.app j
+      comm₁ := NatTrans.congr_app comm₁ j
+      comm₂ := NatTrans.congr_app comm₂ j
+      comm₃ := NatTrans.congr_app comm₃ j }
+  naturality _ _ φ := by
+    ext
+    · exact hom₁.naturality φ
+    · exact hom₂.naturality φ
+    · exact hom₃.naturality φ
+
+/-- Constructor for morphisms between functors constructed by `functorHomMk`. -/
+@[simps!]
+def functorHomMk'
+    {obj₁ obj₂ obj₃ : J ⥤ C}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {obj₁' obj₂' obj₃' : J ⥤ C}
+    {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    (hom₁ : obj₁ ⟶ obj₁') (hom₂ : obj₂ ⟶ obj₂') (hom₃ : obj₃ ⟶ obj₃')
+    (comm₁ : mor₁ ≫ hom₂ = hom₁ ≫ mor₁')
+    (comm₂ : mor₂ ≫ hom₃ = hom₂ ≫ mor₂')
+    (comm₃ : mor₃ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) = hom₃ ≫ mor₃') :
+    functorMk mor₁ mor₂ mor₃ ⟶ functorMk mor₁' mor₂' mor₃' :=
+  functorHomMk _ _ hom₁ hom₂ hom₃ comm₁ comm₂ comm₃
+
+@[simps]
+def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
+    (iso₂ : A ⋙ π₂ ≅ B ⋙ π₂) (iso₃ : A ⋙ π₃ ≅ B ⋙ π₃)
+    (comm₁ : whiskerLeft A π₁Toπ₂ ≫ iso₂.hom = iso₁.hom ≫ whiskerLeft B π₁Toπ₂)
+    (comm₂ : whiskerLeft A π₂Toπ₃ ≫ iso₃.hom = iso₂.hom ≫ whiskerLeft B π₂Toπ₃)
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) =
+      iso₃.hom ≫ whiskerLeft B π₃Toπ₁) : A ≅ B where
+  hom := functorHomMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
+  inv := functorHomMk _ _ iso₁.inv iso₂.inv iso₃.inv
+    (by simp only [← cancel_epi iso₁.hom, ← reassoc_of% comm₁,
+          Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
+    (by simp only [← cancel_epi iso₂.hom, ← reassoc_of% comm₂,
+          Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc])
+    (by
+      simp only [← cancel_epi iso₃.hom, ← reassoc_of% comm₃, Iso.hom_inv_id_assoc,
+        ← whiskerRight_comp, Iso.hom_inv_id, whiskerRight_id']
+      apply comp_id)
+
+/-- Constructor for isomorphisms between functors constructed by `functorHomMk`. -/
+@[simps!]
+def functorIsoMk'
+    {obj₁ obj₂ obj₃ : J ⥤ C}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {obj₁' obj₂' obj₃' : J ⥤ C}
+    {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    (iso₁ : obj₁ ≅ obj₁') (iso₂ : obj₂ ≅ obj₂') (iso₃ : obj₃ ≅ obj₃')
+    (comm₁ : mor₁ ≫ iso₂.hom = iso₁.hom ≫ mor₁')
+    (comm₂ : mor₂ ≫ iso₃.hom = iso₂.hom ≫ mor₂')
+    (comm₃ : mor₃ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) = iso₃.hom ≫ mor₃') :
+    functorMk mor₁ mor₂ mor₃ ≅ functorMk mor₁' mor₂' mor₃' :=
+  functorIsoMk _ _ iso₁ iso₂ iso₃ comm₁ comm₂ comm₃
 
 end
 

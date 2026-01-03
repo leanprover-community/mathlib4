@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.CategoryTheory.JointlyReflect.Isomorphisms
 
 /-! Internal hom of sheaves
 
@@ -243,5 +245,31 @@ def sheafHomSectionsEquiv (F G : Sheaf J A) :
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :
     ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := rfl
+
+@[simp]
+lemma overPullback_map_sheafHomSectionsEquiv_apply
+    {F G : Sheaf J A} (ψ : (sheafHom F G).1.sections) (X : C) :
+    (J.overPullback A X).map ((sheafHomSectionsEquiv F G) ψ) = ψ.1 (op X) := by
+  obtain ⟨φ, rfl⟩ := (sheafHomSectionsEquiv F G).symm.surjective ψ
+  simp
+
+variable {F G : Sheaf J A} (φ : F ⟶ G) {I : Type*} {Y : I → C}
+
+lemma GrothendieckTopology.CoversTop.jointlyReflectIsomorphisms (hY : J.CoversTop Y)
+    (A : Type u') [Category.{v'} A] :
+    JointlyReflectIsomorphisms (fun i => J.overPullback A (Y i)) where
+  isIso {F G} φ hφ := by
+    let f : Presheaf.FamilyOfElementsOnObjects (sheafHom G F).1 Y :=
+      fun i => (asIso ((J.overPullback A (Y i)).map φ)).inv
+    have hf : f.IsCompatible := fun Z i j a b => by
+      have : IsIso ((J.overPullback A Z).map φ) := by
+        rw [← J.overMapPullback_map_overPullback_map a φ]
+        infer_instance
+      rw [← cancel_mono ((J.overPullback A Z).map φ)]
+      simp [f, sheafHom, sheafHom']
+    refine ⟨(sheafHomSectionsEquiv G F) (hf.section_ hY (Sheaf.cond _)), ?_, ?_⟩
+    all_goals
+      exact (sheafHomSectionsEquiv _ _).symm.injective
+        (hY.sections_ext _ (fun i => (by simp [f])))
 
 end CategoryTheory
