@@ -243,6 +243,8 @@
   authors: mathlib
 61:
   title  : Theorem of Ceva
+  decl   : Affine.Triangle.prod_div_one_sub_eq_one_of_mem_line_point_lineMap
+  authors: Joseph Myers
 62:
   title  : Fair Games Theorem
   decl   : MeasureTheory.submartingale_iff_expected_stoppedValue_mono
