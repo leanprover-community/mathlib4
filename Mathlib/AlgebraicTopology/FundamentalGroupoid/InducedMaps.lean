@@ -82,7 +82,7 @@ open scoped ContinuousMap
 /-- Homotopy equivalent topological spaces have equivalent fundamental groupoids. -/
 def equivOfHomotopyEquiv {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (hequiv : X ≃ₕ Y) :
     πₓ (.of X) ≌ πₓ (.of Y) := by
-  apply CategoryTheory.Equivalence.mk (map hequiv) (map hequiv.symm)
+  apply CategoryTheory.Equivalence.mk (map hequiv.toFun) (map hequiv.invFun)
   · simpa only [FundamentalGroupoid.map_id, FundamentalGroupoid.map_comp]
       using (asIso (homotopicMapsNatIso hequiv.left_inv.some)).symm
   · simpa only [FundamentalGroupoid.map_id, FundamentalGroupoid.map_comp]
