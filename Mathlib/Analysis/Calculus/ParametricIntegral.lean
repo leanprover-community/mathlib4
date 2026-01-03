@@ -5,10 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -44,6 +44,15 @@ variable.
   derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
   from `x` near `x₀`.
 
+* `hasFDerivAt_integral_of_continuousOn_fderiv`: this version assumes that `F : H → α → E` is
+  continuously differentiable in the first argument near `x₀` in the sense that:
+  - `F.uncurry : H × α → E` is continuous on `u ×ˢ k` for a neighbourhood `u` of `x₀`,
+  - `fun x ↦ F x a` is differentiable on `u` for each parameter `a ∈ k`,
+  - `fun (x, a) ↦ fderiv 𝕜 (fun y ↦ F y a) x` is continuous on `u ×ˢ k`.
+
+  Here `k : Set α` is the domain of integration and is required to be compact, regarding some
+  sufficiently compatible topology on `α`.
+
 `hasDerivAt_integral_of_dominated_loc_of_lip` and
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are versions of the above two results that
 assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead of Fréchet derivative
@@ -55,12 +64,14 @@ We also provide versions of these theorems for set integrals.
 integral, derivative
 -/
 
+universe u
+
 @[expose] public section
 
 
 noncomputable section
 
-open TopologicalSpace MeasureTheory Filter Metric
+open TopologicalSpace MeasureTheory Filter Metric Set
 
 open scoped Topology Filter
 
@@ -120,7 +131,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       ‖∫ a, ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀)) ∂μ‖ := by
     apply mem_of_superset (ball_mem_nhds _ ε_pos)
     intro x x_in; simp only
-    rw [Set.mem_setOf_eq, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub, integral_sub,
+    rw [mem_setOf_eq, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub, integral_sub,
       ← ContinuousLinearMap.integral_apply hF'_int]
     exacts [hF_int' x x_in, hF_int, (hF_int' x x_in).sub hF_int,
       hF'_int.apply_continuousLinearMap _]
@@ -248,6 +259,136 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ
           bound_integrable.1 h_diff.1).sub
       (hasFDerivAt_integral_of_dominated_of_fderiv_le ε_pos hF_meas.2 hF_int.2 hF'_meas.2 h_bound.2
         bound_integrable.2 h_diff.2)
+
+/-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
+if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.uncurry : H × α → E`
+is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative
+of `fun x => ∫ a in k, F x a ∂μ` in `x₀` can be computed as
+`∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
+theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Space α]
+    [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set α}
+    (hk : IsCompact k) (hk' : μ k < ⊤) (hF₁ : ContinuousOn F.uncurry (u ×ˢ k))
+    (hF₂ : ∀ a ∈ k, DifferentiableOn 𝕜 (fun x ↦ F x a) u)
+    (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ F y x.2) x.1) (u ×ˢ k)) :
+    HasFDerivAt (fun x => ∫ a in k, F x a ∂μ)
+      (∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ) x₀ := by
+  -- wlog shrink u to an open neighbourhood
+  wlog hu' : IsOpen u with h
+  · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
+    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hk' (hF₁.mono <| prod_mono_left hu'.1)
+      (fun a ha ↦ (hF₂ a ha).mono hu'.1) (hF₃.mono <| prod_mono_left hu'.1) hu'.2.1
+  have hxu := mem_of_mem_nhds hu
+  let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ F y x.2) x.1‖
+  have hF' : ContinuousOn F' _ := continuous_norm.comp_continuousOn hF₃
+  -- via a compactness argument, find an ε > 0 such that F' is bounded on `ball x₀ ε × k`
+  let ⟨ε, hε, hε', B, hB⟩ :
+      ∃ ε > 0, ball x₀ ε ⊆ u ∧ ∃ B, ∀ x ∈ ball x₀ ε ×ˢ k, F' x < B := by
+    let ⟨B, hB⟩ := (isCompact_singleton.prod hk).bddAbove_image <|
+      hF'.mono <| prod_mono_left <| singleton_subset_iff.2 hxu
+    have ⟨v, hv, hv'⟩ := generalized_tube_lemma_left (s := {x₀}) isCompact_singleton
+      hk (s' := u) (n := F' ⁻¹' (Iio (B + 1))) (by
+        refine nhdsSetWithin_mono_left ?_ <| hF'.preimage_mem_nhdsSetWithin_of_mem_nhdsSet
+          (t := Iic B) (u := Iio (B + 1)) <| isOpen_Iio.mem_nhdsSet.2 (by simp)
+        intro x hx
+        exact ⟨prod_mono_left (by simp [hxu]) hx, mem_upperBounds.1 hB _ <| mem_image_of_mem _ hx⟩)
+    rw [nhdsSetWithin_singleton, hu'.nhdsWithin_eq hxu] at hv
+    have ⟨ε, hε, hε'⟩ := Metric.mem_nhds_iff.1 (Filter.inter_mem hv (hu))
+    exact ⟨ε, hε, hε'.trans inter_subset_right, B + 1,
+      fun x hx ↦ hv' <| prod_mono_left (hε'.trans inter_subset_left) hx⟩
+  -- now apply `hasFDerivAt_integral_of_dominated_of_fderiv_le` with the obtained ε and bound
+  have hk'' : MeasurableSet k := hk.measurableSet
+  have := isCompact_iff_compactSpace.1 hk
+  have : IsFiniteMeasure (Measure.comap ((↑) : k → α) μ) :=
+    ⟨by simp [(MeasurableEmbedding.subtype_coe hk'').comap_apply, hk']⟩
+  simp_rw [← integral_subtype_comap hk'']
+  refine hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
+    (F' := fun x (a : k) ↦ fderiv 𝕜 (fun x ↦ F x a) x) hε ?_ ?_ ?_ ?_ ?_ ?_
+  · refine eventually_nhds_iff.2 ⟨u, fun x hx ↦ ?_, hu', hxu⟩
+    refine Continuous.aestronglyMeasurable_of_compactSpace ?_
+    exact (hF₁.uncurry_left x hx).comp_continuous (by fun_prop) (by simp)
+  · refine integrableOn_univ.1 <| ContinuousOn.integrableOn_compact isCompact_univ <|
+      continuousOn_univ.2 <| (hF₁.uncurry_left _ hxu).comp_continuous (by fun_prop) (by simp)
+  · refine Continuous.aestronglyMeasurable_of_compactSpace ?_
+    exact hF₃.comp_continuous (f := fun a : k ↦ (x₀, ↑a)) (by fun_prop) fun a ↦ ⟨hxu, a.2⟩
+  · refine .of_forall fun a x hx ↦ (hB (x, a) ⟨hx, a.2⟩).le
+  · exact integrable_const _
+  · refine .of_forall fun a x hx ↦ ?_
+    exact (DifferentiableOn.differentiableAt (hF₂ a <| a.2) (hu'.mem_nhds <| hε' hx)).hasFDerivAt
+
+/-- A convenient special case of `hasFDerivAt_integral_of_continuousOn_fderiv`:
+if `f.uncurry : H × H' → E` is continuously differentiable on `u ×ˢ k` for a neighbourhood `u`
+of `x₀` and a nice compact set `k`, then a derivative of `fun x => ∫ a in k, f x a ∂μ` in `x₀` can
+be computed as `∫ a in k, fderiv 𝕜 (fun x ↦ f x a) x₀ ∂μ`. -/
+theorem hasFDerivAt_integral_of_contDiffOn {H' : Type*} [NormedAddCommGroup H'] [NormedSpace 𝕜 H']
+    [MeasurableSpace H'] [OpensMeasurableSpace H'] {μ : Measure H'} {f : H → H' → E} {x₀ : H}
+    {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set H'} (hk : IsCompact k) (hk' : μ k < ⊤)
+    (hk'' : UniqueDiffOn 𝕜 k) (hF : ContDiffOn 𝕜 1 f.uncurry (u ×ˢ k)) :
+    HasFDerivAt (fun x => ∫ a in k, f x a ∂μ) (∫ a in k, fderiv 𝕜 (fun x ↦ f x a) x₀ ∂μ) x₀ := by
+  wlog hu' : IsOpen u with h
+  · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
+    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hk' hk'' (hF.mono <| prod_mono_left hu'.1) hu'.2.1
+  refine hasFDerivAt_integral_of_continuousOn_fderiv hu hk hk' hF.continuousOn (fun a ha ↦
+    hF.differentiableOn_one.comp (by fun_prop) fun x hx ↦ (⟨hx, ha⟩ : (x, a) ∈ _ ×ˢ _)) ?_
+  refine .congr (f := fun x ↦ (fderivWithin 𝕜 f.uncurry (u ×ˢ k) x).comp (.inl 𝕜 H H'))
+      ?_ fun x hx ↦ ?_
+  · refine ((ContinuousLinearMap.compL 𝕜 H (H × H') E).flip _).continuous.comp_continuousOn ?_
+    exact hF.continuousOn_fderivWithin (hu'.uniqueDiffOn.prod hk'') le_rfl
+  · rw [show (fun y ↦ f y x.2) = (f.uncurry ∘ fun y ↦ (y, x.2)) by rfl]
+    rw [← fderivWithin_eq_fderiv (s := u) (hu'.uniqueDiffWithinAt hx.1) <| by
+      refine DifferentiableOn.differentiableAt (s := u) ?_ (hu'.mem_nhds hx.1)
+      exact ((hF.differentiableOn le_rfl).comp (by fun_prop) (fun y hy ↦ ⟨hy, hx.2⟩))]
+    rw [fderivWithin_comp _ (t := u ×ˢ k) (hF.differentiableOn (by simp) _ ⟨hx.1, hx.2⟩)
+      (by fun_prop) (by exact fun y hy ↦ ⟨hy, hx.2⟩) (hu'.uniqueDiffWithinAt hx.1)]
+    congr
+    exact (hasFDerivAt_prodMk_left _ x.2).hasFDerivWithinAt.fderivWithin
+      (hu'.uniqueDiffWithinAt hx.1)
+
+/-- If `f.uncurry : H × H' → E` is Cⁿ on `u ×ˢ k` for an open set `u` and a compact set `k`,
+the parametric integral `fun x ↦ ∫ a in k f x a ∂μ` is Cⁿ on `u` too. -/
+lemma ContDiffOn.parametric_integral {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [NormedSpace 𝕜 E] {H : Type u} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {H' : Type*}
+    [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
+    {μ : Measure H'} {f : H → H' → E} {u : Set H} (hu : IsOpen u)
+    {k : Set H'} (hk : IsCompact k) (hk' : μ k < ⊤) (hk'' : UniqueDiffOn 𝕜 k) {n : ℕ∞}
+    (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) : ContDiffOn 𝕜 n (fun x ↦ ∫ a in k, f x a ∂μ) u := by
+  revert E; change ∀ E : _, _
+  refine ENat.nat_induction n ?_ ?_ ?_
+  · intro E _ _ f
+    simp_rw [WithTop.coe_zero, contDiffOn_zero]
+    exact ContinuousOn.parametric_integral hk hk.measurableSet hk'
+  · intro m h E _ _ _ f hf
+    refine (contDiffOn_succ_iff_fderiv_of_isOpen (𝕜 := 𝕜) (n := m) hu).2 ⟨?_, by simp, ?_⟩
+    · intro x hx
+      have h := hasFDerivAt_integral_of_contDiffOn (hu.mem_nhds hx) hk hk' hk''
+        (hf.of_le <| by simp)
+      exact h.differentiableAt.differentiableWithinAt
+    · have := hf.fderivWithin (hu.uniqueDiffOn.prod hk'') (m := m) le_rfl
+      refine (h _ (f := fun x a ↦ (fderivWithin 𝕜 f.uncurry (u ×ˢ k) (x, a)).comp
+        (.inl 𝕜 H H')) (by fun_prop)).congr ?_
+      intro x hx
+      have h := hasFDerivAt_integral_of_contDiffOn (μ := μ)
+        (hu.mem_nhds hx) hk hk' hk'' (hf.of_le <| by simp)
+      rw [h.fderiv]
+      refine setIntegral_congr_fun hk.measurableSet fun a ha ↦ ?_
+      rw [show (fun x ↦ f x a) = (f.uncurry ∘ fun x ↦ (x, a)) by rfl]
+      rw [← fderivWithin_eq_fderiv (hu.uniqueDiffWithinAt hx) (((hf.differentiableOn (by simp)).comp
+        (by fun_prop) (fun x hx ↦ ⟨hx, ha⟩)).differentiableAt (hu.mem_nhds hx))]
+      rw [fderivWithin_comp _ (t := u ×ˢ k) (hf.differentiableOn (by simp) _ ⟨hx, ha⟩)
+        (by fun_prop) (fun x hx ↦ ⟨hx, ha⟩) (hu.uniqueDiffWithinAt hx)]
+      congr
+      exact (hasFDerivAt_prodMk_left x a).hasFDerivWithinAt.fderivWithin (hu.uniqueDiffWithinAt hx)
+  · intro h E _ _ _ f hf
+    exact contDiffOn_infty.2 fun n ↦ h n E <| hf.of_le <| WithTop.coe_le_coe.2 le_top
+
+/-- If `f.uncurry : H × H' → E` is Cⁿ, the parametric integral `fun x ↦ ∫ a in k, f x a ∂μ`
+over a nice compact set `k` is Cⁿ too. -/
+lemma ContDiff.parametric_integral {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [NormedSpace 𝕜 E] {H : Type u} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {H' : Type*}
+    [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
+    {μ : Measure H'} {f : H → H' → E} {k : Set H'} (hk : IsCompact k) (hk' : μ k < ⊤)
+    (hk'' : UniqueDiffOn 𝕜 k) {n : ℕ∞}
+    (hf : ContDiff 𝕜 n f.uncurry) : ContDiff 𝕜 n (fun x ↦ ∫ a in k, f x a ∂μ) :=
+  contDiffOn_univ.1 <| ContDiffOn.parametric_integral isOpen_univ hk hk' hk'' hf.contDiffOn
 
 section
 

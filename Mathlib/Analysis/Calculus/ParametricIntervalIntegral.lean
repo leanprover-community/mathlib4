@@ -5,19 +5,21 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Derivatives of interval integrals depending on parameters
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
-integrals. -/
+integrals. In the real case, we also show that parametric integrals of Cⁿ functions are Cⁿ. -/
+
+universe u
 
 @[expose] public section
 
 
-open TopologicalSpace MeasureTheory Filter Metric
+open TopologicalSpace MeasureTheory Filter Metric Set
 
 open scoped Topology Filter Interval
 
@@ -110,4 +112,68 @@ nonrec theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le
     bound_integrable h_diff
   exact ⟨this.1, this.2.const_smul _⟩
 
+/-- A convenient special case of `intervalIntegral.hasFDerivAt_integral_of_dominated_of_fderiv_le`:
+if there exists a neighbourhood `u` of `x₀` such that `f.uncurry : H × ℝ → E` is continuous on
+`u ×ˢ [[a, b]]` and differentiable on `u` in the first argument for every `t ∈ [[a, b]]` and that
+derivative is continuous on `u ×ˢ [[a, b]]`, then a derivative of
+`fun x => ∫ t in a..b, f x t ∂μ` in `x₀` can be computed as
+`∫ t in a..b, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ`. -/
+theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasure μ] [NoAtoms μ]
+    {f : H → ℝ → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {a b : ℝ}
+    (hF₁ : ContinuousOn f.uncurry (u ×ˢ [[a, b]]))
+    (hF₂ : ∀ t ∈ [[a, b]], DifferentiableOn 𝕜 (fun x ↦ f x t) u)
+    (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1) (u ×ˢ [[a, b]])) :
+    HasFDerivAt (fun x => ∫ t in a..b, f x t ∂μ)
+      (∫ t in a..b, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ) x₀ := by
+  wlog hab : a ≤ b with h
+  · simp_rw [integral_symm b a]
+    exact (h hu (uIcc_comm a b ▸ hF₁) (uIcc_comm a b ▸ hF₂) (uIcc_comm a b ▸ hF₃)
+      (le_of_not_ge hab)).neg
+  simp_rw [integral_of_le hab, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab]
+  exact _root_.hasFDerivAt_integral_of_continuousOn_fderiv
+    hu isCompact_uIcc isCompact_uIcc.measure_lt_top hF₁ hF₂ hF₃
+
+/-- A convenient special case of `intervalIntegral.hasFDerivAt_integral_of_dominated_of_fderiv_le`:
+if `f.uncurry : H × ℝ → E` is continuously differentiable on `u ×ˢ [[a, b]]` for a neighbourhood `u`
+of `x₀`, then a derivative of `fun x => ∫ t in a..b, f x t ∂μ` in `x₀` can be computed as
+`∫ t in a..b, fderiv ℝ (fun x ↦ f x t) x₀ ∂μ`. -/
+theorem hasFDerivAt_integral_of_contDiffOn [IsLocallyFiniteMeasure μ] [NoAtoms μ] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [NormedAddCommGroup H]
+    [NormedSpace ℝ H] {f : H → ℝ → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {a b : ℝ}
+    (hF : ContDiffOn ℝ 1 f.uncurry (u ×ˢ [[a, b]])) :
+    HasFDerivAt (fun x => ∫ t in a..b, f x t ∂μ)
+      (∫ t in a..b, fderiv ℝ (fun x ↦ f x t) x₀ ∂μ) x₀ := by
+  wlog hab : a < b with h
+  · obtain hab | hab := lt_or_eq_of_le <| le_of_not_gt hab
+    · simpa only [integral_symm b a] using (h hu (uIcc_comm a b ▸ hF) hab).neg
+    · simp [hab, hasFDerivAt_const]
+  simp_rw [integral_of_le hab.le, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab.le]
+  exact _root_.hasFDerivAt_integral_of_contDiffOn hu isCompact_uIcc isCompact_uIcc.measure_lt_top
+    (uIcc_of_le hab.le ▸ uniqueDiffOn_Icc hab) hF
+
 end intervalIntegral
+
+/-- If `f.uncurry : H × ℝ → E` is Cⁿ on `u ×ˢ [[a, b]]`, the parametric integral
+`fun x ↦ ∫ t in a..b, f x t ∂μ` is Cⁿ on `u` too. -/
+lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+    [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
+    [NormedSpace ℝ H] {f : H → ℝ → E} {u : Set H} (hu : IsOpen u) {a b : ℝ} {n : ℕ∞}
+    (hf : ContDiffOn ℝ n f.uncurry (u ×ˢ [[a, b]])) :
+    ContDiffOn ℝ n (fun x ↦ ∫ t in a..b, f x t ∂μ) u := by
+  wlog hab : a < b with h
+  · obtain hab | hab := lt_or_eq_of_le <| le_of_not_gt hab
+    · simp_rw [intervalIntegral.integral_symm b a]
+      exact (h hu (uIcc_comm a b ▸ hf) hab).neg
+    · simp [hab, contDiffOn_const]
+  simp_rw [intervalIntegral.integral_of_le hab.le, ← integral_Icc_eq_integral_Ioc,
+    ← uIcc_of_le hab.le]
+  exact hf.parametric_integral hu isCompact_uIcc isCompact_uIcc.measure_lt_top
+    (uIcc_of_le hab.le ▸ uniqueDiffOn_Icc hab)
+
+/-- If `f : H × ℝ → E` is Cⁿ, the parametric integral
+`fun x ↦ ∫ t in a..b, f (x, t) ∂μ` is Cⁿ too. -/
+lemma ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+    [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
+    [NormedSpace ℝ H] {f : H × ℝ → E} {a b : ℝ} {n : ℕ∞}
+    (hf : ContDiff ℝ n f) : ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
+  contDiffOn_univ.1 <| hf.contDiffOn.parametric_intervalIntegral isOpen_univ

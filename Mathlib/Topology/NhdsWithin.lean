@@ -534,6 +534,10 @@ lemma nhdsSetWithin_basis_open (s t : Set α) :
 lemma mem_nhdsSetWithin {s t u : Set α} : u ∈ 𝓝ˢ[t] s ↔ ∃ v, IsOpen v ∧ s ⊆ v ∧ v ∩ t ⊆ u := by
   simpa [and_assoc] using (nhdsSetWithin_basis_open s t).mem_iff
 
+lemma mem_nhdsSetWithin_iff_forall {X : Type*} [TopologicalSpace X] {s t u : Set X} :
+    u ∈ 𝓝ˢ[t] s ↔ ∀ x ∈ s, u ∈ 𝓝[t] x := by
+  simp [nhdsSetWithin, nhdsSet, nhdsWithin, sSup_image, ← iSup_inf_principal]
+
 @[simp]
 lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x := by
   simp [nhdsSetWithin, nhdsWithin]
