@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Module.Complemented
 /-!
 # Implicit function theorem
 
-We prove three versions of the implicit function theorem. First we define a structure
+We prove a few different versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
 theorem, see `ImplicitFunctionData.implicitFunction` and
 `ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
@@ -23,12 +23,16 @@ Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit 
 `f (g z y) = z`, where `f : E → F` is a function strictly differentiable at `a` such that its
 derivative `f'` is surjective and has a `complemented` kernel.
 
-Finally, if the codomain of `f` is a finite-dimensional space, then we can automatically prove
+Third, if the codomain of `f` is a finite-dimensional space, then we can automatically prove
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
 For the version where the implicit equation is defined by a $C^n$ function `f : E × F → G` with an
 invertible derivative `∂f/∂y`, see `IsContDiffImplicitAt.implicitFunction`.
+
+Fourth, we consider the common case of bivariate `f`, the second of whose partial derivatives is
+invertible. Then we may apply the general theorem to obtain `ψ` such that for `(y₁, y₂)` in a
+neighbourhood of `(x₁, x₂)` we have `f (y₁, y₂) = f (x₁, x₂) ↔ ψ y₁ = y₂`.
 
 ## TODO
 
@@ -202,6 +206,21 @@ theorem right_map_implicitFunction :
 theorem implicitFunction_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
   φ.hasStrictFDerivAt.eventually_left_inverse
+
+theorem leftFun_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.leftFun φ.pt := by
+  have := φ.left_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+  rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
+
+theorem rightFun_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
+    φ.rightFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.rightFun x := by
+  have := φ.right_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+  rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
+
+theorem leftFun_eq_iff_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun x = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x) = x := by
+  filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFunction] with x hx₁ hx₂
+  constructor <;> exact fun h => by rwa [← h]
 
 theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
   show map (Prod.fst ∘ φ.prodFun) (𝓝 φ.pt) = 𝓝 (φ.prodFun φ.pt).1 by
@@ -556,5 +575,92 @@ theorem to_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = �
   to_implicitFunctionOfComplemented ..
 
 end FiniteDimensional
+
+section ProdDomain
+
+/-!
+### Case of a product space domain
+
+Given `f : E₁ × E₂ → F` and its two partial derivatives, the second invertible, we may construct an
+`ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁` where the first function is `f`, and the second function is
+`Prod.fst : E₁ × E₂ → E₁`. We may then extract `ψ : E₁ → E₂` with the desired
+properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfProdDomain`. A formula
+for the first derivative of `ψ` is immediately derived.
+-/
+
+variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁] [NormedAddCommGroup E₂]
+  [NormedSpace 𝕜 E₂] [CompleteSpace E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+
+/-- Given linear maps `f₁ : E₁ →L[𝕜] F` and `f₂ : E₂ ≃L[𝕜] F` (the second invertible) and that
+`HasStrictFDerivAt f (f₁.coprod f₂) x`, we prove that the kernels of `f : E₁ × E₂ → F` and
+`Prod.fst : E₁ × E₂ → E₁` in
+the original formulation are complementary and construct an object of type `ImplicitFunctionData`
+thereby permitting use of the general machinery provided above. -/
+def implicitFunDataOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
+    ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ where
+  leftFun := f
+  rightFun := Prod.fst
+  pt := x
+  leftDeriv := f₁.coprod f₂
+  hasStrictFDerivAt_leftFun := dfx
+  rightDeriv := ContinuousLinearMap.fst 𝕜 E₁ E₂
+  hasStrictFDerivAt_rightFun := hasStrictFDerivAt_fst
+  range_leftDeriv := by
+    rw [ContinuousLinearMap.range_coprod]
+    convert sup_top_eq _
+    exact LinearEquivClass.range f₂
+  range_rightDeriv := Submodule.range_fst
+  isCompl_ker := by
+    constructor
+    · rw [Submodule.disjoint_def]
+      aesop
+    · rw [Submodule.codisjoint_iff_exists_add_eq]
+      intro (h₁, h₂)
+      use (h₁, f₂.symm (f₁ (-h₁))), (0, h₂ - f₂.symm (f₁ (-h₁)))
+      simp
+
+/-- Implicit function `ψ : E₁ → E₂` associated with the (uncurried) bivariate function
+`f : E₁ × E₂ → F` at `x`. -/
+def implicitFunOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
+    E₁ → E₂ :=
+  fun u => (dfx.implicitFunDataOfProdDomain.implicitFunction (f x) u).2
+
+theorem hasStrictFDerivAt_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
+    HasStrictFDerivAt dfx.implicitFunOfProdDomain (-f₂.symm ∘L f₁) x₁ := by
+  set ψ' : E₁ →L[𝕜] E₂ := -f₂.symm ∘L f₁
+  apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 E₁).prod ψ')
+  apply dfx.implicitFunDataOfProdDomain.implicitFunction_hasStrictFDerivAt
+  · apply ContinuousLinearMap.fst_comp_prod
+  · change f₁ + f₂ ∘L ψ' = 0
+    simp [ψ', ← ContinuousLinearMap.comp_assoc]
+
+theorem image_eq_iff_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
+    ∀ᶠ y in 𝓝 x, f y = f x ↔ dfx.implicitFunOfProdDomain y.1 = y.2 := by
+  let φ := dfx.implicitFunDataOfProdDomain
+  filter_upwards [φ.leftFun_eq_iff_implicitFunction, φ.rightFun_implicitFunction] with y h h'
+  exact Iff.trans h ⟨congrArg _, by aesop⟩
+
+theorem tendsto_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
+    Tendsto dfx.implicitFunOfProdDomain (𝓝 x₁) (𝓝 x₂) := by
+  have := dfx.hasStrictFDerivAt_implicitFunOfProdDomain.continuousAt.tendsto
+  rwa [dfx.image_eq_iff_implicitFunOfProdDomain.self_of_nhds.mp rfl] at this
+
+theorem image_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
+    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
+    ∀ᶠ u in 𝓝 x₁, f (u, dfx.implicitFunOfProdDomain u) = f (x₁, x₂) := by
+  have hψ := dfx.tendsto_implicitFunOfProdDomain
+  set ψ := dfx.implicitFunOfProdDomain
+  suffices ∀ᶠ u in 𝓝 x₁, f (u, ψ u) = f (x₁, x₂) ↔ ψ u = ψ u by simpa
+  apply Eventually.image_of_prod (r := fun u v => f (u, v) = f (x₁, x₂) ↔ ψ u = v) hψ
+  rw [← nhds_prod_eq]
+  exact dfx.image_eq_iff_implicitFunOfProdDomain
+
+end ProdDomain
 
 end HasStrictFDerivAt
