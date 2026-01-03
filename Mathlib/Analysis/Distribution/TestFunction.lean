@@ -57,10 +57,10 @@ open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [NormedSpace 𝕂 F']
-  {n : ℕ∞}
+  {n n₁ n₂ k : ℕ∞}
 
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
@@ -406,5 +406,91 @@ lemma postcompCLM_apply (T : F →L[𝕜] F')
   rfl
 
 end postcomp
+
+section Monotone
+
+section
+
+variable [SMulCommClass ℝ 𝕜 F]
+
+open scoped Classical in
+variable (𝕜 Ω₁ Ω₂ n₁ n₂) in
+/-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoLM 𝕜 Ω₁ Ω₂ n₁ n₂` is the `𝕜`-linear inclusion of
+`𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
+
+This is in fact continuous (see `monoCLM`), and a topological embedding when `n₁ = n₂` and `Ω₁ ⊆ Ω₂`
+(not in Mathlib yet). -/
+noncomputable def monoLM :
+    𝓓^{n₁}(Ω₁, F) →ₗ[𝕜] 𝓓^{n₂}(Ω₂, F) where
+  toFun f :=
+    if h : n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂ then
+      ⟨f, f.contDiff.of_le (mod_cast h.1), f.hasCompactSupport, f.tsupport_subset.trans h.2⟩
+    else 0
+  map_add' f g := by split_ifs <;> ext <;> simp
+  map_smul' c f := by split_ifs <;> ext <;> simp
+
+open scoped Classical in
+@[simp]
+lemma monoLM_apply (f : 𝓓^{n₁}(Ω₁, F)) :
+    (monoLM 𝕜 Ω₁ Ω₂ n₁ n₂ f : E → F) = if n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂ then f else 0 := by
+  rw [monoLM]
+  split_ifs <;> rfl
+
+@[simp]
+lemma monoLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂)) :
+    (monoLM 𝕜 Ω₁ Ω₂ n₁ n₂ : 𝓓^{n₁}(Ω₁, F) →ₗ[𝕜] 𝓓^{n₂}(Ω₂, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoLM 𝕜 Ω₁ Ω₂ n₁ n₂ : 𝓓^{n₁}(Ω₁, F) → _) = monoLM 𝕜' Ω₁ Ω₂ n₁ n₂ :=
+  rfl
+
+variable (𝕜) in
+lemma monoLM_ofSupportedIn {K : Compacts E} (K_sub_Ω₁ : (K : Set E) ⊆ Ω₁) (hΩ : Ω₁ ≤ Ω₂)
+    (f : 𝓓^{n₁}_{K}(E, F)) :
+    monoLM 𝕜 Ω₁ Ω₂ n₁ n₂ (ofSupportedIn K_sub_Ω₁ f) =
+      ofSupportedIn (subset_trans K_sub_Ω₁ hΩ) (ContDiffMapSupportedIn.monoLM 𝕜 n₁ n₂ K K f) := by
+  ext
+  by_cases hn : n₂ ≤ n₁ <;> simp [hΩ, hn]
+
+end
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜 Ω₁ Ω₂ n₁ n₂) in
+/-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜 Ω₁ Ω₂ n₁ n₂` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
+
+This is in fact a topological embedding when `n₁ = n₂` and `Ω₁ ⊆ Ω₂` (not in Mathlib yet). -/
+noncomputable def monoCLM :
+    𝓓^{n₁}(Ω₁, F) →L[𝕜] 𝓓^{n₂}(Ω₂, F) where
+  toLinearMap := monoLM 𝕜 Ω₁ Ω₂ n₁ n₂
+  cont := show Continuous (monoLM 𝕜 Ω₁ Ω₂ n₁ n₂) by
+    by_cases hΩ : Ω₁ ≤ Ω₂
+    · rw [TestFunction.continuous_iff_continuous_comp]
+      intro K K_sub_Ω₁
+      refine .congr ?_ fun f ↦ (monoLM_ofSupportedIn 𝕜 K_sub_Ω₁ hΩ f).symm
+      exact (continuous_ofSupportedIn (subset_trans K_sub_Ω₁ hΩ)).comp
+        (ContDiffMapSupportedIn.monoCLM 𝕜 n₁ n₂ K K).continuous
+    · simpa [hΩ] using continuous_zero
+
+open scoped Classical in
+@[simp]
+lemma monoCLM_apply (f : 𝓓^{n₁}(Ω₁, F)) :
+    (monoCLM 𝕜 Ω₁ Ω₂ n₁ n₂ f : E → F) = if n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂ then f else 0 :=
+  monoLM_apply f
+
+@[simp]
+lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ Ω₁ ≤ Ω₂)) :
+    (monoCLM 𝕜 Ω₁ Ω₂ n₁ n₂ : 𝓓^{n₁}(Ω₁, F) →L[𝕜] 𝓓^{n₂}(Ω₂, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (monoCLM 𝕜 Ω₁ Ω₂ n₁ n₂ : 𝓓^{n₁}(Ω₁, F) → _) = monoCLM 𝕜' Ω₁ Ω₂ n₁ n₂ :=
+  rfl
+
+end Monotone
 
 end TestFunction
