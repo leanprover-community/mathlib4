@@ -248,8 +248,13 @@ theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
 
 theorem G₂_det : G₂.det = 1 := by decide
 
-set_option maxRecDepth 600 in
 theorem F₄_det : F₄.det = 1 := by decide
+
+theorem E₆_det : F₄.det = 1 := by decide
+
+theorem E₇_det : F₄.det = 1 := by decide
+
+theorem E₈_det : F₄.det = 1 := by decide
 
 /-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
