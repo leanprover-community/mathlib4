@@ -3,9 +3,11 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Yuyang Zhao
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
 # One-dimensional derivatives of compositions of functions
@@ -24,12 +26,14 @@ of definitional equality of the different points used in the composition. These 
 often more flexible to use.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, chain rule
 -/
+
+@[expose] public section
 
 
 universe u v w

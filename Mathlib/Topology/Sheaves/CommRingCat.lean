@@ -3,12 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.Topology.Category.TopCommRingCat
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Topology.Category.TopCommRingCat
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Sheaves of (commutative) rings.
@@ -25,6 +27,8 @@ As more results accumulate, please consider splitting this file.
 ## References
 * https://stacks.math.columbia.edu/tag/0073
 -/
+
+@[expose] public section
 
 universe u v w v₁ v₂ u₁ u₂
 
@@ -145,7 +149,7 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
-  rw [RingHom.map_zero]
+  rw [map_zero]
   apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 

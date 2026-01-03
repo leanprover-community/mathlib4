@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Multiset coercion to type
@@ -31,6 +33,8 @@ a multiset. These coercions and definitions make it easier to sum over multisets
 
 multiset enumeration
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*} [DecidableEq α] [DecidableEq β] {m : Multiset α}
@@ -62,7 +66,7 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 theorem coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 
-@[simp] lemma coe_mem {x : m} : ↑x ∈ m := Multiset.count_pos.mp (by have := x.2.2; cutsat)
+@[simp] lemma coe_mem {x : m} : ↑x ∈ m := Multiset.count_pos.mp (by have := x.2.2; lia)
 
 @[simp]
 protected theorem forall_coe (p : m → Prop) :
@@ -84,7 +88,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
       simp_rw [Finset.mem_disjiUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_setOf_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
-      exact fun h ↦ Multiset.count_pos.mp (by cutsat))
+      exact fun h ↦ Multiset.count_pos.mp (by lia))
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
 The `ℕ` component is used to differentiate between equal elements: if `x` appears `n` times
@@ -98,7 +102,7 @@ theorem mem_toEnumFinset (m : Multiset α) (p : α × ℕ) :
   Set.mem_toFinset
 
 theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1 ∈ m :=
-  have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by cutsat)
+  have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by lia)
 
 @[simp] lemma toEnumFinset_filter_eq (m : Multiset α) (a : α) :
     {x ∈ m.toEnumFinset | x.1 = a} = {a} ×ˢ Finset.range (m.count a) := by aesop
@@ -124,7 +128,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
-    cutsat
+    lia
   exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
 @[mono]
@@ -262,7 +266,7 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
   right_inv := by
     rintro (_ | x)
     · simp
-    · simp only [Option.elim_some, Fin.coe_castLE, Fin.eta, Sigma.eta, dite_eq_ite,
+    · simp only [Option.elim_some, Fin.val_castLE, Fin.eta, Sigma.eta, dite_eq_ite,
         ite_eq_right_iff, reduceCtorEq, imp_false, not_and]
       rintro rfl
       exact x.2.2.ne

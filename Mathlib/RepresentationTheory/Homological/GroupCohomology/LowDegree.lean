@@ -3,9 +3,11 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree cohomology of a `k`-linear `G`-representation
@@ -13,7 +15,7 @@ import Mathlib.RepresentationTheory.Invariants
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
 the cocycles and group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
-In `RepresentationTheory/Homological/GroupCohomology/Basic.lean`, we define the `n`th group
+In `Mathlib/RepresentationTheory/Homological/GroupCohomology/Basic.lean`, we define the `n`th group
 cohomology of `A` to be the cohomology of a complex `inhomogeneousCochains A`, whose objects are
 `(Fin n → G) → A`; this is unnecessarily unwieldy in low degree. Here, meanwhile, we define the one
 and two cocycles and coboundaries as submodules of `Fun(G, A)` and `Fun(G × G, A)`, and provide
@@ -29,8 +31,8 @@ multiplicative case, starting with the section `IsMulCocycle`, just mirrors the 
 unfortunately `@[to_additive]` can't deal with scalar actions.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory/Homological/GroupCohomology/Basic.lean`, `groupCohomology.cocycles A n`, and
-the `cocyclesₙ` in this file, for `n = 0, 1, 2`.
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/Basic.lean`,
+`groupCohomology.cocycles A n`, and the `cocyclesₙ` in this file, for `n = 0, 1, 2`.
 
 ## Main definitions
 
@@ -49,6 +51,8 @@ the `cocyclesₙ` in this file, for `n = 0, 1, 2`.
 * Nonabelian group cohomology
 
 -/
+
+@[expose] public section
 
 universe v u
 

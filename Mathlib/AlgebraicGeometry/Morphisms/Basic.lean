@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty.Local
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Pullbacks
+public import Mathlib.CategoryTheory.MorphismProperty.Local
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Properties of morphisms between Schemes
@@ -95,6 +97,8 @@ The properties `IsZariskiLocalAtTarget` and `IsZariskiLocalAtSource` are defined
 for the respective local property of morphism properties defined generally for categories equipped
 with a `Precoverage`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -513,7 +517,7 @@ theorem of_iSup_eq_top
   rw [eq_targetAffineLocally P]
   classical
   intro V
-  induction V using of_affine_open_cover U hU  with
+  induction V using of_affine_open_cover U hU with
   | basicOpen U r h =>
     haveI : IsAffine _ := U.2
     have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h

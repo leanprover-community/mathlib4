@@ -3,7 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Submonoid.Pointwise
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
 
@@ -27,6 +29,8 @@ Define the submonoid of right inverses and two-sided inverses.
 See the comments of https://github.com/leanprover-community/mathlib4/pull/10679 for a possible
 implementation.
 -/
+
+@[expose] public section
 
 
 variable {M : Type*}
@@ -96,7 +100,7 @@ theorem mul_fromLeftInv (x : S.leftInv) : (x : M) * S.fromLeftInv x = 1 :=
 
 @[to_additive (attr := simp)]
 theorem fromLeftInv_one : S.fromLeftInv 1 = 1 :=
-  (one_mul _).symm.trans (Subtype.eq <| S.mul_fromLeftInv 1)
+  (one_mul _).symm.trans (Subtype.ext <| S.mul_fromLeftInv 1)
 
 end Monoid
 

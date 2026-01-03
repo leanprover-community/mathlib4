@@ -3,9 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types.ColimitType
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 
 /-!
 # Colimits in the category of types
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Types.ColimitType
 We show that the category of types has all colimits, by providing the usual concrete models.
 
 -/
+
+@[expose] public section
 
 universe u' v u w
 

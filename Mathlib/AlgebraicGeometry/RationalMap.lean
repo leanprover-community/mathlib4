@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.SpreadingOut
-import Mathlib.AlgebraicGeometry.FunctionField
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
+module
+
+public import Mathlib.AlgebraicGeometry.SpreadingOut
+public import Mathlib.AlgebraicGeometry.FunctionField
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 /-!
 
 # Rational maps between schemes
@@ -25,6 +27,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Separated
   If `X` is integral and `Y` is separated, then any `f : X ⤏ Y` can be realized as a partial
   map on `f.domain`, the domain of definition of `f`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -48,7 +52,7 @@ structure PartialMap (X Y : Scheme.{u}) where
   hom : ↑domain ⟶ Y
 
 variable (S) in
-/-- A partial map is a `S`-map if the underlying morphism is. -/
+/-- A partial map is an `S`-map if the underlying morphism is. -/
 abbrev PartialMap.IsOver [X.Over S] [Y.Over S] (f : X.PartialMap Y) :=
   f.hom.IsOver S
 
@@ -323,7 +327,7 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 variable (S) in
-/-- A rational map is a `S`-map if some partial map in the equivalence class is a `S`-map. -/
+/-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 

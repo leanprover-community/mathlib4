@@ -3,9 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Tactic.Positivity
 
 /-!
 
@@ -31,6 +33,8 @@ inverse of an analytic open partial homeomorphism is analytic.
   power series `p` at a point, with invertible linear part, then the inverse also has a power series
   at the image point, given by `p.leftInv`.
 -/
+
+@[expose] public section
 
 open scoped Topology ENNReal
 
@@ -511,7 +515,7 @@ theorem radius_rightInv_pos_of_radius_pos
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
       exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
     · intro n one_le_n hn
-      have In : 2 ≤ n + 1 := by omega
+      have In : 2 ≤ n + 1 := by lia
       have rSn : r * S n ≤ 1 / 2 :=
         calc
           r * S n ≤ r * ((I + 1) * a) := by gcongr

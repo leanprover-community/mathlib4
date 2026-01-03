@@ -3,11 +3,13 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.GroupTheory.Divisible
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+public import Mathlib.Algebra.Category.ModuleCat.Injective
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.GroupTheory.Divisible
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Injective objects in the category of abelian groups
@@ -21,6 +23,8 @@ in `Mathlib/Algebra/Category/GrpCat/EnoughInjectives.lean`.
 - `AddCommGrpCat.injective_of_divisible` : a divisible group is also an injective object.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

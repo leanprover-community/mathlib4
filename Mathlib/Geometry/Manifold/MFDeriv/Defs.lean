@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
-import Mathlib.Geometry.Manifold.LocalInvariantProperties
+module
+
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
 # The derivative of functions between manifolds
@@ -97,6 +99,8 @@ the space of equivalence classes of smooth curves in the manifold.
 derivative, manifold
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped Topology ContDiff
@@ -122,7 +126,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [TopologicalSpace M'] [ChartedSpace H' M']
 
 variable (I I') in
-/-- Property in the model space of a model with corners of being differentiable within at set at a
+/-- Property in the model space of a model with corners of being differentiable within a set at a
 point, when read in the model vector space. This property will be lifted to manifolds to define
 differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=

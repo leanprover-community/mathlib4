@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Data.ENNReal.Action
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.MetricSpace.Algebra
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Algebra
 
 /-!
 # Lemmas for `IsBoundedSMul` over normed additive groups
@@ -17,6 +19,8 @@ Notably we prove that `NonUnitalSeminormedRing`s have bounded actions by left- a
 multiplication. This allows downstream files to write general results about `IsBoundedSMul`, and
 then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}

@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 # Submersive presentations
@@ -44,6 +46,8 @@ This contribution was created as part of the AIM workshop "Formalizing algebraic
 in June 2024.
 
 -/
+
+@[expose] public section
 
 universe t t' w w' u v
 
@@ -247,7 +251,7 @@ lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite
   have : Nat.card σ' ≤ Nat.card ι' :=
     card_relations_le_card_vars_of_isFinite Q
   simp only [Nat.card_sum]
-  cutsat
+  lia
 
 section
 
@@ -389,7 +393,7 @@ end BaseChange
 
 /-- Given a pre-submersive presentation `P` and equivalences `ι' ≃ ι` and
 `σ' ≃ σ`, this is the induced pre-submersive presentation with variables indexed
-by `ι` and relations indexed by `κ -/
+by `ι` and relations indexed by `κ`. -/
 @[simps toPresentation, simps -isSimp map]
 noncomputable def reindex (P : PreSubmersivePresentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) :
@@ -448,6 +452,7 @@ def naive {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injectiv
   map := a
   map_inj := ha
 
+set_option backward.privateInPublic true in
 @[simp] lemma jacobiMatrix_naive [Fintype ι] [DecidableEq ι] (i j : ι) :
     (naive a ha s hs).jacobiMatrix i j = (v j).pderiv (a i) :=
   jacobiMatrix_apply _ _ _
@@ -513,7 +518,7 @@ noncomputable def localizationAway : SubmersivePresentation R S Unit Unit where
   __ := PreSubmersivePresentation.localizationAway S r
   jacobian_isUnit := by
     rw [localizationAway_jacobian]
-    apply IsLocalization.map_units _ (⟨r, 1, by simp⟩ : Submonoid.powers r)
+    exact IsLocalization.map_units _ (⟨r, 1, by simp⟩ : Submonoid.powers r)
 
 end Localization
 

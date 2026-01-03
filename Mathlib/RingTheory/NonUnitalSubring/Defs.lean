@@ -3,9 +3,11 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # `NonUnitalSubring`s
@@ -34,6 +36,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 non-unital subring
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

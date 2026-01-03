@@ -3,8 +3,10 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Trailing degree of univariate polynomials
@@ -18,6 +20,8 @@ import Mathlib.Data.ENat.Basic
 Converts most results about `degree`, `natDegree` and `leadingCoeff` to results about the bottom
 end of a polynomial
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -146,6 +150,9 @@ lemma trailingDegree_ne_zero : trailingDegree p ≠ 0 ↔ coeff p 0 = 0 :=
 @[simp] theorem trailingDegree_le_trailingDegree (h : coeff q (natTrailingDegree p) ≠ 0) :
     trailingDegree q ≤ trailingDegree p :=
   (trailingDegree_le_of_ne_zero h).trans natTrailingDegree_le_trailingDegree
+
+theorem trailingCoeff_eq_coeff_zero (h : coeff p 0 ≠ 0) : trailingCoeff p = coeff p 0 := by
+  rw [trailingCoeff, (natTrailingDegree_eq_zero.mpr <| .inr h)]
 
 theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n :=

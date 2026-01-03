@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Order.WithBot
 
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
@@ -15,6 +17,8 @@ isomorphisms) and lattice homomorphisms, and properties about the results.
 Some definitions cause a possibly unbounded lattice homomorphism to become bounded,
 so they change the type of the homomorphism.
 -/
+
+@[expose] public section
 
 
 variable {α β γ : Type*}

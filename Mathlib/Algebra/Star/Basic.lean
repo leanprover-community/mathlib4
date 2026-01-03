@@ -3,15 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.SetLike.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Star monoids, rings, and modules
@@ -30,6 +32,8 @@ as different users are expected to feel strongly about the relative merits of
 Our star rings are actually star non-unital, non-associative, semirings, but of course we can prove
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset Subgroup Rat.instField
 

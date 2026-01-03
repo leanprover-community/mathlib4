@@ -3,8 +3,10 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras
@@ -19,6 +21,8 @@ In this file we define `Coalgebra`, and provide instances for:
 
 * <https://en.wikipedia.org/wiki/Coalgebra>
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -429,3 +433,51 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
     simp [LinearMap.comp_assoc]
 
 end Finsupp
+
+namespace Equiv
+variable {R A B : Type*} [CommSemiring R]
+
+variable (R) in
+/-- Transfer `CoalgebraStruct` across an `Equiv`. -/
+abbrev coalgebraStruct [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (e : A ≃ B) :
+    letI := e.addCommMonoid
+    letI := e.module R
+    CoalgebraStruct R A :=
+  letI := e.addCommMonoid
+  letI := e.module R
+  { comul :=
+      TensorProduct.map (e.linearEquiv R).symm.toLinearMap (e.linearEquiv R).symm.toLinearMap ∘ₗ
+        comul ∘ₗ (e.linearEquiv R).toLinearMap
+    counit := counit ∘ₗ (e.linearEquiv R).toLinearMap }
+
+variable (R) in
+/-- Transfer `Coalgebra` across an `Equiv`. -/
+abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
+    letI := e.addCommMonoid
+    letI := e.module R
+    Coalgebra R A :=
+  letI := e.addCommMonoid
+  letI := e.module R
+  { __ := e.coalgebraStruct R
+    rTensor_counit_comp_comul := by
+      ext
+      apply (TensorProduct.map_bijective (f := .id) Function.bijective_id
+        (e.linearEquiv R).bijective).injective
+      simpa [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map, LinearMap.rTensor]
+        using Coalgebra.rTensor_counit_comul _
+    lTensor_counit_comp_comul := by
+      ext
+      apply (TensorProduct.map_bijective (g := .id) (e.linearEquiv R).bijective
+        Function.bijective_id).injective
+      simpa [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map, LinearMap.lTensor]
+        using Coalgebra.lTensor_counit_comul _
+    coassoc := by
+      ext
+      apply (TensorProduct.map_bijective (e.linearEquiv R).bijective <|
+        TensorProduct.map_bijective (e.linearEquiv R).bijective
+        (e.linearEquiv R).bijective).injective
+      simp [coalgebraStruct, e.tensorProductAssoc_def R, TensorProduct.congr,
+        ← LinearMap.comp_assoc, TensorProduct.map_map, ← TensorProduct.map_comp]
+      simpa [LinearMap.comp_assoc, -coassoc_apply] using coassoc_apply (R := R) (A := B) _ }
+
+end Equiv

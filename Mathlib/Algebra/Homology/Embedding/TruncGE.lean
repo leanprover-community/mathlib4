@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.HomEquiv
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.HomEquiv
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # The canonical truncation
@@ -39,10 +41,12 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -394,7 +398,7 @@ end HomologicalComplex
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsTruncGE]
-    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+    (C : Type*) [Category* C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
 this is the (canonical) truncation functor

@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 
@@ -29,6 +31,8 @@ Also, support functions for operating with n-tuples of types, such as:
 Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not definitionally equal
 to it, we need support functions and lemmas to mediate between constructions.
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -419,7 +423,7 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
   induction i with
-  | fz      => rfl
+  | fz => rfl
   | fs _ ih =>
     rw [TypeVec.const]
     exact ih

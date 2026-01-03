@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.Condensed.Light.Module
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.Condensed.Light.Module
 /-!
 
 # The explicit sheaf condition for light condensed sets
@@ -24,11 +26,13 @@ reflects finite limits (resp. products), where it is enough to check the sheaf c
 postcomposing with the forgetful functor.
 -/
 
+@[expose] public section
+
 universe v u w
 
 open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
-variable {A : Type*} [Category A]
+variable {A : Type*} [Category* A]
 
 namespace LightCondensed
 

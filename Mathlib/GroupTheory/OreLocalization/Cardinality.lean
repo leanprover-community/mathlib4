@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.GroupTheory.OreLocalization.Basic
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 
@@ -19,6 +21,8 @@ This file contains some results on cardinality of Ore localizations.
   with `Commute` assumption removed.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -34,8 +38,8 @@ theorem oreDiv_one_surjective_of_finite_left [Finite S] :
     Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ ·)
-  wlog hlt : j < i generalizing i j
-  · exact this j i hne.symm heq.symm (hne.lt_of_le (not_lt.1 hlt))
+  wlog! hlt : j < i generalizing i j
+  · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
   refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩
@@ -48,8 +52,8 @@ theorem oreDiv_one_surjective_of_finite_right [Finite X] :
     Surjective (fun x ↦ x /ₒ (1 : ↥S) : X → OreLocalization S X) := by
   refine OreLocalization.ind fun x s ↦ ?_
   obtain ⟨i, j, hne, heq⟩ := Finite.exists_ne_map_eq_of_infinite (α := ℕ) (s ^ · • x)
-  wlog hlt : j < i generalizing i j
-  · exact this j i hne.symm heq.symm (hne.lt_of_le (not_lt.1 hlt))
+  wlog! hlt : j < i generalizing i j
+  · exact this j i hne.symm heq.symm (hne.lt_of_le hlt)
   use s ^ (i - (j + 1)) • x
   rw [oreDiv_eq_iff]
   refine ⟨s ^ j, (s ^ (j + 1)).1, ?_, ?_⟩

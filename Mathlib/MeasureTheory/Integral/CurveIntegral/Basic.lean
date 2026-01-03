@@ -3,12 +3,14 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Field.Pointwise
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Shift
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Pointwise
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.Deriv.AffineMap
+public import Mathlib.Analysis.Calculus.Deriv.Shift
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Integral of a 1-form along a path
@@ -38,7 +40,7 @@ allows us to avoid inserting `ContinuousLinearMap.restrictScalars` here and ther
 
 ## Main results
 
-We prove that `curveIntegral` well behaves with respect to
+We prove that `curveIntegral` behaves well with respect to
 
 - operations on `Path`s, see `curveIntegral_refl`, `curveIntegral_symm`, `curveIntegral_trans` etc;
 - algebraic operations on 1-forms, see `curveIntegral_add` etc.
@@ -53,14 +55,14 @@ and one for `HasFDerivAt`.
 ### Naming
 
 In literature, the integral of a function or a 1-form along a path
-is called “line integral”, “path integral”, “curve integral”, or “curvelinear integral”.
+is called “line integral”, “path integral”, “curve integral”, or “curvilinear integral”.
 
 We use the name “curve integral” instead of other names for the following reasons:
 
 - for many people whose mother tongue is not English,
   “line integral” sounds like an integral along a straight line;
 
-- we reserve the name "path integral" for Feynmann-style integrals over the space of paths.
+- we reserve the name "path integral" for Feynman-style integrals over the space of paths.
 
 ### Usage of `ContinuousLinearMap`s for 1-forms
 
@@ -83,6 +85,8 @@ This allows us to avoid using `ContinuousLinearMap.restrictScalars`
 in `HasFDerivWithinAt.curveIntegral_segment_source`
 and a future formalization of Poincaré lemma.
 -/
+
+@[expose] public section
 
 open Metric MeasureTheory Topology Set Interval AffineMap Convex Filter
 open scoped Pointwise unitInterval

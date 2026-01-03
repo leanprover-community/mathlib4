@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Multiset.Antidiagonal
+module
+
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Multiset.Antidiagonal
 
 /-!
 # The `Finsupp` counterpart of `Multiset.antidiagonal`.
@@ -13,6 +15,8 @@ import Mathlib.Data.Multiset.Antidiagonal
 The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 -/
+
+@[expose] public section
 
 namespace Finsupp
 

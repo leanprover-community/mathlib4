@@ -3,7 +3,9 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 # The upper half plane
@@ -13,6 +15,8 @@ This file defines `UpperHalfPlane` to be the upper half plane in `ℂ`.
 We define the notation `ℍ` for the upper half plane available in the locale
 `UpperHalfPlane` so as not to conflict with the quaternions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -34,7 +38,7 @@ instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 instance : Inhabited ℍ :=
   ⟨⟨Complex.I, by simp⟩⟩
 
-@[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
+@[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
 
 @[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
@@ -83,6 +87,11 @@ lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ⟨z, hz⟩ = z := by
   rfl
 
+instance : Nontrivial ℍ := by
+  constructor
+  use ⟨Complex.I, by simp⟩, ⟨2 * Complex.I, by simp⟩
+  simp [ne_eq, UpperHalfPlane.ext_iff]
+
 @[simp]
 theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
@@ -119,7 +128,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
-def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
     assertInstancesCommute
@@ -128,7 +137,7 @@ def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
     assertInstancesCommute

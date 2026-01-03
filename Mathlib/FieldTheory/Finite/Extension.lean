@@ -3,7 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Kevin Buzzard
 -/
-import Mathlib.FieldTheory.Finite.GaloisField
+module
+
+public import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # Extensions of finite fields
@@ -29,6 +31,8 @@ isomorphic to our chosen `FiniteField.Extension k p n`.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 variable (k : Type*) [Field k] [Finite k]
@@ -39,7 +43,7 @@ open Polynomial
 
 namespace FiniteField
 
-/-- Given a finite field `k` of characteristic `p`, we have a non-canoncailly chosen extension
+/-- Given a finite field `k` of characteristic `p`, we have a non-canonically chosen extension
 of any given degree `n > 0`. -/
 def Extension [CharP k p] : Type :=
   letI := ZMod.algebra k p

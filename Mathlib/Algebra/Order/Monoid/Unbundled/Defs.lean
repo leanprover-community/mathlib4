@@ -3,9 +3,11 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Order.Basic
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Basic
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 
@@ -53,6 +55,8 @@ However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `
 as it is easier to use.
 
 -/
+
+@[expose] public section
 
 
 -- TODO: convert `ExistsMulOfLE`, `ExistsAddOfLE`?

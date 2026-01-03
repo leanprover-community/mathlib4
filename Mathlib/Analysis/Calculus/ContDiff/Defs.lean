@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+module
+
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!
 # Higher differentiability
@@ -94,6 +96,8 @@ These notations are scoped in `ContDiff`.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Set Fin Filter Function
@@ -133,7 +137,7 @@ lemma HasFTaylorSeriesUpToOn.analyticOn
     (hf : HasFTaylorSeriesUpToOn ω f p s) (h : AnalyticOn 𝕜 (fun x ↦ p x 0) s) :
     AnalyticOn 𝕜 f s := by
   have : AnalyticOn 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0)) s :=
-    (LinearIsometryEquiv.analyticOnNhd _ _ ).comp_analyticOn
+    (LinearIsometryEquiv.analyticOnNhd _ _).comp_analyticOn
       h (Set.mapsTo_univ _ _)
   exact this.congr (fun y hy ↦ (hf.zero_eq _ hy).symm)
 

@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Tangent cone
@@ -29,6 +31,8 @@ are not defined yet. The property of uniqueness of the derivative is therefore p
 prove here.
 -/
 
+@[expose] public section
+
 open Filter Set Metric
 open scoped Topology Pointwise
 
@@ -52,9 +56,6 @@ is automatic when `E` is not `0`-dimensional). -/
 structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
   dense_tangentConeAt : Dense (Submodule.span 𝕜 (tangentConeAt 𝕜 s x) : Set E)
   mem_closure : x ∈ closure s
-
-@[deprecated (since := "2025-04-27")]
-alias UniqueDiffWithinAt.dense_tangentCone := UniqueDiffWithinAt.dense_tangentConeAt
 
 /-- A property ensuring that the tangent cone to `s` at any of its points spans a dense subset of
 the whole space. The main role of this property is to ensure that the differential along `s` is

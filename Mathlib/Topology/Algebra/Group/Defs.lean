@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Definitions about topological groups
@@ -24,6 +26,8 @@ where subtraction is not given by `a - b = a + (-b)`.
 
 We also provide convenience dot notation lemmas like `ContinuousAt.neg`.
 -/
+
+@[expose] public section
 
 open scoped Topology
 

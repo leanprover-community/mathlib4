@@ -3,7 +3,9 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+module
+
+public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
 /-!
 # Translation and scaling of integral curves
@@ -21,6 +23,8 @@ This file mirrors `Mathlib/Analysis/ODE/Transform`.
 
 integral curve, vector field
 -/
+
+@[expose] public section
 
 open Function Set
 

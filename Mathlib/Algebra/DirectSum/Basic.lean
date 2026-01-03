@@ -3,9 +3,11 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Sigma
-import Mathlib.Data.DFinsupp.Submonoid
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.DFinsupp.Sigma
+public import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -21,6 +23,8 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
+
+@[expose] public section
 
 open Function
 
@@ -262,16 +266,15 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι] :
     (⨁ _ : ι, M) ≃+ M :=
-  {
-    DirectSum.toAddMonoid fun _ =>
-      AddMonoidHom.id
-        M with
+  { DirectSum.toAddMonoid fun _ => AddMonoidHom.id M with
     toFun := DirectSum.toAddMonoid fun _ => AddMonoidHom.id M
     invFun := of (fun _ => M) default
-    left_inv := fun x =>
-      DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
-        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by grind
-    right_inv := fun _ => toAddMonoid_of _ _ _ }
+    left_inv x :=
+      DirectSum.induction_on x
+        (by rw [map_zero, map_zero])
+        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of, AddMonoidHom.id_apply])
+        (fun x y ihx ihy => by grind)
+    right_inv _ := toAddMonoid_of _ _ _ }
 
 section CongrLeft
 

@@ -3,11 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Analysis.PSeries
-import Mathlib.Order.Interval.Finset.Box
-import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Order.Interval.Finset.Box
+public import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
 # Summability of Eisenstein series
@@ -16,6 +17,8 @@ We gather results about the summability of Eisenstein series, particularly
 the summability of the Eisenstein series summands, which are used in the proof of the
 boundedness of Eisenstein series at infinity.
 -/
+
+@[expose] public section
 noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
@@ -39,26 +42,24 @@ theorem abs_le_left_of_norm (m n : ℤ) : |n| ≤ ‖![n, m]‖ := by
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
   left
   rw [Int.abs_eq_natAbs]
-  exact Preorder.le_refl _
+  exact le_refl _
 
 theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
   right
   rw [Int.abs_eq_natAbs]
-  exact Preorder.le_refl _
+  exact le_refl _
 
 lemma abs_norm_eq_max_natAbs (n : ℕ) : ‖![1, (n + 1 : ℤ)]‖ = n + 1 := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero, Matrix.cons_val_one,
     Matrix.cons_val_fin_one]
   norm_cast
-  simp
 
 lemma abs_norm_eq_max_natAbs_neg (n : ℕ) : ‖![1, -(n + 1 : ℤ)]‖ = n + 1 := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero, Matrix.cons_val_one,
     Matrix.cons_val_fin_one]
   norm_cast
-  simp
 
 section bounding_functions
 
@@ -160,7 +161,7 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
 
 lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
-  refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
+  refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real)
   rw [isLittleO_const_left]
   exact Or.inr
     (tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real)
@@ -215,7 +216,7 @@ lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpa
 lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by cutsat)
+  lift k to ℕ using (by lia)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply (linear_inv_isBigO_right c z).abs_right.pow
 
@@ -223,12 +224,12 @@ lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun c : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by cutsat)
+  lift k to ℕ using (by lia)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply (linear_inv_isBigO_left d hz).abs_right.pow
 
 lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa [sub_eq_add_neg] using (linear_inv_isBigO_right c₂ z).mul

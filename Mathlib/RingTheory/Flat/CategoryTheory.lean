@@ -3,9 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+module
+
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 /-!
 # Tensoring with a flat module is an exact functor
@@ -27,6 +29,8 @@ In this file we prove that tensoring with a flat module is an exact functor.
 - Relate flatness with `Tor`
 
 -/
+
+@[expose] public section
 
 universe u
 

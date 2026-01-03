@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.LocalRing.Defs
-import Mathlib.RingTheory.Ideal.Nonunits
+module
+
+public import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Ideal.Nonunits
 We prove basic properties of local rings.
 
 -/
+
+@[expose] public section
 
 variable {R S : Type*}
 

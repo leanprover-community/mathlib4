@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Real.Sqrt
-import Mathlib.NumberTheory.Zsqrtd.Basic
+module
+
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Image of `Zsqrtd` in `ℝ`
@@ -12,6 +14,8 @@ import Mathlib.NumberTheory.Zsqrtd.Basic
 This file defines `Zsqrtd.toReal` and related lemmas.
 It is in a separate file to avoid pulling in all of `Data.Real` into `Data.Zsqrtd`.
 -/
+
+@[expose] public section
 
 
 namespace Zsqrtd

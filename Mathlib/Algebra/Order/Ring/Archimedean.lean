@@ -3,11 +3,13 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang, Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Algebra.Order.Group.DenselyOrdered
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Algebra.Order.Group.DenselyOrdered
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Archimedean classes of a linearly ordered ring
@@ -31,10 +33,12 @@ reasons:
 
 * In the ring version of Hahn embedding theorem, the subtype `FiniteArchimedeanClass R` of non-top
   elements in `ArchimedeanClass R` naturally becomes the additive abelian group for the ring
-  `HahnSeries (FiniteArchimedeanClass R) ℝ`.
+  `ℝ⟦FiniteArchimedeanClass R⟧`.
 * The order we defined on `ArchimedeanClass R` matches the order on `AddValuation`, rather than the
   one on `Valuation`.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [LinearOrder R] [LinearOrder S]
 
@@ -50,6 +54,16 @@ instance : Zero (ArchimedeanClass R) where
 
 @[simp] theorem mk_one : mk (1 : R) = 0 := rfl
 
+@[simp]
+theorem top_ne_zero [Nontrivial R] : (⊤ : ArchimedeanClass R) ≠ 0 := by
+  rw [← mk_one, ne_eq, top_eq_mk_iff]
+  exact one_ne_zero
+
+@[simp]
+theorem zero_ne_top [Nontrivial R] : 0 ≠ (⊤ : ArchimedeanClass R) :=
+  top_ne_zero.symm
+
+set_option backward.privateInPublic true in
 private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
   obtain ⟨m, hm⟩ := hx
@@ -59,6 +73,8 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x
     simp_rw [ArchimedeanOrder.val_of, abs_mul]
   ring
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Multipilication in `R` transfers to Addition in `ArchimedeanClass R`. -/
 instance : Add (ArchimedeanClass R) where
   add := lift₂ (fun x y ↦ .mk <| x * y) fun _ _ _ _ hx hy ↦
@@ -80,16 +96,20 @@ instance : AddCommMagma (ArchimedeanClass R) where
     induction y with | mk y
     rw [← mk_mul, mul_comm, mk_mul]
 
+set_option backward.privateInPublic true in
 private theorem zero_add' (x : ArchimedeanClass R) : 0 + x = x := by
   induction x with | mk x
   rw [← mk_one, ← mk_mul, one_mul]
 
+set_option backward.privateInPublic true in
 private theorem add_assoc' (x y z : ArchimedeanClass R) : x + y + z = x + (y + z) := by
   induction x with | mk x
   induction y with | mk y
   induction z with | mk z
   simp_rw [← mk_mul, mul_assoc]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : AddCommMonoid (ArchimedeanClass R) where
   add_assoc := add_assoc'
   zero_add := zero_add'
@@ -104,7 +124,7 @@ instance : IsOrderedAddMonoid (ArchimedeanClass R) where
     induction y with | mk y
     induction z with | mk z
     rw [← mk_mul, ← mk_mul]
-    exact mk_mul_le_of_le le_rfl h
+    exact mk_mul_le_of_le h le_rfl
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass R) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]
@@ -141,6 +161,20 @@ theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x �
     mk (f x) = 0 := by
   simpa using mk_map_of_archimedean f.toOrderAddMonoidHom h
 
+theorem mk_le_mk_add_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y : S) :
+    mk x ≤ mk (f y) + mk x := by
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · rw [mk_map_of_archimedean' f hy, zero_add]
+
+theorem mk_le_add_mk_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y : S) :
+    mk x ≤ mk x + mk (f y) := by
+  rw [add_comm]
+  exact mk_le_mk_add_of_archimedean f x y
+
+theorem mk_map_nonneg_of_archimedean [Archimedean S] (f : S →+*o R) (y : S) : 0 ≤ mk (f y) := by
+  simpa using mk_le_mk_add_of_archimedean f 1 y
+
 @[simp]
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   obtain _ | _ := subsingleton_or_nontrivial S
@@ -148,9 +182,8 @@ theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
 @[simp]
-theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : S) = 0 := by
-  rw [← Int.cast_natCast]
-  exact mk_intCast (mod_cast h)
+theorem mk_natCast {n : ℕ} : n ≠ 0 → mk (n : S) = 0 :=
+  mod_cast mk_intCast (n := n)
 
 end IsOrderedRing
 
@@ -199,7 +232,6 @@ variable [Field R] [IsOrderedRing R]
 
 instance : Neg (ArchimedeanClass R) where
   neg := lift (fun x ↦ mk x⁻¹) fun x y h ↦ by
-    have := IsOrderedRing.toIsStrictOrderedRing R
     obtain rfl | hx := eq_or_ne x 0
     · simp_all
     obtain rfl | hy := eq_or_ne y 0
@@ -217,6 +249,7 @@ instance : SMul ℤ (ArchimedeanClass R) where
 
 @[simp] theorem mk_zpow (n : ℤ) (x : R) : mk (x ^ n) = n • mk x := rfl
 
+set_option backward.privateInPublic true in
 private theorem zsmul_succ' (n : ℕ) (x : ArchimedeanClass R) :
     (n.succ : ℤ) • x = (n : ℤ) • x + x := by
   induction x with | mk x
@@ -225,9 +258,11 @@ private theorem zsmul_succ' (n : ℕ) (x : ArchimedeanClass R) :
   · simp [zero_zpow _ n.cast_add_one_ne_zero]
   · rw [zpow_add_one₀ hx, mk_mul, mk_zpow]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) where
   neg_top := by simp [← mk_zero, ← mk_inv]
-  add_neg_cancel x h := by
+  add_neg_cancel_of_ne_top x h := by
     induction x with | mk x
     simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (mk_eq_top_iff.not.1 h)]
   zsmul n x := n • x
@@ -239,11 +274,9 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
 
 @[simp]
 theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 := by
-  have := IsOrderedRing.toIsStrictOrderedRing R
   simpa using mk_map_of_archimedean ⟨(Rat.castHom R).toAddMonoidHom, fun _ ↦ by simp⟩ h
 
 theorem mk_le_mk_iff_ratCast {x y : R} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
-  have := IsOrderedRing.toIsStrictOrderedRing R
   simpa using mk_le_mk_iff_denselyOrdered (Rat.castHom _) Rat.cast_strictMono (x := x)
 
 end Field

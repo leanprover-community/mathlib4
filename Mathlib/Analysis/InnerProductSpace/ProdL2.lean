@@ -3,8 +3,10 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.Normed.Lp.ProdLp
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L²` inner product space structure on products of inner product spaces
@@ -15,6 +17,8 @@ $$
 $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
+
+@[expose] public section
 
 open Module
 open scoped InnerProductSpace
@@ -59,7 +63,7 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
     · simp
     · unfold Pairwise
       simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
-        OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.linearEquiv_symm_apply,
+        OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.coe_symm_linearEquiv,
         WithLp.prod_inner_apply, Sum.forall, Sum.elim_inl, Function.comp_apply, inner_zero_right,
         add_zero, Sum.elim_inr, zero_add, Sum.inl.injEq, reduceCtorEq, not_false_eq_true,
         inner_zero_left, imp_self, implies_true, and_true, Sum.inr.injEq, true_and]

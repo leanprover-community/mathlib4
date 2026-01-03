@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Transvection
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Block matrices and their determinant
@@ -31,6 +33,8 @@ matrices built out of blocks.
 matrix, diagonal, det, block triangular
 
 -/
+
+@[expose] public section
 
 
 open Finset Function OrderDual

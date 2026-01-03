@@ -3,18 +3,22 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Logic.Basic
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.ExistsUnique
-import Mathlib.Logic.Nonempty
-import Mathlib.Logic.Nontrivial.Defs
-import Batteries.Tactic.Init
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.ExistsUnique
+public import Mathlib.Logic.Nonempty
+public import Mathlib.Logic.Nontrivial.Defs
+public import Batteries.Tactic.Init
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Miscellaneous function constructions and lemmas
 -/
+
+@[expose] public section
 
 open Function
 
@@ -127,12 +131,7 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
     Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
-  dsimp only at h
-  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
-  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
-  · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
-  · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
-  · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+  grind
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y
@@ -280,6 +279,10 @@ theorem injective_of_isPartialInv {α β} {f : α → β} {g} (H : IsPartialInv 
 theorem injective_of_isPartialInv_right {α β} {f : α → β} {g} (H : IsPartialInv f g) (x y b)
     (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
   ((H _ _).1 h₁).symm.trans ((H _ _).1 h₂)
+
+lemma LeftInverse.eq {g : β → α} {f : α → β} (h : LeftInverse g f) (x : α) : g (f x) = x := h x
+
+lemma RightInverse.eq {g : β → α} {f : α → β} (h : RightInverse g f) (x : β) : f (g x) = x := h x
 
 theorem LeftInverse.comp_eq_id {f : α → β} {g : β → α} (h : LeftInverse f g) : f ∘ g = id :=
   funext h
@@ -578,23 +581,15 @@ such as `(Sum.rec · g)`.
 
 In future, we should build some automation to generate applications like `Option.rec_update` for all
 inductive types. -/
+@[nolint unusedArguments]
 lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [DecidableEq κ]
-    {ctor : ι → κ} (hctor : Function.Injective ctor)
+    {ctor : ι → κ} (_ : Function.Injective ctor)
     (recursor : ((i : ι) → α (ctor i)) → ((i : κ) → α i))
     (h : ∀ f i, recursor f (ctor i) = f i)
     (h2 : ∀ f₁ f₂ k, (∀ i, ctor i ≠ k) → recursor f₁ k = recursor f₂ k)
     (f : (i : ι) → α (ctor i)) (i : ι) (x : α (ctor i)) :
     recursor (update f i x) = update (recursor f) (ctor i) x := by
-  ext k
-  by_cases h : ∃ i, ctor i = k
-  · obtain ⟨i', rfl⟩ := h
-    obtain rfl | hi := eq_or_ne i' i
-    · simp [h]
-    · have hk := hctor.ne hi
-      simp [h, hi, hk, Function.update_of_ne]
-  · rw [not_exists] at h
-    rw [h2 _ f _ h]
-    rw [Function.update_of_ne (Ne.symm <| h i)]
+  grind
 
 @[simp]
 lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [DecidableEq α]
@@ -607,22 +602,16 @@ lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [Decidabl
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
     f j (update g i v j) = update (fun k ↦ f k (g k)) i (f i v) j := by
-  by_cases h : j = i
-  · subst j
-    simp
-  · simp [h]
+  grind
 
 theorem apply_update₂ {ι : Sort*} [DecidableEq ι] {α β γ : ι → Sort*} (f : ∀ i, α i → β i → γ i)
     (g : ∀ i, α i) (h : ∀ i, β i) (i : ι) (v : α i) (w : β i) (j : ι) :
     f j (update g i v j) (update h i w j) = update (fun k ↦ f k (g k) (h k)) i (f i v w) j := by
-  by_cases h : j = i
-  · subst j
-    simp
-  · simp [h]
+  grind
 
 theorem pred_update (P : ∀ ⦃a⦄, β a → Prop) (f : ∀ a, β a) (a' : α) (v : β a') (a : α) :
     P (update f a' v a) ↔ a = a' ∧ P v ∨ a ≠ a' ∧ P (f a) := by
-  rw [apply_update P, update_apply, ite_prop_iff_or]
+  grind
 
 theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α') (i : α) (v : α') :
     f ∘ update g i v = update (f ∘ g) i (f v) :=
@@ -630,20 +619,12 @@ theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α')
 
 theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a ≠ b) (v : β a) (w : β b)
     (f : ∀ a, β a) : update (update f a v) b w = update (update f b w) a v := by
-  funext c
-  simp only [update]
-  by_cases h₁ : c = b <;> by_cases h₂ : c = a
-  · rw [dif_pos h₁, dif_pos h₂]
-    cases h (h₂.symm.trans h₁)
-  · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
-  · rw [dif_neg h₁, dif_neg h₁]
-  · rw [dif_neg h₁, dif_neg h₁]
+  grind
 
 @[simp]
 theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β a) (f : ∀ a, β a) :
     update (update f a v) a w = update f a w := by
-  funext b
-  by_cases h : b = a <;> simp [update, h]
+  grind
 
 @[simp]
 theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
@@ -1086,7 +1067,7 @@ theorem Function.LeftInverse.eq_rec_on_eq {γ : β → Sort v} {f : α → β} {
 theorem Function.LeftInverse.cast_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     cast (congr_arg (fun a ↦ γ (f a)) (h a)) (C (g (f a))) = C a := by
-  rw [cast_eq_iff_heq, h]
+  grind
 
 /-- A set of functions "separates points"
 if for each pair of distinct points there is a function taking different values on them. -/

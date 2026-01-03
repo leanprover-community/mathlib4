@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 
 /-!
 # The ideal class group
@@ -26,6 +28,8 @@ inside its field of fractions.
 The definition of `ClassGroup R` involves `FractionRing R`. However, the API should be completely
 identical no matter the choice of field of fractions for `R`.
 -/
+
+@[expose] public section
 
 
 variable {R K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
@@ -86,6 +90,14 @@ noncomputable instance : CommGroup (ClassGroup R) :=
   QuotientGroup.Quotient.commGroup (toPrincipalIdeal R (FractionRing R)).range
 
 noncomputable instance : Inhabited (ClassGroup R) := ⟨1⟩
+
+/-- The class group of `R` is isomorphic to the group of invertible `R`-submodules in `Frac(R)`
+modulo the principal submodules (invertible submodules are automatically fractional ideals). -/
+noncomputable def ClassGroup.mulEquivUnitsSubmoduleQuotRange :
+    ClassGroup R ≃*
+    (Submodule R (FractionRing R))ˣ ⧸ (Units.map (Submodule.spanSingleton R).toMonoidHom).range :=
+  QuotientGroup.congr _ _ unitsMulEquivSubmodule <| by
+    simp_rw [MonoidHom.range_eq_map, Subgroup.map_map]; congr; ext; simp [unitsMulEquivSubmodule]
 
 variable {R}
 
@@ -186,8 +198,7 @@ noncomputable def ClassGroup.equiv :
       · simp only [RingEquiv.toMulEquiv_eq_coe, MulEquiv.coe_toMonoidHom, coe_mapEquiv,
           RingEquiv.coe_toMulEquiv, canonicalEquiv_canonicalEquiv, canonicalEquiv_self,
           RingEquiv.refl_apply]
-  exact @QuotientGroup.congr (FractionalIdeal R⁰ (FractionRing R))ˣ _ (FractionalIdeal R⁰ K)ˣ _
-    (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range _ _
+  exact QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range
     (Units.mapEquiv (FractionalIdeal.canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv) this
 
 @[simp]

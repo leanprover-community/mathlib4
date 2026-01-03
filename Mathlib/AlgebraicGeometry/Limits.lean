@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.AlgebraicGeometry.AffineScheme
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.AlgebraicGeometry.Pullbacks
+public import Mathlib.AlgebraicGeometry.AffineScheme
 
 /-!
 # (Co)Limits of Schemes
@@ -24,6 +26,8 @@ We construct various limits and colimits in the category of schemes.
 * Spec preserves finite coproducts.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -342,6 +346,8 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     · simp only [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 /-- If `X` and `Y` are open disjoint and covering open subschemes of `S`,
 `S` is the disjoint union of `X` and `Y`. -/
 lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
@@ -510,12 +516,32 @@ instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
 
 end Coproduct
 
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    (i : WalkingPair) : Mono ((span f g ⋙ Scheme.forget).map (WidePushoutShape.Hom.init i)) := by
+  rw [mono_iff_injective]
+  cases i
+  · simpa using f.isOpenEmbedding.injective
+  · simpa using g.isOpenEmbedding.injective
+
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
+  obtain (a | (a | a)) := t
+  · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
+    infer_instance
+  · simpa
+  · simpa
+
+-- Test that instances on locally directed colimits fire correctly.
+example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
+    [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
+  inferInstance
+
 instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
 instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
 
 section IsAffine
 
-lemma Scheme.isAffine_of_isLimit {I : Type*} [Category I] {D : I ⥤ Scheme.{u}}
+lemma Scheme.isAffine_of_isLimit {I : Type*} [Category* I] {D : I ⥤ Scheme.{u}}
     (c : Cone D) (hc : IsLimit c) [∀ i, IsAffine (D.obj i)] :
     IsAffine c.pt := by
   let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit

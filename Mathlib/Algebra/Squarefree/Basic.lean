@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Squarefree elements of monoids
@@ -28,6 +30,8 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 squarefree, multiplicity
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*}
@@ -82,7 +86,7 @@ theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : �
     (h : Squarefree (x ^ n)) (h' : ¬ IsUnit x) :
     n = 0 ∨ n = 1 := by
   contrapose! h'
-  replace h' : 2 ≤ n := by omega
+  replace h' : 2 ≤ n := by lia
   have : x * x ∣ x ^ n := by rw [← sq]; exact pow_dvd_pow x h'
   exact h.squarefree_of_dvd this x (refl _)
 

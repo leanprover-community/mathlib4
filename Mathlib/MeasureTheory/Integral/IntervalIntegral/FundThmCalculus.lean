@@ -3,14 +3,16 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
-import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.Analysis.Calculus.TangentCone.Prod
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Measurable
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
+public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Analysis.Calculus.TangentCone.Prod
 
 /-!
 # Fundamental Theorem of Calculus
@@ -102,7 +104,7 @@ a context with the stronger assumption that `f'` is continuous, one can use
 `ContinuousOn.integrableOn_uIcc`.
 
 Versions of FTC-2 under the simpler assumption that the function is `C^1` are given in the
-file `Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff`.
+file `Mathlib/MeasureTheory/Integral/IntervalIntegral/ContDiff.lean`.
 
 Applications to integration by parts are in the file
 `Mathlib.MeasureTheory.Integral.IntegrationByParts`.
@@ -131,15 +133,17 @@ atom at one of the endpoints.
 
 There are some `intervalIntegral.FTCFilter` instances where the fact that it is one-sided or
 two-sided depends on the point, namely `(x, 𝓝[Set.Icc a b] x, 𝓝[Set.Icc a b] x)` (resp.
-`(x, 𝓝[Set.uIcc a b] x, 𝓝[Set.uIcc a b] x)`, with `x ∈ Icc a b` (resp. `x ∈ uIcc a b`). This results
-in a two-sided derivatives for `x ∈ Set.Ioo a b` and one-sided derivatives for `x ∈ {a, b}`. Other
-instances could be added when needed (in that case, one also needs to add instances for
+`(x, 𝓝[Set.uIcc a b] x, 𝓝[Set.uIcc a b] x)`), with `x ∈ Icc a b` (resp. `x ∈ uIcc a b`). This
+results in a two-sided derivatives for `x ∈ Set.Ioo a b` and one-sided derivatives for `x ∈ {a, b}`.
+Other instances could be added when needed (in that case, one also needs to add instances for
 `Filter.IsMeasurablyGenerated` and `Filter.TendstoIxxClass`).
 
 ## Tags
 
 integral, fundamental theorem of calculus, FTC-1, FTC-2
 -/
+
+@[expose] public section
 
 assert_not_exists HasDerivAt.mul -- guard against import creep
 
@@ -551,7 +555,7 @@ In this section we prove that for a measurable function `f` integrable on `a..b`
 
 * `integral_hasStrictFDerivAt_of_tendsto_ae`: the function `(u, v) ↦ ∫ x in u..v, f x` has
   derivative `(u, v) ↦ v • cb - u • ca` at `(a, b)` in the sense of strict differentiability
-  provided that `f` tends to `ca` and `cb` almost surely as `x` tendsto to `a` and `b`,
+  provided that `f` tends to `ca` and `cb` almost surely as `x` tends to `a` and `b`,
   respectively;
 
 * `integral_hasStrictFDerivAt`: the function `(u, v) ↦ ∫ x in u..v, f x` has

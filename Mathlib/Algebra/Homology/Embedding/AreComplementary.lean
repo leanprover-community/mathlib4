@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 
 /-!
 # Complementary embeddings
@@ -19,6 +21,8 @@ the cokernel of `K.ιTruncLE e₁ : K.truncLE e₁ ⟶ K` and `K.truncGE e₂`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits
 
 variable {ι ι₁ ι₂ : Type*} {c : ComplexShape ι} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
@@ -27,7 +31,7 @@ namespace ComplexShape
 
 namespace Embedding
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (e₁ : Embedding c₁ c) (e₂ : Embedding c₂ c)
 
 /-- Two embedding `e₁` and `e₂` into a complex shape `c : ComplexShape ι`
@@ -276,12 +280,12 @@ end AreComplementary
 
 lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     AreComplementary (embeddingUpIntLE n₀) (embeddingUpIntGE n₁) where
-  disjoint i₁ i₂ := by dsimp; omega
+  disjoint i₁ i₂ := by dsimp; lia
   union i := by
     by_cases hi : i ≤ n₀
     · obtain ⟨k, rfl⟩ := Int.exists_add_of_le hi
-      exact Or.inl ⟨k, by dsimp; omega⟩
-    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by omega)
+      exact Or.inl ⟨k, by dsimp; lia⟩
+    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by lia)
       exact Or.inr ⟨k, rfl⟩
 
 end Embedding
@@ -292,7 +296,7 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
   (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
   [e₁.IsTruncLE] [e₂.IsTruncGE] (ac : e₁.AreComplementary e₂)
 

@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Positive linear maps
 
@@ -23,6 +24,8 @@ We nevertheless use the namespace for lemmas using that combination of typeclass
 More substantial results on positive maps such as their continuity can be found in
 the `Analysis/CStarAlgebra` folder.
 -/
+
+@[expose] public section
 
 /-- A positive linear map is a linear map that is also an order homomorphism. -/
 structure PositiveLinearMap (R E₁ E₂ : Type*) [Semiring R]

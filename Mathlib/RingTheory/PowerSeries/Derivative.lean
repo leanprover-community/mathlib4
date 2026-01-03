@@ -3,9 +3,11 @@ Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard M. Hill
 -/
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Definitions
@@ -23,6 +25,8 @@ $\exp ( \log (1+X)) = 1+X$ by differentiating twice.
 - `PowerSeries.derivative R : Derivation R R⟦X⟧ R⟦X⟧` the formal derivative operation.
   This is abbreviated `d⁄dX R`.
 -/
+
+@[expose] public section
 
 namespace PowerSeries
 

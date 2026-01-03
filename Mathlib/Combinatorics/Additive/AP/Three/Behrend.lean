@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.Additive.AP.Three.Defs
-import Mathlib.Combinatorics.Pigeonhole
+module
+
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Combinatorics.Additive.AP.Three.Defs
+public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Behrend's bound on Roth numbers
@@ -42,6 +44,8 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 
 3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
+
+@[expose] public section
 
 assert_not_exists IsConformalMap Conformal
 

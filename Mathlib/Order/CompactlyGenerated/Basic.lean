@@ -3,16 +3,18 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Order.Atoms
-import Mathlib.Order.OrderIsoNat
-import Mathlib.Order.RelIso.Set
-import Mathlib.Order.SupClosed
-import Mathlib.Order.SupIndep
-import Mathlib.Order.Zorn
-import Mathlib.Data.Finset.Order
-import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Data.Finite.Set
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.SupClosed
+public import Mathlib.Order.SupIndep
+public import Mathlib.Order.Zorn
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Order.Interval.Set.OrderIso
+public import Mathlib.Data.Finite.Set
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Compactness properties for complete lattices
@@ -50,6 +52,8 @@ We also show well-founded lattices are compactly generated
 
 complete lattice, well-founded, compact
 -/
+
+@[expose] public section
 
 open Set
 
@@ -279,7 +283,7 @@ end CompleteLattice
 theorem WellFoundedGT.finite_of_sSupIndep [WellFoundedGT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
   classical
-    refine Set.not_infinite.mp fun contra => ?_
+    by_contra! contra
     obtain ⟨t, ht₁, ht₂⟩ := CompleteLattice.WellFoundedGT.isSupFiniteCompact α s
     replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t := by
       have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)

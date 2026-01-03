@@ -3,9 +3,11 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Data.ULift
 
 /-!
 # Discrete categories
@@ -31,6 +33,8 @@ or `I`-indexed families of isomorphisms to natural transformations or natural is
 We show equivalences of types are the same as (categorical) equivalences of the corresponding
 discrete categories.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -106,7 +110,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 to locally give `cat_disch` the ability to call `cases` on
 `Discrete` and `(_ : Discrete _) ⟶ (_ : Discrete _)` hypotheses.
 -/
-def discreteCases : TacticM Unit := do
+meta def discreteCases : TacticM Unit := do
   evalTactic (← `(tactic| discrete_cases))
 
 -- TODO: investigate turning on either
@@ -320,7 +324,7 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
 
 /-- A category is discrete when there is at most one morphism between two objects,
 in which case they are equal. -/
-class IsDiscrete (C : Type*) [Category C] : Prop where
+class IsDiscrete (C : Type*) [Category* C] : Prop where
   subsingleton (X Y : C) : Subsingleton (X ⟶ Y) := by infer_instance
   eq_of_hom {X Y : C} (f : X ⟶ Y) : X = Y
 
@@ -331,7 +335,7 @@ instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
 
 section
 
-variable {C : Type*} [Category C] [IsDiscrete C]
+variable {C : Type*} [Category* C] [IsDiscrete C]
 
 lemma obj_ext_of_isDiscrete {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
 

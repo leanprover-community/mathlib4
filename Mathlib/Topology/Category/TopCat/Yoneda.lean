@@ -3,11 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Topology.Category.TopCat.Limits.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.Topology.Category.TopCat.Limits.Products
 This file develops some API for "topologically concrete" categories, defining universe polymorphic
 "Yoneda presheaves" on such categories.
 -/
+
+@[expose] public section
 
 universe w w' v u
 

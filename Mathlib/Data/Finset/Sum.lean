@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Fold
-import Mathlib.Data.Multiset.Sum
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Multiset.Sum
 
 /-!
 # Disjoint sum of finsets
@@ -19,6 +21,8 @@ the `Finset.sum` operation which computes the additive sum.
 * `Finset.toLeft`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `α`.
 * `Finset.toRight`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `β`.
 -/
+
+@[expose] public section
 
 
 open Function Multiset Sum

@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # Constructing finite products from binary products and terminal.
@@ -18,6 +20,8 @@ If a functor preserves binary products and the terminal object then it preserves
 Provide the dual results.
 Show the analogous results for functors which reflect or create (co)limits.
 -/
+
+@[expose] public section
 
 
 universe v v' u u'
@@ -152,11 +156,6 @@ lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
     haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
     apply preservesLimit_of_iso_diagram F that
-
-@[deprecated PreservesFiniteProducts.of_preserves_binary_and_terminal (since := "2025-04-22")]
-lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
-    PreservesLimitsOfShape (Discrete (Fin n)) F :=
-  have : PreservesFiniteProducts F := .of_preserves_binary_and_terminal _; inferInstance
 
 end Preserves
 

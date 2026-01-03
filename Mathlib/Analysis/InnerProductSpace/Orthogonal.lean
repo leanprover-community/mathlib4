@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Orthogonal complements of submodules
@@ -22,6 +24,8 @@ The orthogonal complement of a submodule `K` is denoted by `Kᗮ`.
 The proposition that two submodules are orthogonal, `Submodule.IsOrtho`, is denoted by `U ⟂ V`.
 Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -101,13 +105,8 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 /-- `Kᗮ` can be characterized as the intersection of the kernels of the operations of
 inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) := by
-  apply le_antisymm
-  · rw [le_iInf_iff]
-    rintro ⟨v, hv⟩ w hw
-    simpa using hw _ hv
-  · intro v hv w hw
-    simp only [mem_iInf] at hv
-    exact hv ⟨w, hw⟩
+  ext
+  simpa using mem_orthogonal _ _
 
 /-- The orthogonal complement of any submodule `K` is closed. -/
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
@@ -118,6 +117,11 @@ theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
   K.isClosed_orthogonal.completeSpace_coe
+
+lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map f = (K.map f)ᗮ := by
+  simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, LinearIsometryEquiv.inner_map_eq_flip]
+  exact fun x ↦ ⟨fun ⟨y, hy⟩ z hz ↦ by simp [← hy.2, hy.1 _ hz], fun h ↦ ⟨_, h, by simp⟩⟩
 
 variable (𝕜 E)
 

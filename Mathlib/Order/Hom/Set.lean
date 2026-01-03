@@ -3,15 +3,19 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.MinImports
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.MinImports
 
 /-!
 # Order homomorphisms and sets
 -/
+
+@[expose] public section
 
 
 open OrderDual Set

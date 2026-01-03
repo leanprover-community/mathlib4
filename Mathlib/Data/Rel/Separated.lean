@@ -3,15 +3,17 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Data.Rel
 
 /-!
 # Uniform separation
 
-This file defines a notion of separation of a set relative to an relation.
+This file defines a notion of separation of a set relative to a relation.
 
-For a relation `R`, a `R`-separated set `s` is a set such that every pair of elements of `s` is
+For a relation `R`, an `R`-separated set `s` is a set such that every pair of elements of `s` is
 `R`-unrelated.
 
 The concept of uniformly separated sets is used to define two further notions of separation:
@@ -23,6 +25,8 @@ The concept of uniformly separated sets is used to define two further notions of
 * Actually use `SetRel.IsSeparated` to define the above two notions.
 * Link to the notion of separation given by pairwise disjoint balls.
 -/
+
+@[expose] public section
 
 open Set
 

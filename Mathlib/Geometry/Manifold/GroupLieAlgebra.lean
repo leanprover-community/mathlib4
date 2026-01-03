@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.VectorField.LieBracket
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
 /-!
 # The Lie algebra of a Lie group
@@ -31,6 +33,8 @@ should be favored when possible.
 The standing assumption in this file is that the group is `C^n` for `n = minSmoothness 𝕜 3`, i.e.,
 it is `C^3` over `ℝ` or `ℂ`, and analytic otherwise.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -127,7 +131,7 @@ lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
 
 @[to_additive]
 lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
-    mulInvariantVectorField (V 1) g = mpullback I I (g ⁻¹ * ·) V g := by
+    mulInvariantVectorField (V 1) g = mpullback I I (g⁻¹ * ·) V g := by
   have A : 1 = g⁻¹ * g := by simp
   simp only [mulInvariantVectorField, mpullback, inverse_mfderiv_mul_left]
   congr

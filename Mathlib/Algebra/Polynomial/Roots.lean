@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Theory of univariate polynomials
@@ -28,6 +30,8 @@ We define the multiset of roots of a polynomial, and prove basic results about i
   ranges through its roots.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal
 
@@ -274,6 +278,17 @@ theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).
     rintro ⟨a, -, h⟩
     exact X_sub_C_ne_zero a h
 
+theorem roots_ofMultiset (s : Multiset R) : (ofMultiset s).roots = s := by
+  simp
+
+variable (R) in
+theorem rightInverse_ofMultiset_roots : Function.RightInverse (α := R[X]) ofMultiset roots :=
+  roots_ofMultiset
+
+variable (R) in
+theorem ofMultiset_injective : Function.Injective (ofMultiset (R := R)) :=
+  rightInverse_ofMultiset_roots R |>.injective
+
 theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
     Multiset.card (roots ((X : R[X]) ^ n - C a)) ≤ n :=
   WithBot.coe_le_coe.1 <|
@@ -281,6 +296,20 @@ theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
       (Multiset.card (roots ((X : R[X]) ^ n - C a)) : WithBot ℕ) ≤ degree ((X : R[X]) ^ n - C a) :=
         card_roots (X_pow_sub_C_ne_zero hn a)
       _ = n := degree_X_pow_sub_C hn a
+
+theorem roots_eq_of_degree_le_card_of_ne_zero {S : Finset R}
+    (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.degree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val := by
+  refine (Multiset.eq_of_le_of_card_le ?_ ?_).symm
+  · exact (Finset.val_le_iff_val_subset.mpr (fun x hx ↦ (p.mem_roots hp).mpr (hS x hx)))
+  · simpa using (p.card_roots hp).trans hcard
+
+theorem roots_eq_of_degree_eq_card {S : Finset R}
+    (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
+  roots_eq_of_degree_le_card_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
+
+theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
+    (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=
+  roots_eq_of_degree_le_card_of_ne_zero hS (degree_le_of_natDegree_le hcard) hp
 
 section NthRoots
 
@@ -311,7 +340,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
           (by
-            rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
+            rw [hn, pow_zero, ← C_1, ← map_sub]
             exact degree_C_le))
   else by
     rw [← Nat.cast_le (α := WithBot ℕ)]
@@ -571,6 +600,10 @@ theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Alge
     [NoZeroSMulDivisors T S] (hp : p ≠ 0) {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 :=
   mem_rootSet.trans <| and_iff_right hp
 
+theorem Monic.mem_rootSet {p : T[X]} (hp : Monic p) {S : Type*} [CommRing S] [IsDomain S]
+    [Algebra T S] {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 := by
+  simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
+
 theorem rootSet_maps_to' {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [CommRing S']
     [IsDomain S'] [Algebra T S'] (hp : p.map (algebraMap T S') = 0 → p.map (algebraMap T S) = 0)
     (f : S →ₐ[T] S') : (p.rootSet S).MapsTo f (p.rootSet S') := fun x hx => by
@@ -827,8 +860,9 @@ theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsD
   card_roots' _ |>.trans natDegree_map_le
 
 theorem filter_roots_map_range_eq_map_roots [IsDomain A] [IsDomain B] {f : A →+* B}
-    [DecidableEq A] [DecidableEq B] [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
+    [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
     (p : A[X]) : (p.map f).roots.filter (· ∈ f.range) = p.roots.map f := by
+  classical
   ext b
   rw [Multiset.count_filter]
   split_ifs with h

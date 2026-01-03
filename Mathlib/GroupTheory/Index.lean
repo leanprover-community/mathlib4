@@ -3,14 +3,17 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Card
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Index of a Subgroup
@@ -25,7 +28,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `H.relIndex K` : the relative index of `H : Subgroup G` in `K : Subgroup G` as a natural number,
   and returns 0 if the relative index is infinite.
 
-# Main results
+## Main results
 
 - `card_mul_index` : `Nat.card H * H.index = Nat.card G`
 - `index_mul_card` : `H.index * Nat.card H = Nat.card G`
@@ -35,6 +38,8 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `relIndex_mul_relIndex` : `relIndex` is multiplicative in towers
 - `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -630,12 +635,12 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
   suffices ∃ n₁ n₂, n₁ < n₂ ∧ n₂ ≤ H.index ∧ ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hlt, hle, he⟩
-    refine ⟨n₂ - n₁, by cutsat, by cutsat, ?_⟩
+    refine ⟨n₂ - n₁, by lia, by lia, ?_⟩
     rw [eq_comm, QuotientGroup.eq, ← zpow_natCast, ← zpow_natCast, ← zpow_neg, ← zpow_add,
         add_comm] at he
     rw [← zpow_natCast]
     convert he
-    cutsat
+    lia
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩

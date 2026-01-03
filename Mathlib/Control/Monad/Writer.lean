@@ -3,8 +3,10 @@ Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Edward Ayers
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Writer monads
@@ -18,6 +20,8 @@ computation progresses.
 - [Original Mark P Jones article introducing `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
 
 -/
+
+@[expose] public section
 
 universe u v
 

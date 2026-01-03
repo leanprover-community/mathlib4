@@ -3,11 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Convex.Deriv
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+public import Mathlib.Analysis.Convex.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!
 # Derivative of Γ at positive integers
@@ -17,6 +18,8 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 `deriv Real.Gamma (n + 1) = Nat.factorial n * (-Real.eulerMascheroniConstant + harmonic n)`
 
 -/
+
+@[expose] public section
 
 open Nat Set Filter Topology
 
@@ -120,9 +123,8 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     · exact (differentiableAt_const _).rpow (by fun_prop) two_ne_zero
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
               deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
-    congr 2
     rw [deriv_fun_mul]
-    · congr 1 <;> norm_num
+    · simp
     · exact h_diff' one_half_pos
     · exact DifferentiableAt.rpow (by fun_prop) (by fun_prop) two_ne_zero
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by

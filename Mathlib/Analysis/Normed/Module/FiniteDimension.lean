@@ -3,19 +3,21 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Normed.Group.Lemmas
-import Mathlib.Analysis.Normed.Affine.Isometry
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.NormedSpace.RieszLemma
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.Topology.Algebra.AffineSubspace
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.LinearAlgebra.Dimension.LinearMap
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Normed.Group.Lemmas
+public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Module.RieszLemma
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.Topology.Algebra.AffineSubspace
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 
 /-!
@@ -44,9 +46,11 @@ linear maps are continuous. Moreover, a finite-dimensional subspace is always co
 The fact that all norms are equivalent is not written explicitly, as it would mean having two norms
 on a single space, which is not the way type classes work. However, if one has a
 finite-dimensional vector space `E` with a norm, and a copy `E'` of this type with another norm,
-then the identities from `E` to `E'` and from `E'`to `E` are continuous thanks to
+then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
 `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -659,7 +663,7 @@ alias ⟨_, Summable.norm⟩ := summable_norm_iff
 theorem summable_of_sum_range_norm_le {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {c : ℝ} {f : ℕ → E} (h : ∀ n, ∑ i ∈ Finset.range n, ‖f i‖ ≤ c) :
     Summable f :=
-  summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _)  h
+  summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _) h
 
 theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}

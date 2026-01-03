@@ -3,15 +3,17 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Dynamics.PeriodicPts.Defs
-import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.GroupTheory.Commutator.Basic
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Properties of group actions involving quotient groups
@@ -23,6 +25,8 @@ This file proves properties of group actions which use the quotient group constr
 
 as well as their analogues for additive groups.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -162,7 +166,7 @@ noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ 
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
       ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
-        fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
+        fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
 @[to_additive AddAction.orbitProdStabilizerEquivAddGroup /-- Orbit-stabilizer theorem. -/]
@@ -228,7 +232,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σ ω : Ω, α
 @[to_additive AddAction.sigmaFixedByEquivOrbitsProdAddGroup
       /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
       `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
-      acting on `X` and `X/G`denotes the quotient of `X` by the relation `orbitRel G X`. -/]
+      acting on `X` and `X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/]
 noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) ≃ Ω × α :=
   calc
     (Σ a : α, fixedBy β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
@@ -431,7 +435,7 @@ open QuotientGroup
 
 /-- Cosets of the centralizer of an element embed into the set of commutators. -/
 noncomputable def quotientCentralizerEmbedding (g : G) :
-    G ⧸ centralizer (zpowers (g : G)) ↪ commutatorSet G :=
+    G ⧸ centralizer {g} ↪ commutatorSet G :=
   ((MulAction.orbitEquivQuotientStabilizer (ConjAct G) g).trans
             (quotientEquivOfEq (ConjAct.stabilizer_eq_centralizer g))).symm.toEmbedding.trans
     ⟨fun x =>
@@ -448,7 +452,7 @@ theorem quotientCentralizerEmbedding_apply (g : G) (x : G) :
 of commutators. -/
 noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
     G ⧸ center G ↪ S → commutatorSet G :=
-  (quotientEquivOfEq (center_eq_infi' S hS)).toEmbedding.trans
+  (quotientEquivOfEq (center_eq_infi' hS)).toEmbedding.trans
     ((quotientiInfEmbedding _).trans
       (Function.Embedding.piCongrRight fun g => quotientCentralizerEmbedding (g : G)))
 

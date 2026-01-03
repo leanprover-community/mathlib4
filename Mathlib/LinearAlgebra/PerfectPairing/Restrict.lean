@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.PerfectPairing.Basic
-import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.LinearAlgebra.Matrix.BaseChange
+module
+
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
+public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.BaseChange
 
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.
@@ -20,6 +22,8 @@ We provide API for restricting perfect pairings to submodules and for restrictin
   of a perfect pairing with coefficients in a field.
 
 -/
+
+@[expose] public section
 
 open Function Module Set
 open Submodule (span subset_span)
@@ -41,6 +45,7 @@ variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Modu
 
 include hi hj hij
 
+set_option backward.privateInPublic true in
 private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toPerfPair.symm := by
@@ -69,6 +74,8 @@ lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
   bijective_left := p.restrict_aux i j hi hj hij
   bijective_right := p.flip.restrict_aux j i hj hi hij.flip
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 set_option linter.deprecated false in
 /-- The restriction of a perfect pairing to submodules (expressed as injections to provide
 definitional control). -/
@@ -88,6 +95,7 @@ variable {S M' N' : Type*}
   [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
+set_option backward.privateInPublic true in
 private lemma restrictScalars_injective_aux
     (hi : Injective i)
     (hN : span R (LinearMap.range j : Set N) = ⊤)
@@ -111,6 +119,7 @@ private lemma restrictScalars_injective_aux
   ext n
   simpa using hx n
 
+set_option backward.privateInPublic true in
 private lemma restrictScalars_surjective_aux
     (h : ∀ g : Module.Dual S N', ∃ m,
       (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
@@ -141,6 +150,8 @@ lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)
   bijective_right := ⟨p.flip.restrictScalars_injective_aux j i hj hM fun m n ↦ hp n m,
     p.flip.restrictScalars_surjective_aux j i h₂ fun m n ↦ hp n m⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 set_option linter.deprecated false in
 /-- Restriction of scalars for a perfect pairing taking values in a subring. -/
 @[deprecated IsPerfPair.restrictScalars (since := "2025-05-28")]
@@ -223,6 +234,15 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   have h_span : span K v = span K (Set.range b) := by simp [b]
   rw [h_span, Basis.mem_span_iff_repr_mem, ← Basis.toMatrix_mulVec_repr bM b m]
   exact fun i ↦ Subring.sum_mem _ fun j _ ↦ Subring.mul_mem _ (hA i j) (hj j)
+
+lemma finrank_eq_of_isPerfPair
+    (M' : Submodule K M) (N' : Submodule K N)
+    (hM : span L (M' : Set M) = ⊤)
+    (hN : span L (N' : Set N) = ⊤)
+    (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
+    finrank K M' = finrank L M := by
+  obtain ⟨n, b, b', hb⟩ := exists_basis_basis_of_span_eq_top_of_mem_algebraMap p M' N' hM hN hp
+  rw [finrank_eq_card_basis b, finrank_eq_card_basis b']
 
 variable {M' N' : Type*}
   [AddCommGroup M'] [AddCommGroup N'] [Module K M'] [Module K N'] [IsScalarTower K L N]

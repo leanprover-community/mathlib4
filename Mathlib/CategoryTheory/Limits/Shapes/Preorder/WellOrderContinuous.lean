@@ -3,17 +3,19 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Fin.SuccPredOrder
-import Mathlib.Order.Interval.Set.InitialSeg
-import Mathlib.Order.Interval.Set.Limit
-import Mathlib.Order.SuccPred.InitialSeg
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.SuccPred.LinearLocallyFinite
+module
+
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.Order.Interval.Set.InitialSeg
+public import Mathlib.Order.Interval.Set.Limit
+public import Mathlib.Order.SuccPred.InitialSeg
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Continuity of functors from well-ordered types
@@ -24,6 +26,8 @@ to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 

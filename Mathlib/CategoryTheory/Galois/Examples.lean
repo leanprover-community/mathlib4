@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Action.Concrete
-import Mathlib.CategoryTheory.Action.Limits
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Action.Concrete
+public import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Examples of Galois categories and fiber functors
@@ -16,6 +18,8 @@ forgetful functor to `FintypeCat` is a `FiberFunctor`.
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -32,9 +36,9 @@ noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
   exact FintypeCat.of (↑(Set.range f)ᶜ)
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
-def imageComplementIncl {X Y : FintypeCat.{u}}
+noncomputable def imageComplementIncl {X Y : FintypeCat.{u}}
     (f : X ⟶ Y) : imageComplement f ⟶ Y :=
-  Subtype.val
+  FintypeCat.homMk Subtype.val
 
 variable (G : Type u) [Group G]
 
@@ -44,20 +48,16 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat G}
     (f : X ⟶ Y) : Action FintypeCat G where
   V := FintypeCat.imageComplement f.hom
   ρ := {
-    toFun := fun g y ↦ Subtype.mk (Y.ρ g y.val) <| by
+    toFun g := FintypeCat.homMk (fun y ↦ Subtype.mk ((Y.ρ g).hom y.val) <| by
       intro ⟨x, h⟩
       apply y.property
-      use X.ρ g⁻¹ x
+      use (X.ρ g⁻¹).hom x
       calc (X.ρ g⁻¹ ≫ f.hom) x
-          = (Y.ρ g⁻¹ * Y.ρ g) y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
-        _ = y.val := by rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_apply]
-    map_one' := by simp only [map_one, End.one_def, FintypeCat.id_apply, Subtype.coe_eta]; rfl
-    map_mul' := by
-      intro g h
-      congr! 1 with ⟨x, hx⟩
-      apply Subtype.ext
-      simp only [map_mul, End.mul_def, FintypeCat.comp_apply]
-      rfl
+          = ((Y.ρ g⁻¹ * Y.ρ g)).hom y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
+        _ = y.val := by
+          rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_hom, id_eq])
+    map_one' := by aesop
+    map_mul' := by aesop
   }
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
@@ -115,7 +115,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     have : Fintype T := Fintype.ofFinite T
     letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G ↑(MulAction.orbit G x)
     let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
-    let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
+    let i : T' ⟶ X := ⟨FintypeCat.homMk Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
       apply IsConnected.noTrivialComponent T' i

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MonoidAlgebra.Degree
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Degree
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Degrees of polynomials
@@ -46,6 +48,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -455,8 +459,8 @@ lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolyno
   (totalDegree_finset_sum ..).trans <| Finset.sup_le hf
 
 lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree :=
-  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (by cutsat) fun h ↦
-    (Finset.single_le_sum (by cutsat) <| Finsupp.mem_support_iff.mpr h).trans
+  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (by lia) fun h ↦
+    (Finset.single_le_sum (by lia) <| Finsupp.mem_support_iff.mpr h).trans
     (le_totalDegree hd)
 
 theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)

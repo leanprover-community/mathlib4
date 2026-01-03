@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Continuous affine equivalences
@@ -31,6 +33,8 @@ which are continuous with continuous inverse.
 with multiplication corresponding to composition in `AffineEquiv.group`.
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -119,6 +123,10 @@ protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
   __ := e
   cont := e.continuous_toFun
+
+/-- Coerce continuous linear equivs to continuous linear maps. -/
+instance ContinuousAffineMap.coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ →ᴬ[k] P₂) :=
+  ⟨toContinuousAffineMap⟩
 
 @[simp]
 lemma coe_toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toContinuousAffineMap = e :=

@@ -3,11 +3,13 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Analysis.RCLike.Extend
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+module
+
+public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.RCLike.Extend
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Separation Hahn-Banach theorem
@@ -32,6 +34,8 @@ We provide many variations to stricten the result under more assumptions on the 
 * Eidelheit's theorem
 * `Convex ℝ s → interior (closure s) ⊆ s`
 -/
+
+@[expose] public section
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
@@ -68,7 +72,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
   rintro ⟨x, hx⟩
   obtain ⟨y, rfl⟩ := Submodule.mem_span_singleton.1 hx
   rw [LinearPMap.mkSpanSingleton'_apply]
-  simp only [mul_one, Algebra.id.smul_eq_mul]
+  simp only [mul_one, smul_eq_mul]
   obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
   · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]

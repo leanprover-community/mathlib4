@@ -3,17 +3,20 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Lean
-import Batteries.Lean.Except
-import Batteries.Tactic.Exact
-import Mathlib.Tactic.GCongr.ForwardAttr
-import Mathlib.Order.Defs.Unbundled
+module
+
+public meta import Lean
+public meta import Batteries.Lean.Except
+public meta import Batteries.Tactic.Exact
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
+public meta import Mathlib.Order.Defs.Unbundled
+import all Lean.Meta.Tactic.Apply
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
 
 The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between a LHS and RHS matching the same pattern to relational subgoals between the differing
+between an LHS and RHS matching the same pattern to relational subgoals between the differing
 inputs to the pattern.  For example,
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
@@ -22,7 +25,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
   · linarith
   · linarith
 ```
-This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
+This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
 ```
 x ^ 2 * ?_ + ?_
 ```
@@ -132,6 +135,8 @@ indicate where the original `?_` holes were. The LHS is then replaced with this 
 `gcongr` can tell based on the LHS how far to continue recursively. We also keep track of when
 then LHS and RHS swap around, so that we know where to look for the metadata annotation.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
@@ -452,7 +457,6 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
 
 end Trans
 
-open private isDefEqApply throwApplyError reorderGoals from Lean.Meta.Tactic.Apply in
 /--
 `Lean.MVarId.applyWithArity` is a copy of `Lean.MVarId.apply`, where the arity of the
 applied function is given explicitly instead of being inferred.
@@ -604,7 +608,7 @@ partial def _root_.Lean.MVarId.gcongr
       \n  attempted lemmas: {lemmas.map (·.declName)}"
 
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between a LHS and RHS.  For example,
+between an LHS and RHS.  For example,
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
@@ -612,7 +616,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
   · linarith
   · linarith
 ```
-This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
+This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
 ```
 x ^ 2 * ?_ + ?_
 ```

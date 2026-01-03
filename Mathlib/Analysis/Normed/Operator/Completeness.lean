@@ -3,8 +3,10 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.Normed.Operator.Bilinear
-import Mathlib.Analysis.Normed.Operator.NNNorm
+module
+
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operators on complete normed spaces
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Operator.NNNorm
 This file contains statements about norms of operators on complete normed spaces, such as a
 version of the Banach-Alaoglu theorem (`ContinuousLinearMap.isCompact_image_coe_closedBall`).
 -/
+
+@[expose] public section
 
 suppress_compilation
 

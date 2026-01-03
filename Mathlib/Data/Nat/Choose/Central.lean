@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Thomas Browning
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Central binomial coefficients
@@ -23,6 +25,8 @@ This file proves properties of the central binomial coefficients (that is, `Nat.
 * `succ_dvd_centralBinom`: The result that `n+1 ∣ n.centralBinom`, ensuring that the explicit
   definition of the Catalan numbers is integer-valued.
 -/
+
+@[expose] public section
 
 
 namespace Nat

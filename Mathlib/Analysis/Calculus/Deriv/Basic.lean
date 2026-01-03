@@ -3,10 +3,12 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Calculus.TangentCone.DimOne
-import Mathlib.Analysis.Calculus.TangentCone.Real
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Calculus.TangentCone.DimOne
+public import Mathlib.Analysis.Calculus.TangentCone.Real
 
 /-!
 
@@ -76,7 +78,7 @@ example (x : ℝ) :
 
 The relationship between the derivative of a function and its definition from a standard
 undergraduate course as the limit of the slope `(f y - f x) / (y - x)` as `y` tends to `𝓝[≠] x`
-is developed in the file `Slope.lean`.
+is developed in the file `Mathlib/Analysis/Calculus/Deriv/Slope.lean`.
 
 ## Implementation notes
 
@@ -85,8 +87,10 @@ for Fréchet derivatives.
 
 The strategy to construct simp lemmas that give the simplifier the possibility to compute
 derivatives is the same as the one for differentiability statements, as explained in
-`FDeriv/Basic.lean`. See the explanations there.
+`Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. See the explanations there.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -429,7 +433,7 @@ theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
 
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
-  rw [← fderiv_deriv, ← ContinuousLinearMap.map_smul]
+  rw [← fderiv_deriv, ← map_smul]
   simp only [smul_eq_mul, mul_one]
 
 theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv 𝕜 f x := by
@@ -602,6 +606,11 @@ theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x =
 
 protected theorem Filter.EventuallyEq.deriv (h : f₁ =ᶠ[𝓝 x] f) : deriv f₁ =ᶠ[𝓝 x] deriv f :=
   h.eventuallyEq_nhds.mono fun _ h => h.deriv_eq
+
+theorem Filter.EventuallyEq.nhdsNE_deriv (h : f₁ =ᶠ[𝓝[≠] x] f) : deriv f₁ =ᶠ[𝓝[≠] x] deriv f := by
+  rw [Filter.EventuallyEq, ← eventually_nhdsNE_eventually_nhds_iff] at *
+  filter_upwards [h] with y hy
+  apply Filter.EventuallyEq.deriv hy
 
 end congr
 
@@ -878,7 +887,7 @@ variable (σ) {f : 𝕜 → 𝕜} {f' : 𝕜}
 
 /-- If `f` has derivative `f'` at `x`, and `σ, σ'` are mutually inverse normed-ring automorphisms,
 then `σ ∘ f ∘ σ'` has derivative `σ f'` at `σ x`. -/
-lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ  f') (σ x) :=
+lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ f') (σ x) :=
   hf.comp_semilinear σ' ⟨σ.toSemilinearMap, σ.isometry.continuous⟩
 
 /-- If `f` is differentiable at `x`, and `L` is `σ`-semilinear, then `L ∘ f ∘ σ⁻¹` is

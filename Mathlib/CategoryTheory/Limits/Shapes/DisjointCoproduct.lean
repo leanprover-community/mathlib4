@@ -3,9 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Disjoint coproducts
@@ -22,6 +24,8 @@ Shows that a category with disjoint coproducts is `InitialMonoClass`.
 * Define extensive categories, and show every extensive category has disjoint coproducts.
 * Define coherent categories and use this to define positive coherent categories.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -217,11 +221,11 @@ alias CoproductDisjoint.mono_inr := CategoryTheory.Mono.of_binaryCoproductDisjoi
 end
 
 /-- `C` has disjoint coproducts if every coproduct is disjoint. -/
-class CoproductsOfShapeDisjoint (C : Type*) [Category C] (ι : Type*) : Prop where
+class CoproductsOfShapeDisjoint (C : Type*) [Category* C] (ι : Type*) : Prop where
   coproductDisjoint (X : ι → C) : CoproductDisjoint X
 
 /-- `C` has disjoint binary coproducts if every binary coproduct is disjoint. -/
-abbrev BinaryCoproductsDisjoint (C : Type*) [Category C] : Prop :=
+abbrev BinaryCoproductsDisjoint (C : Type*) [Category* C] : Prop :=
   CoproductsOfShapeDisjoint C WalkingPair
 
 attribute [instance 999] CoproductsOfShapeDisjoint.coproductDisjoint

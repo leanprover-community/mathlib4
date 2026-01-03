@@ -3,8 +3,10 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.MeasureTheory.Integral.ExpDecay
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Integral.ExpDecay
 
 /-!
 # The Gamma function
@@ -35,6 +37,8 @@ set it to be `0` by convention.)
 
 Gamma
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -112,9 +116,9 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
   dsimp only
-  rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
-    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, RingHom.map_mul, ←
-    ofReal_log (le_of_lt hx), conj_ofReal, RingHom.map_sub, RingHom.map_one]
+  rw [map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
+    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, map_mul,
+    ← ofReal_log (le_of_lt hx), conj_ofReal, map_sub, map_one]
 
 theorem GammaIntegral_ofReal (s : ℝ) :
     GammaIntegral ↑s = ↑(∫ x : ℝ in Ioi 0, Real.exp (-x) * x ^ (s - 1)) := by
@@ -303,7 +307,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]
-    · cutsat
+    · lia
     · linarith
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -361,9 +365,9 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
     intro s
     rw [GammaAux]
     dsimp only
-    rw [div_eq_mul_inv _ s, RingHom.map_mul, conj_inv, ← div_eq_mul_inv]
+    rw [div_eq_mul_inv _ s, map_mul, conj_inv, ← div_eq_mul_inv]
     suffices conj s + 1 = conj (s + 1) by rw [this, IH]
-    rw [RingHom.map_add, RingHom.map_one]
+    rw [map_add, map_one]
 
 /-- Expresses the integral over `Ioi 0` of `t ^ (a - 1) * exp (-(r * t))` in terms of the Gamma
 function, for complex `a`. -/
@@ -482,7 +486,7 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
 open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
-def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
+meta def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Gamma $a) =>
     match ← core q(inferInstance) q(inferInstance) a with

@@ -3,12 +3,14 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.RingTheory.ChainOfDivisors
-import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Localization
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.RingTheory.ChainOfDivisors
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Localization
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Dedekind domains and ideals
@@ -36,6 +38,8 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+
+@[expose] public section
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
@@ -86,6 +90,10 @@ theorem Ideal.isPrime_of_prime {P : Ideal A} (h : Prime P) : IsPrime P := by
 theorem Ideal.prime_of_isPrime {P : Ideal A} (hP : P ≠ ⊥) (h : IsPrime P) : Prime P := by
   refine ⟨hP, mt Ideal.isUnit_iff.mp h.ne_top, fun I J hIJ => ?_⟩
   simpa only [Ideal.dvd_iff_le] using h.mul_le.mp (Ideal.le_of_dvd hIJ)
+
+theorem Ideal.prime_of_mem_primesOver {R : Type*} [CommRing R] [Algebra R A] {p : Ideal R}
+    [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} (hP : P ∈ primesOver p A) : Prime P :=
+  prime_of_isPrime (ne_bot_of_mem_primesOver hp hP) hP.1
 
 /-- In a Dedekind domain, the (nonzero) prime elements of the monoid with zero `Ideal A`
 are exactly the prime ideals. -/
@@ -186,6 +194,11 @@ lemma FractionalIdeal.le_inv_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) 
 lemma FractionalIdeal.inv_le_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
     I⁻¹ ≤ J ↔ J⁻¹ ≤ I := by
   simpa using le_inv_comm (A := A) (K := K) (inv_ne_zero hI) (inv_ne_zero hJ)
+
+@[simp]
+theorem FractionalIdeal.inv_le_inv_iff {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
+    I⁻¹ ≤ J⁻¹ ↔ J ≤ I := by
+  rw [le_inv_comm (inv_ne_zero hI) hJ, inv_inv]
 
 open FractionalIdeal
 
@@ -421,6 +434,12 @@ theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {I : Ideal T} (hI
     exact hpm.coprime_of_ne ((isPrime_of_prime hp).isMaximal hp.ne_zero) (of_mem_filter hpi)
   · nth_rw 1 [← prod_normalizedFactors_eq_self hI, ← filter_add_not (P = ·) (normalizedFactors I)]
     rw [prod_add, pow_count]
+
+theorem map_prime_of_equiv {R : Type*} [CommRing R] [IsDedekindDomain R]
+    (f : T ≃+* R) {I : Ideal T} (hI : Prime I) (h : I ≠ ⊥) : Prime (I.map f) := by
+  rw [Ideal.prime_iff_isPrime h] at hI
+  exact (Ideal.prime_iff_isPrime <| (I.map_eq_bot_iff_of_injective f.injective).not.2 h).2
+    (Ideal.map_isPrime_of_equiv _)
 
 end IsDedekindDomain
 
@@ -690,7 +709,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  cutsat
+  lia
 
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
@@ -798,8 +817,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
         (factors I).toFinset.prod_coe_sort fun P => P ^ (factors I).count P
       _ = ((factors I).map fun P => P).prod := (Finset.prod_multiset_map_count (factors I) id).symm
       _ = (factors I).prod := by rw [Multiset.map_id']
-      _ = I := associated_iff_eq.mp (factors_prod hI)
-      )
+      _ = I := associated_iff_eq.mp (factors_prod hI))
 
 @[simp]
 theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :
@@ -995,12 +1013,8 @@ variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMax
 
 include hpb in
 theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
-  classical
-  ext P
-  rw [primesOverFinset, factors_eq_normalizedFactors, Finset.mem_coe, Multiset.mem_toFinset]
-  exact (P.mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hpb)).trans <| Iff.intro
-    (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
-    (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
+  ext
+  simpa using (mem_primesOver_iff_mem_normalizedFactors _ hpb).symm
 
 include hpb in
 theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by

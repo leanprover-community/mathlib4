@@ -3,9 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
 -/
-import Batteries.Tactic.Alias
-import Batteries.Data.List.Basic
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Tactic.Alias
+public import Batteries.Data.List.Basic
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # The Following Are Equivalent
@@ -14,6 +16,8 @@ This file allows to state that all propositions in a list are equivalent. It is 
 `Mathlib/Tactic/Tfae.lean`.
 `TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `Pairwise (↔) l`.
 -/
+
+@[expose] public section
 
 
 namespace List

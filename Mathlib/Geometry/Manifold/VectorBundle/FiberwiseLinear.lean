@@ -3,13 +3,17 @@ Copyright (c) 2022 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-! # The groupoid of `C^n`, fiberwise-linear maps
 
 This file contains preliminaries for the definition of a `C^n` vector bundle: an associated
 `StructureGroupoid`, the groupoid of `contMDiffFiberwiseLinear` functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 

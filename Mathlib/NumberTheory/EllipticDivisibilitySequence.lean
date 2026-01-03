@@ -3,9 +3,12 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Data.Nat.EvenOddRec
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Data.Nat.EvenOddRec
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.LinearCombination
+import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Elliptic divisibility sequences
@@ -50,7 +53,7 @@ when `n` is even. This coincides with the definition in the references since bot
 `normEDS b c d (2 * (m + 2) + 1)` and in `normEDS b c d (2 * (m + 3))`.
 
 One reason is to avoid the necessity for ring division by `b` in the inductive definition of
-`normEDS b c d (2 * (m + 3))`. The idea is that, it can be shown that `normEDS b c d (2 * (m + 3))`
+`normEDS b c d (2 * (m + 3))`. The idea is that it can be shown that `normEDS b c d (2 * (m + 3))`
 always contains a factor of `b`, so it is possible to remove a factor of `b` *a posteriori*, but
 stating this lemma requires first defining `normEDS b c d (2 * (m + 3))`, which requires having this
 factor of `b` *a priori*. Another reason is to allow the definition of univariate `n`-division
@@ -64,6 +67,8 @@ M Ward, *Memoir on Elliptic Divisibility Sequences*
 
 elliptic, divisibility, sequence
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -401,7 +406,7 @@ def complEDS' : ℕ → R
   | (n + 2) => let m := n / 2 + 1
     if hn : Even n then complEDS' m * complEDS₂ b c d (m * k) else
       have : m + 1 < n + 2 :=
-        add_lt_add_right (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 2
+        add_lt_add_left (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 2
       complEDS' m ^ 2 * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) -
         complEDS' (m + 1) ^ 2 * normEDS b c d (m * k + 1) * normEDS b c d (m * k - 1)
 

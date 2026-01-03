@@ -3,13 +3,15 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Junyan Xu
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.PUnit
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.PUnit
+public import Mathlib.CategoryTheory.Conj
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # The category of `R`-modules
@@ -34,6 +36,8 @@ Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a 
 `f : M ≃ₗ[R] N`, use `f.toModuleIso`.
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits WalkingParallelPair
 
@@ -41,6 +45,7 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
+set_option backward.privateInPublic true in
 /-- The category of R-modules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
@@ -63,6 +68,8 @@ instance : CoeSort (SemimoduleCat.{v} R) (Type v) :=
 
 attribute [coe] SemimoduleCat.carrier
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
@@ -448,6 +455,7 @@ def ofHom₂ {M N P : SemimoduleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     M ⟶ of R (N ⟶ P) :=
   ofHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f
 
+set_option backward.proofsInPublic true in
 /-- Turn a homomorphism into a bilinear map. -/
 @[simps!]
 def Hom.hom₂ {M N P : SemimoduleCat.{u} R}

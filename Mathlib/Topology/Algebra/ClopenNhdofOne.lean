@@ -3,11 +3,13 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yi Song, Xuchun Li
 -/
-import Mathlib.GroupTheory.Index
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Topology.Separation.Profinite
-import Mathlib.Topology.Separation.Connected
+module
+
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Separation.Connected
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 
@@ -17,6 +19,8 @@ there exists an open normal subgroup contained within it.
 
 This file is split out from the file `OpenSubgroup` because it needs more imports.
 -/
+
+@[expose] public section
 
 namespace IsTopologicalGroup
 

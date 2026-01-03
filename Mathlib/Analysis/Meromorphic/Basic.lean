@@ -3,7 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Calculus.Deriv.ZPow
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Meromorphic functions
@@ -16,7 +20,9 @@ Main statements:
   and `g` analytic at `z₀`.
 -/
 
-open Filter
+@[expose] public section
+
+open Filter Set
 
 open scoped Topology
 
@@ -313,7 +319,7 @@ lemma fun_pow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   cases n with
-  | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
+  | ofNat m => simpa only [Int.ofNat_eq_natCast, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 
 @[fun_prop]
@@ -364,6 +370,49 @@ lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} : MeromorphicAt f x
     simp [sub_ne_zero.mpr hz]
   · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr ?_ (EventuallyEq.symm hg_eq)
     exact (((MeromorphicAt.id x).sub (.const _ x)).zpow _).smul hg_an.meromorphicAt
+
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop]
+protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
+    MeromorphicAt (deriv f) x := by
+  rw [MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt] at h
+  obtain ⟨n, g, h₁g, h₂g⟩ := h
+  have : _root_.deriv (fun z ↦ (z - x) ^ n • g z)
+      =ᶠ[𝓝[≠] x] fun z ↦ (n * (z - x) ^ (n - 1)) • g z + (z - x) ^ n • _root_.deriv g z := by
+    filter_upwards [eventually_nhdsWithin_of_eventually_nhds h₁g.eventually_analyticAt,
+      eventually_nhdsWithin_of_forall fun _ a ↦ a] with z₀ h₁ h₂
+    rw [deriv_fun_smul (DifferentiableAt.zpow (by fun_prop) (by simp_all [sub_ne_zero_of_ne h₂]))
+      (by fun_prop), add_comm, deriv_comp_sub_const (f := (· ^ n))]
+    aesop
+  rw [MeromorphicAt.meromorphicAt_congr (Filter.EventuallyEq.nhdsNE_deriv h₂g),
+    MeromorphicAt.meromorphicAt_congr this]
+  fun_prop
+
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop]
+theorem fun_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ _root_.deriv f z) x := h.deriv
+
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop] theorem iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) :
+    MeromorphicAt (_root_.deriv^[n] f) x := by
+  induction n with
+  | zero => exact h
+  | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
+
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop] theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ _root_.deriv^[n] f z) x := h.iterated_deriv
 
 end MeromorphicAt
 
@@ -506,6 +555,32 @@ lemma zpow (n : ℤ) : MeromorphicOn (s ^ n) U := fun x hx ↦ (hs x hx).zpow _
 include hs in
 lemma fun_zpow (n : ℤ) : MeromorphicOn (fun z ↦ s z ^ n) U := fun x hx ↦ (hs x hx).zpow _
 
+include hf in
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
+
+include hf in
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z) U := hf.deriv
+
+include hf in
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
+  fun z hz ↦ (hf z hz).iterated_deriv
+
+include hf in
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
+  MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U := hf.iterated_deriv
+
 end arithmetic
 
 include hf in
@@ -522,5 +597,37 @@ theorem eventually_codiscreteWithin_analyticAt
   apply Filter.mem_of_superset ((h x hx).eventually_analyticAt)
   intro x hx
   simp [hx]
+
+/--
+The singular set of a meromorphic function is countable.
+-/
+theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [CompleteSpace E]
+    (h : MeromorphicOn f U) :
+    ({z | AnalyticAt 𝕜 f z}ᶜ ∩ U).Countable := by
+  apply (HereditarilyLindelof_LindelofSets _).countable_of_isDiscrete
+    (isDiscrete_of_codiscreteWithin _)
+  simpa using eventually_codiscreteWithin_analyticAt f h
+
+/--
+The singular set of a meromorphic function is countable.
+-/
+theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
+    (h : MeromorphicOn f Set.univ) :
+    {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
+  simpa using (countable_compl_analyticAt_inter h)
+
+/--
+Meromorphic functions are measurable.
+-/
+theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
+    [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : MeromorphicOn f Set.univ) :
+    Measurable f := by
+  set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
+  have h₁ : sᶜ.Countable  := by simpa using h.countable_compl_analyticAt_inter
+  have h₁' := h₁.to_subtype
+  have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
+  have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
+  exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
+    (by simp [- mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
 
 end MeromorphicOn

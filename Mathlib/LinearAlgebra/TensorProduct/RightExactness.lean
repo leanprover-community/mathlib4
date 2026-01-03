@@ -3,11 +3,12 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-! # Right-exactness properties of tensor product
 
@@ -83,6 +84,8 @@ to compute some kernels.
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -305,7 +308,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
-  TensorProduct.lift  {
+  TensorProduct.lift {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
     map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change h (p + p') ⊗ₜ[R] q - (h p ⊗ₜ[R] q + h p' ⊗ₜ[R] q) ∈ range (rTensor Q f)
@@ -534,7 +537,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
-          use (a * x) ⊗ₜ[R] (b •y)
+          use (a * x) ⊗ₜ[R] (b • y)
           simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           rfl
         | add x y hx hy =>

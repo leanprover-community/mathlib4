@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Subfields
@@ -59,6 +60,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 subfield, subfields
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -245,6 +248,7 @@ theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ 
   show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
     simp
 
+@[simp]
 theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Subring.mem_sInf.trans
     ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h _ ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
@@ -253,7 +257,8 @@ theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, 
 theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]

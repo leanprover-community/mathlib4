@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Calculus.Deriv.Abs
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Abs
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
 # Differentiability of the norm in a real normed vector space
@@ -34,6 +36,8 @@ at `t • x` when `t ≠ 0`.
 differentiability, norm
 
 -/
+
+@[expose] public section
 
 open ContinuousLinearMap Filter NNReal Real Set
 

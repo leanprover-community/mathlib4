@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kexing Ying
 -/
-import Mathlib.Analysis.Normed.Order.UpperLower
-import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.Analysis.Normed.Order.UpperLower
+public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Order-connected sets are null-measurable
@@ -44,6 +46,8 @@ any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 
 Generalize so that it also applies to `ℝ × ℝ`, for example.
 -/
+
+@[expose] public section
 
 open Filter MeasureTheory Metric Set
 open scoped Topology

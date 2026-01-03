@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Ultrafilter.Defs
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.ZornAtoms
+module
+
+public import Mathlib.Order.Filter.Ultrafilter.Defs
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters
@@ -15,6 +17,8 @@ In this file we define
 
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/
+
+@[expose] public section
 
 universe u v
 

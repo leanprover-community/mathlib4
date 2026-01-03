@@ -3,9 +3,11 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Location
-import Lean.Meta.Tactic.Simp.Main
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Meta.Tactic.Simp.Main
 
 /-!
 # Rewriting at specified locations
@@ -17,6 +19,8 @@ This file provides convenience functions to turn such a metaprogram into a varie
 using the metaprogram to modify the goal, a specified hypothesis, or (via `Tactic.Location`) a
 combination of these.
 -/
+
+public meta section
 
 /-- Runs the given `atLocal` and `atTarget` methods on each of the locations selected by the given
 `loc`.

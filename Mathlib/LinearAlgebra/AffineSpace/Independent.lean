@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Combination
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Affine independence
@@ -28,6 +30,8 @@ This file defines affinely independent families of points.
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -312,6 +316,30 @@ theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
   rw [this]
   exact h.comp_embedding e.symm.toEmbedding
 
+/-- Swapping the first two points preserves affine independence. -/
+theorem AffineIndependent.comm_left {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₂, p₁, p₃] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 1)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Swapping the last two points preserves affine independence. -/
+theorem AffineIndependent.comm_right {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₁, p₃, p₂] := by
+  rw [← affineIndependent_equiv (Equiv.swap 1 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Reversing the order of three points preserves affine independence. -/
+theorem AffineIndependent.reverse_of_three {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₃, p₂, p₁] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
 /-- If a set of points is affinely independent, so is any subset. -/
 protected theorem AffineIndependent.mono {s t : Set P}
     (ha : AffineIndependent k (fun x => x : t → P)) (hs : s ⊆ t) :
@@ -402,8 +430,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
+  simp [← e.affineIndependent_iff, this, affineIndependent_equiv]
 
 end Composition
 
@@ -486,6 +513,81 @@ theorem AffineIndependent.notMem_affineSpan_diff [Nontrivial k] {p : ι → P}
 
 @[deprecated (since := "2025-05-23")]
 alias AffineIndependent.not_mem_affineSpan_diff := AffineIndependent.notMem_affineSpan_diff
+
+lemma AffineIndependent.injective_affineSpan_image [Nontrivial k] {p : ι → P}
+    (ha : AffineIndependent k p) : Injective fun (s : Set ι) ↦ affineSpan k (p '' s) := by
+  by_contra hn
+  rw [not_injective_iff] at hn
+  obtain ⟨s₁, s₂, hs₁₂, hne⟩ := hn
+  apply hne
+  ext i
+  simp_rw [← ha.mem_affineSpan_iff, hs₁₂]
+
+/-- An auxiliary lemma for the proof of `AffineIndependent.vectorSpan_image_eq_iff`. -/
+private lemma AffineIndependent.vectorSpan_image_ne_of_mem_of_notMem_of_not_subsingleton
+    [Nontrivial k] {p : ι → P} (ha : AffineIndependent k p) {s₁ s₂ : Set ι} {i : ι}
+    (his₁ : i ∈ s₁) (his₂ : i ∉ s₂) (h₁ : ¬s₁.Subsingleton) :
+    vectorSpan k (p '' s₁) ≠ vectorSpan k (p '' s₂) := by
+  classical
+  rw [Set.not_subsingleton_iff] at h₁
+  obtain ⟨j, hj, hne⟩ := h₁.exists_ne i
+  intro he
+  have hs : p i -ᵥ p j ∈ vectorSpan k (p '' s₁) :=
+    vsub_mem_vectorSpan k (Set.mem_image_of_mem _ his₁) (Set.mem_image_of_mem _ hj)
+  rw [he, Set.image_eq_range, mem_vectorSpan_iff_eq_weightedVSub] at hs
+  obtain ⟨fs, w, hw, hs⟩ := hs
+  let w' : ι → k := Function.extend Subtype.val w 0
+  have hw' : ∑ t ∈ fs.map (Embedding.subtype _), w' t = 0 := by
+    simp only [sum_map, Embedding.subtype_apply, ← hw]
+    exact sum_congr rfl fun t ht ↦ by simp [w']
+  have hs' : p i -ᵥ p j = (fs.map (Embedding.subtype _)).weightedVSub p w' := by
+    rw [hs, weightedVSub_map]
+    simp [w', Function.comp_def]
+  let fs' : Finset ι := insert i (insert j (fs.map (Embedding.subtype _)))
+  have hfsfs' : fs.map (Embedding.subtype _) ⊆ fs' := by grind
+  let w'' : ι → k := Set.indicator (fs.map (Embedding.subtype _)) w'
+  have hs'' : p i -ᵥ p j = fs'.weightedVSub p w'' := by
+    rw [hs']
+    exact weightedVSubOfPoint_indicator_subset _ _ _ (by grind)
+  have hw'' : ∑ t ∈ fs', w'' t = 0 := by
+    rw [← hw']
+    exact sum_indicator_subset _ (by grind)
+  let w''' : ι → k := w'' - weightedVSubVSubWeights k i j
+  have hi : i ∈ fs' := by grind
+  have hj : j ∈ fs' := by grind
+  have hw''' : ∑ t ∈ fs', w''' t = 0 := by
+    simp [w''', sum_sub_distrib, hw'', hi, hj]
+  have hs''' : fs'.weightedVSub p w''' = 0 := by
+    simp [w''', ← hs'', hi, hj]
+  have h0 := ha fs' w''' hw''' hs''' i hi
+  simp [w''', w'', Pi.sub_apply, hne.symm, his₂] at h0
+
+lemma AffineIndependent.vectorSpan_image_eq_iff [Nontrivial k] {p : ι → P}
+    (ha : AffineIndependent k p) {s₁ s₂ : Set ι} :
+    vectorSpan k (p '' s₁) = vectorSpan k (p '' s₂) ↔
+      s₁ = s₂ ∨ s₁.Subsingleton ∧ s₂.Subsingleton := by
+  constructor
+  · intro h
+    by_cases he : s₁ = s₂
+    · simp [he]
+    simp only [he, false_or]
+    by_cases h₁ : s₁.Subsingleton
+    · rw [vectorSpan_of_subsingleton _ (h₁.image _), eq_comm, vectorSpan_eq_bot_iff_subsingleton]
+        at h
+      exact ⟨h₁, Set.subsingleton_of_image ha.injective s₂ h⟩
+    by_cases h₂ : s₂.Subsingleton
+    · rw [vectorSpan_of_subsingleton _ (h₂.image _), vectorSpan_eq_bot_iff_subsingleton]
+        at h
+      exact ⟨Set.subsingleton_of_image ha.injective s₁ h, h₂⟩
+    simp only [h₁, h₂, false_and]
+    have hi : (∃ i ∈ s₁, i ∉ s₂) ∨ ∃ i ∈ s₂, i ∉ s₁ := by grind
+    rcases hi with ⟨i, his₁, his₂⟩ | ⟨i, his₂, his₁⟩
+    · exact ha.vectorSpan_image_ne_of_mem_of_notMem_of_not_subsingleton his₁ his₂ h₁ h
+    · exact ha.vectorSpan_image_ne_of_mem_of_notMem_of_not_subsingleton his₂ his₁ h₂ h.symm
+  · intro h
+    rcases h with rfl | ⟨h₁, h₂⟩
+    · rfl
+    · simp [h₁.image p, h₂.image p, vectorSpan_of_subsingleton]
 
 theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     (h : ¬AffineIndependent k ((↑) : t → V)) :

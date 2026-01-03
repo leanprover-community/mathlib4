@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexBiprod
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-! The homotopy cofiber of a morphism of homological complexes
 
@@ -29,15 +31,17 @@ morphisms `φ₀ φ₁ : K ⟶ M` and a homotopy `h : Homotopy φ₀ φ₁`,
 see `cylinder.desc`. There is also a homotopy equivalence
 `cylinder.homotopyEquiv K : HomotopyEquiv K.cylinder K`. From the construction of
 the cylinder, we deduce the lemma `Homotopy.map_eq_of_inverts_homotopyEquivalences`
-which assert that if a functor inverts homotopy equivalences, then the image of
+which asserts that if a functor inverts homotopy equivalences, then the images of
 two homotopic maps are equal.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Category Limits Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 namespace HomologicalComplex
 
@@ -336,6 +340,7 @@ lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
 
 end
 
+omit [DecidableRel c.Rel] in
 lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     (x y : Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) :
     x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
@@ -427,8 +432,7 @@ noncomputable abbrev inrX (i : ι) : (K ⊞ K).X i ⟶ K.cylinder.X i :=
 @[reassoc (attr := simp)]
 lemma inlX_π (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (π K).f j = 0 := by
-  erw [homotopyCofiber.inlX_desc_f]
-  simp [Homotopy.equivSubZero]
+  simp [HomologicalComplex.cylinder.π, HomologicalComplex.cylinder.desc, Homotopy.equivSubZero]
 
 @[reassoc (attr := simp)]
 lemma inrX_π (i : ι) :
@@ -529,7 +533,7 @@ noncomputable def homotopy₀₁ : Homotopy (ι₀ K) (ι₁ K) :=
     (Homotopy.ofEq (by simp)))
 
 include hc in
-lemma map_ι₀_eq_map_ι₁ {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
+lemma map_ι₀_eq_map_ι₁ {D : Type*} [Category* D] (H : HomologicalComplex C c ⥤ D)
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map (ι₀ K) = H.map (ι₁ K) := by
   have : IsIso (H.map (cylinder.π K)) := hH _ ⟨homotopyEquiv K hc, rfl⟩
@@ -539,14 +543,16 @@ end
 
 end cylinder
 
+omit [DecidableRel c.Rel] in
 /-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
     {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
     [∀ i, HasBinaryBiproduct (F.X i) (F.X i)]
     [HasHomotopyCofiber (biprod.lift (𝟙 F) (-𝟙 F))]
-    {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
+    {D : Type*} [Category* D] (H : HomologicalComplex C c ⥤ D)
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map φ₀ = H.map φ₁ := by
+  classical
   simp only [← cylinder.ι₀_desc _ _ h, ← cylinder.ι₁_desc _ _ h, H.map_comp,
     cylinder.map_ι₀_eq_map_ι₁ _ hc _ hH]
 

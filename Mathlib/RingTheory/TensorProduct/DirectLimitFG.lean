@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir and María-Inés de Frutos Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.FG
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.FG
 
 /-! # Tensor products and finitely generated submodules
 
@@ -42,6 +43,8 @@ tensor products of finitely-generated modules.
   of the modules `M ⊗[R] Q`, where `Q` ranges over all finitely generated submodules of `N`,
   as a linear equivalence.
 -/
+
+@[expose] public section
 
 open Submodule LinearMap
 

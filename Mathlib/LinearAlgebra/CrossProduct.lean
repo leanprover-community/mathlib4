@@ -3,11 +3,13 @@ Copyright (c) 2021 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Notation
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Cross products
@@ -35,6 +37,8 @@ The scope `Matrix` gives the following notation:
 
 cross product
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -66,7 +70,7 @@ end Matrix
 
 open Lean Elab Meta.Tactic Term in
 @[term_elab Matrix._root_.«term_×₃_», inherit_doc «term_×₃_»]
-def elabDeprecatedCross : TermElab
+meta def elabDeprecatedCross : TermElab
 | `($x ×₃%$tk $y) => fun ty? => do
   logWarningAt tk <| .tagged ``Linter.deprecatedAttr <| m!"The ×₃ notation has been deprecated"
   TryThis.addSuggestion tk { suggestion := "⨯₃" }
@@ -140,7 +144,7 @@ def Cross.lieRing : LieRing (Fin 3 → R) :=
   { Pi.addCommGroup with
     bracket := fun u v => u ⨯₃ v
     add_lie := LinearMap.map_add₂ _
-    lie_add := fun _ => LinearMap.map_add _
+    lie_add := fun _ => map_add _
     lie_self := cross_self
     leibniz_lie := leibniz_cross }
 
@@ -167,7 +171,7 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
   constructor
   · rw [LinearIndependent.pair_iff' hv, not_forall_not]
     rintro ⟨a, rfl⟩
-    rw [LinearMap.map_smul, cross_self, smul_zero]
+    rw [map_smul, cross_self, smul_zero]
   have hv' : v = ![v 0, v 1, v 2] := by simp [← List.ofFn_inj]
   have hw' : w = ![w 0, w 1, w 2] := by simp [← List.ofFn_inj]
   intro h1 h2

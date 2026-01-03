@@ -3,14 +3,16 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.MeasureTheory.Function.Jacobian
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.MeasureTheory.Function.Jacobian
 
 /-!
 # Change of variable formulas for integrals in dimension 1
 
 We record in this file versions of the general change of variables formula in integrals for
-functions from `R` to `ℝ`. This makes it possible to replace the determinant of the Fréchet
+functions from `ℝ` to `ℝ`. This makes it possible to replace the determinant of the Fréchet
 derivative with the one-dimensional derivative.
 
 We also give more specific versions of these theorems for monotone and antitone functions: this
@@ -21,6 +23,8 @@ See also `Mathlib/MeasureTheory/Integral/IntervalIntegral/IntegrationByParts.lea
 the change of variables formula in dimension 1 for non-monotone functions, formulated with
 the interval integral and with stronger requirements on the integrand.
 -/
+
+@[expose] public section
 
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics

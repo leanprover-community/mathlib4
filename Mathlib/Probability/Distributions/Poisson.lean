@@ -3,10 +3,11 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Probability.ProbabilityMassFunction.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-! # Poisson distributions over ℕ
 
@@ -20,6 +21,8 @@ Define the Poisson measure over the natural numbers
   `poissonPMF λ = ENNReal.ofReal (poissonPMFReal λ)`.
 * `poissonMeasure`: a Poisson measure on `ℕ`, parametrized by its rate `λ`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Nat
 
@@ -63,10 +66,10 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
 /-- The Poisson pmf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
 

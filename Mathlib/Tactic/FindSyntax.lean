@@ -3,9 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
-import Mathlib.Init
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # The `#find_syntax` command
@@ -16,6 +17,8 @@ all the candidates for `syntax` terms that contain the string `str`.
 It also makes a very crude effort at regenerating what the syntax looks like, by inspecting the
 `Expr`ession tree of the corresponding parser.
 -/
+
+public meta section
 
 namespace Mathlib.FindSyntax
 
@@ -81,7 +84,8 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
       let mod := (← findModuleOf? nm).getD (← getMainModule)
-      match_results := match_results.insert mod <| (match_results.getD mod #[]).push (nm, rem.trim)
+      match_results := match_results.insert mod <| (match_results.getD mod #[]).push
+        (nm, rem.trimAscii.copy)
   -- We sort the messages to produce a more stable output.
   let sorted_results := match_results.toArray.qsort (·.1.lt ·.1)
   let sorted_results := sorted_results.map fun (mod, msgs) => (mod, msgs.qsort (·.1.lt ·.1))

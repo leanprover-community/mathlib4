@@ -3,24 +3,28 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space
 
 In this file we define inversion in a sphere in an affine space. This map sends each point `x` to
 the point `y` such that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center
-and the radius the sphere.
+and the radius of the sphere.
 
-In many applications, it is convenient to assume that the inversions swaps the center and the point
+In many applications, it is convenient to assume that the inversion swaps the center and the point
 at infinity. In order to stay in the original affine space, we define the map so that it sends
 center to itself.
 
 Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality, see
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

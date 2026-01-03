@@ -3,17 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Infinite sums and products in topological groups
 
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -42,7 +46,7 @@ theorem Multipliable.of_inv (hf : Multipliable (fun b ↦ (f b)⁻¹) L) : Multi
   simpa only [inv_inv] using hf.inv
 
 @[to_additive]
-theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L:=
+theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L :=
   ⟨Multipliable.of_inv, Multipliable.inv⟩
 
 @[to_additive]

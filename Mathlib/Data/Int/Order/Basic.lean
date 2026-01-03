@@ -3,15 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+module
 
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.Notation
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Tactic.ByCases
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Tactic.ByCases
 
 /-!
 # The order relation on the integers
 -/
+
+@[expose] public section
 
 open Nat
 
@@ -47,11 +50,11 @@ theorem nonneg_or_nonpos_of_mul_nonneg {a b : ℤ} : 0 ≤ a * b → 0 ≤ a ∧
   · refine .inr ⟨?_, le_of_lt hb⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
       Int.le_antisymm (Int.mul_nonpos_of_nonneg_of_nonpos ha <| le_of_lt hb) h
-    all_goals cutsat
+    all_goals lia
   · refine .inr ⟨le_of_lt ha, ?_⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
       Int.le_antisymm (Int.mul_nonpos_of_nonpos_of_nonneg (le_of_lt ha) hb) h
-    all_goals cutsat
+    all_goals lia
   · exact .inr ⟨le_of_lt ha, le_of_lt hb⟩
 
 theorem mul_nonneg_of_nonneg_or_nonpos {a b : ℤ} : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 → 0 ≤ a * b

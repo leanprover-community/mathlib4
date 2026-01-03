@@ -3,9 +3,11 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Data.Matrix.Mul
-import Mathlib.GroupTheory.Perm.Sign
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Nonsingular inverses over semirings
@@ -13,6 +15,8 @@ import Mathlib.GroupTheory.Perm.Sign
 This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
 
 -/
+
+@[expose] public section
 
 open Equiv Equiv.Perm Finset
 

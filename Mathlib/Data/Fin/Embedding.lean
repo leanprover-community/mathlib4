@@ -3,8 +3,10 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.SuccPred
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Embeddings of `Fin n`
@@ -24,6 +26,8 @@ This file defines embeddings between `Fin n` and other types,
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 
@@ -141,13 +145,13 @@ at the end of the latter.
 `natAdd_castLEEmb hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adding `m - n` to `i` -/
 @[simps!]
 def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
-  (addNatEmb (m - n)).trans (finCongr (by cutsat)).toEmbedding
+  (addNatEmb (m - n)).trans (finCongr (by lia)).toEmbedding
 
 lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.1} := by
   simp only [natAdd_castLEEmb, Nat.sub_le_iff_le_add]
   ext y
-  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; cutsat,
+  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; lia,
     fun xin ↦ ⟨subNat (m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 

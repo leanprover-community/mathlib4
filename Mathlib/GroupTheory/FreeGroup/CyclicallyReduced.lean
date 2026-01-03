@@ -3,10 +3,12 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
-import Mathlib.Data.List.Induction
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.Tactic.Group
+module
+
+public import Mathlib.Data.List.Induction
+public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.FreeGroup.Reduce
+public import Mathlib.Tactic.Group
 
 /-!
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
@@ -18,6 +20,8 @@ taking powers by every non-zero element `n : ℕ` is injective.
 * `FreeGroup.IsCyclicallyReduced`: the predicate for cyclically reduced words
 
 -/
+
+@[expose] public section
 open List
 
 universe u

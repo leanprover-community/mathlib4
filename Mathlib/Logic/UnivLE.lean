@@ -3,7 +3,9 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # UnivLE
@@ -16,6 +18,8 @@ directly due to https://github.com/leanprover/lean4/issues/2297.
 
 See the doc-string for the comparison with an alternative stronger definition.
 -/
+
+@[expose] public section
 
 universe u v w
 

@@ -3,10 +3,13 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.Lean.Meta.Simp
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Util.AddRelatedDecl
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
+public meta import Mathlib.CategoryTheory.Functor.Basic
+public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Tactic.Simps.Basic
+public meta import Mathlib.Util.AddRelatedDecl
 
 /-!
 # The `reassoc` attribute
@@ -27,13 +30,15 @@ The `Mathlib.Tactic.CategoryTheory.IsoReassoc` extends `@[reassoc]` and `reassoc
 to support creating isomorphism reassociation lemmas.
 -/
 
+public meta section
+
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
 namespace CategoryTheory
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
-theorem eq_whisker' {C : Type*} [Category C]
+theorem eq_whisker' {C : Type*} [Category* C]
     {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
     f ≫ h = g ≫ h := by rw [w]
 
@@ -134,7 +139,7 @@ initialize registerBuiltinAttribute {
   | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun value levels => do
+    addRelatedDecl src "" "_assoc" ref stx? fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
         let pf ← reassocExpr' value
         pure (pf, levels)

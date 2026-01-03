@@ -3,11 +3,13 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
-import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
-import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-import Mathlib.AlgebraicGeometry.ResidueField
-import Mathlib.CategoryTheory.MorphismProperty.Comma
+module
+
+public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
+public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.ResidueField
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 
@@ -28,6 +30,8 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
   https://stacks.math.columbia.edu/tag/01HJ.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -207,7 +211,7 @@ def lift {X Y Z : Scheme.{u}}
 lemma lift_fac {X Y Z : Scheme.{u}}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] (H : f.ker ≤ g.ker) : lift f g H ≫ f = g := by
   nth_rw 2 [← f.toImage_imageι]
-  simp [lift, - Scheme.Hom.toImage_imageι, g.toImage_imageι]
+  simp [lift, -Scheme.Hom.toImage_imageι, g.toImage_imageι]
 
 lemma isIso_of_ker_eq {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
     [IsClosedImmersion i₁] [IsClosedImmersion i₂] (f : Z₁ ⟶ Z₂)

@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 # Presentations on subrings
@@ -19,6 +21,8 @@ If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In thi
 this API can be used to remove Noetherian hypothesis in certain cases.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -167,6 +171,7 @@ lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
   rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
   simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
+set_option backward.privateInPublic true in
 private lemma hom_comp_inv :
     (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
   have h : Function.Surjective
@@ -179,12 +184,15 @@ private lemma hom_comp_inv :
   ext x
   simp
 
+set_option backward.privateInPublic true in
 private lemma inv_comp_hom :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
 noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R₀ ≃ₐ[R] S :=
   AlgEquiv.ofAlgHom (P.tensorModelOfHasCoeffsHom R₀) (P.tensorModelOfHasCoeffsInv R₀)

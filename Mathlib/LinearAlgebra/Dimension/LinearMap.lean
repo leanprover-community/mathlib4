@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # The rank of a linear map
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 ## Main Definition
 -  `LinearMap.rank`: The rank of a linear map.
 -/
+
+@[expose] public section
 
 
 noncomputable section

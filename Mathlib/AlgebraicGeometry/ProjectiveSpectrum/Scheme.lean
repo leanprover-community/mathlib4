@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.RingTheory.GradedAlgebra.Radical
+module
+
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
+public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.RingTheory.GradedAlgebra.Radical
 
 /-!
 # Proj as a scheme
@@ -26,7 +28,7 @@ This file is to prove that `Proj` is a scheme.
 
 ## Implementation
 
-In `AlgebraicGeometry/ProjectiveSpectrum/StructureSheaf.lean`, we have given `Proj` a
+In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/StructureSheaf.lean`, we have given `Proj` a
 structure sheaf so that `Proj` is a locally ringed space. In this file we will prove that `Proj`
 equipped with this structure sheaf is a scheme. We achieve this by using an affine cover by basic
 open sets in `Proj`, more specifically:
@@ -88,6 +90,8 @@ Finally,
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -354,7 +358,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
-    rw [← add_smul]; congr; cutsat
+    rw [← add_smul]; congr; lia
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
@@ -569,7 +573,7 @@ The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
 - `ψ : Spec A⁰_f ⟶ Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
 -/
 def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
+    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f)) where
   hom := ProjIsoSpecTopComponent.toSpec 𝒜 f
   inv := ProjIsoSpecTopComponent.fromSpec f_deg hm
   hom_inv_id := ConcreteCategory.hom_ext _ _
@@ -717,7 +721,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
       (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
-  constructor
+  constructor; constructor
   · rintro ⟨y, hy⟩
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
     refine .of_mul_eq_one
@@ -733,10 +737,10 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hb' m⟩⟩,
         val_injective _ ?_⟩
     · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
-      rw [← succ_nsmul', tsub_add_cancel_of_le (by cutsat), mul_comm, smul_eq_mul]
+      rw [← succ_nsmul', tsub_add_cancel_of_le (by lia), mul_comm, smul_eq_mul]
     · simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk,
         mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk, IsLocalization.mk'_eq_iff_eq]
-      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le (by cutsat)]
+      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le (by lia)]
   · intro y z e
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
     obtain ⟨z, rfl⟩ := HomogeneousLocalization.mk_surjective z

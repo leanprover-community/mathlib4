@@ -3,12 +3,14 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Submodules of a module
@@ -20,6 +22,8 @@ As such it is a good target for organizing and splitting further.
 
 submodule, subspace, linear map
 -/
+
+@[expose] public section
 
 open Function
 
@@ -132,6 +136,11 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
 @[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
+
+@[simp]
+theorem toAddSubgroup_toAddSubmonoid (p : Submodule R M) :
+    p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid :=
+  rfl
 
 @[gcongr]
 protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.toAddSubgroup_le

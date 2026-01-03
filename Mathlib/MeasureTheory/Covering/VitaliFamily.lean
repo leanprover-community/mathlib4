@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+module
+
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
 /-!
 # Vitali families
@@ -45,6 +47,8 @@ Let `v` be such a Vitali family.
   (Vitali families are called Vitali relations there)
 -/
 
+@[expose] public section
+
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 open scoped Topology
@@ -63,7 +67,7 @@ differentiations of measure that apply in both contexts.
 -/
 structure VitaliFamily {m : MeasurableSpace X} (μ : Measure X) where
   /-- Sets of the family "centered" at a given point. -/
-  setsAt :  X → Set (Set X)
+  setsAt : X → Set (Set X)
   /-- All sets of the family are measurable. -/
   measurableSet : ∀ x : X, ∀ s ∈ setsAt x, MeasurableSet s
   /-- All sets of the family have nonempty interior. -/

@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Multiplicative opposite and algebraic operations on it
@@ -36,6 +38,8 @@ definitional eta reduction for structures (Lean 3 does not).
 
 multiplicative opposite, additive opposite
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

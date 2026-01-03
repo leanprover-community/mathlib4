@@ -3,11 +3,13 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, David Loeffler
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.MetricSpace.Ultra.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Order.LiminfLimsup
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -31,6 +33,8 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ultrametric, nonarchimedean
 -/
+
+@[expose] public section
 open Metric NNReal
 
 namespace IsUltrametricDist
@@ -82,10 +86,7 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGr
 
 lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
-  intro x y
-  convert dist_triangle_max 0 x (x + y) using 1
-  · simp
-  · congr <;> simp [SeminormedAddGroup.dist_eq]
+  simpa using isNonarchimedean_norm
 
 lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
@@ -267,7 +268,7 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
     ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
-  |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
+  | ⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`

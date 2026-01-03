@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Minimal
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Minimal
 
 /-!
 # Finite preorders and finite sets in a preorder
@@ -12,6 +14,8 @@ import Mathlib.Order.Minimal
 This file shows that non-empty finite sets in a preorder have minimal/maximal elements, and
 contrapositively that non-empty sets without minimal or maximal elements are infinite.
 -/
+
+@[expose] public section
 
 variable {ι α β : Type*}
 

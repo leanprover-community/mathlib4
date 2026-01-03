@@ -3,10 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.MetricSpace.Antilipschitz
+module
+
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries
@@ -18,6 +20,8 @@ and prove their basic properties. We also introduce isometric bijections.
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -253,11 +257,11 @@ theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 
-/-- An embedding from a topological space to a metric space is an isometry with respect to the
-induced metric space structure on the source space. -/
-theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
-    (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
-  let _ := h.comapMetricSpace f
+/-- An embedding from a topological space to a pseudometric space is an isometry with respect to the
+induced pseudometric space structure on the source space. -/
+theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [PseudoMetricSpace β]
+    {f : α → β} (h : IsEmbedding f) : (letI := h.comapPseudoMetricSpace; Isometry f) :=
+  let _ := h.comapPseudoMetricSpace
   Isometry.of_dist_eq fun _ _ => rfl
 
 theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
@@ -444,6 +448,9 @@ def Simps.symm_apply (h : α ≃ᵢ β) : β → α :=
   h.symm
 
 initialize_simps_projections IsometryEquiv (toFun → apply, invFun → symm_apply)
+
+@[simp]
+theorem coe_symm_toEquiv (h : α ≃ᵢ β) : ⇑h.toEquiv.symm = h.symm := rfl
 
 @[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl

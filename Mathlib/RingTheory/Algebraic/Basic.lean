@@ -3,11 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Algebraic.Defs
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -17,6 +19,8 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
 The main result in this file proves transitivity of algebraicity:
 a tower of algebraic field extensions is algebraic.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -482,7 +486,7 @@ theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f :
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
   let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
   have : f'.Surjective := Finite.injective_iff_surjective.1
-    fun _ _ h ↦ Subtype.eq <| f.injective <| Subtype.ext_iff.1 h
+    fun _ _ h ↦ Subtype.ext <| f.injective <| Subtype.ext_iff.1 h
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 

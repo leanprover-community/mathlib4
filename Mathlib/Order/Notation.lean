@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
-import Qq
-import Mathlib.Lean.PrettyPrinter.Delaborator
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Tactic.ToDual
+module
+
+public import Qq
+public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Notation classes for lattice operations
@@ -34,6 +36,8 @@ as in linear orders, while using the more idiomatic notation `x ⊔ y`/`x ⊓ y`
 Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
 
 -/
+
+@[expose] public section
 
 /-- Set / lattice complement -/
 @[notation_class]
@@ -71,11 +75,11 @@ namespace Mathlib.Meta
 open Lean Meta PrettyPrinter Delaborator SubExpr Qq
 
 -- irreducible to not confuse Qq
-@[irreducible] private def linearOrderExpr (u : Level) : Q(Type u → Type u) :=
+@[irreducible] private meta def linearOrderExpr (u : Level) : Q(Type u → Type u) :=
   .const `LinearOrder [u]
-private def linearOrderToMax (u : Level) : Q((a : Type u) → $(linearOrderExpr u) a → Max a) :=
+private meta def linearOrderToMax (u : Level) : Q((a : Type u) → $(linearOrderExpr u) a → Max a) :=
   .const `LinearOrder.toMax [u]
-private def linearOrderToMin (u : Level) : Q((a : Type u) → $(linearOrderExpr u) a → Min a) :=
+private meta def linearOrderToMin (u : Level) : Q((a : Type u) → $(linearOrderExpr u) a → Min a) :=
   .const `LinearOrder.toMin [u]
 
 /--
@@ -83,7 +87,7 @@ Return `true` if `LinearOrder` is imported and `inst` comes from a `LinearOrder 
 
 We use a `try catch` block to make sure there are no surprising errors during delaboration.
 -/
-private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type u))
+private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type u))
     (toCls : Q((α : Type u) → $(linearOrderExpr u) α → $cls α)) (inst : Q($cls $α)) :
     MetaM Bool := do
   try
@@ -101,7 +105,7 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
-def delabSup : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+meta def delabSup : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr f@Max.max α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
   if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
@@ -113,7 +117,7 @@ def delabSup : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotat
 
 /-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
-def delabInf : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+meta def delabInf : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr f@Min.min α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
   if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then

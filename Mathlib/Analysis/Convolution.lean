@@ -3,13 +3,15 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Convolution of functions
@@ -88,6 +90,8 @@ The following notations are localized in the scope `Convolution`:
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere (this likely requires changes in `to_additive`)
 -/
+
+@[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open Bornology ContinuousLinearMap Metric Topology
@@ -475,7 +479,7 @@ theorem convolution_mono_right {f g g' : G → ℝ} (hfg : ConvolutionExistsAt f
     (hfg' : ConvolutionExistsAt f g' x (lsmul ℝ ℝ) μ) (hf : ∀ x, 0 ≤ f x) (hg : ∀ x, g x ≤ g' x) :
     (f ⋆[lsmul ℝ ℝ, μ] g) x ≤ (f ⋆[lsmul ℝ ℝ, μ] g') x := by
   apply integral_mono hfg hfg'
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul]
+  simp only [lsmul_apply, smul_eq_mul]
   intro t
   apply mul_le_mul_of_nonneg_left (hg _) (hf _)
 
@@ -1340,19 +1344,17 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
     · rw [indicator_of_notMem (notMem_Ioo_of_le ht), indicator_of_notMem (notMem_Ioi.mpr ht),
-        ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]
+        map_zero, ContinuousLinearMap.zero_apply]
     · rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
           indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
     · rw [indicator_of_notMem (notMem_Ioo_of_ge ht),
-          indicator_of_notMem (notMem_Ioi.mpr (sub_nonpos_of_le ht)),
-          ContinuousLinearMap.map_zero]
+          indicator_of_notMem (notMem_Ioi.mpr (sub_nonpos_of_le ht)), map_zero]
   · convert (integral_zero ℝ F).symm with t
     by_cases ht : 0 < t
-    · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
+    · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), map_zero]
       rw [notMem_Ioi] at h ⊢
       exact sub_nonpos.mpr (h.trans ht.le)
-    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
-       ContinuousLinearMap.zero_apply]
+    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), map_zero, ContinuousLinearMap.zero_apply]
 
 theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SFinite μ]
     [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)

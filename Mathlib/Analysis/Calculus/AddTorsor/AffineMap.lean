@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Smooth affine maps
@@ -17,6 +19,8 @@ This file contains results about smoothness of affine maps.
 * `ContinuousAffineMap.contDiff`: a continuous affine map is smooth
 
 -/
+
+@[expose] public section
 namespace ContinuousAffineMap
 
 variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]

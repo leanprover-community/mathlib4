@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Extension.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.Extension.Basic
 
 /-!
 
@@ -15,7 +17,7 @@ import Mathlib.RingTheory.Extension.Basic
 
 ## Main definition
 
-- `Algebra.Generators`: A family of generators of a `R`-algebra `S` consists of
+- `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
   1. `vars`: The type of variables.
   2. `val : vars → S`: The assignment of each variable to a value.
   3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
@@ -44,13 +46,15 @@ unification hints.
 
 -/
 
+@[expose] public section
+
 universe w u v
 
 open TensorProduct MvPolynomial
 
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- A family of generators of a `R`-algebra `S` consists of
+/-- A family of generators of an `R`-algebra `S` consists of
 1. `vars`: The type of variables.
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
@@ -79,7 +83,7 @@ abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 
 instance : Algebra P.Ring S := P.algebra
 
-/-- The designated section of w.r.t. a family of generators. -/
+/-- The designated section w.r.t. a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
 /-- See Note [custom simps projection] -/
@@ -105,6 +109,9 @@ lemma σ_smul (x y) : P.σ x • y = x * y := by
 lemma σ_injective : P.σ.Injective := by
   intro x y e
   rw [← P.aeval_val_σ x, ← P.aeval_val_σ y, e]
+
+lemma aeval_val_surjective : Function.Surjective (aeval (R := R) P.val) :=
+  fun x ↦ ⟨P.σ x, by simp⟩
 
 lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) :=
   (⟨_, P.algebraMap_apply _ ▸ P.aeval_val_σ ·⟩)
@@ -243,6 +250,20 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     obtain ⟨b, hb⟩ := ey
     use (a + b)
     rw [map_add, ha, hb]
+
+/-- Extend generators by more variables. -/
+noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=
+  .ofSurjective (Sum.elim P.val b) fun s ↦ by
+    use rename Sum.inl (P.σ s)
+    simp [aeval_rename]
+
+@[simp]
+lemma extend_val_inl (P : Generators R S ι) (b : ι' → S) (i : ι) :
+    (P.extend b).val (.inl i) = P.val i := rfl
+
+@[simp]
+lemma extend_val_inr (P : Generators R S ι) (b : ι' → S) (i : ι') :
+    (P.extend b).val (.inr i) = b i := rfl
 
 /-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
 are the induced generators indexed by `ι`. -/
@@ -538,6 +559,13 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R) (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x) :
     (Generators.naive s hs).ker = I :=
   I.mk_ker
+
+@[simp]
+lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
+    (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
+  change RingHom.ker _ = _
+  congr
+  exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by

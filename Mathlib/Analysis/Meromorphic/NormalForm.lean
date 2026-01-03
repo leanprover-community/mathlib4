@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Divisor
+module
+
+public import Mathlib.Analysis.Meromorphic.Divisor
 
 /-!
 # Normal form of meromorphic functions and continuous extension
@@ -20,6 +22,8 @@ where `g` is analytic and does not vanish at `x`.
 The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`; these guarantee normal
 form at a single point and along a set, respectively.
 -/
+
+@[expose] public section
 
 open Topology WithTop
 
@@ -464,7 +468,7 @@ then its zero set equals the support of the associated divisor.
 -/
 theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U)
     (h₂f : ∀ u : U, meromorphicOrderAt f u ≠ ⊤) :
-    U ∩ f⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
+    U ∩ f ⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
   ext u
   constructor <;> intro hu
   · simp_all only [ne_eq, Subtype.forall, Set.mem_inter_iff, Set.mem_preimage,

@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Util.Superscript
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -52,6 +54,8 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
 
 -/
+
+@[expose] public section
 
 
 open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
@@ -119,7 +123,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
 @[app_delab WithLp.toLp]
-def EuclideanSpace.delabVecNotation : Delab :=
+meta def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
     let p : Term ← withNaryArg 0 <| delab
@@ -189,11 +193,21 @@ theorem finrank_euclideanSpace :
 theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
-theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
+namespace EuclideanSpace
+
+scoped instance (n : ℕ) : Fact (Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n) :=
+  ⟨finrank_euclideanSpace_fin⟩
+
+instance infinite [Nonempty ι] : Infinite (EuclideanSpace 𝕜 ι) :=
+  Module.Free.infinite 𝕜 _
+
+theorem inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
     ⟪x, y⟫ = ofLp y ⬝ᵥ star (ofLp x) := rfl
 
-lemma EuclideanSpace.inner_toLp_toLp (x y : ι → 𝕜) :
+lemma inner_toLp_toLp (x y : ι → 𝕜) :
     ⟪toLp 2 x, toLp 2 y⟫ = dotProduct y (star x) := rfl
+
+end EuclideanSpace
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
 from `E` to `PiLp 2` of the subspaces equipped with the `L2` inner product. -/
@@ -369,8 +383,8 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
-        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe,
-          LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, EuclideanSpace.toLp_single,
+        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+          coe_symm_linearEquiv, EuclideanSpace.toLp_single,
           LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 
@@ -444,8 +458,7 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 @[simp]
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
-  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr]
-  rfl
+  simp [← Basis.equivFun_apply]
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]

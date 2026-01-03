@@ -3,10 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Tactic.Spread
 
 /-!
 # Multiplicative and additive equivs
@@ -17,6 +19,8 @@ This file contains basic results on `MulEquiv` and `AddEquiv`.
 
 Equiv, MulEquiv, AddEquiv
 -/
+
+@[expose] public section
 
 assert_not_exists Fintype
 
@@ -35,6 +39,15 @@ variable [EquivLike F α β]
 theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
+
+@[to_additive] theorem MulEquivClass.isDedekindFiniteMonoid_iff [MulOne α] [MulOne β]
+    [MulEquivClass F α β] [OneHomClass F α β] (f : F) :
+    IsDedekindFiniteMonoid α ↔ IsDedekindFiniteMonoid β where
+  mp _ := let e := MulEquivClass.toMulEquiv f
+    let g : β →* α := ⟨⟨e.symm, e.injective <| (e.right_inv ..).trans (map_one f).symm⟩, map_mul _⟩
+    MonoidHom.isDedekindFiniteMonoid_of_injective g e.symm.injective
+  mpr _ := let g : α →* β := ⟨⟨f, map_one f⟩, map_mul f⟩
+    MonoidHom.isDedekindFiniteMonoid_of_injective g (EquivLike.injective f)
 
 namespace MulEquiv
 section Mul

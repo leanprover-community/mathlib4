@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Tactic.TFAE
 
 /-!
 
@@ -54,9 +56,11 @@ In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative
 
 ## TODO
 
-If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
+If ever someone extends `Valuation`, we should fully comply with `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
+
+@[expose] public section
 
 open Function Ideal
 
@@ -519,7 +523,7 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
   · use x
     simp [hx]
   · use x⁻¹
-    simp [- map_inv₀, ← one_lt_val_iff, hx]
+    simp [-map_inv₀, ← one_lt_val_iff, hx]
 
 theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
@@ -589,6 +593,10 @@ lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
 lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} :
+    0 < v₁ x ↔ 0 < v₂ x := by
+  rw [zero_lt_iff, zero_lt_iff, h.ne_zero]
 
 end IsEquiv
 
@@ -983,7 +991,7 @@ section Group
 variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = -(v x) :=
   map_inv₀ (toValuation v) x
 
 @[simp]

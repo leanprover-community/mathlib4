@@ -3,15 +3,17 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
-import Mathlib.MeasureTheory.Measure.OpenPos
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.MeasureTheory.Measure.OpenPos
 
 /-!
 # The product measure
 
 In this file we define and prove properties about the binary product measure. If `α` and `β` have
-s-finite measures `μ` resp. `ν` then `α × β` can be equipped with a s-finite measure `μ.prod ν` that
-satisfies `(μ.prod ν) s = ∫⁻ x, ν {y | (x, y) ∈ s} ∂μ`.
+s-finite measures `μ` resp. `ν` then `α × β` can be equipped with an s-finite measure `μ.prod ν`
+that satisfies `(μ.prod ν) s = ∫⁻ x, ν {y | (x, y) ∈ s} ∂μ`.
 We also have `(μ.prod ν) (s ×ˢ t) = μ s * ν t`, i.e. the measure of a rectangle is the product of
 the measures of the sides.
 
@@ -48,6 +50,8 @@ reversed.
 
 product measure, Tonelli's theorem, Fubini-Tonelli theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -282,6 +286,29 @@ instance {X Y : Type*}
     [TopologicalSpace Y] [MeasureSpace Y] [IsOpenPosMeasure (volume : Measure Y)]
     [SFinite (volume : Measure Y)] : IsOpenPosMeasure (volume : Measure (X × Y)) :=
   prod.instIsOpenPosMeasure
+
+protected theorem FiniteAtFilter.prod {X Y : Type*} {m : MeasurableSpace X} {μ : Measure X}
+    {m' : MeasurableSpace Y} {ν : Measure Y} {l : Filter X} {l' : Filter Y}
+    (hμ : μ.FiniteAtFilter l) (hν : ν.FiniteAtFilter l') :
+    (μ.prod ν).FiniteAtFilter (l ×ˢ l') := by
+  rcases hμ with ⟨s, hs, hμs⟩
+  rcases hν with ⟨t, ht, hνt⟩
+  use s ×ˢ t, Filter.prod_mem_prod hs ht
+  grw [prod_prod_le]
+  exact ENNReal.mul_lt_top hμs hνt
+
+instance prod.instIsLocallyFiniteMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasurableSpace X} {μ : Measure X} [IsLocallyFiniteMeasure μ] {m' : MeasurableSpace Y}
+    {ν : Measure Y} [IsLocallyFiniteMeasure ν] : IsLocallyFiniteMeasure (μ.prod ν) where
+  finiteAtNhds x := by
+    rw [nhds_prod_eq]
+    exact μ.finiteAt_nhds _ |>.prod <| ν.finiteAt_nhds _
+
+instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {m : MeasureSpace X} [IsLocallyFiniteMeasure (volume : Measure X)]
+    {m' : MeasureSpace Y} [IsLocallyFiniteMeasure (volume : Measure Y)] :
+    IsLocallyFiniteMeasure (volume : Measure (X × Y)) :=
+  prod.instIsLocallyFiniteMeasure
 
 instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     (μ : Measure α) (ν : Measure β) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :

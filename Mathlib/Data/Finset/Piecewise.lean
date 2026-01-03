@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Functions defined piecewise on a finset
@@ -17,6 +19,8 @@ which is equal to `f` on `s` and `g` on the complement.
 
 Should we deduplicate this from `Set.piecewise`?
 -/
+
+@[expose] public section
 
 open Function
 

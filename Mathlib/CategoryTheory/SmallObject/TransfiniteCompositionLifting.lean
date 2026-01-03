@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+module
+
+public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The left lifting property is stable under transfinite composition
@@ -49,6 +51,8 @@ This is constructed by transfinite induction on `j`:
 * When `j` is a limit element, we use the "continuity" of `F`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

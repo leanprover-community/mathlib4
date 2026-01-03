@@ -3,10 +3,14 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Infinite sums in topological vector spaces -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*}
 
@@ -121,7 +125,7 @@ protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M�
 alias HasSum.mapL := ContinuousLinearMap.hasSum
 
 protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] M₂) (hf : Summable f L) :
-    Summable (fun b : ι ↦ φ (f b)) L:=
+    Summable (fun b : ι ↦ φ (f b)) L :=
   (hf.hasSum.mapL φ).summable
 
 alias Summable.mapL := ContinuousLinearMap.summable

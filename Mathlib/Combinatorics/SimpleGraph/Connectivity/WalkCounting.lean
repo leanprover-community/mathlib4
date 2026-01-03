@@ -3,10 +3,12 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Nat
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length
@@ -20,6 +22,8 @@ can also be useful as a recursive description of this set when `V` is finite.
 
 TODO: should this be extended further?
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

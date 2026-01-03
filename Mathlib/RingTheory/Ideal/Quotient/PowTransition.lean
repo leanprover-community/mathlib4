@@ -3,11 +3,13 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jiedong Jiang
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
@@ -24,6 +26,8 @@ the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 ## Main results
 -/
+
+@[expose] public section
 
 /- Since `Mathlib/LinearAlgebra/Quotient/Basic.lean` and
 `Mathlib/RingTheory/Ideal/Quotient/Defs.lean` do not import each other, and the first file that
@@ -61,7 +65,7 @@ lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
     subst this
     rw [ih (m.le_add_right k) (by simp), h]
     · simp
-    · cutsat
+    · lia
 
 lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
     (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))

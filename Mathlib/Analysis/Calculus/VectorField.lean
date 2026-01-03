@@ -3,7 +3,9 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 
 /-!
 # Vector fields in vector spaces
@@ -27,6 +29,8 @@ In addition to comprehensive API on these two notions, the main results are the 
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
 
 -/
+
+@[expose] public section
 
 open Set
 open scoped Topology
@@ -144,7 +148,7 @@ we have `[f • V, W] = - (df W) • V + f • [V, W]`
 lemma lieBracketWithin_smul_left {f : E → 𝕜} (hf : DifferentiableWithinAt 𝕜 f s x)
     (hV : DifferentiableWithinAt 𝕜 V s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (fun y ↦ f y • V y) W s x =
-      - (fderivWithin 𝕜 f s x) (W x) • (V x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
+      - (fderivWithin 𝕜 f s x) (W x) • (V x) + (f x) • lieBracketWithin 𝕜 V W s x := by
   rw [lieBracketWithin_swap, Pi.neg_apply, lieBracketWithin_smul_right hf hV hs,
     lieBracketWithin_swap, add_comm]
   simp
@@ -156,7 +160,7 @@ we have `[f • V, W] = - (df W) • V + f • [V, W]`
 lemma lieBracket_smul_left {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
     (hV : DifferentiableAt 𝕜 V x) :
     lieBracket 𝕜 (fun y ↦ f y • V y) W x =
-      - (fderiv 𝕜 f x) (W x) • (V x)  + (f x) • lieBracket 𝕜 V W x := by
+      - (fderiv 𝕜 f x) (W x) • (V x) + (f x) • lieBracket 𝕜 V W x := by
   rw [lieBracket_swap, lieBracket_smul_right hf hV, lieBracket_swap, add_comm]
   simp
 
@@ -172,7 +176,7 @@ lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
   abel
 
 lemma lieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : DifferentiableAt 𝕜 V₁ x) :
-    lieBracket 𝕜 (V + V₁) W  x =
+    lieBracket 𝕜 (V + V₁) W x =
       lieBracket 𝕜 V W x + lieBracket 𝕜 V₁ W x := by
   simp only [lieBracket, Pi.add_apply, map_add]
   rw [fderiv_add hV hV₁, ContinuousLinearMap.add_apply]
@@ -538,7 +542,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     ∧ ContDiffWithinAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x
     ∧ (∀ᶠ y in 𝓝[s] x, N y = fderivWithin 𝕜 f s y)
     ∧ ∀ v, fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v
-      = - (N x).symm  ∘L ((fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v)) ∘L (N x).symm := by
+      = - (N x).symm ∘L ((fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v)) ∘L (N x).symm := by
   classical
   rcases hf with ⟨M, hM⟩
   let U := {y | ∃ (N : E ≃L[𝕜] F), N = fderivWithin 𝕜 f s y}
@@ -605,7 +609,7 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
     ∧ ContDiffAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x
     ∧ (∀ᶠ y in 𝓝 x, N y = fderiv 𝕜 f y)
     ∧ ∀ v, fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v
-      = - (N x).symm  ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
+      = - (N x).symm ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
   simp only [← fderivWithin_univ, ← contDiffWithinAt_univ, ← nhdsWithin_univ] at hf h'f ⊢
   exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf uniqueDiffOn_univ (mem_univ _)
 

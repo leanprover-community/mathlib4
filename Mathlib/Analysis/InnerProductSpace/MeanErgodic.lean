@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Dynamics.BirkhoffSum.NormedSpace
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 
 /-!
 # Von Neumann Mean Ergodic Theorem in a Hilbert Space
@@ -18,6 +20,8 @@ birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`,
 see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
+
+@[expose] public section
 
 open Filter Finset Function Bornology
 open scoped Topology

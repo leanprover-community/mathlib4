@@ -3,8 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.Inverse
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Inverse
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Higher differentiability of usual operations
@@ -23,6 +26,8 @@ In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : 
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
+
+@[expose] public section
 
 open scoped NNReal Nat ContDiff
 
@@ -179,7 +184,7 @@ theorem ContDiffAt.add {f g : E → F} (hf : ContDiffAt 𝕜 n f x) (hg : ContDi
     ContDiffAt 𝕜 n (fun x => f x + g x) x := by
   rw [← contDiffWithinAt_univ] at *; exact hf.add hg
 
-/-- The sum of two `C^n`functions is `C^n`. -/
+/-- The sum of two `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.add {f g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x + g x :=
@@ -260,7 +265,7 @@ theorem ContDiffWithinAt.neg {s : Set E} {f : E → F} (hf : ContDiffWithinAt �
 theorem ContDiffAt.neg {f : E → F} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => -f x) x := by rw [← contDiffWithinAt_univ] at *; exact hf.neg
 
-/-- The negative of a `C^n`function is `C^n`. -/
+/-- The negative of a `C^n` function is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.neg {f : E → F} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => -f x :=
   contDiff_neg.comp hf
@@ -405,7 +410,7 @@ nonrec theorem ContDiffAt.mul {f g : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (h
 theorem ContDiffOn.mul {f g : E → 𝔸} (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
     ContDiffOn 𝕜 n (fun x => f x * g x) s := fun x hx => (hf x hx).mul (hg x hx)
 
-/-- The product of two `C^n`functions is `C^n`. -/
+/-- The product of two `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x * g x :=
@@ -670,8 +675,6 @@ theorem contDiffAt_ringInverse [HasSummableGeomSeries R] (x : Rˣ) :
   have := AnalyticOnNhd.contDiffOn (analyticOnNhd_inverse (𝕜 := 𝕜) (A := R)) (n := n)
     Units.isOpen.uniqueDiffOn x x.isUnit
   exact this.contDiffAt (Units.isOpen.mem_nhds x.isUnit)
-
-@[deprecated (since := "2025-04-22")] alias contDiffAt_ring_inverse := contDiffAt_ringInverse
 
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 

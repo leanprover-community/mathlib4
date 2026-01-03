@@ -3,12 +3,14 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-import Mathlib.Analysis.SpecialFunctions.SmoothTransition
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-import Mathlib.Geometry.Manifold.Instances.Icc
-import Mathlib.MeasureTheory.Constructions.UnitInterval
-import Mathlib.MeasureTheory.Function.JacobianOneDim
+module
+
+public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.Instances.Icc
+public import Mathlib.MeasureTheory.Constructions.UnitInterval
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
 
 /-! # Lengths of paths in manifolds
 
@@ -24,7 +26,7 @@ We show that this notion is invariant under reparameterization by a monotone map
 
 We define `riemannianEDist x y` as the infimum of the length of `C^1` paths between `x`
 and `y`. We prove, in `exists_lt_locally_constant_of_riemannianEDist_lt`, that it is also the
-infimum on such path that are moreover locally constant near their endpoints. Such paths can be
+infimum on such paths that are moreover locally constant near their endpoints. Such paths can be
 glued while retaining the `C^1` property. We deduce that `riemannianEDist` satisfies the triangle
 inequality, in `riemannianEDist_triangle`.
 
@@ -33,6 +35,8 @@ the metric comes from an inner product space. However, as all the current applic
 are to Riemannian spaces we stick with the simpler name. This could be changed when Finsler
 manifolds are studied in mathlib.
 -/
+
+@[expose] public section
 
 open Set MeasureTheory
 open scoped Manifold ENNReal ContDiff Topology

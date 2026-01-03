@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Noetherian rings and modules
@@ -46,6 +48,8 @@ is proved in `RingTheory.Polynomial`.
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 
@@ -147,7 +151,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     rw [eq_of_le_of_not_lt (le_sup_right : N₀ ≤ _) (h₂
       ⟨_, Submodule.FG.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁⟩ <|
       sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e)]
-    exact (le_sup_left : (R ∙ x) ≤ _) (Submodule.mem_span_singleton_self _)
+    exact (le_sup_left : R ∙ x ≤ _) (Submodule.mem_span_singleton_self _)
 
 /-- A module is Noetherian iff every nonempty set of submodules has a maximal submodule among them.
 -/

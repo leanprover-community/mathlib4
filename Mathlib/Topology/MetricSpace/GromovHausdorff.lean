@@ -3,12 +3,14 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Topology.MetricSpace.Closeds
-import Mathlib.Topology.MetricSpace.Completion
-import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
-import Mathlib.Topology.MetricSpace.Kuratowski
+module
+
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Topology.MetricSpace.Closeds
+public import Mathlib.Topology.MetricSpace.Completion
+public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
+public import Mathlib.Topology.MetricSpace.Kuratowski
 
 /-!
 # Gromov-Hausdorff distance
@@ -40,6 +42,8 @@ i.e., it is complete and second countable. We also prove the Gromov compactness 
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped Topology ENNReal Cardinal
@@ -62,14 +66,18 @@ Using the Kuratowski embedding, we get a canonical map `toGHSpace` mapping any n
 compact type to `GHSpace`. -/
 section GHSpace
 
+set_option backward.privateInPublic true in
 /-- Equivalence relation identifying two nonempty compact sets which are isometric -/
 private def IsometryRel (x : NonemptyCompacts ℓ_infty_ℝ) (y : NonemptyCompacts ℓ_infty_ℝ) : Prop :=
   Nonempty (x ≃ᵢ y)
 
+set_option backward.privateInPublic true in
 /-- This is indeed an equivalence relation -/
 private theorem equivalence_isometryRel : Equivalence IsometryRel :=
   ⟨fun _ => Nonempty.intro (IsometryEquiv.refl _), fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e⟩ ⟨f⟩ => ⟨e.trans f⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- setoid instance identifying two isometric nonempty compact subspaces of ℓ^∞(ℝ) -/
 instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
   Setoid.mk IsometryRel equivalence_isometryRel
@@ -675,13 +683,13 @@ instance : SecondCountableTopology GHSpace := by
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
       have j' : j = ((E q) (Ψ y)).1 := by
-        simp only [j, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+        simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
       have : (F p).2 ((E p) x) ((E p) y) = ⌊ε⁻¹ * dist x y⌋ := by
         simp only [F, (E p).symm_apply_apply]
@@ -811,12 +819,12 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
-      have j' : j = (E q) (Ψ y) := by simp only [j, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+      have j' : j = (E q) (Ψ y) := by simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
       have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc

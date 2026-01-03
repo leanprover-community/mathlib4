@@ -3,13 +3,15 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
-import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.Data.Matrix.Invertible
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Nonsingular inverses
@@ -51,6 +53,8 @@ The rest of the results in the file are then about `A⁻¹`
 
 matrix inverse, cramer, cramer's rule, adjugate
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -189,9 +193,6 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
     rw [← invOf_eq_nonsing_inv, Ring.inverse_invertible]
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
-
-@[deprecated (since := "2025-04-22")]
-alias nonsing_inv_eq_ring_inverse := nonsing_inv_eq_ringInverse
 
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
@@ -590,7 +591,7 @@ variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix
 
 /-- The **Woodbury Identity** (`⁻¹` version).
 
-See ``add_mul_mul_inv_eq_sub'` for the binomial inverse theorem. -/
+See `add_mul_mul_inv_eq_sub'` for the binomial inverse theorem. -/
 theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C⁻¹ + V * A⁻¹ * U)) :
     (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * (C⁻¹ + V * A⁻¹ * U)⁻¹ * V * A⁻¹ := by
   obtain ⟨_⟩ := hA.nonempty_invertible

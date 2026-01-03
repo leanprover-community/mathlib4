@@ -3,8 +3,10 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Jonas van der Schaaf
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.ObjectProperty.Retract
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
 
@@ -20,6 +22,8 @@ the solid theory (see the lecture series on analytic stacks:
 https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf_Rl_6Mm7juZO).
 -/
 
+@[expose] public section
+
 noncomputable section
 
 universe u
@@ -28,7 +32,7 @@ open CategoryTheory MonoidalCategory MonoidalClosed Limits Functor
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [MonoidalClosed C]
+variable {C : Type*} [Category* C] [MonoidalCategory C] [MonoidalClosed C]
 
 /--
 An object `P : C` is *internally projective* if the functor `P ⟶[C] -` taking internal homs

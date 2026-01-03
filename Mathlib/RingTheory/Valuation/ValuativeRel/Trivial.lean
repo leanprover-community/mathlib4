@@ -3,8 +3,9 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 
@@ -20,6 +21,8 @@ A trivial valuative relation is equivalent to the value group being isomorphic t
 
 -/
 
+@[expose] public section
+
 namespace ValuativeRel
 
 variable {R Γ : Type} [CommRing R] [DecidableEq R] [IsDomain R]
@@ -32,7 +35,7 @@ open WithZero
 The domain condition is necessary so that the relation is closed when multiplying.
 -/
 def trivialRel : ValuativeRel R where
-  rel x y := if y = 0 then x = 0 else True
+  Rel x y := if y = 0 then x = 0 else True
   rel_total _ _ := by split_ifs <;> simp_all
   rel_trans _ _ := by split_ifs; simp_all
   rel_add _ _ := by split_ifs; simp_all

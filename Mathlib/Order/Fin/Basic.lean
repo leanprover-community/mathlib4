@@ -3,9 +3,11 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Embedding
-import Mathlib.Data.Fin.Rev
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Fin.Rev
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # `Fin n` forms a bounded linear order
@@ -33,6 +35,8 @@ This file expands on the development in the core library.
 * `Fin.revOrderIso`: `Fin.rev` as an `OrderIso`, the antitone involution given by `i ↦ n-(i+1)`
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
 
 open Function Nat Set
@@ -55,7 +59,7 @@ theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val
 
 instance instLinearOrder : LinearOrder (Fin n) :=
   Fin.val_injective.linearOrder _
-    Fin.le_iff_val_le_val Fin.lt_iff_val_lt_val coe_min coe_max compare_eq_compare_val
+    Fin.le_iff_val_le_val Fin.lt_def coe_min coe_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
@@ -182,8 +186,7 @@ lemma strictMono_addNat (m) : StrictMono ((addNat · m) : Fin n → Fin (n + m))
 
 lemma strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   strictMono_castSucc.ite strictMono_succ
-    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun i =>
-    (castSucc_lt_succ i).le
+    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun _ => castSucc_lt_succ.le
 
 variable {p : Fin (n + 1)} {i j : Fin n}
 
@@ -260,7 +263,7 @@ alias ⟨_, _root_.GCongr.Fin.castLE_lt_castLE⟩ := castLE_lt_castLE_iff
 lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_val_le_val, coe_pred]
+  all_goals simp only [le_iff_val_le_val, val_pred]
   · exact pred_le_pred H
   · calc
       _ ≤ _ := Nat.pred_le _
@@ -290,9 +293,8 @@ lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (
 lemma predAbove_left_injective : Injective (@predAbove n) := by
   intro i j hij
   obtain ⟨n, rfl⟩ := Nat.exists_add_one_eq.2 i.size_positive
-  wlog h : i < j generalizing i j
-  · simp only [not_lt] at h
-    obtain h | rfl := h.lt_or_eq
+  wlog! h : i < j generalizing i j
+  · obtain h | rfl := h.lt_or_eq
     · exact (this hij.symm h).symm
     · rfl
   replace hij := congr_fun hij i.succ
@@ -415,6 +417,6 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
     specialize h _ this (e.symm _).is_lt
     simp only [Fin.eta, OrderIso.apply_symm_apply] at h
     rwa [h]
-  · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
+  · rwa [← h j hj (hj.trans hi), ← lt_def, e.lt_iff_lt]
 
 end Fin

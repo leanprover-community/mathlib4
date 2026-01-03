@@ -3,14 +3,18 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Lipschitz continuous functions
 
 This file develops Lipschitz continuous functions further with some results that depend on algebra.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis Ideal
 

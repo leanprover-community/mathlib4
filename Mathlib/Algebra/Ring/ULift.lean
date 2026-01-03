@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # `ULift` instances for ring
@@ -16,6 +18,8 @@ This file defines instances for ring, semiring and related structures on `ULift`
 
 We also provide `ULift.ringEquiv : ULift R ≃+* R`.
 -/
+
+@[expose] public section
 
 
 universe u

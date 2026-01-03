@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 ## Basic properties of `C^n` functions between manifolds
@@ -20,6 +22,8 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
 chain rule, manifolds, higher derivative
 
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 open scoped Manifold ContDiff
@@ -68,7 +72,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, e, e',mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
+    simp only [*, e, e', mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
       true_and]
     exact mem_range_self _
   · filter_upwards [A]

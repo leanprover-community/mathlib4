@@ -3,9 +3,11 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Groupoid
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Quotient category
@@ -17,6 +19,8 @@ This is analogous to 'the quotient of a group by the normal closure of a subset'
 than 'the quotient of a group by a normal subgroup'. When taking the quotient by a congruence
 relation, `functor_map_eq_iff` says that no unnecessary identifications have been made.
 -/
+
+@[expose] public section
 
 
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
@@ -30,7 +34,7 @@ open Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 /-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
 def Functor.homRel : HomRel C :=
@@ -42,7 +46,7 @@ lemma Functor.homRel_iff {X Y : C} (f g : X ⟶ Y) :
 
 end
 
-variable {C : Type _} [Category C] (r : HomRel C)
+variable {C : Type _} [Category* C] (r : HomRel C)
 
 /-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
 from left and right. -/
@@ -55,7 +59,7 @@ class Congruence : Prop where
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 
 /-- For `F : C ⥤ D`, `F.homRel` is a congruence. -/
-instance Functor.congruence_homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
+instance Functor.congruence_homRel {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) :
     Congruence F.homRel where
   equivalence :=
     { refl := fun _ ↦ rfl
@@ -118,6 +122,12 @@ instance category : Category (Quotient r) where
   comp_id f := Quot.inductionOn f <| by simp
   id_comp f := Quot.inductionOn f <| by simp
   assoc f g h := Quot.inductionOn f <| Quot.inductionOn g <| Quot.inductionOn h <| by simp
+
+/-- An equivalence between the type synonym for a quotient category and the type alias
+for the original category. -/
+def equiv {C : Type _} [Category* C] (r : HomRel C) : Quotient r ≃ C where
+  toFun x := x.1
+  invFun x := ⟨x⟩
 
 noncomputable section
 
@@ -204,7 +214,7 @@ theorem compClosure.congruence :
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 
-variable {D : Type _} [Category D] (F : C ⥤ D)
+variable {D : Type _} [Category* D] (F : C ⥤ D)
 
 /-- The induced functor on the quotient category. -/
 def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂) : Quotient r ⥤ D where
@@ -290,7 +300,7 @@ lemma natTransLift_app (F G : Quotient r ⥤ D)
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
     (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
-    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by cat_disch
+    natTransLift r τ ≫ natTransLift r τ' = natTransLift r (τ ≫ τ') := by cat_disch
 
 @[simp]
 lemma natTransLift_id (F : Quotient r ⥤ D) :

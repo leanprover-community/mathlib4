@@ -3,10 +3,12 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.Order.Group
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topologies on linear ordered fields
@@ -16,6 +18,8 @@ and division (apart from zero in the denominator). We also prove theorems like
 `Filter.Tendsto.mul_atTop`: if `f` tends to a positive number and `g` tends to positive infinity,
 then `f * g` tends to positive infinity.
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace Function
@@ -189,15 +193,9 @@ lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
 theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero
-
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
 theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
-
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
 
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
   tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left

@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Stefan Kebekus
 -/
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.Analytic.Order
-import Mathlib.Analysis.Meromorphic.Basic
+module
+
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Analytic.Order
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Orders of Meromorphic Functions
@@ -20,6 +22,8 @@ to infinity, resp. a nonzero constant, resp. zero.
 
 Uniformize API between analytic and meromorphic functions
 -/
+
+@[expose] public section
 
 open Filter Set WithTop.LinearOrderedAddCommGroup
 open scoped Topology
@@ -170,7 +174,7 @@ lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x <
         simpa using this.tendsto
       · filter_upwards [self_mem_nhdsWithin] with y hy
         simpa [sub_eq_zero] using hy
-    apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop m_neg) this
+    exact (tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_cobounded m_neg)).comp this
   apply A.congr'
   filter_upwards [hg] with z hz using by simp [hz]
 
@@ -509,6 +513,26 @@ theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜} :
 alias MeromorphicAt.order_inv := meromorphicOrderAt_inv
 
 /--
+Adding a locally vanishing function does not change the order.
+-/
+@[simp]
+theorem meromorphicOrderAt_add_of_top_left
+    {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : meromorphicOrderAt f₁ x = ⊤) :
+    meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₂ x := by
+  rw [meromorphicOrderAt_congr]
+  filter_upwards [meromorphicOrderAt_eq_top_iff.1 hf₁] with z hz
+  simp_all
+
+/--
+Adding a locally vanishing function does not change the order.
+-/
+@[simp]
+theorem meromorphicOrderAt_add_of_top_right
+    {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₂ : meromorphicOrderAt f₂ x = ⊤) :
+    meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
+  rw [add_comm, meromorphicOrderAt_add_of_top_left hf₂]
+
+/--
 The order of a sum is at least the minimum of the orders of the summands.
 -/
 theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
@@ -529,7 +553,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
   let n := min n₁ n₂
-  let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ +  (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
+  let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ + (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
   have h₁g : AnalyticAt 𝕜 g x := by
     apply AnalyticAt.add
     · apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
@@ -603,9 +627,6 @@ theorem meromorphicOrderAt_add_of_ne
 @[deprecated (since := "2025-05-22")]
 alias MeromorphicAt.order_add_of_order_ne := meromorphicOrderAt_add_of_ne
 
-@[deprecated (since := "2025-04-27")]
-alias MeromorphicAt.meromorphicOrderAt_add_of_unequal_order := meromorphicOrderAt_add_of_ne
-
 /-!
 ## Level Sets of the Order Function
 -/
@@ -663,9 +684,6 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · apply (mem_diff w).1
       exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
-@[deprecated (since := "2025-04-27")]
-alias isClopen_setOf_order_eq_top := isClopen_setOf_meromorphicOrderAt_eq_top
-
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/
 theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU : IsConnected U) :
@@ -686,9 +704,6 @@ theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU
     obtain ⟨v, hv⟩ := hU.nonempty
     use ⟨v, hv⟩, h₂f ⟨v, hv⟩
 
-@[deprecated (since := "2025-04-27")]
-alias exists_order_ne_top_iff_forall := exists_meromorphicOrderAt_ne_top_iff_forall
-
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
 theorem meromorphicOrderAt_ne_top_of_isPreconnected (hf : MeromorphicOn f U) {y : 𝕜}
@@ -696,9 +711,6 @@ theorem meromorphicOrderAt_ne_top_of_isPreconnected (hf : MeromorphicOn f U) {y 
     meromorphicOrderAt f y ≠ ⊤ :=
   (hf.exists_meromorphicOrderAt_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1
     (by use ⟨x, h₁x⟩) ⟨y, hy⟩
-
-@[deprecated (since := "2025-04-27")]
-alias order_ne_top_of_isPreconnected := meromorphicOrderAt_ne_top_of_isPreconnected
 
 /-- If a function is meromorphic on a set `U`, then for each point in `U`, it is analytic at nearby
 points in `U`. When the target space is complete, this can be strengthened to analyticity at all
@@ -756,9 +768,6 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
     rcases h₁a with h' | h'
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim
-
-@[deprecated (since := "2025-04-27")]
-alias codiscrete_setOf_order_eq_zero_or_top := codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
 
 end MeromorphicOn
 

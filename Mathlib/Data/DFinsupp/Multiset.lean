@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.BigOperators
-import Mathlib.Data.DFinsupp.Order
+module
+
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Data.DFinsupp.Order
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -12,6 +14,8 @@ import Mathlib.Data.DFinsupp.Order
 This defines `DFinsupp.toMultiset` the equivalence between `Π₀ a : α, ℕ` and `Multiset α`, along
 with `Multiset.toDFinsupp` the reverse equivalence.
 -/
+
+@[expose] public section
 
 open Function
 

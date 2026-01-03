@@ -3,11 +3,13 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Wojciech Nawrocki
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.GroupTheory.Congruence.BigOperators
-import Mathlib.RingTheory.Ideal.Lattice
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.RingTheory.Jacobson.Ideal
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.GroupTheory.Congruence.BigOperators
+public import Mathlib.RingTheory.Ideal.Lattice
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Ideals in a matrix ring
@@ -23,6 +25,8 @@ We also characterize Jacobson radicals of ideals in such rings.
 * `TwoSidedIdeal.jacobson_matrix` shows that $J(Mₙ(I)) = Mₙ(J(I))$
   for any two-sided ideal $I ≤ R$.
 -/
+
+@[expose] public section
 
 /-! ### Left ideals in a matrix semiring -/
 
@@ -379,6 +383,7 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
+set_option backward.privateInPublic true in
 private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
   -- Proof generalized from example 8 in
@@ -394,6 +399,8 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   use N p p
   simpa [mul_apply, single, ite_and] using NxMI p p
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-07-28")] alias jacobson_matricesOver_le := jacobson_matrix_le
 
 /-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/

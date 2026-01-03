@@ -3,9 +3,11 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.Baire.Lemmas
+module
+
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Topology.Semicontinuity.Basic
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
@@ -70,6 +72,8 @@ with the seminorm characterization!
 
 banach-steinhaus, uniform boundedness, equicontinuity
 -/
+
+@[expose] public section
 
 open Filter Topology Set ContinuousLinearMap
 
@@ -194,7 +198,7 @@ protected def continuousLinearMapOfTendsto (hq : WithSeminorms q)
     refine (h.comp hu).continuous_of_equicontinuous (hq.banach_steinhaus ?_).equicontinuous
     -- For `k` and `x` fixed, we need to show that `(i : ℕ) ↦ q k (g i x)` is bounded.
     intro k x
-    -- This follows from the fact that this sequences converges (to `q k (f x)`) by hypothesis and
+    -- This follows from the fact that this sequence converges (to `q k (f x)`) by hypothesis and
     -- continuity of `q k`.
     rw [tendsto_pi_nhds] at h
     exact (((hq.continuous_seminorm k).tendsto _).comp <| (h x).comp hu).bddAbove_range

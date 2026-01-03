@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Complex.Asymptotics
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Analysis.Complex.Asymptotics
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!
 # Complex and real exponential
@@ -18,6 +20,8 @@ limits of `Real.exp` at infinity.
 
 exp
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -64,9 +68,7 @@ theorem continuous_exp : Continuous exp :=
   continuous_iff_continuousAt.mpr fun x =>
     continuousAt_of_locally_lipschitz zero_lt_one (2 * ‖exp x‖)
       (fun y ↦ by
-        convert locally_lipschitz_exp zero_le_one le_rfl x y using 2
-        congr
-        ring)
+        simpa [dist_eq_norm, one_add_one_eq_two] using locally_lipschitz_exp zero_le_one le_rfl x y)
 
 theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn

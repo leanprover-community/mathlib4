@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Tactic.Generalize
+module
+
+public import Mathlib.Analysis.BoxIntegral.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Tactic.Generalize
 
 /-!
 # McShane integrability vs Bochner integrability
@@ -20,6 +22,8 @@ We deduce that the same is true for the Riemann integral for continuous function
 
 integral, McShane integral, Bochner integral
 -/
+
+@[expose] public section
 
 open scoped NNReal ENNReal Topology
 

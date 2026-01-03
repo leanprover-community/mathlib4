@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 /-!
 # Univariate skew polynomials
 
@@ -36,7 +38,7 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 
 ## Implementation notes
 
-The implementation uses `Muliplicative ℕ` instead of `ℕ` as some notion
+The implementation uses `Multiplicative ℕ` instead of `ℕ` as some notion
 of `AddSkewMonoidAlgebra` like the current implementation of `Polynomials` in Mathlib.
 
 This decision was made because we use the type class `MulSemiringAction` to specify the properties
@@ -65,6 +67,8 @@ multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as 
 `δ` is a derivation.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

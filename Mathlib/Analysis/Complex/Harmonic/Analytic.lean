@@ -3,10 +3,12 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Complex.Conformal
-import Mathlib.Analysis.Complex.HasPrimitives
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.Complex.Conformal
+public import Mathlib.Analysis.Complex.HasPrimitives
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
 /-!
 # Analyticity of Harmonic Functions
@@ -15,6 +17,8 @@ If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/�
 `f` is harmonic on an open ball, then it is the real part of a function `F : ℂ → ℂ` that is
 holomorphic on the ball.  This implies in particular that harmonic functions are real-analytic.
 -/
+
+@[expose] public section
 
 open Complex InnerProductSpace Metric Topology
 
@@ -95,7 +99,7 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
       (by fun_prop) h₅F, ContinuousLinearMap.fderiv, h₄F.fderiv_restrictScalars (𝕜 := ℝ)]
     ext a
     nth_rw 2 [(by simp : a = a.re • (1 : ℂ) + a.im • (I : ℂ))]
-    rw [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, ContinuousLinearMap.map_smul]
+    rw [map_add, map_smul, map_smul]
     simp [HasDerivAt.deriv (h₁F y hy), g]
   · simp_all
   · simp [F]

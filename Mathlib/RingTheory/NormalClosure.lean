@@ -3,7 +3,9 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+module
+
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Normal closure of an extension of domains
@@ -15,7 +17,8 @@ Under the hood, `T` is defined as the `integralClosure` of `S` inside the
 `IntermediateField.normalClosure` of the extension `Frac S / Frac R` inside the `AlgebraicClosure`
 of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dedekind domain.
 
-# Technical notes
+## Technical notes
+
 * Many instances are proved about the `IntermediateField.normalClosure` of the extension
 `Frac S / Frac R` inside the `AlgebraicClosure` of `Frac S`. However these are only needed for the
 construction of `T` and to prove some results about it. Therefore, these instances are local.
@@ -24,6 +27,8 @@ construction of `T` and to prove some results about it. Therefore, these instanc
 does not cause timeouts in this file, it does slow down considerably its compilation and
 does trigger timeouts in applications.
 -/
+
+@[expose] public section
 
 namespace Ring
 
@@ -85,7 +90,7 @@ local instance : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
 
 local instance : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
 
-local instance : IsScalarTower R T E :=  IsScalarTower.to₁₃₄ R S T E
+local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)

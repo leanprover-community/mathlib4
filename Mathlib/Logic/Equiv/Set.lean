@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Says
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Says
 
 /-!
 # Equivalences and sets
@@ -21,6 +23,8 @@ Some notable definitions are:
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
 on sets before defining what an equivalence is.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -426,10 +430,10 @@ protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H
     s ≃ f '' s :=
   ⟨fun p => ⟨f p, mem_image_of_mem f p.2⟩, fun p =>
     ⟨Classical.choose p.2, (Classical.choose_spec p.2).1⟩, fun ⟨_, h⟩ =>
-    Subtype.eq
+    Subtype.ext
       (H (Classical.choose_spec (mem_image_of_mem f h)).1 h
         (Classical.choose_spec (mem_image_of_mem f h)).2),
-    fun ⟨_, h⟩ => Subtype.eq (Classical.choose_spec h).2⟩
+    fun ⟨_, h⟩ => Subtype.ext (Classical.choose_spec h).2⟩
 
 /-- If `f` is an injective function, then `s` is equivalent to `f '' s`. -/
 @[simps! apply]
@@ -523,7 +527,7 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
   invFun b := f_inv b.2.nonempty b
   left_inv a := hf ⟨a⟩ a
   right_inv := fun ⟨b, a, ha⟩ =>
-    Subtype.eq <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
+    Subtype.ext <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
 
 /-- If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
 
@@ -613,24 +617,17 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
-theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
-    (e : β ≃ {x // p x})
-    (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
-    [∀ j, Decidable (p j)] :
-    (fun i : α => if h : p i then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
-      Function.update (fun i : α => if h : p i then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
+theorem dite_comp_equiv_update
+    {α E : Type*} {β γ : Sort*} {p : α → Prop} [EquivLike E {x // p x} β]
+    (e : E) (v : β → γ) (w : α → γ) (j : β) (x : γ)
+    [DecidableEq β] [DecidableEq α] [∀ j, Decidable (p j)] :
+    (fun i : α => if h : p i then (update v j x) (e ⟨i, h⟩) else w i) =
+      update (fun i : α => if h : p i then v (e ⟨i, h⟩) else w i) (EquivLike.inv e j) x := by
   ext i
   by_cases h : p i
-  · rw [dif_pos h, Function.update_apply_equiv_apply, Equiv.symm_symm,
-      Function.update_apply, Function.update_apply, dif_pos h]
-    have h_coe : (⟨i, h⟩ : Subtype p) = e j ↔ i = e j :=
-      Subtype.ext_iff.trans (by rw [Subtype.coe_mk])
-    simp [h_coe]
-  · have : i ≠ e j := by
-      contrapose! h
-      have : p (e j : α) := (e j).2
-      rwa [← h] at this
-    simp [h, this]
+  · simp only [h, update_apply]
+    aesop
+  · grind
 
 section Swap
 

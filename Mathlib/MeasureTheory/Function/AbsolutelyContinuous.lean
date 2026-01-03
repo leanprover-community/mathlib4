@@ -3,8 +3,10 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.Order.SuccPred.IntervalSucc
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.Order.SuccPred.IntervalSucc
 
 /-!
 # Absolutely Continuous Functions
@@ -30,7 +32,7 @@ We use the filter version to prove that absolutely continuous functions are clos
 `AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.fun_smul`, `AbsolutelyContinuousOnInterval.smul`,
 `AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
-and that absolutely continuous implies uniform continuous in
+and that absolutely continuous implies uniformly continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
 We use the `ε`-`δ` definition to prove that
@@ -47,6 +49,8 @@ We conclude that
 absolutely continuous
 -/
 
+@[expose] public section
+
 variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
 
 open Set Filter Function
@@ -61,7 +65,7 @@ Details:
 1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
 is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
 `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
-2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, `G` convergence along `totalLengthFilter` means that
+2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, convergence of `G` along `totalLengthFilter` means that
 the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
 tends to `0` as `j` tends to infinity.
 -/
@@ -331,13 +335,13 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           constructor <;> exact this (hp₂ _)
         · rw [PairwiseDisjoint]
           convert hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
-          rw [uIoc_of_le (hp₁ (by omega)), Nat.succ_eq_succ]
+          rw [uIoc_of_le (hp₁ (by lia)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
           convert this
           rw [← Finset.sum_range_sub]
           congr; ext i
           rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
-          linarith [@hp₁ i (i + 1) (by omega)]
+          linarith [@hp₁ i (i + 1) (by lia)]
         linarith [mem_Icc.mp (hp₂ p.1), mem_Icc.mp (hp₂ 0)]
     -- Reduce edist in the goal to dist and clear up
     have veq: (∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
@@ -358,10 +362,10 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     fun hC ↦ by simp [hC] at this
   -- Verify that `[a + i * δ', a + (i + 1) * δ']` is indeed a subinterval of `[a, b]`
   apply v_each
-  · convert h_mono (show 0 ≤ i by omega); simp
-  · convert h_mono (show i ≤ i + 1 by omega); norm_cast
+  · convert h_mono (show 0 ≤ i by lia); simp
+  · convert h_mono (show i ≤ i + 1 by lia); norm_cast
   · rw [add_mul, ← add_assoc]; simpa
-  · convert h_mono (show i + 1 ≤ n + 1 by omega)
+  · convert h_mono (show i + 1 ≤ n + 1 by lia)
     · norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
 

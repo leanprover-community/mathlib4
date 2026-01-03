@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Independence.Conditional
+module
+
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Independence.Conditional
 
 /-!
 # Kolmogorov's 0-1 law
@@ -18,6 +20,8 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   measurable with respect to the tail σ-algebra `limsup s atTop` of an independent sequence of
   σ-algebras `s` has probability 0 or 1.
 -/
+
+@[expose] public section
 
 open MeasureTheory MeasurableSpace
 

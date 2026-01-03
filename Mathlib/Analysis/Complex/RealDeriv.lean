@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.Deriv.Linear
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Linear
+public import Mathlib.Analysis.Complex.Basic
 
 /-! # Real differentiability of complex-differentiable functions
 
@@ -13,6 +15,8 @@ import Mathlib.Analysis.Complex.Basic
 then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the real part of the
 complex derivative.
 -/
+
+@[expose] public section
 
 assert_not_exists IsConformalMap Conformal
 

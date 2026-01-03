@@ -3,11 +3,13 @@ Copyright (c) 2024 Colin Jones. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colin Jones
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Factorisation properties of natural numbers
@@ -44,6 +46,8 @@ relations with prime and perfect numbers.
 
 abundant, deficient, weird, pseudoperfect
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -93,23 +97,23 @@ theorem weird_seventy : Weird 70 := by
 lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 lemma perfect_iff_not_abundant_and_not_deficient (hn : 0 ≠ n) :
     Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 lemma abundant_iff_not_perfect_and_not_deficient (hn : 0 ≠ n) :
     Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 /-- A positive natural number is either deficient, perfect, or abundant -/
 theorem deficient_or_perfect_or_abundant (hn : 0 ≠ n) :
     Deficient n ∨ Abundant n ∨ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 theorem Perfect.pseudoperfect (h : Perfect n) : Pseudoperfect n :=
   ⟨h.2, ⟨properDivisors n, ⟨fun ⦃_⦄ a ↦ a, h.1⟩⟩⟩

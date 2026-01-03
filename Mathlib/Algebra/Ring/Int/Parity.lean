@@ -3,15 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Group.Int.Even
+module
+
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Basic parity lemmas for the ring `ℤ`
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 
@@ -23,7 +27,7 @@ variable {m n : ℤ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 where
-  mp := fun ⟨m, hm⟩ ↦ by simp [hm, add_emod]
+  mp := fun ⟨m, hm⟩ ↦ by grind
   mpr h := ⟨n / 2, by grind⟩
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
@@ -102,15 +106,8 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by grind
 
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 := by grind
 
-@[simp, grind =]
-theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
-  induction z using wlog_sign with
-  | inv => simp
-  | w n =>
-    cases n
-    · simp
-    · norm_cast
-      simp
+@[simp]
+theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by grind
 
 @[simp]
 theorem odd_sign_iff {z : ℤ} : Odd z.sign ↔ z ≠ 0 := by grind

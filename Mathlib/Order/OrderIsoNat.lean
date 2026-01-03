@@ -3,12 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Logic.Denumerable
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Logic.Denumerable
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Relation embeddings from the naturals
@@ -24,6 +25,8 @@ defines the limit value of an eventually-constant sequence.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -131,7 +134,9 @@ theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
 @[simp]
 theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
-  simp [orderIsoOfNat]; congr!
+  simp only [orderIsoOfNat, RelIso.ofSurjective_apply,
+    RelEmbedding.orderEmbeddingOfLTEmbedding_apply, RelEmbedding.coe_natLT]
+  congr!
 
 variable (s)
 
@@ -174,9 +179,9 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         have h := hm _ (Nat.le_add_left m n)
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
-        refine ⟨n + n' - n - m, by cutsat, ?_⟩
+        refine ⟨n + n' - n - m, by lia, ?_⟩
         convert hn2
-        omega
+        lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
         ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>

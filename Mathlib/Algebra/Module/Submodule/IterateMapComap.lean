@@ -3,7 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
+module
+
+public import Mathlib.Algebra.Module.Submodule.Ker
 
 /-!
 
@@ -29,6 +31,8 @@ The construction here is adapted from the proof in Djoković's paper
 *Epimorphisms of modules which must be isomorphisms* [djokovic1973].
 
 -/
+
+@[expose] public section
 
 open Function Submodule
 

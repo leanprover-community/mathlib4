@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.GCD.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -23,6 +25,8 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 
 ModEq, congruence, mod, MOD, modulo
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Function.support
 
@@ -310,15 +314,19 @@ lemma add_modEq_left : n + a ≡ a [MOD n] := by simp
 
 lemma add_modEq_right : a + n ≡ a [MOD n] := by simp
 
+theorem modEq_iff_exists_eq_add (h : a ≤ b) : a ≡ b [MOD n] ↔ ∃ (t : ℕ), b = a + n * t := by
+  rw [modEq_iff_dvd' h, dvd_def]
+  exact exists_congr (fun _ => Nat.sub_eq_iff_eq_add' h)
+
 namespace ModEq
 
 theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
   (le_total a b).elim id fun h3 =>
     Nat.le_of_sub_eq_zero
-      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by cutsat))
+      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by lia))
 
 theorem add_le_of_lt (h1 : a ≡ b [MOD m]) (h2 : a < b) : a + m ≤ b :=
-  le_of_lt_add (add_modEq_right.trans h1) (by cutsat)
+  le_of_lt_add (add_modEq_right.trans h1) (by lia)
 
 theorem dvd_iff (h : a ≡ b [MOD m]) (hdm : d ∣ m) : d ∣ a ↔ d ∣ b := by
   simp only [← modEq_zero_iff_dvd]
@@ -341,7 +349,7 @@ lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
   h.eq_of_abs_lt <| Int.abs_sub_lt_of_lt_lt ha hb
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
-lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b [MOD m / gcd m c] := by
+lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) : a ≡ b [MOD m / gcd m c] := by
   let d := gcd m c
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
@@ -536,7 +544,7 @@ theorem odd_mul_odd_div_two {m n : ℕ} (hm1 : m % 2 = 1) (hn1 : n % 2 = 1) :
     dsimp
     rw [mul_add, two_mul_odd_div_two hm1, mul_left_comm, two_mul_odd_div_two hn1,
       two_mul_odd_div_two (Nat.odd_mul_odd hm1 hn1), Nat.mul_sub, mul_one, ←
-      Nat.add_sub_assoc (by cutsat), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
+      Nat.add_sub_assoc (by lia), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
 
 theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 1 2
@@ -548,7 +556,7 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by cutsat)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by lia)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=

@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 
@@ -21,6 +23,8 @@ A morphism of schemes is separated if its diagonal morphism is a closed immersio
 - `AlgebraicGeometry.IsSeparated.hasAffineProperty`:
   A morphism is separated iff the preimage of affine opens are separated schemes.
 -/
+
+@[expose] public section
 
 
 noncomputable section

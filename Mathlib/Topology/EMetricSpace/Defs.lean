@@ -3,9 +3,11 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.UniformSpace.OfFun
+module
+
+public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
 # Extended metric spaces
@@ -24,6 +26,8 @@ Since a lot of elementary properties don't require `eq_of_edist_eq_zero` we star
 theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y` and we specialize
 to `EMetricSpace` at the end.
 -/
+
+@[expose] public section
 
 
 assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
@@ -90,7 +94,7 @@ ensures that we do not get a diamond when doing
 `[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
-class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
+class PseudoEMetricSpace (α : Type u) : Type u extends EDist α where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
   edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z
@@ -567,6 +571,30 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
 end Compact
 
 end EMetric
+
+namespace Subtype
+
+@[simp]
+theorem preimage_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+  rfl
+
+@[simp]
+theorem preimage_emetricClosedBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+  rfl
+
+@[simp]
+theorem image_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+  rw [← preimage_emetricBall, image_preimage_eq_inter_range, range_val_subtype]
+
+@[simp]
+theorem image_emetricClosedBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+  rw [← preimage_emetricClosedBall, image_preimage_eq_inter_range, range_val_subtype]
+
+end Subtype
 
 /-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying
 `edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality

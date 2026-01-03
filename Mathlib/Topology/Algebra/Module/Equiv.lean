@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Continuous linear equivalences
@@ -12,6 +14,8 @@ import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -784,7 +788,7 @@ section Aut
 /-!
 ### Automorphisms as continuous linear equivalences and as units of the ring of endomorphisms
 
-The next theorems cover the identification between `M ≃L[R] M`and the group of units of the ring
+The next theorems cover the identification between `M ≃L[R] M` and the group of units of the ring
 `M →L[R] M`.
 -/
 
@@ -1173,8 +1177,6 @@ theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M
   simp
   rfl
 
-@[deprecated (since := "2025-04-22")] alias ring_inverse_equiv := ringInverse_equiv
-
 /-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
 theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
@@ -1194,18 +1196,58 @@ theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     rw [hF]
     simp
 
-@[deprecated (since := "2025-04-22")] alias to_ring_inverse := inverse_eq_ringInverse
-
 theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   ext
   simp [inverse_eq_ringInverse (ContinuousLinearEquiv.refl R M)]
 
-@[deprecated (since := "2025-04-22")]
-alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
-
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
+
+namespace IsInvertible
+
+variable {f : M →L[R] M₂}
+
+@[simp]
+theorem self_comp_inverse (hf : f.IsInvertible) : f ∘L f.inverse = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘L f = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem bijective (hf : f.IsInvertible) : Function.Bijective f := by
+  rcases hf with ⟨e, rfl⟩
+  simp [ContinuousLinearEquiv.bijective]
+
+protected theorem injective (hf : f.IsInvertible) : Function.Injective f :=
+  hf.bijective.injective
+
+protected theorem surjective (hf : f.IsInvertible) : Function.Surjective f :=
+  hf.bijective.surjective
+
+protected theorem inverse (hf : f.IsInvertible) : f.inverse.IsInvertible := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+protected theorem inverse_inverse (hf : f.IsInvertible) : f.inverse.inverse = f := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsInvertible := by
+  by_contra H
+  obtain ⟨_, _⟩ : Subsingleton M₂ ∧ Subsingleton M := by simpa [inverse, H] using hf
+  simp_all [Subsingleton.elim f 0]
+
+@[simp]
+theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
+    f.inverse.IsInvertible ↔ f.IsInvertible :=
+  ⟨.of_isInvertible_inverse, .inverse⟩
+
+end IsInvertible
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :
@@ -1213,6 +1255,104 @@ theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ �
   ext <;> simp
 
 end ContinuousLinearMap
+
+-- Restricting a continuous linear equivalence to a map between submodules.
+section map
+
+namespace ContinuousLinearEquiv
+
+variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [TopologicalSpace M]
+  [AddCommMonoid M₂] [TopologicalSpace M₂]
+  {module_M : Module R M} {module_M₂ : Module R₂ M₂} {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+  {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+
+/-- Continuous linear equivalence between two equal submodules:
+this is `LinearEquiv.ofEq` as a continuous linear equivalence -/
+def ofEq (p q : Submodule R M) (h : p = q) : p ≃L[R] q where
+  toLinearEquiv := LinearEquiv.ofEq _ _ h
+  continuous_toFun := by
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    exact (Homeomorph.ofEqSubtypes h').continuous
+  continuous_invFun := by
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    exact (Homeomorph.ofEqSubtypes h').symm.continuous
+
+/--
+A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from any submodule `p` of the domain onto the image of that submodule.
+
+This is the continuous linear version of `LinearEquiv.submoduleMap`.
+This is `ContinuousLinearEquiv.ofSubmodule'` but with map on the right instead of comap on the left.
+-/
+def submoduleMap (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) :
+    p ≃SL[σ₁₂] Submodule.map e p where
+  toLinearMap := (e.comp p.subtype).codRestrict (p.map e) (fun ⟨c, hc⟩ ↦ by simpa)
+  invFun := (e.symm.comp (p.map e).subtype).codRestrict p (fun ⟨c, y, hy, eyc⟩ ↦ by
+    simpa [← eyc, e.symm_apply_apply])
+  left_inv x := by ext; simp
+  right_inv x := by ext; simp
+  continuous_toFun := by
+    have : Continuous (e.comp p.subtype) := by dsimp; fun_prop
+    dsimp
+    exact continuous_induced_rng.mpr this
+  continuous_invFun := by
+    have : Continuous (e.symm.comp (p.map e).subtype) := by dsimp; fun_prop
+    dsimp
+    exact continuous_induced_rng.mpr this
+
+@[simp]
+lemma submoduleMap_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p) :
+    e.submoduleMap p x = e x := by
+  rfl
+
+@[simp]
+lemma submoduleMap_symm_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p.map e) :
+    (e.submoduleMap p).symm x = e.symm x := by
+  rfl
+
+/-- A continuous linear equivalence which maps a submodule of one module onto another,
+restricts to a continuous linear equivalence of the two submodules.
+This is `LinearEquiv.ofSubmodules` as a continuous linear equivalence. -/
+def ofSubmodules (e : M ≃SL[σ₁₂] M₂)
+    (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M →SL[σ₁₂] M₂) = q) : p ≃SL[σ₁₂] q :=
+  (e.submoduleMap p).trans (.ofEq _ _ h)
+
+@[simp]
+theorem ofSubmodules_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map e = q) (x : p) :
+    e.ofSubmodules p q h x = e x :=
+  rfl
+
+@[simp]
+theorem ofSubmodules_symm_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map e = q) (x : q) : (e.ofSubmodules p q h).symm x = e.symm x :=
+  rfl
+
+/-- A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from the preimage of any submodule to that submodule.
+This is `ContinuousLinearEquiv.ofSubmodule` but with `comap` on the left
+instead of `map` on the right. -/
+def ofSubmodule' (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) : U.comap f ≃SL[σ₁₂] U :=
+  f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.toLinearEquiv.symm) |>.symm
+
+theorem ofSubmodule'_toContinuousLinearMap (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
+    (f.ofSubmodule' U).toContinuousLinearMap =
+      (f.toContinuousLinearMap.comp ((U.comap f).subtypeL)).codRestrict U
+        ((fun ⟨x, hx⟩ ↦ by simpa [Submodule.mem_comap])) := by
+  rfl
+
+@[simp]
+theorem ofSubmodule'_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U.comap f) :
+    (f.ofSubmodule' U x : M₂) = f (x : M) :=
+  rfl
+
+@[simp]
+theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U) :
+    ((f.ofSubmodule' U).symm x : M) = f.symm (x : M₂) := rfl
+
+end ContinuousLinearEquiv
+
+end map
 
 namespace Submodule
 

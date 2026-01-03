@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Quotients by submodules
@@ -22,6 +24,8 @@ import Mathlib.Logic.Small.Basic
 * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
 
 -/
+
+@[expose] public section
 
 -- For most of this file we work over a noncommutative ring
 section Ring
@@ -67,6 +71,10 @@ theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = m
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = mk x :=
   rfl
 
+theorem quotientAddGroupMk_eq_mk {p : Submodule R M} (x : M) :
+    (QuotientAddGroup.mk x : M ⧸ p) = mk x :=
+  rfl
+
 protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
@@ -110,10 +118,6 @@ theorem mk_out (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
   Quotient.out_eq m
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
-
-theorem subsingleton_iff : Subsingleton (M ⧸ p) ↔ ∀ x : M, x ∈ p := by
-  rw [subsingleton_iff_forall_eq 0, Submodule.Quotient.forall]
-  simp_rw [Submodule.Quotient.mk_eq_zero]
 
 section SMul
 

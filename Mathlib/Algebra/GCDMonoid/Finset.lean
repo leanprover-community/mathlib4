@@ -3,8 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Algebra.GCDMonoid.Multiset
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Algebra.GCDMonoid.Multiset
 
 /-!
 # GCD and LCM operations on finsets
@@ -25,6 +27,8 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 
 finset, gcd
 -/
+
+@[expose] public section
 
 variable {ι α β γ : Type*}
 
@@ -196,7 +200,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
   classical
     trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
-    · rw [filter_union_filter_neg_eq]
+    · rw [filter_union_filter_not_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
     · exact gcd {x ∈ s | f x ≠ 0} f

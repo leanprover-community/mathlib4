@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.Const
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 # Monoidal structure on `C ⥤ D` when `D` is monoidal.
@@ -15,6 +17,8 @@ there is a natural "pointwise" monoidal structure on `C ⥤ D`.
 
 The initial intended application is tensor product of presheaves.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -196,7 +200,7 @@ end Monoidal
 
 @[simps]
 instance Functor.LaxMonoidal.whiskeringRight
-    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
   ε := { app X := Functor.LaxMonoidal.ε L }
@@ -204,7 +208,7 @@ instance Functor.LaxMonoidal.whiskeringRight
 
 @[simps]
 instance Functor.OplaxMonoidal.whiskeringRight
-    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
   η := { app X := Functor.OplaxMonoidal.η L }
@@ -212,7 +216,7 @@ instance Functor.OplaxMonoidal.whiskeringRight
   oplax_left_unitality := by aesop
   oplax_right_unitality := by aesop
 
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
@@ -226,8 +230,23 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
 @[deprecated (since := "2025-11-06")] alias δ_app := Functor.OplaxMonoidal.whiskeringRight_δ_app
 
 @[simps!]
-instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+instance Functor.Monoidal.whiskeringLeft
+    (E : Type*) [Category* E] [MonoidalCategory E] (F : C ⥤ D) :
     ((whiskeringLeft _ _ E).obj F).Monoidal :=
   CoreMonoidal.toMonoidal { εIso := Iso.refl _, μIso _ _ := Iso.refl _ }
+
+instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).functor.Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.inverse).Monoidal
+
+instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).inverse.Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
+
+instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).IsMonoidal where
+  leftAdjoint_μ X Y := by
+    ext
+    simp [← Functor.map_comp]
 
 end CategoryTheory

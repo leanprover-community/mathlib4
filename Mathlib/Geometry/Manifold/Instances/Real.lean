@@ -3,16 +3,18 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.WithLp
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.WithLp
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Constructing examples of manifolds over ℝ
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
+boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x, y}`
 whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
 has boundary `M × {x, y}`.
 
@@ -41,6 +43,8 @@ model with corners cannot be implicit, see the discussion in
 The manifold structure on the interval `[x, y] = Icc x y` requires the assumption `x < y` as a
 typeclass. We provide it as `[Fact (x < y)]`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -86,12 +90,12 @@ instance : Inhabited (EuclideanQuadrant n) :=
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
-  Subtype.eq h
+  Subtype.ext h
 
 @[ext]
 theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
-  Subtype.eq h
+  Subtype.ext h
 
 theorem EuclideanHalfSpace.convex [NeZero n] :
     Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 } :=

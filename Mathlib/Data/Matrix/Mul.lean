@@ -3,12 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
+module
 
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Matrix.Diagonal
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Matrix.Diagonal
 
 /-!
 # Matrix multiplication
@@ -47,6 +48,8 @@ as having the right type. Instead, `Matrix.of` should be used.
 Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra Field TrivialStar
 
@@ -608,7 +611,7 @@ theorem add_vecMulVec [Mul α] [Add α] [RightDistribClass α] (w₁ w₂ : m �
   ext fun _ _ => add_mul _ _ _
 
 theorem vecMulVec_add [Mul α] [Add α] [LeftDistribClass α] (w : m → α) (v₁ v₂ : n → α) :
-    vecMulVec w (v₁ + v₂) = vecMulVec w v₁ + vecMulVec w v₂  :=
+    vecMulVec w (v₁ + v₂) = vecMulVec w v₁ + vecMulVec w v₂ :=
   ext fun _ _ => mul_add _ _ _
 
 @[simp]
@@ -1060,14 +1063,14 @@ lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
 lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
     (h : (M ^ k).row i = 0) (h' : k ≤ l) :
     (M ^ l).row i = 0 := by
-  replace h' : l = k + (l - k) := by omega
+  replace h' : l = k + (l - k) := by lia
   rw [← single_one_vecMul] at h ⊢
   rw [h', pow_add, ← vecMul_vecMul, h, zero_vecMul]
 
 lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
     (h : (M ^ k).col i = 0) (h' : k ≤ l) :
     (M ^ l).col i = 0 := by
-  replace h' : l = (l - k) + k := by omega
+  replace h' : l = (l - k) + k := by lia
   rw [← mulVec_single_one] at h ⊢
   rw [h', pow_add, ← mulVec_mulVec, h, mulVec_zero]
 

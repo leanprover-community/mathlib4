@@ -3,10 +3,12 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -28,6 +30,8 @@ uses mutual induction and mimics the definition for the surreal inverse. This de
 
 - Show the nimbers are algebraically closed.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -268,17 +272,17 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
 /-- An enumeration of elements in `invSet` by a type in the same universe. -/
-private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
+private def List.toNimber {a : Nimber} : List a.toOrdinal.ToType → Nimber
   | [] => 0
   | x :: l =>
-    let a' := ∗((Ordinal.enumIsoToType a.toOrdinal).symm x)
+    let a' := ∗(x)
     invAux a' * (1 + (a + a') * toNimber l)
 
 instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   refine @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@List.toNimber a))
   refine fun x hx ↦ invSet_recOn a ⟨[], rfl⟩ ?_ x hx
   rintro a' ha _ _ ⟨l, rfl⟩
-  use Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩ :: l
+  use .mk ⟨toOrdinal a', ha⟩ :: l
   rw [List.toNimber]
   simp
 

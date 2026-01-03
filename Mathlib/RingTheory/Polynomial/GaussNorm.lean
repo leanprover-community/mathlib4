@@ -3,8 +3,9 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.RingTheory.PowerSeries.GaussNorm
+public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!
 # Gauss norm for polynomials
@@ -27,6 +28,8 @@ non-negative function with `v 0 = 0` and `c ≥ 0`.
 * `Polynomial.gaussNorm_eq_zero_iff`: if `v x = 0 ↔ x = 0` for all `x : R`, then the Gauss
   norm is zero if and only if the polynomial is zero.
 -/
+
+@[expose] public section
 variable {R F : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : ℝ)
 
 namespace Polynomial
@@ -76,16 +79,10 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
     apply Set.Finite.image f
     rw [Set.top_eq_univ, Set.finite_univ_iff, ← @Finset.coe_sort_coe]
     exact Finite.of_fintype p.support
-  apply Set.Finite.bddAbove <| Set.Finite.subset h_fin _
-  intro x hx
-  obtain ⟨i, hi⟩ := hx
-  rw [← hi]
-  by_cases hi : i ∈ p.support
-  · left
-    use ⟨i, hi⟩
-    simp [f]
-  · right
-    simp [Polynomial.notMem_support_iff.mp hi]
+  refine Set.Finite.bddAbove <| Set.Finite.subset h_fin fun _ ↦ ?_
+  simp only [Set.top_eq_univ, Set.image_univ, Set.union_singleton, Set.mem_insert_iff,
+    Set.mem_range, Subtype.exists, mem_support_iff]
+  grind
 
 @[simp]
 theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]

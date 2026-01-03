@@ -3,8 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-! # Properties of C⋆-algebra homomorphisms
 
@@ -15,6 +16,8 @@ Here we collect properties of C⋆-algebra homomorphisms.
 + `NonUnitalStarAlgHom.norm_map`: A non-unital star algebra monomorphism of complex C⋆-algebras
   is isometric.
 -/
+
+@[expose] public section
 
 open CStarAlgebra in
 lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlgebra B]

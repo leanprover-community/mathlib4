@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 
 /-!
 # The type of nondegenerate simplices not in a subcomplex
@@ -13,6 +15,8 @@ we introduce the type `A.N` of nondegenerate simplices of `X`
 that are not in `A`.
 
 -/
+
+@[expose] public section
 
 universe u
 

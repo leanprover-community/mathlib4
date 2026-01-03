@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.TransferInstance
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.Normed.Lp.ProdLp
+module
+
+public import Mathlib.Algebra.Algebra.TransferInstance
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-! # Unitization equipped with the $L^1$ norm
 
@@ -23,6 +25,8 @@ registered as an instance without the type synonym.
 One application of this is a straightforward proof that the quasispectrum of an element in a
 non-unital Banach algebra is compact, which can be established by passing to the unitization.
 -/
+
+@[expose] public section
 
 variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
 variable [NormedSpace 𝕜 A]
@@ -62,7 +66,7 @@ lemma unitization_norm_def (x : WithLp 1 (Unitization 𝕜 A)) :
   ‖x‖ = (‖(ofLp x).fst‖ ^ (1 : ℝ≥0∞).toReal +
       ‖(ofLp x).snd‖ ^ (1 : ℝ≥0∞).toReal) ^ (1 / (1 : ℝ≥0∞).toReal) :=
     prod_norm_eq_add (by simp : 0 < (1 : ℝ≥0∞).toReal) _
-  _   = ‖(ofLp x).fst‖ + ‖(ofLp x).snd‖ := by simp
+  _ = ‖(ofLp x).fst‖ + ‖(ofLp x).snd‖ := by simp
 
 lemma unitization_nnnorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
     ‖x‖₊ = ‖(ofLp x).fst‖₊ + ‖(ofLp x).snd‖₊ :=

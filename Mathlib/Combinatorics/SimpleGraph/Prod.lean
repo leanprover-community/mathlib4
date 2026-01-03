@@ -3,8 +3,10 @@ Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Graph products
@@ -26,6 +28,8 @@ two edges is a square.
 
 Define all other graph products!
 -/
+
+@[expose] public section
 
 variable {α β γ : Type*}
 
@@ -265,7 +269,7 @@ lemma edist_boxProd (x y : α × β) :
     have w_len : w_app.length = wG.length + wH.length := by
       unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
-    ·  calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
+    · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := by exact_mod_cast w_len
           _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h

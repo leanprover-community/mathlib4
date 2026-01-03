@@ -3,10 +3,12 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Data.FunLike.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Antilipschitz
+public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Dilations
@@ -47,6 +49,8 @@ needed.
 - https://en.wikipedia.org/wiki/Dilation_(metric_space)
 - [Marcel Berger, *Geometry*][berger1987]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -391,8 +395,7 @@ theorem ediam_range : EMetric.diam (range (f : α → β)) = ratio f * EMetric.d
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.ball x r) (EMetric.ball (f x) (ratio f * r)) :=
-  fun y hy => (edist_eq f y x).trans_lt <|
-    (ENNReal.mul_lt_mul_left (ENNReal.coe_ne_zero.2 <| ratio_ne_zero f) ENNReal.coe_ne_top).2 hy
+  fun y (hy : _ < r) ↦ by rw [EMetric.mem_ball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :

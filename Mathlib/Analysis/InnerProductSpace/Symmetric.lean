@@ -3,10 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -31,6 +33,8 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 
 self-adjoint, symmetric
 -/
+
+@[expose] public section
 
 
 open RCLike
@@ -193,7 +197,7 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
           I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
         4 := by
-  rcases@I_mul_I_ax 𝕜 _ with (h | h)
+  rcases @I_mul_I_ax 𝕜 _ with (h | h)
   · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
       inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
     suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
@@ -203,8 +207,8 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
     simp_rw [h, mul_zero, add_zero]
     norm_cast
   · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
-      LinearMap.map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub,
-      sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
+      map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub, sub_sub,
+      ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
     ring
 
 theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommGroup F]

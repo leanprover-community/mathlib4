@@ -3,14 +3,18 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Order.MinMax
 
 /-!
 # Splitting a list to chunks of specified lengths
 
 This file defines splitting a list to chunks of given lengths, and some proofs about that.
 -/
+
+@[expose] public section
 
 variable {α : Type*} (l : List α) (sz : List ℕ)
 
@@ -98,6 +102,6 @@ theorem length_mem_splitLengths {α : Type*} (l : List α) (sz : List ℕ) (b : 
   intro i hi
   have := length_splitLengths_getElem_le l sz (hi := hi)
   have := h (sz[i]'(by simpa using hi)) (getElem_mem ..)
-  cutsat
+  lia
 
 end List

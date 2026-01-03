@@ -3,7 +3,9 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -16,7 +18,9 @@ of `ℕ∞`.
 Uniformize API between analytic and meromorphic functions
 -/
 
-open Filter  Set
+@[expose] public section
+
+open Filter Set
 open scoped Topology
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -81,7 +85,7 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   unfold analyticOrderAt
   split_ifs with h
   · simp only [ENat.top_ne_coe, false_iff]
-    contrapose! h
+    contrapose h
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
     exact ⟨n, h⟩
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
@@ -173,7 +177,7 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
           hfh.filter_mono nhdsWithin_le_nhds] with z hz hf' hf''
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
-        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by cutsat), ← hf']
+        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by lia), ← hf']
 
 @[deprecated (since := "2025-05-03")] alias natCast_le_order_iff := natCast_le_analyticOrderAt
 
@@ -193,7 +197,7 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
 @[simp] lemma analyticOrderAt_neg : analyticOrderAt (-f) z₀ = analyticOrderAt f z₀ := by
   by_cases hf : AnalyticAt 𝕜 f z₀
   · refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
-    simp only [ natCast_le_analyticOrderAt, hf, hf.neg]
+    simp only [natCast_le_analyticOrderAt, hf, hf.neg]
     exact (Equiv.neg _).exists_congr <| by simp [neg_eq_iff_eq_neg]
   · rw [analyticOrderAt_of_not_analyticAt hf,
       analyticOrderAt_of_not_analyticAt <| analyticAt_neg.not.2 hf]
@@ -366,8 +370,6 @@ theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
     simp only [isOpen_induced h₂t', mem_preimage, h₃t', and_self, and_true]
-    intro w hw
-    simp only [mem_setOf_eq]
     grind
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff

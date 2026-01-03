@@ -3,7 +3,9 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Periodicity
@@ -24,6 +26,8 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 
 period, periodic, periodicity, antiperiodic
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -150,7 +154,7 @@ theorem Periodic.nat_mul_sub_eq [NonAssocRing α] (h : Periodic f c) (n : ℕ) :
 
 protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) := by
   rcases n with n | n
-  · simpa only [Int.ofNat_eq_coe, natCast_zsmul] using h.nsmul n
+  · simpa only [Int.ofNat_eq_natCast, natCast_zsmul] using h.nsmul n
   · simpa only [negSucc_zsmul] using (h.nsmul (n + 1)).neg
 
 protected theorem Periodic.int_mul [NonAssocRing α] (h : Periodic f c) (n : ℤ) :

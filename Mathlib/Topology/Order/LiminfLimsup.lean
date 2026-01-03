@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
@@ -20,6 +22,8 @@ import Mathlib.Topology.Order.Monotone
 The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace ι ℝ`. To avoid code
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
+
+@[expose] public section
 
 open Filter TopologicalSpace
 open scoped Topology
@@ -48,11 +52,11 @@ theorem isBounded_le_nhds (a : α) : (𝓝 a).IsBounded (· ≤ ·) :=
 theorem Filter.Tendsto.isBoundedUnder_le (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≤ ·) u :=
   (isBounded_le_nhds a).mono h
 
-theorem Filter.Tendsto.bddAbove_range_of_cofinite [IsDirected α (· ≤ ·)]
+theorem Filter.Tendsto.bddAbove_range_of_cofinite [IsDirectedOrder α]
     (h : Tendsto u cofinite (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range_of_cofinite
 
-theorem Filter.Tendsto.bddAbove_range [IsDirected α (· ≤ ·)] {u : ℕ → α}
+theorem Filter.Tendsto.bddAbove_range [IsDirectedOrder α] {u : ℕ → α}
     (h : Tendsto u atTop (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range
 
@@ -90,11 +94,11 @@ theorem isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·) :=
 theorem Filter.Tendsto.isBoundedUnder_ge (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≥ ·) u :=
   (isBounded_ge_nhds a).mono h
 
-theorem Filter.Tendsto.bddBelow_range_of_cofinite [IsDirected α (· ≥ ·)]
+theorem Filter.Tendsto.bddBelow_range_of_cofinite [IsCodirectedOrder α]
     (h : Tendsto u cofinite (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range_of_cofinite
 
-theorem Filter.Tendsto.bddBelow_range [IsDirected α (· ≥ ·)] {u : ℕ → α}
+theorem Filter.Tendsto.bddBelow_range [IsCodirectedOrder α] {u : ℕ → α}
     (h : Tendsto u atTop (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range
 

@@ -3,14 +3,17 @@ Copyright (c) 2024 Edward Watine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Watine
 -/
-import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Ordinary hypergeometric function in a Banach algebra
 
 In this file, we define `ordinaryHypergeometric`, the _ordinary_ or _Gaussian_ hypergeometric
-function in a topological algebra `𝔸` over a field `𝕂` given by: $$
+function in a topological algebra `𝔸` over a field `𝕂` given by:
+$$
 _2\mathrm{F}_1(a\ b\ c : \mathbb{K}, x : \mathbb{A}) = \sum_{n=0}^{\infty}\frac{(a)_n(b)_n}{(c)_n}
 \frac{x^n}{n!}   \,,
 $$
@@ -49,6 +52,8 @@ See <https://en.wikipedia.org/wiki/Hypergeometric_function>.
 hypergeometric, gaussian, ordinary
 -/
 
+@[expose] public section
+
 open Nat FormalMultilinearSeries
 
 section Field
@@ -81,24 +86,24 @@ notation "₂F₁" => ordinaryHypergeometric
 theorem ordinaryHypergeometricSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
       ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-        ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+        ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n := by
   rw [ordinaryHypergeometricSeries, ofScalars_apply_eq]
 
 /-- This naming follows the convention of `NormedSpace.expSeries_apply_eq'`. -/
 theorem ordinaryHypergeometricSeries_apply_eq' (x : 𝔸) :
     (fun n => ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
       fun n => ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-        ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+        ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n := by
   rw [ordinaryHypergeometricSeries, ofScalars_apply_eq']
 
 theorem ordinaryHypergeometric_sum_eq (x : 𝔸) : (ordinaryHypergeometricSeries 𝔸 a b c).sum x =
     ∑' n : ℕ, ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-      ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
+      ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n :=
   tsum_congr fun n => ordinaryHypergeometricSeries_apply_eq a b c x n
 
 theorem ordinaryHypergeometric_eq_tsum : ₂F₁ a b c =
     fun (x : 𝔸) => ∑' n : ℕ, ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a *
-      (ascPochhammer 𝕂 n).eval b * ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
+      (ascPochhammer 𝕂 n).eval b * ((ascPochhammer 𝕂 n).eval c)⁻¹) • x ^ n :=
   funext (ordinaryHypergeometric_sum_eq a b c)
 
 theorem ordinaryHypergeometricSeries_apply_zero (n : ℕ) :
@@ -140,7 +145,7 @@ variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 (-(k : 𝕂)) b c).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by cutsat)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by lia)
 
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a (-(k : 𝕂)) c).radius = ⊤ := by
@@ -150,7 +155,7 @@ theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a b (-(k : 𝕂))).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by cutsat)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by lia)
 
 /-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
 lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :

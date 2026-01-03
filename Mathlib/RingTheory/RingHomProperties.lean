@@ -3,12 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.IsTensorProduct
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -23,6 +25,8 @@ The following meta-properties of predicates on ring homomorphisms are defined
   implies `P (X ⟶ X ⊗[S] Y)`.
 
 -/
+
+@[expose] public section
 
 
 universe u

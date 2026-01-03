@@ -3,9 +3,11 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Differentiability of uniformly convergent series sums of functions
@@ -13,6 +15,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 We collect some results about the differentiability of infinite sums.
 
 -/
+
+@[expose] public section
 
 lemma SummableLocallyUniformlyOn.differentiableOn {ι E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℂ E] [CompleteSpace E] {f : ι → ℂ → E} {s : Set ℂ}

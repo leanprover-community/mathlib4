@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Measure.Haar.Quotient
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Topology.Algebra.Order.Floor
-import Mathlib.Topology.Instances.AddCircle.Real
+module
+
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.MeasureTheory.Measure.Haar.Quotient
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Integrals of periodic functions
@@ -24,6 +26,8 @@ Another consequence (`Function.Periodic.intervalIntegral_add_eq` and related dec
 period `T`.
 -/
 
+@[expose] public section
+
 open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgroup intervalIntegral
 
 open scoped MeasureTheory NNReal ENNReal
@@ -32,7 +36,7 @@ open scoped MeasureTheory NNReal ENNReal
 ## Measures and integrability on ℝ and on the circle
 -/
 
-@[measurability]
+@[fun_prop]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
   Continuous.measurable <| AddCircle.continuous_mk' a
@@ -204,7 +208,7 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
   linarith [hT.out]
 
 /-- The integral of a function lifted to AddCircle from an interval `(t, t + T]` to `AddCircle T`
-is equal the the intervalIntegral over the interval. -/
+is equal to the intervalIntegral over the interval. -/
 lemma integral_liftIoc_eq_intervalIntegral {t : ℝ} {f : ℝ → E} :
     ∫ a, liftIoc T t f a = ∫ a in t..t + T, f a := by
   rw [← AddCircle.intervalIntegral_preimage T t]

@@ -3,8 +3,10 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.TypeTags.Hom
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # `map` and `comap` for subgroups
@@ -44,6 +46,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 
@@ -284,6 +288,7 @@ theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
 def subgroupOf (H K : Subgroup G) : Subgroup K :=
   H.comap K.subtype
 
+set_option backward.proofsInPublic true in
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/
 @[to_additive (attr := simps)
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]

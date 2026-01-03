@@ -3,8 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.FieldTheory.Perfect
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 
@@ -46,6 +49,8 @@ import Mathlib.FieldTheory.Perfect
 perfect ring, perfect closure
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -109,6 +114,7 @@ theorem induction_on (x : PerfectClosure K p) {q : PerfectClosure K p → Prop}
 
 variable (K p)
 
+set_option backward.privateInPublic true in
 private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 * (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 * (frobenius K p)^[x2.1] y.2) :=
@@ -119,6 +125,7 @@ private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
 private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 * (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 * (frobenius K p)^[x.1] y2.2) :=
@@ -128,6 +135,8 @@ private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_mul]
       apply R.intro
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instMul : Mul (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>
@@ -173,6 +182,7 @@ theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
 instance instInhabited : Inhabited (PerfectClosure K p) :=
   ⟨1⟩
 
+set_option backward.privateInPublic true in
 private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 + (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 + (frobenius K p)^[x2.1] y.2) :=
@@ -183,6 +193,7 @@ private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
 private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 + (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 + (frobenius K p)^[x.1] y2.2) :=
@@ -192,6 +203,8 @@ private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instAdd : Add (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>

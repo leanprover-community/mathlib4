@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Pairwise
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+module
+
+public import Mathlib.CategoryTheory.Category.Pairwise
+public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
 # Equivalent formulations of the sheaf condition
@@ -34,6 +36,8 @@ We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf cond
 thereby also equivalent to the default sheaf condition.
 -/
 
+@[expose] public section
+
 assert_not_exists IsOrderedMonoid
 
 noncomputable section
@@ -42,7 +46,7 @@ universe w
 
 open TopologicalSpace TopCat Opposite CategoryTheory CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {X : TopCat.{w}}
+variable {C : Type*} [Category* C] {X : TopCat.{w}}
 
 namespace TopCat.Presheaf
 
@@ -94,8 +98,8 @@ def pairwiseToOpensLeCoverMap :
     ∀ {V W : Pairwise ι}, (V ⟶ W) → (pairwiseToOpensLeCoverObj U V ⟶ pairwiseToOpensLeCoverObj U W)
   | _, _, id_single _ => 𝟙 _
   | _, _, id_pair _ _ => 𝟙 _
-  | _, _, left _ _ => homOfLE inf_le_left
-  | _, _, right _ _ => homOfLE inf_le_right
+  | _, _, left _ _ => ObjectProperty.homMk (homOfLE inf_le_left)
+  | _, _, right _ _ => ObjectProperty.homMk (homOfLE inf_le_right)
 
 /-- The category of single and double intersections of the `U i` maps into the category
 of open sets below some `U i`.
@@ -106,7 +110,7 @@ def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
   map {_ _} i := pairwiseToOpensLeCoverMap U i
 
 instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) :=
-  ⟨@StructuredArrow.mk _ _ _ _ _ (single V.index) _ V.homToIndex⟩
+  ⟨StructuredArrow.mk (Y := single V.index) (ObjectProperty.homMk V.homToIndex)⟩
 
 -- This is a case bash: for each pair of types of objects in `Pairwise ι`,
 -- we have to explicitly construct a zigzag.
@@ -118,9 +122,10 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
     isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
       · refine
-          ⟨[{   left := ⟨⟨⟩⟩
-                right := pair i i'
-                hom := (le_inf a.le b.le).hom }, _], ?_, rfl⟩
+          ⟨[{ left := ⟨⟨⟩⟩
+              right := pair i i'
+              hom := ObjectProperty.homMk (homOfLE
+                (by simpa using le_inf a.hom.le b.hom.le)) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inr
@@ -134,10 +139,11 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i' i
-                hom := (le_inf (b.le.trans inf_le_left) a.le).hom },
+                hom := ObjectProperty.homMk (homOfLE
+                  (le_inf (b.hom.le.trans (by simp)) a.hom.le)) },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
+                hom := ObjectProperty.homMk (homOfLE (b.hom.le.trans (by simp))) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inr
@@ -155,10 +161,12 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
-                hom := (a.le.trans inf_le_left).hom },
+                hom := ObjectProperty.homMk (homOfLE (a.hom.le.trans (by simp))) },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], ?_, rfl⟩
+                hom := ObjectProperty.homMk (homOfLE
+                  (le_inf ((a.hom.le).trans (by simp)) b.hom.le)) }, _],
+                ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inl
@@ -176,13 +184,14 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
-                hom := (a.le.trans inf_le_left).hom },
+                hom := ObjectProperty.homMk (homOfLE (a.hom.le.trans (by simp))) },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) (b.le.trans inf_le_left)).hom },
+                hom := ObjectProperty.homMk (homOfLE
+                  (le_inf (a.hom.le.trans (by simp)) (b.hom.le.trans (by simp)))) },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
+                hom := ObjectProperty.homMk (homOfLE (b.hom.le.trans (by simp))) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inl

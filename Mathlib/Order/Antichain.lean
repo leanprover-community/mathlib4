@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Preorder.Chain
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Antichains
@@ -21,9 +23,11 @@ relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent se
 * `IsMaxAntichain r s`: An antichain such that no antichain strictly including `s` exists.
 -/
 
+@[expose] public section
+
 assert_not_exists CompleteLattice
 
-open Function Set
+open Function Set Set.Notation
 
 section General
 
@@ -169,7 +173,17 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl ⁻¹' s) := fun _ ha _ ha' hne hle =>
   hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 
+@[simp] protected theorem diff {s t : Set α} (h : IsAntichain r s) : IsAntichain r (s \ t) :=
+  h.subset Set.diff_subset
+
 end IsAntichain
+
+theorem isAntichain_preimage_subtypeVal (s t : Set α) :
+    @IsAntichain ↑s (r · ·) (s ↓∩ t) ↔ IsAntichain r (s ∩ t) := by
+  simp [IsAntichain, Set.Pairwise]
+
+theorem isAntichain_coe_univ_iff {s : Set α} : @IsAntichain ↑s (r · ·) univ ↔ IsAntichain r s := by
+  simpa using isAntichain_preimage_subtypeVal s univ
 
 theorem isAntichain_union :
     IsAntichain r (s ∪ t) ↔
@@ -374,8 +388,8 @@ protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ s = ∅ 
   simp only [IsMaxAntichain, h', IsAntichain.empty, empty_subset, forall_const, true_and] at h
   exact singleton_ne_empty x (h IsAntichain.singleton).symm
 
-protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s ≠ ∅ := by
-  grind [not_nonempty_iff, IsMaxAntichain.isEmpty_iff]
+protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s.Nonempty :=
+  not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
 
 protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
   ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩
