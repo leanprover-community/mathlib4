@@ -408,10 +408,10 @@ def TermDefinable (f : (α → M) → M) : Prop :=
   ∃ φ : L[[A]].Term α, f = φ.realize
 
 /-- Every TermDefinable function has a tupleGraph that is definable. -/
-theorem TermDefinable.tupleGraph_definable {f : (α → M) → M} (h : A.TermDefinable L f) :
+theorem TermDefinable.definable_tupleGraph {f : (α → M) → M} (h : A.TermDefinable L f) :
     A.Definable L f.tupleGraph := by
   obtain ⟨φ, rfl⟩ := h
-  use (φ.relabel Sum.inl).equal (Term.var (Sum.inr ()))
+  use (φ.relabel some).equal (Term.var none)
   ext
   simp [Function.tupleGraph]
 
@@ -424,19 +424,19 @@ theorem TermDefinable.map_expansion (h : A.TermDefinable L f) (φ : L →ᴸ L')
   use (φ.addConstants A).onTerm ψ
   simp
 
-theorem empty_termDefinable_iff :
+theorem termDefinable_empty_iff :
     (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
   rw [TermDefinable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onTerm]
   simp
 
-theorem termDefinable_iff_empty_termDefinable_with_params :
-    A.TermDefinable L f ↔ (∅ : Set M).TermDefinable (L[[A]]) f :=
-  empty_termDefinable_iff.symm
+theorem termDefinable_empty_withConstants_iff :
+    (∅ : Set M).TermDefinable (L[[A]]) f ↔ A.TermDefinable L f :=
+  termDefinable_empty_iff
 
 @[fun_prop]
 theorem TermDefinable.mono {f : (α → M) → M} (h : A.TermDefinable L f) (hAB : A ⊆ B) :
     B.TermDefinable L f := by
-  rw [termDefinable_iff_empty_termDefinable_with_params] at h ⊢
+  rw [← termDefinable_empty_withConstants_iff] at h ⊢
   exact h.map_expansion (L.lhomWithConstantsMap (Set.inclusion hAB))
 
 /-- TermDefinable is transitive. If f is TermDefinable in a structure S on L, and all of the
@@ -450,10 +450,7 @@ theorem TermDefinable.trans {f : (β → M) → M} (h₁ : A.TermDefinable L f)
   choose c hc using @h₂
   simp only [funext_iff] at hc
   use x.substFunc c
-  funext v
-  induction x with
-  | var => simp
-  | func f ts ih => simp [← ih, ← hc]
+  simp_rw [Term.realize_substFunc hc]
 
 variable (L) in
 /-- A function from a structure to itself is term-definable over a set `A` when the
@@ -481,12 +478,12 @@ theorem termDefinable₁_iff_exists_term {f : M → M} : A.TermDefinable₁ L f 
   congr!
 
 /-- A `TermDefinable₁` function has a graph that's `Definable₂`. -/
-theorem TermDefinable₁.graph_definable₂ {f : M → M} (h : A.TermDefinable₁ L f) :
+theorem TermDefinable₁.definable₂_graph {f : M → M} (h : A.TermDefinable₁ L f) :
     A.Definable₂ L f.graph := by
-  obtain ⟨t, h⟩ := h.termDefinable.tupleGraph_definable A L
-  use t.relabel (Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
+  obtain ⟨t, h⟩ := h.termDefinable.definable_tupleGraph A L
+  use t.relabel (Option.elim · 1 (fun _ ↦ 0))
   ext v
-  convert Set.ext_iff.1 h (v ∘ Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
+  convert Set.ext_iff.1 h (v ∘ (Option.elim · 1 (fun _ ↦ 0)))
   simp
 
 /-- The identity function is `TermDefinable₁` -/
