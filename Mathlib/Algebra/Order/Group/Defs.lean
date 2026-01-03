@@ -56,6 +56,10 @@ instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
   le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_right bc a⁻¹
   le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_right bc a⁻¹
 
+@[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid']
+instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid'
+    [CancelCommMonoid α] [LinearOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+  le_of_mul_le_mul_left _ _ _ h := le_of_mul_le_mul_left' h
 
 /-!
 ### Linearly ordered commutative groups
