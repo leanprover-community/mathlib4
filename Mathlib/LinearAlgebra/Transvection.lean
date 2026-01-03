@@ -236,7 +236,7 @@ theorem transvections_pow_mono :
   Set.pow_right_monotone one_mem_transvections
 
 variable (R V) in
-/-- Dilatransvections are linear equivalences `V ≃ₗ[R] V` whose associated linear map are given by
+/-- Dilatransvections are linear equivalences `V ≃ₗ[R] V` whose associated linear map are given by
 `LinearMap.transvection`, ie, are of the form `x ↦ x + f x • v` for `f : Dual R V` and `v : V`.
 
 Over a division ring, `LinearEquiv.mem_dilatransvections_iff_rank` shows that they correspond
