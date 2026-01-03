@@ -443,8 +443,10 @@ theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a
 end IsScalarTower
 
 /-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
-to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
-are all defined in `LinearAlgebra/Basic.lean`. -/
+to `Mathlib/Algebra/Module/Submodule/Defs.lean`. Currently this is tricky because `ker`, `range`,
+`⊤`, and `⊥` are defined in `Mathlib/Algebra/Module/Submodule/Ker.lean`,
+`Mathlib/Algebra/Module/Submodule/Range.lean`, and `Mathlib/Algebra/Module/Submodule/Lattice.lean`.
+-/
 
 section Module
 

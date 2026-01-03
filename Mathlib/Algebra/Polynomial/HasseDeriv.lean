@@ -33,7 +33,7 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
   the "Leibniz rule" `D k (f * g) = ∑ ij ∈ antidiagonal k, D ij.1 f * D ij.2 g`
 
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
-in `Data/Polynomial/Taylor.lean`.
+in `Mathlib/Algebra/Polynomial/Taylor.lean`.
 
 ## Reference
 

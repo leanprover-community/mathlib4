@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Ring.Rat
 
 This file used to contain the linear ordered field instance on the rational numbers.
 
-TODO: rename this file to `Mathlib/Algebra/Order/GroupWithZero/NNRat.lean`
+TODO: rename this file to `Mathlib/Algebra/Order/GroupWithZero/NNRat.lean`.
 
 See note [foundational algebra order theory].
 
