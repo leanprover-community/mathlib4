@@ -9,7 +9,10 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Tactic.Linter.EmptyLine
 public meta import Mathlib.Tactic.Linter.Header
+--public meta import Mathlib.adomaniLeanUtils.Inspect
+
 
 /-!
 # The "flexible" linter
@@ -104,6 +107,12 @@ namespace Mathlib.Linter
 public register_option linter.flexible : Bool := {
   defValue := false
   descr := "enable the flexible linter"
+}
+
+/-- Toggles whether to use a quicker syntax check, before running the flexible linter. -/
+public register_option linter.flexibleQuickCheck : Bool := {
+  defValue := true
+  descr := "enable the quickCheck option for the flexible linter"
 }
 
 /-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of
@@ -354,6 +363,27 @@ def flexible : Std.HashSet Name :=
     `Lean.Parser.Tactic.split,
     `Mathlib.Tactic.splitIfs }
 
+def isFlexible : Syntax → Bool
+  | .node _ ``Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
+  | .node _ ``Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
+  | stx => flexible.contains stx.getKind
+
+def syntaxArrayFlexNoNeed (as : Array Syntax) : Bool :=
+  let isempty := as.isEmpty
+  let lastContains := as.back!.filter isFlexible
+  let lastContainsCondition := lastContains.isEmpty || lastContains == #[as.back!]
+  let middleContains := as.pop.filter fun s => (isFlexible s)--.isEmpty
+  --dbg_trace "\n* syntaxArrayFlexNoNeed:\n  isempty={isempty},\n  lastContains={lastContainsCondition}\n  {lastContains}\n  middleContains={middleContains.isEmpty}\n{middleContains}"
+  isempty ||
+  (lastContainsCondition && middleContains.isEmpty)
+
+def quickCheck (stx : Syntax) : Bool :=
+  let bys := stx.filter (·.isOfKind ``Parser.Tactic.tacticSeq1Indented)
+  let tacticSequences := bys.map (·[0].getArgs.filter fun t => ((!t.isOfKind `null) && (t.getAtomVal != ";")))
+  let filtered := tacticSequences.filter (!syntaxArrayFlexNoNeed ·)
+  --dbg_trace filtered
+  filtered.isEmpty
+
 /-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
 the tactic will use the goal as well: this heuristic works well with `exact`, `refine`, `apply`.
 For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false`. -/
@@ -454,11 +484,14 @@ def generateSimpSuggestion (stainData : StainData) (stainStx : Syntax) :
   | _ => return none
 
 /-- The main implementation of the flexible linter. -/
-def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
+def flexibleLinter : Linter where run := withSetOptionIn fun stx => do
   unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
     return
-  if (← MonadState.get).messages.hasErrors then
+  if (← get).messages.hasErrors then
     return
+  if getLinterValue linter.flexibleQuickCheck (← getLinterOptions) then
+    if quickCheck stx then return
+  dbg_trace "Running full check"
   let trees ← getInfoTrees
   let tacticData := trees.foldl (init := #[]) fun acc tree => acc ++ extractTacticData tree
   -- `stains` records pairs `(location, mvar)`, where

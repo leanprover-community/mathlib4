@@ -385,3 +385,173 @@ end
   let h := mkIdent `h
   let hc ← `(Lean.Parser.Tactic.elimTarget|$h:ident)
   IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"
+
+
+open Lean Elab Command in
+elab "ff " cmd:command : command => do
+  elabCommand cmd
+  dbg_trace quickCheck cmd
+  let bys := cmd.raw.filter (·.isOfKind ``Parser.Tactic.tacticSeq1Indented)
+  --dbg_trace bys.map (·[0].getArgs) |>.map (·.size)
+  --for s in bys.flatMap (·[0].getArgs) do
+  --  logInfo <| m!"{InspectSyntax.toMessageData s} -- '{s.getAtomVal}'"
+  let tacticSequences := bys.map (·[0].getArgs.filter fun t => ((!t.isOfKind `null) && (t.getAtomVal != ";")))
+  for s in tacticSequences do
+    logInfo m!"syntaxArrayFlexNoNeed: {syntaxArrayFlexNoNeed s}" ---- '{s}'"
+  let withoutLastTactic := tacticSequences --.map (·.pop)
+  logInfo <| m!"\n\n".joinSep (withoutLastTactic.map (m!"{·}")).toList
+  for by1 in bys do
+    match by1 with
+    | `(tacticSeq| ($ts:tacticSeq)) =>
+      dbg_trace "found"
+      --continue
+    | _ => continue
+
+/--
+info: syntaxArrayFlexNoNeed: true
+---
+info: [trivial]
+-/
+#guard_msgs in
+ff
+example : True := by
+  trivial;
+
+/--
+info: syntaxArrayFlexNoNeed: false
+---
+info: [simp <;> trivial]
+---
+warning: 'trivial' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+-/
+#guard_msgs in
+ff
+example : True := by
+  simp <;> trivial;
+
+/--
+info: syntaxArrayFlexNoNeed: false
+---
+info: [simp <;> refine ?_, simp [h]]
+---
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [and_true]
+---
+info: 'refine ?_' uses '⊢'!
+-/
+#guard_msgs in
+ff
+example (h : False) : False ∧ True := by
+  simp <;> refine ?_
+  simp [h]
+
+/--
+info: syntaxArrayFlexNoNeed: false
+---
+info: [simp, simp [h]]
+-/
+#guard_msgs in
+ff
+example (h : False) : False ∧ True := by
+  simp
+  simp [h]
+
+/--
+info: syntaxArrayFlexNoNeed: true
+---
+info: [simp only [and_true], simp [h]]
+-/
+#guard_msgs in
+ff
+example (h : False) : False ∧ True := by
+  simp only [and_true]
+  simp [h]
+
+
+/--
+error: `simp` made no progress
+---
+info: syntaxArrayFlexNoNeed: true
+---
+info: [simp only <;> refine ?_, simp [h]]
+-/
+#guard_msgs in
+ff
+example (h : False) : False ∧ True := by
+  simp only <;> refine ?_
+  simp [h]
+
+/--
+info: syntaxArrayFlexNoNeed: false
+---
+info: [simp <;> refine ?_, simp [h]]
+---
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [and_true]
+---
+info: 'refine ?_' uses '⊢'!
+-/
+#guard_msgs in
+ff
+example (h : False) : False ∧ True := by
+  simp <;> refine ?_
+  simp [h]
+
+
+/--
+info: syntaxArrayFlexNoNeed: true
+---
+info: syntaxArrayFlexNoNeed: false
+---
+info: syntaxArrayFlexNoNeed: true
+---
+info: syntaxArrayFlexNoNeed: false
+---
+info: syntaxArrayFlexNoNeed: false
+---
+info: syntaxArrayFlexNoNeed: false
+---
+info: [refine ?_, simp]
+
+[exact by refine ?_; simp]
+
+[simpa]
+
+[simp [(by simpa : False)] <;> rw []]
+
+[apply id, refine by simp [(by simpa : False)] <;> rw []]
+
+[constructor,
+ · exact by refine ?_; simp,
+ · apply id
+   refine by simp [(by simpa : False)] <;> rw []]
+---
+warning: 'rw []' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+-/
+#guard_msgs in
+ff
+example (h : False) : True ∧ False := by
+  constructor
+  · exact by refine ?_; simp
+  · apply id
+    refine by simp [(by simpa : False)] <;> rw []
