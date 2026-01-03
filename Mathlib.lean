@@ -3194,6 +3194,7 @@ public import Mathlib.Combinatorics.Enumerative.Partition
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
 public import Mathlib.Combinatorics.Enumerative.Partition.Glaisher
+public import Mathlib.Combinatorics.Enumerative.Partition.Pentagonal
 public import Mathlib.Combinatorics.Enumerative.Schroder
 public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
@@ -6240,6 +6241,7 @@ public import Mathlib.RingTheory.PowerSeries.Ideal
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.PowerSeries.Pentagonal
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Restricted
 public import Mathlib.RingTheory.PowerSeries.Substitution
@@ -6843,6 +6845,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.InfiniteSum.Pentagonal
 public import Mathlib.Topology.Algebra.InfiniteSum.Real
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
