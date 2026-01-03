@@ -351,8 +351,7 @@ noncomputable def mahlerMeasure' := (p.map v).mahlerMeasure
 
 lemma mahlerMeasure'_mul (f g : A[X]) :
     (f * g).mahlerMeasure' v = (f.mahlerMeasure' v) * (g.mahlerMeasure' v) := by
-  unfold mahlerMeasure'
-  rw [Polynomial.map_mul, mahlerMeasure_mul]
+  simp [mahlerMeasure', mahlerMeasure_mul]
 
 lemma mahlerMeasure'_nonneg : 0 ≤ p.mahlerMeasure' v :=
   Polynomial.mahlerMeasure_nonneg _
