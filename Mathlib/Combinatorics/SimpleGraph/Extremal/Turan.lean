@@ -141,13 +141,15 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
   rw [card_edgeFinset_replaceVertex_of_not_adj _ this,
     card_edgeFinset_replaceVertex_of_not_adj _ hst, dst, Nat.add_sub_cancel]
   have l1 : (G.replaceVertex s t).degree s = G.degree s := by
-    unfold degree; congr 1; ext v
+    rw [← card_neighborFinset_eq_degree, ← card_neighborFinset_eq_degree]
+    congr 1; ext v
     simp_rw [mem_neighborFinset]
     by_cases eq : v = t
     · simpa only [eq, not_adj_replaceVertex_same, false_iff]
     · rw [G.adj_replaceVertex_iff_of_ne s nst eq]
   have l2 : (G.replaceVertex s t).degree u = G.degree u - 1 := by
-    rw [degree, degree, ← card_singleton t, ← card_sdiff_of_subset (by simp [h.symm])]
+    rw [← card_neighborFinset_eq_degree, ← card_neighborFinset_eq_degree, ← card_singleton t,
+      ← card_sdiff_of_subset (by simp [h.symm])]
     congr 1; ext v
     simp_rw [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
     split_ifs <;> simp_all [adj_comm]
@@ -348,8 +350,8 @@ lemma card_edgeFinset_turanGraph_add :
     #(turanGraph (n + r) r).edgeFinset =
     #(turanGraph n r).edgeFinset + n * (r - 1) + r.choose 2 := by
   rw [← mul_right_inj' two_ne_zero]
-  simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges,
-    degree, neighborFinset_eq_filter, turanGraph, card_filter]
+  simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges, ← card_neighborFinset_eq_degree,
+    neighborFinset_eq_filter, turanGraph, card_filter]
   conv_lhs =>
     enter [2, v]
     rw [Fin.sum_univ_eq_sum_range fun w ↦ if v % r ≠ w % r then 1 else 0, sum_range_add]
@@ -408,7 +410,6 @@ theorem mul_card_edgeFinset_turanGraph_le :
   grw [card_edgeFinset_turanGraph, mul_add, Nat.mul_div_le]
   rw [tsub_mul, ← Nat.sub_add_comm]; swap
   · grw [Nat.mod_le]
-    exact Nat.zero_le _
   rw [Nat.sub_le_iff_le_add, mul_comm, Nat.add_le_add_iff_left, Nat.choose_two_right,
     ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
     mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]

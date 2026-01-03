@@ -111,7 +111,7 @@ theorem cycleGraph_neighborFinset {n : ℕ} {v : Fin (n + 2)} :
 
 theorem cycleGraph_degree_two_le {n : ℕ} {v : Fin (n + 2)} :
     (cycleGraph (n + 2)).degree v = Finset.card {v - 1, v + 1} := by
-  rw [SimpleGraph.degree, cycleGraph_neighborFinset]
+  rw [← card_neighborFinset_eq_degree, cycleGraph_neighborFinset]
 
 theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
     (cycleGraph (n + 3)).degree v = 2 := by

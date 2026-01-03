@@ -123,8 +123,7 @@ theorem sum_degrees_support_eq_twice_card_edges :
 end DegreeSum
 
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
-theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
-    Even #{v | Odd (G.degree v)} := by
+theorem even_card_odd_degree_vertices [Fintype V] : Even #{v | Odd (G.degree v)} := by
   classical
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
     simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
@@ -139,8 +138,8 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
         ← Nat.not_even_iff_odd]
       tauto
 
-theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)
-    (h : Odd (G.degree v)) : Odd #{w | w ≠ v ∧ Odd (G.degree w)} := by
+theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] (v : V) (h : Odd (G.degree v)) :
+    Odd #{w | w ≠ v ∧ Odd (G.degree w)} := by
   rcases G.even_card_odd_degree_vertices with ⟨k, hg⟩
   have hk : 0 < k := by
     have hh : Finset.Nonempty {v : V | Odd (G.degree v)} := by
@@ -158,8 +157,8 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
     lia
   · rwa [mem_filter_univ]
 
-theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Adj] (v : V)
-    (h : Odd (G.degree v)) : ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
+theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] (v : V) (h : Odd (G.degree v)) :
+    ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
   haveI := Classical.decEq V
   rcases G.odd_card_odd_degree_vertices_ne v h with ⟨k, hg⟩
   have hg' : 0 < #{w | w ≠ v ∧ Odd (G.degree w)} := by

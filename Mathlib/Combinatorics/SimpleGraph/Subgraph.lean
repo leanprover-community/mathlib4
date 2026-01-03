@@ -852,6 +852,7 @@ end Subgraph
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
     Fintype.card ↑((toSubgraph H h).neighborSet v) = H.degree v := by
+  rw [← H.card_neighborFinset_eq_degree]
   refine (Finset.card_eq_of_equiv_fintype ?_).symm
   simp only [mem_neighborFinset]
   rfl
