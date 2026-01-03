@@ -769,6 +769,48 @@ protected theorem ite {_ : MeasurableSpace α} [TopologicalSpace β] {p : α →
     (hg : StronglyMeasurable g) : StronglyMeasurable fun x => ite (p x) (f x) (g x) :=
   StronglyMeasurable.piecewise hp hf hg
 
+protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι → Set α}
+    (hs : IndexedPartition s) [MeasurableSpace α] (hm : ∀ i, MeasurableSet (s i))
+    {f : ι → α → β} [TopologicalSpace β] (hf : ∀ i, StronglyMeasurable (f i)) :
+    StronglyMeasurable (hs.piecewise f) := by
+  by_cases Fi : Finite ι
+  · refine ⟨fun n => SimpleFunc.indexedPartitionPiecewise hs hm (fun i => (hf i).approx n),
+      fun x => ?_⟩
+    simp [SimpleFunc.indexedPartitionPiecewise, IndexedPartition.piecewise_apply,
+      StronglyMeasurable.tendsto_approx]
+  · simp only [not_finite_iff_infinite] at Fi
+    obtain ⟨e, _⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
+    let he := Equiv.bijective e
+    classical
+    let g (n : ℕ) : ι → Fin (n + 1) := fun i =>
+      if hi : ∃ m < n, i = e m then ⟨hi.choose, by linarith [hi.choose_spec.1]⟩ else Fin.last n
+    have sg (n : ℕ) : (g n).Surjective := by
+      intro b
+      unfold g
+      refine ⟨e b, ?_⟩
+      by_cases hb : b < n
+      · have : ∃ m < n, e b = e m := ⟨b, ⟨hb, rfl⟩⟩
+        simp only [this, ↓reduceDIte, Fin.ext_iff]
+        exact e.injective this.choose_spec.2.symm
+      · ext; simp [hb]; omega
+    have G (n : ℕ) := hs.coarserPartition (g n) (sg n)
+    refine ⟨fun n => SimpleFunc.indexedPartitionPiecewise (G n)
+      (fun i => ?_) (fun i => (hf (e i)).approx n), fun x => ?_⟩
+    · measurability
+    · simp only [SimpleFunc.indexedPartitionPiecewise, SimpleFunc.coe_mk,
+        IndexedPartition.piecewise_apply]
+      have : ∀ᶠ n in atTop, e ((G n).index x) = hs.index x := by
+        obtain ⟨y, hy⟩ := he.2 (hs.index x)
+        refine eventually_atTop.mpr ⟨y + 1, fun b hb => ?_⟩
+        have : y = (⟨y, by linarith⟩ : Fin (b + 1)).1 := by simp
+        rw [← hy, EmbeddingLike.apply_eq_iff_eq, this, ← Fin.ext_iff, ← (G b).mem_iff_index_eq]
+        have : y < b := by linarith
+        have : ∃ m < b, hs.index x = e m := ⟨y, ⟨this, hy.symm⟩⟩
+        simpa [g, hs.mem_iff_index_eq, this] using e.injective (hy.trans this.choose_spec.2).symm
+      have : ∀ᶠ n in atTop, (hf (hs.index x)).approx n x = (hf (e ((G n).index x))).approx n x := by
+        filter_upwards [this] with n hn; congr; exact hn.symm
+      exact (Filter.tendsto_congr' this).mp (by simp [StronglyMeasurable.tendsto_approx])
+
 @[fun_prop]
 theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g : α → γ} {g' : γ → β}
     {mα : MeasurableSpace α} {mγ : MeasurableSpace γ} [TopologicalSpace β]

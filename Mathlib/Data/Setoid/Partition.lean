@@ -328,6 +328,30 @@ open Set
 
 variable {ι α : Type*} {s : ι → Set α}
 
+/-- Given a collections of sets `s : ι → Set α` that forms an indexed partition. We can group
+some of the sets to obtain a coarser partition. -/
+noncomputable def coarserPartition (hs : IndexedPartition s) {κ : Type*} (g : ι → κ)
+    (hg : g.Surjective) :
+    IndexedPartition (fun k : κ => ⋃ i ∈ g ⁻¹' {k}, s i) where
+  eq_of_mem {_x _i _j} hxi hxj := by
+    obtain ⟨a, ⟨c, hc⟩, ha⟩ := hxi
+    obtain ⟨b, ⟨d, hd⟩, hb⟩ := hxj
+    simp only [← hc, mem_iUnion] at ha
+    simp only [← hd, mem_iUnion] at hb
+    have : c = d := hs.eq_of_mem ha.2 hb.2
+    by_contra!
+    have : c ≠ d := disjoint_iff_forall_ne.mp ((disjoint_singleton.mpr this).preimage g) ha.1 hb.1
+    grind
+  some k := hs.some (Nonempty.preimage (singleton_nonempty k) hg).some
+  some_mem k := by
+    refine mem_iUnion_of_mem (Nonempty.preimage (singleton_nonempty k) hg).some ?_
+    simp only [mem_preimage, mem_singleton_iff, mem_iUnion, exists_prop]
+    constructor
+    · simpa using (Nonempty.preimage (singleton_nonempty k) hg).some_mem
+    · exact hs.some_mem (Nonempty.preimage (singleton_nonempty k) hg).some
+  index x := g (hs.index x)
+  mem_index x := mem_iUnion_of_mem (hs.index x) (by simp [hs.mem_index])
+
 /-- On a unique index set there is the obvious trivial partition -/
 instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) :=
   ⟨{  eq_of_mem := fun {_x _i _j} _hi _hj => Subsingleton.elim _ _
@@ -443,11 +467,12 @@ lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewis
 
 open Function
 
+variable {β : Type*} {f : ι → α → β}
+
 /-- A family of injective functions with pairwise disjoint
 domains and pairwise disjoint ranges can be glued together
 to form an injective function. -/
-theorem piecewise_inj {β : Type*} {f : ι → α → β}
-    (h_injOn : ∀ i, InjOn (f i) (s i))
+theorem piecewise_inj (h_injOn : ∀ i, InjOn (f i) (s i))
     (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
     Injective (piecewise hs f) := by
   intro x y h
@@ -461,8 +486,7 @@ theorem piecewise_inj {β : Type*} {f : ι → α → β}
 /-- A family of bijective functions with pairwise disjoint
 domains and pairwise disjoint ranges can be glued together
 to form a bijective function. -/
-theorem piecewise_bij {β : Type*} {f : ι → α → β}
-    {t : ι → Set β} (ht : IndexedPartition t)
+theorem piecewise_bij {t : ι → Set β} (ht : IndexedPartition t)
     (hf : ∀ i, BijOn (f i) (s i) (t i)) :
     Bijective (piecewise hs f) := by
   set g := piecewise hs f with hg
@@ -479,5 +503,27 @@ theorem piecewise_bij {β : Type*} {f : ι → α → β}
     exact ht.disjoint hij
   rw [← bijOn_univ, ← hs.iUnion, ← ht.iUnion]
   exact bijOn_iUnion hg_bij hg_inj
+
+theorem piecewise_preimage (t : Set β) : hs.piecewise f ⁻¹' t = ⋃ i, s i ∩ (f i ⁻¹' t) := by
+  refine ext fun x => ⟨fun hx => ?_, fun ⟨a, ⟨i, hi⟩, ha⟩ => ?_⟩
+  · rw [mem_preimage, IndexedPartition.piecewise_apply, ← mem_preimage] at hx
+    exact mem_iUnion_of_mem (s := fun i => s i ∩ ((f i)⁻¹' t)) (hs.index x)
+      (mem_inter (hs.mem_index x) hx)
+  · rw [← hi, ← (IndexedPartition.mem_iff_index_eq hs).mp ha.1] at ha
+    simp_all [IndexedPartition.piecewise_apply]
+
+theorem range_piecewise : range (hs.piecewise f) = ⋃ i, f i '' s i := by
+  ext x; constructor
+  · rintro ⟨x, rfl⟩
+    exact mem_iUnion_of_mem (hs.index x) ⟨x, hs.mem_index x, rfl⟩
+  · rintro ⟨t, ⟨i, hi⟩, ht⟩
+    simp only [← hi, mem_image] at ht
+    obtain ⟨a, ha1, ha2⟩ := ht
+    refine ⟨a, ?_⟩
+    simp [hs.mem_iff_index_eq] at ha1
+    simpa [hs.mem_iff_index_eq, ← ha1] using ha2
+
+theorem range_piecewise_subset : range (hs.piecewise f) ⊆ ⋃ i, range (f i) :=
+  fun x ⟨y, hy⟩ => by simpa [IndexedPartition.piecewise_apply] using ⟨hs.index y, y, hy⟩
 
 end IndexedPartition
