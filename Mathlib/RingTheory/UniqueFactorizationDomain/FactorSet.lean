@@ -161,9 +161,6 @@ theorem reducible_notMem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s
     p ∉ s := fun h ↦ by
   rwa [← factorSetMem_eq_mem, FactorSetMem, dif_neg hp] at h
 
-@[deprecated (since := "2025-05-23")]
-alias reducible_not_mem_factorSet := reducible_notMem_factorSet
-
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=
   by_contra fun hp ↦ reducible_notMem_factorSet hp s h
