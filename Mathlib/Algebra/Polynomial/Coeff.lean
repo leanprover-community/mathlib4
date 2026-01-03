@@ -56,13 +56,7 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
   contrapose! hi
   simp [hi]
 
-theorem coeff_range_finite : (Set.range p.coeff).Finite := by
-  suffices Set.range p.coeff ⊆ insert 0 (p.coeff '' p.support) by
-    exact Set.Finite.subset (Set.Finite.insert 0 (Set.Finite.image _ p.support.finite_toSet)) this
-  rintro _ ⟨n, rfl⟩
-  by_cases h : p.coeff n = 0
-  · left; exact h
-  · right; exact ⟨n, mem_support_iff.mpr h, rfl⟩
+theorem coeff_range_finite : (Set.range p.coeff).Finite := Finsupp.range_finite _
 
 open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
