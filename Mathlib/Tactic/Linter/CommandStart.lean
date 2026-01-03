@@ -142,7 +142,7 @@ flagging some line-breaking changes.
 -/
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
-  if M.trim.isEmpty then as else
+  if M.trimAscii.isEmpty then as else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
   -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
@@ -153,44 +153,46 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
   -- doc-strings).  In this case, we drop everything until the following line break in the
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
-  if L.take 3 == "/--" && M.take 3 == "/--" then
-    parallelScanAux as (L.drop 3) (M.drop 3) else
-  if L.take 2 == "--" then
+  if L.take 3 == "/--".toSlice && M.take 3 == "/--".toSlice then
+    parallelScanAux as (L.drop 3).copy (M.drop 3).copy else
+  if L.take 2 == "--".toSlice then
     let newL := L.dropWhile (· != '\n')
-    let diff := L.length - newL.length
+    let diff := L.length - newL.copy.length
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
     -- (modulo additional whitespace).
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as newL.trimLeft newM.trimLeft else
-  if L.take 2 == "-/" then
-    let newL := L.drop 2 |>.trimLeft
-    let newM := M.drop 2 |>.trimLeft
-    parallelScanAux as newL newM else
+    parallelScanAux as newL.trimAsciiStart.copy newM.trimAsciiStart.copy else
+  if L.take 2 == "-/".toSlice then
+    let newL := L.drop 2 |>.trimAsciiStart
+    let newM := M.drop 2 |>.trimAsciiStart
+    parallelScanAux as newL.copy newM.copy else
   let ls := L.drop 1
   let ms := M.drop 1
   match L.front, M.front with
   | ' ', m =>
     if m.isWhitespace then
-      parallelScanAux as ls ms.trimLeft
+      parallelScanAux as ls.copy ms.trimAsciiStart.copy
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) ls M
+      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) ls.copy M
   | '\n', m =>
     if m.isWhitespace then
-      parallelScanAux as ls.trimLeft ms.trimLeft
+      parallelScanAux as ls.trimAsciiStart.copy ms.trimAsciiStart.copy
     else
-      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) ls.trimLeft M
+      parallelScanAux
+        (pushFormatError as (mkFormatError L M "remove line break")) ls.trimAsciiStart.copy M
   | l, m => -- `l` is not whitespace
     if l == m then
-      parallelScanAux as ls ms
+      parallelScanAux as ls.copy ms.copy
     else
       if m.isWhitespace then
-        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) L ms.trimLeft
+        parallelScanAux
+          (pushFormatError as (mkFormatError L M "missing space")) L ms.trimAsciiStart.copy
     else
       -- If this code is reached, then `L` and `M` differ by something other than whitespace.
       -- This should not happen in practice.
-      pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
+      pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)")
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
@@ -290,9 +292,9 @@ to avoid cutting into "words".
 *Note*. `start` is the number of characters *from the right* where our focus is!
 -/
 public def mkWindow (orig : String) (start ctx : Nat) : String :=
-  let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
-  let middle := orig.takeRight (start + 1)
-  let headCtx := head.takeRightWhile (!·.isWhitespace)
+  let head := orig.dropEnd (start + 1) -- `orig`, up to one character before the discrepancy
+  let middle := orig.takeEnd (start + 1)
+  let headCtx := head.takeEndWhile (!·.isWhitespace)
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 

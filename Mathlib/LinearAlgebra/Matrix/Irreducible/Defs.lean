@@ -21,28 +21,28 @@ matrix (like powers) into graph-theoretic properties of its quiver (like the exi
 
 ## Main definitions
 
-*   `Matrix.toQuiver A`: The quiver associated with a matrix `A`, where an edge `i ⟶ j` exists if
-    `0 < A i j`.
-*   `Matrix.IsIrreducible A`: A matrix `A` is defined as irreducible if it is entrywise nonnegative
-    and its associated quiver `toQuiver A` is strongly connected. The theorem
-    `Matrix.isIrreducible_iff_exists_pow_pos` proves this graph-theoretic definition is equivalent
-    to the algebraic one in seneta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there
-    exists a positive integer `k` such that `(A ^ k) i j > 0`.
-*   `Matrix.IsPrimitive A`: A matrix `A` is primitive if it is nonnegative and some power `A ^ k`
-    is strictly positive (all entries are `> 0`), (seneta2006, Definition 1.1, p.14).
+* `Matrix.toQuiver A`: The quiver associated with a matrix `A`, where an edge `i ⟶ j` exists if
+  `0 < A i j`.
+* `Matrix.IsIrreducible A`: A matrix `A` is defined as irreducible if it is entrywise nonnegative
+  and its associated quiver `toQuiver A` is strongly connected. The theorem
+  `Matrix.isIrreducible_iff_exists_pow_pos` proves this graph-theoretic definition is equivalent
+  to the algebraic one in seneta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there
+  exists a positive integer `k` such that `(A ^ k) i j > 0`.
+* `Matrix.IsPrimitive A`: A matrix `A` is primitive if it is nonnegative and some power `A ^ k`
+  is strictly positive (all entries are `> 0`), (seneta2006, Definition 1.1, p.14).
 
 ## Main results
 
-*   `Matrix.pow_apply_pos_iff_nonempty_path`: Establishes the link between matrix powers and graph
-      theory:
-    `(A ^ k) i j > 0` if and only if there is a path of length `k` from `i` to `j` in `toQuiver A`.
-*   `Matrix.isIrreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic
-      definition of irreducibility (strong connectivity) and the algebraic one (existence of a
-      positive entry in some power).
-*   `Matrix.IsPrimitive.to_IsIrreducible`: Proves that a primitive matrix is also irreducible
-      (Seneta, p.14).
-*   `Matrix.IsIrreducible.transpose`: Shows that the irreducibility property is preserved under
-    transposition.
+* `Matrix.pow_apply_pos_iff_nonempty_path`: Establishes the link between matrix powers and graph
+  theory:
+  `(A ^ k) i j > 0` if and only if there is a path of length `k` from `i` to `j` in `toQuiver A`.
+* `Matrix.isIrreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic
+  definition of irreducibility (strong connectivity) and the algebraic one (existence of a
+  positive entry in some power).
+* `Matrix.IsPrimitive.to_IsIrreducible`: Proves that a primitive matrix is also irreducible
+  (Seneta, p.14).
+* `Matrix.IsIrreducible.transpose`: Shows that the irreducibility property is preserved under
+  transposition.
 
 ## Implementation notes
 
@@ -52,7 +52,7 @@ like `PosMulStrictMono R` or `Nontrivial R`. Some statements expand matrix power
 
 ## References
 
-*   [E. Seneta, *Non-negative Matrices and Markov Chains*][seneta2006]
+* [E. Seneta, *Non-negative Matrices and Markov Chains*][seneta2006]
 
 ## Tags
 
@@ -111,8 +111,8 @@ theorem pow_apply_pos_iff_nonempty_path
     (hA : ∀ i j, 0 ≤ A i j) (k : ℕ) (i j : n) :
     letI := toQuiver A
     0 < (A ^ k) i j ↔ Nonempty {p : Path i j // p.length = k} := by
-    letI := toQuiver A
-    induction k generalizing i j with
+  letI := toQuiver A
+  induction k generalizing i j with
   | zero =>
     refine ⟨fun h_pos ↦ ?_, fun ⟨p, hp⟩ ↦ ?_⟩
     · rcases eq_or_ne i j with rfl | h_eq
@@ -168,9 +168,8 @@ theorem isIrreducible_iff_exists_pow_pos
     · exact hA
     · intro i j
       obtain ⟨k, hk_pos, hk_entry⟩ := h_exists i j
-      obtain ⟨⟨p, hp_len⟩⟩ :=
+      obtain ⟨⟨p, rfl⟩⟩ :=
         (pow_apply_pos_iff_nonempty_path (A := A) hA k i j).mp hk_entry
-      subst hp_len
       exact ⟨p, hk_pos⟩
 
 /-- If a nonnegative square matrix `A` is primitive, then `A` is irreducible. -/
@@ -206,14 +205,12 @@ theorem IsIrreducible.transpose (hA : IsIrreducible A) : IsIrreducible Aᵀ := b
   obtain ⟨p, hp_pos⟩ := hA.connected j i
   cases p with
   | nil =>
-      exact False.elim ((lt_irrefl (0 : Nat)) (by simp [Quiver.Path.length] at hp_pos))
+    simp at hp_pos
   | @cons b _ q e =>
-      let qT := transposePath (A := A) (q.cons e)
-      letI : Quiver n := toQuiver Aᵀ
-      have hqT_pos : 0 < qT.length := by
-        have : 0 < Nat.succ ((transposePath (A := A) q).length) := Nat.succ_pos _
-        simp [qT, transposePath, Quiver.Path.length_comp, Quiver.Path.length_toPath]
-      exact ⟨qT, hqT_pos⟩
+    let qT := transposePath (A := A) (q.cons e)
+    letI : Quiver n := toQuiver Aᵀ
+    use qT
+    simp [qT, transposePath, Quiver.Path.length_comp, Quiver.Path.length_toPath]
 
 @[simp]
 theorem isIrreducible_transpose_iff :

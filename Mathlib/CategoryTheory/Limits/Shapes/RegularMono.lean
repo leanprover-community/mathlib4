@@ -430,6 +430,10 @@ def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
       apply coequalizer.hom_ext
       simp [← w]
 
+instance (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
+    IsRegularEpi (coequalizer.π g h) :=
+  ⟨⟨coequalizerRegular g h⟩⟩
+
 /-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
 def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
@@ -493,6 +497,10 @@ def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
 instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : IsRegularEpi f :=
   isRegularEpi_of_regularEpi <| regularEpiOfEffectiveEpi f
+
+lemma isRegularEpi_iff_effectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f] :
+    IsRegularEpi f ↔ EffectiveEpi f :=
+  ⟨fun ⟨_⟩ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 /-- Every split epimorphism is a regular epimorphism. -/
 def RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where

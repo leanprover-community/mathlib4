@@ -89,13 +89,13 @@ theorem rank_fun_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι 
   obtain ⟨e⟩ := lift_mk_le'.mp ((aleph0_le_mk_iff.mpr hι).trans_eq (lift_uzero #ι).symm)
   have := LinearMap.lift_rank_le_of_injective _ <|
     LinearMap.funLeft_injective_of_surjective K K _ (invFun_surjective e.injective)
-  rw [lift_umax.{u,v}, lift_id'.{u,v}] at this
+  rw [lift_umax.{u, v}, lift_id'.{u, v}] at this
   have key := (lift_le.{v}.mpr <| max_aleph0_card_le_rank_fun_nat K).trans this
   rw [lift_max, lift_aleph0, max_le_iff] at key
   haveI : Infinite ιK := by
     rw [← aleph0_le_mk_iff, bK.mk_eq_rank'']; exact key.1
   rw [bK.repr.toEquiv.cardinal_eq, mk_finsupp_lift_of_infinite,
-      lift_umax.{u,v}, lift_id'.{u,v}, bK.mk_eq_rank'', eq_comm, max_eq_left]
+      lift_umax.{u, v}, lift_id'.{u, v}, bK.mk_eq_rank'', eq_comm, max_eq_left]
   exact key.2
 
 /-- The **Erdős-Kaplansky Theorem**: the dual of an infinite-dimensional vector space

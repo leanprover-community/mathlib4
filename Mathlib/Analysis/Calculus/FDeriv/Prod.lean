@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Linear
 # Derivative of the Cartesian product of functions
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 Cartesian products of functions, and functions into Pi-types.
@@ -345,13 +345,14 @@ theorem:
 -/
 
 
-variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι : Type*} [Finite ι] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
   {Φ' : E →L[𝕜] ∀ i, F' i}
 
 @[simp]
 theorem hasStrictFDerivAt_pi' :
     HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x := by
+  have := Fintype.ofFinite ι
   simp only [hasStrictFDerivAt_iff_isLittleO]
   exact isLittleO_pi
 
@@ -362,6 +363,7 @@ theorem hasStrictFDerivAt_pi'' (hφ : ∀ i, HasStrictFDerivAt (fun x => Φ x i)
 @[fun_prop]
 theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
+  have := Fintype.ofFinite ι
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasStrictFDerivAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f))).1
@@ -377,6 +379,7 @@ theorem hasStrictFDerivAt_pi :
 theorem hasFDerivAtFilter_pi' :
     HasFDerivAtFilter Φ Φ' x L ↔
       ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L := by
+  have := Fintype.ofFinite ι
   simp only [hasFDerivAtFilter_iff_isLittleO]
   exact isLittleO_pi
 
@@ -397,6 +400,7 @@ theorem hasFDerivAt_pi'' (hφ : ∀ i, HasFDerivAt (fun x => Φ x i) ((proj i).c
 @[fun_prop]
 theorem hasFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
     HasFDerivAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) f := by
+  have := Fintype.ofFinite ι
   apply HasStrictFDerivAt.hasFDerivAt
   apply hasStrictFDerivAt_apply
 
@@ -418,6 +422,7 @@ theorem hasFDerivWithinAt_pi''
 @[fun_prop]
 theorem hasFDerivWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
     HasFDerivWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) (proj i) s' f := by
+  have := Fintype.ofFinite ι
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasFDerivWithinAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f) (s := s'))).1
@@ -432,6 +437,7 @@ theorem hasFDerivWithinAt_pi :
 @[simp]
 theorem differentiableWithinAt_pi :
     DifferentiableWithinAt 𝕜 Φ s x ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => Φ x i) s x :=
+  have := Fintype.ofFinite ι
   ⟨fun h i => (hasFDerivWithinAt_pi'.1 h.hasFDerivWithinAt i).differentiableWithinAt, fun h =>
     (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).differentiableWithinAt⟩
 
@@ -442,11 +448,13 @@ theorem differentiableWithinAt_pi'' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (f
 @[fun_prop]
 theorem differentiableWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' i)) :
     DifferentiableWithinAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' f := by
+  have := Fintype.ofFinite ι
   apply HasFDerivWithinAt.differentiableWithinAt
   fun_prop
 
 @[simp]
 theorem differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, DifferentiableAt 𝕜 (fun x => Φ x i) x :=
+  have := Fintype.ofFinite ι
   ⟨fun h i => (hasFDerivAt_pi'.1 h.hasFDerivAt i).differentiableAt, fun h =>
     (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).differentiableAt⟩
 
@@ -457,6 +465,7 @@ theorem differentiableAt_pi'' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x => Φ x
 @[fun_prop]
 theorem differentiableAt_apply (i : ι) (f : ∀ i, F' i) :
     DifferentiableAt (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) f := by
+  have := Fintype.ofFinite ι
   have h := ((differentiableAt_pi (𝕜 := 𝕜)
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (x := f))).1
   apply h; apply differentiableAt_id
@@ -472,6 +481,7 @@ theorem differentiableOn_pi'' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x => Φ x
 @[fun_prop]
 theorem differentiableOn_apply (i : ι) (s' : Set (∀ i, F' i)) :
     DifferentiableOn (𝕜 := 𝕜) (fun f : ∀ i, F' i => f i) s' := by
+  have := Fintype.ofFinite ι
   have h := ((differentiableOn_pi (𝕜 := 𝕜)
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (s := s'))).1
   apply h; apply differentiableOn_id
@@ -491,10 +501,12 @@ theorem differentiable_apply (i : ι) :
 theorem fderivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (φ i) s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x i => φ i x) s x = pi fun i => fderivWithin 𝕜 (φ i) s x :=
+  have := Fintype.ofFinite ι
   (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).fderivWithin hs
 
 theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
     fderiv 𝕜 (fun x i => φ i x) x = pi fun i => fderiv 𝕜 (φ i) x :=
+  have := Fintype.ofFinite ι
   (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
 
 end Pi

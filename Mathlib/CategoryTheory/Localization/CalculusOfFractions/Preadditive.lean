@@ -26,7 +26,7 @@ As `L` is essentially surjective, we finally transport these abelian group struc
 to `X' ⟶ Y'` for all `X'` and `Y'` in `D`.
 
 Preadditive category instances are defined on the categories `W.Localization`
-(and `W.Localization'`) under the assumption the `W` has a left calculus of fractions.
+(and `W.Localization'`) under the assumption that `W` has a left calculus of fractions.
 (It would be easy to deduce from the results in this file that if `W` has a right calculus
 of fractions, then the localized category can also be equipped with
 a preadditive structure, but only one of these two constructions can be made an instance!)
@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 open MorphismProperty Preadditive Limits Category
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] (L : C ⥤ D)
   {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace MorphismProperty
@@ -321,7 +321,7 @@ lemma functor_additive :
 
 attribute [irreducible] preadditive
 include W in
-lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
+lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
     G.Additive ↔ (L ⋙ G).Additive := by
   constructor

@@ -105,7 +105,7 @@ section ExponentialCDF
 /-- CDF of the exponential distribution -/
 @[deprecated "Use `cdf (expMeasure r)` instead." (since := "2025-08-28")]
 noncomputable
-def exponentialCDFReal (r : ℝ) : StieltjesFunction :=
+def exponentialCDFReal (r : ℝ) : StieltjesFunction ℝ :=
   cdf (expMeasure r)
 
 lemma cdf_expMeasure_eq_integral {r : ℝ} (hr : 0 < r) (x : ℝ) :
