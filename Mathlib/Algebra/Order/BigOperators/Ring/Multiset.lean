@@ -5,8 +5,9 @@ Authors: Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.List
+public import Mathlib.Algebra.Order.Group.Opposite
 
 /-!
 # Big operators on a multiset in ordered rings
@@ -51,5 +52,16 @@ theorem Multiset.le_prod_of_submultiplicative_of_nonneg (f : α → β) (h0 : �
     f s.prod ≤ (s.map f).prod :=
   le_prod_of_submultiplicative_on_pred_of_nonneg f (fun _ ↦ True) h0 h_one
     (fun x y _ _ ↦ h_mul x y) (by simp) s (by simp)
+
+omit [CommMonoid α] in
+lemma Multiset.mem_le_prod_of_one_le [ZeroLEOneClass β] (f : α → β) (h1 : ∀ a : α, 1 ≤ f a)
+    (s : Multiset α) (a : α) (ha : a ∈ s) : f a ≤ (s.map f).prod := by
+  obtain ⟨s', rfl⟩ := exists_cons_of_mem ha
+  rw [map_cons, prod_cons]
+  calc f a = f a * 1 := (mul_one (f a)).symm
+    _ ≤ f a * (s'.map f).prod := by
+      gcongr
+      · exact le_trans (zero_le_one' β) (h1 a)
+      · simp_all [one_le_prod]
 
 end OrderedCommSemiring
