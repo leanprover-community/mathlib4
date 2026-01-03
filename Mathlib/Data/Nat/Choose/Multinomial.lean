@@ -28,10 +28,13 @@ This file defines the multinomial coefficient and several small lemma's for mani
 
 @[expose] public section
 
-open Finset
 open scoped Nat
 
 namespace Nat
+
+section MappedFinset
+
+open Finset
 
 variable {α : Type*} (s : Finset α) (f : α → ℕ) {a b : α} (n : ℕ)
 
@@ -136,10 +139,137 @@ theorem multinomial_univ_three (a b c : ℕ) :
   rw [multinomial, Fin.sum_univ_three, Fin.prod_univ_three]
   rfl
 
+end MappedFinset
+
+section MultisetOfPowers
+
+open Multiset
+
+variable (s : Multiset ℕ) {a b : ℕ} (n : ℕ)
+
+/-- The multinomial coefficient. Gives the number of strings consisting of symbols
+from `s`, where `c ∈ s` appears with multiplicity `f c`.
+
+Defined as `(∑ i ∈ s, f i)! / ∏ i ∈ s, (f i)!`.
+-/
+def multinomial' : ℕ :=
+  (s.sum)! / (s.map factorial).prod
+
+theorem multinomial'_def : multinomial' s = (s.sum)! / (s.map factorial).prod :=
+  rfl
+
+theorem multiset_prod_factorial_pos : 0 < (s.map factorial).prod := by
+  rw [CanonicallyOrderedAdd.multiset_prod_pos]
+  simp
+  intro x hx
+  exact factorial_pos _
+
+theorem multiset_prod_factorial_dvd_factorial_sum : (s.map factorial).prod ∣ (s.sum)! := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih =>
+    simp only [map_cons, prod_cons, sum_cons]
+    exact (mul_dvd_mul_left _ ih).trans (Nat.factorial_mul_factorial_dvd_factorial_add _ _)
+
+theorem multinomial'_pos : 0 < multinomial' s :=
+  Nat.div_pos
+    (le_of_dvd (factorial_pos _) (multiset_prod_factorial_dvd_factorial_sum s))
+    (multiset_prod_factorial_pos s)
+
+theorem multinomial'_spec : (s.map factorial).prod * multinomial' s = (s.sum)! :=
+  Nat.mul_div_cancel' (multiset_prod_factorial_dvd_factorial_sum s)
+
+@[simp] lemma multinomial'_empty : multinomial' ∅ = 1 := by simp [multinomial']
+
+variable {s}
+
+lemma multinomial'_cons :
+    multinomial' (s.cons a) = (a + s.sum).choose (a) * multinomial' s := by
+  rw [multinomial', Nat.div_eq_iff_eq_mul_left (multiset_prod_factorial_pos _)
+      (multiset_prod_factorial_dvd_factorial_sum _),
+    map_cons, prod_cons,
+    multinomial', mul_assoc, mul_left_comm _ (a)!,
+    Nat.div_mul_cancel (multiset_prod_factorial_dvd_factorial_sum _), ← mul_assoc,
+    Nat.choose_symm_add, Nat.add_choose_mul_factorial_mul_factorial, sum_cons]
+
+lemma multinomial'_insert :
+    multinomial' (insert a s) = (a + s.sum).choose (a) * multinomial' s := by
+  rw [insert_eq_cons, multinomial'_cons]
+
+@[simp] lemma multinomial'_singleton (a) : multinomial' {a} = 1 := by
+  rw [<-Multiset.cons_zero, multinomial'_cons]
+  simp [multinomial'_def]
+
+@[simp]
+theorem multinomial'_insert_one :
+    multinomial' (insert 1 s) = (s.sum).succ * multinomial' s := by
+  simp only [multinomial'_def]
+  rw [insert_eq_cons, Multiset.sum_cons, map_cons, prod_cons, add_comm, ← succ_eq_add_one,
+    factorial_succ]
+  simp only [factorial, succ_eq_add_one, zero_add, mul_one, one_mul]
+  rw [Nat.mul_div_assoc _ (multiset_prod_factorial_dvd_factorial_sum _)]
+
+/-! ### Connection to binomial coefficients
+
+When `Nat.multinomial'` is applied to a `Finset` of two elements `{a, b}`, the
+result a binomial coefficient. We use `binomial` in the names of lemmas that
+involves `Nat.multinomial' {a, b}`.
+-/
+
+theorem binomial'_eq :
+    multinomial' {a, b} = (a + b)! / ((a)! * (b)!) := by
+  simp [multinomial'_def]
+
+theorem binomial'_eq_choose :
+    multinomial' {a, b} = (a + b).choose (a) := by
+  rw [binomial'_eq, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
+  simp only [add_tsub_cancel_left]
+
+theorem binomial'_spec :
+    (a)! * (b)! * multinomial' {a, b} = (a + b)! := by
+  simpa using multinomial'_spec {a, b}
+
+theorem binomial'_one :
+    multinomial' {a, 1} = a.succ := by
+  simp [multinomial'_def, factorial]
+  rw [Nat.div_eq_iff_eq_mul_left (Nat.factorial_pos a), mul_comm]
+  exact Nat.dvd_mul_left a ! (a + 1)
+
+theorem binomial'_succ_succ :
+    multinomial' {a.succ, b.succ} =
+      multinomial' {a.succ, b} +
+      multinomial' {a, b.succ} := by
+  simp only [binomial'_eq_choose]
+  rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
+  ring
+
+theorem succ_mul_binomial' :
+    (a + b).succ * multinomial' {a, b} =
+      (a).succ * multinomial' {a.succ, b} := by
+  rw [binomial'_eq_choose, binomial'_eq_choose, mul_comm (a).succ]
+  rw [succ_mul_choose_eq (a + b) (a), succ_add (a) (b)]
+
+/-! ### Simple cases -/
+
+
+theorem multinomial'_univ_two (a b : ℕ) :
+    multinomial' {a, b} = (a + b)! / (a ! * b !) := by
+  simp [multinomial'_def]
+
+
+theorem multinomial'_univ_three (a b c : ℕ) :
+    multinomial' {a, b, c} = (a + b + c)! / (a ! * b ! * c !) := by
+  simp only [insert_eq_cons, multinomial'_def, sum_cons, sum_singleton, map_cons, map_singleton,
+    prod_cons, prod_singleton]
+  ring_nf
+
+end MultisetOfPowers
+
 end Nat
 
 /-! ### Alternative definitions -/
 
+open Finset
 
 namespace Finsupp
 
