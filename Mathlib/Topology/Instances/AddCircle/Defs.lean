@@ -68,31 +68,77 @@ variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archi
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {p : 𝕜} (hp : 0 < p) (a x : 𝕜)
 
-theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x := by
-  intro s h
-  rw [Filter.mem_map, mem_nhdsWithin_iff_exists_mem_nhds_inter]
-  haveI : Nontrivial 𝕜 := ⟨⟨0, p, hp.ne⟩⟩
-  simp_rw [mem_nhds_iff_exists_Ioo_subset] at h ⊢
-  obtain ⟨l, u, hxI, hIs⟩ := h
-  let d := toIcoDiv hp a x • p
-  have hd := toIcoMod_mem_Ico hp a x
-  simp_rw [subset_def, mem_inter_iff]
-  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y => ?_⟩ <;>
-    simp_rw [← sub_mem_Ioo_iff_left, mem_Ioo, lt_min_iff]
-  · exact ⟨hxI.1, hd.2, hxI.2⟩
-  · rintro ⟨h, h'⟩
-    apply hIs
-    rw [← toIcoMod_sub_zsmul, (toIcoMod_eq_self _).2]
-    exacts [⟨h.1, h.2.2⟩, ⟨hd.1.trans (sub_le_sub_right h' _), h.2.1⟩]
+theorem eventuallyEq_toIcoDiv_nhdsGE : toIcoDiv hp a =ᶠ[𝓝[≥] x] fun _ ↦ toIcoDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIcoDiv_eq_iff, sub_mem_Ico_iff_left]
+  apply Ico_mem_nhdsGE_of_mem
+  rw [← sub_mem_Ico_iff_left, ← toIcoDiv_eq_iff]
 
-theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
-  rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
-      toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
-  exact
-    (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
-      (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
+theorem continuousWithinAt_toIcoDiv_Ici : ContinuousWithinAt (toIcoDiv hp a) (Ici x) x :=
+  Filter.tendsto_pure.mpr (eventuallyEq_toIcoDiv_nhdsGE hp a x) |>.mono_right <| pure_le_nhds _
+
+theorem eventuallyEq_toIocDiv_nhdsLE : toIocDiv hp a =ᶠ[𝓝[≤] x] fun _ ↦ toIocDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIocDiv_eq_iff, sub_mem_Ioc_iff_left]
+  apply Ioc_mem_nhdsLE_of_mem
+  rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
+
+theorem continuousWithinAt_toIocDiv_Iic : ContinuousWithinAt (toIocDiv hp a) (Iic x) x :=
+  Filter.tendsto_pure.mpr (eventuallyEq_toIocDiv_nhdsLE hp a x) |>.mono_right <| pure_le_nhds _
+
+theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ici x) x := by
+  refine continuousWithinAt_id.sub <| Filter.Tendsto.mono_right ?_ (pure_le_nhds _)
+  rw [Filter.tendsto_pure]
+  exact (eventuallyEq_toIcoDiv_nhdsGE hp a x).fun_comp (· • p)
+
+alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
+
+theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
+  refine continuousWithinAt_id.sub <| Filter.Tendsto.mono_right ?_ (pure_le_nhds _)
+  rw [Filter.tendsto_pure]
+  exact (eventuallyEq_toIocDiv_nhdsLE hp a x).fun_comp (· • p)
+
+alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic
+
+theorem eventuallyEq_toIcoDiv_nhdsLT : toIcoDiv hp a =ᶠ[𝓝[<] x] fun _ ↦ toIocDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIcoDiv_eq_iff, sub_mem_Ico_iff_left]
+  apply Ico_mem_nhdsLT_of_mem
+  rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
+
+theorem eventuallyEq_toIocDiv_nhdsGT : toIocDiv hp a =ᶠ[𝓝[>] x] fun _ ↦ toIcoDiv hp a x := by
+  simp only [Filter.EventuallyEq, toIocDiv_eq_iff, sub_mem_Ioc_iff_left]
+  apply Ioc_mem_nhdsGT_of_mem
+  rw [← sub_mem_Ico_iff_left, ← toIcoDiv_eq_iff]
 
 variable {x}
+
+theorem eventuallyEq_toIcoDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+    toIcoDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIcoDiv hp a x := by
+  rw [← nhdsLT_sup_nhdsGE, Filter.EventuallyEq, Filter.eventually_sup]
+  refine ⟨?_, eventuallyEq_toIcoDiv_nhdsGE hp a x⟩
+  convert (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
+  rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, not_modEq_iff_ne_mod_zmultiples, ne_comm]
+
+theorem continuousAt_toIcoDiv (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+    ContinuousAt (toIcoDiv hp a) x :=
+  tendsto_nhds_of_eventually_eq <| eventuallyEq_toIcoDiv_nhds hp a hx
+
+theorem continuousOn_toIcoDiv :
+    ContinuousOn (toIcoDiv hp a) ((↑) ⁻¹' {(a : 𝕜 ⧸ zmultiples p)}ᶜ) := fun _x hx ↦
+  (continuousAt_toIcoDiv hp a hx).continuousWithinAt
+
+theorem eventuallyEq_toIocDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+    toIocDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIocDiv hp a x := by
+  rw [← nhdsLE_sup_nhdsGT, Filter.EventuallyEq, Filter.eventually_sup]
+  refine ⟨eventuallyEq_toIocDiv_nhdsLE hp a x, ?_⟩
+  convert (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
+  rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, not_modEq_iff_ne_mod_zmultiples, ne_comm]
+
+theorem continuousAt_toIocDiv (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+    ContinuousAt (toIocDiv hp a) x :=
+  tendsto_nhds_of_eventually_eq <| eventuallyEq_toIocDiv_nhds hp a hx
+
+theorem continuousOn_toIocDiv :
+    ContinuousOn (toIocDiv hp a) ((↑) ⁻¹' {(a : 𝕜 ⧸ zmultiples p)}ᶜ) := fun _x hx ↦
+  (continuousAt_toIocDiv hp a hx).continuousWithinAt
 
 theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
     toIcoMod hp a =ᶠ[𝓝 x] toIocMod hp a :=
@@ -103,18 +149,12 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) 
     (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx.symm
 
 theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
-  let h := toIcoMod_eventuallyEq_toIocMod hp a hx
-  continuousAt_iff_continuous_left_right.2 <|
-    ⟨(continuous_left_toIocMod hp a x).congr_of_eventuallyEq (h.filter_mono nhdsWithin_le_nhds)
-        h.eq_of_nhds,
-      continuous_right_toIcoMod hp a x⟩
+  continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
+    (eventuallyEq_toIcoDiv_nhds hp a hx).fun_comp (· • p)
 
 theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIocMod hp a) x :=
-  let h := toIcoMod_eventuallyEq_toIocMod hp a hx
-  continuousAt_iff_continuous_left_right.2 <|
-    ⟨continuous_left_toIocMod hp a x,
-      (continuous_right_toIcoMod hp a x).congr_of_eventuallyEq
-        (h.symm.filter_mono nhdsWithin_le_nhds) h.symm.eq_of_nhds⟩
+  continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
+    (eventuallyEq_toIocDiv_nhds hp a hx).fun_comp (· • p)
 
 end Continuity
 
