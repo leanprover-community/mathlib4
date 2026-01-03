@@ -502,10 +502,7 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 
 end
 
-lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := by
-  ext X Y f
-  simp only [op, isomorphisms.iff]
-  exact ⟨fun _ ↦ inferInstanceAs (IsIso f.unop.op), fun _ ↦ inferInstance⟩
+lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := op_isomorphisms _
 
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
   apply RespectsIso.mk <;>
