@@ -73,3 +73,27 @@ instance (priority := 100) IsDomain.toCancelCommMonoidWithZero : CancelCommMonoi
   { mul_left_cancel_of_ne_zero := IsLeftCancelMulZero.mul_left_cancel_of_ne_zero }
 
 end IsDomain
+
+namespace IsDedekindFiniteMonoid
+
+variable [Ring α]
+
+/-- A ring is Dedekind-finite if and only if every element has at most one right inverse. -/
+theorem iff_eq_of_mul_left_eq_one :
+    IsDedekindFiniteMonoid α ↔ ∀ x y z : α, x * y = 1 → x * z = 1 → y = z := by
+  refine (isDedekindFiniteMonoid_iff _).trans ⟨fun h x y z hxy hxz ↦ ?_, fun h x y eq ↦ ?_⟩
+  · simpa [← mul_assoc, h hxz] using congr_arg (z * ·) hxy
+  have := h _ _ (1 - y * x + y) eq <| by
+    rw [mul_add, mul_sub, ← mul_assoc, eq, mul_one, one_mul, sub_self, zero_add]
+  rwa [right_eq_add, sub_eq_zero, eq_comm] at this
+
+/-- A ring is Dedekind-finite if and only if every element has at most one left inverse. -/
+theorem iff_eq_of_mul_right_eq_one :
+    IsDedekindFiniteMonoid α ↔ ∀ x y z : α, x * z = 1 → y * z = 1 → x = y := by
+  refine (isDedekindFiniteMonoid_iff _).trans ⟨fun h x y z hxz hyz ↦ ?_, fun h x y eq ↦ ?_⟩
+  · simpa [mul_assoc, h hyz] using congr_arg (· * y) hxz
+  have := h _ (1 - y * x + x) _ eq <| by
+    rw [add_mul, sub_mul, mul_assoc, eq, one_mul, mul_one, sub_self, zero_add]
+  rwa [right_eq_add, sub_eq_zero, eq_comm] at this
+
+end IsDedekindFiniteMonoid

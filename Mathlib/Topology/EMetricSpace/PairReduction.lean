@@ -57,9 +57,9 @@ natural number `k` greater than zero such that `|{x ∈ V | d(t, x) ≤ kc}| ≤
 We construct a sequence `Vᵢ` of subsets of `J`, a sequence `tᵢ ∈ Vᵢ` and a sequence of `rᵢ : ℕ`
 inductively as follows (see `logSizeBallSeq`):
 
-* `V₀ = J`, `tₒ` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-* `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitrarily in
-  `Vᵢ₊₁` (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`.
+* `V₀ = J`, `t₀` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+* `Vᵢ₊₁ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitrarily in
+  `Vᵢ₊₁` (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`.
 
 Then `Vᵢ` is a strictly decreasing sequence (see `card_finset_logSizeBallSeq_add_one_lt`) until
 `Vᵢ` is empty. In particular `Vᵢ = ∅` for `i ≥ |J|`
@@ -176,9 +176,9 @@ def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
 variable [DecidableEq T]
 
 /-- We recursively define a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)` by
-  * `V₀ = J`, `tₒ` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-  * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitrarily in `Vᵢ₊₁, rᵢ₊₁` is
-    the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`. -/
+  * `V₀ = J`, `t₀` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+  * `Vᵢ₊₁ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitrarily in `Vᵢ₊₁`, `rᵢ₊₁` is
+    the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
   | 0 => {finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c}

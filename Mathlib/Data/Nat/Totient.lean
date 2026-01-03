@@ -374,6 +374,43 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
   rw [totient_mul _, totient_prime hp]
   simpa [h] using coprime_or_dvd_of_prime hp n
 
+theorem eq_or_eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (h' : a.totient = b.totient) :
+    a = b ∨ 2 * a = b := by
+  by_cases ha : a = 0
+  · rw [ha, totient_zero, eq_comm, totient_eq_zero] at h'
+    simp [ha, h']
+  by_cases hb : b = 0
+  · rw [hb, totient_zero, totient_eq_zero] at h'
+    exact False.elim (ha h')
+  obtain ⟨c, rfl⟩ := h
+  suffices a.Coprime c by
+    rw [totient_mul this, eq_comm, mul_eq_left (totient_eq_zero.not.mpr ha),
+      totient_eq_one_iff] at h'
+    obtain rfl | rfl := h'
+    · simp
+    · simp [mul_comm]
+  refine coprime_of_dvd fun p hp hap ↦ ?_
+  rintro ⟨d, rfl⟩
+  suffices a.totient < (p * a * d).totient by
+    rw [← mul_assoc, mul_comm a] at h'
+    exact h'.not_lt this
+  rw [mul_comm p]
+  refine lt_of_lt_of_le ?_ (Nat.le_of_dvd ?_ (totient_dvd_of_dvd ⟨d, rfl⟩))
+  · rw [mul_comm, totient_mul_of_prime_of_dvd hp hap, Nat.lt_mul_iff_one_lt_left]
+    · exact hp.one_lt
+    · exact totient_pos.mpr <| pos_of_ne_zero ha
+  · exact totient_pos.mpr <| zero_lt_of_ne_zero (by rwa [mul_assoc])
+
+theorem _root_.Even.eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (ha : Even a)
+    (h' : a.totient = b.totient) : a = b := by
+  by_cases ha' : a = 0
+  · rw [ha', totient_zero, eq_comm, totient_eq_zero] at h'
+    rw [h', ha']
+  refine (eq_or_eq_of_totient_eq_totient h h').resolve_right fun h ↦ ?_
+  rw [← h, totient_mul_of_prime_of_dvd (prime_two) (even_iff_two_dvd.mp ha), eq_comm,
+    mul_eq_right (totient_eq_zero.not.mpr ha')] at h'
+  lia
+
 theorem prime_pow_pow_totient_ediv_prod {p k : ℕ} (hp : p.Prime) (hk : 0 < k) :
       (p ^ k : ℕ) ^ φ (p ^ k) / ∏ q ∈ (p ^ k).primeFactors, q ^ (φ (p ^ k) / (q - 1)) =
         p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by

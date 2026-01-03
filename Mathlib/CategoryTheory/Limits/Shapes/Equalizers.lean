@@ -38,7 +38,7 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
@@ -252,15 +252,35 @@ def diagramIsoParallelPair (F : WalkingParallelPair ⥤ C) :
     F ≅ parallelPair (F.map left) (F.map right) :=
   NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_ | _ | _) <;> simp)
 
+/-- Constructor for natural transformations between parallel pairs. -/
+@[simps]
+def parallelPairHomMk {F G : WalkingParallelPair ⥤ C}
+    (p : F.obj zero ⟶ G.obj zero)
+    (q : F.obj one ⟶ G.obj one)
+    (hl : F.map left ≫ q = p ≫ G.map left := by cat_disch)
+    (hr : F.map right ≫ q = p ≫ G.map right := by cat_disch) : F ⟶ G where
+  app := by rintro (_ | _); exacts [p, q]
+  naturality := by rintro _ _ (_ | _); all_goals cat_disch
+
+/-- Constructor for natural isomorphisms between parallel pairs. -/
+@[simps!]
+def parallelPairIsoMk {F G : WalkingParallelPair ⥤ C}
+    (p : F.obj zero ≅ G.obj zero)
+    (q : F.obj one ≅ G.obj one)
+    (hl : F.map left ≫ q.hom = p.hom ≫ G.map left := by cat_disch)
+    (hr : F.map right ≫ q.hom = p.hom ≫ G.map right := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (by rintro (_ | _); exacts [p, q])
+    (by rintro _ _ (_ | _); all_goals cat_disch)
+
 /-- Construct a morphism between parallel pairs. -/
 def parallelPairHom {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X') (q : Y ⟶ Y')
-    (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') : parallelPair f g ⟶ parallelPair f' g' where
-  app j :=
-    match j with
-    | zero => p
-    | one => q
-  naturality := by
-    rintro _ _ ⟨⟩ <;> simp [wf,wg]
+    (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') : parallelPair f g ⟶ parallelPair f' g' :=
+  parallelPairHomMk p q
+
+/-- Construct a isomorphism between parallel pairs. -/
+def parallelPairIso {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ≅ X') (q : Y ≅ Y')
+    (wf : f ≫ q.hom = p.hom ≫ f') (wg : g ≫ q.hom = p.hom ≫ g') :
+    parallelPair f g ≅ parallelPair f' g' := parallelPairIsoMk p q
 
 @[simp]
 theorem parallelPairHom_app_zero {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X')
@@ -1149,7 +1169,7 @@ variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
 
 /-- The comparison morphism for the equalizer of `f,g`.
 This is an isomorphism iff `G` preserves the equalizer of `f,g`; see
-`CategoryTheory/Limits/Preserves/Shapes/Equalizers.lean`
+`Mathlib/CategoryTheory/Limits/Preserves/Shapes/Equalizers.lean`
 -/
 noncomputable def equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] :
     G.obj (equalizer f g) ⟶ equalizer (G.map f) (G.map g) :=
