@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.RingTheory.Adjoin.Singleton
 
 /-!
 # Adjoining Elements to Fields
@@ -135,6 +136,26 @@ lemma finite_of_fg_of_isAlgebraic
       (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
     simpa [← toSubalgebra_inj] using hs
   exact Algebra.IsIntegral.finite
+
+section RingHom
+
+variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
+  [Algebra B C] [Algebra A C] [IsScalarTower A B C] (b : B)
+
+/-- Ring homomorphism between `A[b]` and `A⟮↑b⟯`. -/
+noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
+    Algebra.adjoin A {b} →+* A⟮((algebraMap B C) b)⟯ :=
+  RingHom.comp (Subalgebra.inclusion <|
+    algebra_adjoin_le_adjoin A {((algebraMap B C) b)}).toRingHom
+    (Algebra.RingHom.adjoinAlgebraMap b)
+
+noncomputable instance : Algebra (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ :=
+  RingHom.toAlgebra (RingHom.adjoinAlgebraMapOfAlgebra _)
+
+instance : IsScalarTower (Algebra.adjoin A {b}) A⟮(algebraMap B C) b⟯ C :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
+end RingHom
 
 section Supremum
 
