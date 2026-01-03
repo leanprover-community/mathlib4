@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Iván Renison
+Authors: Iván Renison, Yue Sun, Nick Adfor
 -/
 module
 
@@ -20,6 +20,10 @@ This file defines colorings for some common graphs.
 ## Main declarations
 
 * `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph.
+
+* `SimpleGraph.bipartite_iff_all_cycles_even`:
+  Proves that `G.IsBipartite` iff `G` does not contain an odd cycle.
+  I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
 
 -/
 
@@ -200,5 +204,141 @@ lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
         (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
       simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
     exact (Nat.even_iff.mpr (by lia)).add_one
+
+section OddCycleTheorem
+
+variable {V : Type*} (G : SimpleGraph V)
+
+lemma even_length_iff_same_color
+    {c : G.Coloring (Fin 2)}
+    {u v : V} (p : G.Walk u v) :
+    Even p.length ↔ c u = c v := by
+  let c' : G.Coloring Bool := G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
+  rw [Coloring.even_length_iff_congr c']
+  simp [c']
+
+@[simp]
+lemma bypass_eq_nil
+{V : Type*} [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
+    w.bypass = SimpleGraph.Walk.nil :=
+  (isPath_iff_eq_nil _).1 (SimpleGraph.Walk.bypass_isPath _)
+
+theorem even_length_cons_of_isPath
+    (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
+    {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
+    Even (SimpleGraph.Walk.cons ha q).length := by
+  by_cases hq' : q.length = 1
+  · simp [hq']
+  apply h_cycles u (SimpleGraph.Walk.cons ha q)
+  rw [cons_isCycle_iff]
+  refine ⟨hq, ?_⟩
+  cases q
+  · simp
+  · rw [edges_cons, List.mem_cons]
+    rintro (h | ha)
+    · aesop
+    · rw [cons_isPath_iff] at hq
+      exact hq.2 <| snd_mem_support_of_mem_edges _ ha
+
+/-
+If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1.
+-/
+lemma IsPath.length_eq_one_of_mem_edges
+{u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
+  by_contra h_non_simple_cycle
+  have h_cycle : ∃ q : G.Walk u u, q.IsCycle := by
+    rcases p with (_ | ⟨_, _, p⟩)
+    · aesop
+    · aesop
+    · -- `aesop` change `p✝` to `p`, but `aesop?` generate nothing valuable.
+      aesop (config := {warnOnNonterminal := false})
+      have := by exact SimpleGraph.Walk.fst_mem_support_of_mem_edges p h_3
+      exact Classical.not_forall_not.mp fun a ↦ right this
+  obtain ⟨q, hq⟩ := h_cycle
+  cases q <;> simp_all +decide only [isCycle_def, IsTrail.nil, ne_eq, not_true_eq_false,
+    support_nil, List.tail_cons, List.nodup_nil, and_true, and_false]
+  cases p <;> simp_all +decide only [isTrail_def, edges_cons, List.nodup_cons, reduceCtorEq,
+    not_false_eq_true, support_cons, List.tail_cons, true_and, isPath_iff_eq_nil, edges_nil,
+    List.not_mem_nil]
+  simp_all only [cons_isPath_iff, List.mem_cons, Sym2.eq, Sym2.rel_iff',
+  Prod.mk.injEq, true_and, Prod.swap_prod_mk, length_cons, Nat.add_eq_right]
+  obtain ⟨left, right⟩ := hq
+  obtain ⟨left_1, right_1⟩ := hp
+  obtain ⟨left, right_2⟩ := left
+  cases h with
+  | inl h_3 =>
+    cases h_3 with
+    | inl h =>
+      subst h
+      simp_all only [length_eq_zero_iff, isPath_iff_eq_nil]
+    | inr h_4 => simp_all only [SimpleGraph.irrefl]
+  | inr h_4 => exact right_1 (SimpleGraph.Walk.fst_mem_support_of_mem_edges _ h_4)
+
+lemma even_length_cons_takeUntil_of_bypass [DecidableEq V]
+    {u v w : V} (q : G.Walk v w) (hq : q.IsPath) (ha : G.Adj u v) (hs : u ∈ q.support)
+    (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
+    Even (SimpleGraph.Walk.cons ha (q.takeUntil u hs)).length := by
+  by_cases hc : SimpleGraph.Walk.IsCycle (SimpleGraph.Walk.cons ha (q.takeUntil u hs))
+  · exact h_cycles _ _ hc
+  · -- If `c` is not a cycle, then `s(u, v) ∈ p.edges`.
+    have h_edge : s(u, v) ∈ (q.takeUntil u hs).edges := by
+      contrapose! hc; simp_all +decide only [cons_isCycle_iff, not_false_eq_true, and_true]
+      exact IsPath.takeUntil hq hs
+    have h_length : (q.takeUntil u hs).length = 1 := by
+      apply IsPath.length_eq_one_of_mem_edges
+      · exact hq.takeUntil _
+      · rwa [Sym2.eq_swap]
+    aesop
+
+lemma even_length_iff_even_bypass_length [DecidableEq V]
+    (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
+    {u v : V} (p : G.Walk u v) :
+    Even p.length ↔ Even p.bypass.length := by
+  induction p with
+  | nil =>
+    simp_all only [Walk.length_nil, Even.zero, true_iff]
+    exact even_iff_two_dvd.mpr ⟨0, rfl⟩
+  | cons h p ih =>
+    simp +decide [SimpleGraph.Walk.bypass]
+    split_ifs <;> simp_all +decide [parity_simps]
+    have h_even : Even (SimpleGraph.Walk.cons h (p.bypass.takeUntil _ ‹_›)).length := by
+      apply even_length_cons_takeUntil_of_bypass
+      · exact bypass_isPath p
+      · assumption
+    simp_all +decide [SimpleGraph.Walk.length_cons, parity_simps]
+    have h_even :
+    Even (SimpleGraph.Walk.length p.bypass) ↔
+    Even (SimpleGraph.Walk.length (p.bypass.takeUntil _ ‹_›) +
+    SimpleGraph.Walk.length (p.bypass.dropUntil _ ‹_›)) := by
+      rw [← SimpleGraph.Walk.length_append, SimpleGraph.Walk.take_spec]
+    grind
+
+theorem bipartite_iff_all_cycles_even :
+  G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+  classical
+  constructor
+  · intro h_bip
+    rcases h_bip with ⟨color⟩
+    intro v c hc
+    have h_color_eq : color v = color v := rfl
+    rw [even_length_iff_same_color]
+    exact color
+  · intro h
+    have h_colorable : G.Colorable 2 := by
+      apply (two_colorable_iff_forall_loop_even).mpr
+      intro u w
+      have h_even_bypass : Even w.length ↔ Even w.bypass.length := by
+        apply even_length_iff_even_bypass_length
+        assumption
+      rw [h_even_bypass]
+      rw [bypass_eq_nil]
+      aesop
+    exact Colorable.mono_left (fun ⦃v w⦄ a => a) h_colorable
+
+theorem no_odd_cycles_implies_bipartite
+(h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
+    G.IsBipartite := (bipartite_iff_all_cycles_even G).mpr h
+
+end OddCycleTheorem
 
 end SimpleGraph
