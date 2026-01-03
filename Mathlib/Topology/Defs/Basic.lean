@@ -12,6 +12,8 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.AssertExists
 
+public meta import Mathlib.Util.DelabNonCanonical
+
 /-!
 # Basic definitions about topological spaces
 
@@ -198,6 +200,24 @@ scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 /-- Notation for `Continuous` with respect to a non-standard topologies. -/
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
+
+namespace TopologicalSpace
+open Topology Lean.PrettyPrinter.Delaborator
+
+/-- Delaborator for `IsOpen[_]`. -/
+@[app_delab IsOpen] meta def delabIsOpen : Delab := delabUnary 2 1 fun x ↦ `(IsOpen[$x])
+
+/-- Delaborator for `IsClosed[_]`. -/
+@[app_delab IsClosed] meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
+
+/-- Delaborator for `closure[_]`. -/
+@[app_delab closure] meta def delabClosure : Delab := delabUnary 2 1 fun x ↦ `(closure[$x])
+
+/-- Delaborator for `Continuous[_, _]`. -/
+@[app_delab Continuous] meta def delabContinuous : Delab :=
+  delabBinary 4 2 3 fun x y ↦ `(Continuous[$x, $y])
+
+end TopologicalSpace
 
 /-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
