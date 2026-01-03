@@ -14,8 +14,6 @@ public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.TwoSidedIdeal.Instances
 
 /-!
-# Tensor product of simple algebras
-
 # Tensor product of simple algebras over a field
 
 In this file, we show that the tensor product of a simple algebra and a central simple algebra is
@@ -96,8 +94,8 @@ lemma TensorProduct.map_comap_eq_zero_if_zero [hA : IsSimpleRing A]
         I.sub_mem (I.mul_mem_left _ _ hT'1) (I.mul_mem_right _ _ hT'1)
       have : ∀ j ∈ s, ∑ i, xL i * a j * xR i ∈ Subalgebra.center K A := fun j hj ↦
         Subalgebra.mem_center_iff.2 fun x ↦ by
-        specialize ih (fun j ↦ if j ∈ s then (x * (∑ i, (xL i * a j * xR i)) -
-          (∑ i, xL i * a j * xR i) * x) else 0) <| by
+        specialize ih (fun j ↦ if j ∈ s then x * ∑ i, xL i * a j * xR i -
+          (∑ i, xL i * a j * xR i) * x else 0) <| by
           convert (hT'_mem x)
           rw [hT'3]
           congr! with i hi
@@ -126,9 +124,9 @@ lemma TensorProduct.map_comap_eq_zero_if_zero [hA : IsSimpleRing A]
         (Finset.mem_insert_self _ _)
       simp [g, dif_neg hjs] at hb
   refine eq_bot_iff.mpr fun x hx ↦ ?_
-  obtain ⟨s, c, rfl⟩ := Submodule.mem_span_range_iff_exists'.mp <|
+  obtain ⟨s, c, rfl⟩ := Submodule.mem_span_range_iff_exists.mp <|
     Submodule.eq_top_iff'.mp (𝓑.baseChange A).span_eq x
-  replace main := main s c (by simpa [← TensorProduct.tmul_eq_smul_one_tmul] using hx)
+  specialize main s c (by simpa [← TensorProduct.tmul_eq_smul_one_tmul] using hx)
   simp +contextual [main]
 
 lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : IsSimpleRing B]
@@ -139,7 +137,7 @@ lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : 
   refine (le_antisymm ?_ ?_).symm
   · obtain rfl | I_ne_bot := eq_or_ne I ⊥
     · exact bot_le
-    change I ≤ TwoSidedIdeal.span (Set.image f <| I.comap f)
+    rw [TwoSidedIdeal.map]
     have hI : I.comap f = ⊤ := hB.1.2 _ |>.resolve_left fun r => by
       refine I_ne_bot <| TensorProduct.map_comap_eq_zero_if_zero (hAB := ?_)
       rw [r, TwoSidedIdeal.map_bot]
@@ -161,15 +159,12 @@ instance TensorProduct.simple {A B : Type*} [Ring A] [IsSimpleRing A] [Algebra K
     [Algebra K B] [Algebra.IsCentral K A] [isSimple_B : IsSimpleRing B] :
     IsSimpleRing (A ⊗[K] B) := by
   let f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
-  suffices eq1 : ∀ (I : TwoSidedIdeal (A ⊗[K] B)),
-      I = TwoSidedIdeal.span (Set.image f <| I.comap f) by
-    refine ⟨⟨fun I => ?_⟩⟩
-    specialize eq1 I
-    rcases isSimple_B.1.2 (I.comap f) with h|h
-    · left
-      rw [eq1, TwoSidedIdeal.span_eq_bot, h]
-      simp
-    · right
-      rw [← TwoSidedIdeal.one_mem_iff, eq1, h]
-      exact TwoSidedIdeal.subset_span ⟨1, by simp⟩
-  exact fun _ ↦ TensorProduct.map_comap_eq K _ _ _|>.symm
+  refine ⟨⟨fun I ↦ ?_⟩⟩
+  rcases isSimple_B.1.2 (I.comap f) with h|h
+  · left
+    rw [← TensorProduct.map_comap_eq K _ _ I, h, TwoSidedIdeal.map, TwoSidedIdeal.span_eq_bot]
+    simp
+  · right
+    rw [← TwoSidedIdeal.one_mem_iff, ← TensorProduct.map_comap_eq K _ _ I, h,
+      TwoSidedIdeal.map]
+    exact TwoSidedIdeal.subset_span ⟨1, by simp [Algebra.TensorProduct.one_def]⟩

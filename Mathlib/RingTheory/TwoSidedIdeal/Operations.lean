@@ -153,6 +153,7 @@ lemma _root_.RingEquiv.mapTwoSidedIdeal_apply (e : R ≃+* S) (I : TwoSidedIdeal
 
 lemma _root_.RingEquiv.mapTwoSidedIdeal_symm (e : R ≃+* S) :
     e.mapTwoSidedIdeal.symm = e.symm.mapTwoSidedIdeal := rfl
+
 @[simp]
 lemma span_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {s : Set R} :
     span s = ⊥ ↔ ∀ x ∈ s, x = 0 := eq_bot_iff.trans
@@ -169,7 +170,7 @@ lemma map_bot {R S : Type*}
   ext x
   simp [map, coe_bot, Set.image_singleton, map_zero f, mem_bot, span_singleton_eq_bot.2]
 
-theorem mem_map_of_mem {R S : Type*}
+protected theorem mem_map_of_mem {R S : Type*}
     [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
     {F : Type*} [FunLike F R S] {f : F} {I : TwoSidedIdeal R}
     {x : R} (hx : x ∈ I) : f x ∈ I.map f :=
@@ -199,12 +200,12 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
     (h_left : ∀ x y, y ∈ s → x * y ∈ s) (h_right : ∀ y x, y ∈ s → y * x ∈ s) {z : R} :
     z ∈ span s ↔ z ∈ closure s := by
   have h_left' {x y} (hy : y ∈ closure s) : x * y ∈ closure s := by
-    have := (AddMonoidHom.mulLeft x).map_closure s ▸ AddSubgroup.mem_map_of_mem _ hy
+    have := (AddMonoidHom.mulLeft x).map_closure s ▸ mem_map_of_mem _ hy
     refine closure_mono ?_ this
     rintro - ⟨y, hy, rfl⟩
     exact h_left x y hy
   have h_right' {y x} (hy : y ∈ closure s) : y * x ∈ closure s := by
-    have := (AddMonoidHom.mulRight x).map_closure s ▸ AddSubgroup.mem_map_of_mem _ hy
+    have := (AddMonoidHom.mulRight x).map_closure s ▸ mem_map_of_mem _ hy
     refine closure_mono ?_ this
     rintro - ⟨y, hy, rfl⟩
     exact h_right y x hy
