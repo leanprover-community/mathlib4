@@ -43,15 +43,14 @@ def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
 theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (x : ∀ i, Ms i) :
     (piQuotientLift p q f hf fun i => Quotient.mk (x i)) = Quotient.mk (lsum _ _ R f x) := by
-  rw [piQuotientLift, lsum_apply, LinearMap.sum_apply, ← mkQ_apply, lsum_apply, LinearMap.sum_apply,
-    _root_.map_sum]
+  rw [piQuotientLift, lsum_apply, sum_apply, ← mkQ_apply, lsum_apply, sum_apply, _root_.map_sum]
   simp only [coe_proj, mapQ_apply, mkQ_apply, comp_apply]
 
 @[simp]
 theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (i)
     (x : Ms i ⧸ p i) : piQuotientLift p q f hf (Pi.single i x) = mapQ _ _ (f i) (hf i) x := by
-  simp_rw [piQuotientLift, lsum_apply, LinearMap.sum_apply, comp_apply, proj_apply]
+  simp_rw [piQuotientLift, lsum_apply, sum_apply, comp_apply, proj_apply]
   rw [Finset.sum_eq_single i]
   · rw [Pi.single_eq_same]
   · rintro j - hj

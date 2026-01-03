@@ -123,11 +123,11 @@ lemma goursat : ∃ (M' : Submodule R M) (N' : Submodule R N) (M'' : Submodule R
   · ext ⟨m, n⟩
     constructor
     · intro hmn
-      simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Subtype.exists, Prod.exists,
-        coe_prodMap, coe_subtype, Prod.map_apply, Prod.mk.injEq, exists_and_right,
-        exists_eq_right_right, exists_eq_right, M', N', fst_apply, snd_apply]
+      simp only [mem_map, LinearMap.mem_range, prod_apply, Subtype.exists, Prod.exists, coe_prodMap,
+        coe_subtype, Prod.map_apply, Prod.mk.injEq, exists_and_right, exists_eq_right_right,
+        exists_eq_right, M', N', fst_apply, snd_apply]
       exact ⟨⟨n, hmn⟩, ⟨m, hmn⟩, ⟨m, n, hmn, rfl⟩⟩
-    · simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Subtype.exists, Prod.exists,
+    · simp only [mem_map, LinearMap.mem_range, prod_apply, Subtype.exists, Prod.exists,
         coe_prodMap, coe_subtype, Prod.map_apply, Prod.mk.injEq, exists_and_right,
         exists_eq_right_right, exists_eq_right, forall_exists_index, Pi.prod]
       rintro hm hn m₁ n₁ hm₁n₁ ⟨hP, hQ⟩

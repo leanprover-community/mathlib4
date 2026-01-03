@@ -274,7 +274,7 @@ variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, Topol
 @[to_additive]
 theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
     HasProd f g L ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) L := by
-  simp only [HasProd, tendsto_pi_nhds, Finset.prod_apply]
+  simp only [HasProd, tendsto_pi_nhds, prod_apply]
 
 @[to_additive]
 theorem Pi.multipliable {f : ι → ∀ x, X x} :
