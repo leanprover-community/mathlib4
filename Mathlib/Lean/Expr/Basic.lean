@@ -512,6 +512,12 @@ where
         let allNotPx ← mkForallFVars #[x] notPx
         return (allNotPx, hAllNotPx)
 
+/-- Given two levels `u v`, create `fun (α : Sort u) (β : α → Sort v) => ∀ (x : α), β x`. -/
+def mkLambdaForall (u v : Level) : Expr :=
+  mkLambda .anonymous .default (.sort u) <|
+    mkLambda .anonymous .default (mkForall .anonymous .default (.bvar 0) (.sort v)) <|
+      mkForall .anonymous .default (.bvar 1) (mkApp (.bvar 1) (.bvar 0))
+
 end Expr
 
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
