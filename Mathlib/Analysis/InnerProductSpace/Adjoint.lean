@@ -739,6 +739,8 @@ variable {𝕜 V W G : Type*} [NormedField 𝕜]
   [SeminormedAddCommGroup W] [NormedSpace 𝕜 W]
   [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
+/-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
+as a linear isometric equivalence. -/
 @[simps! apply] def units_smul (e : V ≃ₗᵢ[𝕜] W) (α : 𝕜ˣ) (hα : ‖(α : 𝕜)‖ = 1) :
     V ≃ₗᵢ[𝕜] W where
   __ := e.toLinearEquiv.units_smul α
@@ -788,12 +790,11 @@ theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
   have : (g : H →L[𝕜] K) = (‖y‖ : 𝕜) ^ 2 • (g : H →L[𝕜] K) := by
     simp [← RCLike.conj_mul, ← smul_smul, ← hfg, ← star_def, ← hgf]
   nth_rw 1 [← one_smul 𝕜 (g : H →L[𝕜] K)] at this
-  rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero, eq_comm, sq_eq_one_iff,
-    FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind,
-    ofReal_inj] at this
+  rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero, eq_comm, sq_eq_one_iff] at this
   obtain ((this | this) | this) := this
-  · exact ⟨.mk0 y hy, this, fun x ↦ congr($hfg x)⟩
-  · grind [norm_nonneg]
+  · exact ⟨.mk0 y hy, by simpa using this, fun x ↦ congr($hfg x)⟩
+  · have : ((-(1 : ℝ) : ℝ) : 𝕜) = -1 := by grind
+    grind [norm_nonneg, ofReal_inj]
   · refine ⟨1, IsAbsoluteValue.abv_one norm, fun x ↦ ?_⟩
     simp [by simpa using congr($this x)]
 

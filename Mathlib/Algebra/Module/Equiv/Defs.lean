@@ -603,6 +603,7 @@ variable {S R V W : Type*} [Semiring R] [Semiring S]
   [AddCommMonoid W] [Module R W] [Module S W]
   [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
 
+/-- Left scalar multiplication of a unit and a linear equivalence, as a linear equivalence. -/
 @[simps apply] def units_smul (e : V ≃ₗ[R] W) (α : Sˣ) : V ≃ₗ[R] W where
   __ := (α : S) • e.toLinearMap
   toFun x := (α : S) • e x

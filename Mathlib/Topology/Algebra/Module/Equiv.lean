@@ -1379,6 +1379,8 @@ variable {S R V W : Type*} [Semiring R] [Semiring S]
   [AddCommMonoid W] [Module R W] [TopologicalSpace W] [Module S W] [ContinuousConstSMul S W]
   [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
 
+/-- Left scalar multiplication of a unit and a continuous linear equivalence,
+as a continuous linear equivalence. -/
 @[simps! apply]
 def ContinuousLinearEquiv.units_smul (e : V ≃L[R] W) (α : Sˣ) : V ≃L[R] W where
   __ := e.toLinearEquiv.units_smul α
