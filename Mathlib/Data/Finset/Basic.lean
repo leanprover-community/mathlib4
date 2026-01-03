@@ -329,9 +329,6 @@ theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     (s.disjUnion t h).filter p = (s.filter p).disjUnion (t.filter p) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
 
-@[deprecated (since := "2025-06-11")]
-alias filter_disj_union := filter_disjUnion
-
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     (s.cons a ha).filter p =
       if p a then (s.filter p).cons a ((mem_of_mem_filter _).mt ha) else s.filter p := by grind
