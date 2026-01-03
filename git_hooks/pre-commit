@@ -1,0 +1,18 @@
+#!/bin/bash
+# This file is a "Git Hooks" file for pre-commit hooks
+# It allows you to run various commands before committing
+# This can help make sure your commits will pass various linters
+# For reference, see e.g. https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks
+#
+# In order to use this file, you must
+# 1. Copy this file to `.git/hooks/pre-commit`
+#   - i.e. by `cp ./git_hooks/pre-commit .git/hooks/pre-commit` on a UNIX-like OS
+# 2. Ensure the file is executable
+#   - i.e. by `chmod +x .git/hooks/pre-commit` on a UNIX-like OS
+echo "Running pre-commit hooks found in .git/hooks/pre-commit"
+# Ensure Mathlib.lean is correctly generated
+echo "lake exe mk_all"
+lake exe mk_all
+# Run lean text-based linters
+echo "lake exe lint-style"
+lake exe lint-style
