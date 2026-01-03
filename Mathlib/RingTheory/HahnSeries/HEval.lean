@@ -62,6 +62,7 @@ theorem powerSeriesFamily_of_orderTop_pos {x : V⟦Γ⟧} (hx : 0 < x.orderTop)
     powerSeriesFamily x f n = f.coeff n • x ^ n := by
   simp [hx]
 
+@[simp]
 theorem powerSeriesFamily_hsum_zero (f : PowerSeries R) :
     (powerSeriesFamily 0 f).hsum = f.constantCoeff • (1 : V⟦Γ⟧) := by
   ext g
