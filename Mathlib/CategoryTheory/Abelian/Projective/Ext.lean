@@ -186,10 +186,13 @@ lemma extMk_hom
     [HasDerivedCategory C] {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (hf : R.complex.d m n ≫ f = 0) :
     (R.extMk f m hm hf).hom =
-      (ShiftedHom.mk₀ _ rfl (inv (DerivedCategory.Q.map R.π'))).comp
-        (ShiftedHom.map (Cocycle.equivHomShift.symm
-          (Cocycle.toSingleMk ((R.cochainComplexXIso (-n) n rfl).hom ≫ f) (by simp)
-            (-m) (by lia) (by simpa [cochainComplex_d _ _ _ _ _ rfl rfl]))) _) (add_zero _) :=
+    (ShiftedHom.mk₀ _ rfl ((DerivedCategory.singleFunctorIsoCompQ C 0).hom.app X ≫
+      inv (DerivedCategory.Q.map R.π'))).comp
+        ((ShiftedHom.map (Cocycle.equivHomShift.symm
+          (Cocycle.toSingleMk ((R.cochainComplexXIso (-n) n rfl).hom ≫ f) (by simp) (-m)
+            (by lia) (by simpa [cochainComplex_d _ _ _ _ _ rfl rfl]))) _).comp
+              (.mk₀ _ rfl ((DerivedCategory.singleFunctorIsoCompQ C 0).inv.app Y))
+                (zero_add _)) (add_zero _) :=
   extEquivCohomologyClass_symm_mk_hom _ _
 
 lemma extMk_eq_zero_iff (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
@@ -254,11 +257,11 @@ lemma comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     Cocycle.equivHomShift_symm_precomp,
     ← ShiftedHom.mk₀_comp 0 rfl, ShiftedHom.map_comp,
     ← ShiftedHom.comp_assoc _ _ _ (zero_add _) _ (by simp),
+    ← ShiftedHom.comp_assoc _ _ _ (add_zero _) _ (by simp),
+    ← ShiftedHom.comp_assoc _ _ _ (add_zero _) _ (by simp),
     ← ShiftedHom.comp_assoc _ _ _ (zero_add _) _ (by simp),
     ShiftedHom.map_mk₀, ShiftedHom.mk₀_comp_mk₀, ShiftedHom.mk₀_comp_mk₀]
-  congr 2
-  symm
-  simpa only [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
-    Functor.map_comp] using DerivedCategory.Q.congr_map φ.comp_π'
+  congr 3
+  simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
 end CategoryTheory.ProjectiveResolution

@@ -179,10 +179,13 @@ lemma extMk_hom
     [HasDerivedCategory C] {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
     (R.extMk f m hm hf).hom =
-      (ShiftedHom.map (Cocycle.equivHomShift.symm
-        (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
-          m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) _).comp
-            (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι'))) (zero_add _) :=
+    (ShiftedHom.mk₀ _ rfl ((DerivedCategory.singleFunctorIsoCompQ C 0).hom.app X)).comp
+      ((ShiftedHom.map (Cocycle.equivHomShift.symm
+        (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _) m
+          (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) _).comp
+            (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι') ≫
+              (DerivedCategory.singleFunctorIsoCompQ C 0).inv.app Y))
+                (zero_add _)) (add_zero _) :=
   extEquivCohomologyClass_symm_mk_hom _ _
 
 lemma extMk_eq_zero_iff (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
@@ -241,10 +244,13 @@ lemma extMk_comp {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m
       (by simp [R.cochainComplex_d _ _ _ _ rfl rfl, reassoc_of% hf]),
     Cocycle.equivHomShift_symm_postcomp,
     ← ShiftedHom.comp_mk₀ _ 0 rfl, ShiftedHom.map_comp,
-    ShiftedHom.comp_assoc _ _ _ _ (add_zero _) (by simp),
-    ShiftedHom.comp_assoc _ _ _ _ (add_zero _) (by simp),
+    ShiftedHom.comp_assoc _ _ _ _ (zero_add _) (by simp),
+    ShiftedHom.comp_assoc _ _ _ _ (zero_add _) (by simp),
+    ShiftedHom.comp_assoc _ _ _ _ (zero_add _) (by simp),
     ShiftedHom.map_mk₀, ShiftedHom.mk₀_comp_mk₀, ShiftedHom.mk₀_comp_mk₀]
-  congr 2
+  congr 3
+  rw [Category.assoc, ← NatTrans.naturality, ← Category.assoc, ← Category.assoc]
+  congr 1
   simpa only [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
     Functor.map_comp] using DerivedCategory.Q.congr_map φ.ι'_comp.symm
 
