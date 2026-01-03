@@ -97,9 +97,87 @@ theorem cons_in_cycleBypass_support {u v : V} (p : G.Walk u v) (h : G.Adj v u) :
     u ∈ (cycleBypass (cons h p)).support := by
   cases p <;> simp [cycleBypass]
 
+theorem in_dropUntil_of_subset {u v a b : V} (p : G.Walk u v) (ha : a ∈ p.support)
+    (hb : b ∈ p.support) (h : (p.dropUntil a ha).support ⊆ (p.dropUntil b hb).support) :
+    a ∈ (p.dropUntil b hb).support := by
+  apply h
+  exact start_mem_support (p.dropUntil a ha)
+
+theorem bypass_eq_nil {u : V} (p : G.Walk u u) :
+    p.bypass = Walk.nil :=
+  (isPath_iff_eq_nil p.bypass).mp <| bypass_isPath p
+
+theorem dropUntil_penultimate {u v w : V} (p : G.Walk u v) (h : w ∈ p.support) (hn : w ≠ v) :
+    (p.dropUntil w h).penultimate = p.penultimate := by
+  induction p with
+  | nil => simp [hn] at h
+  | @cons u _ _ ha p ih =>
+    rw [support_cons, List.mem_cons] at h
+    by_cases! hw : u = w
+    · subst hw
+      simp [dropUntil]
+    · cases p with
+      | nil => simp [hn, hw.symm] at h
+      | cons => simp only [dropUntil, hw, penultimate_cons_cons]; tauto
+
+/-- false in general
+to make it work, we must assume that `v` is not in `p.support.dorpLast`, in which case im not sure
+the statement is still useful.
+counterexample: `u - v - a - b - v`
+-/
+theorem bypass_penultimate_eq {u v : V} (p : G.Walk u v) (hn : u ≠ v) :
+    p.bypass.penultimate = p.penultimate := by
+  induction p with
+  | nil => rfl
+  | @cons u v w h p ih =>
+    by_cases! hv : v = w
+    · subst hv
+
+      sorry
+    cases p with
+    | nil => simp [bypass, h.ne]
+    | @cons u₁ v₁ w₁ ha p =>
+      rw [bypass]
+      split_ifs with hs
+      · by_cases! hv : v = w
+        · subst hv
+          simp [bypass_eq_nil, hn] at hs
+        rwa [penultimate_cons_cons, ← ih hv, dropUntil_penultimate]
+      · by_cases! hv : v = w
+        · subst hv
+          simp only [bypass_eq_nil, penultimate_cons_nil, penultimate_cons_cons]
+
+          sorry
+        rw [penultimate_cons_cons, ← ih hv, bypass]
+        split
+        · exact penultimate_cons_of_not_nil _ _ (not_nil_of_ne hv)
+        · rw [penultimate_cons_cons]
+
+/--
+Also false in general for the same reason as above
+-/
 theorem concat_in_bypass_support {u v w : V} (p : G.Walk u v) (h : G.Adj v w) (hn : u ≠ w) :
     v ∈ (p.concat h).bypass.support := by
-  sorry
+  induction p with
+  | nil => exact start_mem_support (nil.concat h).bypass
+  | cons ha p ih =>
+    specialize ih h
+    rename_i ut t wt
+    by_cases ht : t ≠ w
+    · rw [concat_cons, bypass]
+      split_ifs with hs
+      · specialize ih ht
+        apply in_dropUntil_of_subset _ ih
+        sorry
+      · simpa using Or.inr <| ih ht
+    simp only [ne_eq, Decidable.not_not] at ht
+    simp only [concat_cons]
+    subst ht
+    have : (p.concat h).bypass = Walk.nil:= by
+      exact bypass_eq_nil (p.concat h)
+    rw [bypass, this]
+    simp [hn]
+    sorry
 
 theorem concat_in_cycleBypass_support {u v : V} (p : G.Walk u v) (h : G.Adj v u) :
     v ∈ (cycleBypass (p.concat h)).support := by
