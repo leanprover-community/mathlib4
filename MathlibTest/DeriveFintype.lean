@@ -124,6 +124,10 @@ structure MyStruct (p q : Nat) (h : p + q < 10) : Type where
   Q : Fin q
   deriving Fintype
 
+inductive MyInductive (p q : Nat) : p + q < 10 →  Type where
+  | mk (P : Fin p) (Q : Fin q) : MyInductive p q _
+  deriving Fintype
+
 -- Check implicits work
 inductive I {α : Type _}
   | a | b {x : α}
