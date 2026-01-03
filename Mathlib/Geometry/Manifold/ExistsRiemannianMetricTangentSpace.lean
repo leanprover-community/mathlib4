@@ -218,11 +218,39 @@ lemma g_nonneg' (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
       exact h2
     · simp
 
-lemma g_pos' (i p : B) (hp : p ∈ (extChartAt IB i).source)
-            (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) (hv : v ≠ 0) :
-  0 < ((((g_bilin_2 i p)).toFun v)).toFun v := by
+lemma g_pos' (i b : B) (hp : b ∈ (extChartAt IB i).source)
+            (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) (hv : v ≠ 0) :
+  0 < ((((g_bilin_2 i b)).toFun v)).toFun v := by
   unfold g_bilin_2
-  sorry
+  simp
+  split_ifs with hh1
+  · let χ := (trivializationAt EB (TangentSpace IB) i)
+    have h1 : ((innerSL ℝ).comp (Trivialization.continuousLinearMapAt ℝ χ b)).flip.comp
+                               (Trivialization.continuousLinearMapAt ℝ χ b) v v =
+             innerSL ℝ ((Trivialization.continuousLinearMapAt ℝ χ b) v)
+                       ((Trivialization.continuousLinearMapAt ℝ χ b) v) := rfl
+    have h2 : innerSL ℝ ((Trivialization.continuousLinearMapAt ℝ χ b) v)
+                       ((Trivialization.continuousLinearMapAt ℝ χ b) v) ≠ 0 ↔
+                       ((Trivialization.continuousLinearMapAt ℝ χ b) v) ≠ 0 := by
+        exact inner_self_ne_zero
+
+    have h3 : ((Trivialization.continuousLinearMapAt ℝ χ b) v ≠ 0 ↔ v ≠ 0) := by
+      have : ((Trivialization.continuousLinearEquivAt ℝ χ b hh1) v) =
+             ((Trivialization.continuousLinearMapAt ℝ χ b) v) :=
+              congrArg (fun f => f v) (Trivialization.coe_continuousLinearEquivAt_eq χ hh1)
+      rw [<-this]
+      exact AddEquivClass.map_ne_zero_iff
+
+    have h4 : ((Trivialization.continuousLinearMapAt ℝ χ b) v) ≠ 0 := h3.mpr hv
+    have h5 : innerSL ℝ ((Trivialization.continuousLinearMapAt ℝ χ b) v)
+                       ((Trivialization.continuousLinearMapAt ℝ χ b) v) ≠ 0 := h2.mpr h4
+    have h6 : 0 ≤ innerSL ℝ ((Trivialization.continuousLinearMapAt ℝ χ b) v)
+                       ((Trivialization.continuousLinearMapAt ℝ χ b) v) := by
+      exact @inner_self_nonneg ℝ _ _ _ _ _
+    exact Std.lt_of_le_of_ne h6 (id (Ne.symm h5))
+  · exfalso
+    apply hh1
+    exact Set.mem_of_mem_inter_left hp
 
 noncomputable def mynorm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
