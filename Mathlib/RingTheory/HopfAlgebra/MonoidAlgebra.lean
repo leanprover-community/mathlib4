@@ -38,12 +38,11 @@ variable {G : Type*} [Group G]
 variable (R A G) in
 @[to_additive (dont_translate := R) (relevant_arg := G)]
 instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
-  antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
+  antipode := Finsupp.lsum R (fun g ↦ lsingle g⁻¹ ∘ₗ antipode R) ∘ₗ (coeffLinearEquiv _).toLinearMap
 
 @[to_additive (attr := simp)]
-lemma antipode_single (g : G) (a : A) :
-    antipode R (single g a) = single g⁻¹ (antipode R a) := by
-  simp [MonoidAlgebra, antipode]
+lemma antipode_single (g : G) (a : A) : antipode R (single g a) = single g⁻¹ (antipode R a) := by
+  simp [antipode]
 
 open Coalgebra in
 @[to_additive (dont_translate := R A) (relevant_arg := G)]

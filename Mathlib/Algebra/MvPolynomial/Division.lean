@@ -67,8 +67,8 @@ theorem divMonomial_zero (x : MvPolynomial σ R) : x /ᵐᵒⁿᵒᵐⁱᵃˡ 0 
   x.divOf_zero
 
 theorem add_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
-    (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s :=
-  map_add (N := _ →₀ _) _ _ _
+    (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s := by
+  simp [divMonomial, MvPolynomial, AddMonoidAlgebra.add_divOf]
 
 theorem divMonomial_add (a b : σ →₀ ℕ) (x : MvPolynomial σ R) :
     x /ᵐᵒⁿᵒᵐⁱᵃˡ (a + b) = x /ᵐᵒⁿᵒᵐⁱᵃˡ a /ᵐᵒⁿᵒᵐⁱᵃˡ b :=
@@ -97,15 +97,12 @@ local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 @[simp]
 theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : ¬s ≤ s') :
     coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = coeff s' x :=
-  x.modOf_apply_of_not_exists_add s s'
-    (by
-      rintro ⟨d, rfl⟩
-      exact h le_self_add)
+  x.coeff_modOf_of_not_exists_add s s' <| by rintro ⟨d, rfl⟩; exact h le_self_add
 
 @[simp]
 theorem coeff_modMonomial_of_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : s ≤ s') :
     coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = 0 :=
-  x.modOf_apply_of_exists_add _ _ <| exists_add_of_le h
+  x.coeff_modOf_of_exists_add _ _ <| exists_add_of_le h
 
 @[simp]
 theorem monomial_mul_modMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) :
