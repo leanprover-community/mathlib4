@@ -151,7 +151,7 @@ theorem perm_of_nodup_nodup_toFinset_eq (hl : Nodup l) (hl' : Nodup l')
 
 @[simp]
 theorem toFinset_reverse {l : List α} : toFinset l.reverse = l.toFinset :=
-  toFinset_eq_of_perm _ _ (reverse_perm l)
+  toFinset_eq_of_perm _ _ (reverse_perm_self l)
 
 end List
 

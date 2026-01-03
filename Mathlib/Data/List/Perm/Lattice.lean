@@ -76,10 +76,10 @@ theorem Perm.drop_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup
     have h₁ : xs.drop n = (xs.reverse.take n').reverse := by
       rw [take_reverse, h₀, reverse_reverse]
     rw [h₁]
-    apply (reverse_perm _).trans
+    apply (reverse_perm_self _).trans
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'
-    apply (reverse_perm _).trans; assumption
+    apply (reverse_perm_self _).trans; assumption
   · grind [drop_eq_nil_of_le]
 
 theorem Perm.dropSlice_inter {xs ys : List α} (n m : ℕ) (h : xs ~ ys)

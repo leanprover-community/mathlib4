@@ -33,6 +33,9 @@ variable {α β γ δ ε ζ : Type*}
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
+/-- `l.reverse` is a permutation of `l`. -/
+alias reverse_perm_self := reverse_perm
+
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
