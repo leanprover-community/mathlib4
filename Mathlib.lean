@@ -2887,6 +2887,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.NatTrans
+public import Mathlib.CategoryTheory.NatTransCartesian
 public import Mathlib.CategoryTheory.Noetherian
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
