@@ -399,6 +399,27 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
     simp at Hprop
     simp [Digraph.emptyDigraph, LE.le]
 
+  compl H := by
+    obtain ⟨H, Hprop⟩ := H
+    constructor
+    case val => exact {
+      verts := H.verts
+      -- The complement is defined w.r.t H.verts and G.Adj
+      Adj v w := G.Adj v w ∧ ¬ H.Adj v w ∧ v ∈ H.verts ∧ w ∈ H.verts
+      edge_verts := by
+        intro v w ⟨hGAdj, hHAdj⟩
+        tauto
+    }
+    case property =>
+      simp at Hprop
+      simp_all [LE.le]
+
+  
+
+
+
+
+
 
 
 
