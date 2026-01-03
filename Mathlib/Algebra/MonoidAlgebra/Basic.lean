@@ -25,7 +25,7 @@ open Finset
 
 open Finsupp hiding single mapDomain
 
-variable {R S T A B C M N : Type*}
+variable {R S T A B C M N O : Type*}
 
 /-! ### Multiplicative monoids -/
 
