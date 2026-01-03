@@ -963,7 +963,7 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
 end Curry
 
 section
-variable [AddZeroClass M] [DecidableEq α]
+variable [DecidableEq α] [AddZeroClass M]
 
 /-- The additive monoid isomorphism between `α × β →₀ M` and `α →₀ β →₀ M` given by
 currying/uncurrying. -/
