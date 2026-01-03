@@ -144,6 +144,10 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   rwa [this]
 
 @[simp]
+theorem toIocMod_arg (z : ℂ) : toIocMod Real.two_pi_pos (-π) z.arg = z.arg := by
+  simpa [toIocMod_eq_self, two_mul] using z.arg_mem_Ioc
+
+@[simp]
 theorem range_arg : Set.range arg = Set.Ioc (-π) π :=
   (Set.range_subset_iff.2 arg_mem_Ioc).antisymm fun _ hx => ⟨_, arg_cos_add_sin_mul_I hx⟩
 
@@ -531,6 +535,9 @@ lemma mem_slitPlane_iff_arg {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ π ∧ z �
 
 lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :=
   (mem_slitPlane_iff_arg.mp hz).1
+
+theorem exp_mem_slitPlane {z : ℂ} : exp z ∈ slitPlane ↔ toIocMod Real.two_pi_pos (-π) z.im ≠ π := by
+  simp [mem_slitPlane_iff_arg, arg_exp]
 
 end slitPlane
 
