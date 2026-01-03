@@ -48,7 +48,7 @@ lemma _root_.AddMonoidAlgebra.tensorEquiv.invFun_tmul (a : A) (m : M) (b : B) :
     AddMonoidAlgebra.tensorEquiv.invFun (single m (a ⊗ₜ[R] b)) = a ⊗ₜ single m b := by
   simp [AddMonoidAlgebra.tensorEquiv.invFun]
 
-@[to_additive existing (dont_translate := R A B)]
+@[to_additive existing (dont_translate := R A B) (attr := simp)]
 lemma tensorEquiv.invFun_tmul (a : A) (m : M) (b : B) :
     tensorEquiv.invFun (single m (a ⊗ₜ[R] b)) = a ⊗ₜ single m b := by
   simp [tensorEquiv.invFun]
@@ -67,12 +67,12 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
       tensorEquiv.invFun ?_ ?_
   · apply AlgHom.toLinearMap_injective
     ext
-    simp [tensorEquiv.invFun_tmul]
+    simp
   · ext : 1
     · ext
     apply AlgHom.toLinearMap_injective
     ext
-    simp [tensorEquiv.invFun_tmul]
+    simp
 
 @[to_additive (dont_translate := A B) (attr := simp)]
 lemma tensorEquiv_tmul (a : A) (p : B[M]) :
@@ -81,8 +81,7 @@ lemma tensorEquiv_tmul (a : A) (p : B[M]) :
 
 @[to_additive (dont_translate := R A B) (attr := simp)]
 lemma tensorEquiv_symm_single (m : M) (a : A) (b : B) :
-    (tensorEquiv R A B).symm (single m (a ⊗ₜ b)) = a ⊗ₜ single m b := by
-  simp [(tensorEquiv R A B (M := M)).symm_apply_eq, Algebra.smul_def]
+    (tensorEquiv R A B).symm (single m (a ⊗ₜ b)) = a ⊗ₜ single m b := tensorEquiv.invFun_tmul ..
 
 variable (R A) in
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/
