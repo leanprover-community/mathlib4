@@ -4357,6 +4357,7 @@ public import Mathlib.GroupTheory.GroupExtension.Defs
 public import Mathlib.GroupTheory.HNNExtension
 public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.MonoidLocalization.Archimedean
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.GroupTheory.MonoidLocalization.Cardinality
@@ -6087,6 +6088,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.LocalRing.Subring
+public import Mathlib.RingTheory.Localization.Additive
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AsSubring
 public import Mathlib.RingTheory.Localization.AtPrime
@@ -6112,6 +6114,7 @@ public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.RingTheory.Localization.Pi
 public import Mathlib.RingTheory.Localization.Rat
+public import Mathlib.RingTheory.Localization.StrongRankCondition
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
