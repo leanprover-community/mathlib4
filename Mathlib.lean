@@ -698,6 +698,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.Convergence
+public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 public import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence

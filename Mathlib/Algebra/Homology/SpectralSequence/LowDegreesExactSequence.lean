@@ -167,7 +167,7 @@ noncomputable def toE₂ZeroOne [E.HasEdgeMonoAtFrom (0, 1) 2] :
 lemma πE₃ZeroOne_edgeMonoStep
     [E.HasEdgeMonoAtFrom (0, 1) 2]
     [E.HasEdgeMonoAtFrom (0, 1) 3] [E.HasEdgeEpiAtFrom (0, 1) 3] :
-    πE₃ZeroOne hE ≫ edgeMonoStep (0, 1) 2 3 rfl = toE₂ZeroOne hE := by
+    πE₃ZeroOne hE ≫ E.edgeMonoStep (0, 1) 2 3 rfl = toE₂ZeroOne hE := by
   simp [πE₃ZeroOne, toE₂ZeroOne]
 
 noncomputable def ιE₃TwoZero

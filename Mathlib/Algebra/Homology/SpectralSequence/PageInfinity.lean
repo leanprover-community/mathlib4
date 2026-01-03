@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralSequence.Basic
+public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
 
 /-!
 # The infinity page of a spectral sequence
@@ -769,10 +769,10 @@ lemma edgeMonoStep_naturality (pq : ι) (r r' : ℤ) [E.HasEdgeMonoAt pq r] [E'.
     (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     E.edgeMonoStep pq r r' hrr' ≫ (f.hom r).f pq =
       (f.hom r').f pq ≫ E'.edgeMonoStep pq r r' hrr' := by
-  rw [← cancel_epi (E.iso r r' pq hrr').hom, iso_hom_comp_edgeMonoStep_assoc _ _ _,
+  rw [← cancel_epi (E.iso r r' pq hrr').hom, iso_hom_comp_edgeMonoStep_assoc _ _ _ _,
     ← cancel_epi ((E.page r).isoHomologyπ _ pq rfl (by simp)).hom,
     HomologicalComplex.isoHomologyπ_hom, HomologicalComplex.isoHomologyπ_hom_inv_id_assoc,
-    ← Hom.comm_assoc f r r' pq hrr', iso_hom_comp_edgeMonoStep _ _ _,
+    ← Hom.comm_assoc f r r' pq hrr', iso_hom_comp_edgeMonoStep _ _ _ _,
     HomologicalComplex.homologyπ_naturality_assoc,
     HomologicalComplex.isoHomologyπ_hom_inv_id_assoc, HomologicalComplex.cyclesMap_i]
 
