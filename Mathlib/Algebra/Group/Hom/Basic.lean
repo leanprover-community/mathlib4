@@ -364,7 +364,7 @@ alias _root_.AddMonoidHom.add := AddMonoidHom.instAdd
 alias mul := MonoidHom.instMul
 
 @[to_additive]
-instance instFunLikeMul [Mul M] [CommSemigroup N] : FunLikeMul (M →* N) M N where
+instance instFunLikeMul : FunLikeMul (M →* N) M N where
   mul_apply _ _ _ := rfl
 
 --@[to_additive (attr := simp)]
