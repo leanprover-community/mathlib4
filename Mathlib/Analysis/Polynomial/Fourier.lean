@@ -19,7 +19,7 @@ circle of the norm square of the polynomial.
 
 ## Main results
 
-- `Polynomial.fourierCoeffOn_cicleMap`: An explicit calculation that teh `n`th Fourier coefficient
+- `Polynomial.fourierCoeffOn_cicleMap`: An explicit calculation that the `n`th Fourier coefficient
   of a polynomial equals its `n`th coefficient.
 - `Polynomial.sum_sq_norm_coeff_eq_circleAverage`: Parseval's identity that the sum
   of the squares of the norms of the coefficients of the polynomial is equal to the average over the
