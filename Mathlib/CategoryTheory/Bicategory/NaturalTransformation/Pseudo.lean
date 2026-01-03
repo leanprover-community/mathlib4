@@ -208,6 +208,11 @@ lemma naturality_id_inv (α : F ⟶ G) (a : B) :
   simp [naturality_id_iso]
 
 @[to_app (attr := reassoc)]
+lemma map₂_whiskerRight_app (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
+    F.map₂ η ▷ α.app b = (α.naturality f).hom ≫ α.app a ◁ G.map₂ η ≫ (α.naturality g).inv := by
+  simp [← naturality_naturality_assoc]
+
+@[to_app (attr := reassoc)]
 lemma naturality_naturality_hom (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
     (α.naturality g).hom =
      (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
