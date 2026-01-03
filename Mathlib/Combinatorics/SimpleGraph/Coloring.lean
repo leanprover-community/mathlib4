@@ -129,6 +129,26 @@ instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | C v = c })
 
+instance [Nonempty V] [Nontrivial α] [Nonempty <| G.Coloring α] : Nontrivial <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  have ⟨c, hc⟩ := nontrivial_iff_exists_ne (C v) |>.mp inferInstance
+  refine ⟨(Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C, C, fun h ↦ hc ?_⟩
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [Iso.completeGraph] at this
+  grind
+
+instance [Nonempty V] [Infinite α] [Nonempty <| G.Coloring α] : Infinite <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  let f c := (Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C
+  refine Infinite.of_injective f fun a b h ↦ ?_
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [f, Iso.completeGraph] at this
+  grind
+
 variable (G)
 
 /-- Whether a graph can be colored by at most `n` colors. -/
