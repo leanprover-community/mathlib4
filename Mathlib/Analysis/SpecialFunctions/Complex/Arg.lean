@@ -444,11 +444,7 @@ theorem arg_neg_coe_angle {x : ℂ} (hx : x ≠ 0) : (arg (-x) : Real.Angle) = a
 
 theorem arg_mul_cos_add_sin_mul_I_eq_toIocMod {r : ℝ} (hr : 0 < r) (θ : ℝ) :
     arg (r * (cos θ + sin θ * I)) = toIocMod Real.two_pi_pos (-π) θ := by
-  have hi : toIocMod Real.two_pi_pos (-π) θ ∈ Set.Ioc (-π) π := by
-    convert toIocMod_mem_Ioc _ _ θ
-    ring
-  convert arg_mul_cos_add_sin_mul_I hr hi using 3
-  simp [toIocMod, cos_sub_int_mul_two_pi, sin_sub_int_mul_two_pi]
+  rw [arg_real_mul _ hr, ← exp_mul_I, arg_exp_mul_I]
 
 theorem arg_cos_add_sin_mul_I_eq_toIocMod (θ : ℝ) :
     arg (cos θ + sin θ * I) = toIocMod Real.two_pi_pos (-π) θ := by
@@ -467,9 +463,7 @@ theorem arg_cos_add_sin_mul_I_sub (θ : ℝ) :
 theorem arg_mul_cos_add_sin_mul_I_coe_angle {r : ℝ} (hr : 0 < r) (θ : Real.Angle) :
     (arg (r * (Real.Angle.cos θ + Real.Angle.sin θ * I)) : Real.Angle) = θ := by
   induction θ using Real.Angle.induction_on with | _ θ
-  rw [Real.Angle.cos_coe, Real.Angle.sin_coe, Real.Angle.angle_eq_iff_two_pi_dvd_sub]
-  use ⌊(π - θ) / (2 * π)⌋
-  exact mod_cast arg_mul_cos_add_sin_mul_I_sub hr θ
+  simp [arg_mul_cos_add_sin_mul_I_eq_toIocMod hr]
 
 theorem arg_cos_add_sin_mul_I_coe_angle (θ : Real.Angle) :
     (arg (Real.Angle.cos θ + Real.Angle.sin θ * I) : Real.Angle) = θ := by
