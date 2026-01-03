@@ -430,7 +430,7 @@ variable {α} [DecidableEq α]
 def freeLift (f : α → A) :
     free k G α ⟶ A where
   hom := ModuleCat.ofHom <| linearCombination k (fun x => A.ρ x.2 (f x.1)) ∘ₗ
-    (finsuppProdLEquiv k).symm.toLinearMap
+    (curryLinearEquiv k).symm.toLinearMap
   comm _ := by
     ext; simp [ModuleCat.endRingEquiv]
 
@@ -499,7 +499,7 @@ variable (k G) in
 def leftRegularTensorTrivialIsoFree :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
   Action.mkIso (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
-    finsuppProdLEquiv k).toModuleIso fun _ =>
+    curryLinearEquiv k).toModuleIso fun _ =>
       ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => lhom_ext fun _ _ => by
         ext
         simp [Action_ρ_eq_ρ, tensorObj_carrier, ModuleCat.endRingEquiv]
