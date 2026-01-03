@@ -18,23 +18,33 @@ Basic results on valuations over `Fq`-algebras. -/
 
 namespace Valuation
 
-variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
+
+variable {A : Type*} [Ring A] (v : Valuation A Γ₀)
+
+section IsOfFinOrder
+
+@[grind =>]
+lemma eq_one_of_isOfFinOrder (a : A) (h : IsOfFinOrder a) : v a = 1 := by
+  rw [isOfFinOrder_iff_pow_eq_one] at h
+  obtain ⟨n, h0, ha⟩ := h
+  have hpow : (v a) ^ n = 1 := by simp_all [← map_pow]
+  grind [pow_eq_one_iff, → IsPrimePow.two_le, FiniteField.isPrimePow_card]
+
+end IsOfFinOrder
 
 namespace FiniteField
 
-variable {Fq A : Type*} [Field Fq] [Fintype Fq] [Ring A] [Algebra Fq A] (v : Valuation A Γ₀)
+variable {Fq : Type*} [Field Fq] [Finite Fq] [Algebra Fq A]
 
 @[grind =>]
-lemma algebraMap_eq_one (a : Fq) (ha : a ≠ 0) : v (algebraMap Fq A a) = 1 := by
-  have hpow : (v (algebraMap Fq A a)) ^ (Fintype.card Fq - 1) = 1 := by
-    simp [← map_pow, FiniteField.pow_card_sub_one_eq_one a ha]
-  grind [pow_eq_one_iff, → IsPrimePow.two_le, FiniteField.isPrimePow_card]
+lemma algebraMap_eq_one (a : Fq) (ha : a ≠ 0) : v (algebraMap Fq A a) = 1 :=
+  eq_one_of_isOfFinOrder _ _ (MonoidHom.isOfFinOrder _ (isOfFinOrder_iff_isUnit.mpr (Ne.isUnit ha)))
 
-lemma algebraMap_le_one (v : Valuation A Γ₀) (a : Fq) : v (algebraMap Fq A a) ≤ 1 := by
+lemma algebraMap_le_one (a : Fq) : v (algebraMap Fq A a) ≤ 1 := by
   by_cases a = 0 <;> grind [zero_le']
 
-instance (priority := low) : v.IsTrivialOn Fq where
-  eq_one a ha := FiniteField.algebraMap_eq_one v a ha
+instance (priority := low) : v.IsTrivialOn Fq where eq_one a ha := algebraMap_eq_one v a ha
 
 end FiniteField
 

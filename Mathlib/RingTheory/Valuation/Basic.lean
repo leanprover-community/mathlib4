@@ -543,7 +543,7 @@ end IsNontrivial
 
 section IsTrivialOn
 
-variable [LinearOrderedCommGroupWithZero Γ₀]
+variable [LinearOrderedCommMonoidWithZero Γ₀]
 
 /-- A valuation on an `A`-algebra `B` is trivial on constants if the nonzero elements of the
   base ring `A` are mapped to `1`.
