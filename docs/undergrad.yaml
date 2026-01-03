@@ -393,7 +393,7 @@ Single Variable Complex Analysis:
     maximum principle: 'Complex.eventually_eq_of_isLocalMax_norm'
     isolated singularities: ''
     Laurent series: ''
-    meromorphic functions: ''
+    meromorphic functions: 'Meromorphic'
     residue theorem: ''
     sequences and series of holomorphic functions: ''
     holomorphic stability under uniform convergence: 'TendstoLocallyUniformlyOn.differentiableOn'
