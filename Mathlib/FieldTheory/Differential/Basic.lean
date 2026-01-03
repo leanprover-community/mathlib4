@@ -76,7 +76,6 @@ lemma logDeriv_prod (ι : Type*) (s : Finset ι) (f : ι → R) (h : ∀ x ∈ s
 
 lemma logDeriv_prod_of_eq_zero (ι : Type*) (s : Finset ι) (f : ι → R) (h : ∀ x ∈ s, f x = 0) :
     logDeriv (∏ x ∈ s, f x) = ∑ x ∈ s, logDeriv (f x) := by
-  unfold logDeriv
   simp_all
 
 lemma logDeriv_algebraMap {F K : Type*} [Field F] [Field K] [Differential F] [Differential K]
