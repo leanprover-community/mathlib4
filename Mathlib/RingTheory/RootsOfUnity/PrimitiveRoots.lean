@@ -716,10 +716,11 @@ def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
 
 /-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
     `a`-th power given that `n` and `a` are coprime. -/
+@[simps! apply_coe]
 def primitiveRootsPowEquivOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
     primitiveRoots n R ≃ primitiveRoots n R :=
-  have h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
-  have h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]
+  haveI h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
+  haveI h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]
   primitiveRootsPowEquiv h3
 
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
