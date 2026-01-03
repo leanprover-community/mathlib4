@@ -201,9 +201,6 @@ theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := b
   rw [v.intValuation_if_neg (nonZeroDivisors.coe_ne_zero x)]
   exact WithZero.zero_lt_coe _
 
-@[deprecated (since := "2025-05-11")]
-alias intValuation_zero_le := intValuation_zero_lt
-
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
   by_cases hx : x = 0
@@ -307,11 +304,6 @@ open scoped algebraMap in
 /-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
 theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := by
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
-
-open scoped algebraMap in
-@[deprecated valuation_of_algebraMap (since := "2025-05-11")]
-lemma valuation_eq_intValuationDef (r : R) : v.valuation K r = v.intValuationDef r :=
-  Valuation.extendToLocalization_apply_map_apply ..
 
 open scoped algebraMap in
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
@@ -452,9 +444,6 @@ theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
 
 section AlgebraInstances
 
