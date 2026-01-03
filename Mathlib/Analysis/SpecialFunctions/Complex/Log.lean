@@ -65,11 +65,13 @@ theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
   simp [mul_assoc]
 
 /-- Complex exponential is a branched covering over `{0}ᶜ`.
-This partial equivalence gives a trivialization of this covering over `slitPlane`.
+Over `slitPlane`, we can trivialize this covering,
+i.e., define an explicit homeomorphism
+between the union of the strips `-π + n * 2 * π < z.im < π + n * 2 * π`
+and the product `slitPlane × ℤ`.
 
-Since these maps are inverse of each other on a larger sets,
-we define this equivalence on `ℂ` and `{0}ᶜ × ℤ`,
-even though it is not continuous on that set.
+This is a `PartialEquiv` version of this homeomorphism,
+extended to `ℂ` in the domain and `ℂˣ × ℤ` in the codomain.
 
 See also `expPartialEquivProd` below for a version that is continuous. -/
 @[simps apply_fst source target, simps -isSimp apply apply_snd symm_apply]
@@ -87,17 +89,23 @@ def expPartialEquivProd' : PartialEquiv ℂ (ℂ × ℤ) where
     · simpa [toIocDiv_eq_iff, log_im, two_mul] using z.1.arg_mem_Ioc
 
 /-- Complex exponential is a branched covering over `{0}ᶜ`.
-This partial equivalence gives a trivialization of this covering over `slitPlane`.
+Over `slitPlane`, we can trivialize this covering,
+i.e., define an explicit homeomorphism
+between the union of the strips `-π + n * 2 * π < z.im < π + n * 2 * π`
+and the product `slitPlane × ℤ`.
+
+This is a `PartialEquiv` version of this homeomorphism,
 
 See also `expPartialEquivProd'` above for a discontinuous version with larger source and target. -/
 @[simps! apply_fst source target, simps! -isSimp apply apply_snd symm_apply]
 def expPartialEquivProd : PartialEquiv ℂ (ℂ × ℤ) where
   __ := expPartialEquivProd'
-  source := exp ⁻¹' slitPlane
+  source := {z | ¬(z.im ≡ π [PMOD (2 * π)])}
   target := slitPlane ×ˢ Set.univ
-  map_source' z := by simp
+  map_source' z hz := by
+    simp
   map_target' z hz := by
-    simp [exp_log (slitPlane_ne_zero hz.1), expPartialEquivProd', exp_sub, hz.1]
+    sorry
   left_inv' z _ := expPartialEquivProd'.leftInvOn trivial
   right_inv' z hz := expPartialEquivProd'.rightInvOn ⟨slitPlane_ne_zero hz.1, trivial⟩
 

@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
@@ -14,12 +15,8 @@ import Mathlib.Algebra.Group.Pointwise.Set.Card
 # Cardinality of Hahn series
 
 We define `HahnSeries.cardSupp` as the cardinality of the support of a Hahn series, and find bounds
-for the cardinalities of different operations.
-
-## Todo
-
-- Build the subgroups, subrings, etc. of Hahn series with support less than a given infinite
-  cardinal.
+for the cardinalities of different operations. We also build the subgroups, subrings, etc. of Hahn
+series bounded by a given infinite cardinal.
 -/
 
 @[expose] public section
@@ -146,4 +143,74 @@ theorem cardSupp_div_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x y
   (cardSupp_mul_le ..).trans <| mul_le_mul_right (cardSupp_inv_le y) _
 
 end LinearOrder
+
+/-! ### Substructures -/
+
+variable (κ : Cardinal)
+
+section AddMonoid
+variable [PartialOrder Γ] [AddMonoid R] [hκ : Fact (ℵ₀ ≤ κ)]
+
+variable (Γ R) in
+/-- The `κ`-bounded submonoid of Hahn series with less than `κ` terms. -/
+@[simps!]
+def cardSuppLTAddSubmonoid : AddSubmonoid R⟦Γ⟧ where
+  carrier := {x | x.cardSupp < κ}
+  zero_mem' := by simpa using aleph0_pos.trans_le hκ.out
+  add_mem' hx hy := (cardSupp_add_le ..).trans_lt <| add_lt_of_lt hκ.out hx hy
+
+@[simp]
+theorem mem_cardSuppLTAddSubmonoid {x : R⟦Γ⟧} : x ∈ cardSuppLTAddSubmonoid Γ R κ ↔ x.cardSupp < κ :=
+  .rfl
+
+end AddMonoid
+
+section AddGroup
+variable [PartialOrder Γ] [AddGroup R] [hκ : Fact (ℵ₀ ≤ κ)]
+
+variable (Γ R) in
+/-- The `κ`-bounded subgroup of Hahn series with less than `κ` terms. -/
+@[simps!]
+def cardSuppLTAddSubgroup : AddSubgroup R⟦Γ⟧ where
+  neg_mem' := by simp
+  __ := cardSuppLTAddSubmonoid Γ R κ
+
+@[simp]
+theorem mem_cardSuppLTAddSubgroup {x : R⟦Γ⟧} : x ∈ cardSuppLTAddSubgroup Γ R κ ↔ x.cardSupp < κ :=
+  .rfl
+
+end AddGroup
+
+section Subring
+variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Ring R]
+  [hκ : Fact (ℵ₀ ≤ κ)]
+
+variable (Γ R) in
+/-- The `κ`-bounded subring of Hahn series with less than `κ` terms. -/
+def cardSuppLTSubring : Subring R⟦Γ⟧ where
+  one_mem' := cardSupp_one_le.trans_lt <| one_lt_aleph0.trans_le hκ.out
+  mul_mem' hx hy := (cardSupp_mul_le ..).trans_lt <| mul_lt_of_lt hκ.out hx hy
+  __ := cardSuppLTAddSubgroup Γ R κ
+
+@[simp]
+theorem mem_cardSuppLTSubring {x : R⟦Γ⟧} : x ∈ cardSuppLTSubring Γ R κ ↔ x.cardSupp < κ :=
+  .rfl
+
+end Subring
+
+section Subfield
+variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] [hκ : Fact (ℵ₀ < κ)]
+
+variable (Γ R) in
+/-- The `κ`-bounded subfield of Hahn series with less than `κ` terms. -/
+@[simps!]
+def cardSuppLTSubfield : Subfield R⟦Γ⟧ where
+  inv_mem' _ _ := (cardSupp_inv_le _).trans_lt <| by simpa [hκ.out]
+  __ := have : Fact (ℵ₀ ≤ κ) := ⟨hκ.out.le⟩; cardSuppLTSubring Γ R κ
+
+@[simp]
+theorem mem_cardSuppLTSubfield {x : R⟦Γ⟧} : x ∈ cardSuppLTSubfield Γ R κ ↔ x.cardSupp < κ :=
+  .rfl
+
+end Subfield
 end HahnSeries
