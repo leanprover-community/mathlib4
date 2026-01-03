@@ -220,6 +220,11 @@ lemma lift_snd (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ snd = k :=
   PullbackCone.IsLimit.lift_snd hP.isLimit h k w
 
+lemma exists_lift (hP : IsPullback fst snd f g)
+    {W : C} (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g) :
+    ∃ (l : W ⟶ P), l ≫ fst = h ∧ l ≫ snd = k :=
+  ⟨hP.lift h k w, by simp, by simp⟩
+
 lemma hom_ext (hP : IsPullback fst snd f g) {W : C} {k l : W ⟶ P}
     (h₀ : k ≫ fst = l ≫ fst) (h₁ : k ≫ snd = l ≫ snd) : k = l :=
   PullbackCone.IsLimit.hom_ext hP.isLimit h₀ h₁
@@ -462,6 +467,11 @@ lemma inl_desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
 lemma inr_desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
     (w : f ≫ h = g ≫ k) : inr ≫ hP.desc h k w = k :=
   PushoutCocone.IsColimit.inr_desc hP.isColimit h k w
+
+lemma exists_desc (hP : IsPushout f g inl inr)
+    {W : C} (h : X ⟶ W) (k : Y ⟶ W) (w : f ≫ h = g ≫ k) :
+    ∃ (d : P ⟶ W), inl ≫ d = h ∧ inr ≫ d = k :=
+  ⟨hP.desc h k w, by simp, by simp⟩
 
 lemma hom_ext (hP : IsPushout f g inl inr) {W : C} {k l : P ⟶ W}
     (h₀ : inl ≫ k = inl ≫ l) (h₁ : inr ≫ k = inr ≫ l) : k = l :=
