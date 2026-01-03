@@ -133,6 +133,12 @@ lemma MultipliableUniformlyOn.mono {t : Set β}
     (h : MultipliableUniformlyOn f t) (hst : s ⊆ t) : MultipliableUniformlyOn f s :=
   (h.exists.choose_spec.mono hst).multipliableUniformlyOn
 
+@[to_additive]
+lemma MultipliableUniformlyOn.congr {t : Set β} {f f' : ι → β → α}
+    (h : ∀ (i : ι), Set.EqOn (f i) (f' i) t) (h2 : MultipliableUniformlyOn f t) :
+    MultipliableUniformlyOn f' t :=
+  (h2.hasProdUniformlyOn.congr (.of_forall <| eqOn_fun_finsetProd h)).multipliableUniformlyOn
+
 end UniformlyOn
 
 section LocallyUniformlyOn
@@ -157,6 +163,12 @@ uniformly on `s` to something. -/
 @[to_additive /-- `SummableLocallyUniformlyOn f s` means that `∑' i, f i b` converges locally
 uniformly on `s` to something. -/]
 def MultipliableLocallyUniformlyOn : Prop := ∃ g, HasProdLocallyUniformlyOn f g s
+
+@[to_additive]
+lemma MultipliableUniformlyOn.multipliableLocallyUniformlyOn (hf : MultipliableUniformlyOn f s) :
+    MultipliableLocallyUniformlyOn f s := by
+  obtain ⟨g, hg⟩ := hf.exists
+  exact ⟨g, hg.tendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
 
 @[to_additive]
 lemma hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn :
@@ -395,6 +407,12 @@ uniformly to something. -/]
 def MultipliableLocallyUniformly : Prop := ∃ g, HasProdLocallyUniformly f g
 
 @[to_additive]
+lemma MultipliableUniformly.multipliableLocallyUniformly (hf : MultipliableUniformly f) :
+    MultipliableLocallyUniformly f := by
+  obtain ⟨g, hg⟩ := hf.exists
+  exact ⟨g, hg.tendstoUniformly.tendstoLocallyUniformly⟩
+
+@[to_additive]
 lemma MultipliableLocallyUniformly.exists (h : MultipliableLocallyUniformly f) :
     ∃ g, HasProdLocallyUniformly f g := h
 
@@ -480,3 +498,13 @@ lemma HasProdLocallyUniformly.tendstoLocallyUniformly_finsetRange
     (h.hasProdLocallyUniformlyOn (s := .univ)).tendstoLocallyUniformlyOn_finsetRange
 
 end LocallyUniformly
+
+/-- An infinite product of continuous functions that converges locally uniformly on a set
+is continuous. -/
+@[to_additive /-- An infinite sum of continuous functions that converges locally uniformly on a set
+is continuous. -/]
+theorem MultipliableLocallyUniformlyOn.continuousOn_tsum {ι α β : Type*}
+    [UniformSpace α] [CommMonoid α] [ContinuousMul α] [TopologicalSpace β]
+    {f : ι → β → α} {s : Set β} (hf : ∀ i, ContinuousOn (f i) s)
+    (h : MultipliableLocallyUniformlyOn f s) : ContinuousOn (fun x => ∏' n, f n x) s :=
+  h.hasProdLocallyUniformlyOn.continuousOn <| .of_forall fun _ ↦ by fun_prop
