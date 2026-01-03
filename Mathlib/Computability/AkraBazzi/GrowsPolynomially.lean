@@ -189,13 +189,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
       rw [eventually_atTop]
       refine ⟨max n₀ 2, ?_⟩
       refine Real.induction_Ico_mul _ 2 (by norm_num) (by positivity) ?base ?step
-      case base =>
-        intro x ⟨hxlb, hxub⟩
-        have h₁ := calc n₀ ≤ 1 * max n₀ 2 := by simp
-                        _ ≤ 2 * max n₀ 2 := by gcongr; norm_num
-        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp, by linarith⟩
-        rw [h₂]
-        exact hn₀ (2 * max n₀ 2) h₁ x ⟨by simp [hxlb], le_of_lt hxub⟩
+      case base => grind
       case step =>
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by
