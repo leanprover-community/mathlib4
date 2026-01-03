@@ -292,6 +292,19 @@ theorem domCongr_refl : domCongr k A (.refl G) = .refl := by ext; simp
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
+@[to_additive (attr := simp)]
+theorem trans_domCongr_domCongr {I : Type*} [Monoid I] (e : G ≃* H) (f : H ≃* I) :
+    (domCongr k A e).trans (domCongr k A f) = domCongr k A (e.trans f) := by
+  ext
+  simp
+
+/-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
+@[simps]
+def domCongrAut : MulAut G →* A[G] ≃ₐ[k] A[G] where
+  toFun := MonoidAlgebra.domCongr k A
+  map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
+  map_mul' _ _ := by rw [MulAut.mul_def, AlgEquiv.aut_mul, trans_domCongr_domCongr]
+
 end lift
 
 section mapRange
@@ -311,7 +324,7 @@ variable (M) in
 @[to_additive
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
+def mapRangeAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
   __ := mapRangeRingHom M f
   commutes' := by simp
 
@@ -329,12 +342,23 @@ lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapRangeAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
+    mapRangeAlgHom G (AlgHom.id k R) = AlgHom.id k (MonoidAlgebra R G) := by
+  ext; simp
+
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
+    mapRangeAlgHom G (g.comp f) = (mapRangeAlgHom G g).comp (mapRangeAlgHom G f) := by
+  ext; simp
+
 variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
 @[to_additive (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
+def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
   __ := mapRangeAlgHom M e
   invFun := mapRangeAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
@@ -342,6 +366,14 @@ noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] whe
 
 @[simp] lemma symm_mapRangeAlgEquiv (e : A ≃ₐ[R] B) :
     (mapRangeAlgEquiv R M e).symm = mapRangeAlgEquiv R M e.symm := rfl
+
+variable (R M) in
+/-- `MonoidAlgebra.mapRangeAlgEquiv` as a `MonoidHom` from `A ≃ₐ[R] A`. -/
+@[simps]
+def mapRangeAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+  toFun f := mapRangeAlgEquiv _ _ f
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end mapRange
 
@@ -400,7 +432,7 @@ That's why it is not a global instance. -/
 
 Warning: This produces a diamond for `Algebra R[M] S[M][M]` and another one for `Algebra R[M] R[M]`.
 That's why it is not a global instance. -/]
-noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
+abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
@@ -521,10 +553,36 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : k[G]) :
     rw [lift_unique' F]
     simp [lift_apply]
 
+theorem lift_mapRangeRingHom_algebraMap [CommSemiring R] [CommSemiring S]
+    [Algebra R A] [Algebra S A] [Algebra R S] [IsScalarTower R S A]
+    (f : Multiplicative G →* A) (x : R[G]) :
+    lift _ _ _ f (mapRangeRingHom _ (algebraMap R S) x) = lift _ _ _ f x := by
+  induction x using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ ih => simp [ih]
+
 lemma algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
 
+variable (k A) in
+/-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
+@[simps]
+def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
+  toFun := AddMonoidAlgebra.domCongr k A
+  map_one' := by ext; simp [AddAut.one_def]
+  map_mul' _ _ := by ext; simp [AddAut.mul_def]
+
 end lift
+
+variable [CommSemiring R] [AddMonoid M] [AddMonoid H] [Semiring A] [Algebra R A]
+
+variable (R M) in
+/-- `AddMonoidAlgebra.mapRangeAlgEquiv` as an `AddMonoidHom` from `R ≃ₐ[k] R`. -/
+@[simps]
+def mapRangeAlgAut : (A ≃ₐ[R] A) →* A[M] ≃ₐ[R] A[M] where
+  toFun f := mapRangeAlgEquiv _ _ f
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp
 
 end AddMonoidAlgebra
 

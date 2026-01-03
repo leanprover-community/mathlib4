@@ -501,3 +501,22 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → O} {hf : f 0 0 = 0
 end ZipWith
 
 end Finsupp
+
+namespace Quot
+
+variable {r : α → α → Prop} [Zero β] (f : α →₀ β) (h : ∀ a b, r a b → f a = f b)
+
+/-- Lift a function `α →₀ β` to `Quot r →₀ β`. -/
+protected def liftFinsupp : Quot r →₀ β := by
+  classical
+  refine ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨?_, ?_⟩⟩
+  · rw [mem_image]; rintro ⟨b, hb, rfl⟩; exact Finsupp.mem_support_iff.mp hb
+  · induction a using Quot.ind
+    rw [lift_mk _ h]
+    exact fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
+
+@[simp]
+theorem liftFinsupp_mk (a : α) : Quot.liftFinsupp f h (Quot.mk r a) = f a :=
+  rfl
+
+end Quot

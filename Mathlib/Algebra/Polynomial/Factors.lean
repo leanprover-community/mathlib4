@@ -372,6 +372,15 @@ theorem Splits.map_roots {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
     (hf : f.Splits) (i : R →+* S) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
 
+omit [IsDomain R] in
+theorem Splits.aroots_map_algebraMap {A B : Type*}
+    [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
+    [IsSimpleRing A] [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B] {f : R[X]}
+    (hf : (f.map (algebraMap R A)).Splits) :
+    (f.aroots A).map (algebraMap A B) = f.aroots B := by
+  rw [← aroots_map B A]
+  simp_rw [hf.map_roots]
+
 theorem Splits.mem_range_of_isRoot {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
     (hf : f.Splits) (hf0 : f ≠ 0) {i : R →+* S} {x : S} (hx : (f.map i).IsRoot x) :
     x ∈ i.range := by

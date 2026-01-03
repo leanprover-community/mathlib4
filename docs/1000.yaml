@@ -1743,7 +1743,8 @@ Q1568811:
 
 Q1572474:
   title: Lindemann–Weierstrass theorem
-  # WIP PR: https://github.com/leanprover-community/mathlib4/pull/6718
+  decl   : linearIndependent_exp
+  authors: Yuyang Zhao
 
 Q1576235:
   title: Lochs's theorem
