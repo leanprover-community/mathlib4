@@ -83,12 +83,12 @@ instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
       · exact (aux l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
       · exact Or.inr (Or.inr (rel ab))
 
-instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
+instance asymm (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (Lex r) where
   asymm := aux where
     aux
-    | _, _, Lex.rel h₁, Lex.rel h₂ => asymm h₁ h₂
-    | _, _, Lex.rel h₁, Lex.cons _ => asymm h₁ h₁
-    | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
+    | _, _, Lex.rel h₁, Lex.rel h₂ => _root_.asymm h₁ h₂
+    | _, _, Lex.rel h₁, Lex.cons _ => _root_.asymm h₁ h₁
+    | _, _, Lex.cons _, Lex.rel h₂ => _root_.asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)

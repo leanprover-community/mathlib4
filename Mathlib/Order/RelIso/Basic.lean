@@ -77,7 +77,7 @@ variable {F : Type*} [FunLike F α β]
 protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
 
-protected theorem isAsymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAsymm α r
+protected theorem asymm [RelHomClass F r s] (f : F) : ∀ [Std.Asymm s], Std.Asymm r
   | ⟨H⟩ => ⟨fun _ _ h₁ h₂ => H _ _ (map_rel f h₁) (map_rel f h₂)⟩
 
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
@@ -301,7 +301,7 @@ protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
 protected theorem isSymm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
 
-protected theorem isAsymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
+protected theorem asymm (f : r ↪r s) [Std.Asymm s] : Std.Asymm r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
 
 protected theorem isAntisymm : ∀ (_ : r ↪r s) [IsAntisymm β s], IsAntisymm α r
@@ -434,9 +434,9 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
 
 /-- It suffices to prove `f` is monotone between strict relations
   to show it is a relation embedding. -/
-def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
+def ofMonotone [IsTrichotomous α r] [Std.Asymm s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
-  haveI := @IsAsymm.isIrrefl β s _
+  haveI := @Std.Asymm.isIrrefl β s _
   refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
   · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
     · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
@@ -447,7 +447,7 @@ def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b
     · exact asymm (H _ _ h') h
 
 @[simp]
-theorem ofMonotone_coe [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H) :
+theorem ofMonotone_coe [IsTrichotomous α r] [Std.Asymm s] (f : α → β) (H) :
     (@ofMonotone _ _ r s _ _ f H : α → β) = f :=
   rfl
 
