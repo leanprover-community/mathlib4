@@ -516,7 +516,7 @@ lemma isNontrivial_iff_exists_unit :
 
 lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
-    ∃ x : K, v x ≠ 0 ∧ v x < 1 := by
+    ∃ x ≠ 0, v x < 1 := by
   obtain ⟨x, hx⟩ := isNontrivial_iff_exists_unit.mp hv
   rw [ne_iff_lt_or_gt] at hx
   rcases hx with hx | hx
@@ -525,17 +525,20 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
   · use x⁻¹
     simp [-map_inv₀, ← one_lt_val_iff, hx]
 
-theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
-    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    (v : Valuation K Γ₀) : v.IsNontrivial ↔ ∃ x ≠ 0, v x < 1 :=
   ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
 
 lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
-    ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
+    ∃ x, 1 < v x := by
   obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
   use x⁻¹
-  simp [one_lt_inv₀ (zero_lt_iff.mpr h0), h0, h1]
+  simp [one_lt_inv₀ (zero_lt_iff.mpr (by simp [h0] : v x ≠ 0)), h1]
+
+lemma IsNontrivial_iff_exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} : v.IsNontrivial ↔ ∃ x, 1 < v x  :=
+  ⟨fun h ↦ by simpa using h.exists_one_lt (v := v), fun ⟨x, hx1⟩ ↦ ⟨x, by aesop⟩⟩
 
 end Field
 
