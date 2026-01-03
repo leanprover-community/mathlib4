@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 public import Mathlib.Geometry.Euclidean.Circumcenter
+public import Mathlib.Geometry.Euclidean.Similarity
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
 /-!
@@ -462,6 +463,56 @@ theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄
     (by decide : (0 : Fin 3) ≠ 1) (by decide : (0 : Fin 3) ≠ 2) (by decide)
     (show t₂.points 0 = t₁.points 0 from rfl) rfl h.symm]
   exact t₁.mem_circumsphere 1
+
+/-- If `p` lies strictly between `p₁` and `p₂` on one line and strictly between `p₃` and `p₄`
+on another line, and if `dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`,
+then the points `p₁`, `p₂`, `p₃`, and `p₄` are cospherical. -/
+theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ p : P}
+    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
+    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  suffices h_equiv : Cospherical ({p₁, p₂, p₄, p₃} : Set P) by
+    grind [Set.pair_comm p₄ p₃]
+  have h_angle_eq : ∠ p₁ p p₄ = ∠ p₃ p p₂ := by
+    grind [angle_comm, angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi hp₃p₄]
+  rw [EuclideanGeometry.angle_eq_pi_iff_sbtw] at hp₁p₂ hp₃p₄
+  have h_notcol_p₁p₂p₃ : ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
+    intro hcol
+    have hcol_p₁pp₂ := hp₁p₂.wbtw.collinear
+    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
+    suffices hcol_all : Collinear ℝ ({p₃, p, p₁, p₂} : Set P) by
+      grind [Collinear.subset _ hcol_all]
+    apply collinear_insert_insert_of_mem_affineSpan_pair
+    · grind [Collinear.mem_affineSpan_of_mem_of_ne, hp₁p₂.left_ne_right]
+    · grind [Collinear.mem_affineSpan_of_mem_of_ne, hp₁p₂.left_ne_right]
+  apply EuclideanGeometry.cospherical_of_two_zsmul_oangle_eq_of_not_collinear ?_ h_notcol_p₁p₂p₃
+  suffices ∡ p₁ p₂ p₃ = ∡ p₁ p₄ p₃ by grind
+  suffices ∠ p₁ p₂ p₃ = ∠ p₁ p₄ p₃ by
+    grind [oangle_eq_of_angle_eq_of_sign_eq, Sbtw.oangle_sign_eq_of_sbtw]
+  rw [angle_comm, ← angle_eq_angle_of_angle_eq_pi p₃ hp₁p₂.angle₃₂₁_eq_pi,
+    ← angle_eq_angle_of_angle_eq_pi p₁ hp₃p₄.angle₃₂₁_eq_pi]
+  suffices h_sim : Similar ![p₁, p, p₄] ![p₃, p, p₂] by
+    grind [angle_comm, h_sim.angle_eq_all.right.left]
+  have h_notcol_p₁pp₄ : ¬ Collinear ℝ ({p₁, p, p₄} : Set P) := by
+    intro hcol
+    have hcol_p₃pp₄ := hp₃p₄.wbtw.collinear
+    suffices hcol : Collinear ℝ ({p₁, p₃, p, p₄} : Set P) by
+      have : Collinear ℝ ({p₁, p, p₃} : Set P) := by grind [Collinear.subset _ hcol]
+      exact hn this
+    apply collinear_insert_insert_of_mem_affineSpan_pair
+    · grind [Collinear.mem_affineSpan_of_mem_of_ne, hp₃p₄.ne_right]
+    · grind [Collinear.mem_affineSpan_of_mem_of_ne, hp₃p₄.ne_right]
+  have h_notcol_p₃pp₂ : ¬ Collinear ℝ ({p₃, p, p₂} : Set P) := by
+    intro hcol
+    have hcol_p₁pp₂ := hp₁p₂.wbtw.collinear
+    suffices hcol : Collinear ℝ ({p₃, p₁, p, p₂} : Set P) by
+      have : Collinear ℝ ({p₁, p, p₃} : Set P) := by grind [Collinear.subset _ hcol]
+      exact hn this
+    apply collinear_insert_insert_of_mem_affineSpan_pair
+    · grind [Collinear.mem_affineSpan_of_mem_of_ne, hp₁p₂.ne_right]
+    · grind [Collinear.mem_affineSpan_of_mem_of_ne, hp₁p₂.ne_right]
+  apply similar_of_side_angle_side h_notcol_p₁pp₄ h_notcol_p₃pp₂ h_angle_eq ?_
+  grind [dist_comm]
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
 add to π", for oriented angles mod π, with a "concyclic" conclusion. -/
