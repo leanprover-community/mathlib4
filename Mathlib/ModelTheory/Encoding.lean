@@ -301,16 +301,32 @@ theorem card_le : #(Σ n, L.BoundedFormula α n) ≤
   rw [← add_assoc, add_comm, ← add_assoc, ← add_assoc, aleph0_add_aleph0, add_assoc,
     add_eq_max le_rfl, add_assoc, card, Symbols, mk_sum, lift_add, lift_lift, lift_lift]
 
+section Countable
+
 variable [Countable α] [Countable L.Symbols]
+
+instance : Countable ((constantsOn α).Symbols) := by
+  refine mk_le_aleph0_iff.mp ?_
+  change (constantsOn α).card ≤ ℵ₀
+  simpa only [card_constantsOn, mk_le_aleph0_iff]
+
+instance : Countable (L[[α]].Symbols) := by
+  simp only [←mk_le_aleph0_iff]
+  change L[[α]].card ≤ ℵ₀
+  simp only [withConstants, card_sum, add_le_aleph0, lift_le_aleph0]
+  simp only [card, mk_le_aleph0_iff]
+  constructor <;> infer_instance
 
 instance : Countable (Σ n, L.BoundedFormula α n) := by
   refine Cardinal.mk_le_aleph0_iff.mp (BoundedFormula.card_le.trans (max_le (le_refl _) ?_))
   simp only [card, add_le_aleph0, lift_le_aleph0, mk_le_aleph0_iff]
-  grind
+  constructor <;> infer_instance
 
 instance : Countable (L.Formula α) :=
   (Function.Injective.countable
     (f := fun φ => (⟨0, φ⟩ : Σ n, L.BoundedFormula α n))) <| sigma_mk_injective
+
+end Countable
 
 end BoundedFormula
 
