@@ -366,17 +366,17 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
       exact H₁_prop
 
   inf_le_left := by
-    intro H₁ H₂
+    intros
     simp_all only
     apply distribLattice.inf_le_left
 
   inf_le_right := by
-    intro H₁ H₂
+    intros
     simp_all only
     apply distribLattice.inf_le_right
 
   le_inf := by
-    intros H₁ H₂ H₃ H₁_le_H₂ H₂_le_H₃
+    intros
     simp_all only
     apply distribLattice.le_inf
     all_goals
@@ -414,7 +414,7 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
       simp at Hprop
       simp_all [LE.le]
 
-  
+
 
 
 
