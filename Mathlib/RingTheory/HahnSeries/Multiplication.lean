@@ -858,7 +858,20 @@ def C : R →+* R⟦Γ⟧ where
     by_cases h : a = 0 <;> simp [h]
   map_mul' x y := by rw [single_mul_single, zero_add]
 
-@[simp] theorem single_zero (r : R) : single 0 r = C r := rfl
+@[simp] theorem single_zero (r : R) : single 0 r = (C r : R⟦Γ⟧) := rfl
+
+open Classical in
+@[aesop simp]
+theorem coeff_C (r : R) : coeff (C r : R⟦Γ⟧) = Pi.single 0 r :=
+  rfl
+
+@[simp]
+theorem coeff_C_zero (r : R) : coeff (C r : R⟦Γ⟧) 0 = r := by
+  aesop
+
+@[simp]
+theorem smul_one (r : R) : r • (1 : R⟦Γ⟧) = C r := by
+  aesop
 
 theorem C_zero : C (0 : R) = (0 : R⟦Γ⟧) :=
   C.map_zero
@@ -869,7 +882,7 @@ theorem C_one : C (1 : R) = (1 : R⟦Γ⟧) :=
 theorem map_C [NonAssocSemiring S] (a : R) (f : R →+* S) :
     ((C a).map f : S⟦Γ⟧) = C (f a) := by
   ext g
-  by_cases h : g = 0 <;> simp [h, C]
+  by_cases h : g = 0 <;> simp [h, ← single_zero]
 
 theorem C_injective : Function.Injective (C : R → R⟦Γ⟧) := by
   intro r s rs
@@ -885,10 +898,6 @@ theorem order_C {r : R} : order (C r : R⟦Γ⟧) = 0 := by
   by_cases h : r = 0
   · rw [h, C_zero, order_zero]
   · exact order_single h
-
-@[simp]
-theorem smul_one (r : R) : r • (1 : R⟦Γ⟧) = C r := by
-  aesop
 
 end NonAssocSemiring
 
