@@ -597,4 +597,27 @@ theorem coe_ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomIn
 
 end AddCommMonoid
 
+section smul
+variable {S R V W : Type*} [Semiring R] [Semiring S]
+  [AddCommMonoid V] [Module R V] [Module S V]
+  [AddCommMonoid W] [Module R W] [Module S W]
+  [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
+
+@[simps apply] def units_smul (e : V ≃ₗ[R] W) (α : Sˣ) : V ≃ₗ[R] W where
+  __ := (α : S) • e.toLinearMap
+  toFun x := (α : S) • e x
+  invFun x := (↑α⁻¹ : S) • e.symm x
+  left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
+  right_inv _ := by simp [LinearMapClass.map_smul_of_tower e, smul_smul]
+
+theorem symm_units_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
+    (e.units_smul α).symm x = (↑α⁻¹ : S) • e.symm x := rfl
+
+@[simp] theorem symm_units_smul [SMulCommClass R S V] (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (e.units_smul α).symm = e.symm.units_smul α⁻¹ := rfl
+
+@[simp] theorem toLinearMap_units_smul (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (e.units_smul α).toLinearMap = (α : S) • e.toLinearMap := rfl
+
+end smul
 end LinearEquiv
