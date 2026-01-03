@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Extension.Cotangent.Basis
 public import Mathlib.RingTheory.Extension.Cotangent.Free
+public import Mathlib.RingTheory.Smooth.Locus
 
 /-!
 # Standard smooth of free Kaehler differentials
@@ -24,6 +25,8 @@ From this we deduce relations of standard smooth with other local properties.
   `{d sᵢ}ᵢ` for some `sᵢ : S`.
 - `Etale.iff_isStandardSmoothOfRelativeDimension_zero`: An `R`-algebra `S` is
   étale if and only if it is standard smooth of relative dimension zero.
+- `IsSmoothAt.exists_notMem_isStandardSmooth`: If `S` is `R`-smooth at a prime `p`,
+  it is standard smooth on a standard open containing `p`.
 
 ## Notes
 
@@ -31,10 +34,6 @@ For an example of an algebra with `H¹(S/R) = 0` and `Ω[S⁄R]` finite and free
 `S` not standard smooth over `R`, consider `R = ℝ` and `S = R[x,y]/(x² + y² - 1)` the
 coordinate ring of the circle. One can show that then `Ω[S⁄R]` is `S`-free on `ω = xdy - ydx`,
 but there are no `f g : S` such that `ω = g df`.
-
-## TODOs
-
-- Deduce from this that smooth is equivalent to locally standard smooth (TODO @chrisflav).
 -/
 
 @[expose] public section
@@ -96,5 +95,93 @@ theorem Etale.iff_isStandardSmoothOfRelativeDimension_zero :
   rw [IsStandardSmooth.iff_exists_basis_kaehlerDifferential]
   refine ⟨inferInstance, ⟨Empty, Module.Basis.empty Ω[S⁄R], ?_⟩⟩
   simp [Set.range_subset_iff]
+
+variable (R) in
+/-- If `S` is `R`-smooth at a prime `p`, then `S` is `R`-standard-smooth in a neighbourhood of `p`:
+there exists a basic open `p ∈ D(f)` of `Spec S` such that `S[1/f]` is standard smooth. -/
+theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : Ideal S) [p.IsPrime]
+    [IsSmoothAt R p] :
+    ∃ (f : S), f ∉ p ∧ IsStandardSmooth R (Localization.Away f) := by
+  -- By replacing `S` by some `S[1/g]` we may assume `S` is globally smooth.
+  wlog h : Smooth R S
+  · obtain ⟨g, hg, hsm⟩ := IsSmoothAt.exists_notMem_smooth R p
+    have _ : (Ideal.map (algebraMap S (Localization.Away g)) p).IsPrime := by
+      apply IsLocalization.isPrime_of_isPrime_disjoint (.powers g) _ _ ‹_›
+      rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)]
+    obtain ⟨g', hg', hstd⟩ := this (R := R) (p.map (algebraMap S (Localization.Away g))) hsm
+    have : IsLocalization.Away (g * (IsLocalization.Away.sec g g').1) (Localization.Away g') :=
+      .mul_of_associated _ _ g' <| IsLocalization.Away.associated_sec_fst g g'
+    let e : Localization.Away (g * (IsLocalization.Away.sec g g').1) ≃ₐ[S] Localization.Away g' :=
+      Localization.algEquiv _ _
+    refine ⟨g * (IsLocalization.Away.sec g g').1, ?_, .of_algEquiv (e.restrictScalars R).symm⟩
+    refine Ideal.IsPrime.mul_notMem ‹_› hg fun hmem ↦ hg' ?_
+    rw [Ideal.mem_iff_of_associated (IsLocalization.Away.associated_sec_fst g g').symm]
+    exact Ideal.mem_map_of_mem (algebraMap S (Localization.Away g)) hmem
+  -- `Ω[Localization.AtPrime p⁄R]` is projective, so free over the local ring `Sₚ` and
+  -- a basis extends to a neighbourhood `D(g)`.
+  let v (s : S) : (Ω[Localization.AtPrime p⁄R]) :=
+    map R R S (Localization.AtPrime p) (D R S s)
+  have hv : Submodule.span (Localization.AtPrime p) (Set.range v) = ⊤ :=
+    span_range_map_derivation_of_isLocalization R _ (Localization.AtPrime p) p.primeCompl
+  have : Algebra.EssFiniteType R (Localization.AtPrime p) :=
+    Algebra.EssFiniteType.comp R S (Localization.AtPrime p)
+  have : Module.FinitePresentation (Localization.AtPrime p) (Ω[Localization.AtPrime p⁄R]) :=
+    Module.finitePresentation_of_projective (Localization.AtPrime p) (Ω[Localization.AtPrime p⁄R])
+  obtain ⟨κ, a, b, hb⟩ := Module.exists_basis_of_span_of_flat v hv
+  let e : (κ →₀ S) →ₗ[S] (Ω[S ⁄R]) :=
+    Finsupp.basisSingleOne.constr S (fun i : κ ↦ D R S (a i))
+  let l₁ : (κ →₀ S) →ₗ[S] (κ →₀ Localization.AtPrime p) :=
+    Finsupp.mapRange.linearMap (Algebra.linearMap S (Localization.AtPrime p))
+  have : IsLocalizedModule p.primeCompl l₁ := inferInstance
+  let l₂ : (Ω[S⁄R]) →ₗ[S] (Ω[Localization.AtPrime p⁄R]) := map R R S (Localization.AtPrime p)
+  have : IsLocalizedModule p.primeCompl l₂ := inferInstance
+  let eₚ : (κ →₀ Localization.AtPrime p) →ₗ[Localization.AtPrime p] (Ω[Localization.AtPrime p⁄R]) :=
+    IsLocalizedModule.mapExtendScalars p.primeCompl l₁ l₂ (Localization.AtPrime p) e
+  have : eₚ = b.repr.symm := by
+    refine Finsupp.basisSingleOne.ext fun i ↦ ?_
+    have : Finsupp.basisSingleOne i = l₁ (Finsupp.basisSingleOne i) := by simp [l₁]
+    simp only [this, IsLocalizedModule.mapExtendScalars_apply_apply, IsLocalizedModule.map_apply,
+      Module.Basis.constr_basis, map_D, Module.Basis.coe_repr_symm, eₚ, l₂, e]
+    simp [l₁, hb, v]
+  have heₚ : Function.Bijective eₚ := by
+    rw [this]
+    exact b.repr.symm.bijective
+  have : Finite κ := Module.Finite.finite_basis b
+  obtain ⟨g, hg, h⟩ := Module.FinitePresentation.exists_notMem_bijective e p l₁ l₂
+    (Rₚ := Localization.AtPrime p) heₚ
+  let l₁ₜ : (κ →₀ S) →ₗ[S] (κ →₀ Localization.Away g) :=
+    Finsupp.mapRange.linearMap (Algebra.linearMap S _)
+  let l₂ₜ : (Ω[S⁄R]) →ₗ[S] (Ω[Localization.Away g⁄R]) :=
+    map R R S (Localization.Away g)
+  rw [← IsLocalizedModule.map_bijective_iff_localizedModuleMap_bijective l₁ₜ l₂ₜ] at h
+  let eₜ' : (κ →₀ Localization.Away g) →ₗ[Localization.Away g] (Ω[Localization.Away g⁄R]) :=
+    IsLocalizedModule.mapExtendScalars (Submonoid.powers g) l₁ₜ l₂ₜ (Localization.Away g) e
+  use g, hg
+  have : Subsingleton (H1Cotangent R (Localization.Away g)) :=
+    IsLocalizedModule.subsingleton_of_subsingleton (Submonoid.powers g)
+      (Algebra.H1Cotangent.map R R S (Localization.Away g))
+  have : FinitePresentation R (Localization.Away g) :=
+    .trans R S (Localization.Away g)
+  refine .of_basis_kaehlerDifferential (.ofRepr (LinearEquiv.ofBijective eₜ' h).symm) ?_
+  rintro - ⟨i, rfl⟩
+  use algebraMap S (Localization.Away g) (a i)
+  have : Finsupp.single i 1 = l₁ₜ (Finsupp.basisSingleOne i) := by simp [l₁ₜ]
+  simp [eₜ', this, -Finsupp.coe_basisSingleOne, l₂ₜ, e]
+
+variable (R S) in
+/-- If `S` is `R`-smooth, there exists a cover by basic opens `D(sᵢ)` such that
+`S[1/sᵢ]` is `R`-standard-smooth. -/
+theorem Smooth.exists_span_eq_top_isStandardSmooth [Smooth R S] :
+    ∃ (s : Set S), Ideal.span s = ⊤ ∧ ∀ x ∈ s, IsStandardSmooth R (Localization.Away x) := by
+  choose f hf₁ hf₂ using IsSmoothAt.exists_notMem_isStandardSmooth R (S := S)
+  refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, ?_⟩
+  · rw [← PrimeSpectrum.iSup_basicOpen_eq_top_iff, _root_.eq_top_iff]
+    rintro p -
+    rw [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.coe_mk, Set.mem_iUnion]
+    use p
+    apply hf₁
+  · simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    intro p
+    apply hf₂
 
 end Algebra

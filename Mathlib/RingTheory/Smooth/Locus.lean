@@ -46,6 +46,10 @@ See `Algebra.basicOpen_subset_smoothLocus_iff_smooth` and `Algebra.isOpen_smooth
 abbrev IsSmoothAt (p : Ideal A) [p.IsPrime] : Prop :=
   Algebra.FormallySmooth R (Localization.AtPrime p)
 
+instance (priority := 900) SmoothAt.of_formallySmooth
+    [FormallySmooth R A] (p : Ideal A) [p.IsPrime] : IsSmoothAt R p :=
+  .comp _ A _
+
 /-- `Algebra.smoothLocus R A` is the set of primes `p` of `A`
 such that `Aₚ` is formally smooth over `R`. -/
 def smoothLocus : Set (PrimeSpectrum A) := { p | IsSmoothAt R p.asIdeal }
@@ -104,6 +108,10 @@ lemma smoothLocus_eq_univ_iff [FinitePresentation R A] :
     ← basicOpen_subset_smoothLocus_iff]
   simp
 
+lemma smoothLocus_eq_univ [Smooth R A] : smoothLocus R A = Set.univ := by
+  rw [smoothLocus_eq_univ_iff]
+  infer_instance
+
 lemma smoothLocus_comap_of_isLocalization {Af : Type*} [CommRing Af] [Algebra A Af] [Algebra R Af]
     [IsScalarTower R A Af] (f : A) [IsLocalization.Away f Af] :
     PrimeSpectrum.comap (algebraMap A Af) ⁻¹' smoothLocus R A = smoothLocus R Af := by
@@ -140,5 +148,15 @@ lemma isOpen_smoothLocus [FinitePresentation R A] : IsOpen (smoothLocus R A) := 
   replace this := (PrimeSpectrum.localization_away_isOpenEmbedding Af f).isOpenMap _ this
   rw [Set.image_preimage_eq_inter_range, localization_away_comap_range Af f] at this
   exact ⟨_, Set.inter_subset_left, this, hx, hxf⟩
+
+variable (R) in
+open PrimeSpectrum in
+lemma IsSmoothAt.exists_notMem_smooth [FinitePresentation R A] (p : Ideal A) [p.IsPrime]
+    [IsSmoothAt R p] :
+    ∃ f ∉ p, Smooth R (Localization.Away f) := by
+  obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, hxf, hf⟩ :=
+    isBasis_basic_opens.exists_subset_of_mem_open ‹⟨p, ‹_›⟩ ∈ smoothLocus R A› isOpen_smoothLocus
+  refine ⟨f, by simpa using hxf, ⟨?_, inferInstance⟩⟩
+  rwa [basicOpen_subset_smoothLocus_iff] at hf
 
 end Algebra
