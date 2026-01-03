@@ -93,6 +93,24 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
   · simp
   simp [h, h.symm]
 
+@[deprecated (since := "2025-05-05")] alias mulVec_stdBasisMatrix := single_mulVec
+
+lemma diagonal_eq_sum_single {R : Type*} [AddCommMonoid R] {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (f : ι → R) : ∑ i : ι, single i i (f i) = Matrix.diagonal f := ext fun j k ↦ by
+  rw [sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
+
+lemma one_eq_sum_single {R : Type*} [AddCommMonoid R] [One R] {ι : Type*} [Fintype ι]
+    [DecidableEq ι] : ∑ i : ι, single i i 1 = (1 : Matrix ι ι R) :=
+  diagonal_eq_sum_single _
+
+lemma natCast_eq_sum_single (n : ℕ) {R : Type*} [AddCommMonoidWithOne R] {ι : Type*} [Fintype ι]
+    [DecidableEq ι] : ∑ i : ι, (single i i n : Matrix ι ι R) = n :=
+  diagonal_eq_sum_single _
+
+lemma intCast_eq_sum_single (n : ℤ) {R : Type*} [AddCommGroupWithOne R] {ι : Type*}
+    [Fintype ι] [DecidableEq ι] : ∑ i : ι, (single i i n : Matrix ι ι R) = n :=
+  diagonal_eq_sum_single _
+
 theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, single i j (x i j) := by
   ext i j
@@ -214,6 +232,8 @@ end ext
 section
 
 variable [Zero α] (i : m) (j : n) (c : α) (i' : m) (j' : n)
+
+lemma single_apply : single i j c i' j' = if i = i' ∧ j = j' then c else 0 := rfl
 
 @[simp]
 theorem single_apply_same : single i j c i j = c :=
