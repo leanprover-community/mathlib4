@@ -71,17 +71,8 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       have hf'surj := hfsurj.comp iso.surjective
       constructor
       · exact hf'surj
-      · have hfker_eq : f'.ker = f.ker.map iso.symm := by
-          ext x
-          simp only [Subgroup.mem_map, MonoidHom.mem_ker, f', MonoidHom.comp_apply]
-          constructor
-          · intro hx
-            use iso x, hx
-            simp only [MonoidHom.coe_coe, MulEquiv.symm_apply_apply]
-          · intro ⟨y, hy, hyx⟩
-            rw [← hyx]
-            simpa using hy
-        rw [hfker_eq]
+      · unfold f'
+        rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm']
         exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel
 
 variable (G : Type) [Group G] (g : G)
