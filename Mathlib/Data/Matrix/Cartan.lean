@@ -251,24 +251,33 @@ theorem G₂_det : G₂.det = 1 := by decide
 set_option maxRecDepth 600 in
 theorem F₄_det : F₄.det = 1 := by decide
 
-/-! ### Simply-laced property
+/-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
+def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
+  Pairwise fun i j ↦ A i j = 0 ∨ A i j = -1
 
-A Cartan matrix is simply-laced if it is symmetric, i.e., all off-diagonal entries
-are either 0 or -1. This is equivalent to the transpose being equal to itself.
--/
+@[simp] theorem _root_.Matrix.isSimplyLaced_transpose {ι : Type*} (A : Matrix ι ι ℤ) :
+    A.transpose.IsSimplyLaced ↔ A.IsSimplyLaced := by
+  rw [IsSimplyLaced, IsSimplyLaced, Pairwise, Pairwise, forall_comm]
+  aesop
 
-/-- A Cartan matrix is simply-laced if it equals its transpose. -/
-def IsSimplyLaced {n : ℕ} (A : Matrix (Fin n) (Fin n) ℤ) : Prop := A.transpose = A
+theorem isSimplyLaced_A (n : ℕ) : IsSimplyLaced (A n) := by
+  intro i j h
+  simp only [A, of_apply]
+  grind
 
-theorem E₆_isSimplyLaced : IsSimplyLaced E₆ := E₆_transpose
+theorem isSimplyLaced_D (n : ℕ) : IsSimplyLaced (D n) := by
+  intro i j h
+  simp only [D, of_apply]
+  grind
 
-theorem E₇_isSimplyLaced : IsSimplyLaced E₇ := E₇_transpose
+theorem isSimplyLaced_E₆ : IsSimplyLaced E₆ :=
+  fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₆] at h ⊢
 
-theorem E₈_isSimplyLaced : IsSimplyLaced E₈ := E₈_transpose
+theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ :=
+  fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₇] at h ⊢
 
-theorem A_isSimplyLaced (n : ℕ) : IsSimplyLaced (A n) := A_transpose n
-
-theorem D_isSimplyLaced (n : ℕ) : IsSimplyLaced (D n) := D_transpose n
+theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ :=
+  fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₈] at h ⊢
 
 /-! ### Determinant positivity -/
 
