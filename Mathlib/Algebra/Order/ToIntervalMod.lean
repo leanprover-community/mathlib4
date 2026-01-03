@@ -951,7 +951,8 @@ end LinearOrderedAddCommGroup
 ### `simp` confluence lemmas for rings
 
 In rings, we simplify `(m : ℤ) • x` to `↑m * x`, so we need to restate some lemmas
-using `↑m * x` instead of `m • x`.
+using `↑m * x` instead of `m • x`. In some lemmas, `m` is a variable,
+in other lemmas `m = toIcoDiv _ _ _` or `m = `toIocDiv _ _ _`.
 -/
 
 section Ring
