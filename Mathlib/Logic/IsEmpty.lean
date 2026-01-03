@@ -249,6 +249,5 @@ theorem Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective
   ⟨injective_of_subsingleton f, .of_isEmpty f⟩
 
 theorem Function.not_surjective_of_isEmpty_of_nonempty [IsEmpty α] [Nonempty β] (f : α → β) :
-    ¬Function.Surjective f := by
-  rw [surjective_iff_isEmpty]
-  exact not_isEmpty_of_nonempty β
+    ¬f.Surjective :=
+  (not_isEmpty_of_nonempty β ·.isEmpty)
