@@ -411,13 +411,9 @@ theorem mahlerMeasure'_le_sum_norm_coeff : p.mahlerMeasure' v ≤ p.sum fun _ a 
 theorem norm_coeff_le_choose_mul_mahlerMeasure' (n : ℕ) (p : A[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure' v := by
   have hinj : Function.Injective (v : A → ℂ) := (IsometryClass.isometry v).injective
-  calc ‖p.coeff n‖
-      = ‖v (p.coeff n)‖ := (norm_map v _).symm
-    _ = ‖(p.map (↑v : A →+* ℂ)).coeff n‖ := by simp
-    _ ≤ ((p.map (↑v : A →+* ℂ)).natDegree).choose n * (p.map v).mahlerMeasure :=
-      norm_coeff_le_choose_mul_mahlerMeasure n _
-    _ = (p.natDegree).choose n * p.mahlerMeasure' v := by
-      rw [natDegree_map_eq_of_injective hinj, mahlerMeasure']
+  have : ‖v (p.coeff n)‖ = ‖(p.map (↑v : A →+* ℂ)).coeff n‖ := by simp
+  grw [← norm_map v, this, norm_coeff_le_choose_mul_mahlerMeasure,
+    natDegree_map_eq_of_injective hinj, mahlerMeasure']
 
 end Polynomial
 
