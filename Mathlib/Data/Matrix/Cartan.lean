@@ -284,12 +284,6 @@ theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ :=
 theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ :=
   fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₈] at h ⊢
 
-/-! ### Determinant positivity -/
-
-theorem G₂_det_pos : 0 < G₂.det := by decide
-
-theorem F₄_det_pos : 0 < F₄.det := by decide
-
 end Properties
 
 end CartanMatrix
