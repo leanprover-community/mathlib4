@@ -71,7 +71,6 @@ open scoped Pointwise
 variable {G X ιₚ : Type*} [Group G] [MulAction G X]
 
 variable (G X) in
-
 /-- A `Prototile G X` describes a tile in `X`, copies of which under elements of `G` may be used in
 tilings. Two copies related by an element of `symmetries` are considered the same; two copies not so
 related, even if they have the same points, are considered distinct. -/
@@ -79,10 +78,8 @@ related, even if they have the same points, are considered distinct. -/
   /-- The points in the prototile. Use the coercion to `Set X`, or `∈` on the `Prototile`, rather
       than using `carrier` directly. -/
   carrier : Set X
-  /-- The group elements considered symmetries of the prototile. -/
+  /-- The group elements considered to be symmetries of the prototile. -/
   symmetries : Subgroup (MulAction.stabilizer G carrier)
-
-variable {G X}
 
 namespace Prototile
 
@@ -103,8 +100,7 @@ lemma coe_mk (c s) : (⟨c, s⟩ : Prototile G X) = c := rfl
 
 end Prototile
 
-variable (G X ιₚ)
-
+variable (G X ιₚ) in
 /-- A `Protoset G X ιₚ` is an indexed family of `Prototile G X`. This is a separate definition
 rather than just using plain functions to facilitate defining associated API that can be used with
 dot notation. -/
@@ -112,8 +108,6 @@ dot notation. -/
   /-- The tiles in the protoset. Use the coercion to a function rather than using `tiles`
       directly. -/
   tiles : ιₚ → Prototile G X
-
-variable {G X ιₚ}
 
 namespace Protoset
 
@@ -136,8 +130,9 @@ lemma coe_injective : Injective (Protoset.tiles : Protoset G X ιₚ → ιₚ �
 
 end Protoset
 
-variable (ps : Protoset G X ιₚ)
+variable {ps : Protoset G X ιₚ}
 
+variable (ps) in
 /-- A `PlacedTile ps` is an image of a tile in the protoset `p` under an element of the group `G`.
 This is represented using a quotient so that images under group elements differing only by a
 symmetry of the tile are equal. -/
@@ -146,8 +141,6 @@ symmetry of the tile are equal. -/
   index : ιₚ
   /-- The group elements under which this tile is an image. -/
   groupElts : G ⧸ ((ps index).symmetries.map <| Subgroup.subtype _)
-
-variable {ps}
 
 namespace PlacedTile
 
@@ -197,7 +190,7 @@ lemma ext_iff_of_preimage {pt₁ pt₂ : PlacedTile ps} :
 /-- Coercion from a `PlacedTile` to a set of points. Use the coercion rather than using `coeSet`
 directly. -/
 @[coe] def coeSet (pt : PlacedTile ps) : Set X :=
-  fun pt ↦ Quotient.liftOn' pt.groupElts (fun g ↦ g • (ps pt.index : Set X))
+  Quotient.liftOn' pt.groupElts (fun g ↦ g • (ps pt.index : Set X))
     fun a b r ↦ by
       rw [QuotientGroup.leftRel_eq] at r
       simp only
@@ -208,7 +201,7 @@ instance : CoeOut (PlacedTile ps) (Set X) where
   coe := coeSet
 
 instance : Membership X (PlacedTile ps) where
-  mem := fun p x ↦ x ∈ (p : Set X)
+  mem p x := x ∈ (p : Set X)
 
 @[simp] lemma mem_coe {x : X} {pt : PlacedTile ps} : x ∈ (pt : Set X) ↔ x ∈ pt := Iff.rfl
 
@@ -238,20 +231,12 @@ lemma coe_finite_iff {pt : PlacedTile ps} :
     ((⟨i, g⟩ : PlacedTile ps) : Set X).Finite ↔ (ps i : Set X).Finite :=
   coe_finite_iff
 
-instance : MulAction G (PlacedTile ps) where
-  smul := fun g pt ↦ Quotient.liftOn' pt.groupElts (fun h ↦ ⟨pt.index, g * h⟩)
+instance : SMul G (PlacedTile ps) where
+  smul g pt := Quotient.liftOn' pt.groupElts (fun h ↦ ⟨pt.index, g * h⟩)
     fun a b r ↦ by
       rw [QuotientGroup.leftRel_eq] at r
       refine PlacedTile.ext rfl ?_
       simpa [QuotientGroup.eq, ← mul_assoc] using r
-  one_smul pt := by
-    simp only [HSMul.hSMul]
-    induction pt using PlacedTile.induction_on
-    simp
-  mul_smul := fun x y pt ↦ by
-    simp only [HSMul.hSMul]
-    induction pt using PlacedTile.induction_on
-    simp [mul_assoc]
 
 @[simp] lemma smul_mk_mk (g h : G) (i : ιₚ) : g • (⟨i, ⟦h⟧⟩ : PlacedTile ps) = ⟨i, g * h⟩ := rfl
 
@@ -265,6 +250,15 @@ instance : MulAction G (PlacedTile ps) where
     (g • pt : PlacedTile ps) = g • (pt : Set X) := by
   induction pt using PlacedTile.induction_on
   simp [coeSet, mul_smul]
+
+instance : MulAction G (PlacedTile ps) where
+  __ : SMul G (PlacedTile ps) := inferInstance
+  one_smul pt := by
+    induction pt using PlacedTile.induction_on
+    simp
+  mul_smul x y pt := by
+    induction pt using PlacedTile.induction_on
+    simp [mul_assoc]
 
 @[simp] lemma smul_mem_smul_iff (g : G) {x : X} {pt : PlacedTile ps} : g • x ∈ g • pt ↔ x ∈ pt := by
   rw [← mem_coe, coe_smul, Set.smul_mem_smul_set_iff, mem_coe]
