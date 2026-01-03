@@ -4145,6 +4145,7 @@ public import Mathlib.FieldTheory.PerfectClosure
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.FieldTheory.PrimeField
 public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.FieldTheory.PurelyInseparable.AdjoinPthRoots
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.FieldTheory.PurelyInseparable.Exponent
 public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
