@@ -63,7 +63,6 @@ theorem top_ne_zero [Nontrivial R] : (⊤ : ArchimedeanClass R) ≠ 0 := by
 theorem zero_ne_top [Nontrivial R] : 0 ≠ (⊤ : ArchimedeanClass R) :=
   top_ne_zero.symm
 
-set_option backward.privateInPublic true in
 private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
   obtain ⟨m, hm⟩ := hx
@@ -73,12 +72,10 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x
     simp_rw [ArchimedeanOrder.val_of, abs_mul]
   ring
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-/-- Multipilication in `R` transfers to Addition in `ArchimedeanClass R`. -/
+/-- Multiplication in `R` transfers to addition in `ArchimedeanClass R`. -/
 instance : Add (ArchimedeanClass R) where
-  add := lift₂ (fun x y ↦ .mk <| x * y) fun _ _ _ _ hx hy ↦
-    (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
+  add := lift₂ (fun x y ↦ .mk <| x * y) fun _ _ _ _ hx hy ↦ by
+    exact (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
 
 @[simp] theorem mk_mul (x y : R) : mk (x * y) = mk x + mk y := rfl
 
@@ -181,9 +178,54 @@ theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   · exact Subsingleton.allEq ..
   · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
+theorem mk_intCast_nonneg (n : ℤ) : 0 ≤ mk (n : S) := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  · rw [mk_intCast hn]
+
 @[simp]
 theorem mk_natCast {n : ℕ} : n ≠ 0 → mk (n : S) = 0 :=
   mod_cast mk_intCast (n := n)
+
+@[simp]
+theorem mk_ofNat {n : ℕ} [n.AtLeastTwo] : mk (ofNat(n) : S) = 0 :=
+  mod_cast mk_intCast (n := n) (mod_cast NeZero.ne n)
+
+theorem mk_natCast_nonneg (n : ℕ) : 0 ≤ mk (n : S) :=
+  mod_cast mk_intCast_nonneg n
+
+theorem exists_nat_ge_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℕ, x ≤ n := by
+  obtain ⟨n, hn⟩ := hx
+  refine ⟨n, le_of_abs_le ?_⟩
+  simpa using hn
+
+theorem exists_nat_gt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℕ, x < n := by
+  obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg hx
+  refine ⟨n + 1, hn.trans_lt ?_⟩
+  simp
+
+theorem exists_int_ge_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, x ≤ n := by
+  obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg hx
+  exact ⟨n, mod_cast hn⟩
+
+theorem exists_int_gt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, x < n := by
+  obtain ⟨n, hn⟩ := exists_nat_gt_of_mk_nonneg hx
+  exact ⟨n, mod_cast hn⟩
+
+theorem exists_int_le_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, n ≤ x := by
+  obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg (mk_neg x ▸ hx)
+  use -n
+  simpa [neg_le]
+
+theorem exists_int_lt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, n < x := by
+  obtain ⟨n, hn⟩ := exists_nat_gt_of_mk_nonneg (mk_neg x ▸ hx)
+  use -n
+  simpa [neg_lt]
+
+theorem mk_nonneg_of_le_of_le_of_archimedean [Archimedean S] (f : S →+*o R) {x : R} {r s : S}
+    (hr : f r ≤ x) (hs : x ≤ f s) : 0 ≤ mk x := by
+  apply (min_le_mk_of_le_of_le hr hs).trans'
+  simp [mk_map_nonneg_of_archimedean]
 
 end IsOrderedRing
 
@@ -249,7 +291,6 @@ instance : SMul ℤ (ArchimedeanClass R) where
 
 @[simp] theorem mk_zpow (n : ℤ) (x : R) : mk (x ^ n) = n • mk x := rfl
 
-set_option backward.privateInPublic true in
 private theorem zsmul_succ' (n : ℕ) (x : ArchimedeanClass R) :
     (n.succ : ℤ) • x = (n : ℤ) • x + x := by
   induction x with | mk x
@@ -258,8 +299,6 @@ private theorem zsmul_succ' (n : ℕ) (x : ArchimedeanClass R) :
   · simp [zero_zpow _ n.cast_add_one_ne_zero]
   · rw [zpow_add_one₀ hx, mk_mul, mk_zpow]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) where
   neg_top := by simp [← mk_zero, ← mk_inv]
   add_neg_cancel_of_ne_top x h := by
@@ -267,14 +306,23 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
     simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (mk_eq_top_iff.not.1 h)]
   zsmul n x := n • x
   zsmul_zero' x := by induction x with | mk x => rw [← mk_zpow, zpow_zero, mk_one]
-  zsmul_succ' := zsmul_succ'
+  zsmul_succ' := by exact zsmul_succ'
   zsmul_neg' n x := by
     induction x with | mk x
     rw [← mk_zpow, zpow_negSucc, pow_succ, zsmul_succ', mk_inv, mk_mul, ← zpow_natCast, mk_zpow]
 
 @[simp]
+theorem mk_div (x y : R) : mk (x / y) = mk x - mk y := by
+  rw [div_eq_mul_inv, mk_mul, mk_inv, sub_eq_add_neg]
+
+@[simp]
 theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 := by
   simpa using mk_map_of_archimedean ⟨(Rat.castHom R).toAddMonoidHom, fun _ ↦ by simp⟩ h
+
+theorem mk_ratCast_nonneg (q : ℚ) : 0 ≤ mk (q : R) := by
+  obtain rfl | hn := eq_or_ne q 0
+  · simp
+  · rw [mk_ratCast hn]
 
 theorem mk_le_mk_iff_ratCast {x y : R} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
   simpa using mk_le_mk_iff_denselyOrdered (Rat.castHom _) Rat.cast_strictMono (x := x)

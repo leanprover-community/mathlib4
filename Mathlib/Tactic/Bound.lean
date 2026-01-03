@@ -240,7 +240,8 @@ between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
 by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
 contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.  Conversely, `gcongr` can prove
 inequalities for more types of relations, supports all `positivity` functionality, and is likely
-faster since it is more specialized (not built atop `aesop`).
+faster since it is more specialized (not built atop `aesop`). -/
+syntax "bound" (" [" term,* "]")? : tactic
 
 The variant `bound?` prints the proof it found as a Try this suggestion.
 -/

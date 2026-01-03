@@ -237,6 +237,28 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
       m ⊗ₜ[R] (Finsupp.single i 1) := by
   simp [finsuppScalarRight, finsuppRight_symm_apply_single]
 
+theorem finsuppScalarRight_smul (s : S) (t) :
+    finsuppScalarRight R M ι (s • t) = s • finsuppScalarRight R M ι t := by
+  induction t using TensorProduct.induction_on with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | tmul m x =>
+    simp only [smul_tmul', finsuppScalarRight_apply_tmul, Finsupp.smul_sum]
+    congr
+    ext i n j
+    simp [smul_comm n s m]
+
+variable (R S M ι) in
+/-- When `M` is also an `S`-module, `TensorProduct.finsuppScalarRight R M ι` is `S`-linear. -/
+noncomputable def finsuppScalarRight' :
+    M ⊗[R] (ι →₀ R) ≃ₗ[S] ι →₀ M where
+  toAddEquiv := finsuppScalarRight R M ι
+  map_smul' s x := finsuppScalarRight_smul s x
+
+theorem coe_finsuppScalarRight' :
+    ⇑(finsuppScalarRight' R M ι S) = finsuppScalarRight R M ι :=
+  rfl
+
 end TensorProduct
 
 end TensorProduct

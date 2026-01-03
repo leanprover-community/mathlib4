@@ -300,7 +300,7 @@ theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (t
 
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
 @[simps!]
-def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C  :=
+def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C :=
   (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivToOverUnit C |>.toAdjunction)
 
 /-- A natural isomorphism between the functors `toOver Y` and `toOver X ⋙ pullback f`

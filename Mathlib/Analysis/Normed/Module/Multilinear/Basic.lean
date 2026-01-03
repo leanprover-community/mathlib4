@@ -1081,8 +1081,7 @@ theorem norm_compContinuous_linearIsometryEquiv (g : ContinuousMultilinearMap �
   have : g = (g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i)).compContinuousLinearMap
       fun i => ((f i).symm : E₁ i →L[𝕜] E i) := by
     ext1 m
-    simp only [compContinuousLinearMap_apply, LinearIsometryEquiv.coe_coe'',
-      LinearIsometryEquiv.apply_symm_apply]
+    simp
   conv_lhs => rw [this]
   apply (g.compContinuousLinearMap fun i =>
     (f i : E i →L[𝕜] E₁ i)).norm_compContinuous_linearIsometry_le
