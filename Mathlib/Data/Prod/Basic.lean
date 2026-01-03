@@ -10,6 +10,8 @@ public import Mathlib.Logic.Function.Iterate
 public import Aesop
 public import Mathlib.Tactic.Inhabit
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Extra facts about `Prod`
 
