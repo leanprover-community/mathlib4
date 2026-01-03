@@ -2189,6 +2189,7 @@ public import Mathlib.Analysis.Subadditive
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
+public import Mathlib.CFT.Prestuff
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
@@ -6249,6 +6250,7 @@ public import Mathlib.RingTheory.PowerSeries.WellKnown
 public import Mathlib.RingTheory.Prime
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+public import Mathlib.RingTheory.QuasiFinite
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.ReesAlgebra
@@ -6411,6 +6413,7 @@ public import Mathlib.RingTheory.WittVector.WittPolynomial
 public import Mathlib.RingTheory.ZMod
 public import Mathlib.RingTheory.ZMod.Torsion
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
+public import Mathlib.RingTheory.ZariskiMain
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
