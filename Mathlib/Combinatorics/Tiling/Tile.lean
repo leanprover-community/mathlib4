@@ -54,11 +54,10 @@ be used with the theory here.
 
 ## References
 
-* Branko Grünbaum and G. C. Shephard, Tilings and Patterns, 1987
-* Chaim Goodman-Strauss, [Open Questions in
-  Tiling](https://strauss.hosted.uark.edu/papers/survey.pdf)
-* Rachel Greenfeld and Terence Tao, [A counterexample to the periodic tiling
-  conjecture](https://arxiv.org/abs/2211.15847)
+* [Branko Grünbaum and G. C. Shephard, *Tilings and Patterns*][GrunbaumShephard1987]
+* [Chaim Goodman-Strauss, *Open Questions in Tiling*][GoodmanStrauss2000]
+* [Rachel Greenfeld and Terence Tao, *A counterexample to the periodic tiling
+  conjecture*][GreenfeldTao2024]
 -/
 
 
