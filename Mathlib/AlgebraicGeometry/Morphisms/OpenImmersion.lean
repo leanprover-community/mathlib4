@@ -108,4 +108,9 @@ instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) :
 instance isOpenImmersion_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
 
+instance {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') [IsOpenImmersion f] [IsOpenImmersion g] :
+    IsOpenImmersion (coprod.map f g) :=
+  IsZariskiLocalAtTarget.coprodMap f g ‹_› ‹_›
+
 end AlgebraicGeometry
