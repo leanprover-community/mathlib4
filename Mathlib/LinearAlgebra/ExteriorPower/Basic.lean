@@ -50,7 +50,7 @@ open Function
 
 /-! The canonical alternating map from `Fin n → M` to `⋀[R]^n M`. -/
 
-/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
+/-- `exteriorPower.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
@@ -66,6 +66,14 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
     (s : {s : Finset I // Finset.card s = n}) : ⋀[R]^n M :=
   ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
+@[simp]
+lemma ιMulti_family_coe {I : Type*} [LinearOrder I] (v : I → M) :
+    ExteriorAlgebra.ιMulti_family R n v = (Submodule.subtype _) ∘ (ιMulti_family R n v) := by
+  ext s
+  unfold ιMulti_family
+  simp only [Submodule.coe_subtype, Finset.coe_orderIsoOfFin_apply, comp_apply, ιMulti_apply_coe]
+  rfl
+
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
     (s : {s : Finset I // Finset.card s = n}) :
     ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
@@ -77,6 +85,33 @@ lemma ιMulti_span_fixedDegree :
     Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = ⋀[R]^n M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
+lemma ιMulti_span_fixedDegree_of_span {s : Set M} (hs : Submodule.span R s = ⊤) :
+    Submodule.span R ((ExteriorAlgebra.ιMulti R n) '' {a : Fin n → M | Set.range a ⊆ s}) =
+    ⋀[R]^n M := by
+  apply le_antisymm
+  · rw [Submodule.span_le]
+    rintro x ⟨y, ⟨y_mem, rfl⟩⟩
+    apply ExteriorAlgebra.ιMulti_range R n
+    simp only [Set.mem_range, exists_apply_eq_apply]
+  · rw [ExteriorAlgebra.exteriorPower, LinearMap.range_eq_map, ← hs, Submodule.map_span,
+    Submodule.span_pow, Submodule.span_le]
+    rintro x hx
+    obtain ⟨f, rfl⟩ := Set.mem_pow.mp hx
+    rw [SetLike.mem_coe]
+    apply Submodule.mem_span_of_mem
+    use ExteriorAlgebra.ιInv ∘ Subtype.val ∘ f
+    refine ⟨?_, ?_⟩
+    · rw [Set.mem_setOf_eq, Set.range_comp, Set.image_subset_iff]
+      apply Set.Subset.trans ?_
+        (Set.image_subset_preimage_of_inverse (ExteriorAlgebra.ι_leftInverse (R := R) (M := M)) s)
+      rintro x ⟨i, rfl⟩
+      exact (f i).2
+    · rw [ExteriorAlgebra.ιMulti_apply]
+      apply congrArg (List.prod ∘ List.ofFn)
+      ext i
+      obtain ⟨m, -, hm⟩ := (Set.mem_image _ _ _).mp (f i).2
+      rw [Function.comp_apply, Function.comp_apply, ← hm, ExteriorAlgebra.ι_leftInverse]
+
 /-- The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`. -/
 lemma ιMulti_span :
     Submodule.span R (Set.range (ιMulti R n)) = (⊤ : Submodule R (⋀[R]^n M)) := by
@@ -85,6 +120,14 @@ lemma ιMulti_span :
   simp only [Submodule.coe_subtype, ιMulti_apply_coe, Set.image_univ, Submodule.map_top,
     Submodule.range_subtype]
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
+
+lemma ιMulti_span_of_span {s : Set M} (hs : Submodule.span R s = ⊤) :
+    Submodule.span R ((ιMulti R n) '' {a : Fin n → M | Set.range a ⊆ s}) = ⊤ := by
+  apply LinearMap.map_injective (Submodule.ker_subtype (⋀[R]^n M))
+  rw [LinearMap.map_span, Set.image_image]
+  simp only [Submodule.coe_subtype, ιMulti_apply_coe, Submodule.map_top,
+    Submodule.range_subtype]
+  exact ιMulti_span_fixedDegree_of_span R n M hs
 
 namespace presentation
 
@@ -261,6 +304,121 @@ theorem map_id :
 theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
+
+/-! Exactness properties of the exterior power functor. -/
+variable {K E F : Type*} [Field K]
+variable [AddCommGroup E] [Module K E] [AddCommGroup F] [Module K F]
+/-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/
+lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
+    Function.Injective (map n f) :=
+  let ⟨g, hgf⟩ := hf
+  Function.RightInverse.injective (g := map n g)
+    (fun _ ↦ by rw [← LinearMap.comp_apply, ← map_comp, hgf, map_id, LinearMap.id_coe, id_eq])
+
+/-- If the base ring is a field, then any injective linear map induces an injective map on
+exterior powers. -/
+lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :
+    Function.Injective (map n f) :=
+  map_injective (LinearMap.exists_leftInverse_of_injective f hf)
+
+/-- If a linear map is surjective, then the map it induces on exterior powers is surjective. -/
+lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
+    Function.Surjective (map n f) := by
+  rw [← LinearMap.range_eq_top]
+  conv_lhs => rw [LinearMap.range_eq_map]
+  rw [← ιMulti_span, ← ιMulti_span,
+    Submodule.map_span, ← Set.range_comp, ← LinearMap.coe_compAlternatingMap, map_comp_ιMulti,
+    AlternatingMap.coe_compLinearMap, Set.range_comp]
+  conv_rhs => rw [← Set.image_univ]
+  congr
+  rw [Set.range_eq_univ]
+  exact Surjective.comp_left hf
+
+section ιMulti_family
+
+variable (R)
+
+/-- If `f = v ∘ α` for some injective function `α`, then `ιMulti R n f` belongs to the span
+of the range of `ιMulti_family`. -/
+lemma mem_span_of_injective_aux {I : Type*} [LinearOrder I] {v : I → M} {f : Fin n → M}
+    {α : Fin n → I} (hα : f = v ∘ α) (α_inj : Function.Injective α) :
+    ExteriorAlgebra.ιMulti R n f ∈
+      Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) := by
+  suffices ∃ σ : Equiv.Perm (Fin n), (ExteriorAlgebra.ιMulti R n (f ∘ σ)) ∈
+      Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) by
+    obtain ⟨σ, hσ⟩ := this
+    rw [AlternatingMap.map_perm] at hσ
+    refine (Submodule.smul_mem_iff_of_isUnit _ (r := (σ.sign : R)) ?_).mp hσ
+    rw [isUnit_iff_exists_inv]
+    use (σ.sign : R)
+    norm_cast
+    simp only [Int.units_mul_self, Units.val_one, Int.cast_one]
+  have α_card : (Finset.image α Finset.univ).card = n :=
+    (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
+  use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans
+    ((Equiv.setCongr Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
+  apply Submodule.mem_span_of_mem
+  use ⟨(Finset.image α Finset.univ), α_card⟩
+  rw [hα, ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
+  congr
+  ext i
+  simp [Equiv.apply_ofInjective_symm]
+  rfl
+
+open Finset in
+/-- If a family of vectors spans `M`, then the family of its `n`-fold exterior products spans
+`⋀[R]^n M`. Here we work in the exterior algebra. -/
+lemma ιMulti_family_span_fixedDegree_of_span {I : Type*} [LinearOrder I] {v : I → M}
+    (hv : Submodule.span R (Set.range v) = ⊤) :
+    Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) = ⋀[R]^n M := by
+  apply le_antisymm
+  · rw [Submodule.span_le, Set.range_subset_iff]
+    intro
+    rw [SetLike.mem_coe, ιMulti_family_coe, Submodule.coe_subtype, Function.comp_apply]
+    exact Submodule.coe_mem _
+  · rw [← ιMulti_span_fixedDegree_of_span R n M hv, Submodule.span_le]
+    rintro u ⟨f, ⟨f_range, rfl⟩⟩
+    rw [Set.mem_setOf] at f_range
+    obtain ⟨α, hα⟩ := Set.range_subset_range_iff_exists_comp.mp f_range
+    by_cases α_inj : Function.Injective α
+    · exact mem_span_of_injective_aux R hα α_inj
+    · suffices ExteriorAlgebra.ιMulti R n f = 0 by
+        simp only [this, SetLike.mem_coe, zero_mem]
+      apply AlternatingMap.map_eq_zero_of_not_injective
+      rw [Function.not_injective_iff] at *
+      obtain ⟨i, j, αi_eq_αj, i_ne_j⟩ := α_inj
+      exact ⟨i, j, by simp [hα, αi_eq_αj], i_ne_j⟩
+
+/-- If a family of vectors spans `M`, then the family of its `n`-fold exterior products spans
+`⋀[R]^n M`. This is a variant of `exteriorPower.ιMulti_family_span_fixedDegree_of_span` where we
+work in the exterior power and not the exterior algebra. -/
+lemma ιMulti_family_span_of_span {I : Type*} [LinearOrder I]
+    {v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
+    Submodule.span R (Set.range (ιMulti_family R n v)) = ⊤ := by
+  apply LinearMap.map_injective (Submodule.ker_subtype (⋀[R]^n M))
+  rw [LinearMap.map_span, ← Set.image_univ, Set.image_image]
+  simp only [Submodule.coe_subtype, ιMulti_family_apply_coe, Set.image_univ, Submodule.map_top,
+    Submodule.range_subtype]
+  exact ιMulti_family_span_fixedDegree_of_span R hv
+
+/-- If `v` is a family of vectors of `M` indexed by a linearly ordered type, then the span of the
+range of `exteriorPower.ιMulti_family R n v`, i.e., of the family of `n`-fold exterior products
+of elements of `v`, is the image of the map of exterior powers induced by the inclusion of
+the span of `v` into `M`. -/
+lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
+    LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
+    Submodule.span R (Set.range (ιMulti_family R n v)) := by
+  have ⟨f, hf⟩ : ∃ f : I → Submodule.span R (Set.range v), Submodule.subtype _ ∘ f = v :=
+    ⟨fun i ↦ ⟨v i, Submodule.subset_span (Set.mem_range_self i)⟩, rfl⟩
+  have htop : Submodule.span R (Set.range f) = ⊤ := by
+    apply SetLike.coe_injective
+    apply Set.image_injective.mpr (Submodule.span R (Set.range v)).injective_subtype
+    rw [← Submodule.map_coe, ← Submodule.span_image, ← Set.range_comp, hf,
+      ← Submodule.map_coe, ← LinearMap.range_eq_map, Submodule.range_subtype]
+  rw [LinearMap.range_eq_map (M := ⋀[R]^n _), ← ιMulti_family_span_of_span _ htop,
+    Submodule.map_span, ← Set.range_comp, map_comp_ιMulti_family, hf]
+
+end ιMulti_family
 
 /-! Linear equivalences in degrees 0 and 1. -/
 
