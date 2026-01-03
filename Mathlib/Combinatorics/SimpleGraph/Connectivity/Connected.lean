@@ -667,13 +667,12 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 
 end ConnectedComponent
 
-set_option backward.proofsInPublic true in
-/-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
-homomorphism from `G` to `H` -/
+/-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
+homomorphism from `G` to `H`. -/
 @[simps]
 def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
     (C : (c : G.ConnectedComponent) → c.toSimpleGraph →g H) : G →g H where
-  toFun := fun x ↦ (C (G.connectedComponentMk _)) _
+  toFun := fun x ↦ (C (G.connectedComponentMk x)) ⟨x, ConnectedComponent.connectedComponentMk_mem⟩
   map_rel' := fun hab ↦ by
     have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
         ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
@@ -704,6 +703,12 @@ theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
 theorem Connected.set_univ_walk_nonempty (hconn : G.Connected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty :=
   hconn.preconnected.set_univ_walk_nonempty u v
+
+lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
+    (v : V) : ∃ u, G.Adj v u := by
+  have ⟨u, huv⟩ := exists_ne v
+  have ⟨w⟩ := h v u
+  exact ⟨_, w.adj_snd <| w.not_nil_of_ne huv.symm⟩
 
 /-! ### Bridge edges -/
 

@@ -220,6 +220,11 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
 
+theorem prod_one_add_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
+    ∏ i ∈ s, (1 + f i) = 1 + ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 + f j) := by
+  rw [prod_add_ordered]
+  simp
+
 /-- Summing `a ^ #t * b ^ (n - #t)` over all finite subsets `t` of a finset `s`
 gives `(a + b) ^ #s`. -/
 theorem sum_pow_mul_eq_add_pow (a b : R) (s : Finset ι) :
