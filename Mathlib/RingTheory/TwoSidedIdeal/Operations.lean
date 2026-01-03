@@ -154,6 +154,28 @@ lemma _root_.RingEquiv.mapTwoSidedIdeal_apply (e : R ≃+* S) (I : TwoSidedIdeal
 lemma _root_.RingEquiv.mapTwoSidedIdeal_symm (e : R ≃+* S) :
     e.mapTwoSidedIdeal.symm = e.symm.mapTwoSidedIdeal := rfl
 
+@[simp]
+lemma span_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {s : Set R} :
+    span s = ⊥ ↔ ∀ x ∈ s, x = 0 := eq_bot_iff.trans
+  ⟨fun H _ h => (mem_bot R).1 <| H <| subset_span h, fun H =>
+    span_le.2 fun x h => (mem_bot R).2 <| H x h⟩
+
+lemma span_singleton_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {x : R} :
+    span ({x} : Set R) = ⊥ ↔ x = 0 := by simp
+
+lemma map_bot {R S : Type*}
+    [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    {F : Type*} [FunLike F R S] [ZeroHomClass F R S] {f : F} :
+    (⊥ : TwoSidedIdeal R).map f = ⊥ := by
+  ext x
+  simp [map, coe_bot, Set.image_singleton, map_zero f, mem_bot, span_singleton_eq_bot.2]
+
+protected theorem mem_map_of_mem {R S : Type*}
+    [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    {F : Type*} [FunLike F R S] {f : F} {I : TwoSidedIdeal R}
+    {x : R} (hx : x ∈ I) : f x ∈ I.map f :=
+  TwoSidedIdeal.subset_span ⟨x, hx, rfl⟩
+
 end NonUnitalNonAssocRing
 
 section NonAssocRing
