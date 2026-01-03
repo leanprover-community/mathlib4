@@ -6,6 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Saturated subgroups
@@ -58,7 +59,8 @@ end Subgroup
 
 namespace AddSubgroup
 
-theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [IsAddTorsionFree A₂]
-    (f : A₁ →+ A₂) : f.ker.Saturated := by simp +contextual [Saturated, or_imp]
+theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [NoZeroSMulDivisors ℕ A₂]
+    (f : A₁ →+ A₂) : f.ker.Saturated := by
+  simp [Saturated]
 
 end AddSubgroup

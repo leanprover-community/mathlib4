@@ -22,6 +22,15 @@ assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 
 section NoZeroSMulDivisors
 
+section Nat
+
+theorem Nat.noZeroSMulDivisors
+    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
+    NoZeroSMulDivisors ℕ M where
+  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
+
+end Nat
+
 variable {R M : Type*}
 
 section AddCommGroup
@@ -49,12 +58,6 @@ include R in
 lemma IsAddTorsionFree.of_noZeroSMulDivisors : IsAddTorsionFree M where
   nsmul_right_injective n hn := by
     simp_rw [← Nat.cast_smul_eq_nsmul R]; apply smul_right_injective; simpa
-
-@[deprecated IsAddTorsionFree.of_noZeroSMulDivisors (since := "2025-10-19")]
-theorem Nat.noZeroSMulDivisors
-    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors ℕ M where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
 
 end Nat
 end AddCommGroup
