@@ -60,6 +60,47 @@ instance : BoundedOrder P.invtRootSubmodule where
 instance [Nontrivial M] : Nontrivial P.invtRootSubmodule where
   exists_pair_ne := ⟨⊥, ⊤, by rw [ne_eq, Subtype.ext_iff]; exact bot_ne_top⟩
 
+@[simp] lemma coe_bot : ((⊥ : P.invtRootSubmodule) : Submodule R M) = ⊥ := rfl
+
+@[simp] lemma coe_top : ((⊤ : P.invtRootSubmodule) : Submodule R M) = ⊤ := rfl
+
+open Module in
+lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    (q : P.invtRootSubmodule) :
+    q = ⊥ ↔ ∀ i, P.root i ∉ (q : Submodule K M) := by
+  have : IsReflexive K M := .of_isPerfPair P.toLinearMap
+  refine ⟨fun h ↦ by simp [h, P.ne_zero], fun h ↦ ?_⟩
+  rw [Subtype.mk_eq_bot_iff (by simp), Submodule.eq_bot_iff]
+  intro x hx
+  by_contra hx₀
+  obtain ⟨i, hi⟩ : ∃ i, P.coroot' i x ≠ 0 := by
+    contrapose! hx₀
+    suffices Dual.eval K M x = 0 from
+      ((Dual.eval K M).map_eq_zero_iff (bijective_dual_eval K M).injective).mp this
+    exact LinearMap.ext_on_range P.span_coroot'_eq_top hx₀
+  replace h : P.reflection i x ∉ (q : Submodule K M) := by
+    specialize h i
+    contrapose! h
+    rw [reflection_apply, LinearMap.flip_apply, Submodule.sub_mem_iff_right _ hx] at h
+    exact (Submodule.smul_mem_iff _ hi).mp h
+  have h' : P.reflection i x ∈ (q : Submodule K M) := P.mem_invtRootSubmodule_iff.mp q.property i hx
+  contradiction
+
+open Module in
+lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    (q : P.invtRootSubmodule) :
+    q = ⊤ ↔ ∀ i, P.root i ∈ (q : Submodule K M) := by
+  have : IsReflexive K M := .of_isPerfPair P.toLinearMap
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  rw [Subtype.mk_eq_top_iff (by simp), Submodule.eq_top_iff']
+  intro x
+  by_contra hx₀
+  have h' : x ∈ Submodule.span K (Set.range P.root) := by
+    simp [‹P.IsRootSystem›.span_root_eq_top, Submodule.mem_top]
+  exact hx₀ (Submodule.span_le.mpr (Set.range_subset_iff.mpr h) h')
+
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
