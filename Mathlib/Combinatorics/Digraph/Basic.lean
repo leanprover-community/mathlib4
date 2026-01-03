@@ -383,12 +383,24 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
       simp only [Subtype.coe_le_coe]
       assumption
   top := ⟨G, by apply distribLattice.le_refl⟩
+  le_top := by
+    intro H
+    cases H with | mk H Hprop
+    simp at Hprop
+    simp_all [Subtype.mk_le_mk]
 
-  bot := ⟨Digraph.emptyDigraph V, h⟩
-    where
-      h := by
+  bot := ⟨Digraph.emptyDigraph V, by
         simp [Digraph.emptyDigraph,
-          LE.le]
+          LE.le]⟩
+
+  bot_le := by
+    intro H
+    cases H with | mk H Hprop
+    simp at Hprop
+    simp [Digraph.emptyDigraph, LE.le]
+
+
+
 
 
 
