@@ -17,12 +17,10 @@ introduce some basic operations on this disc.
 
 @[expose] public section
 
-
 open Set Function Metric
+open scoped ComplexConjugate
 
 noncomputable section
-
-local notation "conj'" => starRingEnd ℂ
 
 namespace Complex
 
@@ -30,7 +28,7 @@ namespace Complex
 def UnitDisc : Type :=
   ball (0 : ℂ) 1 deriving TopologicalSpace
 
-@[inherit_doc] scoped[UnitDisc] notation "𝔻" => Complex.UnitDisc
+@[inherit_doc] scoped[Complex.UnitDisc] notation "𝔻" => Complex.UnitDisc
 open UnitDisc
 
 namespace UnitDisc
@@ -44,6 +42,7 @@ instance instIsCancelMulZero : IsCancelMulZero UnitDisc := by unfold UnitDisc; i
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
 instance instCoe : Coe UnitDisc ℂ := ⟨UnitDisc.coe⟩
 
+@[ext]
 theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
   Subtype.coe_injective
 
@@ -56,9 +55,13 @@ theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
 theorem norm_ne_one (z : 𝔻) : ‖(z : ℂ)‖ ≠ 1 :=
   z.norm_lt_one.ne
 
+theorem sq_norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ ^ 2 < 1 := by
+  rw [sq_lt_one_iff_abs_lt_one, abs_norm]
+  exact z.norm_lt_one
+
 theorem normSq_lt_one (z : 𝔻) : normSq z < 1 := by
-  convert (Real.sqrt_lt' one_pos).1 z.norm_lt_one
-  exact (one_pow 2).symm
+  rw [← Complex.norm_mul_self_eq_normSq, ← sq]
+  exact z.sq_norm_lt_one
 
 theorem coe_ne_one (z : 𝔻) : (z : ℂ) ≠ 1 :=
   ne_of_apply_ne (‖·‖) <| by simp [z.norm_ne_one]
@@ -73,10 +76,27 @@ theorem one_add_coe_ne_zero (z : 𝔻) : (1 + z : ℂ) ≠ 0 :=
 theorem coe_mul (z w : 𝔻) : ↑(z * w) = (z * w : ℂ) :=
   rfl
 
+@[simp, norm_cast]
+theorem coe_neg (z : 𝔻) : ↑(-z) = (-z : ℂ) := rfl
+
 /-- A constructor that assumes `‖z‖ < 1` instead of `dist z 0 < 1` and returns an element
 of `𝔻` instead of `↥Metric.ball (0 : ℂ) 1`. -/
 def mk (z : ℂ) (hz : ‖z‖ < 1) : 𝔻 :=
   ⟨z, mem_ball_zero_iff.2 hz⟩
+
+instance : CanLift ℂ 𝔻 (↑) (‖·‖ < 1) where
+  prf z hz := ⟨mk z hz, rfl⟩
+
+/-- A cases eliminator that makes `cases z` use `UnitDisc.mk` instead of `Subtype.mk`. -/
+@[elab_as_elim, cases_eliminator]
+protected def casesOn {motive : 𝔻 → Sort*} (mk : ∀ z hz, motive (.mk z hz)) (z : 𝔻) :
+    motive z :=
+  mk z z.norm_lt_one
+
+@[simp]
+theorem casesOn_mk {motive : 𝔻 → Sort*} (mk' : ∀ z hz, motive (.mk z hz)) {z : ℂ} (hz : ‖z‖ < 1) :
+    (mk z hz).casesOn mk' = mk' z hz :=
+  rfl
 
 @[simp]
 theorem coe_mk (z : ℂ) (hz : ‖z‖ < 1) : (mk z hz : ℂ) = z :=
@@ -85,6 +105,16 @@ theorem coe_mk (z : ℂ) (hz : ‖z‖ < 1) : (mk z hz : ℂ) = z :=
 @[simp]
 theorem mk_coe (z : 𝔻) (hz : ‖(z : ℂ)‖ < 1 := z.norm_lt_one) : mk z hz = z :=
   Subtype.eta _ _
+
+@[simp]
+theorem mk_inj {z w : ℂ} (hz : ‖z‖ < 1) (hw : ‖w‖ < 1) : mk z hz = mk w hw ↔ z = w :=
+  Subtype.mk_eq_mk
+
+protected theorem «forall» {p : 𝔻 → Prop} : (∀ z, p z) ↔ ∀ z hz, p (mk z hz) :=
+  ⟨fun h z hz ↦ h (mk z hz), fun h z ↦ h z z.norm_lt_one⟩
+
+protected theorem «exists» {p : 𝔻 → Prop} : (∃ z, p z) ↔ ∃ z hz, p (mk z hz) :=
+  ⟨fun ⟨z, hz⟩ ↦ ⟨z, z.norm_lt_one, hz⟩, fun ⟨z, hz, h⟩ ↦ ⟨mk z hz, h⟩⟩
 
 @[simp]
 theorem mk_neg (z : ℂ) (hz : ‖-z‖ < 1) : mk (-z) hz = -mk z (norm_neg z ▸ hz) :=
@@ -104,39 +134,42 @@ theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
 instance : Inhabited 𝔻 :=
   ⟨0⟩
 
-instance circleAction : MulAction Circle 𝔻 :=
+instance instMulActionCircle : MulAction Circle 𝔻 :=
   mulActionSphereBall
 
-instance isScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
+instance instIsScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
   isScalarTower_sphere_sphere_ball
 
-instance isScalarTower_circle : IsScalarTower Circle 𝔻 𝔻 :=
+instance instIsScalarTower_circle : IsScalarTower Circle 𝔻 𝔻 :=
   isScalarTower_sphere_ball_ball
 
-instance instSMulCommClass_circle : SMulCommClass Circle 𝔻 𝔻 :=
+instance instSMulCommClass_circle_left : SMulCommClass Circle 𝔻 𝔻 :=
   instSMulCommClass_sphere_ball_ball
 
-instance instSMulCommClass_circle' : SMulCommClass 𝔻 Circle 𝔻 :=
+instance instSMulCommClass_circle_right : SMulCommClass 𝔻 Circle 𝔻 :=
   SMulCommClass.symm _ _ _
 
 @[simp, norm_cast]
-theorem coe_smul_circle (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
+theorem coe_circle_smul (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
 
-instance closedBallAction : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
+@[deprecated (since := "2025-12-30")]
+alias Complex.UnitDisc.coe_smul_circle := coe_circle_smul
+
+instance instMulActionClosedBall : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
   mulActionClosedBallBall
 
-instance isScalarTower_closedBall_closedBall :
+instance instIsScalarTower_closedBall_closedBall :
     IsScalarTower (closedBall (0 : ℂ) 1) (closedBall (0 : ℂ) 1) 𝔻 :=
   isScalarTower_closedBall_closedBall_ball
 
-instance isScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
+instance instIsScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
   isScalarTower_closedBall_ball_ball
 
-instance instSMulCommClass_closedBall : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
+instance instSMulCommClass_closedBall_left : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
   ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
 
-instance instSMulCommClass_closedBall' : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
+instance instSMulCommClass_closedBall_right : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
   SMulCommClass.symm _ _ _
 
 instance instSMulCommClass_circle_closedBall : SMulCommClass Circle (closedBall (0 : ℂ) 1) 𝔻 :=
@@ -146,8 +179,11 @@ instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : �
   SMulCommClass.symm _ _ _
 
 @[simp, norm_cast]
-theorem coe_smul_closedBall (z : closedBall (0 : ℂ) 1) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
+theorem coe_closedBall_smul (z : closedBall (0 : ℂ) 1) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
+
+@[deprecated (since := "2025-12-30")]
+alias coe_smul_closedBall := coe_closedBall_smul
 
 /-- Real part of a point of the unit disc. -/
 def re (z : 𝔻) : ℝ :=
@@ -174,36 +210,51 @@ theorem im_neg (z : 𝔻) : (-z).im = -z.im :=
   rfl
 
 /-- Conjugate point of the unit disc. -/
-def conj (z : 𝔻) : 𝔻 :=
-  mk (conj' ↑z) <| (norm_conj z).symm ▸ z.norm_lt_one
+instance : Star 𝔻 where
+  star z := mk (conj z) <| (norm_conj z).symm ▸ z.norm_lt_one
+
+/-- Conjugate point of the unit disc. Deprecated, use `star` instead. -/
+@[deprecated star (since := "2025-12-30")]
+protected def «conj» (z : 𝔻) := star z
+
+@[simp] theorem coe_star (z : 𝔻) : (↑(star z) : ℂ) = conj ↑z := rfl
+
+@[deprecated (since := "2025-12-30")]
+alias coe_conj := coe_star
 
 @[simp]
-theorem coe_conj (z : 𝔻) : (z.conj : ℂ) = conj' ↑z :=
-  rfl
+protected theorem star_eq_zero {z : 𝔻} : star z = 0 ↔ z = 0 := by
+  simp [← coe_eq_zero]
 
 @[simp]
-theorem conj_zero : conj 0 = 0 :=
-  coe_injective (map_zero conj')
+protected theorem star_zero : star (0 : 𝔻) = 0 := by simp
 
-@[simp]
-theorem conj_conj (z : 𝔻) : conj (conj z) = z :=
-  coe_injective <| Complex.conj_conj (z : ℂ)
+instance : InvolutiveStar 𝔻 where
+  star_involutive z := by ext; simp
 
-@[simp]
-theorem conj_neg (z : 𝔻) : (-z).conj = -z.conj :=
-  rfl
+@[deprecated star_star (since := "2025-12-30")]
+theorem conj_conj (z : 𝔻) : star (star z) = z := star_star z
 
-@[simp]
-theorem re_conj (z : 𝔻) : z.conj.re = z.re :=
-  rfl
+@[simp] protected theorem star_neg (z : 𝔻) : star (-z) = -(star z) := rfl
 
-@[simp]
-theorem im_conj (z : 𝔻) : z.conj.im = -z.im :=
-  rfl
+@[deprecated (since := "2025-12-30")]
+alias conj_neg := UnitDisc.star_neg
 
-@[simp]
-theorem conj_mul (z w : 𝔻) : (z * w).conj = z.conj * w.conj :=
-  Subtype.ext <| map_mul _ _ _
+@[simp] protected theorem re_star (z : 𝔻) : (star z).re = z.re := rfl
+
+@[deprecated (since := "2025-12-30")]
+alias re_conj := UnitDisc.re_star
+
+@[simp] protected theorem im_star (z : 𝔻) : (star z).im = -z.im := rfl
+
+@[deprecated (since := "2025-12-30")] alias im_conj := UnitDisc.im_star
+
+instance : StarMul 𝔻 where
+  star_mul z w := coe_injective <| by simp [mul_comm]
+
+@[deprecated star_mul' (since := "2025-12-30")]
+theorem conj_mul (z w : 𝔻) : star (z * w) = star z * star w :=
+  star_mul' z w
 
 end UnitDisc
 

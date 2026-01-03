@@ -69,6 +69,12 @@ theorem OpenPartialHomeomorph.hasStrictDerivAt_symm (f : OpenPartialHomeomorph �
     HasStrictDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 
+theorem HasDerivAt.of_comp_left {f g h : 𝕜 → 𝕜} {f' h' a : 𝕜} (hst : ContinuousAt g a)
+    (hf : HasDerivAt f f' (g a)) (hh : HasDerivAt h h' a) (hf' : f' ≠ 0)
+    (hcomp : f ∘ g =ᶠ[𝓝 a] h) : HasDerivAt g (h' / f') a := by
+  convert (hf.hasFDerivAt_equiv hf').of_comp_left hst hh (by simp) hcomp |>.hasDerivAt using 1
+  simp [div_eq_mul_inv]
+
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a`, then `g` has the derivative `f'⁻¹` at `a`.
 

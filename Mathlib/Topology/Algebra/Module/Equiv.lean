@@ -1200,7 +1200,17 @@ theorem self_comp_inverse (hf : f.IsInvertible) : f ∘L f.inverse = .id _ _ := 
   simp
 
 @[simp]
+theorem self_apply_inverse (hf : f.IsInvertible) (y : M₂) : f (f.inverse y) = y := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
 theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘L f = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem inverse_apply_self (hf : f.IsInvertible) (y : M) : f.inverse (f y) = y := by
   rcases hf with ⟨e, rfl⟩
   simp
 
