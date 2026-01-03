@@ -105,6 +105,10 @@ lemma fourierCoeffOn_circleMap (p : ℂ[X]) (n : ℤ) :
     apply Continuous.intervalIntegrable
     continuity
 
+lemma fourierCoeffOn_circleMap_nat (p : ℂ[X]) (n : ℕ) :
+    fourierCoeffOn Real.two_pi_pos (fun t => p.eval (circleMap 0 1 t)) n = p.coeff n := by
+  simp [fourierCoeffOn_circleMap p n]
+
 private lemma fourierCoeff_zero (p : ℂ[X]) (n : ℤ) :
     n ∉ p.support.map ⟨Nat.cast, Int.ofNat_injective⟩ →
     (fourierCoeffOn Real.two_pi_pos (fun t => p.eval (circleMap 0 1 t)) n) = 0 := by
