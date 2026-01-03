@@ -47,8 +47,10 @@ Other files in the folder `Analysis/Calculus/FDeriv/` contain the usual formulas
 * multiplication of a function by a scalar function (`Mul.lean`)
 * multiplication of two scalar functions (`Mul.lean`)
 * composition of functions (the chain rule) (`Comp.lean`)
-* inverse function (`Mul.lean`)
-  (assuming that it exists; the inverse function theorem is in `../Inverse.lean`)
+* pointwise inverse (`Mul.lean`)
+* inverse function (for equivalences) (`Equiv.lean`)
+  (assuming that it exists; the inverse function theorem is in
+  `Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean`)
 
 ## Implementation details
 
