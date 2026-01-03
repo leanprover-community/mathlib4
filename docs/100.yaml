@@ -146,6 +146,7 @@
   decls  :
     - taylor_mean_remainder_lagrange
     - taylor_mean_remainder_cauchy
+    - add_eq_sum_add_integral_iteratedFDeriv
   authors: Moritz Doll
 36:
   title  : Brouwer Fixed Point Theorem
