@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson, Maja Kądziołka, Chris Wong, Rudy Peterson
+Authors: Fox Thomson, Maja Kądziołka, Chris Wong, Tom Kranz, Rudy Peterson
 -/
 module
 
 public import Mathlib.Computability.DFA
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Nondeterministic Finite Automata
@@ -126,6 +127,13 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 
 variable (M) in
 @[simp]
+theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
+  induction x with
+  | nil => simp
+  | cons a x ih => simp [ih]
+
+variable (M) in
+@[simp]
 theorem evalFrom_union (S T : Set σ) (x : List α) :
     M.evalFrom (S ∪ T) x = M.evalFrom S x ∪ M.evalFrom T x := by
   induction x generalizing S T with
@@ -172,6 +180,12 @@ theorem mem_acceptsFrom {S : Set σ} {x : List α} :
   rfl
 
 variable (M) in
+theorem mem_acceptsFrom_iff_exists {S : Set σ} {x : List α} :
+    x ∈ M.acceptsFrom S ↔ ∃ s ∈ S, x ∈ M.acceptsFrom {s} := by
+  simp [mem_acceptsFrom, mem_evalFrom_iff_exists (S:=S) (x:=x)]
+  tauto
+
+variable (M) in
 @[simp]
 theorem nil_mem_acceptsFrom {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
   simp only [mem_acceptsFrom, evalFrom_nil]; tauto
@@ -197,6 +211,12 @@ variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
     (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
   ext y; simp [append_mem_acceptsFrom M]
+
+variable (M) in
+@[simp]
+theorem acceptsFrom_empty : M.acceptsFrom ∅ = 0 := by
+  ext x
+  simp [mem_acceptsFrom]
 
 variable (M) in
 @[simp]
@@ -227,12 +247,7 @@ variable (M) in
 @[simp]
 private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
-  induction x generalizing S with
-  | nil => simp only [nil_mem_acceptsFrom, mem_setOf_eq]; tauto
-  | cons a x ih =>
-    have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
-      ext s; simp only [stepSet, mem_setOf_eq, mem_iUnion, exists_prop]; tauto
-    simp [h, ih]
+  by_cases p <;> simp [*]
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
@@ -407,6 +422,384 @@ theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.revers
 
 end NFA
 
+namespace NFA
+
+section kstar
+
+/-!
+### Declarations about `NFA.kstar`
+
+This construction and proof idea are by Tom Kranz from PR Mathlib#15651.
+
+We provide the Kleene closure for non-epsilon NFAs under Kleene star: if NFA `M` accepts language
+`L`, then `M.kstar` accepts language `M∗`. In order to construct `M.kstar`, we must create
+transitions from *penultimate states* to the start state: for all states `s1` and `s2` and any
+character `a` such that `s2 ∈ M.step s1 a` and `s2 ∈ M.accept`, we must add a transition from `s1`
+to every state in `M.start`. Furthermore, we must add a special state `none` that is both a start
+and accept state in order to ensure that `M.kstar` accepts the empty string. This is how we
+"close the loop" for the Kleene closure.
+
+The key idea of this construction: in `M.kstar` we must include:
+* an empty path from state `none` to accept the empty string.
+* all transitions originally from `M`, injected with `some`.
+* new transitions from *penultimate states* to start states to enable looping.
+This gives the new machine `M.kstar` the options to accept a string `x` accepting by `M`, and to
+continue looping after consuming a prefix of `x` accepted by `M`. This choice is reflected in the
+definition `M.kstarStates`, which is used in `M.ktar.step`.
+-/
+
+open Option
+
+variable (M) in
+/-- `M.kstarStates S` is the set of states including both `S`, and `M.start` if there exists an
+`s ∈ S` such that `s ∈ M.accept`. This definition is used in `M.kstarStep` in order to obtain the
+set of states reachable from a given state in `M.kstar` for exactly a single transition. In order to
+compute `M.kstar.step (some s) a`, we compute `M.kstarStates (M.step s a)`. This creates a
+transition from `s` to every `s' ∈ M.step s a`, and if `M.step s a` includes a state in `M.accept`,
+then it also creates a transition from `s` to every state in `M.start`. Thus `M.kstarStates` is the
+core definition in our construction that "closes the loop" for the Kleene closure. -/
+def kstarStates (S : Set σ) : Set (Option σ) :=
+  some '' (S ∪ ⋃ s ∈ S ∩ M.accept, M.start)
+
+variable (M) in
+/-- `M.kstarStart` is the set of start states in `M.kstar`. We include both `M.start` and a new
+state `{none}` to accept the empty string. -/
+@[simp]
+def kstarStart : Set (Option σ) := {none} ∪ some '' M.start
+
+variable (M) in
+/-- `M.kstarAccept` is the set of accept states in `M.kstar`. We include both `M.accept` and a new
+state `{none}` to accept the empty string. -/
+@[simp]
+def kstarAccept : Set (Option σ) := {none} ∪ some '' M.accept
+
+theorem kstartStates_start : M.kstarStates M.start = some '' M.start := by
+  simp [kstarStates, Set.image_union, Set.subset_preimage_image]
+
+theorem kstarStart_eq_kstarStates : M.kstarStart = {none} ∪ M.kstarStates M.start := by
+  ext s
+  cases s <;> simp [kstarStates]
+
+variable (M) in
+/-- `M.kstarStep` is the set of transitions in `M.kstar`. Via `M.kstarStates`, this definition
+covers the following cases:
+* `M.kstarStep none a`: Gives no transitions. The state `none` is reserved for the empty path to
+  accept the empty string.
+* `M.kstarStep (some s) a` when `s` *is NOT a penultimate state*: only includes transitions
+  `M.step s a` if forall `s' ∈ M.step s a` then `s' ∉ M.accept`.
+* `M.kstarStep (some s) a` when `s` *is INDEED a penultimate state*: in addition to including
+  transitions for `M.step s a`, we also *create* transitions `some s' ∈ M.kstarStep (some s) a` for
+  every state `s' ∈ M.start` such that there exists some `s'' ∈ M.accept` and `s'' ∈ M.step s a`.
+  This cases "closes the loop" for the Kleene closure. -/
+@[simp]
+def kstarStep : Option σ → α → Set (Option σ)
+| none, _ => ∅
+| some s, a => M.kstarStates <| M.step s a
+
+variable (M) in
+/-- `M.kstar` is the Kleene closure of NFA `M`: if `M` accepts langauge `L`, then `M.kstar` accepts
+language `L∗`. Construction from Mathlib#15651 by Tom Kranz. -/
+@[simps]
+def kstar : NFA α (Option σ) where
+  step := M.kstarStep
+  start := M.kstarStart
+  accept := M.kstarAccept
+
+theorem mem_acceptsFrom_impl_mem_acceptsFrom_kstar {S : Set σ} {x : List α} :
+    x ∈ M.acceptsFrom S →
+    x ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
+  induction x generalizing S with
+  | nil =>
+    simp only [nil_mem_acceptsFrom]
+    rintro ⟨s, hs, haccept⟩
+    refine ⟨some s, ?_, by simpa⟩
+    rw [kstarStates, Function.Injective.mem_set_image (Option.some_injective _)]
+    tauto
+  | cons a x ih =>
+    simp_rw [cons_mem_acceptsFrom, stepSet, kstarStates, acceptsFrom_iUnion₂, ↑Set.mem_iUnion₂,
+      exists_prop, mem_image]
+    tauto
+
+/-- State `none` is only reachable from itself in `M.kstar`. -/
+theorem mem_kstarStates_not_none {S : Set σ} : none ∉ M.kstarStates S := by
+  simp [kstarStates]
+
+/-- State `none` is only reachable from itself in `M.kstar`. -/
+theorem mem_stepSet_kstar_not_none {S : Set (Option σ)} {a : α} :
+    none ∉ M.kstar.stepSet S a := by
+  simp only [stepSet, kstar_step, kstarStep, mem_iUnion, exists_prop, not_exists, not_and]
+  intro so
+  cases so with
+  | none =>
+    simp
+  | some s =>
+    simp [mem_kstarStates_not_none]
+
+/-- State `none` is only reachable from itself in `M.kstar`. -/
+theorem mem_evalFrom_kstar_not_none {S : Set (Option σ)} {x : List α} :
+    x ≠ [] →
+    none ∉ M.kstar.evalFrom S x := by
+  induction x using List.twoStepInduction generalizing S with
+  | nil =>
+    simp
+  | singleton a =>
+    simp [mem_stepSet_kstar_not_none]
+  | cons_cons a b x _ ih =>
+    intro _
+    rw [evalFrom_cons]
+    apply ih
+    tauto
+
+/-- State `none` is only reachable from itself in `M.kstar`. -/
+theorem evalFrom_kstar_none {S : Set (Option σ)} {x : List α} :
+    none ∈ M.kstar.evalFrom S x → x = [] ∧ none ∈ S := by
+  cases x with
+  | nil =>
+    simp
+  | cons a x =>
+    intro h
+    obtain ⟨⟩ := mem_evalFrom_kstar_not_none (by tauto) h
+
+/-- State `none` is only reachable from itself in `M.kstar`. -/
+theorem acceptsFrom_kstar_none : M.kstar.acceptsFrom {none} = {[]} := by
+  ext x
+  constructor
+  · cases x with
+    | nil =>
+      simp [Set.mem_singleton_iff]
+      tauto
+    | cons a x =>
+      simp
+  · rw [acceptsFrom, Set.mem_setOf, Set.mem_singleton_iff]
+    rintro rfl
+    simp
+
+/-- When a state `t ∈ M.evalFrom S x`, then `some t ∈ M.kstar.evalFrom (some '' S) x`. In this
+proof, we only require paths originally in `M`, and ignore any transitions from penultimate states
+to start states from [M.kstarStates]. Essentially, we demonstrate that any paths in `M` are also
+in `M.kstar`. -/
+theorem mem_evalFrom_impl_mem_evalFrom_kstar {x : List α} {S : Set σ} {t : σ} :
+    t ∈ M.evalFrom S x →
+    some t ∈ M.kstar.evalFrom (some '' S) x := by
+  induction x generalizing S t with
+  | nil =>
+    simp
+  | cons a x ih =>
+    simp only [evalFrom_cons, stepSet, evalFrom_iUnion₂, kstar_step, kstarStep,
+      Set.biUnion_image, kstarStates, Set.image_union, Set.image_iUnion₂,
+      exists_prop, mem_inter_iff, forall_exists_index, and_imp,
+      evalFrom_union, mem_union, mem_iUnion, exists_prop]
+    tauto
+
+/-- For any non-empty string `x`, if `t ∈ M.evalFrom S x` and `t ∈ M.accept`, then for any start
+state `s ∈ M.start`, this start state `s` is included in the states obtained from
+'some s ∈ M.kstar.evalFrom (some '' S) x'. This follows by definition of `M.kstarStates`, where
+pentultimate states have transitions to start states in `M.kstar`. Essentially, we demonstrate that
+for any accepting path in `M` from any set of states `S` for any string `x`, there is also a path
+from `S` for `x` to any start state. This key property allows a non-empty string `x` with an
+accepting path to return to the start. By enabling this "restart", we enable Kleene closure
+looping. In each case, we select the accepting path as follows:
+* vacuous case `M.evalFrom S []`: we violate the assumption that `x` is non-empty.
+* base case `M.evalFrom S [a]`: we reach the end, so we must end the path at a start state from a
+  penultimate state.
+* inductive case `M.evalFrom S (a :: x)` where `x ≠ []`: we must continue the path via transitions
+originally from `M`, avoiding the transition from a pentulitmate state to a start state.
+Note that this property fails to hold if we allow `x = []`, since some arbitrary `S` may not
+include the start states. We require at least one transition in order to ensure the path may lead
+to any start state to enable looping. -/
+theorem mem_evalFrom_impl_mem_evalFrom_kstar_start {x : List α} {S : Set σ} {s t : σ} :
+    x ≠ [] →
+    t ∈ M.accept →
+    t ∈ M.evalFrom S x →
+    s ∈ M.start →
+    some s ∈ M.kstar.evalFrom (some '' S) x := by
+  induction x generalizing S s t with
+  | nil => simp
+  | cons a x ih =>
+    intro _
+    simp only [evalFrom_cons, stepSet, kstar_step, kstarStep, kstarStates, Set.biUnion_image]
+    simp only [evalFrom_union, evalFrom_iUnion₂, Set.image_union, Set.image_iUnion₂,
+      Set.mem_iUnion₂, exists_prop, Set.mem_union]
+    simp only [mem_inter_iff, exists_and_right, forall_exists_index, and_imp]
+    by_cases hnil : x = []
+    · subst x
+      simp only [evalFrom_nil]
+      intro ht q hq hstep hstart
+      exists q
+      tauto
+    · intro ht q hq hx hs
+      exists q
+      specialize ih hnil ht hx hs
+      tauto
+
+/-- If every `z ∈ zs` is accepted by `M` for some list of strings `zs`, then `zs.flatten` is
+accpeted by `M.kstar`. In order to ensure that we may loop through `M` from a penultimate state to
+a start state at the end of each `z ∈ zs`, we require that every `z ≠ []`. Otherwise, `zs.flatten`
+may have no accepting path in `M.kstar` by lacking transitions from a penultimate state to a start
+state.
+
+The conclusion of the goal is `zs.flatten ∈ M.kstar.acceptsFrom (some '' (insert s M.start))` for
+some `s ∈ M.accept`, rather than simply `zs.flatten ∈ M.kstar.acceptsFrom (some '' M.start)`, in
+order to prove the base case when `zs = []`.
+
+In each case, we select the accepting path as follows:
+* base case `[]`: since `s ∈ M.accept`, we may choose this `s` as the final accepting state.
+* inductive case `z :: zs`: our path must always go through some penultimate state to some
+  start state, since to accept `zs.flatten` in `M.kstar` we must reset to a start state after
+  processing string `z`. -/
+theorem Forall_mem_accepts_impl_mem_flatten_kstar_acceptsFrom {s : σ} {zs : List (List α)} :
+    s ∈ M.accept →
+    List.Forall (fun z ↦ z ∈ M.accepts ∧ z ≠ []) zs →
+    zs.flatten ∈ M.kstar.acceptsFrom (some '' (insert s M.start)) := by
+  intro haccept hzs
+  simp only [mem_acceptsFrom, kstar_accept, kstarAccept, Set.mem_union, Set.mem_singleton_iff,
+    mem_image, exists_eq_or_imp, ↓existsAndEq, and_true]
+  right
+  simp_rw [Set.insert_eq, Set.image_union, evalFrom_union, Set.mem_union, Set.image_singleton]
+  induction zs generalizing s haccept with
+  | nil =>
+    tauto
+  | cons z zs ih =>
+    simp only [List.flatten_cons, evalFrom_append]
+    simp only [ne_eq, List.forall_cons] at hzs
+    rcases hzs with ⟨⟨hz, hznil⟩, hzs⟩
+    rw [mem_accepts] at hz
+    rcases hz with ⟨q, hq, hz⟩
+    simp_rw [mem_evalFrom_iff_exists (S:=M.kstar.evalFrom {some s} z)]
+    simp_rw [mem_evalFrom_iff_exists (S:=M.kstar.evalFrom (some '' M.start) z)]
+    rcases (ih hq hzs) with ⟨t, ht, hflatten⟩
+    refine ⟨t, ht, .inr ?_⟩
+    rcases hflatten with (hflatten | hflatten)
+    · refine ⟨q, ?_, ?_⟩
+      · apply mem_evalFrom_impl_mem_evalFrom_kstar
+        assumption
+      · assumption
+    · rw [mem_evalFrom_iff_exists] at hflatten
+      simp_rw [Set.mem_image] at hflatten
+      obtain ⟨so', ⟨s', hs', rfl⟩, hflatten⟩ := hflatten
+      refine ⟨s', ?_, ?_⟩
+      · apply mem_evalFrom_impl_mem_evalFrom_kstar_start hznil hq hz hs'
+      · assumption
+
+/-- Proof idea from Mathlib#15651 by Tom Kranz.
+
+If some string `y` is accepted in `M` from `S`, `y ∈ M.acceptsFrom S`, and some list of strings
+`zs`, such that for all `z ∈ zs` we have `z ∈ M.accepts` and `z ≠ []`, then `y ++ zs.flatten` is
+accepted by `M.kstar` from `M.kstarStates S`.
+
+We proceed by induction on `y`, where `y` represents the suffix of some string `zʸ` in `zʸ :: zs`:
+* base case `[]`: since we know every member of `zs` is independently accepted by `M`, `zs.flatten`
+  is accepted by `M.kstar`. Crucially, we must isoloate some accepting state `s ∈ M.accept`, and
+  proceed to show that `zs.flatten ∈ M.kstar.acceptsFrom (some '' insert s M.start)`.
+* inductive case `a :: y`: when stepping for the transition for character `a`, we *must* choose the
+  transition originally from `M`, not the transition from a pentultimate state to a start state.
+  `a :: y` is not at the boundary of the Kleene loop, but in the middle of a single loop, thus for
+  these inductive steps we must traverse through transitions originally from `M`. This is regardless
+  of whether `y ++ zs.flatten` (from the inductive hypothesis) was accepted from `M.step s a` or
+  `M.start`. -/
+theorem mem_kstar_acceptsFrom {S : Set σ} {y : List α} {zs : List (List α)} :
+    y ∈ M.acceptsFrom S →
+    List.Forall (fun z ↦ z ∈ M.accepts ∧ z ≠ []) zs →
+    y ++ zs.flatten ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
+  intro hy hzs
+  induction y generalizing S zs with
+  | nil =>
+    simp only [nil_mem_acceptsFrom] at hy
+    rcases hy with ⟨s, hs, haccept⟩
+    have hnonempty : (S ∩ M.accept).Nonempty := by exists s
+    have hsub : {s} ⊆ S := by simpa [Set.singleton_subset_iff]
+    simp only [List.nil_append, kstarStates, Set.biUnion_const hnonempty]
+    rw [←Set.diff_union_of_subset (s:=S) (t:={s}) hsub, Set.union_assoc, Set.image_union,
+      acceptsFrom_union, Language.add_def, Set.mem_union]
+    right
+    apply Forall_mem_accepts_impl_mem_flatten_kstar_acceptsFrom haccept hzs
+  | cons a y ih =>
+    rw [cons_mem_acceptsFrom] at hy
+    specialize ih hy hzs
+    simp only [stepSet, kstarStates, Set.image_union, Set.image_iUnion₂, acceptsFrom_union,
+      acceptsFrom_iUnion₂, Language.add_def] at *
+    simp_rw [↑Set.mem_union] at ih
+    left
+    simp only [List.cons_append, cons_mem_acceptsFrom (M:=M.kstar), stepSet, kstar_step,
+      kstarStep, kstarStates, Set.biUnion_image, Set.image_union, acceptsFrom_iUnion₂,
+      acceptsFrom_union, Language.add_def, Set.iUnion_union_distrib]
+    rcases ih with (ih | ih)
+    · simp [-append_mem_acceptsFrom, Set.mem_union_left _ ih]
+    · simp only [mem_inter_iff, mem_iUnion, exists_prop, exists_and_right] at ih
+      obtain ⟨⟨s', ⟨⟨s, hs, hstep⟩, haccept⟩⟩, ih⟩ := ih
+      rw [Set.mem_union]
+      right
+      simp only [Set.image_iUnion₂, acceptsFrom_iUnion, Set.mem_iUnion₂,
+        mem_inter_iff, exists_prop, exists_and_right]
+      tauto
+
+/-- Proof idea from Mathlib#15651 by Tom Kranz
+
+For any string `x` and any set of states `S`, if `x` is accepted by `M.kstar` from `S`, then `x` may
+be separated into some prefix `y` and suffix `zs.flatten` such that `y` is accepted by `M` from `S`
+and forevery string `z ∈ zs`, `z` is accepted by `M`. The key idea is that any string
+`x ∈ M.kstar.acceptsFrom (some '' S)` may be decomposed into a prefix `y` that is accepted by `M`
+from `S`, and then to accept the suffix `zs.flatten` you loop back in the Kleene closure. -/
+theorem mem_acceptsFrom_kstar_impl_exists_flatten {S : Set σ} {x : List α} :
+    x ∈ M.kstar.acceptsFrom (some '' S) →
+    ∃ (y : List α) (zs : List (List α)),
+    x = y ++ zs.flatten ∧ y ∈ M.acceptsFrom S ∧ List.Forall (· ∈ M.accepts) zs := by
+  intro hx
+  induction x generalizing S with
+  | nil =>
+    obtain ⟨s, hs, haccept⟩ : ∃ s ∈ S, s ∈ M.accept := by revert hx; simp
+    refine ⟨[], [], by tauto⟩
+  | cons a x ih =>
+    simp only [cons_mem_acceptsFrom, stepSet, kstar_step, kstarStep, kstarStates,
+      Set.biUnion_image, ←Set.image_iUnion₂, Set.iUnion_union_distrib] at hx
+    obtain ⟨y, zs, rfl, hy, hzs⟩ := ih hx
+    simp only [acceptsFrom_union, Language.add_def, mem_union (x:=y)] at hy
+    rcases hy with (hy | hy)
+    · exists (a :: y), zs
+    · exists [a], (y :: zs)
+      simp only [acceptsFrom_iUnion, Set.mem_iUnion₂, exists_prop, mem_inter_iff] at hy
+      obtain ⟨s, hs, s', ⟨hstep, hs'⟩, hy⟩ := hy
+      refine ⟨rfl, ?_, ?_⟩
+      · suffices Membership.mem (γ:=Language α) (⋃ i ∈ S, M.acceptsFrom (M.step i a)) [] by
+         simpa [stepSet]
+        rw [Set.mem_iUnion₂]
+        tauto
+      · rw [List.forall_cons, accepts_eq_acceptsFrom_start]
+        tauto
+
+/-- If the language of `M` is `L`, then the language of `M.kstar` is `L∗`. -/
+@[simp]
+theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
+  ext x
+  rw [accepts_eq_acceptsFrom_start, kstar_start]
+  constructor
+  · simp only [Language.mem_kstar, kstarStart, acceptsFrom_union, acceptsFrom_union,
+      Language.add_def, ←List.forall_iff_forall_mem, acceptsFrom_kstar_none, Set.mem_union x,
+      Set.mem_singleton_iff (a:=x)]
+    rintro (rfl | hx)
+    · exists []
+    · obtain ⟨y, zs, rfl, hy, hzs⟩ := mem_acceptsFrom_kstar_impl_exists_flatten hx
+      exists y :: zs
+      rw [←accepts_eq_acceptsFrom_start] at hy
+      rw [List.forall_cons]
+      tauto
+  · rw [Language.mem_kstar_iff_exists_nonempty, kstarStart_eq_kstarStates, acceptsFrom_union,
+        Language.add_def, Set.mem_union, acceptsFrom_kstar_none, Set.mem_singleton_iff]
+    rintro ⟨zs, rfl, hzs⟩
+    rw [←List.forall_iff_forall_mem] at hzs
+    cases zs with
+    | nil =>
+      tauto
+    | cons z zs =>
+      right
+      rw [List.forall_cons] at hzs
+      obtain ⟨⟨hz,hznil⟩,hzs⟩ := hzs
+      apply mem_kstar_acceptsFrom hz hzs
+
+end kstar
+
+end NFA
+
 namespace Language
 
 protected theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegular :=
@@ -420,5 +813,10 @@ protected theorem IsRegular.of_reverse {L : Language α} (h : L.reverse.IsRegula
 @[simp]
 theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRegular :=
   ⟨.of_reverse, .reverse⟩
+
+/-- Regular languages are closed under Kleene star. -/
+theorem IsRegular.kstar {L : Language α} (h : L.IsRegular) : L∗.IsRegular :=
+  have ⟨σ, _, M, hM⟩ := h
+  ⟨_, inferInstance, M.toNFA.kstar.toDFA, by simp [hM]⟩
 
 end Language
