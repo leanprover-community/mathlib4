@@ -19,7 +19,7 @@ for the definition) along the tensor product of `C`.
 Such a functor is called a Day convolution of `F` and `G`, and
 although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
 
-We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data
+We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundles the data
 required to make it a unit for the Day convolution monoidal structure: said data is that of
 a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan extension of
 `fromPUnit (𝟙_ V)` along `fromPUnit (𝟙_ C)`.
@@ -59,7 +59,7 @@ variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
 /-- A `DayConvolution` structure on functors `F G : C ⥤ V` is the data of
 a functor `F ⊛ G : C ⥤ V`, along with a unit `F ⊠ G ⟶ tensor C ⋙ F ⊛ G`
 that exhibits this functor as a pointwise left Kan extension of `F ⊠ G` along
-`tensor C`. This is a `class` used to prove various property of such extensions,
+`tensor C`. This is a `class` used to prove various properties of such extensions,
 but registering global instances of this class is probably a bad idea. -/
 class DayConvolution (F G : C ⥤ V) where
   /-- The chosen convolution between the functors. Denoted `F ⊛ G`. -/

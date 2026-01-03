@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 If `C` is a category, the class `MonoCoprod C` expresses that left
 inclusions `A ⟶ A ⨿ B` are monomorphisms when `HasCoproduct A B`
-is satisfied. If it is so, it is shown that right inclusions are
+holds. If so, it is shown that right inclusions are
 also monomorphisms.
 
 More generally, we deduce that when suitable coproducts exist, then

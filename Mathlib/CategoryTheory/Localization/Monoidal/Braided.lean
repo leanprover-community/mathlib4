@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 Let `C` be a monoidal category equipped with a class of morphisms `W` which
 is compatible with the monoidal category structure. The file
 `Mathlib.CategoryTheory.Localization.Monoidal.Basic` constructs a monoidal structure on
-the localized on `D` such that the localization functor is monoidal.
+the localized category `D` such that the localization functor is monoidal.
 
 In this file we promote this monoidal structure to a braided structure in the case where `C` is
 braided, in such a way that the localization functor is braided. If `C` is symmetric monoidal, then

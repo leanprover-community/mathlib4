@@ -20,7 +20,7 @@ public import Mathlib.Tactic.ApplyFun
 The prototypical example is `V = ModuleCat R`,
 where `Action (ModuleCat R) G` is the category of `R`-linear representations of `G`.
 
-We check `Action V G ≌ (CategoryTheory.singleObj G ⥤ V)`,
+We check `Action V G ≌ (CategoryTheory.SingleObj G ⥤ V)`,
 and construct the restriction functors
 `res {G H} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G`.
 -/
@@ -214,7 +214,7 @@ open FunctorCategoryEquivalence
 variable (V G)
 
 /-- The category of actions of `G` in the category `V`
-is equivalent to the functor category `singleObj G ⥤ V`.
+is equivalent to the functor category `SingleObj G ⥤ V`.
 -/
 @[simps]
 def functorCategoryEquivalence : Action V G ≌ SingleObj G ⥤ V where

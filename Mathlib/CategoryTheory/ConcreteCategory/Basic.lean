@@ -380,7 +380,7 @@ variable (C)
 
 /-- Build a coercion to functions out of `HasForget`.
 
-The intended usecase is to provide a `FunLike` instance in `HasForget.toConcreteCategory`.
+The intended use case is to provide a `FunLike` instance in `HasForget.toConcreteCategory`.
 See that definition for the considerations in making this an instance.
 
 See note [reducible non-instances].
@@ -392,7 +392,7 @@ abbrev HasForget.toFunLike [HasForget C] (X Y : C) :
 
 /-- Build a concrete category out of `HasForget`.
 
-The intended usecase is to prove theorems referencing only `(forget C)`
+The intended use case is to prove theorems referencing only `(forget C)`
 and not `(forget C).obj X` nor `(forget C).map f`: those should be written
 as `ToType X` and `ConcreteCategory.hom f` respectively.
 

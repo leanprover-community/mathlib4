@@ -19,7 +19,7 @@ public import Mathlib.Data.Finite.Card
 # Definition and basic properties of Galois categories
 
 We define the notion of a Galois category and a fiber functor as in SGA1, following
-the definitions in Lenstras notes (see below for a reference).
+the definitions in Lenstra's notes (see below for a reference).
 
 ## Main definitions
 
@@ -34,8 +34,8 @@ This is proven in `Mathlib/CategoryTheory/Galois/Equivalence.lean`.
 
 ## Implementation details
 
-We mostly follow Def 3.1 in Lenstras notes. In axiom (G3)
-we omit the factorisation of morphisms in epimorphisms and monomorphisms
+We mostly follow Def 3.1 in Lenstra's notes. In axiom (G3)
+we omit the factorisation of morphisms into epimorphisms and monomorphisms
 as this is not needed for the proof of the fundamental theorem on Galois categories
 (and then follows from it).
 

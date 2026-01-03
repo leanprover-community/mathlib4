@@ -24,7 +24,7 @@ instance on `ULift C` where `C` is a type with a category instance.
 ## ULiftHom
 
 Given a type `C : Type u`, `ULiftHom.{w} C` is just an alias for `C`.
-If we have `category.{v} C`, then `ULiftHom.{w} C` is endowed with a category instance
+If we have `Category.{v} C`, then `ULiftHom.{w} C` is endowed with a category instance
 whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 
 This is a category equivalent to `C`. The forward direction of the equivalence is `ULiftHom.up`,

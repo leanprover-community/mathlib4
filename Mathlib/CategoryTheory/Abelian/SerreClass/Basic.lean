@@ -15,11 +15,11 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 # Serre classes
 
 For any abelian category `C`, we introduce a type class `IsSerreClass C` for
-Serre classes in `S` (also known as "Serre subcategories"). A Serre class is
-a property `P : ObjectProperty C` of objects in `P` which holds for a zero object,
+Serre classes in `C` (also known as "Serre subcategories"). A Serre class is
+a property `P : ObjectProperty C` of objects in `C` which holds for a zero object,
 and is closed under subobjects, quotients and extensions.
 
-## Future works
+## Future work
 
 * Show that the localization of `C` with respect to a Serre class is an abelian category.
 
@@ -42,8 +42,8 @@ variable {C : Type u} [Category.{v} C] [Abelian C] (P : ObjectProperty C)
 
 namespace ObjectProperty
 
-/-- A Serre class in an abelian category consists of predicate which
-hold for the zero object and is closed under subobjects, quotients, extensions. -/
+/-- A Serre class in an abelian category consists of a predicate which
+holds for the zero object and is closed under subobjects, quotients, extensions. -/
 class IsSerreClass : Prop extends P.ContainsZero,
     P.IsClosedUnderSubobjects, P.IsClosedUnderQuotients,
     P.IsClosedUnderExtensions where

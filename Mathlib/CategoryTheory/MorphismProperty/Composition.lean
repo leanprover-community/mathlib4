@@ -27,7 +27,7 @@ namespace MorphismProperty
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-/-- Typeclass expressing that a morphism property contain identities. -/
+/-- Typeclass expressing that a morphism property contains identities. -/
 class ContainsIdentities (W : MorphismProperty C) : Prop where
   /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
   id_mem : ∀ (X : C), W (𝟙 X)

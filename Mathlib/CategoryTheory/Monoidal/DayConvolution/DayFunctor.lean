@@ -19,11 +19,11 @@ where the tensor product of `F` and `G` is the functor `x ↦ F.obj x ⊗ G.obj 
 
 ## TODOs
 - Given a `LawfulDayConvolutionMonoidalCategoryStruct C V D`, show that
-ι induce a monoidal functor `D ⥤ (C ⊛⥤ V)`.
+ι induces a monoidal functor `D ⥤ (C ⊛⥤ V)`.
 - Specialize to the case `V := Type _`, and prove a universal property stating
 that for every monoidal category `W` with suitable colimits,
 colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
-to monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
+monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
 -/
 
 @[expose] public section

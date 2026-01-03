@@ -554,7 +554,7 @@ variable {F : Type*} [Category* F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
     [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A]
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose forward functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose forward functors are compatible with shifts,
 so is `(E.trans E').functor`.
 -/
 instance : (E.trans E').functor.CommShift A := by
@@ -562,7 +562,7 @@ instance : (E.trans E').functor.CommShift A := by
   infer_instance
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose inverse functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose inverse functors are compatible with shifts,
 so is `(E.trans E').inverse`.
 -/
 instance : (E.trans E').inverse.CommShift A := by

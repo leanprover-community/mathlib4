@@ -68,7 +68,7 @@ instance closed (F : D ⥤ C) : Closed F where
     { unit := closedUnit F
       counit := closedCounit F }
 
-/-- If `C` is a monoidal closed category and `D` is groupoid, then the functor category `D ⥤ C`,
+/-- If `C` is a monoidal closed category and `D` is a groupoid, then the functor category `D ⥤ C`,
 with the pointwise monoidal structure, is monoidal closed. -/
 @[simps! closed_adj]
 instance monoidalClosed : MonoidalClosed (D ⥤ C) where

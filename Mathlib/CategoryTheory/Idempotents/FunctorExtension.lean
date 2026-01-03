@@ -52,8 +52,8 @@ def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
   map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map f.comm⟩
 
 /-- Extension of a natural transformation `φ` between functors
-`C ⥤ karoubi D` to a natural transformation between the
-extension of these functors to `karoubi C ⥤ karoubi D` -/
+`C ⥤ Karoubi D` to a natural transformation between the
+extension of these functors to `Karoubi C ⥤ Karoubi D` -/
 @[simps]
 def map {F G : C ⥤ Karoubi D} (φ : F ⟶ G) : obj F ⟶ obj G where
   app P :=
@@ -98,7 +98,7 @@ def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
     simp only [assoc]
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
-using `functorExtension₁` actually extends the original functors `C ⥤ Karoubi D`. -/
+using `functorExtension₁` actually extend the original functors `C ⥤ Karoubi D`. -/
 @[simps!]
 def functorExtension₁CompWhiskeringLeftToKaroubiIso :
     functorExtension₁ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅ 𝟭 _ :=
@@ -174,7 +174,7 @@ def functorExtension₂ : (C ⥤ D) ⥤ Karoubi C ⥤ Karoubi D :=
   (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙ functorExtension₁ C D
 
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
-using `functorExtension₂` actually extends the original functors `C ⥤ D`. -/
+using `functorExtension₂` actually extend the original functors `C ⥤ D`. -/
 @[simps!]
 def functorExtension₂CompWhiskeringLeftToKaroubiIso :
     functorExtension₂ C D ⋙ (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ≅

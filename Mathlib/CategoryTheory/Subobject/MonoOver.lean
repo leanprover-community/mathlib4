@@ -112,7 +112,7 @@ instance mono (f : MonoOver X) : Mono f.arrow :=
 
 instance {X : C} {f : MonoOver X} : Mono ((MonoOver.forget X).obj f).hom := f.mono
 
-/-- The category of monomorphisms over X is a thin category,s
+/-- The category of monomorphisms over X is a thin category,
 which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by

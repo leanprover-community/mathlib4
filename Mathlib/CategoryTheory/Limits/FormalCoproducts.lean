@@ -63,7 +63,7 @@ structure Hom (X Y : FormalCoproduct.{w} C) where
   /-- The map on each component. -/
   φ (i : X.I) : X.obj i ⟶ Y.obj (f i)
 
--- this category identifies to the fullsubcategory of the category of
+-- this category identifies to the full subcategory of the category of
 -- presheaves of sets on `C` which are coproducts of representable presheaves
 @[simps!] instance category : Category (FormalCoproduct.{w} C) where
   Hom := Hom

@@ -83,7 +83,7 @@ attribute [local simp] FunctorToTypes.naturality
 
 /-- Via the Yoneda lemma, `u : F.obj (op X)` defines a natural transformation `yoneda.obj X ⟶ F`
 and via the element `η.app (op X) u` also a morphism `yoneda.obj X ⟶ A`. This structure
-witnesses the fact that these morphisms from a commutative triangle with `η : F ⟶ A`, i.e.,
+witnesses the fact that these morphisms form a commutative triangle with `η : F ⟶ A`, i.e.,
 that `yoneda.obj X ⟶ F` lifts to a morphism in `Over A`. -/
 structure MakesOverArrow {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) {X : C} (s : yoneda.obj X ⟶ A)
     (u : F.obj (op X)) : Prop where
@@ -97,7 +97,7 @@ lemma map₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G ⟶ A} {ε : F �
     (h : MakesOverArrow η s u) : MakesOverArrow μ s (ε.app _ u) :=
   ⟨by rw [← elementwise_of% NatTrans.comp_app ε μ, hε, h.app]⟩
 
-/-- "Functoriality of `MakesOverArrow η s` in `s`. -/
+/-- Functoriality of `MakesOverArrow η s` in `s`. -/
 lemma map₂ {F : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {X Y : C} (f : X ⟶ Y)
     {s : yoneda.obj X ⟶ A} {t : yoneda.obj Y ⟶ A} (hst : yoneda.map f ≫ t = s)
     {u : F.obj (op Y)} (h : MakesOverArrow η t u) : MakesOverArrow η s (F.map f.op u) :=
