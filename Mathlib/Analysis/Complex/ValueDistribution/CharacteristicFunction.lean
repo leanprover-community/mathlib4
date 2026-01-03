@@ -61,8 +61,7 @@ The difference between the characteristic functions for the poles of `f` and `f 
 to the difference between the proximity functions.
 -/
 @[simp]
-lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : MeromorphicOn f Set.univ)
-    (a₀ : E) :
+lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorphic f) (a₀ : E) :
     characteristic f ⊤ - characteristic (f · - a₀) ⊤ = proximity f ⊤ - proximity (f · - a₀) ⊤ := by
   simp [← Pi.sub_def, characteristic, logCounting_sub_const h]
 
@@ -75,8 +74,8 @@ For `1 ≤ r`, the characteristic function for the zeros of `f * g` is less than
 of the characteristic functions for the zeros of `f` and `g`, respectively.
 -/
 theorem characteristic_mul_zero_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
-    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
-    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    (h₁f₁ : Meromorphic f₁) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : Meromorphic f₂) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) 0 r ≤ (characteristic f₁ 0 + characteristic f₂ 0) r := by
   simp only [characteristic, Pi.add_apply]
   rw [add_add_add_comm]
@@ -90,8 +89,8 @@ Asymptotically, the characteristic function for the zeros of `f * g` is less tha
 sum of the characteristic functions for the zeros of `f` and `g`, respectively.
 -/
 theorem characteristic_mul_zero_eventuallyLE {f₁ f₂ : ℂ → ℂ}
-    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
-    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    (h₁f₁ : Meromorphic f₁) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : Meromorphic f₂) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) 0 ≤ᶠ[Filter.atTop] characteristic f₁ 0 + characteristic f₂ 0 := by
   filter_upwards [Filter.eventually_ge_atTop 1]
   exact fun _ hr ↦ characteristic_mul_zero_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
@@ -104,8 +103,8 @@ For `1 ≤ r`, the characteristic function for the poles of `f * g` is less than
 of the characteristic functions for the poles of `f` and `g`, respectively.
 -/
 theorem characteristic_mul_top_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
-    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
-    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    (h₁f₁ : Meromorphic f₁) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : Meromorphic f₂) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) ⊤ r ≤ (characteristic f₁ ⊤ + characteristic f₂ ⊤) r := by
   simp only [characteristic, Pi.add_apply]
   rw [add_add_add_comm]
@@ -119,8 +118,8 @@ Asymptotically, the characteristic function for the poles of `f * g` is less tha
 sum of the characteristic functions for the poles of `f` and `g`, respectively.
 -/
 theorem characteristic_mul_top_eventuallyLE {f₁ f₂ : ℂ → ℂ}
-    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
-    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    (h₁f₁ : Meromorphic f₁) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : Meromorphic f₂) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) ⊤ ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ := by
   filter_upwards [Filter.eventually_ge_atTop 1]
   exact fun _ hr ↦ characteristic_mul_top_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
@@ -133,7 +132,7 @@ For natural numbers `n`, the characteristic function for the zeros of `f ^ n` eq
 characteristic counting function for the zeros of `f`.
 -/
 @[simp]
-theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : Meromorphic f) :
     characteristic (f ^ n) 0 = n • characteristic f 0 := by
   simp_all [characteristic]
 
@@ -142,7 +141,7 @@ For natural numbers `n`, the characteristic function for the poles of `f ^ n` eq
 characteristic function for the poles of `f`.
 -/
 @[simp]
-theorem characteristic_pow_top {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+theorem characteristic_pow_top {f : ℂ → ℂ} {n : ℕ} (hf : Meromorphic f) :
     characteristic (f ^ n) ⊤ = n • characteristic f ⊤ := by
   simp_all [characteristic]
 
