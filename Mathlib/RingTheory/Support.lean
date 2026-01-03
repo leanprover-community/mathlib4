@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Localization.Finiteness
-public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Nakayama.Basic
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 

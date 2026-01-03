@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.Localization.Submodule
-public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Nakayama.Basic
 
 /-!
 # Krull's Height Theorem

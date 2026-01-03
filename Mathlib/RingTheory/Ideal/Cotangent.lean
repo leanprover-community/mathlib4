@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.LinearAlgebra.Dimension.Finite
@@ -13,14 +14,20 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Nakayama.Basic
+public import Mathlib.RingTheory.Nakayama.SpanRank
 
 /-!
 # The module `I ⧸ I ^ 2`
 
 In this file, we provide special API support for the module `I ⧸ I ^ 2`. The official
-definition is a quotient module of `I`, but the alternative definition as an ideal of `R ⧸ I ^ 2` is
-also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
+definition is a quotient module of `I`, but there are two alternative definitions:
+
+- as an ideal of `R ⧸ I ^ 2`,
+- as the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`
+
+They are shown to be `R`-linear equivalent to the official definition via
+`Ideal.cotangentEquivIdeal` and `Ideal.cotangentEquivSubmodule` respectively.
 
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
 
@@ -213,6 +220,19 @@ lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
+/-- `I ⧸ I ^ 2` as the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`. -/
+def cotangentSubmodule (I : Ideal R) : Submodule R (R ⧸ I ^ 2) :=
+  Submodule.map (I ^ 2).mkQ I
+
+/--
+The linear equivalence of the two definitions of `I / I ^ 2`,
+either as a quotient of `I` by its submodule `I • ⊤`,
+or the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`.
+-/
+noncomputable def cotangentEquivSubmodule (I : Ideal R) :
+    I.Cotangent ≃ₗ[R] (Submodule.map (I ^ 2).mkQ I) := by
+  rw [pow_two]; exact Submodule.quotientIdealSubmoduleEquivMap I I
+
 end Ideal
 
 namespace IsLocalRing
@@ -257,6 +277,15 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
     Submodule.restrictScalars_span]
   · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
   · exact Ideal.Quotient.mk_surjective
+
+/--
+In a local ring, the dimension of the cotangent space is equal to
+the span rank of the maximal ideal, if the maximal ideal is finitely generated.
+-/
+theorem rank_cotangentSpace_eq_spanrank_maximalIdeal (hm : (maximalIdeal R).FG) :
+    Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank := by
+  rw [Submodule.spanRank_eq_spanRank_quotient_ideal_quotientIdealSubmodule
+    hm (maximalIdeal_le_jacobson _), Submodule.rank_eq_spanRank_of_free]
 
 open Module
 

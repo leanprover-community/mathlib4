@@ -257,20 +257,113 @@ end Submodule
 section map
 
 universe u
-section Submodule
+namespace Submodule
 
-variable {R : Type*} {M N : Type u} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
-  [Module R N] (f : M →ₗ[R] N) (p : Submodule R M)
+section Semilinear
 
-lemma Submodule.spanRank_map_le : (p.map f).spanRank ≤ p.spanRank := by
+variable {R S : Type*} {M N : Type u} [Semiring R] [Semiring S]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module S N]
+
+lemma spanRank_map_le {σ : R →+* S} [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] N) (p : Submodule R M) : (p.map f).spanRank ≤ p.spanRank := by
   rw [← generators_card p, FG.spanRank_le_iff_exists_span_set_card_le]
   exact ⟨f '' p.generators, Cardinal.mk_image_le, le_antisymm (span_le.2 (fun n ⟨m, hm, h⟩ ↦
     ⟨m, span_generators p ▸ subset_span hm, h⟩)) (by simp [span_generators])⟩
 
-variable {p} in
-lemma Submodule.spanFinrank_map_le_of_fg (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
+lemma spanFinrank_map_le_of_fg {σ : R →+* S} [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] N) {p : Submodule R M} (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
   (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (FG.map f hp))
     (spanRank_finite_iff_fg.mpr hp)).2 (p.spanRank_map_le f)
+
+variable {M₁ : Submodule R M} {N₁ : Submodule S N}
+
+lemma spanRank_le_spanRank_of_map_eq {σ : R →+* S} [RingHomSurjective σ]
+  (f : M →ₛₗ[σ] N) (h_map : map f M₁ = N₁) : N₁.spanRank ≤ M₁.spanRank := by
+  rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
+  rw [FG.spanRank_le_iff_exists_span_set_card_le]
+  use f '' s
+  constructor
+  · rw [← hscard]; exact Cardinal.mk_image_le
+  · rw [span_image', hsspan, h_map]
+
+lemma spanRank_le_spanRank_of_range_eq {σ : R →+* S} [RingHomSurjective σ]
+    (f : M₁ →ₛₗ[σ] N) (h_range : LinearMap.range f = N₁) : N₁.spanRank ≤ M₁.spanRank := by
+  -- obtain the spanning set of submodule `M₁`
+  rcases exists_span_set_card_eq_spanRank M₁ with ⟨s, hscard, hsspan⟩
+  rw [FG.spanRank_le_iff_exists_span_set_card_le]
+  -- lift the set to a `Set M₁`
+  lift s to Set M₁ using show s ⊆ M₁ by rw [← hsspan]; exact subset_span
+  rw [Cardinal.mk_image_eq Subtype.val_injective] at hscard
+  change span R (M₁.subtype '' s) = M₁ at hsspan
+  rw [span_image] at hsspan
+  apply_fun comap M₁.subtype at hsspan
+  rw [comap_map_eq_of_injective (subtype_injective M₁) (span R s), comap_subtype_self] at hsspan
+  -- transfer the lifted set via `f` to get a spanning set of `N₁`
+  use f '' s
+  constructor
+  · grw [Cardinal.mk_image_le]; rw [hscard]
+  · rw [span_image, hsspan, map_top, h_range]
+
+lemma spanRank_le_spanRank_of_surjective {σ : R →+* S} [RingHomSurjective σ]
+    (f : M₁ →ₛₗ[σ] N₁) (h_surj : Function.Surjective f) : N₁.spanRank ≤ M₁.spanRank := by
+  apply spanRank_le_spanRank_of_range_eq (N₁.subtype.comp f)
+  rw [LinearMap.range_comp, LinearMap.range_eq_top_of_surjective f h_surj, map_top, range_subtype]
+
+lemma spanRank_eq_spanRank_of_addEquiv (σ : R →+* S) [RingHomSurjective σ]
+    (e : M₁ ≃+ N₁) (hm : ∀ (r : R) (m : M₁), e (r • m) = (σ r) • (e m)) :
+    M₁.spanRank = N₁.spanRank := by
+  -- recover the one-side linear map
+  let e_toLinearMap : M₁ →ₛₗ[σ] N₁ := {
+      toFun := e.toFun,
+      map_add' := e.map_add',
+      map_smul' := hm
+    }
+  have e_toLinearMap_apply : ∀ x, e_toLinearMap x = e x := by intro x; rfl
+  have e_toLinearMap_injective : Function.Injective e_toLinearMap := e.injective
+  have e_toLinearMap_e_symm_cancel : e_toLinearMap ∘ e.symm = id := by unfold e_toLinearMap; simp
+  apply le_antisymm
+  · -- obtain the spanning set of submodule `N₁`
+    rcases exists_span_set_card_eq_spanRank N₁ with ⟨s, hscard, hsspan⟩
+    rw [FG.spanRank_le_iff_exists_span_set_card_le]
+    -- lift the set to a `Set N₁`
+    lift s to Set N₁ using show s ⊆ N₁ by rw [← hsspan]; exact subset_span
+    rw [Cardinal.mk_image_eq Subtype.val_injective] at hscard
+    change span S (N₁.subtype '' s) = N₁ at hsspan
+    rw [span_image] at hsspan
+    apply_fun comap N₁.subtype at hsspan
+    rw [comap_map_eq_of_injective (subtype_injective N₁) (span S s), comap_subtype_self] at hsspan
+    -- transfer the lifted set via `e.symm` to get a spanning set of `M₁`
+    use (M₁.subtype ∘ e.symm) '' s
+    constructor
+    · grw [Cardinal.mk_image_le]; rw [hscard]
+    · rw [Set.image_comp, span_image]
+      conv => rhs; rw [← map_subtype_top M₁]
+      congr
+      ext x; simp only [mem_top, iff_true]
+      rw [← apply_mem_span_image_iff_mem_span e_toLinearMap_injective,
+          ← Set.image_comp, e_toLinearMap_e_symm_cancel, e_toLinearMap_apply, Set.image_id, hsspan]
+      exact mem_top
+  · apply spanRank_le_spanRank_of_surjective e_toLinearMap e.surjective
+
+lemma spanRank_eq_spanRank_of_equiv'
+    (σ : R →+* S) {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    (e : M₁ ≃ₛₗ[σ] N₁) : M₁.spanRank = N₁.spanRank :=
+  le_antisymm
+    (spanRank_le_spanRank_of_surjective e.symm.toLinearMap e.symm.surjective)
+    (spanRank_le_spanRank_of_surjective e.toLinearMap e.surjective)
+
+end Semilinear
+
+section Linear
+
+variable {R : Type*} {M N : Type u}
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable {M₁ : Submodule R M} {N₁ : Submodule R N}
+
+lemma spanRank_eq_spanRank_of_equiv (e : M₁ ≃ₗ[R] N₁) : M₁.spanRank = N₁.spanRank :=
+  spanRank_eq_spanRank_of_equiv' _ e
+
+end Linear
 
 end Submodule
 
