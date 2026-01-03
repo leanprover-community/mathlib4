@@ -85,7 +85,7 @@ This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
 def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
   haveI := (IsFractionRing.injective A K).isDomain
-  haveI := NoZeroSMulDivisors.trans_faithfulSMul A K L₂
+  haveI := .trans_faithfulSMul A K L₂
   haveI := IsIntegralClosure.isLocalization A K L B
   haveI H : ∀ (y : Algebra.algebraMapSubmonoid B A⁰),
       IsUnit (((algebraMap B₂ L₂).comp σ) (y : B)) := by
@@ -214,7 +214,7 @@ attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_l
 
 noncomputable
 instance (priority := 900) [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
-    [Module.Finite A B] [NoZeroSMulDivisors A B] : Fintype (B ≃ₐ[A] B) :=
+    [Module.Finite A B] [Module.IsTorsionFree A B] : Fintype (B ≃ₐ[A] B) :=
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
   haveI : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) (FractionRing B) :=
@@ -248,7 +248,7 @@ lemma Algebra.map_intTraceAux [IsIntegrallyClosed A] (x : B) :
 
 variable (A B)
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
-variable [Module.Finite A B] [NoZeroSMulDivisors A B]
+variable [Module.Finite A B] [Module.IsTorsionFree A B]
 
 /-- The trace of a finite extension of integrally closed domains `B/A` is the restriction of
 the trace on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intTrace`. -/
@@ -303,7 +303,7 @@ lemma Algebra.intTrace_eq_trace [Module.Free A B] : Algebra.intTrace A B = Algeb
 open nonZeroDivisors
 
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
-variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
+variable [Module.IsTorsionFree Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
 
 include M in
 lemma Algebra.intTrace_eq_of_isLocalization
@@ -374,7 +374,7 @@ lemma Algebra.map_intNormAux (x : B) :
 
 variable (A B)
 variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
-  [NoZeroSMulDivisors A B]
+  [Module.IsTorsionFree A B]
 
 /-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
 the norm on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
@@ -404,7 +404,7 @@ variable (A B)
 
 theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegrallyClosed C]
     [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Algebra.IsIntegral A C]
-    [Algebra.IsIntegral B C] [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C] (x : C) :
+    [Algebra.IsIntegral B C] [Module.IsTorsionFree A C] [Module.IsTorsionFree B C] (x : C) :
     intNorm A B (intNorm B C x) = intNorm A C x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
@@ -451,7 +451,7 @@ lemma Algebra.intNorm_ne_zero [FiniteDimensional (FractionRing A) (FractionRing 
     Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 := by simp
 
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
-variable [NoZeroSMulDivisors Aₘ Bₘ] [Algebra.IsIntegral Aₘ Bₘ]
+variable [Module.IsTorsionFree Aₘ Bₘ] [Algebra.IsIntegral Aₘ Bₘ]
 
 include M in
 lemma Algebra.intNorm_eq_of_isLocalization [FiniteDimensional (FractionRing A) (FractionRing B)]
@@ -493,7 +493,7 @@ lemma Algebra.intNorm_eq_of_isLocalization [FiniteDimensional (FractionRing A) (
 end norm
 
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
-  [Module.Finite A B] [NoZeroSMulDivisors A B]
+  [Module.Finite A B] [Module.IsTorsionFree A B]
 
 lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (FractionRing B)] {x : B} :
     algebraMap A B (Algebra.intNorm A B x) = ∏ σ : B ≃ₐ[A] B, σ x := by

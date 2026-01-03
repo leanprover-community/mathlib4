@@ -184,8 +184,8 @@ section Algebra
 
 open scoped nonZeroDivisors
 
-variable {A K : Type*} (L B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
-  [NoZeroSMulDivisors A B] [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K]
+variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B]
+  [Module.IsTorsionFree A B] [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K]
   [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 
 /--

@@ -49,11 +49,6 @@ section SMul
 
 variable {S : Type*}
 
-@[to_additive (dont_translate := R) noZeroSMulDivisors]
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R k[G] :=
-  Finsupp.noZeroSMulDivisors
-
 @[to_additive (dont_translate := R) distribMulAction]
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R k[G] :=
@@ -62,6 +57,10 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
 @[to_additive (dont_translate := R)]
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
   Finsupp.module G k
+
+@[to_additive (dont_translate := R)]
+instance moduleIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
+    Module.IsTorsionFree R (MonoidAlgebra k G) := Finsupp.moduleIsTorsionFree
 
 @[to_additive (dont_translate := R) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
