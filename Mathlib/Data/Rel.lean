@@ -425,7 +425,7 @@ lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht
 
 variable (R) in
 /-- A relation `R` is symmetric if `a ~[R] b ↔ b ~[R] a`. -/
-protected abbrev IsSymm : Prop := IsSymm α (· ~[R] ·)
+protected abbrev IsSymm : Prop := Std.Symm (· ~[R] ·)
 
 variable (R) in
 protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab
