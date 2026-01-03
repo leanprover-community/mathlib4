@@ -285,6 +285,14 @@ protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx :
   Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
 
 @[to_additive]
+theorem pow_eq_pow_of_modEq {a b : ℕ} (h : a ≡ b [MOD n]) (hx : x ^ n = 1) : x ^ a = x ^ b := by
+  obtain hle | hle := le_total a b
+  all_goals
+    obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle
+    obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h
+    simp [pow_add, pow_mul, hx]
+
+@[to_additive]
 theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
   rw [modEq_zero_iff_dvd, orderOf_dvd_iff_pow_eq_one]
 
