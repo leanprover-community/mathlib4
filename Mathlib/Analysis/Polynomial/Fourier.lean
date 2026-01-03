@@ -154,7 +154,6 @@ theorem sum_sq_norm_coeff_eq_circleAverage : ∑ i ∈ p.support, ‖p.coeff i�
       simp only [Int.natCast_nonneg, true_and, not_le, Int.ofNat_eq_natCast] at hi
       rw [coeff_eq_zero_of_natDegree_lt (by omega : p.natDegree < i)]
       simp
-
   -- Apply Parseval's identity: ∑ ‖f̂(n)‖² = ∫ ‖f(t)‖² dt
   have parseval : ∑' (n : ℤ), ‖fourierCoeffOn Real.two_pi_pos
       (fun t => p.eval (circleMap 0 1 t)) n‖ ^ 2 =
@@ -174,12 +173,10 @@ theorem sum_sq_norm_coeff_eq_circleAverage : ∑ i ∈ p.support, ‖p.coeff i�
           exact ENNReal.ofReal_ne_top
         · apply BddAbove.mono (Set.image_mono Set.Ioc_subset_Icc_self)
           exact (isCompact_Icc.image (by continuity)).bddAbove
-
     -- Apply Parseval's identity and simplify
     have h_parseval := hasSum_sq_fourierCoeffOn Real.two_pi_pos h_memLp
     rw [h_parseval.tsum_eq]
     norm_num
-
   exact coeff_match.trans parseval
 
 end complex
