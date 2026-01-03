@@ -148,6 +148,19 @@ set_option backward.privateInPublic.warn false in
 instance [NeZero n] : Fintype (DihedralGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+@[simp] lemma fintypeHelper_inl (n : ℕ) (i : ZMod n) : fintypeHelper (.inl i) = r i := rfl
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+@[simp] lemma fintypeHelper_inr (n : ℕ) (i : ZMod n) : fintypeHelper (.inr i) = sr i := rfl
+
+example (g : DihedralGroup 3) : g^6 = 1 := by
+  fin_cases g
+  <;> dsimp
+  <;> decide
+
 instance : Infinite (DihedralGroup 0) :=
   DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
 
