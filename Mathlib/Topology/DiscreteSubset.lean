@@ -54,6 +54,17 @@ theorem isDiscrete_iff_nhdsNE {S : Set Y} :
     IsDiscrete S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff]
 
+/-- If a subset of a topological space has no accumulation points,
+then it carries the discrete topology. -/
+lemma discreteTopology_of_noAccPts {X : Type*} [TopologicalSpace X] {E : Set X}
+    (h : ∀ x ∈ E, ¬ AccPt x (𝓟 E)) : DiscreteTopology E := by
+  refine discreteTopology_iff_isOpen_singleton.mpr fun x => ?_
+  simp only [accPt_iff_frequently, not_frequently, ne_eq, not_and] at h
+  obtain ⟨U, hU_mem, hU⟩ := Filter.eventually_iff_exists_mem.mp (h x x.2)
+  obtain ⟨V, hVU, hV_open, hxV⟩ := mem_nhds_iff.mp hU_mem
+  exact ⟨V, hV_open, Set.ext fun y => ⟨fun hyV => by_contra fun hne =>
+    hU y (hVU hyV) (Subtype.coe_ne_coe.mpr hne) y.2, fun hy => hy ▸ hxV⟩⟩
+
 lemma discreteTopology_subtype_iff' {S : Set Y} :
     DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
