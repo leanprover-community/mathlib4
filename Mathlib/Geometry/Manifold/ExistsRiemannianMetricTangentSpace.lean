@@ -10,12 +10,8 @@ import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Topology.Algebra.Module.Equiv
-
 import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-
 import Mathlib.Analysis.Distribution.SchwartzSpace
-
-set_option linter.unusedSectionVars false
 
 /-! ## Existence of a Riemannian bundle metric
 
@@ -23,6 +19,8 @@ Using a partition of unity, we prove the existence of a smooth Riemannian metric
 Specialized attempt.
 
 -/
+
+set_option linter.unusedSectionVars false
 
 open Bundle ContDiff Manifold
 
@@ -936,8 +934,8 @@ lemma g_bilin_eq_00 (i b : B)
 
   exact hr
 
-set_option maxHeartbeats 400000
-
+set_option maxHeartbeats 400000 in
+-- comment explaining why this is necessary
 lemma g_bilin_eq (i b : B)
   (α β : TangentSpace IB b) :
   (g_bilin_1 (IB := IB) i b).snd.toFun α β = (g_bilin_2 i b).toFun α β := by

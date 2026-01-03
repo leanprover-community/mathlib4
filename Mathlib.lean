@@ -3896,6 +3896,7 @@ import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Elaborators
 import Mathlib.Geometry.Manifold.ExistsRiemannianMetric
 import Mathlib.Geometry.Manifold.ExistsRiemannianMetric2
+import Mathlib.Geometry.Manifold.ExistsRiemannianMetricTangentSpace
 import Mathlib.Geometry.Manifold.GroupLieAlgebra
 import Mathlib.Geometry.Manifold.Instances.Icc
 import Mathlib.Geometry.Manifold.Instances.Real
