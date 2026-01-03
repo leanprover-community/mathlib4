@@ -14,8 +14,7 @@ This file studies linear maps on inner product spaces.
 
 ## Main results
 
-- We define `innerSL` as the inner product bundled as a continuous sesquilinear map, and
-  `innerₛₗ` for the non-continuous version.
+- We define `innerSL` as the inner product bundled as a continuous sesquilinear map
 - We prove a general polarization identity for linear maps (`inner_map_polarization`)
 - We show that a linear map preserving the inner product is an isometry
   (`LinearMap.isometryOfInner`) and conversely an isometry preserves the inner product
@@ -158,31 +157,6 @@ theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [Linea
 end
 
 variable (𝕜)
-
-/-- The inner product as a sesquilinear map. -/
-def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
-  LinearMap.mk₂'ₛₗ _ _ (fun v w => ⟪v, w⟫) inner_add_left (fun _ _ _ => inner_smul_left _ _ _)
-    inner_add_right fun _ _ _ => inner_smul_right _ _ _
-
-@[simp]
-theorem coe_innerₛₗ_apply (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
-  rfl
-
-@[simp]
-theorem innerₛₗ_apply_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
-  rfl
-
-variable (F)
-/-- The inner product as a bilinear map in the real case. -/
-def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
-
-@[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
-  ext v w
-  exact real_inner_comm v w
-
-variable {F}
-
-@[simp] lemma innerₗ_apply_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
 
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
