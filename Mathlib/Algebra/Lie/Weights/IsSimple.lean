@@ -260,6 +260,53 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
 
+lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
+    (invtSubmoduleToLieIdeal q (by exact hq) : Submodule K L) =
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
+  rfl
+
+private lemma cartan_le_invtSubmoduleToLieIdeal_top_aux :
+    (H.toLieSubmodule : Submodule K L) ≤
+      invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) := by
+  have h_span : Submodule.span K (Set.range (coroot : Weight K H L → H)) = ⊤ :=
+    eq_top_iff.mpr ((RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H)).symm.trans_le
+      (Submodule.span_mono fun _ ⟨α, hα⟩ ↦ ⟨α.1, hα⟩))
+  intro x hx
+  obtain ⟨c, hc⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp
+    (by rw [h_span]; exact Submodule.mem_top : (⟨x, hx⟩ : H.toLieSubmodule) ∈ _)
+  have hx_sum : x = ∑ α ∈ c.support, c α • (coroot α : L) := by
+    have : (⟨x, hx⟩ : H.toLieSubmodule) = c.sum fun α r => r • coroot α := hc.symm
+    calc x = (⟨x, hx⟩ : H.toLieSubmodule) := rfl
+      _ = _ := by rw [this, Finsupp.sum, AddSubmonoidClass.coe_finset_sum]; rfl
+  rw [hx_sum]
+  refine Submodule.sum_mem _ fun α _ ↦ Submodule.smul_mem _ (c α) ?_
+  by_cases hα : α.IsNonZero
+  · apply LieSubmodule.mem_iSup_of_mem ⟨α, trivial, hα⟩
+    rw [sl2SubmoduleOfRoot_eq_sup]
+    apply Submodule.mem_sup_right
+    have h : coroot α ∈ (corootSpace α : Submodule K H) := by
+      have := Submodule.subset_span (R := K) (s := {coroot α}) rfl
+      rwa [← coe_corootSpace_eq_span_singleton α] at this
+    exact Submodule.mem_map_of_mem h
+  · simp only [Weight.IsNonZero, not_not] at hα; simp [coroot_eq_zero_iff.mpr hα]
+
+@[simp] lemma invtSubmoduleToLieIdeal_top :
+    invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
+  set I := invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp)
+  have h₁ := cartan_le_invtSubmoduleToLieIdeal_top_aux (H := H)
+  have h₂ : ∀ α : H.root, (rootSpace H α : Submodule K L) ≤ (I : Submodule K L) := fun ⟨α, hα⟩ =>
+    (le_of_le_of_eq (le_sup_of_le_left le_sup_left) (sl2SubmoduleOfRoot_eq_sup α _).symm).trans
+      (le_iSup_of_le ⟨α, trivial, (Finset.mem_filter.mp hα).2⟩ le_rfl)
+  have h₃ : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) ≤ I :=
+    sup_le h₁ (iSup_le h₂)
+  have h₄ : (H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α : Submodule K L) = ⊤ := by
+    simpa using congrArg
+      (↑· : LieSubmodule K H L → Submodule K L) (cartan_sup_iSup_rootSpace_eq_top H)
+  rw [h₄, top_le_iff] at h₃
+  exact eq_top_iff.mpr fun x _ => by
+    change x ∈ (I : Submodule K L); rw [h₃]; exact Submodule.mem_top
+
 section IsSimple
 
 variable [IsSimple K L]
