@@ -73,6 +73,13 @@ instance {G : Type*} [AddGroup G] [IsAddKleinFour G] : IsKleinFour (Multiplicati
 
 namespace IsKleinFour
 
+@[to_additive]
+theorem isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
+    IsMulCommutative G where
+  is_comm := {
+    comm := mul_comm_of_exponent_two exponent_two
+      }
+
 /-- This instance is scoped, because it always applies (which makes linting and typeclass inference
 potentially *a lot* slower). -/
 @[to_additive]
