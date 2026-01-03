@@ -83,15 +83,18 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
 
-Some definitions are dual to something other than the dual of their value. Examples include
-- `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`
-- `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself
-- `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself
+Some definitions are dual to something other than the dual of their value. Some examples:
+- `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
+- `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
+- `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself.
 
 To be able to translate a term involfing such constants, `to_dual` needs to insert casts,
 so that the term's correctness doesn't rely on unfolding them.
 You can instruct `to_dual` to do this using the `to_dual_insert_cast` or `to_dual_insert_cast_fun`
 commands.
+
+When troubleshooting `to_dual`, you can see what it is doing by replacing it with `to_dual?` and/or
+by using `set_option trace.translate_detail true`.
 -/
 syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 
