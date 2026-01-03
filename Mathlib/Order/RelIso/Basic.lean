@@ -298,7 +298,7 @@ protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
 protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
 
-protected theorem isSymm (f : r ↪r s) [IsSymm β s] : IsSymm α r :=
+protected theorem isSymm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
 
 protected theorem isAsymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
