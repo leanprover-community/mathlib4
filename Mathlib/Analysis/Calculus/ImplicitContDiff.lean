@@ -98,12 +98,16 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
       exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
 @[simp]
+lemma implicitFunctionData_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.pt = a := rfl
+
+@[simp]
 lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := rfl
+    h.implicitFunctionData.leftFun a = a.1 := rfl
 
 @[simp]
 lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := rfl
+    h.implicitFunctionData.rightFun a = f a := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
@@ -141,6 +145,23 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   ext
   · rw [h1]
   · rfl
+
+theorem implicitFunction_unique (h : IsContDiffImplicitAt n f f' a) :
+    ∀ᶠ xy in 𝓝 a, f xy = f a → xy.2 = h.implicitFunction xy.1 := by
+  suffices H : ∀ᶠ x in 𝓝 a, ∀ᶠ y in 𝓝 (f a),
+      h.implicitFunctionData.prodFun x = (x.1, y) →
+        x = h.implicitFunctionData.implicitFunction x.1 y from by
+    filter_upwards [H] with xy hxy heq
+    rw [implicitFunction, implicitFunctionAux, ← hxy.self_of_nhds (by rw [← heq]; rfl)]
+  have huniq := h.implicitFunctionData.eq_implicitFunction_of_prodFun_eq
+  rw [implicitFunctionData_pt, ImplicitFunctionData.prodFun_apply,
+      implicitFunctionData_leftFun_pt, implicitFunctionData_rightFun_pt, nhds_prod_eq, nhds_prod_eq,
+      nhds_prod_eq, eventually_swap4_prod_iff, eventually_assoc_symm_iff] at huniq
+  replace huniq := huniq.curry.diag_of_prod_left
+  rw [← nhds_prod_eq] at huniq
+  filter_upwards [huniq] with xy hxy
+  filter_upwards [hxy] with fa hfa heq
+  exact hfa heq
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
