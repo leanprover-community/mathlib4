@@ -3,11 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # Spectrum and quasispectrum of products
@@ -28,6 +29,8 @@ union of the (quasi)spectra.
 + Apply these results to block matrices.
 
 -/
+
+@[expose] public section
 
 variable {ι A B R : Type*} {κ : ι → Type*}
 
@@ -85,10 +88,8 @@ lemma Prod.spectrum_eq [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra
 lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (κ i)]
     [∀ i, Module R (κ i)] (a : ∀ i, κ i) :
     quasispectrum R a = ⋃ i, quasispectrum R (a i) := by
-  apply compl_injective
   ext r
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall,
-    not_not, Set.mem_iUnion, not_exists]
+  simp only [quasispectrum, Set.mem_setOf_eq, Set.mem_iUnion]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_pi_iff]

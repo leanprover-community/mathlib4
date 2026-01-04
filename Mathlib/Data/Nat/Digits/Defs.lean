@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Order.Group.Nat
+module
+
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Ring.Defs
+import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
 /-!
 # Digits of a natural number
@@ -24,6 +28,8 @@ Also included is a bound on the length of `Nat.toDigits` from core.
 A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` where `a` and `b`
 are numerals is not yet ported.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -142,11 +148,9 @@ def ofDigits {α : Type*} [Semiring α] (b : α) : List ℕ → α
 
 theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
     ofDigits b L = List.foldr (fun x y => ↑x + b * y) 0 L := by
-  induction' L with d L ih
-  · rfl
-  · dsimp [ofDigits]
-    rw [ih]
-
+  induction L with
+  | nil => rfl
+  | cons d L ih => dsimp [ofDigits]; rw [ih]
 
 @[simp]
 theorem ofDigits_nil {b : ℕ} : ofDigits b [] = 0 := rfl
@@ -163,9 +167,10 @@ theorem ofDigits_cons {b hd} {tl : List ℕ} :
 
 theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
     ofDigits b (l1 ++ l2) = ofDigits b l1 + b ^ l1.length * ofDigits b l2 := by
-  induction' l1 with hd tl IH
-  · simp [ofDigits]
-  · rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
+  induction l1 with
+  | nil => simp [ofDigits]
+  | cons hd tl IH =>
+    rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
     ring
 
 @[simp]
@@ -186,7 +191,7 @@ theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
   simp
 
 theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
-    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b ^ l.length * d := by
   simp only [List.reverse_cons]
   rw [ofDigits_append]
   simp
@@ -198,15 +203,11 @@ theorem ofDigits_reverse_zero_cons {b : ℕ} (l : List ℕ) :
 @[norm_cast]
 theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
     ((ofDigits b L : ℕ) : α) = ofDigits (b : α) L := by
-  induction' L with d L ih
-  · simp [ofDigits]
-  · dsimp [ofDigits]; push_cast; rw [ih]
+  induction L with
+  | nil => simp [ofDigits]
+  | cons d L ih => dsimp [ofDigits]; push_cast; rw [ih]
 
-@[norm_cast]
-theorem coe_int_ofDigits (b : ℕ) (L : List ℕ) : ((ofDigits b L : ℕ) : ℤ) = ofDigits (b : ℤ) L := by
-  induction' L with d L _
-  · rfl
-  · dsimp [ofDigits]; push_cast; simp only
+@[deprecated (since := "2025-08-14")] alias coe_int_ofDigits := coe_ofDigits
 
 theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
     ∀ {L : List ℕ} (_ : ofDigits b L = 0), ∀ l ∈ L, l = 0
@@ -216,10 +217,10 @@ theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
 
 theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L, l < b)
     (w₂ : ∀ h : L ≠ [], L.getLast h ≠ 0) : digits b (ofDigits b L) = L := by
-  induction' L with d L ih
-  · dsimp [ofDigits]
-    simp
-  · dsimp [ofDigits]
+  induction L with
+  | nil => simp
+  | cons d L ih =>
+    dsimp [ofDigits]
     replace w₂ := w₂ (by simp)
     rw [digits_add b h]
     · rw [ih]
@@ -246,9 +247,10 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
     · rfl
     · simp
   · rcases b with - | b
-    · induction' n with n ih
-      · rfl
-      · rw [Nat.zero_add] at ih ⊢
+    · induction n with
+      | zero => rfl
+      | succ n ih =>
+        rw [Nat.zero_add] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · induction n using Nat.strongRecOn with | ind n h => ?_
       cases n
@@ -284,13 +286,8 @@ theorem digits_ne_nil_iff_ne_zero {b n : ℕ} : digits b n ≠ [] ↔ n ≠ 0 :=
   not_congr digits_eq_nil_iff_eq_zero
 
 theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
-    digits b n = (n % b) :: digits b (n / b) := by
-  rcases b with (_ | _ | b)
-  · rw [digits_zero_succ' w, Nat.mod_zero, Nat.div_zero, Nat.digits_zero_zero]
-  · norm_num at h
-  rcases n with (_ | n)
-  · norm_num at w
-  · simp only [digits_add_two_add_one]
+    digits b n = (n % b) :: digits b (n / b) :=
+  digits_def' h (Nat.pos_of_ne_zero w)
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
@@ -317,9 +314,11 @@ theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
 lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
     (len : L1.length = L2.length) (w1 : ∀ l ∈ L1, l < b) (w2 : ∀ l ∈ L2, l < b)
     (h : ofDigits b L1 = ofDigits b L2) : L1 = L2 := by
-  induction' L1 with D L ih generalizing L2
-  · simp only [List.length_nil] at len
+  induction L1 generalizing L2 with
+  | nil =>
+    simp only [List.length_nil] at len
     exact (List.length_eq_zero_iff.mp len.symm).symm
+  | cons D L ih => ?_
   obtain ⟨d, l, rfl⟩ := List.exists_cons_of_length_eq_add_one len.symm
   simp only [List.length_cons, add_left_inj] at len
   simp only [ofDigits_cons] at h
@@ -359,9 +358,11 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   cases hd
   · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> omega
+    · apply Nat.div_lt_self <;> lia
     · assumption
 
+-- TODO: find a good way to fix the linter error; simp_all is called on three goals, one remains
+set_option linter.flexible false in
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
 theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
   rcases b with (_ | _ | b) <;> try simp_all
@@ -370,15 +371,18 @@ theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < 
 /-- an n-digit number in base b + 2 is less than (b + 2)^n -/
 theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l, x < b + 2) :
     ofDigits (b + 2) l < (b + 2) ^ l.length := by
-  induction' l with hd tl IH
-  · simp [ofDigits]
-  · rw [ofDigits, List.length_cons, pow_succ]
+  induction l with
+  | nil => simp [ofDigits]
+  | cons hd tl IH =>
+    rw [ofDigits, List.length_cons, pow_succ]
     have : (ofDigits (b + 2) tl + 1) * (b + 2) ≤ (b + 2) ^ tl.length * (b + 2) :=
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
     exact hl hd List.mem_cons_self
 
+-- TODO: find a good way to fix the linter; simp applies to three goals, leaving one
+set_option linter.flexible false in
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
     ofDigits b l < b ^ l.length := by
@@ -390,6 +394,8 @@ theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m
   convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 
+-- TODO: find a good way to fix the linter; simp applies to three goals, leaving one
+set_option linter.flexible false in
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
 theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m).length := by
   rcases b with (_ | _ | b) <;> try simp_all
@@ -424,11 +430,13 @@ theorem sum_le_ofDigits {p : ℕ} (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDig
   (ofDigits_one L).symm ▸ ofDigits_monotone L h
 
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
-  induction' n with n
-  · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
-  · induction' p with p
-    · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
-    · nth_rw 2 [← ofDigits_digits p.succ (n + 1)]
+  induction n with
+  | zero => exact digits_zero _ ▸ Nat.le_refl (List.sum [])
+  | succ n =>
+    induction p with
+    | zero => rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
+    | succ p =>
+      nth_rw 2 [← ofDigits_digits p.succ (n + 1)]
       rw [← ofDigits_one <| digits p.succ n.succ]
       exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
 
@@ -436,20 +444,21 @@ theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
 -/
 lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
-  induction' digits with hd tl
-  · simp [ofDigits]
-  · refine Eq.trans (add_mul_div_left hd _ hpos) ?_
-    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add]
-    rfl
+  induction digits with
+  | nil => simp [ofDigits]
+  | cons hd tl =>
+    refine Eq.trans (add_mul_div_left hd _ hpos) ?_
+    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add, List.tail_cons]
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
 -/
 lemma ofDigits_div_pow_eq_ofDigits_drop
     {p : ℕ} (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
     ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
-  induction' i with i hi
-  · simp
-  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
+  induction i with
+  | zero => simp
+  | succ i hi =>
+    rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
       (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]
 
@@ -512,7 +521,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
   | succ f ih =>
     grind
 
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) : n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 
@@ -548,109 +557,7 @@ lemma toDigits_length (b n e : Nat) : 0 < e → n < b ^ e → (Nat.toDigits b n)
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e :=
-  toDigits_length _ _ _
-
-/-! ### `norm_digits` tactic -/
-
-
-namespace NormDigits
-
-theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
-    (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
-  rcases h with ⟨h, b2, m0⟩
-  have b0 : 0 < b := by omega
-  have n0 : 0 < n := by linarith [mul_pos b0 m0]
-  refine ⟨?_, b2, n0⟩
-  obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
-  subst h; exact Nat.digits_def' b2 n0
-
-theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
-  have b2 : 1 < b :=
-    lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
-  refine ⟨?_, b2, n0⟩
-  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
-
-/-
-Porting note: this part of the file is tactic related.
-
-open Tactic
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/-- Helper function for the `norm_digits` tactic. -/ unsafe
-  def
-    eval_aux
-    ( eb : expr ) ( b : ℕ ) : expr → ℕ → instance_cache → tactic ( instance_cache × expr × expr )
-    |
-      en , n , ic
-      =>
-      do
-        let m := n / b
-          let r := n % b
-          let ( ic , er ) ← ic . ofNat r
-          let ( ic , pr ) ← norm_num.prove_lt_nat ic er eb
-          if
-            m = 0
-            then
-            do
-              let ( _ , pn0 ) ← norm_num.prove_pos ic en
-                return
-                  (
-                    ic
-                      ,
-                      q( ( [ $ ( en ) ] : List Nat ) )
-                        ,
-                        q( digits_one $ ( eb ) $ ( en ) $ ( pn0 ) $ ( pr ) )
-                    )
-            else
-            do
-              let em ← expr.of_nat q( ℕ ) m
-                let ( _ , pe ) ← norm_num.derive q( ( $ ( er ) + $ ( eb ) * $ ( em ) : ℕ ) )
-                let ( ic , el , p ) ← eval_aux em m ic
-                return
-                  (
-                    ic
-                      ,
-                      q( @ List.cons ℕ $ ( er ) $ ( el ) )
-                        ,
-                        q(
-                          digits_succ
-                            $ ( eb ) $ ( en ) $ ( em ) $ ( er ) $ ( el ) $ ( pe ) $ ( pr ) $ ( p )
-                          )
-                    )
-
-/-- A tactic for normalizing expressions of the form `Nat.digits a b = l` where
-`a` and `b` are numerals.
-
-```
-example : Nat.digits 10 123 = [3,2,1] := by norm_num
-```
--/
-@[norm_num]
-unsafe def eval : expr → tactic (expr × expr)
-  | q(Nat.digits $(eb) $(en)) => do
-    let b ← expr.to_nat eb
-    let n ← expr.to_nat en
-    if n = 0 then return (q(([] : List ℕ)), q(Nat.digits_zero $(eb)))
-      else
-        if b = 0 then do
-          let ic ← mk_instance_cache q(ℕ)
-          let (_, pn0) ← norm_num.prove_ne_zero' ic en
-          return (q(([$(en)] : List ℕ)), q(@Nat.digits_zero_succ' $(en) $(pn0)))
-        else
-          if b = 1 then do
-            let ic ← mk_instance_cache q(ℕ)
-            let s ← simp_lemmas.add_simp simp_lemmas.mk `list.replicate
-            let (rhs, p2, _) ← simplify s [] q(List.replicate $(en) 1)
-            let p ← mk_eq_trans q(Nat.digits_one $(en)) p2
-            return (rhs, p)
-          else do
-            let ic ← mk_instance_cache q(ℕ)
-            let (_, l, p) ← eval_aux eb b en n ic
-            let p ← mk_app `` And.left [p]
-            return (l, p)
-  | _ => failed
--/
-
-end NormDigits
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e := by
+  simpa [Nat.repr] using toDigits_length _ _ _
 
 end Nat

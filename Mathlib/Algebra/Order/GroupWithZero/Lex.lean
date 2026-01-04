@@ -3,11 +3,13 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.ProdHom
-import Mathlib.Algebra.Order.Group.Equiv
-import Mathlib.Algebra.Order.Monoid.Lex
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Data.Prod.Lex
+module
+
+public import Mathlib.Algebra.GroupWithZero.ProdHom
+public import Mathlib.Algebra.Order.Group.Equiv
+public import Mathlib.Algebra.Order.Monoid.Lex
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Data.Prod.Lex
 
 /-!
 # Order homomorphisms for products of linearly ordered groups with zero
@@ -26,6 +28,8 @@ Create the "LinOrdCommGrpWithZero" category.
 
 -/
 
+@[expose] public section
+
 namespace MonoidWithZeroHom
 
 variable {M₀ N₀ : Type*}
@@ -36,7 +40,7 @@ lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preor
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
-  · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
+  · simp [WithZero.withZeroUnitsEquiv]
 
 lemma inl_strictMono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [PartialOrder N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (inl M₀ N₀) :=
@@ -48,7 +52,7 @@ lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZ
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
-  · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
+  · simp [WithZero.withZeroUnitsEquiv]
 
 lemma inr_strictMono [GroupWithZero M₀] [PartialOrder M₀] [LinearOrderedCommGroupWithZero N₀]
     [DecidablePred fun x : N₀ ↦ x = 0] : StrictMono (inr M₀ N₀) :=

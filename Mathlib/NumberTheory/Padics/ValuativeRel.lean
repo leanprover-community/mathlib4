@@ -3,8 +3,10 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.RingTheory.Valuation.RankOne
+module
+
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.RingTheory.Valuation.RankOne
 
 /-!
 # p-adic numbers with a valuative relation
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Valuation.RankOne
 
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
+
+@[expose] public section
 
 variable {p : ℕ} [hp : Fact p.Prime] {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
     (v : Valuation ℚ_[p] Γ₀)

@@ -3,8 +3,10 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Notation
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.Order.Notation
+public import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
 ## Wide subquivers
@@ -13,6 +15,8 @@ A wide subquiver `H` of a quiver `H` consists of a subset of the edge set `a ⟶
 every pair of vertices `a b : V`. We include 'wide' in the name to emphasize that these
 subquivers by definition contain all vertices.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -50,7 +54,6 @@ noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
 
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
 /-- `Total V` is the type of _all_ arrows of `V`. -/
--- Porting note: no hasNonemptyInstance linter yet https://github.com/leanprover-community/mathlib4/issues/5171
 @[ext]
 structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
   /-- the source vertex of an arrow -/

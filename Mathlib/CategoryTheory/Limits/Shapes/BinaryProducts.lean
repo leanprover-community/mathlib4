@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Binary (co)products
@@ -28,6 +30,7 @@ braiding and associating isomorphisms, and the product comparison morphism.
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
 
+@[expose] public section
 
 universe v v₁ u u₁ u₂
 
@@ -281,7 +284,7 @@ section
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
--- Porting note: would it be okay to use this more generally?
+-- TODO: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
@@ -435,8 +438,8 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
     refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
     rw [Category.comp_id]
-    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
-    rwa [Category.assoc,Category.id_comp] at e
+    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (· ≫ inl c) hl
+    rwa [Category.assoc, Category.id_comp] at e
   · intro
     exact
       ⟨BinaryCofan.IsColimit.mk _ (fun f _ => inv c.inl ≫ f)
@@ -654,8 +657,8 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
   rw [← prod.lift_map]
   simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (eg `id_comp`) , while `map_fst` and `map_snd` can still work just
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `map_fst` and `map_snd` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ B₁] [HasBinaryProduct A₂ B₂]
@@ -690,7 +693,7 @@ instance isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] 
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (prod.map f g) :=
   (prod.mapIso (asIso f) (asIso g)).isIso_hom
 
-instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
+instance prod.map_mono {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryProduct W X] [HasBinaryProduct Y Z] : Mono (prod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
@@ -758,8 +761,8 @@ theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
     coprod.desc (g ≫ coprod.inl) (g' ≫ coprod.inr) = coprod.map g g' := by
   rw [← coprod.map_desc]; simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (eg `id_comp`) , while `inl_map` and `inr_map` can still work just
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `inl_map` and `inr_map` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem coprod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryCoproduct A₁ B₁] [HasBinaryCoproduct A₂ B₂]
@@ -795,7 +798,7 @@ instance isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (coprod.map f g) :=
   (coprod.mapIso (asIso f) (asIso g)).isIso_hom
 
-instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
+instance coprod.map_epi {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] : Epi (coprod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
@@ -822,12 +825,14 @@ end CoprodLemmas
 
 variable (C)
 
-/-- `HasBinaryProducts` represents a choice of product for every pair of objects. -/
+/-- A category `HasBinaryProducts` if it has all limits of shape `Discrete WalkingPair`,
+i.e. if it has a product for every pair of objects. -/
 @[stacks 001T]
 abbrev HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
-/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects. -/
+/-- A category `HasBinaryCoproducts` if it has all colimit of shape `Discrete WalkingPair`,
+i.e. if it has a coproduct for every pair of objects. -/
 @[stacks 04AP]
 abbrev HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C
@@ -1075,6 +1080,18 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
   rw [prodComparison, prodComparison, prod.lift_map, ← F.map_comp, ← F.map_comp, prod.comp_lift, ←
     F.map_comp, prod.map_fst, ← F.map_comp, prod.map_snd]
 
+variable {F}
+
+/-- Naturality of the `prodComparison` morphism in a natural transformation. -/
+@[reassoc]
+theorem prodComparison_natural_of_natTrans {H : C ⥤ D} [HasBinaryProduct (H.obj A) (H.obj B)]
+    (α : F ⟶ H) :
+    α.app (prod A B) ≫ prodComparison H A B =
+      prodComparison F A B ≫ prod.map (α.app A) (α.app B) := by
+  rw [prodComparison, prodComparison, prod.lift_map, prod.comp_lift, α.naturality, α.naturality]
+
+variable (F)
+
 /-- The product comparison morphism from `F(A ⨯ -)` to `FA ⨯ F-`, whose components are given by
 `prodComparison`.
 -/
@@ -1311,8 +1328,6 @@ def IsLimit.binaryFanSwap (I : IsLimit s) : IsLimit s.swap where
     specialize w ⟨WalkingPair.swap j⟩
     cases j <;> exact w
 
-@[deprecated (since := "2025-05-04")] alias IsLimit.swapBinaryFan := IsLimit.binaryFanSwap
-
 /-- Construct `HasBinaryProduct Y X` from `HasBinaryProduct X Y`.
 This can't be an instance, as it would cause a loop in typeclass search. -/
 lemma HasBinaryProduct.swap (X Y : C) [HasBinaryProduct X Y] : HasBinaryProduct Y X :=
@@ -1353,7 +1368,7 @@ variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
   mk (s.fst ≫ sXY.fst) (Q.lift (mk (s.fst ≫ sXY.snd) s.snd))
 
@@ -1368,7 +1383,7 @@ lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
 if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
   BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
 
@@ -1380,6 +1395,8 @@ lemma BinaryFan.assocInv_fst (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
 lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
     (assocInv P s).snd = s.snd ≫ sYZ.snd := rfl
 
+-- TODO: find a good way to fix the linter; simp applies to two goals with different simp sets
+set_option linter.flexible false in
 /-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone. -/
 @[simps]
 protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
@@ -1393,16 +1410,11 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
     · apply P.hom_ext
       rintro ⟨⟨⟩⟩ <;> simp
       · exact w ⟨.left⟩
-      · specialize w ⟨.right⟩
-        simp? at w says
-          simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
-            Functor.const_obj_obj, pair_obj_left] at w
-        rw [← w]
-        simp
-    · specialize w ⟨.right⟩
-      simp? at w says
-        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
-          Functor.const_obj_obj, pair_obj_left] at w
+      · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+          simpa using w ⟨.right⟩
+        simp [← w]
+    · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+        simpa using w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,

@@ -3,8 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -18,6 +20,8 @@ Note that a sigma-compactness assumption is necessary. Indeed, let `G` be the re
 the discrete topology, and `H` the real line with the usual topology. Both are locally compact
 groups, and the identity from `G` to `H` is continuous but not open.
 -/
+
+@[expose] public section
 
 open scoped Topology Pointwise
 

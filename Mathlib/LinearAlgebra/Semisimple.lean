@@ -3,12 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.FieldTheory.Perfect
-import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.RingTheory.Artinian.Instances
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+public import Mathlib.RingTheory.Artinian.Instances
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semisimple linear endomorphisms
@@ -39,6 +41,8 @@ In finite dimensions over a field:
 * Triangularizable iff diagonalisable for semisimple endomorphisms
 
 -/
+
+@[expose] public section
 
 open Set Function Polynomial
 
@@ -275,7 +279,6 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
   have : Module.Finite R S :=
     (AdjoinRoot.powerBasis' <| (minpoly.monic <| Algebra.IsIntegral.isIntegral g).map _).finite
-  have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
   have : Module.Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|

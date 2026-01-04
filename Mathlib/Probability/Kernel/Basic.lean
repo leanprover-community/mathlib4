@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Defs
+module
+
+public import Mathlib.Probability.Kernel.Defs
 
 /-!
 # Basic kernels
@@ -35,6 +37,8 @@ kernels.
 ## Main statements
 
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.integral
 
@@ -255,6 +259,13 @@ theorem restrict_apply' (κ : Kernel α β) (hs : MeasurableSet s) (a : α) (ht 
     κ.restrict hs a t = (κ a) (t ∩ s) := by
   rw [restrict_apply κ hs a, Measure.restrict_apply ht]
 
+/-- The restriction of a constant kernel to a measurable set is equal
+to the constant kernel of the restricted measure. -/
+theorem restrict_const {μ : Measure β} (hs : MeasurableSet s) :
+    (Kernel.const α μ).restrict hs = Kernel.const α (μ.restrict s) := by
+  ext a
+  simp [Kernel.restrict_apply, Kernel.const_apply]
+
 @[simp]
 theorem restrict_univ : κ.restrict MeasurableSet.univ = κ := by
   ext1 a
@@ -272,7 +283,7 @@ theorem setLIntegral_restrict (κ : Kernel α β) (hs : MeasurableSet s) (a : α
 
 instance IsFiniteKernel.restrict (κ : Kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (κ.restrict hs) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨κ.bound, κ.bound_lt_top, fun a => ?_⟩⟩
   rw [restrict_apply' κ hs a MeasurableSet.univ]
   exact measure_le_bound κ a _
 
@@ -323,7 +334,7 @@ theorem IsMarkovKernel.comapRight (κ : Kernel α β) (hf : MeasurableEmbedding 
 
 instance IsFiniteKernel.comapRight (κ : Kernel α β) [IsFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsFiniteKernel (comapRight κ hf) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨κ.bound, κ.bound_lt_top, fun a => ?_⟩⟩
   rw [comapRight_apply' κ hf a .univ]
   exact measure_le_bound κ a _
 
@@ -369,8 +380,7 @@ instance IsMarkovKernel.piecewise [IsMarkovKernel κ] [IsMarkovKernel η] :
 
 instance IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (piecewise hs κ η) := by
-  refine ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), ?_, fun a => ?_⟩⟩
-  · exact max_lt (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η)
+  refine ⟨⟨max κ.bound η.bound, max_lt κ.bound_lt_top η.bound_lt_top, fun a => ?_⟩⟩
   rw [piecewise_apply']
   exact (ite_le_sup _ _ _).trans (sup_le_sup (measure_le_bound _ _ _) (measure_le_bound _ _ _))
 
@@ -406,7 +416,7 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
     contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
   refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
-  · filter_upwards [measure_zero_iff_ae_notMem.1 μs] with b hb
+  · filter_upwards [measure_eq_zero_iff_ae_notMem.1 μs] with b hb
     simp [hb, piecewise]
   · refine ⟨fun b ↦ ?_⟩
     by_cases hb : b ∈ s

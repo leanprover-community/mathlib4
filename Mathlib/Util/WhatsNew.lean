@@ -3,7 +3,9 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the
@@ -15,6 +17,8 @@ theorem foo : 42 = 6 * 7 := rfl
 ```
 -/
 
+public meta section
+
 open Lean Elab Command
 
 namespace Mathlib.WhatsNew
@@ -25,7 +29,7 @@ private def throwUnknownId (id : Name) : CommandElabM Unit :=
 private def levelParamsToMessageData (levelParams : List Name) : MessageData :=
   match levelParams with
   | []    => ""
-  | u::us => Id.run <| do
+  | u::us => Id.run do
     let mut m := m!".\{{u}"
     for u in us do
       m := m ++ ", " ++ toMessageData u

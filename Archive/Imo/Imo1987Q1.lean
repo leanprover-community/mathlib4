@@ -14,8 +14,8 @@ Let $p_{n, k}$ be the number of permutations of a set of cardinality `n ≥ 1` t
 elements. Prove that $∑_{k=0}^n k p_{n,k}=n!$.
 
 To prove this identity, we show that both sides are equal to the cardinality of the set
-`{(x : α, σ : Perm α) | σ x = x}`, regrouping by `card (fixedPoints σ)` for the left hand side and
-by `x` for the right hand side.
+`{(x : α, σ : Perm α) | σ x = x}`, regrouping by `card (fixedPoints σ)` for the left-hand side and
+by `x` for the right-hand side.
 
 The original problem assumes `n ≥ 1`. It turns out that a version with `n * (n - 1)!` in the RHS
 holds true for `n = 0` as well, so we first prove it, then deduce the original version in the case

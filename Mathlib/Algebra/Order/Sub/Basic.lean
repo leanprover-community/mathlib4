@@ -3,14 +3,18 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Even
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Even
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -199,3 +203,32 @@ lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
   · exact (tsub_add_tsub_comm h h).symm
 
 end CanonicallyLinearOrderedAddCommMonoid
+
+/-! ### `Sub` structure in linearly canonically ordered monoid using choice. -/
+
+namespace CanonicallyOrderedAdd
+
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
+
+-- See note [reducible non-instances]
+/-- `Sub` structure in linearly canonically ordered monoid using choice. -/
+noncomputable abbrev toSub : Sub α where
+  sub x y := if h : y ≤ x then (exists_add_of_le h).choose else 0
+
+attribute [local instance] toSub
+
+/-- The `Sub` structure using choice satisfies `OrderedSub`. -/
+theorem toOrderedSub [AddRightReflectLE α] : OrderedSub α where
+  tsub_le_iff_right a b c := by
+    change dite _ _ _ ≤ c ↔ _
+    split_ifs with h
+    · have := (exists_add_of_le h).choose_spec
+      rw [this] at h
+      conv_rhs => rw [this, add_comm]
+      rw [add_le_add_iff_right]
+    · rw [not_le] at h
+      constructor <;> intro h'
+      · simpa using add_le_add h' h.le
+      · exact zero_le c
+
+end CanonicallyOrderedAdd

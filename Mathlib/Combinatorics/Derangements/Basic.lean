@@ -3,11 +3,13 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.GroupTheory.Perm.Option
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Derangements on types
@@ -24,6 +26,8 @@ We also define some equivalences involving various subtypes of `Perm α` and `de
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
 on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 -/
+
+@[expose] public section
 
 
 open Equiv Function
@@ -81,7 +85,6 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       (Equiv.sumCompl _).symm
     _ ≃ { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f } ⊕
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
-      -- Porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine Equiv.sumCongr ?_ ?_
       · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})

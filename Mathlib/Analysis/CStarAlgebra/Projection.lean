@@ -3,7 +3,9 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-!
 
@@ -15,6 +17,8 @@ because self-adjointedness and normality are equivalent for idempotent
 elements in non-unital C⋆-algebras.
 
 -/
+
+@[expose] public section
 
 variable {A : Type*} [TopologicalSpace A]
   [NonUnitalRing A] [StarRing A] [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]

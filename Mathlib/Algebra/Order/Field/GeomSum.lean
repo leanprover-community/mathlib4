@@ -3,8 +3,10 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Field.GeomSum
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Partial sums of geometric series in an ordered field
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.Ring.Defs
 This file upper- and lower-bounds the values of the geometric series $\sum_{i=0}^{n-1} x^i$ and
 $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
 -/
+
+@[expose] public section
 
 variable {K : Type*}
 

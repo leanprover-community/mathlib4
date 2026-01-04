@@ -3,20 +3,22 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Topology.UniformSpace.Equiv
+module
+
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Abstract theory of Hausdorff completions of uniform spaces
 
 This file characterizes Hausdorff completions of a uniform space α as complete Hausdorff spaces
-equipped with a map from α which has dense image and induce the original uniform structure on α.
+equipped with a map from α which has dense image and induces the original uniform structure on α.
 Assuming these properties we "extend" uniformly continuous maps from α to complete Hausdorff spaces
 to the completions of α. This is the universal property expected from a completion.
 It is then used to extend uniformly continuous maps from α to α' to maps between
 completions of α and α'.
 
-This file does not construct any such completion, it only study consequences of their existence.
+This file does not construct any such completion; it only studies consequences of their existence.
 The first advantage is that formal properties are clearly highlighted without interference from
 construction details. The second advantage is that this framework can then be used to compare
 different completion constructions. See `Topology/UniformSpace/CompareReals` for an example.
@@ -42,6 +44,8 @@ call a completion.
 
 uniform spaces, completion, universal property
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -121,6 +125,11 @@ variable {f : α → β}
 theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.isDenseInducing.extend f :=
   if_pos hf
 
+theorem inseparable_extend_coe (hf : UniformContinuous f) (x : α) :
+    Inseparable (pkg.extend f (ι x)) (f x) := by
+  rw [extend_def _ hf]
+  exact pkg.isDenseInducing.inseparable_extend hf.continuous.continuousAt
+
 theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.extend f) (ι a) = f a := by
   rw [pkg.extend_def hf]
   exact pkg.isDenseInducing.extend_eq hf.continuous a
@@ -137,6 +146,11 @@ theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
 
 theorem continuous_extend : Continuous (pkg.extend f) :=
   pkg.uniformContinuous_extend.continuous
+
+lemma isUniformInducing_extend (h : IsUniformInducing f) :
+    IsUniformInducing (pkg.extend f) := by
+  rw [extend_def _ h.uniformContinuous]
+  exact pkg.isDenseInducing.isUniformInducing_extend pkg.isUniformInducing h
 
 variable [T0Space β]
 
@@ -209,6 +223,25 @@ variable (pkg'' : AbstractCompletion.{vγ} γ)
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     pkg'.map pkg'' g ∘ pkg.map pkg' f = pkg.map pkg'' (g ∘ f) :=
   pkg.extend_map pkg' (pkg''.uniformContinuous_coe.comp hg) hf
+
+/-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
+def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
+  toFun := pkg.map pkg' e
+  invFun := pkg'.map pkg e.symm
+  uniformContinuous_toFun := uniformContinuous_map ..
+  uniformContinuous_invFun := uniformContinuous_map ..
+  left_inv := Function.leftInverse_iff_comp.2 <| by
+    simp [map_comp _ _ _ e.symm.uniformContinuous e.uniformContinuous]
+  right_inv := Function.rightInverse_iff_comp.2 <| by
+    simp [map_comp _ _ _ e.uniformContinuous e.symm.uniformContinuous]
+
+@[simp]
+theorem mapEquiv_symm (e : α ≃ᵤ β) :
+    (pkg.mapEquiv pkg' e).symm = pkg'.mapEquiv pkg e.symm := rfl
+
+@[simp]
+theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) : pkg.mapEquiv pkg' e (ι a) = ι' (e a) :=
+  pkg.map_coe pkg' e.uniformContinuous _
 
 end MapSec
 
@@ -284,7 +317,7 @@ theorem compare_comp_eq_compare (γ : Type uγ) [TopologicalSpace γ]
   have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
     simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f]
   apply (IsDenseInducing.extend_unique (AbstractCompletion.isDenseInducing _) this
-    (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
+    (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous)).symm
   apply IsDenseInducing.continuous_extend
   exact fun a ↦ ⟨(pkg.isDenseInducing.extend f) a, h a⟩
 

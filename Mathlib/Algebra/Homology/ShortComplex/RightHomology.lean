@@ -3,9 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
-import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
 
 /-!
 # Right Homology of short complexes
@@ -27,13 +28,15 @@ In `Homology.lean`, when `S` has two compatible left and right homology data
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
@@ -581,7 +584,7 @@ lemma opcyclesIsoRightHomology_inv_hom_id (hg : S.g = 0) :
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoRightHomology_hom_inv_id (hg : S.g = 0) :
-    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι  = 𝟙 _ :=
+    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι = 𝟙 _ :=
   (S.opcyclesIsoRightHomology hg).hom_inv_id
 
 end

@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Nakayama's lemma
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.Ideal.Operations
   such that N ⊆ IN, then there exists r ∈ 1 + I such that rN = 0.
 
 -/
+
+@[expose] public section
 
 namespace Submodule
 
