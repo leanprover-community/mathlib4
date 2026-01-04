@@ -84,8 +84,26 @@ we can choose to only translate `α` by writing `to_additive (dont_translate := 
 syntax dontTranslateOption := &"dont_translate" " := " (ident <|> num)+
 syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   relevantArgOption <|> dontTranslateOption ")"
-/-- A hint about the translated declaration (`existing`, `self` or `private`) -/
+
+/-- A hint about the translated declaration
+
+- `existing` indicates that the translated form of the declaration is a pre-existing declaration.
+  This is useful when the value cannot be translated, either because of a limitation in the
+  translation heuristics, or because the value/proof is genuinely different.
+
+- `self` indicates that the declaration translates to itself, up to some reordering of arguments.
+  If no arguments are reordered then the attribute is redundant, which the `translateRedundant`
+  linter will warn about.
+
+- `private` indicates that the translated declaration should not get a user-facing name,
+  instead being named like an auxiliary declaration. This is particularly useful for `to_dual` when
+  using the `reassoc` attribute, because the dual of a right associated term is left associated,
+  but we only want to see right associated terms in user-facing lemmas.
+
+  Note: `private` does not make the translated declaration `private`. It will still be exported
+  if and only if the original declaration is exported. -/
 syntax translationHint := (ppSpace (&"existing" <|> &"self" <|> "private"))?
+
 syntax attrArgs :=
   translationHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
 
