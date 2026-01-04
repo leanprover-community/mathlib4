@@ -153,8 +153,8 @@ def withSubsingletonAsFast {α : Type} [Inhabited α] (mx : (Expr → Expr) → 
   let mkInst (f : Name) (inst : Expr) : MetaM Expr := do
     forallTelescopeReducing (← inferType inst) fun args _ => do
       mkLambdaFVars args <| ← mkAppOptM f #[none, mkAppN inst args]
-  let vals := (← insts1.mapM fun inst => mkInst ``FastSubsingleton.mk inst.val)
-    ++ (← insts2.mapM fun inst => mkInst ``FastIsEmpty.mk inst.val)
+  let vals := (← insts1.mapM fun inst => mkInst ``FastSubsingleton.mk inst.fvar)
+    ++ (← insts2.mapM fun inst => mkInst ``FastIsEmpty.mk inst.fvar)
   let tys ← vals.mapM inferType
   withLocalDeclsD (tys.map fun ty => (`inst, fun _ => pure ty)) fun args =>
     withNewLocalInstances args 0 do
