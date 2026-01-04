@@ -36,9 +36,8 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] (f : A →ₚ[�
 namespace PositiveLinearMap
 
 set_option linter.unusedVariables false in
-/-- The GNS space on a non-unital C⋆-algebra with a positive linear functional. This erases the norm
-on `A`, while remainaing structurally equivalent via the `LinearEquivalence`, `toGNS`.
--/
+/-- The GNS space on a non-unital C⋆-algebra with a positive linear functional. This is a type
+synonym of `A`. -/
 @[nolint unusedArguments]
 def GNS (f : A →ₚ[ℂ] ℂ) := A
 
@@ -64,7 +63,7 @@ The (semi-)inner product space whose elements are the elements of `A`, but which
 inner product-induced norm induced by `f` which is different from the norm on `A`.
 -/
 @[simps]
-instance GNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
+def GNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
   inner a b := f (star (f.ofGNS a) * f.ofGNS b)
   conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
   re_inner_nonneg _ := RCLike.nonneg_iff.mp (f.map_nonneg (star_mul_self_nonneg _)) |>.1
@@ -117,42 +116,36 @@ lemma GNS_op_prod_eq_comp (a b : A) : f.GNS_op (a * b) = f.GNS_op (a) ∘ f.GNS_
 The non-unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
 that is constructed from a linear functional `f` on a possibly non-unital C⋆-algebra.
 -/
-noncomputable def π : NonUnitalStarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
+noncomputable def π : A →⋆ₙₐ[ℂ] (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
   toFun a := mapCLM (f.GNS_op a)
   map_smul' r a := by
     ext x
     induction x using Completion.induction_on with
     | hp => apply isClosed_eq <;> fun_prop
-    | ih x
-    simp [smul_mul_assoc]
+    | ih x => simp [smul_mul_assoc]
   map_zero' := by
     ext b
     induction b using Completion.induction_on with
     | hp => apply isClosed_eq <;> fun_prop
-    | ih b
-    simp
-    rfl
+    | ih b => simp [Completion.coe_zero]
   map_add' x y := by
     ext c
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
-      | ih c
-    simp [add_mul, Completion.coe_add]
+      | ih c => simp [add_mul, Completion.coe_add]
   map_mul' a b := by
     ext c
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
-      | ih c
-    have := map_coe (ContinuousLinearMap.uniformContinuous ((f.GNS_op a).comp
-      (f.GNS_op b)))
-    simp_all
+      | ih c =>
+      have := map_coe ((f.GNS_op a).comp (f.GNS_op b)).uniformContinuous
+      simp_all
   map_star' a := by
     refine (eq_adjoint_iff (mapCLM (f.GNS_op (star a))) (mapCLM (f.GNS_op a))).mpr ?_
     intro x y
     induction x, y using Completion.induction_on₂ with
     | hp => apply isClosed_eq <;> fun_prop
-    | ih x y
-    simp [mul_assoc]
+    | ih x y => simp [mul_assoc]
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
@@ -160,14 +153,13 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : 
 The unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
 that is constructed from a linear functional `f` on a unital C⋆-algebra.
 -/
-noncomputable def π_unital : StarAlgHom ℂ A (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
+noncomputable def π_unital : A →⋆ₐ[ℂ] (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
   toFun := f.π
   map_one' := by
     ext b
     induction b using Completion.induction_on with
     | hp => apply isClosed_eq <;> fun_prop
-    | ih b
-    simp [π]
+    | ih b => simp [π]
   commutes' r := by
     dsimp [π]
     simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, mapCLM]
