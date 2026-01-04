@@ -34,12 +34,6 @@ lemma mk_monotone : Monotone ℤt.mk := by
   rw [WithBot.coe_le_coe, WithTop.coe_le_coe, ]
   exact h
 
-@[simps! obj map]
-def _root_.ιℤt : ℤ ⥤ ℤt := ℤt.mk_monotone.functor
-
-instance {α : Type _} [Preorder α] (a : α) : IsIso (homOfLE (le_refl a)) :=
-  (Iso.refl a).isIso_hom
-
 @[simp]
 lemma some_some_le_none_iff (a : ℤ) :
     @LE.le ℤt _ (some (some a)) none ↔ False := by
