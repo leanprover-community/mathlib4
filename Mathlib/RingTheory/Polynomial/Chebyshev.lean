@@ -201,6 +201,7 @@ theorem T_eval_zero_of_even {n : ℤ} (hn : Even n) : (T R n).eval 0 = (n / 2).n
 theorem T_eval_two_mul_zero (n : ℤ) : (T R (2 * n)).eval 0 = n.negOnePow := by
   simp [T_eval_zero]
 
+@[simp]
 theorem T_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (T R n).eval 0 = 0 := by
   simp [T_eval_zero, ← Int.not_odd_iff_even, hn]
 
