@@ -142,6 +142,8 @@ lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
+/-- In 2D, the line defined by `s.orthRadius p` intersects `s` at exactly two points so long as `p`
+lies strictly within `s` and not at its center. -/
 lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finrank ℝ V = 2)]
     {s : Sphere P} {p : P} (hp : dist p s.center < s.radius) (hpc : p ≠ s.center) :
     (s ∩ s.orthRadius p : Set P).ncard = 2 := by
