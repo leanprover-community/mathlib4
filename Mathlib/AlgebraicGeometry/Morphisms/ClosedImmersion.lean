@@ -247,9 +247,6 @@ lemma isDominant_of_of_appTop_injective [CompactSpace X]
   exact ⟨by simpa only [Scheme.Hom.support_ker, Scheme.IdealSheafData.support_bot,
     Closeds.coe_top, ← dense_iff_closure_eq] using (congr((↑($this).support : Set Y)) :)⟩
 
-@[deprecated (since := "2025-05-10")]
-alias surjective_of_isClosed_range_of_injective := isDominant_of_of_appTop_injective
-
 instance [CompactSpace X] : IsDominant X.toSpecΓ :=
   isDominant_of_of_appTop_injective (by
     simpa only [Scheme.toSpecΓ_appTop] using
