@@ -161,7 +161,7 @@ lemma span_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {s : Set R} :
     span_le.2 fun x h => (mem_bot R).2 <| H x h⟩
 
 lemma span_singleton_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {x : R} :
-    span ({x} : Set R) = ⊥ ↔ x = 0 := by simp
+  span ({x} : Set R) = ⊥ ↔ x = 0 := by simp
 
 lemma map_bot {R S : Type*}
     [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
