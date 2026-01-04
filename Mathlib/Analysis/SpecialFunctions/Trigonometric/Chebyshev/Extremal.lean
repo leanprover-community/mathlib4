@@ -158,10 +158,8 @@ theorem apply_eq_apply_T_real_iff {n : ℕ} {c : ℕ → ℝ}
 
 /-- Coefficients use to reproduce the leading coefficient of a polynomial given its values on the
 Chebyshev nodes. -/
-private noncomputable def leadingCoeff_c (n i : ℕ) :=
-  (∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j))⁻¹
 private noncomputable def leadingCoeffC (n i : ℕ) :=
-    (∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j))⁻¹
+  (∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j))⁻¹
 
 private theorem leadingCoeff_eq_sum_node {n : ℕ} {P : ℝ[X]} (hP : P.degree = n) :
     sumNodes n (leadingCoeffC n) P = P.leadingCoeff := by
