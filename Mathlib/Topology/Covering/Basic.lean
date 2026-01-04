@@ -451,7 +451,7 @@ Then `f` admits a `Trivialization` over the base set `V`. -/
       refine Prod.ext (f_inv _ hx.1) ?_
       rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
       by_contra h; exact (disjoint h).le_bot ⟨idx_U .., inv_U _ _⟩ }
-  have open_preim {W} (hWV: W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
+  have open_preim {W} (hWV : W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
     convert isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
     rw [← Set.inter_iUnion, eq_comm, Set.inter_eq_left]
     exact (Set.preimage_mono hWV).trans exhaustive'
