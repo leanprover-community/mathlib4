@@ -135,8 +135,6 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
   · simp
   simp [h, h.symm]
 
-@[deprecated (since := "2025-05-05")] alias mulVec_stdBasisMatrix := single_mulVec
-
 lemma diagonal_eq_sum_single {R : Type*} [AddCommMonoid R] {ι : Type*} [Fintype ι] [DecidableEq ι]
     (f : ι → R) : ∑ i : ι, single i i (f i) = Matrix.diagonal f := ext fun j k ↦ by
   rw [sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
@@ -272,7 +270,6 @@ end liftLinear
 end ext
 
 section
-
 variable [Zero α] (i j : n) (c : α)
 
 -- This simp lemma should take priority over `diag_apply`
