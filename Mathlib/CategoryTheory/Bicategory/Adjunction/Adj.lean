@@ -191,7 +191,7 @@ def forget₁ : Adj B ⥤ᵖ B where
 -- TODO: define `forget₂` which sends an adjunction to its right adjoint functor
 
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
-underlying isomorphism between the left adjoints. -/
+underlying isomorphisms between the left adjoints. -/
 @[simps]
 def lIso {a b : Adj B} {adj₁ adj₂ : a ⟶ b} (e : adj₁ ≅ adj₂) : adj₁.l ≅ adj₂.l where
   hom := e.hom.τl
