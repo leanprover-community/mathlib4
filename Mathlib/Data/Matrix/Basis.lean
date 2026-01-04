@@ -102,6 +102,7 @@ theorem diagonal_single (i : m) (r : α) :
   dsimp [diagonal, single]
   grind
 
+@[simp]
 theorem submatrix_single_equiv
     (f : l ≃ n) (g : m ≃ o) (i : n) (j : o) (r : α) :
     (single i j r).submatrix f g = single (f.symm i) (g.symm j) r := by
