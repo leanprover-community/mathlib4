@@ -21,6 +21,12 @@ This file defines finitely presented groups and proves their basic properties.
 finitely presented group, normal closure finitely generated,
 -/
 
+/-- The kernel of a composition with an isomorphism equals the preimage (map by symm) of the kernel. -/
+lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
+    (f : H →* K) (e : G ≃* H) : (f.comp e.toMonoidHom).ker = (Subgroup.map (↑e.symm) f.ker) := by
+  rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm']
+  rfl
+
 open Subgroup
 
 -- We define a subgroup that is given by the normal closure of finitely many elements.
@@ -72,7 +78,8 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       constructor
       · exact hf'surj
       · unfold f'
-        rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm']
+        -- rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm']
+        rw [MonoidHom.ker_comp_mulEquiv _ _]
         exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel
 
 variable (G : Type) [Group G] (g : G)
