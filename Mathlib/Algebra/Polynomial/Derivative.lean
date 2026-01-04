@@ -518,7 +518,7 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
 
 theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
     derivative^[n] (p * X ^ m) =
-      ∑ k ∈ range m.succ,
+      ∑ k ∈ range (min m n).succ,
       ((n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k))) := by
   have hsum : derivative^[n] (p * X ^ m) =
       ∑ k ∈ range n.succ,
@@ -530,16 +530,9 @@ theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
     ring
   rw [hsum]
   by_cases! n ≤ m
-  case pos h =>
-    rw [← add_zero (∑ k ∈ range n.succ, _),
-      show range m.succ = range n.succ ∪ Ico n.succ m.succ by grind,
-      sum_union (by rw [range_eq_Ico]; apply Ico_disjoint_Ico_consecutive)]
-    congr 1
-    refine (sum_eq_zero (fun k hk => ?_)).symm
-    rw [Nat.choose_eq_zero_of_lt (by grind)]
-    simp
+  case pos h => simp [h]
   case neg h =>
-    rw [← add_zero (∑ k ∈ range m.succ, _),
+    rw [min_eq_left_of_lt h, ← add_zero (∑ k ∈ range m.succ, _),
       show range n.succ = range m.succ ∪ Ico m.succ n.succ by grind,
       sum_union (by rw [range_eq_Ico]; apply Ico_disjoint_Ico_consecutive)]
     congr 1
@@ -548,10 +541,26 @@ theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
     simp
 
 theorem iterate_derivative_mul_X_pow' {n m} (p : R[X]) :
+    derivative^[n] (p * X ^ m) =
+      ∑ k ∈ range m.succ,
+      ((n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k))) := by
+  rw [iterate_derivative_mul_X_pow p]
+  by_cases! n ≤ m
+  case neg h => rw [min_eq_left_of_lt h]
+  case pos h =>
+    rw [min_eq_right h, ← add_zero (∑ k ∈ range n.succ, _),
+      show range m.succ = range n.succ ∪ Ico n.succ m.succ by grind,
+      sum_union (by rw [range_eq_Ico]; apply Ico_disjoint_Ico_consecutive)]
+    congr 1
+    refine (sum_eq_zero (fun k hk => ?_)).symm
+    rw [Nat.choose_eq_zero_of_lt (by grind)]
+    simp
+
+theorem iterate_derivative_mul_X_pow'' {n m} (p : R[X]) :
     derivative^[n] (derivative^[m] p * X ^ m) =
       ∑ k ∈ range m.succ,
       ((n.choose k * m.descFactorial k) • (derivative^[n + (m - k)] p * X ^ (m - k))) := by
-  rw [iterate_derivative_mul_X_pow]
+  rw [iterate_derivative_mul_X_pow']
   congr! 1 with k hk
   by_cases! k ≤ n
   case pos h =>
@@ -562,7 +571,7 @@ theorem iterate_derivative_mul_X_pow' {n m} (p : R[X]) :
 
 theorem iterate_derivative_mul_X {n} (p : R[X]) :
     derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
-  rw [← pow_one X, iterate_derivative_mul_X_pow, range_add_one, sum_insert notMem_range_self,
+  rw [← pow_one X, iterate_derivative_mul_X_pow', range_add_one, sum_insert notMem_range_self,
     range_one, sum_singleton]
   simp
   ring
@@ -571,7 +580,7 @@ theorem iterate_derivative_mul_X' {n} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
   trans derivative^[n] (derivative^[1] p * X)
   · rw [Function.iterate_one]
-  rw [← pow_one X, iterate_derivative_mul_X_pow', range_add_one, sum_insert notMem_range_self,
+  rw [← pow_one X, iterate_derivative_mul_X_pow'', range_add_one, sum_insert notMem_range_self,
     range_one, sum_singleton]
   simp
   ring
@@ -582,7 +591,7 @@ theorem iterate_derivative_mul_X_sq {n} (p : R[X]) :
       (n * (n - 1)) • derivative^[n - 2] p := by
   trans (n * (n - 1)) • derivative^[n - 2] p + ((2 * n) • (derivative^[n - 1] p) * X +
     (derivative^[n] p) * X ^ 2)
-  · rw [iterate_derivative_mul_X_pow, range_add_one, sum_insert notMem_range_self, range_add_one,
+  · rw [iterate_derivative_mul_X_pow', range_add_one, sum_insert notMem_range_self, range_add_one,
       sum_insert notMem_range_self, range_one, sum_singleton, Nat.sub_self, pow_zero, mul_one,
       Nat.descFactorial_one, Nat.choose_one_right, pow_one, Nat.choose_zero_right,
       Nat.descFactorial_zero, mul_one, one_smul, Nat.sub_zero, Nat.sub_zero]
@@ -598,7 +607,7 @@ theorem iterate_derivative_mul_X_sq' {n} (p : R[X]) :
       (n * (n - 1)) • derivative^[n] p := by
   trans (n * (n - 1)) • derivative^[n] p + ((2 * n) • (derivative^[n + 1] p) * X +
     (derivative^[n + 2] p) * X ^ 2)
-  · rw [iterate_derivative_mul_X_pow', range_add_one, sum_insert notMem_range_self, range_add_one,
+  · rw [iterate_derivative_mul_X_pow'', range_add_one, sum_insert notMem_range_self, range_add_one,
       sum_insert notMem_range_self, range_one, sum_singleton, Nat.sub_self, pow_zero, mul_one,
       Nat.descFactorial_one, Nat.choose_one_right, pow_one, Nat.choose_zero_right,
       Nat.descFactorial_zero, mul_one, one_smul, Nat.sub_zero]
