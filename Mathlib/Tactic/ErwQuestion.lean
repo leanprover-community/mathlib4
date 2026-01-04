@@ -122,8 +122,7 @@ elab_rules : tactic
     -- Follow the implementation of `rw`, using `withRWRulesSeq` followed by
     -- `rewriteLocalDecl` or `rewriteTarget`.
     let loc := expandOptLocation (mkOptionalNode loc)
-    -- using 0 for discharger index means "no discharger clause".
-    withRWRulesSeq (← getRef) tk rs 0 fun symm term => do
+    withRWRulesSeq tk rs fun symm term => do
       withLocation loc
         (fun loc => do
           let g ← getMainGoal

@@ -63,12 +63,12 @@ declare_config_elab elabGRewriteConfig GRewrite.Config
 `grewrite [e]` is like `grw [e]`, but it doesn't try to close the goal with `rfl`.
 This is analogous to `rw` and `rewrite`, where `rewrite` doesn't try to close the goal with `rfl`.
 -/
-syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? (rwDischarge)? : tactic
+syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
 
 @[tactic grewriteSeq, inherit_doc grewriteSeq] def evalGRewriteSeq : Tactic := fun stx => do
   let cfg ← elabGRewriteConfig stx[1]
   let loc := expandOptLocation stx[3]
-  withRWRulesSeq stx stx[0] stx[2] 4 fun symm term => do
+  withRWRulesSeq stx[0] stx[2] fun symm term => do
     withLocation loc
       (grewriteLocalDecl term symm · cfg)
       (grewriteTarget term symm cfg)
