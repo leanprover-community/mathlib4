@@ -94,8 +94,7 @@ lemma signedDist_linear_apply_apply : (signedDist v).linear w p = ⟪-normalize 
 -- Lemmas about the vector argument of `signedDist`
 
 lemma signedDist_smul (r : ℝ) : signedDist (r • v) p q = SignType.sign r * signedDist v p q := by
-  simp only [signedDist_apply_apply]
-  rw [normalize_smul, real_inner_smul_left]
+  simp [signedDist_apply_apply, ← real_inner_smul_left, ← normalize_smul_real]
 
 lemma signedDist_smul_of_pos {r : ℝ} (h : 0 < r) : signedDist (r • v) p q = signedDist v p q := by
   simp [signedDist_smul, h]
@@ -195,8 +194,7 @@ lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -
   rw [signedDist_apply_apply, dist_eq_norm_vsub', NormedSpace.normalize, real_inner_smul_left]
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
-  rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
-  simp only [RCLike.ofReal_real_eq_id, id_eq]
+  rw [inv_mul_eq_iff_eq_mul₀ (by positivity), RCLike.ofReal_real_eq_id, id_eq]
   rw [inner_eq_norm_mul_iff_real]
   simp only [smul_def]
   refine ⟨fun h => ?_, fun ⟨c, h⟩ => ?_⟩
