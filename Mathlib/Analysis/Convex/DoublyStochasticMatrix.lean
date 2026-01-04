@@ -67,12 +67,19 @@ lemma mem_doublyStochastic_iff_sum :
 
 /-- A matrix is doubly stochastic if and only if it is both row and
 column stochastic. -/
-lemma rowStochastic_inf_colStochastic :
-    rowStochastic R n ⊓ colStochastic R n = doublyStochastic R n := by
+@[grind =]
+lemma doublyStochastic_eq_rowStochastic_inf_colStochastic :
+    doublyStochastic R n = rowStochastic R n ⊓ colStochastic R n := by
   ext M
   simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
     Set.mem_setOf_eq, doublyStochastic]
   grind
+
+attribute [grind =] Submonoid.mem_inf
+
+lemma mem_doublyStochastic_iff_mem_rowStochastic_and_mem_colStochastic {M : Matrix n n R} :
+    M ∈ doublyStochastic R n ↔ M ∈ rowStochastic R n ∧ M ∈ colStochastic R n := by
+  rw [doublyStochastic_eq_rowStochastic_inf_colStochastic, Submonoid.mem_inf]
 
 /-- Every entry of a doubly stochastic matrix is nonnegative. -/
 lemma nonneg_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) {i j : n} : 0 ≤ M i j :=
@@ -109,32 +116,15 @@ lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n
 /-- Any permutation matrix is doubly stochastic. -/
 lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
     σ.permMatrix R ∈ doublyStochastic R n := by
-  rw [mem_doublyStochastic_iff_sum]
-  refine ⟨fun i j => ?g1, ?g2, ?g3⟩
-  case g1 => aesop
-  case g2 => simp [Equiv.toPEquiv_apply]
-  case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+  grind only [= doublyStochastic_eq_rowStochastic_inf_colStochastic, = Submonoid.mem_inf,
+    ← permMatrix_mem_rowStochastic, ← permMatrix_mem_colStochastic]
 
 /-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
-lemma mem_doublyStochastic_iff_transpose :
-    M ∈ doublyStochastic R n ↔
-      M.transpose ∈ doublyStochastic R n := by
-  constructor
-  · intro hM
-    have : (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
-      exact mem_doublyStochastic_iff_sum.mp hM
-    have h₀ : ∀ (i j : n), 0 ≤ M.transpose i j := by aesop
-    have h₁ : ∀ (i : n), ∑ j, M.transpose i j = 1 := by aesop
-    have h₂ : ∀ (j : n), ∑ i, M.transpose i j = 1 := by aesop
-    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂ ⟩
-  · intro hM
-    have : (∀ i j, 0 ≤ M.transpose i j) ∧ (∀ i, ∑ j, M.transpose i j = 1)
-        ∧ ∀ j, ∑ i, M.transpose i j = 1 := by
-      exact mem_doublyStochastic_iff_sum.mp hM
-    have h₀ : ∀ (i j : n), 0 ≤ M i j := by aesop
-    have h₁ : ∀ (i : n), ∑ j, M i j = 1 := by aesop
-    have h₂ : ∀ (j : n), ∑ i, M i j = 1 := by aesop
-    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂⟩
+lemma transpose_mem_doublyStochastif_iff :
+    M.transpose ∈ doublyStochastic R n ↔ M ∈ doublyStochastic R n := by
+  grind only [= doublyStochastic_eq_rowStochastic_inf_colStochastic, = Submonoid.mem_inf,
+    = transpose_mem_rowStochastic_iff_mem_colStochastic, = mem_rowStochastic,
+    = transpose_mem_colStochastic_iff_mem_rowStochastic, = mem_colStochastic]
 
 end OrderedSemiring
 

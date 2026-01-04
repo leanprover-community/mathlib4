@@ -13,36 +13,38 @@ public import Mathlib.LinearAlgebra.Matrix.Permutation
 /-!
 # Row- and Column-stochastic matrices
 
-A square matrix `M` is *row-stochastic* if all its entries are non-negative and `M *ᵥ 1 = 1`. Likewise, `M` is *column-stochastic* if all its entries are non-negative and `1 ᵥ* M = 1`. This file defines these concepts and provides basic API for them.
+A square matrix `M` is *row-stochastic* if all its entries are non-negative and `M *ᵥ 1 = 1`.
+Likewise, `M` is *column-stochastic* if all its entries are non-negative and `1 ᵥ* M = 1`. This
+file defines these concepts and provides basic API for them.
 
-Note that *doubly stochastic* matrices (i.e. matrices that are both row- and column-stochastic) are defined in `Analysis.Convex.DoublyStochasticMatrix`.
+Note that *doubly stochastic* matrices (i.e. matrices that are both row- and column-stochastic)
+are defined in `Analysis.Convex.DoublyStochasticMatrix`.
 
 ## Main definitions
 
-* `rowStochastic`: row-stochastic matrices indexed by `n` with entries in `R`, as a submonoid of `Matrix n n R`.
-* `colStochastic R n`: column-stochastic matrices indexed by `n` with entries in `R`, as a submonoid of `Matrix n n R`.
+* `rowStochastic`: row-stochastic matrices indexed by `n` with entries in `R`, as a submonoid
+  of `Matrix n n R`.
+* `colStochastic R n`: column-stochastic matrices indexed by `n` with entries in `R`, as a
+  submonoid of `Matrix n n R`.
 
 -/
 
 @[expose] public section
 
-open Finset Function
-open Matrix
+open Finset
 
-
-namespace Stochastic
+namespace Matrix
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {M : Matrix n n R}
 variable {x : n → R}
 
-/--
-A square matrix is row stochastic iff all entries are nonnegative, and right
-multiplication by the vector of all 1s gives the vector of all 1s.
--/
+/- ## Row-stochastic matrices -/
+
+/-- A square matrix is row stochastic iff all entries are nonnegative, and right
+multiplication by the vector of all 1s gives the vector of all 1s. -/
 def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [PartialOrder R]
-    [IsOrderedRing R] :
-    Submonoid (Matrix n n R) where
+    [IsOrderedRing R] : Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1  }
   mul_mem' {M N} hM hN := by
     refine ⟨fun i j => sum_nonneg fun i _ => mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_⟩
@@ -50,6 +52,7 @@ def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
   one_mem' := by
     simp [zero_le_one_elem]
 
+@[grind =]
 lemma mem_rowStochastic :
     M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧  M *ᵥ 1 = 1 :=
   Iff.rfl
@@ -76,7 +79,6 @@ lemma le_one_of_mem_rowStochastic (hM : M ∈ rowStochastic R n) {i j : n} :
     M i j ≤ 1 := by
   rw [← sum_row_of_mem_rowStochastic hM i]
   exact single_le_sum (fun k _ => hM.1 _ k) (mem_univ j)
-
 
 /-- Left multiplication of a row stochastic matrix by a non-negative vector
 gives a non-negative vector -/
@@ -112,6 +114,7 @@ lemma convex_rowStochastic : Convex R (rowStochastic R n : Set (Matrix n n R)) :
   simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
 
 /-- Any permutation matrix is row stochastic. -/
+@[simp, grind ←]
 lemma permMatrix_mem_rowStochastic {σ : Equiv.Perm n} :
     σ.permMatrix R ∈ rowStochastic R n := by
   rw [mem_rowStochastic_iff_sum]
@@ -120,29 +123,25 @@ lemma permMatrix_mem_rowStochastic {σ : Equiv.Perm n} :
   case g2 => simp [Equiv.toPEquiv_apply]
 
 
+/- ## Column-stochastic matrices -/
 
-/--
-A square matrix is column stochastic iff all entries are nonnegative, and left
-multiplication by the vector of all 1s gives the vector of all 1s.
--/
+/-- A square matrix is column stochastic iff all entries are nonnegative, and left
+multiplication by the vector of all 1s gives the vector of all 1s. -/
 def colStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [PartialOrder R]
-    [IsOrderedRing R] :
-    Submonoid (Matrix n n R) where
+    [IsOrderedRing R] : Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ 1 ᵥ* M = 1  }
   mul_mem' {M N} hM hN := by
     refine Set.mem_sep ?_ ?_
     · intro i j
       apply Finset.sum_nonneg
-      intro k _
-      apply mul_nonneg
-      · exact hM.1 i k
-      · exact hN.1 k j
+      grind [mul_nonneg]
     · rw [← vecMul_vecMul, hM.2, hN.2]
   one_mem' := by
     simp [zero_le_one_elem]
 
+@[grind =]
 lemma mem_colStochastic :
-    M ∈ colStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧  1 ᵥ* M = 1 :=
+    M ∈ colStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ 1 ᵥ* M = 1 :=
   Iff.rfl
 
 /-- A matrix is column stochastic if each column sums to one. -/
@@ -193,7 +192,7 @@ lemma nonneg_vecMul_of_mem_colStochastic (hM : M ∈ colStochastic R n)
 
 /-- Left left-multiplication by column stochastic preserves `ℓ₁ norm` -/
 lemma mulVec_dotProduct_one_eq_one_colStochastic (hM : M ∈ colStochastic R n)
-    (hx : 1 ⬝ᵥ x = 1) : 1  ⬝ᵥ (M  *ᵥ x) = 1 := by
+    (hx : 1 ⬝ᵥ x = 1) : 1 ⬝ᵥ (M *ᵥ x) = 1 := by
   rw [dotProduct_mulVec, hM.2, hx]
 
 /-- The set of column stochastic matrices is convex. -/
@@ -203,6 +202,7 @@ lemma convex_colStochastic : Convex R (colStochastic R n : Set (Matrix n n R)) :
   simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
 
 /-- Any permutation matrix is column stochastic. -/
+@[simp, grind ←]
 lemma permMatrix_mem_colStochastic {σ : Equiv.Perm n} :
     σ.permMatrix R ∈ colStochastic R n := by
   rw [mem_colStochastic_iff_sum]
@@ -210,11 +210,20 @@ lemma permMatrix_mem_colStochastic {σ : Equiv.Perm n} :
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
 
-/-- A matrix is column stochastic if and only if its transpose is row stochastic. -/
-lemma colStochastic_iff_transpose_rowStochastic :
-    M ∈ colStochastic R n ↔ Mᵀ ∈ rowStochastic R n := by
+/-- The transpose of a matrix is row stochastic matrix if it is column stochastic. -/
+@[grind =]
+lemma transpose_mem_rowStochastic_iff_mem_colStochastic :
+    Mᵀ ∈ rowStochastic R n ↔ M ∈ colStochastic R n := by
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
   exact fun _ ↦ forall_swap
 
-end Stochastic
+/-- The transpose of a matrix is column stochastic matrix if it is row stochastic. -/
+@[grind =]
+lemma transpose_mem_colStochastic_iff_mem_rowStochastic :
+    Mᵀ ∈ colStochastic R n ↔ M ∈ rowStochastic R n := by
+  simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
+    and_congr_left_iff]
+  exact fun _ ↦ forall_swap
+
+end Matrix
