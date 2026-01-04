@@ -33,11 +33,7 @@ satisfying the simplicial identities involving the faces and degeneracies.
 
 @[expose] public section
 
-<<<<<<< HEAD
 universe v u v' u'
-=======
-universe v u
->>>>>>> a057c3635eabda014c35b22cd838e5f4ad7a946f
 
 noncomputable section
 
@@ -94,34 +90,21 @@ def refl (f : X ⟶ Y) : SimplicialHomotopy f f where
   h_zero_comp_δ_zero n := by
     have := Y.δ_comp_σ_self (n := n) (i := 0)
     dsimp at this
-<<<<<<< HEAD
     simp only [SimplicialObject.σ_naturality, Category.assoc, this, Category.comp_id]
   h_last_comp_δ_last n := by
     have := Y.δ_comp_σ_succ (i := Fin.last n)
     dsimp at this
     simp only [SimplicialObject.σ_naturality, Category.assoc, this, Category.comp_id]
-=======
-    simp [this]
-  h_last_comp_δ_last n := by
-    have := Y.δ_comp_σ_succ (i := Fin.last n)
-    dsimp at this
-    simp [this]
->>>>>>> a057c3635eabda014c35b22cd838e5f4ad7a946f
   h_succ_comp_δ_castSucc_of_lt i j hij := by simp [Y.δ_comp_σ_of_le hij]
   h_succ_comp_δ_castSucc_succ j := by
     have h₁ := Y.δ_comp_σ_self (i := j.succ)
     have h₂ := Y.δ_comp_σ_succ (i := j.castSucc)
     dsimp at h₁ h₂
-<<<<<<< HEAD
     simp only [SimplicialObject.σ_naturality, Category.assoc, h₁, Category.comp_id, h₂]
-=======
-    simp [h₁, h₂]
->>>>>>> a057c3635eabda014c35b22cd838e5f4ad7a946f
   h_castSucc_comp_δ_succ_of_lt i j hji := by simp [Y.δ_comp_σ_of_gt hji]
   h_comp_σ_castSucc_of_le i j hij := by simp [Y.σ_comp_σ hij]
   h_comp_σ_succ_of_lt i j hji := by simp [Y.σ_comp_σ hji]
 
-<<<<<<< HEAD
 
 variable {D : Type u'} [Category.{v'} D]
 variable (F : C ⥤ D)
@@ -163,8 +146,6 @@ def whiskerRight (H : SimplicialHomotopy f g) :
     simpa [SimplicialObject.σ] using
       congrArg (fun k => F.map k) (H.h_comp_σ_succ_of_lt i j hji)
 
-=======
->>>>>>> a057c3635eabda014c35b22cd838e5f4ad7a946f
 end SimplicialHomotopy
 
 end CategoryTheory
