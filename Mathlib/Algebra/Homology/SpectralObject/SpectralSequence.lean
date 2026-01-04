@@ -17,74 +17,9 @@ public import Batteries.Data.Fin.Basic
 
 @[expose] public section
 
-namespace ComplexShape
-
-variable {ι : Type*} [DecidableEq ι] [AddRightCancelSemigroup ι]
-
-instance (u : ι) : DecidableRel (ComplexShape.up' u).Rel := fun _ _ => by
-  dsimp [up']
-  infer_instance
-
-end ComplexShape
-
 namespace CategoryTheory
 
 open Category Limits ComposableArrows
-
-/-- homOfLE' -/
-abbrev homOfLE' {ι : Type*} [Preorder ι] (a b : ι) (h : a ≤ b) : a ⟶ b := homOfLE h
-
-lemma isIso_homOfLE {ι : Type*} [Preorder ι] (i j : ι) (hij : i = j) :
-    IsIso (homOfLE' i j (by rw [hij])) := by
-  subst hij
-  change IsIso (𝟙 _)
-  infer_instance
-
-namespace ComposableArrows
-
-variable {ι : Type*} [Preorder ι]
-
-/-- twoδ₁Toδ₀' -/
-noncomputable abbrev twoδ₁Toδ₀' (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁)
-    (hi₁₂ : i₁ ≤ i₂) :
-    mk₁ (homOfLE (hi₀₁.trans hi₁₂)) ⟶ mk₁ (homOfLE hi₁₂) :=
-  twoδ₁Toδ₀ (homOfLE hi₀₁) _ _ rfl
-
-/-- twoδ₂Toδ₁' -/
-noncomputable abbrev twoδ₂Toδ₁' (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁)
-    (hi₁₂ : i₁ ≤ i₂) :
-     mk₁ (homOfLE hi₀₁) ⟶ mk₁ (homOfLE (hi₀₁.trans hi₁₂)) :=
-  twoδ₂Toδ₁ _ (homOfLE hi₁₂) _ rfl
-
-/-- threeδ₂Toδ₁' -/
-noncomputable abbrev threeδ₂Toδ₁' (i₀ i₁ i₂ i₃ : ι) (hi₀₁ : i₀ ≤ i₁)
-    (hi₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) :
-     mk₂ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans h₂₃)) ⟶
-      mk₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE h₂₃) :=
-  threeδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ rfl _ rfl
-
-/-- fourδ₁Toδ₀' -/
-noncomputable abbrev fourδ₁Toδ₀' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
-    (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
-    mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) ⟶
-      mk₃ (homOfLE hi₁₂) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
-  fourδ₁Toδ₀ (homOfLE hi₀₁) _ _ _ _ rfl
-
-/-- fourδ₂Toδ₁' -/
-noncomputable abbrev fourδ₂Toδ₁' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
-    (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
-    mk₃ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) (homOfLE hi₃₄)  ⟶
-      mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
-  fourδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ _ rfl _ rfl
-
-/-- fourδ₄Toδ₃' -/
-noncomputable abbrev fourδ₄Toδ₃' (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
-    (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) :
-    mk₃ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE hi₂₃) ⟶
-      mk₃ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE (hi₂₃.trans hi₃₄)) :=
-  fourδ₄Toδ₃ _ _ _ (homOfLE hi₃₄) _ rfl
-
-end ComposableArrows
 
 namespace Abelian
 
@@ -119,7 +54,7 @@ structure SpectralSequenceMkData where
 
 @[simps!]
 def mkDataE₂Cohomological :
-    SpectralSequenceMkData ℤt (fun r => ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
+    SpectralSequenceMkData ℤt (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
   deg pq := pq.1 + pq.2
   i₀ r hr pq := ℤt.mk (pq.2 - r + 2)
   i₁ pq := ℤt.mk pq.2
@@ -151,7 +86,7 @@ def mkDataE₂Cohomological :
 @[simps!]
 def mkDataE₂CohomologicalNat :
     SpectralSequenceMkData ℤt
-    (fun r => ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩) 2 where
+    (fun r ↦ ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩) 2 where
   deg pq := pq.1 + pq.2
   i₀ r hr pq := ℤt.mk (pq.2 - r + 2)
   i₁ pq := ℤt.mk pq.2
@@ -193,7 +128,7 @@ lemma _root_.Fin.clamp_le_clamp {a b : ℕ} (h : a ≤ b) (m : ℕ) :
 
 def mkDataE₂CohomologicalFin (l : ℕ) :
     SpectralSequenceMkData (Fin (l + 1))
-    (fun r => ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩) 2 where
+    (fun r ↦ ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩) 2 where
   deg pq := pq.1 + pq.2.1
   i₀ r hr pq := ⟨(pq.2.1 - (r - 2)).toNat, by
     by_cases h : 0 ≤ pq.2.1 - (r - 2)

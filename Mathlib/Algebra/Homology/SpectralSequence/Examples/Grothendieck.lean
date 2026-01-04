@@ -23,7 +23,7 @@ namespace Plus
 
 open TStructure
 
-variable {A B C : Type _} [Category A] [Category B] [Category C]
+variable {A B C : Type*} [Category* A] [Category* B] [Category* C]
   [Abelian A] [Abelian B] [Abelian C]
   [HasDerivedCategory A] [HasDerivedCategory B] [HasDerivedCategory C]
   (F : A ⥤ B) [F.Additive] [EnoughInjectives A]

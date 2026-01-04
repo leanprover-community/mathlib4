@@ -11,6 +11,8 @@ public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.ArrowSeven
 public import Mathlib.CategoryTheory.ComposableArrows.One
 public import Mathlib.CategoryTheory.ComposableArrows.Two
+public import Mathlib.CategoryTheory.ComposableArrows.Three
+public import Mathlib.CategoryTheory.ComposableArrows.Four
 public import Mathlib.CategoryTheory.Subobject.Lattice
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
@@ -229,142 +231,6 @@ lemma ComposableArrows.exact_iff_exact_evaluation
           exact (hS i).exact k }
 
 namespace ComposableArrows
-
-section
-
-variable {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
-    (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂)
-    (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
-
-def threeδ₃Toδ₂ :
-    mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃ :=
-  homMk₂ (𝟙 _) (𝟙 _) f₃ (by simp) (by simpa using h₂₃)
-
-@[simp]
-lemma threeδ₃Toδ₂_app_zero :
-    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 0 = 𝟙 _ := rfl
-
-@[simp]
-lemma threeδ₃Toδ₂_app_one :
-    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 1 = 𝟙 _ := rfl
-
-@[simp]
-lemma threeδ₃Toδ₂_app_two :
-    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 2 = f₃ := rfl
-
-def threeδ₂Toδ₁ :
-    mk₂ f₁ f₂₃ ⟶ mk₂ f₁₂ f₃ :=
-  homMk₂ (𝟙 _) f₂ (𝟙 _) (by simpa using h₁₂) (by simpa using h₂₃.symm)
-
-@[simp]
-lemma threeδ₂Toδ₁_app_zero :
-    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app 0 = 𝟙 _ := rfl
-
-@[simp]
-lemma threeδ₂Toδ₁_app_one :
-    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app 1 = f₂ := rfl
-
-@[simp]
-lemma threeδ₂Toδ₁_app_two :
-    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app 2 = 𝟙 _ := rfl
-
-/-- Variant of `threeδ₂Toδ₁_app_two`. -/
-@[simp]
-lemma threeδ₂Toδ₁_app_two' :
-    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by lia⟩ = 𝟙 _ := rfl
-
-def threeδ₁Toδ₀ :
-    mk₂ f₁₂ f₃ ⟶ mk₂ f₂ f₃ :=
-  homMk₂ f₁ (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp; rfl)
-
-@[simp]
-lemma threeδ₁Toδ₀_app_zero :
-    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 0 = f₁ := rfl
-
-@[simp]
-lemma threeδ₁Toδ₀_app_one :
-    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 1 = (𝟙 _) := rfl
-
-@[simp]
-lemma threeδ₁Toδ₀_app_two :
-    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 2 = (𝟙 _) := rfl
-
-end
-
-section
-
-variable {i₀ i₁ i₂ i₃ i₄ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
-  (f₄ : i₃ ⟶ i₄)
-  (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
-  (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
-  (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
-
-def fourδ₄Toδ₃ :
-    mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄ :=
-  homMk₃ (𝟙 _) (𝟙 _) (𝟙 _) f₄ (by simp) (by simp; rfl) (by simpa using h₃₄)
-
-@[simp]
-lemma fourδ₄Toδ₃_app_zero :
-    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 0 = 𝟙 _ := rfl
-
-@[simp]
-lemma fourδ₄Toδ₃_app_one :
-    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 1 = 𝟙 _ := rfl
-
-@[simp]
-lemma fourδ₄Toδ₃_app_two :
-    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 2 = 𝟙 _ := rfl
-
-@[simp]
-lemma fourδ₄Toδ₃_app_three :
-    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 3 = f₄ := rfl
-
-def fourδ₂Toδ₁ :
-    mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄ :=
-  homMk₃ (𝟙 _) f₂ (𝟙 _) (𝟙 _) (by simpa using h₁₂) (by simpa using h₂₃.symm) (by simp; rfl)
-
-@[simp]
-lemma fourδ₂Toδ₁_app_zero :
-    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app 0 = 𝟙 _ := rfl
-
-@[simp]
-lemma fourδ₂Toδ₁_app_one :
-    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app 1 = f₂ := rfl
-
-@[simp]
-lemma fourδ₂Toδ₁_app_two :
-    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app 2 = 𝟙 _ := rfl
-
-/-- Variant of `fourδ₂Toδ₁_app_two`. -/
-@[simp]
-lemma fourδ₂Toδ₁_app_two' :
-    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by lia⟩ = 𝟙 _ := rfl
-
-@[simp]
-lemma fourδ₂Toδ₁_app_three :
-    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app 3 = 𝟙 _ := rfl
-
-def fourδ₁Toδ₀ :
-    mk₃ f₁₂ f₃ f₄ ⟶ mk₃ f₂ f₃ f₄ :=
-  homMk₃ f₁ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp; rfl) (by simp; rfl)
-
-@[simp]
-lemma fourδ₁Toδ₀_app_zero :
-    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 0 = f₁ := rfl
-
-@[simp]
-lemma fourδ₁Toδ₀_app_one :
-    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 1 = 𝟙 _ := rfl
-
-@[simp]
-lemma fourδ₁Toδ₀_app_two :
-    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 2 = 𝟙 _ := rfl
-
-@[simp]
-lemma fourδ₁Toδ₀_app_three :
-    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 3 = 𝟙 _ := rfl
-
-end
 
 section
 

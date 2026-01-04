@@ -246,10 +246,10 @@ instance : Epi (X.imageToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h�
 @[reassoc (attr := simp)]
 lemma imageMap_threeδ₂Toδ₁_imageToE :
     X.imageMap n₁ f₁ f₂₃ f₁₂₃ (by rw [← h₁₂₃, h₂₃])
-      f₁₂ f₃ f₁₂₃ (by rw [← h₁₂₃, ← assoc, h₁₂]) (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃) ≫
+      f₁₂ f₃ f₁₂₃ (by rw [← h₁₂₃, ← assoc, h₁₂]) (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃) ≫
       X.imageToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ f₁₂₃ h₁₂₃ = 0 := by
   rw [← cancel_epi (X.imageπ n₁ f₁ f₂₃ f₁₂₃ _), comp_zero,
-    X.π_imageMap_assoc n₁ f₁ f₂₃ f₁₂₃ _ f₁₂ f₃ f₁₂₃ _ (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃)
+    X.π_imageMap_assoc n₁ f₁ f₂₃ f₁₂₃ _ f₁₂ f₃ f₁₂₃ _ (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃)
       (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) rfl, π_imageToE, H_map_twoδ₂Toδ₁_toCycles_assoc, zero_comp]
 
 @[simps]
@@ -264,7 +264,7 @@ instance : Mono (X.shortComplexImage n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f
   replace hx := hx =≫ X.imageι _ _ _ _ _
   rw [zero_comp, assoc] at hx
   rw [X.imageMap_ι n₁ f₁ f₂₃ f₁₂₃ _ f₁₂ f₃ f₁₂₃ _
-    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃) (𝟙 _) (by aesop_cat), Functor.map_id, comp_id] at hx
+    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃) (𝟙 _) (by aesop_cat), Functor.map_id, comp_id] at hx
   rw [← cancel_mono (X.imageι _ _ _ _ _), zero_comp, hx]
 
 instance : Epi (X.shortComplexImage n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ f₁₂₃ h₁₂₃).g := by
