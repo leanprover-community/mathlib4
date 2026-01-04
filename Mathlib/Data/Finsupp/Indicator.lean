@@ -53,7 +53,7 @@ theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
   exact DFunLike.congr_fun h i
 
-theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := support_onFinset_subset
+theorem support_indicator_subset : (indicator s f).support ⊆ s := support_onFinset_subset
 
 lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
   classical
