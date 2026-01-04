@@ -68,40 +68,63 @@ variable [AddCommGroup 𝕜] [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archi
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {p : 𝕜} (hp : 0 < p) (a x : 𝕜)
 
+/-- `toIcoDiv` is eventually constant on the right at every point. -/
 theorem eventuallyEq_toIcoDiv_nhdsGE : toIcoDiv hp a =ᶠ[𝓝[≥] x] fun _ ↦ toIcoDiv hp a x := by
   simp only [Filter.EventuallyEq, toIcoDiv_eq_iff, sub_mem_Ico_iff_left]
   apply Ico_mem_nhdsGE_of_mem
   rw [← sub_mem_Ico_iff_left, ← toIcoDiv_eq_iff]
 
+/-- `toIcoDiv` is continuous on the right at every point.
+
+In fact, a stronger statement is true:
+it's eventually constant on the right, see `eventuallyEq_toIcoDiv_nhdsGE`. -/
 theorem continuousWithinAt_toIcoDiv_Ici : ContinuousWithinAt (toIcoDiv hp a) (Ici x) x :=
   Filter.tendsto_pure.mpr (eventuallyEq_toIcoDiv_nhdsGE hp a x) |>.mono_right <| pure_le_nhds _
 
+/-- `toIocDiv` is eventually constant on the left at every point. -/
 theorem eventuallyEq_toIocDiv_nhdsLE : toIocDiv hp a =ᶠ[𝓝[≤] x] fun _ ↦ toIocDiv hp a x := by
   simp only [Filter.EventuallyEq, toIocDiv_eq_iff, sub_mem_Ioc_iff_left]
   apply Ioc_mem_nhdsLE_of_mem
   rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
 
+/-- `toIocDiv` is continuous on the left at every point.
+
+In fact, a stronger statement is true:
+it's eventually constant on the left, see `eventuallyEq_toIocDiv_nhdsLE`. -/
 theorem continuousWithinAt_toIocDiv_Iic : ContinuousWithinAt (toIocDiv hp a) (Iic x) x :=
   Filter.tendsto_pure.mpr (eventuallyEq_toIocDiv_nhdsLE hp a x) |>.mono_right <| pure_le_nhds _
 
+/-- `toIcoMod` is continuous on the right at every point. -/
 theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ici x) x :=
-  continuousWithinAt_id.sub <| 
+  continuousWithinAt_id.sub <|
     (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
 
+@[deprecated (since := "2026-01-04")]
 alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
 
-theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
-  refine continuousWithinAt_id.sub <| Filter.Tendsto.mono_right ?_ (pure_le_nhds _)
-  rw [Filter.tendsto_pure]
-  exact (eventuallyEq_toIocDiv_nhdsLE hp a x).fun_comp (· • p)
+/-- `toIocMod` is continuous on the right at every point. -/
+theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x :=
+  continuousWithinAt_id.sub <|
+    (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
 
+@[deprecated (since := "2026-01-04")]
 alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic
 
+/-- At every point `x`, for all `y < x` sufficiently close to `x`,
+we have `toIcoDiv hp a y = toIocDiv hp a x`.
+
+Note that we use different functions on the LHS and on the RHS.
+-/
 theorem eventuallyEq_toIcoDiv_nhdsLT : toIcoDiv hp a =ᶠ[𝓝[<] x] fun _ ↦ toIocDiv hp a x := by
   simp only [Filter.EventuallyEq, toIcoDiv_eq_iff, sub_mem_Ico_iff_left]
   apply Ico_mem_nhdsLT_of_mem
   rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
 
+/-- At every point `x`, for all `y > x` sufficiently close to `x`,
+we have `toIocDiv hp a y = toIcoDiv hp a x`.
+
+Note that we use different functions on the LHS and on the RHS.
+-/
 theorem eventuallyEq_toIocDiv_nhdsGT : toIocDiv hp a =ᶠ[𝓝[>] x] fun _ ↦ toIcoDiv hp a x := by
   simp only [Filter.EventuallyEq, toIocDiv_eq_iff, sub_mem_Ioc_iff_left]
   apply Ioc_mem_nhdsGT_of_mem
@@ -109,6 +132,8 @@ theorem eventuallyEq_toIocDiv_nhdsGT : toIocDiv hp a =ᶠ[𝓝[>] x] fun _ ↦ t
 
 variable {x}
 
+/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
+then `toIcoDiv` is locally constant near `x`. -/
 theorem eventuallyEq_toIcoDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
     toIcoDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIcoDiv hp a x := by
   rw [← nhdsLT_sup_nhdsGE, Filter.EventuallyEq, Filter.eventually_sup]
@@ -116,14 +141,22 @@ theorem eventuallyEq_toIcoDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
   convert (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
   rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, not_modEq_iff_ne_mod_zmultiples, ne_comm]
 
+/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
+then `toIcoDiv` is continuous at `x`.
+
+In fact, it is locally near `x`, see `eventuallyEq_toIcoDiv_nhds`. -/
 theorem continuousAt_toIcoDiv (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
     ContinuousAt (toIcoDiv hp a) x :=
   tendsto_nhds_of_eventually_eq <| eventuallyEq_toIcoDiv_nhds hp a hx
 
+/-- `toIcoDiv` is continuous on the set of points
+that don't project to the endpoint on the circle `𝕜 / zmultiples p`. -/
 theorem continuousOn_toIcoDiv :
     ContinuousOn (toIcoDiv hp a) ((↑) ⁻¹' {(a : 𝕜 ⧸ zmultiples p)}ᶜ) := fun _x hx ↦
   (continuousAt_toIcoDiv hp a hx).continuousWithinAt
 
+/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
+then `toIocDiv` is locally constant near `x`. -/
 theorem eventuallyEq_toIocDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
     toIocDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIocDiv hp a x := by
   rw [← nhdsLE_sup_nhdsGT, Filter.EventuallyEq, Filter.eventually_sup]
@@ -131,10 +164,16 @@ theorem eventuallyEq_toIocDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
   convert (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
   rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, not_modEq_iff_ne_mod_zmultiples, ne_comm]
 
+/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
+then `toIocDiv` is continuous at `x`.
+
+In fact, it is locally near `x`, see `eventuallyEq_toIocDiv_nhds`. -/
 theorem continuousAt_toIocDiv (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
     ContinuousAt (toIocDiv hp a) x :=
   tendsto_nhds_of_eventually_eq <| eventuallyEq_toIocDiv_nhds hp a hx
 
+/-- `toIocDiv` is continuous on the set of points
+that don't project to the endpoint on the circle `𝕜 / zmultiples p`. -/
 theorem continuousOn_toIocDiv :
     ContinuousOn (toIocDiv hp a) ((↑) ⁻¹' {(a : 𝕜 ⧸ zmultiples p)}ᶜ) := fun _x hx ↦
   (continuousAt_toIocDiv hp a hx).continuousWithinAt
