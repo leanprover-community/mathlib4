@@ -73,6 +73,6 @@ theorem normalize_real_smul (r : ℝ) (x : V) :
   · simp
   · simp [normalize_smul_of_neg, h_neg]
 
-@[deprecated (since := "2025-01-04")] alias normalize_smul := normalize_real_smul
+@[deprecated (since := "2026-01-04")] alias normalize_smul := normalize_real_smul
 
 end NormedSpace
