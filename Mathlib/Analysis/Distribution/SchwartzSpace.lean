@@ -648,11 +648,11 @@ section Multiplication
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup D] [NormedSpace ℝ D]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F]
 
 section bilin
 
-variable [NormedSpace 𝕜 E]
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -744,7 +744,9 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
 
 end smul
 
-variable [NormedSpace 𝕜 E]
+section pairing
+
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
 /-- The bilinear pairing of Schwartz functions.
 
@@ -764,9 +766,9 @@ theorem pairing_apply_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (
 theorem pairing_continuous_left (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
     Continuous (pairing B · g) := (pairing B.flip g).continuous
 
-open ContinuousLinearMap
+end pairing
 
-variable [NormedSpace 𝕜 F]
+open ContinuousLinearMap
 
 variable (𝕜 F) in
 /-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
