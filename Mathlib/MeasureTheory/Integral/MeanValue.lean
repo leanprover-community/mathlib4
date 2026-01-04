@@ -5,7 +5,7 @@ Authors: Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Average.MeanValue
+public import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # First mean value theorem for set integrals
@@ -36,11 +36,8 @@ Let `s` be a connected measurable set. If `f` is continuous on `s`, `g` is integ
 `f * g` is integrable on `s`, and `g` is nonnegative a.e. on `s` w.r.t. `μ.restrict s`, then
 `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)`. -/
 theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
-    (hs_conn : IsConnected s)
-    (hs_meas : MeasurableSet s)
-    (hf : ContinuousOn f s)
-    (hg : IntegrableOn g s μ)
-    (hfg : IntegrableOn (fun x ↦ f x * g x) s μ)
+    (hs_conn : IsConnected s) (hs_meas : MeasurableSet s) (hf : ContinuousOn f s)
+    (hg : IntegrableOn g s μ) (hfg : IntegrableOn (fun x ↦ f x * g x) s μ)
     (hg0 : ∀ᵐ x ∂(μ.restrict s), 0 ≤ g x) :
     ∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ) := by
   let ρ := fun x ↦ ENNReal.ofReal (g x)
@@ -96,7 +93,7 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
         rw [integrableOn_congr_fun_ae hmul_ae]
         exact hfg
       have h_Int : Integrable f ((μ.restrict s).withDensity ρ) := by
-        rwa [integrable_withDensity_iff_integrable_smul₀' hρ_ae hρ_top, ←IntegrableOn]
+        rwa [integrable_withDensity_iff_integrable_smul₀' hρ_ae hρ_top, ← IntegrableOn]
       have hνrs : ν.restrict s = (μ.restrict s).withDensity ρ := by
         ext t ht
         have hts : MeasurableSet (t ∩ s) := ht.inter hs_meas
@@ -119,11 +116,8 @@ Let `s` be a connected measurable set. If `f` is continuous on `s`, `g` is integ
 `f * g` is integrable on `s`, and `g` is nonnegative on `s`, then
 `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)` -/
 theorem exists_eq_const_mul_setIntegral_of_nonneg
-    (hs_conn : IsConnected s)
-    (hs_meas : MeasurableSet s)
-    (hf : ContinuousOn f s)
-    (hg : IntegrableOn g s μ)
-    (hfg : IntegrableOn (fun x ↦ f x * g x) s μ)
+    (hs_conn : IsConnected s) (hs_meas : MeasurableSet s) (hf : ContinuousOn f s)
+    (hg : IntegrableOn g s μ) (hfg : IntegrableOn (fun x ↦ f x * g x) s μ)
     (hg0 : ∀ x ∈ s, 0 ≤ g x) :
     ∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ) := by
   have hg0_ae : ∀ᵐ x ∂(μ.restrict s), 0 ≤ g x := by
