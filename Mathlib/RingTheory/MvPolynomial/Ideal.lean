@@ -90,27 +90,10 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
   rw [← Fintype.prod_equiv (finCongr (Eq.symm hl)) (fun i ↦ X l[i]) _ (by simp)]
   simp only [Fin.getElem_fin, Fin.prod_univ_fun_getElem, Multiset.prod_map_toList, toMultiset_map,
     prod_toMultiset, l]
-  rw [Finsupp.prod, mapDomain_support_of_injective X_injective, ← hx, monomial_eq,
-    C_1, one_mul, Finsupp.prod, prod_image (by simp)]
-  refine Finset.prod_congr rfl (fun _ _ => ?_)
+  rw [prod, mapDomain_support_of_injective X_injective, ← hx, monomial_eq, C_1, one_mul, prod,
+    prod_image (by simp)]
+  refine prod_congr rfl (fun _ _ => ?_)
   rw [mapDomain_apply X_injective]
-
-lemma _root_.Multiset.exists_le_card_eq {α : Type*} (n : ℕ) (s : Multiset α) (h : n ≤ s.card) :
-    ∃ t, t ≤ s ∧ t.card = n := by
-  revert n h
-  induction s using Multiset.induction_on with
-  | empty =>
-    intro n h
-    simp only [Multiset.card_zero, nonpos_iff_eq_zero] at h
-    simp [h]
-  | cons a s ih =>
-    intro n h
-    cases n with
-    | zero => use 0; simp
-    | succ n =>
-      simp only [Multiset.card_cons, add_le_add_iff_right] at h
-      obtain ⟨t, ht_le, ht_card⟩ := ih n h
-      use a ::ₘ t; simpa [ht_card]
 
 theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
     monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
