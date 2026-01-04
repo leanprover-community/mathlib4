@@ -507,14 +507,28 @@ theorem finprod_mem_congr (h₀ : s = t) (h₁ : ∀ x ∈ t, f x = g x) :
 theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : ∏ᶠ i, f i = 1 := by
   simp +contextual [h]
 
-@[to_additive finsum_pos']
-theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+@[to_additive finprod_cond_pos]
+theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+    {f : ι → M} {p : ι → Prop} (h : ∀ i, p i → 1 ≤ f i) (h' : ∃ i, p i ∧ 1 < f i)
+    (hf : (mulSupport f ∩ {i | p i}).Finite) : 1 < ∏ᶠ (i) (_ : p i), f i := by
+  rw [finprod_cond_eq_prod_of_cond_iff (t := hf.toFinset)]
+  · apply Finset.one_lt_prod'
+    · simp +contextual [h]
+    · aesop
+  · simp +contextual
+
+@[to_additive finsum_pos]
+theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
-  rcases h' with ⟨i, hi⟩
-  rw [finprod_eq_prod _ hf]
-  refine Finset.one_lt_prod' (fun i _ ↦ h i) ⟨i, ?_, hi⟩
-  simpa only [Finite.mem_toFinset, mem_mulSupport] using ne_of_gt hi
+  rw [← finprod_mem_univ]
+  apply one_lt_finprod_cond <;> simpa
+
+@[deprecated (since := "2026-01-03")]
+alias finsum_pos' := finsum_pos
+
+@[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
+alias one_lt_finprod' := one_lt_finprod
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication

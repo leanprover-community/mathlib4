@@ -765,7 +765,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
         rw [← mem_support, g_supp, ← mem_preimage, preimage_inter]
         have Hx : x ∈ tsupport (f c) := subset_tsupport _ (ne_of_gt hc)
         simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
-      apply finsum_pos' (fun c ↦ h''g c x) B
+      apply finsum_pos (fun c ↦ h''g c x) B
       apply (f.locallyFinite.point_finite x).subset
       apply compl_subset_compl.2
       rintro c (hc : f c x = 0)
