@@ -226,4 +226,14 @@ theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
   calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_bounded' hd.symm hPbnd
   _ < 2 ^ (n - 1) := by gcongr; norm_num
 
+theorem coeff_eq_of_bounded_iff {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
+  refine ⟨fun hP => ?_, fun hP => ?_⟩
+  · have hPdeg' : P.degree = n := eq_of_le_of_ge hPdeg (le_degree_of_ne_zero (by norm_num [hP]))
+    apply (leadingCoeff_eq_iff_of_bounded' hPdeg' hPbnd).mp
+    rw [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg', hP]
+  · convert leadingCoeff_T ℝ n
+    simp [hP, leadingCoeff]
+
 end Polynomial.Chebyshev
