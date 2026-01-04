@@ -6,11 +6,10 @@ Authors: Joël Riou, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
-public import Mathlib.AlgebraicGeometry.Restrict
-public import Mathlib.AlgebraicGeometry.Modules.Presheaf
+public import Mathlib.AlgebraicGeometry.OpenImmersion
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
@@ -29,8 +28,6 @@ universe t u
 
 open CategoryTheory Limits TopologicalSpace SheafOfModules Bicategory
 
-noncomputable section
-
 namespace AlgebraicGeometry.Scheme
 
 variable {X Y Z T : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -41,7 +38,7 @@ def Modules := SheafOfModules.{u} X.ringCatSheaf
 
 namespace Modules
 
-/-- Morphism between `𝒪ₓ`-modules. Use `Hom.app` to act on sections. -/
+/-- Morphisms between `𝒪ₓ`-modules. Use `Hom.app` to act on sections. -/
 def Hom (M N : X.Modules) : Type u := SheafOfModules.Hom M N
 
 instance : Category X.Modules where
@@ -75,7 +72,7 @@ instance : (toPresheafOfModules X).IsRightAdjoint :=
 
 variable (X) in
 /-- The forgetful functor from `𝒪ₓ`-modules to presheaf of abelain groups. -/
-def toPresheaf : X.Modules ⥤ TopCat.Presheaf Ab X :=
+noncomputable def toPresheaf : X.Modules ⥤ TopCat.Presheaf Ab X :=
   toPresheafOfModules X ⋙ PresheafOfModules.toPresheaf _
 
 instance : (toPresheaf X).Faithful := .comp _ (PresheafOfModules.toPresheaf _)
@@ -90,7 +87,7 @@ variable {M N : X.Modules} {φ : M ⟶ N} {U V : X.Opens}
 section Presheaf
 
 /-- The underlying abelian presheaf of an `𝒪ₓ`-module. -/
-def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.1.presheaf
+noncomputable def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.1.presheaf
 
 /-- Notation for sections of a presheaf of module. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" M ", " U ")" => (Scheme.Modules.presheaf M).obj (.op U)
@@ -103,7 +100,7 @@ variable (M) in
   M.val.map_smul _ _ _
 
 /-- The underlying map between abelian presheaves of a morphism of `𝒪ₓ`-modules. -/
-def Hom.mapPresheaf (φ : M ⟶ N) : M.presheaf ⟶ N.presheaf :=
+noncomputable def Hom.mapPresheaf (φ : M ⟶ N) : M.presheaf ⟶ N.presheaf :=
   (toPresheaf X).map φ
 
 /-- The application of a morphism of `𝒪ₓ`-modules to sections. -/
@@ -140,12 +137,12 @@ instance [IsIso φ] : IsIso (φ.app U) := Hom.isIso_iff_isIso_app.mp ‹_› _
 
 end Presheaf
 
-section Functorial
+noncomputable section Functorial
 
 variable (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ T)
 
 /-- The pushforward functor for categories of sheaves of modules over schemes. -/
-noncomputable def pushforward : X.Modules ⥤ Y.Modules :=
+def pushforward : X.Modules ⥤ Y.Modules :=
   SheafOfModules.pushforward f.toRingCatSheafHom
 
 @[simp]
@@ -161,12 +158,12 @@ lemma pushforward_map_app (φ : M ⟶ N) (U : Y.Opens) :
     ((pushforward f).map φ).app U = φ.app (f ⁻¹ᵁ U) := rfl
 
 /-- The pullback functor for categories of sheaves of modules over schemes. -/
-noncomputable def pullback : Y.Modules ⥤ X.Modules :=
+def pullback : Y.Modules ⥤ X.Modules :=
   SheafOfModules.pullback f.toRingCatSheafHom
 
 /-- The pullback functor for categories of sheaves of modules over schemes
 is left adjoint to the pushforward functor. -/
-noncomputable def pullbackPushforwardAdjunction : pullback f ⊣ pushforward f :=
+def pullbackPushforwardAdjunction : pullback f ⊣ pushforward f :=
   SheafOfModules.pullbackPushforwardAdjunction _
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
@@ -180,13 +177,13 @@ instance : (pullback f).Additive := Functor.additive_of_preservesBinaryBiproduct
 variable (X) in
 /-- The pushforward of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
-noncomputable def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
+def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pushforwardId _
 
 variable (X) in
 /-- The pullback of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
-noncomputable def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
+def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pullbackId _
 
 variable (X) in
@@ -197,13 +194,13 @@ lemma conjugateEquiv_pullbackId_hom :
 
 /-- The composition of two pushforward functors for sheaves of modules on schemes
 identify to the pushforward for the composition. -/
-noncomputable def pushforwardComp :
+def pushforwardComp :
     pushforward f ⋙ pushforward g ≅ pushforward (f ≫ g) :=
   SheafOfModules.pushforwardComp _ _
 
 /-- The composition of two pullback functors for sheaves of modules on schemes
 identify to the pullback for the composition. -/
-noncomputable def pullbackComp :
+def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
 
@@ -274,7 +271,7 @@ these categories.) -/
 @[simps! obj_obj map_l map_r map_adj
   mapId_hom_τl mapId_hom_τr mapId_inv_τl mapId_inv_τr
   mapComp_hom_τl mapComp_hom_τr mapComp_inv_τl mapComp_inv_τr]
-noncomputable def pseudofunctor :
+def pseudofunctor :
     Pseudofunctor (LocallyDiscrete Scheme.{u}ᵒᵖ) (Adj Cat) :=
   LocallyDiscrete.mkPseudofunctor
     (fun X ↦ Adj.mk (Cat.of X.unop.Modules))
@@ -286,7 +283,7 @@ noncomputable def pseudofunctor :
 
 end Functorial
 
-section Restriction
+noncomputable section Restriction
 
 variable [IsOpenImmersion f]
 
@@ -374,3 +371,4 @@ def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
 end Restriction
 
 end AlgebraicGeometry.Scheme.Modules
+#min_imports
