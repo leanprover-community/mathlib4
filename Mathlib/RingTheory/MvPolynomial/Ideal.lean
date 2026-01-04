@@ -18,7 +18,7 @@ Notably this contains results about monomial ideals.
 
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
-* `MvPolynomial.mem_pow_IdealOfVars_iff`
+* `MvPolynomial.mem_pow_idealOfVars_iff`
 
 -/
 
@@ -144,7 +144,7 @@ theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (
 theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
   by_cases h : r = 0
   · simp [h]
-  simpa [h] using monomial_mem_pow_IdealOfVars_iff (σ := σ) n 0 h
+  simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
 
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
@@ -166,7 +166,7 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
   refine Ideal.sum_mem _ (fun x x_in ↦ ?_)
   by_cases h' : coeff x p = 0
   · simp [h']
-  rw [monomial_mem_pow_IdealOfVars_iff _ _ h']
+  rw [monomial_mem_pow_idealOfVars_iff _ _ h']
   revert h'; contrapose!
   exact h x
 
