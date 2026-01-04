@@ -85,7 +85,7 @@ theorem continuousWithinAt_toIocDiv_Iic : ContinuousWithinAt (toIocDiv hp a) (Ii
   Filter.tendsto_pure.mpr (eventuallyEq_toIocDiv_nhdsLE hp a x) |>.mono_right <| pure_le_nhds _
 
 theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ici x) x :=
-  continuousWithinAt_id.sub <| 
+  continuousWithinAt_id.sub <|
     (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
 
 alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
