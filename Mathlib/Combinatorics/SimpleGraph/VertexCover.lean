@@ -20,7 +20,7 @@ one of the vertices in the set.
 
 ## Main definitions
 
-* `SimpleGraph.IsVertexCover G C`: Predicate that `C` is a vertex cover of `G`.
+* `SimpleGraph.IsVertexCover G c`: Predicate that `c` is a vertex cover of `G`.
 * `SimpleGraph.vertexCoverNum G`: The vertex cover number, e.g. the size of a minimal vertex cover.
 -/
 
@@ -28,11 +28,11 @@ one of the vertices in the set.
 
 namespace SimpleGraph
 
-variable {V W : Type*} {G : SimpleGraph V} {G' : SimpleGraph V} {H : SimpleGraph W}
+variable {V W : Type*} {G G' : SimpleGraph V} {H : SimpleGraph W}
 
 section IsVertexCover
 
-/-- `C` is a vertex cover of `G` if every edge in `G` is incident to at least one vertex in `C`. -/
+/-- `c` is a vertex cover of `G` if every edge in `G` is incident to at least one vertex in `c`. -/
 def IsVertexCover (G : SimpleGraph V) (c : Set V) : Prop :=
   ∀ ⦃v w : V⦄, G.Adj v w → v ∈ c ∨ w ∈ c
 
