@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.FractionalIdeal.Operations
 This file defines the notation `I⁻¹` where `I` is a not necessarily invertible fractional ideal.
 Note that this is somewhat misleading notation in case `I` is not invertible.
 The theorem that all nonzero fractional ideals are invertible in a Dedekind domain can be found in
-`Mathlib/DedekindDomain/Ideal/Basic.lean`.
+`Mathlib/RingTheory/DedekindDomain/Ideal/Basic.lean`.
 
 ## Main definitions
 
