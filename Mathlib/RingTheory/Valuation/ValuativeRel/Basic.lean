@@ -908,6 +908,15 @@ lemma zero_vlt_iff : 0 <ᵥ a ↔ a ≠ 0 := by
 
 @[deprecated (since := "2025-12-20")] alias zero_srel_iff := zero_vlt_iff
 
+@[simp]
+lemma zero_veq_iff : a =ᵥ 0 ↔ a = 0 where
+  mp h := vle_zero_iff.1 h.1
+  mpr := by simp +contextual
+
+@[simp]
+lemma veq_zero_iff : 0 =ᵥ a ↔ 0 = a := by
+  rw [veq_comm, eq_comm, zero_veq_iff]
+
 lemma vle_div_iff (hc : c ≠ 0) : a ≤ᵥ b / c ↔ a * c ≤ᵥ b := by
   rw [← vle_mul_right_iff (c := c) (by simpa), div_mul_cancel₀ _ (by aesop)]
 
