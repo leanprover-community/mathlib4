@@ -104,6 +104,7 @@ public import Mathlib.Algebra.Category.BoolRing
 public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.CoalgCat.ComonEquivalence
 public import Mathlib.Algebra.Category.CoalgCat.Monoidal
+public import Mathlib.Algebra.Category.CommAlgCat.BaseChange
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
@@ -215,6 +216,7 @@ public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Algebra.Category.Ring.Epi
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.Algebra.Category.Ring.FinitePresentation
+public import Mathlib.Algebra.Category.Ring.Flat
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.Algebra.Category.Ring.LinearAlgebra

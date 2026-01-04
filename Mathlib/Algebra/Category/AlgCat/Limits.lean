@@ -189,4 +189,14 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, w}] :
 instance forget_preservesLimits : PreservesLimits (forget (AlgCat.{w} R)) :=
   AlgCat.forget_preservesLimitsOfSize.{w, w}
 
+instance : ReflectsLimits (forget (AlgCat.{w} R)) := reflectsLimits_of_reflectsIsomorphisms
+
+instance : PreservesLimits (forget₂ (AlgCat.{w} R) (ModuleCat.{w} R)) :=
+  have : PreservesLimits (forget₂ (AlgCat R) (ModuleCat R) ⋙ forget (ModuleCat R)) :=
+    inferInstanceAs (PreservesLimits (forget _))
+  preservesLimits_of_reflects_of_preserves (F := forget₂ (AlgCat R) (ModuleCat R)) (G := forget _)
+
+instance : ReflectsLimits (forget₂ (AlgCat.{w} R) (ModuleCat.{w} R)) :=
+  reflectsLimits_of_reflectsIsomorphisms
+
 end AlgCat

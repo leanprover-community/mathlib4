@@ -373,6 +373,9 @@ lemma hom_ext {M : ModuleCat R} {N : ModuleCat S}
     rw [ExtendScalars.smul_tmul, mul_one]
   simp only [this, map_smul, h]
 
+instance : (ModuleCat.extendScalars f).Additive where
+  map_add {M N φ ψ} := by ext; simp [TensorProduct.tmul_add]
+
 end ExtendScalars
 
 namespace CoextendScalars
