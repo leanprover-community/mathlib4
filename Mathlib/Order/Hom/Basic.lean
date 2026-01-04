@@ -887,12 +887,9 @@ def prodComm : α × β ≃o β × α where
 /-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
 @[simps! (attr := grind =)]
 def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
-    (α × β) × γ ≃o α × (β × γ) :=
-  { Equiv.prodAssoc α β γ with
-    map_rel_iff' := fun {a b} ↦ by
-      rcases a with ⟨⟨_ , _⟩ , _⟩
-      rcases b with ⟨⟨_, _⟩ , _⟩
-      simp [Equiv.prodAssoc, and_assoc] }
+    (α × β) × γ ≃o α × (β × γ) where
+  toEquiv := .prodAssoc α β γ
+  map_rel_iff' := @fun ⟨⟨_ , _⟩ , _⟩ ⟨⟨_, _⟩ , _⟩ => by simp [Equiv.prodAssoc, and_assoc]
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
@@ -1079,8 +1076,8 @@ noncomputable def ofUnique
   toEquiv := Equiv.ofUnique α β
   map_rel_iff' := by simp
 
-/-- The order isomorphism `α ≃o β` when `α` has a linear order and `β` is empty via a predicate. -/
-def ofIsEmpty (α β : Type*) [Preorder α] [IsEmpty β] [LinearOrder β] [IsEmpty α] : α ≃o β :=
+/-- `Equiv.equivOfIsEmpty` promoted to an `OrderIso`. -/
+def ofIsEmpty (α β : Type*) [Preorder α] [Preorder β] [IsEmpty α] [IsEmpty β]: α ≃o β :=
   ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
 
 end OrderIso

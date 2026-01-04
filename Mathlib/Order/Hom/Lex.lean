@@ -206,8 +206,6 @@ def sumLexProdLexDistrib (α β γ : Type*)
 def prodLexCongr {α β γ δ : Type*} [Preorder α] [Preorder β]
     [Preorder γ] [Preorder δ] (ea : α ≃o β) (eb : γ ≃o δ) : α ×ₗ γ ≃o β ×ₗ δ where
   toEquiv := ofLex.trans ((Equiv.prodCongr ea eb).trans toLex)
-  map_rel_iff' := by
-    intro a b
-    simp [Prod.Lex.le_iff, OrderIso.lt_iff_lt]
+  map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 end Prod.Lex

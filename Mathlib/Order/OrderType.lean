@@ -20,8 +20,8 @@ into it.
 * `OrderType`: the type of OrderTypes (in a given universe)
 * `OrderType.type α`: given a type `α` with a linear order, this is the corresponding OrderType,
 * `OrderType.card o`: the cardinality of an OrderType `o`.
-* `o₁ + o₂`: the lexicographic sum of order types, which forms an `AddMonoid`
-* `o₁ * o₂`: the lexicographic product of order types (which surely forms a monoid as well?)
+* `o₁ + o₂`: the lexicographic sum of order types, which forms an `AddMonoid`.
+* `o₁ * o₂`: the lexicographic product of order types, which forms a `MonoidWithZero`.
 * `OrderType.mul o₁ o₂`: the product of two OrderTypes `o₁` and `o₂`.
 
 A preorder with a bottom element is registered on order types, where `⊥` is
@@ -92,8 +92,8 @@ public def OrderType : Type (u + 1) :=
 
 namespace OrderType
 
-/-- A "canonical" type order-isomorphic to the order type o, living in the same universe.
-This is defined through the axiom of Classical.choice. -/
+/-- A "canonical" type order-isomorphic to the order type `o`, living in the same universe.
+This is defined through the axiom of choice. -/
 def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
@@ -114,9 +114,9 @@ instance (o : OrderType) : LinearOrder o.ToType where
 
 /-! ### Basic properties of the order type -/
 
-/-- The order type of a linear order on α. -/
+/-- The order type of the linear order on `α`. -/
 def type (α : Type u) [h₁ : LE α] [h₂ : Std.IsLinearOrder α] : OrderType :=
-  ⟦⟨α,h₁,h₂⟩⟧
+  ⟦⟨α, h₁, h₂⟩⟧
 
 instance zero : Zero OrderType where
   zero := type PEmpty
@@ -127,7 +127,7 @@ instance instCoe : Coe LinearOrderedType (Type u) where
 instance (α : Type u) [inst : LinearOrder α] : Std.IsLinearOrder α := ⟨inst.le_total⟩
 
 instance (α : Type*) [inst : LinearOrder α] (x : α) : CoeT α x LinearOrderedType where
- coe := ⟨α,inst.toLE,inferInstance⟩
+ coe := ⟨α, inst.toLE, inferInstance⟩
 
 instance inhabited : Inhabited OrderType :=
   ⟨0⟩
