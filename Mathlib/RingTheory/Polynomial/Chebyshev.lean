@@ -194,6 +194,7 @@ theorem T_eval_zero (n : ℤ) :
     have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
     by_cases Even n <;> simp_all [T_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
 
+@[simp]
 theorem T_eval_zero_of_even {n : ℤ} (hn : Even n) : (T R n).eval 0 = (n / 2).negOnePow := by
   simp [T_eval_zero, hn]
 
