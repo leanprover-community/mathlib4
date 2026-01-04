@@ -80,7 +80,7 @@ end MatrixModCat
 
 universe w
 
-/-- the functor from Module Cat of `Mₙ(R)` to Module Cat of `R` induced by sending `M` to
+/-- The functor from Module Cat of `Mₙ(R)` to Module Cat of `R` induced by sending `M` to
   the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix -/
 @[simps]
 def MatrixModCat.toModuleCat [Inhabited ι] : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
