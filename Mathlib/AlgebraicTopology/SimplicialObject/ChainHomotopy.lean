@@ -3,6 +3,8 @@ Copyright (c) 2025 Fabian Odermatt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabian Odermatt
 -/
+module
+
 import Mathlib.AlgebraicTopology.SimplicialObject.SimplicialHomotopy
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 import Mathlib.Algebra.Homology.Homotopy
