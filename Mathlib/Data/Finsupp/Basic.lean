@@ -1301,4 +1301,21 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 
 end Sigma
 
+lemma mem_range_embDomain_iff {α β M : Type*} [AddCommMonoid M] {f : α ↪ β}
+    {x : β →₀ M} : x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
+  convert mem_range_mapDomain_iff _ f.injective _
+  · ext; rw [embDomain_eq_mapDomain]
+  · grind
+
+@[simp]
+lemma comapDomain_embDomain {α β M : Type*} [AddCommMonoid M]
+    (f : α ↪ β) (l : α →₀ M) :
+    comapDomain f (embDomain f l) f.injective.injOn = l :=
+  embDomain_eq_mapDomain f l ▸ comapDomain_mapDomain _ f.injective _
+
+@[simp]
+lemma embDomain_refl {α M : Type*} [Zero M] :
+    embDomain (M := M) (Function.Embedding.refl α) = id := by
+  ext; simp [embDomain_apply]
+
 end Finsupp
