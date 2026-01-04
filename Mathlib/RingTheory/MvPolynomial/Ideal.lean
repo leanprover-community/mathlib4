@@ -171,6 +171,7 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
   exact h x
 
 end idealOfVars
+
 end MvPolynomial
 
 namespace MonomialOrder
