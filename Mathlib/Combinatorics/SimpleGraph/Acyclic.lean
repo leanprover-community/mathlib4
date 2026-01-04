@@ -469,7 +469,7 @@ theorem exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic {H : SimpleGraph V} 
 
 /-- Every graph has a spanning forest. -/
 theorem exists_isAcyclic_reachable_eq_le :
-    ∃ F : SimpleGraph V, F ≤ G ∧ F.IsAcyclic ∧ F.Reachable = G.Reachable := by
+    ∃ F ≤ G, F.IsAcyclic ∧ F.Reachable = G.Reachable := by
   obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
   use F
   grind
