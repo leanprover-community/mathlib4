@@ -94,13 +94,6 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
       rw [← cancel_epi (adj₁.counit.app X)]
       apply hm.trans ((h _).desc' s.π _).2.symm
 
-/-- To show that `ε_X` is a coequalizer for `(FUε_X, ε_FUX)`, it suffices to assume it's always a
-coequalizer of something (i.e. a regular epi).
--/
-noncomputable def counitCoequalises' [h : ∀ X : B, IsRegularEpi (adj₁.counit.app X)] (X : B) :
-    IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
-  counitCoequalises adj₁ (fun _ ↦ regularEpiOfIsRegularEpi _) X
-
 /-- (Implementation)
 To construct the left adjoint, we use the coequalizer of `F' U ε_Y` with the composite
 
@@ -190,7 +183,7 @@ See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
 lemma isRightAdjoint_triangle_lift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
     (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) [HasReflexiveCoequalizers A]
-    [(R ⋙ U).IsRightAdjoint ] : R.IsRightAdjoint where
+    [(R ⋙ U).IsRightAdjoint] : R.IsRightAdjoint where
   exists_leftAdjoint :=
     ⟨LiftLeftAdjoint.constructLeftAdjoint R _ adj₁ (Adjunction.ofIsRightAdjoint _) h,
       ⟨Adjunction.adjunctionOfEquivLeft _ _⟩⟩

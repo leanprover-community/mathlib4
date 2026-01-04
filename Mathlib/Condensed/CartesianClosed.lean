@@ -26,4 +26,4 @@ instance : CartesianMonoidalCategory (CondensedSet.{u}) :=
   inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance : CartesianClosed (CondensedSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
+instance : MonoidalClosed (CondensedSet.{u}) := inferInstanceAs (MonoidalClosed (Sheaf _ _))

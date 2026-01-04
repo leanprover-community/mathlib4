@@ -34,6 +34,14 @@ variable {S' : Type*} [SetLike S' M'] (s : S')
 instance (priority := low) [SMul M' α] : SMul s α where
   smul m a := (m : M') • a
 
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsLeftCancelSMul M' α] : IsLeftCancelSMul s α where
+  left_cancel' x _ _ := IsLeftCancelSMul.left_cancel x.1 _ _
+
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsCancelSMul M' α] : IsCancelSMul s α where
+  right_cancel' _ _ _ eq := Subtype.ext <| IsCancelSMul.right_cancel _ _ _ eq
+
 section MulOneClass
 
 variable [MulOneClass M']

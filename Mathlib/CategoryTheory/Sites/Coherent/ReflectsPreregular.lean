@@ -21,7 +21,7 @@ category `C` is `Preregular`.
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.EffectivelyEnough]
   [Preregular D] [F.Full] [F.Faithful]

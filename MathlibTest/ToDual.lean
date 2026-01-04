@@ -1,5 +1,6 @@
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Notation
+import Mathlib.Tactic.ToAdditive
 
 -- test that we can translate between structures, reordering the arguments of the fields
 class SemilatticeInf (α : Type) extends PartialOrder α, Min α where
@@ -19,7 +20,11 @@ lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a �
 lemma SemilatticeSup.sup_le' {α : Type} [SemilatticeSup α] (a b c : α) : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
   SemilatticeSup.sup_le a b c
 
--- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not tranlatable
+structure Lattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
+
+attribute [to_dual existing] Lattice.toSemilatticeInf
+
+-- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not translatable
 /--
 error: @[to_dual] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
 instSemilatticeSupOfForallLeForallMax:
@@ -93,10 +98,14 @@ theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 /-
 TODO: If we tag something with `@[to_dual self]` and if there is no reorder, then this is useless.
 So, we should have a linter warning about this.
-The only exception is if we want to influence the tranlsation heuristic.
+The only exception is if we want to influence the translation heuristic.
 For example we tag `PUnit` with `@[to_dual self]`.
 Maybe we should have a new command `@[to_dual_translate]`, analogous to `@[to_dual_dont_translate]`,
 instead of using `@[to_dual self]` for those cases.
 -/
 @[to_dual self]
 theorem not_lt_self {α : Type} [PartialOrder α] (a : α) : ¬ a < a := lt_irrefl a
+
+-- Test that we do not translate numerals like we do in `@[to_additive]`
+@[to_dual self]
+theorem one_le_one {α : Type} [One α] [Preorder α] : (1 : α) ≤ 1 := le_rfl

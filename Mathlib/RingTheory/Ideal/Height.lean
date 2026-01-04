@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+
 /-!
 # The Height of an Ideal
 
@@ -37,7 +38,7 @@ noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
 
 /-- The height of an ideal is defined as the infimum of the heights of its minimal prime ideals. -/
 noncomputable def Ideal.height : ℕ∞ :=
-  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime ‹_›)
+  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime (I := I) ‹_›)
 
 /-- For a prime ideal, its height equals its prime height. -/
 lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
@@ -80,7 +81,7 @@ lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.Finite
   rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at hn ⊢
   obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn
   rw [hn]
-  exact ⟨l, last, by rw [len]; rfl⟩
+  exact ⟨l, last, by rw [len, WithTop.some_eq_coe, ENat.some_eq_coe]⟩
 
 @[gcongr]
 lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
@@ -188,8 +189,8 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   simp only [bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
   constructor
   · intro h
-    by_contra! h'
-    obtain ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩ := h' (inferInstance)
+    refine ⟨inferInstance, ?_⟩
+    by_contra! ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩
     exact hP₃ (h (b := ⟨P, hP₁⟩) hP₂)
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb

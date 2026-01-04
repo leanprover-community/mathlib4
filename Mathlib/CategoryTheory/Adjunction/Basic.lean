@@ -26,7 +26,7 @@ We provide various useful constructors:
   give adjunctions.
 
 There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which asserts the
-existence of a adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
+existence of an adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
 adjoint can be obtained as `F.rightAdjoint`.
 
 `Adjunction.comp` composes adjunctions.
@@ -675,7 +675,7 @@ lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
 
 lemma refl_toAdjunction : (refl (C := C)).toAdjunction = Adjunction.id := rfl
 
-lemma trans_toAdjunction {E : Type*} [Category E] (e' : D ≌ E) :
+lemma trans_toAdjunction {E : Type*} [Category* E] (e' : D ≌ E) :
     (e.trans e').toAdjunction = e.toAdjunction.comp e'.toAdjunction := rfl
 
 end Equivalence

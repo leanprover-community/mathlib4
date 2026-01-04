@@ -163,7 +163,7 @@ lemma finsetSum_iSup {α : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
     gcongr
     exacts [(hk a).1, (hk _).2]
 
-lemma finsetSum_iSup_of_monotone {α : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
+lemma finsetSum_iSup_of_monotone {α : Type*} [Preorder ι] [IsDirectedOrder ι] {s : Finset α}
     {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
   finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 

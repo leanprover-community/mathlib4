@@ -26,7 +26,7 @@ open Functor Opposite
 
 section
 
-variable {J C : Type*} [Category J] [Category C]
+variable {J C : Type*} [Category* J] [Category* C]
 
 /-- Sections of `F ⋙ coyoneda.obj (op X)` identify to natural
 transformations `(const J).obj X ⟶ F`. -/

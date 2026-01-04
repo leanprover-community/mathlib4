@@ -33,7 +33,9 @@ namespace CategoryTheory
 open Category Limits MonoidalCategory
 
 variable {C : Type u} [Category.{v} C]
-variable [CartesianMonoidalCategory C] [CartesianClosed C]
+variable [CartesianMonoidalCategory C] [MonoidalClosed C]
+
+open scoped CartesianClosed
 
 /-- If a Cartesian closed category has an initial object which is isomorphic to the terminal object,
 then each homset has exactly one element.
@@ -43,7 +45,7 @@ def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : 
     calc
       (X ⟶ Y) ≃ (X ⊗ 𝟙_ C ⟶ Y) := Iso.homCongr (rightUnitor _).symm (Iso.refl _)
       _ ≃ (X ⊗ ⊥_ C ⟶ Y) := (Iso.homCongr ((Iso.refl _) ⊗ᵢ i.symm) (Iso.refl _))
-      _ ≃ (⊥_ C ⟶ Y ^^ X) := (exp.adjunction _).homEquiv _ _
+      _ ≃ (⊥_ C ⟶ Y ^^ X) := (ihom.adjunction _).homEquiv _ _
 
 open scoped ZeroObject
 
