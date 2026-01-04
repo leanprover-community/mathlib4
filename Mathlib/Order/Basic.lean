@@ -585,10 +585,10 @@ end OrderDual
 /-! ### `HasCompl` -/
 
 
-instance Prop.hasCompl : HasCompl Prop :=
+instance Prop.instCompl : HasCompl Prop :=
   ⟨Not⟩
 
-instance Pi.hasCompl [∀ i, HasCompl (π i)] : HasCompl (∀ i, π i) :=
+instance Pi.instCompl [∀ i, HasCompl (π i)] : HasCompl (∀ i, π i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 
 @[push ←]
