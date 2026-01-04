@@ -341,24 +341,6 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
-/-- Connecting two unreachable vertices by an edge preserves acyclicity. -/
-theorem IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable {u v : V} (hnreach : ¬G.Reachable u v)
-    (hacyc : G.IsAcyclic) : (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic := by
-  grind [isAcyclic_iff_forall_edge_isBridge, IsBridge.sup_fromEdgeSet_of_not_reachable,
-    edgeSet_sup, IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge, edgeSet_fromEdgeSet]
-
-/-- Connecting two unreachable vertices by an edge results in an acyclic graph if and only if
-the original graph was acyclic and the vertices had no path between them. -/
-theorem not_reachable_and_isAcyclic_iff_isAcyclic_sup_fromEdgeSet {u v : V} (hne : u ≠ v)
-    (hnadj : ¬G.Adj u v) :
-    ¬G.Reachable u v ∧ G.IsAcyclic ↔ (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic := by
-  refine ⟨fun ⟨hnreach, hacyc⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable hnreach, ?_⟩
-  refine fun hacyc ↦ ⟨fun hreach ↦ ?_, hacyc.anti le_sup_left⟩
-  have := isAcyclic_iff_forall_edge_isBridge.mp (e := s(u, v)) hacyc <| by simp [hne]
-  refine isBridge_iff.mp this |>.right <| hreach.mono <| Eq.le <| Eq.symm ?_
-  rw [sup_sdiff_right_self]
-  exact deleteEdges_eq_self.mpr <| Set.disjoint_singleton_right.mpr hnadj
-
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
@@ -374,104 +356,70 @@ lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
   simp [this, p.adj_of_mem_edges]
 
-/-- A maximally acyclic graph is a tree. -/
-theorem isTree_iff_maximal_isAcyclic : G.IsTree ↔ Nonempty V ∧ Maximal IsAcyclic G := by
-  refine ⟨fun htree ↦ ⟨htree.isConnected.nonempty, htree.IsAcyclic,
-    fun G' hacyc hle u v hadj ↦ ?_⟩, fun ⟨_, hacyc, hmax⟩ ↦ ⟨⟨fun _ _ ↦ ?_⟩, hacyc⟩⟩
-  · have ⟨p⟩ := htree.isConnected.preconnected u v
-    apply p.adj_of_mem_edges
-    have := isAcyclic_iff_forall_adj_isBridge.mp hacyc hadj
-    simpa using isBridge_iff_adj_and_forall_walk_mem_edges.mp this |>.right <| p.mapLe hle
-  · refine not_not.mp fun hnreach ↦ hnreach <| Adj.reachable ?_
-    have := hmax (hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable hnreach) le_sup_left
-    exact le_sup_right.trans this <| by grind [fromEdgeSet_adj, Reachable.rfl]
-
 /-- Every connected graph has a spanning tree. -/
 lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
   obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_le_minimal h
   exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
 
-/--
-Adding an edge to an acyclic graph preserves acyclicity if the endpoints are not reachable.
--/
+/-- Connecting two unreachable vertices by an edge preserves acyclicity. -/
+theorem IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable {u v : V} (hnreach : ¬G.Reachable u v)
+    (hacyc : G.IsAcyclic) : (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic := by
+  grind [isAcyclic_iff_forall_edge_isBridge, IsBridge.sup_fromEdgeSet_of_not_reachable,
+    edgeSet_sup, IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge, edgeSet_fromEdgeSet]
+
 theorem isAcyclic_add_edge_iff_of_not_reachable (x y : V) (hxy : ¬ G.Reachable x y) :
-    (G ⊔ fromEdgeSet {s(x, y)}).IsAcyclic ↔ IsAcyclic G := by
-  refine ⟨fun h ↦ h.anti le_sup_left, fun hG ↦ ?_⟩
-  have x_neq_y : x ≠ y := fun c => (c ▸ hxy) (Reachable.refl y)
-  have h_add_remove : (G ⊔ fromEdgeSet {s(x, y)}) \ fromEdgeSet {s(x, y)} = G := by
-    simpa using fun h => hxy h.reachable
-  have h_bridge : (G ⊔ fromEdgeSet {s(x, y)}).IsBridge s(x, y) := by
-    simpa [isBridge_iff, x_neq_y, h_add_remove]
-  rw [isBridge_iff_adj_and_forall_cycle_notMem] at h_bridge
-  intro u c hc
-  let c' : G.Walk u u := Walk.transfer c G (fun e he ↦ by
-    have eneq : e ≠ s(x, y) := fun h => h_bridge.2 c hc (h ▸ he)
-    simpa [eneq] using Walk.edges_subset_edgeSet c he)
-  exact hG c' (Walk.IsCycle.transfer (qc := hc) ..)
+    (G ⊔ fromEdgeSet {s(x, y)}).IsAcyclic ↔ IsAcyclic G :=
+  ⟨(·.anti le_sup_left), IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable hxy⟩
+
+/-- Connecting two unreachable vertices by an edge results in an acyclic graph if and only if
+the original graph was acyclic and the vertices had no path between them. -/
+theorem not_reachable_and_isAcyclic_iff_isAcyclic_sup_fromEdgeSet {u v : V} (hne : u ≠ v)
+    (hnadj : ¬G.Adj u v) :
+    ¬G.Reachable u v ∧ G.IsAcyclic ↔ (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic := by
+  refine ⟨fun ⟨hnreach, hacyc⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable hnreach, ?_⟩
+  refine fun hacyc ↦ ⟨fun hreach ↦ ?_, hacyc.anti le_sup_left⟩
+  have := isAcyclic_iff_forall_edge_isBridge.mp (e := s(u, v)) hacyc <| by simp [hne]
+  refine isBridge_iff.mp this |>.right <| hreach.mono <| Eq.le <| Eq.symm ?_
+  rw [sup_sdiff_right_self]
+  exact deleteEdges_eq_self.mpr <| Set.disjoint_singleton_right.mpr hnadj
 
 /--
 The reachability relation of a maximal acyclic subgraph agrees with that of the larger graph.
 -/
 lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
-    (h : Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F) : F.Reachable = G.Reachable := by
-  obtain ⟨hF : F ≤ G, hF' : F.IsAcyclic⟩ := h.prop
-  replace h : ∀ {H : SimpleGraph V}, H ≤ G ∧ H.IsAcyclic → F ≤ H → H ≤ F := h.le_of_ge
+    (h : Maximal (fun H ↦ H ≤ G ∧ H.IsAcyclic) F) : F.Reachable = G.Reachable := by
   ext u v
-  refine ⟨fun h ↦ h.mono hF, ?_⟩
-  contrapose! h
-  obtain ⟨⟨p : G.Walk u v⟩, h : ¬ F.Reachable u v⟩ := h
-  let s : Set V := F.connectedComponentMk u
+  refine ⟨(·.mono h.prop.left), fun ⟨p⟩ ↦ ?_⟩
+  have := @h.le_of_ge
+  contrapose! this
+  let s := F.connectedComponentMk u
   have hus : u ∈ s := ConnectedComponent.connectedComponentMk_mem
-  have hvs : v ∉ s := h ∘ (F.connectedComponentMk u).reachable_of_mem_supp hus
-  obtain ⟨⟨⟨u', v'⟩, huv : G.Adj u' v'⟩, -, hu : u' ∈ s, hv : v' ∉ s⟩ :=
-    p.exists_boundary_dart s hus hvs
-  suffices (F ⊔ fromEdgeSet {s(u', v')}).IsAcyclic by
-    refine ⟨F ⊔ fromEdgeSet {s(u', v')}, ⟨?_, this⟩, le_sup_left, ?_⟩
-    · have : G.Adj v' u' := G.symm huv
-      simp only [sup_le_iff, le_iff_adj, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq,
-        Sym2.rel_iff'] at hF ⊢
-      grind
-    · rw [le_iff_adj]
-      push_neg
-      refine ⟨u', v', ?_, fun hc ↦ ?_⟩
-      · simpa using Or.inr huv.ne
-      · have := (F.connectedComponentMk u).mem_supp_congr_adj hc
-        grind
-  suffices ¬ F.Reachable u' v' by rwa [isAcyclic_add_edge_iff_of_not_reachable u' v' this]
-  suffices F.connectedComponentMk u' = s by
-    rw [← ConnectedComponent.eq]
-    exact fun hc ↦ (hc ▸ this ▸ hv) ConnectedComponent.connectedComponentMk_mem
-  simp_rw [s, SetLike.coe, ConnectedComponent.supp_inj, ← ConnectedComponent.mem_supp_iff]
-  grind
+  have hvs : v ∉ s := this ∘ (F.connectedComponentMk u).reachable_of_mem_supp hus
+  have ⟨⟨⟨u', v'⟩, huv⟩, _, _, hv⟩ := p.exists_boundary_dart s hus hvs
+  have : ¬F.Reachable u' v' := by
+    have : F.connectedComponentMk u' = s := by simpa [s, ← ConnectedComponent.mem_supp_iff]
+    exact (ConnectedComponent.sound · ▸ this ▸ hv <| ConnectedComponent.connectedComponentMk_mem)
+  refine ⟨_, ⟨?_, h.prop.right.isAcyclic_sup_fromEdgeSet_of_not_reachable this⟩, le_sup_left, ?_⟩
+  · grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, G.symm huv]
+  · rw [le_iff_adj]
+    push_neg
+    exact ⟨u', v', by simp [huv.ne], by grind [F.connectedComponentMk u |>.mem_supp_congr_adj]⟩
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
-theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (hF' : F.IsAcyclic) :
-    Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
-  refine ⟨reachable_eq_of_maximal_isAcyclic F, fun h => ?_⟩
-  by_contra!
-  obtain ⟨F', hF'⟩ := exists_gt_of_not_maximal (P := fun H => H ≤ G ∧ H.IsAcyclic) ⟨hF, hF'⟩ this
-  obtain ⟨e, he⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono hF'.1
-  have : (F ⊔ fromEdgeSet {e}).IsAcyclic := by
-    apply hF'.2.2.anti
-    refine sup_le_iff.mpr ⟨by grind, ?_⟩
-    rw [←F'.fromEdgeSet_edgeSet]
-    grind [fromEdgeSet_mono]
-  have e_ndiag : ¬ e.IsDiag := by
-    suffices e ∈ Sym2.diagSetᶜ by simpa using this
-    exact F'.edgeSet_subset_setOf_not_isDiag he.1
-  have F_sdiff_eq : (F ⊔ fromEdgeSet {e}) \ fromEdgeSet {e} = F := by
-    simpa using he.2
+theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
+    Maximal (fun F ↦ F ≤ G ∧ F.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
+  refine ⟨reachable_eq_of_maximal_isAcyclic F, fun h ↦ ?_⟩
+  by_contra
+  have ⟨H, hFH, hHG, hH⟩ := exists_gt_of_not_maximal ⟨hle, hF⟩ this
+  have ⟨e, he⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono hFH
   have h_bridge : (F ⊔ fromEdgeSet {e}).IsBridge e := by
-    apply isAcyclic_iff_forall_edge_isBridge.mp this
-    simpa using Or.inr e_ndiag
-  simp only [IsBridge, F_sdiff_eq] at h_bridge
+    refine isAcyclic_iff_forall_edge_isBridge.mp (hH.anti <| sup_le_iff.mpr ?_) ?_
+    · grind [fromEdgeSet_edgeSet, fromEdgeSet_mono]
+    · simpa using .inr <| by simpa using H.edgeSet_subset_setOf_not_isDiag he.left
+  have F_sdiff_eq : (F ⊔ fromEdgeSet {e}) \ fromEdgeSet {e} = F := by simpa using he.right
   cases e
-  case h u v =>
-    simp only [Sym2.lift_mk] at h_bridge
-    suffices G.Reachable u v by exact (h ▸ h_bridge.2) this
-    apply Reachable.mono hF'.2.1
-    apply Adj.reachable
-    simpa using he.1
+  rw [isBridge_iff, F_sdiff_eq, h] at h_bridge
+  exact h_bridge.right <| .mono hHG he.left.reachable
 
 /-- A subgraph of a connected graph is maximal acyclic iff it is a tree. -/
 theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Connected)
@@ -493,6 +441,12 @@ theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Co
 theorem maximal_isAcyclic_iff_isTree [Nonempty V] {T : SimpleGraph V} :
     Maximal IsAcyclic T ↔ T.IsTree := by
   simp [← connected_top.maximal_le_isAcyclic_iff_isTree le_top]
+
+/-- A maximally acyclic graph is a tree. -/
+theorem isTree_iff_maximal_isAcyclic : G.IsTree ↔ Nonempty V ∧ Maximal IsAcyclic G := by
+  refine ⟨fun h ↦ ?_, fun ⟨_, h⟩ ↦ G.maximal_isAcyclic_iff_isTree.mp h⟩
+  have := h.isConnected.nonempty
+  exact ⟨this, G.maximal_isAcyclic_iff_isTree.mpr h⟩
 
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
