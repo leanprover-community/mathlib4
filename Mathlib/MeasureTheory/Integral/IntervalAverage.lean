@@ -22,7 +22,7 @@ formulas for this average:
 * `exists_eq_interval_average_of_noAtoms`:
     `∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
 * `exists_eq_interval_average`:
-    `∃ c ∈ uIoo a b, f c = ⨍ (x : ℝ) in a..b, f x`.
+    `∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x`.
 
 We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_average_symm`.
 
@@ -73,26 +73,9 @@ then `∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ`. -/
 theorem exists_eq_interval_average_of_measure
     (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
     ∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
-  wlog h : a ≤ b generalizing a b
-  · simp at h
-    specialize this (by rwa [uIcc_comm]) (by rwa [uIoc_comm]) (by rwa [uIoc_comm]) h.le
-    rcases this with ⟨c, hc, heq⟩
-    refine ⟨c, by rwa [uIoc_comm], by rwa [uIoc_comm]⟩
-  have hint : IntegrableOn f (Ι a b) μ := by
-    have hsubset : Ι a b ⊆ uIcc a b := uIoc_subset_uIcc
-    have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
-    obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc hf.norm
-    apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
-    · rwa [lt_top_iff_ne_top]
-    · apply ContinuousOn.aestronglyMeasurable
-      · exact hf.mono hsubset
-      · exact measurableSet_uIoc
-    · rw [ae_restrict_iff' measurableSet_uIoc]
-      apply ae_of_all
-      intro m hm
-      apply hmax
-      exact hsubset hm
-  have hs_prec : IsPreconnected (Ι a b) := by simpa [h] using isPreconnected_Ioc
+  have hint : IntegrableOn f (Ι a b) μ := hf.integrableOn_of_subset_isCompact
+    isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin
+  have hs_prec : IsPreconnected (Ι a b) := isPreconnected_Ioc
   have hs_nemp : (Ι a b).Nonempty := by exact nonempty_of_measure_ne_zero hμ0
   exact exists_eq_setAverage ⟨hs_nemp, hs_prec⟩ (hf.mono uIoc_subset_uIcc) hint hμfin hμ0
 
@@ -101,64 +84,34 @@ and `μ` has no atoms, then `∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x �
 theorem exists_eq_interval_average_of_noAtoms
     [NoAtoms μ] (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
     ∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
-  wlog h : a ≤ b generalizing a b
-  · simp at h
-    specialize this
-      (a := b) (b := a) (by rwa [uIcc_comm])
-      (by rwa [uIoc_comm]) (by rwa [uIoc_comm]) (h.le)
-    rcases this with ⟨c, hc, heq⟩
-    refine ⟨c, ?_, ?_⟩
-    · simpa [uIoo_comm] using hc
-    · have hswap : Ι a b = Ι b a := uIoc_comm a b
-      rwa [hswap]
-  have hint : IntegrableOn f (Ι a b) μ := by
-    have hsubset : Ι a b ⊆ uIcc a b := uIoc_subset_uIcc
-    have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
-    obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc hf.norm
-    apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
-    · rwa [lt_top_iff_ne_top]
-    · apply ContinuousOn.aestronglyMeasurable
-      · exact hf.mono hsubset
-      · exact measurableSet_uIoc
-    · rw [ae_restrict_iff' measurableSet_uIoc]
-      apply ae_of_all
-      intro m hm
-      apply hmax
-      exact hsubset hm
-  have h' : a ≠ b := by
-    intro hab
-    subst hab
-    simp at hμ0
-  have hab : a < b := lt_of_le_of_ne h h'
-  let s := Ioo a b
-  have hs_conn : IsConnected s := isConnected_Ioo hab
-  have hab' : s = uIoo a b := by rw [uIoo_of_le h]
-  have hs : s ⊆ [[a, b]] := by simpa [hab'] using uIoo_subset_uIcc_self
-  have hf' : ContinuousOn f s := hf.mono hs
-  have hs' : s ⊆ Ι a b := by simpa [uIoc_of_le h] using Ioo_subset_Ioc_self
-  have hint' : IntegrableOn f s μ := hint.mono_set hs'
+  have hint : IntegrableOn f (Ι a b) μ := hf.integrableOn_of_subset_isCompact
+    isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin
+  have h : a ≠ b := by intro hab; subst hab; simp at hμ0
+  let s := uIoo a b
+  have hs' : s ⊆ Ι a b := by intro x hx; rcases hx with ⟨h1, h2⟩; grind
   have hμfin' : μ s ≠ ⊤ := measure_ne_top_of_subset hs' hμfin
+  have hs_ev : s =ᵐ[μ] Ι a b := by simpa using Ioo_ae_eq_Ioc
   have hμ0' : μ s ≠ 0 := by
-    have hμ : μ s = μ (Ι a b) := by rw [uIoc_of_le h, measure_congr Ioo_ae_eq_Ioc]
+    have hμ : μ s = μ (Ι a b) := by rw [measure_congr hs_ev]
     rwa [hμ]
-  obtain ⟨c, hc, heq⟩ := exists_eq_setAverage hs_conn hf' hint' hμfin' hμ0'
-  refine ⟨c, by rwa [uIoo_of_le h], ?_⟩
-  have hs_ev : s =ᵐ[μ] Ι a b := by simpa [uIoc_of_le h] using Ioo_ae_eq_Ioc
-  rwa [← setAverage_congr hs_ev]
+  obtain ⟨c, hc, heq⟩ := exists_eq_setAverage (isConnected_uIoo h) (hf.mono uIoo_subset_uIcc_self)
+    (hint.mono_set hs') (measure_ne_top_of_subset hs' hμfin) hμ0'
+  exact ⟨c, hc, by rwa [← setAverage_congr hs_ev]⟩
 
 /-- The mean value theorem for integrals:
 There exists a point in an interval such that the mean of a continuous function over the interval
 equals the value of the function at the point. -/
 theorem exists_eq_interval_average
     (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
-    ∃ c ∈ uIoo a b, f c = ⨍ (x : ℝ) in a..b, f x := by
-  wlog hle : a ≤ b generalizing a b
-  · rw [uIoo_comm, uIoc_comm]
-    apply this hab.symm ?_ (by grind)
-    rwa [uIcc_comm]
-  have : Ι a b = Ioc a b := uIoc_of_le hle
+    ∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x := by
   apply exists_eq_interval_average_of_noAtoms hf
-  · simp [this]
+  · apply ne_of_lt
+    calc
+      _ ≤ volume [[a, b]] := measure_mono uIoc_subset_uIcc
+      _ < _ := by simp
   · apply ne_of_gt
-    rw [this, Real.volume_Ioc, ENNReal.ofReal_pos]
-    grind
+    have h : (uIoo a b) ⊆ (Ι a b) := by intro x hx; rcases hx with ⟨h1, h2⟩; grind
+    calc
+      0 < volume (uIoo a b) := by
+        rwa [Real.volume_uIoo, ENNReal.ofReal_pos, abs_sub_comm, abs_sub_pos]
+      _ ≤ _ := measure_mono h
