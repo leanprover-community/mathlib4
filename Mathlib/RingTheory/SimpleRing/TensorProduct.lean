@@ -77,7 +77,7 @@ lemma TensorProduct.map_comap_eq_zero_if_zero [hA : IsSimpleRing A]
         | right_absorb b x hx hx1 =>
           obtain ⟨ι, _, xL, xR, eq⟩ := hx1
           exact ⟨ι, inferInstance, xL, fun i ↦ xR i * b, by simp [eq, Finset.sum_mul, ← mul_assoc]⟩
-      obtain ⟨ι', _, xL, xR, eq1⟩ := h' 1 hj1
+      obtain ⟨ι', _, xL, xR, eq1⟩ := h' 1 (by simp_all)
       let T' := ∑ i, xL i ⊗ₜ 1 * (a j ⊗ₜ[K] 𝓑 j + ∑ x ∈ s, a x ⊗ₜ[K] 𝓑 x) * xR i ⊗ₜ 1
       have hT'1 : T' ∈ I := sum_mem <| fun _ _ ↦ I.mul_mem_right _ _ <| I.mul_mem_left _ _ h
       have hT'2 : T' = 1 ⊗ₜ 𝓑 j + ∑ j ∈ s, (∑ i, xL i * a j * xR i) ⊗ₜ 𝓑 j := by
