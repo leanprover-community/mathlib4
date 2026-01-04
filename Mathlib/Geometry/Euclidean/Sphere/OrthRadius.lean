@@ -230,18 +230,15 @@ lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finran
   have hf := finrank_orthRadius hpc
   simp only [hf2.out, Nat.reduceEqDiff, finrank_eq_one_iff'] at hf
   obtain ⟨v, hv0, hv⟩ := hf
-  rw [Set.ncard_eq_two, inter_orthRadius_eq_of_dist_le_radius hp.le hpc (by simpa using v.property)
-    (by simpa using hv0), Submodule.norm_coe, neg_smul]
-  set v' : V := (√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v with hv'e
-  have hvp : 0 < √(s.radius ^ 2 - (dist p s.center) ^ 2) := by
+  replace hv0 : (v : V) ≠ 0 := by simpa using hv0
+  rw [inter_orthRadius_eq_of_dist_le_radius hp.le hpc (by simpa using v.property) hv0,
+    Submodule.norm_coe, neg_smul, Set.ncard_pair]
+  rw [ne_eq, vadd_right_cancel_iff, ← add_eq_zero_iff_eq_neg, ← two_smul ℝ,
+    smul_eq_zero_iff_right two_ne_zero, smul_eq_zero_iff_left hv0, div_eq_iff, zero_mul]
+  have hvp : 0 < √(s.radius ^ 2 - dist p s.center ^ 2) := by
     rw [Real.sqrt_pos, sub_pos, sq_lt_sq, abs_of_nonneg dist_nonneg]
     exact lt_abs.2 (.inl hp)
-  refine ⟨v' +ᵥ p, -v' +ᵥ p, ?_, rfl⟩
-  · simp only [ne_eq, vadd_right_cancel_iff, ← add_eq_zero_iff_eq_neg,
-      ← two_smul ℝ, smul_eq_zero, OfNat.ofNat_ne_zero, false_or]
-    rw [← norm_eq_zero, hv'e]
-    intro h
-    simp [hv0, hvp.ne'] at h
+  exact hvp.ne'
 
 end Sphere
 
