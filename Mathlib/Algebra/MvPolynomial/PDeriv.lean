@@ -6,7 +6,7 @@ Authors: Shing Tak Lam, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.MvPolynomial.Derivation
-public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-!
 # Partial derivatives of polynomials
@@ -148,6 +148,14 @@ lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
   | mul_X p q h =>
     simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
+
+lemma pderiv_sumToIter {σ ι} (p i) :
+    (sumToIter R σ ι p).pderiv i = sumToIter R σ ι (p.pderiv (.inl i)) := by
+  classical
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q _ _ => simp_all
+  | mul_X p n _ => cases n <;> simp_all [pderiv_X, Pi.single_apply, apply_ite]
 
 end PDeriv
 
