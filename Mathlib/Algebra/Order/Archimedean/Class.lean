@@ -22,7 +22,10 @@ This file defines archimedean classes of a given linearly ordered group. Archime
 measure to what extent the group fails to be Archimedean. For additive group, elements `a` and `b`
 in the same class are "equivalent" in the sense that there exist two natural numbers
 `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`. An element `a` in a higher class than `b`
-is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural number `n`.
+is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural numbers `n`.
+
+If `a` and `b` are in the same equivalence class, they're sometimes referred to as "commensurate"
+elements.
 
 ## Main definitions
 
@@ -395,8 +398,8 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
     have hminmem : s.min' hs ∈ (Finset.cons i s hi) :=
       Finset.mem_cons_of_mem (Finset.min'_mem _ _)
     have hne : mk (a i) ≠ mk (a (s.min' hs)) := by
-      by_contra!
-      obtain eq := hmono.injOn (by simp) hminmem this
+      by_contra h
+      obtain eq := hmono.injOn (by simp) hminmem h
       rw [eq] at hi
       exact hi (Finset.min'_mem _ hs)
     rw [← ih] at hne

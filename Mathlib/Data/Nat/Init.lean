@@ -46,10 +46,10 @@ Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated dev
 The relevant files are:
 * `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
 * `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
-* `Mathlib/Algebra/Group/Nat.lean` for the monoid instances on `ℕ`
-* `Mathlib/Algebra/Group/Int.lean` for the group instance on `ℤ`
+* `Mathlib/Algebra/Group/Nat/Defs.lean` for the monoid instances on `ℕ`
+* `Mathlib/Algebra/Group/Int/Defs.lean` for the group instance on `ℤ`
 * `Mathlib/Algebra/Ring/Nat.lean` for the semiring instance on `ℕ`
-* `Mathlib/Algebra/Ring/Int.lean` for the ring instance on `ℤ`
+* `Mathlib/Algebra/Ring/Int/Defs.lean` for the ring instance on `ℤ`
 * `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
 * `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
 * `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
