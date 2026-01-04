@@ -82,9 +82,9 @@ instance [t.IsGE X 0] :
     dsimp
     have := t.truncGEt_obj_obj_isGE (n+1) i (by
       obtain _|_|i := i
-      · apply le_top
       · change _ < ⊥ at hi
         simp at hi
+      · apply le_top
       · change _ < ℤt.mk _ at hi
         change _ ≤ ℤt.mk _
         simp only [ℤt.mk_lt_mk_iff, ℤt.mk_le_mk_iff] at hi ⊢

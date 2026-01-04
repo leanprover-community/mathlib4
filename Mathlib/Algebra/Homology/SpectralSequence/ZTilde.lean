@@ -18,23 +18,20 @@ public import Mathlib.Order.WithBot
 
 open CategoryTheory Limits
 
-def ℤt := WithTop (WithBot ℤ)
+def ℤt := WithBot (WithTop ℤ)
 
 namespace ℤt
 
-instance : LinearOrder ℤt := by
-  dsimp [ℤt]
-  infer_instance
+instance : LinearOrder ℤt := inferInstanceAs (LinearOrder (WithBot (WithTop ℤ)))
+instance : OrderBot ℤt := inferInstanceAs (OrderBot (WithBot (WithTop ℤ)))
+instance : OrderTop ℤt := inferInstanceAs (OrderTop (WithBot (WithTop ℤ)))
 
-lemma le_total (a b : ℤt) : a ≤ b ∨ b ≤ a := by
-  exact @LinearOrder.le_total ℤt (by dsimp [ℤt]; infer_instance) a b
-
-def mk (a : ℤ) : ℤt := ((a : WithBot ℤ) : WithTop (WithBot ℤ))
+def mk (a : ℤ) : ℤt := ((a : WithTop ℤ) : WithBot (WithTop ℤ))
 
 lemma mk_monotone : Monotone ℤt.mk := by
   intro a b h
   dsimp [mk]
-  rw [WithTop.coe_le_coe, WithBot.coe_le_coe]
+  rw [WithBot.coe_le_coe, WithTop.coe_le_coe, ]
   exact h
 
 @[simps! obj map]
@@ -44,42 +41,57 @@ instance {α : Type _} [Preorder α] (a : α) : IsIso (homOfLE (le_refl a)) :=
   (Iso.refl a).isIso_hom
 
 @[simp]
-lemma some_le_some_none_iff (a : ℤ) :
-    @LE.le ℤt _ (some (some a)) (some none) ↔ False := by
-  simp only [iff_false]
-  erw [WithTop.coe_le_coe]
-  apply WithBot.not_coe_le_bot
+lemma some_some_le_none_iff (a : ℤ) :
+    @LE.le ℤt _ (some (some a)) none ↔ False := by
+  tauto
 
 @[simp]
-lemma none_le_some_iff (a : WithBot ℤ) :
-    @LE.le ℤt _ none (some a) ↔ False := by
-  simp only [iff_false]
-  apply WithTop.not_top_le_coe
+lemma none_le_some_iff (a : ℤ) :
+    @LE.le ℤt _ (some none) (some a) ↔ False := by
+  change (⊤ : ℤt) ≤ _ ↔ _
+  rw [iff_false, top_le_iff]
+  intro (h : _ = some none)
+  simp at h
+  tauto
+
 
 @[simp]
 lemma some_some_le_some_some_iff (a b : ℤ) :
     @LE.le ℤt _ (some (some a)) (some (some b)) ↔ a ≤ b := by
-  erw [WithTop.coe_le_coe, WithBot.coe_le_coe]
+  erw [WithBot.coe_le_coe, WithTop.coe_le_coe]
 
 @[simp]
 lemma some_some_lt_some_some_iff (a b : ℤ) :
     @LT.lt ℤt _ (some (some a)) (some (some b)) ↔ a < b := by
-  erw [WithTop.coe_lt_coe, WithBot.coe_lt_coe]
+  erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe, ]
+
+@[simp]
+lemma some_none_le_some_some_iff (a : ℤ) :
+    @LE.le ℤt _ (some none) (some (some a)) ↔ False := by
+  tauto
+
+@[simp]
+lemma some_lt_none_iff (a : WithTop ℤ) :
+    @LE.le ℤt _ (some a) none ↔ False := by
+  tauto
 
 @[simp]
 lemma mk_le_mk_iff (a b : ℤ) :
-    mk a ≤ mk b ↔ a ≤ b := some_some_le_some_some_iff a b
+    mk a ≤ mk b ↔ a ≤ b :=
+  some_some_le_some_some_iff a b
 
 @[simp]
 lemma mk_lt_mk_iff (a b : ℤ) :
-    mk a < mk b ↔ a < b := some_some_lt_some_some_iff a b
+    mk a < mk b ↔ a < b :=
+  some_some_lt_some_some_iff a b
 
 instance : OrderTop ℤt := by dsimp [ℤt]; infer_instance
 instance : OrderBot ℤt := by dsimp [ℤt]; infer_instance
 
 @[simp]
 lemma le_bot_mk_iff (a : ℤ) :
-    ℤt.mk a ≤ ⊥ ↔ False := some_le_some_none_iff a
+    ℤt.mk a ≤ ⊥ ↔ False :=
+  some_some_le_none_iff a
 
 @[simp]
 lemma mk_eq_bot_iff (a : ℤ) :
@@ -101,19 +113,19 @@ lemma top_eq_bot_mk_iff :
 
 @[simp]
 lemma top_le_mk_iff (a : ℤ) :
-    ⊤ ≤ ℤt.mk a ↔ False := none_le_some_iff a
+    ⊤ ≤ ℤt.mk a ↔ False :=
+  some_none_le_some_some_iff a
 
 @[simp]
 lemma top_le_bot_iff :
     (⊤ : ℤt) ≤ ⊥ ↔ False := by
-  simp only [iff_false]
-  apply WithTop.not_top_le_coe
+  simp
 
 lemma three_cases (x : ℤt) :
     x = ⊥ ∨ (∃ (n : ℤ), x = ℤt.mk n) ∨ x = ⊤ := by
   obtain (_|_|n) := x
-  · exact Or.inr (Or.inr rfl)
   · exact Or.inl rfl
+  · exact Or.inr (Or.inr rfl)
   · exact Or.inr (Or.inl ⟨n, rfl⟩)
 
 lemma le_bot_iff (a : ℤt) : a ≤ ⊥ ↔ a = ⊥ := by

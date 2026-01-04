@@ -161,21 +161,21 @@ lemma triangleLEGT_distinguished (n : ℤ) (X : C) :
 namespace TruncLTt
 
 noncomputable def obj : ℤt → C ⥤ C
-  | some none => 0
+  | none => 0
   | some (some a) => t.truncLT a
-  | none => 𝟭 C
+  | some none => 𝟭 C
 
 noncomputable def map : ∀ {x y : ℤt}, (x ⟶ y) → (obj t x ⟶ obj t y)
-  | some none, some none => fun _ => 𝟙 _
-  | some none, some (some b) => fun _ => 0
-  | some none, none => fun _ => 0
-  | some (some a), some none  => fun _ => 0
-  | some (some a), some (some b) =>
-      fun hab => t.natTransTruncLTOfLE a b (by simpa using (leOfHom hab))
-  | some (some a), none => fun _ => t.truncLTι a
-  | none, some none  => fun _ => 0
-  | none, some (some b) => fun _ => 0
   | none, none => fun _ => 𝟙 _
+  | none, some (some b) => fun _ => 0
+  | none, some none => fun _ => 0
+  | some (some a), none  => fun _ => 0
+  | some (some a), some (some b) =>
+      fun hab ↦ t.natTransTruncLTOfLE a b (by simpa using leOfHom hab)
+  | some (some a), some none => fun _ => t.truncLTι a
+  | some none, none  => fun _ => 0
+  | some none, some (some b) => fun _ => 0
+  | some none, some none => fun _ => 𝟙 _
 
 end TruncLTt
 
@@ -212,21 +212,21 @@ lemma truncLTt_map_eq_truncLTι (n : ℤ) :
 namespace TruncGEt
 
 noncomputable def obj : ℤt → C ⥤ C
-  | some none => 𝟭 C
+  | none => 𝟭 C
   | some (some a) => t.truncGE a
-  | none => 0
+  | some none => 0
 
 noncomputable def map : ∀ {x y : ℤt}, (x ⟶ y) → (obj t x ⟶ obj t y)
-  | some none, some none => fun _ => 𝟙 _
-  | some none, some (some b) => fun _ => t.truncGEπ b
-  | some none, none => fun _ => 0
-  | some (some a), some none  => fun _ => 0
+  | none, none => fun _ => 𝟙 _
+  | none, some (some b) => fun _ => t.truncGEπ b
+  | none, some none => fun _ => 0
+  | some (some a), none  => fun _ => 0
   | some (some a), some (some b) =>
       fun hab => t.natTransTruncGEOfLE a b (by simpa using (leOfHom hab))
-  | some (some a), none => fun _ => 0
-  | none, some none  => fun _ => 0
-  | none, some (some b) => fun _ => 0
-  | none, none => fun _ => 𝟙 _
+  | some (some a), some none => fun _ => 0
+  | some none, none  => fun _ => 0
+  | some none, some (some b) => fun _ => 0
+  | some none, some none => fun _ => 𝟙 _
 
 end TruncGEt
 
@@ -272,7 +272,7 @@ noncomputable def truncGEtδLTt :
   app a := TruncGEtδLTt.app t a
   naturality {a b} hab := by
     replace hab := leOfHom hab
-    obtain (_|_|a) := a
+    obtain (_|_|a) := a; rotate_left
     · apply IsZero.eq_of_src
       exact isZero_zero _
     all_goals obtain (_|_|b) := b <;> simp (config := {failIfUnchanged := false}) at hab <;>
@@ -290,7 +290,6 @@ noncomputable def abstractSpectralObject : SpectralObject.AbstractSpectralObject
   truncLTObjTopIso' := Iso.refl _
   truncGEObjBotIso' := Iso.refl _
   truncGEδLT := t.truncGEtδLTt
-
 
 namespace AbstractSpectralObject
 
@@ -378,11 +377,11 @@ noncomputable def triangleLTGEBotIso (X : C) :
 lemma distinguished (n : ℤt) (X : C) :
   (t.abstractSpectralObject.triangleLTGE.obj n).obj X ∈ distTriang C := by
   obtain (_|_|n) := n
-  · exact isomorphic_distinguished _ (contractible_distinguished X) _
-      (triangleLTGETopIso t X)
   · exact isomorphic_distinguished _
       (inv_rot_of_distTriang _ (contractible_distinguished X)) _
       (triangleLTGEBotIso t X)
+  · exact isomorphic_distinguished _ (contractible_distinguished X) _
+      (triangleLTGETopIso t X)
   · exact isomorphic_distinguished _ (t.triangleLTGE_distinguished n X) _
       (triangleLTGEIso t n X)
 

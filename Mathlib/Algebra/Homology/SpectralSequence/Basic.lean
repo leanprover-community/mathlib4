@@ -75,6 +75,7 @@ instance : Category (SpectralSequence C c r₀) where
         dsimp
         simp [HomologicalComplex.homologyMap_comp, assoc, g.comm r r', f.comm_assoc r r'] }
 
+@[ext]
 lemma hom_ext {E E' : SpectralSequence C c r₀} {f f' : E ⟶ E'}
     (h : ∀ (r : ℤ) (hr : r₀ ≤ r), f.hom r = f'.hom r) :
     f = f' :=
