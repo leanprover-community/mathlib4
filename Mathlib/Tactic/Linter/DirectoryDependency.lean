@@ -333,7 +333,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.AlgebraicTopology, `Mathlib.NumberTheory),
   (`Mathlib.AlgebraicTopology, `Mathlib.Probability),
   (`Mathlib.AlgebraicTopology, `Mathlib.RepresentationTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.SetTheory),
   (`Mathlib.AlgebraicTopology, `Mathlib.Testing),
   (`Mathlib.Analysis, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Analysis, `Mathlib.AlgebraicTopology),

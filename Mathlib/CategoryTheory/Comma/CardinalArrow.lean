@@ -62,6 +62,9 @@ lemma hasCardinalLT_arrow_discrete_iff {X : Type u} (κ : Cardinal.{w}) :
     HasCardinalLT (Arrow (Discrete X)) κ ↔ HasCardinalLT X κ :=
   hasCardinalLT_iff_of_equiv (Arrow.discreteEquiv X) κ
 
+instance (X : Type u) [Finite X] : Finite (Arrow (Discrete X)) :=
+  Finite.of_equiv _ (Arrow.discreteEquiv X).symm
+
 lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     Small.{w} C :=
   small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
