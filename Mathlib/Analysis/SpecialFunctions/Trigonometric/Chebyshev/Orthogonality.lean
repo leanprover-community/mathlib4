@@ -25,4 +25,16 @@ theorem integral_T_mul_T_of_ne {n m : ℤ} (h : n ≠ m) :
     ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂volume.withDensity chebDensT = 0 := by
   sorry
 
+example {n m : ℕ} (h : (n : WithBot ℕ) < m) : n < m := by grind
+example {n m : ℕ} (h : (n : WithBot ℕ) < m) : n < m := by grind [WithBot.coe_lt_coe]
+example {n m : ℕ} (h : (n : WithBot ℕ) < m) : n < m := WithBot.coe_lt_coe.mp h
+
+example {n m : ℕ} (h : m ≤ n) : m * π / n ≤ π := by grind
+example {n m : ℕ} (h : m ≤ n) : m * π / n ≤ π := by
+  by_cases! n = 0
+  case pos hn => rw [hn, Nat.cast_zero, div_zero]; positivity
+  case neg hn => calc
+      m * π / n ≤ n * π / n := by gcongr
+      _ = π := by aesop
+
 end Polynomial.Chebyshev
