@@ -60,8 +60,8 @@ def toModuleCatObj (i : ι) : Submodule R M :=
 
 variable {R ι} in
 @[simp]
-lemma mem_toModuleCatObj (i : ι) {x : M} : x ∈ toModuleCatObj R M i ↔ ∃ y : M,
-    (single i i 1 : Matrix ι ι R) • y = x :=
+lemma mem_toModuleCatObj (i : ι) {x : M} :
+    x ∈ toModuleCatObj R M i ↔ ∃ y : M, single i i (1 : R) • y = x :=
   Iff.rfl
 
 variable {R ι} in
@@ -74,7 +74,6 @@ def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i
   toFun x := ⟨f x.1, by obtain ⟨y, hy⟩ := mem_toModuleCatObj i|>.1 x.2; simp [← hy]⟩
   map_add' := by simp
   map_smul' := by simp
-
 
 end MatrixModCat
 
