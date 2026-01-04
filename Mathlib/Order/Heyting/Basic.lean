@@ -67,7 +67,7 @@ instance Prod.instHNot [HNot α] [HNot β] : HNot (α × β) :=
 instance Prod.instSDiff [SDiff α] [SDiff β] : SDiff (α × β) :=
   ⟨fun a b => (a.1 \ b.1, a.2 \ b.2)⟩
 
-instance Prod.instHasCompl [Compl α] [Compl β] : Compl (α × β) :=
+instance Prod.instCompl [Compl α] [Compl β] : Compl (α × β) :=
   ⟨fun a => (a.1ᶜ, a.2ᶜ)⟩
 
 end
