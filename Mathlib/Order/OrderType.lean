@@ -306,26 +306,26 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 end Cardinal
 
-recommended_spelling "ω" for "type ℕ" in [OrderType]
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 public def omega0 : OrderType := type ℕ
 
-recommended_spelling "η" for "type ℚ" in [OrderType]
 /-- The order type of the rational numbers. -/
 public def eta : OrderType := type ℚ
 
-recommended_spelling "θ" for "type ℝ" in [OrderType]
 /-- The order type of the real numbers. -/
 public def theta : OrderType := type ℝ
 
 @[inherit_doc]
 scoped notation "ω" => OrderType.omega0
+recommended_spelling "omega0" for "ω" in [omega0, «termω»]
 
 @[inherit_doc]
 scoped notation "η" => OrderType.eta
+recommended_spelling "eta" for "η" in [eta, «termη»]
 
 @[inherit_doc]
 scoped notation "θ" => OrderType.theta
+recommended_spelling "theta" for "θ" in [theta, «termθ»]
 
 instance : Add OrderType.{u} where
   add := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s), inferInstance, inferInstance⟩)
@@ -381,7 +381,7 @@ instance : Monoid OrderType where
     simp only [←type_mul]
     exact RelIso.ordertype_eq ( Prod.Lex.prodAssoc _ _ _ |> OrderIso.symm )
   one_mul o := by
-    rcases o with ⟨ l ⟩
+    rcases o with ⟨l⟩
     exact Quot.sound ⟨Prod.Lex.prodUnique _ PUnit⟩
   mul_one o := by
     refine inductionOn o (fun α hα ↦ ?_)
