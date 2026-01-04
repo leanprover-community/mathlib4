@@ -99,15 +99,11 @@ theorem extDerivWithin_apply_vectorField
   rw [mem_Ici] at hj
   simp only [← Fin.insertNth_removeNth, map_insertNth]
   rw [Fin.removeNth_removeNth_eq_swap]
-  simp? [pow_add, lieBracketWithin, mul_smul, smul_comm ((-1) ^ (j : ℕ)), smul_sub,
-      ← sub_eq_add_neg] says
-    simp only [Int.reduceNeg, Fin.coe_castSucc, Fin.val_succ, pow_add, pow_one, mul_neg, mul_one,
-      neg_smul, smul_comm ((-1) ^ (j : ℕ)), ← sub_eq_add_neg, lieBracketWithin,
-      map_vecCons_sub, smul_sub, mul_smul]
   have H₁ : i.castSucc.succAbove j = j.succ := by simp [Fin.succAbove_of_le_castSucc, hj]
   have H₂ : j.predAbove i.castSucc = i := by simp [Fin.predAbove_of_le_castSucc, hj]
   have H₃ : j.succ.succAbove i = i.castSucc := by simp [Fin.succAbove_of_castSucc_lt, hj]
-  simp +unfoldPartialApp [H₁, H₂, H₃, Fin.removeNth]
+  simp +unfoldPartialApp [pow_add, lieBracketWithin, mul_smul, smul_comm ((-1) ^ (j : ℕ)), smul_sub,
+      ← sub_eq_add_neg, H₁, H₂, H₃, Fin.removeNth]
 
 /--
 If `ω` is a differentiable `(n + 1)`-form and `V i` are `n + 2` differentiable vector fields, then
