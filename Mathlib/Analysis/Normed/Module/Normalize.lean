@@ -66,13 +66,13 @@ theorem normalize_smul_of_neg {r : 𝕜} (hr : r < 0) (x : V) :
   simpa using normalize_smul_of_pos (show 0 < -r by grind) (-x)
 
 variable {𝕜} in
-theorem normalize_smul_real (r : ℝ) (x : V) :
+theorem normalize_real_smul (r : ℝ) (x : V) :
     normalize 𝕜 ((r : 𝕜) • x) = (SignType.sign r : 𝕜) • normalize 𝕜 x := by
   rcases lt_trichotomy 0 r with (h_pos | rfl | h_neg)
   · simp [normalize_smul_of_pos, h_pos]
   · simp
   · simp [normalize_smul_of_neg, h_neg]
 
-@[deprecated (since := "2025-01-04")] alias normalize_smul := normalize_smul_real
+@[deprecated (since := "2025-01-04")] alias normalize_smul := normalize_real_smul
 
 end NormedSpace

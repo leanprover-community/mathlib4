@@ -94,7 +94,7 @@ lemma signedDist_linear_apply_apply : (signedDist v).linear w p = ⟪-normalize 
 -- Lemmas about the vector argument of `signedDist`
 
 lemma signedDist_smul (r : ℝ) : signedDist (r • v) p q = SignType.sign r * signedDist v p q := by
-  simp [signedDist_apply_apply, ← real_inner_smul_left, ← normalize_smul_real]
+  simp [signedDist_apply_apply, ← real_inner_smul_left, ← normalize_real_smul]
 
 lemma signedDist_smul_of_pos {r : ℝ} (h : 0 < r) : signedDist (r • v) p q = signedDist v p q := by
   simp [signedDist_smul, h]
