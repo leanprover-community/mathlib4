@@ -144,6 +144,7 @@ class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HI
 difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.
 
 This generalizes `CoheytingAlgebra` by not requiring a top element. -/
+@[to_dual]
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
   /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
@@ -156,6 +157,7 @@ class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot
 
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `(· \ a)` is left adjoint to `(· ⊔ a)`. -/
+@[to_dual]
 class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, OrderTop α, HNot α where
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
@@ -172,14 +174,11 @@ attribute [instance 100] GeneralizedHeytingAlgebra.toOrderTop
 attribute [instance 100] GeneralizedCoheytingAlgebra.toOrderBot
 
 -- See note [lower instance priority]
-instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α :=
-  { bot_le := ‹HeytingAlgebra α›.bot_le }
+@[to_dual]
+instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α where
 
 -- See note [lower instance priority]
-instance (priority := 100) CoheytingAlgebra.toBoundedOrder [CoheytingAlgebra α] : BoundedOrder α :=
-  { ‹CoheytingAlgebra α› with }
-
--- See note [lower instance priority]
+@[to_dual existing]
 instance (priority := 100) BiheytingAlgebra.toCoheytingAlgebra [BiheytingAlgebra α] :
     CoheytingAlgebra α :=
   { ‹BiheytingAlgebra α› with }
@@ -228,60 +227,78 @@ intuitionistic logic,- where `≤` can be interpreted as "validates", `⇨` as "
 the same in this logic.
 
 See also `Prop.heytingAlgebra`. -/
+
+section GeneralizedCoheytingAlgebra
+
+variable [GeneralizedCoheytingAlgebra α] {a b c : α}
+
+@[simp]
+theorem sdiff_le_iff : a \ b ≤ c ↔ a ≤ b ⊔ c := GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
+
+theorem sdiff_le_iff' : a \ b ≤ c ↔ a ≤ c ⊔ b := by rw [sdiff_le_iff, sup_comm]
+
+end GeneralizedCoheytingAlgebra
+
 section GeneralizedHeytingAlgebra
 
 variable [GeneralizedHeytingAlgebra α] {a b c d : α}
 
 /-- `p → q → r ↔ p ∧ q → r` -/
-@[simp]
+@[to_dual existing sdiff_le_iff', simp]
 theorem le_himp_iff : a ≤ b ⇨ c ↔ a ⊓ b ≤ c :=
   GeneralizedHeytingAlgebra.le_himp_iff _ _ _
 
 /-- `p → q → r ↔ q ∧ p → r` -/
+@[to_dual existing sdiff_le_iff]
 theorem le_himp_iff' : a ≤ b ⇨ c ↔ b ⊓ a ≤ c := by rw [le_himp_iff, inf_comm]
 
 /-- `p → q → r ↔ q → p → r` -/
+@[to_dual sdiff_le_comm]
 theorem le_himp_comm : a ≤ b ⇨ c ↔ b ≤ a ⇨ c := by rw [le_himp_iff, le_himp_iff']
 
 /-- `p → q → p` -/
+@[to_dual sdiff_le]
 theorem le_himp : a ≤ b ⇨ a :=
   le_himp_iff.2 inf_le_left
 
 /-- `p → p → q ↔ p → q` -/
+@[to_dual sdiff_le_iff_left]
 theorem le_himp_iff_left : a ≤ a ⇨ b ↔ a ≤ b := by rw [le_himp_iff, inf_idem]
 
 /-- `p → p` -/
-@[simp]
+@[to_dual (attr := simp)]
 theorem himp_self : a ⇨ a = ⊤ :=
   top_le_iff.1 <| le_himp_iff.2 inf_le_right
 
 /-- `(p → q) ∧ p → q` -/
+@[to_dual le_sdiff_sup]
 theorem himp_inf_le : (a ⇨ b) ⊓ a ≤ b :=
   le_himp_iff.1 le_rfl
 
 /-- `p ∧ (p → q) → q` -/
+@[to_dual le_sup_sdiff]
 theorem inf_himp_le : a ⊓ (a ⇨ b) ≤ b := by rw [inf_comm, ← le_himp_iff]
 
 /-- `p ∧ (p → q) ↔ p ∧ q` -/
-@[simp]
+@[to_dual (attr := simp) sup_sdiff_self]
 theorem inf_himp (a b : α) : a ⊓ (a ⇨ b) = a ⊓ b :=
   le_antisymm (le_inf inf_le_left <| by rw [inf_comm, ← le_himp_iff]) <| inf_le_inf_left _ le_himp
 
 /-- `(p → q) ∧ p ↔ q ∧ p` -/
-@[simp]
+@[to_dual (attr := simp)]
 theorem himp_inf_self (a b : α) : (a ⇨ b) ⊓ a = b ⊓ a := by rw [inf_comm, inf_himp, inf_comm]
 
 /-- The **deduction theorem** in the Heyting algebra model of intuitionistic logic:
 an implication holds iff the conclusion follows from the hypothesis. -/
-@[simp]
+@[to_dual (attr := simp)]
 theorem himp_eq_top_iff : a ⇨ b = ⊤ ↔ a ≤ b := by rw [← top_le_iff, le_himp_iff, top_inf_eq]
 
 /-- `p → true`, `true → p ↔ p` -/
-@[simp]
+@[to_dual (attr := simp) bot_sdiff]
 theorem himp_top : a ⇨ ⊤ = ⊤ :=
   himp_eq_top_iff.2 le_top
 
-@[simp]
+@[to_dual (attr := simp) sdiff_bot]
 theorem top_himp : ⊤ ⇨ a = a :=
   eq_of_forall_le_iff fun b => by rw [le_himp_iff, inf_top_eq]
 
@@ -385,33 +402,11 @@ section GeneralizedCoheytingAlgebra
 
 variable [GeneralizedCoheytingAlgebra α] {a b c d : α}
 
-@[simp]
-theorem sdiff_le_iff : a \ b ≤ c ↔ a ≤ b ⊔ c :=
-  GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
-
-theorem sdiff_le_iff' : a \ b ≤ c ↔ a ≤ c ⊔ b := by rw [sdiff_le_iff, sup_comm]
-
-theorem sdiff_le_comm : a \ b ≤ c ↔ a \ c ≤ b := by rw [sdiff_le_iff, sdiff_le_iff']
-
-theorem sdiff_le : a \ b ≤ a :=
-  sdiff_le_iff.2 le_sup_right
-
 theorem Disjoint.disjoint_sdiff_left (h : Disjoint a b) : Disjoint (a \ c) b :=
   h.mono_left sdiff_le
 
 theorem Disjoint.disjoint_sdiff_right (h : Disjoint a b) : Disjoint a (b \ c) :=
   h.mono_right sdiff_le
-
-theorem sdiff_le_iff_left : a \ b ≤ b ↔ a ≤ b := by rw [sdiff_le_iff, sup_idem]
-
-@[simp]
-theorem sdiff_self : a \ a = ⊥ :=
-  le_bot_iff.1 <| sdiff_le_iff.2 le_sup_left
-
-theorem le_sup_sdiff : a ≤ b ⊔ a \ b :=
-  sdiff_le_iff.1 le_rfl
-
-theorem le_sdiff_sup : a ≤ a \ b ⊔ b := by rw [sup_comm, ← sdiff_le_iff]
 
 theorem sup_sdiff_left : a ⊔ a \ b = a :=
   sup_of_le_left sdiff_le
@@ -424,13 +419,6 @@ theorem inf_sdiff_left : a \ b ⊓ a = a \ b :=
 
 theorem inf_sdiff_right : a ⊓ a \ b = a \ b :=
   inf_of_le_right sdiff_le
-
-@[simp]
-theorem sup_sdiff_self (a b : α) : a ⊔ b \ a = a ⊔ b :=
-  le_antisymm (sup_le_sup_left sdiff_le _) (sup_le le_sup_left le_sup_sdiff)
-
-@[simp]
-theorem sdiff_sup_self (a b : α) : b \ a ⊔ a = b ⊔ a := by rw [sup_comm, sup_sdiff_self, sup_comm]
 
 alias sup_sdiff_self_left := sdiff_sup_self
 
@@ -453,17 +441,6 @@ theorem sup_le_of_le_sdiff_left (h : b ≤ c \ a) (hac : a ≤ c) : a ⊔ b ≤ 
 
 theorem sup_le_of_le_sdiff_right (h : a ≤ c \ b) (hbc : b ≤ c) : a ⊔ b ≤ c :=
   sup_le (h.trans sdiff_le) hbc
-
-@[simp]
-theorem sdiff_eq_bot_iff : a \ b = ⊥ ↔ a ≤ b := by rw [← le_bot_iff, sdiff_le_iff, sup_bot_eq]
-
-@[simp]
-theorem sdiff_bot : a \ ⊥ = a :=
-  eq_of_forall_ge_iff fun b => by rw [sdiff_le_iff, bot_sup_eq]
-
-@[simp]
-theorem bot_sdiff : ⊥ \ a = ⊥ :=
-  sdiff_eq_bot_iff.2 bot_le
 
 theorem sdiff_sdiff_sdiff_le_sdiff : (a \ b) \ (a \ c) ≤ c \ b := by
   rw [sdiff_le_iff, sdiff_le_iff, sup_left_comm, sup_sdiff_self, sup_left_comm, sdiff_sup_self,
