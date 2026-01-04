@@ -89,6 +89,10 @@ theorem volume_real_Ico_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ico a b
 theorem volume_Icc {a b : ℝ} : volume (Icc a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
+theorem volume_uIcc {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
+  simp [uIcc, volume_Icc, max_sub_min_eq_abs]
+
+@[simp]
 theorem volume_real_Icc {a b : ℝ} : volume.real (Icc a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
@@ -99,6 +103,10 @@ theorem volume_real_Icc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b
 theorem volume_Ioo {a b : ℝ} : volume (Ioo a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
+theorem volume_uIoo {a b : ℝ} : volume (uIoo a b) = ofReal |b - a| := by
+  simp [uIoo, volume_Ioo, max_sub_min_eq_abs]
+
+@[simp]
 theorem volume_real_Ioo {a b : ℝ} : volume.real (Ioo a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
@@ -107,6 +115,10 @@ theorem volume_real_Ioo_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b
 
 @[simp]
 theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val]
+
+@[simp]
+theorem volume_uIoc {a b : ℝ} : volume (uIoc a b) = ofReal |b - a| := by
+  simp [uIoc, volume_Ioc, max_sub_min_eq_abs]
 
 @[simp]
 theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := by
