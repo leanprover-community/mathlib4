@@ -207,7 +207,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' y w w := by
       grw [← le_opNorm]
       simp
-    _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
+    _ = δ * C * ‖G.symm w‖ ^ 2 + g' y w w := by ring
     _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by simp [← hg]
     _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
@@ -311,7 +311,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' x w w := by
       grw [← le_opNorm]
       simp
-    _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
+    _ = δ * C * ‖G.symm w‖ ^ 2 + g' x w w := by ring
     _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by simp [← hg]
     _ = δ * C * g' x w w + g' x w w := by
       congr

@@ -47,8 +47,8 @@ which is a special case where the conditions are easier to check.
 
 ## Implementation details
 
-All the hard work is done in `AlgebraicGeometry/PresheafedSpace/Gluing.lean` where we glue
-presheafed spaces, sheafed spaces, and locally ringed spaces.
+All the hard work is done in `Mathlib/Geometry/RingedSpace/PresheafedSpace/Gluing.lean` where we
+glue presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
 
