@@ -539,13 +539,13 @@ instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
 instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
     CommRing (X →ₑ[σ] Y) where
 
-section
+namespace End
 
 /-- For a monoid `M` acting on a type `X`, the `M`-equivariant functions from `X` to itself
 form a monoid under composition. -/
 @[to_additive /-- For an additive monoid `M` acting on a type `X`, the `M`-equivariant functions
 from `X` to itself form an additive monoid under composition. -/]
-local instance instMonoidEnd [SMul M X] : Monoid (X →[M] X) where
+local instance [SMul M X] : Monoid (X →[M] X) where
   mul f g := f.comp g
   mul_assoc _ _ _ := rfl
   one := .id _
@@ -579,7 +579,7 @@ def mulOppositeEquiv [Monoid M] : (M →[Mᵐᵒᵖ] M) ≃* M where
   right_inv := mul_one
   map_mul' f g := show _ = MulOpposite.op (g 1) • f 1 by simp [← map_smul]
 
-end
+end End
 
 end MulActionHom
 
