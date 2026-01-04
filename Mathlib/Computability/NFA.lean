@@ -138,7 +138,7 @@ theorem evalFrom_iUnion {ι : Sort*} (s : ι → Set σ) (x : List α) :
     M.evalFrom (⋃ i, s i) x = ⋃ i, M.evalFrom (s i) x := by
   induction x generalizing s with
   | nil => simp
-  | cons a x ih => simp [stepSet, Set.iUnion_comm (ι:=σ) (ι':=ι), ih]
+  | cons a x ih => simp [stepSet, Set.iUnion_comm (ι := σ) (ι' := ι), ih]
 
 variable (M) in
 theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) (x : List α) :

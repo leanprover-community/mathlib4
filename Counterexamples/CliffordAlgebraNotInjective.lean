@@ -62,8 +62,6 @@ theorem X_Y_Z_notMem_kIdeal : (X * Y * Z : MvPolynomial (Fin 3) (ZMod 2)) ∉ kI
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
   contradiction
 
-@[deprecated (since := "2025-05-23")] alias X_Y_Z_not_mem_kIdeal := X_Y_Z_notMem_kIdeal
-
 theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X * Y * Z * x ∈ kIdeal) : x * x ∈ kIdeal := by
   rw [mem_kIdeal_iff] at h
