@@ -173,13 +173,20 @@ private theorem leadingCoeff_eq_sum_node_coeff_pos {n i : ℕ} (hi : i ≤ n) :
   have := inv_pos_of_pos <| zero_lt_prod_node_sub_node hi
   rwa [mul_inv, ← inv_pow, inv_neg_one] at this
 
-theorem leadingCoeff_le_of_bounded' {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    P.leadingCoeff ≤ 2 ^ (n - 1) := by
-  rw [← leadingCoeff_eq_sum_node hPdeg]
-  convert apply_le_apply_T_real
-    (fun i hi => le_of_lt <| leadingCoeff_eq_sum_node_coeff_pos hi) hPbnd
-  simp [leadingCoeff_eq_sum_node]
+theorem coeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    P.coeff n ≤ 2 ^ (n - 1) := by
+  by_cases P.degree = n
+  case pos hPdeg' =>
+    suffices P.leadingCoeff ≤ 2 ^ (n - 1) by
+      rwa [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg'] at this
+    rw [← leadingCoeff_eq_sum_node hPdeg']
+    convert apply_le_apply_T_real
+      (fun i hi => le_of_lt <| leadingCoeff_eq_sum_node_coeff_pos hi) hPbnd
+    simp [leadingCoeff_eq_sum_node]
+  case neg hPdeg' =>
+    suffices P.coeff n = 0 by rw [this]; positivity
+    exact coeff_eq_zero_of_degree_lt (by grind)
 
 theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
@@ -189,51 +196,38 @@ theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
   case neg hP =>
     lift P.degree to ℕ using degree_ne_bot.mpr hP with d hd
     replace hPdeg : d ≤ n := (WithBot.coe_le rfl).mp hPdeg
-    calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_bounded' hd.symm hPbnd
+    calc P.leadingCoeff = P.coeff d := by rw [leadingCoeff, natDegree_eq_of_degree_eq_some hd.symm]
+      _ ≤ 2 ^ (d - 1) := coeff_le_of_bounded (le_of_eq hd.symm) hPbnd
       _ ≤ 2 ^ (n - 1) := by gcongr; norm_num
-
-theorem coeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    P.coeff n ≤ 2 ^ (n - 1) := by
-  by_cases P.degree = n
-  case pos hPdeg' =>
-    convert leadingCoeff_le_of_bounded' hPdeg' hPbnd
-    rw [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg']
-  case neg hPdeg' =>
-    suffices P.coeff n = 0 by rw [this]; positivity
-    exact coeff_eq_zero_of_degree_lt (by grind)
-
-theorem leadingCoeff_eq_iff_of_bounded' {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
-  rw [← leadingCoeff_eq_sum_node hPdeg]
-  convert apply_eq_apply_T_real_iff (fun i hi => leadingCoeff_eq_sum_node_coeff_pos hi)
-    (le_of_eq hPdeg) hPbnd
-  simp [leadingCoeff_eq_sum_node]
-
-theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
-  refine ⟨fun hP => ?_, fun hP => by simp [hP]⟩
-  lift P.degree to ℕ with d hd
-  · contrapose! hP
-    rw [degree_eq_bot.mp hP, leadingCoeff_zero]
-    positivity
-  suffices n ≤ P.degree from (leadingCoeff_eq_iff_of_bounded' (by grind) hPbnd).mp hP
-  replace hP := ge_of_eq hP
-  contrapose! hP
-  have : d - 1 < n - 1 := by grind [Nat.cast_withBot, WithBot.coe_le_coe, WithBot.coe_lt_coe]
-  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_bounded' hd.symm hPbnd
-  _ < 2 ^ (n - 1) := by gcongr; norm_num
 
 theorem coeff_eq_of_bounded_iff {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
   refine ⟨fun hP => ?_, fun hP => ?_⟩
   · have hPdeg' : P.degree = n := eq_of_le_of_ge hPdeg (le_degree_of_ne_zero (by norm_num [hP]))
-    apply (leadingCoeff_eq_iff_of_bounded' hPdeg' hPbnd).mp
-    rw [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg', hP]
+    apply (apply_eq_apply_T_real_iff (fun i hi => leadingCoeff_eq_sum_node_coeff_pos hi)
+      hPdeg hPbnd).mp
+    rwa [leadingCoeff_eq_sum_node hPdeg', leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg',
+      leadingCoeff_eq_sum_node (by aesop), leadingCoeff_T, Int.natAbs_natCast]
   · convert leadingCoeff_T ℝ n
     simp [hP, leadingCoeff]
+
+theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
+  refine ⟨fun hP => ?_, fun hP => by simp [hP]⟩
+  apply (coeff_eq_of_bounded_iff hPdeg hPbnd).mp
+  suffices hPdeg' : n ≤ P.degree by
+    replace hPdeg' : P.degree = n := eq_of_le_of_ge hPdeg hPdeg'
+    rwa [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg'] at hP
+  lift P.degree to ℕ with d hd
+  · contrapose! hP
+    rw [degree_eq_bot.mp hP, leadingCoeff_zero]
+    positivity
+  replace hP := ge_of_eq hP
+  contrapose! hP
+  have : d - 1 < n - 1 := by grind [Nat.cast_withBot, WithBot.coe_le_coe, WithBot.coe_lt_coe]
+  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_bounded (le_of_eq hd.symm) hPbnd
+  _ < 2 ^ (n - 1) := by gcongr; norm_num
 
 end Polynomial.Chebyshev
