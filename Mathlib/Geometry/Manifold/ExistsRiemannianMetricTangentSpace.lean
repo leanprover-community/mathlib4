@@ -147,6 +147,13 @@ noncomputable instance (p : B) : NormedSpace ℝ (TangentSpace IB p) := by
   change NormedSpace ℝ EB
   infer_instance
 
+/-
+We have two definitions of a local section of bilinear forms.
+Well the second is the fiber component at a point.
+The first definition is "obviously" smooth: it's a pair of the identity function and a constant
+function. The required properties of symmetry and positive definiteness are more easily proved
+using the second definition and showing that the definitions are essentially the same.
+-/
 noncomputable
 def g_bilin_1 (i b : B) :
  (TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
@@ -166,6 +173,11 @@ def g_bilin_2 (i p : B) :
   · exact (innerSL ℝ).comp (χ.continuousLinearMapAt ℝ p) |>.flip.comp (χ.continuousLinearMapAt ℝ p)
   · exact 0
 
+/-
+Overloading the use of π, let φ : π⁻¹(U) → U × ℝⁿ and ψ : π⁻¹(U) → U × (ℝⁿ ⊗ ℝⁿ →ₗ ℝ) be local
+trivialisations of the tangent bundle and the bundle of bilinear forms respectively and
+w ∈ π⁻¹(U) and (x, u) and (y, v) ∈ U × ℝⁿ then ψ(w)(u, v) = w(φ⁻¹(x, u), φ⁻¹(x, v))
+-/
 lemma trivializationAt_tangentSpace_bilinearForm_apply (x₀ x : B)
     (w : (TangentSpace (M := B) IB) x →L[ℝ] (TangentSpace (M := B) IB) x →L[ℝ] ℝ)
     (u v : EB)
@@ -178,7 +190,9 @@ lemma trivializationAt_tangentSpace_bilinearForm_apply (x₀ x : B)
     ((trivializationAt EB (TangentSpace (M := B) IB) x₀).symm x v) := by
   rw [Trivialization.continuousLinearMapAt_apply]
   rw [@Trivialization.linearMapAt_apply]
-  simp
+  simp only [hom_trivializationAt_baseSet, TangentBundle.trivializationAt_baseSet,
+      Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, Set.inter_univ,
+      Set.inter_self]
   have hx' : x ∈ (chartAt HB x₀).source ∩ ((chartAt HB x₀).source ∩ Set.univ) := by
     simpa [Trivialization.baseSet, hx]
   rw [@hom_trivializationAt_apply]
@@ -187,7 +201,11 @@ lemma trivializationAt_tangentSpace_bilinearForm_apply (x₀ x : B)
   simp only [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization,
       LinearMap.id_coe, id_eq]
 
-
+/-
+We are going to show that `(g_bilin_1 (IB := IB) i b).snd.toFun α β = (g_bilin_2 i b).toFun α β`
+and given that both of these are defined by two cases (effectively if b is in the source of the
+trivialisation at i) then we need 4 different cases. This is the essential case.
+-/
 lemma g_bilin_eq_00 (i b : B)
   (hb : b ∈ (trivializationAt EB (TangentSpace IB) i).baseSet)
   (hc : b ∈ (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
@@ -199,7 +217,7 @@ lemma g_bilin_eq_00 (i b : B)
     ((innerSL ℝ)
       ((Trivialization.linearMapAt ℝ (trivializationAt EB (TangentSpace (M := B) IB) i) b) β))
       ((Trivialization.linearMapAt ℝ (trivializationAt EB (TangentSpace (M := B) IB) i) b) α) := by
-  simp
+  simp only [innerSL_apply]
   let ψ := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
     (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i
   let χ := trivializationAt EB (TangentSpace (M := B) IB) i
@@ -282,7 +300,11 @@ lemma g_bilin_eq (i b : B)
 
   simp only []
   split_ifs with hh1
-  · simp
+  · simp only [hom_trivializationAt_target, TangentBundle.trivializationAt_baseSet,
+      hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
+      Trivial.trivialization_baseSet,
+      PartialEquiv.invFun_as_coe, PartialHomeomorph.coe_coe_symm, dite_eq_ite,
+      AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
     split_ifs with hh2
     · have hha : (b, innerSL ℝ) ∈
         (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
@@ -296,7 +318,11 @@ lemma g_bilin_eq (i b : B)
       rw [if_pos hhc, if_pos hhb]
       exact hhd
     · exact False.elim (hh2 hh1)
-  · simp
+  · simp only [hom_trivializationAt_target, TangentBundle.trivializationAt_baseSet,
+      hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
+      Trivial.trivialization_baseSet,
+      PartialEquiv.invFun_as_coe, PartialHomeomorph.coe_coe_symm, dite_eq_ite,
+      AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
     split_ifs with hh2
     · exact False.elim (hh1 hh2)
     · have hha : (b, innerSL ℝ) ∉
@@ -313,7 +339,7 @@ lemma g_bilin_eq (i b : B)
         contradiction
       rw [if_neg hhc, if_neg hhb]
 
-lemma g_nonneg' (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
+lemma g_nonneg (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
   0 ≤ ((((g_bilin_2 j b)).toFun v)).toFun v := by
     unfold g_bilin_2
     simp
@@ -332,7 +358,7 @@ lemma g_nonneg' (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
       exact h2
     · simp
 
-lemma g_pos' (i b : B) (hp : b ∈ (extChartAt IB i).source)
+lemma g_pos (i b : B) (hp : b ∈ (extChartAt IB i).source)
             (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) (hv : v ≠ 0) :
   0 < ((((g_bilin_2 i b)).toFun v)).toFun v := by
   unfold g_bilin_2
@@ -366,7 +392,31 @@ lemma g_pos' (i b : B) (hp : b ∈ (extChartAt IB i).source)
     apply hh1
     exact Set.mem_of_mem_inter_left hp
 
-noncomputable def mynorm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+/-- The seminorm induced by a positive semi-definite symmetric bilinear form.
+
+Given a bilinear form `φ : TₓB →L[ℝ] TₓB →L[ℝ] ℝ` that is positive semi-definite and symmetric,
+we define the associated seminorm by `‖v‖_φ := √(φ(v,v))`.
+
+**Why do we need this?**
+
+To show that a Riemannian metric is smooth, we need to verify that it's compatible with
+the bornology (bounded sets) of the tangent space. In mathlib, the dependency chain is:
+
+  Norm → Bounded sets → Bornology → Smoothness works → Riemannian metric can be defined
+
+So we need to connect our bilinear form to the existing norm structure.
+
+**Why not just use the existing norm on `TangentSpace IB x`?**
+
+Because we need to work with the geometry induced by `φ`, not the ambient geometry.
+However, mathlib's type system doesn't let us "change" the norm on an existing type.
+The solution (see `TangentSpaceAux` below) is to create a copy of the tangent space
+with the φ-induced norm, then prove the two are equivalent via finite-dimensionality.
+
+The triangle inequality follows from the Cauchy-Schwarz inequality for bilinear forms.
+-/
+noncomputable def seminormOfBilinearForm {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
     Seminorm ℝ (TangentSpace IB x) where
   toFun v := Real.sqrt (φ v v)
@@ -402,6 +452,29 @@ noncomputable def mynorm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace 
   neg' r := by simp
   smul' a v := by simp [← mul_assoc, ← Real.sqrt_mul_self_eq_abs, Real.sqrt_mul (mul_self_nonneg a)]
 
+/-- Auxiliary tangent space with norm induced by a bilinear form.
+
+This is a copy of `TangentSpace IB x` with the norm `‖v‖_φ := √(φ(v,v))` from `mynorm`.
+
+**Why create a new type?**
+
+Mathlib's type class system doesn't support having multiple norm structures on the same type.
+As the mathlib documentation states (Analysis.NormedSpace.FiniteDimension):
+
+> "The fact that all norms are equivalent is not written explicitly, as it would mean having
+> two norms on a single space, which is not the way type classes work. However, if one has a
+> finite-dimensional vector space `E` with a norm, and a copy `E'` of this type with another
+> norm, then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
+> `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence."
+
+What this description elides is that "this gives the desired norm equivalence" requires
+creating this auxiliary type plus substantial additional work (see `tangentSpaceEquiv`,
+`bbr`, and `aux_tvs`) to establish the equivalence and derive the needed `WithSeminorms`
+and `IsVonNBounded` properties.
+
+In classical mathematics, "all norms on a finite-dimensional space are equivalent" is a
+one-line citation. In mathlib, making this work requires explicit construction and proof.
+-/
 structure TangentSpaceAux
   (x : B) (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v)
@@ -466,20 +539,23 @@ noncomputable instance {x : B}
   (hsymm : ∀ u v, φ u v = φ v u)
   (hdef : ∀ v, φ v v = 0 → v = 0) :
   Norm (@TangentSpaceAux EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
-  norm v := mynorm φ hpos hsymm v.val
+  norm v := seminormOfBilinearForm φ hpos hsymm v.val
 
-lemma mynorm_sub_self {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+lemma seminormOfBilinearForm_sub_self {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
   (v : TangentSpaceAux x φ hpos hsymm hdef) :
-  mynorm φ hpos hsymm (v.val - v.val) = 0 := by
-  unfold mynorm
+  seminormOfBilinearForm φ hpos hsymm (v.val - v.val) = 0 := by
+  unfold seminormOfBilinearForm
   simp
 
-lemma mynorm_sub_comm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+lemma seminormOfBilinearForm_sub_comm {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
   (u v : TangentSpaceAux x φ hpos hsymm hdef) :
-  mynorm φ hpos hsymm (u.val - v.val) = mynorm φ hpos hsymm (v.val - u.val) := by
-  unfold mynorm
+  seminormOfBilinearForm φ hpos hsymm (u.val - v.val) =
+  seminormOfBilinearForm φ hpos hsymm (v.val - u.val) := by
+  unfold seminormOfBilinearForm
   have h1 : φ (u.val - v.val) (u.val - v.val) =
          φ u.val u.val - φ u.val v.val - φ v.val u.val + φ v.val v.val := by
     rw [φ.map_sub]
@@ -503,9 +579,9 @@ lemma my_eq_of_dist_eq_zero {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
   ∀ {u v: TangentSpaceAux x φ hpos hsymm hdef},
-    (mynorm φ hpos hsymm) (u.val - v.val) = 0 → u = v := by
+    (seminormOfBilinearForm φ hpos hsymm) (u.val - v.val) = 0 → u = v := by
     intro u v h
-    rw [mynorm] at h
+    rw [seminormOfBilinearForm] at h
     have h1 : √((φ (u.val - v.val)) (u.val - v.val)) = 0 := h
     have h2 : ((φ (u.val - v.val)) (u.val - v.val)) = 0 :=
       (Real.sqrt_eq_zero (hpos (u.val - v.val))).mp h
@@ -517,12 +593,14 @@ lemma my_dist_triangle {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
   ∀ (x_1 y z : TangentSpaceAux x φ hpos hsymm hdef),
-    (mynorm φ hpos hsymm) (x_1.val - z.val) ≤
-      (mynorm φ hpos hsymm) (x_1.val - y.val) + (mynorm φ hpos hsymm) (y.val - z.val) := by
+    (seminormOfBilinearForm φ hpos hsymm) (x_1.val - z.val) ≤
+      (seminormOfBilinearForm φ hpos hsymm) (x_1.val - y.val) +
+      (seminormOfBilinearForm φ hpos hsymm) (y.val - z.val) := by
   intro u v w
-  have h1 : mynorm φ hpos hsymm ((u.val - v.val) + (v.val - w.val)) ≤
-    mynorm φ hpos hsymm (u.val - v.val) + mynorm φ hpos hsymm (v.val - w.val)
-    := (mynorm φ hpos hsymm).add_le' (u.val - v.val) (v.val - w.val)
+  have h1 : seminormOfBilinearForm φ hpos hsymm ((u.val - v.val) + (v.val - w.val)) ≤
+    seminormOfBilinearForm φ hpos hsymm (u.val - v.val) +
+    seminormOfBilinearForm φ hpos hsymm (v.val - w.val)
+    := (seminormOfBilinearForm φ hpos hsymm).add_le' (u.val - v.val) (v.val - w.val)
   have h2 : (u.val - v.val) + (v.val - w.val) = u.val - w.val :=
     sub_add_sub_cancel u.val v.val w.val
   rw [h2] at h1
@@ -532,7 +610,7 @@ noncomputable instance {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
   NormedAddCommGroup (@TangentSpaceAux EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
-  norm := fun v => mynorm φ hpos hsymm v.val
+  norm := fun v => seminormOfBilinearForm φ hpos hsymm v.val
   dist_eq := by intros; rfl
   add_assoc := fun u v w => TangentSpaceAux.ext_iff _ _ _ _ _ _|>.mpr (add_assoc u.val v.val w.val)
   zero_add := fun u => TangentSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (zero_add u.val)
@@ -543,8 +621,8 @@ noncomputable instance {x : B}
   add_comm := fun u v => TangentSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (add_comm u.val v.val)
   sub_eq_add_neg :=
     fun u v => TangentSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (sub_eq_add_neg u.val v.val)
-  dist_self := mynorm_sub_self φ hpos hsymm hdef
-  dist_comm := mynorm_sub_comm φ hpos hsymm hdef
+  dist_self := seminormOfBilinearForm_sub_self φ hpos hsymm hdef
+  dist_comm := seminormOfBilinearForm_sub_comm φ hpos hsymm hdef
   dist_triangle := my_dist_triangle φ hpos hsymm hdef
   eq_of_dist_eq_zero := my_eq_of_dist_eq_zero φ hpos hsymm hdef
 
@@ -577,7 +655,7 @@ noncomputable instance {x : B}
     have hd : φ (a • u.val) (a • u.val) = a * a * φ u.val u.val := by
       rw [hb, hc]
       ring
-    have h3 : norm (a • u) = mynorm φ hpos hsymm (a • u).val := rfl
+    have h3 : norm (a • u) = seminormOfBilinearForm φ hpos hsymm (a • u).val := rfl
     have h7 : norm (a • u) = Real.sqrt (φ (a • u.val) (a • u.val)) := h3
     have h8 : norm (a • u) = Real.sqrt ( a * a * φ u.val u.val) := by
       rw [hd] at h7
@@ -620,7 +698,7 @@ instance {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] �
 
 noncomputable def aux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  SeminormFamily ℝ (TangentSpace IB x) (Fin 1) := fun _ ↦ mynorm φ hpos hsymm
+  SeminormFamily ℝ (TangentSpace IB x) (Fin 1) := fun _ ↦ seminormOfBilinearForm φ hpos hsymm
 
 lemma bbr {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
@@ -633,7 +711,7 @@ lemma bbr {x : B}
     have h_eq : ∀ i v, aux φ hpos hsymm i v =
                        normSeminorm ℝ (TangentSpaceAux x φ hpos hsymm hdef) ⟨v⟩ := by
       intro i v
-      simp [aux, mynorm]
+      simp [aux, seminormOfBilinearForm]
       rfl
     let e := tangentSpaceEquiv φ hpos hsymm hdef
     apply WithSeminorms.congr (norm_withSeminorms ℝ (TangentSpace IB x))
@@ -648,11 +726,13 @@ lemma bbr {x : B}
       intro v
       simp
       have hhave : ‖(tangentSpaceEquiv φ hpos hsymm hdef) v‖ ≤ C * ‖v‖ := hC.2 v
-      have h_aux_eq : aux φ hpos hsymm i v = mynorm φ hpos hsymm v := rfl
-      have h_norm_eq : ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ = mynorm φ hpos hsymm v := rfl
+      have h_aux_eq : aux φ hpos hsymm i v = seminormOfBilinearForm φ hpos hsymm v := rfl
+      have h_norm_eq : ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ =
+                       seminormOfBilinearForm φ hpos hsymm v := rfl
       rw [h_aux_eq, ← h_norm_eq]
-      have : mynorm φ hpos hsymm v  ≤ max C 1 * ‖v‖ := calc
-        mynorm φ hpos hsymm v = ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ := h_norm_eq.symm
+      have : seminormOfBilinearForm φ hpos hsymm v  ≤ max C 1 * ‖v‖ := calc
+        seminormOfBilinearForm φ hpos hsymm v =
+        ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ := h_norm_eq.symm
         _ ≤ C * ‖v‖ := hhave
         _ ≤ max C 1 * ‖v‖ := by gcongr; exact le_max_left C 1
       exact this
@@ -671,8 +751,9 @@ lemma bbr {x : B}
                ≤ C * ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ := hC.2 ⟨v⟩
       simp [tangentSpaceEquiv] at hhave
       have :   ‖v‖ ≤ max C 1 * (aux φ hpos hsymm j) v :=
-         calc ‖v‖ ≤ C * mynorm φ hpos hsymm v := hhave
-              _ ≤ max C 1 * mynorm φ hpos hsymm v := by gcongr; exact le_max_left C 1
+         calc ‖v‖ ≤ C * seminormOfBilinearForm φ hpos hsymm v := hhave
+              _ ≤ max C 1 * seminormOfBilinearForm φ hpos hsymm v := by
+                gcongr; exact le_max_left C 1
               _ = max C 1 * aux φ hpos hsymm j v := rfl
       exact this
 
@@ -695,7 +776,7 @@ lemma aux_tvs {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[�
     · convert this
   simp only [Set.mem_setOf_eq, Finset.sup_singleton, J]
   refine ⟨1, by norm_num, fun x h ↦ ?_⟩
-  simp only [aux, mynorm]
+  simp only [aux, seminormOfBilinearForm]
   change Real.sqrt (φ x x) < 1
   rw [Real.sqrt_lt' (by norm_num)]
   simp [h]
@@ -876,8 +957,8 @@ lemma h_need' (f : SmoothPartitionOfUnity B IB B)
     apply subset_closure
     exact Function.mem_support.mpr hi_pos.ne'
 
-  have h1 : ∀ j, 0 ≤ h' j := fun j => mul_nonneg (h_nonneg j) (g_nonneg' j b v)
-  have h2 : ∃ j, 0 < h' j := ⟨i, mul_pos hi_pos (g_pos' i b hi_chart v hv)⟩
+  have h1 : ∀ j, 0 ≤ h' j := fun j => mul_nonneg (h_nonneg j) (g_nonneg j b v)
+  have h2 : ∃ j, 0 < h' j := ⟨i, mul_pos hi_pos (g_pos i b hi_chart v hv)⟩
   have h3 : (Function.support h').Finite := by
     apply (f.locallyFinite'.point_finite b).subset
     intro x hx
@@ -947,8 +1028,6 @@ lemma riemannian_unit_ball_bounded (f : SmoothPartitionOfUnity B IB B)
   have h3 : ∀ (v : TangentSpace IB b), ((g_global_bilin_2 f b).toFun v).toFun v = 0 → v = 0 :=
     riemannian_metric_def f h_sub b
   exact aux_tvs (g_global_bilin_2 f b) h1 h2 h3
-
-
 
 theorem g_bilin_symm_1 (i b : B)
   (α β : TangentSpace IB b) :
