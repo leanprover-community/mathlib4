@@ -11,15 +11,16 @@ public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
-# Stochastic matrices
+# Row- and Column-stochastic matrices
 
-This file gives the key definitions and results about matrices that are
-(possibly) only singly stochastic (both row and column).
+A square matrix `M` is *row-stochastic* if all its entries are non-negative and `M *ᵥ 1 = 1`. Likewise, `M` is *column-stochastic* if all its entries are non-negative and `1 ᵥ* M = 1`. This file defines these concepts and provides basic API for them.
+
+Note that *doubly stochastic* matrices (i.e. matrices that are both row- and column-stochastic) are defined in `Analysis.Convex.DoublyStochasticMatrix`.
 
 ## Main definitions
 
-* `rowStochastic`
-* `colStochastic`
+* `rowStochastic`: row-stochastic matrices indexed by `n` with entries in `R`, as a submonoid of `Matrix n n R`.
+* `colStochastic R n`: column-stochastic matrices indexed by `n` with entries in `R`, as a submonoid of `Matrix n n R`.
 
 -/
 
