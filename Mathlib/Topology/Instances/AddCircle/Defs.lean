@@ -84,10 +84,9 @@ theorem eventuallyEq_toIocDiv_nhdsLE : toIocDiv hp a =ᶠ[𝓝[≤] x] fun _ ↦
 theorem continuousWithinAt_toIocDiv_Iic : ContinuousWithinAt (toIocDiv hp a) (Iic x) x :=
   Filter.tendsto_pure.mpr (eventuallyEq_toIocDiv_nhdsLE hp a x) |>.mono_right <| pure_le_nhds _
 
-theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ici x) x := by
-  refine continuousWithinAt_id.sub <| Filter.Tendsto.mono_right ?_ (pure_le_nhds _)
-  rw [Filter.tendsto_pure]
-  exact (eventuallyEq_toIcoDiv_nhdsGE hp a x).fun_comp (· • p)
+theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ici x) x :=
+  continuousWithinAt_id.sub <| 
+    (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
 
 alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
 
