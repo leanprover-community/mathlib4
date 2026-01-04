@@ -371,4 +371,3 @@ def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
 end Restriction
 
 end AlgebraicGeometry.Scheme.Modules
-#min_imports
