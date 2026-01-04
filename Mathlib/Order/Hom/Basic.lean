@@ -1079,7 +1079,8 @@ noncomputable def ofUnique
   toEquiv := Equiv.ofUnique α β
   map_rel_iff' := by simp
 
-def ofIsEmpty (α β : Type*) [LinearOrder α] [LinearOrder β] [IsEmpty β] [IsEmpty α] : α ≃o β :=
+/-- The order isomorphism `α ≃o β` when `α` has a linear order and `β` is empty via a predicate. -/
+def ofIsEmpty (α β : Type*) [Preorder α] [IsEmpty β] [LinearOrder β] [IsEmpty α] : α ≃o β :=
   ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
 
 end OrderIso
