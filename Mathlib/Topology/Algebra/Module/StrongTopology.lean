@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
@@ -560,8 +561,7 @@ def postcomp_uniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGr
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-variable (E)
-
+variable (E) in
 /-- Post-composition by a *fixed* continuous linear map as a continuous linear map.
 
 Note that in non-normed space it is not always true that composition is continuous
@@ -572,7 +572,7 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
   toFun f := L.comp f
   __ := postcomp_uniformConvergenceCLM { S | IsVonNBounded 𝕜₁ S } L
 
-variable (σ F) {E} in
+variable (σ F) in
 lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
     [ContinuousConstSMul 𝕜₂ F]
     (𝔖 : Set (Set E)) (h : 𝔖 ⊆ {S | IsVonNBounded 𝕜₁ S}) :
@@ -802,6 +802,32 @@ def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H
 @[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
     (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
 
+/-- A continuous linear equivalence of two spaces induces a continuous equivalence of algebras of
+their endomorphisms. -/
+def conjContinuousAlgEquiv (e : G ≃L[𝕜] H) : (G →L[𝕜] G) ≃A[𝕜] (H →L[𝕜] H) :=
+  { e.arrowCongr e with
+    map_mul' _ _ := by ext; simp
+    commutes' _ := by ext; simp }
+
+@[simp] theorem conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) (x : H) :
+    e.conjContinuousAlgEquiv f x = e (f (e.symm x)) := rfl
+
+theorem symm_conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : H →L[𝕜] H) (x : G) :
+    e.conjContinuousAlgEquiv.symm f x = e.symm (f (e x)) := rfl
+
+theorem conjContinuousAlgEquiv_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) :
+    e.conjContinuousAlgEquiv f = e ∘L f ∘L e.symm := rfl
+
+@[simp] theorem symm_conjContinuousAlgEquiv (e : G ≃L[𝕜] H) :
+    e.conjContinuousAlgEquiv.symm = e.symm.conjContinuousAlgEquiv := rfl
+
+@[simp] theorem conjContinuousAlgEquiv_refl : conjContinuousAlgEquiv (.refl 𝕜 G) = .refl 𝕜 _ := rfl
+
+theorem conjContinuousAlgEquiv_trans [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+    (e : E ≃L[𝕜] G) (f : G ≃L[𝕜] H) :
+    (e.trans f).conjContinuousAlgEquiv = e.conjContinuousAlgEquiv.trans f.conjContinuousAlgEquiv :=
+  rfl
+
 end Linear
 
 end ContinuousLinearEquiv
@@ -810,8 +836,11 @@ section CompactSets
 
 /-! ### Topology of compact convergence for continuous linear maps -/
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
-  {E F : Type*} [AddCommGroup E] [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
+  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜₁ E]
+  [AddCommGroup F] [Module 𝕜₂ F]
+  [AddCommGroup G] [Module 𝕜₃ G]
 
 variable (E F σ) in
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
@@ -860,5 +889,30 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace E] [TopologicalSpace F]
   CompactConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
 end CompactConvergenceCLM
+
+section comp
+
+variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
+
+open scoped CompactConvergenceCLM
+
+variable (G) in
+/-- Specialization of `ContinuousLinearMap.precomp_uniformConvergenceCLM` to compact
+convergence. -/
+@[simps! apply]
+def ContinuousLinearMap.precomp_compactConvergenceCLM [IsTopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
+  L.precomp_uniformConvergenceCLM G _ _ (fun _ hs ↦ hs.image L.continuous)
+
+variable (E) in
+/-- Specialization of `ContinuousLinearMap.postcomp_uniformConvergenceCLM` to compact
+convergence. -/
+@[simps! apply]
+def ContinuousLinearMap.postcomp_compactConvergenceCLM [IsTopologicalAddGroup F]
+    [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [ContinuousConstSMul 𝕜₂ F]
+    (L : F →SL[τ] G) : (E →SL_c[σ] F) →SL[τ] E →SL_c[ρ] G :=
+  L.postcomp_uniformConvergenceCLM _
+
+end comp
 
 end CompactSets

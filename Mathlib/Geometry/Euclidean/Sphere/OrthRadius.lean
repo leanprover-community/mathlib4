@@ -111,7 +111,7 @@ lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
   have hqp := orthRadius_le_orthRadius_iff.1 h.symm.le
   grind
 
-lemma injective_orthRadius (s : Sphere P) : Injective s.orthRadius :=
+lemma orthRadius_injective (s : Sphere P) : Injective s.orthRadius :=
   fun _ _ ↦ orthRadius_eq_orthRadius_iff.1
 
 lemma finrank_orthRadius [FiniteDimensional ℝ V] {s : Sphere P} {p : P} (hp : p ≠ s.center) :
@@ -134,52 +134,67 @@ lemma direction_orthRadius_le_iff {s : Sphere P} {p q : P} :
 
 lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
     s.orthRadius p ∥ s.orthRadius q ↔ ∃ r : ℝ, r ≠ 0 ∧ q -ᵥ s.center = r • (p -ᵥ s.center) := by
-  simp only [orthRadius, parallel_iff_direction_eq_and_eq_bot_iff_eq_bot, direction_mk',
+  simp_rw [orthRadius, parallel_iff_direction_eq_and_eq_bot_iff_eq_bot, direction_mk',
     Submodule.orthogonalComplement_eq_orthogonalComplement,
     Submodule.span_singleton_eq_span_singleton, ← coe_eq_bot_iff,
-    ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, not_true_eq_false, and_true]
-  exact ⟨fun ⟨r, h⟩ ↦ ⟨r, r.ne_zero, h.symm⟩, fun ⟨r, hr, h⟩ ↦ ⟨.mk0 r hr, h.symm⟩⟩
+    ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, and_true, ← Units.exists_iff_ne_zero, eq_comm,
+    Units.smul_def]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finrank ℝ V = 2)]
-    {s : Sphere P} {p : P} (hp : dist p s.center < s.radius) (hpc : p ≠ s.center) :
-    (s ∩ s.orthRadius p : Set P).ncard = 2 := by
-  rw [Set.ncard_eq_two]
+lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 2)]
+    {s : Sphere P} {p : P} (hp : dist p s.center ≤ s.radius) (hpc : p ≠ s.center) {v : V}
+    (hv : v ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ) (hv0 : v ≠ 0) :
+    (s ∩ s.orthRadius p : Set P) = {(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p,
+      -(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p} := by
+  rcases hp.eq_or_lt with hp | hp
+  · simp only [hp, sub_self, Real.sqrt_zero, zero_div, zero_smul, zero_vadd, neg_zero,
+      Set.mem_singleton_iff, Set.insert_eq_of_mem]
+    ext p'
+    simp only [Set.mem_inter_iff, Metric.mem_sphere, mem_coe', SetLike.mem_coe,
+      mem_orthRadius_iff_inner_left, Set.mem_singleton_iff]
+    constructor
+    · rintro ⟨hp's, hp'i⟩
+      rw [← dist_eq_zero, ← sq_eq_zero_iff, dist_eq_norm_vsub, ← vsub_add_vsub_cancel _ s.center,
+        norm_add_sq_real, ← dist_eq_norm_vsub, hp's, ← dist_eq_norm_vsub, dist_comm, hp,
+        ← vsub_add_vsub_cancel p' p, inner_add_left, ← neg_vsub_eq_vsub_rev p s.center,
+        inner_neg_right, hp'i, inner_neg_right, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
+        hp]
+      ring
+    · rintro rfl
+      simpa using hp
+  rw [neg_smul]
   have hf := finrank_orthRadius hpc
-  simp only [hf2.out, Nat.reduceEqDiff, finrank_eq_one_iff'] at hf
-  obtain ⟨v, hv0, hv⟩ := hf
-  let v' : V := (√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v
+  rw [direction_orthRadius] at hf
+  simp only [hf2.out, Nat.reduceEqDiff] at hf
+  rw [finrank_eq_one_iff_of_nonzero' ⟨v, hv⟩ (by simpa using hv0)] at hf
+  have hvc : ∀ w ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ, ∃ c : ℝ, c • v = w := by
+    intro w hw
+    simpa using hf ⟨w, hw⟩
+  set v' : V := (√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v with hv'e
   have hvp : 0 < √(s.radius ^ 2 - (dist p s.center) ^ 2) := by
     rw [Real.sqrt_pos, sub_pos, sq_lt_sq, abs_of_nonneg dist_nonneg]
     exact lt_abs.2 (.inl hp)
   have hv' : ∀ p' ∈ s.orthRadius p, ∃ c : ℝ, c • v' +ᵥ p = p' := by
     intro p' hp'
-    rw [orthRadius, mem_mk', ← direction_orthRadius] at hp'
-    obtain ⟨c, hc⟩ := hv ⟨_, hp'⟩
-    have hc' : c • (v : V) = p' -ᵥ p := by
-      norm_cast
-      simp [hc]
+    rw [orthRadius, mem_mk'] at hp'
+    obtain ⟨c, hc⟩ := hvc _ hp'
     refine ⟨‖v‖ / √(s.radius ^ 2 - (dist p s.center) ^ 2) * c, ?_⟩
     simp_rw [v', smul_smul]
-    rw [eq_comm, eq_vadd_iff_vsub_eq, ← hc']
+    rw [eq_comm, eq_vadd_iff_vsub_eq, ← hc]
     congr
     field
   have hvn : ‖v'‖ ^ 2 = s.radius ^ 2 - (dist p s.center) ^ 2 := by
-    simp only [AddSubgroupClass.coe_norm, norm_smul, norm_div, Real.norm_eq_abs, v', abs_norm,
-      mul_pow, div_pow, sq_abs]
+    simp only [norm_smul, norm_div, Real.norm_eq_abs, v', abs_norm, mul_pow, div_pow, sq_abs]
     rw [Real.sq_sqrt (Real.sqrt_pos.1 hvp).le]
     have hv0 : ‖(v : V)‖ ≠ 0 := by simp [hv0]
     field
-  have hvd : (v : V) ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ := by
-    rw [← direction_orthRadius]
-    exact v.property
   have hvn' (c : ℝ) : (dist (c • v' +ᵥ p) s.center) ^ 2 =
       (dist p s.center) ^ 2 + c ^ 2 * (s.radius ^ 2 - (dist p s.center) ^ 2) := by
     rw [dist_eq_norm_vsub, vadd_vsub_assoc, norm_add_sq_real, ← dist_eq_norm_vsub, norm_smul,
       mul_pow, hvn, Real.norm_eq_abs, sq_abs, real_inner_smul_left]
     simp_rw [v', real_inner_smul_left]
-    rw [Submodule.inner_right_of_mem_orthogonal hvd (by simp)]
+    rw [Submodule.inner_right_of_mem_orthogonal hv (by simp)]
     ring
   have hvn'' (c : ℝ) : dist (c • v' +ᵥ p) s.center = s.radius ↔ |c| = 1 := by
     rw [← abs_of_nonneg dist_nonneg, ← abs_of_nonneg (dist_nonneg.trans hp.le),
@@ -187,27 +202,42 @@ lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finran
       right_eq_mul₀ (Real.sqrt_pos.1 hvp).ne', sq_eq_one_iff]
     refine ⟨fun h ↦ ?_, eq_or_eq_neg_of_abs_eq⟩
     obtain rfl | rfl := h <;> norm_num
-  refine ⟨(1 : ℝ) • v' +ᵥ p, (-1 : ℝ) • v' +ᵥ p, ?_, ?_⟩
-  · simp only [one_smul, neg_smul, ne_eq, vadd_right_cancel_iff, ← add_eq_zero_iff_eq_neg,
+  ext p'
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨?_, ?_⟩⟩
+  · rw [Set.mem_inter_iff, Metric.mem_sphere, SetLike.mem_coe] at h
+    obtain ⟨hc, ho⟩ := h
+    obtain ⟨c, rfl⟩ := hv' _ ho
+    rw [hvn''] at hc
+    obtain rfl | rfl := eq_or_eq_neg_of_abs_eq hc <;> simp
+  · rw [Set.mem_insert_iff, Set.mem_singleton_iff, ← neg_one_smul ℝ] at h
+    nth_rw 1 [← one_smul ℝ v'] at h
+    rcases h with rfl | rfl <;> rw [Metric.mem_sphere, hvn''] <;> norm_num
+  · rcases h with rfl | rfl <;>
+      simp only [SetLike.mem_coe, mem_orthRadius_iff_inner_left, vadd_vsub, v',
+        real_inner_smul_left, inner_neg_left] <;>
+      rw [Submodule.inner_right_of_mem_orthogonal hv (by simp)] <;> simp
+
+
+/-- In 2D, the line defined by `s.orthRadius p` intersects `s` at exactly two points so long as `p`
+lies strictly within `s` and not at its center. -/
+lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finrank ℝ V = 2)]
+    {s : Sphere P} {p : P} (hp : dist p s.center < s.radius) (hpc : p ≠ s.center) :
+    (s ∩ s.orthRadius p : Set P).ncard = 2 := by
+  have hf := finrank_orthRadius hpc
+  simp only [hf2.out, Nat.reduceEqDiff, finrank_eq_one_iff'] at hf
+  obtain ⟨v, hv0, hv⟩ := hf
+  rw [Set.ncard_eq_two, inter_orthRadius_eq_of_dist_le_radius hp.le hpc (by simpa using v.property)
+    (by simpa using hv0), Submodule.norm_coe, neg_smul]
+  set v' : V := (√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v with hv'e
+  have hvp : 0 < √(s.radius ^ 2 - (dist p s.center) ^ 2) := by
+    rw [Real.sqrt_pos, sub_pos, sq_lt_sq, abs_of_nonneg dist_nonneg]
+    exact lt_abs.2 (.inl hp)
+  refine ⟨v' +ᵥ p, -v' +ᵥ p, ?_, rfl⟩
+  · simp only [ne_eq, vadd_right_cancel_iff, ← add_eq_zero_iff_eq_neg,
       ← two_smul ℝ, smul_eq_zero, OfNat.ofNat_ne_zero, false_or]
-    rw [← norm_eq_zero]
+    rw [← norm_eq_zero, hv'e]
     intro h
-    simp only [h, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow] at hvn
-    rw [← hvn] at hvp
-    simp at hvp
-  · ext p'
-    refine ⟨fun h ↦ ?_, fun h ↦ ⟨?_, ?_⟩⟩
-    · rw [Set.mem_inter_iff, Metric.mem_sphere, SetLike.mem_coe] at h
-      obtain ⟨hc, ho⟩ := h
-      obtain ⟨c, rfl⟩ := hv' _ ho
-      rw [hvn''] at hc
-      obtain rfl | rfl := eq_or_eq_neg_of_abs_eq hc <;> grind
-    · rw [Set.mem_insert_iff, Set.mem_singleton_iff] at h
-      rcases h with rfl | rfl <;> rw [Metric.mem_sphere, hvn''] <;> norm_num
-    · rcases h with rfl | rfl <;>
-        simp only [SetLike.mem_coe, mem_orthRadius_iff_inner_left, vadd_vsub, v',
-          real_inner_smul_left] <;>
-        rw [Submodule.inner_right_of_mem_orthogonal hvd (by simp)] <;> simp
+    simp [hv0, hvp.ne'] at h
 
 end Sphere
 

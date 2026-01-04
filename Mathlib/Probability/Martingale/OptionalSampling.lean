@@ -100,7 +100,7 @@ theorem stoppedValue_ae_eq_condExp_of_le_const_of_countable_range (h : Martingal
   intro i hi
   have h_top : i ≠ ⊤ := fun h ↦ by
     simp only [h, Set.mem_range] at hi
-    obtain ⟨ω , hω⟩ := hi
+    obtain ⟨ω, hω⟩ := hi
     specialize hτ_le ω
     simp [hω] at hτ_le
   lift i to ι using h_top with i

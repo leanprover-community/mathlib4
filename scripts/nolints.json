@@ -169,7 +169,6 @@
  ["docBlame", "Mathlib.Notation3.prettyPrintOpt"],
  ["docBlame", "Mathlib.Tactic.evalIntrov"],
  ["docBlame", "Mathlib.Tactic.setArgsRest"],
- ["docBlame", "Mathlib.Tactic.tacticMatch_target_"],
  ["docBlame", "Mathlib.Tactic.usingArg"],
  ["docBlame", "Mathlib.Tactic.withArgs"],
  ["docBlame", "Mathlib.WhatsNew.diffExtension"],
@@ -261,4 +260,11 @@
  ["docBlame", "Mathlib.Tactic.Coherence.LiftObj.lift"],
  ["docBlame", "Mathlib.Tactic.GCongr.ForwardExt.eval"],
  ["docBlame", "Mathlib.Tactic.Monotonicity.mono.side"],
- ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"]]
+ ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"],
+ ["tacticDocs",
+  "AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.tacticMem_tac"],
+ ["tacticDocs",
+  "AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.tacticMem_tac_aux"],
+ ["tacticDocs", "Mathlib.Tactic.Conv.convLHS"],
+ ["tacticDocs", "Mathlib.Tactic.Conv.convRHS"],
+ ["tacticDocs", "Mathlib.Tactic.GCongr.tacticGcongr_discharger"]]

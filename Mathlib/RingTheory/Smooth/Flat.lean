@@ -47,15 +47,16 @@ lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing (f : S →ₐ[R] A) (hf 
 variable (R A)
 
 /-- If `A` is `R`-smooth and `R` is Noetherian, then `A` is `R`-flat. -/
-instance Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Algebra.Smooth R A] :
+theorem Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Smooth R A] :
     Module.Flat R A := by
   obtain ⟨k, f, hf⟩ := (FiniteType.iff_quotient_mvPolynomial'' (R := R) (S := A)).mp inferInstance
   exact FormallySmooth.flat_of_algHom_of_isNoetherianRing f hf
 
 /-- Any smooth algebra is flat. -/
-instance Smooth.flat [Algebra.Smooth R A] : Module.Flat R A := by
+instance Smooth.flat [Smooth R A] : Module.Flat R A := by
   obtain ⟨A₀, B₀, _, _, _, _, _, _, _, _, ⟨e⟩⟩ := exists_finiteType ℤ R A
   have : IsNoetherianRing A₀ := Algebra.FiniteType.isNoetherianRing ℤ _
+  have : Module.Flat A₀ B₀ := Smooth.flat_of_isNoetherianRing _ _
   exact .of_linearEquiv e.toLinearEquiv
 
 end Algebra

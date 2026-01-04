@@ -399,7 +399,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       split_ifs <;> dsimp; lia
     · simp only [Function.comp_apply, Fin.snoc_castSucc]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_castSucc _ _ _)
-      simp only [coe_castSucc, coe_cast]
+      simp only [val_castSucc, val_cast]
       split_ifs <;> simp
 
 theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + 1) → M}
@@ -740,7 +740,7 @@ variable (M N)
 theorem realize_iff_of_model_completeTheory [N ⊨ L.completeTheory M] (φ : L.Sentence) :
     N ⊨ φ ↔ M ⊨ φ := by
   refine ⟨fun h => ?_, (L.completeTheory M).realize_sentence_of_mem⟩
-  contrapose! h
+  contrapose h
   rw [← Sentence.realize_not] at *
   exact (L.completeTheory M).realize_sentence_of_mem (mem_completeTheory.2 h)
 

@@ -301,15 +301,15 @@ lemma isTangent_of_mem_tangentsFrom {as : AffineSubspace ℝ P} {s : Sphere P} {
 lemma tangentsFrom_eq_image_orthRadius_inter_polar {s : Sphere P} {p : P} (hp : p ≠ s.center) :
     s.tangentsFrom p = s.orthRadius '' (s ∩ s.polar p) := by
   ext as
-  rw [tangentsFrom, tangentSet, Set.mem_setOf, Set.image_inter s.injective_orthRadius,
+  rw [tangentsFrom, tangentSet, Set.mem_setOf, Set.image_inter s.orthRadius_injective,
     Set.mem_inter_iff, and_congr_right_iff]
   rintro ⟨p₂, hp₂, rfl⟩
-  rw [s.injective_orthRadius.mem_set_image]
+  rw [s.orthRadius_injective.mem_set_image]
   exact mem_orthRadius_iff_mem_polar_of_mem hp hp₂
 
 lemma orthRadius_mem_tangentsFrom_iff_mem_and_mem_polar {s : Sphere P} {p₁ p₂ : P}
     (hp₁ : p₁ ≠ s.center) : s.orthRadius p₂ ∈ s.tangentsFrom p₁ ↔ p₂ ∈ s ∧ p₂ ∈ s.polar p₁ := by
-  rw [tangentsFrom_eq_image_orthRadius_inter_polar hp₁, s.injective_orthRadius.mem_set_image]
+  rw [tangentsFrom_eq_image_orthRadius_inter_polar hp₁, s.orthRadius_injective.mem_set_image]
   simp
 
 lemma tangentsFrom_eq_empty_of_dist_lt_radius {s : Sphere P} {p : P}
@@ -349,7 +349,7 @@ lemma ncard_tangentsFrom_eq_two_of_radius_lt_dist [Fact (Module.finrank ℝ V = 
     (hs : 0 < s.radius) {p : P} (hp : s.radius < dist p s.center) :
     (s.tangentsFrom p).ncard = 2 := by
   rw [tangentsFrom_eq_image_orthRadius_inter_polar (fun h ↦ by rw [h, dist_self] at hp; grind),
-    Set.ncard_image_of_injective _ s.injective_orthRadius,
+    Set.ncard_image_of_injective _ s.orthRadius_injective,
     ncard_inter_polar_eq_two_of_radius_lt_dist hs hp]
 
 /-- The set of all maximal common tangent spaces to the spheres `s₁` and `s₂`. -/
