@@ -453,7 +453,7 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
 
 /-- SubMulAction on the complement of an invariant subset -/
 @[to_additive /-- SubAddAction on the complement of an invariant subset -/]
-instance : HasCompl (SubMulAction R M) where
+instance : Compl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
 @[to_additive]

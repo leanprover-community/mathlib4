@@ -275,13 +275,13 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
-    HasCompl.compl ⁻¹' s = HasCompl.compl '' s :=
+    Compl.compl ⁻¹' s = Compl.compl '' s :=
   Set.ext fun x =>
     ⟨fun h => ⟨xᶜ, h, compl_compl x⟩, fun h =>
       Exists.elim h fun _ hy => (compl_eq_comm.mp hy.2).symm.subst hy.1⟩
 
 theorem mem_compl_image [BooleanAlgebra α] (t : α) (s : Set α) :
-    t ∈ HasCompl.compl '' s ↔ tᶜ ∈ s := by
+    t ∈ Compl.compl '' s ↔ tᶜ ∈ s := by
   simp [← preimage_compl_eq_image_compl]
 
 @[simp]
@@ -301,7 +301,7 @@ lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n]
   | succ n ih => rw [iterate_succ', iterate_succ', ← ih, image_comp_eq]
 
 theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
-    HasCompl.compl '' (HasCompl.compl '' s) = s := by
+    Compl.compl '' (Compl.compl '' s) = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :

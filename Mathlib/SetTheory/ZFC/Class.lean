@@ -33,7 +33,7 @@ practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
 @[pp_with_univ]
 def Class :=
-  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, HasCompl, SDiff
+  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩

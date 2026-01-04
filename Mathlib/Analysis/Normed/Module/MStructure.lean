@@ -158,7 +158,7 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
   convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
   noncomm_ring
 
-instance Subtype.instCompl : HasCompl { f : M // IsLprojection X f } :=
+instance Subtype.instCompl : Compl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]

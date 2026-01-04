@@ -336,7 +336,7 @@ instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
 instance : HImp (Clopens α) where himp s t := ⟨s ⇨ t, s.isClopen.himp t.isClopen⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
+instance : Compl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 @[simp, norm_cast] lemma coe_sup (s t : Clopens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_inf (s t : Clopens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl

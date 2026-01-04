@@ -18,7 +18,7 @@ In this file we introduce typeclasses and definitions for lattice operations.
 
 ## Main definitions
 
-* `HasCompl`: type class for the `ᶜ` notation
+* `Compl`: type class for the `ᶜ` notation
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
@@ -41,11 +41,11 @@ Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` 
 
 /-- Set / lattice complement -/
 @[notation_class]
-class HasCompl (α : Type*) where
+class Compl (α : Type*) where
   /-- Set / lattice complement -/
   compl : α → α
 
-export HasCompl (compl)
+export Compl (compl)
 
 @[inherit_doc]
 postfix:1024 "ᶜ" => compl
@@ -137,7 +137,7 @@ class HImp (α : Type*) where
 
 /-- Syntax typeclass for Heyting negation `￢`.
 
-The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
+The difference between `Compl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
 underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.

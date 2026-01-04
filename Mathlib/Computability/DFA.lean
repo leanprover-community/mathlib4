@@ -269,7 +269,7 @@ section compl
 
 /-- DFAs are closed under complement:
 Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`. -/
-instance : HasCompl (DFA α σ) where
+instance : Compl (DFA α σ) where
   compl M := ⟨M.step, M.start, M.acceptᶜ⟩
 
 theorem compl_def : Mᶜ = ⟨M.step, M.start, M.acceptᶜ⟩ :=
