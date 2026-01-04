@@ -52,24 +52,6 @@ namespace MvPowerSeries
 /-- Rename all the variables in a multivariable power series by an embedding, as a function. -/
 def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R := Function.extend (embDomain f) p 0
 
-lemma _root_.Finsupp.mem_range_embDomain_iff
-    {α β M : Type*} [AddCommMonoid M] {f : α ↪ β} {x : β →₀ M} :
-    x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
-  convert mem_range_mapDomain_iff _ f.injective _
-  · ext; rw [embDomain_eq_mapDomain]
-  · grind
-
-@[simp]
-lemma _root_.Finsupp.comapDomain_embDomain {α β M : Type*} [AddCommMonoid M]
-    (f : α ↪ β) (l : α →₀ M) :
-    comapDomain f (embDomain f l) f.injective.injOn = l :=
-  embDomain_eq_mapDomain f l ▸ comapDomain_mapDomain _ f.injective _
-
-@[simp]
-lemma _root_.Finsupp.embDomain_refl {α M : Type*} [Zero M] :
-    embDomain (M := M) (Function.Embedding.refl α) = id := by
-  ext; simp [embDomain_apply]
-
 @[simp]
 theorem coeff_embDomain_renameFun (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
     coeff (embDomain f x) (renameFun f p) = coeff x p :=
