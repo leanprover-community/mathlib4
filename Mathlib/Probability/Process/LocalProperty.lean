@@ -271,7 +271,7 @@ lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     refine (by simp : ¬ (1 / 2 : ℝ≥0∞) ^ n ≤ 0) <| this.trans <| nonpos_iff_eq_zero.2 ?_
     rw [measure_eq_zero_iff_ae_notMem]
     filter_upwards [(hσ n).tendsto_top] with ω hTop hmem
-    rw [WithTop.tendsto_atTop_nhds_top_iff] at hTop
+    simp_rw [WithTop.tendsto_nhds_top_iff, eventually_atTop] at hTop
     simp only [Set.mem_iInter, Set.mem_setOf_eq] at hmem
     obtain ⟨N, hN⟩ := hTop (T n)
     specialize hN N le_rfl
@@ -343,7 +343,7 @@ lemma isPreLocalizingSequence_of_isLocalizingSequence
       (tsum_geometric_lt_top.2 <| by norm_num)
   have hτTop := hτ.tendsto_top
   filter_upwards [ae_eventually_notMem this.ne, hτTop] with ω hω hωτ
-  replace hT := hωτ.min hT.tendsto_withTop_atTop_nhds_top
+  replace hT := hωτ.min <| WithTop.tendsto_coe_atTop.comp hT
   simp_rw [eventually_atTop, not_lt, ← eventually_atTop] at hω
   rw [min_self] at hT
   rw [← min_self ⊤]
@@ -391,67 +391,5 @@ lemma locally_induction₂ {r : (ι → Ω → E) → Prop} [IsRightContinuous �
 end
 
 end ConditionallyCompleteLinearOrderBot
-
-section LinearOrder
-
-variable [LinearOrder ι] [OrderBot ι] {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p : (ι → Ω → E) → Prop}
-
-open Classical in
-/-- Given a property on paths which holds almost surely for a stochastic process, we construct a
-localizing sequence by setting the stopping time to be ∞ whenever the property holds. -/
-noncomputable
-def LocalizingSequence_of_prop (X : ι → Ω → E) (p : (ι → E) → Prop) : ℕ → Ω → WithTop ι :=
-  Function.const _ <| fun ω ↦ if p (X · ω) then ⊤ else ⊥
-
-lemma isStoppingTime_ae_const [HasUsualConditions 𝓕 P] (τ : Ω → WithTop ι) (c : WithTop ι)
-    (hτ : τ =ᵐ[P] Function.const _ c) :
-    IsStoppingTime 𝓕 τ := by
-  intros i
-  suffices P {ω | τ ω ≤ i} = 0 ∨ P {ω | τ ω ≤ ↑i}ᶜ = 0 by
-    obtain h | h := this
-    · exact 𝓕.mono bot_le _ <| HasUsualConditions.IsComplete h
-    · exact (𝓕.mono bot_le _ <| HasUsualConditions.IsComplete h).of_compl
-  obtain hle | hgt := le_or_gt c i
-  · refine Or.inr <| ae_iff.1 ?_
-    filter_upwards [hτ] with ω rfl using hle
-  · refine Or.inl ?_
-    rw [← compl_compl {ω | τ ω ≤ i}]
-    refine ae_iff.1 ?_
-    filter_upwards [hτ] with ω hω
-    simp [hω, hgt]
-
-variable [TopologicalSpace ι] [OrderTopology ι]
-
-lemma isLocalizingSequence_ae [HasUsualConditions 𝓕 P] {p : (ι → E) → Prop}
-    (hpX : ∀ᵐ ω ∂P, p (X · ω)) :
-    IsLocalizingSequence 𝓕 (LocalizingSequence_of_prop X p) P where
-  isStoppingTime n := by
-    refine isStoppingTime_ae_const (P := P) _ ⊤ ?_
-    filter_upwards [hpX] with ω hω
-    rw [LocalizingSequence_of_prop, Function.const_apply, Function.const_apply, if_pos hω]
-  mono := ae_of_all _ <| fun ω i j hij ↦ by simp [LocalizingSequence_of_prop]
-  tendsto_top := by
-    filter_upwards [hpX] with ω hω
-    simp [LocalizingSequence_of_prop, if_pos hω]
-
-variable [Zero E]
-
-open Classical in
-lemma locally_of_ae [HasUsualConditions 𝓕 P] {p : (ι → E) → Prop} (hpX : ∀ᵐ ω ∂P, p (X · ω))
-    (hp₀ : p (0 : ι → E)) :
-    Locally (fun X ↦ ∀ ω, p (X · ω)) 𝓕 X P := by
-  refine ⟨_, isLocalizingSequence_ae hpX, fun _ ω ↦ ?_⟩
-  by_cases hω : p (X · ω)
-  · convert hω using 2
-    rw [stoppedProcess_eq_of_le, Set.indicator_of_mem]
-    · simp [LocalizingSequence_of_prop, if_pos hω]
-    · simp [LocalizingSequence_of_prop, if_pos hω]
-  · convert hp₀ using 2
-    rw [stoppedProcess_eq_of_ge, Set.indicator_of_notMem]
-    · rfl
-    · simp [LocalizingSequence_of_prop, if_neg hω]
-    · simp [LocalizingSequence_of_prop, if_neg hω]
-
-end LinearOrder
 
 end ProbabilityTheory
