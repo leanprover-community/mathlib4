@@ -112,7 +112,7 @@ lemma _root_.Multiset.exists_le_card_eq {α : Type*} (n : ℕ) (s : Multiset α)
       obtain ⟨t, ht_le, ht_card⟩ := ih n h
       use a ::ₘ t; simpa [ht_card]
 
-theorem monomial_mem_pow_IdealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
+theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
     monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
   classical
   refine ⟨fun h' => ?_, fun h' => ?_⟩
@@ -146,7 +146,7 @@ theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0
   · simp [h]
   simpa [h] using monomial_mem_pow_IdealOfVars_iff (σ := σ) n 0 h
 
-theorem mem_pow_IdealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
+theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
   classical
   constructor
