@@ -126,7 +126,7 @@ lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     Equivalence.counitInv_functor_comp, comp_id, Iso.inv_hom_id_app_assoc]
 
 /-- In a square of categories, when the top and bottom functors are part
-of equivalences of categories, it is equivalent to show 2-commutativity for
+of equivalence of categories, it is equivalent to show 2-commutativity for
 the functors of these equivalences or for their inverses. -/
 def hInvEquiv : CatCommSq T.functor L R B.functor ≃ CatCommSq T.inverse R L B.inverse where
   toFun := hInv T L R B
@@ -171,7 +171,7 @@ lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
   simp
 
 /-- In a square of categories, when the left and right functors are part
-of equivalences of categories, it is equivalent to show 2-commutativity for
+of equivalence of categories, it is equivalent to show 2-commutativity for
 the functors of these equivalences or for their inverses. -/
 def vInvEquiv : CatCommSq T L.functor R.functor B ≃ CatCommSq B L.inverse R.inverse T where
   toFun := vInv T L R B

@@ -36,8 +36,8 @@ injectives (see `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/EnoughInjec
 cogenerator (see `Mathlib/CategoryTheory/Generator/Abelian.lean`).
 4. By taking a coproduct of copies of the injective cogenerator, we find a projective separator `G`
 in `Dᵒᵖ` such that every object in the image of `F` is a quotient of `G`. Then the additive Hom
-functor `Hom(G, ·) : Dᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful (because `G` is a separator), left exact
-(because it is a hom functor), right exact (because `G` is projective) and full (because of a
+functor `Hom(G, ·) : Dᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful (because `G` is a separator), left
+exact (because it is a hom functor), right exact (because `G` is projective) and full (because of a
 combination of the aforementioned properties, see `Mathlib/CategoryTheory/Abelian/Yoneda.lean`).
 We put this all together in the file
 `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/ModuleEmbedding/Opposite.lean`.
