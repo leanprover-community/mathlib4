@@ -3,11 +3,12 @@ Copyright (c) 2025 Steven Herbert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Steven Herbert
 -/
+module
 
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.LinearAlgebra.Matrix.Permutation
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
 # Stochastic matrices
@@ -21,6 +22,8 @@ This file gives the key definitions and results about matrices that are
 * `colStochastic`
 
 -/
+
+@[expose] public section
 
 open Finset Function
 open Matrix
