@@ -106,7 +106,8 @@ lemma TensorProduct.map_comap_eq_zero_if_zero [hA : IsSimpleRing A]
       set key : B := 𝓑 j + ∑ i ∈ s.attach, k i i.2 • 𝓑 i
       have hkey : key = 0 := by
         refine (map_eq_zero_iff _ f.toRingHom.injective).mp ?_
-        refine eq_bot_iff.mp hAB <| TwoSidedIdeal.mem_map_of_mem <| (TwoSidedIdeal.mem_comap _).mpr ?_
+        refine eq_bot_iff.mp hAB <| TwoSidedIdeal.mem_map_of_mem <|
+          (TwoSidedIdeal.mem_comap _).mpr ?_
         rw [← Finset.sum_attach] at hT'2
         conv at hT'2 => enter [2, 2, 2, x]; rw [← hk x.1 x.2]
         convert hT'1 using 1
