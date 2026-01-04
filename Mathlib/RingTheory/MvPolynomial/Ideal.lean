@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
+Authors: Eric Wieser, Bingyu Xia
 -/
 module
 
@@ -18,6 +18,8 @@ Notably this contains results about monomial ideals.
 
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
+* `MvPolynomial.mem_pow_IdealOfVars_iff`
+
 -/
 
 @[expose] public section
@@ -54,6 +56,121 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
 
+section idealOfVars
+
+open Finset Finsupp
+
+variable (σ R) in
+/-- The ideal spanned by all of the variables. -/
+def idealOfVars : Ideal (MvPolynomial σ R) := Ideal.span (Set.range (MvPolynomial.X))
+
+/-- The `n`th power of `idealOfVars` is spanned by all monomials of total degree `n`. -/
+theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
+    Ideal.span ((fun x ↦ monomial x 1) '' {x | x.sum (fun _ => id) = n}) := by
+  classical
+  by_cases h' : Subsingleton R
+  · trans 1
+    · exact Subsingleton.eq_one _
+    symm; exact Subsingleton.eq_one _
+  rw [not_subsingleton_iff_nontrivial] at h'
+  rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Ideal.span]
+  congr; ext p
+  simp only [Set.mem_pow_iff_prod, Set.mem_range, Set.mem_image, Set.mem_setOf_eq]
+  refine ⟨fun ⟨f, h, hf⟩ => ?_, fun ⟨x, x_sum, hx⟩ => ?_⟩
+  · choose i hi using h
+    use ∑ j, single (i j) 1; constructor
+    · simp [← Finsupp.sum_finset_sum_index]
+    simp only [← hf, ← hi, monomial_sum_index, C_1, one_mul]
+    rfl
+  let l := x.toMultiset.toList
+  have hl : n = l.length := by
+    rw [Multiset.length_toList, card_toMultiset, x_sum]
+  use fun i => X (l.get (Fin.cast hl i))
+  simp only [List.get_eq_getElem, exists_apply_eq_apply, implies_true, true_and, ← finCongr_apply]
+  rw [← Fintype.prod_equiv (finCongr (Eq.symm hl)) (fun i ↦ X l[i]) _ (by simp)]
+  simp only [Fin.getElem_fin, Fin.prod_univ_fun_getElem, Multiset.prod_map_toList, toMultiset_map,
+    prod_toMultiset, l]
+  rw [Finsupp.prod, mapDomain_support_of_injective X_injective, ← hx, monomial_eq,
+    C_1, one_mul, Finsupp.prod, prod_image (by simp)]
+  refine Finset.prod_congr rfl (fun _ _ => ?_)
+  rw [mapDomain_apply X_injective]
+
+lemma _root_.Multiset.exists_le_card_eq {α : Type*} (n : ℕ) (s : Multiset α) (h : n ≤ s.card) :
+    ∃ t, t ≤ s ∧ t.card = n := by
+  revert n h
+  induction s using Multiset.induction_on with
+  | empty =>
+    intro n h
+    simp only [Multiset.card_zero, nonpos_iff_eq_zero] at h
+    simp [h]
+  | cons a s ih =>
+    intro n h
+    cases n with
+    | zero => use 0; simp
+    | succ n =>
+      simp only [Multiset.card_cons, add_le_add_iff_right] at h
+      obtain ⟨t, ht_le, ht_card⟩ := ih n h
+      use a ::ₘ t; simpa [ht_card]
+
+theorem monomial_mem_pow_IdealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
+    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
+  classical
+  refine ⟨fun h' => ?_, fun h' => ?_⟩
+  · rw [pow_idealOfVars_eq_span, Ideal.span, Submodule.mem_span_image_iff_exists_fun] at h'
+    rcases h' with ⟨t, t_sbst, c, hc⟩
+    by_contra! hx
+    apply congrArg (coeff x) at hc
+    simp only [univ_eq_attach, smul_eq_mul, coeff_sum, coeff_mul_monomial', mul_one, sum_ite,
+      sum_const_zero, add_zero, coeff_monomial, ↓reduceIte] at hc
+    have : filter (fun y => y.val ≤ x) t.attach = ∅ := by
+      simp only [filter_eq_empty_iff, mem_attach, forall_const, Subtype.forall]
+      intro y y_in hy
+      revert hx; rw [imp_false, not_lt]
+      simp only [Set.subset_def, SetLike.mem_coe, Set.mem_setOf_eq] at t_sbst
+      rw [← t_sbst y y_in]
+      exact sum_le_sum_index hy (by simp [Monotone]) (by simp)
+    rw [this, sum_empty] at hc
+    simp [hc] at h
+  rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
+  simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, h, imp_false,
+    Decidable.not_not, Set.mem_setOf_eq, forall_eq']
+  rw [← Finsupp.card_toMultiset] at h'
+  obtain ⟨y, t_le, hy⟩ := Multiset.exists_le_card_eq _ _ h'
+  use y.toFinsupp; constructor
+  · rw [Multiset.toFinsupp_sum_eq, hy]
+  simp only [Multiset.le_iff_count, count_toMultiset] at t_le
+  rwa [Multiset.toFinsupp, AddEquiv.coe_mk, Equiv.coe_fn_mk, le_def, coe_mk]
+
+theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
+  by_cases h : r = 0
+  · simp [h]
+  simpa [h] using monomial_mem_pow_IdealOfVars_iff (σ := σ) n 0 h
+
+theorem mem_pow_IdealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
+  classical
+  constructor
+  · rw [pow_idealOfVars_eq_span, Ideal.span]
+    refine Submodule.span_induction (fun u u_in x hx ↦ ?_) ?_ (fun _ _ _ _ h h' _ hx ↦ ?_)
+      (fun q r _ h s hx ↦ ?_)
+    · simp only [Set.mem_image, Set.mem_setOf_eq] at u_in
+      rcases u_in with ⟨v, v_sum, hv⟩
+      rw [← hv, coeff_monomial, if_neg (by intro; grind only)]
+    · simp
+    · rw [coeff_add, h _ hx, h' _ hx, zero_add]
+    rw [smul_eq_mul, coeff_mul]
+    refine sum_eq_zero (fun u u_in ↦ mul_eq_zero_of_right _ (h _ ?_))
+    exact lt_of_le_of_lt (sum_le_sum_index (antidiagonal.snd_le u_in)
+      (by simp [Monotone]) (by simp)) hx
+  intro h; rw [as_sum p]
+  refine Ideal.sum_mem _ (fun x x_in ↦ ?_)
+  by_cases h' : coeff x p = 0
+  · simp [h']
+  rw [monomial_mem_pow_IdealOfVars_iff _ _ h']
+  revert h'; contrapose!
+  exact h x
+
+end idealOfVars
 end MvPolynomial
 
 namespace MonomialOrder
