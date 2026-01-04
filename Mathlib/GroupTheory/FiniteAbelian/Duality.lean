@@ -51,7 +51,7 @@ lemma exists_apply_ne_one_aux
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
   simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
 
-variable [HasEnoughRootsOfUnity M (Monoid.exponent G)]
+variable [hM : HasEnoughRootsOfUnity M (Monoid.exponent G)]
 
 /-- If `G` is a finite commutative group of exponent `n` and `M` is a commutative monoid
 with enough `n`th roots of unity, then for each `a ≠ 1` in `G`, there exists a
@@ -84,22 +84,18 @@ theorem monoidHom_card_of_hasEnoughRootsOfUnity :
     Nat.card (G →* Mˣ) = Nat.card G :=
   Nat.card_congr (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some.toEquiv
 
-/--
-Let `G` be a finite commutative group and let `H` be a subgroup. If the ring `R` contains enough
-roots of unity, then any homomorphism `H →* Rˣ` can be extended to an homomorphism `G →* Rˣ`.
--/
-theorem MonoidHom.restrict_surjective (R : Type*) (H : Subgroup G)
-    [CommRing R] [IsDomain R] [hR : HasEnoughRootsOfUnity R (Monoid.exponent G)] :
-    Function.Surjective (MonoidHom.restrictHom Rˣ H) := by
+theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* Mˣ)]
+    [Finite (H →* Mˣ)] :
+    Function.Surjective (MonoidHom.restrictHom Mˣ H) := by
   have : Fintype H := Fintype.ofFinite H
-  have : HasEnoughRootsOfUnity R (Monoid.exponent H) :=
-    hR.of_dvd R <| Monoid.exponent_dvd_of_submonoid H.toSubmonoid
-  have : HasEnoughRootsOfUnity R (Monoid.exponent (G ⧸ H)) :=
-    hR.of_dvd R <| Group.exponent_dvd_of_quotient H
+  have : HasEnoughRootsOfUnity M (Monoid.exponent H) :=
+    hM.of_dvd M <| Monoid.exponent_dvd_of_submonoid H.toSubmonoid
+  have : HasEnoughRootsOfUnity M (Monoid.exponent (G ⧸ H)) :=
+    hM.of_dvd M <| Group.exponent_dvd_of_quotient H
   refine MonoidHom.surjective_of_card_ker_le_div _ (le_of_eq ?_)
   rw [monoidHom_card_of_hasEnoughRootsOfUnity, monoidHom_card_of_hasEnoughRootsOfUnity,
     H.card_eq_card_quotient_mul_card_subgroup,
     mul_div_cancel_right₀ _ (Fintype.card_eq_nat_card ▸ Fintype.card_ne_zero),
-    ← monoidHom_card_of_hasEnoughRootsOfUnity (G ⧸ H) R, Nat.card_congr (restrictHomKerEquiv Rˣ H)]
+    ← monoidHom_card_of_hasEnoughRootsOfUnity (G ⧸ H) M, Nat.card_congr (restrictHomKerEquiv Mˣ H)]
 
 end CommGroup

@@ -362,8 +362,8 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
-noncomputable
-def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
+@[simps!]
+noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
   { equivToUnitHom with
     map_mul' := by
       intro χ ψ
