@@ -688,6 +688,11 @@ theorem ContinuousOn.aestronglyMeasurable_of_isCompact [TopologicalSpace α] [Op
   · exact (hs.image_of_continuousOn hf).isSeparable
   · exact mem_of_superset (self_mem_ae_restrict h's) (subset_preimage_image _ _)
 
+lemma Continuous.aestronglyMeasurable_of_compactSpace [TopologicalSpace α] [OpensMeasurableSpace α]
+    [CompactSpace α] [TopologicalSpace β] [PseudoMetrizableSpace β] {μ : Measure α} {f : α → β}
+    (hf : Continuous f) : AEStronglyMeasurable f μ := by
+  simpa using hf.continuousOn.aestronglyMeasurable_of_isCompact isCompact_univ .univ
+
 theorem ContinuousOn.integrableAt_nhdsWithin_of_isSeparable [TopologicalSpace α]
     [PseudoMetrizableSpace α] [OpensMeasurableSpace α] {μ : Measure α} [IsLocallyFiniteMeasure μ]
     {a : α} {t : Set α} {f : α → E} (hft : ContinuousOn f t) (ht : MeasurableSet t)
