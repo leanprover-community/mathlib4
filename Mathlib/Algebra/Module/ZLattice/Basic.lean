@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.LinearAlgebra.Countable
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -72,8 +73,10 @@ variable (b : Basis ι K E)
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
 
 theorem map {F : Type*} [AddCommGroup F] [Module K F] (f : E ≃ₗ[K] F) :
-    Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
-  simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
+    Submodule.map (f.restrictScalars ℤ : E →ₗ[ℤ] F) (span ℤ (Set.range b)) =
+      span ℤ (Set.range (b.map f)) := by
+  simp_rw [Submodule.map_span, LinearEquiv.coe_coe, LinearEquiv.restrictScalars_apply,
+    Basis.coe_map, Set.range_comp]
 
 open scoped Pointwise in
 theorem smul {c : K} (hc : c ≠ 0) :
@@ -103,9 +106,7 @@ theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K 
 theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
     fundamentalDomain (b.reindex e) = fundamentalDomain b := by
   ext
-  simp_rw [mem_fundamentalDomain, Basis.repr_reindex_apply]
-  rw [Equiv.forall_congr' e]
-  simp_rw [implies_true]
+  simp [e.forall_congr_left]
 
 variable [IsStrictOrderedRing K]
 
@@ -439,8 +440,6 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
 
-@[deprecated (since := "2025-05-08")] alias ZSpan.isZLattice := instIsZLatticeRealSpan
-
 section NormedLinearOrderedField
 
 variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
@@ -562,12 +561,10 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
       rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
-      contrapose h
-      rw [Finset.not_nonempty_iff_eq_empty, Set.toFinset_diff,
-        Finset.sdiff_eq_empty_iff_subset] at h
+      contrapose! h
+      rw [Set.toFinset_diff, Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h
-      rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
-        finrank_span_set_eq_card ht_lin]
+      rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose! this
@@ -727,7 +724,8 @@ instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K
     IsZLattice K (ZLattice.comap K L e.toLinearMap) where
   span_top := by
     rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
-      ← Submodule.map_span, IsZLattice.span_top, Submodule.map_top, LinearEquivClass.range]
+      ← ContinuousLinearEquiv.coe_toLinearEquiv, ← LinearEquiv.coe_coe, ← Submodule.map_span,
+      IsZLattice.span_top, Submodule.map_top, e.symm.range]
 
 @[simp]
 theorem ZLattice.comap_toAddSubgroup (e : F →ₗ[K] E) :

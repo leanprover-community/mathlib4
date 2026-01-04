@@ -329,6 +329,13 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
     refine (eventually_ge_atTop 0).mono fun t ht => ?_
     simp [field, Real.exp_neg, rpow_neg ht]
 
+theorem isLittleO_exp_mul_rpow_of_lt (k : ℝ) {a b : ℝ} (ha' : a < b) :
+    (fun t ↦ Real.exp (a * t) * t ^ k) =o[atTop] fun t ↦ Real.exp (b * t) := by
+  refine (isLittleO_of_tendsto (fun _ h ↦ (Real.exp_ne_zero _ h).elim) ?_)
+  simp_rw [← div_mul_eq_mul_div₀, ← Real.exp_sub, ← sub_mul, ← neg_sub b a,
+    mul_comm _ (_ ^ k)]
+  exact tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ (sub_pos.mpr ha')
+
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
     log =O[atTop] fun x => r * log x := isBigO_self_const_mul hr.ne' _ _

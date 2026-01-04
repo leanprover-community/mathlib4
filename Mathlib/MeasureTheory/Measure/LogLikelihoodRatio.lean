@@ -79,11 +79,11 @@ lemma exp_neg_llr' [SigmaFinite μ] [SigmaFinite ν] (hμν : ν ≪ μ) :
   rw [Pi.neg_apply, neg_eq_iff_eq_neg] at hx
   rw [← hx, hx_exp_log]
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_llr (μ ν : Measure α) : Measurable (llr μ ν) :=
   (Measure.measurable_rnDeriv μ ν).ennreal_toReal.log
 
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_llr (μ ν : Measure α) : StronglyMeasurable (llr μ ν) :=
   (measurable_llr μ ν).stronglyMeasurable
 

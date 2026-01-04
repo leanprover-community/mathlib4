@@ -110,7 +110,8 @@ instance [NoZeroSMulDivisors S M'] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂]
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where
   add_smul _ _ _ := ext fun _ ↦ by
     simp_rw [add_apply, DomMulAct.smul_linearMap_apply, ← map_add, ← add_smul]; rfl
-  zero_smul _ := ext fun _ ↦ by erw [DomMulAct.smul_linearMap_apply, zero_smul, map_zero]; rfl
+  zero_smul _ := ext fun _ ↦ by
+    simp [DomMulAct.smul_linearMap_apply, DomMulAct.mk, MulOpposite.opEquiv]
 
 end Module
 

@@ -20,7 +20,7 @@ namespace MonObj
 
 open CategoryTheory MonoidalCategory MonoidalOpposite
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
 
 section mop
 

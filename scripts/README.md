@@ -110,9 +110,6 @@ to learn about it as well!
 - `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
   This script downloads a .json file with proposed assignments and makes the
   corresponding github API calls.
-- `bench_summary.lean`
-  Convert data retrieved from the speed center into a shorter, more accessible format,
-  and post a comment with this summary on github.
 - `declarations_diff.sh`
   Attempts to find which declarations have been removed and which have been added in the current PR
   with respect to `master`, and posts a comment on github with the result.
@@ -144,6 +141,9 @@ to learn about it as well!
   repositories listed in `downstream_repos.yml`.
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
+
+**Version tag verification**
+- `verify_version_tags.py` verifies that Mathlib version tags are correctly published across git, GitHub, elan toolchains, and build cache.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`

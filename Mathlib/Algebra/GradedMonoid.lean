@@ -538,11 +538,11 @@ def submonoid : Submonoid R where
   mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
   one_mem' := SetLike.one_mem_graded A
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instMonoid : Monoid (A 0) := inferInstanceAs <| Monoid (GradeZero.submonoid A)
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instCommMonoid
     {R S : Type*} [SetLike S R] [CommMonoid R]
@@ -602,7 +602,7 @@ instance SetLike.gMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A 
 @[simp]
 theorem SetLike.coe_gnpow {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S)
     [SetLike.GradedMonoid A] {i : ι} (x : A i) (n : ℕ) :
-    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x:R)^n :=
+    ↑(@GradedMonoid.GMonoid.gnpow _ (fun i => A i) _ _ n _ x) = (x : R) ^ n :=
   rfl
 
 /-- Build a `GCommMonoid` instance for a collection of subobjects. -/

@@ -633,7 +633,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- Then the open set `Gs JB` approximates `B` rather well:
   -- except for what happens in the small complement `(⋃ n < N, Es n)ᶜ`, the set `B` is
   -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `δ` from `B`.
-  set JB := {i | B ∩ Es i ≠ ∅ ∧ i ∈ Iio N}
+  set JB := {i | (B ∩ Es i).Nonempty ∧ i ∈ Iio N}
   have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
     suffices B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
       refine this.trans <| union_subset_union le_rfl ?_
@@ -644,14 +644,13 @@ lemma continuous_ofMeasure_probabilityMeasure :
       simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
                   exists_prop] at con
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
-      exact disjoint_left.mp (Es_disjoint (show j ≠ i by cutsat)) ω_in_Esj ω_in_Esi
+      exact disjoint_left.mp (Es_disjoint (show j ≠ i by lia)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
     obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]
     by_cases i_small : i ∈ Iio N
     · refine Or.inl ⟨i, ?_, self_subset_thickening third_ε_pos _ hi⟩
       simp only [mem_Iio, mem_setOf_eq, JB]
-      push_neg
       exact ⟨Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
     · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
   have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
@@ -660,7 +659,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
     obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
     rw [mem_thickening_iff] at ω_in_thEk ⊢
     obtain ⟨w, w_in_Ek, w_near⟩ := ω_in_thEk
-    obtain ⟨z, ⟨z_in_B, z_in_Ek⟩⟩ := nonempty_iff_ne_empty.mpr B_intersects
+    obtain ⟨z, ⟨z_in_B, z_in_Ek⟩⟩ := B_intersects
     refine ⟨z, z_in_B, lt_of_le_of_lt (dist_triangle ω w z) ?_⟩
     apply lt_of_le_of_lt (add_le_add w_near.le <|
             (dist_le_diam_of_mem (Es_bdd k) w_in_Ek z_in_Ek).trans <| Es_diam k)

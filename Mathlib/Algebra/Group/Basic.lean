@@ -77,9 +77,6 @@ theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
 
 end Semigroup
 
-@[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
-
 section MulOneClass
 
 variable [MulOneClass M]
