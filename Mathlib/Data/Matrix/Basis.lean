@@ -34,6 +34,26 @@ and zeroes elsewhere.
 def single (i : m) (j : n) (a : α) : Matrix m n α :=
   of <| fun i' j' => if i = i' ∧ j = j' then a else 0
 
+section
+variable (i : m) (j : n) (c : α) (i' : m) (j' : n)
+
+@[simp]
+theorem single_apply_same : single i j c i j = c :=
+  if_pos (And.intro rfl rfl)
+
+@[simp]
+theorem single_apply_of_ne (h : ¬(i = i' ∧ j = j')) : single i j c i' j' = 0 := by
+  simp only [single, and_imp, ite_eq_right_iff, of_apply]
+  tauto
+
+theorem single_apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
+    single i j a i' j' = 0 := by simp [hi]
+
+theorem single_apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
+    single i j a i' j' = 0 := by simp [hj]
+
+end
+
 /-- See also `single_eq_updateRow_zero` and `single_eq_updateCol_zero`. -/
 theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
     single i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
@@ -75,6 +95,26 @@ theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
   simp only [Set.mem_matrix, single, of_apply]
   conv_lhs => intro _ _; rw [ite_mem]
   simp [hS]
+
+theorem diagonal_single (i : m) (r : α) :
+    diagonal (Pi.single i r) = single i i r := by
+  ext j k
+  dsimp [diagonal, single]
+  grind
+
+@[simp]
+theorem submatrix_single_equiv
+    (f : l ≃ n) (g : m ≃ o) (i : n) (j : o) (r : α) :
+    (single i j r).submatrix f g = single (f.symm i) (g.symm j) r := by
+  ext i' j'
+  dsimp
+  obtain hi | rfl := ne_or_eq (f.symm i) i'
+  · rw [single_apply_of_row_ne hi, single_apply_of_row_ne]
+    exact f.symm_apply_eq.not.1 hi
+  obtain hj | rfl := ne_or_eq (g.symm j) j'
+  · rw [single_apply_of_col_ne _ _ hj, single_apply_of_col_ne]
+    exact g.symm_apply_eq.not.1 hj
+  simp
 
 end Zero
 
@@ -210,27 +250,6 @@ theorem liftLinear_singleLinearMap [Module S α] [SMulCommClass R S α] :
 end liftLinear
 
 end ext
-
-section
-
-variable [Zero α] (i : m) (j : n) (c : α) (i' : m) (j' : n)
-
-@[simp]
-theorem single_apply_same : single i j c i j = c :=
-  if_pos (And.intro rfl rfl)
-
-@[simp]
-theorem single_apply_of_ne (h : ¬(i = i' ∧ j = j')) : single i j c i' j' = 0 := by
-  simp only [single, and_imp, ite_eq_right_iff, of_apply]
-  tauto
-
-theorem single_apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
-    single i j a i' j' = 0 := by simp [hi]
-
-theorem single_apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
-    single i j a i' j' = 0 := by simp [hj]
-
-end
 
 section
 variable [Zero α] (i j : n) (c : α)
