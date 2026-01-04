@@ -12,6 +12,10 @@ This file is meant to develop the theory of time complexity for single-tape Turi
 
 Related is `TMComputable.lean`, which develops this for (a kind of) multi-tape Turing machines.
 
+This file tries to fix the alphabet to computability on functions from lists of booleans to lists of booleans
+with tape of Option Bool (none is the blank symbol),
+
+
 -/
 
 
@@ -26,16 +30,38 @@ def Tape.move? {α} [Inhabited α] : Turing.Tape α → Option Dir → Turing.Ta
   | t, none => t
   | t, some d => t.move d
 
+open Classical in
+/--
+-/
+noncomputable def ListBlank.space_used {α} [Inhabited α] (l : ListBlank α) : ℕ :=
+  Nat.find (p := fun n => ∀ i > n, l.nth i = default)
+    (by sorry)
+
+/--
+The space used by a tape is the number of symbols
+between and including the head, and leftmost and rightmost non-blank symbols on the tape
+-/
+noncomputable def Tape.space_used {α} [Inhabited α] (t : Turing.Tape α) : ℕ :=
+  1 + t.left.space_used + t.right.space_used
+
+lemma Tape.space_used_write {α} [Inhabited α] (t : Turing.Tape α) (a : α) :
+    (t.write a).space_used = t.space_used := by
+  sorry
+
+lemma Tape.space_used_move {α} [Inhabited α] (t : Turing.Tape α) (d : Dir) :
+    (t.move d).space_used ≤ t.space_used + 1 := by
+  sorry
+
 namespace BinTM0
 
 /-- A Turing machine "statement" is just a command to move
   left or right, and write a symbol on the tape. -/
-def Stmt := Bool × Option (Dir)
+def Stmt := (Option Bool) × Option (Dir)
 deriving Inhabited
 
 end BinTM0
 
-/-- A TM0 over binary alphabet. -/
+/-- A TM0 over the alphabet of Option Bool (none is blank tape symbol). -/
 structure BinTM0 where
   /-- type of state labels -/
   (Λ : Type)
@@ -45,7 +71,7 @@ structure BinTM0 where
   (q₀ : Λ)
   /-- Transition function, mapping a state and a head symbol
   to a Stmt to invoke, and optionally a new state (none for halt) -/
-  (M : Λ → Bool → (Turing.BinTM0.Stmt × Option Λ))
+  (M : Λ → (Option Bool) → (Turing.BinTM0.Stmt × Option Λ))
 
 namespace BinTM0
 
@@ -65,8 +91,8 @@ instance inhabitedStmt : Inhabited (Stmt) := inferInstance
 structure Cfg : Type where
   /-- the state of the TM (or none for the halting state) -/
   state : Option tm.Λ
-  /-- the tape contents -/
-  tape : Tape Bool
+  /-- the tape contents, which -/
+  tape : Tape (Option Bool)
 deriving Inhabited
 
 /-- The step function corresponding to this TM. -/
@@ -185,6 +211,17 @@ lemma EvalsToInTime.map {σ σ' : Type*} (f : σ → Option σ) (f' : σ' → Op
     simp only [Option.map_bind, Function.comp_apply, hg]
     exact Turing.BinTM0.EvalsToInTime.congr.extracted_1_2 f f' g hg n a
 
+/--
+If `h : σ → ℕ` increases by at most 1 on each step of `f`,
+then the value of `h` at the output after `steps` steps is at most `h` at the input plus `steps`.
+-/
+lemma EvalsToInTime.small_change {σ : Type*} (f : σ → Option σ) (h : σ → ℕ)
+    (h_step : ∀ a b, f a = some b → h b ≤ h a + 1)
+    (a : σ) (b : Option σ)
+    (steps : ℕ)
+    (hevals : EvalsToInTime f a b steps) :
+    ∀ b' : σ, b = some b' → h b' ≤ h a + steps := by
+  sorry
 
 -- m -> step_bound
 /-- `f` eventually reaches `b` in at most `m` steps when repeatedly
@@ -498,7 +535,7 @@ theorem map_liftCompCfg_right_step
 theorem comp_transition_to_right {α β γ : Type}
     {eα : BinEncoding α} {eβ : BinEncoding β} {eγ : BinEncoding γ} {f : α → β} {g : β → γ}
     (hf : ComputableInTime eα eβ f) (hg : ComputableInTime eβ eγ g)
-    (tape : Tape Bool)
+    (tape : Tape (Option Bool))
     (q : hf.tm.Λ)
     (hM : (hf.tm.M q tape.head).2 = none) :
     (compComputer hf hg).step { state := some (Sum.inl q), tape := tape } =
@@ -634,21 +671,17 @@ theorem comp_right_simulation {α β γ : Type}
   exact EvalsToWithinTime.map hg.tm.step (compComputer hf hg).step
     (liftCompCfg_right hf hg) (map_liftCompCfg_right_step hf hg) x y m h
 
-/--
-The output length of a Turing machine is bounded by the input length plus the number of steps.
 
-This is because the tape head can only move one position per step, so:
-- Initially, non-default symbols exist only in positions 0 to (n-1) where n is input length
-- After t steps, non-default symbols exist only in positions from -(t) to (n+t-1)
-- So the output length (which starts at position 0) is at most n + t
--/
+
+
 lemma output_length_le_input_length_add_time (tm : BinTM0) (l l' : List Bool) (t : ℕ)
     (h : tm.OutputsWithinTime l (some l') t) :
     l'.length ≤ l.length + t := by
-  -- This is a fundamental property of single-tape Turing machines.
-  -- A full proof would require tracking the tape extent through execution.
-  -- For now, we admit this as an axiom about TM behavior.
-  -- TODO: Prove this by induction on the number of steps, tracking the tape extent.
+  unfold OutputsWithinTime EvalsToWithinTime at h
+
+  obtain ⟨steps, hsteps_le, hevals⟩ := h
+  -- have := EvalsToInTime.small_change
+  --
   sorry
 
 /--
@@ -684,8 +717,6 @@ def ComputableInTime.comp
   outputsFun a := by
     have hf_outputsFun := hf.outputsFun a
     have hg_outputsFun := hg.outputsFun (f a)
-
-
     simp only [OutputsWithinTime, initCfg, compComputer_q₀_eq, Function.comp_apply,
       Option.map_some, haltList] at hg_outputsFun hf_outputsFun ⊢
     -- The computer evals a to f a in time hf.time (eα.encode a)
@@ -708,11 +739,9 @@ def ComputableInTime.comp
         hg_outputsFun
       simp only [liftCompCfg_right, Option.map_some] at this
       exact this
-
     have h_a_evalsTo_g_f_a :=
       EvalsToWithinTime.trans
         (compComputer hf hg).step _ _ _ _ _ h_a_evalsTo_f_a h_f_a_evalsTo_g_f_a
-
     apply EvalsToWithinTime.mono_time _ _ _ h_a_evalsTo_g_f_a
     nth_rw 1 [← add_comm]
     apply add_le_add
