@@ -317,6 +317,34 @@ def idComputable {α Γ : Type} (ea : FinEncodingTo α Γ) [Inhabited Γ] [Finty
 -- instance inhabitedComputableAux : Inhabited (ComputableAux Bool Bool) :=
 --   ⟨(default : Computable finEncodingBoolBool finEncodingBoolBool id).toComputableAux⟩
 
+def compComputer {α β γ Γ : Type} {eα : FinEncodingTo α Γ} {eβ : FinEncodingTo β Γ}
+    {eγ : FinEncodingTo γ Γ} {f : α → β} {g : β → γ}
+    (hf : ComputableInTime eα eβ f)
+    (hg : ComputableInTime eβ eγ g)
+    (h_mono : Monotone hg.time) :
+    FinTM0 :=
+  {
+    Γ := Γ
+    InhabitedΓ := sorry
+    FintypeΓ := sorry
+    Λ := hf.tm.Λ ⊕ hg.tm.Λ
+    q₀ := Sum.inl hf.tm.q₀
+    M := fun q h =>
+      match q with
+      -- If we are in the first machine's states, run that machine
+      | Sum.inl ql => match hf.tm.M ql (hf.equivAlphabet.invFun h) with
+        -- If it halts, transition to the second machine's start state, take null action on tape
+        | none => some ⟨Sum.inr hg.tm.q₀, Stmt.null⟩
+        -- Otherwise continue as normal
+        | some (ql', stmt) => some (Sum.inl ql', stmt.mapEquiv (hf.equivAlphabet))
+      -- If we are in the second machine's states, run that machine
+      | Sum.inr qr =>
+        match hg.tm.M qr (hg.equivAlphabet.invFun h) with
+        -- If it halts, halt
+        | none => none
+        -- Otherwise continue as normal
+        | some (qr', stmt) => some (Sum.inr qr', stmt.mapEquiv (hg.equivAlphabet))
+  }
 
 /--
 A composition for ComputableInTime.
@@ -346,32 +374,19 @@ def ComputableInTime.comp
     (hg : ComputableInTime eβ eγ g)
     (h_mono : Monotone hg.time) :
     (ComputableInTime eα eγ (g ∘ f)) where
-  tm := {
-    Γ := Γ
-    InhabitedΓ := sorry
-    FintypeΓ := sorry
-    Λ := hf.tm.Λ ⊕ hg.tm.Λ
-    q₀ := Sum.inl hf.tm.q₀
-    FintypeΛ := inferInstance
-    M q h := match q with
-      -- If we are in the first machine's states, run that machine
-      | Sum.inl ql => match hf.tm.M ql (hf.equivAlphabet.invFun h) with
-        -- If it halts, transition to the second machine's start state, take null action on tape
-        | none => some ⟨Sum.inr hg.tm.q₀, Stmt.null⟩
-        -- Otherwise continue as normal
-        | some (ql', stmt) => some (Sum.inl ql', stmt.mapEquiv (hf.equivAlphabet))
-      -- If we are in the second machine's states, run that machine
-      | Sum.inr qr =>
-        match hg.tm.M qr (hg.equivAlphabet.invFun h) with
-        -- If it halts, halt
-        | none => none
-        -- Otherwise continue as normal
-        | some (qr', stmt) => some (Sum.inr qr', stmt.mapEquiv (hg.equivAlphabet))
-  }
+  tm := compComputer hf hg h_mono
   equivAlphabet := Equiv.refl Γ
   time l := hf.time l + 1 + hg.time (l + hf.time l)
   outputsFun a := by
-    simp
+    simp [OutputsInTime, initList, haltList]
+    -- The computer evals a to f a in time hf.time (eα.encode a)
+    have :
+        EvalsToInTime (compComputer hf hg h_mono).step
+          { state := some (compComputer hf hg h_mono).q₀, tape := Tape.mk₁ (List.map (⇑(Equiv.refl Γ).symm) (eα.encode a)) }
+          (some { state := none, tape := Tape.mk₁ (List.map (⇑(Equiv.refl Γ).symm) (eγ.encode (g (f a)))) })
+          (hf.time (eα.encode a).length + 1 + hg.time ((eα.encode a).length + hf.time (eα.encode a).length)) := by
+      sorry
+
     sorry
 
 
