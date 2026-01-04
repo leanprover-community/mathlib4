@@ -52,8 +52,10 @@ lemma node_eq_neg_one {n : ℕ} (hn : n ≠ 0) : node n n = -1 := by
 lemma node_mem_Icc {n i : ℕ} : node n i ∈ Set.Icc (-1) 1 :=
   Set.mem_Icc.mpr ⟨neg_one_le_cos _, cos_le_one _⟩
 
-lemma eval_T_real_node {n i : ℕ} (hn : n ≠ 0) :
+lemma eval_T_real_node {n i : ℕ} (hi : i ∈ Finset.Iic n) :
     (T ℝ n).eval (node n i) = (-1) ^ i := by
+  wlog! hn : n ≠ 0
+  · simp [hn, show i = 0 by grind]
   have : (n : ℤ) * (i * π / n) = i * π := by norm_cast; field
   rw [node, T_real_cos, this, cos_nat_mul_pi]
 
@@ -76,8 +78,7 @@ lemma node_lt {n i j : ℕ} (hj : j ≤ n) (hij : i < j) :
     (Finset.mem_coe.mpr (Finset.mem_range_succ_iff.mpr hj)) hij
 
 lemma zero_lt_prod_node_sub_node {n i : ℕ} (hi : i ≤ n) :
-    0 < (-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j) :=
-    by
+    0 < (-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j) := by
   wlog! hn : n ≠ 0
   · replace hi : i = 0 := Nat.le_zero.mp (le_of_le_of_eq hi hn)
     simp [hn, hi]
@@ -103,50 +104,35 @@ private lemma negOnePow_mul_le {α : ℝ} {i : ℕ} (hα : α ∈ Set.Icc (-1) 1
   rw [abs_mul, abs_neg_one_pow, one_mul]
   exact abs_le.mpr hα
 
-/-- For a polynomial P and coefficient function c, param n c P is a linear combination of
-P evaluated at the n'th order Chebyshev nodes, with coefficients taken from c. -/
-noncomputable def param (n : ℕ) (c : ℕ → ℝ) (P : ℝ[X]) := ∑ i ≤ n, P.eval (node n i) * (c i)
+/-- For a polynomial `P` and coefficient function `c`, sumNodes `n` `c` `P` is a linear combination
+of `P` evaluated at the `n`'th order Chebyshev nodes, with coefficients taken from `c`. -/
+noncomputable def sumNodes (n : ℕ) (c : ℕ → ℝ) (P : ℝ[X]) := ∑ i ≤ n, P.eval (node n i) * (c i)
 
 theorem apply_le_apply_T_real {n : ℕ} {c : ℕ → ℝ}
     (hcnonneg : ∀ i ≤ n, 0 ≤ (-1) ^ i * (c i))
     {P : ℝ[X]} (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    param n c P ≤ param n c (T ℝ n) := by
-  rw [param, param]
-  wlog! hn : n ≠ 0
-  · rw [hn, show Finset.Iic 0 = {0} by rfl, Nat.cast_zero, T_zero,
-      Finset.sum_singleton, Finset.sum_singleton, node_eq_one, eval_one]
-    exact mul_le_mul_of_nonneg_right (hPbnd 1 (by simp) |> Set.mem_Icc.mp).2
-      (le_of_le_of_eq (hcnonneg 0 n.zero_le) (one_mul _))
+    sumNodes n c P ≤ sumNodes n c (T ℝ n) := by
+  rw [sumNodes, sumNodes]
+  refine Finset.sum_le_sum (fun i hi => ?_)
   calc
-    ∑ i ≤ n, P.eval (node n i) * (c i) ≤ ∑ i ≤ n, (T ℝ n).eval (node n i) * (c i) := by
-      refine Finset.sum_le_sum (fun i hi => ?_)
-      calc
-        P.eval (node n i) * (c i) =
-          ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * (c i)) :=
-          negOnePow_mul_negOnePow_mul_cancel.symm
-        _ ≤ 1 * ((-1) ^ i * (c i)) :=
-          mul_le_mul_of_nonneg_right (negOnePow_mul_le (hPbnd _ node_mem_Icc))
-          (hcnonneg i (Finset.mem_Iic.mp hi))
-        _ = (T ℝ n).eval (node n i) * (c i) := by
-          rw [eval_T_real_node hn, one_mul]
+    P.eval (node n i) * (c i) =
+      ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * (c i)) :=
+      negOnePow_mul_negOnePow_mul_cancel.symm
+    _ ≤ 1 * ((-1) ^ i * (c i)) :=
+      mul_le_mul_of_nonneg_right (negOnePow_mul_le (hPbnd _ node_mem_Icc))
+      (hcnonneg i (Finset.mem_Iic.mp hi))
+    _ = (T ℝ n).eval (node n i) * (c i) := by
+      rw [eval_T_real_node hi, one_mul]
 
 theorem apply_eq_apply_T_real_iff {n : ℕ} {c : ℕ → ℝ}
     (hcpos : ∀ i ≤ n, 0 < (-1) ^ i * (c i))
-    {P : ℝ[X]} (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    (param n c P = param n c (T ℝ n)) ↔ P = T ℝ n := by
+    {P : ℝ[X]} (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    (sumNodes n c P = sumNodes n c (T ℝ n)) ↔ P = T ℝ n := by
   refine ⟨fun h => ?_, by intro h; rw [h]⟩
-  rw [param, param] at h
-  wlog! hn : n ≠ 0
-  · rw [hn, show Finset.Iic 0 = {0} by rfl, Nat.cast_zero, T_zero, Finset.sum_singleton,
-      Finset.sum_singleton, node_eq_one, eval_one, one_mul] at h
-    rw [hn, Nat.cast_zero] at hPdeg
-    rw [hn, Nat.cast_zero, T_zero]
-    have eval_P_one : P.eval 1 = 1 :=
-      (mul_eq_right₀ (ne_of_lt <| lt_of_lt_of_eq (hcpos 0 n.zero_le) (one_mul _)).symm).mp h
-    rw [eq_C_of_degree_eq_zero hPdeg, eval_C] at eval_P_one
-    rw [eq_C_of_degree_eq_zero hPdeg, eval_P_one, C_1]
+  rw [sumNodes, sumNodes] at h
   apply eq_of_degrees_lt_of_eval_finset_eq ((Finset.range (n + 1)).image (node n ·))
-  · rw [hPdeg, Nat.cast_lt, Finset.card_image_of_injOn (strictAntiOn_node n).injOn,
+  · apply lt_of_le_of_lt hPdeg
+    rw [Nat.cast_lt, Finset.card_image_of_injOn (strictAntiOn_node n).injOn,
       Finset.card_range, Nat.lt_succ_iff]
   · rw [degree_T, Int.natAbs_natCast, Nat.cast_lt,
       Finset.card_image_of_injOn (strictAntiOn_node n).injOn,
@@ -164,7 +150,7 @@ theorem apply_eq_apply_T_real_iff {n : ℕ} {c : ℕ → ℝ}
     (-1) ^ i * P.eval (node n i) * ((-1) ^ i * c i) ≤
     (-1) ^ i * (T ℝ n).eval (node n i)  * ((-1) ^ i * c i) := by
     refine mul_le_mul_of_nonneg_right ?_ (le_of_lt (hcpos i (Finset.mem_Iic.mp hi)))
-    rw [eval_T_real_node hn, ← neg_pow', neg_neg, one_pow]
+    rw [eval_T_real_node hi, ← neg_pow', neg_neg, one_pow]
     exact negOnePow_mul_le (hPbnd _ node_mem_Icc)
   refine Finset.sum_lt_sum (fun i hi => h_le hi) ⟨i, hi, lt_of_le_of_ne (h_le hi) ?_⟩
   have := ne_of_lt (hcpos i (Finset.mem_Iic.mp hi))
@@ -174,16 +160,18 @@ theorem apply_eq_apply_T_real_iff {n : ℕ} {c : ℕ → ℝ}
 Chebyshev nodes. -/
 private noncomputable def leadingCoeff_c (n i : ℕ) :=
   (∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j))⁻¹
+private noncomputable def leadingCoeffC (n i : ℕ) :=
+    (∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j))⁻¹
 
 private theorem leadingCoeff_eq_sum_node {n : ℕ} {P : ℝ[X]} (hP : P.degree = n) :
-    param n (leadingCoeff_c n) P = P.leadingCoeff := by
-  simp_rw [param, leadingCoeff_c]
+    sumNodes n (leadingCoeffC n) P = P.leadingCoeff := by
+  simp_rw [sumNodes, leadingCoeffC]
   rw [Lagrange.leadingCoeff_eq_sum (strictAntiOn_node n).injOn (by simp [hP]),
     show Finset.range (n + 1) = Finset.Iic n by grind]
   rfl
 
 private theorem leadingCoeff_eq_sum_node_coeff_pos {n i : ℕ} (hi : i ≤ n) :
-    0 < (-1) ^ i * leadingCoeff_c n i := by
+    0 < (-1) ^ i * leadingCoeffC n i := by
   have := inv_pos_of_pos <| zero_lt_prod_node_sub_node hi
   rwa [mul_inv, ← inv_pow, inv_neg_one] at this
 
@@ -206,11 +194,23 @@ theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
     calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_bounded' hd.symm hPbnd
       _ ≤ 2 ^ (n - 1) := by gcongr; norm_num
 
+theorem coeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    P.coeff n ≤ 2 ^ (n - 1) := by
+  by_cases P.degree = n
+  case pos hPdeg' =>
+    convert leadingCoeff_le_of_bounded' hPdeg' hPbnd
+    rw [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg']
+  case neg hPdeg' =>
+    suffices P.coeff n = 0 by rw [this]; positivity
+    exact coeff_eq_zero_of_degree_lt (by grind)
+
 theorem leadingCoeff_eq_iff_of_bounded' {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree = n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
   rw [← leadingCoeff_eq_sum_node hPdeg]
-  convert apply_eq_apply_T_real_iff (fun i hi => leadingCoeff_eq_sum_node_coeff_pos hi) hPdeg hPbnd
+  convert apply_eq_apply_T_real_iff (fun i hi => leadingCoeff_eq_sum_node_coeff_pos hi)
+    (le_of_eq hPdeg) hPbnd
   simp [leadingCoeff_eq_sum_node]
 
 theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
