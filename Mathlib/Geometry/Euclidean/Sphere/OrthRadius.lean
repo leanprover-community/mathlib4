@@ -44,7 +44,7 @@ instance (s : Sphere P) (p : P) : Nonempty (s.orthRadius p) := by
   rw [orthRadius]
   infer_instance
 
-lemma self_mem_orthRadius (s : Sphere P) (p : P) : p ∈ s.orthRadius p :=
+@[simp] lemma self_mem_orthRadius (s : Sphere P) (p : P) : p ∈ s.orthRadius p :=
   self_mem_mk' _ _
 
 lemma mem_orthRadius_iff_inner_left {s : Sphere P} {p x : P} :
@@ -140,7 +140,40 @@ lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
     ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, and_true, ← Units.exists_iff_ne_zero, eq_comm,
     Units.smul_def]
 
+lemma dist_sq_eq_of_mem_orthRadius {s : Sphere P} {p q : P} (hq : q ∈ s.orthRadius p) :
+    (dist q s.center) ^ 2 = (dist p s.center) ^ 2 + (dist q p) ^ 2 := by
+  simp_rw [dist_eq_norm_vsub, pow_two]
+  rw [← vsub_add_vsub_cancel q p s.center]
+  conv_rhs => rw [add_comm]
+  rwa [norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero, ← mem_orthRadius_iff_inner_left]
+
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
+
+lemma inter_orthRadius_eq_singleton_of_dist_eq_radius {s : Sphere P} {p : P}
+    (hp : dist p s.center = s.radius) : (s ∩ s.orthRadius p : Set P) = {p} := by
+  ext p'
+  simp only [Set.mem_inter_iff, Metric.mem_sphere, mem_coe', SetLike.mem_coe, Set.mem_singleton_iff]
+  constructor
+  · rintro ⟨hp's, hp'i⟩
+    have h' := dist_sq_eq_of_mem_orthRadius hp'i
+    rw [hp's, hp] at h'
+    simpa using h'
+  · rintro rfl
+    simpa using hp
+
+lemma inter_orthRadius_eq_empty_of_radius_lt_dist {s : Sphere P} {p : P}
+    (hp : s.radius < dist p s.center) : (s ∩ s.orthRadius p : Set P) = ∅ := by
+  ext p'
+  simp only [Set.mem_inter_iff, Metric.mem_sphere, mem_coe', SetLike.mem_coe,
+    Set.mem_empty_iff_false, iff_false, not_and]
+  intro hp' ho
+  have ho' := dist_sq_eq_of_mem_orthRadius ho
+  revert ho'
+  refine ne_of_lt ?_
+  rw [hp']
+  calc s.radius ^ 2 < dist p s.center ^ 2 := by
+        simpa [sq_lt_sq, abs_of_nonneg (radius_nonneg_of_mem hp')] using hp
+    _ ≤ dist p s.center ^ 2 + dist p' p ^ 2 := by simp
 
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
@@ -153,21 +186,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 
     (s ∩ s.orthRadius p : Set P) = {(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p,
       -(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p} := by
   rcases hp.eq_or_lt with hp | hp
-  · simp only [hp, sub_self, Real.sqrt_zero, zero_div, zero_smul, zero_vadd, neg_zero,
-      Set.mem_singleton_iff, Set.insert_eq_of_mem]
-    ext p'
-    simp only [Set.mem_inter_iff, Metric.mem_sphere, mem_coe', SetLike.mem_coe,
-      mem_orthRadius_iff_inner_left, Set.mem_singleton_iff]
-    constructor
-    · rintro ⟨hp's, hp'i⟩
-      rw [← dist_eq_zero, ← sq_eq_zero_iff, dist_eq_norm_vsub, ← vsub_add_vsub_cancel _ s.center,
-        norm_add_sq_real, ← dist_eq_norm_vsub, hp's, ← dist_eq_norm_vsub, dist_comm, hp,
-        ← vsub_add_vsub_cancel p' p, inner_add_left, ← neg_vsub_eq_vsub_rev p s.center,
-        inner_neg_right, hp'i, inner_neg_right, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
-        hp]
-      ring
-    · rintro rfl
-      simpa using hp
+  · simpa [hp] using inter_orthRadius_eq_singleton_of_dist_eq_radius hp
   rw [neg_smul]
   have hf := finrank_orthRadius hpc
   rw [direction_orthRadius] at hf
@@ -241,6 +260,13 @@ lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finran
       exact lt_abs.2 (.inl hp)
     exact hvp.ne'
   · simpa using hv0
+
+lemma ncard_inter_orthRadius_le_two [hf2 : Fact (Module.finrank ℝ V = 2)]
+    {s : Sphere P} {p : P} (hpc : p ≠ s.center) : (s ∩ s.orthRadius p : Set P).ncard ≤ 2 := by
+  rcases lt_trichotomy (dist p s.center) s.radius with h | h | h
+  · exact (ncard_inter_orthRadius_eq_two_of_dist_lt_radius h hpc).le
+  · simp [inter_orthRadius_eq_singleton_of_dist_eq_radius h]
+  · simp [inter_orthRadius_eq_empty_of_radius_lt_dist h]
 
 end Sphere
 
