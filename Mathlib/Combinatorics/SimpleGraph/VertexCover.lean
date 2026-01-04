@@ -48,7 +48,7 @@ theorem isVertexCover_univ : IsVertexCover G .univ := by
 theorem isVertexCover_bot (c : Set V) : IsVertexCover ⊥ c := by
   simp [IsVertexCover]
 
-theorem IsVertexCover.subset (c d : Set V) (hcd : c ⊆ d) (hc : IsVertexCover G c) :
+theorem IsVertexCover.subset {c d : Set V} (hcd : c ⊆ d) (hc : IsVertexCover G c) :
     IsVertexCover G d := by
   grind [IsVertexCover]
 
@@ -112,7 +112,7 @@ theorem exists_of_le_vertexCoverNum (n : ℕ) (h₁ : vertexCoverNum G ≤ n)
   obtain ⟨s, hs₁, hs₂⟩ := vertexCoverNum_exists G
   obtain ⟨r, hr₁, _, hr₃⟩ :=
     Set.exists_superset_subset_encard_eq (by simp) (le_of_eq_of_le hs₁ h₁) (Set.encard_univ _ ▸ h₂)
-  exact ⟨r, hr₃, hs₂.subset s r hr₁⟩
+  exact ⟨r, hr₃, hs₂.subset hr₁⟩
 
 @[simp]
 theorem vertexCoverNum_bot : vertexCoverNum (emptyGraph V) = 0 :=
