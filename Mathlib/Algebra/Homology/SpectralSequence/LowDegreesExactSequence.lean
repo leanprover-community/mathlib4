@@ -289,8 +289,7 @@ lemma lowDegreesComposableArrows_exact
         ShortComplex.mk _ _ (d₂_fromE₂TwoZero hE) :=
       { τ₁ := 𝟙 _
         τ₂ := 𝟙 _
-        τ₃ := ιE₃TwoZero hE
-         }
+        τ₃ := ιE₃TwoZero hE }
     exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1 ((d₂Sequence_exact E).exact 1)
 
 end CohomologicalSpectralSequenceNat
