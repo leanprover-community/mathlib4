@@ -329,11 +329,11 @@ scoped notation "θ" => OrderType.theta
 
 instance : Add OrderType.{u} where
   add := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s), inferInstance, inferInstance⟩)
-   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩)
+   fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩
 
 instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hAdd := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s), inferInstance, inferInstance⟩)
-   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩)
+   fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩
 
 lemma OrderIso.sumLexEmpty (α : Type u) {β : Type v} [LinearOrder α] [IsEmpty β] :
     Nonempty (Lex (α ⊕ β) ≃o α) :=
