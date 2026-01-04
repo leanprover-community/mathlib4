@@ -59,12 +59,9 @@ theorem IsVertexCover.mono {c : Set V} (hG : G ≤ G') (hc : IsVertexCover G' c)
 /-- A set `c` is a vertex cover iff the complement of `c` is an independent set. -/
 @[simp]
 theorem isIndepSet_compl_iff_isVertexCover {c : Set V} : G.IsIndepSet cᶜ ↔ IsVertexCover G c := by
-  constructor
-  · intro hi v w hadj
-    by_cases! hh : v ∈ c ∨ w ∈ c
-    · grind
-    · exact False.elim <| hi hh.1 hh.2 (Adj.ne hadj) hadj
-  · grind [IsVertexCover, Set.Pairwise]
+  refine ⟨fun hi v w hadj ↦ ?_, by grind [IsVertexCover, Set.Pairwise]⟩
+  by_contra! hh
+  exact hi hh.1 hh.2 (Adj.ne hadj) hadj
 
 @[simp]
 theorem isVertexCover_compl {c : Set V} : G.IsVertexCover cᶜ ↔ G.IsIndepSet c := by
@@ -127,11 +124,8 @@ theorem vertexCoverNum_of_subsingleton [Subsingleton V] : vertexCoverNum G = 0 :
 
 @[simp]
 theorem vertexCoverNum_eq_zero : vertexCoverNum G = 0 ↔ G = ⊥ := by
-  constructor
-  · intro h
-    have := vertexCoverNum_exists G
-    simp_all
-  · simp_all
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  simpa [h] using vertexCoverNum_exists G
 
 theorem vertexCoverNum_le_card_sub_one : vertexCoverNum G ≤ ENat.card V - 1 := by
   nontriviality V
@@ -154,14 +148,11 @@ theorem vertexCoverNum_lt_card [Nonempty V] [Finite V] : vertexCoverNum G < ENat
 theorem vertexCoverNum_le_encard_edgeSet : vertexCoverNum G ≤ G.edgeSet.encard := by
   by_cases h' : G.edgeSet = ∅
   · simp [h', SimpleGraph.edgeSet_eq_empty.mp]
-  have := ne_bot_iff_exists_adj.mp (by simpa using h')
   refine ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_
   simp only [vertexCoverNum, le_iInf_iff] at hn
-  have := hn ((·.out.1) '' G.edgeSet) (fun v w hadj ↦ by
-    have := Sym2.mem_iff.mp <| Sym2.out_fst_mem s(v, w)
-    grind [mem_edgeSet])
-  grw [this]
-  exact Set.encard_image_le (fun x ↦ (Quot.out x).1) G.edgeSet
+  have := hn ((·.out.1) '' G.edgeSet)
+    (fun v w _ ↦ by grind [Sym2.out_fst_mem s(v, w), mem_edgeSet])
+  grind [Set.encard_image_le]
 
 @[simp]
 theorem vertexCoverNum_ne_top_of_finite_edgeSet (h : G.edgeSet.Finite) : vertexCoverNum G ≠ ⊤ :=
