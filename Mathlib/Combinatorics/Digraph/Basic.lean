@@ -356,9 +356,10 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
     obtain ⟨H, Hprop⟩ := H
     constructor
     case val => exact {
-      verts := H.verts
+      verts := G.verts
       -- The complement is defined w.r.t H.verts and G.Adj
-      Adj v w := G.Adj v w ∧ ¬ H.Adj v w ∧ v ∈ H.verts ∧ w ∈ H.verts
+      Adj v w := G.Adj v w ∧ ¬ H.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
+
     }
     case property =>
       simp at Hprop
@@ -406,10 +407,13 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
 
   top_le_sup_compl := by
     intro ⟨H, H_prop⟩
-    simp_all [LE.le, max, SemilatticeSup.sup]
-    sorry
-
-
+    simp_all only [LE.le, max, SemilatticeSup.sup, Set.subset_union_right, true_and]
+    intro v w G_adj
+    obtain ⟨H_verts, H_adj⟩ := H_prop
+    by_cases hadj : H.Adj v w <;> simp_all
+    · constructor
+      · apply G.left_mem_verts_of_adj G_adj
+      · apply G.right_mem_verts_of_adj G_adj
 
   sInf ℋ := by
     constructor
