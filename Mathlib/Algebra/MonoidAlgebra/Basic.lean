@@ -280,6 +280,7 @@ theorem domCongr_trans (e : M ≃* N) (f : N ≃* O) :
   ext
   simp
 
+variable (R A) in
 /-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
 @[simps]
 def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
@@ -538,7 +539,7 @@ theorem lift_unique (F : R[M] →ₐ[R] A) (f : R[M]) :
 lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 1) = φ₂ (single x 1)) ↔ φ₁ = φ₂ :=
   ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
 
-variable (k A) in
+variable (R A) in
 /-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
 @[simps]
 def domCongrAut : AddAut M →* A[M] ≃ₐ[R] A[M] where
