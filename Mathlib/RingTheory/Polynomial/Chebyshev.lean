@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee, Julien Michel
+Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee, Julien Michel,
+Andrew Yang
 -/
 module
 
@@ -906,119 +907,49 @@ theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
 
 open Finset in
 theorem T_eq_sum_of_nat (n : ℕ) : T R n = ∑ k ∈ Icc 0 (n / 2),
-    Polynomial.C (n.choose (2 * k) : R) * ((X ^ 2 - 1) ^ k * X ^ (n - 2 * k)) := by
+    (n.choose (2 * k) : R[X]) * ((X ^ 2 - 1) ^ k * X ^ (n - 2 * k)) := by
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one => simp
   | more n ih0 ih1 =>
-    -- We'll use T(n + 2) = 2 X T(n + 1) - T(n), so we aim to align the polynomial exponents first
-    -- First rewrite T(n).
-    replace ih0 := calc
-      T R n = _ := ih0
-      _ = ∑ k ∈ Icc 0 (n / 2),
-            (Polynomial.C (n.choose (2 * k) : R) * ((X ^ 2 - 1) ^ k * X ^ (n - 2 * k + 2)) -
-             Polynomial.C (n.choose (2 * k) : R) * ((X ^ 2 - 1) ^ (k + 1) * X ^ (n - 2 * k))) := by
-        congr! 1 with k hk
-        ring
-      _ = ∑ k ∈ _, _ * (_ ^ k * _ ^ (n + 2 - 2 * k)) -
-          ∑ k ∈ _, _ * (_ ^ (k + 1) * _ ^ (n + 2 - 2 * (k + 1))) := by
-        rw [sum_sub_distrib]
-        congr! 5 with k hk k hk
-        all_goals
-        · simp at hk
-          omega
-      -- Reindex the second sum to align the exponents.
-      _ = _ - ∑ k ∈ Icc 1 (n / 2 + 1), Polynomial.C (n.choose (2 * (k - 1)) : R) *
-            ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) := by
-        congr 1
-        rw [sum_bij (fun k _ => k + 1)]
-        · simp
-        · simp
-        · intro b hb; use b - 1; simp at hb ⊢; omega
-        · simp
-      -- We'll align all the index sets to Icc 1 (n / 2 + 1).
-      _ = ∑ k ∈ Icc 0 (n / 2 + 1), Polynomial.C (n.choose (2 * k) : R) *
-            ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) - _ := by
-        congr 1
-        rw [← sum_sdiff <| show {n / 2 + 1} ⊆ Icc 0 (n / 2 + 1) by simp]
-        rw [show Icc 0 (n / 2 + 1) \ {n / 2 + 1} = Icc 0 (n / 2) by ext k; simp; omega]
-        rw [sum_singleton, Nat.choose_eq_zero_of_lt]
-        · simp
-        · omega
-      _ = ∑ k ∈ Icc 1 (n / 2 + 1), Polynomial.C (n.choose (2 * k) : R) *
-            ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) + X ^ (n + 2) - _ := by
-        congr 1
-        rw [← sum_sdiff <| show {0} ⊆ Icc 0 (n / 2 + 1) by simp]
-        rw [show Icc 0 (n / 2 + 1) \ {0} = Icc 1 (n / 2 + 1) by ext k; simp; omega]
-        congr 1
-        simp [sum_singleton]
-      -- The index starting from k = 1 leaves an X^(n+2) term out which will cancel later.
-      _ = X ^ (n + 2) + ∑ k ∈ Icc 1 (n / 2 + 1),
-          (Polynomial.C (n.choose (2 * k) : R) * ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) -
-          Polynomial.C (n.choose (2 * (k - 1)) : R) * ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k))) := by
-        rw [sum_sub_distrib]
-        ring
-      _ = X ^ (n + 2) + ∑ k ∈ Icc 1 (n / 2 + 1),
-          (Polynomial.C (n.choose (2 * k) - n.choose (2 * (k - 1)) : R)) *
-          ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) := by
-        simp_rw [C_sub]
+    -- The key is `2 X T(n + 1) - T(n + 2) = T(n)`.
+    -- We shall verify that the summation also satisfies this recurrence relation.
+    dsimp at ih1 ⊢
+    rw [T_add_two, ih0, ih1, sub_eq_iff_eq_add, ← sub_eq_iff_eq_add']
+    -- Using the fact that `2 ₙ₊₁C₂ₖ - ₙ₊₂C₂ₖ = ₙC₂ₖ - ₙC₂ₖ₋₂`,
+    -- the LHS expands to `∑ₖ (ₙC₂ₖ - ₙC₂ₖ₋₂) (X²-1)ᵏ Xⁿ⁺²⁻²ᵏ`.
+    -- (the extra `+ X ^ (n + 2)` is just to remedy the fact that `ₙC₋₂` is `1` in mathlib)
+    trans (∑ k ∈ Icc 1 ((n + 2) / 2), (n.choose (2 * k) - n.choose (2 * (k - 1)) : R[X]) *
+      ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k))) + X ^ (n + 2)
+    · rw [sum_subset (Icc_subset_Icc (b₂ := (n + 2) / 2) le_rfl (by lia))
+        (by intros; rw [Nat.choose_eq_zero_of_lt] <;> grind), mul_sum, ← sum_sub_distrib,
+        ← sum_sdiff <| show {0} ⊆ Icc 0 ((n + 2) / 2) by simp]
+      congr! 2 with k hk; swap; · simp; ring
+      have : ((n + 2).choose (2 * k) : R[X]) =
+          2 * (n + 1).choose (2 * k) - (n.choose (2 * k) - n.choose (2 * (k - 1))) := by
+        rw [(n + 1).choose_succ_left (2 * k), n.choose_succ_left (2 * k - 1),
+          n.choose_succ_left (2 * k)] <;> grind
+      by_cases hn : n + 2 = 2 * k
+      · simp [← hn, Nat.choose_eq_zero_of_lt, show n = (2 * (k - 1)) by lia]
+      · rw [this, show n + 2 - 2 * k = (n + 1 - 2 * k) + 1 by simp_all; lia]
         ring_nf
-    replace ih0 := sub_eq_of_eq_add' ih0
-    -- Now rewrite X * T(n + 1).
-    replace ih1 := calc
-      X * T R (n + 1) = X * _ := congrArg _ ih1
-      _ = ∑ k ∈ Icc 0 ((n + 1) / 2), Polynomial.C ((n + 1).choose (2 * k) : R) *
-          ((X ^ 2 - 1) ^ k * X ^ (n + 1 - 2 * k + 1)) := by
-        rw [mul_sum]
-        ring_nf
-      _ = ∑ k ∈ _, _ * (_ * _ ^ (n + 2 - 2 * k)) := by congr! 4 with k hk; simp at hk; omega
-      _ = ∑ k ∈ Icc 0 (n / 2 + n % 2), _ := by congr 1; ext _; simp; omega
-      _ = ∑ k ∈ Icc 0 (n / 2 + 1), Polynomial.C ((n + 1).choose (2 * k) : R) *
-          ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) := by
-        obtain hn | hn : n % 2 = 1 ∨ n % 2 = 0 := by omega
-        · rw [hn]
-        · rw [hn, add_zero]
-          rw [← sum_sdiff <| show {n / 2 + 1} ⊆ Icc 0 (n / 2 + 1) by simp]
-          rw [show Icc 0 (n / 2 + 1) \ {n / 2 + 1} = Icc 0 (n / 2) by ext k; simp; omega]
-          simp only [map_natCast, sum_singleton, left_eq_add]
-          rw [Nat.choose_eq_zero_of_lt]
-          · simp
-          · omega
-      _ = X ^ (n + 2) + ∑ k ∈ Icc 1 (n / 2 + 1), Polynomial.C ((n + 1).choose (2 * k) : R) *
-          ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) := by
-        rw [← sum_sdiff <| show {0} ⊆ Icc 0 (n / 2 + 1) by simp]
-        rw [show Icc 0 (n / 2 + 1) \ {0} = Icc 1 (n / 2 + 1) by ext k; simp; omega]
+    -- Shifting the index of second term in the summand by one,
+    -- the LHS is equal to `∑ₖ ₙC₂ₖ ((X²-1)ᵏ Xⁿ⁺²⁻²ᵏ - (X²-1)ᵏ⁺¹ Xⁿ⁻²ᵏ)`,
+    trans ∑ k ∈ Icc 0 (n / 2), (n.choose (2 * k) : R[X]) * ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k) -
+        (X ^ 2 - 1) ^ (k + 1) * X ^ (n - 2 * k))
+    · simp_rw [sub_mul, mul_sub, sum_sub_distrib, sub_add_eq_add_sub]
+      congr 1
+      · rw [← sum_subset (Icc_subset_Icc (b₁ := n / 2) le_rfl (by lia))
+          (by intros; rw [Nat.choose_eq_zero_of_lt] <;> grind),
+          ← sum_sdiff <| show {0} ⊆ Icc 0 (n / 2) by simp]
+        congr 1
         simp
-        ring
-    replace ih1 := sub_eq_of_eq_add' ih1
-    -- Then rewrite T(n + 2) at the goal.
-    convert_to T R (n + 2) = X ^ (n + 2) + ∑ k ∈ Icc 1 (n / 2 + 1),
-      Polynomial.C ((n + 2).choose (2 * k) : R) * ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k)) using 1
-    · rw [show (n + 2) / 2 = n / 2 + 1 by omega]
-      rw [← sum_sdiff <| show {0} ⊆ Icc 0 (n / 2 + 1) by simp]
-      rw [show Icc 0 (n / 2 + 1) \ {0} = Icc 1 (n / 2 + 1) by ext k; simp; omega]
-      simp
-      ring
-    -- Then combine the induction hypotheses
-    apply eq_add_of_sub_eq'
-    calc
-      _ = 2 * X * T R (n + 1) - T R n - X ^ (n + 2) := by rw [T_eq]; congr 4 <;> omega
-      _ = 2 * (X * T R (n + 1) - X ^ (n + 2)) - (T R n - X ^ (n + 2)) := by ring
-      _ = Polynomial.C (2 : R) * _ - _ := by congr 1
-      _ = _ := by
-        rw [ih1, ih0, mul_sum, ← sum_sub_distrib]
-        congr! 1 with k hk
-        simp only [mem_Icc] at hk
-        -- Now it remains to show equality of the binomial coefficients.
-        rw [← mul_assoc, ← mul_sub_right_distrib]
-        rw [← Polynomial.C_mul, ← Polynomial.C_sub]
-        congr 2
-        -- which follows from applying Pascal's identity three times.
-        rw [(n + 1).choose_succ_left (2 * k) (by omega)]
-        rw [n.choose_succ_left (2 * k - 1) (by omega)]
-        rw [n.choose_succ_left (2 * k) (by omega)]
-        rw [show 2 * k - 1 - 1 = 2 * (k - 1) by omega]
-        push_cast
-        ring_nf
+      · rw [show Icc 1 ((n + 2) / 2) = (Finset.Icc 0 (n / 2)).image (· + 1) by simp,
+          Finset.sum_image (add_left_injective _).injOn]
+        simp [mul_add]
+    -- ... which is then equal to `∑ₖ ₙC₂ₖ (X²-1)ᵏ Xⁿ⁻²ᵏ` as intended.
+    · congr! 2 with k hk
+      rw [show n + 2 - 2 * k = n - 2 * k + 2 by simp_all; lia]
+      ring_nf
 
 end Polynomial.Chebyshev
