@@ -396,11 +396,19 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
     simp_all only [LE.le, Subtype.forall, Set.mem_Iic, forall_and_index, sSup, Set.mem_setOf_eq,
       forall_exists_index, Set.subset_def]
     constructor
-    · intro v H' H'_prop hadj _
+    · intro v H' H'_prop hadj h_mem
       simp at H_prop
+      specialize h H' H'_prop hadj h_mem
+      tauto
+    · intro v w H' H'_prop hadj h_mem
+      specialize h H' H'_prop hadj h_mem
+      tauto
 
-      done
-    · done
+  top_le_sup_compl := by
+    intro ⟨H, H_prop⟩
+    simp_all [LE.le, max, SemilatticeSup.sup]
+    sorry
+
 
 
   sInf ℋ := by
