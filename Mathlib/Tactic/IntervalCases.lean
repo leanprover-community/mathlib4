@@ -204,9 +204,9 @@ partial def Methods.bisect (m : Methods) (g : MVarId) (cases : Subarray Interval
     let g₂ ← mkFreshExprMVar (← mkArrow le tgt) .syntheticOpaque
     g.assign <| ← mkAppM ``dite #[le, g₂, g₁]
     let (x₁, g₁) ← g₁.mvarId!.intro1
-    m.bisect g₁ cases[:mid] z1 (.lt z3) e1 e3 p1 (.fvar x₁) e
+    m.bisect g₁ cases.copy[*...mid] z1 (.lt z3) e1 e3 p1 (.fvar x₁) e
     let (x₂, g₂) ← g₂.mvarId!.intro1
-    m.bisect g₂ cases[mid:] (.le z3) z2 e3 e2 (.fvar x₂) p2 e
+    m.bisect g₂ cases.copy[mid:] (.le z3) z2 e3 e2 (.fvar x₂) p2 e
   else if _x : 0 < cases.size then
     let { goal, rhs, .. } := cases[0]
     let pf₁ ← match z1 with | .le _ => pure p1 | .lt _ => m.roundUp e1 e rhs p1

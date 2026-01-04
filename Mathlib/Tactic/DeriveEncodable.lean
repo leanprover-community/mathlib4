@@ -255,7 +255,7 @@ private def mkFromSFuns (ctx : Deriving.Context) (fromSFunNames : Array Name) :
     let header ← mkHeader ``Encodable 1 indVal
     let body ← mkFromSMatch ctx indVal fromSFunNames
     -- Last binder is for the target
-    let binders := header.binders[0:header.binders.size - 1]
+    let binders := header.binders[0...(header.binders.size - 1)].copy
     res := res.push <| ← `(
       private def $(mkIdent fromNatFnName):ident $binders:bracketedBinder* :
         $(mkCIdent ``S) → Option $header.targetType := $body:term
