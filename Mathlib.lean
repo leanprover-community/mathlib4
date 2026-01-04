@@ -6146,7 +6146,8 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
-public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Nakayama.Basic
+public import Mathlib.RingTheory.Nakayama.SpanRank
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.Nilpotent.Exp
