@@ -342,7 +342,7 @@ lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x�
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_left (x y : V) :
-    angle (NormedSpace.normalize x) y = angle x y := by
+    angle (NormedSpace.normalize ℝ x) y = angle x y := by
   by_cases hx : x = 0
   · simp [hx]
   · rw [NormedSpace.normalize, angle_smul_left_of_pos _ _ (by positivity)]
@@ -351,7 +351,7 @@ lemma angle_normalize_left (x y : V) :
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_right (x y : V) :
-    angle x (NormedSpace.normalize y) = angle x y := by
+    angle x (NormedSpace.normalize ℝ y) = angle x y := by
   rw [angle_comm, angle_normalize_left, angle_comm]
 
 /-- The inner product of two unit vectors is equal to the cosine of the angle between them. -/

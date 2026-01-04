@@ -42,12 +42,12 @@ section signedDist
 set_option backward.privateInPublic true in
 /-- Auxiliary definition for `signedDist`. It is the underlying linear map of `signedDist`. -/
 private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ] ℝ where
-  toFun w := .const ℝ P ⟪-normalize v, w⟫
+  toFun w := .const ℝ P ⟪-normalize ℝ v, w⟫
   map_add' x y := by ext; simp [inner_add_right]
   map_smul' r x := by ext; simp [inner_smul_right]
 
 private lemma signedDistLinear_apply (v w : V) :
-    signedDistLinear v w = .const ℝ P ⟪-normalize v, w⟫ := rfl
+    signedDistLinear v w = .const ℝ P ⟪-normalize ℝ v, w⟫ := rfl
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -59,7 +59,7 @@ In the degenerate case `v = 0`, it returns `0`.
 TODO: once we have a topology on `P →ᴬ[ℝ] ℝ`, the type should be `P →ᴬ[ℝ] P →ᴬ[ℝ] ℝ`.
 -/
 noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
-  toFun p := (innerSL ℝ (normalize v)).toContinuousAffineMap.comp
+  toFun p := (innerSL ℝ (normalize ℝ v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p)
   linear := signedDistLinear v
   map_vadd' p v' := by
@@ -71,24 +71,24 @@ variable (v w : V) (p q r : P)
 
 -- Lemmas about the definition of `signedDist`
 
-lemma signedDist_apply : signedDist v p = (innerSL ℝ (normalize v)).toContinuousAffineMap.comp
+lemma signedDist_apply : signedDist v p = (innerSL ℝ (normalize ℝ v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p) :=
   rfl
 
-lemma signedDist_apply_apply : signedDist v p q = ⟪normalize v, q -ᵥ p⟫ :=
+lemma signedDist_apply_apply : signedDist v p q = ⟪normalize ℝ v, q -ᵥ p⟫ :=
   rfl
 
-lemma signedDist_apply_linear : (signedDist v p).linear = innerₗ V (normalize v) := by
-  change (innerₗ V (normalize v)).comp (LinearMap.id - 0) = _
+lemma signedDist_apply_linear : (signedDist v p).linear = innerₗ V (normalize ℝ v) := by
+  change (innerₗ V (normalize ℝ v)).comp (LinearMap.id - 0) = _
   simp
 
-lemma signedDist_apply_linear_apply : (signedDist v p).linear w = ⟪normalize v, w⟫ := by
+lemma signedDist_apply_linear_apply : (signedDist v p).linear w = ⟪normalize ℝ v, w⟫ := by
   simp [signedDist_apply_linear]
 
-lemma signedDist_linear_apply : (signedDist v).linear w = .const ℝ P ⟪-normalize v, w⟫ :=
+lemma signedDist_linear_apply : (signedDist v).linear w = .const ℝ P ⟪-normalize ℝ v, w⟫ :=
   rfl
 
-lemma signedDist_linear_apply_apply : (signedDist v).linear w p = ⟪-normalize v, w⟫ :=
+lemma signedDist_linear_apply_apply : (signedDist v).linear w p = ⟪-normalize ℝ v, w⟫ :=
   rfl
 
 -- Lemmas about the vector argument of `signedDist`
@@ -137,10 +137,10 @@ lemma signedDist_triangle_right : signedDist v p r - signedDist v q r = signedDi
 
 -- Lemmas about offsetting the point arguments of `signedDist` (with `+ᵥ` or `-ᵥ`)
 
-lemma signedDist_vadd_left : signedDist v (w +ᵥ p) q = -⟪normalize v, w⟫ + signedDist v p q := by
+lemma signedDist_vadd_left : signedDist v (w +ᵥ p) q = -⟪normalize ℝ v, w⟫ + signedDist v p q := by
   simp [signedDist_linear_apply_apply]
 
-lemma signedDist_vadd_right : signedDist v p (w +ᵥ q) = ⟪normalize v, w⟫ + signedDist v p q := by
+lemma signedDist_vadd_right : signedDist v p (w +ᵥ q) = ⟪normalize ℝ v, w⟫ + signedDist v p q := by
   simp [signedDist_apply_linear_apply]
 
 -- TODO: find a better name for these 2 lemmas
