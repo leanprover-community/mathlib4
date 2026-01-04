@@ -13,8 +13,8 @@ public import Mathlib.Analysis.Convolution
 In this file we calculate the Fourier transform of a convolution.
 
 ## Main statements
-* `Real.fourier_bilin_convolution_eq`: the Fourier transform of a convolution is the multiplication
-of the Fourier transform of the functions in terms of a general bilinear map.
+* `Real.fourier_bilin_convolution_eq`: The Fourier transform of a convolution is the bilinear map
+  applied to the Fourier transform of the functions.
 * `Real.fourier_smul_convolution_eq`: Variant for scalar multiplication.
 * `Real.fourier_mul_convolution_eq`: Variant for multiplication.
 
@@ -33,7 +33,9 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] [NormedSpace 𝕜 F₃]
 
-private theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
+/- The norm of the integrant of the convolution is integrable if the functions are integrable
+and continuous. -/
+theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) :
     Integrable (fun (p : E × E) ↦ ‖B‖ * (‖f₁ (p.1 - p.2)‖ * ‖f₂ p.2‖)) (volume.prod volume) := by
   apply Integrable.const_mul
@@ -57,7 +59,7 @@ open FourierTransform
 variable [NormedSpace ℂ F₃]
 
 /-- Calculate the Fourier transform of the convolution as a symmetric integral. -/
-theorem fourier_bilin_convolution_eq' (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
+theorem fourier_bilin_convolution_eq_integral (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂)
     (ξ : E) :
     𝓕 (f₁ ⋆[B] f₂) ξ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) := calc
@@ -88,16 +90,14 @@ variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]
 
 open ContinuousLinearMap
 
-/-- The Fourier transform of the convolution is given by the multiplication of the Fourier transform
-of the individual functions.
-
-Version for general bilinear forms. -/
+/-- The Fourier transform of the convolution is given by the bilinear map applied to the Fourier
+transform of the individual functions. -/
 theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂)
     (ξ : E) :
     𝓕 (f₁ ⋆[B] f₂) ξ = B (𝓕 f₁ ξ) (𝓕 f₂ ξ) := calc
   _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) :=
-    fourier_bilin_convolution_eq' B hf₁ hf₂ hf₁' hf₂' _
+    fourier_bilin_convolution_eq_integral B hf₁ hf₂ hf₁' hf₂' _
   _ = ∫ y, ∫ x, 𝐞 (-inner ℝ y ξ) • 𝐞 (-inner ℝ x ξ) • B (f₁ x) (f₂ y) := by
     congr
     ext y
