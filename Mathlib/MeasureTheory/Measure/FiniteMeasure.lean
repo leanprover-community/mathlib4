@@ -476,7 +476,6 @@ theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
   constructor
   · have key := μ.testAgainstNN_lipschitz_estimate f₂ f₁
     rw [mul_comm] at key
-    suffices ↑(μ.testAgainstNN f₂) ≤ ↑(μ.testAgainstNN f₁) + ↑μ.mass * dist f₁ f₂ by linarith
     simpa [nndist_comm] using NNReal.coe_mono key
   · have key := μ.testAgainstNN_lipschitz_estimate f₁ f₂
     rw [mul_comm] at key

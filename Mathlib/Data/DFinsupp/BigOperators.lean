@@ -199,7 +199,6 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
 theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] (v : Π₀ i, β i) {f : ∀ i, β i → γ} (hf : ∀ i, f i 0 = 1) :
     v.prod f = ∏ i, f i (DFinsupp.equivFunOnFintype v i) := by
-  suffices (∏ i ∈ v.support, f i (v i)) = ∏ i, f i (v i) by simp [DFinsupp.prod, this]
   apply Finset.prod_subset v.support.subset_univ
   intro i _ hi
   rw [mem_support_iff, not_not] at hi
