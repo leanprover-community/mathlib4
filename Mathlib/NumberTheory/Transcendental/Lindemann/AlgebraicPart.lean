@@ -330,19 +330,18 @@ theorem linearIndependent_exp_aux_rat {K S : Type*}
     (h : ∑ i : ι, algebraMap K S (v' i) * φ (.ofAdd (u' i)) = 0) :
     ∃ (f : K[K]), f ≠ 0 ∧ AddMonoidAlgebra.lift _ _ _ φ f = 0 := by
   classical
-  let f : K[K] := Finsupp.indicator (image u' univ) (fun x _ => u'.extend v' (fun _ ↦ 0) x)
+  let f : K[K] := (Finsupp.equivFunOnFinite.symm v').mapDomain u'
   refine ⟨f, ?_, ?_⟩
   · simp_rw [Ne, funext_iff, Pi.zero_apply] at v0; push_neg at v0
     obtain ⟨i, hv'i⟩ := v0
     have h : f (u' i) ≠ 0 := by
-      rwa [Finsupp.indicator_apply, dif_pos, u'_inj.extend_apply]
-      exact mem_image_of_mem _ (mem_univ _)
+      rw [Finsupp.mapDomain_apply u'_inj]
+      simpa
     intro f0
     rw [f0, Finsupp.zero_apply] at h
     exact absurd rfl h
-  · rw [AddMonoidAlgebra.lift_apply, ← h, Finsupp.sum_indicator_index _ (by simp),
-      sum_image (by simpa)]
-    simp [u'_inj.extend_apply, Algebra.smul_def]
+  · rw [AddMonoidAlgebra.lift_apply, ← h, Finsupp.sum_mapDomain_index_inj u'_inj]
+    simp [Finsupp.sum_fintype, Algebra.smul_def]
 
 theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]
