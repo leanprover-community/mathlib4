@@ -219,31 +219,45 @@ theorem limitRecOn_limit {motive} (o H₁ H₂ H₃ h) :
 
 /-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
   added to all cases. The final term's domain is the ordinals below `l`. -/
-@[elab_as_elim]
+@[deprecated limitRecOn (since := "2025-12-26"), elab_as_elim]
 def boundedLimitRecOn {l : Ordinal} (lLim : IsSuccLimit l) {motive : Iio l → Sort*} (o : Iio l)
     (zero : motive ⟨0, lLim.bot_lt⟩)
     (succ : (o : Iio l) → motive o → motive ⟨succ o, lLim.succ_lt o.2⟩)
-    (limit : (o : Iio l) → IsSuccLimit o.1 → (Π o' < o, motive o') → motive o) : motive o :=
-  limitRecOn (motive := fun p ↦ (h : p < l) → motive ⟨p, h⟩) o.1 (fun _ ↦ zero)
-    (fun o ih h ↦ succ ⟨o, _⟩ <| ih <| (lt_succ o).trans h)
-    (fun _o ho ih _ ↦ limit _ ho fun _o' h ↦ ih _ h _) o.2
+    (limit : (o : Iio l) → IsSuccLimit o.1 → (Π o' < o, motive o') → motive o) : motive o := by
+  obtain ⟨o, ho⟩ := o
+  induction o using limitRecOn with
+  | zero => exact zero
+  | succ o IH =>
+    have ho' : o < l := (lt_succ o).trans ho
+    exact succ ⟨o, ho'⟩ (IH ho')
+  | limit o ho' IH => exact limit _ ho' fun a ha ↦ IH a.1 ha (ha.trans (c := l) ho)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated limitRecOn_zero (since := "2025-12-26")]
 theorem boundedLimitRec_zero {l} (lLim : IsSuccLimit l) {motive} (H₁ H₂ H₃) :
     @boundedLimitRecOn l lLim motive ⟨0, lLim.bot_lt⟩ H₁ H₂ H₃ = H₁ := by
-  rw [boundedLimitRecOn, limitRecOn_zero]
+  rw [boundedLimitRecOn]
+  dsimp
+  rw [limitRecOn_zero]
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated limitRecOn_succ (since := "2025-12-26")]
 theorem boundedLimitRec_succ {l} (lLim : IsSuccLimit l) {motive} (o H₁ H₂ H₃) :
     @boundedLimitRecOn l lLim motive ⟨succ o.1, lLim.succ_lt o.2⟩ H₁ H₂ H₃ = H₂ o
     (@boundedLimitRecOn l lLim motive o H₁ H₂ H₃) := by
-  rw [boundedLimitRecOn, limitRecOn_succ]
+  rw [boundedLimitRecOn]
+  dsimp
+  rw [limitRecOn_succ]
   rfl
 
+set_option linter.deprecated false in
+@[deprecated limitRecOn_limit (since := "2025-12-26")]
 theorem boundedLimitRec_limit {l} (lLim : IsSuccLimit l) {motive} (o H₁ H₂ H₃ oLim) :
     @boundedLimitRecOn l lLim motive o H₁ H₂ H₃ = H₃ o oLim (fun x _ ↦
     @boundedLimitRecOn l lLim motive x H₁ H₂ H₃) := by
-  rw [boundedLimitRecOn, limitRecOn_limit]
+  rw [boundedLimitRecOn]
+  dsimp
+  rw [limitRecOn_limit]
   rfl
 
 instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).ToType :=
