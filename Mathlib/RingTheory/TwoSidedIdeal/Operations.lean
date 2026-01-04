@@ -157,8 +157,8 @@ lemma _root_.RingEquiv.mapTwoSidedIdeal_symm (e : R ≃+* S) :
 @[simp]
 lemma span_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {s : Set R} :
     span s = ⊥ ↔ ∀ x ∈ s, x = 0 := eq_bot_iff.trans
-  ⟨fun H _ h => (mem_bot R).1 <| H <| subset_span h, fun H =>
-    span_le.2 fun x h => (mem_bot R).2 <| H x h⟩
+  ⟨fun H _ h => (mem_bot R).mp <| H <| subset_span h,
+   fun H => span_le.mpr fun x h => (mem_bot R).mpr <| H x h⟩
 
 lemma span_singleton_eq_bot {R : Type*} [NonUnitalNonAssocRing R] {x : R} :
   span ({x} : Set R) = ⊥ ↔ x = 0 := by simp
