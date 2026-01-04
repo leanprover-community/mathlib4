@@ -57,8 +57,8 @@ lemma TensorProduct.map_comap_eq_zero_if_zero [hA : IsSimpleRing A]
     rcases eq_or_ne (a j) 0 with hj | hj
     · aesop
     · rw [Finset.sum_insert hjs] at h
-      have : span {a j} = ⊤ := hA.1.2 _|>.resolve_left fun h ↦ hj <| (mem_bot A).1 <|
-        (SetLike.ext_iff.1 h (a j)).1 <| subset_span (by simp)
+      have : span {a j} = ⊤ := hA.1.2 _|>.resolve_left fun h ↦ hj <| (mem_bot A).mp <|
+        (SetLike.ext_iff.mp h (a j)).mp <| subset_span (by simp)
       have h' : ∀ (x : A) (hx : x ∈ span {a j}), ∃ (ι : Type) (_ : Fintype ι) (xL : ι → A)
           (xR : ι → A), x = ∑ i, xL i * a j * xR i := fun x hx ↦ by
         induction hx using span_induction with
