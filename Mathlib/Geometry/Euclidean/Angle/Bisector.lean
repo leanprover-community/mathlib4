@@ -41,9 +41,8 @@ private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux₁ {p p' : P}
     rw [orthogonalProjection_eq_self_iff.2 h]
   · rw [orthogonalProjection_eq_self_iff.2 h'] at h ⊢
     rw [dist_self, zero_eq_dist, eq_comm, orthogonalProjection_eq_self_iff]
-    by_cases hpp' : p = p'
-    · subst hpp'
-      exact hp'₂
+    obtain rfl | hpp' := eq_or_ne p p'
+    · exact hp'₂
     · by_contra hn
       rw [angle_self_of_ne hpp', angle_comm,
         angle_eq_arcsin_of_angle_eq_pi_div_two (angle_self_orthogonalProjection p hp'₂),
@@ -237,8 +236,8 @@ private lemma dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq_aux₁ {p
     (h' : orthogonalProjection line[ℝ, p₁, p₂] p = p₁) :
     dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
       dist p (orthogonalProjection line[ℝ, p₁, p₃] p) := by
-  by_cases hp : p = p₁
-  · rw [h', hp, dist_self, zero_eq_dist, eq_comm, orthogonalProjection_eq_self_iff]
+  obtain rfl | hp := eq_or_ne p p₁
+  · rw [h', dist_self, zero_eq_dist, eq_comm, orthogonalProjection_eq_self_iff]
     exact left_mem_affineSpan_pair _ _ _
   · rw [← h'] at h hp
     have hpm : p ∉ line[ℝ, p₁, p₂] := orthogonalProjection_eq_self_iff.not.1 (Ne.symm hp)
@@ -348,8 +347,8 @@ lemma dist_orthogonalProjection_line_eq_iff_two_zsmul_oangle_eq {p p₁ p₂ p�
     (ha : AffineIndependent ℝ ![p₁, p₂, p₃]) :
     dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
       dist p (orthogonalProjection line[ℝ, p₁, p₃] p) ↔
-        (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃ := by
-  exact ⟨two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq ha,
+        (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃ :=
+  ⟨two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq ha,
     dist_orthogonalProjection_line_eq_of_two_zsmul_oangle_eq
       (ha.injective.ne (by decide : (0 : Fin 3) ≠ 1))
       (ha.injective.ne (by decide : (0 : Fin 3) ≠ 2))⟩
