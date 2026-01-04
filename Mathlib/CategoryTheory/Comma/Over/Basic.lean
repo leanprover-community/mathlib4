@@ -131,6 +131,15 @@ lemma forall_iff (P : Over X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
   aesop
 
+lemma mk_surjective {S : T} (X : Over S) :
+    ∃ (Y : T) (f : Y ⟶ S), Over.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Over S} (f : X ⟶ Y) :
+    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
+  ⟨f.left, by simp⟩
+
 section
 
 variable (X)
@@ -259,9 +268,9 @@ variable (T) in
 /-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
-  map := map
-  map_id := mapId_eq
-  map_comp := mapComp_eq
+  map f := (map f).toCatHom
+  map_id X := congr($(mapId_eq X).toCatHom)
+  map_comp f g := congr($(mapComp_eq f g).toCatHom)
 
 end coherences
 
@@ -334,6 +343,10 @@ def iteratedSliceForward : Over f ⥤ Over f.left where
 def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
+
+theorem iteratedSliceBackward_forget (f : Over X) :
+    iteratedSliceBackward f ⋙ Over.forget f = Over.map f.hom :=
+  rfl
 
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
@@ -588,6 +601,15 @@ lemma forall_iff (P : Under X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : X ⟶ Y), P (.mk f)) := by
   aesop
 
+lemma mk_surjective {S : T} (X : Under S) :
+    ∃ (Y : T) (f : S ⟶ Y), Under.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Under S} (f : X ⟶ Y) :
+    ∃ (g : X.right ⟶ Y.right) (hg : X.hom ≫ g = Y.hom), Under.homMk g = f :=
+  ⟨f.right, by simp⟩
+
 section
 
 variable (X)
@@ -702,9 +724,9 @@ variable (T) in
 /-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
-  map f := map f.unop
-  map_id X := mapId_eq X.unop
-  map_comp f g := mapComp_eq (g.unop) (f.unop)
+  map f := (map f.unop).toCatHom
+  map_id X := congr($(mapId_eq X.unop).toCatHom)
+  map_comp f g := congr($(mapComp_eq (g.unop) (f.unop)).toCatHom)
 
 end coherences
 

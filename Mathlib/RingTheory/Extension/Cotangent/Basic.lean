@@ -68,6 +68,52 @@ def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
 lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :=
   rfl
 
+section baseChange
+
+variable {A : Type*} [CommRing A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
+
+variable (R S) in
+/-- This is (isomorphic to) the base change of the contangent complex to `A`, but
+the domain and codomains of this are more manageable. -/
+noncomputable
+def _root_.KaehlerDifferential.cotangentComplexBaseChange
+    (P A : Type*) [CommRing P] [CommRing A] [Algebra P S] [Algebra P A]
+    [Algebra R P] [Algebra S A] [IsScalarTower P S A] :
+    A ⊗[P] RingHom.ker (algebraMap P S) →ₗ[A] A ⊗[P] Ω[P⁄R] :=
+  LinearMap.liftBaseChange _ (KaehlerDifferential.kerToTensor _ _ _ ∘ₗ Submodule.inclusion
+    (by rw [IsScalarTower.algebraMap_eq P S A]; intro; aesop))
+
+omit [Algebra R S] in
+lemma _root_.KaehlerDifferential.cotangentComplexBaseChange_tmul
+    {P A : Type*} [CommRing P] [CommRing A] [Algebra P S]
+    [Algebra P A] [Algebra R P] [Algebra S A] [IsScalarTower P S A] (a b) :
+  cotangentComplexBaseChange R S P A (a ⊗ₜ b) =
+    a • kerToTensor R P A ⟨b.1, by rw [IsScalarTower.algebraMap_eq P S A]; aesop⟩ := rfl
+
+variable (A) in
+lemma cotangentComplexBaseChange_eq_lTensor_cotangentComplex :
+  cotangentComplexBaseChange R S P.Ring A =
+    AlgebraTensorModule.cancelBaseChange P.Ring S A A Ω[P.Ring⁄R] ∘ₗ
+      P.cotangentComplex.baseChange A ∘ₗ
+      ((AlgebraTensorModule.cancelBaseChange P.Ring S A A P.ker).symm ≪≫ₗ
+        P.cotangentEquiv.baseChange (A := A)) := by
+  ext x
+  simp [LinearEquiv.baseChange, cotangentComplexBaseChange_tmul]
+
+variable (A) in
+lemma lTensor_cotangentComplex_eq_cotangentComplexBaseChange :
+  P.cotangentComplex.baseChange A =
+    (AlgebraTensorModule.cancelBaseChange P.Ring S A A Ω[P.Ring⁄R]).symm ∘ₗ
+      cotangentComplexBaseChange R S P.Ring A ∘ₗ
+      ((AlgebraTensorModule.cancelBaseChange P.Ring S A A P.ker).symm ≪≫ₗ
+        P.cotangentEquiv.baseChange (A := A)).symm := by
+  apply LinearMap.coe_injective
+  dsimp
+  rw [LinearEquiv.eq_symm_comp, ← LinearEquiv.comp_symm_eq]
+  exact congr(($(cotangentComplexBaseChange_eq_lTensor_cotangentComplex P A) : _ → _)).symm
+
+end baseChange
+
 universe w' u' v'
 
 variable {R' : Type u'} {S' : Type v'} [CommRing R'] [CommRing S'] [Algebra R' S']
@@ -351,6 +397,7 @@ lemma H1Cotangent.map_comp
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
 
+set_option backward.proofsInPublic true in
 /-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
 induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
 @[simps! apply]

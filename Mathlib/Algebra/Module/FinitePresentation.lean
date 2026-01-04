@@ -571,7 +571,7 @@ instance [Module.FinitePresentation R M] :
   Module.FinitePresentation.isLocalizedModule_mapExtendScalars _ _ _ _
 
 /--
-Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+Let `M` be a finitely presented `R`-module, `N` an `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
 `LocalizedModule S M →ₗ[R] LocalizedModule S N`
 -/
@@ -593,7 +593,7 @@ lemma Module.FinitePresentation.linearEquivMap_symm_apply [Module.FinitePresenta
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
 /--
-Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+Let `M` be a finitely presented `R`-module, `N` an `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
 `LocalizedModule S M →ₗ[Localization S] LocalizedModule S N`
 -/

@@ -516,12 +516,10 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
 def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let mut decl := decl
   decl := decl.updateType <| ← unfoldAuxLemmas decl.type
-  if let some v := decl.value? then
+  if let some v := decl.value? (allowOpaque := true) then
     trace[translate] "value before unfold:{indentExpr v}"
     decl := decl.updateValue <| ← unfoldAuxLemmas v
     trace[translate] "value after unfold:{indentExpr decl.value!}"
-  else if let .opaqueInfo info := decl then -- not covered by `value?`
-    decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
   return decl
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
@@ -532,11 +530,8 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
     renameBinderNames t decl.type
-  if let some v := decl.value? then
+  if let some v := decl.value? (allowOpaque := true) then
     decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
-  else if let .opaqueInfo info := decl then -- not covered by `value?`
-    decl := .opaqueInfo { info with
-      value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
 /--
@@ -645,10 +640,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclRec t ref pre tgt_pre n
-  if let some value := srcDecl.value? then
-    for n in findAuxDecls value pre do
-      transformDeclRec t ref pre tgt_pre n
-  if let .opaqueInfo {value, ..} := srcDecl then
+  if let some value := srcDecl.value? (allowOpaque := true) then
     for n in findAuxDecls value pre do
       transformDeclRec t ref pre tgt_pre n
   -- expose target body when source body is exposed
@@ -1178,7 +1170,8 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   let nestedNames ← copyMetaData t cfg src tgt argInfo
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
-  addConstInfo cfg.ref tgt
+  Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
+    |>.run' |>.run'
   if let some doc := cfg.doc then
     addDocStringCore tgt doc
   return nestedNames.push tgt

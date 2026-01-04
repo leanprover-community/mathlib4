@@ -641,7 +641,7 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     rw [this, mfderiv_comp (I' := I)]
     · simp only [mfderiv_fst, id_eq]
       rfl
-    · exact hf.comp _  (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
+    · exact hf.comp _ (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
     · exact mdifferentiableAt_fst
   · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
@@ -669,7 +669,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {p : M ⊕ M'}
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
-    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] (I <|chartAt H p p)] id := by
+    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] (I <| chartAt H p p)] id := by
   cases p with
     | inl x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
