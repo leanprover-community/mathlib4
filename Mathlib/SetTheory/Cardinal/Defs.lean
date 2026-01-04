@@ -515,6 +515,10 @@ theorem mk_subtype_of_equiv {α β : Type u} (p : β → Prop) (e : α ≃ β) :
     #{ a : α // p (e a) } = #{ b : β // p b } :=
   mk_congr (Equiv.subtypeEquivOfSubtype e)
 
+namespace OrderType
+
+end OrderType
+
 end Cardinal
 
 -- namespace Tactic
