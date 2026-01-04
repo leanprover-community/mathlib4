@@ -19,8 +19,8 @@ following proof in https://math.stackexchange.com/a/978145/1277
 
 ## Main statements
 
-* `leadingCoeff_le_of_bounded`: If P is a degree n polynomial and |P(x)|≤1 for all |x|≤1 then
-  the leading coefficient of P is at most 2^(n-1)
+* leadingCoeff_le_of_bounded: If `P` is a degree `n` real polynomial and `|P (x)| ≤ 1` for all `|x| ≤ 1` then
+  the leading coefficient of `P` is at most `2 ^ (n-1)`
 * `leadingCoeff_eq_iff_of_bounded`: If P is a degree n polynomial and |P(x)|≤1 for all |x|≤1 then
   the leading coefficient of P equals 2^(n-1) iff P = T_n, the n'th Chebyshev polynomial
 -/
