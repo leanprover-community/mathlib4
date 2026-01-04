@@ -19,18 +19,19 @@ following proof in https://math.stackexchange.com/a/978145/1277
 
 ## Main statements
 
-* leadingCoeff_le_of_bounded: If `P` is a degree `n` real polynomial and `|P (x)| ≤ 1` for all `|x| ≤ 1` then
-  the leading coefficient of `P` is at most `2 ^ (n-1)`
-* `leadingCoeff_eq_iff_of_bounded`: If P is a degree n polynomial and |P(x)|≤1 for all |x|≤1 then
-  the leading coefficient of P equals 2^(n-1) iff P = T_n, the n'th Chebyshev polynomial
+* leadingCoeff_le_of_bounded: If `P` is a degree `n` real polynomial and `|P (x)| ≤ 1` for all
+  `|x| ≤ 1` then the leading coefficient of `P` is at most `2 ^ (n-1)`
+* leadingCoeff_eq_iff_of_bounded: If `P` is a degree `n` polynomial and `|P (x)| ≤ 1` for all
+  `|x| ≤ 1` then the leading coefficient of `P` equals `2 ^ (n-1)` iff `P = T_n`, the `n`'th
+  Chebyshev polynomial
 -/
 @[expose] public section
 namespace Polynomial.Chebyshev
 
 open Polynomial Real
 
-/-- For n ≠ 0 and i ≤ n, `chebyshevNode n i` is one of the extremal points of the Chebyhsev T
-polynomial over the interval [-1, 1]. -/
+/-- For `n ≠ 0` and `i ≤ n`, chebyshevNode n i is one of the extremal points of the Chebyhsev T
+polynomial over the interval `[-1, 1]`. -/
 noncomputable abbrev chebyshevNode (n i : ℕ) : ℝ := cos (i * π / n)
 
 lemma chebyshevNode_eq_one {n : ℕ} : chebyshevNode n 0 = 1 := by simp [chebyshevNode]
