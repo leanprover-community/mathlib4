@@ -277,47 +277,6 @@ open Filtration
 variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
     [DenselyOrdered ι] [FirstCountableTopology ι] {f : Filtration ι m}
 
-lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [NoMaxOrder ι]
-    {τ : Ω → WithTop ι} [hf : f.IsRightContinuous] (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω < i}) :
-    IsStoppingTime f τ := by
-  intro i
-  obtain ⟨u, hu₁, hu₂, hu₃⟩ := exists_seq_strictAnti_tendsto i
-  refine MeasurableSet.of_compl ?_
-  rw [(_ : {ω | τ ω ≤ i}ᶜ = ⋃ n, {ω | u n ≤ τ ω})]
-  · refine hf.measurableSet ?_
-    simp_rw [f.rightCont_eq, MeasurableSpace.measurableSet_iInf]
-    intros j hj
-    obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hj).exists
-    rw [(_ : ⋃ n, {ω | u n ≤ τ ω} = ⋃ n ≥ N, {ω | u n ≤ τ ω})]
-    · refine MeasurableSet.iUnion <| fun n ↦ MeasurableSet.iUnion <| fun hn ↦
-        f.mono ((hu₁.antitone hn).trans hN) _ <| MeasurableSet.of_compl ?_
-      rw [(by ext; simp : {ω | u n ≤ τ ω}ᶜ = {ω | τ ω < u n})]
-      exact hτ (u n)
-    · ext ω
-      simp only [Set.mem_iUnion, Set.mem_setOf_eq, ge_iff_le, exists_prop]
-      constructor
-      · rintro ⟨i, hle⟩
-        refine ⟨i + N, N.le_add_left i, le_trans ?_ hle⟩
-        norm_cast
-        exact hu₁.antitone <| i.le_add_right N
-      · rintro ⟨i, -, hi⟩
-        exact ⟨i, hi⟩
-  · ext ω
-    simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le, Set.mem_iUnion]
-    constructor
-    · intro h
-      by_cases hτ : τ ω = ⊤
-      · exact ⟨0, hτ ▸ le_top⟩
-      · have hlt : i < (τ ω).untop hτ := by
-          rwa [WithTop.lt_untop_iff]
-        obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hlt).exists
-        refine ⟨N, WithTop.coe_le_iff.2 <| fun n hn ↦ hN.trans ?_⟩
-        simp [hn, WithTop.untop_coe]
-    · rintro ⟨j, hj⟩
-      refine lt_of_lt_of_le ?_ hj
-      norm_cast
-      exact hu₂ _
-
 lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous'
     {τ : Ω → WithTop ι} [hf : f.IsRightContinuous]
     (hτ1 : ∀ i, ¬ IsMax i → MeasurableSet[f i] {ω | τ ω < i})
@@ -325,9 +284,9 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous'
     IsStoppingTime f τ := by
   intro i
   by_cases hmax : IsMax i
-  · rw [hf.eq, f.rightCont_eq_of_isMax hmax]
+  · rw [← hf.eq, f.rightCont_eq_of_isMax hmax]
     exact hτ2 i hmax
-  rw [hf.eq, f.rightCont_eq_of_not_isMax hmax]
+  rw [← hf.eq, f.rightCont_eq_of_not_isMax hmax]
   rw [not_isMax_iff] at hmax
   obtain ⟨j, hj⟩ := hmax
   obtain ⟨u, hu₁, hu₂, hu₃⟩ := exists_seq_strictAnti_tendsto' hj
@@ -365,6 +324,12 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous'
       refine lt_of_lt_of_le ?_ hj
       norm_cast
       exact (hu₂ j).1
+
+lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [NoMaxOrder ι]
+    {τ : Ω → WithTop ι} [f.IsRightContinuous] (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω < i}) :
+    IsStoppingTime f τ :=
+  isStoppingTime_of_measurableSet_lt_of_isRightContinuous' (fun i _ ↦ hτ i)
+    <| fun i hi ↦ False.elim <| (not_isMax i) hi
 
 end IsRightContinuous
 
