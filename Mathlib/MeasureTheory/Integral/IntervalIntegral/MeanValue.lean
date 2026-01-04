@@ -15,12 +15,10 @@ We prove versions of the first mean value theorem for interval integrals.
 
 ## Main results
 
-* `exists_eq_const_mul_intervalIntegral_of_ae_nonneg`:
+* `exists_eq_const_mul_intervalIntegral_of_ae_nonneg` (a.e. nonnegativity of `g` on `s`):
     `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
-* `exists_eq_const_mul_intervalIntegral_of_nonneg'`:
+* `exists_eq_const_mul_intervalIntegral_of_nonneg` (pointwise nonnegativity of `g` on `s`):
     `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`.
-* `exists_eq_const_mul_intervalIntegral_of_nonneg`:
-    `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x) = f c * (∫ x in a..b, g x)`.
 
 ## References
 
@@ -52,32 +50,30 @@ theorem exists_eq_const_mul_intervalIntegral_of_ae_nonneg
     ∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ) := by
   by_cases h : a = b
   · subst h
-    refine ⟨a, by simp, by simp⟩
+    exact ⟨a, by simp, by simp⟩
   wlog hab : a < b generalizing a b
   · simp only [not_lt] at hab
     obtain ⟨c, c_in_uIcc, that⟩ :=
       this (by rwa [uIcc_comm]) hg.symm (by rwa [uIoc_comm]) (by aesop) (lt_of_le_of_ne' hab h)
-    refine ⟨c, by rwa [uIcc_comm], by simpa [integral_symm b a]⟩
+    exact ⟨c, by rwa [uIcc_comm], by simpa [integral_symm b a]⟩
   let s := Ι a b
   have hs : s = Ioc a b := uIoc_of_le hab.le
   have hs' : s ⊆ [[a, b]] := uIoc_subset_uIcc
   have hs_conn : IsConnected s := by simpa [hs] using isConnected_Ioc hab
-  have hs_meas : MeasurableSet s := measurableSet_uIoc
-  have hf' : ContinuousOn f s := hf.mono hs'
-  have hg' : IntegrableOn g s μ := by rwa [← intervalIntegrable_iff]
   have hfg : IntegrableOn (fun x ↦ f x * g x) s μ := by
     rw [← intervalIntegrable_iff]
     exact hg.continuousOn_smul hf
-  obtain ⟨c, hc, h⟩ := exists_eq_const_mul_setIntegral_of_ae_nonneg hs_conn hs_meas hf' hg' hfg hg0
+  obtain ⟨c, hc, h⟩ := exists_eq_const_mul_setIntegral_of_ae_nonneg
+    hs_conn measurableSet_uIoc (hf.mono hs') (by rwa [← intervalIntegrable_iff]) hfg hg0
   have h' : ∫ (x : ℝ) in a..b, f x * g x ∂μ = f c * ∫ (x : ℝ) in a..b, g x ∂μ := by
-    simp_rw [integral_of_le hab.le]; rwa [← hs]
-  refine ⟨c, mem_of_subset_of_mem hs' hc, h'⟩
+    simpa [intervalIntegral.integral_of_le hab.le, hs] using h
+  exact ⟨c, mem_of_subset_of_mem hs' hc, h'⟩
 
 /-- **First mean value theorem for interval integrals (arbitrary measure, nonnegativity).**
 Let `f g : ℝ → ℝ` and let `μ` be a measure on `ℝ`. Assume that `f` is continuous on `uIcc a b`,
 that `g` is interval integrable on `a..b` w.r.t. `μ`, and that `g ≥ 0` on `Ι a b`. Then
 `∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ)`. -/
-theorem exists_eq_const_mul_intervalIntegral_of_nonneg'
+theorem exists_eq_const_mul_intervalIntegral_of_nonneg
     (hf : ContinuousOn f (uIcc a b)) (hg : IntervalIntegrable g μ a b)
     (hg0 : ∀ x ∈ Ι a b, 0 ≤ g x) :
     ∃ c ∈ uIcc a b, (∫ x in a..b, f x * g x ∂μ) = f c * (∫ x in a..b, g x ∂μ) := by
