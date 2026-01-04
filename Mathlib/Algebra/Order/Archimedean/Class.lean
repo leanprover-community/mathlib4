@@ -685,7 +685,7 @@ theorem mk_lt_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
   Subtype.ext (MulArchimedeanClass.mk_inv a)
 
 /-- An induction principle for `FiniteMulArchimedeanClass`. -/
-@[to_additive (attr := elab_as_elim) /--An induction principle for `FiniteArchimedeanClass`. -/]
+@[to_additive (attr := elab_as_elim) /-- An induction principle for `FiniteArchimedeanClass`. -/]
 theorem ind {motive : FiniteMulArchimedeanClass M → Prop}
     (mk : ∀ a, (ha : a ≠ 1) → motive (.mk a ha)) : ∀ x, motive x := by
   simpa [FiniteMulArchimedeanClass, MulArchimedeanClass.forall]

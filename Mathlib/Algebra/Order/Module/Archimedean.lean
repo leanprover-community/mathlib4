@@ -115,7 +115,7 @@ variable (K)
 /-- Given an upper set `s` of finite archimedean classes in a linearly ordered module `M` with
 Archimedean scalars, all elements belonging to these classes together with 0 form a submodule.
 
-This has the same carrier as `FiniteArchimedeanClass.addSubgroup`'s. -/
+This has the same carrier as `FiniteArchimedeanClass.addSubgroup`. -/
 noncomputable
 def submodule (s : UpperSet (FiniteArchimedeanClass M)) : Submodule K M where
   __ := addSubgroup s
