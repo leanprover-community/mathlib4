@@ -145,7 +145,8 @@ attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
 
-This version provides expressions for those points in terms of an arbitrary vector in `s.orthRadius p`. -/
+This version provides expressions for those points in terms of an arbitrary vector in
+`s.orthRadius p`. -/
 lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 2)]
     {s : Sphere P} {p : P} (hp : dist p s.center ≤ s.radius) (hpc : p ≠ s.center) {v : V}
     (hv : v ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ) (hv0 : v ≠ 0) :
@@ -235,10 +236,11 @@ lemma ncard_inter_orthRadius_eq_two_of_dist_lt_radius [hf2 : Fact (Module.finran
     Submodule.norm_coe, neg_smul, Set.ncard_pair]
   rw [ne_eq, vadd_right_cancel_iff, ← add_eq_zero_iff_eq_neg, ← two_smul ℝ,
     smul_eq_zero_iff_right two_ne_zero, smul_eq_zero_iff_left hv0, div_eq_iff, zero_mul]
-  have hvp : 0 < √(s.radius ^ 2 - dist p s.center ^ 2) := by
-    rw [Real.sqrt_pos, sub_pos, sq_lt_sq, abs_of_nonneg dist_nonneg]
-    exact lt_abs.2 (.inl hp)
-  exact hvp.ne'
+  · have hvp : 0 < √(s.radius ^ 2 - dist p s.center ^ 2) := by
+      rw [Real.sqrt_pos, sub_pos, sq_lt_sq, abs_of_nonneg dist_nonneg]
+      exact lt_abs.2 (.inl hp)
+    exact hvp.ne'
+  · simpa using hv0
 
 end Sphere
 
