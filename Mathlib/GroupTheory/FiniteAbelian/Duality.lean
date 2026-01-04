@@ -100,6 +100,7 @@ theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* M�
   rw [monoidHom_card_of_hasEnoughRootsOfUnity, monoidHom_card_of_hasEnoughRootsOfUnity,
     H.card_eq_card_quotient_mul_card_subgroup,
     mul_div_cancel_right₀ _ (Fintype.card_eq_nat_card ▸ Fintype.card_ne_zero),
-    ← monoidHom_card_of_hasEnoughRootsOfUnity (G ⧸ H) M, Nat.card_congr (restrictHomKerEquiv Mˣ H)]
+    ← monoidHom_card_of_hasEnoughRootsOfUnity (G ⧸ H) M,
+    Nat.card_congr (restrictHomKerEquiv Mˣ H).toEquiv]
 
 end CommGroup
