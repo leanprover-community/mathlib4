@@ -77,7 +77,7 @@ variable [Mul M]
 def mulTripleAntidiagonal (s t u : Set M) (a : M) : Set (M × M × M) :=
   {x | x.1 ∈ s ∧ x.2.1 ∈ t ∧ x.2.2 ∈ u ∧ x.1 * x.2.1 * x.2.2 = a}
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem mem_mulTripleAntidiagonal {s t u : Set M} {a : M} {x : M × M × M} :
     x ∈ mulTripleAntidiagonal s t u a ↔ x.1 ∈ s ∧ x.2.1 ∈ t ∧ x.2.2 ∈ u ∧ x.1 * x.2.1 * x.2.2 = a :=
   Iff.rfl
@@ -168,7 +168,7 @@ scoped notation:70 f:70 " ⋆[" L:70 "] " g:71 => convolution L f g
 /-- Notation for additive convolution. -/
 scoped notation:70 f:70 " ⋆₊[" L "] " g:71 => addConvolution L f g
 
-@[to_additive (dont_translate := S E E' F) addConvolution_apply, simp]
+@[to_additive (dont_translate := S E E' F) (attr := simp) addConvolution_apply]
 theorem convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
     (f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2) := rfl
 
@@ -207,11 +207,11 @@ scoped notation:70 f:70 " ⋆₊ₘ " g:71 => addMulConvolution f g
 theorem mulConvolution_apply (f g : M → R) (x : M) :
     (f ⋆ₘ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
 
-@[to_additive (dont_translate := R) zero_addMulConvolution, simp]
+@[to_additive (dont_translate := R) (attr := simp) zero_addMulConvolution]
 theorem zero_mulConvolution (f : M → R) : (0 : M → R) ⋆ₘ f = 0 := by
   ext x; simp only [mulConvolution_apply, Pi.zero_apply, zero_mul, tsum_zero]
 
-@[to_additive (dont_translate := R) addMulConvolution_zero, simp]
+@[to_additive (dont_translate := R) (attr := simp) addMulConvolution_zero]
 theorem mulConvolution_zero (f : M → R) : f ⋆ₘ (0 : M → R) = 0 := by
   ext x; simp only [mulConvolution_apply, Pi.zero_apply, mul_zero, tsum_zero]
 
@@ -228,10 +228,10 @@ variable [Monoid M] [DecidableEq M] [Semiring S] [AddCommMonoid E] [Module S E]
 else `0`. -/]
 def delta (e : E) : M → E := Pi.single 1 e
 
-@[to_additive addDelta_zero, simp]
+@[to_additive (attr := simp) addDelta_zero]
 theorem delta_one (e : E) : delta e 1 = e := rfl
 
-@[to_additive addDelta_ne, simp]
+@[to_additive (attr := simp) addDelta_ne]
 theorem delta_ne (e : E) {x : M} (hx : x ≠ 1) : delta e x = 0 :=
   Pi.single_eq_of_ne (M := fun _ => E) hx e
 
