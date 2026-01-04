@@ -59,7 +59,7 @@ noncomputable def homResolutionIso :
     rintro i j ⟨rfl⟩
     ext (x : leftRegular _ _ ⟶ _)
     by_cases hi : Even i
-    · have : ¬(Even (i + 1)) := (not_iff_comm.1 Nat.even_add_one.symm).2 hi
+    · have : ¬(Even (i + 1)) := Nat.even_add_one.not_left.mpr hi
       simp [hi, this, ← hom_comm_apply x]
     · simp [hi, Nat.even_add_one.2 hi, Representation.norm, ← hom_comm_apply x]
 
@@ -130,6 +130,6 @@ lemma groupCohomologyπOdd_eq_zero_iff (i : ℕ) (hi : Odd i) (x : LinearMap.ker
 lemma groupCohomologyπOdd_eq_iff (i : ℕ) (hi : Odd i) (x y : LinearMap.ker A.norm.hom.hom) :
     groupCohomologyπOdd A g hg i hi x = groupCohomologyπOdd A g hg i hi y ↔
       x.1 - y.1 ∈ LinearMap.range (applyAsHom A g - 𝟙 A).hom.hom := by
-  rw [← sub_eq_zero, ← map_sub, groupCohomologyπOdd_eq_zero_iff]; rfl
+  rw [← sub_eq_zero, ← map_sub, groupCohomologyπOdd_eq_zero_iff, AddSubgroupClass.coe_sub]
 
 end Rep.FiniteCyclicGroup
