@@ -360,16 +360,20 @@ theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
     forall_eq_or_imp] at hN
   choose x hx using hN.1
   choose x' hx' using hN.2
+  set w'' := Finsupp.indicator w'.support
+    (fun i hi ↦ x' (w' i) (by simpa [Finsupp.mem_frange] using hi)) with w''_def
+  have hw'' : ∀ i, algebraMap R F (w'' i) = N • w' i := by
+    simp only [w'', Finsupp.indicator_apply, Finsupp.mem_support_iff, ne_eq]
+    intro i
+    split_ifs with h0 <;> simp [h0, hx']
   have x0 : x ≠ 0 := by
     rintro ⟨rfl⟩
     simp [eq_comm, N0, w0] at hx
-  use x, x0, .indicator w'.support (fun i hi ↦ x' (w' i) (by simpa [Finsupp.mem_frange] using hi)),
-    by simp [hw']
+  use x, x0, w'', by simp [w'', hw']
   rw [Finsupp.sum] at h
-  rw [Finsupp.sum_indicator_index_eq_sum_attach _ (by simp)]
-  simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R F S, hx, hx', Algebra.smul_def,
-    map_mul, mul_assoc, ← mul_sum, ← mul_add, ← Algebra.smul_def,
-    sum_attach _ fun x ↦ w' x • f x, h, smul_zero]
+  rw [Finsupp.sum_of_support_subset _ (Finsupp.support_indicator_subset _ _) _ (by simp), ← w''_def]
+  simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R F S, hx, hw'', Algebra.smul_def,
+    map_mul, mul_assoc, ← mul_sum, ← mul_add, ← Algebra.smul_def, h, smul_zero]
 
 open Classical in
 theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}

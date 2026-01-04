@@ -60,9 +60,9 @@ theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
   exact DFunLike.congr_fun h i
 
-theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := by
+theorem support_indicator_subset : (indicator s f).support ⊆ s := by
   intro i hi
-  rw [mem_coe, mem_support_iff] at hi
+  rw [mem_support_iff] at hi
   by_contra h
   exact hi (indicator_of_notMem h _)
 
