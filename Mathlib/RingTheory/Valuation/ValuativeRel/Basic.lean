@@ -115,7 +115,7 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] {x y z : R}
 
-/-- The valuation less-than relation, defined as `x < y ↔ ¬ y ≤ᵥ x`. -/
+/-- The valuation less-than relation, defined as `x <ᵥ y ↔ ¬ y ≤ᵥ x`. -/
 def vlt (x y : R) : Prop := ¬ y ≤ᵥ x
 
 @[deprecated (since := "2025-12-20")] alias SRel := vlt
@@ -124,32 +124,63 @@ def vlt (x y : R) : Prop := ¬ y ≤ᵥ x
 
 macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.vlt $a $b)
 
+/-- The valuation equals relation, defined as `x =ᵥ y ↔ x ≤ᵥ y ∧ y ≤ᵥ x`. -/
+def veq : R → R → Prop := AntisymmRel (· ≤ᵥ ·)
+
+@[inherit_doc] infix:50 " =ᵥ " => ValuativeRel.veq
+
+macro_rules | `($a =ᵥ $b) => `(binrel% ValuativeRel.veq $a $b)
+
 @[simp, grind =] lemma not_vle {x y : R} : ¬ x ≤ᵥ y ↔ y <ᵥ x := .rfl
 @[simp, grind =] lemma not_vlt {x y : R} : ¬ x <ᵥ y ↔ y ≤ᵥ x := not_vle.not_left
+lemma veq_def {x y : R} : x =ᵥ y ↔ x ≤ᵥ y ∧ y ≤ᵥ x := .rfl
 
 @[deprecated not_vle (since := "2025-12-20")]
 lemma srel_iff {x y : R} : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
 
 @[deprecated (since := "2025-12-20")] alias not_srel_iff := not_vlt
 
-@[simp]
-lemma vle_refl (x : R) : x ≤ᵥ x := by
-  cases vle_total x x <;> assumption
+protected alias ⟨_, vle.not_vlt⟩ := not_vlt
+protected alias ⟨_, vlt.not_vle⟩ := not_vle
+
+lemma veq_comm {x y : R} : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
+protected alias ⟨veq.symm, _⟩ := veq_comm
+
+lemma vle_of_veq {x y : R} (h : x =ᵥ y) : x ≤ᵥ y := h.1
+lemma vle_of_veq' {x y : R} (h : x =ᵥ y) : y ≤ᵥ x := h.2
+
+protected alias veq.vle := vle_of_veq
+protected alias veq.vle' := vle_of_veq'
+
+lemma not_vlt_of_veq {x y : R} (h : x =ᵥ y) : ¬ x <ᵥ y := h.vle'.not_vlt
+lemma not_vlt_of_veq' {x y : R} (h : x =ᵥ y) : ¬ y <ᵥ x := h.vle.not_vlt
+
+protected alias veq.not_vlt := not_vlt_of_veq
+protected alias veq.not_vlt' := not_vlt_of_veq'
+
+@[simp, refl] lemma vle_refl (x : R) : x ≤ᵥ x := or_self_iff.1 <| vle_total x x
+lemma vle_rfl {x : R} : x ≤ᵥ x := vle_refl x
 
 @[deprecated (since := "2025-12-20")] alias rel_refl := vle_refl
-
-lemma vle_rfl {x : R} : x ≤ᵥ x :=
-  vle_refl x
-
 @[deprecated (since := "2025-12-20")] alias rel_rfl := vle_rfl
 
 protected alias vle.refl := vle_refl
-
-@[deprecated (since := "2025-12-20")] protected alias Rel.refl := vle.refl
-
 protected alias vle.rfl := vle_rfl
 
+instance : IsRefl R (· ≤ᵥ ·) where
+  refl _ := vle_rfl
+
+@[deprecated (since := "2025-12-20")] protected alias Rel.refl := vle.refl
 @[deprecated (since := "2025-12-20")] protected alias Rel.rfl := vle.rfl
+
+@[simp, refl] lemma veq_refl (x : R) : x =ᵥ x := AntisymmRel.rfl
+lemma veq_rfl {x : R} : x =ᵥ x := veq_refl x
+
+protected alias veq.refl := veq_refl
+protected alias veq.rfl := veq_rfl
+
+instance : IsRefl R (· =ᵥ ·) where
+  refl _ := veq_rfl
 
 @[simp]
 theorem zero_vle (x : R) : 0 ≤ᵥ x := by
@@ -170,8 +201,8 @@ lemma vle_mul_left {x y : R} (z) : x ≤ᵥ y → z * x ≤ᵥ z * y := by
 
 @[deprecated (since := "2025-12-20")] alias rel_mul_left := vle_mul_left
 
-instance : Trans (vle (R := R)) (vle (R := R)) (vle (R := R)) where
-  trans h1 h2 := vle_trans h1 h2
+instance : @Trans R R R vle vle vle where
+  trans := vle_trans
 
 protected alias vle.trans := vle_trans
 
@@ -186,10 +217,15 @@ protected alias vle.trans' := vle_trans'
 
 @[deprecated (since := "2025-12-20")] protected alias Rel.trans' := vle.trans'
 
+lemma veq_trans {x y z : R} (h1 : x =ᵥ y) (h2 : y =ᵥ z) : x =ᵥ z :=
+  AntisymmRel.trans h1 h2
+
+instance : @Trans R R R veq veq veq where
+  trans := veq_trans
+
 @[gcongr]
-lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
-  calc x * x' ≤ᵥ x * y' := vle_mul_left _ h2
-    _ ≤ᵥ y * y' := vle_mul_right _ h1
+lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' :=
+  (vle_mul_left _ h2).trans (vle_mul_right _ h1)
 
 @[deprecated (since := "2025-12-20")] alias mul_rel_mul := mul_vle_mul
 
@@ -214,6 +250,10 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 @[deprecated (since := "2025-12-20")] alias mul_srel_mul_iff_right := mul_vlt_mul_iff_right
 
 @[deprecated (since := "2025-11-04")] alias rel_mul := mul_vle_mul
+
+@[gcongr]
+lemma mul_veq_mul {x x' y y' : R} (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
+  ⟨mul_vle_mul h1.vle h2.vle, mul_vle_mul h1.vle' h2.vle'⟩
 
 theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (vle_total y x).imp (fun h => vle_add .rfl h) (fun h => vle_add h .rfl)
@@ -665,6 +705,9 @@ lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
 @[deprecated (since := "2025-10-09")]
 alias Compatible.srel_iff_lt := vlt_iff_lt
 
+lemma veq_iff_eq : x =ᵥ y ↔ v x = v y := by
+  simp_rw [veq_def, vle_iff_le v, antisymm_iff]
+
 lemma vle_one_iff : x ≤ᵥ 1 ↔ v x ≤ 1 := by simp [v.vle_iff_le]
 lemma vlt_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.vlt_iff_lt]
 lemma one_vle_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.vle_iff_le]
@@ -812,6 +855,7 @@ lemma mul_vlt_mul_of_vle_of_vlt (hab : a ≤ᵥ b) (hcd : c <ᵥ d) (ha : 0 <ᵥ
 
 @[deprecated (since := "2025-12-20")] alias mul_srel_mul_of_rel_of_srel := mul_vlt_mul_of_vle_of_vlt
 
+@[gcongr]
 lemma mul_vlt_mul (hab : a <ᵥ b) (hcd : c <ᵥ d) : a * c <ᵥ b * d :=
   (vle_mul_left _ hcd.vle).trans_vlt (vlt_mul_right ((zero_vle c).trans_vlt hcd) hab)
 
