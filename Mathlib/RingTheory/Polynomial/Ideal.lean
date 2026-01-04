@@ -52,10 +52,15 @@ lemma ker_constantCoeff : RingHom.ker constantCoeff = .span {(X : R[X])} := by
   simp only [RingHom.mem_ker, constantCoeff_apply, ← Polynomial.X_dvd_iff] at hp
   rwa [Ideal.mem_span_singleton]
 
-open Algebra in
-lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
-    y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
+end Polynomial
+
+namespace Algebra
+
+variable {R S : Type*}
+
+lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (I : Ideal R)
+    {y : adjoin R {x}} :
+    y ∈ I.map (algebraMap R (adjoin R {x})) ↔
       ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
   constructor
   · intro H
@@ -70,9 +75,7 @@ lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiri
       exact ⟨a + b, fun i ↦ by simpa using add_mem (ha i) (hb i), by simp [ha', hb']⟩
     | smul a b hb hb' =>
       obtain ⟨b', hb, hb'⟩ := hb'
-      obtain ⟨a, ha⟩ := a
-      rw [Algebra.adjoin_singleton_eq_range_aeval] at ha
-      obtain ⟨p, hp : aeval x p = a⟩ := ha
+      have ⟨p, hp⟩ := adjoin_eq_exists_aeval R x a
       refine ⟨p * b', fun i ↦ ?_, by simp [hp, hb']⟩
       rw [coeff_mul]
       exact sum_mem fun i hi ↦ Ideal.mul_mem_left _ _ (hb _)
@@ -86,4 +89,21 @@ lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiri
     simp_rw [this, Algebra.smul_def]
     exact sum_mem fun i _ ↦ Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (hp i))
 
-end Polynomial
+lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [CommRing R] [CommRing S]
+    [Algebra R S] (x : S) (I : Ideal R) (hI : I ≠ ⊤) [Invertible x]
+    (h : I.map (algebraMap R (adjoin R {x})) ⊔ .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
+    ∃ p : R[X], p.leadingCoeff - 1 ∈ I ∧ p.aeval ⅟x = 0 := by
+  rw [← Ideal.one_eq_top, ← Ideal.add_eq_sup, Ideal.add_eq_one_iff] at h
+  have ⟨y, hy, z, hz, eq⟩ := h
+  have ⟨p, hp⟩ := (mem_ideal_map_adjoin ..).mp hy
+  have ⟨w, hw⟩ := Ideal.mem_span_singleton.mp hz
+  have ⟨q, hq⟩ := adjoin_eq_exists_aeval R x w
+  use (1 - p - X * q).reverse
+  have : (1 - p - X * q).coeff 0 - 1 ∈ I := by simpa using hp.1 0
+  apply_fun (·.1) at eq hw
+  dsimp at eq
+  rw [reverse_leadingCoeff, trailingCoeff_eq_coeff_zero]
+  · exact ⟨this, (eval₂_reverse_eq_zero_iff ..).mpr <| by simp [← aeval_def, hp.2, hq, ← eq, hw]⟩
+  · exact fun h ↦ hI <| by simpa [h, Ideal.eq_top_iff_one]
+
+end Algebra

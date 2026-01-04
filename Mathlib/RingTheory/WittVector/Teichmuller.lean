@@ -125,4 +125,9 @@ theorem ghostComponent_teichmuller (r : R) (n : ℕ) :
     ghostComponent n (teichmuller p r) = r ^ p ^ n :=
   ghostComponent_teichmullerFun _ _ _
 
+/-- The Teichmüller lift is set-theoretically right inverse to the constant coefficient map,
+showing that the latter is surjective. -/
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff : 𝕎 R → R) :=
+  fun r ↦ ⟨teichmuller p r, rfl⟩
+
 end WittVector

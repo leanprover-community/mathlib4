@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.AtTopBot.Finset
 /-!
 # Infinite sum and products that converge uniformly
 
-# Main definitions
+## Main definitions
 - `HasProdUniformlyOn f g s` : `∏ i, f i b` converges uniformly on `s` to `g`.
 - `HasProdLocallyUniformlyOn f g s` : `∏ i, f i b` converges locally uniformly on `s` to `g`.
 - `HasProdUniformly f g` : `∏ i, f i b` converges uniformly to `g`.
@@ -137,7 +137,7 @@ end UniformlyOn
 
 section LocallyUniformlyOn
 /-!
-## Locally uniform convergence of sums and products
+## Locally uniform convergence of sums and products
 -/
 
 variable [TopologicalSpace β]
@@ -186,12 +186,6 @@ lemma HasProdLocallyUniformlyOn.exists_hasProdUniformlyOn [LocallyCompactSpace �
   exact ⟨K, nhdsWithin_le_nhds hK1,
     HasProdLocallyUniformlyOn.hasProdUniformlyOn_of_isCompact (h.mono hK3) hK2⟩
 
-@[deprecated (since := "2025-05-22")] alias hasProdLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
-
-@[deprecated (since := "2025-05-22")] alias hasSumLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  hasSumLocallyUniformlyOn_of_of_forall_exists_nhds
-
 @[to_additive]
 lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g s) :
     HasProdLocallyUniformlyOn f g s := by
@@ -230,14 +224,6 @@ lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
     MultipliableLocallyUniformlyOn f s :=
   (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
   | ⟨t, ht, htr⟩ => ⟨t, ht, htr.hasProdUniformlyOn⟩).multipliableLocallyUniformlyOn
-
-@[deprecated (since := "2025-05-22")]
-alias multipliableLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
-
-@[deprecated (since := "2025-05-22")]
-alias summableLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  summableLocallyUniformlyOn_of_of_forall_exists_nhds
 
 lemma MultipliableLocallyUniformlyOn.multipliableUniformlyOn_of_isCompact
     (h : MultipliableLocallyUniformlyOn f s) (hs : IsCompact s) : MultipliableUniformlyOn f s :=
@@ -387,7 +373,7 @@ end Uniformly
 
 section LocallyUniformly
 /-!
-## Locally uniform convergence of sums and products
+## Locally uniform convergence of sums and products
 -/
 
 variable [TopologicalSpace β]

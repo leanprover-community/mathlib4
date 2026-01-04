@@ -85,7 +85,7 @@ def OrderMonoidIso.toMultiplicative_toAdditive {G : Type*} [CommMonoid G] [Parti
     Multiplicative (Additive G) ≃*o G :=
   OrderAddMonoidIso.toMultiplicativeLeft <| OrderMonoidIso.toAdditive (.refl _)
 
-/-- The additive version of an multiplicativized ordered additive monoid is
+/-- The additive version of a multiplicativized ordered additive monoid is
 order-add-equivalent to itself. -/
 def OrderAddMonoidIso.toAdditive_toMultiplicative {G : Type*} [AddCommMonoid G] [PartialOrder G] :
     Additive (Multiplicative G) ≃+o G :=

@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Pushouts
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
@@ -53,5 +54,27 @@ instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'} (monomorphism
     obtain ⟨k, α, hk⟩ := (Types.FilteredColimit.isColimit_eq_iff' hc₂ _ _).1 h
     simp only [← FunctorToTypes.naturality] at hk
     rw [← c₁.w α, types_comp_apply, types_comp_apply, hf _ hk]⟩
+
+instance (T : Type u') : MorphismProperty.IsStableUnderCoproductsOfShape
+    (monomorphisms (Type u)) T :=
+  IsStableUnderCoproductsOfShape.mk _ _ (by
+    intro X₁ X₂ _ _ f h
+    simp only [monomorphisms.iff, mono_iff_injective] at h ⊢
+    intro x₁ x₂ hx
+    obtain ⟨i₁, x₁, rfl⟩ := Cofan.inj_jointly_surjective_of_isColimit
+      (coproductIsCoproduct X₁) x₁
+    obtain ⟨i₂, x₂, rfl⟩ := Cofan.inj_jointly_surjective_of_isColimit
+      (coproductIsCoproduct X₁) x₂
+    simp only [cofan_mk_inj] at hx ⊢
+    replace hx : Sigma.ι X₂ i₁ (f i₁ x₁) = Sigma.ι X₂ i₂ (f i₂ x₂) := by
+      have h₁ := congr_fun (Sigma.ι_map f i₁) x₁
+      have h₂ := congr_fun (Sigma.ι_map f i₂) x₂
+      dsimp at h₁ h₂
+      rw [← h₁, ← h₂, hx]
+    obtain rfl := Cofan.eq_of_inj_apply_eq_of_isColimit (coproductIsCoproduct X₂) _ _ hx
+    obtain rfl := h _ (Cofan.inj_injective_of_isColimit (coproductIsCoproduct X₂) i₁ hx)
+    rfl)
+
+instance : MorphismProperty.IsStableUnderCoproducts (monomorphisms (Type u)) where
 
 end CategoryTheory.Types

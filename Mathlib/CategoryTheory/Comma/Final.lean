@@ -49,7 +49,7 @@ variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
 private lemma final_fst_small [R.Final] : (fst L R).Final := by
-  rw  [Functor.final_iff_isIso_colimit_pre]
+  rw [Functor.final_iff_isIso_colimit_pre]
   intro G
   let i : colimit G ≅ colimit (fst L R ⋙ G) :=
     colimitIsoColimitGrothendieck L G ≪≫
