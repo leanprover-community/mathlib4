@@ -377,7 +377,7 @@ lemma uIoo_subset_Ioo (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂
 @[simp] lemma nonempty_uIoo [DenselyOrdered α] : (uIoo a b).Nonempty ↔ a ≠ b := by
   simp [uIoo, eq_comm]
 
-@[simp] lemma nonempty_uIoc [DenselyOrdered α] : (uIoc a b).Nonempty ↔ a ≠ b := by
+@[simp] lemma nonempty_uIoc : (uIoc a b).Nonempty ↔ a ≠ b := by
   simp [uIoc, eq_comm]
 
 lemma uIoo_eq_union : uIoo a b = Ioo a b ∪ Ioo b a := by
