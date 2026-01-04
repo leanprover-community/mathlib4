@@ -129,8 +129,7 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
     · simp [*]
     by_cases H4 : ortho y z = 0
     · simp [*]
-    exact neg_one_le_real_inner_of_norm_eq_one
-      (norm_normalize_eq_one_iff _ |>.mpr H3) (norm_normalize_eq_one_iff _ |>.mpr H4)
+    exact neg_one_le_real_inner_of_norm_eq_one (norm_normalize ℝ H3) (norm_normalize ℝ H4)
   have := sin_angle_nonneg x y; have := sin_angle_nonneg y z
   grw [← H2]
   apply le_of_eq
@@ -178,8 +177,8 @@ lemma angle_expression_of_angle_eq_angle_sum :
     grind [ortho_ne_zero_of_not_collinear, angle_comm]
   have H10 : ortho y z ≠ 0 := by
     grind [ortho_ne_zero_of_not_collinear]
-  have H11 : ‖normalize ℝ (ortho y x)‖ = 1 := norm_normalize_eq_one_iff _ |>.mpr H9
-  have H12 : ‖normalize ℝ (ortho y z)‖ = 1 := norm_normalize_eq_one_iff _ |>.mpr H10
+  have H11 : ‖normalize ℝ (ortho y x)‖ = 1 := norm_normalize _ H9
+  have H12 : ‖normalize ℝ (ortho y z)‖ = 1 := norm_normalize _ H10
   rw [inner_eq_neg_one_iff_of_norm_eq_one H11 H12] at H8
   nth_rw 2 [angle_le_angle_add_angle_aux hx hy]
   nth_rw 3 [angle_le_angle_add_angle_aux hz hy]
@@ -197,8 +196,8 @@ public theorem angle_le_angle_add_angle (x y z : V) :
   · simpa [hy] using angle_le_pi x z
   by_cases hz : z = 0
   · simpa [hz] using angle_nonneg x y
-  simpa using angle_le_angle_add_angle_of_norm_eq_one (norm_normalize_eq_one_iff ℝ |>.mpr hx)
-    (norm_normalize_eq_one_iff ℝ |>.mpr hy) (norm_normalize_eq_one_iff ℝ |>.mpr hz)
+  simpa using angle_le_angle_add_angle_of_norm_eq_one (norm_normalize ℝ hx)
+    (norm_normalize ℝ hy) (norm_normalize ℝ hz)
 
 /-- The triangle inequality is an equality if the middle vector is a nonnegative linear combination
 of the other two vectors. See `angle_add_angle_eq_pi_of_angle_eq_pi` for the other equality case. -/
@@ -264,8 +263,8 @@ public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
       grind [sin_angle_nonneg, norm_nonneg, div_nonneg_iff, mul_nonneg_iff]
     have hnonzero : (⟨Real.sin (angle x z) / ‖y‖, hnneg₃⟩ : ℝ≥0) ≠ 0 := by
       simp; grind
-    have h₁ := angle_expression_of_angle_eq_angle_sum (norm_normalize_eq_one_iff ℝ |>.mpr hx)
-        (norm_normalize_eq_one_iff ℝ |>.mpr hy) (norm_normalize_eq_one_iff ℝ |>.mpr hz)
+    have h₁ := angle_expression_of_angle_eq_angle_sum (norm_normalize ℝ hx)
+        (norm_normalize ℝ hy) (norm_normalize ℝ hz)
     simp only [angle_normalize_right, angle_normalize_left] at h₁
     have h₂ := h₁ hxz₁ h
     have h₃ : (⟨_, hnneg₃⟩ : ℝ≥0) • y = (⟨_, hnneg₁⟩ : ℝ≥0) • x + (⟨_, hnneg₂⟩ : ℝ≥0) • z := by

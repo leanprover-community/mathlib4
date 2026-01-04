@@ -20,11 +20,11 @@ Function that returns unit length vector that points in the same direction
 
 variable (𝕜 : Type*) {V : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
+namespace NormedSpace
+
 /-- For a nonzero vector `x`, `normalize x` is the unit-length vector that points
 in the same direction as `x`. If `x = 0`, then `normalize x = 0`. -/
-noncomputable def NormedSpace.normalize (x : V) : V := (‖x‖⁻¹ : 𝕜) • x
-
-namespace NormedSpace
+def normalize (x : V) : V := (‖x‖⁻¹ : 𝕜) • x
 
 @[simp] theorem normalize_zero_eq_zero : normalize 𝕜 (0 : V) = 0 := by
   simp [normalize]
@@ -50,7 +50,7 @@ variable {𝕜} in
   · simp [normalize_eq_self_of_norm_eq_one, hx]
 
 variable {𝕜} in
-@[simp] theorem normalize_neg (x : V) : normalize 𝕜 (-x) = - normalize 𝕜 x := by
+@[simp] theorem normalize_neg (x : V) : normalize 𝕜 (-x) = -normalize 𝕜 x := by
   simp [normalize]
 
 open scoped ComplexOrder in
@@ -62,7 +62,7 @@ theorem normalize_smul_of_pos {r : 𝕜} (hr : 0 < r) (x : V) :
 open scoped ComplexOrder in
 variable {𝕜} in
 theorem normalize_smul_of_neg {r : 𝕜} (hr : r < 0) (x : V) :
-    normalize 𝕜 (r • x) = - normalize 𝕜 x := by
+    normalize 𝕜 (r • x) = -normalize 𝕜 x := by
   simpa using normalize_smul_of_pos (show 0 < -r by grind) (-x)
 
 theorem normalize_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] (r : ℝ) (x : V) :
