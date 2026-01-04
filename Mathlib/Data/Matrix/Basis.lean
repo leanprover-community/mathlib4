@@ -135,20 +135,25 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
   · simp
   simp [h, h.symm]
 
-lemma diagonal_eq_sum_single {R : Type*} [AddCommMonoid R] {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (f : ι → R) : ∑ i : ι, single i i (f i) = Matrix.diagonal f := ext fun j k ↦ by
+lemma diagonal_eq_sum_single [AddCommMonoid α] [Fintype m] (f : m → α) :
+    ∑ i : m, single i i (f i) = Matrix.diagonal f := by
+  ext j k
   rw [sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
 
-lemma one_eq_sum_single {R : Type*} [AddCommMonoid R] [One R] {ι : Type*} [Fintype ι]
-    [DecidableEq ι] : ∑ i : ι, single i i 1 = (1 : Matrix ι ι R) :=
+lemma one_eq_sum_single [AddCommMonoid α] [One α] [Fintype m] :
+    ∑ i : m, single i i (1 : α) = 1 :=
   diagonal_eq_sum_single _
 
-lemma natCast_eq_sum_single (n : ℕ) {R : Type*} [AddCommMonoidWithOne R] {ι : Type*} [Fintype ι]
-    [DecidableEq ι] : ∑ i : ι, (single i i n : Matrix ι ι R) = n :=
+lemma natCast_eq_sum_single [AddCommMonoidWithOne α] [Fintype m] (n : ℕ) :
+    ∑ i : m, single i i (n : α) = n :=
   diagonal_eq_sum_single _
 
-lemma intCast_eq_sum_single (n : ℤ) {R : Type*} [AddCommGroupWithOne R] {ι : Type*}
-    [Fintype ι] [DecidableEq ι] : ∑ i : ι, (single i i n : Matrix ι ι R) = n :=
+lemma ofNat_eq_sum_single [AddCommMonoidWithOne α] [Fintype m] (n : ℕ) [n.AtLeastTwo] :
+    ∑ i : m, single i i (ofNat(n) : α) = ofNat(n) :=
+  diagonal_eq_sum_single _
+
+lemma intCast_eq_sum_single [AddCommGroupWithOne α] [Fintype m] (z : ℤ) :
+    ∑ i : m, single i i (z : α) = z :=
   diagonal_eq_sum_single _
 
 theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
