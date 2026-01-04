@@ -84,7 +84,8 @@ instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).A
   --    classical
   --    refine ⟨Embedding.injective _, ?_⟩
 
-instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) := sorry
+open Finset Set in
+instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Set V) := inferInstanceAs Set.fintype
 
 /--
 The complete digraph on a type `V` (denoted by `⊤`)
@@ -170,10 +171,10 @@ instance hasCompl : HasCompl (Digraph V) where
   : Gᶜ.Adj v w ↔ ¬G.Adj v w := by
   constructor
   · intro compl_adj
-    simp[hasCompl] at compl_adj
+    simp only [hasCompl] at compl_adj
     tauto
   · intro adj
-    simp [hasCompl]
+    simp only [hasCompl]
     tauto
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
@@ -358,15 +359,65 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
       verts := H.verts
       -- The complement is defined w.r.t H.verts and G.Adj
       Adj v w := G.Adj v w ∧ ¬ H.Adj v w ∧ v ∈ H.verts ∧ w ∈ H.verts
-      edge_verts := by
-        intro v w ⟨hGAdj, hHAdj⟩
-        tauto
     }
     case property =>
       simp at Hprop
       simp_all [LE.le]
 
+  sSup ℋ := by
+    constructor
+    case val =>
+      exact sSup {H | ∃p , ⟨H,p⟩ ∈ ℋ}
+    case property =>
+      simp_all [sSup]
+      constructor
+      · simp only [LE.le]
+        rw [Set.subset_def]
+        intro _ ⟨H, ⟨⟨⟨h, _⟩,_⟩, h'⟩⟩
+        solve_by_elim
+      · intro v w
+        simp only [LE.le]
+        intro ⟨H, ⟨⟨⟨_, h⟩, _⟩, _⟩⟩
+        solve_by_elim
 
+  le_sSup := by
+    intro ℋ ⟨H, ⟨H_vert_prop, H_Adj_prop⟩⟩ hH
+    simp_all only [LE.le, sSup, Set.mem_Iic, Set.subset_def, Set.mem_setOf_eq]
+    constructor
+    · intro v vHverts
+      use H
+      tauto
+    · intro v w Hadj
+      use H
+      tauto
+
+  sSup_le := by
+    intro ℋ ⟨H, H_prop⟩ h
+    simp_all only [LE.le, Subtype.forall, Set.mem_Iic, forall_and_index, sSup, Set.mem_setOf_eq,
+      forall_exists_index, Set.subset_def]
+    constructor
+    · intro v H' H'_prop hadj _
+      simp at H_prop
+
+      done
+    · done
+
+
+  sInf ℋ := by
+    constructor
+    case val =>
+      exact sInf {H | ∃p , ⟨H,p⟩ ∈ ℋ}
+    case property =>
+      simp_all only [sInf, Set.mem_Iic, Set.mem_setOf_eq]
+      constructor
+      · simp [LE.le]
+        rw [Set.subset_def]
+        intro v hv
+        simp at hv
+        done
+      · intro v w hadj
+        simp at hadj
+        done
 
 
 
