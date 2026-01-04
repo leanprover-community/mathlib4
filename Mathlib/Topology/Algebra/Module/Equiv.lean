@@ -1398,9 +1398,9 @@ theorem symm_smul_apply (e : V ≃L[R] W) (α : Sˣ) (x : W) :
 @[simp] theorem toLinearEquiv_smul (e : V ≃L[R] W) (α : Sˣ) :
     (α • e).toLinearEquiv = α • e.toLinearEquiv := rfl
 
-theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G]
-    (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
-    (α • e).trans f = α • (e.trans f) := by ext; simp [LinearMapClass.map_smul_of_tower f]
+theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V)
+    (f : V ≃L[R] W) : (α • e).trans f = α • (e.trans f) := by
+  ext; simp [LinearMapClass.map_smul_of_tower f]
 
 theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
     e.trans (α • f) = α • (e.trans f) := by ext; simp
