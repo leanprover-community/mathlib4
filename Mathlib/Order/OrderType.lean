@@ -363,11 +363,11 @@ lemma type_add (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
 
 instance : Mul OrderType where
   mul := Quotient.map₂ (fun r s ↦ ⟨(s ×ₗ r), inferInstance, inferInstance⟩)
-   (fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodCongr (Classical.choice hb) (Classical.choice ha)⟩)
+   fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodCongr (Classical.choice hb) (Classical.choice ha)⟩
 
 instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hMul := Quotient.map₂ (fun r s ↦ ⟨(s ×ₗ r), inferInstance, inferInstance⟩)
-   (fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodCongr (Classical.choice hb) (Classical.choice ha)⟩)
+   fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodCongr (Classical.choice hb) (Classical.choice ha)⟩
 
 @[simp]
 lemma type_mul (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
@@ -391,7 +391,7 @@ instance : Monoid OrderType where
 instance : LeftDistribClass OrderType where
   left_distrib a b c := by
     refine inductionOn₃ a b c (fun _ _ _ _ _ _ ↦ ?_)
-    simp only [ ← type_mul, ← type_add ]
+    simp only [←type_mul,←type_add]
     exact RelIso.ordertype_eq (Prod.Lex.sumProdDistrib _ _ _)
 
 end OrderType
