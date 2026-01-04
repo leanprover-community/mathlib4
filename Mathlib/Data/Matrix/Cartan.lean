@@ -289,6 +289,23 @@ theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ :=
 theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ :=
   fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₈] at h ⊢
 
+
+/-! ### Non-simply-laced theorems
+
+The Cartan matrices F₄ and G₂ are not simply laced because they contain
+off-diagonal entries that are neither 0 nor -1. -/
+
+theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by
+  intro hs
+  have h12 : (1 : Fin 4) ≠ 2 := by decide
+  have := hs h12
+  rcases this with h | h <;> simp_all [F₄]
+
+theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by
+  intro hs
+  have h01 : (0 : Fin 2) ≠ 1 := by decide
+  have := hs h01
+  rcases this with h | h <;> simp_all [G₂]
 end Properties
 
 end CartanMatrix
