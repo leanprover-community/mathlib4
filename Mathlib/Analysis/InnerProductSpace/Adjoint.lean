@@ -764,11 +764,17 @@ theorem symm_smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : W) :
 @[simp] theorem toContinuousLinearEquiv_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
     (α • e).toContinuousLinearEquiv = Unitary.toUnits α • e.toContinuousLinearEquiv := rfl
 
+theorem smul_trans (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp
+
+theorem trans_smul (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
 end smul
 
 open ContinuousLinearEquiv ContinuousLinearMap in
 theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
-    f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ (α : unitary 𝕜), f = α • g := by
+    f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : unitary 𝕜, f = α • g := by
   conv_lhs => rw [eq_comm]
   simp_rw [StarAlgEquiv.ext_iff, LinearIsometryEquiv.ext_iff, conjStarAlgEquiv_apply,
     ← eq_toContinuousLinearMap_symm_comp, ← comp_assoc, toContinuousLinearEquiv_symm,
@@ -779,26 +785,18 @@ theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
   refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : 𝕜), by ext; simp [h]⟩⟩
   by_cases! hy : y = 0
   · exact ⟨1, fun x ↦ by simp [by simpa [hy] using congr($h x).symm]⟩
-  have hfg : (f : H →L[𝕜] K) = y • (g : H →L[𝕜] K) := by
+  have hfg : (f : H →L[𝕜] K) = y • g := by ext; simpa using congr(g ($h _)).symm
+  have hgf : (g : H →L[𝕜] K) = star y • f := by
     ext x
-    have := by simpa only [coe_smul', Pi.smul_apply, one_apply, comp_coe,
-      ContinuousLinearEquiv.coe_coe, ContinuousLinearEquiv.trans_apply, eq_symm_apply] using
-        congr($h x)
-    simp [by simpa using this]
-  have hgf : (g : H →L[𝕜] K) = star y • (f : H →L[𝕜] K) := by
-    ext x
-    have := by simpa only [ContinuousLinearMap.one_def, map_smulₛₗ, coe_id,
-      LinearMap.IsSymmetric.id, LinearMap.IsSymmetric.clm_adjoint_eq,
-      ← toContinuousLinearEquiv_symm, ← adjoint_eq_symm,
-      adjoint_comp, adjoint_adjoint] using congr(adjoint $h)
-    simp [by simpa using congr(f ($this x))]
-  have : (g : H →L[𝕜] K) = (starRingEnd 𝕜 y * y) • (g : H →L[𝕜] K) := by
+    have := by simpa [map_smulₛₗ, ← ContinuousLinearEquiv.comp_coe, ← toContinuousLinearEquiv_symm,
+      ← adjoint_eq_symm, ContinuousLinearMap.one_def] using congr(f (adjoint $h x)).symm
+    simpa
+  have : (g : H →L[𝕜] K) = (starRingEnd 𝕜 y * y) • g := by
     simp [← smul_smul, ← hfg, ← star_def, ← hgf]
   nth_rw 1 [← one_smul 𝕜 (g : H →L[𝕜] K)] at this
   rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero, eq_comm] at this
   obtain (this | this) := this
-  · exact ⟨⟨y, ((Units.mk0 y hy).isUnit).mem_unitary_iff_star_mul_self.mpr this⟩,
-      fun x ↦ congr($hfg x)⟩
+  · exact ⟨⟨y, by simp [Unitary.mem_iff, this, mul_comm y]⟩, fun x ↦ congr($hfg x)⟩
   · exact ⟨1, fun x ↦ by simp [by simpa using congr($this x)]⟩
 
 end LinearIsometryEquiv

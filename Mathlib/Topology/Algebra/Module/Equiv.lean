@@ -1374,9 +1374,10 @@ def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
 end MulOpposite
 
 namespace ContinuousLinearEquiv
-variable {S R V W : Type*} [Semiring R] [Semiring S]
+variable {S R V W G : Type*} [Semiring R] [Semiring S]
   [AddCommMonoid V] [Module R V] [TopologicalSpace V] [Module S V] [ContinuousConstSMul S V]
   [AddCommMonoid W] [Module R W] [TopologicalSpace W] [Module S W] [ContinuousConstSMul S W]
+  [AddCommMonoid G] [Module R G] [TopologicalSpace G] [Module S G] [ContinuousConstSMul S G]
   [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
 
 /-- Left scalar multiplication of a unit and a continuous linear equivalence,
@@ -1396,6 +1397,14 @@ theorem symm_smul_apply (e : V ≃L[R] W) (α : Sˣ) (x : W) :
 
 @[simp] theorem toLinearEquiv_smul (e : V ≃L[R] W) (α : Sˣ) :
     (α • e).toLinearEquiv = α • e.toLinearEquiv := rfl
+
+theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G]
+    (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp [LinearMapClass.map_smul_of_tower f]
+
+theorem trans_smul [SMulCommClass R S V] [IsScalarTower S R G]
+    (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
 
 end ContinuousLinearEquiv
 end
