@@ -741,7 +741,7 @@ namespace Module.Flat
 
 variable {R M A} [Semiring A] [Algebra R A] (e : A ⊗[R] M ≃ₗ[A] A)
 
-/-- If flat `R`-module becomes free of rank 1 after tensoring with a faithful `R`-algebra `A`,
+/-- If a flat `R`-module becomes free of rank 1 after base-changing to a faithful `R`-algebra `A`,
 then it embeds into `A`. -/
 noncomputable def toAlgebra : M →ₗ[R] A :=
   e.restrictScalars R ∘ₗ (Algebra.ofId R A).toLinearMap.rTensor M ∘ₗ (TensorProduct.lid R M).symm
@@ -752,7 +752,7 @@ theorem toAlgebra_injective : Function.Injective (toAlgebra e) := by
   simpa [toAlgebra] using
     Flat.rTensor_preserves_injective_linearMap _ (FaithfulSMul.algebraMap_injective R A)
 
-/-- An flat `R`-module as a `R`-submodule of a faithful `R`-algebra. -/
+/-- A flat `R`-module as a `R`-submodule of a faithful `R`-algebra. -/
 noncomputable abbrev submoduleAlgebra : Submodule R A := LinearMap.range (toAlgebra e)
 
 /-- An isomorphism between a flat `R`-module and its realization as a submodule in
@@ -784,7 +784,7 @@ theorem top_mul_submoduleAlgebra : ⊤ * submoduleAlgebra e = ⊤ := by
   ext; rfl
 
 /-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
-we have `I ⊗[R] M ≃ I * M` for any `R`-submodule `I` of `A`. -/
+we have `I ⊗[R] M ≃ₗ[R] I * M` for any `R`-submodule `I` of `A`. -/
 noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
     I ⊗[R] submoduleAlgebra e ≃ₗ[R] I * submoduleAlgebra e := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, Submodule.mulMap'_surjective _ _⟩
