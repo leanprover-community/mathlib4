@@ -33,8 +33,6 @@ example {n m : ℕ} (h : m ≤ n) : m * π / n ≤ π := by grind
 example {n m : ℕ} (h : m ≤ n) : m * π / n ≤ π := by
   by_cases! n = 0
   case pos hn => rw [hn, Nat.cast_zero, div_zero]; positivity
-  case neg hn => calc
-      m * π / n ≤ n * π / n := by gcongr
-      _ = π := by aesop
+  case neg hn => trans n * π / n; { gcongr }; aesop
 
 end Polynomial.Chebyshev
