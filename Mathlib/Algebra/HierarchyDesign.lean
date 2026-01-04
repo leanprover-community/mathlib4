@@ -69,7 +69,7 @@ when applicable:
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pi/Basic.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```

@@ -66,7 +66,7 @@ open MulOpposite in
 /-- Opposite algebra of a central algebra is central. This instance combined with the coming
   `IsSimpleRing` instance for the opposite of central simple algebra will be an
   inverse for an element in `BrauerGroup`, find out more about this in
-  `Mathlib/Algebra/BrauerGroup/Basic.lean`. -/
+  `Mathlib/Algebra/BrauerGroup/Defs.lean`. -/
 instance : IsCentral K Dᵐᵒᵖ where
   out z hz :=
     have ⟨k, hk⟩ := h.1 (MulOpposite.unop_mem_center_iff.mpr hz)

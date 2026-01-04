@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 In this file we prove that divisible groups are injective objects in category of (additive) abelian
 groups. The proof that the category of abelian groups has enough injective objects can be found
-in `Mathlib/Algebra/Category/GrpCat/EnoughInjectives.lean`.
+in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
 
 ## Main results
 
