@@ -273,19 +273,3 @@ lemma tendsto_coe_atTop [NoMaxOrder ι] :
   simp
 
 end WithTop
-
-namespace Filter
-
-theorem Tendsto.tendsto_withTop_atTop_nhds_top {ι : Type*}
-    [Nonempty ι] [LinearOrder ι] [NoMaxOrder ι] [TopologicalSpace ι] [OrderTopology ι]
-    {a : ℕ → ι} (ha : Tendsto a atTop atTop) :
-    Tendsto (fun n ↦ (a n : WithTop ι)) atTop (𝓝 ⊤) := by
-  rw [WithTop.tendsto_atTop_nhds_top_iff]
-  rw [tendsto_atTop_atTop] at ha
-  norm_cast
-  intro i
-  obtain ⟨i', hi'⟩ := NoMaxOrder.exists_gt i
-  obtain ⟨j, hj⟩ := ha i'
-  exact ⟨j, fun n hn ↦ lt_of_lt_of_le hi' <| hj _ hn⟩
-
-end Filter
