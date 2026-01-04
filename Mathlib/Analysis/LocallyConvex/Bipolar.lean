@@ -117,11 +117,8 @@ theorem flip_polar_polar_eq {s : Set E} [Nonempty s] :
       Algebra.mul_smul_comm]
     rw [← smul_eq_mul, ← smul_assoc]
     norm_cast
-    have unz : u ≠ 0 := (ne_of_lt f_zero_lt_u).symm
-    simp_all only [nonempty_subtype, Set.mem_compl_iff, one_div, ne_eq, not_false_eq_true,
-      smul_inv_smul₀, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, mul_inv_cancel₀,
-      map_one, one_mul]
-    rfl
+    simp only [smul_eq_mul, mul_inv_cancel₀ (ne_of_lt f_zero_lt_u).symm, map_one, one_mul]
+    exact flip_apply (f := B) (n:= f₀) (m := x)
   -- From which it follows that `x` can't be in the bipolar of `s`
   exact fun hc ↦ ((lt_iff_le_not_ge.mp one_lt_x_f₀).2)
     (Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1
