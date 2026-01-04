@@ -604,21 +604,23 @@ variable {S R V W : Type*} [Semiring R] [Semiring S]
   [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
 
 /-- Left scalar multiplication of a unit and a linear equivalence, as a linear equivalence. -/
-@[simps apply] def units_smul (e : V ≃ₗ[R] W) (α : Sˣ) : V ≃ₗ[R] W where
-  __ := (α : S) • e.toLinearMap
-  toFun x := (α : S) • e x
-  invFun x := (↑α⁻¹ : S) • e.symm x
-  left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
-  right_inv _ := by simp [LinearMapClass.map_smul_of_tower e, smul_smul]
+instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
+  { __ := (α : S) • e.toLinearMap
+    toFun x := (α : S) • e x
+    invFun x := (↑α⁻¹ : S) • e.symm x
+    left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
+    right_inv _ := by simp [LinearMapClass.map_smul_of_tower e, smul_smul] }
 
-theorem symm_units_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
-    (e.units_smul α).symm x = (↑α⁻¹ : S) • e.symm x := rfl
+@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
 
-@[simp] theorem symm_units_smul [SMulCommClass R S V] (e : V ≃ₗ[R] W) (α : Sˣ) :
-    (e.units_smul α).symm = e.symm.units_smul α⁻¹ := rfl
+theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl
 
-@[simp] theorem toLinearMap_units_smul (e : V ≃ₗ[R] W) (α : Sˣ) :
-    (e.units_smul α).toLinearMap = (α : S) • e.toLinearMap := rfl
+@[simp] theorem symm_smul [SMulCommClass R S V] (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (α • e).symm = α⁻¹ • e.symm := rfl
+
+@[simp] theorem toLinearMap_smul (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (α • e).toLinearMap = (α : S) • e.toLinearMap := rfl
 
 end smul
 end LinearEquiv

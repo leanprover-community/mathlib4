@@ -1373,7 +1373,7 @@ def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
 
 end MulOpposite
 
-section smul
+namespace ContinuousLinearEquiv
 variable {S R V W : Type*} [Semiring R] [Semiring S]
   [AddCommMonoid V] [Module R V] [TopologicalSpace V] [Module S V] [ContinuousConstSMul S V]
   [AddCommMonoid W] [Module R W] [TopologicalSpace W] [Module S W] [ContinuousConstSMul S W]
@@ -1381,24 +1381,21 @@ variable {S R V W : Type*} [Semiring R] [Semiring S]
 
 /-- Left scalar multiplication of a unit and a continuous linear equivalence,
 as a continuous linear equivalence. -/
-@[simps! apply]
-def ContinuousLinearEquiv.units_smul (e : V ≃L[R] W) (α : Sˣ) : V ≃L[R] W where
-  __ := e.toLinearEquiv.units_smul α
-  continuous_toFun := by
-    dsimp [LinearEquiv.units_smul]
-    refine α.isUnit.continuous_const_smul_iff.mpr e.continuous
-  continuous_invFun := by
-    dsimp [LinearEquiv.units_smul]
-    refine α⁻¹.isUnit.continuous_const_smul_iff.mpr e.symm.continuous
+instance : SMul Sˣ (V ≃L[R] W) where smul α e :=
+  { __ := α • e.toLinearEquiv
+    continuous_toFun := α.isUnit.continuous_const_smul_iff.mpr e.continuous
+    continuous_invFun := α⁻¹.isUnit.continuous_const_smul_iff.mpr e.symm.continuous }
 
-theorem ContinuousLinearEquiv.symm_units_smul_apply (e : V ≃L[R] W) (α : Sˣ) (x : W) :
-    (e.units_smul α).symm x = (↑α⁻¹ : S) • e.symm x := rfl
+@[simp] theorem smul_apply (α : Sˣ) (e : V ≃L[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
 
-@[simp] theorem ConitnuousLinearEquiv.symm_units_smul [SMulCommClass R S V]
-    (e : V ≃L[R] W) (α : Sˣ) : (e.units_smul α).symm = e.symm.units_smul α⁻¹ := rfl
+theorem symm_smul_apply (e : V ≃L[R] W) (α : Sˣ) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl
 
-@[simp] theorem ContinuousLinearEquiv.toLinearEquiv_units_smul (e : V ≃L[R] W) (α : Sˣ) :
-    (e.units_smul α).toLinearEquiv = e.toLinearEquiv.units_smul α := rfl
+@[simp] theorem symm_smul [SMulCommClass R S V]
+    (e : V ≃L[R] W) (α : Sˣ) : (α • e).symm = α⁻¹ • e.symm := rfl
 
-end smul
+@[simp] theorem toLinearEquiv_smul (e : V ≃L[R] W) (α : Sˣ) :
+    (α • e).toLinearEquiv = α • e.toLinearEquiv := rfl
+
+end ContinuousLinearEquiv
 end

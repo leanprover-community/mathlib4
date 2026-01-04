@@ -50,7 +50,7 @@ public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M�
     ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
     ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
     eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_coe,
-    smul_apply, End.one_apply]
+    LinearMap.smul_apply, End.one_apply]
   constructor
   all_goals
     refine fun ⟨y, hy⟩ ↦ ⟨y, fun _ ↦ ?_⟩
