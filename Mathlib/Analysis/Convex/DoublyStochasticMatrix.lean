@@ -75,8 +75,6 @@ lemma doublyStochastic_eq_rowStochastic_inf_colStochastic :
     Set.mem_setOf_eq, doublyStochastic]
   grind
 
-attribute [grind =] Submonoid.mem_inf
-
 lemma mem_doublyStochastic_iff_mem_rowStochastic_and_mem_colStochastic {M : Matrix n n R} :
     M ∈ doublyStochastic R n ↔ M ∈ rowStochastic R n ∧ M ∈ colStochastic R n := by
   rw [doublyStochastic_eq_rowStochastic_inf_colStochastic, Submonoid.mem_inf]
