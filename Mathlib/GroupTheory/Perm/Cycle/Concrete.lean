@@ -164,9 +164,6 @@ theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x
   induction s using Quot.inductionOn
   simpa using List.formPerm_apply_of_notMem hx
 
-@[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
-
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by
   induction s using Quot.inductionOn

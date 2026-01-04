@@ -60,9 +60,6 @@ lemma primesBelow_succ (n : ℕ) :
 lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
 
-@[deprecated (since := "2025-05-23")] alias not_mem_primesBelow := notMem_primesBelow
-
-
 /-!
 ### `s`-factored numbers
 -/
@@ -432,7 +429,7 @@ def smoothNumbersUpTo (N k : ℕ) : Finset ℕ :=
 
 lemma mem_smoothNumbersUpTo {N k n : ℕ} :
     n ∈ smoothNumbersUpTo N k ↔ n ≤ N ∧ n ∈ smoothNumbers k := by
-  simp [smoothNumbersUpTo, Nat.lt_succ_iff]
+  simp [smoothNumbersUpTo]
 
 /-- The positive non-`k`-smooth (so "`k`-rough") numbers up to and including `N` as a `Finset` -/
 def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
