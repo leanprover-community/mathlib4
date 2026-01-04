@@ -46,7 +46,7 @@ variable {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
   [IsScalarTower R (Matrix ι ι R) M]
 
 variable {ι} (M) in
-/-- The image of `E₁₁` (the elementary matrix) acting on all elements in `M`. -/
+/-- The image of `Eᵢᵢ` (the elementary matrix) acting on all elements in `M`. -/
 def toModuleCatObj (i : ι) : Submodule R M :=
   LinearMap.range (τ₁₂ := .id _) <|
     { __ := DistribMulAction.toAddMonoidHom M (single i i 1 : Matrix ι ι R)
@@ -65,7 +65,7 @@ lemma mem_toModuleCatObj (i : ι) {x : M} : x ∈ toModuleCatObj R M i ↔ ∃ y
   Iff.rfl
 
 variable {R ι} in
-/-- An `R`-linear map between `E₁₁ • M` and `E₁₁ • N` induced by an `Mₙ(R)`-linear map
+/-- An `R`-linear map between `Eᵢᵢ • M` and `Eᵢᵢ • N` induced by an `Mₙ(R)`-linear map
   from `M` to `N` -/
 @[simps]
 def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i : ι)
@@ -80,8 +80,8 @@ end MatrixModCat
 
 universe w
 
-/-- The functor from Module Cat of `Mₙ(R)` to Module Cat of `R` induced by sending `M` to
-  the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix -/
+/-- The functor from the category of modules over `Mₙ(R)` to the category of modules over `R`
+  induced by sending `M` to the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix -/
 @[simps]
 def MatrixModCat.toModuleCat [Inhabited ι] : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
@@ -97,7 +97,7 @@ open MatrixModCat Matrix
 
 variable [Inhabited ι]
 
-/-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = E₁₁ • Mⁿ` -/
+/-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = Eᵢᵢ • Mⁿ` -/
 def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup M] [Module R M] :
     (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι).obj (.of R M) ≃ₗ[R]
     MatrixModCat.toModuleCatObj R (ι := ι) (ι → M) default where
