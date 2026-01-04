@@ -182,6 +182,28 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+theorem T_eval_zero (n : ℤ) :
+    (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [Int.negOnePow_add]
+  | neg_add_one n ih1 ih2 =>
+    have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [T_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
+
+@[simp]
+theorem T_eval_zero_of_even {n : ℤ} (hn : Even n) : (T R n).eval 0 = (n / 2).negOnePow := by
+  simp [T_eval_zero, hn]
+
+theorem T_eval_two_mul_zero (n : ℤ) : (T R (2 * n)).eval 0 = n.negOnePow := by simp
+
+@[simp]
+theorem T_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (T R n).eval 0 = 0 := by
+  simp [T_eval_zero, ← Int.not_odd_iff_even, hn]
+
 @[simp]
 theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
@@ -326,6 +348,28 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     norm_cast
     norm_num
     ring
+
+theorem U_eval_zero (n : ℤ) :
+    (U R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [Int.negOnePow_add]
+  | neg_add_one n ih1 ih2 =>
+    have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [U_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
+
+@[simp]
+theorem U_eval_zero_of_even {n : ℤ} (hn : Even n) : (U R n).eval 0 = (n / 2).negOnePow := by
+  simp [U_eval_zero, hn]
+
+theorem U_eval_two_mul_zero (n : ℤ) : (U R (2 * n)).eval 0 = n.negOnePow := by simp
+
+@[simp]
+theorem U_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (U R n).eval 0 = 0 := by
+  simp [U_eval_zero, ← Int.not_odd_iff_even, hn]
 
 @[simp]
 theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
