@@ -583,7 +583,7 @@ end
 
 section
 
-variable (Y : SpectralObject C ℤt) [Y.IsFirstQuadrant]
+variable (Y : SpectralObject C EInt) [Y.IsFirstQuadrant]
 
 instance (pq : ℕ × ℕ) : Y.StationaryAt mkDataE₂CohomologicalNat pq where
   exists_isZero₀ :=
@@ -591,14 +591,14 @@ instance (pq : ℕ × ℕ) : Y.StationaryAt mkDataE₂CohomologicalNat pq where
       apply isZero₁_of_isFirstQuadrant
       refine hj.trans ?_
       dsimp
-      simp only [ℤt.mk_le_mk_iff]
+      simp only [EInt.mk_le_mk_iff]
       lia⟩
   exists_isZero₃ :=
     ⟨pq.1 + 1, fun i j hij hi => by
       apply isZero₂_of_isFirstQuadrant
       refine lt_of_lt_of_le ?_ hi
       dsimp
-      simp only [ℤt.mk_lt_mk_iff]
+      simp only [EInt.mk_lt_mk_iff]
       lia⟩
 
 instance (pq : ℤ × ℤ) : Y.StationaryAt mkDataE₂Cohomological pq where
@@ -608,7 +608,7 @@ instance (pq : ℤ × ℤ) : Y.StationaryAt mkDataE₂Cohomological pq where
       apply isZero₁_of_isFirstQuadrant
       refine hj.trans ?_
       dsimp
-      simp only [ℤt.mk_le_mk_iff]
+      simp only [EInt.mk_le_mk_iff]
       lia⟩
   exists_isZero₃ := by
     obtain ⟨k, hk⟩ : ∃ (k : ℕ), pq.1 ≤ k := ⟨_, Int.self_le_toNat pq.1⟩
@@ -616,27 +616,27 @@ instance (pq : ℤ × ℤ) : Y.StationaryAt mkDataE₂Cohomological pq where
       apply isZero₂_of_isFirstQuadrant
       refine lt_of_lt_of_le ?_ hi
       dsimp
-      simp only [ℤt.mk_lt_mk_iff, sub_lt_sub_iff_right]
+      simp only [EInt.mk_lt_mk_iff, sub_lt_sub_iff_right]
       lia⟩
 
 end
 
 section
 
-variable (Y : SpectralObject C ℤt) [Y.IsThirdQuadrant]
+variable (Y : SpectralObject C EInt) [Y.IsThirdQuadrant]
 
 instance (pq : ℕ × ℕ) : Y.StationaryAt mkDataE₂HomologicalNat pq where
   exists_isZero₀ := ⟨pq.1, fun i j hij hj => by
       apply isZero₂_of_isThirdQuadrant
       refine hj.trans ?_
       dsimp
-      simp only [ℤt.mk_le_mk_iff]
+      simp only [EInt.mk_le_mk_iff]
       lia⟩
   exists_isZero₃ := ⟨pq.2, fun i j hij hi => by
       apply isZero₁_of_isThirdQuadrant
       refine lt_of_lt_of_le ?_ hi
       dsimp
-      simp only [neg_add_cancel_comm_assoc, ℤt.mk_lt_mk_iff, sub_pos]
+      simp only [neg_add_cancel_comm_assoc, EInt.mk_lt_mk_iff, sub_pos]
       lia⟩
 
 end

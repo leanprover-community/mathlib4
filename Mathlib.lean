@@ -700,12 +700,12 @@ public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Algebra.Homology.SpectralSequence.Convergence
+public import Mathlib.Algebra.Homology.SpectralSequence.EInt
 public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 public import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
-public import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 public import Mathlib.Algebra.Homology.Square
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.TotalComplexMap

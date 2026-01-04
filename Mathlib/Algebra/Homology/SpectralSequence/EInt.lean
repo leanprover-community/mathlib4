@@ -18,31 +18,31 @@ public import Mathlib.Order.WithBot
 
 open CategoryTheory Limits
 
-def ℤt := WithBot (WithTop ℤ)
+def EInt := WithBot (WithTop ℤ)
 
-namespace ℤt
+namespace EInt
 
-instance : LinearOrder ℤt := inferInstanceAs (LinearOrder (WithBot (WithTop ℤ)))
-instance : OrderBot ℤt := inferInstanceAs (OrderBot (WithBot (WithTop ℤ)))
-instance : OrderTop ℤt := inferInstanceAs (OrderTop (WithBot (WithTop ℤ)))
+instance : LinearOrder EInt := inferInstanceAs (LinearOrder (WithBot (WithTop ℤ)))
+instance : OrderBot EInt := inferInstanceAs (OrderBot (WithBot (WithTop ℤ)))
+instance : OrderTop EInt := inferInstanceAs (OrderTop (WithBot (WithTop ℤ)))
 
-def mk (a : ℤ) : ℤt := ((a : WithTop ℤ) : WithBot (WithTop ℤ))
+def mk (a : ℤ) : EInt := ((a : WithTop ℤ) : WithBot (WithTop ℤ))
 
-lemma mk_monotone : Monotone ℤt.mk := by
+lemma mk_monotone : Monotone EInt.mk := by
   intro a b h
   dsimp [mk]
-  rw [WithBot.coe_le_coe, WithTop.coe_le_coe, ]
+  rw [WithBot.coe_le_coe, WithTop.coe_le_coe]
   exact h
 
 @[simp]
 lemma some_some_le_none_iff (a : ℤ) :
-    @LE.le ℤt _ (some (some a)) none ↔ False := by
+    @LE.le EInt _ (some (some a)) none ↔ False := by
   tauto
 
 @[simp]
 lemma none_le_some_iff (a : ℤ) :
-    @LE.le ℤt _ (some none) (some a) ↔ False := by
-  change (⊤ : ℤt) ≤ _ ↔ _
+    @LE.le EInt _ (some none) (some a) ↔ False := by
+  change (⊤ : EInt) ≤ _ ↔ _
   rw [iff_false, top_le_iff]
   intro (h : _ = some none)
   simp at h
@@ -51,22 +51,22 @@ lemma none_le_some_iff (a : ℤ) :
 
 @[simp]
 lemma some_some_le_some_some_iff (a b : ℤ) :
-    @LE.le ℤt _ (some (some a)) (some (some b)) ↔ a ≤ b := by
+    @LE.le EInt _ (some (some a)) (some (some b)) ↔ a ≤ b := by
   erw [WithBot.coe_le_coe, WithTop.coe_le_coe]
 
 @[simp]
 lemma some_some_lt_some_some_iff (a b : ℤ) :
-    @LT.lt ℤt _ (some (some a)) (some (some b)) ↔ a < b := by
+    @LT.lt EInt _ (some (some a)) (some (some b)) ↔ a < b := by
   erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe, ]
 
 @[simp]
 lemma some_none_le_some_some_iff (a : ℤ) :
-    @LE.le ℤt _ (some none) (some (some a)) ↔ False := by
+    @LE.le EInt _ (some none) (some (some a)) ↔ False := by
   tauto
 
 @[simp]
 lemma some_lt_none_iff (a : WithTop ℤ) :
-    @LE.le ℤt _ (some a) none ↔ False := by
+    @LE.le EInt _ (some a) none ↔ False := by
   tauto
 
 @[simp]
@@ -79,50 +79,47 @@ lemma mk_lt_mk_iff (a b : ℤ) :
     mk a < mk b ↔ a < b :=
   some_some_lt_some_some_iff a b
 
-instance : OrderTop ℤt := by dsimp [ℤt]; infer_instance
-instance : OrderBot ℤt := by dsimp [ℤt]; infer_instance
-
 @[simp]
 lemma le_bot_mk_iff (a : ℤ) :
-    ℤt.mk a ≤ ⊥ ↔ False :=
+    EInt.mk a ≤ ⊥ ↔ False :=
   some_some_le_none_iff a
 
 @[simp]
 lemma mk_eq_bot_iff (a : ℤ) :
-    ℤt.mk a = ⊥ ↔ False := by
+    EInt.mk a = ⊥ ↔ False := by
   simp only [iff_false]
   rintro ⟨⟩
 
 @[simp]
 lemma mk_eq_top_iff (a : ℤ) :
-    ℤt.mk a = ⊤ ↔ False := by
+    EInt.mk a = ⊤ ↔ False := by
   simp only [iff_false]
   rintro ⟨⟩
 
 @[simp]
 lemma top_eq_bot_mk_iff :
-    (⊤ : ℤt) = ⊥ ↔ False := by
+    (⊤ : EInt) = ⊥ ↔ False := by
   simp only [iff_false]
   rintro ⟨⟩
 
 @[simp]
 lemma top_le_mk_iff (a : ℤ) :
-    ⊤ ≤ ℤt.mk a ↔ False :=
+    ⊤ ≤ EInt.mk a ↔ False :=
   some_none_le_some_some_iff a
 
 @[simp]
 lemma top_le_bot_iff :
-    (⊤ : ℤt) ≤ ⊥ ↔ False := by
+    (⊤ : EInt) ≤ ⊥ ↔ False := by
   simp
 
-lemma three_cases (x : ℤt) :
-    x = ⊥ ∨ (∃ (n : ℤ), x = ℤt.mk n) ∨ x = ⊤ := by
+lemma three_cases (x : EInt) :
+    x = ⊥ ∨ (∃ (n : ℤ), x = EInt.mk n) ∨ x = ⊤ := by
   obtain (_|_|n) := x
   · exact Or.inl rfl
   · exact Or.inr (Or.inr rfl)
   · exact Or.inr (Or.inl ⟨n, rfl⟩)
 
-lemma le_bot_iff (a : ℤt) : a ≤ ⊥ ↔ a = ⊥ := by
+lemma le_bot_iff (a : EInt) : a ≤ ⊥ ↔ a = ⊥ := by
   constructor
   · intro h
     obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
@@ -132,7 +129,7 @@ lemma le_bot_iff (a : ℤt) : a ≤ ⊥ ↔ a = ⊥ := by
   · rintro rfl
     exact le_refl _
 
-lemma top_le_iff (a : ℤt) : ⊤ ≤ a ↔ a = ⊤ := by
+lemma top_le_iff (a : EInt) : ⊤ ≤ a ↔ a = ⊤ := by
   constructor
   · intro h
     obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
@@ -142,4 +139,4 @@ lemma top_le_iff (a : ℤt) : ⊤ ≤ a ↔ a = ⊤ := by
   · rintro rfl
     exact le_refl _
 
-end ℤt
+end EInt

@@ -1141,7 +1141,7 @@ variable (X : C) (q q' : ℤ) (hqq' : q + 1 = q')
 
 noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart :
     ((spectralObject t X).ω₁ ⋙ shiftFunctor C q).obj
-        (ComposableArrows.mk₁ (homOfLE (by simp; linarith) : ℤt.mk q ⟶ ℤt.mk q')) ≅
+        (ComposableArrows.mk₁ (homOfLE (by simp; linarith) : EInt.mk q ⟶ EInt.mk q')) ≅
       (t.homology q ⋙ ιHeart t).obj X :=
   (shiftFunctor C q).mapIso ((t.truncGELEIsoTruncGELT q q q' hqq').symm.app X) ≪≫
     ((t.homologyCompιHeartIso q).app X).symm

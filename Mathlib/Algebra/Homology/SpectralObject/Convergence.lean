@@ -302,7 +302,7 @@ def mkDataE₂HomologicalNatCompatibility :
     rintro n ⟨i, hi⟩ ⟨j, hj⟩ h
     simp at h
     dsimp
-    simp only [ℤt.mk_le_mk_iff]
+    simp only [EInt.mk_le_mk_iff]
     linarith [Nat.add_sub_of_le (show i ≤ n by linarith),
       Nat.add_sub_of_le (show j ≤ n by linarith)]
 
@@ -573,7 +573,7 @@ noncomputable def convergesAt :
     (ConvergesAt.composableArrows_exact X hdata n i j hij pq hpq).toIsComplex.zero 0
   exact_π' i j hij pq hpq := (ConvergesAt.composableArrows_exact X hdata n i j hij pq hpq).exact 0
 
-instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
+instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℤ) :
     X.ConvergesInDegree mkDataE₂CohomologicalCompatibility n where
   isZero₁ := ⟨1, fun j hj => by
     apply isZero₁_of_isFirstQuadrant
@@ -597,7 +597,7 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℤ) :
     | bot => simp at hij
     | coe i => exact (mkDataE₂Cohomological_i₁_eq_i₂ n i j hij pq hpq).symm
 
-instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
+instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℕ) :
     X.ConvergesInDegree mkDataE₂CohomologicalNatCompatibility n where
   isZero₁ := ⟨0, fun j hj => by
     exfalso
@@ -648,7 +648,7 @@ instance (X : SpectralObject C ℤt) [X.IsFirstQuadrant] (n : ℕ) :
         rw [← hpq]
         rfl
 
-instance (X : SpectralObject C ℤt) [X.IsThirdQuadrant] (n : ℕ) :
+instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
     X.ConvergesInDegree mkDataE₂HomologicalNatCompatibility n where
   isZero₁ := ⟨0, fun j hj => by
     exfalso

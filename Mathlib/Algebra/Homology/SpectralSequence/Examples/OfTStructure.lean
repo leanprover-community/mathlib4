@@ -85,10 +85,10 @@ instance [t.IsGE X 0] :
       · change _ < ⊥ at hi
         simp at hi
       · apply le_top
-      · change _ < ℤt.mk _ at hi
-        change _ ≤ ℤt.mk _
-        simp only [ℤt.mk_lt_mk_iff, ℤt.mk_le_mk_iff] at hi ⊢
-        linarith)
+      · change _ < EInt.mk _ at hi
+        change _ ≤ EInt.mk _
+        simp only [EInt.mk_lt_mk_iff, EInt.mk_le_mk_iff] at hi ⊢
+        lia)
     apply H.isZero_shift_obj_of_vanishesOnGEOne t n (n+1) (by linarith)
 
 noncomputable def spectralSequence : E₂CohomologicalSpectralSequence A :=
