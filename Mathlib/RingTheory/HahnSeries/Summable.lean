@@ -355,7 +355,6 @@ theorem coe_sub (s t : SummableFamily Γ R α) : ⇑(s - t) = s - t :=
 theorem sub_apply : (s - t) a = s a - t a :=
   rfl
 
-
 instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul' _ _) (fun _ _ => coe_smul' _ _)
@@ -868,6 +867,7 @@ theorem single_div_single (a b : Γ) (r s : R) :
     single a r / single b s = single (a - b) (r / s) := by
   rw [div_eq_mul_inv, sub_eq_add_neg, div_eq_mul_inv, inv_single, single_mul_single]
 
+attribute [-simp] single_zero in
 instance instField : Field R⟦Γ⟧ where
   inv_zero := by simp [inv_def]
   mul_inv_cancel x x0 := by
