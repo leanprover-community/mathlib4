@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Tactic.ToFun
 
 /-!
 # Meromorphic functions
@@ -84,31 +83,20 @@ lemma add {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
   exact (((analyticAt_id.sub analyticAt_const).pow _).smul hf).add
     (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
-@[deprecated (since := "2025-05-09")] alias add' := fun_add
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.fun_smul hg using 2 with z
-  rw [Pi.smul_apply', smul_eq_mul]
+  convert hf.smul hg using 2 with z
+  simp
   module
-
-@[fun_prop]
-lemma fun_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
-    MeromorphicAt (fun z ↦ f z • g z) x :=
-  hf.smul hg
-
-@[deprecated (since := "2025-05-09")] alias smul' := fun_smul
 
 @[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f * g) x :=
   hf.smul hg
-
-@[deprecated (since := "2025-05-09")] alias mul' := fun_mul
 
 /-- Finite products of meromorphic functions are meromorphic. -/
 @[fun_prop] -- TODO: to_fun generates an unreadable statement, see #32866
@@ -156,8 +144,6 @@ lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
 
-@[deprecated (since := "2025-05-09")] alias neg' := fun_neg
-
 @[simp]
 lemma neg_iff {f : 𝕜 → E} :
     MeromorphicAt (-f) x ↔ MeromorphicAt f x :=
@@ -202,8 +188,6 @@ at `x`.
 lemma meromorphicAt_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x ↔ MeromorphicAt f x := by
   exact ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
-
-@[deprecated (since := "2025-05-09")] alias sub' := fun_sub
 
 /-- With our definitions, `MeromorphicAt f x` depends only on the values of `f` on a punctured
 neighbourhood of `x` (not on `f x`) -/
@@ -262,8 +246,6 @@ lemma inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x 
         exact this.2
       simp [field, pow_succ', mul_assoc, hfg]
 
-@[deprecated (since := "2025-05-09")] alias inv' := fun_inv
-
 @[simp]
 lemma inv_iff {f : 𝕜 → 𝕜} :
     MeromorphicAt f⁻¹ x ↔ MeromorphicAt f x :=
@@ -274,23 +256,17 @@ lemma div {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x
     MeromorphicAt (f / g) x :=
   (div_eq_mul_inv f g).symm ▸ (hf.mul hg.inv)
 
-@[deprecated (since := "2025-05-09")] alias div' := fun_div
-
 @[to_fun (attr := fun_prop)]
 lemma pow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction n with
   | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
   | succ m hm => simpa only [pow_succ] using hm.mul hf
 
-@[deprecated (since := "2025-05-09")] alias pow' := fun_pow
-
 @[to_fun (attr := fun_prop)]
 lemma zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   cases n with
   | ofNat m => simpa only [Int.ofNat_eq_natCast, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
-
-@[deprecated (since := "2025-05-09")] alias zpow' := fun_zpow
 
 /-- If a function is meromorphic at a point, then it is continuous at nearby points. -/
 theorem eventually_continuousAt {f : 𝕜 → E}
@@ -434,10 +410,7 @@ include hf in
   ⟨fun h ↦ by simpa only [neg_neg] using h.neg, neg⟩
 
 include hs hf in
-lemma smul : MeromorphicOn (s • f) U := fun x hx ↦ (hs x hx).smul (hf x hx)
-
-include hs hf in
-lemma fun_smul : MeromorphicOn (fun z ↦ s z • f z) U := fun x hx ↦ (hs x hx).smul (hf x hx)
+@[to_fun] lemma smul : MeromorphicOn (s • f) U := fun x hx ↦ (hs x hx).smul (hf x hx)
 
 include hs ht in
 @[to_fun] lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)
@@ -516,28 +489,6 @@ theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [Complet
     (isDiscrete_of_codiscreteWithin _)
   simpa using eventually_codiscreteWithin_analyticAt f h
 
-/--
-The singular set of a meromorphic function is countable.
--/
-theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
-    (h : MeromorphicOn f Set.univ) :
-    {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
-  simpa using (countable_compl_analyticAt_inter h)
-
-/--
-Meromorphic functions are measurable.
--/
-theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
-    [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : MeromorphicOn f Set.univ) :
-    Measurable f := by
-  set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
-  have h₁ : sᶜ.Countable := by simpa using h.countable_compl_analyticAt_inter
-  have h₁' := h₁.to_subtype
-  have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
-  have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
-  exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
-    (by simp [-mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
-
 end MeromorphicOn
 
 /-- Meromorphy of a function on all of 𝕜. -/
@@ -575,8 +526,15 @@ lemma sub (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f - g) := fun x ↦ (hf x).sub (hg x)
 
 @[to_fun (attr := fun_prop)]
+lemma smul {f : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+    Meromorphic (f • g) := fun x ↦ (hf x).smul (hg x)
+
+@[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
     Meromorphic (f * g) := fun x ↦ (hf x).mul (hg x)
+
+@[to_fun (attr := fun_prop)]
+lemma inv {f : 𝕜 → 𝕜} (hf : Meromorphic f) : Meromorphic f⁻¹ := fun x ↦ (hf x).inv
 
 @[to_fun (attr := fun_prop)]
 theorem prod (h : ∀ σ, Meromorphic (F σ)) :
@@ -599,5 +557,32 @@ protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deri
 @[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
     Meromorphic (deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
+
+/--
+The singular set of a meromorphic function is countable.
+-/
+theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
+    (h : Meromorphic f) :
+    {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
+  simpa using (h.meromorphicOn (s := univ)).countable_compl_analyticAt_inter
+
+@[deprecated (since := "2025-12-21")] alias MeromorphicOn.countable_compl_analyticAt :=
+  countable_compl_analyticAt
+
+/--
+Meromorphic functions are measurable.
+-/
+theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
+    [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : Meromorphic f) :
+    Measurable f := by
+  set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
+  have h₁ : sᶜ.Countable := by simpa using h.countable_compl_analyticAt
+  have h₁' := h₁.to_subtype
+  have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
+  have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
+  exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
+    (by simp [- mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
+
+@[deprecated (since := "2025-12-21")] alias MeromorphicOn.measurable := measurable
 
 end Meromorphic

@@ -121,9 +121,6 @@ noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommG
 @[deprecated (since := "2025-10-10")]
 alias cartesianMonoidalCategoryAddCommGrp := cartesianMonoidalCategory
 
-@[deprecated (since := "2025-05-15")]
-alias chosenFiniteProductsAddCommGrp := cartesianMonoidalCategory
-
 attribute [local instance] cartesianMonoidalCategory
 
 noncomputable instance : BraidedCategory AddCommGrpCat.{u} := .ofCartesianMonoidalCategory

@@ -89,9 +89,6 @@ theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} =
 
 theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDivisors]
 
-@[deprecated (since := "2025-05-23")]
-alias properDivisors.not_self_mem := self_notMem_properDivisors
-
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [properDivisors]
@@ -425,7 +422,7 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
-  simp [Nat.lt_succ_iff, eq_comm]
+  simp [eq_comm]
 
 theorem divisors_injective : Function.Injective divisors :=
   Function.LeftInverse.injective sup_divisors_id
@@ -651,7 +648,8 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    suffices (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a:ℤ) = -1 + -↑x) ↔ (n:ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
+    suffices
+      (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a : ℤ) = -1 + -↑x) ↔ (n : ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
       simpa [divisorsAntidiag, eq_comm, negSucc_eq]
     simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
     norm_cast
