@@ -250,6 +250,11 @@ theorem G₂_det : G₂.det = 1 := by decide
 
 theorem F₄_det : F₄.det = 1 := by decide
 
+/-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively.
+`decide` fails for these larger matrices without increasing the max recursion depth.
+We could write manual proofs (e.g., expanding via `det_succ_column_zero`),
+but prefer to wait for a more principled determinant tactic. -/
+
 proof_wanted E₆_det : E₆.det = 3
 
 proof_wanted E₇_det : E₇.det = 2
