@@ -77,7 +77,7 @@ lemma CStarAlgebra.norm_smul_two_inv_smul_add_four_unitary (x : A) (hx : x ≠ 0
   rw [smul_add, smul_comm _ I, Unitary.coe_star, Unitary.coe_star,
     ← realPart_apply_coe (u₁ : A), ← realPart_apply_coe (u₂ : A)]
   simpa only [u₁, u₂, selfAdjoint.realPart_unitarySelfAddISMul, realPart_add_I_smul_imaginaryPart]
-    using Eq.symm <| NormedSpace.norm_smul_normalize x
+    using Eq.symm <| NormedSpace.norm_smul_normalize ℝ x
 
 end Ordered
 

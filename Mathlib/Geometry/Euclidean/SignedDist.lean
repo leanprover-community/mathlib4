@@ -173,7 +173,7 @@ lemma abs_signedDist_le_dist : |signedDist v p q| ≤ dist p q := by
   by_cases h : v = 0
   · simp [h]
   · grw [abs_real_inner_le_norm]
-    simp [norm_normalize h, dist_eq_norm_vsub']
+    simp [norm_normalize ℝ h, dist_eq_norm_vsub']
 
 lemma signedDist_le_dist : signedDist v p q ≤ dist p q :=
   le_trans (le_abs_self _) (abs_signedDist_le_dist _ _ _)
@@ -182,7 +182,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
     |signedDist v p q| = dist p q ↔ q -ᵥ p ∈ ℝ ∙ v := by
   rw [Submodule.mem_span_singleton]
   rw [signedDist_apply_apply, dist_eq_norm_vsub', NormedSpace.normalize, real_inner_smul_left,
-    abs_mul, abs_inv, abs_norm]
+    abs_mul, abs_inv, RCLike.ofReal_real_eq_id, id_eq, abs_norm]
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
@@ -196,6 +196,7 @@ lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
+  simp only [RCLike.ofReal_real_eq_id, id_eq]
   rw [inner_eq_norm_mul_iff_real]
   simp only [smul_def]
   refine ⟨fun h => ?_, fun ⟨c, h⟩ => ?_⟩
