@@ -25,9 +25,9 @@ This is notably useful in local martingales.
 ## Main results
 
 * `ProbabilityTheory.IsStable.isStable_locally`: If a property `p` is stable, then the property
+  "satisfies `p` locally" is also stable.
 * `ProbabilityTheory.isLocalizingSequence_of_isPreLocalizingSequence`: Given a
   pre-localizing sequence `(τ n)`, the sequence `⊓ j ≥ n, τ j` is a localizing sequence.
-  "satisfies `p` locally" is also stable.
 * `ProbabilityTheory.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then it is
   locally satisfied by `X` if the definition of local holds replacing localizing sequence by
   pre-localizing sequence.
@@ -47,7 +47,8 @@ namespace ProbabilityTheory
 
 variable {ι Ω E : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
-/-- A localizing sequence is a sequence of stopping times that tends almost surely to infinity. -/
+/-- A pre-localizing sequence is a sequence of stopping times that tends almost surely to
+infinity. -/
 structure IsPreLocalizingSequence [Preorder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι mΩ) (τ : ℕ → Ω → WithTop ι) (P : Measure Ω := by volume_tac) :
     Prop where
@@ -234,8 +235,8 @@ lemma isLocalizingSequence_of_isPreLocalizingSequence
     intro k hk i hi
     grind
 
-/-- A stable property holds locally `p` for `X` if there exists a pre-localizing sequence `τ` for
-which the stopped process of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfies `p`. -/
+/-- A stable property satisfies `p` locally for `X` if there exists a pre-localizing sequence `τ`
+for which the stopped process of `fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)` satisfies `p`. -/
 lemma locally_of_isPreLocalizingSequence [Zero E] {τ : ℕ → Ω → WithTop ι}
     (hp : IsStable 𝓕 p) [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P)
     (hpτ : ∀ n, p (stoppedProcess (fun i ↦ {ω | ⊥ < τ n ω}.indicator (X i)) (τ n))) :
@@ -287,8 +288,6 @@ lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     grind
   · intro i
     refine MeasurableSet.nullMeasurableSet ?_
-    have hMσ := ((hσ n).isStoppingTime i).measurable
-    have hMτ := (hτ.isStoppingTime n).measurable
     simp_rw [lt_inf_iff]
     rw [(_ : {ω | σ n i ω < τ n ω ∧ σ n i ω < T n} = {ω | σ n i ω < τ n ω} ∩ {ω | σ n i ω < T n})]
     · exact MeasurableSet.inter
@@ -297,7 +296,7 @@ lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     · rfl
   · exact ⟨0, measure_ne_top P _⟩
 
-/-- Auxliary defintion for `isPreLocalizingSequence_of_isLocalizingSequence` which constructs a
+/-- Auxiliary definition for `isPreLocalizingSequence_of_isLocalizingSequence` which constructs a
 strictly increasing sequence from a given sequence. -/
 def mkStrictMonoAux (x : ℕ → ℕ) : ℕ → ℕ
 | 0 => x 0
