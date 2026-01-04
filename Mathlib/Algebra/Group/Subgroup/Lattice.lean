@@ -3,8 +3,10 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Group.Subgroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Subgroup.Defs
 
 /-!
 # Lattice structure of subgroups
@@ -42,7 +44,9 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid Multiset Ring
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -66,9 +70,17 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
-/-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
+@[simp] lemma Additive.mem_toAddSubgroup (S : Subgroup G) (g : Additive G) :
+    g ∈ S.toAddSubgroup ↔ Additive.toMul g ∈ S :=
+  .rfl
+
+/-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroups of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
+
+@[simp] lemma AddSubgroup.mem_toSubgroup' (S : AddSubgroup (Additive G)) (g : G) :
+    g ∈ toSubgroup' S ↔ Additive.ofMul g ∈ S :=
+  .rfl
 
 /-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
@@ -80,10 +92,18 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
+@[simp] lemma Multiplicative.mem_toSubgroup (S : AddSubgroup A) (a : Multiplicative A) :
+    a ∈ S.toSubgroup ↔ Multiplicative.toAdd a ∈ S :=
+  .rfl
+
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
 abbrev Subgroup.toAddSubgroup' : Subgroup (Multiplicative A) ≃o AddSubgroup A :=
   AddSubgroup.toSubgroup.symm
+
+@[simp] lemma Subgroup.mem_toAddSubgroup' (S : Subgroup (Multiplicative A)) (a : A) :
+    a ∈ toAddSubgroup' S ↔ Multiplicative.ofAdd a ∈ S :=
+  .rfl
 
 end mul_add
 
@@ -228,8 +248,8 @@ theorem coe_sInf (H : Set (Subgroup G)) : ((sInf H : Subgroup G) : Set G) = ⋂ 
 theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
-@[to_additive]
-theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
@@ -326,12 +346,6 @@ theorem mem_closure_of_mem {s : Set G} {x : G} (hx : x ∈ s) : x ∈ closure s 
 @[to_additive]
 theorem notMem_of_notMem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubgroup.not_mem_of_not_mem_closure := AddSubgroup.notMem_of_notMem_closure
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 open Set
 
@@ -586,6 +600,45 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 @[to_additive]
 theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
+
+variable {P : C → Prop}
+
+@[to_additive, simp high]
+lemma forall_mem_sup :
+    (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+  aesop
+
+@[to_additive, simp high]
+lemma exists_mem_sup :
+    (∃ x ∈ s ⊔ t, P x) ↔ (∃ x₁ ∈ s, ∃ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+
+@[to_additive]
+theorem mem_sup_of_normal_right {s t : Subgroup G} [ht : t.Normal] {x : G} :
+    x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
+  constructor
+  · intro hx; rw [sup_eq_closure] at hx
+    refine closure_induction ?_ ?_ ?_ ?_ hx
+    · rintro x (hx | hx)
+      · exact ⟨x, hx, 1, t.one_mem, by simp⟩
+      · exact ⟨1, s.one_mem, x, hx, by simp⟩
+    · exact ⟨1, s.one_mem, 1, t.one_mem, by simp⟩
+    · rintro _ _ _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+      exact ⟨y₁ * y₂, s.mul_mem hy₁ hy₂,
+            (y₂⁻¹ * z₁ * y₂) * z₂, t.mul_mem (ht.conj_mem' z₁ hz₁ y₂) hz₂, by simp [mul_assoc]⟩
+    · rintro _ _ ⟨y, hy, z, hz, rfl⟩
+      exact ⟨y⁻¹, s.inv_mem hy,
+            y * z⁻¹ * y⁻¹, ht.conj_mem z⁻¹ (t.inv_mem hz) y, by simp [mul_assoc]⟩
+  · rintro ⟨y, hy, z, hz, rfl⟩; exact mul_mem_sup hy hz
+
+@[to_additive]
+theorem mem_sup_of_normal_left {s t : Subgroup G} [hs : s.Normal] {x : G} :
+    x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
+  have h := (sup_comm t s) ▸ mem_sup_of_normal_right (s := t) (t := s) (x := x)
+  exact h.trans
+    ⟨fun ⟨y, hy, z, hz, hp⟩ ↦ ⟨y * z * y⁻¹, hs.conj_mem z hz y, y, hy, by simp [hp]⟩,
+    fun ⟨y, hy, z, hz, hp⟩ ↦ ⟨z, hz, z⁻¹ * y * z, hs.conj_mem' y hy z, by simp [mul_assoc, hp]⟩⟩
 
 @[to_additive]
 theorem mem_closure_pair {x y z : C} :

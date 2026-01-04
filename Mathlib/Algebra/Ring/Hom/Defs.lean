@@ -3,9 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Homomorphisms of semirings and rings
@@ -40,6 +42,8 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 
 `RingHom`, `SemiringHom`
 -/
+
+@[expose] public section
 
 assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map
 
@@ -253,7 +257,6 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
-  zero := 0
   mul_zero := comp_zero
   zero_mul := zero_comp
 

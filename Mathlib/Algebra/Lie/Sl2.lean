@@ -3,9 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 
@@ -25,6 +27,8 @@ about `sl₂`.
 
 -/
 
+@[expose] public section
+
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
@@ -37,7 +41,7 @@ structure IsSl2Triple (h e f : L) : Prop where
   h_ne_zero : h ≠ 0
   lie_e_f : ⁅e, f⁆ = h
   lie_h_e_nsmul : ⁅h, e⁆ = 2 • e
-  lie_h_f_nsmul : ⁅h, f⁆ = - (2 • f)
+  lie_h_f_nsmul : ⁅h, f⁆ = -(2 • f)
 
 namespace IsSl2Triple
 
@@ -72,7 +76,7 @@ lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
 variable {R}
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a vector is said to be
-primitive if it is a simultaneous eigenvector for the action of both `h`, `e`, and the eigenvalue
+primitive if it is a simultaneous eigenvector for the action of both `h` and `e`, and the eigenvalue
 for `e` is zero. -/
 structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop where
   ne_zero : m ≠ 0
@@ -81,9 +85,9 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a simultaneous
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
-lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
+lemma HasPrimitiveVectorWith.mk' [IsAddTorsionFree M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
-    HasPrimitiveVectorWith t m μ  where
+    HasPrimitiveVectorWith t m μ where
   ne_zero := hm
   lie_h := hm'
   lie_e := by
@@ -139,7 +143,7 @@ lemma mem_toLieSubalgebra_iff {x : L} {t : IsSl2Triple h e f} :
 namespace HasPrimitiveVectorWith
 
 variable {m : M} {μ : R} {t : IsSl2Triple h e f}
-local notation "ψ" n => ((toEnd R L M f) ^ n) m
+local notation "ψ " n => ((toEnd R L M f) ^ n) m
 
 -- Although this is true by definition, we include this lemma (and the assumption) to mirror the API
 -- for `lie_h_pow_toEnd_f` and `lie_e_pow_succ_toEnd_f`.
@@ -219,7 +223,7 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat
       lie_h := (P.lie_h_pow_toEnd_f _).trans (by simp [hn])
       lie_e := (P.lie_e_pow_succ_toEnd_f _).trans (by simp [hn]) }
   obtain ⟨m, hm⟩ := this.exists_nat
-  have : (n : ℤ) < m + 2 * (n + 1) := by omega
+  have : (n : ℤ) < m + 2 * (n + 1) := by lia
   exact this.ne (Int.cast_injective (α := R) <| by simpa [sub_eq_iff_eq_add] using hm)
 
 end HasPrimitiveVectorWith

@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Lemmas relating different ways to compose measures and kernels
@@ -12,6 +14,8 @@ This file contains lemmas about the composition of measures and kernels that do 
 the other files in this directory, because they involve several types of compositions/products.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory
 

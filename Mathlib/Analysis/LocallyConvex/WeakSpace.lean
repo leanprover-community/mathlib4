@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces
 
@@ -16,6 +18,8 @@ in a locally convex space coincides with the closure in the original topology.
 Of course, we phrase this in terms of linear maps between locally convex spaces, rather than
 creating two separate topologies on the same space.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*}
 variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]

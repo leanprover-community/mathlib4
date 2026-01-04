@@ -3,13 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Option.NAry
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Option.NAry
 
 /-!
 # Adjoining a zero to a group
@@ -33,6 +35,8 @@ In scope `WithZero`:
 * `WithZero.exp`: The "exponential map" `M → Mᵐ⁰`
 * `WithZero.exp`: The "logarithm" `Mᵐ⁰ → M`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -363,6 +367,23 @@ lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
 
 @[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
 
+/-- Recursion principle for `Mᵐ⁰`. To construct predicate for all elements of `Mᵐ⁰`, it is enough to
+construct its value at `0` and its value at `exp a` for all `a : M`. -/
+-- TODO: Uncomment once it stops firing on `WithZero M`.
+-- See https://github.com/leanprover-community/mathlib4/issues/31213
+@[elab_as_elim] -- , induction_eliminator, cases_eliminator]
+def expRecOn {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰) (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    motive x := Option.recOn x zero exp
+
+@[simp] lemma expRecOn_zero {motive : Mᵐ⁰ → Sort*} (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    expRecOn 0 zero exp = zero := rfl
+
+@[simp] lemma expRecOn_exp {motive : Mᵐ⁰ → Sort*} (x : M) (zero : motive 0)
+    (exp : ∀ a, motive (exp a)) :
+    expRecOn (M := M) (motive := motive) (.exp x) zero exp = exp x := rfl
+
+instance : CanLift Mᵐ⁰ M exp (· ≠ 0) where prf | (.exp a : Mᵐ⁰), _ => ⟨a, rfl⟩
+
 variable [AddMonoid M]
 
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
@@ -419,13 +440,13 @@ def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicat
 
 lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
-@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b  := rfl
+@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
 
 @[simp]
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
   lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹  := rfl
+@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
 
 @[simp]
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x

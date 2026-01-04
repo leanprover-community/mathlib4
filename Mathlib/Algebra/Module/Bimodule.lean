@@ -3,7 +3,9 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Bimodules
@@ -52,6 +54,8 @@ advantage of the fact that `(Sᵐᵒᵖ)ᵐᵒᵖ` is defeq to `S`.
 Develop the theory of two-sided ideals, which have type `Submodule (R ⊗[ℕ] Rᵐᵒᵖ) R`.
 
 -/
+
+@[expose] public section
 
 
 open TensorProduct

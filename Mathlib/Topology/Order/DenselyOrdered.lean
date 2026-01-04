@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Topology.Order.IsLUB
 
 /-!
 # Order topology on a densely ordered set
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -333,6 +337,21 @@ instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
   · exact ⟨y, us ⟨hab hy, xy.symm⟩⟩
   obtain ⟨z, hz⟩ : ∃ z, a < z ∧ z < x := exists_between hy.1
   exact ⟨z, us ⟨hab ⟨hz.1, hz.2.trans hy.2⟩, hz.2.ne⟩⟩
+
+/-- If the order topology for a dense linear ordering is discrete, the space has at most one point.
+
+We would prefer for this to be an instance but even at `(priority := 100)` this was problematic so
+we have deferred this issue. TODO Promote this to an `instance`! -/
+lemma DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Subsingleton α := by
+  suffices ∀ a b : α, b ≤ a from ⟨fun a b ↦ le_antisymm (this b a) (this a b)⟩
+  intro a b
+  by_contra! contra
+  suffices b ∈ Ioo a b by
+    #adaptation_note /-- 2025-10-25 https://github.com/leanprover/lean4/issues/10953
+      Used to be `grind`. -/
+    simp_all
+  rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
+  grind
 
 /-- Let `s` be a dense set in a nontrivial dense linear order `α`. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable

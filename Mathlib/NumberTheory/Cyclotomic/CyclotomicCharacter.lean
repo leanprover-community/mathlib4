@@ -3,11 +3,13 @@ Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Hanneke Wiersema, Andrew Yang
 -/
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.NumberTheory.Padics.RingHoms
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
-import Mathlib.FieldTheory.KrullTopology
+module
+
+public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
+public import Mathlib.FieldTheory.KrullTopology
 
 /-!
 
@@ -38,7 +40,7 @@ of `1` in `L`.
 * `cyclotomicCharacter L p : (L ≃+* L) →* ℤ_[p]ˣ` sends `g` to the unique `j` such
   that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`-th roots of unity `ζ`.
 
-  Note: This is defined to be the trivial character if `L` has no enough roots of unity.
+  Note: This is defined to be the trivial character if `L` does not have enough roots of unity.
 
 ## Implementation note
 
@@ -62,6 +64,8 @@ where `d` is the number of `n`th roots of unity in `L`.
 
 cyclotomic character
 -/
+
+@[expose] public section
 
 universe u
 variable {L : Type u} [CommRing L] [IsDomain L]
@@ -236,7 +240,7 @@ variable {L}
 `modularCyclotomicCharacter`. Note that `IsPrimitiveRoot.autToPow`
 needs an explicit root of unity, and also an auxiliary "base ring" `R`. -/
 lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n]
-    (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
+    (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : Gal(L/R)) :
     hμ.autToPow R g = modularCyclotomicCharacter L hμ.card_rootsOfUnity g := by
   ext
   apply ZMod.val_injective
@@ -331,7 +335,7 @@ theorem cyclotomicCharacter.toZModPow (p : ℕ) [Fact p.Prime] {n : ℕ}
 open IntermediateField in
 lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    Continuous ((cyclotomicCharacter L p).comp (MulSemiringAction.toRingAut (L ≃ₐ[K] L) L)) := by
+    Continuous ((cyclotomicCharacter L p).comp (MulSemiringAction.toRingAut Gal(L/K) L)) := by
   by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
   · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
     exact continuous_const (y := 1)
@@ -359,58 +363,3 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     rw [ZMod.val_one'', pow_one]
     · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
     · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
-
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.aux := modularCyclotomicCharacter.aux
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.aux_spec := modularCyclotomicCharacter.aux_spec
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow :=
-  modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.toFun := modularCyclotomicCharacter.toFun
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.toFun_spec := modularCyclotomicCharacter.toFun_spec
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.toFun_spec' := modularCyclotomicCharacter.toFun_spec'
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.toFun_spec'' := modularCyclotomicCharacter.toFun_spec''
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.toFun_unique := modularCyclotomicCharacter.toFun_unique
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.toFun_unique' := modularCyclotomicCharacter.toFun_unique'
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.id := modularCyclotomicCharacter.id
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.comp := modularCyclotomicCharacter.comp
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter' := modularCyclotomicCharacter'
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter'.spec' := modularCyclotomicCharacter'.spec'
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter'.unique' := modularCyclotomicCharacter'.unique'
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter := modularCyclotomicCharacter
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.spec := modularCyclotomicCharacter.spec
-@[deprecated (since := "2025-05-02")]
-alias ModularCyclotomicCharacter.unique := modularCyclotomicCharacter.unique
-@[deprecated (since := "2025-05-02")]
-alias IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter :=
-  IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter.toFun := cyclotomicCharacter.toFun
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter.toFun_apply := cyclotomicCharacter.toFun_apply
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter.toZModPow_toFun := cyclotomicCharacter.toZModPow_toFun
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter.toFun_spec := cyclotomicCharacter.toFun_spec
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter := cyclotomicCharacter
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter.spec := cyclotomicCharacter.spec
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter.toZModPow := cyclotomicCharacter.toZModPow
-@[deprecated (since := "2025-05-02")]
-alias CyclotomicCharacter.continuous := cyclotomicCharacter.continuous

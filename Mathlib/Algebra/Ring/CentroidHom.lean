@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Module.Hom
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Module.Hom
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Centroid homomorphisms
@@ -42,6 +44,8 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

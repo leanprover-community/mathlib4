@@ -3,15 +3,19 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yury Kudryashov
 -/
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
-#  `Nat.divisors` as a multiplicative homomorpism
+# `Nat.divisors` as a multiplicative homomorpism
 
 The main definition of this file is `Nat.divisorsHom : ℕ →* Finset ℕ`,
 exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset ℕ`.
 -/
+
+@[expose] public section
 
 open Nat Finset
 open scoped Pointwise

@@ -3,13 +3,16 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kyle Miller
 -/
+module
 
-import Lean.Elab.SyntheticMVars
-import Lean
-import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
+public meta import Lean
+public import Mathlib.Init
 /-!
 # The `fast_instance%` term elaborator
 -/
+
+public meta section
 
 namespace Mathlib.Elab.FastInstance
 
@@ -115,7 +118,7 @@ rather than applications of `Function.Injective.ring` or other non-canonical con
 The advantage is then that `instRing.toSemiring` unifies almost immediately with `instSemiring`,
 rather than having to break it down into smaller pieces.
 -/
-syntax (name := fastInstance) "fast_instance%" term : term
+syntax (name := fastInstance) "fast_instance% " term : term
 
 @[term_elab fastInstance, inherit_doc fastInstance]
 def elabFastInstance : TermElab

@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Push.Attr
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Nontrivial types
@@ -18,6 +20,8 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 
 Basic results about nontrivial types are in `Mathlib/Logic/Nontrivial/Basic.lean`.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {β : Type*}
 
@@ -32,6 +36,21 @@ theorem nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
 
 theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
   Nontrivial.exists_pair_ne
+
+/-- Pushforward a `Nontrivial` instance along an injective function. -/
+protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
+    (hf : Function.Injective f) : Nontrivial β :=
+  let ⟨x, y, h⟩ := exists_pair_ne α
+  ⟨⟨f x, f y, hf.ne h⟩⟩
+
+/-- An injective function from a nontrivial type has an argument at
+which it does not take a given value. -/
+protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
+    (hf : Function.Injective f) (y : β) : ∃ x, f x ≠ y := by
+  rcases exists_pair_ne α with ⟨x₁, x₂, hx⟩
+  by_cases h : f x₂ = y
+  · exact ⟨x₁, (hf.ne_iff' h).2 hx⟩
+  · exact ⟨x₂, h⟩
 
 -- See Note [decidable namespace]
 protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) : ∃ y, y ≠ x := by
@@ -50,6 +69,13 @@ theorem nontrivial_of_ne (x y : α) (h : x ≠ y) : Nontrivial α :=
 
 theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
   ⟨fun h ↦ @exists_ne α h x, fun ⟨_, hy⟩ ↦ nontrivial_of_ne _ _ hy⟩
+
+theorem Function.nontrivial_of_nontrivial (α β : Type*) [Nontrivial (α → β)] :
+    Nontrivial β := by
+  obtain ⟨f, g, h⟩ := exists_pair_ne (α → β)
+  rw [ne_eq, funext_iff, Classical.not_forall] at h
+  obtain ⟨a, h⟩ := h
+  exact nontrivial_of_ne _ _ h
 
 instance : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩

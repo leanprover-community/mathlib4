@@ -3,10 +3,12 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Sign.Basic
-import Mathlib.Data.Nat.Cast.Order.Field
+module
+
+public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers
@@ -16,6 +18,8 @@ This file defines an absolute value and sign function on `EReal` and uses them t
 Then it defines the inverse of an `EReal` as `⊤⁻¹ = ⊥⁻¹ = 0`, which leads to a
 `DivInvMonoid` instance and division.
 -/
+
+@[expose] public section
 
 open ENNReal Set SignType
 
@@ -149,8 +153,8 @@ instance : CommMonoidWithZero EReal :=
 instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
   rintro ⟨x, x0⟩ a b h
   simp only [le_iff_sign, EReal.sign_mul, sign_pos x0, one_mul, EReal.abs_mul] at h ⊢
-  exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_left' · _)) <|
-    Or.imp_right <| And.imp_right <| And.imp_right (mul_le_mul_left' · _)
+  exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_right · _)) <|
+    Or.imp_right <| And.imp_right <| And.imp_right (mul_le_mul_right · _)
 
 instance : MulPosMono EReal := posMulMono_iff_mulPosMono.1 inferInstance
 
@@ -255,7 +259,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
 
 lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : EReal) = a⁻¹ := by
   induction a with
-  | bot | top  => simp
+  | bot | top => simp
   | coe a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, abs_def a,
@@ -449,7 +453,7 @@ lemma lt_div_iff (h : 0 < b) (h' : b ≠ ⊤) : a < c / b ↔ a * b < c := by
   rw [EReal.mul_div b a b, mul_comm a b]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
-lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) :  b / c < a ↔ b < a * c := by
+lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) : b / c < a ↔ b < a * c := by
   nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_gt h)]
   rw [EReal.mul_div c a c, mul_comm a c]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
@@ -547,7 +551,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]
-def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealInv : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
     assertInstancesCommute
@@ -558,7 +562,7 @@ def evalERealInv : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
 @[positivity (_ / _ : EReal)]
-def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a / $b) =>
     assertInstancesCommute

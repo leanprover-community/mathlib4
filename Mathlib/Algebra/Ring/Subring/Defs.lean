@@ -3,8 +3,10 @@ Copyright (c) 2020 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 -/
-import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.RingTheory.NonUnitalSubring.Defs
+module
+
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
 
 /-!
 # Subrings
@@ -61,7 +63,9 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists RelIso Even OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists RelIso Even IsOrderedMonoid
 
 universe u v w
 
@@ -154,9 +158,21 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
+lemma toSubsemiring_injective : (toSubsemiring : Subring R → Subsemiring R).Injective :=
+  fun ⟨s, hs⟩ t ↦ by congr!
+
+@[simp] lemma toSubsemiring_inj {s t : Subring R} : s.toSubsemiring = t.toSubsemiring ↔ s = t :=
+  toSubsemiring_injective.eq_iff
+
 instance : SetLike (Subring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective' := SetLike.coe_injective.comp toSubsemiring_injective
+
+lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
+
+lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
@@ -226,15 +242,6 @@ protected def copy (S : Subring R) (s : Set R) (hs : s = ↑S) : Subring R :=
 
 theorem copy_eq (S : Subring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
-
-theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R → Subsemiring R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R → AddSubgroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSubmonoid)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/

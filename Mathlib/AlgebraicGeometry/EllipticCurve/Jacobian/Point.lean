@@ -3,14 +3,16 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 
 /-!
 # Nonsingular points and the group law in Jacobian coordinates
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points of `W` can be
-endowed with an group law, which is uniquely determined by the formulae in
+endowed with a group law, which is uniquely determined by the formulae in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean` and follows from an equivalence with
 the nonsingular points `W⟮F⟯` in affine coordinates.
 
@@ -42,9 +44,9 @@ the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a non
 point on `W` can be given by `[x : y : z]` and the nonsingular condition on any representative.
 
 A nonsingular Jacobian point representative can be converted to a nonsingular point in affine
-coordinates using `WeiestrassCurve.Jacobian.Point.toAffine`, which lifts to a map on nonsingular
-Jacobian points using `WeiestrassCurve.Jacobian.Point.toAffineLift`. Conversely, a nonsingular point
-in affine coordinates can be converted to a nonsingular Jacobian point using
+coordinates using `WeierstrassCurve.Jacobian.Point.toAffine`, which lifts to a map on nonsingular
+Jacobian points using `WeierstrassCurve.Jacobian.Point.toAffineLift`. Conversely, a nonsingular
+point in affine coordinates can be converted to a nonsingular Jacobian point using
 `WeierstrassCurve.Jacobian.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toJacobian`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
@@ -58,6 +60,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 elliptic curve, Jacobian, point, group law
 -/
+
+@[expose] public section
 
 local notation3 "x" => (0 : Fin 3)
 
@@ -402,8 +406,6 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
 lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
     fromAffine (.some h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
-
-@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular Jacobian point on a Weierstrass curve `W`.
 

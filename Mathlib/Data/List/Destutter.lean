@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Eric Wieser
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.Data.List.Dedup
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.Data.List.Dedup
 
 /-!
 # Destuttering of Lists
@@ -25,6 +27,8 @@ Note that we make no guarantees of being the longest sublist with this property;
 
 adjacent, chain, duplicates, remove, list, stutter, destutter
 -/
+
+@[expose] public section
 
 open Function
 
@@ -175,9 +179,9 @@ theorem map_destutter {f : α → β} : ∀ {l : List α}, (∀ a ∈ l, ∀ b �
         (subset_cons_self _ _) hc) _ (cons_subset_cons _ (subset_cons_self _ _) hd),
         map_destutter fun c hc d hd ↦ hl _ (subset_cons_self _ _ hc) _ (subset_cons_self _ _ hd)]
 
-/-- For a injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
+/-- For an injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
 theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [DecidableEq β] :
-    (l.destutter (·≠·)).map f = (l.map f).destutter (·≠·) :=
+    (l.destutter (· ≠ ·)).map f = (l.map f).destutter (· ≠ ·) :=
   map_destutter fun _ _ _ _ ↦ h.ne_iff.symm
 
 /-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotone

@@ -3,11 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Algebra.Order.Monoid.Units
-import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Data.Int.LeastGreatest
-import Mathlib.Data.Rat.Floor
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Monoid.Units
+public import Mathlib.Algebra.Order.Ring.Pow
+public import Mathlib.Data.Int.LeastGreatest
+public import Mathlib.Data.Rat.Floor
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Archimedean groups and fields.
@@ -29,6 +32,8 @@ number `n` such that `x ≤ n • y`.
 
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -161,7 +166,7 @@ theorem exists_nat_ge (x : R) :
   nontriviality R
   exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
 
-instance (priority := 100) : IsDirected R (· ≤ ·) :=
+instance (priority := 100) : IsDirectedOrder R :=
   ⟨fun x y ↦
     let ⟨m, hm⟩ := exists_nat_ge x; let ⟨n, hn⟩ := exists_nat_ge y
     let ⟨k, hmk, hnk⟩ := exists_ge_ge m n
@@ -183,7 +188,7 @@ theorem add_one_pow_unbounded_of_pos (x : R) (hy : 0 < y) : ∃ n : ℕ, x < (y 
       _ = n * y := nsmul_eq_mul _ _
       _ < 1 + n * y := lt_one_add _
       _ ≤ (1 + y) ^ n :=
-        one_add_mul_le_pow' (mul_nonneg hy.le hy.le) (mul_nonneg this this)
+        one_add_mul_le_pow_of_sq_nonneg (pow_nonneg hy.le _) (pow_nonneg this _)
           (add_nonneg zero_le_two hy.le) _
       _ = (y + 1) ^ n := by rw [add_comm]
 
@@ -203,7 +208,7 @@ theorem exists_int_ge (x : R) : ∃ n : ℤ, x ≤ n := let ⟨n, h⟩ := exists
 theorem exists_int_le (x : R) : ∃ n : ℤ, n ≤ x :=
   let ⟨n, h⟩ := exists_int_ge (-x); ⟨-n, by simpa [neg_le] using h⟩
 
-instance (priority := 100) : IsDirected R (· ≥ ·) where
+instance (priority := 100) : IsCodirectedOrder R where
   directed a b :=
     let ⟨m, hm⟩ := exists_int_le a; let ⟨n, hn⟩ := exists_int_le b
     ⟨(min m n : ℤ), le_trans (Int.cast_mono <| min_le_left _ _) hm,
@@ -298,11 +303,10 @@ theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
 theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
-  by_cases y_pos : y ≤ 0
+  by_cases! y_pos : y ≤ 0
   · use 1
     simp only [pow_one]
     exact y_pos.trans_lt hx
-  rw [not_le] at y_pos
   rcases pow_unbounded_of_one_lt x⁻¹ ((one_lt_inv₀ y_pos).2 hy) with ⟨q, hq⟩
   exact ⟨q, by rwa [inv_pow, inv_lt_inv₀ hx (pow_pos y_pos _)] at hq⟩
 
@@ -506,7 +510,7 @@ instance : Archimedean ℤ :=
     ⟨n.toNat,
       le_trans (Int.self_le_toNat _) <| by
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
-          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
+          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.natCast_nonneg n.toNat)⟩⟩
 
 instance Nonneg.instArchimedean [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [Archimedean M] :

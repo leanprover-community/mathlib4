@@ -3,7 +3,9 @@ Copyright (c) 2025 Jacob Reinhold. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
-import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 
 /-!
 # Deterministic Morphisms in Copy-Discard Categories
@@ -29,6 +31,8 @@ morphisms are deterministic.
 
 deterministic, copy-discard category, comonoid morphism
 -/
+
+@[expose] public section
 
 universe v u
 

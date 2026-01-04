@@ -3,10 +3,12 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Meta.ExprLens
-import ProofWidgets.Component.MakeEditLink
-import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
-import Mathlib.Tactic.Widget.SelectInsertParamsClass
+module
+
+public meta import Lean.Meta.ExprLens
+public meta import ProofWidgets.Component.MakeEditLink
+public meta import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
+public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
 
 /-! # Selection panel utilities
 
@@ -15,6 +17,8 @@ generating tactic calls based on selected sub-expressions in the main goal.
 
 There are also some minor helper functions.
 -/
+
+public meta section
 
 open Lean Meta Server
 
@@ -37,7 +41,8 @@ def String.renameMetaVar (s : String) : String :=
   match s.splitOn "?m." with
   | [] => ""
   | [s] => s
-  | head::tail => head ++ "?_" ++ "?_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
+  | head::tail => head ++ "?_" ++
+      "?_".toSlice.intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
 
 open ProofWidgets
 
@@ -74,7 +79,7 @@ We also make sure `mkCmdStr` is executed in the right context.
 -/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
     (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
-    MetaM (String × String × Option (String.Pos × String.Pos)))
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)))
     (helpMsg : String) (title : String) (onlyGoal := true) (onlyOne := false) :
     (params : Params) → RequestM (RequestTask Html) :=
   fun params ↦ RequestM.asTask do

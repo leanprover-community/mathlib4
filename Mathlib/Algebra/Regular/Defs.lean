@@ -3,7 +3,9 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Notation.Defs
+module
+
+public import Mathlib.Algebra.Notation.Defs
 
 /-!
 # Regular elements
@@ -13,6 +15,8 @@ analogues add-left-regular, add-right-regular and add-regular elements.
 
 For monoids where _every_ element is regular, see `IsCancelMul` and nearby typeclasses.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [Mul R]
 

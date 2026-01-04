@@ -3,14 +3,18 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Nat.Fib.Basic
+public meta import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.fib`
 
 This `norm_num` extension uses a strategy parallel to that of `Nat.fastFib`, but it instead
 produces proofs of what `Nat.fib` evaluates to.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 

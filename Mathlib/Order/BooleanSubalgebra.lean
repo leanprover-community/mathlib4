@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Sublattice
+module
+
+public import Mathlib.Order.Sublattice
 
 /-!
 # Boolean subalgebras
 
 This file defines Boolean subalgebras.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -280,7 +284,7 @@ lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.m
 
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : BooleanSubalgebra α) :
     L.map f = L.comap (f.symm : BoundedLatticeHom β α) :=
-  SetLike.coe_injective <| f.toEquiv.image_eq_preimage L
+  SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : BooleanSubalgebra α) :
     L.comap f = L.map (f.symm : BoundedLatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm

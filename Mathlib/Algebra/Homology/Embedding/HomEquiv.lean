@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.Embedding.Boundary
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.Boundary
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Relations between `extend` and `restriction`
@@ -22,12 +24,14 @@ condition `e.HasLift φ`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace ComplexShape
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'} (e : Embedding c c')
-  {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 namespace Embedding
 
@@ -62,7 +66,6 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
     f φ i' = (K.restrictionXIso e hi).inv ≫ φ.f i ≫ (L.extendXIso e hi).inv := by
   have hi' : ∃ k, e.f k = i' := ⟨i, hi⟩
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
-  dsimp [f]
   grind [f]
 
 @[reassoc (attr := simp)]

@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Order.RelClasses
+module
+
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
@@ -30,6 +31,8 @@ isomorphisms.
 * `↪r`: `RelEmbedding`
 * `≃r`: `RelIso`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -201,7 +204,6 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
   coe x := x.toFun
   coe_injective' f g h := by
@@ -209,7 +211,6 @@ instance : FunLike (r ↪r s) α β where
     rcases g with ⟨⟨⟩⟩
     congr
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
@@ -297,7 +298,7 @@ protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
 protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
 
-protected theorem isSymm (f : r ↪r s) [IsSymm β s] : IsSymm α r :=
+protected theorem isSymm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
 
 protected theorem isAsymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
@@ -541,12 +542,10 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : FunLike (r ≃r s) α β where
   coe x := x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
@@ -661,17 +660,14 @@ protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → 
     rw [eq_of_heq h₂]
     rfl⟩
 
-@[simp]
 protected theorem cast_symm {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
     (h₂ : r ≍ s) : (RelIso.cast h₁ h₂).symm = RelIso.cast h₁.symm h₂.symm :=
   rfl
 
-@[simp]
 protected theorem cast_refl {α : Type u} {r : α → α → Prop} (h₁ : α = α := rfl)
     (h₂ : r ≍ r := HEq.rfl) : RelIso.cast h₁ h₂ = RelIso.refl r :=
   rfl
 
-@[simp]
 protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : β → β → Prop}
     {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : r ≍ s) (h₂' : s ≍ t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=

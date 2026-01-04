@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Order.Closure
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Order.Closure
 
 /-!
 # Convex hull
@@ -18,6 +20,8 @@ set containing `s`. In order theory speak, this is a closure operator.
 while the impact on writing code is minimal as `convexHull 𝕜 s` is automatically elaborated as
 `(convexHull 𝕜) s`.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -146,10 +150,6 @@ theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Conv
       ⟨convexHull_min diff_subset hs hy, by
         rintro (rfl : y = x)
         exact hx hy⟩
-
-@[deprecated (since := "2025-05-23")]
-alias Convex.convex_remove_iff_not_mem_convexHull_remove :=
-  Convex.convex_remove_iff_notMem_convexHull_remove
 
 theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=

@@ -3,15 +3,17 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Algebra.Star.Pi
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Data.Real.Star
-import Mathlib.Topology.Algebra.Module.Star
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Data.Real.Star
+public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
 # Normed star rings and algebras
@@ -31,6 +33,8 @@ Note that the type classes corresponding to C⋆-algebras are defined in
   definition of C*-algebras in some sources (e.g. Wikipedia).
 
 -/
+
+@[expose] public section
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
@@ -132,7 +136,7 @@ theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖�
 
 lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖ = ‖x‖ ^ 2 := by
-  simpa [sq, hx.star_eq] using  CStarRing.norm_star_mul_self (x := x)
+  simpa [sq, hx.star_eq] using CStarRing.norm_star_mul_self (x := x)
 
 lemma _root_.IsSelfAdjoint.nnnorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
@@ -212,7 +216,7 @@ instance (priority := 100) [Nontrivial E] : NormOneClass E :=
 
 theorem norm_coe_unitary [Nontrivial E] (U : unitary E) : ‖(U : E)‖ = 1 := by
   rw [← sq_eq_sq₀ (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CStarRing.norm_star_mul_self,
-    unitary.coe_star_mul_self, CStarRing.norm_one]
+    Unitary.coe_star_mul_self, CStarRing.norm_one]
 
 @[simp]
 theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U‖ = 1 :=
@@ -226,7 +230,7 @@ theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A�
       _ ≤ ‖(U : E)‖ * ‖A‖ := norm_mul_le _ _
       _ = ‖A‖ := by rw [norm_coe_unitary, one_mul]
   · calc
-      _ = ‖(U : E)⋆ * U * A‖ := by rw [unitary.coe_star_mul_self U, one_mul]
+      _ = ‖(U : E)⋆ * U * A‖ := by rw [Unitary.coe_star_mul_self U, one_mul]
       _ ≤ ‖(U : E)⋆‖ * ‖(U : E) * A‖ := by
         rw [mul_assoc]
         exact norm_mul_le _ _
@@ -244,7 +248,7 @@ theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
   calc
     _ = ‖((U : E)⋆ * A⋆)⋆‖ := by simp only [star_star, star_mul]
     _ = ‖(U : E)⋆ * A⋆‖ := by rw [norm_star]
-    _ = ‖A⋆‖ := norm_mem_unitary_mul (star A) (unitary.star_mem U.prop)
+    _ = ‖A⋆‖ := norm_mem_unitary_mul (star A) (Unitary.star_mem U.prop)
     _ = ‖A‖ := norm_star _
 
 theorem norm_mul_mem_unitary (A : E) {U : E} (hU : U ∈ unitary E) : ‖A * U‖ = ‖A‖ :=

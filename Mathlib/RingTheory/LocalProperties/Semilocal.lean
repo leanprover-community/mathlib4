@@ -3,8 +3,10 @@ Copyright (c) 2025 Yiming Fu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yiming Fu
 -/
-import Mathlib.RingTheory.DedekindDomain.PID
-import Mathlib.RingTheory.KrullDimension.PID
+module
+
+public import Mathlib.RingTheory.DedekindDomain.PID
+public import Mathlib.RingTheory.KrullDimension.PID
 
 /-!
 # Local properties for semilocal rings
@@ -21,6 +23,8 @@ finitely many maximal ideals).
 * `isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization_maximal`: A semilocal
   integral domain `A` is a PID if its localization at every maximal ideal is a PID.
 -/
+
+@[expose] public section
 
 section CommSemiring
 
@@ -52,7 +56,7 @@ theorem Module.Finite.of_isLocalized_maximal
   have : Fintype (MaximalSpectrum R) := Fintype.ofFinite _
   choose s hs using fun P : MaximalSpectrum R ↦ (H P.1).fg_top
   choose frac hfrac using fun P : MaximalSpectrum R ↦ IsLocalizedModule.surj P.1.primeCompl (f P.1)
-  use Finset.biUnion Finset.univ fun P ↦ Finset.image (frac P ·|>.1) (s P)
+  use Finset.biUnion Finset.univ fun P ↦ Finset.image (frac P · |>.1) (s P)
   refine Submodule.eq_top_of_localization_maximal Rₚ Mₚ f _ fun P hP ↦ ?_
   rw [eq_top_iff, ← hs ⟨P, hP⟩, Submodule.localized'_span, Submodule.span_le]
   intro x hx

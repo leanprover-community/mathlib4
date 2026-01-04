@@ -3,8 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Category of groupoids
@@ -21,6 +23,8 @@ and `forgetToCat : Grpd ⥤ Cat`.
 Though `Grpd` is not a concrete category, we use `Bundled` to define
 its carrier type.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -72,11 +76,14 @@ def objects : Grpd.{v, u} ⥤ Type u where
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
   obj C := Cat.of C
-  map := id
+  map := Functor.toCatHom
 
-instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
+instance (X : Grpd) : Groupoid (Grpd.forgetToCat.obj X) := inferInstanceAs (Groupoid X)
+
+instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f.toFunctor, rfl⟩
 
 instance forgetToCat_faithful : forgetToCat.Faithful where
+  map_injective := congrArg (Cat.Hom.toFunctor)
 
 /-- Convert arrows in the category of groupoids to functors,
 which sometimes helps in applying simp lemmas -/

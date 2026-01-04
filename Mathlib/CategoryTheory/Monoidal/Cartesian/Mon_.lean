@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Andrew Yang
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # Yoneda embedding of `Mon C`
@@ -15,8 +17,11 @@ is a presheaf of monoids, by constructing the yoneda embedding `Mon C ⥤ Cᵒ�
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
 
+@[expose] public section
+
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   [Category.{w} D] [CartesianMonoidalCategory D]
@@ -63,8 +68,7 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
-attribute [local simp] tensorObj.one_def tensorObj.mul_def
-
+attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 instance : CartesianMonoidalCategory (Mon C) where
   isTerminalTensorUnit := .ofUniqueHom (fun M ↦ ⟨toUnit _⟩) fun M f ↦ by ext; exact toUnit_unique ..
   fst M N := .mk (fst M.X N.X)
@@ -75,11 +79,24 @@ instance : CartesianMonoidalCategory (Mon C) where
   fst_def M N := by ext; simp [fst_def]; congr
   snd_def M N := by ext; simp [snd_def]; congr
 
-variable {M N₁ N₂ : Mon C}
+variable {M N N₁ N₂ : Mon C}
 
 @[simp] lemma lift_hom (f : M ⟶ N₁) (g : M ⟶ N₂) : (lift f g).hom = lift f.hom g.hom := rfl
 @[simp] lemma fst_hom (M N : Mon C) : (fst M N).hom = fst M.X N.X := rfl
 @[simp] lemma snd_hom (M N : Mon C) : (snd M N).hom = snd M.X N.X := rfl
+
+/-! ### Comm monoid objects are internal monoid objects -/
+
+/-- A commutative monoid object is a monoid object in the category of monoid objects. -/
+instance [IsCommMonObj M.X] : MonObj M where
+  one := .mk η[M.X]
+  mul := .mk μ[M.X]
+
+@[simp] lemma hom_one (M : Mon C) [IsCommMonObj M.X] : η[M].hom = η[M.X] := rfl
+@[simp] lemma hom_mul (M : Mon C) [IsCommMonObj M.X] : μ[M].hom = μ[M.X] := rfl
+
+/-- A commutative monoid object is a commutative monoid object in the category of monoid objects. -/
+instance [IsCommMonObj M.X] : IsCommMonObj M where
 
 end Mon
 
@@ -120,9 +137,6 @@ def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _)
 
 @[deprecated (since := "2025-09-09")] alias Mon_Class.ofRepresentableBy := MonObj.ofRepresentableBy
 
-@[deprecated (since := "2025-03-07")]
-alias MonObjOfRepresentableBy := MonObj.ofRepresentableBy
-
 @[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObj.ofRepresentableBy
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
@@ -150,12 +164,12 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
       Category.comp_id, rightUnitor_hom]
     exact lift_fst _ _
 
-scoped[MonObj] attribute [instance] Hom.monoid
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.monoid
 
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
 
-namespace CategoryTheory.Functor
+namespace Functor
 variable (F : C ⥤ D) [F.Monoidal]
 
 open scoped Obj
@@ -181,7 +195,7 @@ def FullyFaithful.homMulEquiv (hF : F.FullyFaithful) : (X ⟶ M) ≃* (F.obj X �
   __ := hF.homEquiv
   __ := F.homMonoidHom
 
-end CategoryTheory.Functor
+end Functor
 
 section BraidedCategory
 variable [BraidedCategory C]
@@ -190,7 +204,17 @@ variable [BraidedCategory C]
 abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
   mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using lift g f ≫= IsCommMonObj.mul_comm M
 
-scoped[MonObj] attribute [instance] Hom.commMonoid
+namespace Mon.Hom
+variable {M N : Mon C} [IsCommMonObj N.X]
+
+@[simp] lemma hom_one : (1 : M ⟶ N).hom = 1 := rfl
+@[simp] lemma hom_mul (f g : M ⟶ N) : (f * g).hom = f.hom * g.hom := rfl
+@[simp] lemma hom_pow (f : M ⟶ N) (n : ℕ) : (f ^ n).hom = f.hom ^ n := by
+  induction n <;> simp [pow_succ, *]
+
+end Mon.Hom
+
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.commMonoid
 
 end BraidedCategory
 
@@ -260,10 +284,6 @@ lemma MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy :
 
 @[deprecated (since := "2025-09-09")]
 alias Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy :=
-  MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
-
-@[deprecated (since := "2025-03-07")]
-alias MonObjOfRepresentableBy_yonedaMonObjRepresentableBy :=
   MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
 
 @[deprecated (since := "2025-09-09")]
@@ -365,3 +385,4 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 
 end Hom
+end CategoryTheory

@@ -3,17 +3,20 @@ Copyright (c) 2024 Elliot Dean Young and Jiazhen Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiazhen Xia, Elliot Dean Young
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Topology.Category.TopCat.EpiMono
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Topology.Category.TopCat.EpiMono
 
 /-!
 # Euclidean spheres
 
-This files defines the `n`-sphere `𝕊 n`, the `n`-disk `𝔻 n`, its boundary `∂𝔻 n` and its interior
+This file defines the `n`-sphere `𝕊 n`, the `n`-disk `𝔻 n`, its boundary `∂𝔻 n` and its interior
 `𝔹 n` as objects in `TopCat`.
 
 -/
+
+@[expose] public section
 
 universe u
 

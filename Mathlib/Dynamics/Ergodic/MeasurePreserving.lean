@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.AEMeasurable
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.MeasureTheory.Measure.AEMeasurable
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measure-preserving maps
@@ -25,6 +27,8 @@ Isabelle formalization.
 
 measure-preserving map, measure
 -/
+
+@[expose] public section
 
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
@@ -89,6 +93,17 @@ protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
   ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
+
+protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
+    (hg : Measurable g) (hf : Measurable f) :
+    MeasurePreserving g (μa.map f) μc :=
+  ⟨hg, (map_map hg hf).trans hgf.map_eq⟩
+
+protected theorem of_semiconj {f : α → β} {ga : α → α} {gb : β → β}
+    (hfm : MeasurePreserving f μa μb) (hga : MeasurePreserving ga μa μa) (hf : Semiconj f ga gb)
+    (hgb : Measurable gb) : MeasurePreserving gb μb μb := by
+  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp hgb hfm.measurable
+  rwa [hfm.map_eq] at this
 
 /-- An alias of `MeasureTheory.MeasurePreserving.comp` with a convenient defeq and argument order
 for `MeasurableEquiv` -/
@@ -182,7 +197,7 @@ lemma measure_symmDiff_preimage_iterate_le
   | zero => simp
   | succ n ih =>
     simp only [add_smul, one_smul]
-    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n + 1] ⁻¹' s)]
     replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
       hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
     rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]

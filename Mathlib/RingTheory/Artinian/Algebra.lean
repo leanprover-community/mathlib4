@@ -3,15 +3,19 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Algebras over Artinian rings
 
 In this file we collect results about algebras over Artinian rings.
 -/
+
+@[expose] public section
 
 namespace IsArtinianRing
 

@@ -27,8 +27,8 @@ commands that can show the dependency structure from the unused import up to the
 "unnecessarily" transitively imports it.
 
 `scripts/unused_in_pole.sh module` (or no argument for all of Mathlib), will calculate the current
-longest pole in Mathlib (note for this you need to be on a commit on which the speed center has
-run), and then feed that list of modules into `lake exe unused`.
+longest pole in Mathlib (note for this you need to be on a commit on which radar has run), and then
+feed that list of modules into `lake exe unused`.
 
 Demo video at https://youtu.be/PVj_FHGwhUI
 -/
@@ -62,7 +62,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   -- Should we sort the modules?
   -- The code below assumes that it is "deeper files first", as reported by `lake exe pole`.
 
-  searchPathRef.set compile_time_search_path%
+  searchPathRef.set (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
   -- It may be reasonable to remove this again after https://github.com/leanprover/lean4/pull/6325
   unsafe enableInitializersExecution
   let (unused, _) ← unsafe withImportModules #[{module := `Mathlib}] {} (trustLevel := 1024)

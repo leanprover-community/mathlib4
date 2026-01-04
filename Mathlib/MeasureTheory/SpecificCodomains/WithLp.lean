@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.MeasureTheory.SpecificCodomains.Pi
+module
+
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.MeasureTheory.SpecificCodomains.Pi
 
 /-!
 # Integrability in `WithLp`
@@ -12,6 +14,8 @@ import Mathlib.MeasureTheory.SpecificCodomains.Pi
 We prove that `f : X → PiLp q E` is in `Lᵖ` if and only if for all `i`, `f · i` is in `Lᵖ`.
 We do the same for `f : X → WithLp q (E × F)`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 
@@ -24,7 +28,7 @@ section Pi
 variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] {f : X → PiLp q E}
 
 lemma memLp_piLp_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ := by
-  simp_rw [← PiLp.ofLp_apply, ← memLp_pi_iff, ← Function.comp_apply (f := WithLp.ofLp)]
+  simp_rw [← memLp_pi_iff, ← Function.comp_apply (f := WithLp.ofLp)]
   exact (PiLp.lipschitzWith_ofLp q E).memLp_comp_iff_of_antilipschitz
     (PiLp.antilipschitzWith_ofLp q E) (by simp) |>.symm
 
@@ -51,7 +55,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : X → 
 
 lemma memLp_prodLp_iff :
     MemLp f p μ ↔ MemLp (fun x ↦ (f x).fst) p μ ∧ MemLp (fun x ↦ (f x).snd) p μ := by
-  simp_rw [← memLp_prod_iff]
+  simp_rw [← WithLp.ofLp_fst, ← WithLp.ofLp_snd, ← memLp_prod_iff]
   exact (WithLp.prod_lipschitzWith_ofLp q E F).memLp_comp_iff_of_antilipschitz
     (WithLp.prod_antilipschitzWith_ofLp q E F) (by simp) |>.symm
 
