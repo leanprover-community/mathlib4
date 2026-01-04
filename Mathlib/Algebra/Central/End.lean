@@ -50,9 +50,20 @@ public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M�
     ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
     ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
     eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_coe,
-    LinearMap.smul_apply, End.one_apply]
-  constructor
-  all_goals
-    refine fun ⟨y, hy⟩ ↦ ⟨y, fun _ ↦ ?_⟩
-    simp_all only [EmbeddingLike.apply_eq_iff_eq, eq_comm (a := y • _), Pi.smul_apply]
-    exact LinearMapClass.map_smul_of_tower _ _ _
+    LinearMap.smul_apply, End.one_apply, Pi.smul_apply, LinearMapClass.map_smul_of_tower g]
+
+open LinearMap in
+public theorem LinearEquiv.conjAlgEquiv_ext_iff' {S M₂ : Type*} [Semifield S] [Module S M]
+    [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M] [AddCommMonoid M₂] [Module R M₂]
+    [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂] [Algebra.IsCentral S R]
+    (f g : M ≃ₗ[R] M₂) : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : Sˣ, f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← eq_toLinearMap_symm_comp, ← comp_assoc,
+    eq_comp_toLinearMap_symm, comp_assoc, ← comp_assoc _ _ g.symm.toLinearMap, comp_coe,
+    ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
+    ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
+    eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, LinearEquiv.ext_iff, comp_apply, coe_coe,
+    LinearEquiv.smul_apply, LinearMap.smul_apply, End.one_apply, LinearMapClass.map_smul_of_tower g]
+  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : S), by simp [h]⟩⟩
+  if hy : y = 0 then exact ⟨1, fun x ↦ by simp [by simpa [hy] using congr($(h x))]⟩
+  else exact ⟨.mk0 y hy, fun x ↦ h _⟩
