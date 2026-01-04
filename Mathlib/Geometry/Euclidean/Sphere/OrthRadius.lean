@@ -111,7 +111,7 @@ lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
   have hqp := orthRadius_le_orthRadius_iff.1 h.symm.le
   grind
 
-lemma injective_orthRadius (s : Sphere P) : Injective s.orthRadius :=
+lemma orthRadius_injective (s : Sphere P) : Injective s.orthRadius :=
   fun _ _ ↦ orthRadius_eq_orthRadius_iff.1
 
 lemma finrank_orthRadius [FiniteDimensional ℝ V] {s : Sphere P} {p : P} (hp : p ≠ s.center) :
