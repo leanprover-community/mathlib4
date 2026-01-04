@@ -240,7 +240,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
     rfl
   rw [E, pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn]
   · simp [η, ContinuousAffineMap.coe_lineMap_eq]
-  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn le_rfl
+  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn one_ne_zero
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
@@ -303,10 +303,10 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       gcongr
       simpa only [inv_nonneg, sub_nonneg] using ha'b'.le
     · simp only [η]
-      apply (ContDiff.contDiffOn _).differentiableOn le_rfl
+      apply (ContDiff.contDiffOn _).differentiableOn one_ne_zero
       fun_prop
     · rw [A a haa', B b hb'b]
-      apply γ_smooth.mdifferentiableOn le_rfl
+      apply γ_smooth.mdifferentiableOn one_ne_zero
   · filter_upwards [Iio_mem_nhds haa'] with t ht using A' t ht
   · filter_upwards [Ioi_mem_nhds hb'b] with t ht using B' t ht
 
@@ -331,7 +331,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   rw [← pathELength_comp_of_antitoneOn zero_le_one] at this; rotate_left
   · exact monotone_id.neg.antitoneOn _
   · exact differentiableOn_neg _
-  · exact h_smooth.contMDiffOn.mdifferentiableOn le_rfl
+  · exact h_smooth.contMDiffOn.mdifferentiableOn one_ne_zero
   apply this.trans_lt
   convert hγ
   ext t

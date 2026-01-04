@@ -176,7 +176,7 @@ theorem coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
 
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) :
-    Perfection.coeff _ p n ((frobeniusEquiv _ p).symm ^[m] f) =
+    Perfection.coeff _ p n ((frobeniusEquiv _ p).symm^[m] f) =
     Perfection.coeff _ p (n + m) f := by
   induction m generalizing f n with
   | zero => simp
@@ -545,7 +545,7 @@ theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
 
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
-    (coeff m (((frobeniusEquiv _ p).symm ^[n]) x)) = coeff (m + n) x := by
+    (coeff m (((frobeniusEquiv _ p).symm^[n]) x)) = coeff (m + n) x := by
   simp [PreTilt, coeff]
 
 end coeff
