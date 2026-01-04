@@ -103,16 +103,15 @@ lemma TensorProduct.map_comap_eq_zero_if_zero [hA : IsSimpleRing A]
         simpa [sub_eq_zero] using ih j hj
       simp_rw [isCentral_A.center_eq_bot, Algebra.mem_bot, Set.mem_range] at this
       choose k hk using this
-      rw [← Finset.sum_attach] at hT'2
-      conv at hT'2 => enter [2, 2, 2, x]; rw [← hk x.1 x.2]
       set key : B := 𝓑 j + ∑ i ∈ s.attach, k i i.2 • 𝓑 i
-      have hkey : f key ∈ I := by
+      have hkey : key = 0 := by
+        refine (map_eq_zero_iff _ f.toRingHom.injective).mp ?_
+        refine eq_bot_iff.mp hAB <| TwoSidedIdeal.mem_map_of_mem <| (TwoSidedIdeal.mem_comap _).mpr ?_
+        rw [← Finset.sum_attach] at hT'2
+        conv at hT'2 => enter [2, 2, 2, x]; rw [← hk x.1 x.2]
         convert hT'1 using 1
         rw [hT'2, map_add]
         simp +zetaDelta [Algebra.algebraMap_eq_smul_one, ← smul_tmul']
-      replace hkey : f key = 0 :=
-        eq_bot_iff.mp hAB <| TwoSidedIdeal.mem_map_of_mem <| (TwoSidedIdeal.mem_comap _).2 hkey
-      replace hkey := (map_eq_zero_iff _ f.toRingHom.injective).mp hkey
       set g : ι → K := fun i ↦ if h : i ∈ s then k i h else 1
       have hg : ∑ i ∈ insert j s, g i • 𝓑 i = 0 := by
         unfold g
