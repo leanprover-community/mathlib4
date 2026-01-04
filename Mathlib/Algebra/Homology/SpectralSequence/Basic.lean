@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -7,43 +7,22 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 
 /-!
 # Spectral sequences
 
+In this file, we define the category `SpectralSequence C c r₀` of spectral sequences
+in an abelian category `C` with `Eᵣ`-pages defined from `r₀ : ℤ` having differentials
+given by complex shapes `c : ℤ → ComplexShape ι`, where `ι` is the index type
+for the objects on each page (e.g. `ι := ℤ × ℤ` or `ι := ℕ × ℕ`).
+A spectral sequence is defined as the data of a sequence of homological complexes
+(the pages) and a sequence of isomorphism between the homology of a page and the
+next page.
+
 -/
 
 @[expose] public section
-
-namespace ComplexShape
-
-def spectralSequenceNat (u : ℤ × ℤ) : ComplexShape (ℕ × ℕ) where
-  Rel a b := a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2
-  next_eq {a b b'} := by
-    rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> lia
-  prev_eq {a a' b} := by
-    rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> lia
-
-instance (u : ℤ × ℤ) : DecidableRel (spectralSequenceNat u).Rel := fun a b => by
-  dsimp [spectralSequenceNat]
-  infer_instance
-
-@[simp]
-lemma spectralSequenceNat_rel_iff (u : ℤ × ℤ) (a b : ℕ × ℕ) :
-    (spectralSequenceNat u).Rel a b ↔ a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2 := by rfl
-
-def spectralSequenceFin (l : ℕ) (u : ℤ × ℤ) : ComplexShape (ℤ × Fin l) where
-  Rel a b := a.1 + u.1 = b.1 ∧ a.2.1 + u.2 = b.2.1
-  next_eq := by
-    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩⟨b₁', ⟨b₂', _⟩⟩ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> lia
-  prev_eq := by
-    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨a₁', ⟨a₂', _⟩⟩⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> lia
-
-end ComplexShape
 
 namespace CategoryTheory
 
@@ -52,103 +31,105 @@ open Category Limits
 variable (C : Type*) [Category C] [Abelian C]
   {ι : Type*} (c : ℤ → ComplexShape ι) (r₀ : ℤ)
 
+/-- Given an abelian category `C`, a sequence of complex shapes `c : ℤ → ComplexShape ι`
+and a starting page `r₀ : ℤ`, a spectral sequence involves pages which are homological
+complexes and isomorphisms saying that the homology of a page identifies to the next page. -/
 structure SpectralSequence where
+  /-- the `r`th page of a spectral sequence is an homological complex -/
   page (r : ℤ) (hr : r₀ ≤ r := by lia) : HomologicalComplex C (c r)
+  /-- the isomorphism between the homology of the `r`-th page at an object `pq : ι`
+  and the corresponding object on the next page -/
   iso (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     (page r).homology pq ≅ (page r').X pq
 
 namespace SpectralSequence
 
 variable {C c r₀}
-variable (E E' E'' : SpectralSequence C c r₀)
 
+/-- A morphism of spectral sequence is a sequence of morphisms between the
+pages which commutes with the isomorphisms in homology. -/
 @[ext]
-structure Hom where
+structure Hom (E E' : SpectralSequence C c r₀) where
+  /-- the morphism of homological complexes between the `r`th pages -/
   hom (r : ℤ) (hr : r₀ ≤ r := by lia) : E.page r ⟶ E'.page r
   comm (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     HomologicalComplex.homologyMap (hom r) pq ≫ (E'.iso r r' pq).hom =
-      (E.iso r r' pq).hom ≫ (hom r').f pq := by aesop_cat
+      (E.iso r r' pq).hom ≫ (hom r').f pq := by cat_disch
 
-def pageXIsoOfEq (pq : ι) (r r' : ℤ) (h : r = r') (hr : r₀ ≤ r := by lia) :
+/-- If `E` is a spectral sequence, and `r = r'`, this is the
+isomorphism `(E.page r).X pq ≅ (E.page r').X pq`. -/
+def pageXIsoOfEq (E : SpectralSequence C c r₀) (pq : ι) (r r' : ℤ) (h : r = r' := by lia)
+    (hr : r₀ ≤ r := by lia) :
     (E.page r).X pq ≅ (E.page r').X pq :=
   eqToIso (by subst h; rfl)
 
-namespace Hom
+attribute [reassoc (attr := simp)] Hom.comm
 
-attribute [reassoc] comm
-
-@[simps]
-def id : Hom E E where
-  hom r hr := 𝟙 _
-
-variable {E E' E''}
-
-@[simps]
-def comp (f : Hom E E') (g : Hom E' E'') : Hom E E'' where
-  hom r hr := f.hom r ≫ g.hom r
-  comm r r' hrr' pq hr := by
-    dsimp
-    rw [HomologicalComplex.homologyMap_comp, assoc, g.comm r r', f.comm_assoc r r']
-
-end Hom
-
+@[simps! id_hom comp_hom]
 instance : Category (SpectralSequence C c r₀) where
   Hom := Hom
-  id := Hom.id
-  comp := Hom.comp
+  id _ := { hom _ _ := 𝟙 _}
+  comp f g :=
+    { hom r hr := f.hom r ≫ g.hom r
+      comm r r' hrr' pq hr := by
+        dsimp
+        simp [HomologicalComplex.homologyMap_comp, assoc, g.comm r r', f.comm_assoc r r'] }
 
-variable {E E'}
-
-lemma hom_ext {f f' : E ⟶ E'}
+lemma hom_ext {E E' : SpectralSequence C c r₀} {f f' : E ⟶ E'}
     (h : ∀ (r : ℤ) (hr : r₀ ≤ r), f.hom r = f'.hom r) :
-    f = f' := by
-  apply Hom.ext
-  ext r hr : 2
-  exact h r hr
+    f = f' :=
+  Hom.ext (by grind)
 
-variable (E)
-
-@[simp]
-lemma id_hom (r : ℕ) (hr : r₀ ≤ r := by lia) :
-    Hom.hom (𝟙 E) r = 𝟙 _ := rfl
-
-variable {E E''}
-
-@[reassoc, simp]
-lemma comp_hom (f : E ⟶ E') (g : E' ⟶ E'') (r : ℕ) (hr : r₀ ≤ r := by lia) :
-    (f ≫ g).hom r = f.hom r ≫ g.hom r := rfl
+attribute [simp] id_hom
+attribute [reassoc, simp] comp_hom
 
 variable (C c r₀)
 
+/-- The functor `SpectralSequence C c r₀ ⥤ HomologicalComplex C (c r)` which
+sends a spectral sequence to its `r`th page. -/
 @[simps]
 def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
     SpectralSequence C c r₀ ⥤ HomologicalComplex C (c r) where
   obj E := E.page r
   map f := f.hom r
 
+/-- The natural isomorphism between the homology of a spectral sequence on the
+object `pq : ι` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]
 noncomputable def pageHomologyNatIso
     (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     pageFunctor C c r₀ r ⋙ HomologicalComplex.homologyFunctor _ _ pq ≅
       pageFunctor C c r₀ r' ⋙ HomologicalComplex.eval _ _ pq :=
-  NatIso.ofComponents (fun E => E.iso r r' pq) (fun _ ↦ Hom.comm _ _ _ _ (by lia))
+  NatIso.ofComponents (fun E ↦ E.iso r r' pq)
 
 end SpectralSequence
 
+/-- A cohomological spectral sequence has differentials given by the
+vector `(r, 1 - r)` on the `r`th page. -/
 abbrev CohomologicalSpectralSequence :=
-  SpectralSequence C (fun r => ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ))
+  SpectralSequence C (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ))
 
+/-- A `E₂`-cohomological spectral sequence has differentials given by the
+vector `(r, 1 - r)` on the `r`th page for `2 ≤ r`. -/
 abbrev E₂CohomologicalSpectralSequence := CohomologicalSpectralSequence C 2
 
+/-- A first quadrant cohomological spectral sequence has differentials
+given by the vector `(r, 1 - r)` on the `r`th page. -/
 abbrev CohomologicalSpectralSequenceNat :=
-  SpectralSequence C (fun r => ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩)
+  SpectralSequence C (fun r ↦ ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩)
 
+/-- A first quadrant `E₂`-cohomological spectral sequence has differentials
+given by the vector `(r, 1 - r)` on the `r`th page for `2 ≤ r`. -/
 abbrev E₂CohomologicalSpectralSequenceNat :=
   CohomologicalSpectralSequenceNat C 2
 
+/-- A cohomological spectral sequence lying on finitely many rows
+has differentials given by the vector `(r, 1 - r)` on the `r`th page. -/
 abbrev CohomologicalSpectralSequenceFin (l : ℕ) :=
-  SpectralSequence C (fun r => ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩)
+  SpectralSequence C (fun r ↦ ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩)
 
+/-- A `E₂`-cohomological spectral sequence lying on finitely many rows
+has differentials given by the vector `(r, 1 - r)` on the `r`th page for `2 ≤ r`. -/
 abbrev E₂CohomologicalSpectralSequenceFin (l : ℕ) :=
   CohomologicalSpectralSequenceFin C 2 l
 

@@ -697,6 +697,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.Misc
 public import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
+public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Algebra.Homology.SpectralSequence.Convergence
 public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
