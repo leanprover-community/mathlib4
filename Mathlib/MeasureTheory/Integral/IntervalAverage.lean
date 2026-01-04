@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Average.MeanValue
+public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
@@ -18,7 +18,7 @@ formulas for this average:
 * `interval_average_eq`: `⨍ x in a..b, f x = (b - a)⁻¹ • ∫ x in a..b, f x`;
 * `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`;
 * `exists_eq_interval_average_of_measure`:
-    `∃ c ∈ uIcc a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
+    `∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
 * `exists_eq_interval_average_of_noAtoms`:
     `∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
 * `exists_eq_interval_average`:
@@ -35,7 +35,7 @@ We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_aver
 @[expose] public section
 
 
-open MeasureTheory Set
+open MeasureTheory Set intervalIntegral
 
 open scoped Interval
 
@@ -52,10 +52,9 @@ theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x)
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
   rcases le_or_gt a b with h | h
-  · rw [setAverage_eq, uIoc_of_le h, Real.volume_real_Ioc_of_le h,
-      intervalIntegral.integral_of_le h]
-  · rw [setAverage_eq, uIoc_of_ge h.le, Real.volume_real_Ioc_of_le h.le,
-      intervalIntegral.integral_of_ge h.le, smul_neg, ← neg_smul, ← inv_neg, neg_sub]
+  · rw [setAverage_eq, uIoc_of_le h, Real.volume_real_Ioc_of_le h, integral_of_le h]
+  · rw [setAverage_eq, uIoc_of_ge h.le, Real.volume_real_Ioc_of_le h.le, integral_of_ge h.le,
+      smul_neg, ← neg_smul, ← inv_neg, neg_sub]
 
 theorem interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :
     (⨍ x in a..b, f x) = (∫ x in a..b, f x) / (b - a) := by
@@ -65,35 +64,28 @@ theorem interval_average_eq_div (f : ℝ → ℝ) (a b : ℝ) :
 theorem intervalAverage_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
     (hf : f₁ =ᶠ[Filter.codiscreteWithin (Ι a b)] f₂) :
     ⨍ (x : ℝ) in a..b, f₁ x = ⨍ (x : ℝ) in a..b, f₂ x := by
-  rw [interval_average_eq, intervalIntegral.integral_congr_codiscreteWithin hf,
-    ← interval_average_eq]
+  rw [interval_average_eq, integral_congr_codiscreteWithin hf, ← interval_average_eq]
 
 variable {f : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-then there exists `c ∈ uIcc a b` such that
-`f c = ⨍ x in (Ι a b), f x ∂μ`. -/
+then `∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ`. -/
 theorem exists_eq_interval_average_of_measure
-    (hf : ContinuousOn f (uIcc a b))
-    (hμfin : μ (Ι a b) ≠ ⊤)
-    (hμ0 : μ (Ι a b) ≠ 0) :
-    ∃ c ∈ uIcc a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
+    (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
+    ∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
   wlog h : a ≤ b generalizing a b
   · simp at h
-    specialize this
-      (a := b) (b := a) (by rwa [uIcc_comm])
-      (by rwa [uIoc_comm]) (by rwa [uIoc_comm])
-      (h.le)
-    rcases this with ⟨c, hc, hEq⟩
-    refine ⟨c, by rwa [uIcc_comm], by rwa [uIoc_comm]⟩
+    specialize this (by rwa [uIcc_comm]) (by rwa [uIoc_comm]) (by rwa [uIoc_comm]) h.le
+    rcases this with ⟨c, hc, heq⟩
+    refine ⟨c, by rwa [uIoc_comm], by rwa [uIoc_comm]⟩
   have hint : IntegrableOn f (Ι a b) μ := by
     have hsubset : Ι a b ⊆ uIcc a b := uIoc_subset_uIcc
     have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
-    obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc (hf.norm)
+    obtain ⟨c, hc, hmax⟩ := hcomp.exists_isMaxOn nonempty_uIcc hf.norm
     apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
     · rwa [lt_top_iff_ne_top]
     · apply ContinuousOn.aestronglyMeasurable
-      · exact ContinuousOn.mono hf hsubset
+      · exact hf.mono hsubset
       · exact measurableSet_uIoc
     · rw [ae_restrict_iff' measurableSet_uIoc]
       apply ae_of_all
@@ -102,32 +94,23 @@ theorem exists_eq_interval_average_of_measure
       exact hsubset hm
   have hs_prec : IsPreconnected (Ι a b) := by simpa [h] using isPreconnected_Ioc
   have hs_nemp : (Ι a b).Nonempty := by exact nonempty_of_measure_ne_zero hμ0
-  rcases exists_eq_setAverage
-    ⟨hs_nemp, hs_prec⟩ (hf.mono uIoc_subset_uIcc) hint hμfin hμ0 with ⟨c, hc, hfc⟩
-  exact ⟨c, uIoc_subset_uIcc hc, hfc⟩
+  exact exists_eq_setAverage ⟨hs_nemp, hs_prec⟩ (hf.mono uIoc_subset_uIcc) hint hμfin hμ0
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-and `μ` has no atoms, then there exists `c ∈ uIoo a b` such that
-`f c = ⨍ x in (Ι a b), f x ∂μ`. -/
+and `μ` has no atoms, then `∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ`. -/
 theorem exists_eq_interval_average_of_noAtoms
-    [NoAtoms μ]
-    (hf : ContinuousOn f (uIcc a b))
-    (hμfin : μ (Ι a b) ≠ ⊤)
-    (hμ0 : μ (Ι a b) ≠ 0) :
+    [NoAtoms μ] (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
     ∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
   wlog h : a ≤ b generalizing a b
   · simp at h
     specialize this
       (a := b) (b := a) (by rwa [uIcc_comm])
       (by rwa [uIoc_comm]) (by rwa [uIoc_comm]) (h.le)
-    rcases this with ⟨c, hc, hEq⟩
+    rcases this with ⟨c, hc, heq⟩
     refine ⟨c, ?_, ?_⟩
     · simpa [uIoo_comm] using hc
     · have hswap : Ι a b = Ι b a := uIoc_comm a b
       rwa [hswap]
-  let ave := ⨍ x in (Ι a b), f x ∂μ
-  let S₁ := {x | x ∈ Ι a b ∧ f x ≤ ave}
-  let S₂ := {x | x ∈ Ι a b ∧ ave ≤ f x}
   have hint : IntegrableOn f (Ι a b) μ := by
     have hsubset : Ι a b ⊆ uIcc a b := uIoc_subset_uIcc
     have hcomp : IsCompact (uIcc a b) := isCompact_uIcc
@@ -135,48 +118,33 @@ theorem exists_eq_interval_average_of_noAtoms
     apply IntegrableOn.of_bound ?_ ?_ (|f c|) ?_
     · rwa [lt_top_iff_ne_top]
     · apply ContinuousOn.aestronglyMeasurable
-      · exact ContinuousOn.mono hf hsubset
+      · exact hf.mono hsubset
       · exact measurableSet_uIoc
     · rw [ae_restrict_iff' measurableSet_uIoc]
       apply ae_of_all
       intro m hm
       apply hmax
       exact hsubset hm
-  have hS₁ : 0 < μ S₁ := measure_le_setAverage_pos hμ0 hμfin hint
-  have hS₂ : 0 < μ S₂ := measure_setAverage_le_pos hμ0 hμfin hint
-  have hb0 : μ {b} = 0 := measure_singleton b
-  have hS₁pos' : 0 < μ (S₁ \ {b}) := by
-    have hcap0 : μ (S₁ ∩ {b}) = 0 := measure_inter_null_of_null_right S₁ hb0
-    have : μ (S₁ \ {b}) = μ S₁ := AEDisjoint.measure_diff_left hcap0
-    grind
-  have hS₂pos' : 0 < μ (S₂ \ {b}) := by
-    have hcap0 : μ (S₂ ∩ {b}) = 0 := measure_inter_null_of_null_right S₂ hb0
-    have : μ (S₂ \ {b}) = μ S₂ := AEDisjoint.measure_diff_left hcap0
-    grind
-  have hS₁nonempty : (S₁ \ {b}).Nonempty := nonempty_of_measure_ne_zero hS₁pos'.ne'
-  have hS₂nonempty : (S₂ \ {b}).Nonempty := nonempty_of_measure_ne_zero hS₂pos'.ne'
-  rcases hS₁nonempty with ⟨c₁, hc₁⟩
-  rcases hS₂nonempty with ⟨c₂, hc₂⟩
-  have hc₁Ioc : c₁ ∈ Ioc a b := by
-    simpa [h] using (hc₁.1 : c₁ ∈ S₁).1
-  have hc₂Ioc : c₂ ∈ Ioc a b := by
-    simpa [h] using (hc₂.1 : c₂ ∈ S₂).1
-  have h_subset : uIcc c₁ c₂ ⊆ Icc a b := by
-    intro x hx
-    rw [mem_uIcc] at hx
-    grind
-  have h_ivt : ∃ c ∈ uIcc c₁ c₂, f c = ave := by
-    apply intermediate_value_uIcc
-    · refine ContinuousOn.mono hf ?_
-      rwa [uIcc_of_le h]
-    · rw [mem_uIcc]
-      grind
-  rcases h_ivt with ⟨c, hc_mem, hfc⟩
-  refine ⟨c, ?_, hfc⟩
-  rw [mem_uIcc] at hc_mem
-  apply mem_uIoo_of_lt
-  · grind
-  · grind
+  have h' : a ≠ b := by
+    intro hab
+    subst hab
+    simp at hμ0
+  have hab : a < b := lt_of_le_of_ne h h'
+  let s := Ioo a b
+  have hs_conn : IsConnected s := isConnected_Ioo hab
+  have hab' : s = uIoo a b := by rw [uIoo_of_le h]
+  have hs : s ⊆ [[a, b]] := by simpa [hab'] using uIoo_subset_uIcc_self
+  have hf' : ContinuousOn f s := hf.mono hs
+  have hs' : s ⊆ Ι a b := by simpa [uIoc_of_le h] using Ioo_subset_Ioc_self
+  have hint' : IntegrableOn f s μ := hint.mono_set hs'
+  have hμfin' : μ s ≠ ⊤ := measure_ne_top_of_subset hs' hμfin
+  have hμ0' : μ s ≠ 0 := by
+    have hμ : μ s = μ (Ι a b) := by rw [uIoc_of_le h, measure_congr Ioo_ae_eq_Ioc]
+    rwa [hμ]
+  obtain ⟨c, hc, heq⟩ := exists_eq_setAverage hs_conn hf' hint' hμfin' hμ0'
+  refine ⟨c, by rwa [uIoo_of_le h], ?_⟩
+  have hs_ev : s =ᵐ[μ] Ι a b := by simpa [uIoc_of_le h] using Ioo_ae_eq_Ioc
+  rwa [← setAverage_congr hs_ev]
 
 /-- The mean value theorem for integrals:
 There exists a point in an interval such that the mean of a continuous function over the interval
