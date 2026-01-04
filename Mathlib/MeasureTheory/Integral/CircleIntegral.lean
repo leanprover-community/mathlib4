@@ -70,7 +70,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
 
-open scoped Real NNReal Interval Pointwise Topology
+open scoped Real NNReal Interval Pointwise Topology BigOperators
 
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
 
@@ -386,6 +386,12 @@ theorem integral_sub {f g : ℂ → E} {c : ℂ} {R : ℝ} (hf : CircleIntegrabl
     (hg : CircleIntegrable g c R) :
     (∮ z in C(c, R), f z - g z) = (∮ z in C(c, R), f z) - ∮ z in C(c, R), g z := by
   simp only [circleIntegral, smul_sub, intervalIntegral.integral_sub hf.out hg.out]
+
+theorem integral_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E} {c : ℂ} {R : ℝ}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    (∮ z in C(c, R), ∑ i ∈ s, f i z) = ∑ i ∈ s, ∮ z in C(c, R), f i z := by
+  simp only [circleIntegral, Finset.smul_sum,
+    intervalIntegral.integral_finset_sum fun i hi ↦ (h i hi).out]
 
 theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
     (hf : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ C) : ‖∮ z in C(c, R), f z‖ ≤ 2 * π * |R| * C :=

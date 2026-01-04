@@ -215,6 +215,6 @@ lemma eval_homogenize {p : K[X]} {n : ℕ} (hn : p.natDegree ≤ n) (x : Fin 2 �
   rw [MvPolynomial.eval_monomial, Finsupp.update_eq_add_single, Finsupp.prod_add_index',
     Finsupp.prod_single_index, Finsupp.prod_single_index, pow_sub₀]
   · ring
-  all_goals simp_all [pow_add, Nat.lt_add_one_iff]
+  all_goals simp_all [pow_add]
 
 end Polynomial
