@@ -158,7 +158,7 @@ instance TensorProduct.simple {A B : Type*} [Ring A] [IsSimpleRing A] [Algebra K
     IsSimpleRing (A ⊗[K] B) := by
   let f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
   refine ⟨⟨fun I ↦ ?_⟩⟩
-  rcases isSimple_B.1.2 (I.comap f) with h|h
+  rcases isSimple_B.1.2 (I.comap f) with h | h
   · left
     rw [← TensorProduct.map_comap_eq K _ _ I, h, TwoSidedIdeal.map, TwoSidedIdeal.span_eq_bot]
     simp
