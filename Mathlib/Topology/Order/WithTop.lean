@@ -255,21 +255,22 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
     exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
 
-lemma tendsto_nhds_top_iff {α : Type*} [Nonempty ι] {f : Filter α} (x : α → WithTop ι) :
+lemma tendsto_nhds_top_iff {α : Type*} {f : Filter α} (x : α → WithTop ι) :
     Tendsto x f (𝓝 ⊤) ↔ ∀ (i : ι), ∀ᶠ (a : α) in f, i < x a := by
+  obtain (h | h) := isEmpty_or_nonempty ι
+  · simpa using .of_forall fun _ ↦ Subsingleton.elim ..
   refine nhds_top_basis.tendsto_right_iff.trans ?_
-  simp only [Set.mem_Ioi]
-  refine ⟨fun h i ↦ h i (by simp), fun h i hi ↦ ?_⟩
-  specialize h (i.untop hi.ne)
-  filter_upwards [h] with a ha
-  simpa using ha
+  rw [← Set.forall_mem_range (p := (∀ᶠ a in f, · < x a)), WithTop.range_coe]
+  simp
 
-lemma tendsto_atTop_nhds_top_iff [Nonempty ι]
-    {α : Type*} [Nonempty α] [inst : Preorder α] [IsDirected α fun x1 x2 ↦ x1 ≤ x2]
-    (x : α → WithTop ι) :
-    Tendsto x atTop (𝓝 ⊤) ↔ ∀ (i : ι), ∃ N, ∀ n ≥ N, i < x n := by
-  rw [WithTop.tendsto_nhds_top_iff]
-  simp [eventually_atTop, ge_iff_le]
+lemma tendsto_coe_atTop [NoMaxOrder ι] :
+    Tendsto ((↑) : ι → WithTop ι) atTop (𝓝 ⊤) := by
+  obtain (h | h) := isEmpty_or_nonempty ι
+  · simpa using Subsingleton.elim ..
+  rw [tendsto_nhds_top_iff]
+  intro i
+  filter_upwards [atTop_basis_Ioi.mem_of_mem (i := i) trivial]
+  simp
 
 end WithTop
 
