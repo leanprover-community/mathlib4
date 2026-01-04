@@ -416,20 +416,39 @@ instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
       · apply G.right_mem_verts_of_adj G_adj
 
   sInf ℋ := by
+    classical
     constructor
-    case val =>
-      exact sInf {H | ∃p , ⟨H,p⟩ ∈ ℋ}
+    case val => exact (
+      if Nonempty ℋ then
+        sInf {H | ∃ p , ⟨H,p⟩ ∈ ℋ}
+      else Digraph.emptyDigraph V)
     case property =>
-      simp_all only [sInf, Set.mem_Iic, Set.mem_setOf_eq]
-      constructor
-      · simp [LE.le]
-        rw [Set.subset_def]
-        intro v hv
-        simp at hv
-        done
-      · intro v w hadj
-        simp at hadj
-        done
+      by_cases hnon : Nonempty ℋ
+      all_goals
+        simp_all only [nonempty_subtype, Subtype.exists, Set.mem_Iic, LE.le, ↓reduceIte, sInf,
+          Set.mem_setOf_eq, forall_exists_index, forall_and_index, subset_refl, implies_true]
+      · obtain ⟨H, ⟨hHverts, hHadj⟩, hHmem⟩ := hnon
+        constructor
+        · intro v hv
+          rw [Set.mem_setOf_eq] at hv
+          specialize hv H hHverts hHadj hHmem
+          apply hHverts hv
+        · intro v w hv
+          specialize @hv H hHverts hHadj hHmem
+          apply hHadj hv
+      · simp [Digraph.emptyDigraph]
+
+  sInf_le := by
+    intro ℋ ⟨H, H_prop'⟩ hH
+    by_cases hnon : Nonempty ℋ <;> simp_all only [nonempty_subtype, Subtype.exists, Set.mem_Iic,
+      ↓reduceIte, Subtype.mk_le_mk]
+    · simp_all [sInf, LE.le]
+      obtain ⟨H', ⟨hH'verts, hH'adj⟩, hH'mem⟩ := hnon
+      done
+
+      done
+    · done
+
 
 
 
