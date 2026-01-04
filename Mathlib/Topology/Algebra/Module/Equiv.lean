@@ -1402,8 +1402,7 @@ theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G]
     (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
     (α • e).trans f = α • (e.trans f) := by ext; simp [LinearMapClass.map_smul_of_tower f]
 
-theorem trans_smul [SMulCommClass R S V] [IsScalarTower S R G]
-    (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
+theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
     e.trans (α • f) = α • (e.trans f) := by ext; simp
 
 end ContinuousLinearEquiv
