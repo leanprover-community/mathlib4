@@ -356,7 +356,7 @@ lemma inf_sdiff_left_comm (a b c : α) : a ⊓ (b \ c) = b ⊓ (a \ c) := by
   simp_rw [← inf_sdiff_assoc, inf_comm]
 
 theorem inf_sdiff_distrib_left (a b c : α) : a ⊓ b \ c = (a ⊓ b) \ (a ⊓ c) := by
-  rw [sdiff_inf, sdiff_eq_bot_iff.2 inf_le_left, bot_sup_eq, inf_sdiff_assoc]
+  rw [sdiff_inf, (sdiff_eq_bot_iff (α := α)).2 inf_le_left, bot_sup_eq, inf_sdiff_assoc]
 
 theorem inf_sdiff_distrib_right (a b c : α) : a \ b ⊓ c = (a ⊓ c) \ (b ⊓ c) := by
   simp_rw [inf_comm _ c, inf_sdiff_distrib_left]
