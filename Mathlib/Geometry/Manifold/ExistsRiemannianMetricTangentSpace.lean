@@ -139,37 +139,6 @@ instance (x : B) : IsTopologicalAddGroup (W E x) := by
 
 end
 
-noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :=
-  letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
-  @Inner.inner ℝ EB _ (dψ v) (dψ w)
-
-variable (IB) in
-noncomputable def g' (i p : B) : TangentSpace IB p → TangentSpace IB p → ℝ := fun v w ↦
-  letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
-  @Inner.inner ℝ EB _ (dψ v) (dψ w)
-
-lemma g_nonneg (i p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
-  0 ≤ g i p v v := by
-  unfold g
-  exact @inner_self_nonneg ℝ _ _ _ _ _
-
-lemma g_pos (i p : B) (hp : p ∈ (extChartAt IB i).source)
-            (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) (hv : v ≠ 0) :
-    0 < g i p v v := by
-  let ψ := extChartAt IB i
-  let dψ := mfderiv IB 𝓘(ℝ, EB) ψ p
-  have h_invert : dψ.IsInvertible := isInvertible_mfderiv_extChartAt hp
-  obtain ⟨inv, left_inv⟩ := h_invert
-  have inj : Function.Injective inv := inv.injective
-  have h1 : inv v = dψ v := by
-    rw[← left_inv]
-    exact inj (inj (inj (inj rfl)))
-  have hx : dψ v ≠ 0 := by
-    intro h
-    have h2 : inv v = inv 0 := by simp [h, h1]
-    exact hv (inj h2)
-  exact real_inner_self_pos.mpr hx
-
 noncomputable instance (p : B) : NormedAddCommGroup (TangentSpace IB p) := by
   change NormedAddCommGroup EB
   infer_instance
@@ -196,6 +165,153 @@ def g_bilin_2 (i p : B) :
   by_cases h : p ∈ χ.baseSet
   · exact (innerSL ℝ).comp (χ.continuousLinearMapAt ℝ p) |>.flip.comp (χ.continuousLinearMapAt ℝ p)
   · exact 0
+
+lemma trivializationAt_tangentSpace_bilinearForm_apply (x₀ x : B)
+    (w : (TangentSpace (M := B) IB) x →L[ℝ] (TangentSpace (M := B) IB) x →L[ℝ] ℝ)
+    (u v : EB)
+    (hx : x ∈ (trivializationAt EB (TangentSpace (M := B) IB) x₀).baseSet) :
+  (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+                    (fun x ↦ (TangentSpace (M := B) IB) x →L[ℝ]
+                             (TangentSpace (M := B) IB) x →L[ℝ]
+                              ℝ) x₀).continuousLinearMapAt ℝ x w u v =
+  w ((trivializationAt EB (TangentSpace (M := B) IB) x₀).symm x u)
+    ((trivializationAt EB (TangentSpace (M := B) IB) x₀).symm x v) := by
+  rw [Trivialization.continuousLinearMapAt_apply]
+  rw [@Trivialization.linearMapAt_apply]
+  simp
+  have hx' : x ∈ (chartAt HB x₀).source ∩ ((chartAt HB x₀).source ∩ Set.univ) := by
+    simpa [Trivialization.baseSet, hx]
+  rw [@hom_trivializationAt_apply]
+  simp only [hx', ↓reduceIte]
+  rw [inCoordinates_apply_eq₂ hx hx (by simp : x ∈ (trivializationAt ℝ (fun _ ↦ ℝ) x₀).baseSet)]
+  simp only [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization,
+      LinearMap.id_coe, id_eq]
+
+
+lemma g_bilin_eq_00 (i b : B)
+  (hb : b ∈ (trivializationAt EB (TangentSpace IB) i).baseSet)
+  (hc : b ∈ (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).baseSet)
+  (α β : TangentSpace IB b) :
+  (((FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).toPartialHomeomorph.symm
+      (b, innerSL ℝ)).snd α) β =
+    ((innerSL ℝ)
+      ((Trivialization.linearMapAt ℝ (trivializationAt EB (TangentSpace (M := B) IB) i) b) β))
+      ((Trivialization.linearMapAt ℝ (trivializationAt EB (TangentSpace (M := B) IB) i) b) α) := by
+  simp
+  let ψ := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i
+  let χ := trivializationAt EB (TangentSpace (M := B) IB) i
+  let w := ψ.symm b (innerSL ℝ)
+  have h1 : ∀ u v,
+    (((Trivialization.continuousLinearMapAt ℝ ψ b) w) u) v =
+     w (χ.symm b u) (χ.symm b v)
+     := fun u v ↦ trivializationAt_tangentSpace_bilinearForm_apply i b w u v hb
+  have h4 : ∀ u v,
+    (((Trivialization.continuousLinearMapAt ℝ ψ b) (ψ.symmL ℝ b (innerSL ℝ))) u) v =
+    innerSL ℝ u v := by
+    intro u v
+    rw [Trivialization.continuousLinearMapAt_symmL ψ hc]
+  have h3 : ∀ u v, innerSL ℝ u v = w (χ.symm b u) (χ.symm b v) := by
+    intro u v
+    rw [<-h4]
+    exact h1 u v
+
+  have ha : χ.symm b (χ.continuousLinearMapAt ℝ b α) = α :=
+    Trivialization.symmL_continuousLinearMapAt
+      (trivializationAt EB (TangentSpace (M := B) IB) i) hb α
+
+  have hb : χ.symm b (χ.continuousLinearMapAt ℝ b β) = β :=
+    Trivialization.symmL_continuousLinearMapAt
+      (trivializationAt EB (TangentSpace (M := B) IB) i) hb β
+
+  have hp : (innerSL ℝ) ((Trivialization.continuousLinearMapAt ℝ χ b) α)
+                     ((Trivialization.continuousLinearMapAt ℝ χ b) β) =
+    w (χ.symm b ((Trivialization.continuousLinearMapAt ℝ χ b) α))
+      (χ.symm b ((Trivialization.continuousLinearMapAt ℝ χ b) β)) :=
+       h3 (χ.continuousLinearMapAt ℝ b α) (χ.continuousLinearMapAt ℝ b β)
+
+  rw [ha, hb] at hp
+
+  have hd : (innerSL ℝ) ((Trivialization.continuousLinearMapAt ℝ χ b) α)
+                        ((Trivialization.continuousLinearMapAt ℝ χ b) β) =
+    w α β := hp
+
+  have he : ψ.symm b (innerSL ℝ) =
+            (ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd := by
+    rw [Trivialization.symm_apply ψ hc (innerSL ℝ)]
+    exact rfl
+
+  have hf : (innerSL ℝ) ((Trivialization.continuousLinearMapAt ℝ χ b) α)
+                        ((Trivialization.continuousLinearMapAt ℝ χ b) β) =
+    ψ.symm b (innerSL ℝ) α β := hp
+
+  rw [he] at hf
+
+  have hs : (ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd α β =
+  (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) α)
+               ((Trivialization.linearMapAt ℝ χ b) β) := id (Eq.symm hf)
+
+  have ht : (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) α)
+                        ((Trivialization.linearMapAt ℝ χ b) β) =
+            (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) β)
+                        ((Trivialization.linearMapAt ℝ χ b) α) := by
+    exact real_inner_comm ((Trivialization.linearMapAt ℝ χ b) β)
+                          ((Trivialization.linearMapAt ℝ χ b) α)
+
+  have hr : (ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd α β =
+  (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) β)
+              ((Trivialization.linearMapAt ℝ χ b) α) := by
+    rw [<-ht]
+    exact hs
+
+  exact hr
+
+set_option maxHeartbeats 400000 in
+-- comment explaining why this is necessary
+lemma g_bilin_eq (i b : B)
+  (α β : TangentSpace IB b) :
+  (g_bilin_1 (IB := IB) i b).snd.toFun α β = (g_bilin_2 i b).toFun α β := by
+  unfold g_bilin_1 g_bilin_2
+
+  let ψ := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i
+  let χ := trivializationAt EB (TangentSpace (M := B) IB) i
+  let w := ψ.symm b (innerSL ℝ)
+
+  simp only []
+  split_ifs with hh1
+  · simp
+    split_ifs with hh2
+    · have hha : (b, innerSL ℝ) ∈
+        (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+         (fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).target := hh1
+      have hhb : (b, innerSL ℝ) ∈
+        ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ := hh2
+      have hhc : b ∈ (chartAt HB i).source := Set.mem_of_mem_inter_left hh2.1
+      have hhd : ((ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd α) β =
+        ((innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) β))
+                     ((Trivialization.linearMapAt ℝ χ b) α) := g_bilin_eq_00 i b hhc hha.1 α β
+      rw [if_pos hhc, if_pos hhb]
+      exact hhd
+    · exact False.elim (hh2 hh1)
+  · simp
+    split_ifs with hh2
+    · exact False.elim (hh1 hh2)
+    · have hha : (b, innerSL ℝ) ∉
+        (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+         (fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).target := hh1
+      have hhb : (b, innerSL ℝ) ∉
+        ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ := hh2
+      have hhc : b ∉ (chartAt HB i).source := by
+        intro hcontra
+        have : (b, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈
+          ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ := by
+          simp only [Set.inter_univ, Set.inter_self, Set.mem_prod, Set.mem_univ, and_true]
+          exact hcontra
+        contradiction
+      rw [if_neg hhc, if_neg hhb]
 
 lemma g_nonneg' (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
   0 ≤ ((((g_bilin_2 j b)).toFun v)).toFun v := by
@@ -832,152 +948,7 @@ lemma riemannian_unit_ball_bounded (f : SmoothPartitionOfUnity B IB B)
     riemannian_metric_def f h_sub b
   exact aux_tvs (g_global_bilin_2 f b) h1 h2 h3
 
-lemma foo (x₀ x : B)
-    (w : (TangentSpace (M := B) IB) x →L[ℝ] (TangentSpace (M := B) IB) x →L[ℝ] ℝ)
-    (u v : EB)
-    (hx : x ∈ (trivializationAt EB (TangentSpace (M := B) IB) x₀).baseSet) :
-  (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-                    (fun x ↦ (TangentSpace (M := B) IB) x →L[ℝ]
-                             (TangentSpace (M := B) IB) x →L[ℝ]
-                              ℝ) x₀).continuousLinearMapAt ℝ x w u v =
-  w ((trivializationAt EB (TangentSpace (M := B) IB) x₀).symm x u)
-    ((trivializationAt EB (TangentSpace (M := B) IB) x₀).symm x v) := by
-  rw [Trivialization.continuousLinearMapAt_apply]
-  rw [@Trivialization.linearMapAt_apply]
-  simp
-  have hx' : x ∈ (chartAt HB x₀).source ∩ ((chartAt HB x₀).source ∩ Set.univ) := by
-    simpa [Trivialization.baseSet, hx]
-  rw [@hom_trivializationAt_apply]
-  simp only [hx', ↓reduceIte]
-  rw [inCoordinates_apply_eq₂ hx hx (by simp : x ∈ (trivializationAt ℝ (fun _ ↦ ℝ) x₀).baseSet)]
-  simp only [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization,
-      LinearMap.id_coe, id_eq]
 
-
-lemma g_bilin_eq_00 (i b : B)
-  (hb : b ∈ (trivializationAt EB (TangentSpace IB) i).baseSet)
-  (hc : b ∈ (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).baseSet)
-  (α β : TangentSpace IB b) :
-  (((FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).toPartialHomeomorph.symm
-      (b, innerSL ℝ)).snd α) β =
-    ((innerSL ℝ)
-      ((Trivialization.linearMapAt ℝ (trivializationAt EB (TangentSpace (M := B) IB) i) b) β))
-      ((Trivialization.linearMapAt ℝ (trivializationAt EB (TangentSpace (M := B) IB) i) b) α) := by
-  simp
-  let ψ := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i
-  let χ := trivializationAt EB (TangentSpace (M := B) IB) i
-  let w := ψ.symm b (innerSL ℝ)
-  have h1 : ∀ u v,
-    (((Trivialization.continuousLinearMapAt ℝ ψ b) w) u) v =
-     w (χ.symm b u) (χ.symm b v)
-     := fun u v ↦ foo i b w u v hb
-  have h4 : ∀ u v,
-    (((Trivialization.continuousLinearMapAt ℝ ψ b) (ψ.symmL ℝ b (innerSL ℝ))) u) v =
-    innerSL ℝ u v := by
-    intro u v
-    rw [Trivialization.continuousLinearMapAt_symmL ψ hc]
-  have h3 : ∀ u v, innerSL ℝ u v = w (χ.symm b u) (χ.symm b v) := by
-    intro u v
-    rw [<-h4]
-    exact h1 u v
-
-  have ha : χ.symm b (χ.continuousLinearMapAt ℝ b α) = α :=
-    Trivialization.symmL_continuousLinearMapAt
-      (trivializationAt EB (TangentSpace (M := B) IB) i) hb α
-
-  have hb : χ.symm b (χ.continuousLinearMapAt ℝ b β) = β :=
-    Trivialization.symmL_continuousLinearMapAt
-      (trivializationAt EB (TangentSpace (M := B) IB) i) hb β
-
-  have hp : (innerSL ℝ) ((Trivialization.continuousLinearMapAt ℝ χ b) α)
-                     ((Trivialization.continuousLinearMapAt ℝ χ b) β) =
-    w (χ.symm b ((Trivialization.continuousLinearMapAt ℝ χ b) α))
-      (χ.symm b ((Trivialization.continuousLinearMapAt ℝ χ b) β)) :=
-       h3 (χ.continuousLinearMapAt ℝ b α) (χ.continuousLinearMapAt ℝ b β)
-
-  rw [ha, hb] at hp
-
-  have hd : (innerSL ℝ) ((Trivialization.continuousLinearMapAt ℝ χ b) α)
-                        ((Trivialization.continuousLinearMapAt ℝ χ b) β) =
-    w α β := hp
-
-  have he : ψ.symm b (innerSL ℝ) =
-            (ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd := by
-    rw [Trivialization.symm_apply ψ hc (innerSL ℝ)]
-    exact rfl
-
-  have hf : (innerSL ℝ) ((Trivialization.continuousLinearMapAt ℝ χ b) α)
-                        ((Trivialization.continuousLinearMapAt ℝ χ b) β) =
-    ψ.symm b (innerSL ℝ) α β := hp
-
-  rw [he] at hf
-
-  have hs : (ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd α β =
-  (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) α)
-               ((Trivialization.linearMapAt ℝ χ b) β) := id (Eq.symm hf)
-
-  have ht : (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) α)
-                        ((Trivialization.linearMapAt ℝ χ b) β) =
-            (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) β)
-                        ((Trivialization.linearMapAt ℝ χ b) α) := by
-    exact real_inner_comm ((Trivialization.linearMapAt ℝ χ b) β)
-                          ((Trivialization.linearMapAt ℝ χ b) α)
-
-  have hr : (ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd α β =
-  (innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) β)
-              ((Trivialization.linearMapAt ℝ χ b) α) := by
-    rw [<-ht]
-    exact hs
-
-  exact hr
-
-set_option maxHeartbeats 400000 in
--- comment explaining why this is necessary
-lemma g_bilin_eq (i b : B)
-  (α β : TangentSpace IB b) :
-  (g_bilin_1 (IB := IB) i b).snd.toFun α β = (g_bilin_2 i b).toFun α β := by
-  unfold g_bilin_1 g_bilin_2
-
-  let ψ := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i
-  let χ := trivializationAt EB (TangentSpace (M := B) IB) i
-  let w := ψ.symm b (innerSL ℝ)
-
-  simp only []
-  split_ifs with hh1
-  · simp
-    split_ifs with hh2
-    · have hha : (b, innerSL ℝ) ∈
-        (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-         (fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).target := hh1
-      have hhb : (b, innerSL ℝ) ∈
-        ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ := hh2
-      have hhc : b ∈ (chartAt HB i).source := Set.mem_of_mem_inter_left hh2.1
-      have hhd : ((ψ.toPartialHomeomorph.symm (b, innerSL ℝ)).snd α) β =
-        ((innerSL ℝ) ((Trivialization.linearMapAt ℝ χ b) β))
-                     ((Trivialization.linearMapAt ℝ χ b) α) := g_bilin_eq_00 i b hhc hha.1 α β
-      rw [if_pos hhc, if_pos hhb]
-      exact hhd
-    · exact False.elim (hh2 hh1)
-  · simp
-    split_ifs with hh2
-    · exact False.elim (hh1 hh2)
-    · have hha : (b, innerSL ℝ) ∉
-        (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-         (fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i).target := hh1
-      have hhb : (b, innerSL ℝ) ∉
-        ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ := hh2
-      have hhc : b ∉ (chartAt HB i).source := by
-        intro hcontra
-        have : (b, ((innerSL ℝ) : (EB →L[ℝ] EB →L[ℝ] ℝ))) ∈
-          ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ := by
-          simp only [Set.inter_univ, Set.inter_self, Set.mem_prod, Set.mem_univ, and_true]
-          exact hcontra
-        contradiction
-      rw [if_neg hhc, if_neg hhb]
 
 theorem g_bilin_symm_1 (i b : B)
   (α β : TangentSpace IB b) :
