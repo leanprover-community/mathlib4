@@ -64,6 +64,9 @@ inductive Hom : Pairwise ι → Pairwise ι → Type v
   | right : ∀ i j, Hom (pair i j) (single j)
   deriving DecidableEq
 
+-- False positive?
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
+
 open Hom
 
 instance homInhabited [Inhabited ι] : Inhabited (Hom (single (default : ι)) (single default)) :=
