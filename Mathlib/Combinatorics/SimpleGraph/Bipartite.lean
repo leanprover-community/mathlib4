@@ -66,47 +66,40 @@ relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/Double
 -/
 
 /--
-A (finite) multigraph is bipartite if and only if every cycle has even length.
+A (finite) simplegraph is bipartite if and only if every cycle has even length.
 
-More precisely, let `G` be a multigraph on a finite vertex type `V`.
+More precisely, let `G` be a simplegraph on a finite vertex type `V`.
 Then `G` is bipartite if and only if for every cycle `C` in `G`,
 the length of `C` is even.
 -/
 
+open SimpleGraph
 variable {V : Type*} (G : SimpleGraph V)
+theorem even_length_iff_congr {α} {G : SimpleGraph α}
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    Even p.length ↔ (c u ↔ c v) := by
+  induction p with
+  | nil => simp
+  | @cons u v w h p ih =>
+    simp only [SimpleGraph.Walk.length_cons, Nat.even_add_one]
+    have : ¬ c u = true ↔ c v = true := by
+      rw [← not_iff, ← Bool.eq_iff_iff]
+      exact c.valid h
+    tauto
 lemma even_length_iff_same_color
     {c : G.Coloring (Fin 2)}
     {u v : V} (p : G.Walk u v) :
     Even p.length ↔ c u = c v := by
-  induction p with
-  | nil =>
-    simp
-  | cons h_adj p_tail ih =>
-    have h_first_step_diff := c.valid h_adj
-    rw [SimpleGraph.Walk.length_cons]
-    rw [Nat.even_add_one]
-    rw [ih]
-    constructor
-    · intro h_next_ne_end
-      have h_cases : c u = 0 ∨ c u = 1 := by
-        match c u with
-        | 0 => left; rfl
-        | 1 => right; rfl
-      cases h_cases
-      · simp_all
-        omega
-      · simp_all
-        omega
-    · intro h_start_eq_end
-      rw [h_start_eq_end] at h_first_step_diff
-      exact h_first_step_diff.symm
+  classical
+  let c' : G.Coloring Bool :=
+    G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
+  simpa [c'] using
+    (even_length_iff_congr (c := c') (p := p))
 theorem bipartite_implies_even_cycles (h : G.IsBipartite) :
-    ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+    ∀ (v : V) (w : G.Walk v v), w.IsCycle → Even w.length := by
   rcases h with ⟨color⟩
-  intro v c hc
-  have h_color_eq : color v = color v := rfl
-  rw [even_length_iff_same_color]
-  exact color
+  intro v w hw
+  exact (even_length_iff_same_color (G := G) (c := color) (p := w)).2 rfl
 namespace SimpleGraph.Walk
 lemma bypass_eq_nil_of_closed {V : Type*} [DecidableEq V]
     {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
@@ -218,6 +211,27 @@ lemma even_length_iff_even_bypass_length {V : Type*} [DecidableEq V] {G : Simple
                 h_not_even_total_iff_even_drop
         simpa [length_cons, bypass, hu] using h_step
       · simp [length_cons, bypass, hu, Nat.even_add_one, not_congr ih]
+open Walk
+lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
+    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+  constructor <;> intro h
+  · intro u w
+    rcases h with ⟨c⟩
+    rw [even_length_iff_same_color (G := G) (c := c) (p := w)]
+  · apply SimpleGraph.colorable_iff_forall_connectedComponents.2
+    intro c
+    obtain ⟨_, hv⟩ := c.nonempty_supp
+    use fun a ↦ Fin.ofNat 2 (c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length
+    intro a b hab he
+    have h_even := h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat hab).append
+                 (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
+    rw [length_map, length_append, length_concat, length_reverse, add_right_comm] at h_even
+    have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
+        (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
+      simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
+    revert h_even
+    simp [Nat.even_iff]
+    omega
 theorem bipartite_iff_all_cycles_even {V : Type*} {G : SimpleGraph V} :
   G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
   classical
@@ -226,16 +240,18 @@ theorem bipartite_iff_all_cycles_even {V : Type*} {G : SimpleGraph V} :
     exact bipartite_implies_even_cycles (G := G) h_bip
   · intro h
     have h_colorable : G.Colorable 2 := by
-      apply (SimpleGraph.two_colorable_iff_forall_loop_even (G := G)).mpr
+      apply (two_colorable_iff_forall_loop_even (G := G)).mpr
       intro u w
       have h_even_bypass : Even w.length ↔ Even w.bypass.length := by
         apply even_length_iff_even_bypass_length (G := G)
         exact h
       rw [h_even_bypass]
       rw [bypass_eq_nil_of_closed (G := G) w]
-      norm_num
+      simp
     exact h_colorable
+
 end SimpleGraph.Walk
+
 @[expose] public section
 
 
