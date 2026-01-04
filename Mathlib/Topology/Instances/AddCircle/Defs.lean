@@ -748,8 +748,8 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     all_goals
       apply continuous_quot_mk.continuousAt.comp_continuousWithinAt
       rw [IsInducing.subtypeVal.continuousWithinAt_iff]
-    · apply continuous_left_toIocMod
-    · apply continuous_right_toIcoMod
+    · apply continuousWithinAt_toIocMod_Iic
+    · apply continuousWithinAt_toIcoMod_Ici
   continuous_invFun :=
     continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtype_val)
 
