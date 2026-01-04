@@ -14,8 +14,8 @@ public import Mathlib.Topology.Algebra.Polynomial
 /-!
 # Chebyshev polynomials over the reals: some extremal properties
 
-* Chebyshev polynomials have largest leading coefficient,
-  following proof in https://math.stackexchange.com/a/978145/1277
+Chebyshev polynomials have largest leading coefficient,
+following proof in https://math.stackexchange.com/a/978145/1277
 
 ## Main statements
 
