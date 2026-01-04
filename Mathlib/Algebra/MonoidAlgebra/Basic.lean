@@ -275,15 +275,15 @@ theorem domCongr_refl : domCongr R A (.refl M) = .refl := by ext; simp
 theorem domCongr_symm (e : M ≃* N) : (domCongr R A e).symm = domCongr R A e.symm := rfl
 
 @[to_additive]
-theorem domCongr_trans {I : Type*} [Monoid I] (e : G ≃* H) (f : H ≃* I) :
-    domCongr k A (e.trans f) = (domCongr k A e).trans (domCongr k A f) := by
+theorem domCongr_trans (e : M ≃* N) (f : N ≃* O) :
+    domCongr R A (e.trans f) = (domCongr R A e).trans (domCongr R A f) := by
   ext
   simp
 
 /-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
 @[simps]
-def domCongrAut : MulAut G →* A[G] ≃ₐ[k] A[G] where
-  toFun := MonoidAlgebra.domCongr k A
+def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
+  toFun := MonoidAlgebra.domCongr R A
   map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
   map_mul' _ _ := by rw [MulAut.mul_def, AlgEquiv.aut_mul, domCongr_trans]
 
@@ -325,14 +325,13 @@ lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
   classical ext; simp [single_apply, apply_ite f]
 
 @[to_additive (attr := simp)]
-lemma mapRangeAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
-    mapRangeAlgHom G (AlgHom.id k R) = AlgHom.id k (MonoidAlgebra R G) := by
+lemma mapRangeAlgHom_id :
+    mapRangeAlgHom M (AlgHom.id R A) = AlgHom.id R (MonoidAlgebra A M) := by
   ext; simp
 
 @[to_additive (attr := simp)]
-lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
-    mapRangeAlgHom G (g.comp f) = (mapRangeAlgHom G g).comp (mapRangeAlgHom G f) := by
+lemma mapRangeAlgHom_comp (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
+    mapRangeAlgHom M (g.comp f) = (mapRangeAlgHom M g).comp (mapRangeAlgHom M f) := by
   ext; simp
 
 variable (R M) in
@@ -542,14 +541,14 @@ lemma algHom_ext_iff {φ₁ φ₂ : R[M] →ₐ[R] A} : (∀ x, φ₁ (single x 
 variable (k A) in
 /-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
 @[simps]
-def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
-  toFun := AddMonoidAlgebra.domCongr k A
+def domCongrAut : AddAut M →* A[M] ≃ₐ[R] A[M] where
+  toFun := AddMonoidAlgebra.domCongr R A
   map_one' := by ext; simp [AddAut.one_def]
   map_mul' _ _ := by ext; simp [AddAut.mul_def]
 
 end lift
 
-variable [CommSemiring R] [AddMonoid M] [AddMonoid H] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
 
 variable (R M) in
 /-- `AddMonoidAlgebra.mapRangeAlgEquiv` as an `AddMonoidHom` from `R ≃ₐ[k] R`. -/
