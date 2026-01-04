@@ -5,9 +5,9 @@ Authors: Fabian Odermatt
 -/
 module
 
-import Mathlib.AlgebraicTopology.SingularHomology.Basic
-import Mathlib.AlgebraicTopology.SimplicialObject.SimplicialHomotopy
-import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
+public import Mathlib.AlgebraicTopology.SingularHomology.Basic
+public import Mathlib.AlgebraicTopology.SimplicialObject.SimplicialHomotopy
+public import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
 
 /-!
 # Homotopy invariance of singular homology (simplicial step)
@@ -15,6 +15,8 @@ import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
 This file proves that simplicially homotopic morphisms of simplicial sets induce the same maps
 on singular homology (with coefficients in an object of a preadditive category with coproducts).
 -/
+
+@[expose] public section
 
 universe v u
 

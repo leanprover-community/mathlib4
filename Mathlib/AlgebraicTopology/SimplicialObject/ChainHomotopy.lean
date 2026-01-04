@@ -5,9 +5,9 @@ Authors: Fabian Odermatt
 -/
 module
 
-import Mathlib.AlgebraicTopology.SimplicialObject.SimplicialHomotopy
-import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.AlgebraicTopology.SimplicialObject.SimplicialHomotopy
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+public import Mathlib.Algebra.Homology.Homotopy
 
 /-!
 # Simplicial homotopies induce chain homotopies
@@ -19,6 +19,8 @@ Concretely, if `H : SimplicialHomotopy f g` gives maps
 `H.h i : X _⦋n⦌ ⟶ Y _⦋n+1⦌` indexed by `i : Fin (n+1)`, we define the degree-`n` component
 of the chain homotopy as the alternating sum `∑ i, (-1)^i • H.h i`.
 -/
+
+@[expose] public section
 
 universe v u
 
