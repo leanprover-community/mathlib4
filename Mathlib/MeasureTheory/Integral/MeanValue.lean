@@ -14,9 +14,9 @@ We prove versions of the first mean value theorem for set integrals.
 
 ## Main results
 
-* `exists_eq_const_mul_setIntegral_of_ae_nonneg`:
+* `exists_eq_const_mul_setIntegral_of_ae_nonneg` (a.e. nonnegativity of `g` on `s`):
     `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)`.
-* `exists_eq_const_mul_setIntegral_of_nonneg`:
+* `exists_eq_const_mul_setIntegral_of_nonneg` (pointwise nonnegativity of `g` on `s`):
     `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)`.
 
 ## Tags
@@ -90,14 +90,12 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
         intro x hx
         simp [hx, mul_comm]
       have h_IntOn : IntegrableOn (fun x ↦ (ρ x).toReal * f x) s μ := by
-        rw [integrableOn_congr_fun_ae hmul_ae]
-        exact hfg
+        rwa [integrableOn_congr_fun_ae hmul_ae]
       have h_Int : Integrable f ((μ.restrict s).withDensity ρ) := by
         rwa [integrable_withDensity_iff_integrable_smul₀' hρ_ae hρ_top, ← IntegrableOn]
       have hνrs : ν.restrict s = (μ.restrict s).withDensity ρ := by
         ext t ht
-        have hts : MeasurableSet (t ∩ s) := ht.inter hs_meas
-        simp [ν, withDensity_apply, Measure.restrict_apply, ht, hs_meas]
+        simp [ht, ν, hs_meas]
       simpa [IntegrableOn, hνrs] using h_Int
     obtain ⟨c, hc, h_ave⟩ := exists_eq_setAverage hs_conn hf hint hνfin hν0''
     refine ⟨c, hc, ?_⟩
