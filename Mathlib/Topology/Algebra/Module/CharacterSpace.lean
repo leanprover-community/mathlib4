@@ -64,7 +64,7 @@ instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
   map_smulₛₗ φ := (φ : WeakDual 𝕜 A).map_smul
   map_add φ := (φ : WeakDual 𝕜 A).map_add
-  map_continuous φ := (φ : WeakDual 𝕜 A).cont
+  map_continuous φ := (φ : WeakDual 𝕜 A).continuous_toFun
 
 /-- This has to come after `WeakDual.CharacterSpace.instFunLike`, otherwise the right-hand side
 gets coerced via `Subtype.val` instead of directly via `DFunLike`. -/

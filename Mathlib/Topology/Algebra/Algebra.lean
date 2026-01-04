@@ -71,7 +71,7 @@ variable [ContinuousSMul R A]
 def algebraMapCLM : R →L[R] A :=
   { Algebra.linearMap R A with
     toFun := algebraMap R A
-    cont := continuous_algebraMap R A }
+    continuous_toFun := continuous_algebraMap R A }
 
 theorem coe_algebraMapCLM : ⇑(algebraMapCLM R A) = algebraMap R A :=
   rfl

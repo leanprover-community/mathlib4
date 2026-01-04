@@ -73,14 +73,14 @@ theorem continuous_decomposeProdAdjoint_symm [ContinuousAdd A] :
 def selfAdjointPartL [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
     A →L[R] selfAdjoint A where
   toLinearMap := selfAdjointPart R
-  cont := continuous_selfAdjointPart _ _
+  continuous_toFun := continuous_selfAdjointPart _ _
 
 /-- The skew-adjoint part of an element of a star module, as a continuous linear map. -/
 @[simps!]
 def skewAdjointPartL [ContinuousSub A] [ContinuousStar A] [ContinuousConstSMul R A] :
     A →L[R] skewAdjoint A where
   toLinearMap := skewAdjointPart R
-  cont := continuous_skewAdjointPart _ _
+  continuous_toFun := continuous_skewAdjointPart _ _
 
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a continuous linear equivalence. -/

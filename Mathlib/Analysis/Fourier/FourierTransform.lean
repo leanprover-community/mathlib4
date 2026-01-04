@@ -195,7 +195,7 @@ theorem integral_fourierIntegral_swap
       (Measure.prod ν μ) := hg.1.comp_fst.prodMk A
     have hM : Continuous (fun q ↦ M q.1 q.2 : F × E → G) :=
       -- There is no `Continuous.clm_apply` for semilinear continuous maps
-      (M.flip.cont.comp continuous_snd).clm_apply continuous_fst
+      (M.flip.continuous_toFun.comp continuous_snd).clm_apply continuous_fst
     apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
   · filter_upwards with ⟨ξ, x⟩
     simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]

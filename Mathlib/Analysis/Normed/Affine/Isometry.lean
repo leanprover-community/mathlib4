@@ -177,7 +177,7 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
   f.isometry.diam_range
 
 /-- Interpret an affine isometry as a continuous affine map. -/
-def toContinuousAffineMap : P →ᴬ[𝕜] P₂ := { f with cont := f.continuous }
+def toContinuousAffineMap : P →ᴬ[𝕜] P₂ := { f with continuous_toFun := f.continuous }
 
 theorem toContinuousAffineMap_injective :
     Function.Injective (toContinuousAffineMap : _ → P →ᴬ[𝕜] P₂) := fun x _ h =>

@@ -63,7 +63,7 @@ abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
       { toFun f := .comp (rep.ρ g).hom (f.comp (Homeomorph.mulLeft g⁻¹))
         map_add' _ _ := by ext; simp
         map_smul' _ _ := by ext; simp
-        cont := (continuous_postcomp _).comp (continuous_precomp _) }
+        continuous_toFun := (continuous_postcomp _).comp (continuous_precomp _) }
     map_one' := ConcreteCategory.ext (by ext; simp)
     map_mul' _ _ := ConcreteCategory.ext (by ext; simp [mul_assoc]) }
 
@@ -143,7 +143,7 @@ def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
   map f := TopModuleCat.ofHom
     { toLinearMap := f.hom.hom.restrict fun x hx g ↦
         congr($(f.comm g) x).symm.trans congr(f.hom.hom $(hx g))
-      cont := continuous_induced_rng.mpr (f.hom.hom.2.comp continuous_subtype_val) }
+      continuous_toFun := continuous_induced_rng.mpr (f.hom.hom.2.comp continuous_subtype_val) }
 
 instance : (invariants R G).Linear R where
 instance : (invariants R G).Additive where
@@ -193,7 +193,8 @@ def kerHomogeneousCochainsZeroEquiv
   continuous_toFun := continuous_induced_rng.mpr ((continuous_eval_const (F := C(G, _)) 1).comp
       (continuous_subtype_val.comp continuous_subtype_val))
   continuous_invFun := continuous_induced_rng.mpr
-    (continuous_induced_rng.mpr ((ContinuousLinearMap.const R G).cont.comp continuous_subtype_val))
+    (continuous_induced_rng.mpr
+      ((ContinuousLinearMap.const R G).continuous_toFun.comp continuous_subtype_val))
 
 open ShortComplex HomologyData in
 /-- `H⁰_cont(G, X) ≅ Xᴳ`. -/

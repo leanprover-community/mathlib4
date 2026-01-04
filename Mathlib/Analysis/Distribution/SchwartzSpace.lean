@@ -590,7 +590,7 @@ def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
     (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
       ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
     𝓢(D, E) →SL[σ] 𝓢(F, G) where
-  cont := by
+  continuous_toFun := by
     change Continuous (mkLM A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
     refine
       Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 D E)
@@ -612,7 +612,7 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
       map_add' := hadd
       map_smul' := hsmul }
   { toLinearMap := f
-    cont := by
+    continuous_toFun := by
       change Continuous (LinearMap.mk _ _)
       apply Seminorm.cont_withSeminorms_normedSpace G (schwartz_withSeminorms 𝕜 D E)
       rcases hbound with ⟨s, C, hC, h⟩

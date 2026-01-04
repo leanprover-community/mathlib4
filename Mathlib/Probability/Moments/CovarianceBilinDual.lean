@@ -134,7 +134,7 @@ noncomputable
 def toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] :
     StrongDual 𝕜 E →L[𝕜] Lp 𝕜 p μ where
   toLinearMap := StrongDual.toLpₗ μ p
-  cont := by
+  continuous_toFun := by
     refine LinearMap.continuous_of_locally_bounded _ fun s hs ↦ ?_
     rw [image_isVonNBounded_iff]
     simp_rw [isVonNBounded_iff'] at hs

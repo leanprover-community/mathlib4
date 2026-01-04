@@ -122,7 +122,6 @@ protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
 /-- A continuous affine equivalence is a continuous affine map. -/
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
   __ := e
-  cont := e.continuous_toFun
 
 /-- Coerce continuous linear equivs to continuous linear maps. -/
 instance ContinuousAffineMap.coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ →ᴬ[k] P₂) :=

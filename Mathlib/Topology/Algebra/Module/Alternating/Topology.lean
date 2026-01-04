@@ -236,7 +236,7 @@ def liftCLM (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F
   toFun x := ⟨f x, hf x⟩
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-  cont := continuous_induced_rng.mpr (map_continuous f)
+  continuous_toFun := continuous_induced_rng.mpr (map_continuous f)
 
 @[simp]
 lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)
@@ -252,7 +252,7 @@ def apply (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_eval_const m
+  continuous_toFun := continuous_eval_const m
 
 variable {𝕜 E F}
 

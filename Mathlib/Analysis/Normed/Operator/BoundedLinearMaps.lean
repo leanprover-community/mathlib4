@@ -99,7 +99,7 @@ def toLinearMap (f : E → F) (h : IsBoundedLinearMap 𝕜 f) : E →ₗ[𝕜] F
 /-- Construct a continuous linear map from `IsBoundedLinearMap`. -/
 def toContinuousLinearMap {f : E → F} (hf : IsBoundedLinearMap 𝕜 f) : E →L[𝕜] F :=
   { toLinearMap f hf with
-    cont :=
+    continuous_toFun :=
       let ⟨C, _, hC⟩ := hf.bound
       AddMonoidHomClass.continuous_of_bound (toLinearMap f hf) C hC }
 

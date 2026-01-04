@@ -256,7 +256,8 @@ theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpa
     [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f) (surj : Surjective f) :
     IsOpenMap f :=
   AffineMap.isOpenMap_linear_iff.mp <|
-    ContinuousLinearMap.isOpenMap { f.linear with cont := AffineMap.continuous_linear_iff.mpr hf }
+    ContinuousLinearMap.isOpenMap { f.linear with
+      continuous_toFun := AffineMap.continuous_linear_iff.mpr hf }
       (f.linear_surjective_iff.mpr surj)
 
 /-! ### Applications of the Banach open mapping theorem -/
@@ -520,7 +521,7 @@ namespace ContinuousLinearMap
 /-- Upgrade a `LinearMap` to a `ContinuousLinearMap` using the **closed graph theorem**. -/
 def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →L[𝕜] F where
   toLinearMap := g
-  cont := g.continuous_of_isClosed_graph hg
+  continuous_toFun := g.continuous_of_isClosed_graph hg
 
 @[simp]
 theorem coeFn_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
@@ -538,7 +539,7 @@ def ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
     E →L[𝕜] F where
   toLinearMap := g
-  cont := g.continuous_of_seq_closed_graph hg
+  continuous_toFun := g.continuous_of_seq_closed_graph hg
 
 @[simp]
 theorem coeFn_ofSeqClosedGraph

@@ -228,7 +228,7 @@ def condExpInd {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) [Si
   toFun := condExpIndL1 hm μ s
   map_add' := condExpIndL1_add
   map_smul' := condExpIndL1_smul
-  cont := continuous_condExpIndL1
+  continuous_toFun := continuous_condExpIndL1
 
 variable {G}
 

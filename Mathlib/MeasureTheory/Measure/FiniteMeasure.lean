@@ -489,7 +489,7 @@ def toWeakDualBCNN (μ : FiniteMeasure Ω) : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0
   toFun f := μ.testAgainstNN f
   map_add' := testAgainstNN_add μ
   map_smul' := testAgainstNN_smul μ
-  cont := μ.testAgainstNN_lipschitz.continuous
+  continuous_toFun := μ.testAgainstNN_lipschitz.continuous
 
 @[simp]
 theorem coe_toWeakDualBCNN (μ : FiniteMeasure Ω) : ⇑μ.toWeakDualBCNN = μ.testAgainstNN :=
@@ -980,7 +980,7 @@ noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable
   map_smul' := map_smul
-  cont := continuous_map f_cont
+  continuous_toFun := continuous_map f_cont
 
 lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
     [MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [NormalSpace Ω']

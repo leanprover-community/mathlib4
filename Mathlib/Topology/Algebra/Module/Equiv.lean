@@ -136,7 +136,7 @@ variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring 
 /-- A continuous linear equivalence induces a continuous linear map. -/
 @[coe]
 def toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) : M₁ →SL[σ₁₂] M₂ :=
-  { e.toLinearEquiv.toLinearMap with cont := e.continuous_toFun }
+  { e.toLinearEquiv.toLinearMap with continuous_toFun := e.continuous_toFun }
 
 /-- Coerce continuous linear equivs to continuous linear maps. -/
 instance ContinuousLinearMap.coe : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ →SL[σ₁₂] M₂) :=

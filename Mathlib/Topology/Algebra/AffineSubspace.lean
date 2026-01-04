@@ -32,7 +32,7 @@ variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpac
 /-- Embedding of an affine subspace to the ambient space, as a continuous affine map. -/
 def subtypeA (s : AffineSubspace R P) [Nonempty s] : s →ᴬ[R] P where
   toAffineMap := s.subtype
-  cont := continuous_subtype_val
+  continuous_toFun := continuous_subtype_val
 
 @[simp] lemma coe_subtypeA (s : AffineSubspace R P) [Nonempty s] : ⇑s.subtypeA = Subtype.val :=
   rfl

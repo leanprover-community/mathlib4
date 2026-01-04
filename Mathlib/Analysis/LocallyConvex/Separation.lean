@@ -215,7 +215,8 @@ variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : StrongDual ℝ E →ₗ[ℝ] StrongDual 𝕜 E :=
   letI to𝕜 (fr : StrongDual ℝ E) : StrongDual 𝕜 E :=
     { toLinearMap := LinearMap.extendTo𝕜' fr
-      cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
+      continuous_toFun :=
+        show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
   have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
   { toFun := to𝕜
     map_add' := by intros; ext; simp [h]; ring

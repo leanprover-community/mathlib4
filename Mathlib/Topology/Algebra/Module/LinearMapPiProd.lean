@@ -92,12 +92,12 @@ variable (R M₁ M₂)
 
 /-- `Prod.fst` as a `ContinuousLinearMap`. -/
 def fst : M₁ × M₂ →L[R] M₁ where
-  cont := continuous_fst
+  continuous_toFun := continuous_fst
   toLinearMap := LinearMap.fst R M₁ M₂
 
 /-- `Prod.snd` as a `ContinuousLinearMap`. -/
 def snd : M₁ × M₂ →L[R] M₂ where
-  cont := continuous_snd
+  continuous_toFun := continuous_snd
   toLinearMap := LinearMap.snd R M₁ M₂
 
 variable {R M₁ M₂}
@@ -220,7 +220,7 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
   toFun := fun v i ↦ v (f i)
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  cont := by fun_prop
+  continuous_toFun := by fun_prop
 
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
@@ -229,7 +229,7 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 @[simps! -fullyApplied]
 def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
   toLinearMap := .single R φ i
-  cont := continuous_single _
+  continuous_toFun := continuous_single _
 
 lemma sum_comp_single [Fintype ι] [DecidableEq ι] (L : (Π i, φ i) →L[R] M) (v : Π i, φ i) :
     ∑ i, L.comp (.single R φ i) (v i) = L v := by
@@ -306,7 +306,8 @@ variable [AddCommMonoid M] [Module R M] [ContinuousAdd M] [AddCommMonoid N] [Mod
 /-- The continuous linear map given by `(x, y) ↦ f₁ x + f₂ y`. -/
 @[simps! coe apply]
 def coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) : M₁ × M₂ →L[R] M :=
-  ⟨.coprod f₁ f₂, (f₁.cont.comp continuous_fst).add (f₂.cont.comp continuous_snd)⟩
+  ⟨.coprod f₁ f₂,
+    (f₁.continuous_toFun.comp continuous_fst).add (f₂.continuous_toFun.comp continuous_snd)⟩
 
 @[simp] lemma coprod_add (f₁ g₁ : M₁ →L[R] M) (f₂ g₂ : M₂ →L[R] M) :
     (f₁ + g₁).coprod (f₂ + g₂) = f₁.coprod f₂ + g₁.coprod g₂ := by ext <;> simp

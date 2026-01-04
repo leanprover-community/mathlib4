@@ -373,7 +373,7 @@ namespace Trivialization
 def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →L[R] F :=
   { e.linearMapAt R b with
     toFun := e.linearMapAt R b -- given explicitly to help `simps`
-    cont := by
+    continuous_toFun := by
       rw [e.coe_linearMapAt b]
       classical
       refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
@@ -385,7 +385,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
 def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
   { e.symmₗ R b with
     toFun := e.symm b -- given explicitly to help `simps`
-    cont := by
+    continuous_toFun := by
       by_cases hb : b ∈ e.baseSet
       · rw [(FiberBundle.totalSpaceMk_isInducing F E b).continuous_iff]
         exact e.continuousOn_symm.comp_continuous (.prodMk_right _) fun x ↦

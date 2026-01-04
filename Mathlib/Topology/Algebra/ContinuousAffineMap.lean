@@ -32,7 +32,7 @@ for `ContinuousLinearMap R E F`.
 structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddCommGroup V]
   [Module R V] [TopologicalSpace P] [AddTorsor V P] [AddCommGroup W] [Module R W]
   [TopologicalSpace Q] [AddTorsor W Q] extends P →ᵃ[R] Q where
-  cont : Continuous toFun
+  continuous_toFun : Continuous toFun
 
 /-- A continuous map of affine spaces -/
 notation:25 P " →ᴬ[" R "] " Q => ContinuousAffineMap R P Q
@@ -59,7 +59,7 @@ instance : FunLike (P →ᴬ[R] Q) P Q where
   coe_injective' _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
 
 instance : ContinuousMapClass (P →ᴬ[R] Q) P Q where
-  map_continuous := cont
+  map_continuous := continuous_toFun
 
 theorem toFun_eq_coe (f : P →ᴬ[R] Q) : f.toFun = ⇑f := rfl
 
@@ -75,7 +75,7 @@ theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
-  ⟨f, f.cont⟩
+  ⟨f, f.continuous_toFun⟩
 
 instance : CoeHead (P →ᴬ[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
@@ -115,7 +115,7 @@ variable (R P)
 
 /-- The constant map as a continuous affine map -/
 def const (q : Q) : P →ᴬ[R] Q :=
-  { AffineMap.const R P q with cont := continuous_const }
+  { AffineMap.const R P q with continuous_toFun := continuous_const }
 
 @[simp]
 theorem coe_const (q : Q) : ⇑(const R P q) = Function.const P q := rfl
@@ -124,7 +124,7 @@ noncomputable instance : Inhabited (P →ᴬ[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
 
 /-- The identity map as a continuous affine map -/
-def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
+def id : P →ᴬ[R] P := { AffineMap.id R P with continuous_toFun := continuous_id }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(id R P) = _root_.id := rfl
@@ -134,7 +134,8 @@ variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor 
 
 /-- The composition of continuous affine maps as a continuous affine map -/
 def comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) : P →ᴬ[R] Q₂ :=
-  { (f : Q →ᵃ[R] Q₂).comp (g : P →ᵃ[R] Q) with cont := f.cont.comp g.cont }
+  { (f : Q →ᵃ[R] Q₂).comp (g : P →ᵃ[R] Q) with
+    continuous_toFun := f.continuous_toFun.comp g.continuous_toFun }
 
 @[simp, norm_cast]
 theorem coe_comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) : ⇑(f.comp g) = f ∘ g := rfl
@@ -153,7 +154,7 @@ theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
 def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] : R →ᴬ[R] P where
   toAffineMap := AffineMap.lineMap p₀ p₁
-  cont := (continuous_id.smul continuous_const).vadd continuous_const
+  continuous_toFun := (continuous_id.smul continuous_const).vadd continuous_const
 
 @[simp] lemma lineMap_toAffineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
@@ -173,7 +174,7 @@ variable [TopologicalSpace W₂] [IsTopologicalAddTorsor Q₂]
 def contLinear (f : P →ᴬ[R] Q) : V →L[R] W :=
   { f.linear with
     toFun := f.linear
-    cont := by rw [AffineMap.continuous_linear_iff]; exact f.cont }
+    continuous_toFun := by rw [AffineMap.continuous_linear_iff]; exact f.continuous_toFun }
 
 @[simp]
 theorem coe_contLinear (f : P →ᴬ[R] Q) : (f.contLinear : V → W) = f.linear :=
@@ -248,7 +249,7 @@ variable [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
 variable [ContinuousConstSMul S W]
 
 instance : SMul S (P →ᴬ[R] W) where
-  smul t f := { t • (f : P →ᵃ[R] W) with cont := f.continuous.const_smul t }
+  smul t f := { t • (f : P →ᵃ[R] W) with continuous_toFun := f.continuous_toFun.const_smul t }
 
 @[norm_cast, simp]
 theorem coe_smul (t : S) (f : P →ᴬ[R] W) : ⇑(t • f) = t • ⇑f := rfl
@@ -272,7 +273,8 @@ end MulAction
 variable [IsTopologicalAddGroup W]
 
 instance : Add (P →ᴬ[R] W) where
-  add f g := { (f : P →ᵃ[R] W) + (g : P →ᵃ[R] W) with cont := f.continuous.add g.continuous }
+  add f g := { (f : P →ᵃ[R] W) + (g : P →ᵃ[R] W) with
+    continuous_toFun := f.continuous.add g.continuous }
 
 @[norm_cast, simp]
 theorem coe_add (f g : P →ᴬ[R] W) : ⇑(f + g) = f + g := rfl
@@ -280,7 +282,8 @@ theorem coe_add (f g : P →ᴬ[R] W) : ⇑(f + g) = f + g := rfl
 theorem add_apply (f g : P →ᴬ[R] W) (x : P) : (f + g) x = f x + g x := rfl
 
 instance : Sub (P →ᴬ[R] W) where
-  sub f g := { (f : P →ᵃ[R] W) - (g : P →ᵃ[R] W) with cont := f.continuous.sub g.continuous }
+  sub f g := { (f : P →ᵃ[R] W) - (g : P →ᵃ[R] W) with
+    continuous_toFun := f.continuous.sub g.continuous }
 
 @[norm_cast, simp]
 theorem coe_sub (f g : P →ᴬ[R] W) : ⇑(f - g) = f - g := rfl
@@ -288,7 +291,7 @@ theorem coe_sub (f g : P →ᴬ[R] W) : ⇑(f - g) = f - g := rfl
 theorem sub_apply (f g : P →ᴬ[R] W) (x : P) : (f - g) x = f x - g x := rfl
 
 instance : Neg (P →ᴬ[R] W) :=
-  { neg := fun f => { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
+  { neg := fun f => { -(f : P →ᵃ[R] W) with continuous_toFun := f.continuous.neg } }
 
 @[norm_cast, simp]
 theorem coe_neg (f : P →ᴬ[R] W) : ⇑(-f) = -f := rfl
@@ -335,10 +338,14 @@ variable [TopologicalSpace W] [IsTopologicalAddGroup W] [IsTopologicalAddTorsor 
 /-- The space of continuous affine maps from `P` to `Q` is an affine space over the space of
 continuous affine maps from `P` to `W`. -/
 instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
-  vadd f g := { __ := f.toAffineMap +ᵥ g.toAffineMap, cont := f.cont.vadd g.cont }
+  vadd f g := {
+    __ := f.toAffineMap +ᵥ g.toAffineMap,
+    continuous_toFun := f.continuous_toFun.vadd g.continuous_toFun }
   zero_vadd _ := ext fun _ ↦ zero_vadd _ _
   add_vadd _ _ _ := ext fun _ ↦ add_vadd _ _ _
-  vsub f g := { __ := f.toAffineMap -ᵥ g.toAffineMap, cont := f.cont.vsub g.cont }
+  vsub f g := {
+    __ := f.toAffineMap -ᵥ g.toAffineMap,
+    continuous_toFun := f.continuous_toFun.vsub g.continuous_toFun }
   vsub_vadd' _ _ := ext fun _ ↦ vsub_vadd _ _
   vadd_vsub' _ _ := ext fun _ ↦ vadd_vsub _ _
 
@@ -380,7 +387,7 @@ variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
 @[simps toAffineMap]
 def prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : P₁ →ᴬ[k] P₂ × P₃ where
   __ := AffineMap.prod f g
-  cont := by eta_expand; dsimp; fun_prop
+  continuous_toFun := by eta_expand; dsimp; fun_prop
 
 theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Pi.prod f g :=
   rfl
@@ -393,7 +400,7 @@ theorem prod_apply (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) (p : P₁
 @[simps toAffineMap]
 def prodMap (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) : P₁ × P₃ →ᴬ[k] P₂ × P₄ where
   __ := AffineMap.prodMap f g
-  cont := by eta_expand; dsimp; fun_prop
+  continuous_toFun := by eta_expand; dsimp; fun_prop
 
 theorem coe_prodMap (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) : ⇑(f.prodMap g) = Prod.map f g :=
   rfl
@@ -433,7 +440,7 @@ def toContinuousAffineMap (f : V →L[R] W) : V →ᴬ[R] W where
   toFun := f
   linear := f
   map_vadd' := by simp
-  cont := f.cont
+  continuous_toFun := f.continuous
 
 @[simp]
 theorem coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap = f := rfl

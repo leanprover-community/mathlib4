@@ -340,7 +340,7 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   -- through infinite sums of continuous linear maps.
   let eval_fst_CLM : (ℂ × ℂ →L[ℂ] ℂ) →L[ℂ] ℂ :=
   { toFun := fun f ↦ f (1, 0)
-    cont := continuous_id'.clm_apply continuous_const
+    continuous_toFun := continuous_id'.clm_apply continuous_const
     map_add' := by simp only [ContinuousLinearMap.add_apply, forall_const]
     map_smul' := by simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul,
       RingHom.id_apply, forall_const] }

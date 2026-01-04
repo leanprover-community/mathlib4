@@ -83,7 +83,8 @@ instance ContinuousMultilinearMap.instContinuousEval :
     let _ := IsTopologicalAddGroup.rightUniformSpace F
     have := isUniformAddGroup_of_addCommGroup (G := F)
     refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
-      (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
+      (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦
+        f.continuous_toFun.continuousAt
     exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
       ball_mem_nhds _ one_pos⟩
 
@@ -299,7 +300,7 @@ theorem continuous_of_bound (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, 
 condition. -/
 def mkContinuous (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
     ContinuousMultilinearMap 𝕜 E G :=
-  { f with cont := f.continuous_of_bound C H }
+  { f with continuous_toFun := f.continuous_of_bound C H }
 
 @[simp]
 theorem coe_mkContinuous (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :

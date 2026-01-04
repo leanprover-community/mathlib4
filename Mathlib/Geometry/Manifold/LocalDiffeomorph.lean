@@ -391,8 +391,8 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
       exact hf.mdifferentiableAt hn
     rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
       hf.localInverse_left_inv hf.localInverse_mem_target]
-  continuous_toFun := (mfderiv I J f x).cont
-  continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
+  continuous_toFun := (mfderiv I J f x).continuous_toFun
+  continuous_invFun := (mfderiv J I hf.localInverse (f x)).continuous_toFun
   map_add' := fun x_1 y ↦ map_add _ x_1 y
   map_smul' := by intros; simp
 

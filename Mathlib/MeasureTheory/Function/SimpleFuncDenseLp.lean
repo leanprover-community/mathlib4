@@ -693,7 +693,7 @@ variable (α E 𝕜)
 def coeToLp : Lp.simpleFunc E p μ →L[𝕜] Lp E p μ :=
   { AddSubgroup.subtype (Lp.simpleFunc E p μ) with
     map_smul' := fun _ _ => rfl
-    cont := Lp.simpleFunc.uniformContinuous.continuous }
+    continuous_toFun := Lp.simpleFunc.uniformContinuous.continuous }
 
 variable {α E 𝕜}
 

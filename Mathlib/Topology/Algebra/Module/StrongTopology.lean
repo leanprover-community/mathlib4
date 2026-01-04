@@ -523,7 +523,7 @@ def precomp_uniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul
   toFun f := f.comp L
   map_add' f g := add_comp f g L
   map_smul' a f := smul_comp a f L
-  cont := by
+  continuous_toFun := by
     letI : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
     haveI : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
     rw [(UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous_iff]
@@ -551,7 +551,7 @@ def postcomp_uniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGr
   toFun f := L.comp f
   map_add' := comp_add L
   map_smul' := comp_smulₛₗ L
-  cont := by
+  continuous_toFun := by
     letI : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
     haveI : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
     letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F

@@ -120,7 +120,7 @@ variable (σ F) in
 @[simps!]
 def evalCLM [ContinuousConstSMul 𝕜₂ F] (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
   toLinearMap := (coeLMₛₗ σ E F).flip a
-  cont := continuous_eval_const a
+  continuous_toFun := continuous_eval_const a
 
 /-- A map to `E →SLₚₜ[σ] F` is continuous if for every `x : E` the evaluation `g · x` is
 continuous. -/
@@ -153,7 +153,7 @@ variable (𝕜₂ σ E F) in
 def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E]
     [ContinuousConstSMul 𝕜₂ F] : (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
   __ := LinearMap.id
-  cont := _root_.ContinuousLinearMap.toUniformConvergenceCLM_continuous σ F _
+  continuous_toFun := _root_.ContinuousLinearMap.toUniformConvergenceCLM_continuous σ F _
     (fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in

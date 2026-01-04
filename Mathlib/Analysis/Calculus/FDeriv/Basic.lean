@@ -156,7 +156,7 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l :
   have L1 : Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
     (isLittleO_one_iff ℝ).1 this
   have L2 : Tendsto (fun n => f' (c n • d n)) l (𝓝 (f' v)) :=
-    Tendsto.comp f'.cont.continuousAt cdlim
+    Tendsto.comp f'.continuous_toFun.continuousAt cdlim
   have L3 :
     Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
     L1.add L2
