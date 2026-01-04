@@ -369,6 +369,7 @@ theorem U_eval_zero_of_even {n : ℤ} (hn : Even n) : (U R n).eval 0 = (n / 2).n
 theorem U_eval_two_mul_zero (n : ℤ) : (U R (2 * n)).eval 0 = n.negOnePow := by
   simp [U_eval_zero]
 
+@[simp]
 theorem U_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (U R n).eval 0 = 0 := by
   simp [U_eval_zero, ← Int.not_odd_iff_even, hn]
 
