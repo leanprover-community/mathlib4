@@ -55,7 +55,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
   by_cases z_zero : z = 0
   · rw [z_zero]
-    simp only [LinearMap.map_zero, norm_zero, mul_zero]
+    simp only [map_zero, norm_zero, mul_zero]
     exact le_rfl
   set z₁ := ((r : 𝕜) * (‖z‖ : 𝕜)⁻¹) • z with hz₁
   have norm_f_z₁ : ‖f z₁‖ ≤ c := by
@@ -64,7 +64,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
     exact norm_smul_inv_norm' r_pos.le z_zero
   have r_ne_zero : (r : 𝕜) ≠ 0 := RCLike.ofReal_ne_zero.mpr r_pos.ne'
   have eq : f z = ‖z‖ / r * f z₁ := by
-    rw [hz₁, LinearMap.map_smul, smul_eq_mul]
+    rw [hz₁, map_smul, smul_eq_mul]
     rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel₀, one_mul]
     simp only [z_zero, RCLike.ofReal_eq_zero, norm_eq_zero, Ne, not_false_iff]
   rw [eq, norm_mul, norm_div, RCLike.norm_coe_norm, RCLike.norm_of_nonneg r_pos.le,

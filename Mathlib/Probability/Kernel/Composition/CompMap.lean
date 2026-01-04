@@ -52,14 +52,6 @@ lemma deterministic_comp_deterministic (hf : Measurable f) (hg : Measurable g) :
   ext; simp [comp_deterministic_eq_comap, comap_apply, deterministic_apply]
 
 @[simp]
-lemma comp_id (κ : Kernel α β) : κ ∘ₖ Kernel.id = κ := by
-  rw [Kernel.id, comp_deterministic_eq_comap, comap_id]
-
-@[simp]
-lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
-  rw [Kernel.id, deterministic_comp_eq_map, map_id]
-
-@[simp]
 lemma swap_swap : (swap α β) ∘ₖ (swap β α) = Kernel.id := by
   simp_rw [swap, Kernel.deterministic_comp_deterministic, Prod.swap_swap_eq, Kernel.id]
 

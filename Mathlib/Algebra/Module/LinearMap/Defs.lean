@@ -339,7 +339,7 @@ protected theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S)
     c • f x = f (σ' c • x) := by simp
 
 @[simp]
-theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
+protected theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
   _root_.map_eq_zero_iff f h
 
 variable (M M₂)
@@ -398,15 +398,18 @@ theorem isLinearMap_of_compatibleSMul [Module S M] [Module S M₂] [CompatibleSM
   map_add := map_add f
   map_smul := map_smul_of_tower f
 
-/-- convert a linear map to an additive map -/
-def toAddMonoidHom : M →+ M₃ where
+/-- Convert a linear map to an additive monoid hom. -/
+-- See note [implicit instance arguments]
+def toAddMonoidHom {modM₁ : Module R M₁} {modM₂ : Module S M₂} {σ : R →+* S} (f : M₁ →ₛₗ[σ] M₂) :
+    M₁ →+ M₂ where
   toFun := f
   map_zero' := f.map_zero
   map_add' := f.map_add
 
+omit [Module R M₂] in
 @[simp]
-theorem toAddMonoidHom_coe : ⇑f.toAddMonoidHom = f :=
-  rfl
+lemma toAddMonoidHom_coe {modM₁ : Module R M₁} {modM₂ : Module S M₂} {σ : R →+* S}
+    (f : M₁ →ₛₗ[σ] M₂) : ⇑f.toAddMonoidHom = f := rfl
 
 section RestrictScalars
 

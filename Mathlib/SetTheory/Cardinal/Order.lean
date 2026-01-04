@@ -208,11 +208,14 @@ theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
   mk_congr (Fintype.equivOfCardEq (by simp))
 
+set_option backward.privateInPublic true in
 private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
   change #(ULift.{u} _) = #(ULift.{u} _) + 1
   rw [← mk_option]
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance commSemiring : CommSemiring Cardinal.{u} where
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
@@ -310,7 +313,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     bot_le _ := bot_le
-    mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+    mul_le_mul_left _ _ := mul_le_mul_left
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
@@ -637,7 +640,7 @@ theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 @[simp]
 theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
     (n : Cardinal) = lift.{v} a ↔ (n : Cardinal) = a := by
-  rw [← lift_natCast.{v,u} n, lift_inj]
+  rw [← lift_natCast.{v, u} n, lift_inj]
 
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
@@ -656,7 +659,7 @@ theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
-  rw [← lift_natCast.{v,u}, lift_le]
+  rw [← lift_natCast.{v, u}, lift_le]
 
 @[simp]
 theorem lift_le_one_iff {a : Cardinal.{u}} :
@@ -670,7 +673,7 @@ theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
-  rw [← lift_natCast.{v,u}, lift_le]
+  rw [← lift_natCast.{v, u}, lift_le]
 
 @[simp]
 theorem one_le_lift_iff {a : Cardinal.{u}} :
@@ -684,7 +687,7 @@ theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
-  rw [← lift_natCast.{v,u}, lift_lt]
+  rw [← lift_natCast.{v, u}, lift_lt]
 
 @[simp]
 theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
@@ -693,7 +696,7 @@ theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
-  rw [← lift_natCast.{v,u}, lift_lt]
+  rw [← lift_natCast.{v, u}, lift_lt]
 
 @[simp]
 theorem zero_lt_lift_iff {a : Cardinal.{u}} :

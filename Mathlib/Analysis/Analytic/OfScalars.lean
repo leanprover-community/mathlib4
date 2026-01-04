@@ -96,6 +96,9 @@ theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c
   simp_rw [Pi.add_apply, Pi.add_def _ _]
   exact funext fun n ↦ Module.add_smul (c n) (c' n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)
 
+lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by
+  ext; simp [ofScalars, sub_smul]
+
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
   unfold ofScalars
   simp [Pi.smul_def x _, smul_smul]
@@ -201,9 +204,9 @@ private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')), one_mul, norm_div, NNReal.norm_eq]
   exact mul_comm r' r ▸ hc.mul tendsto_const_nhds
 
-theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
+theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
-      (ofScalars E c).radius ≥ ofNNReal r⁻¹ := by
+      ofNNReal r⁻¹ ≤ (ofScalars E c).radius := by
   refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
   rw [coe_lt_coe, NNReal.lt_inv_iff_mul_lt hr] at hr'
   by_cases hrz : r' = 0
@@ -220,12 +223,15 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     gcongr
     exact ofScalars_norm_le E c n (Nat.pos_iff_ne_zero.mpr hn)
 
+@[deprecated (since := "2025-11-21")]
+alias ofScalars_radius_ge_inv_of_tendsto := inv_le_ofScalars_radius_of_tendsto
+
 /-- The radius of convergence of a scalar series is the inverse of the non-zero limit
 `fun n ↦ ‖c n.succ‖ / ‖c n‖`. -/
 theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       (ofScalars E c).radius = ofNNReal r⁻¹ := by
-  refine le_antisymm ?_ (ofScalars_radius_ge_inv_of_tendsto E c hr hc)
+  refine le_antisymm ?_ (inv_le_ofScalars_radius_of_tendsto E c hr hc)
   refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
   rw [coe_le_coe, NNReal.le_inv_iff_mul_le hr]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr'
@@ -274,12 +280,12 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   contrapose! this
   refine not_summable_of_ratio_norm_eventually_ge (r := 2) (by simp) ?_ ?_
   · contrapose! hc
-    apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
+    apply not_tendsto_atTop_of_tendsto_nhds (a := 0)
     apply Tendsto.congr' ?_ tendsto_const_nhds
     filter_upwards [hc] with n hc'
     rw [ofScalars_norm, norm_mul, norm_norm, mul_eq_zero] at hc'
     cases hc' <;> aesop
-  · filter_upwards [hc.eventually_ge_atTop (2*r⁻¹), eventually_ne_atTop 0] with n hc hn
+  · filter_upwards [hc.eventually_ge_atTop (2 * r⁻¹), eventually_ne_atTop 0] with n hc hn
     simp only [ofScalars_norm, norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
     rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff₀, mul_div_assoc]
     · convert hc

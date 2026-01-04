@@ -233,4 +233,9 @@ lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
     | _, _, some _, h => (h _ rfl).elim
     | _, _, none, _ => rfl) _ _ _
 
+@[simp]
+lemma getD_comp_some (d : α) : (fun x ↦ x.getD d) ∘ some = id := by
+  ext
+  simp only [Function.comp_apply, getD_some, id_eq]
+
 end Option

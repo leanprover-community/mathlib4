@@ -140,7 +140,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
 /-- Niven's theorem, but stated for `sin` instead of `cos`. -/
 theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ = q) :
     sin θ ∈ ({-1, -1 / 2, 0, 1 / 2, 1} : Set ℝ) := by
-  convert ← niven (θ := θ - π/2) ?_ ?_ using 1
+  convert ← niven (θ := θ - π / 2) ?_ ?_ using 1
   · exact cos_sub_pi_div_two θ
   · exact hθ.imp' (· - 1 / 2) (by intros; push_cast; linarith)
   · simpa [cos_sub_pi_div_two]
@@ -150,7 +150,7 @@ theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
     (h_bnd : θ ∈ Set.Icc 0 π) : θ ∈ ({0, π / 3, π / 2, π * (2 / 3), π} : Set ℝ) := by
   rcases niven hθ hcos with h | h | h | h | h <;>
   -- define `h₂` appropriately for each proof branch
-  [ have h₂ := cos_pi;
+  [have h₂ := cos_pi;
     have h₂ : cos (π * (2 / 3)) = -1 / 2 := by
       have := cos_pi_sub (π / 3)
       have := cos_pi_div_three

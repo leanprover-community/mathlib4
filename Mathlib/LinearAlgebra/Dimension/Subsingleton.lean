@@ -29,14 +29,3 @@ theorem rank_punit : Module.rank R PUnit = 0 := rank_subsingleton' _ _
 theorem rank_bot : Module.rank R (⊥ : Submodule R M) = 0 := rank_subsingleton' _ _
 
 end
-
-@[nontriviality, simp]
-theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
-  haveI := Module.subsingleton R M
-  have : Nonempty { s : Set M // LinearIndepOn R id s} := ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
-  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
-  · rintro ⟨s, hs⟩
-    rw [Cardinal.mk_le_one_iff_set_subsingleton]
-    apply Set.subsingleton_of_subsingleton
-  intro w hw
-  exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩

@@ -161,9 +161,6 @@ theorem reducible_notMem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s
     p ∉ s := fun h ↦ by
   rwa [← factorSetMem_eq_mem, FactorSetMem, dif_neg hp] at h
 
-@[deprecated (since := "2025-05-23")]
-alias reducible_not_mem_factorSet := reducible_notMem_factorSet
-
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=
   by_contra fun hp ↦ reducible_notMem_factorSet hp s h
@@ -237,8 +234,7 @@ theorem factors_prod (a : Associates α) : a.factors.prod = a := by
   rcases Associates.mk_surjective a with ⟨a, rfl⟩
   rcases eq_or_ne a 0 with rfl | ha
   · simp
-  · simp [ha, prod_mk, mk_eq_mk_iff_associated, UniqueFactorizationMonoid.factors_prod,
-      -Quotient.eq]
+  · simp [ha, prod_mk, mk_eq_mk_iff_associated, UniqueFactorizationMonoid.factors_prod]
 
 @[simp]
 theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=

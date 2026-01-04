@@ -31,7 +31,7 @@ namespace HomotopicalAlgebra
 
 namespace ModelCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   [CategoryWithCofibrations C] [CategoryWithFibrations C] [CategoryWithWeakEquivalences C]
   [(weakEquivalences C).HasTwoOutOfThreeProperty]
 

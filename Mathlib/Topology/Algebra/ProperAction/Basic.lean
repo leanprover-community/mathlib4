@@ -220,7 +220,7 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
   let Φ : G × X → X × X := fun gx ↦ (gx.1 • gx.2, gx.2)
   have Φ_proper : IsProperMap Φ := ProperSMul.isProperMap_smul_pair
   let α : G × t ≃ₜ (Φ ⁻¹' (snd ⁻¹' t)) :=
-    have : univ ×ˢ t = Φ ⁻¹' (snd ⁻¹' t) := by rw [univ_prod]; rfl
+    have : univ ×ˢ t = Φ ⁻¹' (snd ⁻¹' t) := by ext; simp [Φ]
     Homeomorph.Set.univ G |>.symm.prodCongr (.refl t) |>.trans
       ((Homeomorph.Set.prod _ t).symm) |>.trans (Homeomorph.setCongr this)
   let β : X × t ≃ₜ (snd ⁻¹' t) :=

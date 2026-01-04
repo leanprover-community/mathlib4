@@ -48,7 +48,7 @@ See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`. -/
 instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α where
   Hom U V := ULift (PLift (U ≤ V))
   id X := ⟨⟨le_refl X⟩⟩
-  comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
+  comp f g := ⟨⟨le_trans f.down.down g.down.down⟩⟩
 
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
   ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩

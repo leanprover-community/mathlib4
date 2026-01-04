@@ -105,6 +105,9 @@ end Semiring
 
 end Module
 
+theorem CommSemiring.finrank_self (R) [CommSemiring R] : Module.finrank R R = 1 :=
+  finrank_eq_of_rank_eq (rank_self R)
+
 open Module
 
 namespace LinearEquiv

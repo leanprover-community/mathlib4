@@ -121,7 +121,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
   trans ‖f ((2 : ℝ) ^ (-n : ℤ) • x n)‖
   · have := hx n |>.le
     rw [pow_mul', sq] at this
-    simpa [norm_smul] using (le_inv_mul_iff₀' (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
+    simpa [norm_smul] using (le_inv_mul_iff₀ (show 0 < (2 : ℝ) ^ n by positivity)).mpr this
   · have (m : ℕ) : 0 ≤ ((2 : ℝ) ^ (-(m : ℤ)) • x m) := smul_nonneg (by positivity) (hx_nonneg m)
     refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg (this n)) ?_
     gcongr

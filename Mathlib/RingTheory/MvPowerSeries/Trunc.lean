@@ -36,7 +36,7 @@ public import Mathlib.Algebra.MvPolynomial.Eval
 * `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
   of a product with those of the product of truncations.
 
-* `MvPowerSeries.trunc'_one` : truncation of a the unit power series.
+* `MvPowerSeries.trunc'_one` : truncation of the unit power series.
 
 * `MvPowerSeries.trunc'_C` : truncation of a constant.
 

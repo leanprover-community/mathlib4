@@ -94,7 +94,7 @@ theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   rw [map_zero, hx] at hs
   exact hs.false
 
-/-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `RankOne.hom v` if and
+/-- If `v` is a rank one valuation, then `x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
 theorem hom_eq_zero_iff {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩

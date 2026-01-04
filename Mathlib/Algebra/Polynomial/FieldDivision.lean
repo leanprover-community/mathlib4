@@ -135,7 +135,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by simp), h 1 (by simp)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
   obtain (_ | _ | m) := m
-  exacts [h0, h1, by cutsat]
+  exacts [h0, h1, by lia]
 
 end CommRing
 
@@ -192,7 +192,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
-  cutsat
+  lia
 
 section NormalizationMonoid
 
@@ -201,7 +201,7 @@ variable [NormalizationMonoid R]
 instance instNormalizationMonoid : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
-      rw [← RingHom.map_mul, Units.mul_inv, C_1], by rw [← RingHom.map_mul, Units.inv_mul, C_1]⟩
+      rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
   normUnit_zero := Units.ext (by simp)
   normUnit_mul hp0 hq0 :=
     Units.ext
@@ -308,6 +308,7 @@ def div (p q : R[X]) :=
 def mod (p q : R[X]) :=
   p %ₘ (q * C (leadingCoeff q)⁻¹)
 
+set_option backward.privateInPublic true in
 private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
   by_cases h : q = 0
   · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
@@ -316,6 +317,7 @@ private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + m
       rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
     rw [div, mod, add_comm, mul_assoc]
 
+set_option backward.privateInPublic true in
 private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
   rw [← degree_mul_leadingCoeff_inv q hq]
   exact degree_modByMonic_lt p (monic_mul_leadingCoeff_inv hq)
@@ -347,6 +349,8 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with
@@ -428,6 +432,21 @@ lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) 
     rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
     simp [hq]
   · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
+
+theorem degree_mod_lt (p : R[X]) {q : R[X]} (hq : q ≠ 0) : (p % q).degree < q.degree := by
+  rw [Polynomial.mod_def]
+  refine (Polynomial.degree_modByMonic_lt p ?_).trans_eq (by simp)
+  simp [Polynomial.Monic.def, hq]
+
+theorem add_mod (p₁ p₂ q : R[X]) : (p₁ + p₂) % q = p₁ % q + p₂ % q := by
+  simp [Polynomial.mod_def, Polynomial.add_modByMonic]
+
+theorem sub_mod (p₁ p₂ q : R[X]) : (p₁ - p₂) % q = p₁ % q - p₂ % q := by
+  simp [Polynomial.mod_def, Polynomial.sub_modByMonic]
+
+theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % q) % q := by
+  simp_rw [Polynomial.mod_def]
+  apply Polynomial.mul_modByMonic
 
 section
 
@@ -704,6 +723,14 @@ theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) 
 theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
     (mapAlg R S p).Monic ↔ p.Monic := by
   simp [mapAlg_eq_map, monic_map_iff]
+
+theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % q = p₂ % q := by
+  obtain rfl | hq := eq_or_ne q 0
+  · simpa [sub_eq_zero] using h
+  simp_rw [Polynomial.mod_def]
+  apply Polynomial.modByMonic_eq_of_dvd_sub (by simp [Polynomial.Monic.def, hq])
+  rw [mul_comm]
+  exact (Polynomial.C_mul_dvd (by simpa using hq)).mpr h
 
 end Field
 

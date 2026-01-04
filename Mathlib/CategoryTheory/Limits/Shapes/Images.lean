@@ -59,7 +59,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 noncomputable section
 
-universe v u
+universe w v u
 
 open CategoryTheory
 
@@ -180,6 +180,11 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
   m := m
   e := e
   m_mono := by rw [hm]; infer_instance
+
+@[simp]
+lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
+    (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
+  simp [← types_comp_apply, ← NatTrans.comp_app]
 
 end MonoFactorisation
 
@@ -736,7 +741,7 @@ instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [H
   HasImageMap.mk
     { map := (HasImageMap.imageMap sq1).map ≫ (HasImageMap.imageMap sq2).map
       map_ι := by
-        rw [Category.assoc,ImageMap.map_ι, ImageMap.map_ι_assoc, Comma.comp_right] }
+        rw [Category.assoc, ImageMap.map_ι, ImageMap.map_ι_assoc, Comma.comp_right] }
 
 variable {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
 
@@ -825,7 +830,7 @@ section
 
 variable (C) [HasImages C]
 
-/-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
+/-- If a category `HasImageMaps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps : Prop where
   has_image_map : ∀ {f g : Arrow C} (st : f ⟶ g), HasImageMap st
 
@@ -1012,7 +1017,7 @@ namespace CategoryTheory.Functor
 
 open CategoryTheory.Limits
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=

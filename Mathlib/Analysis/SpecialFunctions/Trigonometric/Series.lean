@@ -137,7 +137,7 @@ end Complex
 namespace Real
 
 /-- The power series expansion of `Real.cosh`. -/
-lemma hasSum_cosh (r : ℝ) : HasSum (fun n  ↦ r ^ (2 * n) / ↑(2 * n)!) (cosh r) :=
+lemma hasSum_cosh (r : ℝ) : HasSum (fun n ↦ r ^ (2 * n) / ↑(2 * n)!) (cosh r) :=
   mod_cast Complex.hasSum_cosh r
 
 /-- The power series expansion of `Real.sinh`. -/

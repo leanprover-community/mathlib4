@@ -87,10 +87,10 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Full :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Full :=
   Quotient.full_whiskeringLeft_functor _ _
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
   Quotient.faithful_whiskeringLeft_functor _ _
 
 variable {V c}
@@ -118,6 +118,11 @@ theorem eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homot
 def homotopyOfEq {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (w : (quotient V c).map f = (quotient V c).map g) : Homotopy f g :=
   ((Quotient.functor_map_eq_iff _ _ _).mp w).some
+
+lemma quotient_map_eq_zero_iff {C D : HomologicalComplex V c} (f : C ⟶ D) :
+    (quotient V c).map f = 0 ↔ Nonempty (Homotopy f 0) :=
+  ⟨fun h ↦ ⟨homotopyOfEq _ _ (by simpa using h)⟩,
+    fun ⟨h⟩ ↦ by simpa using eq_of_homotopy _ _ h⟩
 
 /-- An arbitrarily chosen representation of the image of a chain map in the homotopy category
 is homotopic to the original chain map.
@@ -205,7 +210,7 @@ end HomotopyCategory
 
 namespace CategoryTheory
 
-variable {V} {W : Type*} [Category W] [Preadditive W]
+variable {V} {W : Type*} [Category* W] [Preadditive W]
 
 /-- An additive functor induces a functor between homotopy categories. -/
 @[simps! obj]

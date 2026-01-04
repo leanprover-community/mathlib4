@@ -89,9 +89,6 @@ theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
 
-@[deprecated (since := "2025-05-23")]
-alias continuousWithinAt_of_not_mem_closure := continuousWithinAt_of_notMem_closure
-
 /-!
 ## `ContinuousOn`
 -/
@@ -296,10 +293,25 @@ theorem continuousWithinAt_diff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
   continuousWithinAt_singleton.diff_iff
 
+/-- A function is continuous at a point `x` within a set `s` if `x` is not an accumulation point of
+`s`. -/
+lemma continuousWithinAt_of_not_accPt (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by
+  rw [← continuousWithinAt_diff_self]
+  simp_all [ContinuousWithinAt, AccPt, ← nhdsWithin_inter', Set.diff_eq, Set.inter_comm]
+
 @[simp]
 theorem continuousWithinAt_compl_self :
     ContinuousWithinAt f {x}ᶜ x ↔ ContinuousAt f x := by
   rw [compl_eq_univ_diff, continuousWithinAt_diff_self, continuousWithinAt_univ]
+
+/-- A function is continuous at a point `x` if `x` is isolated. -/
+lemma continuousAt_of_not_accPt (h : ¬AccPt x (𝓟 {x}ᶜ)) : ContinuousAt f x := by
+  rw [← continuousWithinAt_compl_self]
+  exact continuousWithinAt_of_not_accPt h
+
+/-- A function is continuous at a point `x` if `x` is isolated. -/
+lemma continuousAt_of_not_accPt_top (h : ¬AccPt x ⊤) : ContinuousAt f x :=
+  continuousAt_of_not_accPt fun hh ↦ h <| AccPt.mono hh (by simp)
 
 theorem ContinuousOn.mono (hf : ContinuousOn f s) (h : t ⊆ s) :
     ContinuousOn f t := fun x hx => (hf x (h hx)).mono_left (nhdsWithin_mono _ h)
@@ -930,3 +942,28 @@ lemma Continuous.tendsto_nhdsSet_nhds
     Tendsto f (𝓝ˢ s) (𝓝 b) := by
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
+
+lemma ContinuousOn.preimage_mem_nhdsSetWithin {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) {t u t' : Set β} (h : u ∈ 𝓝ˢ[t'] t) :
+    f ⁻¹' u ∈ 𝓝ˢ[s ∩ f ⁻¹' t'] (s ∩ f ⁻¹' t) := by
+  have ⟨v, hv⟩ := mem_nhdsSetWithin.1 h
+  have ⟨w, hw⟩ := continuousOn_iff'.1 hf v hv.1
+  refine mem_nhdsSetWithin.2 ⟨w, hw.1, ?_, ?_⟩
+  · exact (inter_comm _ _).trans_subset <| (inter_subset_inter_left _ <| preimage_mono hv.2.1).trans
+      (hw.2.trans_subset inter_subset_left)
+  · rw [← inter_assoc, ← hw.2, inter_comm _ s, inter_assoc, ← preimage_inter]
+    exact inter_subset_right.trans <| preimage_mono hv.2.2
+
+/-- If `f` is continuous on `s` and `u` is a neighbourhood of `t`, then `f ⁻¹' u` is a neighbourhood
+of `s ∩ f ⁻¹' t` within `s`. -/
+lemma ContinuousOn.preimage_mem_nhdsSetWithin_of_mem_nhdsSet {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) {t u : Set β} (h : u ∈ 𝓝ˢ t) : f ⁻¹' u ∈ 𝓝ˢ[s] (s ∩ f ⁻¹' t) := by
+  simpa [h] using ContinuousOn.preimage_mem_nhdsSetWithin hf (t := t) (u := u) (t' := univ)
+
+lemma Continuous.preimage_mem_nhdsSetWithin {f : α → β} (hf : Continuous f) {s u s' : Set β}
+    (h : u ∈ 𝓝ˢ[s'] s) : f ⁻¹' u ∈ 𝓝ˢ[f ⁻¹' s'] (f ⁻¹' s) := by
+  simpa using (hf.continuousOn (s := univ)).preimage_mem_nhdsSetWithin h
+
+lemma Continuous.preimage_mem_nhdsSet {f : α → β} (hf : Continuous f) {s u : Set β}
+    (h : u ∈ 𝓝ˢ s) : f ⁻¹' u ∈ 𝓝ˢ (f ⁻¹' s) := by
+  simpa [h] using hf.preimage_mem_nhdsSetWithin (s := s) (u := u) (s' := univ)
