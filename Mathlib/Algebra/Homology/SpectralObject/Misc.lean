@@ -25,71 +25,6 @@ open CategoryTheory Category Limits Preadditive
 
 namespace CategoryTheory
 
-/-section
-
-variable {ι : Type _} [Preorder ι]
-
-@[simps!]
-def Arrow.mkOfLE (a b : ι) (hab : a ≤ b := by linarith) : Arrow ι := Arrow.mk (homOfLE hab)
-
-variable (ι)
-
-@[simps]
-noncomputable def Arrow.ιOfOrderBot [OrderBot ι] : ι ⥤ Arrow ι where
-  obj i := Arrow.mkOfLE ⊥ i bot_le
-  map {i j} φ :=
-    { left := 𝟙 _
-      right := φ }
-
-end-/
-
-/-section
-
-variable {C : Type _} [Category C] [Abelian C]
-
-noncomputable def Over.abelianImageFunctor (X : C) : Over X ⥤ MonoOver X where
-  obj f := MonoOver.mk' (Abelian.image.ι f.hom)
-  map φ := MonoOver.homMk (Abelian.image.lift _ (Abelian.image.ι _)
-    (by rw [← cancel_epi (Abelian.factorThruImage _),
-        Abelian.image.fac_assoc, comp_zero, ← Over.w φ, assoc,
-        cokernel.condition, comp_zero])) (by simp)
-  map_id X := by
-    apply CostructuredArrow.hom_ext
-    dsimp
-    rw [← cancel_mono (Abelian.image.ι _), Abelian.image.lift_ι]
-    erw [id_comp]
-  map_comp φ ψ := by
-    apply CostructuredArrow.hom_ext
-    change _ = _ ≫ _ ≫ _
-    dsimp [MonoOver.mk', MonoOver.homMk, Over.homMk,
-      CostructuredArrow.homMk, CommaMorphism.mk]
-    rw [← cancel_mono (Abelian.image.ι _)]
-    simp only [equalizer_as_kernel, Abelian.image.lift_ι, comp_id,
-      assoc, limit.lift_π, Fork.ofι_pt, Fork.ofι_π_app]
-
-end-/
-
-/-namespace Arrow
-
-lemma isIso_iff {C : Type _} [Category C] {X Y : Arrow C} (f : X ⟶ Y) :
-    IsIso f ↔ IsIso f.left ∧ IsIso f.right := by
-  constructor
-  · intro hf
-    constructor
-    · change IsIso ((Comma.fst _ _).map f)
-      infer_instance
-    · change IsIso ((Comma.snd _ _).map f)
-      infer_instance
-  · rintro ⟨hf₁, hf₂⟩
-    refine' ⟨CommaMorphism.mk (inv f.left) (inv f.right) _, _, _⟩
-    · dsimp
-      simp only [← cancel_epi f.left, Arrow.w_assoc f,
-        IsIso.hom_inv_id_assoc, IsIso.hom_inv_id, comp_id]
-    · aesop_cat
-    · aesop_cat
-
-end Arrow-/
-
 namespace Limits
 
 open Functor
@@ -238,7 +173,7 @@ def natTransδ {n : ℕ} (i j : Fin (n + 2)) (hij : i.1 ≤ j.1) :
     obtain ⟨x, hx⟩ := x
     simp only at hij
     simp only [Fin.mk_lt_mk]
-    split_ifs with h₁ h₂ <;> simp only [Fin.mk_le_mk] <;> linarith)).toNatTrans
+    split_ifs with h₁ h₂ <;> simp only [Fin.mk_le_mk] <;> lia)).toNatTrans
 
 variable {C}
 
@@ -317,11 +252,6 @@ lemma threeδ₃Toδ₂_app_one :
 lemma threeδ₃Toδ₂_app_two :
     (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 2 = f₃ := rfl
 
-/-- Variant of `threeδ₃Toδ₂_app_two`. -/
-@[simp]
-lemma threeδ₃Toδ₂_app_two' :
-    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app ⟨2, by linarith⟩ = f₃ := rfl
-
 def threeδ₂Toδ₁ :
     mk₂ f₁ f₂₃ ⟶ mk₂ f₁₂ f₃ :=
   homMk₂ (𝟙 _) f₂ (𝟙 _) (by simpa using h₁₂) (by simpa using h₂₃.symm)
@@ -341,7 +271,7 @@ lemma threeδ₂Toδ₁_app_two :
 /-- Variant of `threeδ₂Toδ₁_app_two`. -/
 @[simp]
 lemma threeδ₂Toδ₁_app_two' :
-    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
+    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by lia⟩ = 𝟙 _ := rfl
 
 def threeδ₁Toδ₀ :
     mk₂ f₁₂ f₃ ⟶ mk₂ f₂ f₃ :=
@@ -358,11 +288,6 @@ lemma threeδ₁Toδ₀_app_one :
 @[simp]
 lemma threeδ₁Toδ₀_app_two :
     (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 2 = (𝟙 _) := rfl
-
-/-- Variant of `threeδ₁Toδ₀_app_two`. -/
-@[simp]
-lemma threeδ₁Toδ₀_app_two' :
-    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app ⟨2, by linarith⟩ = (𝟙 _) := rfl
 
 end
 
@@ -390,19 +315,9 @@ lemma fourδ₄Toδ₃_app_one :
 lemma fourδ₄Toδ₃_app_two :
     (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 2 = 𝟙 _ := rfl
 
-/-- Variant of `fourδ₄Toδ₃_app_two`. -/
-@[simp]
-lemma fourδ₄Toδ₃_app_two' :
-    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
-
 @[simp]
 lemma fourδ₄Toδ₃_app_three :
     (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 3 = f₄ := rfl
-
-/-- Variant of `fourδ₄Toδ₃_app_three`. -/
-@[simp]
-lemma fourδ₄Toδ₃_app_three' :
-    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app ⟨3, by linarith⟩ = f₄ := rfl
 
 def fourδ₂Toδ₁ :
     mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄ :=
@@ -423,16 +338,11 @@ lemma fourδ₂Toδ₁_app_two :
 /-- Variant of `fourδ₂Toδ₁_app_two`. -/
 @[simp]
 lemma fourδ₂Toδ₁_app_two' :
-    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
+    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by lia⟩ = 𝟙 _ := rfl
 
 @[simp]
 lemma fourδ₂Toδ₁_app_three :
     (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app 3 = 𝟙 _ := rfl
-
-/-- Variant of `fourδ₂Toδ₁_app_three`. -/
-@[simp]
-lemma fourδ₂Toδ₁_app_three' :
-    (fourδ₂Toδ₁ f₁ f₂ f₃ f₄ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨3, by linarith⟩ = 𝟙 _ := rfl
 
 def fourδ₁Toδ₀ :
     mk₃ f₁₂ f₃ f₄ ⟶ mk₃ f₂ f₃ f₄ :=
@@ -450,19 +360,9 @@ lemma fourδ₁Toδ₀_app_one :
 lemma fourδ₁Toδ₀_app_two :
     (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 2 = 𝟙 _ := rfl
 
-/-- Variant of `fourδ₁Toδ₀_app_two`. -/
-@[simp]
-lemma fourδ₁Toδ₀_app_two' :
-    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
-
 @[simp]
 lemma fourδ₁Toδ₀_app_three :
     (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 3 = 𝟙 _ := rfl
-
-/-- Variant of `fourδ₁Toδ₀_app_three`. -/
-@[simp]
-lemma fourδ₁Toδ₀_app_three' :
-    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app ⟨3, by linarith⟩ = 𝟙 _ := rfl
 
 end
 
@@ -470,40 +370,20 @@ section
 
 omit [Abelian C]
 
-lemma isIso_iff {n : ℕ} {S₁ S₂ : ComposableArrows C n} (f : S₁ ⟶ S₂) :
-    IsIso f ↔ ∀ (i : Fin (n + 1)), IsIso (f.app i) := by
-  constructor
-  · intro hf i
-    infer_instance
-  · intro h
-    apply NatIso.isIso_of_isIso_app
-
 lemma isIso_iff₀ {S₁ S₂ : ComposableArrows C 0} (f : S₁ ⟶ S₂) :
     IsIso f ↔ IsIso (f.app 0) := by
-  rw [isIso_iff]
-  constructor
-  · intro h
-    exact h 0
-  · rintro h₀ i
-    fin_cases i; assumption
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact ⟨fun h ↦ h 0, fun _ i ↦ by fin_cases i; assumption⟩
 
 lemma isIso_iff₁ {S₁ S₂ : ComposableArrows C 1} (f : S₁ ⟶ S₂) :
     IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) := by
-  rw [isIso_iff]
-  constructor
-  · intro h
-    exact ⟨h 0, h 1⟩
-  · rintro ⟨h₀, h₁⟩ i
-    fin_cases i <;> assumption
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact ⟨fun h ↦ ⟨h 0, h 1⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
 
 lemma isIso_iff₂ {S₁ S₂ : ComposableArrows C 2} (f : S₁ ⟶ S₂) :
     IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) ∧ IsIso (f.app 2) := by
-  rw [isIso_iff]
-  constructor
-  · intro h
-    exact ⟨h 0, h 1, h 2⟩
-  · rintro ⟨h₀, h₁, h₂⟩ i
-    fin_cases i <;> assumption
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact ⟨fun h ↦ ⟨h 0, h 1, h 2⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
 
 end
 

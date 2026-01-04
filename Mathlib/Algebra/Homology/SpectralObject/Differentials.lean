@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.Algebra.Homology.SpectralObject.Page
 public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
@@ -177,7 +177,6 @@ noncomputable def leftHomologyDataShortComplexE :
   wπ := cokernel.condition _
   hπ := cokernelIsCokernel _
 
-/-- `leftHomologyDataShortComplexE_f'`. -/
 @[simp]
 lemma leftHomologyDataShortComplexE_f' :
     (X.leftHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).f' =
