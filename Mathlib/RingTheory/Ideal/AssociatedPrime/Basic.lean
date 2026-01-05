@@ -156,7 +156,7 @@ variable (R M M') in
 the union of those of the two modules. -/
 @[stacks 02M3 "third part"]
 theorem prod : associatedPrimes R (M × M') = associatedPrimes R M ∪ associatedPrimes R M' :=
-  (subset_union_of_exact LinearMap.inl_injective .inl_snd).antisymm (Set.union_subset_iff.2
+  (subset_union_of_addExact LinearMap.inl_injective .inl_snd).antisymm (Set.union_subset_iff.2
     ⟨subset_of_injective LinearMap.inl_injective, subset_of_injective LinearMap.inr_injective⟩)
 
 end associatedPrimes

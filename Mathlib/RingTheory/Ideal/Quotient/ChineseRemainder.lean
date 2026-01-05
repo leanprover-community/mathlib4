@@ -48,8 +48,8 @@ coprime, then for any `R`-module `M`, the kernel of `M → Πᵢ (R ⧸ Iᵢ) �
 theorem ker_tensorProductMk_quotient :
     ker (LinearMap.pi fun i ↦ TensorProduct.mk R (R ⧸ I i) M 1) =
       (⨅ i, I i) • (⊤ : Submodule R M) := by
-  have := rTensor_exact M (exact_subtype_ker_map _) (pi_mkQ_surjective hI)
-  rw [← (TensorProduct.lid R M).conj_exact_iff_exact, exact_iff] at this
+  have := rTensor_addExact M (addExact_subtype_ker_map _) (pi_mkQ_surjective hI)
+  rw [← (TensorProduct.lid R M).conj_addExact_iff_addExact, addExact_iff] at this
   convert this
   · classical simp [pi_mkQ_rTensor, LinearMap.comp_assoc]
   refine le_antisymm (Submodule.smul_le.mpr fun r hr m _ ↦ ⟨⟨r, ?_⟩ ⊗ₜ m, rfl⟩) ?_

@@ -747,9 +747,12 @@ lemma KaehlerDifferential.range_mapBaseChange :
 
 /-- The sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A] → 0` is exact.
 Also see `KaehlerDifferential.map_surjective`. -/
-lemma KaehlerDifferential.exact_mapBaseChange_map :
-    Function.Exact (mapBaseChange R A B) (map R A B B) :=
+lemma KaehlerDifferential.addExact_mapBaseChange_map :
+    Function.AddExact (mapBaseChange R A B) (map R A B B) :=
   SetLike.ext_iff.mp (range_mapBaseChange R A B).symm
+
+@[deprecated (since := "2026-01-05")]
+alias KaehlerDifferential.exact_mapBaseChange_map := KaehlerDifferential.addExact_mapBaseChange_map
 
 end
 
@@ -830,10 +833,14 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
         simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
       simp [RingHom.mem_ker, ha, this.2]
 
-theorem KaehlerDifferential.exact_kerCotangentToTensor_mapBaseChange
+theorem KaehlerDifferential.addExact_kerCotangentToTensor_mapBaseChange
     (h : Function.Surjective (algebraMap A B)) :
-    Function.Exact (kerCotangentToTensor R A B) (KaehlerDifferential.mapBaseChange R A B) :=
+    Function.AddExact (kerCotangentToTensor R A B) (KaehlerDifferential.mapBaseChange R A B) :=
   SetLike.ext_iff.mp (range_kerCotangentToTensor R A B h).symm
+
+@[deprecated (since := "2026-01-05")]
+alias KaehlerDifferential.exact_kerCotangentToTensor_mapBaseChange :=
+  KaehlerDifferential.addExact_kerCotangentToTensor_mapBaseChange
 
 lemma KaehlerDifferential.mapBaseChange_surjective
     (h : Function.Surjective (algebraMap A B)) :

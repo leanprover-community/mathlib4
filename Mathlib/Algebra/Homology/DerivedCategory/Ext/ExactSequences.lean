@@ -69,8 +69,8 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
     (hS.singleTriangle_distinguished) n
-  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+  rw [ShortComplex.ab_exact_iff_function_addExact] at this ⊢
+  apply Function.AddExact.of_ladder_addEquiv_of_addExact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   all_goals ext x; apply hom_comp_singleFunctor_map_shift (C := C)
 
@@ -89,8 +89,8 @@ lemma covariant_sequence_exact₃' :
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
-  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+  rw [ShortComplex.ab_exact_iff_function_addExact] at this ⊢
+  apply Function.AddExact.of_ladder_addEquiv_of_addExact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   · ext x; apply hom_comp_singleFunctor_map_shift (C := C)
   · ext x
@@ -108,8 +108,8 @@ lemma covariant_sequence_exact₁' :
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
-  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+  rw [ShortComplex.ab_exact_iff_function_addExact] at this ⊢
+  apply Function.AddExact.of_ladder_addEquiv_of_addExact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   · ext x
     exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
@@ -203,8 +203,8 @@ lemma contravariant_sequence_exact₂' (n : ℕ) :
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₂ _
     (op_distinguished _ hS.singleTriangle_distinguished) n
-  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+  rw [ShortComplex.ab_exact_iff_function_addExact] at this ⊢
+  apply Function.AddExact.of_ladder_addEquiv_of_addExact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   all_goals ext; apply singleFunctor_map_comp_hom (C := C)
 
@@ -222,8 +222,8 @@ lemma contravariant_sequence_exact₁' :
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₃ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
-  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+  rw [ShortComplex.ab_exact_iff_function_addExact] at this ⊢
+  apply Function.AddExact.of_ladder_addEquiv_of_addExact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   · ext; apply singleFunctor_map_comp_hom (C := C)
   · ext; dsimp; apply preadditiveYoneda_homologySequenceδ_singleTriangle_apply
@@ -238,8 +238,8 @@ lemma contravariant_sequence_exact₃' :
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₁ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
-  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+  rw [ShortComplex.ab_exact_iff_function_addExact] at this ⊢
+  apply Function.AddExact.of_ladder_addEquiv_of_addExact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   · ext; dsimp; apply preadditiveYoneda_homologySequenceδ_singleTriangle_apply
   · ext; apply singleFunctor_map_comp_hom (C := C)

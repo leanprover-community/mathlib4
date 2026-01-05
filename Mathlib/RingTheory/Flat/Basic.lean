@@ -296,81 +296,99 @@ lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
 
 variable (M) in
 /-- If `M` is flat then `M ⊗ -` is an exact functor. -/
-lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
+lemma lTensor_addExact [Flat R M] ⦃N N' N'' : Type*⦄
     [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
-    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
-    Function.Exact (f.lTensor M) (g.lTensor M) := by
+    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.AddExact f g) :
+    Function.AddExact (f.lTensor M) (g.lTensor M) := by
   let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
   let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
     Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
       Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
-        (LinearMap.exact_iff.mp exact).symm
-  suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
+        (LinearMap.addExact_iff.mp exact).symm
+  suffices exact1 : Function.AddExact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π from rfl, lTensor_comp]
-    exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
+    exact exact1.comp_injective (lTensor_preserves_injective_linearMap ι <| by
       simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
-  exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
+  exact _root_.lTensor_addExact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
+
+@[deprecated (since := "2026-01-05")]
+alias lTensor_exact := lTensor_addExact
 
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
-lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
+lemma rTensor_addExact [Flat R M] ⦃N N' N'' : Type*⦄
     [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
-    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
-    Function.Exact (f.rTensor M) (g.rTensor M) := by
+    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.AddExact f g) :
+    Function.AddExact (f.rTensor M) (g.rTensor M) := by
   let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
   let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
     Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
       Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
-        (LinearMap.exact_iff.mp exact).symm
-  suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
+        (LinearMap.addExact_iff.mp exact).symm
+  suffices exact1 : Function.AddExact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π from rfl, rTensor_comp]
-    exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
+    exact exact1.comp_injective (rTensor_preserves_injective_linearMap ι <| by
       simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
-  exact _root_.rTensor_exact M (fun x ↦ by simp [π]) Quotient.mk''_surjective
+  exact _root_.rTensor_addExact M (fun x ↦ by simp [π]) Quotient.mk''_surjective
+
+@[deprecated (since := "2026-01-05")]
+alias rTensor_exact := rTensor_addExact
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
   `Module.Flat.iff_lTensor_exact` to specialize the universe of `N, N', N''` to `Type (max u v)`. -/
-theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
+theorem iff_lTensor_addExact' [Small.{v'} R] : Flat R M ↔
     ∀ ⦃N N' N'' : Type v'⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
-        Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) := by
-  refine ⟨fun _ ↦ lTensor_exact _, fun H ↦ iff_lTensor_preserves_injective_linearMap'.mpr
+        Function.AddExact f g → Function.AddExact (f.lTensor M) (g.lTensor M) := by
+  refine ⟨fun _ ↦ lTensor_addExact _, fun H ↦ iff_lTensor_preserves_injective_linearMap'.mpr
     fun N' N'' _ _ _ _ L hL ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
     exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 
+@[deprecated (since := "2026-01-05")]
+alias iff_lTensor_exact' := iff_lTensor_addExact'
+
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor.
   See `Module.Flat.iff_lTensor_exact'` to generalize the universe of
   `N, N', N''` to any universe that is higher than `R` and `M`. -/
-theorem iff_lTensor_exact : Flat R M ↔
+theorem iff_lTensor_addExact : Flat R M ↔
     ∀ ⦃N N' N'' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
-        Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) :=
-  iff_lTensor_exact'
+        Function.AddExact f g → Function.AddExact (f.lTensor M) (g.lTensor M) :=
+  iff_lTensor_addExact'
+
+@[deprecated (since := "2026-01-05")]
+alias iff_lTensor_exact := iff_lTensor_addExact
 
 /-- `M` is flat if and only if `- ⊗ M` is an exact functor. See
   `Module.Flat.iff_rTensor_exact` to specialize the universe of `N, N', N''` to `Type (max u v)`. -/
-theorem iff_rTensor_exact' [Small.{v'} R] : Flat R M ↔
+theorem iff_rTensor_addExact' [Small.{v'} R] : Flat R M ↔
     ∀ ⦃N N' N'' : Type v'⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
-        Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) := by
-  refine ⟨fun _ ↦ rTensor_exact _, fun H ↦ iff_rTensor_preserves_injective_linearMap'.mpr
+        Function.AddExact f g → Function.AddExact (f.rTensor M) (g.rTensor M) := by
+  refine ⟨fun _ ↦ rTensor_addExact _, fun H ↦ iff_rTensor_preserves_injective_linearMap'.mpr
     fun N' N'' _ _ _ _ f hf ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 f (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
     exact (f.map_eq_zero_iff hf).trans eq_comm) x |>.mp hx
 
+@[deprecated (since := "2026-01-05")]
+alias iff_rTensor_exact' := iff_rTensor_addExact'
+
 /-- `M` is flat if and only if `- ⊗ M` is an exact functor.
   See `Module.Flat.iff_rTensor_exact'` to generalize the universe of
   `N, N', N''` to any universe that is higher than `R` and `M`. -/
-theorem iff_rTensor_exact : Flat R M ↔
+theorem iff_rTensor_addExact : Flat R M ↔
     ∀ ⦃N N' N'' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
-        Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) :=
-  iff_rTensor_exact'
+        Function.AddExact f g → Function.AddExact (f.rTensor M) (g.rTensor M) :=
+  iff_rTensor_addExact'
+
+@[deprecated (since := "2026-01-05")]
+alias iff_rTensor_exact := iff_rTensor_addExact
 
 end Flat
 

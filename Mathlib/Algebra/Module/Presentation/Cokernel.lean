@@ -138,13 +138,16 @@ end Cokernel
 of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of generators
 `g₁ : ι → M₁` of `M₁`, and an additional data in a `Presentation.CokernelData` structure. -/
 @[simps!]
-noncomputable def ofExact {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
+noncomputable def ofAddExact {f : M₁ →ₗ[A] M₂} {g : M₂ →ₗ[A] M₃}
     (pres₂ : Presentation.{w₂₀, w₂₁} A M₂) {ι : Type w₁} {g₁ : ι → M₁}
     (data : pres₂.CokernelData f g₁)
-    (hfg : Function.Exact f g) (hg : Function.Surjective g)
+    (hfg : Function.AddExact f g) (hg : Function.Surjective g)
     (hg₁ : Submodule.span A (Set.range g₁) = ⊤) :
     Presentation A M₃ :=
   (pres₂.cokernel data hg₁).ofLinearEquiv (hfg.linearEquivOfSurjective hg)
+
+@[deprecated (since := "2026-01-05")]
+alias ofExact := ofAddExact
 
 end Presentation
 

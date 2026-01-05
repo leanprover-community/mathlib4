@@ -242,32 +242,39 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
 
 /-- Given a split exact sequence `0 → M → N → P → 0` with `N` finitely presented,
 then `M` is also finitely presented. -/
-lemma Module.finitePresentation_of_split_exact
+lemma Module.finitePresentation_of_split_addExact
     {P : Type*} [AddCommGroup P] [Module R P]
     [Module.FinitePresentation R N]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) (l : P →ₗ[R] N) (hl : g ∘ₗ l = .id)
-    (hf : Function.Injective f) (H : Function.Exact f g) :
+    (hf : Function.Injective f) (H : Function.AddExact f g) :
     Module.FinitePresentation R M := by
   have hg : Function.Surjective g := Function.LeftInverse.surjective (DFunLike.congr_fun hl)
   have := Module.Finite.of_surjective g hg
-  obtain ⟨e, rfl, rfl⟩ := ((Function.Exact.split_tfae' H).out 0 2 rfl rfl).mp
+  obtain ⟨e, rfl, rfl⟩ := ((Function.AddExact.split_tfae' H).out 0 2 rfl rfl).mp
     ⟨hf, l, hl⟩
   refine Module.finitePresentation_of_surjective (LinearMap.fst _ _ _ ∘ₗ e.toLinearMap)
     (Prod.fst_surjective.comp e.surjective) ?_
   rw [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm,
-    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← Submodule.map_top]
+    LinearMap.addExact_iff.mp Function.AddExact.inr_fst, ← Submodule.map_top]
   exact .map _ (.map _ (Module.Finite.fg_top))
+
+@[deprecated (since := "2026-01-05")]
+alias Module.finitePresentation_of_split_exact := Module.finitePresentation_of_split_addExact
 
 /-- Given an exact sequence `0 → M → N → P → 0`
 with `N` finitely presented and `P` projective, then `M` is also finitely presented. -/
-lemma Module.finitePresentation_of_projective_of_exact
+lemma Module.finitePresentation_of_projective_of_addExact
     {P : Type*} [AddCommGroup P] [Module R P]
     [Module.FinitePresentation R N] [Module.Projective R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P)
-    (hf : Function.Injective f) (hg : Function.Surjective g) (H : Function.Exact f g) :
+    (hf : Function.Injective f) (hg : Function.Surjective g) (H : Function.AddExact f g) :
     Module.FinitePresentation R M :=
   have ⟨l, hl⟩ := Module.projective_lifting_property g .id hg
-  Module.finitePresentation_of_split_exact f g l hl hf H
+  Module.finitePresentation_of_split_addExact f g l hl hf H
+
+@[deprecated (since := "2026-01-05")]
+alias Module.finitePresentation_of_projective_of_exact :=
+  Module.finitePresentation_of_projective_of_addExact
 
 lemma Module.FinitePresentation.of_equiv (e : M ≃ₗ[R] N) [Module.FinitePresentation R M] :
     Module.FinitePresentation R N := by
@@ -337,9 +344,9 @@ instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
   have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
   apply Module.finitePresentation_of_surjective (f.baseChange A)
     (LinearMap.lTensor_surjective A hf)
-  have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
-    lTensor_exact A f.exact_subtype_ker_map hf
-  rw [LinearMap.exact_iff] at this
+  have : Function.AddExact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
+    lTensor_addExact A f.addExact_subtype_ker_map hf
+  rw [LinearMap.addExact_iff] at this
   rw [this, ← Submodule.map_top]
   apply Submodule.FG.map
   have : Module.Finite R (LinearMap.ker f) :=

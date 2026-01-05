@@ -75,10 +75,14 @@ lemma ShortExact.moduleCat_surjective_g (hS : S.ShortExact) :
 
 variable (S)
 
-lemma ShortExact.moduleCat_exact_iff_function_exact :
-    S.Exact ↔ Function.Exact S.f S.g := by
-  rw [moduleCat_exact_iff_range_eq_ker, LinearMap.exact_iff]
+lemma ShortExact.moduleCat_exact_iff_function_addExact :
+    S.Exact ↔ Function.AddExact S.f S.g := by
+  rw [moduleCat_exact_iff_range_eq_ker, LinearMap.addExact_iff]
   tauto
+
+@[deprecated (since := "2026-01-05")]
+alias ShortExact.moduleCat_exact_iff_function_exact :=
+  ShortExact.moduleCat_exact_iff_function_addExact
 
 /-- Constructor for short complexes in `ModuleCat.{v} R` taking as inputs
 morphisms `f` and `g` and the assumption `LinearMap.range f ≤ LinearMap.ker g`. -/

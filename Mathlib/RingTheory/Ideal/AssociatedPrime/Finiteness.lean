@@ -124,13 +124,13 @@ theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
       (N₂ : Type v) → [AddCommGroup N₂] → [Module A N₂] → [Module.Finite A N₂] →
       (N₃ : Type v) → [AddCommGroup N₃] → [Module A N₃] → [Module.Finite A N₃] →
       (f : N₁ →ₗ[A] N₂) → (g : N₂ →ₗ[A] N₃) →
-      Function.Injective f → Function.Surjective g → Function.Exact f g →
+      Function.Injective f → Function.Surjective g → Function.AddExact f g →
       motive N₁ → motive N₃ → motive N₂) : motive M := by
   have equiv (N₁ : Type v) [AddCommGroup N₁] [Module A N₁] [Module.Finite A N₁]
       (N₂ : Type v) [AddCommGroup N₂] [Module A N₂] [Module.Finite A N₂]
       (f : N₁ ≃ₗ[A] N₂) (h : motive N₁) : motive N₂ :=
     exact N₁ N₂ PUnit.{v + 1} f 0 f.injective (Function.surjective_to_subsingleton _)
-      ((f.exact_zero_iff_surjective _).2 f.surjective) h (subsingleton _)
+      ((f.addExact_zero_iff_surjective _).2 f.surjective) h (subsingleton _)
   obtain ⟨s, hs1, hs2⟩ := IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime A M
   suffices H : ∀ n, (h : n < s.length + 1) → motive (s ⟨n, h⟩) by
     replace H : motive s.last := H s.length s.length.lt_add_one
@@ -147,7 +147,7 @@ theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
     obtain ⟨hle, p, ⟨f⟩⟩ := s.step ⟨n, (add_lt_add_iff_right _).1 h⟩
     replace ih := equiv _ _ (Submodule.submoduleOfEquivOfLe hle).symm ih
     exact exact _ _ _ _ _ (Submodule.injective_subtype _) (Submodule.mkQ_surjective _)
-      (LinearMap.exact_subtype_mkQ _) ih (quotient _ p f)
+      (LinearMap.addExact_subtype_mkQ _) ih (quotient _ p f)
 
 /-- There are only finitely many associated primes of a finitely generated module
 over a Noetherian ring. -/
@@ -160,7 +160,7 @@ theorem associatedPrimes.finite : (associatedPrimes A M).Finite := by
     have := associatedPrimes.eq_singleton_of_isPrimary p.2.isPrimary
     simp [LinearEquiv.AssociatedPrimes.eq f, this]
   | exact N₁ N₂ N₃ f g hf _ hfg h₁ h₃ =>
-    exact (h₁.union h₃).subset (associatedPrimes.subset_union_of_exact hf hfg)
+    exact (h₁.union h₃).subset (associatedPrimes.subset_union_of_addExact hf hfg)
 
 /-- Every maximal ideal of a commutative Noetherian total ring of fractions `A` is
 an associated prime of the `A`-module `A`. -/

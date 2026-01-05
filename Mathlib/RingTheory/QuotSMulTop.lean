@@ -114,11 +114,14 @@ lemma map_surjective {f : M →ₗ[R] M'} (hf : Surjective f) : Surjective (map 
   @Surjective.of_comp _ _ _ _ (mkQ (r • ⊤ : Submodule R M)) <| by
     rwa [← LinearMap.coe_comp, map_comp_mkQ, LinearMap.coe_comp]
 
-lemma map_exact {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
-    (hfg : Exact f g) (hg : Surjective g) : Exact (map r f) (map r g) :=
-  (Exact.iff_of_ladder_linearEquiv (equivQuotTensor_naturality r f).symm
+lemma map_addExact {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
+    (hfg : AddExact f g) (hg : Surjective g) : AddExact (map r f) (map r g) :=
+  (AddExact.iff_of_ladder_linearEquiv (equivQuotTensor_naturality r f).symm
                              (equivQuotTensor_naturality r g).symm).mp
-    (lTensor_exact (R ⧸ Ideal.span {r}) hfg hg)
+    (lTensor_addExact (R ⧸ Ideal.span {r}) hfg hg)
+
+@[deprecated (since := "2026-01-05")]
+alias map_exact := map_addExact
 
 variable (M M')
 
