@@ -670,6 +670,7 @@ public import Mathlib.Algebra.Lie.IdealOperations
 public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.LieTheorem
+public import Mathlib.Algebra.Lie.Loop
 public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
