@@ -39,8 +39,8 @@ open scoped MonoidAlgebra
 universe u v w
 
 /-- The category of `k`-linear representations of a monoid `G`. -/
-abbrev Rep (k : Type u) (G : Type v) [Ring k] [Monoid G] :=
-  Action (ModuleCat.{w} k) G
+abbrev Rep.{a, b, c} (k : Type b) (G : Type c) [Ring k] [Monoid G] :=
+  Action (ModuleCat.{a} k) G
 
 instance (k : Type u) (G : Type v) [CommRing k] [Monoid G] : Linear k (Rep k G) := by infer_instance
 
@@ -908,7 +908,7 @@ def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} k[G] where
 
 -- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
 
-instance : EnoughProjectives (Rep.{u, u, u} k G) :=
+instance : EnoughProjectives (Rep.{u} k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{u}
 
 instance free_projective {G α : Type u} [Group G] :
