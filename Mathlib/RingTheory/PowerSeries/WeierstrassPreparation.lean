@@ -3,11 +3,13 @@ Copyright (c) 2025 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
-import Mathlib.RingTheory.PowerSeries.CoeffMulMem
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Trunc
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
+public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Trunc
 
 /-!
 
@@ -86,6 +88,8 @@ such ring has only one maximal ideal, and hence it is a complete local ring.
 - [Washington, Lawrence C. *Introduction to cyclotomic fields.*][washington_cyclotomic]
 
 -/
+
+@[expose] public section
 
 open scoped Polynomial
 
@@ -466,7 +470,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
     have hI : I ≠ ⊤ := by
       rintro rfl
       exact not_subsingleton _ ‹IsAdicComplete ⊤ A›.toIsHausdorff.subsingleton
-    have := Ideal.Quotient.nontrivial hI
+    have := Ideal.Quotient.nontrivial_iff.mpr hI
     obtain ⟨f, hfdeg, rfl⟩ : ∃ r : A[X], r.degree < g.degree ∧ Ideal.Quotient.mk _ r = f := by
       obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
       refine ⟨f %ₘ g, Polynomial.degree_modByMonic_lt f H.monic, ?_⟩
@@ -658,7 +662,7 @@ variable {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} {I : Ideal A} (H : g.IsWeierst
 include H
 
 theorem map_ne_zero_of_ne_top (hI : I ≠ ⊤) : g.map (Ideal.Quotient.mk I) ≠ 0 := by
-  have := Ideal.Quotient.nontrivial hI
+  have := Ideal.Quotient.nontrivial_iff.mpr hI
   rw [congr(map (Ideal.Quotient.mk I) $(H.eq_mul)), map_mul, ← Polynomial.polynomial_map_coe, ne_eq,
     (H.isUnit.map _).mul_left_eq_zero]
   exact_mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
@@ -736,7 +740,7 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
   rw [isUnit_iff_constantCoeff, ← isUnit_map_iff (IsLocalRing.residue A)]
   rw [coeff_mul, ← Finset.sum_subset (s₁ := {(n, 0)}) (by simp) (fun p hp hnotMem ↦ ?_),
     Finset.sum_singleton, coeff_map, coeff_map, coeff_zero_eq_constantCoeff, mul_comm] at H2
-  · exact isUnit_of_mul_eq_one _ _ H2.symm
+  · exact .of_mul_eq_one _ H2.symm
   · rw [coeff_of_lt_order p.1 ?_]
     · rw [zero_mul]
     · rw [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg), ENat.lift_eq_toNat_of_lt_top]

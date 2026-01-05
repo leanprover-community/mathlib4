@@ -3,7 +3,9 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Congruences
@@ -25,6 +27,8 @@ For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#na
 
 * `v₁ ≅ v₂`: for `Congruent v₁ v₂`.
 -/
+
+@[expose] public section
 
 variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 

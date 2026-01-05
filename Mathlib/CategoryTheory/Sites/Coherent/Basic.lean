@@ -3,9 +3,11 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.Extensive
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # The Coherent, Regular and Extensive Grothendieck Topologies
@@ -39,11 +41,13 @@ from the coproduct to the target.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /--
 The condition `Precoherent C` is essentially the minimal condition required to define the
@@ -58,7 +62,7 @@ class Precoherent : Prop where
     ∀ (α : Type) [Finite α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)), EffectiveEpiFamily X₁ π₁ →
     ∃ (β : Type) (_ : Finite β) (X₂ : β → C) (π₂ : (b : β) → (X₂ b ⟶ B₂)),
       EffectiveEpiFamily X₂ π₂ ∧
-    ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))), ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
+    ∃ (i : β → α) (ι : (b : β) → (X₂ b ⟶ X₁ (i b))), ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
 
 /--
 The coherent coverage on a precoherent category `C`.

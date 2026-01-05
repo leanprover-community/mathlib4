@@ -3,15 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.SetLike.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Star monoids, rings, and modules
@@ -30,6 +32,8 @@ as different users are expected to feel strongly about the relative merits of
 Our star rings are actually star non-unital, non-associative, semirings, but of course we can prove
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset Subgroup Rat.instField
 
@@ -144,6 +148,8 @@ alias ⟨_, Commute.star_star⟩ := commute_star_star
 theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
   rw [← commute_star_star, star_star]
 
+alias ⟨Commute.star_right, Commute.star_left⟩ := commute_star_comm
+
 end StarMul
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
@@ -169,6 +175,11 @@ variable (R) in
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
+
+@[simp]
+lemma Pi.star_mulSingle {ι : Type*} {R : ι → Type*} [DecidableEq ι] [∀ i, MulOneClass (R i)]
+    [∀ i, StarMul (R i)] (i : ι) (r : R i) : star (mulSingle i r) = mulSingle i (star r) := by
+  ext; exact apply_mulSingle (fun _ ↦ star) (fun _ ↦ star_one _) ..
 
 @[simp]
 theorem star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
@@ -229,6 +240,11 @@ variable (R) in
 @[simp]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
+
+@[simp]
+lemma Pi.star_single {ι : Type*} {R : ι → Type*} [DecidableEq ι] [∀ i, AddMonoid (R i)]
+    [∀ i, StarAddMonoid (R i)] (i : ι) (r : R i) : star (single i r) = single i (star r) := by
+  ext; exact apply_single (fun _ ↦ star) (fun _ ↦ star_zero _) ..
 
 @[simp]
 theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=

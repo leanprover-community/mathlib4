@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 
 /-!
 # Rotations by oriented angles.
@@ -16,6 +18,8 @@ This file defines rotations by oriented angles in real inner product spaces.
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -140,7 +144,7 @@ theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
 @[simp]
 theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
-  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, LinearIsometryEquiv.map_add,
+  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, map_add,
     map_smul, rightAngleRotation_rightAngleRotation]
   module
 
@@ -154,7 +158,7 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.toCircle : ℂ) * o.kahler x y := by
-  simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
+  simp only [o.rotation_apply, map_add, map_mul, map_smulₛₗ, RingHom.id_apply,
     LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
     Real.Angle.coe_toCircle, Complex.conj_ofReal, conj_I]
   ring
@@ -183,7 +187,7 @@ theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
     o.kahler x (o.rotation θ y) = θ.toCircle * o.kahler x y := by
-  simp only [o.rotation_apply, map_add, LinearMap.map_smulₛₗ, RingHom.id_apply, real_smul,
+  simp only [o.rotation_apply, map_add, map_smulₛₗ, RingHom.id_apply, real_smul,
     kahler_rightAngleRotation_right, Real.Angle.coe_toCircle]
   ring
 
@@ -278,7 +282,7 @@ theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : 
   have hp := div_pos (norm_pos_iff.2 hy) (norm_pos_iff.2 hx)
   constructor
   · rintro rfl
-    rw [← LinearIsometryEquiv.map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
+    rw [← map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
       rotation_oangle_eq_iff_norm_eq, norm_smul, Real.norm_of_nonneg hp.le,
       div_mul_cancel₀ _ (norm_ne_zero_iff.2 hx)]
   · intro hye

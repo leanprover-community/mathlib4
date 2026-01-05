@@ -3,10 +3,12 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Push
+module
+
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Push
 
 /-!
 # Action of regular elements on a module
@@ -26,6 +28,8 @@ This property is the direct generalization to modules of the property `IsLeftReg
 `Algebra/Regular`.  Lemma `isLeftRegular_iff` shows that indeed the two notions
 coincide.
 -/
+
+@[expose] public section
 
 
 variable {R S : Type*} (M : Type*) {a b : R} {s : S}
@@ -54,6 +58,15 @@ theorem isRightRegular_iff [Mul R] {a : R} :
 namespace IsSMulRegular
 
 variable {M}
+
+@[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
+    IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
+  simp_rw [IsSMulRegular, Function.Injective]
+  conv_rhs => rw [← n.sign_mul_natAbs]
+  obtain h | h | h := n.sign_trichotomy
+  · simp [h]
+  · simp [Int.sign_eq_zero_iff_zero.mp h]
+  · simp [h, neg_zsmul]
 
 section SMul
 

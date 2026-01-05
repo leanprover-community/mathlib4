@@ -3,10 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Logic.IsEmpty
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Multiplicative opposite and algebraic operations on it
@@ -37,6 +38,8 @@ definitional eta reduction for structures (Lean 3 does not).
 
 multiplicative opposite, additive opposite
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 
@@ -183,6 +186,17 @@ instance [Add α] [IsRightCancelAdd α] : IsRightCancelAdd αᵐᵒᵖ where
   add_right_cancel _ _ _ eq := unop_injective <| add_right_cancel (congr_arg unop eq)
 
 instance [Add α] [IsCancelAdd α] : IsCancelAdd αᵐᵒᵖ where
+
+theorem isLeftCancelAdd_iff [Add α] : IsLeftCancelAdd αᵐᵒᵖ ↔ IsLeftCancelAdd α where
+  mp _ := ⟨fun _ _ _ eq ↦ op_injective <| add_left_cancel (congr_arg op eq)⟩
+  mpr _ := inferInstance
+
+theorem isRightCancelAdd_iff [Add α] : IsRightCancelAdd αᵐᵒᵖ ↔ IsRightCancelAdd α where
+  mp _ := ⟨fun _ _ _ eq ↦ op_injective <| add_right_cancel (congr_arg op eq)⟩
+  mpr _ := inferInstance
+
+protected theorem isCancelAdd_iff [Add α] : IsCancelAdd αᵐᵒᵖ ↔ IsCancelAdd α := by
+  simp_rw [isCancelAdd_iff, isLeftCancelAdd_iff, isRightCancelAdd_iff]
 
 @[to_additive] instance instSMul [SMul α β] : SMul α βᵐᵒᵖ where smul c x := op (c • unop x)
 

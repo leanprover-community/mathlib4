@@ -3,13 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Order.Nat
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Order.Nat
 
 /-!
 # Casts for Rational Numbers
@@ -24,7 +26,9 @@ casting lemmas showing the well-behavedness of this injection.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-assert_not_exists MulAction OrderedAddCommMonoid
+@[expose] public section
+
+assert_not_exists MulAction IsOrderedMonoid
 
 variable {F ι α β : Type*}
 
@@ -57,7 +61,7 @@ lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
   have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
-  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' h] at e
+  simp_rw [Rat.mk_eq_divInt, mk_divInt, divNat_inj hb' h] at e
   rw [cast_def]
   dsimp
   rw [Commute.div_eq_div_iff _ hd hb]
@@ -148,7 +152,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
     have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction
-  rw [mk'_eq_divInt] at e
+  rw [mk_eq_divInt] at e
   have := congr_arg ((↑) : ℤ → α)
     ((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this

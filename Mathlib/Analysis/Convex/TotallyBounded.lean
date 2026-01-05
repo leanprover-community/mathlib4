@@ -3,18 +3,19 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Totally Bounded sets and Convex Hulls
 
 ## Main statements
 
-- `totallyBounded_convexHull` The convex hull of a totally bounded set is totally bounded.
+- `totallyBounded_convexHull`: The convex hull of a totally bounded set is totally bounded.
 
 ## References
 
@@ -24,6 +25,8 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 convex, totally bounded
 -/
+
+@[expose] public section
 
 open Set Pointwise
 

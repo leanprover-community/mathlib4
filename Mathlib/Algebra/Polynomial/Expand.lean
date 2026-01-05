@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.Polynomial.Basic
 * `Polynomial.contract p f`: the opposite of `expand`, so it sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -255,21 +259,28 @@ theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivati
   · rw [expand_one, contract_one]
   · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
-theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
+theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine f.induction_on' (fun a b ha hb => ?_) fun n a => ?_
   · rw [map_add, Polynomial.map_add, ha, hb, add_pow_expChar]
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
       mul_pow, ← C.map_pow, frobenius_def]
     ring
 
-theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
-    map (frobenius R p ^ n) (expand R (p ^ n) f) = f ^ p ^ n := by
+@[deprecated (since := "2025-12-27")]
+alias expand_char := map_frobenius_expand
+
+theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
+    map (iterateFrobenius R p n) (expand R (p ^ n) f) = f ^ p ^ n := by
   induction n with
-  | zero => simp [RingHom.one_def]
-  | succ _ n_ih =>
+  | zero => simp
+  | succ k n_ih =>
     symm
-    rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
-      expand_mul, ← map_expand]
+    conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
+    simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
+      ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
+
+@[deprecated (since := "2025-12-27")]
+alias map_expand_pow_char := map_iterateFrobenius_expand
 
 end ExpChar
 

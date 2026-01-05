@@ -3,11 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.Module.Congruence.Defs
+public import Mathlib.LinearAlgebra.Basis.Cardinality
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.StdBasis
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finite modules and types with finitely many elements
@@ -15,6 +18,8 @@ import Mathlib.RingTheory.Finiteness.Basic
 This file relates `Module.Finite` and `_root_.Finite`.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 open Finsupp
@@ -103,7 +108,11 @@ end ModuleAndAlgebra
 namespace Module.Finite
 
 universe u
-variable (R : Type u) (M : Type*) [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable (R : Type u) (M : Type*)
+
+section Ring
+
+variable [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 /-- The kernel of a random surjective linear map from a finite free module
 to a given finite module. -/
@@ -115,5 +124,25 @@ protected abbrev repr : Type u := _ ⧸ kerRepr R M
 /-- The representative is isomorphic to the original module. -/
 noncomputable def reprEquiv : Finite.repr R M ≃ₗ[R] M :=
   LinearMap.quotKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
+
+end Ring
+
+section Semiring
+
+variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Finite R M]
+
+/-- The kernel (as a congruence relation) of a random surjective linear map
+from a finite free module to a given finite module. -/
+noncomputable def kerReprₛ :=
+  ModuleCon.ker (Finite.exists_fin' R M).choose_spec.choose.toDistribMulActionHom
+
+/-- A representative of a finite module in the same universe as the semiring. -/
+protected abbrev reprₛ : Type u := (kerReprₛ R M).Quotient
+
+/-- The representative is isomorphic to the original module. -/
+noncomputable def reprEquivₛ : Finite.reprₛ R M ≃ₗ[R] M :=
+  ModuleCon.quotientKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
+
+end Semiring
 
 end Module.Finite

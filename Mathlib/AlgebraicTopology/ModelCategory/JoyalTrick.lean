@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # A trick by Joyal
@@ -21,13 +23,15 @@ namely that cofibrations are stable under composition and cobase change.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits MorphismProperty
 
 namespace HomotopicalAlgebra
 
 namespace ModelCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   [CategoryWithCofibrations C] [CategoryWithFibrations C] [CategoryWithWeakEquivalences C]
   [(weakEquivalences C).HasTwoOutOfThreeProperty]
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
 
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topological closure of the submonoid closure
@@ -17,6 +19,8 @@ then the topological closures of `Submonoid.closure s` and `Subgroup.closure s` 
 The proof is based on the following observation, see `mapClusterPt_self_zpow_atTop_pow`:
 each `x^m`, `m : ℤ` is a limit point (`MapClusterPt`) of the sequence `x^n`, `n : ℕ`, as `n → ∞`.
 -/
+
+@[expose] public section
 
 open Filter Function Set
 open scoped Topology

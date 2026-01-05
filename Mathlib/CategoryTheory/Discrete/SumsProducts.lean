@@ -3,9 +3,11 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Sums.Basic
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Sums.Basic
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-! # Sums and products of discrete categories.
 
@@ -23,6 +25,8 @@ are also discrete, both in the form of explicit equivalences and through the
 * `IsDiscrete.sum`: an `IsDiscrete` instance on the sum of two discrete categories.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -61,7 +65,7 @@ end Discrete
 
 namespace IsDiscrete
 
-variable (C C' : Type*) [Category C] [Category C'] (D : Type*) [Category D]
+variable (C C' : Type*) [Category* C] [Category* C'] (D : Type*) [Category* D]
   [IsDiscrete C] [IsDiscrete C'] [IsDiscrete D]
 
 /-- A product of discrete categories is discrete. -/

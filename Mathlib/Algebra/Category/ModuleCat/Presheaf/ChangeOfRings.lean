@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
 /-!
 # Change of presheaf of rings
@@ -14,6 +16,8 @@ In this file, we define the restriction of scalars functor
 attached to a morphism of presheaves of rings `α : R ⟶ R'`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

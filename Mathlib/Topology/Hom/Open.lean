@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Continuous open maps
@@ -21,6 +23,8 @@ be satisfied by itself and all stricter types.
 
 * `ContinuousOpenMapClass`
 -/
+
+@[expose] public section
 
 
 open Function

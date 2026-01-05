@@ -3,9 +3,11 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Monad.Algebra
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Monad.Algebra
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Preadditive structure on algebras over a monad
@@ -14,6 +16,8 @@ If `C` is a preadditive category and `T` is an additive monad on `C` then `Algeb
 preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is preadditive as well.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁

@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Int.GCD
-import Mathlib.RingTheory.Coprime.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Int.GCD
+public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
@@ -19,6 +21,8 @@ Notably, this includes lemmas about `Finset.prod` as this requires importing Big
 lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -54,6 +58,17 @@ alias IsCoprime.nat_coprime := IsCoprime.natCoprime
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) :=
   mod_cast h.isCoprime.intCast
+
+theorem Rat.isCoprime_num_den (x : ℚ) : IsCoprime x.num x.den :=
+  x.reduced.cast.of_isCoprime_of_dvd_left Int.dvd_natAbs_self
+
+theorem Int.isCoprime_gcdA {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdA y) y := by
+  use x, x.gcdB y
+  rwa [mul_comm _ y, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
+
+theorem Int.isCoprime_gcdB {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdB y) x := by
+  use y, x.gcdA y
+  rwa [add_comm, mul_comm, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
 
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
     (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=

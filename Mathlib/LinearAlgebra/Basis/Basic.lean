@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Basic results on bases
@@ -22,6 +24,8 @@ There are also various lemmas on bases on specific spaces (such as empty or sing
 * `Basis.mk`: construct a basis out of `v : ι → M` such that `LinearIndependent v` and
   `span (range v) = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Ordinal
 
@@ -167,6 +171,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       simp
     rwa [h_x_eq_y]
 
+@[simp]
 protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
   congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
 
@@ -251,8 +256,7 @@ protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
   ⟨fun {c x} hcx => by
     exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
-        ← map_zero (linearCombination R b)] at hcx
+      rw [← b.linearCombination_repr x, ← map_smul, ← map_zero (linearCombination R b)] at hcx
       have := b.linearIndependent hcx
       rw [smul_eq_zero] at this
       exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩

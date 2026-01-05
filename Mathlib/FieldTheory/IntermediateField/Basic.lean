@@ -3,11 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Intermediate fields
@@ -37,6 +39,8 @@ A `Subalgebra` is closed under all operations except `⁻¹`,
 intermediate field, field extension
 -/
 
+@[expose] public section
+
 
 open Polynomial
 
@@ -61,7 +65,7 @@ instance : SetLike (IntermediateField K L) L :=
     simp ⟩
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
-  change -x ∈S.toSubalgebra; simpa
+  change -x ∈ S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
 def toSubfield : Subfield L :=
@@ -619,6 +623,11 @@ def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateF
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
+@[simp]
+theorem lift_inj {F : IntermediateField K L} (E E' : IntermediateField K F) :
+    lift E = lift E' ↔ E = E' :=
+  (lift_injective F).eq_iff
+
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
   rintro _ ⟨x, _, rfl⟩
   exact x.2
@@ -674,6 +683,11 @@ theorem mem_restrictScalars {E : IntermediateField L' L} {x : L} :
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars K : IntermediateField L' L → IntermediateField K L) :=
   fun U V H => ext fun x => by rw [← mem_restrictScalars K, H, mem_restrictScalars]
+
+@[simp]
+theorem restrictScalars_inj {E E' : IntermediateField L' L} :
+    E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
+  (restrictScalars_injective K).eq_iff
 
 end RestrictScalars
 

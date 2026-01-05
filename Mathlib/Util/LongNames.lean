@@ -3,15 +3,19 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Lean.Name
-import Mathlib.Lean.Expr.Basic
-import Lean.Elab.Command
+module
+
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Lean.Elab.Command
 
 /-!
 # Commands `#long_names` and `#long_instances`
 
 For finding declarations with excessively long names.
 -/
+
+public meta section
 
 open Lean Meta Elab
 

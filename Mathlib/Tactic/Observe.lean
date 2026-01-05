@@ -3,16 +3,20 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Meta.Tactic.LibrarySearch
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.LibrarySearch
 
 /-!
 # The `observe` tactic.
 
 `observe hp : p` asserts the proposition `p`, and tries to prove it using `exact?`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.LibrarySearch
 

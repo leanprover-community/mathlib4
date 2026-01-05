@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Quotient
+module
+
+public import Mathlib.Algebra.Group.ConjFinite
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Properties of group actions involving quotient groups
@@ -21,6 +23,8 @@ See `Mathlib/GroupTheory/GroupAction/Quotient.lean` for the construction of isom
 prove these cardinality properties.
 These lemmas are separate because they require the development of cardinals.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

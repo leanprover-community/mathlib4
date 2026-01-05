@@ -3,11 +3,13 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.IsomorphismClasses
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+module
+
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.IsomorphismClasses
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Zero morphisms and zero objects
@@ -24,6 +26,8 @@ zero object provides zero morphisms, as the unique morphisms factoring through t
 * https://en.wikipedia.org/wiki/Zero_morphism
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -219,7 +223,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-asks for an instance of `HasZeroObjects`. -/
+asks for an instance of `HasZeroObject`. -/
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
@@ -244,9 +248,9 @@ open ZeroObject
 It is rarely a good idea to use this. Many categories that have a zero object have zero
 morphisms for some other reason, for example from additivity. Library code that uses
 `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
-the `has_zero_morphisms` instances will not be definitionally equal. For this reason library
+the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-asks for an instance of `HasZeroObjects`. -/
+asks for an instance of `HasZeroObject`. -/
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
@@ -292,7 +296,7 @@ end HasZeroMorphisms
 
 open ZeroObject
 
-instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
+instance {B : Type*} [Category* B] : HasZeroObject (B ⥤ C) :=
   (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
 
 end HasZeroObject
@@ -389,12 +393,12 @@ def isoZeroOfEpiZero {X Y : C} (_ : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
 /-- If a monomorphism out of `X` is zero, then `X ≅ 0`. -/
 def isoZeroOfMonoEqZero {X Y : C} {f : X ⟶ Y} [Mono f] (h : f = 0) : X ≅ 0 := by
   subst h
-  apply isoZeroOfMonoZero ‹_›
+  apply isoZeroOfMonoZero (Y := Y) ‹_›
 
 /-- If an epimorphism in to `Y` is zero, then `Y ≅ 0`. -/
 def isoZeroOfEpiEqZero {X Y : C} {f : X ⟶ Y} [Epi f] (h : f = 0) : Y ≅ 0 := by
   subst h
-  apply isoZeroOfEpiZero ‹_›
+  apply isoZeroOfEpiZero (X := X) ‹_›
 
 /-- If an object `X` is isomorphic to 0, there's no need to use choice to construct
 an explicit isomorphism: the zero morphism suffices. -/
@@ -455,6 +459,17 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
     · exact (idZeroEquivIsoZero Y) hY
   · cat_disch
   · cat_disch
+
+/-- A zero morphism `0 : X ⟶ Y` is an isomorphism if and only if
+`X` and `Y` are zero objects.
+-/
+lemma isIsoZero_iff_source_target_isZero (X Y : C) : IsIso (0 : X ⟶ Y) ↔ IsZero X ∧ IsZero Y := by
+  constructor
+  · intro h
+    let h' := isIsoZeroEquivIsoZero _ _ h
+    exact ⟨(isZero_zero _).of_iso h'.1, (isZero_zero _).of_iso h'.2⟩
+  · intro ⟨hX, hY⟩
+    exact (isIsoZeroEquivIsoZero _ _).symm ⟨hX.isoZero, hY.isoZero⟩
 
 theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
     IsIso f := by

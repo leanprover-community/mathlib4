@@ -3,10 +3,12 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Analysis.ODE.Gronwall
-import Mathlib.Analysis.ODE.PicardLindelof
-import Mathlib.Geometry.Manifold.IntegralCurve.Transform
-import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+module
+
+public import Mathlib.Analysis.ODE.Gronwall
+public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Existence and uniqueness of integral curves
@@ -41,6 +43,8 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 
 integral curve, vector field, local existence, uniqueness
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -300,11 +304,10 @@ lemma IsMIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
   refine ⟨|a - b|, ?_, ?_⟩
   · rw [gt_iff_lt, abs_pos, sub_ne_zero]
     exact hne
-  · by_cases hab : a - b < 0
+  · by_cases! hab : a - b < 0
     · rw [abs_of_neg hab, neg_sub]
       exact hγ.periodic_of_eq hv heq.symm
-    · rw [not_lt] at hab
-      rw [abs_of_nonneg hab]
+    · rw [abs_of_nonneg hab]
       exact hγ.periodic_of_eq hv heq
 
 @[deprecated (since := "2025-08-12")] alias IsIntegralCurve.periodic_xor_injective :=

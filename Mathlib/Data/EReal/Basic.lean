@@ -3,7 +3,9 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # The extended real numbers
@@ -21,6 +23,8 @@ and their basic properties proved. The latter takes up most of the rest of this 
 
 real, ereal, complete lattice
 -/
+
+@[expose] public section
 
 open Function ENNReal NNReal Set
 
@@ -186,7 +190,7 @@ theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x 
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction x <;> induction y  <;>
+  induction x <;> induction y <;>
     try { rfl }
   rw [← coe_mul, ← coe_mul, mul_comm]
 
@@ -361,6 +365,34 @@ lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
   · simp
   · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
   · simp
+
+lemma toReal_pos {x : EReal} (hx : 0 < x) (h'x : x ≠ ⊤) : 0 < x.toReal := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+lemma toReal_neg {x : EReal} (hx : x < 0) (h'x : x ≠ ⊥) : x.toReal < 0 := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+@[simp] lemma toReal_image_Ioo_zero_top : toReal '' (Ioo 0 ⊤) = Ioi 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨hy0, _⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
+
+@[simp] lemma toReal_image_Ioo_bot_zero : toReal '' (Ioo ⊥ 0) = Iio 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨_, hy0⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
 
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by
@@ -821,7 +853,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
-def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -835,7 +867,7 @@ def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
-def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -852,7 +884,7 @@ We prove that `EReal.toReal x` is nonnegative whenever `x` is nonnegative.
 Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
 at least without relying on a tactic like `finiteness`. -/
 @[positivity EReal.toReal _]
-def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
     assertInstancesCommute
@@ -868,7 +900,7 @@ and it is nonnegative otherwise.
 We cannot deduce any corollaries from `x ≠ 0`, since `EReal.toENNReal x = 0` for `x < 0`.
 -/
 @[positivity EReal.toENNReal _]
-def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
     assertInstancesCommute

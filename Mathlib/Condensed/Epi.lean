@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
-import Mathlib.CategoryTheory.Sites.EpiMono
-import Mathlib.Condensed.Equivalence
-import Mathlib.Condensed.Module
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Condensed.Module
 /-!
 
 # Epimorphisms of condensed objects
@@ -16,6 +18,8 @@ This file characterises epimorphisms of condensed sets and condensed `R`-modules
 as those morphisms which are objectwise surjective on `Stonean` (see
 `CondensedSet.epi_iff_surjective_on_stonean` and `CondensedMod.epi_iff_surjective_on_stonean`).
 -/
+
+@[expose] public section
 
 universe v u w u' v'
 

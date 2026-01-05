@@ -3,20 +3,24 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 /-!
 
 # Forgetful functor from `Over X` preserves cofiltered limits
 
 Note that `Over.forget X : Over X ⥤ C` already preserves all colimits because it is a left adjoint.
-See `Mathlib/CategoryTheory/Adjunction/Over.lean`
+See `Mathlib/CategoryTheory/Comma/Over/Pullback.lean`
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 attribute [local instance] IsFiltered.nonempty IsCofiltered.nonempty
 

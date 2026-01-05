@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Algebra.Algebra.Spectrum.Pi
-import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Algebra.Algebra.Spectrum.Pi
+public import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # The continuous functional calculus on product types
 
@@ -19,6 +20,8 @@ This file contains results about the continuous functional calculus on (indexed)
 + `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
   `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
 -/
+
+@[expose] public section
 
 section nonunital_pi
 

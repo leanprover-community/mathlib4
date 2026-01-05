@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Small classes of morphisms
@@ -13,6 +15,8 @@ A class of morphisms `W : MorphismProperty C` is `w`-small
 if the corresponding set in `Set (Arrow C)` is.
 
 -/
+
+@[expose] public section
 
 universe w t v u
 
