@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-! # Descend finiteness along quotients by nilpotent ideals -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

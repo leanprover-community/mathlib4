@@ -25,7 +25,7 @@ principal.
   that is a unique factorisation domain, is also a principal ideal domain.
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} [CommRing R]

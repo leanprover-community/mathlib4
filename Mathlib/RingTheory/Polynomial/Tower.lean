@@ -19,7 +19,7 @@ When you update this file, you can also try to make a corresponding update in
 `RingTheory.MvPolynomial.Tower`.
 -/
 
-@[expose] public section
+public section
 
 
 open Polynomial

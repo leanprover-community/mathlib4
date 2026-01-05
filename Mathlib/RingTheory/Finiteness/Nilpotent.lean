@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 

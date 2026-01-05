@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 # Ideals in polynomial rings
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

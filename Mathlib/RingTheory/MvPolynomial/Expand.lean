@@ -15,7 +15,7 @@ In this file we prove results about `MvPolynomial.expand` that require more than
 available in `Mathlib.Algebra.*`.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

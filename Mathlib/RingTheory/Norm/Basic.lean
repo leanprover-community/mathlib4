@@ -37,7 +37,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

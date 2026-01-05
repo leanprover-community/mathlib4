@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Localization.Integral
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace RingHom
