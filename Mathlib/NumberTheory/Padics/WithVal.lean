@@ -78,7 +78,8 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
       split_ifs with H
       · simp
       · rw [← lt_log_iff_exp_lt (by simp)]
-        simp_all [← zpow_natCast, zpow_pos, inv_le_inv₀, zpow_le_zpow_iff_right₀ hp1', abs_le]
+        simp_all [← zpow_natCast, zpow_pos, inv_le_inv₀, zpow_le_zpow_iff_right₀ hp1', abs_le,
+          Int.lt_iff_add_one_le]
     · simp [Nat.Prime.ne_zero Fact.out]
 
 lemma isDenseInducing_cast_withVal : IsDenseInducing ((Rat.castHom ℚ_[p]).comp
