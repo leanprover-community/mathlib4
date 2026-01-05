@@ -65,8 +65,9 @@ theorem single_smul (i j : ι) (r : R) (v : ι → M) :
   · obtain rfl | hi := eq_or_ne i i' <;> simp [*]
   · simp [hj.symm]
 
-lemma scalar_smul_apply (r : R) (v : ι → M) (i : ι) :
-    ((Matrix.scalar ι r) • v) i = r • v i := by
+lemma scalar_smul (r : R) (v : ι → M) :
+    Matrix.scalar ι r • v = r • v := by
+  ext i
   simp [Matrix.scalar_apply, Matrix.diagonal_apply]
 
 scoped instance (S : Type*) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
