@@ -27,7 +27,7 @@ fractional part operator.
 rounding, floor, ceil
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
