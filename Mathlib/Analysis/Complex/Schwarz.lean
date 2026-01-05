@@ -109,7 +109,7 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
     have hwc := ne_of_mem_sphere hw hR₁.ne'
     have hfw : ‖f w - f c‖ ≤ R₂ := by simpa using h_maps (sphere_subset_closedBall hw)
     rw [mem_sphere_iff_norm] at hw
-    simpa [g', hwc, g, hw, field] 
+    simpa [g', hwc, g, hw, field]
   · exact subset_closure hz
 
 public section
