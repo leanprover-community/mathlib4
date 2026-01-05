@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Independent
 # Simplicial complexes
 
 In this file, we define simplicial complexes over `𝕜`-modules.
-An abstract simplicial complex is a downwards-closed collection of nonempty finite sets,
+A (pre-) abstract simplicial complex is a downwards-closed collection of nonempty finite sets,
 and a simplicial complex is such a collection identified with simplices
 closed by inclusion (of vertices) and intersection (of underlying sets)
 whose convex hulls "glue nicely", each finite set and its convex hull corresponding respectively
