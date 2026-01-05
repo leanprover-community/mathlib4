@@ -397,8 +397,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable (K : ClosedSubmodule 𝕜 E)
 
-#check innerSL
-
 /-- The closed subspace of vectors orthogonal to a given subspace, denoted `Kᗮ`. -/
 def orthogonal : ClosedSubmodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
