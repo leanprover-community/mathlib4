@@ -6,6 +6,9 @@ Authors: Yoh Tanimoto
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
 # Standard subspaces of a Hilbert space
