@@ -19,7 +19,7 @@ an inner product space and for a real number `p > 1`.
 
 -/
 
-@[expose] public section
+public section
 
 section ContDiffNormPow
 
