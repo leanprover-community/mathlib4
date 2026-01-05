@@ -267,48 +267,6 @@ namespace Complex
 open Set
 open scoped Real
 
-/-- Complex exponential is a branched covering over `{0}ᶜ`.
-Over `slitPlane`, we can trivialize this covering,
-i.e., define an explicit homeomorphism
-between the union of the strips `-π + n * 2 * π < z.im < π + n * 2 * π`
-and the product `slitPlane × ℤ`.
-
-See also `expOpenPartialHomeomorph` below
-for a homeomorphism between the strip `-π < z.im < π` and `slitPlane`. -/
-@[simps apply_fst source target, simps! -isSimp apply apply_snd symm_apply]
-def expOpenPartialHomeomorphProd : OpenPartialHomeomorph ℂ (ℂ × ℤ) where
-  toFun z := (exp z, -toIocDiv Real.two_pi_pos (-π) z.im)
-  invFun z := z.fst.log - z.snd * (2 * π * I)
-  source := {z | toIocMod Real.two_pi_pos (-π) z.im ≠ π}
-  target := slitPlane ×ˢ Set.univ
-  map_source' z hz := by simpa [exp_mem_slitPlane]
-  map_target' z hz := by simp_all [log_im, mem_slitPlane_iff_arg]
-  left_inv' z _ := by simp [log_exp_eq_sub_toIocDiv]
-  right_inv' z hz := by
-    ext
-    · simp [exp_sub, exp_log (slitPlane_ne_zero hz.1)]
-    · simpa [toIocDiv_eq_iff, log_im, two_mul] using z.1.arg_mem_Ioc
-  open_source := by
-    simp only [← exp_mem_slitPlane]
-    exact isOpen_slitPlane.preimage continuous_exp
-  open_target := isOpen_slitPlane.prod isOpen_univ
-  continuousOn_toFun := by
-    refine continuousOn_exp.prodMk <| .neg <| (continuousOn_toIocDiv _ _).comp (by fun_prop) ?_
-    intro z
-    simp +contextual only [mem_preimage, mem_compl_singleton_iff, ne_eq,
-      ← AddCommGroup.modEq_iff_eq_mod_zmultiples, AddCommGroup.ModEq,
-      ← toIocMod_eq_toIocMod Real.two_pi_pos (a := -π), mem_setOf_eq, not_imp_not]
-    intro _
-    simp [two_mul]
-  continuousOn_invFun := by
-    simp only [continuousOn_prod_of_discrete_right]
-    exact fun _ ↦ .sub (continuousOn_id.clog <| by simp) (by fun_prop)
-
-@[simp]
-lemma exp_expOpenPartialHomeomorphProd {x : ℂ × ℤ} (h : x.1 ≠ 0) :
-    exp (expOpenPartialHomeomorphProd.symm x) = x.1 := by
-  simp [expOpenPartialHomeomorphProd, exp_sub, exp_log h]
-
 /-- `Complex.exp` as an `OpenPartialHomeomorph` with `source = {z | -π < im z < π}` and
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}` (a.k.a. `slitPlane`).
 This definition is used to prove that `Complex.log`
