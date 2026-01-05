@@ -69,16 +69,6 @@ theorem topologicalKrullDim_subspace_le (X : Type*) [TopologicalSpace X] (Y : Se
 theorem topologicalKrullDim_zero_of_discreteTopology
     (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     topologicalKrullDim X ≤ 0 := by
-  apply krullDim_nonpos_iff_forall_isMax.mpr
-  intro Z Y h
-  change Y.1 ≤ Z.1
-  have hYZ : Z.1 = Y.1 := by
-    have hZY := IsDiscrete.subsingleton_of_isPreirreducible DiscreteTopology.isDiscrete Y.2.2
-    ext x
-    constructor
-    · exact fun hx ↦ h hx
-    intro hx
-    obtain ⟨z, hz⟩ := Z.2.1
-    rw[hZY hx (h hz)]
-    exact hz
-  rw[hYZ]
+  refine krullDim_nonpos_iff_forall_isMax.mpr fun Z Y h ↦ (h.antisymm' fun x hx ↦ ?_).le
+  obtain ⟨z, hz⟩ := Z.2.nonempty
+  rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.2.isPreirreducible hx (h hz)]
