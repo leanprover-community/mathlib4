@@ -26,7 +26,7 @@ This file proves some results regarding the conditional expectation of real-valu
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
