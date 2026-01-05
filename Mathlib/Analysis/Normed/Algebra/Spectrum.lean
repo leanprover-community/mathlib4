@@ -691,63 +691,18 @@ lemma compactSpace {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
 
 end QuasispectrumRestricts
 
-namespace spectrum
-
 open Filter Set Topology
-
-/-- A set-valued function `f : α → Set β` is upper hemicontinuous at `x₀ : α` if for every pair
-of sequences `x : ℕ → α` and `y : ℕ → β` such that `x` tends to `x₀` and `y n ∈ f (x n)` there
-is some `y₀ ∈ f x₀` which is a cluster point of the range of `y`. -/
-lemma _root_.UpperHemicontinuousAt.of_sequences {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] {f : α → Set β} {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
-    (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
-      ∀ y : ℕ → β, (∀ n, y n ∈ f (x n)) → ∃ y₀ ∈ f x₀, MapClusterPt y₀ atTop y) :
-    UpperHemicontinuousAt f x₀ := by
-  -- should have some alternate forms of semicontinuity and hemicontinuity.
-  intro s
-  simp only [← subset_interior_iff_mem_nhdsSet]
-  have hu : IsOpen (interior s) := isOpen_interior
-  generalize interior s = u at *
-  contrapose
-  simp only [not_eventually, Set.not_subset, ← Set.mem_compl_iff]
-  intro hs
-  obtain ⟨seq, seq_tendsto, h_seq⟩ := exists_seq_forall_of_frequently hs
-  choose x hx hx' using h_seq
-  specialize h seq seq_tendsto x hx
-  obtain ⟨y₀, hy₁, hy₂⟩ := h
-  refine ⟨y₀, hy₁, ?_⟩
-  rw [mapClusterPt_iff_ultrafilter] at hy₂
-  obtain ⟨l, hl₁, hl₂⟩ := hy₂
-  exact hu.isClosed_compl.mem_of_tendsto hl₂ <| .of_forall hx'
-
-/-- A set-valued function `f : α → Set β` is upper hemicontinuous at `x₀ : α` if for every pair
-of sequences `x : ℕ → α` and `y : ℕ → β` such that `x` tends to `x₀` and `y n ∈ f (x n)` and
-`y` tends to `y₀ : β`, then `y₀ ∈ f x₀`. This requires that there is some compact set containing
-all `f x'` for `x'` sufficiently close to `x`. -/
-lemma _root_.UpperHemicontinuousAt.of_sequences_of_isSeqCompact {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] {f : α → Set β} {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
-    {K : Set β} (hK : IsSeqCompact K) (hf : ∀ᶠ x in 𝓝 x₀, f x ⊆ K)
-    (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
-      ∀ y : ℕ → β, (∀ n, y n ∈ f (x n)) → ∀ y₀, Tendsto y atTop (𝓝 y₀) → y₀ ∈ f x₀) :
-    UpperHemicontinuousAt f x₀ := by
-  refine .of_sequences fun x hx y hy ↦ ?_
-  obtain ⟨y₀, hy₀, φ, hφ, hφ_tendsto⟩ := hK.subseq_of_frequently_in (x := y) <| by
-    refine Eventually.frequently ?_
-    filter_upwards [hx hf] with n hn
-    exact hn (hy n)
-  refine ⟨y₀, ?_, hφ_tendsto.mapClusterPt.of_comp hφ.tendsto_atTop⟩
-  exact h (x ∘ φ) (hx.comp hφ.tendsto_atTop) (y ∘ φ) (fun n ↦ hy (φ n)) y₀ hφ_tendsto
 
 variable [NormedField 𝕜] [ProperSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
   [HasSummableGeomSeries A]
 
 variable (𝕜 A) in
-lemma _root_.upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
+lemma upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
   /- It suffices to use the sequential characterization of upper hemicontinuity.
   Suppose that `a : ℕ → A` converges to `a₀`, `x : ℕ → 𝕜` converges to `x₀`, and for all `n`,
   `x n ∈ spectrum 𝕜 (a n)`. -/
   rw [upperHemicontinuous_iff]
-  refine fun a₀ ↦ .of_sequences_of_isSeqCompact
+  refine fun a₀ ↦ .of_sequences
     (isCompact_closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)).isSeqCompact ?_ <|
     fun a ha x hx_mem x₀ hx↦ ?_
   /- We must show that `spectrum 𝕜 (a n)` is eventually contained in some fixed compact set
@@ -764,48 +719,30 @@ lemma _root_.upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 :
   · exact nonunits.isClosed.mem_of_tendsto
       (continuous_algebraMap 𝕜 A |>.tendsto x₀ |>.comp hx |>.sub ha) <| .of_forall hx_mem
 
-#exit
-variable (𝕜 A) in
-lemma _root_.upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
-  /- It suffices to use the sequential characterization of upper hemicontinuity -/
-  rw [upperHemicontinuous_iff]
-  refine fun a₀ ↦ .of_sequences fun a ha x hx ↦ ?_
-  /- Since the sequence `x : ℕ → 𝕜` satisfies `x n ∈ spectrm 𝕜 (a n)`, and since `a n` converges
-  to `a`, the sequences `x` is bounded (since `‖x n‖ ≤ ‖a n‖ * ‖1‖`), and therefore has a
-  subsequence which converges to some `x₀`. -/
-  obtain ⟨r, hr⟩ := Metric.isBounded_range_of_tendsto a ha |>.exists_norm_le
-  obtain ⟨x₀, -, φ, hφ, φ_tendsto⟩ := tendsto_subseq_of_bounded
-    (Metric.isBounded_closedBall (x := 0) (r := r * ‖(1 : A)‖)) (x := x) fun n ↦ by
-      simp only [Metric.mem_closedBall, dist_zero_right]
-      apply spectrum.norm_le_norm_mul_of_mem (hx n) |>.trans
-      gcongr
-      exact hr _ ⟨n, rfl⟩
-  /- Along this subsequence `algebraMap 𝕜 A (x n) - (a n)` converges to `algebraMap 𝕜 A x₀ - a₀`. -/
-  have h₁ : Tendsto (fun n ↦ algebraMap 𝕜 A ((x ∘ φ) n) - (a ∘ φ) n)
-      atTop (𝓝 (algebraMap 𝕜 A x₀ - a₀)) :=
-    continuous_algebraMap 𝕜 A |>.tendsto _ |>.comp φ_tendsto |>.sub <| ha.comp hφ.tendsto_atTop
-  /- `x₀` is a `MapClusterPt` of `x` along `atTop` because a subsequence tends to `x₀`. -/
-  refine ⟨x₀, ?_, φ_tendsto.mapClusterPt.of_comp hφ.tendsto_atTop⟩
-  /- `x₀ ∈ spectrum 𝕜 a₀` since `algebraMap 𝕜 A x₀ - a₀` is not invertible, being itself a limit
-  of non-invertible elements. -/
-  exact nonunits.isClosed.mem_of_tendsto h₁ <| .of_forall fun n ↦ hx (φ n)
+/-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
+theorem upperHemicontinuous_spectrum_nnreal (A : Type*)
+    [NormedRing A] [NormedAlgebra ℝ A] [HasSummableGeomSeries A] :
+    UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
+  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
-lemma subset_of_frequently (a : A) (s : Set 𝕜) (h : ∃ᶠ x in 𝓝 a, s ⊆ spectrum 𝕜 x) :
-    s ⊆ spectrum 𝕜 a := by
-  intro y hy
-  replace h := h.mp <| .of_forall fun x hx ↦ hx hy
-  obtain ⟨seq, seq_tendsto, h_seq⟩ := exists_seq_forall_of_frequently h
-  exact nonunits.isClosed.mem_of_tendsto (tendsto_const_nhds.sub seq_tendsto) <| .of_forall h_seq
+open WithLp in
+/-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
+theorem upperHemicontinuous_quasispectrum (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
+    [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+    [CompleteSpace A] :
+    UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by
+  convert upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
+    unitization_isometry_inr.continuous
+  ext1 a
+  rw [Unitization.quasispectrum_eq_spectrum_inr,
+    ← AlgEquiv.spectrum_eq (unitizationAlgEquiv 𝕜 (𝕜 := 𝕜) (A := A) |>.symm)]
+  congr
 
-open Metric in
-lemma exists_compact_neighborhood (a : A) :
-    ∃ s : Set 𝕜, IsCompact s ∧ ∀ᶠ x in 𝓝 a, spectrum 𝕜 x ⊆ s := by
-  have := spectrum.upperHemicontinuous 𝕜 A a
-  obtain ⟨t, ht₁, ht₂, hat₁, hat₂⟩ := exists_compact_closed_between (spectrum.isCompact (𝕜 := 𝕜) a)
-    isOpen_thickening (self_subset_thickening zero_lt_one _)
-  have hat₃ : t ∈ 𝓝ˢ (spectrum 𝕜 a) := by rwa [← subset_interior_iff_mem_nhdsSet]
-  refine ⟨t, ht₁, this t hat₃ |>.mp <| .of_forall fun x ↦ ?_⟩
-  simpa [← subset_interior_iff_mem_nhdsSet] using (Set.Subset.trans · interior_subset)
-
-
-end spectrum
+/-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
+theorem upperHemicontinuous_quasispectrum_nnreal (A : Type*) [NonUnitalNormedRing A]
+    [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
+    UpperHemicontinuous (quasispectrum ℝ≥0 : A → Set ℝ≥0) := by
+  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  simpa [← NNReal.algebraMap_eq_coe] using
+    upperHemicontinuous_quasispectrum ℝ A |>.isInducing_comp h₁ h₂
