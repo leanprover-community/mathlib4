@@ -83,8 +83,9 @@ theorem ofLower_inj {a b : WithLowerLimit α} : ofLowerLimit a = ofLowerLimit b 
 
 /-- A recursor for `WithLowerLimit`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithLowerLimit α → Sort*} (h : ∀ a, β (toLowerLimit a)) : ∀ a, β a :=
-  fun a => h (ofLowerLimit a)
+protected def rec {motive : WithLowerLimit α → Sort*}
+    (toLowerLimit : ∀ a, motive (toLowerLimit a)) : ∀ a, motive a :=
+  fun a => toLowerLimit (ofLowerLimit a)
 
 instance [Nonempty α] : Nonempty (WithLowerLimit α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLowerLimit α) := ‹Inhabited α›
