@@ -27,23 +27,23 @@ as there is a new error about this instance having to be noncomputable, and `der
 for adding this! -/
 namespace Hyperreal
 
-
+noncomputable section
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
-noncomputable instance : Field ℝ* :=
+instance : Field ℝ* :=
   inferInstanceAs (Field (Germ _ _))
 
-noncomputable instance : LinearOrder ℝ* :=
+instance : LinearOrder ℝ* :=
   inferInstanceAs (LinearOrder (Germ _ _))
 
 instance : IsStrictOrderedRing ℝ* :=
   inferInstanceAs (IsStrictOrderedRing (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
-@[coe] noncomputable def ofReal : ℝ → ℝ* := const
+@[coe] def ofReal : ℝ → ℝ* := const
 
-noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
+instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : ℝ} : (x : ℝ*) = y ↔ x = y :=
@@ -134,19 +134,19 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 
 /-- Construct a hyperreal number from a sequence of real numbers. -/
-noncomputable def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
+def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
 
-/-- A sample infinitesimal hyperreal -/
-noncomputable def epsilon : ℝ* :=
+/-- A sample infinitesimal hyperreal ε = ⟦(0, 1, 1/2, 1/3, ⋯)⟧. -/
+def epsilon : ℝ* :=
   ofSeq fun n => n⁻¹
 
-/-- A sample infinite hyperreal -/
-noncomputable def omega : ℝ* := ofSeq Nat.cast
+/-- A sample infinite hyperreal ω = ⟦(0, 1, 2, 3, ⋯)⟧. -/
+def omega : ℝ* := ofSeq Nat.cast
 
 @[inherit_doc] scoped notation "ε" => Hyperreal.epsilon
 @[inherit_doc] scoped notation "ω" => Hyperreal.omega
@@ -197,7 +197,7 @@ def IsSt (x : ℝ*) (r : ℝ) :=
 
 open scoped Classical in
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
-noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
+def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
 
 /-- A hyperreal number is infinitesimal if its standard part is 0 -/
 def Infinitesimal (x : ℝ*) :=
