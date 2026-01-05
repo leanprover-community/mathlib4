@@ -26,7 +26,9 @@ def EInt := WithBot (WithTop ℤ)
 namespace EInt
 
 instance : LinearOrder EInt := inferInstanceAs (LinearOrder (WithBot (WithTop ℤ)))
+
 instance : OrderBot EInt := inferInstanceAs (OrderBot (WithBot (WithTop ℤ)))
+
 instance : OrderTop EInt := inferInstanceAs (OrderTop (WithBot (WithTop ℤ)))
 
 instance : Coe ℤ EInt := ⟨Int.toEInt⟩
@@ -87,12 +89,5 @@ lemma top_eq_bot_iff :
     (⊤ : EInt) = ⊥ ↔ False := by
   simp only [iff_false]
   exact ne_of_beq_false rfl
-
-lemma three_cases (x : EInt) :
-    x = ⊥ ∨ (∃ (n : ℤ), x = EInt.mk n) ∨ x = ⊤ := by
-  induction x with
-  | bot => exact Or.inl rfl
-  | coe n => exact Or.inr (Or.inl ⟨n, rfl⟩)
-  | top => exact Or.inr (Or.inr rfl)
 
 end EInt

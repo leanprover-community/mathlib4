@@ -913,22 +913,19 @@ lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
 
 lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
     IsIso ((t.truncLTt.obj a).map ((t.abstractSpectralObject.truncLTι b).app X)) := by
-  obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
-  · refine ⟨0, IsZero.eq_of_src ?_ _ _, IsZero.eq_of_src ?_ _ _⟩
-    all_goals
-      simp only [truncLTt_obj_bot, Functor.zero_obj]
-  · obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
-    · simp at h
-    · simp only [EInt.coe_le_coe_iff] at h
-      dsimp
+  induction a with
+  | bot => exact ⟨0, IsZero.eq_of_src (by simp) _ _, IsZero.eq_of_src (by simp) _ _⟩
+  | coe a =>
+    induction b with
+    | bot => simp at h
+    | coe b =>
+      simp only [EInt.coe_le_coe_iff] at h
       simp only [AbstractSpectralObject.truncLEι_mk]
       exact t.isIso_truncLT_map_truncLTι_app a b h X
-    · dsimp
-      infer_instance
-  · simp only [top_le_iff] at h
-    subst h
-    dsimp
-    simp only [AbstractSpectralObject.truncLTι_top_app]
+    | top => dsimp; infer_instance
+  | top =>
+    obtain rfl : b = ⊤ := by simpa using h
+    dsimp [AbstractSpectralObject.truncLTι_top_app]
     infer_instance
 
 instance (D : Arrow EInt) (X : C) :
@@ -954,56 +951,50 @@ lemma truncGEπ_compatibility (a : EInt) (X : C) :
   (t.abstractSpectralObject.truncGE.obj a).map ((t.abstractSpectralObject.truncGEπ a).app X) =
     (t.abstractSpectralObject.truncGEπ a).app
       ((t.abstractSpectralObject.truncGE.obj a).obj X) := by
-  obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
-  · rfl
-  · dsimp
-    simp only [AbstractSpectralObject.truncGEπ_mk]
+  induction a with
+  | bot => simp
+  | coe a =>
+    simp only [abstractSpectralObject_truncGE, truncGEt_obj_mk, id_obj,
+      AbstractSpectralObject.truncGEπ_mk]
     apply from_truncGE_obj_ext
     exact ((t.truncGEπ a).naturality ((t.truncGEπ a).app X)).symm
-  · apply IsZero.eq_of_src
-    dsimp
-    simp
+  | top => exact IsZero.eq_of_src (by simp) _ _
 
 omit [IsTriangulated C] in
 lemma truncLTι_compatibility (a : EInt) (X : C) :
     (t.abstractSpectralObject.truncLT.obj a).map ((t.abstractSpectralObject.truncLTι a).app X) =
       (t.abstractSpectralObject.truncLTι a).app
         ((t.abstractSpectralObject.truncLT.obj a).obj X) := by
-  obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
-  · apply IsZero.eq_of_src
-    dsimp
-    simp
-  · dsimp
-    simp only [AbstractSpectralObject.truncLEι_mk]
+  induction a with
+  | bot => exact IsZero.eq_of_src (by simp) _ _
+  | coe a =>
+    simp only [abstractSpectralObject_truncLT, truncLTt_obj_mk, id_obj,
+      AbstractSpectralObject.truncLEι_mk]
     apply to_truncLT_obj_ext
-    exact ((t.truncLTι a).naturality ((t.truncLTι a).app X))
-  · rfl
+    exact (t.truncLTι a).naturality ((t.truncLTι a).app X)
+  | top => simp
 
 lemma isIso_truncLTι_app_truncGELT_obj (a b : EInt) (h : a ≤ b) (X : C) :
     IsIso ((t.abstractSpectralObject.truncLTι b).app
       ((t.truncLTt.obj b ⋙ t.truncGEt.obj a).obj X)) := by
-  obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
-  · refine ⟨0, IsZero.eq_of_src ?_ _ _, IsZero.eq_of_src ?_ _ _⟩
-    · dsimp
-      simp
-    · dsimp
-      exact IsZero.of_iso (isZero_zero _)
+  induction b with
+  | bot =>
+    refine ⟨0, IsZero.eq_of_src (by simp) _ _, IsZero.eq_of_src ?_ _ _⟩
+    dsimp
+    exact IsZero.of_iso (isZero_zero _)
         (Functor.mapIso _ (IsZero.isoZero (Functor.zero_obj _)) ≪≫
           (t.truncGEt.obj a).mapZeroObject)
-  · dsimp [SpectralObject.AbstractSpectralObject.truncLTι]
-    simp only [comp_id]
+  | coe b =>
+    simp only [abstractSpectralObject_truncLT, truncLTt_obj_mk, comp_obj, id_obj,
+      AbstractSpectralObject.truncLEι_mk]
     rw [← t.isLE_iff_isIso_truncLTι_app (b-1) b (by lia)]
-    obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
-    · dsimp
-      infer_instance
-    · dsimp
-      infer_instance
-    · dsimp
-      apply t.isLE_of_isZero
-      simp
-  · dsimp [SpectralObject.AbstractSpectralObject.truncLTι]
-    erw [comp_id, Functor.map_id]
-    dsimp
+    induction a with
+    | bot => dsimp; infer_instance
+    | coe a => dsimp; infer_instance
+    | top => exact t.isLE_of_isZero _ (by simp) _
+  | top =>
+    simp only [abstractSpectralObject_truncLT, truncLTt_obj_top, comp_obj, id_obj,
+      AbstractSpectralObject.truncLTι_top_app]
     infer_instance
 
 instance (D : Arrow EInt) (X : C) :
@@ -1137,27 +1128,31 @@ lemma isIso_truncLT_map_truncGE_map_truncLTι_app (a b : ℤ) (X : C) :
 
 instance (D : Arrow EInt) (X : C) :
     IsIso ((t.abstractSpectralObject.truncLTGELTSelfToTruncLTGE.app D).app X) := by
-  obtain ⟨a, b, f : a ⟶ b⟩ := D
+  obtain ⟨a, b, f, rfl⟩ := Arrow.mk_surjective D
   have h : a ≤ b := leOfHom f
-  obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
-  · simp only [le_bot_iff] at h
-    subst h
+  induction b with
+  | bot =>
+    obtain rfl : a = ⊥ := by simpa using h
     exact ⟨0, IsZero.eq_of_src (Functor.zero_obj _) _ _,
       IsZero.eq_of_src (Functor.zero_obj _) _ _⟩
-  · dsimp [SpectralObject.AbstractSpectralObject.truncLTGELTSelfToTruncLTGE,
+  | coe b =>
+    dsimp [SpectralObject.AbstractSpectralObject.truncLTGELTSelfToTruncLTGE,
       SpectralObject.AbstractSpectralObject.truncLTGE]
-    obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
-    · simp only [AbstractSpectralObject.truncLEι_mk]
+    induction a with
+    | bot =>
+      simp only [AbstractSpectralObject.truncLEι_mk]
       exact t.isIso_truncLT_map_truncLTι_app b b (by rfl) X
-    · simp only [EInt.coe_le_coe_iff] at h
+    | coe a =>
+      simp only [EInt.coe_le_coe_iff] at h
       simp only [truncGEt_obj_mk, AbstractSpectralObject.truncLEι_mk]
       exact t.isIso_truncLT_map_truncGE_map_truncLTι_app a b X
-    · refine ⟨0, IsZero.eq_of_src ?_ _ _,
-        IsZero.eq_of_src ?_ _ _⟩
+    | top =>
+      refine ⟨0, IsZero.eq_of_src ?_ _ _, IsZero.eq_of_src ?_ _ _⟩
       all_goals
-        exact IsZero.of_iso (isZero_zero _)
+        exact (isZero_zero _).of_iso
           ((t.truncLT b).mapIso ((Functor.zero_obj _).isoZero) ≪≫
-          (t.truncLT b).mapZeroObject)
+            (t.truncLT b).mapZeroObject)
+  | top =>
   · dsimp [SpectralObject.AbstractSpectralObject.truncLTGELTSelfToTruncLTGE]
     simp only [AbstractSpectralObject.truncLTι_top_app, Functor.map_id]
     infer_instance
