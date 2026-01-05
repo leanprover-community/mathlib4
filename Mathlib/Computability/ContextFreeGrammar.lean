@@ -1099,6 +1099,37 @@ private lemma in_concat_of_in_left_and_right {w₁ w₂ : List T}
   rw [← h1, ← h2]
   exact (g₁g_concat.derives_map hw₁).append_right _ |>.trans ((g₂g_concat.derives_map hw₂).append_left _)
 
+private lemma filterMap_terminals_eq {N N' : Type*} (projectNT : N → Option N')
+    (w : List T) :
+    (w.map (Symbol.terminal (N := N))).filterMap (Symbol.filterMap projectNT) =
+      w.map (Symbol.terminal (N := N')) := by
+  induction w with
+  | nil => rfl
+  | cons t w ih => simp [Symbol.filterMap, ih]
+
+/-- Extract terminals from a symbol list. -/
+private def extractTerminals {N : Type*} : List (Symbol T N) → List T
+  | [] => []
+  | Symbol.terminal t :: rest => t :: extractTerminals rest
+  | Symbol.nonterminal _ :: rest => extractTerminals rest
+
+private lemma extractTerminals_map_terminal {N : Type*} (w : List T) :
+    extractTerminals (w.map (Symbol.terminal (N := N))) = w := by
+  induction w with
+  | nil => rfl
+  | cons t w ih => simp [extractTerminals, ih]
+
+private lemma extractTerminals_filterMap_terminals {N₁ N₂ : Type*} (projectNT : N₂ → Option N₁)
+    (s : List (Symbol T N₂)) (hs : ∀ x ∈ s, ∃ t : T, x = Symbol.terminal t) :
+    extractTerminals s = extractTerminals (s.filterMap (Symbol.filterMap projectNT)) := by
+  induction s with
+  | nil => rfl
+  | cons head tail ih =>
+    have h_head := hs head (by simp)
+    obtain ⟨t, rfl⟩ := h_head
+    have h_tail : ∀ x ∈ tail, ∃ t : T, x = Symbol.terminal t := fun x hx => hs x (by simp [hx])
+    simp [extractTerminals, Symbol.filterMap, ih h_tail]
+
 lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
     w ∈ (g₁.concat g₂).language ↔ ∃ w₁ ∈ g₁.language, ∃ w₂ ∈ g₂.language, w = w₁ ++ w₂ := by
   constructor
@@ -1118,27 +1149,68 @@ lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
       simp only [ContextFreeGrammar.concat, List.nil_append, List.append_nil] at hr huv hg
       rcases Finset.mem_cons.mp hr with rfl | hr
       · -- The case where r is the concatenation rule
-        simp only [ContextFreeRule.output] at hg
-        -- Now we have hg : derives from [inl initial, inr initial] to terminals
         -- Use splitting to get two separate derivations
         obtain ⟨u'', v'', hu'', hv'', huv''⟩ := concatenation_split _ _ _ hg
         -- Extract words from the combined grammar back to original grammars
-        have good_u : g₁g_concat.GoodString [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
+        have good_u : @g₁g_concat.GoodString T g₁ g₂ [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
           intro a ha; simp at ha; rw [ha]; exact ⟨g₁.initial, rfl⟩
-        have good_v : g₂g_concat.GoodString [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
+        have good_v : @g₂g_concat.GoodString T g₁ g₂ [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
           intro a ha; simp at ha; rw [ha]; exact ⟨g₂.initial, rfl⟩
         have hu_filter := g₁g_concat.derives_filterMap hu'' good_u
         have hv_filter := g₂g_concat.derives_filterMap hv'' good_v
-        -- Terminal strings filter to themselves
-        have filter_u : u''.filterMap (Symbol.filterMap g₁g_concat.projectNT) =
-            (u''.filterMap (Symbol.filterMap g₁g_concat.projectNT)).map Symbol.terminal := by
-          sorry -- Technical lemma about filtering terminals
-        have filter_v : v''.filterMap (Symbol.filterMap g₂g_concat.projectNT) =
-            (v''.filterMap (Symbol.filterMap g₂g_concat.projectNT)).map Symbol.terminal := by
-          sorry -- Technical lemma about filtering terminals
-        sorry -- Complete the extraction and show w = w₁ ++ w₂
+        -- Extract the terminal words
+        set w₁ := extractTerminals u''
+        set w₂ := extractTerminals v''
+        -- Show that u'' and v'' consist only of terminals
+        have u_terminals : ∀ x ∈ u'', ∃ t : T, x = Symbol.terminal t := by
+          intro x hx
+          have : x ∈ u'' ++ v'' := List.mem_append_left v'' hx
+          rw [huv''] at this
+          simp at this
+          exact ⟨this, rfl⟩
+        have v_terminals : ∀ x ∈ v'', ∃ t : T, x = Symbol.terminal t := by
+          intro x hx
+          have : x ∈ u'' ++ v'' := List.mem_append_right u'' hx
+          rw [huv''] at this
+          simp at this
+          exact ⟨this, rfl⟩
+        -- Show these are in the languages
+        use w₁, ?_, w₂, ?_, ?_
+        · -- w₁ ∈ g₁.language
+          have eq1 : w₁.map Symbol.terminal = u''.filterMap (Symbol.filterMap g₁g_concat.projectNT) := by
+            have : w₁ = extractTerminals (u''.filterMap (Symbol.filterMap g₁g_concat.projectNT)) := by
+              rw [extractTerminals_filterMap_terminals g₁g_concat.projectNT u'' u_terminals]
+            rw [this]
+            exact (extractTerminals_map_terminal _).symm
+          rw [eq1]
+          exact hu_filter
+        · -- w₂ ∈ g₂.language
+          have eq2 : w₂.map Symbol.terminal = v''.filterMap (Symbol.filterMap g₂g_concat.projectNT) := by
+            have : w₂ = extractTerminals (v''.filterMap (Symbol.filterMap g₂g_concat.projectNT)) := by
+              rw [extractTerminals_filterMap_terminals g₂g_concat.projectNT v'' v_terminals]
+            rw [this]
+            exact (extractTerminals_map_terminal _).symm
+          rw [eq2]
+          exact hv_filter
+        · -- w = w₁ ++ w₂
+          have : w.map Symbol.terminal = u'' ++ v'' := huv''
+          have : w = extractTerminals (w.map Symbol.terminal) := (extractTerminals_map_terminal w).symm
+          rw [this, huv'']
+          induction u'' with
+          | nil => rfl
+          | cons head tail ih =>
+            have ⟨t, rfl⟩ := u_terminals head (by simp)
+            simp [extractTerminals]
+            rw [ih]
+            intro x hx
+            exact u_terminals x (by simp [hx])
       · exfalso
         -- Show this case is impossible: none can't appear in the mapped rules
+        letI : DecidableEq T := Classical.decEq T
+        letI : DecidableEq g₁.NT := Classical.decEq g₁.NT
+        letI : DecidableEq g₂.NT := Classical.decEq g₂.NT
+        letI : DecidableEq (Option (g₁.NT ⊕ g₂.NT)) := Classical.decEq _
+        letI : DecidableEq (ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))) := Classical.decEq _
         rw [Finset.mem_union] at hr
         cases hr with
         | inl hr =>
@@ -1164,7 +1236,11 @@ theorem Language.IsContextFree.mul {L₁ L₂ : Language T} :
   rintro ⟨g₁, rfl⟩ ⟨g₂, rfl⟩
   refine ⟨g₁.concat g₂, ?_⟩
   ext w
-  rw [Language.mem_mul]
-  exact ContextFreeGrammar.mem_concat_language_iff_mem_mul
+  rw [Language.mem_mul, ContextFreeGrammar.mem_concat_language_iff_mem_mul]
+  constructor
+  · intro ⟨w₁, hw₁, w₂, hw₂, heq⟩
+    exact ⟨w₁, hw₁, w₂, hw₂, heq.symm⟩
+  · intro ⟨w₁, hw₁, w₂, hw₂, heq⟩
+    exact ⟨w₁, hw₁, w₂, hw₂, heq.symm⟩
 
 end closure_concatenation
