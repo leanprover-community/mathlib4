@@ -111,6 +111,15 @@ lemma rangeFactorization [One P] (h : Exact f g) (hg : 1 ∈ Set.range g) :
 
 end Exact
 
+@[deprecated (since := "2026-01-05")]
+alias Exact.apply_apply_eq_zero := AddExact.apply_apply_eq_zero
+
+@[deprecated (since := "2026-01-05")]
+alias Exact.comp_eq_zero := AddExact.comp_eq_zero
+
+@[deprecated (since := "2026-01-05")]
+alias Exact.of_comp_eq_zero_of_ker_in_range := AddExact.of_comp_eq_zero_of_ker_in_range
+
 end Function
 
 section MonoidHom
