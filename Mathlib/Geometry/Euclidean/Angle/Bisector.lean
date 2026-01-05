@@ -147,15 +147,11 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
   haveI : Nonempty (s₁ ⊓ s₂ : AffineSubspace ℝ P) := ⟨p', hp'₁, hp'₂⟩
   have hp₁ : orthogonalProjection s₁ p ≠ p' := by
     intro hp
-    rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p',
-      dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p hp'₂,
-      add_eq_right, mul_eq_zero, dist_eq_zero, or_self] at h
+    rw [hp, eq_comm, dist_orthogonalProjection_eq_dist_iff_eq_of_mem hp'₂] at h
     grind
   have hp₂ : orthogonalProjection s₂ p ≠ p' := by
     intro hp
-    rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p',
-      dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p hp'₁,
-      right_eq_add, mul_eq_zero, dist_eq_zero, or_self] at h
+    rw [hp, dist_orthogonalProjection_eq_dist_iff_eq_of_mem hp'₁] at h
     grind
   have hc : ¬ Collinear ℝ {p', (orthogonalProjection s₁ p : P),
       (orthogonalProjection s₂ p : P)} := by
@@ -326,17 +322,13 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
   have h₃₁ : p₃ ≠ p₁ := ha.injective.ne (by decide : (2 : Fin 3) ≠ 0)
   have hp₁ : orthogonalProjection line[ℝ, p₁, p₂] p ≠ p₁ := by
     intro hp
-    rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p₁,
-      dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p
-        (left_mem_affineSpan_pair ℝ _ p₃),
-      add_eq_right, mul_eq_zero, dist_eq_zero, or_self] at h
+    rw [hp, eq_comm, dist_orthogonalProjection_eq_dist_iff_eq_of_mem
+      (left_mem_affineSpan_pair ℝ _ p₃)] at h
     grind
   have hp₂ : orthogonalProjection line[ℝ, p₁, p₃] p ≠ p₁ := by
     intro hp
-    rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p₁,
-      dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p
-        (left_mem_affineSpan_pair ℝ _ p₂),
-      right_eq_add, mul_eq_zero, dist_eq_zero, or_self] at h
+    rw [hp, dist_orthogonalProjection_eq_dist_iff_eq_of_mem
+        (left_mem_affineSpan_pair ℝ _ p₂)] at h
     grind
   rw [← (collinear_insert_of_mem_affineSpan_pair
            (orthogonalProjection_mem p)).two_zsmul_oangle_eq_left hp₁ h₂₁,
