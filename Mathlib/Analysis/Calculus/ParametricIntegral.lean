@@ -66,7 +66,7 @@ assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead
 integral, derivative
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

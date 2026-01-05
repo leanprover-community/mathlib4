@@ -16,7 +16,7 @@ integrals. In the real case, we also show that parametric integrals of Cⁿ func
 
 universe u
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace MeasureTheory Filter Metric Set

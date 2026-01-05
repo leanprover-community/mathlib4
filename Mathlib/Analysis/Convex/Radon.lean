@@ -28,7 +28,7 @@ compactness of sets (see `helly_theorem_compact`).
 convex hull, affine independence, Radon, Helly
 -/
 
-@[expose] public section
+public section
 
 open Fintype Finset Set
 

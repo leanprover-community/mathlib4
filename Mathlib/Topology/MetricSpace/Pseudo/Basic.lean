@@ -19,7 +19,7 @@ Further results about pseudo-metric spaces.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
