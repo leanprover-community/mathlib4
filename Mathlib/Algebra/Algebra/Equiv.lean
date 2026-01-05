@@ -557,6 +557,10 @@ theorem linearEquivConj_mulRight (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
     f.toLinearEquiv.conj (.mulRight R x) = .mulRight R (f x) := by
   ext; simp [LinearEquiv.conj_apply]
 
+theorem linearEquivConj_mulLeftRight (f : A₁ ≃ₐ[R] A₂) (x y : A₁) :
+    f.toLinearEquiv.conj (.mulLeftRight R (x, y)) = .mulLeftRight R (f x, f y) := by
+  ext; simp [LinearEquiv.conj_apply]
+
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
   { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
