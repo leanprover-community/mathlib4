@@ -267,7 +267,7 @@ def homologicalStripesNat :
   stripe pq := pq.1 + pq.2
   pred n := fun i => match i with
     | 0 => ⊥
-    | ⟨j + 1, hj⟩ => WithBot.some ⟨j, by linarith⟩
+    | ⟨j + 1, hj⟩ => WithBot.some ⟨j, by lia⟩
   pred_lt n i := by
     obtain ⟨_ | _, _⟩ := i
     · apply WithBot.bot_lt_coe
@@ -275,13 +275,13 @@ def homologicalStripesNat :
   position n i := ⟨i.1, n - i.1⟩
   stripe_position := by
     rintro n ⟨i, hi⟩
-    exact Nat.add_sub_of_le (by linarith)
+    exact Nat.add_sub_of_le (by lia)
   discrete := by
     rintro n ⟨_ | i, hi⟩ ⟨j, hj⟩ h
     · simp
     · simp only [WithBot.coe_lt_coe, Fin.mk_lt_mk] at h
       simp only [Fin.mk_le_mk]
-      linarith
+      lia
   finite_segment n i j := by
     rw [Set.finite_def]
     refine ⟨Fintype.ofInjective (fun x => (x : Fin (n + 1))) ?_⟩
@@ -297,7 +297,7 @@ def mkDataE₂HomologicalNatCompatibility :
   deg_stripe pq := by
     dsimp
     simp only [neg_add_rev]
-    linarith
+    lia
   i₂_monotone := by
     rintro n ⟨i, hi⟩ ⟨j, hj⟩ h
     simp at h ⊢
@@ -576,7 +576,7 @@ instance (X : SpectralObject C EInt) [X.IsFirstQuadrant] (n : ℤ) :
     apply isZero₁_of_isFirstQuadrant
     obtain rfl : j = 0 := by
       erw [Option.some.injEq] at hj
-      linarith
+      lia
     simp⟩
   isZero₂ := ⟨n + 1, by
     apply isZero₂_of_isFirstQuadrant
@@ -663,9 +663,7 @@ instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
     · obtain rfl : j = i := by simpa using hij
       rw [← hpq]
       dsimp
-      congr 1
-      linarith [Nat.add_sub_of_le (show j.succ ≤ n by linarith),
-        Nat.add_sub_of_le (show j ≤ n by linarith)]
+      lia
   isIso₂ := by
     rintro i ⟨j, hj⟩ hij pq hpq _ _ _ rfl rfl rfl h
     obtain _|⟨i, hi⟩ := i
@@ -700,8 +698,8 @@ instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
         rw [← hpq]
         dsimp
         congr 1
-        linarith [Nat.add_sub_of_le (show j.succ ≤ n by linarith),
-          Nat.add_sub_of_le (show j ≤ n by linarith)]
+        linarith [Nat.add_sub_of_le (show j.succ ≤ n by lia),
+          Nat.add_sub_of_le (show j ≤ n by lia)]
 
 end SpectralObject
 

@@ -34,12 +34,12 @@ class HasFirstPageComputation : Prop where
   hi₂₃ (pq : κ) : data.i₂ pq = data.i₃ r₀ (by rfl) pq
 
 instance : mkDataE₂Cohomological.HasFirstPageComputation where
-  hi₀₁ pq := by dsimp; congr 1; linarith
-  hi₂₃ pq := by dsimp; congr 1; linarith
+  hi₀₁ pq := by dsimp; congr 1; lia
+  hi₂₃ pq := by dsimp; congr 1; lia
 
 instance : mkDataE₂CohomologicalNat.HasFirstPageComputation where
-  hi₀₁ pq := by dsimp; congr 1; linarith
-  hi₂₃ pq := by dsimp; congr 1; linarith
+  hi₀₁ pq := by dsimp; congr 1; lia
+  hi₂₃ pq := by dsimp; congr 1; lia
 
 section
 
@@ -75,7 +75,7 @@ lemma spectralSequenceFirstPageXIso_hom (pq : κ) (n : ℤ) (hn : n = data.deg p
       (X.spectralSequencePageXIso data r₀ (by rfl) _ _ _ _ _ _ hn _ _ _ _
         (by rw [hi₁, ← data.hi₀₁]) hi₁ hi₂ (by rw [hi₂, data.hi₂₃])).hom ≫
         (X.EIsoH n₀ n n₂ hn₀ hn₂ _).hom := by
-  obtain rfl : n₀ = n - 1 := by linarith
+  obtain rfl : n₀ = n - 1 := by lia
   obtain rfl := hn₂
   rfl
 
@@ -86,7 +86,7 @@ lemma spectralSequenceFirstPageXIso_inv (pq : κ) (n : ℤ) (hn : n = data.deg p
       (X.EIsoH n₀ n n₂ hn₀ hn₂ _).inv ≫
       (X.spectralSequencePageXIso data r₀ (by rfl) _ _ _ _ _ _ hn _ _ _ _
         (by rw [hi₁, ← data.hi₀₁]) hi₁ hi₂ (by rw [hi₂, data.hi₂₃])).inv := by
-  obtain rfl : n₀ = n - 1 := by linarith
+  obtain rfl : n₀ = n - 1 := by lia
   obtain rfl := hn₂
   rfl
 

@@ -111,10 +111,11 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
   i₀ r hr pq := ⟨(pq.2.1 - (r - 2)).toNat, by
     by_cases h : 0 ≤ pq.2.1 - (r - 2)
     · simp only [Int.toNat_lt h, Nat.cast_add, Nat.cast_one]
+      have := pq.2.2
       linarith [pq.2.2]
-    · refine lt_of_le_of_lt (le_of_eq ?_) (show 0 < l + 1 by omega)
+    · refine lt_of_le_of_lt (le_of_eq ?_) (show 0 < l + 1 by lia)
       rw [Int.toNat_eq_zero]
-      omega⟩
+      lia⟩
   i₁ pq := pq.2.castSucc
   i₂ pq := pq.2.succ
   i₃ r hr pq := Fin.clamp (pq.2.1 + (r - 1)).toNat _
@@ -124,14 +125,10 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     simp only [Fin.le_iff_val_le_val, Fin.val_succ,
       le_min_iff, Fin.clamp]
     constructor
-    · rw [Int.le_toNat (by omega)]
-      simp only [Nat.cast_add, Nat.cast_one, add_le_add_iff_left]
-      omega
+    · rw [Int.le_toNat (by lia)]
+      lia
     · linarith [pq.2.2]
-  hc r _ := by
-    rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
-    dsimp at h₁ h₂ ⊢
-    omega
+  hc _ _ _ _ := fun ⟨h₁, h₂⟩ ↦ by lia
   hc₀₂ r hr := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
     ext

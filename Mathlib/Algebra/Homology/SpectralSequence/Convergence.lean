@@ -52,13 +52,13 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
     by_cases hij : i ≤ j
     · obtain ⟨d, rfl⟩ := Int.le.dest hij
       refine ⟨Fintype.ofSurjective (fun (k : Fin (d + 1)) =>
-        ⟨i + k, ⟨by linarith, by linarith [k.is_lt]⟩⟩) ?_⟩
+        ⟨i + k, ⟨by lia, by linarith [k.is_lt]⟩⟩) ?_⟩
       rintro ⟨x, h₁, h₂⟩
       obtain ⟨k, rfl⟩ := Int.le.dest h₁
-      exact ⟨⟨k, by linarith⟩, rfl⟩
+      exact ⟨⟨k, by lia⟩, rfl⟩
     · refine ⟨@Fintype.ofIsEmpty _ ⟨?_⟩⟩
       rintro ⟨x, h₁, h₂⟩
-      linarith
+      lia
   discrete n (i j : ℤ) h := by
     linarith [show i - 1 < j from WithBot.coe_lt_coe.1 h]
 
@@ -67,14 +67,14 @@ def cohomomologicalStripesFin (l : ℕ) : ConvergenceStripes (ℤ × Fin l) (fun
   stripe pq := pq.1 + pq.2.1
   pred _ j := match j with
     | ⟨0, _⟩   => ⊥
-    | ⟨j+1, _⟩ => WithBot.some ⟨j, by linarith⟩
+    | ⟨j+1, _⟩ => WithBot.some ⟨j, by lia⟩
   pred_lt n := by rintro ⟨_|i, _⟩ <;> simp
   position n i := ⟨n - i.1, i⟩
   discrete := by
     rintro n ⟨_|i, hi⟩ ⟨j, hj⟩ h
     · simp
     · simp only [WithBot.coe_lt_coe, Fin.mk_lt_mk, Fin.mk_le_mk] at h ⊢
-      linarith
+      lia
   finite_segment _ _ _ := by
     rw [Set.finite_def]
     exact ⟨Fintype.ofInjective Subtype.val (by apply Subtype.ext)⟩
@@ -270,7 +270,7 @@ lemma sub_antitone (n : σ) (i : WithBot (α n)) (k₁ k₂ : ℕ) (h : k₁ ≤
 
 lemma sub_succ_lt (n : σ) (i : α n) (k : ℕ) :
     s.sub n (WithBot.some i) (k + 1) < WithBot.some i :=
-  lt_of_le_of_lt (s.sub_antitone n (WithBot.some i) 1 (k + 1) (by linarith)) (by
+  lt_of_le_of_lt (s.sub_antitone n (WithBot.some i) 1 (k + 1) (by lia)) (by
     rw [sub_one, pred'_some]
     apply pred_lt)
 
@@ -518,20 +518,20 @@ lemma isIso_filtration_map'_iff (i j : WithBot (α n)) (φ : j ⟶ i) (k : ℕ) 
     infer_instance
   | succ k hk =>
     erw [h.isIso_filtration_map_comp_iff (s.sub n i (k + 1)) (s.sub n i k) i
-      (homOfLE (s.sub_antitone _ _ _  _ (by linarith))) (homOfLE (s.sub_le_self n i k)), hk,
+      (homOfLE (s.sub_antitone _ _ _  _ (by lia))) (homOfLE (s.sub_le_self n i k)), hk,
       h.isIso_filtration_map_from_pred'_iff _ _ _ (by rw [s.sub_succ])]
     constructor
     · rintro ⟨h₁, h₂⟩ d hd j hj pq hpq
-      have hd' : d ≤ k := by linarith
+      have hd' : d ≤ k := by lia
       obtain hd'' | rfl := hd'.lt_or_eq
       · exact h₂ d hd'' j hj pq hpq
       · exact h₁ j hj pq hpq
     · intro H
       constructor
       · intro l hl pq hpq
-        exact H k (by linarith) l hl pq hpq
+        exact H k (by lia) l hl pq hpq
       · intro d hd j hj pq hpq
-        exact H d (by linarith) j hj pq hpq
+        exact H d (by lia) j hj pq hpq
 
 lemma isZero_filtration_obj_none : IsZero (h.filtration.obj none) := by
   obtain ⟨j, hj⟩ := h.exists_isZero
@@ -605,7 +605,7 @@ lemma isIso_filtration_map_iff (i j : WithBot (α n)) (φ : i ⟶ j) :
       refine H l ?_ ?_ pq hpq
       · rw [← s.pred'_some, ← hl, ← s.sub_one, s.sub_sub n j d 1 _ rfl, ← hk]
         apply s.sub_antitone
-        linarith
+        lia
       · rw [← WithBot.coe_le_coe]
         change (WithBot.some l) ≤ (WithBot.some j)
         rw [← hl]

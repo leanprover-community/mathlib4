@@ -158,7 +158,7 @@ lemma triangleLEGT_distinguished (n : ℤ) (X : C) :
   isomorphic_distinguished _ (t.triangleLEGE_distinguished n (n+1) rfl X) _
     ((t.triangleLEGTIsoTriangleLEGE n (n+1) rfl).app X)
 
-noncomputable def truncLTt : EInt ⥤ C ⥤ C where
+noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
   obj n := by
     induction n with
     | bot => exact 0
@@ -188,19 +188,19 @@ noncomputable def truncLTt : EInt ⥤ C ⥤ C where
     induction x <;> induction y <;> induction z <;> cat_disch
 
 @[simp]
-lemma truncLTt_obj_top : t.truncLTt.obj ⊤ = 𝟭 _ := rfl
+lemma eTruncLT_obj_top : t.eTruncLT.obj ⊤ = 𝟭 _ := rfl
 
 @[simp]
-lemma truncLTt_obj_bot : t.truncLTt.obj ⊥ = 0 := rfl
+lemma eTruncLT_obj_bot : t.eTruncLT.obj ⊥ = 0 := rfl
 
 @[simp]
-lemma truncLTt_obj_mk (n : ℤ) : t.truncLTt.obj (EInt.mk n) = t.truncLT n := rfl
+lemma eTruncLT_obj_mk (n : ℤ) : t.eTruncLT.obj (EInt.mk n) = t.truncLT n := rfl
 
 @[simp]
-lemma truncLTt_map_eq_truncLTι (n : ℤ) :
-    t.truncLTt.map (homOfLE (show EInt.mk n ≤ ⊤ by simp)) = t.truncLTι n := rfl
+lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
+    t.eTruncLT.map (homOfLE (show EInt.mk n ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
-noncomputable def truncGEt : EInt ⥤ C ⥤ C where
+noncomputable def eTruncGE : EInt ⥤ C ⥤ C where
   obj n := by
     induction n with
     | bot => exact 𝟭 C
@@ -230,18 +230,18 @@ noncomputable def truncGEt : EInt ⥤ C ⥤ C where
     induction x <;> induction y <;> induction z <;> cat_disch
 
 @[simp]
-lemma truncGEt_obj_bot :
-    t.truncGEt.obj ⊥ = 𝟭 _ := rfl
+lemma eTruncGE_obj_bot :
+    t.eTruncGE.obj ⊥ = 𝟭 _ := rfl
 
 @[simp]
-lemma truncGEt_obj_top :
-    t.truncGEt.obj ⊤ = 0 := rfl
+lemma eTruncGE_obj_top :
+    t.eTruncGE.obj ⊤ = 0 := rfl
 
 @[simp]
-lemma truncGEt_obj_mk (n : ℤ) : t.truncGEt.obj (EInt.mk n) = t.truncGE n := rfl
+lemma eTruncGE_obj_mk (n : ℤ) : t.eTruncGE.obj (EInt.mk n) = t.truncGE n := rfl
 
-noncomputable def truncGEtδLTt :
-    t.truncGEt ⟶ t.truncLTt ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
+noncomputable def eTruncGEδLTt :
+    t.eTruncGE ⟶ t.eTruncLT ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
   app a := by
     induction a with
     | bot => exact 0
@@ -253,20 +253,20 @@ noncomputable def truncGEtδLTt :
     · apply (isZero_zero _).eq_of_src
     all_goals
       induction b <;> simp at hab <;>
-        dsimp [truncGEt, truncLTt] <;>
+        dsimp [eTruncGE, eTruncLT] <;>
         simp [t.truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE]
 
 @[simp]
-lemma truncGEtδLTt_mk (n : ℤ) :
-    t.truncGEtδLTt.app (EInt.mk n) = t.truncGEδLT n := rfl
+lemma eTruncGEδLTt_mk (n : ℤ) :
+    t.eTruncGEδLTt.app (EInt.mk n) = t.truncGEδLT n := rfl
 
 @[simps]
 noncomputable def abstractSpectralObject : SpectralObject.AbstractSpectralObject C EInt where
-  truncLT := t.truncLTt
-  truncGE := t.truncGEt
+  truncLT := t.eTruncLT
+  truncGE := t.eTruncGE
   truncLTObjTopIso' := Iso.refl _
   truncGEObjBotIso' := Iso.refl _
-  truncGEδLT := t.truncGEtδLTt
+  truncGEδLT := t.eTruncGEδLTt
 
 namespace AbstractSpectralObject
 
@@ -275,7 +275,7 @@ open SpectralObject
 @[simp]
 lemma truncGELT_eq (g : Arrow EInt) :
   (abstractSpectralObject t).truncGELT.obj g =
-    t.truncLTt.obj g.right ⋙ t.truncGEt.obj g.left := rfl
+    t.eTruncLT.obj g.right ⋙ t.eTruncGE.obj g.left := rfl
 
 lemma isZero_truncGE_obj_top_obj (X : C) :
     IsZero ((t.abstractSpectralObject.truncGE.obj ⊤).obj X) :=
@@ -316,14 +316,14 @@ lemma truncLTι_top_app (X : C) :
     (t.abstractSpectralObject.truncLTι ⊤).app X = 𝟙 X := by
   dsimp [AbstractSpectralObject.truncLTι]
   erw [Functor.map_id]
-  simp only [truncLTt_obj_top, NatTrans.id_app, Functor.id_obj, comp_id]
+  simp only [eTruncLT_obj_top, NatTrans.id_app, Functor.id_obj, comp_id]
 
 @[simp]
 lemma truncGEπ_bot_app (X : C) :
     (t.abstractSpectralObject.truncGEπ ⊥).app X = 𝟙 X := by
   dsimp [AbstractSpectralObject.truncGEπ]
   erw [Functor.map_id]
-  simp only [truncGEt_obj_bot, NatTrans.id_app, Functor.id_obj, comp_id]
+  simp only [eTruncGE_obj_bot, NatTrans.id_app, Functor.id_obj, comp_id]
 
 noncomputable def triangleLTGETopIso (X : C) :
   (t.abstractSpectralObject.triangleLTGE.obj ⊤).obj X ≅
@@ -821,15 +821,15 @@ instance (a b : ℤ) : (t.truncGELE a b).Additive := by
   dsimp only [truncGELE]
   infer_instance
 
-instance (i : EInt) : (t.truncGEt.obj i).Additive := by
+instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
   induction i <;> constructor <;> cat_disch
 
-instance (i : EInt) : (t.truncLTt.obj i).Additive := by
+instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
   induction i <;> constructor <;> cat_disch
 
 omit [IsTriangulated C] in
-lemma isZero_truncLTt_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : EInt) (hj : j ≤ EInt.mk n) :
-    IsZero ((t.truncLTt.obj j).obj X) := by
+lemma isZero_eTruncLT_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : EInt) (hj : j ≤ EInt.mk n) :
+    IsZero ((t.eTruncLT.obj j).obj X) := by
   induction j with
   | bot => simp
   | coe j =>
@@ -839,8 +839,8 @@ lemma isZero_truncLTt_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : EInt) (hj : j 
   | top => simp at hj
 
 omit [IsTriangulated C] in
-lemma isZero_truncGEt_obj_obj (X : C) (n : ℤ) [t.IsLE X n] (j : EInt) (hj : EInt.mk n < j) :
-    IsZero ((t.truncGEt.obj j).obj X) := by
+lemma isZero_eTruncGE_obj_obj (X : C) (n : ℤ) [t.IsLE X n] (j : EInt) (hj : EInt.mk n < j) :
+    IsZero ((t.eTruncGE.obj j).obj X) := by
   induction j with
   | bot => simp at hj
   | coe j =>
@@ -851,8 +851,8 @@ lemma isZero_truncGEt_obj_obj (X : C) (n : ℤ) [t.IsLE X n] (j : EInt) (hj : EI
   | top => simp
 
 omit [IsTriangulated C] in
-lemma truncGEt_obj_obj_isGE (n : ℤ) (i : EInt) (h : EInt.mk n ≤ i) (X : C) :
-    t.IsGE ((t.truncGEt.obj i).obj X) n := by
+lemma eTruncGE_obj_obj_isGE (n : ℤ) (i : EInt) (h : EInt.mk n ≤ i) (X : C) :
+    t.IsGE ((t.eTruncGE.obj i).obj X) n := by
   induction i with
   | bot => simp at h
   | coe i =>
@@ -861,8 +861,8 @@ lemma truncGEt_obj_obj_isGE (n : ℤ) (i : EInt) (h : EInt.mk n ≤ i) (X : C) :
   | top => exact t.isGE_of_isZero _ (Functor.zero_obj _) _
 
 omit [IsTriangulated C] in
-lemma truncLTt_obj_obj_isLE (n : ℤ) (i : EInt) (h : i ≤ EInt.mk (n + 1)) (X : C) :
-    t.IsLE (((t.truncLTt.obj i)).obj X) n := by
+lemma eTruncLT_obj_obj_isLE (n : ℤ) (i : EInt) (h : i ≤ EInt.mk (n + 1)) (X : C) :
+    t.IsLE (((t.eTruncLT.obj i)).obj X) n := by
   induction i with
   | bot => exact t.isLE_of_isZero _ (by simp) _
   | coe i =>
@@ -893,8 +893,8 @@ instance (X : C) (n : ℤ) : IsIso ((t.truncLE n).map ((t.truncLEι n).app X)) :
 instance (X : C) (n : ℤ) : IsIso ((t.truncGE n).map ((t.truncGEπ n).app X)) :=
   t.isIso_truncGE_map_truncGEπ_app _ _ (by rfl) _
 
-lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
-    IsIso ((t.truncGEt.obj b).map ((t.abstractSpectralObject.truncGEπ a).app X)) := by
+lemma isIso_eTruncGE_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
+    IsIso ((t.eTruncGE.obj b).map ((t.abstractSpectralObject.truncGEπ a).app X)) := by
   induction b with
   | bot =>
     obtain rfl : a = ⊥ := by simpa using h
@@ -911,8 +911,8 @@ lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
     | top => simp at h
   | top => exact ⟨0, IsZero.eq_of_src (by simp) _ _, IsZero.eq_of_src (by simp) _ _⟩
 
-lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
-    IsIso ((t.truncLTt.obj a).map ((t.abstractSpectralObject.truncLTι b).app X)) := by
+lemma isIso_eTruncLT_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
+    IsIso ((t.eTruncLT.obj a).map ((t.abstractSpectralObject.truncLTι b).app X)) := by
   induction a with
   | bot => exact ⟨0, IsZero.eq_of_src (by simp) _ _, IsZero.eq_of_src (by simp) _ _⟩
   | coe a =>
@@ -930,11 +930,11 @@ lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
 
 instance (D : Arrow EInt) (X : C) :
   IsIso ((t.abstractSpectralObject.truncGEToTruncGEGE.app D).app X) :=
-    t.isIso_truncGEt_obj_map_truncGEπ_app _ _ (leOfHom D.hom) X
+    t.isIso_eTruncGE_obj_map_truncGEπ_app _ _ (leOfHom D.hom) X
 
 instance (D : Arrow EInt) (X : C) :
   IsIso ((t.abstractSpectralObject.truncLTLTToTruncLT.app D).app X) :=
-    t.isIso_truncLTt_obj_map_truncLTπ_app _ _ (leOfHom D.hom) X
+    t.isIso_eTruncLT_obj_map_truncLTπ_app _ _ (leOfHom D.hom) X
 
 instance (D : Arrow EInt) : IsIso (t.abstractSpectralObject.truncGEToTruncGEGE.app D) :=
   NatIso.isIso_of_isIso_app _
@@ -954,7 +954,7 @@ lemma truncGEπ_compatibility (a : EInt) (X : C) :
   induction a with
   | bot => simp
   | coe a =>
-    simp only [abstractSpectralObject_truncGE, truncGEt_obj_mk, id_obj,
+    simp only [abstractSpectralObject_truncGE, eTruncGE_obj_mk, id_obj,
       AbstractSpectralObject.truncGEπ_mk]
     apply from_truncGE_obj_ext
     exact ((t.truncGEπ a).naturality ((t.truncGEπ a).app X)).symm
@@ -968,7 +968,7 @@ lemma truncLTι_compatibility (a : EInt) (X : C) :
   induction a with
   | bot => exact IsZero.eq_of_src (by simp) _ _
   | coe a =>
-    simp only [abstractSpectralObject_truncLT, truncLTt_obj_mk, id_obj,
+    simp only [abstractSpectralObject_truncLT, eTruncLT_obj_mk, id_obj,
       AbstractSpectralObject.truncLEι_mk]
     apply to_truncLT_obj_ext
     exact (t.truncLTι a).naturality ((t.truncLTι a).app X)
@@ -976,16 +976,16 @@ lemma truncLTι_compatibility (a : EInt) (X : C) :
 
 lemma isIso_truncLTι_app_truncGELT_obj (a b : EInt) (h : a ≤ b) (X : C) :
     IsIso ((t.abstractSpectralObject.truncLTι b).app
-      ((t.truncLTt.obj b ⋙ t.truncGEt.obj a).obj X)) := by
+      ((t.eTruncLT.obj b ⋙ t.eTruncGE.obj a).obj X)) := by
   induction b with
   | bot =>
     refine ⟨0, IsZero.eq_of_src (by simp) _ _, IsZero.eq_of_src ?_ _ _⟩
     dsimp
     exact IsZero.of_iso (isZero_zero _)
         (Functor.mapIso _ (IsZero.isoZero (Functor.zero_obj _)) ≪≫
-          (t.truncGEt.obj a).mapZeroObject)
+          (t.eTruncGE.obj a).mapZeroObject)
   | coe b =>
-    simp only [abstractSpectralObject_truncLT, truncLTt_obj_mk, comp_obj, id_obj,
+    simp only [abstractSpectralObject_truncLT, eTruncLT_obj_mk, comp_obj, id_obj,
       AbstractSpectralObject.truncLEι_mk]
     rw [← t.isLE_iff_isIso_truncLTι_app (b-1) b (by lia)]
     induction a with
@@ -993,7 +993,7 @@ lemma isIso_truncLTι_app_truncGELT_obj (a b : EInt) (h : a ≤ b) (X : C) :
     | coe a => dsimp; infer_instance
     | top => exact t.isLE_of_isZero _ (by simp) _
   | top =>
-    simp only [abstractSpectralObject_truncLT, truncLTt_obj_top, comp_obj, id_obj,
+    simp only [abstractSpectralObject_truncLT, eTruncLT_obj_top, comp_obj, id_obj,
       AbstractSpectralObject.truncLTι_top_app]
     infer_instance
 
@@ -1144,7 +1144,7 @@ instance (D : Arrow EInt) (X : C) :
       exact t.isIso_truncLT_map_truncLTι_app b b (by rfl) X
     | coe a =>
       simp only [EInt.coe_le_coe_iff] at h
-      simp only [truncGEt_obj_mk, AbstractSpectralObject.truncLEι_mk]
+      simp only [eTruncGE_obj_mk, AbstractSpectralObject.truncLEι_mk]
       exact t.isIso_truncLT_map_truncGE_map_truncLTι_app a b X
     | top =>
       refine ⟨0, IsZero.eq_of_src ?_ _ _, IsZero.eq_of_src ?_ _ _⟩
@@ -1247,28 +1247,28 @@ instance [IsTriangulated C] : t.bounded.HasInducedTStructure t := by
 namespace TStructure
 
 instance (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
-    t.IsLE ((t.truncLTt.obj i).obj X) n := by
+    t.IsLE ((t.eTruncLT.obj i).obj X) n := by
   induction i with
   | bot => exact isLE_of_isZero _ _ (by simp) _
   | coe _ => dsimp; infer_instance
   | top => dsimp; infer_instance
 
 instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
-    t.IsGE ((t.truncLTt.obj i).obj X) n := by
+    t.IsGE ((t.eTruncLT.obj i).obj X) n := by
   induction i with
   | bot => exact isGE_of_isZero _ _ (by simp) _
   | coe _ => dsimp; infer_instance
   | top => dsimp; infer_instance
 
 instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
-    t.IsLE ((t.truncGEt.obj i).obj X) n := by
+    t.IsLE ((t.eTruncGE.obj i).obj X) n := by
   induction i with
   | bot => dsimp; infer_instance
   | coe _ => dsimp; infer_instance
   | top => exact isLE_of_isZero _ _ (by simp) _
 
 instance (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
-    t.IsGE ((t.truncGEt.obj i).obj X) n := by
+    t.IsGE ((t.eTruncGE.obj i).obj X) n := by
   induction i with
   | bot => dsimp; infer_instance
   | coe _ => dsimp; infer_instance
