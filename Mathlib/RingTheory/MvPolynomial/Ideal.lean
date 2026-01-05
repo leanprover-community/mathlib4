@@ -73,7 +73,7 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     · exact Subsingleton.eq_one _
     symm; exact Subsingleton.eq_one _
   rw [not_subsingleton_iff_nontrivial] at h'
-  rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Ideal.span]
+  rw [idealOfVars, Ideal.span, Submodule.span_pow]
   congr; ext p
   simp only [Set.mem_pow_iff_prod, Set.mem_range, Set.mem_image, Set.mem_setOf_eq]
   refine ⟨fun ⟨f, h, hf⟩ => ?_, fun ⟨x, x_sum, hx⟩ => ?_⟩
@@ -86,7 +86,7 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
   have hl : n = l.length := by
     rw [Multiset.length_toList, card_toMultiset, x_sum]
   use fun i => X (l.get (Fin.cast hl i))
-  simp only [List.get_eq_getElem, exists_apply_eq_apply, implies_true, true_and, ← finCongr_apply]
+  simp only [List.get_eq_getElem, exists_apply_eq_apply, implies_true, true_and]
   rw [← Fintype.prod_equiv (finCongr (Eq.symm hl)) (fun i ↦ X l[i]) _ (by simp)]
   simp only [Fin.getElem_fin, Fin.prod_univ_fun_getElem, Multiset.prod_map_toList, toMultiset_map,
     prod_toMultiset, l]
