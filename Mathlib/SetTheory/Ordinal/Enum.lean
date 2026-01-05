@@ -30,7 +30,11 @@ namespace Ordinal
 
 variable {o a b : Ordinal.{u}}
 
-/-- Enumerator function for an unbounded set of ordinals. -/
+/-- Enumerator function for an unbounded set of ordinals.
+
+The definition is an implementation detail; this function is entirely characterized by being an
+order isomorphism. See `enumOrdOrderIso`. -/
+@[no_expose]
 noncomputable def enumOrd (s : Set Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
   sInf (s ∩ { b | ∀ c, c < o → enumOrd s c < b })
 termination_by o
