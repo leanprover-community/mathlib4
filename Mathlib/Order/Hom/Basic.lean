@@ -1077,8 +1077,8 @@ noncomputable def ofUnique
   map_rel_iff' := by simp
 
 /-- `Equiv.equivOfIsEmpty` promoted to an `OrderIso`. -/
-def ofIsEmpty (α β : Type*) [Preorder α] [Preorder β] [IsEmpty α] [IsEmpty β]: α ≃o β :=
-  ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
+def ofIsEmpty (α β : Type*) [Preorder α] [Preorder β] [IsEmpty α] [IsEmpty β] : α ≃o β :=
+  ⟨Equiv.equivOfIsEmpty α β, @isEmptyElim _ _ _⟩
 
 end OrderIso
 

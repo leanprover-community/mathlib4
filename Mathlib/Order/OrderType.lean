@@ -55,10 +55,7 @@ universe u v w w'
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'}
 
-instance {α : Type*} [IsEmpty α] : Subsingleton α where
- allEq a _ := (IsEmpty.false a).elim
-
-instance {α : Type*} [IsEmpty α] : LinearOrder α := .ofSubsingleton
+public section
 
 /-- An auxiliary structure representing a linearly ordered type. -/
 @[ext]
@@ -66,15 +63,6 @@ structure LinearOrderedType : Type (u + 1) where
   carrier : Type u
   le : LE carrier
   isLinearOrder_carrier : Std.IsLinearOrder carrier
-
-instance (x : LinearOrderedType) : LE x.carrier := x.le
-
-instance (x : LinearOrderedType) : LinearOrder x.carrier where
-  le_refl := x.isLinearOrder_carrier.le_refl
-  le_trans := x.isLinearOrder_carrier.le_trans
-  le_antisymm := x.isLinearOrder_carrier.le_antisymm
-  le_total := x.isLinearOrder_carrier.le_total
-  toDecidableLE := Classical.decRel LE.le
 
 /-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
@@ -87,29 +75,35 @@ instance OrderType.instSetoid : Setoid LinearOrderedType where
 
 /-- `OrderType.{u}` is the type of linear orders in `Type u`, up to order isomorphism. -/
 @[pp_with_univ]
-public def OrderType : Type (u + 1) :=
+def OrderType : Type (u + 1) :=
   Quotient OrderType.instSetoid
 
+end
+
 namespace OrderType
+
+private protected local instance (x : LinearOrderedType) : LinearOrder x.carrier where
+  le := x.le.le
+  le_refl := x.isLinearOrder_carrier.le_refl
+  le_trans := x.isLinearOrder_carrier.le_trans
+  le_antisymm := x.isLinearOrder_carrier.le_antisymm
+  le_total := x.isLinearOrder_carrier.le_total
+  toDecidableLE := Classical.decRel x.le.le
 
 /-- A "canonical" type order-isomorphic to the order type `o`, living in the same universe.
 This is defined through the axiom of choice. -/
 def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
-def toisLinearOrder (o : OrderType) := o.out.isLinearOrder_carrier
-
-def totype_def (o : OrderType) : o.ToType = o.out.carrier := rfl
-
 instance (o : OrderType) : LE o.ToType := ⟨o.out.le.le⟩
 
 instance (o : OrderType) : Std.IsLinearOrder o.ToType := o.out.isLinearOrder_carrier
 
 instance (o : OrderType) : LinearOrder o.ToType where
-  le_refl := o.toisLinearOrder.le_refl
-  le_antisymm := o.toisLinearOrder.le_antisymm
-  le_trans := o.toisLinearOrder.le_trans
-  le_total := o.toisLinearOrder.le_total
+  le_refl := o.out.isLinearOrder_carrier.le_refl
+  le_antisymm := o.out.isLinearOrder_carrier.le_antisymm
+  le_trans := o.out.isLinearOrder_carrier.le_trans
+  le_total := o.out.isLinearOrder_carrier.le_total
   toDecidableLE := Classical.decRel LE.le
 
 /-! ### Basic properties of the order type -/
@@ -123,8 +117,6 @@ instance zero : Zero OrderType where
 
 instance instCoe : Coe LinearOrderedType (Type u) where
  coe x := x.carrier
-
-instance (α : Type u) [inst : LinearOrder α] : Std.IsLinearOrder α := ⟨inst.le_total⟩
 
 instance (α : Type*) [inst : LinearOrder α] (x : α) : CoeT α x LinearOrderedType where
  coe := ⟨α, inst.toLE, inferInstance⟩
@@ -144,42 +136,39 @@ theorem type_eq {α β} [LinearOrder α] [LinearOrder β] :
     type α = type β ↔ Nonempty (α ≃o β) :=
   Quotient.eq'
 
-theorem _root_.RelIso.ordertype_eq {α β} [LinearOrder α]
+theorem _root_.RelIso.orderType_eq {α β} [LinearOrder α]
     [LinearOrder β] (h : α ≃o β) : type α = type β :=
   type_eq.2 ⟨h⟩
 
 @[simp]
-theorem type_eq_zero [LinearOrder α] [IsEmpty α] : type α = 0 :=
-  (OrderIso.ofIsEmpty α PEmpty).ordertype_eq
+theorem type_of_isEmpty [LinearOrder α] [IsEmpty α] : type α = 0 :=
+  (OrderIso.ofIsEmpty α PEmpty).orderType_eq
 
 @[simp]
-theorem type_eq_zero_iff [LinearOrder α] : type α = 0 ↔ IsEmpty α :=
+theorem type_eq_zero [LinearOrder α] : type α = 0 ↔ IsEmpty α :=
   ⟨fun h ↦
     let ⟨s⟩ := type_eq.1 h
     s.toEquiv.isEmpty,
-    @type_eq_zero α _⟩
+    @type_of_isEmpty α _⟩
 
 theorem type_ne_zero_iff [LinearOrder α] : type α ≠ 0 ↔ Nonempty α := by simp
 
 theorem type_ne_zero [LinearOrder α] [h : Nonempty α] : type α ≠ 0 :=
   type_ne_zero_iff.2 h
 
-theorem type_empty : type Empty = 0 :=
-  type_eq_zero
-
 @[simp]
-theorem type_eq_one [LinearOrder α] [Nonempty α] [Subsingleton α] : type α = 1 := by
+theorem type_of_unique [LinearOrder α] [Nonempty α] [Subsingleton α] : type α = 1 := by
   cases nonempty_unique α
-  exact (OrderIso.ofUnique α _).ordertype_eq
+  exact (OrderIso.ofUnique α _).orderType_eq
 
 @[simp]
-theorem type_eq_one_iff [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
+theorem type_eq_one [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h ↦ let ⟨s⟩ := type_eq.1 h; ⟨s.toEquiv.unique⟩,
-    fun ⟨_⟩ ↦ type_eq_one⟩
+    fun ⟨_⟩ ↦ type_of_unique⟩
 
 @[simp]
 theorem isEmpty_toType_iff {o : OrderType} : IsEmpty o.ToType ↔ o = 0 := by
-  rw [← @type_eq_zero_iff o.ToType, type_ordtoType]
+  rw [← @type_eq_zero o.ToType, type_ordtoType]
 
 instance isEmpty_toType_zero : IsEmpty (ToType 0) :=
  isEmpty_toType_iff.2 rfl
@@ -200,13 +189,13 @@ theorem inductionOn {C : OrderType → Prop} (o : OrderType)
     (H : ∀ α [LinearOrder α], C (type α)) : C o :=
   Quot.inductionOn o (fun α ↦ H α.carrier)
 
-/-- `Quotient.inductionOn₂` specialized to OrderTypes. -/
+/-- `Quotient.inductionOn₂` specialized to `OrderType`. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : OrderType → OrderType → Prop} (o₁ o₂ : OrderType)
     (H : ∀ α [LinearOrder α] β [LinearOrder β], C (type α) (type β)) : C o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun α β ↦ H α β
 
-/-- `Quotient.inductionOn₃` specialized to OrderTypes. -/
+/-- `Quotient.inductionOn₃` specialized to `OrderType`. -/
 @[elab_as_elim]
 theorem inductionOn₃ {C : OrderType → OrderType → OrderType → Prop} (o₁ o₂ o₃ : OrderType)
     (H : ∀ α [LinearOrder α] β [LinearOrder β] γ [LinearOrder γ],
@@ -249,19 +238,18 @@ instance : Preorder OrderType where
 instance instNeZeroOne : NeZero (1 : OrderType) :=
   ⟨OrderType.one_ne_zero⟩
 
-theorem type_le_iff {α β} [LinearOrder α]
+theorem type_le_type_iff {α β} [LinearOrder α]
     [LinearOrder β] : type α ≤ type β ↔ Nonempty (α ↪o β) :=
   Iff.rfl
-theorem type_le {α β}
+
+theorem type_le_type {α β}
     [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
   ⟨h⟩
 
-theorem _root_.RelEmbedding.type_le {α β}
-    [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
-  ⟨h⟩
+alias _root_.OrderEmbedding.type_le_type := type_le_type
 
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
-  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le)
+  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type)
 
 instance : OrderBot OrderType where
   bot := 0
@@ -282,8 +270,9 @@ instance : ZeroLEOneClass OrderType :=
   ⟨OrderType.zero_le _⟩
 
 section Cardinal
-/-- The cardinal of an OrderType is the cardinality of any type on which a relation with that order
-type is defined. -/
+
+/-- The cardinal of an `OrderType` is the cardinality of any type on which a relation
+with that order type is defined. -/
 def card : OrderType → Cardinal :=
   Quotient.map _ fun _ _ ⟨e⟩ ↦ ⟨e.toEquiv⟩
 
@@ -335,23 +324,13 @@ instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hAdd := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s), inferInstance, inferInstance⟩)
    fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩
 
-lemma OrderIso.sumLexEmpty (α : Type u) {β : Type v} [LinearOrder α] [IsEmpty β] :
-    Nonempty (Lex (α ⊕ β) ≃o α) :=
-  ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := α) (β := β)).symm.trans
-    (RelIso.sumLexEmpty (β := β) (α := α) (r := (· < ·)) (s := (· < ·))))⟩
-
-lemma OrderIso.emptySumLex (α : Type u) {β : Type v} [LinearOrder α] [IsEmpty β] :
-    Nonempty (Lex (β ⊕ α) ≃o α) :=
-  ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := β) (β := α)).trans
-    (RelIso.emptySumLex (β := α) (α := β) (r := (· < ·)) (s := (· < ·))))⟩
-
 instance : AddMonoid OrderType where
   add_assoc o₁ o₂ o₃ :=
-    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_eq (OrderIso.sumLexAssoc α β γ))
+    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.orderType_eq (OrderIso.sumLexAssoc α β γ))
   zero_add o :=
-    inductionOn o (fun α _ ↦ RelIso.ordertype_eq (Classical.choice (OrderIso.emptySumLex α)))
+    inductionOn o (fun α _ ↦ RelIso.orderType_eq (Classical.choice (OrderIso.emptySumLex α)))
   add_zero o :=
-   inductionOn o (fun α _ ↦ RelIso.ordertype_eq (Classical.choice (OrderIso.sumLexEmpty α)))
+   inductionOn o (fun α _ ↦ RelIso.orderType_eq (Classical.choice (OrderIso.sumLexEmpty α)))
   nsmul := nsmulRec
 
 instance (n : Nat) : OfNat OrderType n where
@@ -379,19 +358,19 @@ instance : Monoid OrderType where
   mul_assoc o₁ o₂ o₃ := by
     refine inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ ?_)
     simp only [←type_mul]
-    exact RelIso.ordertype_eq ( Prod.Lex.prodAssoc _ _ _ |> OrderIso.symm )
+    exact RelIso.orderType_eq ( Prod.Lex.prodAssoc _ _ _ |> OrderIso.symm )
   one_mul o := by
     rcases o with ⟨l⟩
     exact Quot.sound ⟨Prod.Lex.prodUnique _ PUnit⟩
   mul_one o := by
     refine inductionOn o (fun α hα ↦ ?_)
     rw [one_def, ←type_mul ]
-    exact RelIso.ordertype_eq (Prod.Lex.uniqueProd PUnit _)
+    exact RelIso.orderType_eq (Prod.Lex.uniqueProd PUnit _)
 
 instance : LeftDistribClass OrderType where
   left_distrib a b c := by
     refine inductionOn₃ a b c (fun _ _ _ _ _ _ ↦ ?_)
     simp only [←type_mul,←type_add]
-    exact RelIso.ordertype_eq (Prod.Lex.sumProdDistrib _ _ _)
+    exact RelIso.orderType_eq (Prod.Lex.sumProdDistrib _ _ _)
 
 end OrderType
