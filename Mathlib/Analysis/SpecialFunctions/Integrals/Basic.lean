@@ -353,6 +353,23 @@ theorem integral_one_div_one_add_sq :
 theorem integral_inv_one_add_sq : (∫ x : ℝ in a..b, (↑1 + x ^ 2)⁻¹) = arctan b - arctan a := by
   simp only [← one_div, integral_one_div_one_add_sq]
 
+@[simp]
+theorem integral_inv_sq_add_sq {c : ℝ} (hc : c ≠ 0) :
+    ∫ x : ℝ in a..b, (c ^ 2 + x ^ 2)⁻¹ = c⁻¹ * (arctan (b / c) - arctan (a / c)) := calc
+  _ = ∫ x : ℝ in a..b, (c ^ 2)⁻¹ * (1 + (x / c) ^ 2)⁻¹ := by field_simp
+  _ = _ := by
+    simp [integral_comp_div (fun x => (c ^ 2)⁻¹ * (1 + x ^ 2)⁻¹) hc]
+    field_simp
+
+theorem integral_div_sq_add_sq {c : ℝ} :
+    ∫ x : ℝ in a..b, c / (c ^ 2 + x ^ 2) = arctan (b / c) - arctan (a / c) := calc
+  _ = ∫ x : ℝ in a..b, c * (c ^ 2 + x ^ 2)⁻¹ := by ring_nf
+  _ = _ := by
+    by_cases hc : c = 0
+    · simp [hc]
+    · rw [integral_const_mul, integral_inv_sq_add_sq hc]
+      field_simp
+
 section RpowCpow
 
 open Complex
