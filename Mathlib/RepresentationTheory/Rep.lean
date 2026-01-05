@@ -362,7 +362,7 @@ def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k 
 
 end
 section
-variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 
 /-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
 `ℤ`-linear `M`-representation on `Additive G`. -/
@@ -379,7 +379,7 @@ def toAdditive : ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/
-@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+@[simp] def ofAlgebraAutOnUnits (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
 
 end
