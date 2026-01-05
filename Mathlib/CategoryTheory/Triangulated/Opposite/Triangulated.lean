@@ -19,7 +19,7 @@ that `Cᵒᵖ` is triangulated if `C` is triangulated.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

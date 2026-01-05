@@ -17,7 +17,7 @@ effective epimorphic families, such that for every object `X` of `D` there exist
 `C` with an effective epi `π : F.obj W ⟶ X`, the category `C` is `Precoherent` whenever `D` is.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

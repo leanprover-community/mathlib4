@@ -70,7 +70,7 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

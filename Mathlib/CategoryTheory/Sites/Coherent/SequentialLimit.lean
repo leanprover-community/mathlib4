@@ -27,7 +27,7 @@ This is deduced from the corresponding statement about locally surjective morphi
 (see `coherentTopology.isLocallySurjective_π_app_zero_of_isLocallySurjective_map`).
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

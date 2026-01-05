@@ -44,7 +44,7 @@ using duality, but this would require lengthy API developments for `ComposableAr
 four lemma, five lemma, diagram lemma, diagram chase
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

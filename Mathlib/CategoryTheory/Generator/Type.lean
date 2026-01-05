@@ -14,7 +14,7 @@ In this file, we show that `PUnit` is a separator of the category `Type u`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

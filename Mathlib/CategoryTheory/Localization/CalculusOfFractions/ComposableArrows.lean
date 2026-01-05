@@ -17,7 +17,7 @@ is essentially surjective for any `n : ℕ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

@@ -33,7 +33,7 @@ is represented by a Galois object.
 
 -/
 
-@[expose] public section
+public section
 
 universe u₁ u₂ w
 

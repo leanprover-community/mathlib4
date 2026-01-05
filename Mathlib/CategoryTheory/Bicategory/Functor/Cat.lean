@@ -15,7 +15,7 @@ for pseudofunctors to `Cat`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 
