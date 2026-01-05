@@ -61,7 +61,8 @@ variable {X : Type*} [MeasurableSpace X]
 within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
 the entire set and the the number of partition elements is required to be finite. -/
 def IsInnerPart (s : Set X) (P : Finset (Set X)) : Prop :=
-    (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧ (∀ p ∈ P, p ≠ ∅)
+    (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
+    (∀ p ∈ P, p ≠ ∅)
 
 lemma isInnerPart_of_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = ∅ := by
   obtain ⟨h, _, _, h'⟩ := hP
@@ -85,7 +86,8 @@ lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     {P : ℕ → Finset (Set X)} (hP : ∀ i, IsInnerPart (s i) (P i)) (n : ℕ) :
     IsInnerPart (⋃ i, s i) (Finset.biUnion (Finset.range n) P) := by
   suffices (∀ t, ∀ x < n, t ∈ P x → t ⊆ ⋃ i, s i) ∧ (∀ t, ∀ x < n, t ∈ P x → MeasurableSet t) ∧
-      (⋃ x, ⋃ (_ : x < n), (P x).toSet).PairwiseDisjoint id ∧ ∀ p, ∀ x < n, p ∈ P x → ¬p = ∅ by
+      (⋃ x, ⋃ (_ : x < n), (P x : Set (Set X))).PairwiseDisjoint id ∧
+      ∀ p, ∀ x < n, p ∈ P x → ¬p = ∅ by
     simpa [IsInnerPart]
   refine ⟨fun p i _ hp ↦ ?_, fun p i _ hp ↦ ?_, fun p hp q hq hpq _ hrp hrq ↦ ?_, fun _ i _ h' ↦ ?_⟩
   · exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
@@ -106,7 +108,8 @@ lemma isInnerPart_of_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (
   intro R hRP hRQ
   simp only [Finset.bot_eq_empty, Finset.le_eq_subset, Finset.subset_empty]
   by_contra! hc
-  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr hc
+  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr
+    (Finset.nonempty_iff_ne_empty.mp hc)
   have := hst (hP.1 r <| hRP hr) (hQ.1 r <| hRQ hr)
   exact hP.2.2.2 r (hRP hr) <| Set.subset_eq_empty this rfl
 
