@@ -336,12 +336,3 @@ lemma UpperHemicontinuousAt.mem_of_tendsto {α β ι : Type*} [TopologicalSpace 
   filter_upwards [hx (hf s hs)] with n hn hyn
   simp only [← subset_interior_iff_mem_nhdsSet, preimage_setOf_eq, mem_setOf_eq] at hn
   exact interior_subset <| hn hyn
-
--- Probably it isn't worth having this specialized version? Or maybe it is because compact-valued
--- upper hemicontinuous functions are common in practice.
-lemma UpperHemicontinuousAt.exists_compact_neighborhood {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] [LocallyCompactSpace β] {f : α → Set β} {x₀ : α}
-    (hf : UpperHemicontinuousAt f x₀) (hfx : IsCompact (f x₀)) {t : Set β} (ht : t ∈ 𝓝ˢ (f x₀)) :
-    ∃ s : Set β, IsCompact s ∧ s ⊆ t ∧ ∀ᶠ x in 𝓝 x₀, f x ⊆ interior s := by
-  obtain ⟨k, ⟨hfx, hak⟩, hkt⟩ := hfx.nhdsSet_basis_isCompact.mem_iff.mp ht
-  exact ⟨k, hak, hkt, hf _ hfx |>.mp <| .of_forall fun x ↦ subset_interior_iff_mem_nhdsSet.mpr⟩

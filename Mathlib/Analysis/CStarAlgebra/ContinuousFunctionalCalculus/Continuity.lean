@@ -329,20 +329,19 @@ theorem ContinuousOn.cfc_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {
     ContinuousOn (fun x ↦ cfc f (a x)) t := by
   have hs' := hs
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
-  have : ∀ (x : t), ∃ S, IsCompact S ∧ S ⊆ s ∧ ∀ᶠ (x' : A) in 𝓝 (a x), spectrum 𝕜 x' ⊆ S := by
-    rintro ⟨x, hx⟩
-    obtain ⟨S, hS₁, hS₂, hS₃⟩ := upperHemicontinuous_spectrum 𝕜 A |>.upperHemicontinuousAt (a x)
-      |>.exists_compact_neighborhood (spectrum.isCompact (a x)) (hs' x hx)
-    exact ⟨S, hS₁, hS₂, hS₃.mp <| .of_forall fun _ ↦ (Set.Subset.trans · interior_subset)⟩
+  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum 𝕜 x' ⊆ S) ∧ S ⊆ s:= by
+    obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
+      spectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+    refine ⟨S, hS₂, ?_, hS₃⟩
+    exact upperHemicontinuous_spectrum 𝕜 A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
+      fun _ ↦ subset_of_mem_nhdsSet
   choose S hS₁ hS₂ hS₃ using this
   classical
   refine ha_cont.cfc (s := fun x : X ↦ if hx : x ∈ t then S ⟨x, hx⟩ else ∅) f
-    ?_ ?_ ha' ?_
-  · simpa +contextual using hS₁
-  · simp +contextual only [↓reduceDIte]
-    simp only [Subtype.forall] at hS₃
-    exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₃ x₀ hx₀
-  · simpa +contextual using fun x hx ↦ hf.mono <| hS₂ ⟨x, hx⟩
+    (by simpa +contextual using hS₁) ?_ ha' ?_
+  all_goals simp +contextual only [↓reduceDIte]
+  · exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₂ ⟨x₀, hx₀⟩
+  · exact fun x hx ↦ hf.mono <| hS₃ ⟨x, hx⟩
 
 /-- Suppose `a : X → Set A` is continuous and `a x` satisfies the predicate `p` for all `x`.
 Suppose further that `s : X → Set 𝕜` is a family of compact sets `s x₀` contains the spectrum of
@@ -498,21 +497,19 @@ theorem ContinuousOn.cfc_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpa
     ContinuousOn (fun x ↦ cfc f (a x)) t := by
   have hs' := hs
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
-  have : ∀ (x : t), ∃ S, IsCompact S ∧ S ⊆ s ∧ ∀ᶠ (x' : A) in 𝓝 (a x), spectrum ℝ≥0 x' ⊆ S := by
-    rintro ⟨x, hx⟩
-    obtain ⟨S, hS₁, hS₂, hS₃⟩ := upperHemicontinuous_spectrum_nnreal A
-      |>.upperHemicontinuousAt (a x)
-      |>.exists_compact_neighborhood (spectrum.isCompact_nnreal (a x)) (hs' x hx)
-    exact ⟨S, hS₁, hS₂, hS₃.mp <| .of_forall fun _ ↦ (Set.Subset.trans · interior_subset)⟩
+  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s:= by
+    obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
+      spectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+    refine ⟨S, hS₂, ?_, hS₃⟩
+    exact upperHemicontinuous_spectrum_nnreal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
+      fun _ ↦ subset_of_mem_nhdsSet
   choose S hS₁ hS₂ hS₃ using this
   classical
   refine ha_cont.cfc_nnreal (s := fun x : X ↦ if hx : x ∈ t then S ⟨x, hx⟩ else ∅) f
-    ?_ ?_ ha' ?_
-  · simpa +contextual using hS₁
-  · simp +contextual only [↓reduceDIte]
-    simp only [Subtype.forall] at hS₃
-    exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₃ x₀ hx₀
-  · simpa +contextual using fun x hx ↦ hf.mono <| hS₂ ⟨x, hx⟩
+    (by simpa +contextual using hS₁) ?_ ha' ?_
+  all_goals simp +contextual only [↓reduceDIte]
+  · exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₂ ⟨x₀, hx₀⟩
+  · exact fun x hx ↦ hf.mono <| hS₃ ⟨x, hx⟩
 
 /-- Suppose `a : X → Set A` is a continuous family of nonnegative elements.
 Suppose further that `s : X → Set ℝ≥0` is a family of compact sets such that `s x₀` contains the
@@ -840,21 +837,19 @@ theorem ContinuousOn.cfcₙ_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X
     ContinuousOn (fun x ↦ cfcₙ f (a x)) t := by
   have hs' := hs
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
-  have : ∀ (x : t), ∃ S, IsCompact S ∧ S ⊆ s ∧ ∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum 𝕜 x' ⊆ S := by
-    rintro ⟨x, hx⟩
-    obtain ⟨S, hS₁, hS₂, hS₃⟩ := upperHemicontinuous_quasispectrum 𝕜 A
-      |>.upperHemicontinuousAt (a x)
-      |>.exists_compact_neighborhood (quasispectrum.isCompact (a x)) (hs' x hx)
-    exact ⟨S, hS₁, hS₂, hS₃.mp <| .of_forall fun _ ↦ (Set.Subset.trans · interior_subset)⟩
+  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum 𝕜 x' ⊆ S) ∧ S ⊆ s := by
+    obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
+      quasispectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+    refine ⟨S, hS₂, ?_, hS₃⟩
+    exact upperHemicontinuous_quasispectrum 𝕜 A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
+      fun _ ↦ subset_of_mem_nhdsSet
   choose S hS₁ hS₂ hS₃ using this
   classical
   refine ha_cont.cfcₙ (s := fun x : X ↦ if hx : x ∈ t then S ⟨x, hx⟩ else ∅) f
-    ?_ ?_ ha' ?_
-  · simpa +contextual using hS₁
-  · simp +contextual only [↓reduceDIte]
-    simp only [Subtype.forall] at hS₃
-    exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₃ x₀ hx₀
-  · simpa +contextual using fun x hx ↦ hf.mono <| hS₂ ⟨x, hx⟩
+    (by simpa +contextual using hS₁) ?_ ha' ?_
+  all_goals simp +contextual only [↓reduceDIte]
+  · exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₂ ⟨x₀, hx₀⟩
+  · exact fun x hx ↦ hf.mono <| hS₃ ⟨x, hx⟩
 
 /-- Suppose `a : X → Set A` is continuous and `a x` satisfies the predicate `p` for all `x`.
 Suppose further that `s : X → Set 𝕜` is a family of compact sets `s x₀` contains the spectrum of
@@ -1017,22 +1012,19 @@ theorem ContinuousOn.cfcₙ_nnreal_of_mem_nhdsSet [CompleteSpace A] [Topological
     ContinuousOn (fun x ↦ cfcₙ f (a x)) t := by
   have hs' := hs
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
-  have : ∀ (x : t), ∃ S, IsCompact S ∧ S ⊆ s ∧
-      ∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum ℝ≥0 x' ⊆ S := by
-    rintro ⟨x, hx⟩
-    obtain ⟨S, hS₁, hS₂, hS₃⟩ := upperHemicontinuous_quasispectrum_nnreal A
-      |>.upperHemicontinuousAt (a x)
-      |>.exists_compact_neighborhood (quasispectrum.isCompact_nnreal (a x)) (hs' x hx)
-    exact ⟨S, hS₁, hS₂, hS₃.mp <| .of_forall fun _ ↦ (Set.Subset.trans · interior_subset)⟩
+  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s:= by
+    obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
+      quasispectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
+    refine ⟨S, hS₂, ?_, hS₃⟩
+    exact upperHemicontinuous_quasispectrum_nnreal A |>.upperHemicontinuousAt (a x) _ hS₁ |>.mono
+      fun _ ↦ subset_of_mem_nhdsSet
   choose S hS₁ hS₂ hS₃ using this
   classical
   refine ha_cont.cfcₙ_nnreal (s := fun x : X ↦ if hx : x ∈ t then S ⟨x, hx⟩ else ∅) f
-    ?_ ?_ ha' ?_
-  · simpa +contextual using hS₁
-  · simp +contextual only [↓reduceDIte]
-    simp only [Subtype.forall] at hS₃
-    exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₃ x₀ hx₀
-  · simpa +contextual using fun x hx ↦ hf.mono <| hS₂ ⟨x, hx⟩
+    (by simpa +contextual using hS₁) ?_ ha' ?_
+  all_goals simp +contextual only [↓reduceDIte]
+  · exact fun x₀ hx₀ ↦ ha_cont.continuousWithinAt hx₀ |>.eventually <| hS₂ ⟨x₀, hx₀⟩
+  · exact fun x hx ↦ hf.mono <| hS₃ ⟨x, hx⟩
 
 /-- Suppose `a : X → Set A` is a continuous family of nonnegative elements.
 Suppose further that `s : X → Set ℝ≥0` is a family of compact sets such that `s x₀` contains the
