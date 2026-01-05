@@ -1188,7 +1188,7 @@ open Triangulated
 /-- Constructor for `HasInducedTStructure`. -/
 lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TStructure C}
     (h : ∀ (X : C) (_ : P X) (n : ℤ), P ((t.truncLE n).obj X) ∧
-      (P ((t.truncGE n).obj X))) :
+      P ((t.truncGE n).obj X)) :
     P.HasInducedTStructure t where
   exists_triangle_zero_one X hX :=
       ⟨_, _, inferInstance, inferInstance, _, _, _,
