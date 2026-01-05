@@ -21,7 +21,9 @@ This file defines finitely presented groups and proves their basic properties.
 finitely presented group, normal closure finitely generated,
 -/
 
-/-- The kernel of a composition with an isomorphism equals the preimage (map by symm) of the kernel. -/
+/-- The kernel of a composition with an isomorphism equals the preimage (map by symm) of the
+kernel. -/
+@[simp]
 lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
     (f : H →* K) (e : G ≃* H) : (f.comp e.toMonoidHom).ker = (Subgroup.map (↑e.symm) f.ker) := by
   rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm']
@@ -60,15 +62,13 @@ class IsFinitelyPresented (G : Type*) [Group G] : Prop where
     · -- mpr
       sorry -/
 
-lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
+/- lemma isFinitelyPresented_iff_fintype_old {G : Type*} [Group G] :
   IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Fintype α) (f : FreeGroup α →* G),
-  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f) := by
+  Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
     constructor
-    · -- mp
-      intro ⟨n, f, hfsurj, hkernel⟩
+    · intro ⟨n, f, hfsurj, hkernel⟩
       use Fin n, inferInstance, f
-    · -- mpr
-      intro ⟨α, instα, f, hfsurj, hfkernel⟩
+    · intro ⟨α, instα, f, hfsurj, hfkernel⟩
       let n := Fintype.card α
       let e := Fintype.equivFin α
       let iso : FreeGroup (Fin n) ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
@@ -78,14 +78,25 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       constructor
       · exact hf'surj
       · unfold f'
-        -- rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm']
-        rw [MonoidHom.ker_comp_mulEquiv _ _]
-        exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel
+        simp only [MonoidHom.ker_comp_mulEquiv]
+        exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel -/
+
+lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
+    IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Fintype α) (f : FreeGroup α →* G),
+    Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
+  constructor
+  · intro ⟨n, f, hfsurj, hkernel⟩
+    exact ⟨Fin n, inferInstance, f, hfsurj, hkernel⟩
+  · intro ⟨α, instα, f, hfsurj, hfkernel⟩
+    let iso := FreeGroup.freeGroupCongr (Fintype.equivFin α).symm
+    refine ⟨Fintype.card α, f.comp iso.toMonoidHom, hfsurj.comp iso.surjective, ?_⟩
+    simp only [MonoidHom.ker_comp_mulEquiv] -- this could further be factored as a lemma I feel.
+    exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel
 
 variable (G : Type) [Group G] (g : G)
 
 /- instance [h : IsFinitelyPresented G] : Group.FG G := by
-  rw [isFinitelyPresented_iff'] at h
+  rw [isFinitelyPresented_iff_fintype] at h
   rw [Group.fg_iff_exists_freeGroup_hom_surjective]
   obtain ⟨S, f, hfsurj, hkernel⟩ := h
   use S
