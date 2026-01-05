@@ -362,15 +362,13 @@ instance [CharZero R] : FaithfulSMul ℕ R := by
 instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
   simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℤ R).injective_int
 
-end FaithfulSMul
-
-lemma NoZeroDivisors.of_faithfulSMul (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-    [FaithfulSMul R A] [NoZeroDivisors A] : NoZeroDivisors R :=
+lemma NoZeroDivisors.of_faithfulSMul [NoZeroDivisors A] : NoZeroDivisors R :=
   (FaithfulSMul.algebraMap_injective R A).noZeroDivisors _ (by simp) (by simp)
 
-lemma IsDomain.of_faithfulSMul (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-    [FaithfulSMul R A] [IsDomain A] : IsDomain R :=
+lemma IsDomain.of_faithfulSMul [IsDomain A] : IsDomain R :=
   (FaithfulSMul.algebraMap_injective R A).isDomain
+
+end FaithfulSMul
 
 namespace NoZeroSMulDivisors
 
