@@ -397,6 +397,8 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable (K : ClosedSubmodule 𝕜 E)
 
+#check innerSL
+
 /-- The closed subspace of vectors orthogonal to a given subspace, denoted `Kᗮ`. -/
 def orthogonal : ClosedSubmodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
@@ -404,18 +406,21 @@ def orthogonal : ClosedSubmodule 𝕜 E where
   add_mem' hx hy u hu := by rw [inner_add_right, hx u hu, hy u hu, add_zero]
   smul_mem' c x hx u hu := by rw [inner_smul_right, hx u hu, mul_zero]
   isClosed' := by
-    suffices h : { v | ∀ u ∈ K, ⟪u, v⟫ = 0 } = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) by
+    suffices h :
+        { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
+        = (⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap).carrier by
       rw [h]
-      simp only [Submodule.iInf_coe]
+      simp only [Submodule.carrier_eq_coe, Submodule.coe_iInf]
       convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
     apply le_antisymm
-    · simp only [Submodule.iInf_coe, Set.le_eq_subset, Set.subset_iInter_iff, Subtype.forall]
+    · simp only [Submodule.carrier_eq_coe, Submodule.coe_iInf, Set.le_eq_subset,
+      Set.subset_iInter_iff, Subtype.forall]
       intro v hv w hw
       simpa using hw _ hv
     · intro v hv w hw
-      simp only [Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, LinearMap.mem_ker,
-        innerSL_apply, Subtype.forall] at hv
-      exact hv w hw
+      simp only [Submodule.carrier_eq_coe, Submodule.coe_iInf, Set.mem_iInter, SetLike.mem_coe,
+        LinearMap.mem_ker, ContinuousLinearMap.coe_coe, coe_innerSL_apply, Subtype.forall] at hv
+      exact Submodule.inner_right_of_mem_orthogonal hw hv
 
 @[inherit_doc]
 notation:1200 K "ᗮ" => orthogonal K
@@ -481,7 +486,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 
 /-- `Kᗮ` can be characterized as the intersection of the kernels of the operations of
 inner product with each of the elements of `K`. -/
-theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) := by
+theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
   apply le_antisymm
   · rw [le_iInf_iff]
     rintro ⟨v, hv⟩ w hw

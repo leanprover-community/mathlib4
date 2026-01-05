@@ -220,7 +220,7 @@ variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 @[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
   ext x
-  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
+  simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
