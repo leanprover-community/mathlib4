@@ -114,9 +114,6 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, sum_apply, mul_apply]
 
-@[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_mem_jacobson_matricesOver := single_mem_jacobson_matrix
-
 @[deprecated (since := "2025-07-28")] alias single_mem_jacobson_matricesOver :=
 single_mem_jacobson_matrix
 
@@ -168,8 +165,6 @@ theorem matrix_apply_single [DecidableEq n] {c : RingCon R} {i j : n} {x y : R} 
   obtain hj | rfl := ne_or_eq j j'
   · simpa [hj] using c.refl _
   simpa using h
-
-@[deprecated (since := "2025-05-05")] alias matrix_apply_stdBasisMatrix := matrix_apply_single
 
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
   fun _ _ hc _ _ h _ _ ↦ hc (h _ _)
@@ -383,6 +378,7 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
+set_option backward.privateInPublic true in
 private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
   -- Proof generalized from example 8 in
@@ -398,6 +394,8 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   use N p p
   simpa [mul_apply, single, ite_and] using NxMI p p
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-07-28")] alias jacobson_matricesOver_le := jacobson_matrix_le
 
 /-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/

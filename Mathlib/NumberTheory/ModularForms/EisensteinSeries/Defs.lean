@@ -71,7 +71,7 @@ def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a ≃ gammaSet 1
 abbrev finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
 
 lemma finGcdMap_div {r : ℕ} [NeZero r] (v : Fin 2 → ℤ) (hv : finGcdMap v = r) :
-    IsCoprime ((v / r) 0 ) ((v / r) 1) := by
+    IsCoprime ((v / r) 0) ((v / r) 1) := by
   rw [← hv]
   apply isCoprime_div_gcd_div_gcd_of_gcd_ne_zero
   have := NeZero.ne r

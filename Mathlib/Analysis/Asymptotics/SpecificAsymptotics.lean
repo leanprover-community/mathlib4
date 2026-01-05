@@ -16,7 +16,7 @@ theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
 `Mathlib/Analysis/Asymptotics/Lemmas.lean`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics

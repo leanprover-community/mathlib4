@@ -53,7 +53,7 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -63,7 +63,7 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
 
 /-- An additive functor which preserves homology preserves finite limits. -/
@@ -90,7 +90,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
+variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--

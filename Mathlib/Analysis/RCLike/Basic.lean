@@ -145,9 +145,6 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
 theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
 
-@[deprecated (since := "2025-05-29")]
-alias zero_re' := zero_re
-
 @[rclike_simps]
 theorem zero_im : im (0 : K) = (0 : ℝ) :=
   map_zero im
@@ -968,6 +965,10 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
     · exact ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp h.symm).ge
 
 scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
+
+lemma instMulPosReflectLE : MulPosReflectLE K := PosMulReflectLE.toMulPosReflectLE
+
+scoped[ComplexOrder] attribute [instance] RCLike.instMulPosReflectLE
 
 end Order
 

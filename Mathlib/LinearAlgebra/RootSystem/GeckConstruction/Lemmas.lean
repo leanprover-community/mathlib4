@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 # Supporting lemmas for Geck's construction of a Lie algebra associated to a root system
 -/
 
-@[expose] public section
+public section
 
 open Set
 open FaithfulSMul (algebraMap_injective)
@@ -138,20 +138,20 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
     exact Submodule.subset_span (mem_range_self k)
   let s : Set ℤ := {-3, -1, 0, 1, 3}
   let A : ℤ := P.pairingIn ℤ j i
-  have hki  : P.root k ≠  P.root i := fun contra ↦ by
+  have hki : P.root k ≠ P.root i := fun contra ↦ by
     replace h₁ : 2 • P.root i = P.root l := by rwa [contra, ← two_nsmul] at h₁
     exact P.nsmul_notMem_range_root ⟨_, h₁.symm⟩
   have hki' : P.root k ≠ -P.root i := fun contra ↦ by
     replace h₁ : P.root l = 0 := by rwa [contra, neg_add_cancel, eq_comm] at h₁
     exact P.ne_zero _ h₁
-  have hli  : P.root l ≠  P.root i := fun contra ↦ by
+  have hli : P.root l ≠ P.root i := fun contra ↦ by
     replace h₁ : P.root k = 0 := by rwa [contra, add_eq_right] at h₁
     exact P.ne_zero _ h₁
   have hli' : P.root l ≠ -P.root i := fun contra ↦ by
     replace h₁ : P.root k = 2 • P.root l := by
       rwa [← neg_eq_iff_eq_neg.mpr contra, ← sub_eq_add_neg, sub_eq_iff_eq_add, ← two_nsmul] at h₁
     exact P.nsmul_notMem_range_root ⟨_, h₁⟩
-  have hmi  : P.root m ≠  P.root i := fun contra ↦ by
+  have hmi : P.root m ≠ P.root i := fun contra ↦ by
     replace h₂ : P.root k = P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
     replace h₃ : P.root n = 2 • P.root i := by rw [h₃, h₂]; abel
     exact P.nsmul_notMem_range_root ⟨_, h₃⟩
@@ -159,7 +159,7 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
     replace h₂ : P.root k = -P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
     replace h₃ : P.root n = 0 := by rw [h₃, h₂]; abel
     exact P.ne_zero _ h₃
-  have hni  : P.root n ≠  P.root i := fun contra ↦ by
+  have hni : P.root n ≠ P.root i := fun contra ↦ by
     replace h₃ : P.root k = P.root j := by
       rwa [contra, add_comm, add_sub_assoc, left_eq_add, sub_eq_zero] at h₃
     replace h₂ : P.root m = 0 := by rw [← h₂, h₃, sub_self]
@@ -196,7 +196,7 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
     (b.root_ne_neg_of_ne hj hi hij.symm)
   subst s
   simp only [mem_insert_iff, mem_singleton_iff] at h₀ h₁ h₂ h₃ hA
-  rcases hA with hA | hA | hA | hA | hA <;> rw [hA] at h₀ h₁ h₂ h₃ <;> omega
+  rcases hA with hA | hA | hA | hA | hA <;> rw [hA] at h₀ h₁ h₂ h₃ <;> lia
 
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
@@ -243,7 +243,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
       simp
     have hn₂ : P.pairingIn ℤ n k ≤ 0 := by
       by_contra! contra; exact hnk_notMem <| P.root_sub_root_mem_of_pairingIn_pos contra hnk_ne
-    omega
+    lia
   have key₄ : P.pairingIn ℤ l j = 1 := by
     have hij : P.pairing i j = 0 := by
       rw [pairing_eq_zero_iff, ← P.algebraMap_pairingIn ℤ, aux₁, map_zero]
@@ -254,7 +254,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
     apply algebraMap_injective ℤ R
     rw [algebraMap_pairingIn, ← root_coroot_eq_pairing, ← h₁]
     simp [hkj, hij]
-  replace key₄ : P.pairingIn ℤ j l ≠ 0 := by rw [ne_eq, P.pairingIn_eq_zero_iff]; omega
+  replace key₄ : P.pairingIn ℤ j l ≠ 0 := by rw [ne_eq, P.pairingIn_eq_zero_iff]; lia
   /- Calculate the value of each of the four terms in the goal. -/
   have hik_mem : P.root i + P.root k ∈ range P.root := ⟨l, by rw [← h₁, add_comm]⟩
   simp only [P.chainBotCoeff_if_one_zero, hik_mem, him_mem, hjl_mem, hjk_mem]

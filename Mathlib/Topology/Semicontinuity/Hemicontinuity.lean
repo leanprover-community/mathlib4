@@ -112,6 +112,11 @@ lemma upperHemicontinuous_iff_isClosed_compl_preimage_Iic_compl :
     simp [← isOpen_compl_iff]
   exact upperHemicontinuous_iff_isOpen_preimage_Iic
 
+lemma isClosedMap_iff_upperHemicontinuous {f : α → β} :
+    IsClosedMap f ↔ UpperHemicontinuous (f ⁻¹' {·}) := by
+  rw [isClosedMap_iff_kernImage, upperHemicontinuous_iff_isOpen_preimage_Iic]
+  aesop
+
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *lower inverse*
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
 sends open sets to open sets. -/
@@ -132,6 +137,11 @@ lemma lowerHemicontinuous_iff_isClosed_preimage_Iic :
     rw [compl_surjective.forall]
     simp [← isOpen_compl_iff]
   exact lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl
+
+lemma isOpenMap_iff_lowerHemicontinuous {f : α → β} :
+    IsOpenMap f ↔ LowerHemicontinuous (f ⁻¹' {·}) := by
+  rw [isOpenMap_iff_kernImage, lowerHemicontinuous_iff_isClosed_preimage_Iic]
+  aesop
 
 /-! ### Singleton maps -/
 

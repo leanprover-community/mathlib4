@@ -143,7 +143,7 @@ theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootS
     Finset.card_insert_of_notMem (mt Finset.mem_singleton.mp hxy)]
 
 theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a b).rootSet ℂ) = 5 :=
-  (card_rootSet_eq_natDegree h (IsAlgClosed.splits_codomain _)).trans (natDegree_Phi a b)
+  (card_rootSet_eq_natDegree h (IsAlgClosed.splits _)).trans (natDegree_Phi a b)
 
 theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
     Bijective (galActionHom (Φ ℚ a b) ℂ) := by

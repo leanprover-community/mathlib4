@@ -205,6 +205,13 @@ variable [Preorder β] {f g : α → β} {x : α} {s t : Set α} {y z : β}
 
 section Definitions
 
+/- In https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Semicontinuity.20definition.20for.20non-linear.20orders/with/436241797
+it was suggested to redefine `LowerSemicontinuous` in a way that works better for partial orders.
+The following example shows that this redefinition can still take place even in light of the
+refactor in terms of `Semicontinuous`. -/
+example : Semicontinuous (¬ f · ≤ ·) ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
+  simp_rw [Semicontinuous, SemicontinuousAt, ← not_frequently, not_imp_not]
+
 /-- A real function `f` is lower semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
 `x'` close enough to `x` in `s`, then `f x'` is at least `f x - ε`. We formulate this in a general
 preordered space, using an arbitrary `y < f x` instead of `f x - ε`. -/
@@ -766,9 +773,7 @@ end
 ### Upper hemicontinuous functions
 -/
 
-
 /-! #### Basic dot notation interface for upper hemicontinuity -/
-
 
 theorem UpperHemicontinuousWithinAt.mono (h : UpperHemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     UpperHemicontinuousWithinAt f t x :=
@@ -816,14 +821,6 @@ theorem UpperHemicontinuous.upperHemicontinuousWithinAt (h : UpperHemicontinuous
 theorem UpperHemicontinuous.upperHemicontinuousOn (h : UpperHemicontinuous f) (s : Set α) :
     UpperHemicontinuousOn f s :=
   h.semicontinuousOn s
-
-lemma forall_isClosed_iff {p : Set α → Prop} :
-    (∀ t, IsClosed t → p t) ↔ (∀ t, p (closure t)) :=
-  ⟨fun h t ↦ h (closure t) isClosed_closure, fun h t ht ↦ ht.closure_eq ▸ h t⟩
-
-lemma forall_isOpen_iff {p : Set α → Prop} :
-    (∀ t, IsOpen t → p t) ↔ (∀ t, p (interior t)) :=
-  ⟨fun h t ↦ h (interior t) isOpen_interior, fun h t ht ↦ ht.interior_eq ▸ h t⟩
 
 lemma upperHemicontinuousWithinAt_iff_frequently :
     UpperHemicontinuousWithinAt f s x ↔

@@ -272,7 +272,7 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
 /-- An enumeration of elements in `invSet` by a type in the same universe. -/
-private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
+private def List.toNimber {a : Nimber} : List a.toOrdinal.ToType → Nimber
   | [] => 0
   | x :: l =>
     let a' := ∗(x)
@@ -303,8 +303,6 @@ theorem mem_invSet_of_lt_invAux (h : b < invAux a) : b ∈ invSet a := by
 theorem invAux_notMem_invSet (a : Nimber) : invAux a ∉ invSet a := by
   rw [invAux]
   exact csInf_mem (invSet_nonempty a)
-
-@[deprecated (since := "2025-05-23")] alias invAux_not_mem_invSet := invAux_notMem_invSet
 
 theorem invAux_mem_invSet_of_lt (ha : a ≠ 0) (hb : a < b) : invAux a ∈ invSet b := by
   have H := cons_mem_invSet ha hb (zero_mem_invSet b)

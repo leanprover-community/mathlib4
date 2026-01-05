@@ -23,7 +23,7 @@ rely on an isometric continuous functional calculus.
 continuous functional calculus, rpow, sqrt
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

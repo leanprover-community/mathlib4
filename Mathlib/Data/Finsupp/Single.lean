@@ -360,8 +360,6 @@ theorem erase_single_ne {a a' : α} {b : M} (h : a ≠ a') : erase a (single a' 
 theorem erase_of_notMem_support {f : α →₀ M} {a} (haf : a ∉ f.support) : erase a f = f := by
   classical grind
 
-@[deprecated (since := "2025-05-23")] alias erase_of_not_mem_support := erase_of_notMem_support
-
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
   simp
 
@@ -413,12 +411,8 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     use c
     constructor
     · ext d
-      rw [← embDomain_apply f l, h]
-      by_cases h_cases : c = d
-      · simp only [Eq.symm h_cases, hc₂, single_eq_same]
-      · rw [single_apply, single_apply, if_neg, if_neg h_cases]
-        by_contra hfd
-        exact h_cases (f.injective (hc₂.trans hfd))
+      rw [← embDomain_apply_self f l, h]
+      grind
     · exact hc₂
 
 @[simp]

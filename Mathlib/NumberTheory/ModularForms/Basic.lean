@@ -153,6 +153,10 @@ instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k
   holo := CuspForm.holo'
   zero_at_cusps := CuspForm.zero_at_cusps'
 
+initialize_simps_projections ModularForm (toFun → coe, as_prefix coe)
+
+initialize_simps_projections CuspForm (toFun → coe, as_prefix coe)
+
 variable {F Γ k}
 
 theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ → ℂ) :=
@@ -226,6 +230,10 @@ theorem coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
 @[simp]
 theorem zero_apply (z : ℍ) : (0 : ModularForm Γ k) z = 0 :=
   rfl
+
+@[simp] lemma coe_eq_zero_iff (f : ModularForm Γ k) :
+    (f : ℍ → ℂ) = 0 ↔ f = 0 := by
+  rw [← coe_zero, DFunLike.coe_fn_eq]
 
 section
 -- scalar multiplication by real types (no assumption on `Γ`)
@@ -323,6 +331,7 @@ instance : Inhabited (ModularForm Γ k) :=
 
 /-- The modular form of weight `k_1 + k_2` given by the product of two modular forms of weights
 `k_1` and `k_2`. -/
+@[simps! -fullyApplied coe]
 def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : ModularForm Γ k_2) :
     ModularForm Γ (k_1 + k_2) where
   toSlashInvariantForm := f.1.mul g.1
@@ -330,27 +339,28 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
   bdd_at_cusps' hc γ hγ := by
     simpa [mul_slash] using ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
 
-@[simp]
-theorem mul_coe [Γ.HasDetPlusMinusOne] {k_1 k_2 : ℤ} (f : ModularForm Γ k_1)
-    (g : ModularForm Γ k_2) : (f.mul g : ℍ → ℂ) = f * g :=
-  rfl
+@[deprecated (since := "2025-12-06")] alias mul_coe := coe_mul
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
-def const (x : ℂ) [Γ.HasDetOne] : ModularForm Γ 0 where
+@[simps! -fullyApplied] def const (x : ℂ) [Γ.HasDetOne] : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
   holo' _ := mdifferentiableAt_const
-  bdd_at_cusps' hc g hg := by simpa only [const_toFun, slash_def, SlashInvariantForm.toFun_eq_coe,
+  bdd_at_cusps' hc g hg := by simpa only [coe_const, slash_def, SlashInvariantForm.toFun_eq_coe,
       Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
+
+@[deprecated (since := "2025-12-06")] alias const_toFun := coe_const
 
 @[simp]
 lemma const_apply [Γ.HasDetOne] (x : ℂ) (τ : ℍ) : (const x : ModularForm Γ 0) τ = x := rfl
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
-def constℝ (x : ℝ) [Γ.HasDetPlusMinusOne] : ModularForm Γ 0 where
+@[simps! -fullyApplied coe] def constℝ (x : ℝ) [Γ.HasDetPlusMinusOne] : ModularForm Γ 0 where
   toSlashInvariantForm := .constℝ x
   holo' _ := mdifferentiableAt_const
-  bdd_at_cusps' hc g hg := by simpa only [constℝ_toFun, slash_def, SlashInvariantForm.toFun_eq_coe,
+  bdd_at_cusps' hc g hg := by simpa only [coe_constℝ, slash_def, SlashInvariantForm.toFun_eq_coe,
       Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
+
+@[deprecated (since := "2025-12-06")] alias constℝ_toFun := coe_constℝ
 
 @[simp]
 lemma constℝ_apply [Γ.HasDetPlusMinusOne] (x : ℝ) (τ : ℍ) :

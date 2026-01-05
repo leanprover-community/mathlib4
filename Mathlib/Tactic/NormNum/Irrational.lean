@@ -177,7 +177,7 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     by_contra! h
     simp only [nonpos_iff_eq_zero] at h
     simp only [h, pow_zero, Nat.lt_one_iff] at hn1 hn2
-    omega
+    lia
   rcases hx_isNNRat with ⟨hx_inv, hx_eq⟩
   rcases hy_isNNRat with ⟨hy_inv, hy_eq⟩
   rw [hy_eq, hx_eq]

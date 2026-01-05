@@ -11,7 +11,7 @@ public import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
-# Lower and Upper Semicontinuity maps
+# Lower and Upper Semicontinuity
 
 This file develops key properties of upper and lower semicontinuous functions.
 
@@ -53,12 +53,12 @@ ones for lower semicontinuous functions using `OrderDual`.
 * <https://en.wikipedia.org/wiki/Semi-continuity>
 
 
-+ lower and upper semicontuity correspond to `r := (f · > ·)` and `r := (f · < ·)`;
++ lower and upper semicontinuity correspond to `r := (f · > ·)` and `r := (f · < ·)`;
 + lower and upper hemicontinuity correspond to `r := (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)`
   and `r := (fun x s ↦ s ∈ 𝓝ˢ (f x))`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open Topology ENNReal
 
@@ -86,8 +86,8 @@ theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
     apply iInf_neBot_of_directed _ _
     · change Directed GE.ge (fun x ↦ (φ ∘ (fun (a : s) ↦ f ↑a)) x)
       exact Directed.mono_comp GE.ge (fun x y hxy ↦
-        principal_mono.mpr (inter_subset_inter_right _ (preimage_mono <| Iic_subset_Iic.mpr hxy))
-        ) (IsTotal.directed _)
+        principal_mono.mpr (inter_subset_inter_right _ (preimage_mono <| Iic_subset_Iic.mpr hxy)))
+        (IsTotal.directed _)
     · intro x
       have : (pure x : Filter α) ≤ φ (f x) := le_principal_iff.mpr ⟨x.2, le_refl (f x)⟩
       exact neBot_of_le this
@@ -266,7 +266,34 @@ end
 
 section
 
-variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [ClosedIciTopology γ]
+variable {γ : Type*} [LinearOrder γ]
+
+/-- The sublevel sets of a lower semicontinuous function on a compact set are compact. -/
+theorem LowerSemicontinuousOn.isCompact_inter_preimage_Iic {f : α → γ}
+    (hfs : LowerSemicontinuousOn f s) (ks : IsCompact s) (c : γ) :
+    IsCompact (s ∩ f ⁻¹' Iic c) := by
+  rw [lowerSemicontinuousOn_iff_preimage_Iic] at hfs
+  obtain ⟨v, hv, hv'⟩ := hfs c
+  exact hv' ▸ ks.inter_right hv
+
+open scoped Set.Notation in
+/-- An intersection of sublevel sets of a lower semicontinuous function
+on a compact set is empty if and only if a finite sub-intersection is already empty. -/
+theorem LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset
+    {ι : Type*} {f : ι → α → γ}
+    (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, LowerSemicontinuousOn (f i) s) :
+    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Iic c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, c < f i x := by
+  refine ⟨fun H ↦ ?_, fun ⟨u, hu⟩ ↦ ?_⟩
+  · suffices ∀ i ∈ I, IsClosed (s ↓∩ (fun i ↦ f i ⁻¹' Iic c) i) by
+      simpa [Set.eq_empty_iff_forall_notMem] using
+        ks.elim_finite_subfamily_isClosed_subtype _ this H
+    exact fun i hi ↦ lowerSemicontinuous_restrict_iff.mpr (hfi i hi) |>.isClosed_preimage c
+  · rw [Set.eq_empty_iff_forall_notMem]
+    simp only [mem_inter_iff, mem_iInter, mem_preimage, mem_Iic, not_and, not_forall,
+      exists_prop, not_le]
+    grind
+
+variable [TopologicalSpace γ] [ClosedIciTopology γ]
 
 theorem lowerSemicontinuousOn_iff_isClosed_epigraph {f : α → γ} {s : Set α} (hs : IsClosed s) :
     LowerSemicontinuousOn f s ↔ IsClosed {p : α × γ | p.1 ∈ s ∧ f p.1 ≤ p.2} := by
@@ -813,7 +840,24 @@ end
 
 section
 
-variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [ClosedIicTopology γ]
+variable {γ : Type*} [LinearOrder γ]
+
+/-- The overlevel sets of an upper semicontinuous function on a compact set are compact. -/
+theorem UpperSemicontinuousOn.isCompact_inter_preimage_Ici {f : α → γ}
+    (hfs : UpperSemicontinuousOn f s) (ks : IsCompact s) (c : γ) :
+    IsCompact (s ∩ f ⁻¹' Ici c) :=
+  LowerSemicontinuousOn.isCompact_inter_preimage_Iic (γ := γᵒᵈ) hfs ks c
+
+open scoped Set.Notation in
+/-- An intersection of overlevel sets of a lower semicontinuous function
+on a compact set is empty if and only if a finite sub-intersection is already empty. -/
+theorem UpperSemicontinuousOn.inter_biInter_preimage_Ici_eq_empty_iff_exists_finset
+    {ι : Type*} {f : ι → α → γ}
+    (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, UpperSemicontinuousOn (f i) s) :
+    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Ici c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, f i x < c :=
+  LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset ks hfi (γ := γᵒᵈ)
+
+variable [TopologicalSpace γ] [ClosedIicTopology γ]
 
 theorem upperSemicontinuousOn_iff_isClosed_hypograph {f : α → γ} (hs : IsClosed s) :
     UpperSemicontinuousOn f s ↔ IsClosed {p : α × γ | p.1 ∈ s ∧ p.2 ≤ f p.1} :=
