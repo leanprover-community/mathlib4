@@ -33,7 +33,7 @@ variable {R S : Type*}
 /-- A nonzero element in a domain integral over a field is a unit. -/
 theorem IsIntegral.isUnit [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
     (int : IsIntegral R x) (h0 : x ≠ 0) : IsUnit x :=
-  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+  have : FiniteDimensional R (adjoin R {x}) := Module.Finite.iff_fg.2 int.fg_adjoin_singleton
   (FiniteDimensional.isUnit R (K := adjoin R {x})
     (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
 
@@ -52,7 +52,7 @@ variable [Field R] [DivisionRing S] [Algebra R S] {x : S} {A : Subalgebra R S}
 theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {x} := by
   obtain rfl | h0 := eq_or_ne x 0
   · rw [inv_zero]; exact Subalgebra.zero_mem _
-  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+  have : FiniteDimensional R (adjoin R {x}) := Module.Finite.iff_fg.2 int.fg_adjoin_singleton
   obtain ⟨⟨y, hy⟩, h1⟩ := FiniteDimensional.exists_mul_eq_one R
     (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
   rwa [← mul_left_cancel₀ h0 ((Subtype.ext_iff.mp h1).trans (mul_inv_cancel₀ h0).symm)]
