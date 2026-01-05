@@ -469,7 +469,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ⟨r • (x : v.adicCompletion K), by
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      rw [algebraMap_adicCompletion]
+      rw [Valuation.Completion.coe_algebraMap]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=
@@ -478,7 +478,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     map_mul' x y := by
       ext
       simp only [map_mul, UniformSpace.Completion.coe_mul, MulMemClass.mk_mul_mk]
-    map_zero' := by ext; simp
+    map_zero' := by ext; simp; rfl
     map_add' x y := by
       ext
       simp only [map_add, UniformSpace.Completion.coe_add, AddMemClass.mk_add_mk] }
@@ -541,7 +541,7 @@ instance adicCompletion.instIsScalarTower' :
 variable {R} in
 open scoped algebraMap in
 theorem adicCompletionIntegers.exists_uniformizer :
-    ∃ π : v.adicCompletionIntegers K, Valued.v π.1 = Multiplicative.ofAdd (- 1 : ℤ) := by
+    ∃ π : v.adicCompletionIntegers K, Valued.v π.1 = exp (- 1 : ℤ) := by
   obtain ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
   use π
   rw [← hπ, ← ValuationSubring.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
@@ -564,11 +564,11 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     -- let ϖ be a uniformiser
     obtain ⟨ϖ, hϖ⟩ := intValuation_exists_uniformizer v
     have : Valued.v (algebraMap R (v.adicCompletion K) ϖ) = (exp (1 : ℤ))⁻¹ := by
-      simp [valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, exp]
+      simp [Valuation.Completion.valued_eq_valuation, valuation_of_algebraMap, hϖ, exp]
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp [exp_ne_zero.symm] at hϖ
     refine ⟨ϖ^(log (Valued.v a)).natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
     -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
-    simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
+    simp only [map_pow, mem_integers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
       Int.natCast_natAbs]
     exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) (zero_le _)
 
