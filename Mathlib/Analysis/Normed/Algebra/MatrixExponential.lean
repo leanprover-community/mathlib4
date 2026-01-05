@@ -61,7 +61,7 @@ results for general rings are instead stated about `Ring.inverse`:
 * https://en.wikipedia.org/wiki/Matrix_exponential
 -/
 
-@[expose] public section
+public section
 
 open scoped Matrix
 

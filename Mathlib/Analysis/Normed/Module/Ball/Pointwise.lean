@@ -16,7 +16,7 @@ Notably, we express arbitrary balls as rescaling of other balls, and we show tha
 multiplication of bounded sets remain bounded.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric Set

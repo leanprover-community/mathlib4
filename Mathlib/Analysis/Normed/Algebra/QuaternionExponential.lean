@@ -24,7 +24,7 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Quaternion Nat
 

@@ -15,7 +15,7 @@ This file collects some specific results about convexity over the ring `ℝ≥0`
 Expand as needed.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped NNReal
