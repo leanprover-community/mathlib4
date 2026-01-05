@@ -112,9 +112,7 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
   toFun x := ∑ i : ι, x.1 i
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
-  invFun x := ⟨Pi.single i x, Function.const ι x, by
-    ext j
-    simp [-Module.smul_apply]⟩
+  invFun x := ⟨Pi.single i x, Function.const ι x, by simp⟩
   left_inv := fun ⟨x, hx⟩ ↦ by
     obtain ⟨y, hy⟩ := mem_toModuleCatObj i|>.1 hx
     ext j
