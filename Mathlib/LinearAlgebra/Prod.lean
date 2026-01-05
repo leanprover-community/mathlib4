@@ -537,6 +537,35 @@ theorem range_fst : range (fst R M M₂) = ⊤ := by rw [range_eq_map, ← prod_
 @[simp]
 theorem range_snd : range (snd R M M₂) = ⊤ := by rw [range_eq_map, ← prod_top, prod_map_snd]
 
+theorem disjoint_prod_right {N : Type*} [AddCommGroup N] [Module R N]
+    {p : Submodule R (M × N)} {q : Submodule R M} {r : Submodule R N}
+    (hq : Disjoint (p.map (.fst R M N)) q)
+    (hr : Disjoint (p.comap (.inr R M N)) r) :
+    Disjoint p (q.prod r) := by
+  simp only [disjoint_def, mem_map, mem_comap, mem_prod, LinearMap.fst_apply,
+    LinearMap.inr_apply] at *
+  rintro ⟨a, b⟩ habp ⟨haq, hbr⟩
+  obtain rfl : a = 0 := hq a ⟨(a, b), habp, rfl⟩ haq
+  simp [hr b habp hbr]
+
+theorem codisjoint_prod_right {N : Type*} [AddCommGroup N] [Module R N]
+    {p : Submodule R (M × N)} {q : Submodule R M} {r : Submodule R N}
+    (hpq : Codisjoint (p.map (.fst R M N)) q) (hpr : Codisjoint (p.comap (.inr R M N)) r) :
+    Codisjoint p (q.prod r) := by
+  simp only [Submodule.codisjoint_iff_exists_add_eq, mem_map, mem_comap, mem_prod,
+    LinearMap.fst_apply, LinearMap.inr_apply] at *
+  rintro ⟨x, y⟩
+  rcases hpq x with ⟨_a, c, ⟨⟨a, b⟩, hab, rfl⟩, hcS, rfl⟩
+  rcases hpr (y - b) with ⟨d, e, hdp, heq, hde⟩
+  use (a, b) + (0, d), (c, e), add_mem hab hdp
+  simp [hcS, heq, add_assoc, hde]
+
+theorem isCompl_prod_right {N : Type*} [AddCommGroup N] [Module R N]
+    {p : Submodule R (M × N)} {q : Submodule R M} {r : Submodule R N}
+    (hpq : IsCompl (p.map (.fst R M N)) q) (hpr : IsCompl (p.comap (.inr R M N)) r) :
+    IsCompl p (q.prod r) :=
+  ⟨disjoint_prod_right hpq.1 hpr.1, codisjoint_prod_right hpq.2 hpr.2⟩
+
 variable (R M M₂)
 
 /-- `M` as a submodule of `M × N`. -/
