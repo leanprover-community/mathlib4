@@ -17,7 +17,7 @@ This file contains a number of further results on `iteratedDerivWithin` that nee
 than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 -/
 
-@[expose] public section
+public section
 
 section one_dimensional
 
@@ -96,8 +96,6 @@ variable (f) in
 theorem iteratedDerivWithin_fun_neg :
     iteratedDerivWithin n (fun z => -f z) s x = -iteratedDerivWithin n f s x :=
   iteratedDerivWithin_neg f
-
-@[deprecated (since := "2025-06-24")] alias iteratedDerivWithin_neg' := iteratedDerivWithin_fun_neg
 
 include h hx
 
