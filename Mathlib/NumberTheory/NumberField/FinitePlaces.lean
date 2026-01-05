@@ -344,7 +344,7 @@ theorem Ideal.IsDedekindDomain.emultiplicity_eq_zero_of_ne {R : Type*} [CommRing
     Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff h_bot, not_and]
   intro _ h_le
   exact h ((((Ideal.prime_iff_isPrime hb.ne_zero).1 hb.prime).isMaximal hb.ne_zero).eq_of_le
-    (by exact IsPrime.ne_top') h_le).symm
+    IsPrime.ne_top' h_le).symm
 
 namespace IsDedekindDomain
 
@@ -507,11 +507,11 @@ instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asI
    IsLocalHom (algebraMap (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)) :=
   Valuation.HasExtension.instIsLocalHomValuationSubring _ _
 
-noncomputable
-instance [IsFractionRing B L] [NoZeroSMulDivisors A B]
-    [w.asIdeal.LiesOver v.asIdeal] :
-    Algebra (v.adicCompletionIntegers K) (w.adicCompletion L) :=
-  Algebra.compHom _ (algebraMap _ (w.adicCompletionIntegers L))
+-- noncomputable
+-- instance [IsFractionRing B L] [NoZeroSMulDivisors A B]
+--     [w.asIdeal.LiesOver v.asIdeal] :
+--     Algebra (v.adicCompletionIntegers K) (w.adicCompletion L) :=
+--   Algebra.compHom _ (algebraMap _ (w.adicCompletionIntegers L))
 
 attribute [local instance 1001] Algebra.toSMul in
 noncomputable
@@ -524,10 +524,6 @@ noncomputable
 instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal] :
     IsScalarTower (v.adicCompletionIntegers K) (v.adicCompletion K) (w.adicCompletion L) :=
   Valuation.HasExtension.instIsScalarTower_valuationSubring _
-
-noncomputable instance {v : HeightOneSpectrum A}
-    [(Valued.v : Valuation (v.adicCompletion K) _).RankOne] :
-    NontriviallyNormedField (v.adicCompletion K) := Valued.toNontriviallyNormedField
 
 open NumberField.FinitePlace NumberField.RingOfIntegers
   NumberField.RingOfIntegers.HeightOneSpectrum
