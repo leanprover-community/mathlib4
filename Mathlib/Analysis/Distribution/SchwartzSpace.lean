@@ -70,7 +70,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G H V : Type*}
+variable {ι 𝕜 𝕜' D E F G H V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -754,6 +754,20 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
     smulLeftCLM F g₁ ∘L smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
+
+@[fun_prop]
+theorem HasTemperateGrowth.sum {g : ι → E → 𝕜} {s : Finset ι}
+    (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) : (∑ i ∈ s, g i ·).HasTemperateGrowth := by
+  sorry
+
+theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
+  ext f x
+  simp only [HasTemperateGrowth.sum hg, smulLeftCLM_apply_apply, ContinuousLinearMap.coe_sum',
+    Finset.sum_apply, sum_apply, Finset.sum_smul]
+  apply Finset.sum_congr (refl _)
+  intro i hi
+  simp [hg i hi]
 
 end smul
 

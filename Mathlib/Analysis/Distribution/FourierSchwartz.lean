@@ -191,6 +191,25 @@ theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕 f ξ * g ξ = ∫ x, f x * 𝓕 g x :=
   integral_bilin_fourier_eq f g (ContinuousLinearMap.mul ℂ ℂ)
 
+/-- The inverse Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕⁻ f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
+  convert (integral_bilin_fourier_eq (𝓕⁻ f) (𝓕⁻ g) M).symm
+  · exact (FourierTransform.fourier_fourierInv_eq g).symm
+  · exact (FourierTransform.fourier_fourierInv_eq f).symm
+
+/-- The inverse Fourier transform satisfies `∫ 𝓕 f • g = ∫ f • 𝓕 g`, i.e., it is self-adjoint. -/
+theorem integral_fourierInv_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
+    ∫ ξ, 𝓕⁻ f ξ • g ξ = ∫ x, f x • 𝓕⁻ g x :=
+  integral_bilin_fourierInv_eq f g (ContinuousLinearMap.lsmul ℂ ℂ)
+
+/-- The inverse Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint. -/
+theorem integral_fourierInv_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
+    ∫ ξ, 𝓕⁻ f ξ * g ξ = ∫ x, f x * 𝓕⁻ g x :=
+  integral_bilin_fourierInv_eq f g (ContinuousLinearMap.mul ℂ ℂ)
+
 theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
   simpa [fourierInv_coe] using VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
@@ -310,6 +329,12 @@ theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
       convert f.integrable_pow_mul volume 1
       simp
 
+theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
+    𝓕 (fderivCLM 𝕜 V E f) = fourierSMulRightCLM (-innerSL ℝ) (𝓕 f) := by
+  ext1 x
+  change 𝓕 (fderiv ℝ (f : V → E)) x = VectorFourier.fourierSMulRight (-innerSL ℝ) (𝓕 (f : V → E)) x
+  rw [Real.fourier_fderiv f.integrable f.differentiable (fderivCLM ℝ V E f).integrable]
+
 open LineDeriv
 
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
@@ -324,6 +349,34 @@ theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
     ext x
     have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
     simp [this, innerSL_apply_apply ℝ]
+
+theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
+    𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕 f) := calc
+  _ = 𝓕 (SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E f)) := rfl
+  _ = SchwartzMap.evalCLM ℝ V E m (𝓕 (fderivCLM ℝ V E f)) := by
+    rw [fourier_evalCLM_eq ℝ]
+  _ = SchwartzMap.evalCLM ℝ V E m (fourierSMulRightCLM (-innerSL ℝ) (𝓕 f)) := by
+    rw [fourier_fderivCLM_eq]
+  _ = _ := by
+    ext x
+    have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
+    simp [this, innerSL_apply_apply ℝ]
+
+variable [CompleteSpace E]
+
+theorem lineDerivOp_fourierInv_eq (f : 𝓢(V, E)) (m : V) :
+    ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := calc
+  _ = 𝓕⁻ (𝓕 (∂_{m} (𝓕⁻ f))) := by simp
+  _ = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕 (𝓕⁻ f))) := by
+    rw [fourier_lineDerivOp_eq]
+  _ = _ := by simp
+
+theorem fourierInv_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
+    𝓕⁻ (∂_{m} f) = -(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕⁻ f) := calc
+  _ = 𝓕⁻ (∂_{m} (𝓕 (𝓕⁻ f))) := by simp
+  _ = 𝓕⁻ (𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕⁻ f))) := by
+    rw [lineDerivOp_fourier_eq]
+  _ = _ := by simp
 
 end deriv
 

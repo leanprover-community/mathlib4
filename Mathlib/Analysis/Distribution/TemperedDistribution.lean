@@ -36,8 +36,6 @@ linear map.
 
 @[expose] public noncomputable section
 
-noncomputable section
-
 open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
@@ -343,6 +341,10 @@ def fourierTransformCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
 instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
   fourier := fourierTransformCLM E F
 
+instance instFourierModule : FourierModule ℂ 𝓢'(E, F) 𝓢'(E, F) where
+  fourier_add := (fourierTransformCLM E F).map_add
+  fourier_smul := (fourierTransformCLM E F).map_smul
+
 @[simp]
 theorem fourierTransformCLM_apply (f : 𝓢'(E, F)) :
   fourierTransformCLM E F f = 𝓕 f := rfl
@@ -357,6 +359,10 @@ def fourierTransformInvCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
 
 instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv := fourierTransformInvCLM E F
+
+instance instFourierInvModule : FourierInvModule ℂ 𝓢'(E, F) 𝓢'(E, F) where
+  fourierInv_add := (fourierTransformInvCLM E F).map_add
+  fourierInv_smul := (fourierTransformInvCLM E F).map_smul
 
 @[simp]
 theorem fourierTransformInvCLM_apply (f : 𝓢'(E, F)) :
@@ -390,41 +396,15 @@ theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
     rw [fourierTransform_toTemperedDistributionCLM_eq]
   _ = _ := fourierInv_fourier_eq _
 
+open LineDeriv Real
+
+theorem lineDerivOp_fourier_eq (f : 𝓢'(E, F)) (m : E) :
+    ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
+  ext1 u
+  simp
+  sorry
+
 end Fourier
 
-section FourierMultiplier
-
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-  [InnerProductSpace ℝ E] [NormedSpace ℂ F]
-  [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
-
-open FourierTransform
-
-variable (F) in
-def fourierMultiplierCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  fourierTransformInvCLM E F ∘L (smulLeftCLM F g) ∘L fourierTransformCLM E F
-
-theorem fourierMultiplierCLM_apply (g : E → ℂ) (f : 𝓢'(E, F)) :
-    fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
-  rfl
-
-@[simp]
-theorem fourierMultiplierCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) :
-    fourierMultiplierCLM F g f u = f (𝓕 (SchwartzMap.smulLeftCLM ℂ g (𝓕⁻ u))) := by
-  rfl
-
-@[simp]
-theorem fourierMultiplierCLM_const_apply (f : 𝓢'(E, F)) (c : ℂ) :
-    fourierMultiplierCLM F (fun _ ↦ c) f = c • f := by
-  ext
-  simp
-
-theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → ℂ}
-    (hg₁ : g₁.HasTemperateGrowth) (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
-    fourierMultiplierCLM F g₂ (fourierMultiplierCLM F g₁ f) =
-    fourierMultiplierCLM F (g₁ * g₂) f := by
-  simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
-
-end FourierMultiplier
 
 end TemperedDistribution

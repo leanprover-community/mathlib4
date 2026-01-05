@@ -37,10 +37,6 @@ theorem besselPotential_zero : besselPotential E F 0 = ContinuousLinearMap.id �
   ext f
   simp [besselPotential]
 
-@[fun_prop]
-theorem Complex.hasTemperateGrowth_ofReal : Function.HasTemperateGrowth Complex.ofReal :=
-  ContinuousLinearMap.hasTemperateGrowth (Complex.ofRealCLM)
-
 @[simp]
 theorem besselPotential_besselPotential_apply (s s' : ℝ) (f : 𝓢'(E, F)) :
     besselPotential E F s' (besselPotential E F s f) = besselPotential E F (s + s') f := by
@@ -269,15 +265,7 @@ theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁
   rw [mul_comm]
   congr
 
--- lineDeriv v = fourierMultiplierCLM F (fun x ↦ 2 π I * ⟪x, v⟫)
-
-
 /- What needs to be done for the Laplacian:
-* Characterization of Laplacian on 𝓢 and 𝓢' via FT
-  use
-  -- Real.iteratedFDeriv_fourier
-  -- InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis
-  -- OrthonormalBasis.sum_sq_inner_right
 * ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1) is bounded
   => Δ maps H^(s+2) to H^s
 -/
