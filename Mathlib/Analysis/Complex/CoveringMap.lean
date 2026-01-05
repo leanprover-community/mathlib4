@@ -12,6 +12,8 @@ public import Mathlib.Topology.Covering.AddCircle
 
 /-!
 # Covering maps involving the complex plane
+
+In this file, we show that `Complex.exp` is a covering map on `{0}ᶜ`.
 -/
 
 @[expose] public section
