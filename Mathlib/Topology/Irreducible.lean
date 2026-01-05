@@ -407,7 +407,7 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
 end
 
 lemma IsDiscrete.subsingleton_of_isPreirreducible
-    {X : Type*} [TopologicalSpace X] {s : Set X}
+    {s : Set X}
     (hs : IsDiscrete s) (hs' : IsPreirreducible s) : s.Subsingleton := by
   intro x hxs y hys
   obtain ⟨U, hU, hUx⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs x hxs
