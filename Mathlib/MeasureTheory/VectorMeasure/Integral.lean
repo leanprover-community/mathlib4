@@ -188,10 +188,11 @@ section ScalarSMul
 
 /-- The embedding of `ℝ` to the multiple of the identity map as an `F`-valued pairing of
 `ℝ` and `F`. -/
-def scalarSMulCLM (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F] : ℝ →L[ℝ] F →L[ℝ] F where
-  toFun c := c • (id ℝ F)
-  map_add' _ _ := Module.add_smul _ _ (id ℝ F)
-  map_smul' _ _ := IsScalarTower.smul_assoc _ _ (id ℝ F)
+noncomputable def scalarSMulCLM (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F] :
+    ℝ →L[ℝ] F →L[ℝ] F where
+  toFun c := lsmul ℝ ℝ c
+  map_add' _ _ := ContinuousLinearMap.map_add _ _ _
+  map_smul' _ _ := map_smul_of_tower (lsmul ℝ ℝ) _ _
 
 end ScalarSMul
 
@@ -204,7 +205,7 @@ variable {α F : Type*} [MeasurableSpace α]
 /-- For an `F`-valued vector measure `μ`, `μ.withPairing` is a structure `VectorMeasureWithPairing`
 where `pairing` is just the `ℝ`-multiplication, so that `μ.withPairing.integral` is the
 `F`-valued integral of `μ`. -/
-def withPairing : VectorMeasureWithPairing α ℝ F F where
+noncomputable def withPairing : VectorMeasureWithPairing α ℝ F F where
   pairing := scalarSMulCLM F
   vectorMeasure := μ
 
