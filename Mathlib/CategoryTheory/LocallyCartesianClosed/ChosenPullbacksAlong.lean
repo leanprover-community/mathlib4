@@ -186,6 +186,15 @@ theorem fst'_left : (fst' f g).left = fst f g := rfl
 /-- The second projection from the chosen pullback along `g` of `f` to the domain of `g`. -/
 abbrev snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
 
+theorem pullback_map_left_snd {Y' : C} (f' : Y' ⟶ Y) :
+    ((pullback g).map (Over.homMk f')).left ≫ snd f g = snd (f' ≫ f) g := by
+  simp
+
+@[reassoc (attr := simp)]
+theorem pullback_map_left_snd₂ {T T' : Over X} (f' : T' ⟶ T) :
+    ((pullback g).map f').left ≫ snd T.hom g = snd T'.hom g :=
+  Over.w ((pullback g).map f')
+
 /-- A morphism in `Over X` from the chosen pullback along `g` of `f` to `Over.mk g`. -/
 abbrev snd' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ (Over.mk g) :=
   Over.homMk (snd f g)
