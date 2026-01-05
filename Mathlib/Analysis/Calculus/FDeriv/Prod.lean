@@ -19,7 +19,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 Cartesian products of functions, and functions into Pi-types.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
