@@ -26,6 +26,11 @@ these left and right homology data are compatible (i.e.
 provide a `HomologyData`) is obtained by using the
 coimage-image isomorphism in abelian categories.
 
+We also provide a constructor `HomologyData.ofEpiMonoFactorisation`
+which takes as an input an epi-mono factorization `kf.pt ⟶ H ⟶ cc.pt`
+of `kf.ι ≫ cc.π` where `kf` is a limit kernel fork of `S.g` and
+`cc` is a limit cokernel cofork of `S.f`.
+
 -/
 
 @[expose] public section
@@ -202,6 +207,8 @@ noncomputable instance : Abelian (ShortComplex C) where
 
 attribute [local instance] strongEpi_of_epi
 
+/-- The homology of a short complex `S` in an abelian category identifies to
+the image of `S.iCycles ≫ S.pOpcycles : S.cycles ⟶ S.opcycles`. -/
 noncomputable def homologyIsoImageICyclesCompPOpcycles :
     S.homology ≅ image (S.iCycles ≫ S.pOpcycles) :=
   image.isoStrongEpiMono _ _ S.homology_π_ι
@@ -214,7 +221,7 @@ lemma homologyIsoImageICyclesCompPOpcycles_ι :
 
 namespace HomologyData
 
-namespace OfEpiMonoFactorisation
+namespace ofEpiMonoFactorisation
 
 variable {kf : KernelFork S.g} {cc : CokernelCofork S.f}
   (hkf : IsLimit kf) (hcc : IsColimit cc)
@@ -222,6 +229,10 @@ variable {kf : KernelFork S.g} {cc : CokernelCofork S.f}
   (fac : kf.ι ≫ cc.π = π ≫ ι)
   [Epi π] [Mono ι]
 
+/-- Let `S` be a short complex in an abelian category. Let `kf` be a
+limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
+Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`,
+then `H` identifies to the image of `S.iCycles ≫ S.pOpcycles : S.cycles ⟶ S.opcycles`. -/
 noncomputable def isoImage : H ≅ image (S.iCycles ≫ S.pOpcycles) := by
   have : ((S.isoCyclesOfIsLimit hkf).inv ≫ π) ≫ ι ≫
     (S.isoOpcyclesOfIsColimit hcc).hom = S.iCycles ≫ S.pOpcycles := by
@@ -235,6 +246,10 @@ lemma isoImage_ι :
   apply image.isoStrongEpiMono_hom_comp_ι
   simp [← reassoc_of% fac]
 
+/-- Let `S` be a short complex in an abelian category. Let `kf` be a
+limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
+Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`,
+then `H` identifies to the homology of `S`. -/
 noncomputable def isoHomology : H ≅ S.homology :=
   isoImage S hkf hcc fac ≪≫ S.homologyIsoImageICyclesCompPOpcycles.symm
 
@@ -263,17 +278,23 @@ lemma g'_eq : hcc.desc (CokernelCofork.ofπ S.g S.zero) =
   have := Cofork.IsColimit.epi hcc
   simp [← cancel_epi cc.π]
 
+@[reassoc (attr := simp)]
 lemma homologyπ_isoHomology_inv :
     S.homologyπ ≫ (isoHomology S hkf hcc fac).inv = (S.isoCyclesOfIsLimit hkf).inv ≫ π := by
   simp only [← cancel_mono (isoHomology S hkf hcc fac).hom, assoc, Iso.inv_hom_id, comp_id,
     π_comp_isoHomology_hom, Iso.inv_hom_id_assoc]
 
+@[reassoc (attr := simp)]
 lemma isoHomology_inv_homologyι :
     (isoHomology S hkf hcc fac).hom ≫ S.homologyι =
     ι ≫ (S.isoOpcyclesOfIsColimit hcc).hom := by
   rw [← cancel_mono (S.isoOpcyclesOfIsColimit hcc).inv, assoc, assoc, Iso.hom_inv_id,
     comp_id, ← isoHomology_hom_comp_ι S hkf hcc fac, Iso.hom_inv_id_assoc]
 
+/-- Let `S` be a short complex in an abelian category. Let `kf` be a
+limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
+Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.
+This is the left homology data expressing `H` as the homology of `S`. -/
 @[simps]
 noncomputable def leftHomologyData : S.LeftHomologyData where
   K := kf.pt
@@ -288,15 +309,15 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
       π_comp_isoHomology_hom, zero_comp, f'_eq,
       assoc, Iso.inv_hom_id_assoc, toCycles_comp_homologyπ]
   hπ := by
-    dsimp
-    let e : parallelPair (hkf.lift (KernelFork.ofι S.f S.zero) ≫ 𝟙 _) 0 ≅
-        parallelPair S.toCycles 0 := parallelPair.ext (Iso.refl _) (S.isoCyclesOfIsLimit hkf)
-          (by cat_disch) (by cat_disch)
-    refine IsColimit.precomposeInvEquiv e _ ?_
-    exact IsColimit.ofIsoColimit S.homologyIsCokernel
-      (Cofork.ext (isoHomology S hkf hcc fac).symm (homologyπ_isoHomology_inv S _ _ _))
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsCokernel
+    · exact parallelPair.ext (Iso.refl _) (S.isoCyclesOfIsLimit hkf)
+    · exact Cofork.ext (isoHomology S hkf hcc fac) (by simp [Cofork.π])
 
 attribute [local simp] g'_eq in
+/-- Let `S` be a short complex in an abelian category. Let `kf` be a
+limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
+Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.
+This is the right homology data expressing `H` as the homology of `S`. -/
 @[simps]
 noncomputable def rightHomologyData : S.RightHomologyData where
   Q := cc.pt
@@ -310,22 +331,23 @@ noncomputable def rightHomologyData : S.RightHomologyData where
     rw [id_comp, g'_eq, ← cancel_epi (isoHomology S hkf hcc fac).inv, comp_zero,
       isoHomology_hom_comp_ι_assoc, Iso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
   hι := by
-    let e : parallelPair (𝟙 _ ≫ hcc.desc (CokernelCofork.ofπ S.g S.zero)) 0 ≅
-        parallelPair S.fromOpcycles 0 := parallelPair.ext (S.isoOpcyclesOfIsColimit hcc)
-          (Iso.refl _) (by cat_disch) (by cat_disch)
-    refine IsLimit.postcomposeHomEquiv e _ ?_
-    exact IsLimit.ofIsoLimit S.homologyIsKernel
-      (Iso.symm (Fork.ext (isoHomology S hkf hcc fac) (isoHomology_inv_homologyι S hkf hcc fac)))
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsKernel
+    · exact parallelPair.ext (S.isoOpcyclesOfIsColimit hcc) (Iso.refl _)
+    · exact Fork.ext (isoHomology S hkf hcc fac) (by simp [Fork.ι])
 
-end OfEpiMonoFactorisation
+end ofEpiMonoFactorisation
 
+/-- Let `S` be a short complex in an abelian category. Let `kf` be a
+limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
+Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.
+This is the homology data expressing `H` as the homology of `S`. -/
 @[simps]
 noncomputable def ofEpiMonoFactorisation {kf : KernelFork S.g} {cc : CokernelCofork S.f}
     (hkf : IsLimit kf) (hcc : IsColimit cc) {H : C} {π : kf.pt ⟶ H} {ι : H ⟶ cc.pt}
     (fac : kf.ι ≫ cc.π = π ≫ ι) [Epi π] [Mono ι] :
     S.HomologyData where
-  left := OfEpiMonoFactorisation.leftHomologyData S hkf hcc fac
-  right := OfEpiMonoFactorisation.rightHomologyData S hkf hcc fac
+  left := ofEpiMonoFactorisation.leftHomologyData S hkf hcc fac
+  right := ofEpiMonoFactorisation.rightHomologyData S hkf hcc fac
   iso := Iso.refl _
 
 end HomologyData
