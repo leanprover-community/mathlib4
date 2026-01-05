@@ -14448,6 +14448,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.MetricSpace.Sequences
 public import Mathlib.Topology.MetricSpace.ShrinkingLemma
 public import Mathlib.Topology.MetricSpace.Similarity
+public import Mathlib.Topology.MetricSpace.Snowflaking
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 public import Mathlib.Topology.MetricSpace.Thickening
 public import Mathlib.Topology.MetricSpace.TransferInstance
