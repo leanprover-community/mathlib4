@@ -52,6 +52,9 @@ theorem single_apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
 theorem single_apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
     single i j a i' j' = 0 := by simp [hj]
 
+@[grind =]
+lemma single_apply : single i j c i' j' = if i = i' ∧ j = j' then c else 0 := rfl
+
 end
 
 /-- See also `single_eq_updateRow_zero` and `single_eq_updateCol_zero`. -/
@@ -133,11 +136,36 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
   · simp
   simp [h, h.symm]
 
-theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
-    x = ∑ i : m, ∑ j : n, single i j (x i j) := by
+lemma sum_single_eq_diagonal [AddCommMonoid α] [Fintype m] (f : m → α) :
+    ∑ i : m, single i i (f i) = Matrix.diagonal f := by
+  ext j k
+  rw [sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
+
+lemma sum_single_one [AddCommMonoid α] [One α] [Fintype m] :
+    ∑ i : m, single i i (1 : α) = 1 :=
+  sum_single_eq_diagonal _
+
+lemma sum_single_natCast [AddCommMonoidWithOne α] [Fintype m] (n : ℕ) :
+    ∑ i : m, single i i (n : α) = n :=
+  sum_single_eq_diagonal _
+
+lemma sum_single_ofNat [AddCommMonoidWithOne α] [Fintype m] (n : ℕ) [n.AtLeastTwo] :
+    ∑ i : m, single i i (ofNat(n) : α) = ofNat(n) :=
+  sum_single_eq_diagonal _
+
+lemma sum_single_intCast [AddCommGroupWithOne α] [Fintype m] (z : ℤ) :
+    ∑ i : m, single i i (z : α) = z :=
+  sum_single_eq_diagonal _
+
+theorem sum_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : m → n → α) :
+    ∑ i : m, ∑ j : n, single i j (x i j) = of x := by
   ext i j
   rw [← Fintype.sum_prod_type']
   simp [single, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk_inj]
+
+theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
+    x = ∑ i : m, ∑ j : n, single i j (x i j) :=
+  sum_sum_single _ |>.symm
 
 theorem single_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     single i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
