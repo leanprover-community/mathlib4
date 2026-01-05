@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Ring.Regular
 A characteristic zero domain is torsion-free.
 -/
 
-@[expose] public section
+public section
 
 namespace IsDomain
 

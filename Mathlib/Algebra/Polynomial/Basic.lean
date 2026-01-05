@@ -576,6 +576,9 @@ theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=
 
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f; rfl
 
+theorem finite_range_coeff (f : R[X]) : (Set.range f.coeff).Finite :=
+  Finsupp.finite_range _
+
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [coeff, Finsupp.single_apply]
 
@@ -623,8 +626,6 @@ theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   simp
 
 theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by

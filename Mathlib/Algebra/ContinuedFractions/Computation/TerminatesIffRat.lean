@@ -29,7 +29,7 @@ rational number, that is `↑v = q` for some `q : ℚ`.
 rational, continued fraction, termination
 -/
 
-@[expose] public section
+public section
 
 
 namespace GenContFract
