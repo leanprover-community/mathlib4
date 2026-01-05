@@ -21,7 +21,7 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
   monotone.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
 open scoped Topology NNReal

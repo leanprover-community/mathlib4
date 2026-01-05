@@ -23,7 +23,7 @@ Here we prove basic properties of these definitions. Where convenient we assume 
 ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

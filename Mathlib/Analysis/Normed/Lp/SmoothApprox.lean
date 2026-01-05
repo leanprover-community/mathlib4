@@ -19,7 +19,7 @@ functions for `p < ∞`.
 This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 

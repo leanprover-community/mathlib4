@@ -33,7 +33,7 @@ theory.
 `Mathlib/Analysis/Convex/Mul.lean` for convexity of `x ↦ x ^ n`
 -/
 
-@[expose] public section
+public section
 
 open Real Set NNReal
 

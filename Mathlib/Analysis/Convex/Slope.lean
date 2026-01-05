@@ -19,7 +19,7 @@ of their slopes.
 The main use is to show convexity/concavity from monotonicity of the derivative.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
 

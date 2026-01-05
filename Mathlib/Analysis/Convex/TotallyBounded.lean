@@ -26,7 +26,7 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
 convex, totally bounded
 -/
 
-@[expose] public section
+public section
 
 open Set Pointwise
 

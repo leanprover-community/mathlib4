@@ -38,7 +38,7 @@ in this setup.
   within `f '' U` is codiscrete within `U`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Nat FormalMultilinearSeries EMetric Set
 

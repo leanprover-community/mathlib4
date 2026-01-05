@@ -14,7 +14,7 @@ In this file, we define classes for fields and groups that are both normed and o
 These are mostly useful to avoid diamonds during type class inference.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Set
