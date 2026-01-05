@@ -65,6 +65,7 @@ theorem single_smul (i j : ι) (r : R) (v : ι → M) :
   · obtain rfl | hi := eq_or_ne i i' <;> simp [*]
   · simp [hj.symm]
 
+@[simp]
 lemma scalar_smul (r : R) (v : ι → M) :
     Matrix.scalar ι r • v = r • v := by
   ext i
