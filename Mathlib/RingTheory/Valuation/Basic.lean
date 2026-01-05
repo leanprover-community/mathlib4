@@ -581,6 +581,10 @@ theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := b
   have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.val_eq
   rwa [v₁.map_zero, v₂.map_zero] at this
 
+@[deprecated "use `(eq_zero _).ne` instead." (since := "2026-01-05")]
+theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 :=
+  (eq_zero h).ne
+
 lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
   rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
 
