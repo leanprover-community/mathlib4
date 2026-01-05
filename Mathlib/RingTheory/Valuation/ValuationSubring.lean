@@ -187,7 +187,6 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 where
     ext
     simp [field]
 
-@[simp]
 theorem eq_top_iff : A = ⊤ ↔ ¬ A.valuation.IsNontrivial := by
   simp [Valuation.IsNontrivial_iff_exists_one_lt, SetLike.ext_iff]
 
@@ -413,6 +412,10 @@ theorem isNontrivial_valuation_valuationSubring_iff :
 
 lemma valuationSubring.integers : v.Integers v.valuationSubring :=
   Valuation.integer.integers _
+
+@[simp]
+theorem valuationSubring_eq_top_iff : v.valuationSubring = ⊤ ↔ ¬ v.IsNontrivial := by
+  simp [ValuationSubring.eq_top_iff]
 
 end Valuation
 
