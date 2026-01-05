@@ -59,14 +59,14 @@ namespace WellFounded
 
 variable {r r' : α → α → Prop}
 
-protected theorem isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric⟩
+protected theorem asymm (h : WellFounded r) : Std.Asymm r := ⟨h.asymmetric⟩
 
-protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
+protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @Std.Asymm.isIrrefl α r h.asymm
 
-instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
-  WellFoundedRelation.wf.isAsymm
+instance [WellFoundedRelation α] : Std.Asymm (α := α) WellFoundedRelation.rel :=
+  WellFoundedRelation.wf.asymm
 
-instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
+instance : IsIrrefl α WellFoundedRelation.rel := Std.Asymm.isIrrefl
 
 theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr

@@ -91,8 +91,8 @@ namespace Shortlex
 instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
   ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
 
-instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) :=
-  inferInstanceAs <| IsAsymm (List α) (InvImage _ _)
+instance asymm [Std.Asymm r] : Std.Asymm (Shortlex r) :=
+  inferInstanceAs <| Std.Asymm (InvImage _ _)
 
 theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s₂) :
     Shortlex r s₁ (s₂ ++ t) := by

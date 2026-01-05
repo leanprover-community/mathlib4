@@ -248,8 +248,8 @@ instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
   show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
-instance : IsAsymm (Set α) (· ⊂ ·) :=
-  show IsAsymm (Set α) (· < ·) by infer_instance
+instance : Std.Asymm (α := Set α) (· ⊂ ·) :=
+  show Std.Asymm (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
