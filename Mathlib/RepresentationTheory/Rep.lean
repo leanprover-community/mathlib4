@@ -229,7 +229,7 @@ lemma coe_res_obj_ρ {H : Type w} [Monoid H] (f : G →* H) (A : Rep k H) (g : G
 
 section Linearization
 
-variable (k G)
+variable (k G : Type u) [CommRing k] [Monoid G]
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
@@ -472,6 +472,7 @@ section
 
 open MonoidalCategory
 
+variable {k G : Type u} [CommRing k] [Monoid G]
 variable (A B : Rep k G) (α : Type u) [DecidableEq α]
 
 open ModuleCat.MonoidalCategory
@@ -536,7 +537,7 @@ section Group
 open Finsupp MonoidalCategory ModuleCat.MonoidalCategory
 open Representation (IsTrivial)
 
-variable [Group G] {n : ℕ}
+variable {k G : Type u} [CommRing k] [Group G] {n : ℕ}
 
 variable (k G n) in
 /-- An isomorphism of `k`-linear representations of `G` from `k[Gⁿ⁺¹]` to `k[G] ⊗ₖ k[Gⁿ]` (on
@@ -907,7 +908,7 @@ def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} k[G] where
 
 -- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
 
-instance : EnoughProjectives (Rep k G) :=
+instance : EnoughProjectives (Rep.{u, u, u} k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{u}
 
 instance free_projective {G α : Type u} [Group G] :
