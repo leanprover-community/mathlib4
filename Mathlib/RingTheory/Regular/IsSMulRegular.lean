@@ -184,16 +184,20 @@ lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
 
 -- Who knew this didn't rely on exactness at the right!?
 open Function in
-lemma QuotSMulTop.map_first_exact_on_four_term_exact_of_isSMulRegular_last
+lemma QuotSMulTop.map_first_addExact_on_four_term_addExact_of_isSMulRegular_last
     {M'''} [AddCommGroup M'''] [Module R M''']
     {r : R} {f₁ : M →ₗ[R] M'} {f₂ : M' →ₗ[R] M''} {f₃ : M'' →ₗ[R] M'''}
-    (h₁₂ : Exact f₁ f₂) (h₂₃ : Exact f₂ f₃) (h : IsSMulRegular M''' r) :
-    Exact (map r f₁) (map r f₂) :=
+    (h₁₂ : AddExact f₁ f₂) (h₂₃ : AddExact f₂ f₃) (h : IsSMulRegular M''' r) :
+    AddExact (map r f₁) (map r f₂) :=
   suffices IsSMulRegular (M'' ⧸ LinearMap.range f₂) r by
     dsimp [map, mapQLinear]
-    rw [Exact.exact_mapQ_iff h₁₂, map_pointwise_smul, Submodule.map_top, inf_comm]
+    rw [AddExact.addExact_mapQ_iff h₁₂, map_pointwise_smul, Submodule.map_top, inf_comm]
     exact smul_top_inf_eq_smul_of_isSMulRegular_on_quot this
   h.of_injective _ <| LinearMap.ker_eq_bot.mp <|
     ker_liftQ_eq_bot' _ _ h₂₃.linearMap_ker_eq.symm
+
+@[deprecated (since := "2026-01-05")]
+alias QuotSMulTop.map_first_exact_on_four_term_exact_of_isSMulRegular_last :=
+  QuotSMulTop.map_first_addExact_on_four_term_addExact_of_isSMulRegular_last
 
 end CommRing

@@ -231,15 +231,15 @@ variable (hf : Function.Surjective f)
 
 include hf
 
-private lemma tens_exact : Function.Exact (lTensorKerIncl I M f) (lTensorf I M f) :=
-  lTensor_exact (AdicCompletion I R) (f.exact_subtype_ker_map) hf
+private lemma tens_exact : Function.AddExact (lTensorKerIncl I M f) (lTensorf I M f) :=
+  lTensor_addExact (AdicCompletion I R) (f.addExact_subtype_ker_map) hf
 
 private lemma tens_surj : Function.Surjective (lTensorf I M f) :=
   LinearMap.lTensor_surjective (AdicCompletion I R) hf
 
 private lemma adic_exact [IsNoetherianRing R] [Finite ι] :
-    Function.Exact (map I (LinearMap.ker f).subtype) (map I f) :=
-  map_exact (Submodule.injective_subtype _) (f.exact_subtype_ker_map) hf
+    Function.AddExact (map I (LinearMap.ker f).subtype) (map I f) :=
+  map_addExact (Submodule.injective_subtype _) (f.addExact_subtype_ker_map) hf
 
 private lemma adic_surj : Function.Surjective (map I f) :=
   map_surjective I hf
@@ -266,11 +266,11 @@ lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R]
     rfl
     rfl
     (tens_exact I M f hf)
-    ((LinearMap.exact_zero_iff_surjective _ _).mpr <| tens_surj I M f hf)
-    ((LinearMap.exact_zero_iff_surjective _ _).mpr <| Function.surjective_to_subsingleton _)
+    ((LinearMap.addExact_zero_iff_surjective _ _).mpr <| tens_surj I M f hf)
+    ((LinearMap.addExact_zero_iff_surjective _ _).mpr <| Function.surjective_to_subsingleton _)
     (adic_exact I M f hf)
-    ((LinearMap.exact_zero_iff_surjective _ _).mpr <| adic_surj I M f hf)
-    ((LinearMap.exact_zero_iff_surjective _ _).mpr <| Function.surjective_to_subsingleton _)
+    ((LinearMap.addExact_zero_iff_surjective _ _).mpr <| adic_surj I M f hf)
+    ((LinearMap.addExact_zero_iff_surjective _ _).mpr <| Function.surjective_to_subsingleton _)
     (ofTensorProduct_surjective_of_finite I (LinearMap.ker f))
     (ofTensorProduct_bijective_of_pi_of_fintype I ι)
     (Function.bijective_of_subsingleton _)

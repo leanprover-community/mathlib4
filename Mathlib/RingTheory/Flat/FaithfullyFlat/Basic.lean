@@ -271,8 +271,8 @@ composition `N₁ -> N₂ -> N₃` is `0`.
 
 Implementation detail, please use `rTensor_reflects_exact` instead.
 -/
-lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
-    (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
+lemma range_le_ker_of_addExact_rTensor [fl : FaithfullyFlat R M]
+    (ex : Function.AddExact (l12.rTensor M) (l23.rTensor M)) :
     LinearMap.range l12 ≤ LinearMap.ker l23 := by
   -- let `n1 ∈ N1`. We need to show `l23 (l12 n1) = 0`. Suppose this is not the case.
   rintro _ ⟨n1, rfl⟩
@@ -313,10 +313,14 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
 
-lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
-    (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
-    Function.Exact l12 l23 := LinearMap.exact_iff.2 <| by
-  have complex : LinearMap.range l12 ≤ LinearMap.ker l23 := range_le_ker_of_exact_rTensor R M _ _ ex
+@[deprecated (since := "2026-01-05")]
+alias range_le_ker_of_exact_rTensor := range_le_ker_of_addExact_rTensor
+
+lemma rTensor_reflects_addExact [fl : FaithfullyFlat R M]
+    (ex : Function.AddExact (l12.rTensor M) (l23.rTensor M)) :
+    Function.AddExact l12 l23 := LinearMap.addExact_iff.2 <| by
+  have complex : LinearMap.range l12 ≤ LinearMap.ker l23 :=
+    range_le_ker_of_addExact_rTensor R M _ _ ex
   -- By the previous lemma we have that range l12 ≤ ker l23 and hence the quotient
   -- H := ker l23 ⧸ range l12 makes sense.
   -- Hence our goal ker l23 = range l12 follows from the claim that H = 0.
@@ -343,7 +347,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   | tmul x m =>
     rcases x with ⟨x, (hx : l23 x = 0)⟩
     have mem : x ⊗ₜ[R] m ∈ LinearMap.ker (l23.rTensor M) := by simp [hx]
-    rw [LinearMap.exact_iff.1 ex] at mem
+    rw [LinearMap.addExact_iff.1 ex] at mem
     obtain ⟨y, hy⟩ := mem
     refine ⟨LinearMap.rTensor M (LinearMap.rangeRestrict _ ∘ₗ LinearMap.rangeRestrict l12) y,
       Module.Flat.rTensor_preserves_injective_linearMap (LinearMap.ker l23).subtype
@@ -357,22 +361,34 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     obtain ⟨x, rfl⟩ := hx; obtain ⟨y, rfl⟩ := hy
     exact ⟨x + y, by simp⟩
 
-lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
-    (ex : Function.Exact (l12.lTensor M) (l23.lTensor M)) :
-    Function.Exact l12 l23 :=
-  rTensor_reflects_exact R M _ _ <| ex.of_ladder_linearEquiv_of_exact
+@[deprecated (since := "2026-01-05")]
+alias rTensor_reflects_exact := rTensor_reflects_addExact
+
+lemma lTensor_reflects_addExact [fl : FaithfullyFlat R M]
+    (ex : Function.AddExact (l12.lTensor M) (l23.lTensor M)) :
+    Function.AddExact l12 l23 :=
+  rTensor_reflects_addExact R M _ _ <| ex.of_ladder_linearEquiv_of_addExact
     (e₁ := TensorProduct.comm _ _ _) (e₂ := TensorProduct.comm _ _ _)
     (e₃ := TensorProduct.comm _ _ _) (by ext; rfl) (by ext; rfl)
 
-@[simp]
-lemma rTensor_exact_iff_exact [FaithfullyFlat R M] :
-    Function.Exact (l12.rTensor M) (l23.rTensor M) ↔ Function.Exact l12 l23 :=
-  ⟨fun ex ↦ rTensor_reflects_exact R M l12 l23 ex, fun e ↦ Module.Flat.rTensor_exact _ e⟩
+@[deprecated (since := "2026-01-05")]
+alias lTensor_reflects_exact := lTensor_reflects_addExact
 
 @[simp]
-lemma lTensor_exact_iff_exact [FaithfullyFlat R M] :
-    Function.Exact (l12.lTensor M) (l23.lTensor M) ↔ Function.Exact l12 l23 :=
-  ⟨fun ex ↦ lTensor_reflects_exact R M l12 l23 ex, fun e ↦ Module.Flat.lTensor_exact _ e⟩
+lemma rTensor_addExact_iff_addExact [FaithfullyFlat R M] :
+    Function.AddExact (l12.rTensor M) (l23.rTensor M) ↔ Function.AddExact l12 l23 :=
+  ⟨fun ex ↦ rTensor_reflects_addExact R M l12 l23 ex, fun e ↦ Module.Flat.rTensor_addExact _ e⟩
+
+@[deprecated (since := "2026-01-05")]
+alias rTensor_exact_iff_exact := rTensor_addExact_iff_addExact
+
+@[simp]
+lemma lTensor_addExact_iff_addExact [FaithfullyFlat R M] :
+    Function.AddExact (l12.lTensor M) (l23.lTensor M) ↔ Function.AddExact l12 l23 :=
+  ⟨fun ex ↦ lTensor_reflects_addExact R M l12 l23 ex, fun e ↦ Module.Flat.lTensor_addExact _ e⟩
+
+@[deprecated (since := "2026-01-05")]
+alias lTensor_exact_iff_exact := lTensor_addExact_iff_addExact
 
 section
 
@@ -382,16 +398,17 @@ variable {N N' : Type*} [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module 
 @[simp]
 lemma lTensor_injective_iff_injective [Module.FaithfullyFlat R M] :
     Function.Injective (f.lTensor M) ↔ Function.Injective f := by
-  rw [← LinearMap.exact_zero_iff_injective (M ⊗[R] Unit), ← LinearMap.exact_zero_iff_injective Unit]
-  conv_rhs => rw [← lTensor_exact_iff_exact R M]
+  rw [← LinearMap.addExact_zero_iff_injective (M ⊗[R] Unit),
+    ← LinearMap.addExact_zero_iff_injective Unit]
+  conv_rhs => rw [← lTensor_addExact_iff_addExact R M]
   simp
 
 @[simp]
 lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
     Function.Surjective (f.lTensor M) ↔ Function.Surjective f := by
-  rw [← LinearMap.exact_zero_iff_surjective (M ⊗[R] Unit),
-    ← LinearMap.exact_zero_iff_surjective Unit]
-  conv_rhs => rw [← lTensor_exact_iff_exact R M]
+  rw [← LinearMap.addExact_zero_iff_surjective (M ⊗[R] Unit),
+    ← LinearMap.addExact_zero_iff_surjective Unit]
+  conv_rhs => rw [← lTensor_addExact_iff_addExact R M]
   simp
 
 end
@@ -400,28 +417,34 @@ end arbitrary_universe
 
 section fixed_universe
 
-lemma iff_exact_iff_rTensor_exact :
+lemma iff_addExact_iff_rTensor_addExact :
     FaithfullyFlat R M ↔
     (∀ {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
       {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
       {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
-        Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
-  ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 => (rTensor_exact_iff_exact R M l12 l23).symm, fun iff_exact =>
-    iff_flat_and_rTensor_reflects_triviality _ _ |>.2
-      ⟨Flat.iff_rTensor_exact.2 <| fun _ _ _ => iff_exact .. |>.1,
+        Function.AddExact l12 l23 ↔ Function.AddExact (l12.rTensor M) (l23.rTensor M)) :=
+  ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 => (rTensor_addExact_iff_addExact R M l12 l23).symm,
+    fun iff_addExact => iff_flat_and_rTensor_reflects_triviality _ _ |>.2
+      ⟨Flat.iff_rTensor_addExact.2 <| fun _ _ _ => iff_addExact .. |>.1,
     fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
-      simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x => by
+      simpa [eq_comm] using (iff_addExact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x => by
         simpa using Subsingleton.elim _ _) y⟩⟩
 
-lemma iff_exact_iff_lTensor_exact :
+@[deprecated (since := "2026-01-05")]
+alias iff_exact_iff_rTensor_exact := iff_addExact_iff_rTensor_addExact
+
+lemma iff_addExact_iff_lTensor_addExact :
     FaithfullyFlat R M ↔
     (∀ {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
       {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
       {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
-        Function.Exact l12 l23 ↔ Function.Exact (l12.lTensor M) (l23.lTensor M)) := by
-  simp only [iff_exact_iff_rTensor_exact, LinearMap.rTensor_exact_iff_lTensor_exact]
+        Function.AddExact l12 l23 ↔ Function.AddExact (l12.lTensor M) (l23.lTensor M)) := by
+  simp only [iff_addExact_iff_rTensor_addExact, LinearMap.rTensor_addExact_iff_lTensor_addExact]
+
+@[deprecated (since := "2026-01-05")]
+alias iff_exact_iff_lTensor_exact := iff_addExact_iff_lTensor_addExact
 
 end fixed_universe
 
@@ -449,8 +472,8 @@ lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
     {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.lTensor M f = 0 :=
   ⟨fun hf => hf.symm ▸ LinearMap.lTensor_zero M, fun hf => by
-    have := lTensor_reflects_exact R M f LinearMap.id (by
-      rw [LinearMap.exact_iff, hf, LinearMap.range_zero, LinearMap.ker_eq_bot]
+    have := lTensor_reflects_addExact R M f LinearMap.id (by
+      rw [LinearMap.addExact_iff, hf, LinearMap.range_zero, LinearMap.ker_eq_bot]
       apply Module.Flat.lTensor_preserves_injective_linearMap
       exact fun _ _ h => h)
     ext x; simpa using this (f x)⟩

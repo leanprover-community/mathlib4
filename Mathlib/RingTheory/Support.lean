@@ -168,7 +168,7 @@ lemma Module.support_subset_of_surjective (hf : Function.Surjective f) :
 variable {f g} in
 /-- Given an exact sequence `0 → M → N → P → 0` of `R`-modules, `Supp N = Supp M ∪ Supp P`. -/
 @[stacks 00L3 "(4)"]
-lemma Module.support_of_exact (h : Function.Exact f g)
+lemma Module.support_of_addExact (h : Function.AddExact f g)
     (hf : Function.Injective f) (hg : Function.Surjective g) :
     Module.support R N = Module.support R M ∪ Module.support R P := by
   refine subset_antisymm ?_ (Set.union_subset (Module.support_subset_of_injective f hf)
@@ -182,6 +182,9 @@ lemma Module.support_of_exact (h : Function.Exact f g)
   obtain ⟨m', hm'⟩ := e₁
   obtain ⟨s, hs, e₁⟩ := H₁ m'
   exact ⟨_, x.asIdeal.primeCompl.mul_mem hs hr, by rw [mul_smul, ← hm', ← map_smul, e₁, map_zero]⟩
+
+@[deprecated (since := "2026-01-05")]
+alias Module.support_of_exact := Module.support_of_addExact
 
 lemma LinearEquiv.support_eq (e : M ≃ₗ[R] N) :
     Module.support R M = Module.support R N :=

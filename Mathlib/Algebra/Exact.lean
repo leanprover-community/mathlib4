@@ -407,13 +407,13 @@ lemma iff_of_ladder_linearEquiv
 @[deprecated (since := "2026-01-05")]
 alias _root_.Function.Exact.iff_of_ladder_linearEquiv := iff_of_ladder_linearEquiv
 
-lemma of_ladder_linearEquiv_of_exact
+lemma of_ladder_linearEquiv_of_addExact
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃)
     (H : AddExact f₁₂ f₂₃) : AddExact g₁₂ g₂₃ := by
   rwa [iff_of_ladder_linearEquiv h₁₂ h₂₃]
 
 @[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.of_ladder_linearEquiv_of_exact := of_ladder_linearEquiv_of_exact
+alias _root_.Function.Exact.of_ladder_linearEquiv_of_exact := of_ladder_linearEquiv_of_addExact
 
 /-- Two maps `f : M →ₗ[R] N` and `g : N →ₗ[R] P` are exact if and only if the induced maps
 `LinearMap.range f → N → LinearMap.range g` are exact. -/
@@ -600,7 +600,7 @@ variable [Ring R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 namespace Function
 
 /-- A necessary and sufficient condition for an exact sequence to descend to a quotient. -/
-lemma AddExact.exact_mapQ_iff
+lemma AddExact.addExact_mapQ_iff
     (hfg : AddExact f g) {p q r} (hpq : p ≤ comap f q) (hqr : q ≤ comap g r) :
     AddExact (mapQ p q f hpq) (mapQ q r g hqr) ↔ range g ⊓ r ≤ map g q := by
   rw [addExact_iff, ← (comap_injective_of_surjective (mkQ_surjective _)).eq_iff]
@@ -611,7 +611,7 @@ lemma AddExact.exact_mapQ_iff
     ← comap_map_eq, ← map_le_iff_le_comap, map_comap_eq]
 
 @[deprecated (since := "2026-01-05")]
-alias Exact.exact_mapQ_iff := AddExact.exact_mapQ_iff
+alias Exact.exact_mapQ_iff := AddExact.addExact_mapQ_iff
 
 end Function
 

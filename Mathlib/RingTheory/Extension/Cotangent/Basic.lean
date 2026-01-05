@@ -319,8 +319,11 @@ abbrev toKaehler : P.CotangentSpace →ₗ[S] Ω[S⁄R] := mapBaseChange _ _ _
 lemma toKaehler_surjective : Function.Surjective P.toKaehler :=
   mapBaseChange_surjective _ _ _ P.algebraMap_surjective
 
-lemma exact_cotangentComplex_toKaehler : Function.Exact P.cotangentComplex P.toKaehler :=
-  exact_kerCotangentToTensor_mapBaseChange _ _ _ P.algebraMap_surjective
+lemma addExact_cotangentComplex_toKaehler : Function.AddExact P.cotangentComplex P.toKaehler :=
+  addExact_kerCotangentToTensor_mapBaseChange _ _ _ P.algebraMap_surjective
+
+@[deprecated (since := "2026-01-05")]
+alias exact_cotangentComplex_toKaehler := addExact_cotangentComplex_toKaehler
 
 variable (P) in
 /--
@@ -513,7 +516,8 @@ instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S Ω[S⁄R
   let P := Algebra.Presentation.ofFinitePresentation R S
   have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
-  rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
+  rw [LinearMap.addExact_iff.mp P.toExtension.addExact_cotangentComplex_toKaehler,
+    ← Submodule.map_top]
   exact (Extension.Cotangent.finite P.fg_ker).1.map P.toExtension.cotangentComplex
 
 variable {ι : Type w} {ι' : Type*} {P : Generators R S ι}
@@ -585,10 +589,10 @@ instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]
   have := Extension.Cotangent.finite P.fg_ker
   have : Module.FinitePresentation S (LinearMap.range P.toExtension.cotangentComplex) := by
-    rw [← LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler]
-    exact Module.finitePresentation_of_projective_of_exact
+    rw [← LinearMap.addExact_iff.mp P.toExtension.addExact_cotangentComplex_toKaehler]
+    exact Module.finitePresentation_of_projective_of_addExact
       _ _ (Subtype.val_injective) P.toExtension.toKaehler_surjective
-      (LinearMap.exact_subtype_ker_map _)
+      (LinearMap.addExact_subtype_ker_map _)
   exact Module.FinitePresentation.fg_ker (N := LinearMap.range P.toExtension.cotangentComplex)
     _ P.toExtension.cotangentComplex.surjective_rangeRestrict
 
