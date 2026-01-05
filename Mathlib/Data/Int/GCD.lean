@@ -102,13 +102,10 @@ section
 
 variable (x y : ℕ)
 
-set_option backward.privateInPublic true in
 private def P : ℕ × ℤ × ℤ → Prop
   | (r, s, t) => (r : ℤ) = x * s + y * t
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-theorem xgcdAux_P {r r'} :
+private theorem xgcdAux_P {r r'} :
     ∀ {s t s' t'}, P x y (r, s, t) → P x y (r', s', t') → P x y (xgcdAux r s t r' s' t') := by
   induction r, r' using gcd.induction with
   | H0 => simp

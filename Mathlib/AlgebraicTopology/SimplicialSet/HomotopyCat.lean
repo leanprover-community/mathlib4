@@ -278,6 +278,12 @@ lemma mk_surjective : Function.Surjective (mk (V := V)) := by
   rintro ⟨⟨x⟩⟩
   exact ⟨x, rfl⟩
 
+lemma ext {x y : V.HomotopyCategory} (h : x.as.as = y.as.as) : x = y := by
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  obtain ⟨y, rfl⟩ := y.mk_surjective
+  obtain rfl : x = y := h
+  rfl
+
 @[elab_as_elim, cases_eliminator]
 protected lemma cases_on {motive : V.HomotopyCategory → Prop}
     (h : ∀ (x : V _⦋0⦌₂), motive (.mk x))
@@ -310,7 +316,7 @@ lemma homMk_id (x : V _⦋0⦌₂) :
 lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
     {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ := by
-  simpa [homMk] using  CategoryTheory.Quotient.sound _
+  simpa [homMk] using CategoryTheory.Quotient.sound _
     (OneTruncation₂.HoRel₂.of_compStruct h)
 
 variable (V) in
@@ -448,6 +454,33 @@ lemma functor_ext {F G : V.HomotopyCategory ⥤ D}
     (fun _ _ e ↦ by simp [h₂ e])) (fun _ ↦ h₁ _)
 
 end
+
+instance (X : Truncated.{u} 2) [Subsingleton (X _⦋0⦌₂)] :
+    Subsingleton X.HomotopyCategory where
+  allEq x y := by
+    obtain ⟨x, rfl⟩ := x.mk_surjective
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    obtain rfl := Subsingleton.elim x y
+    rfl
+
+instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)]
+    (x y : X.HomotopyCategory) :
+    Subsingleton (x ⟶ y) :=
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  letI (x y : (OneTruncation₂ X)) : Subsingleton (x ⟶ y) :=
+    inferInstanceAs (Subsingleton <| X.Edge _ _)
+  CategoryTheory.Quotient.instSubsingletonHom _ _ _
+
+instance (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] : Unique X.HomotopyCategory :=
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  CategoryTheory.Quotient.instUnique _
+
+/-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
+then `X.HomotopyCategory` is a terminal object in `Cat`. -/
+def isTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
+    IsTerminal (Cat.of X.HomotopyCategory) :=
+  letI : IsDiscrete (X.HomotopyCategory) := { eq_of_hom := by subsingleton }
+  Cat.isTerminalOfUniqueOfIsDiscrete
 
 end HomotopyCategory
 

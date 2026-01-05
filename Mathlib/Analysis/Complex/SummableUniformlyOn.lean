@@ -16,7 +16,7 @@ We collect some results about the differentiability of infinite sums.
 
 -/
 
-@[expose] public section
+public section
 
 lemma SummableLocallyUniformlyOn.differentiableOn {ι E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℂ E] [CompleteSpace E] {f : ι → ℂ → E} {s : Set ℂ}
