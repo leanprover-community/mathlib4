@@ -18,7 +18,7 @@ This files provides basic facts about upper and lower hemicontinuity of correspo
 `f : α → Set β`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 
