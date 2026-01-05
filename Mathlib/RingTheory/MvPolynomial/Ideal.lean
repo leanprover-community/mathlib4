@@ -118,7 +118,7 @@ theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (
   simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, h, imp_false,
     Decidable.not_not, Set.mem_setOf_eq, forall_eq']
   rw [← Finsupp.card_toMultiset] at h'
-  obtain ⟨y, t_le, hy⟩ := Multiset.exists_le_card_eq _ _ h'
+  obtain ⟨y, t_le, hy⟩ := Multiset.exists_le_card_eq h'
   use y.toFinsupp; constructor
   · rw [Multiset.toFinsupp_sum_eq, hy]
   simp only [Multiset.le_iff_count, count_toMultiset] at t_le
