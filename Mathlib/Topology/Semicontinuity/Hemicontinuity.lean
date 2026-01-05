@@ -321,7 +321,7 @@ respectively, if `y n ∈ f (x n)` frequently, then `y₀ ∈ f x₀`.
 
 This is a partial converse of `UpperHemicontinuousAt.of_sequences`. -/
 lemma UpperHemicontinuousAt.mem_of_tendsto {α β ι : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] [RegularSpace β] {f : α → Set β} {x₀ : α} {l : Filter ι} [l.NeBot]
+    [TopologicalSpace β] [RegularSpace β] {f : α → Set β} {x₀ : α} {l : Filter ι}
     (hf : UpperHemicontinuousAt f x₀) (hf_closed : IsClosed (f x₀))
     {x : ι → α} (hx : Tendsto x l (𝓝 x₀))
     {y : ι → β} (hy : ∃ᶠ n in l, y n ∈ f (x n)) {y₀ : β} (hy₀ : Tendsto y l (𝓝 y₀)) :
