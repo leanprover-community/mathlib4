@@ -106,7 +106,7 @@ variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the coinduced `H`-representation `coind φ A`, with action on maps given by postcomposition. -/
 @[simps obj map]
-noncomputable def coindFunctor : Rep k G ⥤ Rep k H where
+noncomputable def coindFunctor : Rep.{u} k G ⥤ Rep.{u} k H where
   obj A := coind φ A
   map f := coindMap φ f
 
