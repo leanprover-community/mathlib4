@@ -212,7 +212,6 @@ def closedsEmbedding (R : Type*) [CommSemiring R] :
 theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField R := by
   refine ⟨?_, fun h => ?_⟩
   · intro h
-    have hbot : Ideal.IsPrime (⊥ : Ideal R) := Ideal.bot_prime
     exact
       Classical.not_not.1
         (mt
@@ -275,7 +274,7 @@ lemma vanishingIdeal_isClosed_isIrreducible :
 
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
-  simpa using Ideal.bot_prime
+  simpa using Ideal.instIsPrimeBot
 
 instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
