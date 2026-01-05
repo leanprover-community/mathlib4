@@ -31,7 +31,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u
