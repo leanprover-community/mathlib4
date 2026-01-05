@@ -27,7 +27,8 @@ variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommM
 open Classical Finset in
 /-- Measure version of `le_var_aux` which was for subadditive functions. -/
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
-    (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : ∀ t ∈ P, MeasurableSet t) (hP₃ : P.toSet.PairwiseDisjoint id) :
+    (hP₁ : ∀ t ∈ P, t ⊆ s)
+    (hP₂ : ∀ t ∈ P, MeasurableSet t) (hP₃ : (P : Set (Set X)).PairwiseDisjoint id) :
     ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
   let Q := P.filter (· ≠ ∅)
   have h : ∑ p ∈ P, ‖μ p‖ₑ = ∑ q ∈ Q, ‖μ q‖ₑ := by
