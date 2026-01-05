@@ -90,7 +90,7 @@ namespace Rep
 
 open CategoryTheory Finsupp
 
-variable {k G H : Type u} [CommRing k] [Group G] [Group H] (φ : G →* H) (A : Rep k G)
+variable {k G H : Type u} [CommRing k] [Group G] [Group H] (φ : G →* H) (A : Rep.{u} k G)
 
 section Ind
 
