@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 # The Grothendieck construction
 
 Given a functor `F : C ⥤ Cat`, the objects of `Grothendieck F`
-consist of dependent pairs `(b, f)`, where `b : C` and `f : F.obj c`,
+consist of dependent pairs `(b, f)`, where `b : C` and `f : F.obj b`,
 and a morphism `(b, f) ⟶ (b', f')` is a pair `β : b ⟶ b'` in `C`, and
 `φ : (F.map β).toFunctor.obj f ⟶ f'`
 
@@ -28,7 +28,7 @@ and it may be interesting to try to generalize some of the development there.
 Really we should treat `Cat` as a 2-category, and allow `F` to be a 2-functor.
 
 There is also a closely related construction starting with `G : Cᵒᵖ ⥤ Cat`,
-where morphisms consist again of `β : b ⟶ b'` and `φ : f ⟶ (F.map (op β)).obj f'`.
+where morphisms consist again of `β : b ⟶ b'` and `φ : f ⟶ (G.map (op β)).obj f'`.
 
 ## Notable constructions
 

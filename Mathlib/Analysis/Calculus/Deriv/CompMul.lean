@@ -30,9 +30,7 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] 
 theorem hasDerivWithinAt_comp_mul_left_smul_iff :
     HasDerivWithinAt (f <| c * ·) (c • f') s x ↔ HasDerivWithinAt f f' (c • s) (c * x) := by
   simp only [hasDerivWithinAt_iff_hasFDerivWithinAt, ← smul_eq_mul,
-    ← hasFDerivWithinAt_comp_smul_smul_iff]
-  simp only [ContinuousLinearMap.smulRight_one_eq_toSpanSingleton,
-    ContinuousLinearMap.toSpanSingleton_smul]
+    ← hasFDerivWithinAt_comp_smul_smul_iff, ContinuousLinearMap.toSpanSingleton_smul]
 
 variable (c f s x) in
 theorem derivWithin_comp_mul_left :

@@ -22,11 +22,13 @@ section Find
 
 /-! ### `Nat.find` -/
 
+set_option backward.privateInPublic true in
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, ¬p k
 
 variable [DecidablePred p] (H : ∃ n, p n)
 
+set_option backward.privateInPublic true in
 private def wf_lbp : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
@@ -41,6 +43,8 @@ private def wf_lbp : WellFounded (@lbp p) :=
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)

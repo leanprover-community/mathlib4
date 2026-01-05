@@ -276,7 +276,6 @@ theorem fix_fwd_eq {f : α →. β ⊕ α} {a a' : α} (ha' : Sum.inr a' ∈ f a
 theorem fix_fwd {f : α →. β ⊕ α} {b : β} {a a' : α} (hb : b ∈ f.fix a) (ha' : Sum.inr a' ∈ f a) :
     b ∈ f.fix a' := by rwa [← fix_fwd_eq ha']
 
-set_option backward.proofsInPublic true in
 /-- A recursion principle for `PFun.fix`. -/
 @[elab_as_elim]
 def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h : b ∈ f.fix a)
@@ -284,7 +283,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction ‹Acc _ _› with | intro a ha IH => _
+  induction ‹Acc (Sum.inr · ∈ f ·) a› with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 

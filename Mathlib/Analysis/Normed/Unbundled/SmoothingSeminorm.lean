@@ -180,7 +180,7 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
         (μ (x ^ (m1 : ℕ)) ^ (n / (m1 : ℕ))) ^ (1 / (n : ℝ)) := by
       apply rpow_le_rpow (apply_nonneg μ _) _ (one_div_cast_nonneg _)
       rw [pow_mul]
-      exact map_pow_le_pow μ (x^(m1 : ℕ))
+      exact map_pow_le_pow μ (x ^ (m1 : ℕ))
         (pos_iff_ne_zero.mp (Nat.div_pos (le_trans (le_max_left (m1 : ℕ) m2) hn) (PNat.pos m1)))
     have hL0' : 0 < L + ε / 2 := add_pos_of_nonneg_of_pos hL0 (half_pos hε)
     /- We show that `(μ (x ^ (m1 : ℕ)) ^ (n / (m1 : ℕ))) ^ (1 / (n : ℝ)) <

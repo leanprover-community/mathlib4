@@ -225,8 +225,7 @@ lemma genWeightSpace_ne_bot (χ : Weight R L M) : genWeightSpace M χ ≠ ⊥ :=
 
 variable {M}
 
-@[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
-  obtain ⟨f₁, _⟩ := χ₁; obtain ⟨f₂, _⟩ := χ₂; aesop
+@[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := DFunLike.ext _ _ h
 
 lemma ext_iff' {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by simp
 
@@ -316,7 +315,7 @@ theorem zero_genWeightSpace_eq_top_of_nilpotent [IsNilpotent L M] :
 
 theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
-      genWeightSpace M χ ≤ LinearMap.ker ((toEnd R L M x - algebraMap R _ (χ x)) ^ k) := by
+      genWeightSpace M χ ≤ ((toEnd R L M x - algebraMap R _ (χ x)) ^ k).ker := by
   use (toEnd R L M x).maxGenEigenspaceIndex (χ x)
   intro m hm
   replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=

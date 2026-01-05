@@ -45,7 +45,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subpresheaf.lift_ι, stdSimplex.map_apply,
+    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
       Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_lt hlt]
     rfl
@@ -54,7 +54,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
-    rw [Subcomplex.yonedaEquiv_coe, Subpresheaf.lift_ι, stdSimplex.map_apply,
+    rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
       Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_gt hgt]
     rfl
@@ -85,7 +85,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       apply Subtype.ext
       ext z : 1
       dsimp [horn.face]
-      rw [Subcomplex.yonedaEquiv_coe, Subpresheaf.lift_ι, stdSimplex.map_apply,
+      rw [Subcomplex.yonedaEquiv_coe, Subfunctor.lift_ι, stdSimplex.map_apply,
         Quiver.Hom.unop_op, stdSimplex.map_apply, Quiver.Hom.unop_op]
       dsimp [CosimplicialObject.δ]
       rw [stdSimplex.yonedaEquiv_map]
