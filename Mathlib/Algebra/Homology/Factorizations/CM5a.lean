@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Single
@@ -87,24 +88,6 @@ lemma functorNatOp_app (H : ∀ (n : ℕ), F.map (homOfLE (by linarith)).op ≫ 
 end NatTrans
 
 end CategoryTheory
-
-namespace HomologicalComplex
-
-variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
-
-noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
-  ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
-    (isColimitOfEval _ _ (fun _ =>
-      isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi _ _))⟩⟩
-
-noncomputable instance : IsNormalMonoCategory (HomologicalComplex C c) := ⟨fun p _ =>
-  ⟨NormalMono.mk _ (cokernel.π p) (cokernel.condition _)
-    (isLimitOfEval _ _ (fun _ =>
-      isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono _ _))⟩⟩
-
-noncomputable instance : Abelian (HomologicalComplex C c) where
-
-end HomologicalComplex
 
 namespace CochainComplex
 
