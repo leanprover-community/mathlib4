@@ -119,8 +119,7 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
   ext y
   simp only [neg_mul, ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
     Function.comp_apply, ofRealCLM_apply, smul_eq_mul, ContinuousLinearMap.comp_neg,
-    ContinuousLinearMap.neg_apply, ContinuousLinearMap.smulRight_apply,
-    ContinuousLinearMap.one_apply, real_smul, neg_inj]
+    ContinuousLinearMap.neg_apply, ContinuousLinearMap.toSpanSingleton_apply, real_smul, neg_inj]
   ring
 
 lemma fderiv_fourierChar_neg_bilinear_right_apply (v : V) (w y : W) :
@@ -175,7 +174,7 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
   ext w' : 1
   simp_rw [fourierSMulRight, ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply]
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.neg_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, ← smul_assoc, smul_comm,
+    ContinuousLinearMap.toSpanSingleton_apply, ← smul_assoc, smul_comm,
     ← smul_assoc, real_smul, real_smul, Submonoid.smul_def, smul_eq_mul]
   push_cast
   ring_nf
@@ -415,9 +414,9 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     gcongr with i hi
     · rw [← Nat.cast_pow, Nat.cast_le]
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
-      _ ≤ (n + 1) ^ i := by gcongr; cutsat
+      _ ≤ (n + 1) ^ i := by gcongr; lia
       _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
-    · exact hv _ (by cutsat) _ (by cutsat)
+    · exact hv _ (by lia) _ (by lia)
   _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
       Nat.cast_pow, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one, ← mul_pow, mul_add]
@@ -743,6 +742,7 @@ theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_iteratedFDeriv := fourier_iteratedFDeriv
 
+set_option linter.flexible false in -- simp followed by positivity
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourier_le
@@ -823,9 +823,10 @@ theorem fourier_deriv
     𝓕 (deriv f) = fun (x : ℝ) ↦ (2 * π * I * x) • (𝓕 f x) := by
   ext x
   have I : Integrable (fun x ↦ fderiv ℝ f x) := by
-    simpa only [← deriv_fderiv] using (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
+    simpa only [← toSpanSingleton_deriv] using
+      (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
-    simp only [fourier_continuousLinearMap_apply I, fderiv_deriv]
+    simp only [fourier_continuousLinearMap_apply I, fderiv_apply_one_eq_deriv]
   rw [this, fourier_fderiv hf h'f I]
   simp only [fourierSMulRight_apply, ContinuousLinearMap.neg_apply, innerSL_apply_apply, smul_smul,
     RCLike.inner_apply', conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]

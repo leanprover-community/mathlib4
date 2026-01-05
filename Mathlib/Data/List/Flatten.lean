@@ -15,7 +15,7 @@ This file proves basic properties of `List.flatten`, which concatenates a list o
 defined in `Init.Prelude`.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -45,5 +45,28 @@ theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length
 theorem append_flatten_map_append (L : List (List α)) (x : List α) :
     x ++ (L.map (· ++ x)).flatten = (L.map (x ++ ·)).flatten ++ x := by
   induction L with grind
+
+/-- See also `head_flatten_eq_head_head`, which switches around the proof obligations. -/
+theorem head_head_eq_head_flatten {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
+    (l.head hl).head hl' = l.flatten.head (flatten_ne_nil_iff.2 ⟨_, head_mem hl, hl'⟩) := by
+  cases l with grind
+
+/-- See also `head_head_eq_head_flatten`, which switches around the proof obligations. -/
+theorem head_flatten_eq_head_head {l : List (List α)} (hl : l.flatten ≠ [])
+    (hl' : l.head (by grind) ≠ []) : l.flatten.head hl = (l.head (by grind)).head hl' :=
+  (head_head_eq_head_flatten ..).symm
+
+/-- See also `getLast_flatten_of_flatten_ne_nil`, which switches around the proof obligations. -/
+theorem getLast_flatten_of_getLast_ne_nil {l : List (List α)}
+    (hl : l ≠ []) (hl' : l.getLast hl ≠ []) :
+    l.flatten.getLast (flatten_ne_nil_iff.2 ⟨_, getLast_mem hl, hl'⟩) =
+      (l.getLast hl).getLast hl' := by
+  cases eq_nil_or_concat l with grind
+
+/-- See also `getLast_flatten_of_getLast_ne_nil`, which switches around the proof obligations. -/
+theorem getLast_flatten_of_flatten_ne_nil {l : List (List α)}
+    (hl : l.flatten ≠ []) (hl' : l.getLast (by grind) ≠ []) :
+    (l.getLast (by grind)).getLast hl' = l.flatten.getLast hl :=
+  (getLast_flatten_of_getLast_ne_nil ..).symm
 
 end List

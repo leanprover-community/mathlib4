@@ -99,6 +99,10 @@ theorem volume_real_Icc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b
 theorem volume_Ioo {a b : ℝ} : volume (Ioo a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
+theorem volume_uIoo {a b : ℝ} : volume (uIoo a b) = ofReal |b - a| := by
+  simp [uIoo, volume_Ioo, max_sub_min_eq_abs]
+
+@[simp]
 theorem volume_real_Ioo {a b : ℝ} : volume.real (Ioo a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
@@ -107,6 +111,10 @@ theorem volume_real_Ioo_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b
 
 @[simp]
 theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val]
+
+@[simp]
+theorem volume_uIoc {a b : ℝ} : volume (uIoc a b) = ofReal |b - a| := by
+  simp [uIoc, volume_Ioc, max_sub_min_eq_abs]
 
 @[simp]
 theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := by
@@ -351,14 +359,14 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
   refine (Measure.pi_eq fun s hs => ?_).symm
-  simp only [det_diagonal, Measure.coe_smul, Algebra.id.smul_eq_mul, Pi.smul_apply]
+  simp only [det_diagonal, Measure.coe_smul, smul_eq_mul, Pi.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
   have :
     (Matrix.toLin' (diagonal D) ⁻¹' Set.pi Set.univ fun i : ι => s i) =
       Set.pi Set.univ fun i : ι => (D i * ·) ⁻¹' s i := by
     ext f
-    simp only [LinearMap.coe_proj, Algebra.id.smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
+    simp only [LinearMap.coe_proj, smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
       mem_preimage, LinearMap.pi_apply, diagonal_toLin']
   have B : ∀ i, ofReal (abs (D i)) * volume ((D i * ·) ⁻¹' s i) = volume (s i) := by
     intro i

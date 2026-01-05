@@ -103,11 +103,9 @@ theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
 theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj
 
-theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine eq_top_iff'.2 fun f => ?_
-  refine ⟨Finsupp.linearCombination R b (Finsupp.equivFunOnFinite.symm fun i => f (b i)),
-    b.ext fun i => ?_⟩
-  rw [b.toDual_eq_repr _ i, repr_linearCombination b, Finsupp.equivFunOnFinite_symm_apply_toFun]
+theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ :=
+  eq_top_iff'.2 fun f => ⟨Finsupp.linearCombination R b <|
+    Finsupp.equivFunOnFinite.symm fun i => f (b i), b.ext fun i => by simp⟩
 
 omit [DecidableEq ι] in
 @[simp]
@@ -216,6 +214,7 @@ open Lean.Elab.Tactic in
 meta def evalUseFiniteInstance : TacticM Unit := do
   evalTactic (← `(tactic| intros; apply Set.toFinite))
 
+@[inherit_doc evalUseFiniteInstance]
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/

@@ -244,7 +244,7 @@ theorem nth_mul_coeff' (n : ℕ) :
     let S : Set (Fin 2 × ℕ) := { a | a.2 = n ∨ a.2 < n }
     have ha' : a ∈ S := by grind
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    obtain ⟨ha, ha⟩ := ha' <;> omega
+    obtain ⟨ha, ha⟩ := ha' <;> lia
   use f
   intro x y
   dsimp [f, peval]

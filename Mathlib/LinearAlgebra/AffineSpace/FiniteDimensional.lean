@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -646,7 +647,7 @@ theorem affineIndependent_of_affineIndependent_collinear_ne {p₁ p₂ p₃ p : 
     AffineIndependent k ![p₁, p₂, p] := by
   rw [affineIndependent_iff_not_collinear_set]
   by_contra h
-  have h1: Collinear k {p₁, p₃, p₂, p} := by
+  have h1 : Collinear k {p₁, p₃, p₂, p} := by
     apply collinear_insert_insert_of_mem_affineSpan_pair
     · apply Collinear.mem_affineSpan_of_mem_of_ne h (by simp) (by simp) (by simp) hne
     · apply Collinear.mem_affineSpan_of_mem_of_ne hcol (by simp) (by simp) (by simp) hne

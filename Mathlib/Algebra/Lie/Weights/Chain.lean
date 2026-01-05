@@ -331,7 +331,7 @@ lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
 
 lemma genWeightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β) :
     genWeightSpace M ((-n : ℤ) • α + β : L → R) ≠ ⊥ := by
-  apply genWeightSpace_zsmul_add_ne_bot α β <;> omega
+  apply genWeightSpace_zsmul_add_ne_bot α β <;> lia
 
 /-- The last weight in an `α`-chain through `β`. -/
 noncomputable

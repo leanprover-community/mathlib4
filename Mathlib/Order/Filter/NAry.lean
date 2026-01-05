@@ -20,8 +20,8 @@ operations on filters.
 
 ## Notes
 
-This file is very similar to `Data.Set.NAry`, `Data.Finset.NAry` and `Data.Option.NAry`. Please
-keep them in sync.
+This file is very similar to `Mathlib/Data/Set/NAry.lean`, `Mathlib/Data/Finset/NAry.lean` and
+`Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
 
 @[expose] public section

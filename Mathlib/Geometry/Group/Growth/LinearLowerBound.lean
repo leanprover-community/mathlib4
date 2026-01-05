@@ -15,7 +15,7 @@ public import Mathlib.Data.Nat.SuccPred
 This file proves that the growth of a set generating an infinite group is at least linear.
 -/
 
-@[expose] public section
+public section
 
 open Subgroup
 open scoped Pointwise
@@ -71,7 +71,7 @@ lemma pow_right_strictMonoOn (hX₁ : 1 ∈ X) (hX : X.Nontrivial) :
   · simp [eq_comm (a := (1 : Set _)), coe_set_eq_one, -Set.subset_singleton_iff,
       hX.coe.not_subset_singleton] at hm
   · calc (X : Set G) ^ (n - 1)
-    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; cutsat
+    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; lia
     _ = closure (X : Set G) := by rw [hm, Set.pow_mul_subgroupClosure hX.nonempty.to_set]
 
 @[to_additive]
