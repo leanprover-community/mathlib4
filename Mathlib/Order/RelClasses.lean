@@ -38,7 +38,7 @@ theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
 theorem IsAntisymm.swap (r) [IsAntisymm α r] : IsAntisymm α (swap r) :=
   ⟨fun _ _ h₁ h₂ => _root_.antisymm h₂ h₁⟩
 
-theorem IsAsymm.swap (r) [IsAsymm α r] : IsAsymm α (swap r) :=
+theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
 
 theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
@@ -114,9 +114,9 @@ theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α
     (h₁ : ¬r a b) (h₂ : ¬r b c) : ¬r a c :=
   mt (IsOrderConnected.conn a b c) <| by simp [h₁, h₂]
 
-theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected α r] :
+theorem isStrictWeakOrder_of_isOrderConnected [Std.Asymm r] [IsOrderConnected α r] :
     IsStrictWeakOrder α r :=
-  { @IsAsymm.isIrrefl α r _ with
+  { @Std.Asymm.isIrrefl α r _ with
     trans := fun _ _ c h₁ h₂ => (IsOrderConnected.conn _ c _ h₁).resolve_right (asymm h₂),
     incomp_trans := fun _ _ _ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ =>
       ⟨IsOrderConnected.neg_trans h₁ h₃, IsOrderConnected.neg_trans h₄ h₂⟩ }
@@ -133,8 +133,8 @@ theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Funct
     IsTrichotomous β (InvImage r f) where
   trichotomous a b := trichotomous (f a) (f b) |>.imp3 id (h ·) id
 
-instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
-  asymm a b h h2 := IsAsymm.asymm (f a) (f b) h h2
+instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f) where
+  asymm a b h h2 := Std.Asymm.asymm (f a) (f b) h h2
 
 /-! ### Well-order -/
 
@@ -220,12 +220,12 @@ theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : Wel
   @WellFoundedRelation.asymmetric₃ _ ⟨_, h⟩ _ _ _
 
 -- see Note [lower instance priority]
-instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
+instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : Std.Asymm r :=
   ⟨IsWellFounded.wf.asymmetric⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
-  IsAsymm.isIrrefl
+  Std.Asymm.isIrrefl
 
 instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
   ⟨i.wf.transGen⟩
@@ -268,7 +268,7 @@ instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Is
   infer_instance
 
 -- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsAsymm α r := by
+instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Std.Asymm r := by
   infer_instance
 
 namespace WellFoundedLT
@@ -406,7 +406,7 @@ instance instIsIrrefl [IsIrrefl α r] {f : β → α} : IsIrrefl β (f ⁻¹'o r
 instance instIsSymm [Std.Symm r] {f : β → α} : Std.Symm (f ⁻¹'o r) :=
   ⟨fun _ _ ↦ symm_of r⟩
 
-instance instIsAsymm [IsAsymm α r] {f : β → α} : IsAsymm β (f ⁻¹'o r) :=
+instance instAsymm [Std.Asymm r] {f : β → α} : Std.Asymm (f ⁻¹'o r) :=
   ⟨fun _ _ ↦ asymm_of r⟩
 
 instance instIsTrans [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
@@ -523,7 +523,7 @@ lemma ne_of_ssuperset [IsIrrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → b ≠ a
 @[trans]
 lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
 
-lemma ssubset_asymm [IsAsymm α (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
+lemma ssubset_asymm [Std.Asymm (α := α) (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
 
 alias Eq.trans_ssubset := ssubset_of_eq_of_ssubset
 
@@ -655,13 +655,13 @@ instance [Preorder α] : IsIrrefl α (· < ·) :=
 instance [Preorder α] : IsTrans α (· < ·) :=
   ⟨@lt_trans _ _⟩
 
-@[to_dual instIsAsymmGt]
-instance [Preorder α] : IsAsymm α (· < ·) :=
+@[to_dual instAsymmGt]
+instance instAsymmLt [Preorder α] : Std.Asymm (α := α) (· < ·) :=
   ⟨@lt_asymm _ _⟩
 
 @[to_dual instIsAntisymmGt]
 instance [Preorder α] : IsAntisymm α (· < ·) :=
-  IsAsymm.isAntisymm _
+  Std.Asymm.isAntisymm _
 
 @[to_dual instIsStrictOrderGt]
 instance [Preorder α] : IsStrictOrder α (· < ·) where
