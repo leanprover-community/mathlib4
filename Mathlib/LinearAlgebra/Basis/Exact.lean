@@ -26,13 +26,13 @@ is stated not for `κ ⊕ σ`, but for an arbitrary type `ι` with two maps `κ 
 variable {R M K P : Type*} [Ring R] [AddCommGroup M] [AddCommGroup K] [AddCommGroup P]
 variable [Module R M] [Module R K] [Module R P]
 variable {f : K →ₗ[R] M} {g : M →ₗ[R] P} {s : M →ₗ[R] K}
-variable (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
+variable (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.AddExact f g)
 variable {ι κ σ : Type*} {v : ι → M} {a : κ → ι} {b : σ → ι}
 
 section
 include hs hfg
 
-lemma LinearIndependent.linearIndependent_of_exact_of_retraction
+lemma LinearIndependent.linearIndependent_of_addExact_of_retraction
     (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
     (hli : LinearIndependent R v) :
     LinearIndependent R (g ∘ v ∘ a) := by
@@ -51,6 +51,10 @@ lemma LinearIndependent.linearIndependent_of_exact_of_retraction
   replace hs := DFunLike.congr_fun hs y
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
   rw [← hs, hz, map_zero]
+
+@[deprecated (since := "2026-01-05")]
+alias LinearIndependent.linearIndependent_of_exact_of_retraction :=
+  LinearIndependent.linearIndependent_of_addExact_of_retraction
 
 private lemma top_le_span_of_aux (v : κ ⊕ σ → M)
     (hg : Function.Surjective g) (hslzero : ∀ i, s (v (.inl i)) = 0)
@@ -96,7 +100,7 @@ noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Ba
     (hlib : LinearIndependent R (s ∘ v ∘ b))
     (hab : Codisjoint (Set.range a) (Set.range b)) :
     Basis κ R P :=
-  .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
+  .mk (v.linearIndependent.linearIndependent_of_addExact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))
 
 @[simp]

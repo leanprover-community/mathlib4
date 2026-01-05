@@ -146,11 +146,11 @@ lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M
 
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
-variable (H : Function.Exact f g)
+variable (H : Function.AddExact f g)
 
 include hf hg H in
 /-- Length is additive in exact sequences. -/
-lemma Module.length_eq_add_of_exact :
+lemma Module.length_eq_add_of_addExact :
     Module.length R M = Module.length R N + Module.length R P := by
   by_cases hP : IsFiniteLength R P
   · by_cases hN : IsFiniteLength R N
@@ -161,7 +161,7 @@ lemma Module.length_eq_add_of_exact :
       let t' : CompositionSeries (Submodule R M) :=
         t.map ⟨Submodule.map f, Submodule.map_covBy_of_injective hf⟩
       have hfg : Submodule.map f ⊤ = Submodule.comap g ⊥ := by
-        rw [Submodule.map_top, Submodule.comap_bot, LinearMap.exact_iff.mp H]
+        rw [Submodule.map_top, Submodule.comap_bot, LinearMap.addExact_iff.mp H]
       let r := t'.smash s' (by simpa [s', t', hs₁, ht₂] using hfg)
       rw [← Module.length_compositionSeries s hs₁ hs₂,
         ← Module.length_compositionSeries t ht₁ ht₂,
@@ -176,23 +176,26 @@ lemma Module.length_eq_add_of_exact :
     rw [← Module.length_ne_top_iff, ne_eq, not_not] at hP this
     rw [hP, this, add_top]
 
+@[deprecated (since := "2026-01-05")]
+alias Module.length_eq_add_of_exact := Module.length_eq_add_of_addExact
+
 include hf in
 lemma Module.length_le_of_injective : Module.length R N ≤ Module.length R M := by
-  rw [Module.length_eq_add_of_exact f (LinearMap.range f).mkQ hf
-    (Submodule.mkQ_surjective _) (LinearMap.exact_map_mkQ_range f)]
+  rw [Module.length_eq_add_of_addExact f (LinearMap.range f).mkQ hf
+    (Submodule.mkQ_surjective _) (LinearMap.addExact_map_mkQ_range f)]
   exact le_self_add
 
 include hg in
 lemma Module.length_le_of_surjective : Module.length R P ≤ Module.length R M := by
-  rw [Module.length_eq_add_of_exact (LinearMap.ker g).subtype g (Submodule.subtype_injective _) hg
-    (LinearMap.exact_subtype_ker_map g)]
+  rw [Module.length_eq_add_of_addExact (LinearMap.ker g).subtype g
+    (Submodule.subtype_injective _) hg (LinearMap.addExact_subtype_ker_map g)]
   exact le_add_self
 
 variable (R M N) in
 @[simp]
 lemma Module.length_prod :
     Module.length R (M × N) = Module.length R M + Module.length R N :=
-  Module.length_eq_add_of_exact _ _ LinearMap.inl_injective LinearMap.snd_surjective .inl_snd
+  Module.length_eq_add_of_addExact _ _ LinearMap.inl_injective LinearMap.snd_surjective .inl_snd
 
 variable (R) in
 @[simp]

@@ -114,8 +114,8 @@ lemma ab_exact_iff :
     obtain ⟨x₁, rfl⟩ := h x₂ hx₂
     exact ⟨x₁, rfl⟩
 
-lemma ab_exact_iff_function_exact :
-    S.Exact ↔ Function.Exact S.f S.g := by
+lemma ab_exact_iff_function_addExact :
+    S.Exact ↔ Function.AddExact S.f S.g := by
   rw [S.ab_exact_iff]
   apply forall_congr'
   intro x₂
@@ -125,6 +125,9 @@ lemma ab_exact_iff_function_exact :
     rintro ⟨x₁, rfl⟩
     simp only [ab_zero_apply]
   · tauto
+
+@[deprecated (since := "2026-01-05")]
+alias ab_exact_iff_function_exact := ab_exact_iff_function_addExact
 
 variable {S}
 

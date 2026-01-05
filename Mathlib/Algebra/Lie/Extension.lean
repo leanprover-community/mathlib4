@@ -60,7 +60,7 @@ class IsExtension (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) : Prop where
   exact : i.range = p.ker
 
 lemma _root_.LieHom.range_eq_ker_iff (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) :
-    i.range = p.ker ↔ Exact i p :=
+    i.range = p.ker ↔ AddExact i p :=
   ⟨fun h x ↦ by simp [← LieHom.coe_range, h], fun h ↦ (p.ker.toLieSubalgebra.ext i.range h).symm⟩
 
 /-- The equivalence from the kernel of the projection. -/
@@ -107,7 +107,7 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
 
 lemma incl_apply_mem_ker (E : Extension R M L) (x : M) :
     E.incl x ∈ E.proj.ker :=
-  Exact.apply_apply_eq_zero ((E.incl.range_eq_ker_iff E.proj).mp E.IsExtension.exact) x
+  AddExact.apply_apply_eq_zero ((E.incl.range_eq_ker_iff E.proj).mp E.IsExtension.exact) x
 
 @[simp] lemma proj_incl (E : Extension R M L) (x : M) :
     E.proj (E.incl x) = 0 :=

@@ -34,8 +34,8 @@ variable (f₂ : M₂ →ₗ[R] M₂') [IsLocalizedModule S f₂]
 
 /-- Localization of modules is an exact functor, proven here for `LocalizedModule`.
 See `IsLocalizedModule.map_exact` for the more general version. -/
-lemma LocalizedModule.map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Exact g h) :
-    Exact (map S (mkLinearMap S M₀) (mkLinearMap S M₁) g)
+lemma LocalizedModule.map_addExact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : AddExact g h) :
+    AddExact (map S (mkLinearMap S M₀) (mkLinearMap S M₁) g)
     (map S (mkLinearMap S M₁) (mkLinearMap S M₂) h) :=
   fun y ↦ Iff.intro
     (induction_on
@@ -52,10 +52,16 @@ lemma LocalizedModule.map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M�
       refine induction_on (fun m s hx ↦ ?_) x
       rw [← hx, map_LocalizedModules, map_LocalizedModules, (ex (g m)).2 ⟨m, rfl⟩, zero_mk]
 
+@[deprecated (since := "2026-01-05")]
+alias LocalizedModule.map_exact := LocalizedModule.map_addExact
+
 /-- Localization of modules is an exact functor. -/
-theorem IsLocalizedModule.map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂) (ex : Function.Exact g h) :
-    Function.Exact (map S f₀ f₁ g) (map S f₁ f₂ h) :=
-  Function.Exact.of_ladder_linearEquiv_of_exact
-    (map_iso_commute S f₀ f₁ g) (map_iso_commute S f₁ f₂ h) (LocalizedModule.map_exact S g h ex)
+theorem IsLocalizedModule.map_addExact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂)
+    (ex : Function.AddExact g h) : Function.AddExact (map S f₀ f₁ g) (map S f₁ f₂ h) :=
+  Function.AddExact.of_ladder_linearEquiv_of_exact
+    (map_iso_commute S f₀ f₁ g) (map_iso_commute S f₁ f₂ h) (LocalizedModule.map_addExact S g h ex)
+
+@[deprecated (since := "2026-01-05")]
+alias IsLocalizedModule.map_exact := IsLocalizedModule.map_addExact
 
 end

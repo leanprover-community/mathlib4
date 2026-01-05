@@ -75,10 +75,10 @@ theorem bijective_of_isLocalized_maximal
   ⟨injective_of_isLocalized_maximal Mₚ f Nₚ g F fun J _ ↦ (H J).1,
   surjective_of_isLocalized_maximal Mₚ f Nₚ g F fun J _ ↦ (H J).2⟩
 
-theorem exact_of_isLocalized_maximal (H : ∀ (J : Ideal R) [J.IsMaximal],
-    Function.Exact (map J.primeCompl (f J) (g J) F) (map J.primeCompl (g J) (h J) G)) :
-    Function.Exact F G := by
-  simp only [LinearMap.exact_iff] at H ⊢
+theorem addExact_of_isLocalized_maximal (H : ∀ (J : Ideal R) [J.IsMaximal],
+    Function.AddExact (map J.primeCompl (f J) (g J) F) (map J.primeCompl (g J) (h J) G)) :
+    Function.AddExact F G := by
+  simp only [LinearMap.addExact_iff] at H ⊢
   apply eq_of_localization₀_maximal Nₚ g
   intro J hJ
   rw [← LinearMap.range_localizedMap_eq_localized₀_range _ (f J) (g J) F,
@@ -87,6 +87,9 @@ theorem exact_of_isLocalized_maximal (H : ∀ (J : Ideal R) [J.IsMaximal],
   ext x
   simp only [mem_range, mem_ker] at this ⊢
   exact this x
+
+@[deprecated (since := "2026-01-05")]
+alias exact_of_isLocalized_maximal := addExact_of_isLocalized_maximal
 
 theorem LinearIndependent.of_isLocalized_maximal {ι} (v : ι → M)
     (H : ∀ (P : Ideal R) [P.IsMaximal], LinearIndependent (Rₚ P) (f P ∘ v)) :
@@ -117,11 +120,14 @@ theorem bijective_of_localized_maximal
   ⟨injective_of_localized_maximal _ fun J _ ↦ (h J).1,
   surjective_of_localized_maximal _ fun J _ ↦ (h J).2⟩
 
-theorem exact_of_localized_maximal
-    (h : ∀ (J : Ideal R) [J.IsMaximal], Function.Exact (map J.primeCompl f) (map J.primeCompl g)) :
-    Function.Exact f g :=
-  exact_of_isLocalized_maximal _ (fun _ _ ↦ mkLinearMap _ _) _ (fun _ _ ↦ mkLinearMap _ _)
+theorem addExact_of_localized_maximal (h : ∀ (J : Ideal R) [J.IsMaximal],
+    Function.AddExact (map J.primeCompl f) (map J.primeCompl g)) :
+    Function.AddExact f g :=
+  addExact_of_isLocalized_maximal _ (fun _ _ ↦ mkLinearMap _ _) _ (fun _ _ ↦ mkLinearMap _ _)
     _ (fun _ _ ↦ mkLinearMap _ _) f g h
+
+@[deprecated (since := "2026-01-05")]
+alias exact_of_localized_maximal := addExact_of_localized_maximal
 
 end localized_maximal
 
@@ -170,10 +176,10 @@ theorem bijective_of_isLocalized_span
   ⟨injective_of_isLocalized_span _ spn Mₚ f Nₚ g F fun r ↦ (H r).1,
   surjective_of_isLocalized_span _ spn Mₚ f Nₚ g F fun r ↦ (H r).2⟩
 
-lemma exact_of_isLocalized_span (H : ∀ r : s, Function.Exact
+lemma addExact_of_isLocalized_span (H : ∀ r : s, Function.AddExact
     (map (.powers r.1) (f r) (g r) F) (map (.powers r.1) (g r) (h r) G)) :
-    Function.Exact F G := by
-  simp only [LinearMap.exact_iff] at H ⊢
+    Function.AddExact F G := by
+  simp only [LinearMap.addExact_iff] at H ⊢
   apply Submodule.eq_of_isLocalized₀_span s spn Nₚ g
   intro r
   rw [← LinearMap.range_localizedMap_eq_localized₀_range _ (f r) (g r) F]
@@ -182,6 +188,9 @@ lemma exact_of_isLocalized_span (H : ∀ r : s, Function.Exact
   ext x
   simp only [mem_range, mem_ker] at this ⊢
   exact this x
+
+@[deprecated (since := "2026-01-05")]
+alias exact_of_isLocalized_span := addExact_of_isLocalized_span
 
 end isLocalized_span
 
@@ -208,11 +217,14 @@ theorem bijective_of_localized_span
   ⟨injective_of_localized_span _ spn _ fun r ↦ (h r).1,
   surjective_of_localized_span _ spn _ fun r ↦ (h r).2⟩
 
-lemma exact_of_localized_span
-    (h : ∀ r : s, Function.Exact (map (.powers r.1) f) (map (.powers r.1) g)) :
-    Function.Exact f g :=
-  exact_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _)
+lemma addExact_of_localized_span
+    (h : ∀ r : s, Function.AddExact (map (.powers r.1) f) (map (.powers r.1) g)) :
+    Function.AddExact f g :=
+  addExact_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _)
     _ (fun _ ↦ mkLinearMap _ _) f g h
+
+@[deprecated (since := "2026-01-05")]
+alias exact_of_localized_span := addExact_of_localized_span
 
 end localized_span
 

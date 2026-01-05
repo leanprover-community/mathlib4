@@ -52,14 +52,14 @@ variable {R} [CommRing R] {M₁ M₂ M₃ N₁ N₂ N₃}
   [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup M₃] [Module R M₃]
   [AddCommGroup N₁] [Module R N₁] [AddCommGroup N₂] [Module R N₂] [AddCommGroup N₃] [Module R N₃]
   (i₁ : M₁ →ₗ[R] N₁) (i₂ : M₂ →ₗ[R] N₂) (i₃ : M₃ →ₗ[R] N₃)
-  (f₁ : M₁ →ₗ[R] M₂) (f₂ : M₂ →ₗ[R] M₃) (hf : Exact f₁ f₂)
-  (g₁ : N₁ →ₗ[R] N₂) (g₂ : N₂ →ₗ[R] N₃) (hg : Exact g₁ g₂)
+  (f₁ : M₁ →ₗ[R] M₂) (f₂ : M₂ →ₗ[R] M₃) (hf : AddExact f₁ f₂)
+  (g₁ : N₁ →ₗ[R] N₂) (g₂ : N₂ →ₗ[R] N₃) (hg : AddExact g₁ g₂)
   (h₁ : g₁.comp i₁ = i₂.comp f₁) (h₂ : g₂.comp i₂ = i₃.comp f₂)
   (σ : M₃ → M₂) (hσ : f₂ ∘ σ = id) (ρ : N₂ → N₁) (hρ : ρ ∘ g₁ = id)
   {K₂ K₃ C₁ C₂} [AddCommGroup K₂] [Module R K₂] [AddCommGroup K₃] [Module R K₃]
   [AddCommGroup C₁] [Module R C₁] [AddCommGroup C₂] [Module R C₂]
-  (ι₂ : K₂ →ₗ[R] M₂) (hι₂ : Exact ι₂ i₂) (ι₃ : K₃ →ₗ[R] M₃) (hι₃ : Exact ι₃ i₃)
-  (π₁ : N₁ →ₗ[R] C₁) (hπ₁ : Exact i₁ π₁) (π₂ : N₂ →ₗ[R] C₂) (hπ₂ : Exact i₂ π₂)
+  (ι₂ : K₂ →ₗ[R] M₂) (hι₂ : AddExact ι₂ i₂) (ι₃ : K₃ →ₗ[R] M₃) (hι₃ : AddExact ι₃ i₃)
+  (π₁ : N₁ →ₗ[R] C₁) (hπ₁ : AddExact i₁ π₁) (π₂ : N₂ →ₗ[R] C₂) (hπ₂ : AddExact i₂ π₂)
 
 include hg hρ h₂ hσ hι₃ in
 lemma SnakeLemma.δ_aux (x : K₃) : g₁ (ρ (i₂ (σ (ι₃ x)))) = i₂ (σ (ι₃ x)) := by
@@ -148,9 +148,9 @@ C₁
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
 (set-theoretic) retraction `ρ`, and `ι₃` is injective, then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
-lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F)
+lemma SnakeLemma.addExact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F)
     (h : Injective ι₃) :
-    Exact F (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) := by
+    AddExact F (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) := by
   haveI H₁ : ∀ x, f₂ (σ x) = x := congr_fun hσ
   haveI H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
   intro x
@@ -164,6 +164,9 @@ lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ 
   · rintro ⟨y, rfl⟩
     exact (δ_eq i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁ _ (ι₂ y) congr($hF y)
       _ (by rw [map_zero, hι₂.apply_apply_eq_zero])).trans π₁.map_zero
+
+@[deprecated (since := "2026-01-05")]
+alias SnakeLemma.exact_δ_right := SnakeLemma.addExact_δ_right
 
 include hπ₂ in
 /--
@@ -187,8 +190,8 @@ C₁ -G-→ C₂
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
 (set-theoretic) retraction `ρ`, and `π₁` is surjective, then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/
-lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
-    Exact (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) G := by
+lemma SnakeLemma.addExact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
+    AddExact (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) G := by
   haveI H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
   intro x
   constructor
@@ -201,6 +204,9 @@ lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π
   · rintro ⟨x, rfl⟩
     simp only [δ, coe_mk, AddHom.coe_mk]
     rw [← G.comp_apply, hF, π₂.comp_apply, H₂, hπ₂.apply_apply_eq_zero]
+
+@[deprecated (since := "2026-01-05")]
+alias SnakeLemma.exact_δ_left := SnakeLemma.addExact_δ_left
 
 /--
 Suppose we have an exact commutative diagram
@@ -255,10 +261,13 @@ C₁
 such that `f₂` is surjective, `g₁` is injective, and `ι₃` is injective,
 then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
-lemma SnakeLemma.exact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
+lemma SnakeLemma.addExact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
     (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F) (h : Injective ι₃) :
-    Exact F (δ' i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ ι₃ hι₃ π₁ hπ₁ hf₂ hg₁) :=
-  SnakeLemma.exact_δ_right _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ‹_› _ _ _ _ _ ‹_› ‹_›
+    AddExact F (δ' i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ ι₃ hι₃ π₁ hπ₁ hf₂ hg₁) :=
+  SnakeLemma.addExact_δ_right _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ‹_› _ _ _ _ _ ‹_› ‹_›
+
+@[deprecated (since := "2026-01-05")]
+alias SnakeLemma.exact_δ'_right := SnakeLemma.addExact_δ'_right
 
 include hπ₂ in
 /--
@@ -282,7 +291,10 @@ C₁ -G-→ C₂
 such that `f₂` is surjective, `g₁` is injective, and `π₁` is surjective,
 then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/
-lemma SnakeLemma.exact_δ'_left (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
+lemma SnakeLemma.addExact_δ'_left (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
     (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
-    Exact (δ' i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ ι₃ hι₃ π₁ hπ₁ hf₂ hg₁) G :=
-  SnakeLemma.exact_δ_left _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ‹_› _ ‹_› ‹_›
+    AddExact (δ' i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ ι₃ hι₃ π₁ hπ₁ hf₂ hg₁) G :=
+  SnakeLemma.addExact_δ_left _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ‹_› _ ‹_› ‹_›
+
+@[deprecated (since := "2026-01-05")]
+alias SnakeLemma.exact_δ'_left := SnakeLemma.addExact_δ'_left

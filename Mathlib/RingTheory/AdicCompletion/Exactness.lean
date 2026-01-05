@@ -111,7 +111,7 @@ section
 variable [IsNoetherianRing R] [Module.Finite R N]
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P} (hf : Function.Injective f)
-  (hfg : Function.Exact f g) (hg : Function.Surjective g)
+  (hfg : Function.AddExact f g) (hg : Function.Surjective g)
 
 section
 
@@ -181,8 +181,8 @@ end
 
 include hf hfg hg in
 /-- `AdicCompletion` over a Noetherian ring is exact on finitely generated modules. -/
-theorem map_exact : Function.Exact (map I f) (map I g) := by
-  refine LinearMap.exact_of_comp_eq_zero_of_ker_le_range ?_ (fun y ↦ ?_)
+theorem map_addExact : Function.AddExact (map I f) (map I g) := by
+  refine LinearMap.addExact_of_comp_eq_zero_of_ker_le_range ?_ (fun y ↦ ?_)
   · rw [map_comp, hfg.linearMap_comp_eq_zero, AdicCompletion.map_zero]
   · apply AdicCompletion.induction_on I N y (fun b ↦ ?_)
     intro hz
@@ -201,6 +201,9 @@ theorem map_exact : Function.Exact (map I f) (map I g) := by
       have hle : (I ^ (k + n) • ⊤ : Submodule R N) ≤ (I ^ n • ⊤ : Submodule R N) :=
         Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))
       exact hle (a n).property
+
+@[deprecated (since := "2026-01-05")]
+alias map_exact := map_addExact
 
 end
 

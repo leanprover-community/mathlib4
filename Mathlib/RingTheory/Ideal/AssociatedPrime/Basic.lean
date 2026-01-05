@@ -120,7 +120,7 @@ theorem subset_of_injective (hf : Function.Injective f) :
 /-- If `0 → M → M' → M''` is an exact sequence, then the set of associated primes of `M'` is
 contained in the union of those of `M` and `M''`. -/
 @[stacks 02M3 "second part"]
-theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
+theorem subset_union_of_addExact (hf : Function.Injective f) (hfg : Function.AddExact f g) :
     associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
   rintro p ⟨_, x, hx⟩
   by_cases! h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
@@ -147,6 +147,9 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
       obtain ⟨y, hy⟩ := hb
       by_contra H
       exact h b H y hy
+
+@[deprecated (since := "2026-01-05")]
+alias subset_union_of_exact := subset_union_of_addExact
 
 variable (R M M') in
 /-- The set of associated primes of the product of two modules is equal to

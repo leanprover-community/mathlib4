@@ -314,9 +314,12 @@ lemma ker_π : LinearMap.ker solution.π = Submodule.span A (Set.range relations
   simpa only [← injective_fromQuotient_iff_ker_π_eq_span] using h.bijective.1
 
 /-- The sequence `(relations.R →₀ A) → (relations.G →₀ A) → M → 0` is exact. -/
-lemma exact : Function.Exact relations.map solution.π := by
-  rw [LinearMap.exact_iff, range_map, ← solution.injective_fromQuotient_iff_ker_π_eq_span]
+lemma addExact : Function.AddExact relations.map solution.π := by
+  rw [LinearMap.addExact_iff, range_map, ← solution.injective_fromQuotient_iff_ker_π_eq_span]
   exact h.bijective.1
+
+@[deprecated (since := "2026-01-05")]
+alias exact := addExact
 
 variable {N : Type v'} [AddCommGroup N] [Module A N]
 

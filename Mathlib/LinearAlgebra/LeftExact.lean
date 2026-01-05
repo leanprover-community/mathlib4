@@ -29,9 +29,9 @@ variable {R : Type*} [CommRing R] {M1 M2 M3 : Type*} (N : Type*)
   [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup M3] [AddCommGroup N]
   [Module R M1] [Module R M2] [Module R M3] [Module R N]
 
-lemma exact_lcomp_of_exact_of_surjective {f : M1 →ₗ[R] M2} {g : M2 →ₗ[R] M3}
-    (exac : Function.Exact f g) (surj : Function.Surjective g) :
-    Function.Exact (LinearMap.lcomp R N g) (LinearMap.lcomp R N f) := by
+lemma addExact_lcomp_of_addExact_of_surjective {f : M1 →ₗ[R] M2} {g : M2 →ₗ[R] M3}
+    (exac : Function.AddExact f g) (surj : Function.Surjective g) :
+    Function.AddExact (LinearMap.lcomp R N g) (LinearMap.lcomp R N f) := by
   intro h
   simp only [LinearMap.lcomp_apply', Set.mem_range]
   refine ⟨fun hh ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
@@ -40,5 +40,8 @@ lemma exact_lcomp_of_exact_of_surjective {f : M1 →ₗ[R] M2} {g : M2 →ₗ[R]
     ext x
     simp
   · rw [← hy, LinearMap.comp_assoc, exac.linearMap_comp_eq_zero, LinearMap.comp_zero y]
+
+@[deprecated (since := "2026-01-05")]
+alias exact_lcomp_of_exact_of_surjective := addExact_lcomp_of_addExact_of_surjective
 
 end LinearMap
