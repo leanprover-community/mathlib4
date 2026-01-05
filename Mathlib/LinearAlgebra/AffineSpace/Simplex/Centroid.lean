@@ -15,7 +15,7 @@ This file proves some basic properties of the centroid of a simplex in affine sp
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

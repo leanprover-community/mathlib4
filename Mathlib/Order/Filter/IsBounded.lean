@@ -18,7 +18,7 @@ This file proves several lemmas about
 `IsBounded`, `IsBoundedUnder`, `IsCobounded` and `IsCoboundedUnder`.
 -/
 
-@[expose] public section
+public section
 
 open Set Function
 

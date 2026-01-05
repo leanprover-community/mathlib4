@@ -20,7 +20,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 -/
 
-@[expose] public section
+public section
 
 open Module Submodule
 
