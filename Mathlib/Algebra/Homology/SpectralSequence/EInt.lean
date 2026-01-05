@@ -1,19 +1,23 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Kevin Buzzard
 -/
 module
 
 public import Mathlib.Order.WithBot
 
 /-!
-# ℤ with bot and top
+# The extended integers
+
+This file defines `EInt`, `ℤ` with a top element `⊤` and a bottom element `⊥`,
+implemented as `WithBot (WithTop ℤ)`.
 
 -/
 
 @[expose] public section
 
+/-- The type of extended integers `[-∞, ∞]`, constructed as `WithBot (WithTop ℤ)`. -/
 def EInt := WithBot (WithTop ℤ)
 
 /-- The canonical inclusion from integers to e-integers. Registered as a coercion. -/
@@ -33,14 +37,15 @@ theorem coe_strictMono : StrictMono Int.toEInt :=
 theorem coe_injective : Function.Injective Int.toEInt :=
   coe_strictMono.injective
 
-abbrev mk (a : ℤ) : EInt := a
-
 lemma coe_monotone : Monotone Int.toEInt := coe_strictMono.monotone
+
+/-- The constructor `ℤ → EInt`. -/
+abbrev mk (a : ℤ) : EInt := a
 
 section
 
 variable {motive : EInt → Sort*}
-    (bot : motive ⊥) (coe : ∀ a : ℤ, motive a) (top : motive ⊤)
+  (bot : motive ⊥) (coe : ∀ a : ℤ, motive a) (top : motive ⊤)
 
 /-- A recursor for `EInt` in terms of the coercion. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
