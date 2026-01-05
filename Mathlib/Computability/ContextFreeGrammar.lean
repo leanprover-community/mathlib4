@@ -24,6 +24,7 @@ nonterminal symbols that are referred to by its finitely many rules.
 
 ## Main theorems
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
+* `Language.IsContextFree.union`: The class of context-free languages is closed under union.
 -/
 
 @[expose] public section
