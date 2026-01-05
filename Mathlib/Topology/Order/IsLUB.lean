@@ -11,7 +11,7 @@ public import Mathlib.Topology.Order.LeftRightNhds
 # Properties of LUB and GLB in an order topology
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Topology Function
 

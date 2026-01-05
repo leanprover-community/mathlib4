@@ -14,7 +14,7 @@ public import Mathlib.Topology.Instances.AddCircle.Defs
 
 -/
 
-@[expose] public section
+public section
 
 namespace AddCircle
 
