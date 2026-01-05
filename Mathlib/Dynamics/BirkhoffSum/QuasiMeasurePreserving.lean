@@ -21,7 +21,7 @@ Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreservin
 
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory.Measure.QuasiMeasurePreserving
 
