@@ -6,9 +6,7 @@ Authors: Yunzhou Xie
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Matrix.Basis
-public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Mₙ(R)-module structure on `Mⁿ`
