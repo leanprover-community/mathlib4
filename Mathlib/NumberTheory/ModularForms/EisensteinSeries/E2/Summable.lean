@@ -15,10 +15,27 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 We collect here lemmas about the summability of the Eisenstein series `E2` that will be used to
 prove how it transforms under the slash action.
 
-The key identities used to prove these transformation formulae are `tsumFilter_tsum_eq` which says
-that  `∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))` equals
-`-2 * π * I / z` while if we take the sum the other way, `tsum_tsumFilter_eq` tells us that
-`∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0`.
+## Main Results
+
+The key results concern the difference between two different orders of summation for the
+telescoping series `∑_{m,n} (1/(mz + n) - 1/(mz + n + 1))`:
+
+1. **`tsum_symmetricIco_tsum_sub_eq`**: Summing first over `n` (in symmetric intervals), then `m`:
+   `∑'[symmetricIco] n : ℤ, ∑' m : ℤ, (1/(mz+n) - 1/(mz+n+1)) = -2πi/z`
+
+2. **`tsum_tsum_symmetricIco_sub_eq`**: Summing first over `m`, then `n` (in symmetric intervals):
+   `∑' m : ℤ, ∑'[symmetricIco] n : ℤ, (1/(mz+n) - 1/(mz+n+1)) = 0`
+
+The difference `-2πi/z` between these two orderings is precisely the correction term
+`D2` that appears in the transformation formula for `G2` under the action of `S`.
+
+## Proof Strategy
+
+1. For fixed `m ≠ 0`, the inner sum over `n` telescopes to zero (each term cancels with its
+   neighbor), establishing the first identity.
+
+2. For fixed `n`, the inner sum over `m` can be computed using the cotangent series expansion.
+   As `n → ±∞` in symmetric intervals, these sums contribute `-2πi/z`.
 
 -/
 
@@ -260,7 +277,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
   rw [this, show -2 * π * I / z = 0 + -2 * π * I / z by ring]
   apply Tendsto.add
   · have : Tendsto (fun x : ℕ ↦ -(2 / (x : ℂ))) atTop (𝓝 0) := by
-      simpa [tendsto_zero_iff_norm_tendsto_zero] using Filter.Tendsto.const_div_atTop
+      simpa [tendsto_zero_iff_norm_tendsto_zero] using Tendsto.const_div_atTop
         (g := fun n : ℕ ↦ ‖(n : ℂ)‖) (r := 2) (by simpa using tendsto_natCast_atTop_atTop)
     exact tendsto_comp_val_Ioi_atTop.mpr this
   · simp_rw [aux_tsum_identity_2]
