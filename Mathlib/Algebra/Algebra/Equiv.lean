@@ -549,6 +549,14 @@ theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
     (f.trans g).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
   rfl
 
+theorem linearEquivConj_mulLeft (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulLeft R x) = .mulLeft R (f x) := by
+  ext; simp [LinearEquiv.conj_apply]
+
+theorem linearEquivConj_mulRight (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulRight R x) = .mulRight R (f x) := by
+  ext; simp [LinearEquiv.conj_apply]
+
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
   { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
