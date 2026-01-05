@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
+module
+
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -25,6 +27,8 @@ field, its finite adèle ring is just defined to be the trivial ring.
 ## Tags
 finite adèle ring, dedekind domain
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R] [IsDedekindDomain R] {K : Type*}
     [Field K] [Algebra R K] [IsFractionRing R K]
@@ -85,8 +89,19 @@ the ring of finite adeles of `K`, defined as the restricted product of the compl
 and the restricted product is the subring of `∏_v K_v` consisting of elements which
 are in `R_v` for all but finitely many `v`.
 -/
-abbrev FiniteAdeleRing : Type _ :=
+def FiniteAdeleRing : Type _ :=
   Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+
+instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
+  CommRing <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+
+instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
+  TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+
+instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K) :=
+  inferInstanceAs <|
+  DFunLike (Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K])
+    (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K)
 
 namespace FiniteAdeleRing
 
@@ -102,10 +117,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
      adicCompletion, Valued.valuedCompletion_apply, not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
-  map_mul' x y := Subtype.eq <| funext (fun v ↦
+  map_mul' x y := Subtype.ext <| funext (fun v ↦
     UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
   map_zero' := rfl
-  map_add' x y := Subtype.eq <| funext (fun v ↦
+  map_add' x y := Subtype.ext <| funext (fun v ↦
     UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra

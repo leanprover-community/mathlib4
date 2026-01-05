@@ -3,9 +3,11 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Analysis.Convex.Body
-import Mathlib.Analysis.Convex.Measure
-import Mathlib.MeasureTheory.Group.FundamentalDomain
+module
+
+public import Mathlib.Analysis.Convex.Body
+public import Mathlib.Analysis.Convex.Measure
+public import Mathlib.MeasureTheory.Group.FundamentalDomain
 
 /-!
 # Geometry of numbers
@@ -32,6 +34,8 @@ Hermann Minkowski.
 
 * [Pete L. Clark, *Geometry of Numbers with Applications to Number Theory*][clark_gon] p.28
 -/
+
+@[expose] public section
 
 
 namespace MeasureTheory
@@ -64,8 +68,8 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h : μ F * 2 ^ finrank ℝ E < μ s) :
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
-    rw [addHaar_smul_of_nonneg μ (by simp : 0 ≤ (2 : ℝ)⁻¹) s, ←
-      mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (by finiteness),
+    rw [addHaar_smul_of_nonneg μ (by simp : 0 ≤ (2 : ℝ)⁻¹) s,
+      ← ENNReal.mul_lt_mul_iff_left (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (by finiteness),
       mul_right_comm, ofReal_pow (by simp : 0 ≤ (2 : ℝ)⁻¹), ofReal_inv_of_pos zero_lt_two]
     norm_num
     rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top, one_pow, one_mul]
@@ -91,11 +95,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h_cpt : IsCompact s)
     (h : μ F * 2 ^ finrank ℝ E ≤ μ s) :
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
-  have h_mes : μ s ≠ 0 := by
-    intro hμ
-    suffices μ F = 0 from fund.measure_ne_zero (NeZero.ne μ) this
-    rw [hμ, le_zero_iff, mul_eq_zero] at h
-    exact h.resolve_right <| pow_ne_zero _ two_ne_zero
+  have h_mes : μ s ≠ 0 := fun hμ ↦ fund.measure_ne_zero (NeZero.ne μ) <| by simpa [hμ] using h
   have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
   let u : ℕ → ℝ≥0 := (exists_seq_strictAnti_tendsto 0).choose
   let K : ConvexBody E := ⟨s, h_conv, h_cpt, h_nemp⟩
@@ -112,16 +112,16 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
       exact ⟨⟨x, by simp_all⟩, by aesop⟩
     · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
-    rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧  U ∩ L = {0}
+    rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧ U ∩ L = {0}
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
       exact AddSubgroup.isClosed_of_discrete.sdiff hU.1
-    exact isOpen_inter_eq_singleton_of_mem_discrete (zero_mem L)
+    exact isOpen_inter_eq_singleton_of_mem_discrete ⟨inferInstance⟩ (zero_mem L)
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n => ?_)
     (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
   · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_
     rw [add_le_add_iff_left]
-    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt.base n)
+    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt_add_one n)
   · suffices μ F * 2 ^ finrank ℝ E < μ (S n : Set E) by
       have h_symm' : ∀ x ∈ S n, -x ∈ S n := by
         rintro _ ⟨y, hy, rfl⟩
@@ -132,8 +132,10 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     refine lt_of_le_of_lt h ?_
     rw [ConvexBody.coe_smul', NNReal.smul_def, addHaar_smul_of_nonneg _ (NNReal.coe_nonneg _)]
     rw [show μ s < _ ↔ 1 * μ s < _ by rw [one_mul]]
-    refine (mul_lt_mul_right h_mes (ne_of_lt h_cpt.measure_lt_top)).mpr ?_
-    rw [ofReal_pow (NNReal.coe_nonneg _)]
+    dsimp [K]
+    gcongr
+    · exact h_cpt.measure_ne_top
+    rw [ofReal_pow (by positivity)]
     refine one_lt_pow₀ ?_ (ne_of_gt finrank_pos)
     simp [u, (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
 

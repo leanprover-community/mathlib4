@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.RelIso.Basic
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Order continuity
@@ -17,6 +19,8 @@ For monotone functions `ℝ → ℝ` these notions correspond to the usual left 
 We prove some basic lemmas (`map_sup`, `map_sSup` etc) and prove that a `RelIso` is both left
 and right order continuous.
 -/
+
+@[expose] public section
 
 
 universe u v w x
@@ -56,9 +60,6 @@ variable {α}
 protected theorem rightOrdContinuous_dual :
     LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
-
-@[deprecated (since := "2025-04-08")]
-protected alias order_dual := LeftOrdContinuous.rightOrdContinuous_dual
 
 theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
     IsGreatest (f '' s) (f x) :=

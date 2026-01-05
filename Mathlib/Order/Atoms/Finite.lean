@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Atoms
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
@@ -18,6 +20,8 @@ This module contains some results on atoms and simple lattices in the finite con
   are atomic resp. coatomic.
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -50,10 +54,8 @@ open scoped _root_.IsSimpleOrder
 variable [LE α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
 theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} := by
-  change Finset.map _ (Finset.univ : Finset Bool) = _
-  rw [Fintype.univ_bool]
-  simp only [Finset.map_insert, Function.Embedding.coeFn_mk, Finset.map_singleton]
-  rfl
+  ext
+  simpa using (eq_bot_or_eq_top _).symm
 
 theorem card : Fintype.card α = 2 :=
   (Fintype.ofEquiv_card _).trans Fintype.card_bool

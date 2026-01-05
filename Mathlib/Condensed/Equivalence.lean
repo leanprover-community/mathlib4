@@ -3,10 +3,12 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Nikolas Kuhn, Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Profinite.EffectiveEpi
-import Mathlib.Topology.Category.Stonean.EffectiveEpi
-import Mathlib.Condensed.Basic
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+module
+
+public import Mathlib.Topology.Category.Profinite.EffectiveEpi
+public import Mathlib.Topology.Category.Stonean.EffectiveEpi
+public import Mathlib.Condensed.Basic
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 /-!
 
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
@@ -32,6 +34,8 @@ categories. We give the corresponding statements for `Profinite` as well.
   coherent sheaves on `CompHaus` (i.e. condensed sets).
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory Limits
@@ -43,7 +47,7 @@ namespace StoneanCompHaus
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
 noncomputable
-def equivalence (A : Type*) [Category A]
+def equivalence (A : Type*) [Category* A]
     [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A] :
     Sheaf (coherentTopology Stonean) A ≌ Condensed.{u} A :=
   coherentTopology.equivalence' Stonean.toCompHaus A
@@ -74,7 +78,7 @@ instance : Stonean.toProfinite.EffectivelyEnough where
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `Profinite`. -/
 noncomputable
-def equivalence (A : Type*) [Category A]
+def equivalence (A : Type*) [Category* A]
     [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toProfinite.op) A] :
     Sheaf (coherentTopology Stonean) A ≌ Sheaf (coherentTopology Profinite) A :=
   coherentTopology.equivalence' Stonean.toProfinite A
@@ -86,14 +90,14 @@ namespace ProfiniteCompHaus
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
 (i.e. condensed sets). -/
 noncomputable
-def equivalence (A : Type*) [Category A]
+def equivalence (A : Type*) [Category* A]
     [∀ X, HasLimitsOfShape (StructuredArrow X profiniteToCompHaus.op) A] :
     Sheaf (coherentTopology Profinite) A ≌ Condensed.{u} A :=
   coherentTopology.equivalence' profiniteToCompHaus A
 
 end ProfiniteCompHaus
 
-variable {A : Type*} [Category A] (X : Condensed.{u} A)
+variable {A : Type*} [Category* A] (X : Condensed.{u} A)
 
 lemma isSheafProfinite
     [∀ Y, HasLimitsOfShape (StructuredArrow Y profiniteToCompHaus.{u}.op) A] :

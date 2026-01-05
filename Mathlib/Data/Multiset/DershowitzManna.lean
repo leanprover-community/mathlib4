@@ -3,8 +3,10 @@ Copyright (c) 2024 Haitian Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haitian Wang, Malvin Gattinger
 -/
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
+module
+
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public import Mathlib.Data.Multiset.OrderedMonoid
 
 /-!
 # Dershowitz-Manna ordering
@@ -24,14 +26,15 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 ## References
 
-* [Wikipedia, Dershowitz–Manna ordering*]
-(https://en.wikipedia.org/wiki/Dershowitz%E2%80%93Manna_ordering)
+* [Wikipedia, Dershowitz–Manna ordering](https://en.wikipedia.org/wiki/Dershowitz%E2%80%93Manna_ordering)
 
 * [CoLoR](https://github.com/fblanqui/color), a Coq library on rewriting theory and termination.
   Our code here is inspired by their formalization and the theorem is called `mOrd_wf` in the file
   [MultisetList.v](https://github.com/fblanqui/color/blob/1.8.5/Util/Multiset/MultisetOrder.v).
 
 -/
+
+@[expose] public section
 
 open Relation
 
@@ -52,7 +55,7 @@ lemma IsDershowitzMannaLT.trans :
     IsDershowitzMannaLT M N → IsDershowitzMannaLT N P → IsDershowitzMannaLT M P := by
   classical
   rintro ⟨X₁, Y₁, Z₁, -, rfl, rfl, hYZ₁⟩ ⟨X₂, Y₂, Z₂, hZ₂, hXZXY, rfl, hYZ₂⟩
-  rw [add_comm X₁,add_comm X₂] at hXZXY
+  rw [add_comm X₁, add_comm X₂] at hXZXY
   refine ⟨X₁ ∩ X₂, Y₁ + (Y₂ - Z₁), Z₂ + (Z₁ - Y₂), ?_, ?_, ?_, ?_⟩
   · simpa [-not_and, not_and_or] using .inl hZ₂
   · rwa [← add_assoc, add_right_comm, inter_add_sub_of_add_eq_add]
@@ -100,9 +103,9 @@ private lemma isDershowitzMannaLT_singleton_insert (h : OneStep N (a ::ₘ M)) :
 
 private lemma acc_oneStep_cons_of_acc_lt (ha : Acc LT.lt a) :
     ∀ {M}, Acc OneStep M → Acc OneStep (a ::ₘ M) := by
-  induction' ha with a _ ha
+  induction ha with | _ a _ ha
   rintro M hM
-  induction' hM with M hM ihM
+  induction hM with | _ M hM ihM
   refine .intro _ fun N hNM ↦ ?_
   obtain ⟨N, ⟨rfl, hNM'⟩ | ⟨rfl, hN⟩⟩ := isDershowitzMannaLT_singleton_insert hNM
   · exact ihM _ hNM'
@@ -135,8 +138,9 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
     IsDershowitzMannaLT M N → TransGen OneStep M N := by
   classical
   rintro ⟨X, Y, Z, hZ, hM, hN, hYZ⟩
-  induction' Z using Multiset.induction_on with z Z ih generalizing X Y M N
-  · simp at hZ
+  induction Z using Multiset.induction_on generalizing X Y M N with
+  | empty => simp at hZ
+  | cons z Z ih => ?_
   obtain rfl | hZ := eq_or_ne Z 0
   · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
   let Y' : Multiset α := Y.filter (· < z)
@@ -149,7 +153,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
 private lemma isDershowitzMannaLT_of_transGen_oneStep (hMN : TransGen OneStep M N) :
     IsDershowitzMannaLT M N :=
   hMN.trans_induction_on (by rintro _ _ ⟨X, Y, a, rfl, rfl, hYa⟩; exact ⟨X, Y, {a}, by simpa⟩)
-    fun  _ _ ↦ .trans
+    fun _ _ ↦ .trans
 
 /-- `TransGen OneStep` and `IsDershowitzMannaLT` are equivalent. -/
 private lemma transGen_oneStep_eq_isDershowitzMannaLT :

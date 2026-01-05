@@ -3,12 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Hom.CompTypeclasses
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.Algebra.Group.Hom.CompTypeclasses
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
 # Equivariant homomorphisms
@@ -53,6 +54,8 @@ that it could lead to confusion — unless one needs types `M` and `X` with simu
 instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
 
 -/
+
+@[expose] public section
 
 assert_not_exists Submonoid
 
@@ -798,7 +801,7 @@ class MulSemiringActionSemiHomClass (F : Type*)
     extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
-the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
+the ring structure and equivariant with respect to a `DistribMulAction` of `M` on `R` and `S`.
 -/
 abbrev MulSemiringActionHomClass
     (F : Type*)

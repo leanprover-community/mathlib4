@@ -3,7 +3,9 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.IndepAxioms
+module
+
+public import Mathlib.Combinatorics.Matroid.IndepAxioms
 
 /-!
 # Matroid Duality
@@ -27,6 +29,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
 * `M.Coindep X` means `M✶.Indep X`, or equivalently that `X` is contained in `M.E \ B` for some
   base `B` of `M`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Paul A. Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Convex bodies
@@ -28,6 +30,8 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 convex, convex body
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise Topology NNReal
@@ -83,7 +87,7 @@ theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s 
 /-- A convex body that is symmetric contains `0`. -/
 theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, -x ∈ K) : 0 ∈ K := by
   obtain ⟨x, hx⟩ := K.nonempty
-  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by simp]
+  rw [show 0 = (1 / 2 : ℝ) • x + (1 / 2 : ℝ) • (-x) by simp]
   apply convex_iff_forall_pos.mp K.convex hx (h_symm x hx)
   all_goals linarith
 

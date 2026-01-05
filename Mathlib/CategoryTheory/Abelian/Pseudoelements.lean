@@ -3,9 +3,11 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Pseudoelements in abelian categories
@@ -53,7 +55,7 @@ Here are the metatheorems we provide:
   `g a' = 0 → g a = g a''`. We can think of `a''` as `a - a'`, but don't get too carried away
   by that: pseudoelements of an object do not form an abelian group.
 
-## Notations
+## Notation
 
 We introduce coercions from an object of an abelian category to the set of its pseudoelements
 and from a morphism to the function it induces on pseudoelements.
@@ -71,6 +73,8 @@ writing `g a` raises a "function expected" error. This error can be fixed by wri
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

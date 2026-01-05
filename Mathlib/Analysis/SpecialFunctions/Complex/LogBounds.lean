@@ -3,9 +3,12 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.Calculus.Deriv.Shift
+module
+
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Shift
+public import Mathlib.Analysis.SpecificLimits.RCLike
 
 /-!
 # Estimates for the complex logarithm
@@ -21,6 +24,8 @@ over the unit interval (`Complex.log_eq_integral`) and introduce notation
 
 Refactor using general Taylor series theory, once this exists in Mathlib.
 -/
+
+@[expose] public section
 
 namespace Complex
 
@@ -181,7 +186,7 @@ lemma log_sub_logTaylor_isBigO (n : ℕ) :
   use 2 / (n + 1)
   filter_upwards [
     eventually_norm_sub_lt 0 one_pos,
-    eventually_norm_sub_lt 0 (show 0 < 1 / 2 by norm_num)] with z hz1 hz12
+    eventually_norm_sub_lt 0 (show 0 < 1 / 2 by simp)] with z hz1 hz12
   rw [sub_zero] at hz1 hz12
   have : (1 - ‖z‖)⁻¹ ≤ 2 := by rw [inv_le_comm₀ (sub_pos_of_lt hz1) two_pos]; linarith
   apply (norm_log_sub_logTaylor_le n hz1).trans
@@ -317,7 +322,7 @@ lemma tendsto_one_add_cpow_exp_of_tendsto {g : ℝ → ℂ} {t : ℂ}
   apply ((continuous_exp.tendsto _).comp (tendsto_mul_log_one_add_of_tendsto hg)).congr'
   have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
     hg.norm.isBoundedUnder_le (RCLike.tendsto_ofReal_atTop_cobounded ℂ)
-  filter_upwards [hg0.eventually_ne (show 0 ≠ -1 by norm_num)] with x hg1
+  filter_upwards [hg0.eventually_ne (show 0 ≠ -1 by simp)] with x hg1
   dsimp
   rw [cpow_def_of_ne_zero, mul_comm]
   intro hg0
@@ -367,7 +372,7 @@ lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   rw [← tendsto_ofReal_iff] at hg ⊢
   push_cast at hg ⊢
   apply (Complex.tendsto_mul_log_one_add_of_tendsto hg).congr'
-  filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by norm_num)] with x hg1
+  filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by simp)] with x hg1
   rw [Complex.ofReal_log (by linarith), Complex.ofReal_add, Complex.ofReal_one]
 
 theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
@@ -376,9 +381,6 @@ theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
     tendsto_const_nhds.congr' <|
       (EventuallyEq.div_mul_cancel_atTop tendsto_id).symm.trans <|
         .of_eq <| funext fun _ => mul_comm _ _
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_mul_log_one_plus_div_atTop := tendsto_mul_log_one_add_div_atTop
 
 /-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
 where `t : ℝ` is the limit of `x * g x`. -/
@@ -390,7 +392,7 @@ lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
   rw [← tendsto_ofReal_iff] at hg ⊢
   push_cast at hg ⊢
   apply (Complex.tendsto_one_add_cpow_exp_of_tendsto hg).congr'
-  filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by norm_num)] with x hg1
+  filter_upwards [hg0.eventually_const_le (show (-1 : ℝ) < 0 by simp)] with x hg1
   rw [Complex.ofReal_cpow (by linarith), Complex.ofReal_add, Complex.ofReal_one]
 
 /-- The limit of `(1 + t/x) ^ x` as `x → ∞` is `exp t` for `t : ℝ`. -/
@@ -400,9 +402,6 @@ lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
   apply tendsto_nhds_of_eventually_eq
   filter_upwards [eventually_ne_atTop 0] with x hx0
   exact mul_div_cancel₀ t (mod_cast hx0)
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_rpow_exp := tendsto_one_add_div_rpow_exp
 
 /-- The limit of `n * log (1 + g n)` as `(n : ℝ) → ∞` is `t`,
 where `t : ℝ` is the limit of `n * g n`. -/
@@ -424,9 +423,6 @@ lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
 lemma tendsto_one_add_div_pow_exp (t : ℝ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_rpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_pow_exp := tendsto_one_add_div_pow_exp
 
 end Real
 

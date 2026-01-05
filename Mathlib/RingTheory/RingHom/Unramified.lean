@@ -3,14 +3,18 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Unramified.Locus
-import Mathlib.RingTheory.LocalProperties.Basic
+module
+
+public import Mathlib.RingTheory.Unramified.Locus
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
 # The meta properties of unramified ring homomorphisms.
 
 -/
+
+@[expose] public section
 
 namespace RingHom
 
@@ -31,6 +35,10 @@ lemma formallyUnramified_algebraMap [Algebra R S] :
 
 namespace FormallyUnramified
 
+lemma of_surjective {f : R →+* S} (hf : Function.Surjective f) : f.FormallyUnramified := by
+  algebraize [f]
+  exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) hf
+
 lemma stableUnderComposition :
     StableUnderComposition FormallyUnramified := by
   intro R S T _ _ _ f g _ _
@@ -41,8 +49,7 @@ lemma respectsIso :
     RespectsIso FormallyUnramified := by
   refine stableUnderComposition.respectsIso ?_
   intro R S _ _ e
-  letI := e.toRingHom.toAlgebra
-  exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) e.surjective
+  exact .of_surjective e.surjective
 
 lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
@@ -97,7 +104,7 @@ lemma propertyIsLocal :
     have H : Submonoid.powers r ≤ (Submonoid.powers (f r)).comap f := by
       rintro x ⟨n, rfl⟩; exact ⟨n, by simp⟩
     have : IsScalarTower R R' S' := .of_algebraMap_eq' (IsLocalization.map_comp H).symm
-    exact Algebra.FormallyUnramified.of_comp R R' S'
+    exact Algebra.FormallyUnramified.of_restrictScalars R R' S'
   · exact ofLocalizationSpanTarget
   · exact ofLocalizationSpanTarget.ofLocalizationSpan
       (stableUnderComposition.stableUnderCompositionWithLocalizationAway

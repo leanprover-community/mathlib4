@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Order.Filter.CountableSeparatingOn
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
 # Countably many infinite intervals separate points
@@ -14,6 +16,8 @@ the points can be separated by countably many infinite intervals.
 We prove 4 versions of this statement (one for each of the infinite intervals),
 as well as provide convenience corollaries about `Filter.EventuallyEq`.
 -/
+
+@[expose] public section
 
 open Set
 

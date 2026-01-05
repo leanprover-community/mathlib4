@@ -3,13 +3,15 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Closed submodules of a topological module
 
-This files builds the frame of closed `R`-submodules of a topological module `M`.
+This file builds the frame of closed `R`-submodules of a topological module `M`.
 
 One can turn `s : Submodule R E` + `hs : IsClosed s` into `s : ClosedSubmodule R E` in a tactic
 block by doing `lift s to ClosedSubmodule R E using hs`.
@@ -18,6 +20,8 @@ block by doing `lift s to ClosedSubmodule R E using hs`.
 
 Actually provide the `Order.Frame (ClosedSubmodule R M)` instance.
 -/
+
+@[expose] public section
 
 open Function Order TopologicalSpace
 
@@ -85,14 +89,14 @@ instance : CanLift (Submodule R M) (ClosedSubmodule R M) toSubmodule (IsClosed (
 /-- The preimage of a closed submodule under a continuous linear map as a closed submodule. -/
 @[simps!]
 def comap (f : M →L[R] N) (s : ClosedSubmodule R N) : ClosedSubmodule R M where
-  toSubmodule := .comap f s
+  toSubmodule := .comap (f : M →ₗ[R] N) s
   isClosed' := by simpa using s.isClosed.preimage f.continuous
 
 @[simp]
 lemma mem_comap {f : M →L[R] N} {s : ClosedSubmodule R N} {x : M} : x ∈ s.comap f ↔ f x ∈ s := .rfl
 
 @[simp] lemma toSubmodule_comap (f : M →L[R] N) (s : ClosedSubmodule R N) :
-    (s.comap f).toSubmodule = s.toSubmodule.comap f := rfl
+    (s.comap f).toSubmodule = s.toSubmodule.comap (f : M →ₗ[R] N) := rfl
 
 @[simp] lemma comap_id (s : ClosedSubmodule R M) : s.comap (.id _ _) = s := rfl
 
@@ -139,12 +143,10 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le s a := by
-    intro ha _
+  sInf_le s a ha _ := by
     simp only [toSubmodule_sInf, Submodule.mem_iInf]
     exact fun h ↦ h a ha
-  le_sInf s a := by
-    intro ha b
+  le_sInf s a ha b := by
     simp only [toSubmodule_sInf, Submodule.mem_iInf]
     exact fun a i hi ↦ ha i hi a
 
@@ -187,8 +189,8 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
   t.isClosed.closure_subset_iff
 
 @[simp]
-lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure := by
-  exact Eq.to_iff rfl
+lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
+  Iff.rfl
 
 lemma mem_closure_iff' {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.closure.toSubmodule := by
   rfl
@@ -215,17 +217,22 @@ namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
+@[simp]
+lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
+  ext x
+  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
+
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
 
 `ClosedSubmodule.map f` is left-adjoint to `ClosedSubmodule.comap f`.
 See `ClosedSubmodule.gc_map_comap`. -/
 def map (f : M →L[R] N) (s : ClosedSubmodule R M) : ClosedSubmodule R N :=
-  (s.toSubmodule.map f).closure
+  (s.toSubmodule.map (f : M →ₗ[R] N)).closure
 
 @[simp]
 lemma map_id [ContinuousAdd M] [ContinuousConstSMul R M] (s : ClosedSubmodule R M) :
-    s.map (.id _ _) = s := SetLike.coe_injective <| by simpa [map] using s.isClosed.closure_eq
+    s.map (.id _ _) = s := SetLike.coe_injective <| by simp [map]
 
 lemma map_le_iff_le_comap {s : ClosedSubmodule R M} {t : ClosedSubmodule R N} :
     map f s ≤ t ↔ s ≤ comap f t := by
@@ -249,8 +256,7 @@ lemma coe_sup :
   simp only [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
 
 @[simp] lemma mem_sup :
-    x ∈ s ⊔ t ↔ x ∈ closure (s.toSubmodule ⊔ t.toSubmodule).carrier := by
-  simp [← SetLike.mem_coe]
+    x ∈ s ⊔ t ↔ x ∈ closure (s.toSubmodule ⊔ t.toSubmodule).carrier := Iff.rfl
 
 instance : SupSet (ClosedSubmodule R N) where
   sSup S := ⟨(⨆ s ∈ S, s.toSubmodule).closure, isClosed_closure⟩
@@ -273,12 +279,11 @@ lemma coe_sSup (S : Set (ClosedSubmodule R N)) :
 @[simp, norm_cast]
 lemma coe_iSup (f : ι → ClosedSubmodule R N) :
     ↑(⨆ i, f i) = closure (⨆ i, (f i).toSubmodule).carrier := by
-  simp [← coe_toSubmodule]
+  simp only [← coe_toSubmodule, toSubmodule_iSup, Submodule.carrier_eq_coe]
   rfl
 
 @[simp] lemma mem_sSup {S : Set (ClosedSubmodule R N)} :
-    x ∈ sSup S ↔ x ∈ closure (⨆ s ∈ S, s.toSubmodule).carrier := by
-  simp [← SetLike.mem_coe]
+    x ∈ sSup S ↔ x ∈ closure (⨆ s ∈ S, s.toSubmodule).carrier := Iff.rfl
 
 @[simp] lemma mem_iSup {f : ι → ClosedSubmodule R N} :
     x ∈ ⨆ i, f i ↔ x ∈ closure (⨆ i, (f i).toSubmodule).carrier := by
@@ -286,45 +291,20 @@ lemma coe_iSup (f : ι → ClosedSubmodule R N) :
 
 instance : SemilatticeSup (ClosedSubmodule R N) where
   sup s t := s ⊔ t
-  le_sup_left s t := by
-    intro x hx
-    apply subset_closure
-    simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe]
-    exact Submodule.mem_sup_left hx
-  le_sup_right s t := by
-    intro x hx
-    apply subset_closure
-    simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe]
-    exact Submodule.mem_sup_right hx
-  sup_le a b c := by
-    intro ha hb
-    apply Submodule.closure_le.mpr
-    simp only [sup_le_iff, toSubmodule_le_toSubmodule]
-    exact ⟨ha, hb⟩
+  le_sup_left _ _ _ hx := subset_closure <| Submodule.mem_sup_left hx
+  le_sup_right _ _ _ hx := subset_closure <| Submodule.mem_sup_right hx
+  sup_le _ _ _ ha hb := Submodule.closure_le.mpr <| sup_le_iff.mpr ⟨ha, hb⟩
 
 instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
-  le_sSup s a := by
-    intro ha x
-    simp only [toSubmodule_sSup]
-    intro hx
-    apply subset_closure
-    simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe]
-    apply Submodule.mem_iSup_of_mem
-    exact Submodule.mem_iSup_of_mem ha hx
-  sSup_le s a := by
-    intro h x
-    simp only [toSubmodule_sSup]
-    nth_rw 2 [Submodule.mem_toSubmodule_iff]
+  le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
+    Submodule.mem_iSup_of_mem ha hx
+  sSup_le s a h x := by
+    rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
     apply closure_mono
     simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
     intro y hy
-    simp only [SetLike.mem_coe] at hy
-    rw [Submodule.mem_iSup] at hy
-    apply hy
-    intro b z hz
-    rw [Submodule.mem_iSup] at hz
-    apply hz
-    exact fun hb ↦ h b hb
+    simp only [SetLike.mem_coe, Submodule.mem_iSup] at hy
+    exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ <| fun hb ↦ h b hb
 
 instance : Lattice (ClosedSubmodule R N) where
 

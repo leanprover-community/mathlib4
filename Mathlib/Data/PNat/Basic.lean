@@ -3,11 +3,13 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.PNat.Equiv
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Order.Positive.Ring
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.PNat.Equiv
 
 /-!
 # The positive natural numbers
@@ -16,6 +18,8 @@ This file develops the type `ℕ+` or `PNat`, the subtype of natural numbers tha
 It is defined in `Data.PNat.Defs`, but most of the development is deferred to here so
 that `Data.PNat.Defs` can have very few imports.
 -/
+
+@[expose] public section
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   Add, Mul, Distrib for PNat
@@ -233,7 +237,7 @@ theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
 
-theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
+theorem lt_succ_self (a : ℕ+) : a < succPNat a := Nat.lt_add_one a
 
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.

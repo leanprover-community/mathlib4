@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Multiplicative and additive equivs
@@ -18,7 +20,7 @@ datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`G
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
   preserve multiplication/addition.
 
-## Notations
+## Notation
 
 * ``infix ` ≃* `:25 := MulEquiv``
 * ``infix ` ≃+ `:25 := AddEquiv``
@@ -30,6 +32,10 @@ notation when treating the isomorphisms as maps.
 
 Equiv, MulEquiv, AddEquiv
 -/
+
+set_option backward.proofsInPublic true
+
+@[expose] public section
 
 open Function
 
@@ -432,8 +438,21 @@ def symmEquiv (P Q : Type*) [Mul P] [Mul Q] : (P ≃* Q) ≃ (Q ≃* P) where
 
 end Mul
 
+/-- `Equiv.cast (congrArg _ h)` as a `MulEquiv`.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[to_additive (attr := simps!) /-- `Equiv.cast (congrArg _ h)` as an `AddEquiv`.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/]
+protected def cast {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] {i j : ι} (h : i = j) :
+    M i ≃* M j where
+  toEquiv := Equiv.cast (congrArg _ h)
+  map_mul' _ _ := by cases h; rfl
+
 /-!
-## Monoids
+### Monoids
 -/
 
 section MulOneClass
@@ -509,7 +528,7 @@ theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) 
 end MulOneClass
 
 /-!
-# Groups
+### Groups
 -/
 
 /-- A multiplicative equivalence of groups preserves inversion. -/
