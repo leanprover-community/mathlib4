@@ -502,24 +502,69 @@ end embed_project
 section closure_union
 
 /-- Grammar for a union of two context-free languages. -/
-def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGrammar T :=
-  ContextFreeGrammar.mk (Option (g₁.NT ⊕ g₂.NT)) none (
-    ⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩ :: (
-    ⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩ :: (
-    List.map (ContextFreeRule.map · (Option.some ∘ Sum.inl)) g₁.rules ++
-    List.map (ContextFreeRule.map · (Option.some ∘ Sum.inr)) g₂.rules)))
+def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGrammar T where
+  NT := Option (g₁.NT ⊕ g₂.NT)
+  initial := none
+  rules := by
+    let r1 : ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT)) :=
+      ⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩
+    let r2 : ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT)) :=
+      ⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩
+    let f₁ : ContextFreeRule T g₁.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT)) :=
+      fun r => r.map (some ∘ Sum.inl)
+    let f₂ : ContextFreeRule T g₂.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT)) :=
+      fun r => r.map (some ∘ Sum.inr)
+    have h₁ : f₁.Injective := by
+      intro ⟨a_in, a_out⟩ ⟨b_in, b_out⟩ hab
+      simp only [f₁, ContextFreeRule.map, Function.comp_apply, ContextFreeRule.mk.injEq] at hab ⊢
+      obtain ⟨h_in, h_out⟩ := hab
+      constructor
+      · exact Sum.inl_injective (Option.some_injective _ h_in)
+      · rw [List.map_inj_right] at h_out
+        · exact h_out
+        · intros a b
+          intro map_h
+          cases a
+          · simp [Symbol.map] at map_h
+            cases b
+            · grind
+            · grind
+          · simp [Symbol.map] at map_h
+            cases b
+            · grind
+            · grind
+    have h₂ : f₂.Injective := by
+      intro ⟨a_in, a_out⟩ ⟨b_in, b_out⟩ hab
+      simp only [f₂, ContextFreeRule.map, Function.comp_apply, ContextFreeRule.mk.injEq] at hab ⊢
+      obtain ⟨h_in, h_out⟩ := hab
+      constructor
+      · exact Sum.inr_injective (Option.some_injective _ h_in)
+      · have : (Symbol.map (T := T) (N₀ := g₂.NT) (N := Option (g₁.NT ⊕ g₂.NT)) (some ∘ Sum.inr)).Injective := by
+          intro s1 s2 hs
+          cases s1 <;> cases s2 <;> simp [Symbol.map] at hs ⊢
+          exact Sum.inr_injective (Option.some_injective _ hs)
+        exact List.map_injective this h_out
+    let mapped1 := g₁.rules.map ⟨f₁, h₁⟩
+    let mapped2 := g₂.rules.map ⟨f₂, h₂⟩
+    exact Finset.cons r1 (Finset.cons r2 (mapped1 ∪ mapped2) (by
+        intro h
+        simp [r2, ContextFreeRule.map] at h
+        obtain ⟨r, _, rfl⟩ | ⟨r, _, rfl⟩ := h <;> simp))
+      (by
+        intro h
+        simp [r1, r2, ContextFreeRule.map] at h
+        obtain h | ⟨r, _, rfl⟩ | ⟨r, _, rfl⟩ := h <;> simp [r2] at h)
 
 section union_aux
 
 /-- The only interesting declaration in this subsection is the lemma
 `ContextFreeGrammar.mem_union_language_iff_mem_or_mem` towards which the whole section builds.
 Ignore everything else. -/
-
 private lemma both_empty {u v : List T} {a b : T} (ha : [a] = u ++ [b] ++ v) :
     u = [] ∧ v = [] := by
   cases u <;> cases v <;> simp at ha; trivial
 
-variable {g₁ g₂ : ContextFreeGrammar.{uT} T}
+variable {g₁ g₂ : ContextFreeGrammar T}
 
 private def oN₁_of_N : (g₁.union g₂).NT → Option g₁.NT
   | none => none
@@ -531,160 +576,92 @@ private def oN₂_of_N : (g₁.union g₂).NT → Option g₂.NT
   | some (Sum.inl _) => none
   | some (Sum.inr n) => some n
 
-private def g₁g : ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) :=
-  ⟨g₁, g₁.union g₂, some ∘ Sum.inl, oN₁_of_N,
-    (fun x y hxy => Sum.inl_injective (Option.some_injective _ hxy)),
-    (by
-      intro x y hxy
-      cases x with
-      | none => right; rfl;
-      | some x₀ =>
-        cases y with
-        | none => right; exact hxy
-        | some y₀ =>
-          cases x₀ with
-          | inl =>
-            cases y₀ with
-            | inl =>
-              simp only [oN₁_of_N, Option.some.injEq] at hxy
-              left
-              rw [hxy]
-            | inr =>
-              exfalso
-              simp [oN₁_of_N] at hxy
-          | inr =>
-            cases y₀ with
-            | inl =>
-              exfalso
-              simp [oN₁_of_N] at hxy
-            | inr =>
-              right
-              rfl),
-    (fun _ => rfl),
-    (by
-      intro r _
-      apply List.mem_cons_of_mem
-      apply List.mem_cons_of_mem
-      apply List.mem_append_left
-      rw [List.mem_map]
-      use r),
-    (by
-      intro r hr n₀ imposs
-      cases hr with
-      | head =>
-        exfalso
-        exact Option.noConfusion imposs
-      | tail _ hr =>
-        cases hr with
-        | head =>
-          exfalso
-          exact Option.noConfusion imposs
-        | tail _ hr =>
-          change r ∈ List.map _ g₁.rules ++ List.map _ g₂.rules at hr
-          rw [List.mem_append] at hr
-          cases hr with
-          | inl hr =>
-            rw [List.mem_map] at hr
-            exact hr
-          | inr hr =>
-            exfalso
-            rw [List.mem_map] at hr
-            rcases hr with ⟨_, -, rfl⟩
-            simp only [ContextFreeRule.map, Function.comp_apply] at imposs
-            rw [Option.some_inj] at imposs
-            exact Sum.noConfusion imposs)⟩
+private def g₁g : ContextFreeGrammar.Embedding g₁ (g₁.union g₂) where
+  embedNT := some ∘ Sum.inl
+  projectNT := oN₁_of_N
+  projectNT_embedNT := fun n₀ => rfl
+  embed_mem_rules := by
+    intro r hr
+    simp only [ContextFreeGrammar.union]
+    apply Finset.mem_cons_of_mem
+    apply Finset.mem_cons_of_mem
+    apply Finset.mem_union_left
+    rw [Finset.mem_map]
+    exact ⟨r, hr, rfl⟩
+  preimage_of_rules := by
+    intro r hr n₀ heq
+    simp only [ContextFreeGrammar.union] at hr
+    rcases Finset.mem_cons.mp hr with rfl | hr
+    · simp at heq
+    rcases Finset.mem_cons.mp hr with rfl | hr
+    · simp at heq
+    rcases Finset.mem_union.mp hr with hr | hr
+    · rcases Finset.mem_map.mp hr with ⟨r₀, hr₀, rfl⟩
+      use r₀, hr₀
+    · exfalso
+      rcases Finset.mem_map.mp hr with ⟨r₀, _, rfl⟩
+      simp only [ContextFreeRule.map, Function.comp_apply] at heq
+      exact Sum.noConfusion (Option.some_injective _ heq)
 
-private def g₂g : EmbeddedContextFreeGrammar T :=
-  ⟨g₂, g₁.union g₂, some ∘ Sum.inr, oN₂_of_N,
-    (fun x y hxy => Sum.inr_injective (Option.some_injective _ hxy)),
-    (by
-      intro x y hxy
-      cases x with
-      | none => right; rfl;
-      | some x₀ =>
-        cases y with
-        | none => right; exact hxy
-        | some y₀ =>
-          cases x₀ with
-          | inl =>
-            cases y₀ with
-            | inl =>
-              right
-              rfl
-            | inr =>
-              exfalso
-              simp [oN₂_of_N] at hxy
-          | inr =>
-            cases y₀ with
-            | inl =>
-              exfalso
-              simp [oN₂_of_N] at hxy
-            | inr =>
-              simp only [oN₂_of_N, Option.some.injEq] at hxy
-              left
-              rw [hxy]),
-    (fun _ => rfl),
-    (by
-      intro r _
-      apply List.mem_cons_of_mem
-      apply List.mem_cons_of_mem
-      apply List.mem_append_right
-      rw [List.mem_map]
-      use r),
-    (by
-      intro r hr n₀ imposs
-      cases hr with
-      | head =>
-        exfalso
-        exact Option.noConfusion imposs
-      | tail _ hr =>
-        cases hr with
-        | head =>
-          exfalso
-          exact Option.noConfusion imposs
-        | tail _ hr =>
-          change r ∈ List.map _ g₁.rules ++ List.map _ g₂.rules at hr
-          rw [List.mem_append] at hr
-          cases hr with
-          | inl hr =>
-            exfalso
-            rw [List.mem_map] at hr
-            rcases hr with ⟨_, -, rfl⟩
-            simp only [ContextFreeRule.map, Function.comp_apply] at imposs
-            rw [Option.some_inj] at imposs
-            exact Sum.noConfusion imposs
-          | inr hr =>
-            rw [List.mem_map] at hr
-            exact hr)⟩
+private def g₂g : ContextFreeGrammar.Embedding g₂ (g₁.union g₂) where
+  embedNT := some ∘ Sum.inr
+  projectNT := oN₂_of_N
+  projectNT_embedNT := fun n₀ => rfl
+  embed_mem_rules := by
+    intro r hr
+    simp only [ContextFreeGrammar.union]
+    apply Finset.mem_cons_of_mem
+    apply Finset.mem_cons_of_mem
+    apply Finset.mem_union_right
+    rw [Finset.mem_map]
+    exact ⟨r, hr, rfl⟩
+  preimage_of_rules := by
+    intro r hr n₀ heq
+    simp only [ContextFreeGrammar.union] at hr
+    rcases Finset.mem_cons.mp hr with rfl | hr
+    · simp at heq
+    rcases Finset.mem_cons.mp hr with rfl | hr
+    · simp at heq
+    rcases Finset.mem_union.mp hr with hr | hr
+    · exfalso
+      rcases Finset.mem_map.mp hr with ⟨r₀, _, rfl⟩
+      simp only [ContextFreeRule.map, Function.comp_apply] at heq
+      exact Sum.noConfusion (Option.some_injective _ heq)
+    · rcases Finset.mem_map.mp hr with ⟨r₀, hr₀, rfl⟩
+      use r₀, hr₀
 
 private lemma union_derives_left_initial :
-    (g₁.union g₂).Derives [Symbol.nonterminal none]
-      [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
+    (g₁.union g₂).Derives [Symbol.nonterminal (none : (g₁.union g₂).NT)]
+      [Symbol.nonterminal (some (Sum.inl g₁.initial) : (g₁.union g₂).NT)] := by
   refine ContextFreeGrammar.Produces.single
-    ⟨⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩, List.mem_cons_self .., ?_⟩
-  rw [ContextFreeRule.rewrites_iff]
-  use [], []
-  simp
+    ⟨⟨none, [Symbol.nonterminal (some (Sum.inl g₁.initial))]⟩, ?_, ?_⟩
+  · simp only [ContextFreeGrammar.union]
+    apply Finset.mem_cons_self
+  · rw [ContextFreeRule.rewrites_iff]
+    use [], []
+    simp
 
 private lemma union_derives_right_initial :
-    (g₁.union g₂).Derives [Symbol.nonterminal none]
-      [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
+    (g₁.union g₂).Derives [Symbol.nonterminal (none : (g₁.union g₂).NT)]
+      [Symbol.nonterminal (some (Sum.inr g₂.initial) : (g₁.union g₂).NT)] := by
   refine ContextFreeGrammar.Produces.single
-    ⟨⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩,
-      List.mem_cons_of_mem _ (List.mem_cons_self ..), ?_⟩
-  rw [ContextFreeRule.rewrites_iff]
-  use [], []
-  simp
+    ⟨⟨none, [Symbol.nonterminal (some (Sum.inr g₂.initial))]⟩, ?_, ?_⟩
+  · simp only [ContextFreeGrammar.union]
+    apply Finset.mem_cons_of_mem
+    apply Finset.mem_cons_self
+  · rw [ContextFreeRule.rewrites_iff]
+    use [], []
+    simp
 
 variable {w : List T}
 
 private lemma in_union_of_in_left (hw : w ∈ g₁.language) : w ∈ (g₁.union g₂).language :=
   union_derives_left_initial.trans
-    (List.map_map (Symbol.map g₁g.embedNT) Symbol.terminal w ▸ g₁g.derives_map hw)
+    ((List.map_map _ _ w).symm ▸ g₁g.derives_map hw)
 
 private lemma in_union_of_in_right (hw : w ∈ g₂.language) : w ∈ (g₁.union g₂).language :=
   union_derives_right_initial.trans
-    (List.map_map (Symbol.map g₂g.embedNT) Symbol.terminal w ▸ g₂g.derives_map hw)
+    ((List.map_map _ _ w).symm ▸ g₂g.derives_map hw)
 
 private lemma List.filterMap_symbol_filterMap_terminal {N₀ N : Type*}
     (projectN : N → Option N₀) (w : List T) :
@@ -694,40 +671,40 @@ private lemma List.filterMap_symbol_filterMap_terminal {N₀ N : Type*}
   | cons t _ ih => exact congr_arg (Symbol.terminal t :: ·) ih
 
 private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
-      [Symbol.nonterminal (some (Sum.inl g₁.initial))]
+      [Symbol.nonterminal (some (Sum.inl g₁.initial) : (g₁.union g₂).NT)]
       (List.map Symbol.terminal w)) :
     w ∈ g₁.language := by
   apply w.filterMap_symbol_filterMap_terminal g₁g.projectNT ▸ g₁g.derives_filterMap hw
-  apply EmbeddedContextFreeGrammar.singletonGoodString
-  constructor
-  rfl
+  apply goodString_singleton
+  exact Good.nonterminal g₁.initial
 
 private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
-      [Symbol.nonterminal (some (Sum.inr g₂.initial))]
+      [Symbol.nonterminal (some (Sum.inr g₂.initial) : (g₁.union g₂).NT)]
       (List.map Symbol.terminal w)) :
     w ∈ g₂.language := by
   apply w.filterMap_symbol_filterMap_terminal g₂g.projectNT ▸ g₂g.derives_filterMap hw
-  apply EmbeddedContextFreeGrammar.singletonGoodString
-  constructor
-  rfl
+  apply goodString_singleton
+  exact Good.nonterminal g₂.initial
 
 private lemma impossible_rule {r : ContextFreeRule T (g₁.union g₂).NT}
     (hg : [Symbol.nonterminal (g₁.union g₂).initial] =
       ([] : List (Symbol T (g₁.union g₂).NT)) ++ [Symbol.nonterminal r.input] ++
       ([] : List (Symbol T (g₁.union g₂).NT)))
     (hr : r ∈
-      List.map (ContextFreeRule.map · (Option.some ∘ Sum.inl)) g₁.rules ++
-      List.map (ContextFreeRule.map · (Option.some ∘ Sum.inr)) g₂.rules) :
+      g₁.rules.map ⟨(ContextFreeRule.map · (Option.some ∘ Sum.inl)), by
+        intro a b hab; simp [ContextFreeRule.map] at hab; ext <;> simp [hab]⟩ ∪
+      g₂.rules.map ⟨(ContextFreeRule.map · (Option.some ∘ Sum.inr)), by
+        intro a b hab; simp [ContextFreeRule.map] at hab; ext <;> simp [hab]⟩) :
     False := by
   have rule_root : none = r.input := Symbol.nonterminal.inj (List.head_eq_of_cons_eq hg)
-  rw [List.mem_append] at hr
+  rw [Finset.mem_union] at hr
   cases hr with
   | inl hr' =>
-    rw [List.mem_map] at hr'
+    rw [Finset.mem_map] at hr'
     rcases hr' with ⟨_, -, rfl⟩
     exact Option.noConfusion rule_root
   | inr hr' =>
-    rw [List.mem_map] at hr'
+    rw [Finset.mem_map] at hr'
     rcases hr' with ⟨_, -, rfl⟩
     exact Option.noConfusion rule_root
 
@@ -736,27 +713,21 @@ private lemma in_language_of_in_union (hw : w ∈ (g₁.union g₂).language) :
   cases hw.eq_or_head with
   | inl impossible =>
     exfalso
-    have h0 := congr_arg (List.get? · 0) impossible
-    simp only [List.get?_map] at h0
-    cases hw0 : w.get? 0 with
-    | none => exact Option.noConfusion (hw0 ▸ h0)
-    | some => exact Symbol.noConfusion (Option.some.inj (hw0 ▸ h0))
+    simp only [List.map] at impossible
+    exact List.noConfusion impossible
   | inr hv =>
     rcases hv with ⟨_, ⟨r, hr, hrr⟩, hg⟩
     rcases hrr.exists_parts with ⟨u, v, huv, rfl⟩
     rcases both_empty huv with ⟨rfl, rfl⟩
-    cases hr with
-    | head =>
-      left
+    simp only [ContextFreeGrammar.union] at hr
+    rcases Finset.mem_cons.mp hr with rfl | hr
+    · left
       exact in_left_of_in_union hg
-    | tail _ hr' =>
-      cases hr' with
-      | head =>
-        right
-        exact in_right_of_in_union hg
-      | tail _ hr'' =>
-        exfalso
-        exact impossible_rule huv hr''
+    rcases Finset.mem_cons.mp hr with rfl | hr
+    · right
+      exact in_right_of_in_union hg
+    exfalso
+    exact impossible_rule huv hr
 
 lemma ContextFreeGrammar.mem_union_language_iff_mem_or_mem :
     w ∈ (g₁.union g₂).language ↔ w ∈ g₁.language ∨ w ∈ g₂.language :=
