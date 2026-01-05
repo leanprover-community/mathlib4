@@ -94,6 +94,17 @@ theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
 
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
+variable (K) in
+noncomputable abbrev fieldTop : Field (⊤ : ValuationSubring K) := by
+  apply Field.ofIsUnitOrEqZero
+  intro ⟨a, ha⟩
+  by_cases h0 : a = 0
+  · aesop
+  · left
+    rw [isUnit_iff_exists_inv']
+    use ⟨a⁻¹, ValuationSubring.mem_top _⟩
+    aesop
+
 instance : OrderTop (ValuationSubring K) where
   le_top := le_top
 
