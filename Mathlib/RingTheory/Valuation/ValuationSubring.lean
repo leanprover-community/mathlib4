@@ -124,8 +124,6 @@ instance : ValuationRing A where
 
 instance : Algebra A K := inferInstance
 
-instance : SMul A K := inferInstance
-
 instance isLocalRing : IsLocalRing A := inferInstance
 
 @[simp]

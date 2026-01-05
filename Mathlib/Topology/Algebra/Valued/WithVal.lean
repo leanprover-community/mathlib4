@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.UniformSpace.Completion
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.Valuation.RankOne
 
 /-!
 # Ring topologised by a valuation
@@ -155,16 +154,6 @@ abbrev Completion := UniformSpace.Completion (WithVal v)
 
 instance : Coe R v.Completion :=
   inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
-
-instance instRankOneCompletion {K : Type*} [Field K] {Γ : Type*}
-    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) [h : v.RankOne] :
-    (Valued.v : Valuation v.Completion Γ).RankOne where
-  hom := Valuation.RankOne.hom v
-  strictMono' := Valuation.RankOne.strictMono v
-  exists_val_nontrivial := by
-    rcases h.exists_val_nontrivial with ⟨x, hx1, hx2⟩
-    use (WithVal.equiv v).symm x
-    simp_all
 
 section Equivalence
 
