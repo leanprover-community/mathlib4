@@ -19,6 +19,7 @@ public import Mathlib.Order.Interval.Set.Basic
 * `OrderType.card o`: the cardinality of an OrderType `o`.
 * `o₁ + o₂`: the lexicographic sum of order types, which forms an `AddMonoid`.
 * `o₁ * o₂`: the lexicographic product of order types, which forms a `MonoidWithZero`.
+* `OrderType.mul o₁ o₂`: the product of two OrderTypes `o₁` and `o₂`.
 
 ## Notation
 
@@ -50,9 +51,12 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'}
 instance : ZeroLEOneClass OrderType :=
   ⟨OrderType.zero_le _⟩
 
+instance instIsEmptyIioZero : IsEmpty (Set.Iio (0 : OrderType)) := by
+  simp [← bot_eq_zero]
+
 instance : Add OrderType.{u} where
   add := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s)⟩)
-    fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩
+   fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩
 
 instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hAdd := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s)⟩)
@@ -60,11 +64,11 @@ instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
 
 instance : AddMonoid OrderType where
   add_assoc o₁ o₂ o₃ :=
-    inductionOn₃ o₁ o₂ o₃ fun α _ β _ γ _ ↦ (OrderIso.sumLexAssoc α β γ).orderType_eq
+    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.orderType_eq (OrderIso.sumLexAssoc α β γ))
   zero_add o :=
-    inductionOn o (fun α _ ↦ RelIso.orderType_eq (OrderIso.emptySumLex α _))
+    inductionOn o (fun α _ ↦ RelIso.orderType_eq (Classical.choice (OrderIso.emptySumLex α)))
   add_zero o :=
-   inductionOn o (fun α _ ↦ RelIso.orderType_eq (OrderIso.sumLexEmpty α _))
+   inductionOn o (fun α _ ↦ RelIso.orderType_eq (Classical.choice (OrderIso.sumLexEmpty α)))
   nsmul := nsmulRec
 
 instance (n : Nat) : OfNat OrderType n where
