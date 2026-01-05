@@ -77,7 +77,7 @@ include hf₁ hg₁ hc₁ hc₂ in
 -- correctly convert the multiplicative instances on `Unit` to addive instances
 attribute [-instance] PUnit.commRing in
 attribute [-instance] PUnit.cancelCommMonoidWithZero in
-/-- A special case of one four lemma such that the left-most term is zero in terms of
+/-- A special case of one four lemma such that the left-most term is one in terms of
 groups. For a diagram explaining the variables, see the module docstring. -/
 @[to_additive /-- A special case of one four lemma such that the left-most term is zero in terms
 of (additive) groups. For a diagram explaining the variables, see the module docstring. -/]
@@ -113,7 +113,7 @@ include hf₁ hg₁ hc₁ hc₂ in
 -- correctly convert the multiplicative instances on `Unit` to addive instances
 attribute [-instance] PUnit.commRing in
 attribute [-instance] PUnit.cancelCommMonoidWithZero in
-/-- A special case of one four lemma such that the right-most term is zero in terms of
+/-- A special case of one four lemma such that the right-most term is one in terms of
 groups. For a diagram explaining the variables, see the module docstring. -/
 @[to_additive /-- A special case of one four lemma such that the right-most term is zero in terms
 of (additive) groups. For a diagram explaining the variables, see the module docstring. -/]

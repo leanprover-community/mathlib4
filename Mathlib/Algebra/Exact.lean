@@ -581,7 +581,7 @@ lemma AddExact.inr_fst : Function.AddExact (LinearMap.inr R M N) (LinearMap.fst 
     exists_eq_right]
 
 @[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.inr_fst := AddExact.inr_fst
+alias Exact.inr_fst := AddExact.inr_fst
 
 lemma AddExact.inl_snd : Function.AddExact (LinearMap.inl R M N) (LinearMap.snd R M N) := by
   rintro ⟨x, y⟩
@@ -589,7 +589,7 @@ lemma AddExact.inl_snd : Function.AddExact (LinearMap.inl R M N) (LinearMap.snd 
     exists_eq_left]
 
 @[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.inl_snd := AddExact.inl_snd
+alias Exact.inl_snd := AddExact.inl_snd
 
 end Prod
 
