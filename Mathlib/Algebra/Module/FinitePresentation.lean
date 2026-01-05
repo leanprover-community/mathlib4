@@ -215,7 +215,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   obtain ⟨s, hs⟩ : (⊤ : Submodule R M).FG := by
     apply Submodule.fg_of_fg_map_of_fg_inf_ker l
     · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.fg_top
-    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.fg_top
+    · rw [top_inf_eq, ← Module.Finite.iff_fg]; infer_instance
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
