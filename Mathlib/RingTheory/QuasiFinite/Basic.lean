@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.Topology.DiscreteSubset
 
 /-!
-# Quasi-finite
+# Quasi-finite algebras
 
 In this file, we define the notion of quasi-finite algebras and prove basic properties about them
 
