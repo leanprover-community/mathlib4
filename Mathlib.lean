@@ -1665,6 +1665,7 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Complex.Conformal
 public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Complex.CoveringMap
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.Complex.Hadamard
