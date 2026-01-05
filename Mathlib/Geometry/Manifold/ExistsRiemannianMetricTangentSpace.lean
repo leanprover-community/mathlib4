@@ -467,10 +467,13 @@ As the mathlib documentation states (Analysis.NormedSpace.FiniteDimension):
 > norm, then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
 > `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence."
 
+See
+https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Module/FiniteDimension.html
+
 What this description elides is that "this gives the desired norm equivalence" requires
 creating this auxiliary type plus substantial additional work (see `tangentSpaceEquiv`,
-`bbr`, and `aux_tvs`) to establish the equivalence and derive the needed `WithSeminorms`
-and `IsVonNBounded` properties.
+`withSeminormsOfBilinearForm`, and `aux_tvs`) to establish the equivalence and derive the needed
+`WithSeminorms` and `IsVonNBounded` properties.
 
 In classical mathematics, "all norms on a finite-dimensional space are equivalent" is a
 one-line citation. In mathlib, making this work requires explicit construction and proof.
@@ -667,11 +670,6 @@ noncomputable instance {x : B}
       rw [this]
     exact le_of_eq h9
 
-/-
-See
-https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Module/FiniteDimension.html
--/
-
 def tangentSpaceEquiv {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v)
@@ -700,7 +698,7 @@ noncomputable def aux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB 
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
   SeminormFamily ℝ (TangentSpace IB x) (Fin 1) := fun _ ↦ seminormOfBilinearForm φ hpos hsymm
 
-lemma bbr {x : B}
+lemma withSeminormsOfBilinearForm {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v)
   (hsymm : ∀ u v, φ u v = φ v u)
@@ -757,21 +755,20 @@ lemma bbr {x : B}
               _ = max C 1 * aux φ hpos hsymm j v := rfl
       exact this
 
-lemma qux {α : Type*} [Unique α] (s : Finset α) : s = ∅ ∨ s = {default} := by
-  by_cases h : s = ∅
-  · simp [h]
-  · rw [Finset.eq_singleton_iff_nonempty_unique_mem]
-    refine Or.inr ⟨Finset.nonempty_iff_ne_empty.mpr h, fun x hx ↦ Unique.uniq _ _⟩
-
 lemma aux_tvs {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
    (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
     Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
   rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded
-        (p := aux φ hpos hsymm) (bbr φ hpos hsymm hdef)]
+        (p := aux φ hpos hsymm) (withSeminormsOfBilinearForm φ hpos hsymm hdef)]
   intro I
   letI J : Finset (Fin 1) := {1}
   suffices ∃ r > 0, ∀ x ∈ {v | (φ v) v < 1}, (J.sup (aux φ hpos hsymm)) x < r by
-    obtain (rfl | h) := qux I
+    obtain (rfl | h) : I = ∅ ∨ I = {default} := by
+      by_cases h : I = ∅
+      · simp only [Fin.default_eq_zero, Fin.isValue]
+        exact Or.symm (Or.inr h)
+      · rw [Finset.eq_singleton_iff_nonempty_unique_mem]
+        refine Or.inr ⟨Finset.nonempty_iff_ne_empty.mpr h, fun x hx ↦ Unique.uniq _ _⟩
     · use 1; simp
     · convert this
   simp only [Set.mem_setOf_eq, Finset.sup_singleton, J]
