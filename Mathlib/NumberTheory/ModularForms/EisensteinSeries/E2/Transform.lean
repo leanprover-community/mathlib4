@@ -155,11 +155,7 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
         (summable_right_one_div_linear_sub_one_div_linear_succ z a), ← Summable.tsum_add
         ((G2Term_prod_summable z).prod_factor _)
         (summable_right_one_div_linear_sub_one_div_linear_succ z a)]
-      apply tsum_congr (fun b ↦ ?_)
-      simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-          Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, G2Term, mul_inv_rev, one_div,
-          aux_identity z a b, inv_inj]
-      rfl
+      exact tsum_congr (fun b ↦ by simp [eisSummand, G2Term, aux_identity z a b, zpow_ofNat])
     · conv =>
         enter [1, N]
         rw [tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z N, add_zero]
@@ -217,12 +213,7 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
   simp_rw [SL_slash_def, modular_T_smul z]
-  simp only [G2_eq_tsum_cexp, coe_vadd, ofReal_one, T, denom_apply, Fin.isValue, Matrix.of_apply,
-    Matrix.cons_val', Matrix.cons_val_zero, Matrix.empty_val', Matrix.cons_val_fin_one,
-    Matrix.cons_val_one, Int.cast_zero, zero_mul, Int.cast_one, zero_add, Int.reduceNeg, zpow_neg,
-    one_zpow, inv_one, mul_one, ← exp_periodic.nat_mul 1 (2 * π * I * z), Nat.cast_one, one_mul,
-    sub_right_inj, mul_eq_mul_left_iff, mul_eq_zero, OfNat.ofNat_ne_zero, ne_eq, not_false_eq_true,
-    pow_eq_zero_iff, ofReal_eq_zero, Real.pi_ne_zero, or_self, or_false]
+  simp [G2_eq_tsum_cexp,  T, denom_apply,  ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
@@ -249,7 +240,6 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
       rw [SL_slash] at this
       simp only [Pi.sub_apply, h1, D2_S z, this, mul_comm, G2_S_transform z, modular_S_smul]
       ring_nf
-      simp_rw [inv_pow, mul_eq_mul_right_iff]
       aesop
     · simpa only [h2, D2_T, sub_zero] using G2_T_transform
 
