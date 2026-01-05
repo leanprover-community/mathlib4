@@ -396,9 +396,7 @@ theorem _root_.Wbtw.angle_eq_right {p₂ p₃ p : P} (p₁ : P) (h : Wbtw ℝ p�
 same ray. -/
 theorem _root_.Wbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Wbtw ℝ p₂ p₁ p) (hp₁p₂ : p₁ ≠ p₂) :
     ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
-  rw [angle_comm]
-  nth_rw 2 [angle_comm]
-  exact Wbtw.angle_eq_right p₃ h hp₁p₂
+  simpa only [angle_comm] using h.angle_eq_right p₃ hp₁p₂
 
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/
