@@ -64,7 +64,7 @@ lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
 
 lemma le_iff_exists_mono {x y : X.N} :
     x ≤ y ↔ ∃ (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) (_ : Mono f), X.map f.op y.simplex = x.simplex := by
-  simp only [le_iff, CategoryTheory.Subpresheaf.ofSection_le_iff,
+  simp only [le_iff, CategoryTheory.Subfunctor.ofSection_le_iff,
     Subcomplex.mem_ofSimplex_obj_iff]
   exact ⟨fun ⟨f, hf⟩ ↦ ⟨f, X.mono_of_nonDegenerate ⟨_, x.nonDegenerate⟩ f _ hf, hf⟩, by tauto⟩
 
@@ -125,6 +125,14 @@ lemma cast_eq_self : s.cast hd = s := by
   rfl
 
 end
+
+variable (X) in
+lemma iSup_subcomplex_eq_top :
+    ⨆ (s : X.N), s.subcomplex = ⊤ :=
+  le_antisymm (by simp) (by
+    rw [← Subcomplex.iSup_ofSimplex_nonDegenerate_eq_top X, iSup_le_iff]
+    rintro ⟨d, s, hs⟩
+    exact le_trans (by rfl) (le_iSup _ (N.mk _ hs)))
 
 end N
 

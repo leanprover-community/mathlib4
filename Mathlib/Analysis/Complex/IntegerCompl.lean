@@ -58,13 +58,10 @@ lemma upperHalfPlane_inter_integerComplement :
   simp only [Set.mem_inter_iff, Set.mem_setOf_eq, and_iff_left_iff_imp]
   exact fun hz ↦ UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩
 
-lemma int_div_upperHalfPlane_mem_integerComplement (z : ℍ) (n : ℤ) (hn : n ≠ 0) :
-    (↑n / (z : ℂ)) ∈ ℂ_ℤ := by
-  intro h
-  rcases h with ⟨m, hm⟩
-  have him : (n / (z : ℂ)).im  ≠ 0:= by
-    rw [div_im]
-    simp [hn, z.im_pos.ne', ne_zero z]
-  simp [← hm] at him
+lemma UpperHalfPlane.int_div_mem_integerComplement (z : ℍ) {n : ℤ} (hn : n ≠ 0) :
+    n / (z : ℂ) ∈ ℂ_ℤ := by
+  rintro ⟨_, hm⟩
+  have : (n / (z : ℂ)).im ≠ 0:= by simp [div_im, hn, z.im_pos.ne', ne_zero z]
+  simpa [← hm]
 
 end Complex

@@ -40,7 +40,7 @@ Henstock-Kurzweil integral.
 Henstock-Kurzweil integral, integral, Stokes theorem, divergence theorem
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal ENNReal Topology BoxIntegral
 

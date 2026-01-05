@@ -447,8 +447,6 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
 theorem exists_notMem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
 
-@[deprecated (since := "2025-05-23")] alias exists_not_mem_finset := exists_notMem_finset
-
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
   ⟨let ⟨x, _hx⟩ := exists_notMem_finset (∅ : Finset α)
@@ -521,6 +519,8 @@ instance [Infinite α] : Infinite (Equiv.Perm α) := by
 
 namespace Infinite
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
@@ -529,6 +529,8 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
@@ -543,6 +545,8 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
   rw [h, natEmbeddingAux]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Embedding of `ℕ` into an infinite type. -/
 noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩

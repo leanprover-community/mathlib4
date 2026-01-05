@@ -111,7 +111,7 @@ private lemma linear_sub_linear_eq (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ 
 
 lemma summable_left_one_div_linear_sub_one_div_linear (a b : ℤ) :
     Summable fun m : ℤ ↦ 1 / (m * (z : ℂ) + a) - 1 / (m * z + b) := by
-  have := Summable.mul_left (b - a : ℂ) (summable_linear_mul_linear (ne_zero z) a b)
+  have := Summable.mul_left (b - a : ℂ) (summable_linear_left_mul_linear_left (ne_zero z) a b)
   rw [← Finset.summable_compl_iff (s := {0})] at *
   apply this.congr (fun m ↦ ?_)
   rw [linear_sub_linear_eq z a b m (by grind)]
@@ -119,7 +119,7 @@ lemma summable_left_one_div_linear_sub_one_div_linear (a b : ℤ) :
 
 lemma summable_right_one_div_linear_sub_one_div_linear_succ (a : ℤ) :
     Summable fun b : ℤ ↦ 1 / ((a : ℂ) * z + b) - 1 / ((a : ℂ) * z + b + 1) := by
-  have := summable_linear_add_mul_linear_add z a a
+  have := summable_linear_right_add_one_mul_linear_right z a a
   rw [← Finset.summable_compl_iff (s := {0, -1})] at *
   apply this.congr (fun b ↦ ?_)
   simpa [add_assoc, mul_comm] using (linear_sub_linear_eq z b (b + 1) a (by grind)).symm
@@ -209,7 +209,7 @@ private lemma aux_tsum_identity_2 (d : ℕ+) :
     ring_nf
     field_simp [ne_zero z]
   · have := (Summable_cotTerm (x := -d / (z : ℂ))
-      (by simpa using int_div_upperHalfPlane_mem_integerComplement z (-d) (by aesop)))
+      (by simpa using UpperHalfPlane.int_div_mem_integerComplement z (n := -d) (by aesop)))
     simp only [cotTerm, one_div] at *
     conv at this =>
       enter [1, n]

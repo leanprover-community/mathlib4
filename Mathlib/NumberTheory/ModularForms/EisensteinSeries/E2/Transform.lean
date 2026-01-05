@@ -35,17 +35,17 @@ open scoped Real Topology
 
 noncomputable section
 
+namespace EisensteinSeries
+
 /-- This is an auxiliary correction term for proving how E2 transforms. It allows us to work with
 nicer indexing sets for our infinite sums. The key is the `aux_identity` below. -/
-private def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
+def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
 
 @[simp]
 private lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
 
 @[simp]
 private lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
-
-namespace EisensteinSeries
 
 /-- This term gives an alternative infinite sum for G2 which is absolutely convergent. -/
 abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
@@ -72,7 +72,7 @@ section transform
 lemma G2Term_summable (z : ℍ) : Summable fun m ↦ G2Term z m := by
   have H : Summable (fun m ↦ (G2Term z m) - δ m) := by
     simp_rw [G2Term, add_sub_cancel_right]
-    apply summable_inv_of_isBigO_rpow_norm_inv (a := 3) (by linarith)
+    apply summable_of_isBigO_rpow_norm (a := 3) (by linarith)
     simpa [pow_three, pow_two, ← mul_assoc] using ((isBigO_linear_add_const_vec z 0 1).mul
       (isBigO_linear_add_const_vec z 0 0)).mul (isBigO_linear_add_const_vec z 0 0)
   let s : Finset (Fin 2 → ℤ) := {![0,0], ![0,-1]}

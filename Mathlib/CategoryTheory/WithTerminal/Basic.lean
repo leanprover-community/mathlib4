@@ -410,6 +410,8 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   · rfl
   · rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 @[simps apply]
 private def widePullbackShapeEquivObj {J : Type*} :
@@ -423,6 +425,8 @@ private def widePullbackShapeEquivObj {J : Type*} :
   left_inv  x := by cases x <;> simp
   right_inv x := by cases x <;> simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
@@ -446,6 +450,8 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
   | some x, none
   | none, none => rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
 
 TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere? -/

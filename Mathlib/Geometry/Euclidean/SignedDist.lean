@@ -39,6 +39,7 @@ variable [NormedAddTorsor V P]
 
 section signedDist
 
+set_option backward.privateInPublic true in
 /-- Auxiliary definition for `signedDist`. It is the underlying linear map of `signedDist`. -/
 private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ] ℝ where
   toFun w := .const ℝ P ⟪-normalize v, w⟫
@@ -48,6 +49,8 @@ private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ]
 private lemma signedDistLinear_apply (v w : V) :
     signedDistLinear v w = .const ℝ P ⟪-normalize v, w⟫ := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
 It is the size of `q - p` in the direction of `v`.
@@ -183,7 +186,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
-  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2:)]
+  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2 :)]
   simp [h, eq_comm]
 
 open NNReal in
