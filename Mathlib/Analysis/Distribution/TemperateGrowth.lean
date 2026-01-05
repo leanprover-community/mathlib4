@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Tactic.MoveAdd
-public import Mathlib.Tactic.ToFun
 
 /-! # Functions and measures of temperate growth -/
 
@@ -74,7 +73,7 @@ theorem HasTemperateGrowth.isBigO_uniform {f : E → F}
   rw [Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity)]
   gcongr
   · simp
-  · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
+  · exact Finset.le_sup (by simpa using hn)
 
 theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
@@ -284,7 +283,7 @@ theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateG
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
     convert (2 • innerSL ℝ).hasTemperateGrowth
-  · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
+  · exact .norm_sq ℝ differentiable_id
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]
     exact le_add_of_nonneg_left (by positivity)

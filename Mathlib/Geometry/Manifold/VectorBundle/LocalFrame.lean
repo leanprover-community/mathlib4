@@ -27,10 +27,10 @@ Any section `s` of `e` can be uniquely written as `s = ∑ i, f^i sᵢ` near `x`
 and `s` is smooth at `x` iff the functions `f^i` are.
 
 In this file, we prove the latter statement for finite-rank bundles (with coefficients in a
-complete field). In `Mathlib/Geometry/Manifold/VectorBundle/OrthonormalFrame.lean` (#26221),
-we will prove the same for real vector bundles of any rank which admit a `C^n` bundle metric.
-This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which has
-smooth partitions of unity.
+complete field). In the planned file `Mathlib/Geometry/Manifold/VectorBundle/OrthonormalFrame.lean`
+(#26221), we will prove the same for real vector bundles of any rank which admit a `C^n` bundle
+metric. This includes bundles of finite rank, modelled on a Hilbert space or on a Banach space which
+has smooth partitions of unity.
 
 We will use this to construct local extensions of a vector to a section which is smooth on the
 trivialisation domain.
@@ -288,7 +288,7 @@ lemma mdifferentiableOn_of_coeff [FiniteDimensional 𝕜 F] (h : ∀ i, MDiff[u]
   rcases u.eq_empty_or_nonempty with rfl | ⟨x, hx⟩; · simp
   have := fintypeOfFiniteDimensional hs hx
   have this (i) : MDiff[u] (T% (hs.coeff i t • s i)) :=
-    (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn le_rfl)
+    (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero)
   have almost : MDiff[u] (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) :=
     .sum_section (fun i _ hx ↦ this i _ hx)
   apply almost.congr
@@ -302,7 +302,7 @@ lemma mdifferentiableAt_of_coeff [FiniteDimensional 𝕜 F]
   have := fintypeOfFiniteDimensional hs (mem_of_mem_nhds hu)
   have almost : MDiffAt (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x :=
     .sum_section (fun i ↦ (h i).smul_section <|
-      ((hs.contMDiffOn i).mdifferentiableOn le_rfl).mdifferentiableAt hu)
+      ((hs.contMDiffOn i).mdifferentiableOn one_ne_zero).mdifferentiableAt hu)
   exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono (by simp)
 
 /-- Given a local frame `s i` on open set `u` containing `x`, if a section `t`
