@@ -598,16 +598,16 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
 
 lemma WithBot.add_natCast_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + c ↔ a = b :=
-  WithBot.WithTop.add_cast_cancel a b c
+  (IsAddRightRegular.all c).withTop.withBot.eq_iff
 
 lemma WithBot.add_one_cancel (a b : WithBot ℕ∞) : a + 1 = b + 1 ↔ a = b :=
-  WithBot.WithTop.add_cast_cancel a b 1
+  (IsAddRightRegular.all 1).withTop.withBot.eq_iff
 
 lemma WithBot.natCast_add_cancel (a b : WithBot ℕ∞) (c : ℕ) : c + a = c + b ↔ a = b :=
-  WithBot.WithTop.cast_add_cancel a b c
+  (IsAddLeftRegular.all c).withTop.withBot.eq_iff
 
 lemma WithBot.one_add_cancel (a b : WithBot ℕ∞) : 1 + a = 1 + b ↔ a = b :=
-  WithBot.WithTop.cast_add_cancel a b 1
+  (IsAddLeftRegular.all 1).withTop.withBot.eq_iff
 
 lemma WithBot.add_le_add_natCast_right_iff (a b : WithBot ℕ∞) (c : ℕ) : a + c ≤ b + c ↔ a ≤ b :=
   WithBot.WithTop.add_le_add_cast_iff_right a b c

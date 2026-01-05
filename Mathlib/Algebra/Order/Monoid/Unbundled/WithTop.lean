@@ -126,6 +126,14 @@ lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithTop α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
 
+lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
+    AddLECancellable (a : WithTop α) := by
+  rintro (_ | b) (_ | c)
+  · simp [none_eq_top]
+  · simp [none_eq_top]
+  · simp [some_eq_coe, ← coe_add, none_eq_top]
+  · simpa [none_eq_top, some_eq_coe, ← coe_add] using fun a ↦ ha a
+
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊤) : x + z = y + z ↔ x = y := by
   lift z to α using hz; exact (IsAddRightRegular.all _).withTop.eq_iff
 
@@ -466,6 +474,14 @@ lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithBot α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
 
+lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
+    AddLECancellable (a : WithBot α) := by
+  rintro (_ | b) (_ | c)
+  · simp [none_eq_bot]
+  · simp [none_eq_bot]
+  · simp [some_eq_coe, ← coe_add, none_eq_bot]
+  · simpa [none_eq_bot, some_eq_coe, ← coe_add] using fun a ↦ ha a
+
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊥) : x + z = y + z ↔ x = y := by
   lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
 
@@ -675,22 +691,6 @@ protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom
 protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
-
-lemma WithTop.add_cast_cancel {α : Type*} [Add α] [IsRightCancelAdd α]
-    (a b : WithBot (WithTop α)) (c : α) : a + c = b + c ↔ a = b :=
-  (IsAddRightRegular.all _).withTop.withBot.eq_iff
-
-lemma WithTop.cast_add_cancel {α : Type*} [Add α] [IsLeftCancelAdd α]
-    (a b : WithBot (WithTop α)) (c : α) : c + a = c + b ↔ a = b := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-  induction a with
-  | bot => exact (WithBot.coe_add_eq_bot_iff.mp (h.symm.trans (add_bot _))).symm
-  | coe a =>
-    induction b with
-    | bot => simp at h
-    | coe b =>
-      rw [← coe_add, ← coe_add, WithBot.coe_inj] at h
-      simpa using (WithTop.add_left_inj WithTop.coe_ne_top).mp h
 
 lemma WithTop.add_le_add_cast_iff_right {α : Type*} [Add α] [LE α] [AddRightMono α]
   [AddRightReflectLE α] (a b : WithBot (WithTop α)) (c : α) : a + c ≤ b + c ↔ a ≤ b := by
