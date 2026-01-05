@@ -540,11 +540,19 @@ theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
     rw [Nat.descFactorial_eq_zero_iff_lt.mpr (by grind)]
     simp
 
-theorem iterate_derivative_mul_X {n} (p : R[X]) :
+theorem iterate_derivative_mul_X' {n} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
-  sorry
+  trans derivative^[n] (derivative p * X ^ 1)
+  · simp
+  rw [iterate_derivative_mul_X_pow]
+  by_cases n = 0
+  case pos h => simp [h]
+  case neg h =>
+    rw [min_eq_left (by omega), show range 2 = {0, 1} by grind,
+      show derivative^[n] p = derivative^[n - 1 + 1] p by grind]
+    simp
 
-theorem iterate_derivative_mul_X_sq {n} (p : R[X]) :
+theorem iterate_derivative_mul_X_sq' {n} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
       (n * (n - 1)) • derivative^[n] p := by
