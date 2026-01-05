@@ -366,7 +366,7 @@ def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ 
 `embedNT` of the nonterminal symbols from the former to the latter along with a one-sided inverse
 `projectNT` such that all rewrite rules of `g` that end in `embedNT n₀` for some `n₀` come from some
 rule in `g₀`. -/
-structure ContextFreeGrammar.Embedding {T : Type uT} (g₀ g : ContextFreeGrammar T) where
+structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
   /-- Mapping nonterminals from the smaller type to the bigger type. -/
   embedNT : g₀.NT → g.NT
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
@@ -387,14 +387,11 @@ variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
 
 lemma projectNT_inverse_embedNT {n : g.NT} {n₀ : g₀.NT}
     (hn : G.projectNT n = some n₀) :
-    Option.map G.embedNT (G.projectNT n) = n := by
-  rw [hn, Option.map_some']
-  apply congr_arg
+    Option.map G.embedNT (G.projectNT n) = some n := by
+  rw [hn, Option.map_some]
+  apply congrArg
   by_contra hnx
   sorry
-  /-cases (G.projectNT_embedNT n₀ ▸ G.project_inj n (G.embedNT n₀)) hn with
-  | inl case_valu => exact hnx case_valu.symm
-  | inr case_none => exact Option.noConfusion (hn ▸ case_none)-/
 
 /-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
 lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
@@ -419,13 +416,13 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
 
 /-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
 terminal. -/
-inductive Good : Symbol T g.NT → Prop
-  | terminal (t : T) : Good (.terminal t)
-  | nonterminal {n : g.NT} {n₀ : g₀.NT} (hn : G.projectNT n = n₀) : Good (.nonterminal n)
+inductive Good (G : g₀.Embedding g) : Symbol T g.NT → Prop
+  | terminal (t : T) : Good G (.terminal t)
+  | nonterminal {n : g.NT} {n₀ : g₀.NT} (hn : G.projectNT n = n₀) : Good G (.nonterminal n)
 
 /-- A string is good iff every `Symbol` in it is good. -/
-def GoodString (s : List (Symbol T g.NT)) : Prop :=
-  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → Good a
+def GoodString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
+  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → Good G a
 
 lemma goodString_singleton {s : Symbol T g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
@@ -433,18 +430,18 @@ lemma goodString_singleton {s : Symbol T g.NT} (hs : G.Good s) : G.GoodString [s
 /-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain any
 nonterminals that `G.g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
+    (hG : g.Produces w₁ w₂) (hw₁ : G.GoodString w₁) :
     g₀.Produces
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    GoodString w₂ := by
+    G.GoodString w₂ := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  cases (show Good (Symbol.nonterminal r.input) by apply hw₁; simp) with
+  cases (show G.Good (Symbol.nonterminal r.input) by apply hw₁; simp) with
   | nonterminal hn =>
     rcases G.preimage_of_rules r rin _ (by
-      simpa [G.projectNT_inverse_embedNT hn, Option.map_some'] using
+      simpa [G.projectNT_inverse_embedNT hn, Option.map_some] using
         congr_arg (Option.map G.embedNT) hn.symm)
       with ⟨r₀, hr₀, hrr₀⟩
     constructor
@@ -457,9 +454,9 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
         cases x
         · rfl
         rw [Function.comp_apply]
-        simp only [Symbol.filterMap, Symbol.map, Option.map_eq_some', Symbol.nonterminal.injEq]
-        rw [exists_eq_right]
-        apply G.projectNT_embedNT
+        simp only [Symbol.filterMap, Symbol.map]
+        rw [G.projectNT_embedNT]
+        rfl
       constructor
       · have middle :
           List.filterMap (Symbol.filterMap (T := T) G.projectNT)
@@ -482,15 +479,15 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
       rcases ha with ⟨s, -, hs⟩
       rw [← hs]
       cases s with
-      | terminal _ => exact False.elim (Symbol.noConfusion hs)
+      | terminal t => simp [Symbol.map] at hs
       | nonterminal s' => exact Good.nonterminal (G.projectNT_embedNT s')
 
 lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
+    (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    GoodString w₂ := by
+    G.GoodString w₂ := by
   induction hG with
   | refl => exact ⟨by rfl, hw₁⟩
   | tail _ orig ih =>
@@ -500,7 +497,7 @@ lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
 /-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
 any nonterminals that `G.g₀` lacks. -/
 lemma derives_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
+    (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
