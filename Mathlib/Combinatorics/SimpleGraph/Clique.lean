@@ -3,14 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Combinatorics.SimpleGraph.Operations
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Data.Finset.Pairwise
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Nat.Lattice
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Graph cliques
@@ -25,6 +27,8 @@ A clique is a set of vertices that are pairwise adjacent.
 * `SimpleGraph.cliqueFinset`: Finset of `n`-cliques of a graph.
 * `SimpleGraph.CliqueFree`: Predicate for a graph to have no `n`-cliques.
 -/
+
+@[expose] public section
 
 open Finset Fintype Function SimpleGraph.Walk
 
@@ -63,6 +67,9 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
     simp only [top_adj, ne_eq, Subtype.mk.injEq, eq_iff_iff] at h2
     exact h2.1 hne
 
+theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
+  simp [IsChain, G.symm.iff]
+
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
 
@@ -85,8 +92,6 @@ lemma isClique_insert_of_notMem (ha : a ∉ s) :
     G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, G.Adj a b :=
   Set.pairwise_insert_of_symmetric_of_notMem G.symm ha
 
-@[deprecated (since := "2025-05-23")] alias isClique_insert_of_not_mem := isClique_insert_of_notMem
-
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
     G.IsClique (insert a s) := hs.insert_of_symmetric G.symm h
 
@@ -108,13 +113,13 @@ theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nont
     (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
   refine ⟨fun h ↦ ⟨f ⁻¹' t, ?_, ?_⟩, by rintro ⟨x, hs, rfl⟩; exact hs.map⟩
   · rintro x (hx : f x ∈ t) y (hy : f y ∈ t) hne
-    obtain ⟨u,v, huv, hux, hvy⟩ := h hx hy (by simpa)
+    obtain ⟨u, v, huv, hux, hvy⟩ := h hx hy (by simpa)
     rw [EmbeddingLike.apply_eq_iff_eq] at hux hvy
     rwa [← hux, ← hvy]
   rw [Set.image_preimage_eq_iff]
   intro x hxt
-  obtain ⟨y,hyt, hyne⟩ := ht.exists_ne x
-  obtain ⟨u,v, -, rfl, rfl⟩ := h hyt hxt hyne
+  obtain ⟨y, hyt, hyne⟩ := ht.exists_ne x
+  obtain ⟨u, v, -, rfl, rfl⟩ := h hyt hxt hyne
   exact Set.mem_range_self _
 
 theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
@@ -359,19 +364,19 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
-  convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
+  convert (Embedding.induce ↑h.choose).comp this.toEmbedding
   exact hb.symm
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
-  rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
+  contrapose!; exact not_cliqueFree_iff n
 
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
 theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
     G.CliqueFree (card β) ↔ (⊤ : SimpleGraph β).Free G := by
-  rw [← not_iff_not, not_free, cliqueFree_iff, not_isEmpty_iff,
+  rw [← not_iff_not, not_free, not_cliqueFree_iff,
     isContained_congr (Iso.completeGraph (Fintype.equivFin β)) Iso.refl]
   exact ⟨fun ⟨f⟩ ↦ ⟨f.toCopy⟩, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
@@ -412,10 +417,9 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
-  by_contra h
-  refine Nat.lt_le_asymm hc ?_
-  rw [cliqueFree_iff, not_isEmpty_iff] at h
-  simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
+  rw [cliqueFree_iff]
+  contrapose! hc
+  simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding hc.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
 theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
@@ -497,7 +501,7 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
 
 lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} (h : G.CliqueFree n)
     (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
-  by_contra! hf
+  by_contra hf
   have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
   exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
 
@@ -665,7 +669,8 @@ variable {α : Type*} {G : SimpleGraph α}
 /-- The maximum number of vertices in a clique of a graph `G`. -/
 noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
 
-private lemma fintype_cliqueNum_bddAbove [Fintype α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
+private lemma fintype_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
+  have := Fintype.ofFinite α
   use Fintype.card α
   rintro y ⟨s, syc⟩
   rw [isNClique_iff] at syc
@@ -755,7 +760,7 @@ variable [DecidableRel H.Adj]
 
 @[gcongr, mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
-  monotone_filter_right _ fun _ ↦ IsNClique.mono h
+  monotone_filter_right _ fun _ _ ↦ IsNClique.mono h
 
 variable [Fintype β] [DecidableEq β] (G)
 
@@ -784,7 +789,10 @@ abbrev IsIndepSet (s : Set α) : Prop :=
   s.Pairwise (fun v w ↦ ¬G.Adj v w)
 
 theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w) :=
-  Iff.rfl
+  .rfl
+
+theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
+  .rfl
 
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by
@@ -804,10 +812,10 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
     { b ∈ sᶜ | b ∈ e }.Nonempty := by
   obtain ⟨v, w⟩ := e
-  by_contra c
+  by_contra! c
   rw [IsIndepSet] at indA
   rw [mem_edgeSet] at he
-  rw [not_nonempty_iff_eq_empty, filter_eq_empty_iff] at c
+  rw [filter_eq_empty_iff] at c
   simp_rw [mem_compl, Sym2.mem_iff, not_or] at c
   by_cases vins : v ∈ s
   · have wins : w ∈ s := by by_contra wnins; exact (c wnins).right rfl
@@ -880,11 +888,11 @@ variable {n : ℕ}
 def IndepSetFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNIndepSet n t
 
-/-- An graph is `n`-independent set free iff its complement is `n`-clique free. -/
+/-- A graph is `n`-independent set free iff its complement is `n`-clique free. -/
 @[simp] theorem cliqueFree_compl : Gᶜ.CliqueFree n ↔ G.IndepSetFree n := by
   simp [IndepSetFree, CliqueFree]
 
-/-- An graph's complement is `n`-independent set free iff it is `n`-clique free. -/
+/-- A graph's complement is `n`-independent set free iff it is `n`-clique free. -/
 @[simp] theorem indepSetFree_compl : Gᶜ.IndepSetFree n ↔ G.CliqueFree n := by
   simp [IndepSetFree, CliqueFree]
 

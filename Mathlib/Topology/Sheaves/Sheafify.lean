@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Topology.Sheaves.LocalPredicate
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Sheafification of `Type`-valued presheaves
@@ -26,6 +28,8 @@ Show sheafification is a functor from presheaves to sheaves,
 and that it is the left adjoint of the forgetful functor,
 following <https://stacks.math.columbia.edu/tag/007X>.
 -/
+
+@[expose] public section
 
 assert_not_exists CommRingCat
 
@@ -73,7 +77,7 @@ def toSheafify : F ⟶ F.sheafify.1 where
   app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
-    apply Subtype.ext -- Porting note: Added `apply`
+    apply Subtype.ext -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Added `apply`
     ext ⟨u, m⟩
     exact germ_res_apply F f.unop u m x
 
@@ -106,9 +110,9 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   rcases F.germ_eq x mU mV gU gV e with ⟨W, mW, iU', iV', (e' : F.map iU'.op gU = F.map iV'.op gV)⟩
   use ⟨W ⊓ (U' ⊓ V'), ⟨mW, mU, mV⟩⟩
   refine ⟨?_, ?_, ?_⟩
-  · change W ⊓ (U' ⊓ V') ⟶ U.obj
+  · change W ⊓ (U' ⊓ V') ⟶ U.val
     exact Opens.infLERight _ _ ≫ Opens.infLELeft _ _ ≫ iU
-  · change W ⊓ (U' ⊓ V') ⟶ V.obj
+  · change W ⊓ (U' ⊓ V') ⟶ V.val
     exact Opens.infLERight _ _ ≫ Opens.infLERight _ _ ≫ iV
   · intro w
     specialize wU ⟨w.1, w.2.2.1⟩

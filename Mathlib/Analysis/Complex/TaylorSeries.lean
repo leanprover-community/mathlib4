@@ -3,7 +3,9 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # Convergence of Taylor series of holomorphic functions
@@ -23,6 +25,8 @@ differentiable on all of `ℂ` converges to `f` on `ℂ`;
 see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire` and
 `Complex.taylorSeries_eq_of_entire'`.
 -/
+
+public section
 
 namespace Complex
 

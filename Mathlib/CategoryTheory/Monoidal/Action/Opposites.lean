@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
-import Mathlib.CategoryTheory.Monoidal.Opposite
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-!
 
@@ -12,9 +14,9 @@ import Mathlib.CategoryTheory.Monoidal.Opposite
 
 In this file, given a monoidal category `C` and a category `D`,
 we construct a left `C`-action on `D` out of the data of a right `Cᴹᵒᵖ`-action
-on `D`. We also construct a right `C`-action on `D`from the data of a left
+on `D`. We also construct a right `C`-action on `D` from the data of a left
 `Cᴹᵒᵖ`-action on `D`. Conversely, given left/right `C`-actions on `D`,
-we construct a`Cᴹᵒᵖ` actions with the conjugate variance.
+we construct a `Cᴹᵒᵖ` action with the conjugate variance.
 
 We construct similar actions for `Cᵒᵖ`, namely, left/right `Cᵒᵖ`-actions
 on `Dᵒᵖ` from left/right-actions of `C` on `D`, and vice-versa.
@@ -24,11 +26,13 @@ you should bring them as local instances if you intend to use them.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [MonoidalCategory C] [Category D]
+variable [Category* C] [MonoidalCategory C] [Category* D]
 
 namespace MonoidalLeftAction
 open scoped MonoidalLeftAction MonoidalRightAction
@@ -136,23 +140,23 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   associator_actionHom _ _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   leftUnitor_actionHom _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   rightUnitor_actionHom _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 /-- Define a left action of `C` on `D` from a left action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `c ⊙ₗ d = unop ((op c) ⊙ₗ (op d))`. -/
@@ -176,23 +180,23 @@ def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   associator_actionHom _ _ _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   leftUnitor_actionHom _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   rightUnitor_actionHom _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 section
 
@@ -348,23 +352,23 @@ def oppositeRightAction [MonoidalRightAction C D] :
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   actionHom_associator _ _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_leftUnitor _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_rightUnitor _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 /-- Define a right action of `C` on `D` from a right action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `d ⊙ᵣ c = unop ((op d) ⊙ᵣ (op c))`. -/
@@ -388,23 +392,23 @@ def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ _ _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   actionHom_associator _ _ _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_leftUnitor _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_rightUnitor _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 section
 

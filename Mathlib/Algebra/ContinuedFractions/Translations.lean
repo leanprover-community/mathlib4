@@ -3,9 +3,11 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Seq.Basic
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Seq.Basic
 
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions
@@ -15,6 +17,8 @@ import Mathlib.Data.Seq.Basic
 Some simple translation lemmas between the different definitions of functions defined in
 `Algebra.ContinuedFractions.Basic`.
 -/
+
+@[expose] public section
 
 
 namespace GenContFract

@@ -3,13 +3,15 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.MeasureTheory.Measure.Haar.Disintegration
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere
@@ -41,6 +43,8 @@ elementary but maybe the most elegant once necessary prerequisites are set up.
 
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
+
+public section
 
 open Filter MeasureTheory Measure Module Metric Set Asymptotics
 
@@ -221,9 +225,9 @@ theorem ae_lineDeriv_sum_eq
   suffices S2 : ∫ x, (∑ i ∈ s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
                   ∑ i ∈ s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
     obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
-      ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth (mod_cast le_top)
+      ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth (by simp)
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
-    simp_rw [(g_smooth.differentiable (mod_cast le_top)).differentiableAt.lineDeriv_eq_fderiv]
+    simp_rw [(g_smooth.differentiable (by simp)).differentiableAt.lineDeriv_eq_fderiv]
     simp only [map_neg, _root_.map_sum, map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
@@ -233,7 +237,7 @@ theorem ae_lineDeriv_sum_eq
   let L : StrongDual ℝ E → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
-  · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
+  · exact ((g_smooth.continuous_fderiv (by simp)).clm_apply continuous_const).mul
       hf.continuous
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 

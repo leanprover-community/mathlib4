@@ -3,8 +3,9 @@ Copyright (c) 2024 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.Cartesian
+public import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 
 /-!
 
@@ -37,6 +38,8 @@ equalities.
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -127,7 +130,7 @@ lemma isStronglyCartesian_of_exists_isCartesian (p : 𝒳 ⥤ 𝒮) (h : ∀ (a 
   -- Let `ψ` be a Cartesian arrow lying over `g`
   obtain ⟨a', ψ, hψ⟩ := h _ _ (p.map φ)
   -- Let `τ' : c ⟶ a'` be the map induced by the universal property of `ψ`
-  let τ' := IsStronglyCartesian.map p (p.map φ) ψ (f':= g ≫ p.map φ) rfl φ'
+  let τ' := IsStronglyCartesian.map p (p.map φ) ψ (f' := g ≫ p.map φ) rfl φ'
   -- Let `Φ : a' ≅ a` be natural isomorphism induced between `φ` and `ψ`.
   let Φ := domainUniqueUpToIso p (p.map φ) φ ψ
   -- The map induced by `φ` will be `τ' ≫ Φ.hom`

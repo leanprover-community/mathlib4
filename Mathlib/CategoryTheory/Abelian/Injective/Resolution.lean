@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Abelian categories with enough injectives have injective resolutions
@@ -27,6 +29,8 @@ When the underlying category is abelian:
 * `CategoryTheory.InjectiveResolution.of`: Hence, starting from a monomorphism `X ⟶ J`, where `J`
   is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -112,7 +116,7 @@ def descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveRes
 lemma comp_descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) :
     I.cocomplex.d 0 1 ≫ descHomotopyZeroZero f comm = f.f 0 :=
-  I.exact₀.comp_descToInjective  _ _
+  I.exact₀.comp_descToInjective _ _
 
 /-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroOne {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -146,9 +150,9 @@ lemma comp_descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : Injec
     (f : I.cocomplex ⟶ J.cocomplex) (n : ℕ) (g : I.cocomplex.X (n + 1) ⟶ J.cocomplex.X n)
     (g' : I.cocomplex.X (n + 2) ⟶ J.cocomplex.X (n + 1))
     (w : f.f (n + 1) = I.cocomplex.d (n + 1) (n + 2) ≫ g' + g ≫ J.cocomplex.d n (n + 1)) :
-    I.cocomplex.d (n+2) (n+3) ≫ descHomotopyZeroSucc f n g g' w =
+    I.cocomplex.d (n + 2) (n + 3) ≫ descHomotopyZeroSucc f n g g' w =
       f.f (n + 2) - g' ≫ J.cocomplex.d _ _ :=
-  (I.exact_succ (n + 1)).comp_descToInjective  _ _
+  (I.exact_succ (n + 1)).comp_descToInjective _ _
 
 /-- Any descent of the zero morphism is homotopic to zero. -/
 def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}

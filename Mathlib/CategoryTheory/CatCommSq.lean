@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # 2-commutative squares of functors
@@ -19,12 +21,14 @@ Future work: using this notion in the development of the localization of categor
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Functor
 
-variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
-  [Category C₅] [Category C₆]
+variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
+  [Category* C₅] [Category* C₆]
 
 /-- `CatCommSq T L R B` expresses that there is a 2-commutative square of functors, where
 the functors `T`, `L`, `R` and `B` are respectively the left, top, right and bottom functors

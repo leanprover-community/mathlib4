@@ -3,12 +3,14 @@ Copyright (c) 2025 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
 -/
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Topology.Metrizable.Urysohn
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Modular character of a locally compact group
@@ -28,6 +30,8 @@ TODO: Show that the character is continuous.
   depend on the measure chosen is `modularCharacterFun_eq_haarScalarFactor`.
 * `modularCharacter`: The homomorphism G →* ℝ≥0 whose toFun is `modularCharacterFun`.
 -/
+
+@[expose] public section
 
 open MeasureTheory
 open scoped NNReal

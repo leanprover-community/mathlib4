@@ -3,12 +3,14 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Topology.Perfect
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Order.Filter.EventuallyConst
+public import Mathlib.Topology.Perfect
 
 /-!
 # Principle of isolated zeros
@@ -36,6 +38,8 @@ in this setup.
   within `f '' U` is codiscrete within `U`.
 -/
 
+public section
+
 open Filter Function Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology
@@ -57,7 +61,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
     exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
-  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field_simp, ?_⟩
+  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field, ?_⟩
     have h1 : ∑ i ∈ Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
@@ -151,8 +155,8 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
     (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ m • g z)
     (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
-  wlog h_le : n ≤ m generalizing m n
-  · exact ((this hn hm) (not_le.mp h_le).le).symm
+  wlog! h_le : n ≤ m generalizing m n
+  · exact ((this hn hm) h_le.le).symm
   let ⟨g, hg_an, _, hg_eq⟩ := hm
   let ⟨j, hj_an, hj_ne, hj_eq⟩ := hn
   contrapose! hj_ne
@@ -266,7 +270,7 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 section Mul
 /-!
-### Vanishing of products of analytic functions
+### Vanishing of products of analytic functions
 -/
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -308,7 +312,7 @@ end Mul
 end AnalyticOnNhd
 
 /-!
-### Preimages of codiscrete sets
+### Preimages of codiscrete sets
 -/
 
 section PreimgCodiscrete
@@ -342,8 +346,8 @@ theorem AnalyticAt.map_nhdsNE {x : 𝕜} {f : 𝕜 → E} (hfx : AnalyticAt 𝕜
 Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and not locally constant,
 then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
 
-See `AnalyticOnNhd.preimage_zero_codiscreteWithin` for the special case that `s` is the complement
-of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+See `AnalyticOnNhd.preimage_zero_mem_codiscreteWithin` for the special case that `s` is the
+complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
 -/
 theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))

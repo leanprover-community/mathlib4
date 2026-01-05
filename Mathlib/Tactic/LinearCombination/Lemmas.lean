@@ -3,15 +3,19 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Ineq
+module
+
+public meta import Mathlib.Algebra.Field.Defs
+public meta import Mathlib.Algebra.Order.Module.Defs
+public meta import Mathlib.Data.Ineq
 
 /-!
 # Lemmas for the linear_combination tactic
 
 These should not be used directly in user code.
 -/
+
+public meta section
 
 open Lean
 
@@ -26,19 +30,19 @@ theorem add_eq_eq [Add α] (p₁ : (a₁ : α) = b₁) (p₂ : a₂ = b₂) : a�
 
 theorem add_le_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₂ ▸ add_le_add_right p₁ b₂
+  p₂ ▸ add_le_add_left p₁ b₂
 
 theorem add_eq_le [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₁ ▸ add_le_add_left p₂ b₁
+  p₁ ▸ add_le_add_right p₂ b₁
 
 theorem add_lt_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p₁ : (a₁ : α) < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₂ ▸ add_lt_add_right p₁ b₂
+  p₂ ▸ add_lt_add_left p₁ b₂
 
 theorem add_eq_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] {a₁ b₁ a₂ b₂ : α}
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₁ ▸ add_lt_add_left p₂ b₁
+  p₁ ▸ add_lt_add_right p₂ b₁
 
 /-! ### Multiplication -/
 
@@ -145,9 +149,7 @@ theorem eq_of_eq [Add α] [IsRightCancelAdd α] (p : (a : α) = b) (H : a' + b =
 theorem le_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) ≤ b) (H : a' + b ≤ b' + a) :
     a' ≤ b' := by
-  rw [← add_le_add_iff_right b]
-  apply H.trans
-  apply add_le_add_left p
+  grw [← add_le_add_iff_right b, H, p]
 
 theorem le_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b ≤ b' + a) :
@@ -162,9 +164,7 @@ theorem le_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
 theorem lt_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) ≤ b) (H : a' + b < b' + a) :
     a' < b' := by
-  rw [← add_lt_add_iff_right b]
-  apply H.trans_le
-  apply add_le_add_left p
+  grw [p] at H; simpa using H
 
 theorem lt_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b < b' + a) :
@@ -174,9 +174,8 @@ theorem lt_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
 theorem lt_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) < b) (H : a' + b ≤ b' + a) :
     a' < b' := by
-  rw [← add_lt_add_iff_right b]
-  apply H.trans_lt
-  apply add_lt_add_left p
+  grw [← add_lt_add_iff_right b, H]
+  gcongr
 
 alias ⟨eq_rearrange, _⟩ := sub_eq_zero
 
@@ -190,7 +189,7 @@ theorem lt_rearrange {α : Type*} [AddCommGroup α] [PartialOrder α] [IsOrdered
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a : α) = b)
     (H : (a' - b') ^ n - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
+  rw [← sub_eq_zero] at p ⊢; apply eq_zero_of_pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
 end Tactic.LinearCombination
 

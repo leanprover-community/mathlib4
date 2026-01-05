@@ -3,14 +3,15 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+module
 
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.MvPowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-import Mathlib.Data.ENat.Lattice
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+public import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 
@@ -26,6 +27,8 @@ monoid. The definition `residueFieldOfPowerSeries` provides the isomorphism betw
 field of `k⟦X⟧` and `k`, when `k` is a field.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -327,7 +330,7 @@ instance : NormalizationMonoid k⟦X⟧ where
     simp only [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
-      Units.ext_iff, Units.val_mul, divXPowOrder_mul_divXPowOrder]
+      Units.ext_iff, Units.val_mul, ← divXPowOrder_mul]
   normUnit_coe_units := by
     intro u
     set u₀ := u.1 with hu

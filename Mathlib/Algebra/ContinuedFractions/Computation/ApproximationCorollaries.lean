@@ -3,11 +3,13 @@ Copyright (c) 2021 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Tactic.GCongr
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
+public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
@@ -36,6 +38,8 @@ Moreover, we show the convergence of the continued fractions computations, that 
 
 convergence, fractions
 -/
+
+@[expose] public section
 
 variable {K : Type*} (v : K) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 

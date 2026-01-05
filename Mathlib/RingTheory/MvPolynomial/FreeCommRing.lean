@@ -3,15 +3,16 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.RingTheory.FreeCommRing
 
 /-!
 
 # Constructing Ring terms from MvPolynomial
 
 This file provides tools for constructing ring terms that can be evaluated to particular
-`MvPolynomial`s. The main motivation is in model theory. It can be used to construct first order
+`MvPolynomial`s. The main motivation is in model theory. It can be used to construct first-order
 formulas whose realization is a property of an `MvPolynomial`
 
 ## Main definitions
@@ -22,6 +23,8 @@ formulas whose realization is a property of an `MvPolynomial`
   `p : MvPolynomial κ R` such that `p.support ⊆ monoms i`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -41,7 +44,7 @@ def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ κ) :=
   fun i => (monoms i).attach.sum
     (fun m => FreeCommRing.of (Sum.inl ⟨i, m⟩) *
-      Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inr j)^ n))
+      Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inr j) ^ n))
 
 /-- Collections of `MvPolynomial`s, `p : ι → MvPolynomial κ R` such
 that `∀ i, (p i).support ⊆ monoms i` can be identified with functions

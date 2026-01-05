@@ -3,17 +3,22 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Paul Lezeau, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 
 /-!
 # The category of module objects over a monoid object.
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory MonObj
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
   {D : Type u₂} [Category.{v₂} D] [MonoidalLeftAction C D]
 
@@ -42,9 +47,9 @@ class ModObj (X : D) where
 
 attribute [reassoc] ModObj.mul_smul' ModObj.one_smul'
 
-@[inherit_doc] scoped[MonObj] notation "γ" => ModObj.smul
-@[inherit_doc] scoped[MonObj] notation "γ["Y"]" => ModObj.smul (X := Y)
-@[inherit_doc] scoped[MonObj] notation "γ["N","Y"]" =>
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ" => ModObj.smul
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" Y "]" => ModObj.smul (X := Y)
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" N "," Y "]" =>
   ModObj.smul (M := N) (X := Y)
 
 variable {M}
@@ -66,12 +71,12 @@ theorem assoc_flip (X : D) [ModObj M X] : M ⊴ₗ γ ≫ γ =
 
 variable (M) in
 /-- The action of a monoid object on itself. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev regular : ModObj M M where
   smul := μ
 
 attribute [local instance] regular in
-@[simp] lemma smul_eq_mul (M : C) [MonObj M] : γ[M, M] = μ[M] := rfl
+@[simp] lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
@@ -208,7 +213,7 @@ def forget : Mod_ D A ⥤ D where
 
 section comap
 
-variable {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMon_Hom f]
+variable {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f]
 
 open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
@@ -219,7 +224,7 @@ def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
   smul := f ⊵ₗ M ≫ γ[B, M]
   one_smul' := by
     rw [← comp_actionHomLeft_assoc]
-    rw [IsMon_Hom.one_hom, ModObj.one_smul]
+    rw [IsMonHom.one_hom, ModObj.one_smul]
   mul_smul' := by
     -- oh, for homotopy.io in a widget!
     slice_rhs 2 3 => rw [action_exchange]
@@ -229,7 +234,7 @@ def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
     slice_rhs 2 4 => rw [← whiskerLeft_actionHomLeft]
     slice_rhs 1 2 => rw [← comp_actionHomLeft]
     rw [← comp_actionHomLeft, Category.assoc, ← comp_actionHomLeft_assoc,
-      IsMon_Hom.mul_hom, tensorHom_def, Category.assoc]
+      IsMonHom.mul_hom, tensorHom_def, Category.assoc]
 
 open MonoidalLeftAction in
 /-- If `g : M ⟶ N` is a `B`-linear morphisms of `B`-modules, then it induces an
@@ -243,16 +248,13 @@ lemma scalarRestriction_hom
   letI := scalarRestriction f M
   letI := scalarRestriction f N
   { smul_hom := by
-      dsimp
-      slice_rhs 1 2 => rw [action_exchange]
-      slice_rhs 2 3 => rw [← IsMod_Hom.smul_hom]
-      rw [Category.assoc] }
+      simpa using (action_exchange_assoc f g γ).symm }
 
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/
 @[simps]
-def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMon_Hom f] :
+def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] :
     Mod_ D B ⥤ Mod_ D A where
   obj M :=
     letI := scalarRestriction f M.X
@@ -267,3 +269,4 @@ def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMon_Hom f] :
 end comap
 
 end Mod_
+end CategoryTheory

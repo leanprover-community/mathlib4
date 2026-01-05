@@ -3,13 +3,17 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Algebra.Field.Basic
+module
+
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.Rat.Cast.CharZero
+public meta import Mathlib.Algebra.Field.Basic
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
+
+public meta section
 
 variable {u : Lean.Level}
 
@@ -148,7 +152,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   simp only [Int.negOfNat_eq]
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   generalize Nat.succ n = n at *
-  use this; simp only [Int.ofNat_eq_coe, Int.cast_neg,
+  use this; simp only [Int.ofNat_eq_natCast, Int.cast_neg,
     Int.cast_natCast, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
 
 open Lean

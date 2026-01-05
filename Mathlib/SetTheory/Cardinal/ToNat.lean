@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Projection from cardinal numbers to natural numbers
@@ -12,6 +14,8 @@ In this file we define `Cardinal.toNat` to be the natural projection `Cardinal �
 sending all infinite cardinals to zero.
 We also prove basic lemmas about this definition.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -139,7 +143,7 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c := by
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat #α = toNat #β := by
   -- Porting note: Inserted universe hint below
-  rw [← toNat_lift, (lift_mk_eq.{_,_,v}).mpr ⟨e⟩, toNat_lift]
+  rw [← toNat_lift, (lift_mk_eq.{_, _, v}).mpr ⟨e⟩, toNat_lift]
 
 theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mul toNat x y
 
