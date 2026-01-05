@@ -5,7 +5,7 @@ Authors: Apurva Nakade
 -/
 module
 
-public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.Geometry.Convex.Cone.Pointed.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
