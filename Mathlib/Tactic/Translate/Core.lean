@@ -513,12 +513,15 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
     applyReplacementFun t e #[]
 
 /-- Unfold auxlemmas in the type and value. -/
-def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
+def declUnfoldSimpAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
+  let unfold (e : Expr) := deltaExpand e fun
+    | .str _ s => "_simp_".isPrefixOf s
+    | _ => false
   let mut decl := decl
-  decl := decl.updateType <| ← unfoldAuxLemmas decl.type
+  decl := decl.updateType <| ← unfold decl.type
   if let some v := decl.value? (allowOpaque := true) then
     trace[translate] "value before unfold:{indentExpr v}"
-    decl := decl.updateValue <| ← unfoldAuxLemmas v
+    decl := decl.updateValue <| ← unfold v
     trace[translate] "value after unfold:{indentExpr decl.value!}"
   return decl
 
@@ -559,13 +562,6 @@ def findRelevantArg (t : TranslateData) (nm : Name) : CoreM Nat := MetaM.run' do
     trace[translate_detail] "findRelevantArg: {arg}"
     return arg.getD 0
 
-/-- Abstracts the nested proofs in the value of `decl` if it is a def.
-This follows the behaviour of `Elab.abstractNestedProofs`. -/
-def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  let .defnInfo info := decl | return decl
-  let value ← withDeclNameForAuxNaming decl.name do Meta.abstractNestedProofs info.value
-  return .defnInfo { info with value }
-
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (t : TranslateData) (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
@@ -595,7 +591,7 @@ The last example may or may not be the equation lemma of a declaration with a tr
 We will only translate it if it has a translation attribute.
 
 Note that this function would return `proof_nnn` aux lemmas if
-we hadn't unfolded them in `declUnfoldAuxLemmas`.
+we hadn't unfolded them in `declUnfoldSimpAuxLemmas`.
 -/
 def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
   e.foldConsts ∅ fun n l ↦
@@ -636,7 +632,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     return
   let srcDecl ← withoutExporting do getConstInfo src
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
-  let srcDecl ← withoutExporting do MetaM.run' do declUnfoldAuxLemmas srcDecl
+  let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclRec t ref pre tgt_pre n
@@ -666,8 +662,6 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       of `to_additive`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
-  -- "Refold" all the aux lemmas that we unfolded.
-  let trgDecl ← MetaM.run' <| declAbstractNestedProofs trgDecl
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
   has executable code.
