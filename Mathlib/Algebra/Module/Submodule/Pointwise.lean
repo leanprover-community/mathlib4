@@ -367,7 +367,7 @@ lemma set_smul_le_of_le_le {s t : Set S} {p q : Submodule R M}
 lemma set_smul_eq_iSup [SMulCommClass S R M] (s : Set S) (N : Submodule R M) :
     s • N = ⨆ (a ∈ s), a • N := by
   refine Eq.trans (congrArg sInf ?_) csInf_Ici
-  simp_rw [← Set.Ici_def, iSup_le_iff, @forall_comm M]
+  simp_rw [Set.Ici_def, iSup_le_iff, @forall_comm M]
   exact Set.ext fun _ => forall₂_congr (fun _ _ => Iff.symm map_le_iff_le_comap)
 
 theorem set_smul_span [SMulCommClass S R M] (s : Set S) (t : Set M) :
