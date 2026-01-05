@@ -306,6 +306,10 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by grind
 lemma two_dvd_mul_add_one (k : ℕ) : 2 ∣ k * (k + 1) :=
   even_iff_two_dvd.mp (even_mul_succ_self k)
 
+lemma two_dvd_mul_sub_one (k : ℕ) : 2 ∣ k * (k - 1) :=
+  (@Nat.eq_zero_or_eq_sub_one_add_one k).elim (by grind)
+  (by grind [Nat.two_dvd_mul_add_one (k - 1)])
+
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, parity_simps]

@@ -573,12 +573,8 @@ theorem iterate_derivative_mul_X_sq' {n} (p : R[X]) :
         (n.choose 2 : R[X]) * (Nat.descFactorial 2 2 : R[X]) = ((n * (n - 1) : ℕ) : R[X]) := by
         norm_cast
         congr 1
-        rw [Nat.choose_two_right, Nat.descFactorial_self, Nat.factorial_two, Nat.div_mul_cancel]
-        cases n with
-        | zero => simp
-        | succ n =>
-          rw [Nat.add_sub_cancel, mul_comm]
-          exact Nat.two_dvd_mul_add_one n
+        grind [Nat.choose_two_right, Nat.descFactorial_self, Nat.factorial_two,
+          Nat.two_dvd_mul_sub_one]
       simp [-Nat.descFactorial_succ, cf₁, cf₂]; ring
 
 theorem derivative_comp (p q : R[X]) :
