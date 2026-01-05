@@ -106,7 +106,7 @@ theorem fourier_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
     · exact ((FourierTransform.fourierCLM ℂ _ _) ∘L (toTemperedDistributionCLM F volume 2)).cont
     · exact (toTemperedDistributionCLM F volume 2).cont.comp (fourierTransformₗᵢ E F).continuous
   intro f
-  simp [p, TemperedDistribution.fourierTransform_toTemperedDistributionCLM_eq]
+  simp [p, TemperedDistribution.fourier_toTemperedDistributionCLM_eq]
 
 /-- The `𝓢'`-inverse Fourier transform and the `L2`-inverse Fourier transform coincide on `L2`. -/
 theorem fourierInv_toTemperedDistribution_eq (f : Lp (α := E) F 2) :

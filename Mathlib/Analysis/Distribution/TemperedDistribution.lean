@@ -269,11 +269,6 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace ℝ E] [NormedSpace ℂ F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
-/-variable (E F) in
-/-- The Fourier transform on tempered distributions as a continuous linear map. -/
-def fourierTransformCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))-/
-
 instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
   fourier := PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))
 
@@ -286,17 +281,17 @@ instance instFourierSMul : FourierSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
 instance instContinuousFourier : ContinuousFourier 𝓢'(E, F) 𝓢'(E, F) where
   continuous_fourier := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))).cont
 
-/-@[simp]
-theorem fourierTransformCLM_apply (f : 𝓢'(E, F)) :
-  fourierTransformCLM E F f = 𝓕 f := rfl-/
-
 @[simp]
-theorem fourierTransform_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
+theorem fourier_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
 
-/-variable (E F) in
-/-- The inverse Fourier transform on tempered distributions as a continuous linear map. -/
-def fourierTransformInvCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))-/
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformCLM := FourierTransform.fourierCLM
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformCLM_apply := FourierTransform.fourierCLM_apply
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransform_apply := fourier_apply
 
 instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv := PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))
@@ -310,12 +305,17 @@ instance instFourierInvSMul : FourierInvSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
 instance instContinuousFourierInv : ContinuousFourierInv 𝓢'(E, F) 𝓢'(E, F) where
   continuous_fourierInv := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) _)).cont
 
-/-@[simp]
-theorem fourierTransformInvCLM_apply (f : 𝓢'(E, F)) :
-    fourierTransformInvCLM E F f = 𝓕⁻ f := rfl-/
-
 @[simp]
-theorem fourierTransformInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
+theorem fourierInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformInvCLM := FourierTransform.fourierInvCLM
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformInvCLM_apply := FourierTransform.fourierInvCLM_apply
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformInv_apply := fourierInv_apply
 
 instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv_fourier_eq f := by ext; simp
@@ -327,19 +327,19 @@ variable [CompleteSpace F]
 
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
 `𝓢(E, F)`. -/
-theorem fourierTransform_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+theorem fourier_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
     𝓕 (f : 𝓢'(E, F)) = 𝓕 f := by
   ext g
   simpa using integral_fourier_smul_eq g f
 
 /-- The distributional inverse Fourier transform and the classical inverse Fourier transform
 coincide on `𝓢(E, F)`. -/
-theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
     𝓕⁻ (f : 𝓢'(E, F)) = 𝓕⁻ f := calc
   _ = 𝓕⁻ (toTemperedDistributionCLM E F volume (𝓕 (𝓕⁻ f))) := by
     congr; exact (fourier_fourierInv_eq f).symm
   _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
-    rw [fourierTransform_toTemperedDistributionCLM_eq]
+    rw [fourier_toTemperedDistributionCLM_eq]
   _ = _ := fourierInv_fourier_eq _
 
 end Fourier

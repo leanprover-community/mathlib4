@@ -106,19 +106,40 @@ attribute [simp] fourier_smul
 attribute [simp] fourierInv_add
 attribute [simp] fourierInv_smul
 
+@[deprecated (since := "2026-01-06")]
+alias _root_.FourierModule.fourier_add := FourierTransform.fourier_add
+
+@[deprecated (since := "2026-01-06")]
+alias _root_.FourierModule.fourier_smul := FourierTransform.fourier_smul
+
+@[deprecated (since := "2026-01-06")]
+alias _root_.FourierInvModule.fourierInv_add := FourierTransform.fourierInv_add
+
+@[deprecated (since := "2026-01-06")]
+alias _root_.FourierInvModule.fourierInv_smul := FourierTransform.fourierInv_smul
+
 variable [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
-  [TopologicalSpace E] [TopologicalSpace F]
 
 section fourierCLM
 
-variable [FourierTransform E F] [FourierAdd E F] [FourierSMul R E F] [ContinuousFourier E F]
+variable [FourierTransform E F] [FourierAdd E F] [FourierSMul R E F]
 
 variable (R E F) in
 /-- The Fourier transform as a linear map. -/
-def fourierCLM : E →L[R] F where
+def fourierₗ : E →ₗ[R] F where
   toFun := 𝓕
   map_add' := fourier_add
   map_smul' := fourier_smul
+
+@[simp]
+lemma fourierₗ_apply (f : E) : fourierₗ R E F f = 𝓕 f := rfl
+
+variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourier E F]
+
+variable (R E F) in
+/-- The Fourier transform as a continuous linear map. -/
+def fourierCLM : E →L[R] F where
+  __ := fourierₗ R E F
   cont := continuous_fourier
 
 @[simp]
@@ -129,10 +150,21 @@ end fourierCLM
 section fourierInvCLM
 
 variable [FourierTransformInv E F] [FourierInvAdd E F] [FourierInvSMul R E F]
-  [ContinuousFourierInv E F]
 
 variable (R E F) in
 /-- The inverse Fourier transform as a linear map. -/
+def fourierInvₗ : E →ₗ[R] F where
+  toFun := 𝓕⁻
+  map_add' := fourierInv_add
+  map_smul' := fourierInv_smul
+
+@[simp]
+lemma fourierInvₗ_apply (f : E) : fourierInvₗ R E F f = 𝓕⁻ f := rfl
+
+variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourierInv E F]
+
+variable (R E F) in
+/-- The inverse Fourier transform as a continuous linear map. -/
 def fourierInvCLM : E →L[R] F where
   toFun := 𝓕⁻
   map_add' := fourierInv_add
@@ -169,18 +201,32 @@ attribute [simp] fourierInv_fourier_eq
 attribute [simp] fourier_fourierInv_eq
 
 variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
-  [TopologicalSpace E] [TopologicalSpace F]
-  [FourierTransform E F] [FourierAdd E F] [FourierSMul R E F] [ContinuousFourier E F]
-  [FourierTransformInv F E] [ContinuousFourierInv F E]
+  [FourierTransform E F] [FourierAdd E F] [FourierSMul R E F]
+  [FourierTransformInv F E]
   [FourierPair E F] [FourierInvPair F E]
 
 variable (R E F) in
 /-- The Fourier transform as a linear equivalence. -/
-def fourierCLE : E ≃L[R] F where
-  __ := fourierCLM R E F
+def fourierEquiv : E ≃ₗ[R] F where
+  __ := fourierₗ R E F
   invFun := 𝓕⁻
   left_inv := fourierInv_fourier_eq
   right_inv := fourier_fourierInv_eq
+
+@[simp]
+lemma fourierEquiv_apply (f : E) : fourierEquiv R E F f = 𝓕 f := rfl
+
+@[simp]
+lemma fourierEquiv_symm_apply (f : F) : (fourierEquiv R E F).symm f = 𝓕⁻ f := rfl
+
+variable [TopologicalSpace E] [TopologicalSpace F]
+  [ContinuousFourier E F] [ContinuousFourierInv F E]
+
+variable (R E F) in
+/-- The Fourier transform as a continuous linear equivalence. -/
+def fourierCLE : E ≃L[R] F where
+  __ := fourierEquiv R E F
+  continuous_toFun := continuous_fourier
   continuous_invFun := continuous_fourierInv
 
 @[simp]
