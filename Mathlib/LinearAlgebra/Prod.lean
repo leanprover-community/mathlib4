@@ -199,6 +199,10 @@ theorem inr_injective : Function.Injective (inr R M M₂) := fun _ => by simp
 def coprod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : M × M₂ →ₗ[R] M₃ :=
   f.comp (fst _ _ _) + g.comp (snd _ _ _)
 
+theorem coprod_def (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
+    f.coprod g = f.comp (fst _ _ _) + g.comp (snd _ _ _) :=
+  rfl
+
 @[simp]
 theorem coprod_apply (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (x : M × M₂) :
     coprod f g x = f x.1 + g x.2 :=
@@ -375,6 +379,21 @@ theorem inr_map_mul (b₁ b₂ : B) :
   Prod.ext (by simp) rfl
 
 end map_mul
+
+theorem range_eq_range_iff_map_ker_fst_eq_top {R M N P : Type*} [Semiring R]
+    [AddCommMonoid M] [Module R M] [AddCommGroup N] [Module R N]
+    [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) (g : N →ₗ[R] P) :
+    f.range ≤ g.range ↔ (f.comp (.fst R M N) + g.comp (.snd R M N)).ker.map (.fst R M N) = ⊤ := by
+  suffices (∀ x, ∃ y, g y = f x) ↔ ∀ x, ∃ y, f x + g y = 0 by
+    simpa [Submodule.eq_top_iff', SetLike.le_def]
+  refine forall_congr' fun x ↦ neg_surjective.exists.trans <| exists_congr fun y ↦ ?_
+  simp [neg_eq_iff_add_eq_zero, add_comm]
+
+theorem map_fst_ker_eq_top {R M N P : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P] {f : M × N →ₗ[R] P} :
+    f.ker.map (.fst R M N) = ⊤ ↔ (f ∘ₗ .inl R M N).range ≤ (f ∘ₗ .inr R M N).range := by
+  rw [range_eq_range_iff_map_ker_fst_eq_top]
+  simp only [comp_assoc, ← comp_add, ← coprod_def, coprod_inl_inr, comp_id]
 
 end LinearMap
 
