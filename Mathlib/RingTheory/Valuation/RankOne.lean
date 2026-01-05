@@ -5,10 +5,11 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Real.Embedding
-public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # Rank one valuations
@@ -111,16 +112,6 @@ instance [RankOne v] : IsNontrivial v where
   exists_val_nontrivial := RankOne.nontrivial v
 
 end RankOne
-
-instance instRankOneCompletion {K : Type*} [Field K] {Γ : Type*}
-    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) [h : v.RankOne] :
-    (Valued.v : Valuation v.Completion Γ).RankOne where
-  hom := Valuation.RankOne.hom v
-  strictMono' := Valuation.RankOne.strictMono v
-  exists_val_nontrivial := by
-    rcases h.exists_val_nontrivial with ⟨x, hx1, hx2⟩
-    use (WithVal.equiv v).symm x
-    simp_all
 
 end Valuation
 
