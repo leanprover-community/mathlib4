@@ -445,9 +445,9 @@ open ContinuousMultilinearMap in
 given any subset `s₀` of `k` the parametric integral `fun x ↦ ∫ a in s₀, f x a ∂μ`
 is `Cⁿ` on `u` too. -/
 lemma ContDiffOn.parametric_integral
-    {μ : Measure H'} [IsFiniteMeasureOnCompacts μ] {f : H → H' → E} {u : Set H} (hu : IsOpen u)
+    {μ : Measure H'} {f : H → H' → E} {u : Set H} (hu : IsOpen u)
     {s₀ k : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
-    (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) :
+    (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) (mus₀ : μ s₀ ≠ ⊤) :
     ContDiffOn 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) u := by
   /- Locally, this is already proved in `hasFTaylorSeriesOn_setIntegral_of_le_const` (which moreover
   gives a formula for the successive derivatives). To globalize, one covers the compact set `k`
@@ -456,37 +456,40 @@ lemma ContDiffOn.parametric_integral
   the property locally, and invariance under binary union. -/
   intro x hx
   apply contDiffWithinAt_iff_forall_nat_le.2 (fun m hm ↦ ?_)
-  suffices ∃ s, k ∩ k ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
+  suffices ∃ s, k ∩ k ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t → μ t ≠ ⊤ →
       ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x by
     rcases this with ⟨s, ks, sk, -, hs⟩
     rw [show s = k by grind] at hs
     have : ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in k ∩ toMeasurable μ s₀, f x a ∂μ) u x := by
-      apply hs _ inter_subset_left
-      exact hk.measurableSet.inter (measurableSet_toMeasurable _ _)
+      apply hs _ inter_subset_left (hk.measurableSet.inter (measurableSet_toMeasurable _ _))
+      apply ((measure_mono inter_subset_right).trans_lt ?_).ne
+      rw [measure_toMeasurable]
+      exact mus₀.lt_top
     convert this using 3
-    apply (Measure.restrict_inter_toMeasurable _ hk.measurableSet hs₀).symm
-    exact ((measure_mono hs₀).trans_lt hk.measure_lt_top).ne
+    exact (Measure.restrict_inter_toMeasurable mus₀ hk.measurableSet hs₀).symm
   apply IsCompact.induction_on (s := k)
     (p := fun s₀ ↦ ∃ s, k ∩ s₀ ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
-      ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x) hk
+      μ t ≠ ⊤ → ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x) hk
   · simp only [inter_empty, empty_subset, true_and]
     exact ⟨∅, by simpa using contDiffWithinAt_const⟩
   · grind
   · -- check invariance of the property under binary union
     rintro s s' ⟨t, kt, tk, tmeas, ht⟩ ⟨t', kt', t'k, t'meas, ht'⟩
-    refine ⟨t ∪ t', by grind, by grind, tmeas.union t'meas, fun v hv vmeas ↦ ?_⟩
+    refine ⟨t ∪ t', by grind, by grind, tmeas.union t'meas, fun v hv vmeas muv ↦ ?_⟩
     let v₁ := v ∩ t
     let v₂ := v \ v₁
     have v₁meas : MeasurableSet v₁ := vmeas.inter tmeas
     have v₂meas : MeasurableSet v₂ := vmeas.diff v₁meas
-    have : ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in v₁, f x a ∂μ +  ∫ a in v₂, f x a ∂μ) u x :=
-      (ht v₁ inter_subset_right v₁meas).add (ht' v₂ (by grind) v₂meas)
+    have muv₁ : μ v₁ ≠ ⊤ := ((measure_mono inter_subset_left).trans_lt muv.lt_top).ne
+    have muv₂ : μ v₂ ≠ ⊤ := ((measure_mono diff_subset).trans_lt muv.lt_top).ne
+    have : ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in v₁, f x a ∂μ + ∫ a in v₂, f x a ∂μ) u x :=
+      (ht v₁ inter_subset_right v₁meas muv₁).add (ht' v₂ (by grind) v₂meas muv₂)
     apply this.congr_of_mem (fun y hy ↦ ?_) hx
-    have I : IntegrableOn (f y) k μ :=
-      (hf.continuousOn.uncurry_left _ hy).integrableOn_compact hk
     rw [show v = v₁ ∪ v₂ by grind, setIntegral_union disjoint_sdiff_left.symm v₂meas]
-    · exact I.mono (by grind) le_rfl
-    · exact I.mono (by grind) le_rfl
+    · exact (hf.continuousOn.uncurry_left _ hy).integrableOn_of_subset_isCompact
+        hk v₁meas (inter_subset_right.trans tk) muv₁
+    · exact (hf.continuousOn.uncurry_left _ hy).integrableOn_of_subset_isCompact
+        hk v₂meas (by grind only [= subset_def, = mem_diff, = mem_union]) muv₂
   -- check the property locally using `hasFTaylorSeriesOn_setIntegral_of_le_const`
   intro y hy
   obtain ⟨v, v_mem, p, hp⟩ : ∃ v ∈ 𝓝[insert (x, y) (u ×ˢ k)] (x, y), ∃ p,
@@ -521,13 +524,12 @@ lemma ContDiffOn.parametric_integral
         exact this z_mem
       simp only [Finset.mem_Iic, mem_iInter, mem_setOf_eq, v''] at this
       exact this i hi
-  refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas ↦ ?_⟩
-  have hmut : μ t < ⊤ := (measure_mono (tk'.trans k'k)).trans_lt hk.measure_lt_top
+  refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas hmut ↦ ?_⟩
   have : HasFTaylorSeriesUpToOn m (fun x ↦ ∫ a in t, f x a ∂μ)
       (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
         (fun _ ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) u' := by
     apply hasFTaylorSeriesOn_setIntegral_of_le_const u'_open (hk.isSeparable.mono (tk'.trans k'k))
-      tmeas hmut.ne (hp.mono (by grind)) (C := fun i ↦ 1 + ‖p (x, y) i‖)
+      tmeas hmut (hp.mono (by grind)) (C := fun i ↦ 1 + ‖p (x, y) i‖)
     intro x' hx' a ha i hi
     exact (hk'_bound i (mod_cast hi) (x', a) ⟨hx', tk' ha⟩).le
   apply ContDiffWithinAt.mono_of_mem_nhdsWithin ?_ (nhdsWithin_le_nhds u'_mem)
@@ -537,10 +539,10 @@ lemma ContDiffOn.parametric_integral
 over a set `s₀` contained in a compact set `k` is `Cⁿ` too. -/
 lemma ContDiff.parametric_integral {H' : Type*}
     [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
-    {μ : Measure H'} [IsFiniteMeasureOnCompacts μ]
-    {f : H → H' → E} {k s₀ : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
-    (hf : ContDiff 𝕜 n f.uncurry) : ContDiff 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) :=
-  contDiffOn_univ.1 <| hf.contDiffOn.parametric_integral isOpen_univ hk hs₀
+    {μ : Measure H'} {f : H → H' → E} {k s₀ : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
+    (hf : ContDiff 𝕜 n f.uncurry) (mus₀ : μ s₀ ≠ ⊤) :
+    ContDiff 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) :=
+  contDiffOn_univ.1 <| hf.contDiffOn.parametric_integral isOpen_univ hk hs₀ mus₀
 
 section
 
