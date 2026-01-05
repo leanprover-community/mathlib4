@@ -44,7 +44,7 @@ structure ShortComplex where
   /-- the second morphism of a `ShortComplex` -/
   g : X₂ ⟶ X₃
   /-- the composition of the two given morphisms is zero -/
-  zero : f ≫ g = 0
+  zero : f ≫ g = 0 := by cat_disch
 
 namespace ShortComplex
 

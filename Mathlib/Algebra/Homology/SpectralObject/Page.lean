@@ -11,13 +11,42 @@ public import Mathlib.Algebra.Homology.ExactSequenceFour
 /-!
 # Spectral objects in abelian categories
 
+Let `X` be a spectral object index by the category `ι`
+in the abelian category `C`. The purpose of this file
+is two introduce the homology `X.E` of the short complex `X.shortComplexE`
+`(X.H n₀).obj (mk₁ f₃) ⟶ (X.H n₁).obj (mk₁ f₂) ⟶ (X.H n₂).obj (mk₁ f₁)`
+when `f₁`, `f₂` and `f₃` are composable morphisms in `ι` and the
+equalities `n₀ + 1 = n₁` and `n₁ + 1 = n₂` hold (both maps in the
+short complex are given by `X.δ`). All the relevant objects in the
+spectral sequence attached to spectral objects can be defined
+in terms of this homology `X.E`: the objects in all pages, including
+the page at infinity.
+
+In order to study this homology, we introduce objects `X.cycles`
+for the kernel of `δ` and `X.opcycles` for its cokernel. We record
+the obvious exact sequences that are part of this definition
+as the lemmas `kernelSequenceCycles_exact`
+and `cokernelSequenceOpcycles_exact`, and constructor for morphisms
+`X.liftCycles` to cycles and `X.descOpcycles` from opcycles.
+The definitions `cyclesMap` and `opcyclesMap` give the functoriality
+with respect to `ComposableArrows ι 2`.
+
+The fact that the morphisms `δ` are part of a long exact sequence allow
+to show that `X.cycles` also identify to a cokernel (`cokernelIsoCycles`)
+and `X.opcycles` to a kernel (`opcyclesIsoKernel`). In particular, we also
+get constructors `descCycles` and `liftOpcycles` for morphisms from cycles
+and to opcycles.
+
+## References
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
+
 -/
 
 @[expose] public section
 
 namespace CategoryTheory
 
-open Category Limits ComposableArrows
+open Limits ComposableArrows
 
 namespace Abelian
 
@@ -77,11 +106,11 @@ instance : Epi (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).g := by
   dsimp
   infer_instance
 
-noncomputable def kernelSequenceCycles_exact :
+lemma kernelSequenceCycles_exact :
     (X.kernelSequenceCycles n₀ n₁ hn₁ f g).Exact :=
   ShortComplex.kernelSequence_exact _
 
-noncomputable def cokernelSequenceOpcycles_exact :
+lemma cokernelSequenceOpcycles_exact :
     (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).Exact :=
   ShortComplex.cokernelSequence_exact _
 
@@ -117,7 +146,7 @@ noncomputable def cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') :
     X.cycles n₀ n₁ hn₁ f g ⟶ X.cycles n₀ n₁ hn₁ f' g' :=
   kernel.lift _ (X.iCycles n₀ n₁ hn₁ f g ≫
       (X.H n₀).map (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2))) (by
-      rw [assoc, X.δ_naturality n₀ n₁ hn₁ f g f' g'
+      rw [Category.assoc, X.δ_naturality n₀ n₁ hn₁ f g f' g'
         (homMk₁ (α.app 0) (α.app 1) (naturality' α 0 1))
           (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2)) rfl, iCycles_δ_assoc, zero_comp])
 
@@ -134,14 +163,14 @@ lemma cyclesMap_id :
     X.cyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) = 𝟙 _ := by
   rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g),
     X.cyclesMap_i n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by aesop_cat),
-    Functor.map_id, comp_id, id_comp]
+    Functor.map_id, Category.comp_id, Category.id_comp]
 
 lemma cyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk₂ f'' g'')
     (α'' : mk₂ f g ⟶ mk₂ f'' g'') (h : α ≫ α' = α'') :
     X.cyclesMap n₀ n₁ hn₁ f g f' g' α ≫ X.cyclesMap n₀ n₁ hn₁ f' g' f'' g'' α' =
       X.cyclesMap n₀ n₁ hn₁ f g f'' g'' α'' := by
   subst h
-  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f'' g''), assoc,
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f'' g''), Category.assoc,
     X.cyclesMap_i n₀ n₁ hn₁ f' g' f'' g'' α' _ rfl,
     X.cyclesMap_i_assoc n₀ n₁ hn₁ f g f' g' α _ rfl,
     ← Functor.map_comp]
@@ -171,7 +200,7 @@ lemma opcyclesMap_id :
     X.opcyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) = 𝟙 _ := by
   rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
     X.p_opcyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by aesop_cat),
-    Functor.map_id, comp_id, id_comp]
+    Functor.map_id, Category.comp_id, Category.id_comp]
 
 lemma opcyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk₂ f'' g'')
     (α'' : mk₂ f g ⟶ mk₂ f'' g'') (h : α ≫ α' = α'') :
@@ -225,7 +254,7 @@ lemma toCycles_cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk�
     (hβ₀ : β.app 0 = α.app 0) (hβ₁ : β.app 1 = α.app 2) :
     X.toCycles n₀ n₁ hn₁ f g fg h ≫ X.cyclesMap n₀ n₁ hn₁ f g f' g' α =
       (X.H n₀).map β ≫ X.toCycles n₀ n₁ hn₁ f' g' fg' h' := by
-  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f' g'), assoc, assoc, toCycles_i,
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f' g'), Category.assoc, Category.assoc, toCycles_i,
     X.cyclesMap_i n₀ n₁ hn₁ f g f' g' α (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2)) rfl,
     toCycles_i_assoc, ← Functor.map_comp, ← Functor.map_comp]
   congr 1
@@ -234,7 +263,7 @@ lemma toCycles_cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk�
     rw [hβ₀]
     exact naturality' α 0 1
   · dsimp
-    erw [hβ₁, comp_id, id_comp]
+    rw [hβ₁, Category.comp_id, Category.id_comp]
 
 noncomputable def fromOpcycles :
     X.opcycles n₀ n₁ hn₁ f g ⟶ (X.H n₁).obj (mk₁ fg) :=
@@ -260,8 +289,7 @@ lemma opcyclesMap_fromOpcycles (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg �
     p_fromOpcycles, ← Functor.map_comp, ← Functor.map_comp]
   congr 1
   ext
-  · dsimp
-    erw [hβ₀, id_comp, comp_id]
+  · cat_disch
   · dsimp
     rw [hβ₁]
     exact (naturality' α 1 2).symm
@@ -269,12 +297,12 @@ lemma opcyclesMap_fromOpcycles (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg �
 @[reassoc (attr := simp)]
 lemma H_map_twoδ₂Toδ₁_toCycles :
     (X.H n₀).map (twoδ₂Toδ₁ f g fg h) ≫ X.toCycles n₀ n₁ hn₁ f g fg h = 0 := by
-  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g), assoc, toCycles_i, zero₂, zero_comp]
+  simp [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g)]
 
 @[reassoc (attr := simp)]
 lemma fromOpcycles_H_map_twoδ₁Toδ₀ :
     X.fromOpcycles n₀ n₁ hn₁ f g fg h ≫ (X.H n₁).map (twoδ₁Toδ₀ f g fg h) = 0 := by
-  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g), p_fromOpcycles_assoc, zero₂, comp_zero]
+  simp [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g)]
 
 @[simps]
 noncomputable def cokernelSequenceCycles : ShortComplex C :=
@@ -297,18 +325,14 @@ lemma cokernelSequenceCycles_exact :
   apply ShortComplex.exact_of_g_is_cokernel
   exact IsColimit.ofIsoColimit (cokernelIsCokernel _)
     (Cofork.ext (X.cokernelIsoCycles n₀ n₁ hn₁ f g fg h) (by
-      dsimp
-      simp only [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g), assoc,
-        cokernelIsoCycles_hom_fac, toCycles_i]))
+      simp [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g)]))
 
 lemma kernelSequenceOpcycles_exact :
     (X.kernelSequenceOpcycles n₀ n₁ hn₁ f g fg h).Exact := by
   apply ShortComplex.exact_of_f_is_kernel
   exact IsLimit.ofIsoLimit (kernelIsKernel _)
     (Iso.symm (Fork.ext (X.opcyclesIsoKernel n₀ n₁ hn₁ f g fg h) (by
-      dsimp
-      simp only [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
-        opcyclesIsoKernel_hom_fac, p_fromOpcycles])))
+      simp [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g)])))
 
 section
 
@@ -409,7 +433,7 @@ lemma shortComplexEMap_comp' (h : α ≫ β = γ) :
   ext
   all_goals dsimp; rw [← Functor.map_comp]; congr 1; cat_disch
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma shortComplexEMap_comp :
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' (α ≫ β) =
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
@@ -433,7 +457,7 @@ lemma EMap_id' (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃) (hα : α = 
   subst hα
   simp only [EMap_id]
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma EMap_comp :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' (α ≫ β) =
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
@@ -463,16 +487,14 @@ lemma δ_eq_zero_of_isIso₁ (hf : IsIso f) :
     X.δ n₀ n₁ hn₁ f g = 0 := by
   have : IsIso (twoδ₁Toδ₀ f g _ rfl) := by
     rw [isIso_iff₁]
-    dsimp
-    constructor <;> infer_instance
+    constructor <;> dsimp <;> infer_instance
   simpa only [Preadditive.IsIso.comp_left_eq_zero] using X.zero₃ n₀ n₁ hn₁ f g _ rfl
 
 lemma δ_eq_zero_of_isIso₂ (hg : IsIso g) :
     X.δ n₀ n₁ hn₁ f g = 0 := by
   have : IsIso (twoδ₂Toδ₁ f g _ rfl) := by
     rw [isIso_iff₁]
-    dsimp
-    constructor <;> infer_instance
+    constructor <;> dsimp <;> infer_instance
   simpa only [Preadditive.IsIso.comp_right_eq_zero] using X.zero₁ n₀ n₁ hn₁ f g _ rfl
 
 end
@@ -519,12 +541,10 @@ lemma homologyπ_EIsoH_hom :
 
 lemma EIsoH_hom_naturality (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
     (hβ : β = homMk₃ (α.app 0) (α.app 0) (α.app 1) (α.app 1)
-      (by simp) (naturality' α 0 1) (by
-        dsimp [Precomp.map]
-        erw [id_comp, comp_id])) :
+      (by simp) (naturality' α 0 1) (by simp [Precomp.obj, Precomp.map])) :
   X.EMap n₀ n₁ n₂ hn₁ hn₂ (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β ≫
     (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f').hom =
-    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by
+  (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by
   have : α = homMk₁ (β.app 1) (β.app 2) (naturality' β 1 2 ) := by
     subst hβ
     exact hom_ext₁ rfl rfl
