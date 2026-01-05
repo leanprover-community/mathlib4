@@ -51,13 +51,12 @@ inductive Key where
   | proj (typeName : Name) (idx nargs : Nat)
   deriving Inhabited, BEq
 
-set_option backward.privateInPublic true in
 /-
 At the root, `.const` is the most common key, and it is very uncommon
 to get the same constant name with a different arity.
 So for performance, we just use `hash name` to hash `.const name _`.
 -/
-private nonrec def Key.hash : Key → UInt64
+protected def Key.hash : Key → UInt64
   | .star                => 0
   | .labelledStar id     => mixHash 5 <| hash id
   | .opaque              => 1
@@ -70,12 +69,9 @@ private nonrec def Key.hash : Key → UInt64
   | .«forall»            => 4
   | .proj name idx nargs => mixHash (hash nargs) <| mixHash (hash name) (hash idx)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Hashable Key := ⟨Key.hash⟩
 
-set_option backward.privateInPublic true in
-private def Key.format : Key → Format
+def Key.format : Key → Format
   | .star                   => f!"*"
   | .labelledStar id        => f!"*{id}"
   | .opaque                 => "◾"
@@ -89,12 +85,8 @@ private def Key.format : Key → Format
   | .forall                 => "∀"
   | .proj name idx nargs    => f!"⟨{name}.{idx}, {nargs}⟩"
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ToFormat Key := ⟨Key.format⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 Converts an entry (i.e., `List Key`) to the discrimination tree into
 `MessageData` that is more user-friendly.
@@ -187,13 +179,10 @@ inductive StackEntry where
   /-- `.expr` is an expression that will be indexed. -/
   | expr (info : ExprInfo)
 
-set_option backward.privateInPublic true in
-private def StackEntry.format : StackEntry → Format
+def StackEntry.format : StackEntry → Format
   | .star => f!".star"
   | .expr info => f!".expr {info.expr}"
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ToFormat StackEntry := ⟨StackEntry.format⟩
 
 /-- A `LazyEntry` represents a snapshot of the computation of encoding an `Expr` as `Array Key`.
@@ -241,8 +230,7 @@ def mkInitLazyEntry (labelledStars : Bool) : MetaM LazyEntry :=
     labelledStars? := if labelledStars then some #[] else none
   }
 
-set_option backward.privateInPublic true in
-private def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
+def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
   let mut parts := #[f!"stack: {entry.stack}"]
   unless entry.computedKeys == [] do
     parts := parts.push f!"results: {entry.computedKeys}"
@@ -250,8 +238,6 @@ private def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
     parts := parts.push f!"todo: {info.expr}"
   return Format.joinSep parts.toList ", "
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ToFormat LazyEntry := ⟨LazyEntry.format⟩
 
 /-- Array index of a `Trie α` in the `tries` of a `RefinedDiscrTree`. -/
@@ -303,8 +289,7 @@ namespace RefinedDiscrTree
 
 variable {α : Type}
 
-set_option backward.privateInPublic true in
-private partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
+partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   let lines := tree.root.fold (init := #[]) fun lines key trie =>
     lines.push (Format.nest 2 f!"{key} =>{Format.line}{go trie}")
   if lines.size = 0 then
@@ -330,8 +315,6 @@ where
     else
       Format.joinSep lines.toList "\n"
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩
 
 end Lean.Meta.RefinedDiscrTree
