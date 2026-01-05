@@ -987,8 +987,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq
 
-set_option backward.privateInPublic true in
-private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
+alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
@@ -1013,8 +1012,7 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => failure
   | _, _, _ => throwError "not Real.toNNReal"
 
-set_option backward.privateInPublic true in
-private alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
+alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
 /-- Extension for the `positivity` tactic: `Real.nnabs. -/
 @[positivity Real.nnabs _]
