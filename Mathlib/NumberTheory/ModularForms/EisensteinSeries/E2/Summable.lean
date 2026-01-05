@@ -101,7 +101,7 @@ open ModularGroup
 
 variable (z : ℍ)
 
-private lemma linear_sub_linear_eq (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ b ≠ 0)) :
+private lemma one_div_linear_sub_one_div_linear_eq (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ b ≠ 0)) :
     1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
   rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div]
   · simp only [one_div, add_sub_add_left_eq_sub, mul_inv_rev]
@@ -114,15 +114,15 @@ lemma summable_left_one_div_linear_sub_one_div_linear (a b : ℤ) :
   have := Summable.mul_left (b - a : ℂ) (summable_linear_left_mul_linear_left (ne_zero z) a b)
   rw [← Finset.summable_compl_iff (s := {0})] at *
   apply this.congr (fun m ↦ ?_)
-  rw [linear_sub_linear_eq z a b m (by grind)]
-  simp
+  grind [one_div_linear_sub_one_div_linear_eq z a b m (by grind)]
 
 lemma summable_right_one_div_linear_sub_one_div_linear_succ (a : ℤ) :
     Summable fun b : ℤ ↦ 1 / ((a : ℂ) * z + b) - 1 / ((a : ℂ) * z + b + 1) := by
   have := summable_linear_right_add_one_mul_linear_right z a a
   rw [← Finset.summable_compl_iff (s := {0, -1})] at *
   apply this.congr (fun b ↦ ?_)
-  simpa [add_assoc, mul_comm] using (linear_sub_linear_eq z b (b + 1) a (by grind)).symm
+  simpa [add_assoc, mul_comm] using
+    (one_div_linear_sub_one_div_linear_eq z b (b + 1) a (by grind)).symm
 
 /- Acting by `S` (which sends `z` to `-z ⁻¹`) swaps the sums and pulls out a factor of
 `(z ^ 2)⁻¹`. -/
@@ -134,9 +134,7 @@ private lemma aux_sum_Ico_S_indentity (N : ℕ) :
     (by apply fun (i : ℤ) hi => linear_left_summable (ne_zero z) i (k := 2) (by omega))]
   apply sum_congr rfl fun n hn ↦ ?_
   rw [← tsum_mul_left, ← tsum_comp_neg]
-  apply tsum_congr fun d ↦ ?_
-  field_simp [ne_zero z]
-  grind
+  apply tsum_congr fun d ↦ by grind [ne_zero z]
 
 lemma tendsto_double_sum_S_act :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
@@ -148,7 +146,7 @@ lemma tendsto_double_sum_S_act :
   simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk, ← mul_sum]
     using (aux_sum_Ico_S_indentity z N)
 
-lemma tsumFilter_tsum_eq_S_act :
+lemma tsum_symmetricIco_tsum_eq_S_act :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, 1 / ((m : ℂ) * z + n) ^ 2 =
     ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) := by
   apply HasSum.tsum_eq
@@ -199,7 +197,7 @@ private lemma aux_tsum_identity_1 (d : ℕ+) :
   · apply (summable_left_one_div_linear_sub_one_div_linear z (-d) d).congr
     grind [Int.cast_neg, Int.cast_natCast, one_div, sub_left_inj, inv_inj]
 
-/- This sum of four terms can now be combined into a sum where `z` has changes for `-1 / z`.-/
+/- This sum of four terms can now be combined into a sum where `z` has changed for `-1 / z`.-/
 private lemma aux_tsum_identity_2 (d : ℕ+) :
     ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - (1 / (m * z + d)) -
     1 / (-m * z + d)) = 2 / z * ∑' m : ℕ+, (1 / (-(d : ℂ) / z - m) + 1 / (-d / z + m)) := by
@@ -237,11 +235,10 @@ private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
     ext N
     have h2 := cot_series_rep (UpperHalfPlane.coe_mem_integerComplement
       (⟨-N / z, im_pnat_div_pos N z⟩))
-    rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add',coe_mk_subtype, one_div, inv_div, neg_mul] at *
-    rw [← h2, ← tsum_zero_pnat_eq_tsum_nat
-      (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, im_pnat_div_pos N z⟩)]
-    field_simp [ne_zero z]
-    ring
+    rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add',coe_mk_subtype, one_div, inv_div, neg_mul, ← h2,
+      ← tsum_zero_pnat_eq_tsum_nat
+      (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, im_pnat_div_pos N z⟩)] at *
+    grind [ne_zero z]
   rw [H0]
   nth_rw 2 [show -2 * π * I / z = (-2 * π * I / z) - (2 / z * (2 * π * I)) * 0 + 2 * 0 by ring]
   apply Tendsto.add (Tendsto.sub (by simp) ((aux_tendsto_tsum_cexp_pnat z).const_mul _))
