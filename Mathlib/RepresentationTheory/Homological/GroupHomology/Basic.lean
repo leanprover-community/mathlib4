@@ -119,7 +119,7 @@ namespace groupHomology
 
 open Rep Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (n : ℕ)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (n : ℕ)
 
 namespace inhomogeneousChains
 
