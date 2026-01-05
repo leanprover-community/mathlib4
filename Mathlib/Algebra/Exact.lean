@@ -175,6 +175,20 @@ lemma exact_iff_of_surjective_of_bijective_of_injective
 
 end MonoidHom
 
+@[deprecated (since := "2026-01-05")]
+alias AddMonoidHom.exact_iff := AddMonoidHom.addExact_iff
+
+@[deprecated (since := "2026-01-05")]
+alias AddMonoidHom.exact_of_comp_eq_one_of_ker_le_range :=
+  AddMonoidHom.addExact_of_comp_eq_zero_of_ker_le_range
+
+@[deprecated (since := "2026-01-05")]
+alias AddMonoidHom.exact_of_comp_of_mem_range := AddMonoidHom.addExact_of_comp_of_mem_range
+
+@[deprecated (since := "2026-01-05")]
+alias AddMonoidHom.exact_iff_of_surjective_of_bijective_of_injective :=
+  AddMonoidHom.addExact_iff_of_surjective_of_bijective_of_injective
+
 namespace Function.Exact
 
 open MonoidHom
@@ -185,7 +199,7 @@ lemma monoidHom_ker_eq (hfg : Exact f g) :
   SetLike.ext hfg
 
 @[to_additive]
-lemma addMonoidHom_comp_eq_zero (h : Exact f g) : g.comp f = 1 :=
+lemma monoidHom_comp_eq_zero (h : Exact f g) : g.comp f = 1 :=
   DFunLike.coe_injective h.comp_eq_one
 
 section
@@ -201,10 +215,12 @@ lemma iff_of_ladder_mulEquiv (comm₁₂ : g₁₂.comp e₁ = MonoidHom.comp e�
   (exact_iff_of_surjective_of_bijective_of_injective _ _ _ _ e₁ e₂ e₃ comm₁₂ comm₂₃
     e₁.surjective e₂.bijective e₃.injective).symm
 
+@[to_additive]
 lemma of_ladder_mulEquiv_of_exact (comm₁₂ : g₁₂.comp e₁ = MonoidHom.comp e₂ f₁₂)
     (comm₂₃ : g₂₃.comp e₂ = MonoidHom.comp e₃ f₂₃) (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ :=
   (iff_of_ladder_mulEquiv _ _ _ comm₁₂ comm₂₃).2 H
 
+@[to_additive]
 lemma of_ladder_mulEquiv_of_exact' (comm₁₂ : g₁₂.comp e₁ = MonoidHom.comp e₂ f₁₂)
     (comm₂₃ : g₂₃.comp e₂ = MonoidHom.comp e₃ f₂₃) (H : Exact g₁₂ g₂₃) : Exact f₁₂ f₂₃ :=
   (iff_of_ladder_mulEquiv _ _ _ comm₁₂ comm₂₃).1 H
@@ -223,6 +239,31 @@ lemma iff_monoidHom_rangeRestrict :
 alias ⟨monoidHom_rangeRestrict, _⟩ := iff_monoidHom_rangeRestrict
 
 end Function.Exact
+
+@[deprecated (since := "2026-01-05")]
+alias Function.Exact.addMonoidHom_ker_eq := Function.AddExact.addMonoidHom_ker_eq
+
+@[deprecated (since := "2026-01-05")]
+alias Function.Exact.addMonoidHom_comp_eq_zero := Function.AddExact.addMonoidHom_comp_eq_zero
+
+@[deprecated (since := "2026-01-05")]
+alias Function.Exact.iff_of_ladder_addEquiv := Function.AddExact.iff_of_ladder_addEquiv
+
+@[deprecated (since := "2026-01-05")]
+alias Function.Exact.of_ladder_addEquiv_of_exact :=
+  Function.AddExact.of_ladder_addEquiv_of_addExact
+
+@[deprecated (since := "2026-01-05")]
+alias Function.Exact.of_ladder_addEquiv_of_exact' :=
+  Function.AddExact.of_ladder_addEquiv_of_addExact'
+
+@[deprecated (since := "2026-01-05")]
+alias Function.Exact.iff_addMonoidHom_rangeRestrict :=
+  Function.AddExact.iff_addMonoidHom_rangeRestrict
+
+@[deprecated (since := "2026-01-05")]
+alias Function.Exact.addMonoidHom_rangeRestrict :=
+  Function.AddExact.addMonoidHom_rangeRestrict
 
 end MonoidHom
 
@@ -591,7 +632,7 @@ lemma addExact_iff_of_surjective_of_bijective_of_injective
     (comm₁₂ : f'.comp τ₁ = τ₂.comp f) (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
     (h₁ : Function.Surjective τ₁) (h₂ : Function.Bijective τ₂) (h₃ : Function.Injective τ₃) :
     Function.AddExact f g ↔ Function.AddExact f' g' :=
-  AddMonoidHom.exact_iff_of_surjective_of_bijective_of_injective
+  AddMonoidHom.addExact_iff_of_surjective_of_bijective_of_injective
     f.toAddMonoidHom g.toAddMonoidHom f'.toAddMonoidHom g'.toAddMonoidHom
     τ₁.toAddMonoidHom τ₂.toAddMonoidHom τ₃.toAddMonoidHom
     (by ext; apply DFunLike.congr_fun comm₁₂) (by ext; apply DFunLike.congr_fun comm₂₃) h₁ h₂ h₃
