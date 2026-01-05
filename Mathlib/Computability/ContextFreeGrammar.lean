@@ -373,6 +373,9 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
   projectNT : g.NT → Option g₀.NT
   /-- The two mappings are essentially inverses. -/
   projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
+  /-- Inverse property: if projectNT recognizes a nonterminal, it must be in the image of
+  embedNT. -/
+  embedNT_projectNT : ∀ n : g.NT, ∀ n₀ : g₀.NT, projectNT n = some n₀ → embedNT n₀ = n
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
   embed_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.map embedNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal is recognized by the smaller grammar
@@ -388,10 +391,7 @@ variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
 lemma projectNT_inverse_embedNT {n : g.NT} {n₀ : g₀.NT}
     (hn : G.projectNT n = some n₀) :
     Option.map G.embedNT (G.projectNT n) = some n := by
-  rw [hn, Option.map_some]
-  apply congrArg
-  by_contra hnx
-  sorry
+  rw [hn, Option.map_some, G.embedNT_projectNT n n₀ hn]
 
 /-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
 lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
