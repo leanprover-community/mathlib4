@@ -103,7 +103,9 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup 
   map_smul' r x := by
     dsimp at x ⊢
     ext i
-    exact Matrix.Module.scalar_smul_apply r x.1 i
+    change ((Matrix.scalar ι r) • x.1) i = r • x.1 i
+    rw [Matrix.Module.scalar_smul]
+    rfl
 
 /-- auxilary isomorphism showing that compose two functors gives `id` on objects. -/
 @[simps]
