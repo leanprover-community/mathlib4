@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.UniformSpace.Completion
+public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.NumberTheory.NumberField.Basic
 
@@ -150,10 +151,107 @@ open WithVal
 variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 /-- The completion of a field with respect to a valuation. -/
-abbrev Completion := UniformSpace.Completion (WithVal v)
+def Completion := UniformSpace.Completion (WithVal v)
 
-instance : Coe R v.Completion :=
+namespace Completion
+
+instance : Ring v.Completion := UniformSpace.Completion.ring
+
+instance : Inhabited v.Completion := ⟨0⟩
+
+instance : Coe (WithVal v) v.Completion :=
   inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
+
+instance : Coe R v.Completion where
+  coe := (↑) ∘ (equiv v).symm
+
+instance : UniformSpace v.Completion :=
+  UniformSpace.Completion.uniformSpace _
+
+instance : CompleteSpace v.Completion :=
+  UniformSpace.Completion.completeSpace _
+
+instance {M : Type*} [SMul M (WithVal v)] : SMul M v.Completion :=
+  UniformSpace.Completion.instSMul _ _
+
+instance (M N : Type*) [SMul M (WithVal v)] [SMul N (WithVal v)] [SMul M N]
+    [UniformContinuousConstSMul M (WithVal v)] [UniformContinuousConstSMul N (WithVal v)]
+    [IsScalarTower M N (WithVal v)] :
+    IsScalarTower M N v.Completion :=
+  UniformSpace.Completion.instIsScalarTower M N (WithVal v)
+
+variable {K : Type*} [Field K] (v : Valuation K Γ₀)
+
+instance valued : Valued v.Completion Γ₀ := Valued.valuedCompletion
+
+theorem valued_apply (x : WithVal v) : (valued v).v x = Valued.v x :=
+  Valued.valuedCompletion_apply _
+
+instance [CompletableTopField (WithVal v)] : Field v.Completion :=
+  UniformSpace.Completion.instField
+
+variable {S : Type*} [CommSemiring S] [Algebra S K]
+
+variable (K) in
+instance : UniformContinuousConstSMul S (WithVal v) := by
+  refine ⟨fun l ↦ ?_⟩
+  simp_rw [Algebra.smul_def]
+  exact (Ring.uniformContinuousConstSMul _).uniformContinuous_const_smul _
+
+open UniformSpace in
+instance : Algebra S v.Completion where
+  algebraMap := Completion.coeRingHom.comp (algebraMap _ _)
+  commutes' r x := by
+    induction x using Completion.induction_on with
+    | hp =>
+      exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
+    | ih x =>
+      change (↑(algebraMap S (WithVal v) r) : v.Completion) * x
+        = x * (↑(algebraMap S (WithVal v) r) : v.Completion)
+      norm_cast
+      rw [Algebra.commutes]
+  smul_def' r x := by
+    induction x using Completion.induction_on with
+    | hp =>
+      exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
+    | ih x =>
+      change _ = (↑(algebraMap S (WithVal v) r) : v.Completion) * x
+      norm_cast
+      simp_rw [← Algebra.smul_def]
+      rw [UniformSpace.Completion.coe_smul]
+
+theorem coe_smul (r : S) (x : WithVal v) :
+    (↑(r • x) : v.Completion) = r • (↑x : v.Completion) :=
+  UniformSpace.Completion.coe_smul r x
+
+theorem coe_algebraMap : ⇑(algebraMap S v.Completion) = (↑) ∘ algebraMap S K :=
+  rfl
+
+/-- The ring of integers of `Valuation.Completion`. -/
+def integers [CompletableTopField (WithVal v)] : ValuationSubring v.Completion :=
+  (valued v).v.valuationSubring
+
+instance : Inhabited (valuationSubring v) := ⟨0⟩
+
+theorem mem_integers {x : v.Completion} :
+    x ∈ integers v ↔ Valued.v x ≤ 1 :=
+  Iff.rfl
+
+theorem notMem_integers {x : v.Completion} :
+    x ∉ integers v ↔ 1 < Valued.v x := by
+  rw [not_congr <| mem_integers v]
+  exact not_le
+
+open scoped algebraMap in
+theorem valued_eq_valuation (s : S) :
+    Valued.v (s : v.Completion) = v s :=
+  valued_apply v (s : K)
+
+theorem valued_eq_valuation' (k : K) :
+    Valued.v (k : v.Completion) = v k :=
+  valued_eq_valuation v k
+
+end Completion
 
 section Equivalence
 
@@ -219,8 +317,7 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
   | hp =>
     exact (mapEquiv (h.uniformEquiv _ _)).toHomeomorph.isClosed_setOf_iff
       (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
-  | ih a =>
-    simpa [Valued.valuedCompletion_apply, ← WithVal.apply_equiv] using h.le_one_iff_le_one
+  | ih a => simpa [Completion.valued_apply] using h.le_one_iff_le_one
 
 end Equivalence
 
@@ -228,11 +325,12 @@ end Valuation
 
 namespace NumberField.RingOfIntegers
 
-variable {K : Type*} [Field K] [NumberField K] (v : Valuation K Γ₀)
+variable {K : Type*} [Field K] (v : Valuation K Γ₀)
 
 instance : CoeHead (𝓞 (WithVal v)) (WithVal v) := inferInstanceAs (CoeHead (𝓞 K) K)
 
-instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDomain (𝓞 K))
+instance [NumberField K] : IsDedekindDomain (𝓞 (WithVal v)) :=
+  inferInstanceAs (IsDedekindDomain (𝓞 K))
 
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
@@ -242,6 +340,16 @@ instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
 @[simps!]
 def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
+
+theorem withValEquiv_symm_apply_coe (R : Type*) [CommRing R] [Algebra R K]
+    [IsIntegralClosure R ℤ K] (x : R) :
+    ((withValEquiv v R).symm x).1 = (algebraMap R (WithVal v) x) := by
+  rw [withValEquiv_symm_apply, ← IsIntegralClosure.algebraMap_equiv ℤ R (WithVal v) (𝓞 (WithVal v))]
+  rfl
+
+@[simp]
+theorem withVal_coe_eq_algebraMap (x : 𝓞 K) :
+    algebraMap (𝓞 K) (WithVal v) x = (x : K) := rfl
 
 end NumberField.RingOfIntegers
 
