@@ -57,7 +57,7 @@ noncomputable def scalarSMulCLE (c : ℂ) [h : NeZero c] : H ≃L[ℝ] H where
   map_add' x y := by simp
   map_smul' a x := by
     exact smul_comm c a x
-  invFun := c⁻¹ • (id ℝ H)
+  invFun := lsmul ℂ ℂ c⁻¹
   left_inv := by
     exact fun x => inv_smul_smul₀ h.out x
   right_inv := by
@@ -116,7 +116,7 @@ lemma mem_symplComp_iff {x : H} {S : ClosedSubmodule ℝ H} :
   constructor
   · intro h y hy
     have hiy := h (Complex.I • y)
-    simp [← smul_assoc] at hiy
+    simp only [← smul_assoc, smul_eq_mul, Complex.I_mul_I, neg_smul, one_smul, neg_neg] at hiy
     have hxy := hiy hy
     rw [inner_real_eq_re_inner] at hxy
     simp only [CStarModule.inner_op_smul_left, RCLike.star_def, Complex.conj_I, mul_neg,
@@ -145,8 +145,7 @@ lemma orthogonal_mulI_eq_symplComp (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.s
     simp only [smul_eq_mul, Complex.mul_re, Complex.I_re, zero_mul, Complex.I_im, one_mul, zero_sub,
       neg_eq_zero] at hxy
     exact hxy
-  · intro h
-    intro y hy
+  · intro h y hy
     simp only [inner_neg_right, Complex.neg_re, neg_eq_zero]
     rw [inner_smul_right_eq_smul]
     simp only [smul_eq_mul, Complex.mul_re, Complex.I_re, zero_mul, Complex.I_im, one_mul, zero_sub,
