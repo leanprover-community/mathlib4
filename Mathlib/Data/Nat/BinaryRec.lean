@@ -77,12 +77,12 @@ def bitCasesOn {motive : Nat → Sort u} (n) (bit : ∀ b n, motive (bit b n)) :
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> lia
 
-private abbrev binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
+abbrev binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
     (bit : ∀ b n, motive n → motive (bit b n)) :
     ∀ fuel n : Nat, n < 2 ^ fuel → motive n
   | 0, _, lt => lt_one_iff.mp lt ▸ zero
   | fuel + 1, n, lt => congrArg motive n.bit_testBit_zero_shiftRight_one ▸
-      (bit (1 &&& n != 0) (n >>> 1) <| binaryRecAux zero bit _ _ <| by
+      (bit (1 &&& n != 0) (n >>> 1) <| binaryRecAux zero bit fuel _ <| by
         rwa [← n.bit_testBit_zero_shiftRight_one, bit_lt_two_pow_succ_iff] at lt)
 
 /-- A recursion principle for `bit` representations of natural numbers.
