@@ -429,20 +429,18 @@ lemma valuedAdicCompletion_surjective :
   Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
 /-- The ring of integers of `adicCompletion`. -/
-abbrev adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
+def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valuation.Completion.integers (v.valuation K)
 
 variable (R)
 
-@[deprecated Valuation.Completion.mem_integers (since := "2025-08-19")]
 theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
-@[deprecated Valuation.Completion.notMem_integers (since := "2025-08-19")]
 theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
-  rw [not_congr <| Valuation.Completion.mem_integers (v.valuation K)]
+  rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
 
 section AlgebraInstances
@@ -461,7 +459,7 @@ theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (�
 open Valuation.Completion in
 theorem coe_algebraMap_mem (r : R) :
     ↑((algebraMap R (WithVal (v.valuation K))) r) ∈ adicCompletionIntegers K v := by
-  rw [mem_integers, valued_apply]
+  rw [mem_adicCompletionIntegers, valued_apply]
   exact v.valuation_le_one _
 
 instance : Algebra R (v.adicCompletionIntegers K) where
@@ -523,7 +521,7 @@ open scoped algebraMap in -- to make the coercion from `R` fire
 /-- A global integer is in the local integers. -/
 lemma coe_mem_adicCompletionIntegers (r : R) :
     (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
-  rw [mem_integers, valued_eq_valuation, valuation_of_algebraMap]
+  rw [mem_adicCompletionIntegers, valued_eq_valuation, valuation_of_algebraMap]
   exact intValuation_le_one v r
 
 @[simp]
@@ -556,7 +554,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
     simp [ha]
-  · rw [notMem_integers] at ha
+  · rw [notMem_adicCompletionIntegers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
@@ -568,7 +566,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp [exp_ne_zero.symm] at hϖ
     refine ⟨ϖ^(log (Valued.v a)).natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
     -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
-    simp only [map_pow, mem_integers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
+    simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
       Int.natCast_natAbs]
     exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) (zero_le _)
 
