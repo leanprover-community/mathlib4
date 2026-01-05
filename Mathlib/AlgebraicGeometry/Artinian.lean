@@ -85,12 +85,6 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have := this.trans W.2
   rwa [← show Subtype.val '' {⟨x, hW2⟩} = {x} from Set.image_singleton]
 
-theorem IsNoetherianRing.discreteTopololgy_of_isArtinianRing
-    (R : Type*) [CommRing R] [IsNoetherianRing R] [h : DiscreteTopology (PrimeSpectrum R)] :
-    IsArtinianRing R :=
-  isArtinianRing_iff_krullDimLE_zero.mpr
-    (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp h).2
-
 lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     {X : Scheme} [IsLocallyNoetherian X] (h : topologicalKrullDim X ≤ 0) :
     IsLocallyArtinian X := by
