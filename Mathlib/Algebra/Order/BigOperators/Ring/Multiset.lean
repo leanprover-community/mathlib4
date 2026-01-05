@@ -15,7 +15,7 @@ This file contains the results concerning the interaction of multiset big operat
 rings.
 -/
 
-@[expose] public section
+public section
 
 open Multiset
 
