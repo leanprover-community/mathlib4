@@ -17,7 +17,7 @@ polynomial is the whole ring if and only if the `v`-adic Gauss norms of the poly
 1 for all `v`.
 -/
 
-@[expose] public section
+public section
 namespace Polynomial
 
 open IsDedekindDomain HeightOneSpectrum

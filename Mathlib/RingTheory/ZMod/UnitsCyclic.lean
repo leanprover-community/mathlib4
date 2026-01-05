@@ -49,7 +49,7 @@ The proofs mostly follow [Ireland and Rosen,
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Nat
 
