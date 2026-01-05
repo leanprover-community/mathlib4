@@ -71,8 +71,10 @@ end CharZero
 
 section ExpChar
 
-instance [h : ExpChar R p] : ExpChar (MvPolynomial σ R) p := by
-  cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+variable [ExpChar R p]
+
+instance : ExpChar (MvPolynomial σ R) p := by
+  cases ‹ExpChar R p›; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
 end ExpChar
 

@@ -249,7 +249,7 @@ and `g`. -/
 noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
     F.obj (equalizer f g) ≃ { x : F.obj X // F.map f x = F.map g x } :=
   (PreservesEqualizer.iso (F ⋙ FintypeCat.incl) f g ≪≫
-  Types.equalizerIso (F.map f) (F.map g)).toEquiv
+    Types.equalizerIso (F.map f).hom (F.map g).hom).toEquiv
 
 @[simp]
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
@@ -263,8 +263,8 @@ lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
 /-- The fiber of the pullback is the fiber product of the fibers. -/
 noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
     F.obj (pullback f g) ≃ { p : F.obj A × F.obj B // F.map f p.1 = F.map g p.2 } :=
-  (PreservesPullback.iso (F ⋙ FintypeCat.incl) f g ≪≫
-  Types.pullbackIsoPullback (F.map f) (F.map g)).toEquiv
+  Iso.toEquiv (PreservesPullback.iso (F ⋙ FintypeCat.incl) f g ≪≫
+    Types.pullbackIsoPullback (F.map f).hom (F.map g).hom)
 
 @[simp]
 lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
@@ -330,7 +330,7 @@ epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
   apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
-  simpa using congr_fun (F.congr_map huv) _
+  simpa using DFunLike.congr_fun (F.congr_map huv) _
 
 /-- An epimorphism induces a surjective map on fibers. -/
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=

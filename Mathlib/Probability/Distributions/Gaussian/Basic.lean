@@ -126,7 +126,7 @@ lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : StrongDua
 
 /-- The map of a Gaussian measure by a continuous linear map is Gaussian. -/
 instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) :=
-    isGaussian_map_of_measurable (by fun_prop)
+  isGaussian_map_of_measurable (by fun_prop)
 
 instance isGaussian_map_equiv (L : E ≃L[ℝ] F) : IsGaussian (μ.map L) :=
   isGaussian_map (L : E →L[ℝ] F)

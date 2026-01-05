@@ -90,12 +90,6 @@ namespace IsCyclotomicExtension
 
 section Basic
 
-variable {S B} in
-@[deprecated exists_isPrimitiveRoot (since := "2025-05-21")]
-theorem exists_prim_root [IsCyclotomicExtension S A B] {n : ℕ} (ha : n ∈ S) (ha' : n ≠ 0) :
-    ∃ r : B, IsPrimitiveRoot r n :=
-  exists_isPrimitiveRoot A B ha ha'
-
 /-- A reformulation of `IsCyclotomicExtension` that uses `⊤`. -/
 theorem iff_adjoin_eq_top :
     IsCyclotomicExtension S A B ↔
@@ -127,7 +121,7 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {0} A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
-  (iff_adjoin_eq_top _ _ _).2  <| by simpa
+  (iff_adjoin_eq_top _ _ _).2 <| by simpa
 
 theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
