@@ -55,7 +55,7 @@ We prove most results for an arbitrary field `ğ•‚`, and then specialize to `ğ•
 
 -/
 
-@[expose] public section
+public section
 
 
 open Filter RCLike ContinuousMultilinearMap NormedField NormedSpace Asymptotics

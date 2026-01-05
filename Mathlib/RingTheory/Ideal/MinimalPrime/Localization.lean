@@ -31,7 +31,7 @@ of localizations.
   the resulting ring only has a single prime ideal.
 -/
 
-@[expose] public section
+public section
 
 
 section
