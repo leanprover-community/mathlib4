@@ -42,7 +42,7 @@ in order to avoid using real exponents. For real exponents we prove both this an
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

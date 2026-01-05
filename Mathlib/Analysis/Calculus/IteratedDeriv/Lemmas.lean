@@ -17,7 +17,7 @@ This file contains a number of further results on `iteratedDerivWithin` that nee
 than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 -/
 
-@[expose] public section
+public section
 
 section one_dimensional
 

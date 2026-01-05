@@ -25,7 +25,7 @@ Mathlib 4.
 affine map, derivative, differentiability
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

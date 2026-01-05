@@ -17,7 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 the scalar restriction of a linear map.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal

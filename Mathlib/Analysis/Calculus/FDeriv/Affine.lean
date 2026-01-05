@@ -19,7 +19,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 continuous affine maps.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

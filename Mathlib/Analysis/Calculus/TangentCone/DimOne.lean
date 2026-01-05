@@ -14,7 +14,7 @@ In this file we prove that a set in the base field has the unique differentiabil
 iff `x` is an accumulation point of the set, see `uniqueDiffWithinAt_iff_accPt`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set
 open scoped Topology

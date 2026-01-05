@@ -44,7 +44,7 @@ elementary but maybe the most elegant once necessary prerequisites are set up.
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Measure Module Metric Set Asymptotics
 

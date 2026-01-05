@@ -20,7 +20,7 @@ from an inner product space.
 absolute value, derivative
 -/
 
-@[expose] public section
+public section
 
 open Filter Real Set
 

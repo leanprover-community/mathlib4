@@ -20,7 +20,7 @@ derivative, differentiable, Fréchet, calculus
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 

@@ -19,7 +19,7 @@ the theorems in this file require neither differentiability of `f`,
 nor assumptions like `UniqueDiffWithinAt 𝕜 s x`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped Pointwise

@@ -16,7 +16,7 @@ In this file we prove that the product of two sets with unique differentiability
 has the same property, see `UniqueDiffOn.prod`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped Topology
