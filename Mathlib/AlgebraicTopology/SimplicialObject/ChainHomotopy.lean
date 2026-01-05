@@ -41,6 +41,7 @@ This is the alternating sum `H_n = ∑ i : Fin (n+1), (-1)^i • H.h i`.
 def chainHomotopyComponent (H : SimplicialHomotopy f g) (n : ℕ) :
     X _⦋n⦌ ⟶ Y _⦋n+1⦌ := ∑ i : Fin (n+1), ( (-1 : ℤ) ^ (i : ℕ) : ℤ ) • H.h i
 
+/-- The family of components of the induced chain homotopy-/
 noncomputable def hom (H : SimplicialHomotopy f g) : ∀ i j : ℕ,
     ((alternatingFaceMapComplex C).obj X).X i ⟶ ((alternatingFaceMapComplex C).obj Y).X j :=
   fun i j =>
