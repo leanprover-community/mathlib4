@@ -385,28 +385,20 @@ def shortComplexEMap :
   τ₁ := (X.H n₀).map (homMk₁ (α.app 2) (α.app 3) (naturality' α 2 3))
   τ₂ := (X.H n₁).map (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2))
   τ₃ := (X.H n₂).map (homMk₁ (α.app 0) (α.app 1) (naturality' α 0 1))
-  comm₁₂ := by
-    apply δ_naturality
-    rfl
-  comm₂₃ := by
-    apply δ_naturality
-    rfl
+  comm₁₂ := δ_naturality ..
+  comm₂₃ := δ_naturality ..
 
 /-- Variant of `shortComplexEMap_id`. -/
 lemma shortComplexEMap_id' (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃) (hα : α = 𝟙 _) :
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃ α = 𝟙 _ := by
   subst hα
   ext
-  all_goals
-    dsimp
-    convert (X.H _).map_id _
-    aesop_cat
+  all_goals dsimp; convert (X.H _).map_id _; cat_disch
 
 @[simp]
 lemma shortComplexEMap_id :
-    X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃ (𝟙 _) = 𝟙 _ := by
-  apply shortComplexEMap_id'
-  rfl
+    X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃ (𝟙 _) = 𝟙 _ :=
+  shortComplexEMap_id' _ _ _ _ _ _ _ _ _ _ rfl
 
 /-- Variant of `shortComplexEMap_comp`. -/
 lemma shortComplexEMap_comp' (h : α ≫ β = γ) :
@@ -415,20 +407,14 @@ lemma shortComplexEMap_comp' (h : α ≫ β = γ) :
         X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' γ := by
   subst h
   ext
-  all_goals
-    dsimp
-    rw [← Functor.map_comp]
-    congr 1
-    aesop_cat
+  all_goals dsimp; rw [← Functor.map_comp]; congr 1; cat_disch
 
 @[reassoc (attr := simp)]
 lemma shortComplexEMap_comp :
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' (α ≫ β) =
     X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
-      X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁'' f₂'' f₃'' β := by
-  symm
-  apply shortComplexEMap_comp'
-  rfl
+      X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁'' f₂'' f₃'' β :=
+  (shortComplexEMap_comp' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ rfl).symm
 
 noncomputable def EMap :
     X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' :=
@@ -455,21 +441,14 @@ lemma EMap_comp :
   dsimp only [EMap]
   rw [shortComplexEMap_comp, ShortComplex.homologyMap_comp]
 
-/-- Variant of `EMap_comp`. -/
-lemma EMap_comp' (h : α ≫ β = γ) :
-    X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫
-      X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁'' f₂'' f₃'' β =
-        X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' γ := by
-  subst h
-  simp only [EMap_comp]
-
 lemma isIso_EMap
     (h₀ : IsIso ((X.H n₀).map ((functorArrows ι 2 3 3).map α)))
     (h₁ : IsIso ((X.H n₁).map ((functorArrows ι 1 2 3).map α)))
     (h₂ : IsIso ((X.H n₂).map ((functorArrows ι 0 1 3).map α))) :
     IsIso (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) := by
-  have : IsIso (shortComplexEMap X n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) :=
-    @ShortComplex.isIso_of_isIso _ _ _ _ _ _ h₀ h₁ h₂
+  have : IsIso (shortComplexEMap X n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) := by
+    apply (config := { allowSynthFailures := true})
+      ShortComplex.isIso_of_isIso <;> assumption
   dsimp [EMap]
   infer_instance
 
@@ -535,7 +514,7 @@ lemma cycles'IsoH_inv_iCycles :
 lemma homologyπ_EIsoH_hom :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).homologyπ ≫
       (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom =
-      (X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f).hom := by
+    (X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f).hom := by
   simp [EIsoH, cycles'IsoH]
 
 lemma EIsoH_hom_naturality (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))

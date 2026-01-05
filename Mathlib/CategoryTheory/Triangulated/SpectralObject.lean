@@ -18,14 +18,6 @@ public import Mathlib.CategoryTheory.Triangulated.Functor
 In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in a pretriangulated category `C` indexed by the category `ι`.
 
-## TODO (@joelriou)
-* construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
-of all truncations of an object of a triangulated category equipped with a t-structure
-* define a similar notion of spectral objects in abelian categories, show that
-by applying a homological functor `C ⥤ A` to a spectral object in the
-triangulated category `C`, we obtain a spectral object in the abelian category `A`
-* construct the spectral sequence attached to a spectral object in an abelian category
-
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
@@ -208,29 +200,19 @@ structure Hom (Y : SpectralObject C ι) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
+@[simps id_hom comp_hom]
 instance : Category (SpectralObject C ι) where
   Hom := Hom
   id X := { hom := 𝟙 _ }
   comp f g :=
     { hom := f.hom ≫ g.hom }
 
-section
+attribute [simp] id_hom
+attribute [reassoc (attr := simp)] comp_hom
 
-variable {X} {Y Z : SpectralObject C ι}
-
+variable {X} in
 @[ext]
-lemma hom_ext {α β : X ⟶ Y} (h : α.hom = β.hom) : α = β := Hom.ext h
-
-variable (X) in
-@[simp]
-lemma id_hom : Hom.hom (𝟙 X) = 𝟙 _ := rfl
-
-@[simp, reassoc]
-lemma comp_hom (α : X ⟶ Y) (β : Y ⟶ Z) :
-    (α ≫ β).hom = α.hom ≫ β.hom := rfl
-
-end
-
+lemma hom_ext {Y : SpectralObject C ι} {α β : X ⟶ Y} (h : α.hom = β.hom) : α = β := Hom.ext h
 
 section
 
@@ -241,12 +223,11 @@ variable {A : Type*} [Category A] [Abelian A]
 noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
   H n := X.ω₁ ⋙ F.shift n
   δ' n₀ n₁ h :=
-    { app := fun D => F.homologySequenceδ (X.triangle (D.map' 0 1) (D.map' 1 2)) n₀ n₁ h
-      naturality := fun D₁ D₂ φ => by
+    { app D := F.homologySequenceδ (X.triangle (D.map' 0 1) (D.map' 1 2)) n₀ n₁ h
+      naturality D₁ D₂ φ := by
         obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D₁
         obtain ⟨_, _, _, f', g', rfl⟩ := mk₂_surjective D₂
-        exact F.homologySequenceδ_naturality (X.mapTriangle φ) n₀ n₁ h
-        }
+        exact F.homologySequenceδ_naturality (X.mapTriangle φ) n₀ n₁ h }
   exact₁' n₀ n₁ h D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
     exact (F.homologySequence_exact₁ _
