@@ -44,7 +44,7 @@ class ExponentiableMorphism {I J : C} (f : I ⟶ J) [ChosenPullbacksAlong f] whe
   /-- The pushforward functor -/
   pushforward : Over I ⥤ Over J
   /-- The pushforward functor is right adjoint to the pullback functor -/
-  pullbackAdjPushforward (f) : pullback f ⊣ pushforward
+  pullbackPushforwardAdj (f) : pullback f ⊣ pushforward
 
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
 has a right adjoint. -/
@@ -54,7 +54,7 @@ abbrev IsExponentiable [ChosenPullbacks C] : MorphismProperty C :=
 namespace ExponentiableMorphism
 
 instance isExponentiable [ChosenPullbacks C] {I J : C} (f : I ⟶ J) [ExponentiableMorphism f] :
-  IsExponentiable f := ⟨pushforward f, ⟨pullbackAdjPushforward f⟩⟩
+  IsExponentiable f := ⟨pushforward f, ⟨pullbackPushforwardAdj f⟩⟩
 
 section
 
@@ -65,21 +65,21 @@ def ev : pushforward f ⋙ pullback f ⟶ 𝟭 _ :=
   pullbackAdjPushforward f |>.counit
 
 /-- The dependent coevaluation natural transformation as the unit of the adjunction. -/
-def coev : 𝟭 _ ⟶ pullback f ⋙ pushforward f :=
-  pullbackAdjPushforward f |>.unit
+  pullbackPushforwardAdj f |>.unit
 
 @[simp]
-theorem ev_def : ev f = (pullbackAdjPushforward f).counit :=
+theorem ev_def : ev f = (pullbackPushforwardAdj f).counit :=
   rfl
 
 @[simp]
-theorem coev_def : coev f = (pullbackAdjPushforward f).unit :=
+theorem coev_def : coev f = (pullbackPushforwardAdj f).unit :=
   rfl
 
+@[reassoc]
 theorem ev_naturality {X Y : Over I} (g : X ⟶ Y) :
     (pullback f).map ((pushforward f).map g) ≫ (ev f).app Y = (ev f).app X ≫ g :=
   ev f |>.naturality g
-
+@[reassoc]
 theorem coev_naturality {X Y : Over J} (g : X ⟶ Y) :
     g ≫ (coev f).app Y = (coev f).app X ≫ (pushforward f).map ((pullback f).map g) :=
   coev f |>.naturality g
@@ -89,7 +89,7 @@ theorem coev_naturality {X Y : Over J} (g : X ⟶ Y) :
 theorem ev_coev (X : Over J) :
     (pullback f).map (coev f |>.app X) ≫ (ev f |>.app (pullback f |>.obj X)) =
     𝟙 (pullback f |>.obj X) :=
-  pullbackAdjPushforward f |>.left_triangle_components X
+  pullbackPushforwardAdj f |>.left_triangle_components X
 
 /-- The second triangle identity for the counit and unit of the adjunction. -/
 @[reassoc]
@@ -97,12 +97,7 @@ theorem coev_ev (Y : Over I) :
     (coev f |>.app (pushforward f |>.obj Y)) ≫
     (pushforward f |>.map (ev f |>.app Y)) =
     𝟙 (pushforward f |>.obj Y) :=
-  pullbackAdjPushforward f |>.right_triangle_components Y
-
-@[reassoc (attr := simp)]
-theorem ev_comp_hom_eq_snd {Y : Over I} :
-    ((ev f).app Y).left ≫ Y.hom = snd _ _ := by
-  cat_disch
+  pullbackPushforwardAdj f |>.right_triangle_components Y
 
 variable {f}
 
@@ -111,31 +106,31 @@ in `Over J`. -/
 def pushforwardCurry {X : Over I} {A : Over J}
     (u : (pullback f).obj A ⟶ X) :
     A ⟶ (pushforward f).obj X :=
-  pullbackAdjPushforward f |>.homEquiv A X u
+  pullbackPushforwardAdj f |>.homEquiv A X u
 
 /-- The uncurrying of `A ⟶ (pushforward f).obj X` in `Over J` to a morphism
 `(Over.pullback f).obj A ⟶ X` in `Over I`. -/
 def pushforwardUncurry {X : Over I} {A : Over J}
     (v : A ⟶ (pushforward f).obj X) :
     (pullback f).obj A ⟶ X :=
-  pullbackAdjPushforward f |>.homEquiv A X |>.invFun v
+  pullbackPushforwardAdj f |>.homEquiv A X |>.invFun v
 
 theorem homEquiv_apply_eq {X : Over I} {A : Over J} (u : (pullback f).obj A ⟶ X) :
-    (pullbackAdjPushforward f |>.homEquiv _ _) u = pushforwardCurry u :=
+    (pullbackPushforwardAdj f |>.homEquiv _ _) u = pushforwardCurry u :=
   rfl
 
 theorem homEquiv_symm_apply_eq {X : Over I} {A : Over J} (v : A ⟶ (pushforward f).obj X) :
-    (pullbackAdjPushforward f |>.homEquiv _ _).symm v = pushforwardUncurry v :=
+    (pullbackPushforwardAdj f |>.homEquiv _ _).symm v = pushforwardUncurry v :=
   rfl
 
 theorem pushforward_uncurry_curry {X : Over I} {A : Over J}
     (u : (pullback f).obj A ⟶ X) :
     pushforwardUncurry (pushforwardCurry u) = u :=
-  pullbackAdjPushforward f |>.homEquiv A X |>.left_inv u
+  pullbackPushforwardAdj f |>.homEquiv A X |>.left_inv u
 
 theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforward f).obj X) :
     pushforwardCurry (pushforwardUncurry v) = v :=
-  pullbackAdjPushforward f |>.homEquiv A X |>.right_inv v
+  pullbackPushforwardAdj f |>.homEquiv A X |>.right_inv v
 
 instance : ChosenPullbacksAlong (Over.mk f).hom := by
   dsimp only [Over.mk_hom]
@@ -160,21 +155,21 @@ theorem id_pushforward (I : C) [ChosenPullbacksAlong (𝟙 I)] :
 /-- Any pushforward of the identity morphism is naturally isomorphic to the identity functor. -/
 def pushforwardId (I : C) [ChosenPullbacksAlong (𝟙 I)] [ExponentiableMorphism (𝟙 I)] :
     pushforward (𝟙 I) ≅ 𝟭 (Over I) :=
-  Adjunction.rightAdjointUniq (pullbackAdjPushforward (𝟙 I)) (id I).pullbackAdjPushforward
+  Adjunction.rightAdjointUniq (pullbackPushforwardAdj (𝟙 I)) (id I).pullbackPushforwardAdj
 
 @[reassoc (attr := simp)]
 theorem unit_pushforwardId_hom (I : C) [ChosenPullbacksAlong (𝟙 I)] [ExponentiableMorphism (𝟙 I)] :
-    (pullbackAdjPushforward (𝟙 I)).unit ≫
+    (pullbackPushforwardAdj (𝟙 I)).unit ≫
       (pullback (𝟙 I)).whiskerLeft (pushforwardId I).hom =
-      (id I).pullbackAdjPushforward.unit := by
+      (id I).pullbackPushforwardAdj.unit := by
   rw [pushforwardId, Adjunction.unit_rightAdjointUniq_hom]
 
 @[reassoc (attr := simp)]
 theorem pushforwardId_hom_counit (I : C) [ChosenPullbacksAlong (𝟙 I)]
     [ExponentiableMorphism (𝟙 I)] :
     Functor.whiskerRight (pushforwardId I).hom (pullback (𝟙 I)) ≫
-      (id I).pullbackAdjPushforward.counit =
-      (pullbackAdjPushforward (𝟙 I)).counit := by
+      (id I).pullbackPushforwardAdj.counit =
+      (pullbackPushforwardAdj (𝟙 I)).counit := by
   rw [pushforwardId, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- The composition of exponentiable morphisms is exponentiable. -/
@@ -183,7 +178,7 @@ def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
     ExponentiableMorphism (f ≫ g) :=
   ⟨pushforward f ⋙ pushforward g,
-    ofNatIsoLeft (pullbackAdjPushforward g |>.comp <| pullbackAdjPushforward f)
+    ofNatIsoLeft (pullbackPushforwardAdj g |>.comp <| pullbackPushforwardAdj f)
     (pullbackComp f g).symm⟩
 
 theorem comp_pushforward {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
@@ -198,15 +193,15 @@ def pushforwardComp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] [ExponentiableMorphism (f ≫ g)] :
     pushforward (C:= C) (f ≫ g) ≅ pushforward f ⋙ pushforward g :=
-  Adjunction.rightAdjointUniq (pullbackAdjPushforward (f ≫ g)) ((comp f g).pullbackAdjPushforward)
+  Adjunction.rightAdjointUniq (pullbackPushforwardAdj (f ≫ g)) ((comp f g).pullbackPushforwardAdj)
 
 @[reassoc (attr := simp)]
 theorem unit_pushforwardComp_hom {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] [ExponentiableMorphism (f ≫ g)] :
-    (pullbackAdjPushforward (f ≫ g)).unit ≫
+    (pullbackPushforwardAdj (f ≫ g)).unit ≫
       (pullback (f ≫ g)).whiskerLeft (pushforwardComp f g).hom =
-      (comp f g).pullbackAdjPushforward.unit := by
+      (comp f g).pullbackPushforwardAdj.unit := by
   rw [pushforwardComp, Adjunction.unit_rightAdjointUniq_hom]
 
 @[reassoc (attr := simp)]
@@ -214,8 +209,8 @@ theorem pushforwardComp_hom_counit {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] [ExponentiableMorphism (f ≫ g)] :
     Functor.whiskerRight (pushforwardComp f g).hom (pullback (f ≫ g)) ≫
-      (comp f g).pullbackAdjPushforward.counit =
-      (pullbackAdjPushforward (f ≫ g)).counit := by
+      (comp f g).pullbackPushforwardAdj.counit =
+      (pullbackPushforwardAdj (f ≫ g)).counit := by
   rw [pushforwardComp, Adjunction.rightAdjointUniq_hom_counit]
 
 end

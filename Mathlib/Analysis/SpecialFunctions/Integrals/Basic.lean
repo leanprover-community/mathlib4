@@ -33,7 +33,7 @@ This file is still being developed.
 integrate, integration, integrable
 -/
 
-@[expose] public section
+public section
 
 
 open Real Set Finset
