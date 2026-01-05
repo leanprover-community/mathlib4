@@ -81,14 +81,7 @@ instance [t.IsGE X 0] :
   isZero₂ i j hij n hi := by
     dsimp
     have := t.truncGEt_obj_obj_isGE (n+1) i (by
-      obtain _|_|i := i
-      · change _ < ⊥ at hi
-        simp at hi
-      · apply le_top
-      · change _ < EInt.mk _ at hi
-        change _ ≤ EInt.mk _
-        simp only [EInt.mk_lt_mk_iff, EInt.mk_le_mk_iff] at hi ⊢
-        lia)
+      induction i <;> simp_all; lia)
     apply H.isZero_shift_obj_of_vanishesOnGEOne t n (n+1) (by linarith)
 
 noncomputable def spectralSequence : E₂CohomologicalSpectralSequence A :=

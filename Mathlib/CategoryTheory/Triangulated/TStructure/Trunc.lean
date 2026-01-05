@@ -158,43 +158,34 @@ lemma triangleLEGT_distinguished (n : ℤ) (X : C) :
   isomorphic_distinguished _ (t.triangleLEGE_distinguished n (n+1) rfl X) _
     ((t.triangleLEGTIsoTriangleLEGE n (n+1) rfl).app X)
 
-namespace TruncLTt
-
-noncomputable def obj : EInt → C ⥤ C
-  | none => 0
-  | some (some a) => t.truncLT a
-  | some none => 𝟭 C
-
-noncomputable def map : ∀ {x y : EInt}, (x ⟶ y) → (obj t x ⟶ obj t y)
-  | none, none => fun _ => 𝟙 _
-  | none, some (some b) => fun _ => 0
-  | none, some none => fun _ => 0
-  | some (some a), none  => fun _ => 0
-  | some (some a), some (some b) =>
-      fun hab ↦ t.natTransTruncLTOfLE a b (by simpa using leOfHom hab)
-  | some (some a), some none => fun _ => t.truncLTι a
-  | some none, none  => fun _ => 0
-  | some none, some (some b) => fun _ => 0
-  | some none, some none => fun _ => 𝟙 _
-
-end TruncLTt
-
 noncomputable def truncLTt : EInt ⥤ C ⥤ C where
-  obj := TruncLTt.obj t
-  map φ := TruncLTt.map t φ
-  map_id := by
-    rintro (_|_|_)
-    · rfl
-    · rfl
-    · dsimp [TruncLTt.map]
-      rw [t.natTransTruncLTOfLE_refl]
-      rfl
-  map_comp {a b c} hab hbc := by
-    replace hab := leOfHom hab
-    replace hbc := leOfHom hbc
-    obtain (_|_|_) := a <;> obtain (_|_|_) := b <;> obtain (_|_|_) := c
-    all_goals simp (config := {failIfUnchanged := false}) at hbc hab <;>
-      dsimp [TruncLTt.map] <;> simp
+  obj n := by
+    induction n with
+    | bot => exact 0
+    | coe a => exact t.truncLT a
+    | top => exact 𝟭 C
+  map {x y} f := by
+    induction x with
+    | bot =>
+      induction y with
+      | bot => exact 𝟙 _
+      | coe b => exact 0
+      | top => exact 0
+    | coe a =>
+      induction y with
+      | bot => exact 0
+      | coe b => exact t.natTransTruncLTOfLE a b (by simpa using leOfHom f)
+      | top => exact t.truncLTι a
+    | top =>
+      induction y with
+      | bot => exact 0
+      | coe b => exact 0
+      | top => exact 𝟙 _
+  map_id n := by induction n <;> simp
+  map_comp {x y z} f g := by
+    have f' := leOfHom f
+    have g' := leOfHom g
+    induction x <;> induction y <;> induction z <;> cat_disch
 
 @[simp]
 lemma truncLTt_obj_top : t.truncLTt.obj ⊤ = 𝟭 _ := rfl
@@ -209,43 +200,34 @@ lemma truncLTt_obj_mk (n : ℤ) : t.truncLTt.obj (EInt.mk n) = t.truncLT n := rf
 lemma truncLTt_map_eq_truncLTι (n : ℤ) :
     t.truncLTt.map (homOfLE (show EInt.mk n ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
-namespace TruncGEt
-
-noncomputable def obj : EInt → C ⥤ C
-  | none => 𝟭 C
-  | some (some a) => t.truncGE a
-  | some none => 0
-
-noncomputable def map : ∀ {x y : EInt}, (x ⟶ y) → (obj t x ⟶ obj t y)
-  | none, none => fun _ => 𝟙 _
-  | none, some (some b) => fun _ => t.truncGEπ b
-  | none, some none => fun _ => 0
-  | some (some a), none  => fun _ => 0
-  | some (some a), some (some b) =>
-      fun hab => t.natTransTruncGEOfLE a b (by simpa using (leOfHom hab))
-  | some (some a), some none => fun _ => 0
-  | some none, none  => fun _ => 0
-  | some none, some (some b) => fun _ => 0
-  | some none, some none => fun _ => 𝟙 _
-
-end TruncGEt
-
 noncomputable def truncGEt : EInt ⥤ C ⥤ C where
-  obj := TruncGEt.obj t
-  map φ := TruncGEt.map t φ
-  map_id := by
-    rintro (_|a|_)
-    · rfl
-    · rfl
-    · dsimp [TruncGEt.map]
-      rw [natTransTruncGEOfLE_refl]
-      rfl
-  map_comp {a b c} hab hbc := by
-    replace hab := leOfHom hab
-    replace hbc := leOfHom hbc
-    obtain (_|_|_) := a <;> obtain (_|_|_) := b <;> obtain (_|_|_) := c
-    all_goals simp (config := {failIfUnchanged := false}) at hbc hab <;>
-      dsimp [TruncGEt.map] <;> simp
+  obj n := by
+    induction n with
+    | bot => exact 𝟭 C
+    | coe a => exact t.truncGE a
+    | top => exact 0
+  map {x y} f := by
+    induction x with
+    | bot =>
+      induction y with
+      | bot => exact 𝟙 _
+      | coe b => exact t.truncGEπ b
+      | top => exact 0
+    | coe a =>
+      induction y with
+      | bot => exact 0
+      | coe b => exact t.natTransTruncGEOfLE a b (by simpa using leOfHom f)
+      | top => exact 0
+    | top =>
+      induction y with
+      | bot => exact 0
+      | coe b => exact 0
+      | top => exact 𝟙 _
+  map_id n := by induction n <;> simp
+  map_comp {x y z} f g := by
+    have f' := leOfHom f
+    have g' := leOfHom g
+    induction x <;> induction y <;> induction z <;> cat_disch
 
 @[simp]
 lemma truncGEt_obj_bot :
@@ -258,26 +240,21 @@ lemma truncGEt_obj_top :
 @[simp]
 lemma truncGEt_obj_mk (n : ℤ) : t.truncGEt.obj (EInt.mk n) = t.truncGE n := rfl
 
-namespace TruncGEtδLTt
-
-noncomputable def app : ∀ (a : EInt), t.truncGEt.obj a ⟶ t.truncLTt.obj a ⋙ shiftFunctor C (1 : ℤ)
-  | some none => 0
-  | some (some a) => t.truncGEδLT a
-  | none => 0
-
-end TruncGEtδLTt
-
 noncomputable def truncGEtδLTt :
     t.truncGEt ⟶ t.truncLTt ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
-  app a := TruncGEtδLTt.app t a
+  app a := by
+    induction a with
+    | bot => exact 0
+    | coe a => exact t.truncGEδLT a
+    | top => exact 0
   naturality {a b} hab := by
     replace hab := leOfHom hab
-    obtain (_|_|a) := a; rotate_left
-    · apply IsZero.eq_of_src
-      exact isZero_zero _
-    all_goals obtain (_|_|b) := b <;> simp (config := {failIfUnchanged := false}) at hab <;>
-      dsimp [TruncGEtδLTt.app, truncGEt, truncLTt, TruncGEt.map, TruncLTt.map] <;>
-      simp [t.truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE]
+    induction a; rotate_right
+    · apply (isZero_zero _).eq_of_src
+    all_goals
+      induction b <;> simp at hab <;>
+        dsimp [truncGEt, truncLTt] <;>
+        simp [t.truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE]
 
 @[simp]
 lemma truncGEtδLTt_mk (n : ℤ) :
@@ -845,57 +822,43 @@ instance (a b : ℤ) : (t.truncGELE a b).Additive := by
   infer_instance
 
 instance (i : EInt) : (t.truncGEt.obj i).Additive := by
-  obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
-  · dsimp
-    infer_instance
-  · dsimp
-    infer_instance
-  · constructor
-    aesop_cat
+  induction i <;> constructor <;> cat_disch
 
 instance (i : EInt) : (t.truncLTt.obj i).Additive := by
-  obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
-  · constructor
-    dsimp
-    aesop_cat
-  · dsimp
-    infer_instance
-  · dsimp
-    infer_instance
+  induction i <;> constructor <;> cat_disch
 
 omit [IsTriangulated C] in
 lemma isZero_truncLTt_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : EInt) (hj : j ≤ EInt.mk n) :
     IsZero ((t.truncLTt.obj j).obj X) := by
-  obtain (rfl|⟨j, rfl⟩|rfl) := j.three_cases
-  · apply Functor.zero_obj
-  · simp only [EInt.mk_le_mk_iff] at hj
+  induction j with
+  | bot => simp
+  | coe j =>
     dsimp
     rw [← t.isGE_iff_isZero_truncLT_obj]
-    exact t.isGE_of_GE  _ _ _ hj
-  · simp at hj
+    exact t.isGE_of_GE  _ _ _ (by simpa using hj)
+  | top => simp at hj
 
 omit [IsTriangulated C] in
 lemma isZero_truncGEt_obj_obj (X : C) (n : ℤ) [t.IsLE X n] (j : EInt) (hj : EInt.mk n < j) :
     IsZero ((t.truncGEt.obj j).obj X) := by
-  obtain (rfl|⟨j, rfl⟩|rfl) := j.three_cases
-  · simp at hj
-  · simp at hj
+  induction j with
+  | bot => simp at hj
+  | coe j =>
+    simp only [EInt.coe_lt_coe_iff] at hj
     dsimp
     rw [← t.isLE_iff_isZero_truncGE_obj (j - 1) j (by simp)]
-    exact t.isLE_of_LE X n (j - 1) (by linarith)
-  · apply Functor.zero_obj
+    exact t.isLE_of_LE X n (j - 1) (by lia)
+  | top => simp
 
 omit [IsTriangulated C] in
 lemma truncGEt_obj_obj_isGE (n : ℤ) (i : EInt) (h : EInt.mk n ≤ i) (X : C) :
     t.IsGE ((t.truncGEt.obj i).obj X) n := by
-  obtain (rfl|⟨i, rfl⟩|rfl) := i.three_cases
-  · simp at h
-  · simp only [EInt.mk_le_mk_iff] at h
+  induction i with
+  | bot => simp at h
+  | coe i =>
     dsimp
-    exact t.isGE_of_GE  _ _ _ h
-  · dsimp
-    apply t.isGE_of_isZero
-    apply Functor.zero_obj
+    exact t.isGE_of_GE  _ _ _ (by simpa using h)
+  | top => exact t.isGE_of_isZero _ (Functor.zero_obj _) _
 
 omit [IsTriangulated C] in
 lemma truncLTt_obj_obj_isLE (n : ℤ) (i : EInt) (h : i ≤ EInt.mk (n + 1)) (X : C) :
@@ -967,7 +930,7 @@ instance (X : C) (n : ℤ) : IsIso ((t.truncGE n).map ((t.truncGEπ n).app X)) :
 lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
     IsIso ((t.truncGEt.obj b).map ((t.abstractSpectralObject.truncGEπ a).app X)) := by
   obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
-  · simp only [EInt.le_bot_iff] at h
+  · simp only [le_bot_iff] at h
     subst h
     dsimp
     simp only [AbstractSpectralObject.truncGEπ_bot_app]
@@ -975,7 +938,7 @@ lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : EInt) (h : a ≤ b) (X : C) :
   · obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
     · dsimp
       infer_instance
-    · simp only [EInt.mk_le_mk_iff] at h
+    · simp only [EInt.coe_le_coe_iff] at h
       dsimp
       simp only [AbstractSpectralObject.truncGEπ_mk]
       exact t.isIso_truncGE_map_truncGEπ_app a b h X
@@ -992,13 +955,13 @@ lemma isIso_truncLTt_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
       simp only [truncLTt_obj_bot, Functor.zero_obj]
   · obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
     · simp at h
-    · simp only [EInt.mk_le_mk_iff] at h
+    · simp only [EInt.coe_le_coe_iff] at h
       dsimp
       simp only [AbstractSpectralObject.truncLEι_mk]
       exact t.isIso_truncLT_map_truncLTι_app a b h X
     · dsimp
       infer_instance
-  · simp only [EInt.top_le_iff] at h
+  · simp only [top_le_iff] at h
     subst h
     dsimp
     simp only [AbstractSpectralObject.truncLTι_top_app]
@@ -1213,7 +1176,7 @@ instance (D : Arrow EInt) (X : C) :
   obtain ⟨a, b, f : a ⟶ b⟩ := D
   have h : a ≤ b := leOfHom f
   obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
-  · simp only [EInt.le_bot_iff] at h
+  · simp only [le_bot_iff] at h
     subst h
     exact ⟨0, IsZero.eq_of_src (Functor.zero_obj _) _ _,
       IsZero.eq_of_src (Functor.zero_obj _) _ _⟩
@@ -1222,7 +1185,7 @@ instance (D : Arrow EInt) (X : C) :
     obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
     · simp only [AbstractSpectralObject.truncLEι_mk]
       exact t.isIso_truncLT_map_truncLTι_app b b (by rfl) X
-    · simp only [EInt.mk_le_mk_iff] at h
+    · simp only [EInt.coe_le_coe_iff] at h
       simp only [truncGEt_obj_mk, AbstractSpectralObject.truncLEι_mk]
       exact t.isIso_truncLT_map_truncGE_map_truncLTι_app a b X
     · refine ⟨0, IsZero.eq_of_src ?_ _ _,

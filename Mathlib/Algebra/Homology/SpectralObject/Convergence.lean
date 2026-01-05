@@ -300,11 +300,8 @@ def mkDataE₂HomologicalNatCompatibility :
     linarith
   i₂_monotone := by
     rintro n ⟨i, hi⟩ ⟨j, hj⟩ h
-    simp at h
-    dsimp
-    simp only [EInt.mk_le_mk_iff]
-    linarith [Nat.add_sub_of_le (show i ≤ n by linarith),
-      Nat.add_sub_of_le (show j ≤ n by linarith)]
+    simp at h ⊢
+    lia
 
 variable {data s}
 variable (hdata : data.CompatibleWithConvergenceStripes s)

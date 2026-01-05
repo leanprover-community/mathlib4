@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.Order.WithBot
 
 /-!
@@ -16,9 +14,10 @@ public import Mathlib.Order.WithBot
 
 @[expose] public section
 
-open CategoryTheory Limits
-
 def EInt := WithBot (WithTop ℤ)
+
+/-- The canonical inclusion from integers to e-integers. Registered as a coercion. -/
+@[coe] def Int.toEInt : ℤ → EInt := WithBot.some ∘ WithTop.some
 
 namespace EInt
 
@@ -26,117 +25,69 @@ instance : LinearOrder EInt := inferInstanceAs (LinearOrder (WithBot (WithTop �
 instance : OrderBot EInt := inferInstanceAs (OrderBot (WithBot (WithTop ℤ)))
 instance : OrderTop EInt := inferInstanceAs (OrderTop (WithBot (WithTop ℤ)))
 
-def mk (a : ℤ) : EInt := ((a : WithTop ℤ) : WithBot (WithTop ℤ))
+instance : Coe ℤ EInt := ⟨Int.toEInt⟩
 
-lemma mk_monotone : Monotone EInt.mk := by
-  intro a b h
-  dsimp [mk]
-  rw [WithBot.coe_le_coe, WithTop.coe_le_coe]
-  exact h
+theorem coe_strictMono : StrictMono Int.toEInt :=
+  WithBot.coe_strictMono.comp WithTop.coe_strictMono
 
-@[simp]
-lemma some_some_le_none_iff (a : ℤ) :
-    @LE.le EInt _ (some (some a)) none ↔ False := by
-  tauto
+theorem coe_injective : Function.Injective Int.toEInt :=
+  coe_strictMono.injective
 
-@[simp]
-lemma none_le_some_iff (a : ℤ) :
-    @LE.le EInt _ (some none) (some a) ↔ False := by
-  change (⊤ : EInt) ≤ _ ↔ _
-  rw [iff_false, top_le_iff]
-  intro (h : _ = some none)
-  simp at h
-  tauto
+abbrev mk (a : ℤ) : EInt := a
 
+lemma coe_monotone : Monotone Int.toEInt := coe_strictMono.monotone
 
-@[simp]
-lemma some_some_le_some_some_iff (a b : ℤ) :
-    @LE.le EInt _ (some (some a)) (some (some b)) ↔ a ≤ b := by
-  erw [WithBot.coe_le_coe, WithTop.coe_le_coe]
+section
 
-@[simp]
-lemma some_some_lt_some_some_iff (a b : ℤ) :
-    @LT.lt EInt _ (some (some a)) (some (some b)) ↔ a < b := by
-  erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe, ]
+variable {motive : EInt → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℤ, motive a) (top : motive ⊤)
+
+/-- A recursor for `EInt` in terms of the coercion. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def rec : ∀ a : EInt, motive a
+  | ⊥ => bot
+  | (a : ℤ) => coe a
+  | ⊤ => top
+
+@[simp] lemma rec_bot : EInt.rec (motive := motive) bot coe top ⊥ = bot := rfl
+@[simp] lemma rec_coe (a : ℤ) : EInt.rec (motive := motive) bot coe top a = coe a := rfl
+@[simp] lemma rec_top : EInt.rec (motive := motive) bot coe top ⊤ = top := rfl
+
+end
 
 @[simp]
-lemma some_none_le_some_some_iff (a : ℤ) :
-    @LE.le EInt _ (some none) (some (some a)) ↔ False := by
-  tauto
-
-@[simp]
-lemma some_lt_none_iff (a : WithTop ℤ) :
-    @LE.le EInt _ (some a) none ↔ False := by
-  tauto
-
-@[simp]
-lemma mk_le_mk_iff (a b : ℤ) :
+lemma coe_le_coe_iff (a b : ℤ) :
     mk a ≤ mk b ↔ a ≤ b :=
-  some_some_le_some_some_iff a b
+  coe_strictMono.le_iff_le
 
 @[simp]
-lemma mk_lt_mk_iff (a b : ℤ) :
+lemma coe_lt_coe_iff (a b : ℤ) :
     mk a < mk b ↔ a < b :=
-  some_some_lt_some_some_iff a b
+  coe_strictMono.lt_iff_lt
 
 @[simp]
-lemma le_bot_mk_iff (a : ℤ) :
-    EInt.mk a ≤ ⊥ ↔ False :=
-  some_some_le_none_iff a
-
-@[simp]
-lemma mk_eq_bot_iff (a : ℤ) :
+lemma coe_eq_bot_iff (a : ℤ) :
     EInt.mk a = ⊥ ↔ False := by
   simp only [iff_false]
   rintro ⟨⟩
 
 @[simp]
-lemma mk_eq_top_iff (a : ℤ) :
+lemma coe_eq_top_iff (a : ℤ) :
     EInt.mk a = ⊤ ↔ False := by
   simp only [iff_false]
   rintro ⟨⟩
 
 @[simp]
-lemma top_eq_bot_mk_iff :
+lemma top_eq_bot_iff :
     (⊤ : EInt) = ⊥ ↔ False := by
   simp only [iff_false]
-  rintro ⟨⟩
-
-@[simp]
-lemma top_le_mk_iff (a : ℤ) :
-    ⊤ ≤ EInt.mk a ↔ False :=
-  some_none_le_some_some_iff a
-
-@[simp]
-lemma top_le_bot_iff :
-    (⊤ : EInt) ≤ ⊥ ↔ False := by
-  simp
+  exact ne_of_beq_false rfl
 
 lemma three_cases (x : EInt) :
     x = ⊥ ∨ (∃ (n : ℤ), x = EInt.mk n) ∨ x = ⊤ := by
-  obtain (_|_|n) := x
-  · exact Or.inl rfl
-  · exact Or.inr (Or.inr rfl)
-  · exact Or.inr (Or.inl ⟨n, rfl⟩)
-
-lemma le_bot_iff (a : EInt) : a ≤ ⊥ ↔ a = ⊥ := by
-  constructor
-  · intro h
-    obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
-    · rfl
-    · simp at h
-    · simp at h
-  · rintro rfl
-    exact le_refl _
-
-lemma top_le_iff (a : EInt) : ⊤ ≤ a ↔ a = ⊤ := by
-  constructor
-  · intro h
-    obtain (rfl|⟨a, rfl⟩|rfl) := a.three_cases
-    · simp at h
-    · simp at h
-    · rfl
-  · rintro rfl
-    exact le_refl _
+  induction x with
+  | bot => exact Or.inl rfl
+  | coe n => exact Or.inr (Or.inl ⟨n, rfl⟩)
+  | top => exact Or.inr (Or.inr rfl)
 
 end EInt
