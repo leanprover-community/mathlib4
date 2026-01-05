@@ -211,7 +211,7 @@ structure Rewrite where
 
 /-- If `thm` can be used to rewrite `e`, return the rewrite. -/
 def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
-  withTraceNodeBefore `rw?? (return m!
+  withTraceNodeBefore `rw?? (fun _ => return m!
     "rewriting {e} by {if symm then "← " else ""}{thm}") do
   let (mvars, binderInfos, eqn) ← forallMetaTelescopeReducing (← inferType thm)
   let some (lhs, rhs) := eqOrIff? (← whnf eqn) |
