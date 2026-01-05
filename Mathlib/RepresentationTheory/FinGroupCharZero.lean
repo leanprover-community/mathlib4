@@ -45,7 +45,7 @@ variable [NeZero (Fintype.card G : k)]
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is injective.
 -/
-instance (V : Rep k G) : Injective V := by
+instance (V : Rep.{u} k G) : Injective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_injective_iff,
     ← Module.injective_iff_injective_object]
   exact Module.injective_of_isSemisimpleRing _ _
@@ -55,7 +55,7 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is projective.
 -/
 -- Will this clash with the previously defined `Projective` instances?
-instance (V : Rep k G) : Projective V := by
+instance (V : Rep.{u} k G) : Projective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff,
     ← IsProjective.iff_projective]
   exact Module.projective_of_isSemisimpleRing _ _
