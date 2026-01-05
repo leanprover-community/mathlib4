@@ -46,7 +46,7 @@ namespace MeasureTheory.Lp
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
 def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
-  (fourierTransformCLE ℂ (V := E) (E := F)).toLinearEquiv.extendOfIsometry
+  (fourierCLE ℂ 𝓢(E, F) _).toLinearEquiv.extendOfIsometry
     (toLpCLM ℂ (E := E) F 2 volume) (toLpCLM ℂ (E := E) F 2 volume)
     -- Not explicitly stating the measure as being the volume causes time-outs in the proofs below
     (denseRange_toLpCLM ENNReal.ofNat_ne_top) (denseRange_toLpCLM ENNReal.ofNat_ne_top)
@@ -103,8 +103,7 @@ theorem fourier_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
   apply DenseRange.induction_on (p := p)
     (SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.ofNat_ne_top) f
   · apply isClosed_eq
-    · exact ((TemperedDistribution.fourierTransformCLM E F) ∘L
-        (toTemperedDistributionCLM F volume 2)).cont
+    · exact ((FourierTransform.fourierCLM ℂ _ _) ∘L (toTemperedDistributionCLM F volume 2)).cont
     · exact (toTemperedDistributionCLM F volume 2).cont.comp (fourierTransformₗᵢ E F).continuous
   intro f
   simp [p, TemperedDistribution.fourierTransform_toTemperedDistributionCLM_eq]

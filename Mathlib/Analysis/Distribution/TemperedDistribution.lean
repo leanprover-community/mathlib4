@@ -269,32 +269,50 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace ℝ E] [NormedSpace ℂ F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
-variable (E F) in
+/-variable (E F) in
 /-- The Fourier transform on tempered distributions as a continuous linear map. -/
 def fourierTransformCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp F (SchwartzMap.fourierTransformCLM ℂ)
+  PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))-/
 
 instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
-  fourier := fourierTransformCLM E F
+  fourier := PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))
 
-@[simp]
+instance instFourierAdd : FourierAdd 𝓢'(E, F) 𝓢'(E, F) where
+  fourier_add := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))).map_add
+
+instance instFourierSMul : FourierSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
+  fourier_smul := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))).map_smul
+
+instance instContinuousFourier : ContinuousFourier 𝓢'(E, F) 𝓢'(E, F) where
+  continuous_fourier := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))).cont
+
+/-@[simp]
 theorem fourierTransformCLM_apply (f : 𝓢'(E, F)) :
-  fourierTransformCLM E F f = 𝓕 f := rfl
+  fourierTransformCLM E F f = 𝓕 f := rfl-/
 
 @[simp]
 theorem fourierTransform_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
 
-variable (E F) in
+/-variable (E F) in
 /-- The inverse Fourier transform on tempered distributions as a continuous linear map. -/
 def fourierTransformInvCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp F (SchwartzMap.fourierTransformCLE ℂ).symm.toContinuousLinearMap
+  PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))-/
 
 instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
-  fourierInv := fourierTransformInvCLM E F
+  fourierInv := PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))
 
-@[simp]
+instance instFourierInvAdd : FourierInvAdd 𝓢'(E, F) 𝓢'(E, F) where
+  fourierInv_add := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))).map_add
+
+instance instFourierInvSMul : FourierInvSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
+  fourierInv_smul := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) 𝓢(E, ℂ))).map_smul
+
+instance instContinuousFourierInv : ContinuousFourierInv 𝓢'(E, F) 𝓢'(E, F) where
+  continuous_fourierInv := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ) _)).cont
+
+/-@[simp]
 theorem fourierTransformInvCLM_apply (f : 𝓢'(E, F)) :
-    fourierTransformInvCLM E F f = 𝓕⁻ f := rfl
+    fourierTransformInvCLM E F f = 𝓕⁻ f := rfl-/
 
 @[simp]
 theorem fourierTransformInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
