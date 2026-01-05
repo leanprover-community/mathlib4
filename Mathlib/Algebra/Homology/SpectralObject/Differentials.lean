@@ -517,18 +517,22 @@ variable (n₀ n₁ n₂ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
 
+-- TODO: remove the dependency on `n₀`, this should be defined in the `Page` file
 noncomputable def cyclesIsoH :
     X.cycles n₁ n₂ hn₂ (𝟙 i₀) f ≅ (X.H n₁).obj (mk₁ f) :=
-  (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫ X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f
+  (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
+    (X.homologyDataEIdId ..).left.cyclesIso
 
 @[simp]
 lemma cyclesIsoH_inv :
     (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv = X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) := by
   rw [← cancel_mono (X.iCycles n₁ n₂ hn₂ (𝟙 _) f ), toCycles_i]
   dsimp [cyclesIsoH]
-  rw [assoc, cyclesIso_hom_i, cycles'IsoH_inv_iCycles, ← Functor.map_id]
+  rw [assoc, cyclesIso_hom_i,
+    ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles,
+    homologyDataEIdId_left_i, ← Functor.map_id]
   congr 1
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma cyclesIsoH_hom_inv_id :
@@ -555,7 +559,7 @@ variable (n₀ n₁ n₂ n₃ : ℤ)
 lemma πE_EIsoH_hom :
     X.πE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f₁ (𝟙 i₁) ≫ (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f₁).hom =
       (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f₁).hom := by
-  simp [πE, cyclesIsoH]
+  simp [πE, cyclesIsoH, EIsoH]
 
 @[reassoc]
 lemma d_EIsoH_hom :

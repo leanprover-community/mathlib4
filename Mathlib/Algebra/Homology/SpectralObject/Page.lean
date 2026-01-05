@@ -555,24 +555,6 @@ lemma EIsoH_hom_naturality
   exact (ShortComplex.LeftHomologyMapData.ofZeros
     (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ β) _ _ _ _).homologyMap_comm
 
--- TODO: Get rid of this definition
-noncomputable def cycles'IsoH :
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).cycles ≅ (X.H n₁).obj (mk₁ f) :=
-  (X.homologyDataEIdId ..).left.cyclesIso
-
-@[reassoc (attr := simp)]
-lemma cycles'IsoH_inv_iCycles :
-    (X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f).inv ≫
-      (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).iCycles = 𝟙 _ := by
-  simp [cycles'IsoH]
-
-@[reassoc (attr := simp)]
-lemma homologyπ_EIsoH_hom :
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).homologyπ ≫
-      (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom =
-    (X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f).hom := by
-  simp [EIsoH, cycles'IsoH]
-
 end
 
 end SpectralObject
