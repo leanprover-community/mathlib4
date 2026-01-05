@@ -5,6 +5,7 @@ Authors: Apurva Nakade
 -/
 module
 
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 
@@ -33,12 +34,15 @@ abbrev PointedCone (R E)
 
 namespace PointedCone
 
-open Function
+open Function Submodule
 
 section Definitions
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
   {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
+
+/- Every submodule can be turned into a pointed cone by restricting to nonnegative scalars. -/
+instance : Coe (Submodule R E) (PointedCone R E) := ⟨restrictScalars _⟩
 
 /-- Every pointed cone is a convex cone. -/
 @[coe]
@@ -236,4 +240,42 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
   simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
 
 end Salient
+
+section Lineal
+
+open Pointwise
+
+variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+/-- The lineality space of a cone `C`, namely the submodule with carrier `C ⊓ -C`. -/
+def lineal (C : PointedCone R E) : Submodule R E where
+  carrier := C ⊓ -C
+  add_mem' hx hy := by simpa using ⟨C.add_mem hx.1 hy.1, C.add_mem hy.2 hx.2⟩
+  zero_mem' := by simp
+  smul_mem' r _ hx := by
+    by_cases hr : 0 ≤ r
+    · simpa using And.intro (C.smul_mem hr hx.1) (C.smul_mem hr hx.2)
+    · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
+      simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
+
+@[simp]
+lemma lineal_eq_inf_neg (C : PointedCone R E) : C.lineal = C ⊓ -C :=
+  rfl
+
+lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by
+  rfl
+
+@[simp]
+lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := by simp
+
+/- The lineality space of a cone is the supremum of its submodules. -/
+theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R E | S ≤ C} := by
+  rw [le_antisymm_iff]
+  refine ⟨le_sSup (lineal_le C), ?_⟩
+  intro x hx
+  have hC : sSup {S : Submodule R E | S ≤ C} ≤ C := by simp
+  exact mem_lineal.mpr ⟨hC hx, hC (neg_mem hx : -x ∈ _)⟩
+
+end Lineal
+
 end PointedCone

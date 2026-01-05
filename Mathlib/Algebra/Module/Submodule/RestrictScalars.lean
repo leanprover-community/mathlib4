@@ -113,6 +113,11 @@ def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S 
   map_sSup' s := by rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]; simp
 
 @[simp]
+lemma restrictScalars_sSup {s : Set (Submodule R M)} :
+    (sSup s).restrictScalars S = sSup (Submodule.restrictScalars S '' s) :=
+  (Submodule.restrictScalarsLatticeHom S R M).map_sSup' s
+
+@[simp]
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) :
     N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl

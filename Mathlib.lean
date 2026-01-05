@@ -4165,8 +4165,10 @@ public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.FieldTheory.Tower
 public import Mathlib.Geometry.Convex.Cone.Basic
-public import Mathlib.Geometry.Convex.Cone.Pointed.Dual
 public import Mathlib.Geometry.Convex.Cone.Pointed.Basic
+public import Mathlib.Geometry.Convex.Cone.Pointed.Dual
+public import Mathlib.Geometry.Convex.Cone.Pointed.Face.Basic
+public import Mathlib.Geometry.Convex.Cone.Pointed.Face.Lattice
 public import Mathlib.Geometry.Convex.Cone.Pointed.TensorProduct
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
