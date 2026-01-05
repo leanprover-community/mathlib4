@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-! # Properties of integration with respect to the Lebesgue measure -/
 
-@[expose] public section
+public section
 
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace

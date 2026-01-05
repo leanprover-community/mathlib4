@@ -15,7 +15,7 @@ In this file we first show that Lebesgue integrals can be subtracted with the ex
 the monotone convergence theorem that use this subtraction in their proofs.
 -/
 
-@[expose] public section
+public section
 
 open Filter ENNReal Topology
 

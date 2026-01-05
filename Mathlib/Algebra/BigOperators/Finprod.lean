@@ -263,6 +263,12 @@ theorem one_le_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMo
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 
+/-- A version of `one_le_finprod'` for `PosMulMono` in place of `MulLeftMono`. -/
+lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneClass M]
+    [PosMulMono M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
+    1 ≤ ∏ᶠ i, f i :=
+  finprod_induction _ le_rfl (fun _ _ ↦ one_le_mul_of_one_le_of_one_le) hf
+
 @[to_additive]
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : (mulSupport <| g ∘ PLift.down).Finite) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
@@ -507,7 +513,7 @@ theorem finprod_mem_congr (h₀ : s = t) (h₁ : ∀ x ∈ t, f x = g x) :
 theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : ∏ᶠ i, f i = 1 := by
   simp +contextual [h]
 
-@[to_additive]
+@[to_additive finprod_cond_pos]
 theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M} {p : ι → Prop} (h : ∀ i, p i → 1 ≤ f i) (h' : ∃ i, p i ∧ 1 < f i)
     (hf : (mulSupport f ∩ {i | p i}).Finite) : 1 < ∏ᶠ (i) (_ : p i), f i := by
@@ -517,12 +523,18 @@ theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrder
     · aesop
   · simp +contextual
 
-@[to_additive finsum_pos']
-theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+@[to_additive finsum_pos]
+theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
   rw [← finprod_mem_univ]
   apply one_lt_finprod_cond <;> simpa
+
+@[deprecated (since := "2026-01-03")]
+alias finsum_pos' := finsum_pos
+
+@[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
+alias one_lt_finprod' := one_lt_finprod
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication

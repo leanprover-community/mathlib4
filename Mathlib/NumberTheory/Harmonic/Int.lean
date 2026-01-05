@@ -19,7 +19,7 @@ https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 
 -/
 
-@[expose] public section
+public section
 
 lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n := by
   unfold harmonic
