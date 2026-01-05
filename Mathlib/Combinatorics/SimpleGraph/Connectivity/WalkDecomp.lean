@@ -255,10 +255,6 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   simp only [takeUntil_takeUntil] at h1 h2
   lia
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_support_takeUntil_support_takeUntil_subset :=
-  notMem_support_takeUntil_support_takeUntil_subset
-
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
   (c.dropUntil u h).append (c.takeUntil u h)
