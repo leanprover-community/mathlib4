@@ -581,12 +581,8 @@ theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := b
   have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.val_eq
   rwa [v₁.map_zero, v₂.map_zero] at this
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 :=
-  not_congr (eq_zero h)
-
-lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} :
-    0 < v₁ x ↔ 0 < v₂ x := by
-  rw [zero_lt_iff, zero_lt_iff, h.ne_zero]
+lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
+  rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
 
 lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
     v₁ x < v₁ y ↔ v₂ x < v₂ y := by
@@ -604,10 +600,6 @@ lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x = 1 ↔ v₂ x = 1 := by
   rw [← v₁.map_one, h.val_eq, map_one]
 
-lemma neq_one_iff_neq_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x ≠ 1 ↔ v₂ x ≠ 1 :=
-  not_congr (eq_one_iff_eq_one h)
-
 lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
@@ -616,7 +608,7 @@ lemma one_lt_iff_one_lt (h : v₁.IsEquiv v₂) {x : R} :
     1 < v₁ x ↔ 1 < v₂ x := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
-end IsEquiv -- end of namespace
+end IsEquiv
 
 section LinearOrderedCommMonoidWithZero
 
@@ -648,17 +640,17 @@ section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
   {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
 
-theorem isEquiv_of_val_le_one (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
+theorem isEquiv_of_val_le_one (h : ∀ x, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
   obtain rfl | hy := eq_or_ne y 0
   · simp
   · rw [← div_le_one₀, ← v.map_div, h, v'.map_div, div_le_one₀] <;>
       rwa [zero_lt_iff, ne_zero_iff]
 
-theorem isEquiv_iff_val_le_one : v.IsEquiv v' ↔ ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1 :=
+theorem isEquiv_iff_val_le_one : v.IsEquiv v' ↔ ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1 :=
   ⟨IsEquiv.le_one_iff_le_one, isEquiv_of_val_le_one⟩
 
-theorem isEquiv_iff_val_eq_one : v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
+theorem isEquiv_iff_val_eq_one : v.IsEquiv v' ↔ ∀ {x}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
     rw [h.eq_one_iff_eq_one]
@@ -691,7 +683,7 @@ theorem isEquiv_iff_val_eq_one : v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x 
       · rw [← h] at hx'
         exact le_of_eq hx'
 
-theorem isEquiv_iff_val_lt_one : v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
+theorem isEquiv_iff_val_lt_one : v.IsEquiv v' ↔ ∀ {x}, v x < 1 ↔ v' x < 1 := by
   constructor
   · intro h x
     rw [h.lt_one_iff_lt_one]
@@ -716,7 +708,7 @@ theorem isEquiv_iff_val_lt_one : v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x 
         exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
 
 theorem isEquiv_iff_val_sub_one_lt_one :
-    v.IsEquiv v' ↔ ∀ {x : K}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
+    v.IsEquiv v' ↔ ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
   rw [isEquiv_iff_val_lt_one]
   exact (Equiv.subRight 1).surjective.forall
 
@@ -789,7 +781,6 @@ theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
 
 end Supp
 
--- end of section
 end Valuation
 
 section AddMonoid
@@ -1067,7 +1058,7 @@ theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = 
   Valuation.IsEquiv.val_eq h
 
 theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
-  Valuation.IsEquiv.ne_zero h
+  (Valuation.IsEquiv.eq_zero h).ne
 
 end IsEquiv
 
@@ -1088,7 +1079,6 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a :=
 
 end Supp
 
--- end of section
 end AddValuation
 
 namespace Valuation

@@ -407,7 +407,7 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   rw [ValuationSubring.valuation_le_one_iff, mem_valuationSubring_iff]
 
 @[simp]
-theorem isNontrivial_valuationSubring_valuation_iff :
+theorem isNontrivial_valuation_valuationSubring_iff :
     v.valuationSubring.valuation.IsNontrivial ↔ v.IsNontrivial :=
   isNontrivial_iff_isEquiv_isNontrivial (IsEquiv.symm (isEquiv_valuation_valuationSubring v))
 
