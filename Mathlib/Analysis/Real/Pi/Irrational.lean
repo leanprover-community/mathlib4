@@ -34,7 +34,7 @@ The proof idea is as follows.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

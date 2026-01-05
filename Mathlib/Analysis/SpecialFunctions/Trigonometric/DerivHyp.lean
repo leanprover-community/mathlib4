@@ -24,7 +24,7 @@ computed.
 sinh, cosh, tanh
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

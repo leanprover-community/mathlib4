@@ -39,7 +39,7 @@ This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_i
 it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
 
