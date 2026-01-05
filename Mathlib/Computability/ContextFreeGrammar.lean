@@ -502,7 +502,8 @@ end embed_project
 section closure_union
 
 /-- Grammar for a union of two context-free languages. -/
-noncomputable def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGrammar T where
+noncomputable def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) :
+  ContextFreeGrammar T where
   NT := Option (g₁.NT ⊕ g₂.NT)
   initial := none
   rules := by
@@ -524,20 +525,19 @@ noncomputable def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : 
         · exact h_out
         · intros a b
           intro hs
-          cases a <;> cases b <;> simp [Symbol.map] at hs ⊢
-          exact hs
-          exact hs
+          cases a <;> cases b <;> simp only [Symbol.map, Symbol.terminal.injEq] at hs ⊢
+          repeat' grind
     have h₂ : f₂.Injective := by
       intro ⟨a_in, a_out⟩ ⟨b_in, b_out⟩ hab
       simp only [f₂, ContextFreeRule.map, Function.comp_apply, ContextFreeRule.mk.injEq] at hab ⊢
       obtain ⟨h_in, h_out⟩ := hab
       constructor
       · exact Sum.inr_injective (Option.some_injective _ h_in)
-      · have : (Symbol.map (T := T) (N₀ := g₂.NT) (N := Option (g₁.NT ⊕ g₂.NT)) (some ∘ Sum.inr)).Injective := by
+      · have : (Symbol.map (T := T) (N₀ := g₂.NT)
+          (N := Option (g₁.NT ⊕ g₂.NT)) (some ∘ Sum.inr)).Injective := by
           intro s1 s2 hs
-          cases s1 <;> cases s2 <;> simp [Symbol.map] at hs ⊢
-          exact hs
-          exact hs
+          cases s1 <;> cases s2 <;> simp only [Symbol.map, Symbol.terminal.injEq] at hs ⊢
+          repeat' grind
         exact (List.map_inj_right this).mp h_out
     let mapped1 : Finset (ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))) := g₁.rules.map ⟨f₁, h₁⟩
     let mapped2 : Finset (ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))) := g₂.rules.map ⟨f₂, h₂⟩
@@ -711,9 +711,7 @@ private lemma in_union_of_in_left (hw : w ∈ g₁.language) : w ∈ (g₁.union
   refine union_derives_left_initial.trans ?_
   have h : (w.map Symbol.terminal).map (Symbol.map (some ∘ Sum.inl : g₁.NT → (g₁.union g₂).NT)) =
       w.map Symbol.terminal := by
-    induction w with
-    | nil => rfl
-    | cons t _ ih => simp [Symbol.map, ih]
+      simp [Symbol.map]
   rw [← h]
   exact g₁g.derives_map hw
 
@@ -721,9 +719,7 @@ private lemma in_union_of_in_right (hw : w ∈ g₂.language) : w ∈ (g₁.unio
   refine union_derives_right_initial.trans ?_
   have h : (w.map Symbol.terminal).map (Symbol.map (some ∘ Sum.inr : g₂.NT → (g₁.union g₂).NT)) =
       w.map Symbol.terminal := by
-    induction w with
-    | nil => rfl
-    | cons t _ ih => simp [Symbol.map, ih]
+      simp [Symbol.map]
   rw [← h]
   exact g₂g.derives_map hw
 
@@ -740,7 +736,7 @@ private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
     w ∈ g₁.language := by
   apply w.filterMap_symbol_filterMap_terminal g₁g.projectNT ▸ g₁g.derives_filterMap hw
   intro a ha
-  simp at ha
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
   rw [ha]
   exact ContextFreeGrammar.Embedding.Good.nonterminal g₁.initial
 
@@ -750,35 +746,35 @@ private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
     w ∈ g₂.language := by
   apply w.filterMap_symbol_filterMap_terminal g₂g.projectNT ▸ g₂g.derives_filterMap hw
   intro a ha
-  simp at ha
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
   rw [ha]
   exact ContextFreeGrammar.Embedding.Good.nonterminal g₂.initial
 
 private lemma map_inl_injective : ((ContextFreeRule.map · (Option.some ∘ Sum.inl)) :
     ContextFreeRule T g₁.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))).Injective := by
   intro ⟨a_in, a_out⟩ ⟨b_in, b_out⟩ hab
-  simp [ContextFreeRule.map] at hab
+  simp only [ContextFreeRule.map, comp_apply, ContextFreeRule.mk.injEq, Option.some.injEq,
+    Sum.inl.injEq] at hab
   simp only [hab.left, ContextFreeRule.mk.injEq, true_and]
   rw [List.map_inj_right] at hab
   · simp [hab]
   · intros a b
     intro hs
-    cases a <;> cases b <;> simp [Symbol.map] at hs ⊢
-    exact hs
-    exact hs
+    cases a <;> cases b <;> simp only [Symbol.map, Symbol.terminal.injEq] at hs ⊢
+    repeat' grind
 
 private lemma map_inr_injective : ((ContextFreeRule.map · (Option.some ∘ Sum.inr)) :
     ContextFreeRule T g₂.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))).Injective := by
   intro ⟨a_in, a_out⟩ ⟨b_in, b_out⟩ hab
-  simp [ContextFreeRule.map] at hab
-  simp [hab.left]
+  simp only [ContextFreeRule.map, comp_apply, ContextFreeRule.mk.injEq, Option.some.injEq,
+    Sum.inr.injEq] at hab
+  simp only [hab.left, ContextFreeRule.mk.injEq, true_and]
   rw [List.map_inj_right] at hab
   · simp [hab]
   · intros a b
     intro hs
-    cases a <;> cases b <;> simp [Symbol.map] at hs ⊢
-    exact hs
-    exact hs
+    cases a <;> cases b <;> simp only [Symbol.map, Symbol.terminal.injEq] at hs ⊢
+    repeat' grind
 
 private lemma impossible_rule {r : ContextFreeRule T (g₁.union g₂).NT}
     (hg : [Symbol.nonterminal (g₁.union g₂).initial] =
