@@ -15,7 +15,7 @@ This file is a stub containing some basic facts about
 invertible elements in the ring of polynomials.
 -/
 
-@[expose] public section
+public section
 
 
 open MvPolynomial

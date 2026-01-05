@@ -15,7 +15,7 @@ This file contains some results about the cardinality of `FreeAlgebra`,
 parallel to that of `MvPolynomial`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

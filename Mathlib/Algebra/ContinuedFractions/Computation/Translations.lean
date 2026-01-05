@@ -40,7 +40,7 @@ The file consists of three sections:
   parts.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

@@ -15,7 +15,7 @@ We prove that the expression for the norm of an element in a quadratic algebra c
 the endomorphism defined by left multiplication by that element and taking its determinant.
 -/
 
-@[expose] public section
+public section
 
 namespace QuadraticAlgebra
 
