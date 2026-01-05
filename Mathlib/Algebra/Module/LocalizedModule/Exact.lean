@@ -58,7 +58,7 @@ alias LocalizedModule.map_exact := LocalizedModule.map_addExact
 /-- Localization of modules is an exact functor. -/
 theorem IsLocalizedModule.map_addExact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M₂)
     (ex : Function.AddExact g h) : Function.AddExact (map S f₀ f₁ g) (map S f₁ f₂ h) :=
-  Function.AddExact.of_ladder_linearEquiv_of_exact
+  Function.AddExact.of_ladder_linearEquiv_of_addExact
     (map_iso_commute S f₀ f₁ g) (map_iso_commute S f₁ f₂ h) (LocalizedModule.map_addExact S g h ex)
 
 @[deprecated (since := "2026-01-05")]

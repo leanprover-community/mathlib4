@@ -62,9 +62,9 @@ lemma cotangentRestrict_bijective_of_isCompl
   rw [cotangentRestrict, Finsupp.lcomapDomain_eq_linearProjOfIsCompl _ huv.symm]
   set f : _ →ₗ[S] (ι →₀ S) := P.cotangentSpaceBasis.repr ∘ₗ P.toExtension.cotangentComplex
   let g : (ι →₀ S) →ₗ[S] (Ω[S⁄R]) := P.toExtension.toKaehler ∘ₗ P.cotangentSpaceBasis.repr.symm
-  have hfg : Function.Exact f g := by
-    simp only [f, g, LinearEquiv.conj_exact_iff_exact]
-    exact Extension.exact_cotangentComplex_toKaehler
+  have hfg : Function.AddExact f g := by
+    simp only [f, g, LinearEquiv.conj_addExact_iff_addExact]
+    exact Extension.addExact_cotangentComplex_toKaehler
   apply LinearMap.linearProjOfIsCompl_comp_bijective_of_exact hfg
   · exact P.cotangentSpaceBasis.repr.injective.comp <|
       (Extension.subsingleton_h1Cotangent P.toExtension).mp P.equivH1Cotangent.subsingleton

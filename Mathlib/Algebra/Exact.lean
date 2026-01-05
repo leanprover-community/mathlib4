@@ -482,7 +482,7 @@ def AddExact.splitSurjectiveEquiv (h : Function.AddExact f g) (hf : Function.Inj
     ext <;> simp
 
 @[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.splitSurjectiveEquiv := AddExact.splitSurjectiveEquiv
+alias Exact.splitSurjectiveEquiv := AddExact.splitSurjectiveEquiv
 
 /-- Given an exact sequence `M → N → P → 0`, giving a retraction `N → M` is equivalent to giving a
 splitting `N ≃ M × P`. -/
@@ -521,7 +521,7 @@ def AddExact.splitInjectiveEquiv
     ext x <;> simp
 
 @[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.splitInjectiveEquiv := AddExact.splitInjectiveEquiv
+alias Exact.splitInjectiveEquiv := AddExact.splitInjectiveEquiv
 
 theorem AddExact.split_tfae' (h : Function.AddExact f g) :
     List.TFAE [
@@ -543,7 +543,7 @@ theorem AddExact.split_tfae' (h : Function.AddExact f g) :
   tfae_finish
 
 @[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.split_tfae' := AddExact.split_tfae'
+alias Exact.split_tfae' := AddExact.split_tfae'
 
 /-- Equivalent characterizations of split exact sequences. Also known as the **Splitting lemma**. -/
 theorem AddExact.split_tfae
@@ -561,7 +561,7 @@ theorem AddExact.split_tfae
   tfae_finish
 
 @[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.split_tfae := AddExact.split_tfae
+alias Exact.split_tfae := AddExact.split_tfae
 
 end split
 

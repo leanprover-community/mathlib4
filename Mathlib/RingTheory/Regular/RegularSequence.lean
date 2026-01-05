@@ -552,25 +552,29 @@ lemma IsWeaklyRegular.isWeaklyRegular_rTensor [Module.Flat R M₂]
     exact ((e.isWeaklyRegular_congr rs').mp ih).cons (h1.rTensor M₂)
 -- TODO: apply the above to localization and completion (Corollary 1.1.3 in B&H)
 
-lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
+lemma map_first_addExact_on_four_term_right_addExact_of_isSMulRegular_last
     {rs : List R} {f₁ : M →ₗ[R] M₂} {f₂ : M₂ →ₗ[R] M₃} {f₃ : M₃ →ₗ[R] M₄}
-    (h₁₂ : Exact f₁ f₂) (h₂₃ : Exact f₂ f₃) (h₃ : Surjective f₃)
+    (h₁₂ : AddExact f₁ f₂) (h₂₃ : AddExact f₂ f₃) (h₃ : Surjective f₃)
     (h₄ : IsWeaklyRegular M₄ rs) :
-    Exact (mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList rs) f₁))
+    AddExact (mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList rs) f₁))
           (mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList rs) f₂)) := by
   induction h₄ generalizing M M₂ M₃ with
   | nil =>
-    apply (Exact.iff_of_ladder_linearEquiv ?_ ?_).mp h₁₂
+    apply (AddExact.iff_of_ladder_linearEquiv ?_ ?_).mp h₁₂
     any_goals exact quotEquivOfEqBot _ <|
       Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
     all_goals exact quot_hom_ext _ _ _ fun _ => rfl
   | cons r rs h₄ _ ih =>
     specialize ih
-      (map_first_exact_on_four_term_exact_of_isSMulRegular_last h₁₂ h₂₃ h₄)
-      (map_exact r h₂₃ h₃) (map_surjective r h₃)
+      (map_first_addExact_on_four_term_addExact_of_isSMulRegular_last h₁₂ h₂₃ h₄)
+      (map_addExact r h₂₃ h₃) (map_surjective r h₃)
     have H₁ := quotOfListConsSMulTopEquivQuotSMulTopInner_naturality r rs f₁
     have H₂ := quotOfListConsSMulTopEquivQuotSMulTopInner_naturality r rs f₂
-    exact (Exact.iff_of_ladder_linearEquiv H₁.symm H₂.symm).mp ih
+    exact (AddExact.iff_of_ladder_linearEquiv H₁.symm H₂.symm).mp ih
+
+@[deprecated (since := "2026-01-05")]
+alias map_first_exact_on_four_term_right_exact_of_isSMulRegular_last :=
+  map_first_addExact_on_four_term_right_addExact_of_isSMulRegular_last
 
 -- todo: modding out a complex by a regular sequence (prop 1.1.5 in B&H)
 

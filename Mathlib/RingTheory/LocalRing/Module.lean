@@ -45,7 +45,7 @@ section
 
 variable [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-open Function (Injective Surjective Exact)
+open Function (Injective Surjective AddExact)
 open IsLocalRing TensorProduct
 
 local notation "k" => ResidueField R
@@ -124,13 +124,13 @@ Given `M₁ → M₂ → M₃ → 0` and `N₁ → N₂ → N₃ → 0`,
 if `M₁ ⊗ N₃ → M₂ ⊗ N₃` and `M₂ ⊗ N₁ → M₂ ⊗ N₂` are both injective,
 then `M₃ ⊗ N₁ → M₃ ⊗ N₂` is also injective.
 -/
-theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
+theorem lTensor_injective_of_addExact_of_addExact_of_rTensor_injective
     {M₁ M₂ M₃ N₁ N₂ N₃}
     [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup M₃] [Module R M₃]
     [AddCommGroup N₁] [Module R N₁] [AddCommGroup N₂] [Module R N₂] [AddCommGroup N₃] [Module R N₃]
     {f₁ : M₁ →ₗ[R] M₂} {f₂ : M₂ →ₗ[R] M₃} {g₁ : N₁ →ₗ[R] N₂} {g₂ : N₂ →ₗ[R] N₃}
-    (hfexact : Exact f₁ f₂) (hfsurj : Surjective f₂)
-    (hgexact : Exact g₁ g₂) (hgsurj : Surjective g₂)
+    (hfexact : AddExact f₁ f₂) (hfsurj : Surjective f₂)
+    (hgexact : AddExact g₁ g₂) (hgsurj : Surjective g₂)
     (hfinj : Injective (f₁.rTensor N₃)) (hginj : Injective (g₁.lTensor M₂)) :
     Injective (g₁.lTensor M₃) := by
   rw [injective_iff_map_eq_zero]
@@ -139,7 +139,7 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
   have : f₂.rTensor N₂ (g₁.lTensor M₂ x) = 0 := by
     rw [← hx, ← LinearMap.comp_apply, ← LinearMap.comp_apply, LinearMap.rTensor_comp_lTensor,
       LinearMap.lTensor_comp_rTensor]
-  obtain ⟨y, hy⟩ := (rTensor_exact N₂ hfexact hfsurj _).mp this
+  obtain ⟨y, hy⟩ := (rTensor_addExact N₂ hfexact hfsurj _).mp this
   have : g₂.lTensor M₁ y = 0 := by
     apply hfinj
     trans g₂.lTensor M₂ (g₁.lTensor M₂ x)
@@ -147,13 +147,17 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
         LinearMap.lTensor_comp_rTensor]
     rw [← LinearMap.comp_apply, ← LinearMap.lTensor_comp, hgexact.linearMap_comp_eq_zero]
     simp
-  obtain ⟨z, rfl⟩ := (lTensor_exact _ hgexact hgsurj _).mp this
+  obtain ⟨z, rfl⟩ := (lTensor_addExact _ hgexact hgsurj _).mp this
   obtain rfl : f₁.rTensor N₁ z = x := by
     apply hginj
     simp only [← hy, ← LinearMap.comp_apply, ← LinearMap.comp_apply, LinearMap.lTensor_comp_rTensor,
       LinearMap.rTensor_comp_lTensor]
   rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp, hfexact.linearMap_comp_eq_zero]
   simp
+
+@[deprecated (since := "2026-01-05")]
+alias lTensor_injective_of_exact_of_exact_of_rTensor_injective :=
+  lTensor_injective_of_addExact_of_addExact_of_rTensor_injective
 
 namespace Module
 
@@ -199,17 +203,17 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
       rw [Module.finrank_eq_card_basis bk]
     -- On the other hand, `m ⊗ M → M` injective => `Tor₁(k, M) = 0` => `k ⊗ ker(i) → kᴵ` injective.
     intro x
-    refine lTensor_injective_of_exact_of_exact_of_rTensor_injective
+    refine lTensor_injective_of_addExact_of_addExact_of_rTensor_injective
       (N₁ := LinearMap.ker i) (N₂ := ι →₀ R) (N₃ := M)
       (f₁ := (𝔪).subtype) (f₂ := Submodule.mkQ 𝔪)
-      (g₁ := (LinearMap.ker i).subtype) (g₂ := i) (LinearMap.exact_subtype_mkQ 𝔪)
-      (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H ?_ ?_
+      (g₁ := (LinearMap.ker i).subtype) (g₂ := i) (LinearMap.addExact_subtype_mkQ 𝔪)
+      (Submodule.mkQ_surjective _) (LinearMap.addExact_subtype_ker_map i) hi H ?_ ?_
     · apply Module.Flat.lTensor_preserves_injective_linearMap
       exact Subtype.val_injective
     · apply hi'.injective
       rw [LinearMap.baseChange_eq_ltensor]
       erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
-      rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
+      rw [(LinearMap.addExact_subtype_ker_map i).linearMap_comp_eq_zero]
       simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
   use Basis.ofRepr iequiv.symm
   intro j
@@ -308,7 +312,7 @@ theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.
 -/
-theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f g)
+theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Function.AddExact f g)
     [Module.Finite R M] [Module.Finite R N] [Module.Free R N]
     (hf : Function.Injective (f.lTensor k)) :
     Module.Free R P := by
@@ -316,8 +320,8 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
     (by rw [h.linearMap_ker_eq, LinearMap.range_eq_map]; exact (Module.Finite.fg_top).map f)
   apply free_of_maximalIdeal_rTensor_injective
   rw [← LinearMap.lTensor_inj_iff_rTensor_inj]
-  apply lTensor_injective_of_exact_of_exact_of_rTensor_injective
-    h hg (LinearMap.exact_subtype_mkQ 𝔪) (Submodule.mkQ_surjective _)
+  apply lTensor_injective_of_addExact_of_addExact_of_rTensor_injective
+    h hg (LinearMap.addExact_subtype_mkQ 𝔪) (Submodule.mkQ_surjective _)
     ((LinearMap.lTensor_inj_iff_rTensor_inj _ _).mp hf)
     (Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective)
 
@@ -339,20 +343,20 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
   · intro h
     -- By `Module.free_of_lTensor_residueField_injective`, `k ⊗ l` injective => `N ⧸ l(M)` free.
     have := Module.free_of_lTensor_residueField_injective l (LinearMap.range l).mkQ
-      (Submodule.mkQ_surjective _) l.exact_map_mkQ_range h
+      (Submodule.mkQ_surjective _) l.addExact_map_mkQ_range h
     -- Hence `l(M)` is projective because `0 → l(M) → N → N ⧸ l(M) → 0` splits.
     have : Module.Projective R (LinearMap.range l) := by
-      have := (Exact.split_tfae (LinearMap.exact_subtype_mkQ (LinearMap.range l))
+      have := (AddExact.split_tfae (LinearMap.addExact_subtype_mkQ (LinearMap.range l))
         Subtype.val_injective (Submodule.mkQ_surjective _)).out 0 1
       obtain ⟨l', hl'⟩ := this.mp
          (Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _))
       exact Module.Projective.of_split _ _ hl'
     -- Then `0 → ker l → M → l(M) → 0` splits.
     obtain ⟨l', hl'⟩ : ∃ l', l' ∘ₗ (LinearMap.ker l).subtype = LinearMap.id := by
-      have : Function.Exact (LinearMap.ker l).subtype
+      have : AddExact (LinearMap.ker l).subtype
           (l.codRestrict (LinearMap.range l) (LinearMap.mem_range_self l)) := by
-        rw [LinearMap.exact_iff, LinearMap.ker_rangeRestrict, Submodule.range_subtype]
-      have := (Exact.split_tfae this
+        rw [LinearMap.addExact_iff, LinearMap.ker_rangeRestrict, Submodule.range_subtype]
+      have := (AddExact.split_tfae this
         Subtype.val_injective (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩)).out 0 1
       exact this.mp (Module.projective_lifting_property _ _ (fun ⟨x, y, e⟩ ↦ ⟨y, Subtype.ext e⟩))
     have : Module.Finite R (LinearMap.ker l) := by
@@ -368,14 +372,14 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
     have : Subsingleton (k ⊗[R] LinearMap.ker l) := by
       refine (subsingleton_iff_forall_eq 0).mpr fun y ↦ H (h ?_)
       rw [map_zero, map_zero, ← LinearMap.comp_apply, ← LinearMap.lTensor_comp,
-        l.exact_subtype_ker_map.linearMap_comp_eq_zero, LinearMap.lTensor_zero,
+        l.addExact_subtype_ker_map.linearMap_comp_eq_zero, LinearMap.lTensor_zero,
         LinearMap.zero_apply]
     -- By Nakayama's lemma, `l` is injective.
     have : Function.Injective l := by
       rwa [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,
         ← IsLocalRing.subsingleton_tensorProduct (R := R)]
     -- Whence `M ≃ l(M)` is projective and the result follows.
-    have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
+    have := (AddExact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
 
