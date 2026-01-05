@@ -194,3 +194,16 @@ theorem iteratedLineDerivOpCLM_apply {n : ℕ} (m : Fin n → V) (x : E) :
 end iteratedLineDerivOp
 
 end LineDeriv
+
+/--
+The notation typeclass for the Laplace operator.
+-/
+class Laplacian (E : Type v) (F : outParam (Type w)) where
+  /-- `Δ f` is the Laplacian of `f`. The meaning of this notation is type-dependent. -/
+  laplacian : E → F
+
+namespace Laplacian
+
+@[inherit_doc] scoped notation "Δ" => Laplacian.laplacian
+
+end Laplacian
