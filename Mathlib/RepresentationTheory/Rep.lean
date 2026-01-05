@@ -368,6 +368,12 @@ variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 `ℤ`-linear `M`-representation on `Additive G`. -/
 def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
 
+variable {G M}
+
+/-- Unfolds `ofMulDistribMulAction`; useful to keep track of additivity. -/
+@[simps!]
+def toAdditive : ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
+
 @[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
     (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • a.toMul) := rfl
 
