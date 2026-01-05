@@ -102,7 +102,7 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     rw [Category.assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
 
 @[simp]
-theorem sections_curry_uncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
+theorem sectionsCurry_sectionUncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
   cat_disch
