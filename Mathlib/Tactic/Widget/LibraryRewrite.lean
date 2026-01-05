@@ -217,7 +217,7 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   let some (lhs, rhs) := eqOrIff? (← whnf eqn) |
     throwError "Expected equation, not {indentExpr eqn}"
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
-  let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
+  let unifies ← withTraceNodeBefore `rw?? (fun _ =>return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
   unless unifies do return none
   -- just like in `kabstract`, we compare the `HeadIndex` and number of arguments
