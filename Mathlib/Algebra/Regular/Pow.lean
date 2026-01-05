@@ -3,8 +3,10 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Regular.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Product of regular elements
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Regular.Basic
 
 Move to `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`?
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} {a b : R}

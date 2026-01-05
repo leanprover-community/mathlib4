@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 
@@ -43,6 +45,8 @@ The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingCat`).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -277,7 +281,7 @@ theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r :
 
 theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r : R) :
     bind₂ f (monomial d r) = f r * monomial d 1 := by
-  simp only [monomial_eq, RingHom.map_mul, bind₂_C_right, Finsupp.prod, map_prod,
+  simp only [monomial_eq, map_mul, bind₂_C_right, Finsupp.prod, map_prod,
     map_pow, bind₂_X_right, C_1, one_mul]
 
 @[simp]

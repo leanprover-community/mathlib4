@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Completion
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Topology.Algebra.UniformRing
-import Mathlib.Topology.Algebra.UniformField
+module
+
+public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # Normed space structure on the completion of a normed space
@@ -19,6 +21,8 @@ We also show that if `A` is a normed algebra over `𝕜`, then so is `UniformSpa
 
 TODO: Generalise the results here from the concrete `completion` to any `AbstractCompletion`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Order.Group.Lattice
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Order.Group.Lattice
 
 /-!
 # Absolute values in ordered groups
@@ -19,6 +21,8 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
 -/
 
+@[expose] public section
+
 open Function
 
 variable {α : Type*}
@@ -30,7 +34,7 @@ section Group
 variable [Group α] {a b : α}
 
 /-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
-@[to_additive /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
+@[to_additive (attr := grind) /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
 def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
@@ -42,7 +46,7 @@ macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander mabs]
-def mabs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
@@ -52,7 +56,7 @@ def mabs.unexpander : Lean.PrettyPrinter.Unexpander
 /-- Unexpander for the notation `|a|` for `abs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
-def abs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)
@@ -239,7 +243,7 @@ variable [MulLeftMono α] {a b : α}
   · simp [mabs_of_le_one h]
 
 @[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
-  rw [← mul_inv_cancel a]; exact mul_le_mul_left' (inv_le_mabs a) _
+  grw [← mul_inv_cancel a, inv_le_mabs a]
 
 @[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 
@@ -296,6 +300,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Latti
 
 @[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
 
+@[push ←]
 lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi

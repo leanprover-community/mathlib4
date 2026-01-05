@@ -3,7 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Ideals in product rings
@@ -13,6 +15,8 @@ product `I × J`, viewed as an ideal of `R × S`. In `ideal_prod_eq` we show tha
 `R × S` is of this form.  Furthermore, we show that every prime ideal of `R × S` is of the form
 `p × S` or `R × p`, where `p` is a prime ideal.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -128,8 +132,6 @@ theorem span_prod {s : Set R} {t : Set S} (hst : s.Nonempty ↔ t.Nonempty) :
 theorem prod_inj {I I' : Ideal R} {J J' : Ideal S} :
     prod I J = prod I' J' ↔ I = I' ∧ J = J' := by
   simp only [← idealProdEquiv_symm_apply, idealProdEquiv.symm.injective.eq_iff, Prod.mk_inj]
-
-@[deprecated (since := "2025-05-22")] alias prod.ext_iff := prod_inj
 
 @[simp]
 theorem prod_eq_bot_iff {I : Ideal R} {J : Ideal S} :

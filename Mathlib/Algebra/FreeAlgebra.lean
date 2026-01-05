@@ -3,11 +3,13 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.FreeMonoid.UniqueProds
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.FreeMonoid.UniqueProds
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 
 /-!
 # Free Algebras
@@ -30,7 +32,7 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
-5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
+5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X]`
 6. An inductive principle `induction`.
 
 ## Implementation details
@@ -48,9 +50,11 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
   the relation `FreeAlgebra.Rel R X`.
 -/
 
+@[expose] public section
 
-variable (R : Type*) [CommSemiring R]
-variable (X : Type*)
+open scoped MonoidAlgebra
+
+variable (R X : Type*) [CommSemiring R]
 
 namespace FreeAlgebra
 
@@ -301,6 +305,7 @@ theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by r
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 
+set_option backward.privateInPublic true in
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
@@ -351,6 +356,8 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
     rfl
   commutes' := by tauto
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]
@@ -377,13 +384,15 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
-        rw [map_add, map_add, ha, hb]
+        grind
       | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
-        rw [map_mul, map_mul, ha, hb] }
+        grind }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
   rw [lift]
@@ -440,21 +449,10 @@ theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
 This would be useful when constructing linear maps out of a free algebra,
 for example.
 -/
-noncomputable def equivMonoidAlgebraFreeMonoid :
-    FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X) :=
-  AlgEquiv.ofAlgHom (lift R fun x ↦ (MonoidAlgebra.of R (FreeMonoid X)) (FreeMonoid.of x))
-    ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
-    (by
-      apply MonoidAlgebra.algHom_ext; intro x
-      refine FreeMonoid.recOn x ?_ ?_
-      · simp
-        rfl
-      · intro x y ih
-        simp at ih
-        simp [ih])
-    (by
-      ext
-      simp)
+noncomputable def equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X] :=
+  .ofAlgHom (lift R fun x ↦ .of R (FreeMonoid X) (.of x))
+    (MonoidAlgebra.lift R (FreeAlgebra R X) (FreeMonoid X) (FreeMonoid.lift (ι R)))
+    (by ext; simp) (by ext; simp)
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
@@ -558,7 +556,8 @@ theorem induction {motive : FreeAlgebra R X → Prop}
   suffices a = lift R of a by
     rw [this]
     exact Subtype.prop (lift R of a)
-  simp [AlgHom.ext_iff] at of_id
+  simp only [AlgHom.ext_iff, AlgHom.coe_id, id_eq, AlgHom.coe_comp, Subalgebra.coe_val,
+    Function.comp_apply] at of_id
   exact of_id a
 
 @[simp]

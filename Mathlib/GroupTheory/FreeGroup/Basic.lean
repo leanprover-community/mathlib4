@@ -3,10 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Data.List.Chain
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Free groups
@@ -48,6 +51,8 @@ distinguish the quotient types more easily.
 free group, Newman's diamond lemma, Church-Rosser theorem
 -/
 
+@[expose] public section
+
 open Relation
 open scoped List
 
@@ -57,8 +62,8 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
-run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `FreeGroup `FreeAddGroup
+/- Ensure that `@[to_additive]` uses the right namespace before the definition of `FreeGroup`. -/
+insert_to_additive_translation FreeGroup FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
 inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop
@@ -333,7 +338,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     induction L1 with
     | nil =>
       dsimp
-      omega
+      lia
     | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _
@@ -379,21 +384,21 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
 elements of the word cancel. -/
 @[to_additive /-- Predicate asserting the word `L` admits no reduction steps,
 i.e., no two neighboring elements of the word cancel. -/]
-def IsReduced (L : List (α × Bool)) : Prop := L.Chain' fun a b ↦ a.1 = b.1 → a.2 = b.2
+def IsReduced (L : List (α × Bool)) : Prop := L.IsChain fun a b ↦ a.1 = b.1 → a.2 = b.2
 
 section IsReduced
 
 open List
 
 @[to_additive (attr := simp)]
-theorem IsReduced.nil : IsReduced ([] : List (α × Bool)) := chain'_nil
+theorem IsReduced.nil : IsReduced ([] : List (α × Bool)) := isChain_nil
 
 @[to_additive (attr := simp)]
-theorem IsReduced.singleton {a : α × Bool} : IsReduced [a] := chain'_singleton a
+theorem IsReduced.singleton {a : α × Bool} : IsReduced [a] := isChain_singleton a
 
 @[to_additive (attr := simp)]
 theorem isReduced_cons_cons {a b : (α × Bool)} :
-    IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := chain'_cons_cons
+    IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := isChain_cons_cons
 
 @[to_additive]
 theorem IsReduced.not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun step ↦ by
@@ -426,10 +431,10 @@ theorem IsReduced.red_iff_eq (h : IsReduced L₁) : Red L₁ L₂ ↔ L₂ = L�
 @[to_additive]
 theorem IsReduced.append_overlap {L₁ L₂ L₃ : List (α × Bool)} (h₁ : IsReduced (L₁ ++ L₂))
     (h₂ : IsReduced (L₂ ++ L₃)) (hn : L₂ ≠ []) : IsReduced (L₁ ++ L₂ ++ L₃) :=
-  Chain'.append_overlap h₁ h₂ hn
+  IsChain.append_overlap h₁ h₂ hn
 
 @[to_additive]
-theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ := Chain'.infix h h'
+theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ := IsChain.infix h h'
 
 end IsReduced
 end FreeGroup
@@ -595,9 +600,6 @@ theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
 
 @[to_additive]
 instance : Group (FreeGroup α) where
-  mul := (· * ·)
-  one := 1
-  inv := Inv.inv
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
@@ -665,7 +667,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 
 @[to_additive]
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
-  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux]
+  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux, List.prod_append]
 
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
@@ -675,9 +677,9 @@ from the free group over `α` to `β` -/
 def lift : (α → β) ≃ (FreeGroup α →* β) where
   toFun f :=
     MonoidHom.mk' (Quot.lift (Lift.aux f) fun _ _ => Red.Step.lift) <| by
-      rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
+      rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux, List.prod_append]
   invFun g := g ∘ of
-  left_inv f := List.prod_singleton
+  left_inv f := by ext; simp [of, Lift.aux]
   right_inv g := by ext; simp [of, Lift.aux]
 
 variable {f}
@@ -687,8 +689,7 @@ theorem lift_mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift_apply_of {x} : lift f (of x) = f x :=
-  List.prod_singleton
+theorem lift_apply_of {x} : lift f (of x) = f x := by simp [of]
 
 @[to_additive]
 theorem lift_unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
@@ -716,6 +717,10 @@ theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
   exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
+
+@[to_additive]
+theorem closure_eq_range (s : Set β) : Subgroup.closure s = (lift ((↑) : s → β)).range := by
+  rw [FreeGroup.range_lift_eq_closure, Subtype.range_coe]
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/
@@ -790,7 +795,7 @@ def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β wher
   invFun := map e.symm
   left_inv x := by simp [map.comp]
   right_inv x := by simp [map.comp]
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive (attr := simp)]
 theorem freeGroupCongr_refl : freeGroupCongr (Equiv.refl α) = MulEquiv.refl _ :=
@@ -881,6 +886,9 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
 
+-- TODO: find a good way to fix the linter
+-- simp applies to two goals at once, with different simp sets
+set_option linter.flexible false in
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by

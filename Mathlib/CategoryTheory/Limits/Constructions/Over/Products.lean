@@ -3,7 +3,9 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Products in the over category
@@ -20,6 +22,8 @@ category.
 * Generalise from arbitrary products to arbitrary limits. This is done in Toric.
 * Dualise to get the `Under X` results.
 -/
+
+@[expose] public section
 
 
 universe w v u -- morphism levels before object levels. See note [category_theory universes].
@@ -184,7 +188,7 @@ lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
 
 variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
 
-/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
+/-- The product of `Y` and `Z` in `Over X` is isomorphic to `Y ×ₓ Z`. -/
 noncomputable
 def prodLeftIsoPullback :
     (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=

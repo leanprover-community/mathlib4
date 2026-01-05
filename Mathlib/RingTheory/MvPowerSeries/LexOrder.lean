@@ -3,9 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.Finsupp.WellFounded
 
 /-! LexOrder of multivariate power series
 
@@ -15,6 +16,8 @@ which can be used to define a natural valuation `lexOrder` on the ring `MvPowerS
 the smallest exponent in the support.
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -55,7 +58,7 @@ theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :
   · simp only [h]
   · simp only [h, WithTop.coe_ne_top]
 
-theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
+@[simp] theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
   unfold lexOrder
   rw [dif_pos rfl]
 
@@ -154,10 +157,10 @@ alias lexOrder_mul_ge := le_lexOrder_mul
 
 theorem lexOrder_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
     lexOrder (φ * ψ) = lexOrder φ + lexOrder ψ := by
-  by_cases hφ : φ = 0
-  · simp only [hφ, zero_mul, lexOrder_zero, top_add]
-  by_cases hψ : ψ = 0
-  · simp only [hψ, mul_zero, lexOrder_zero, add_top]
+  obtain rfl | hφ := eq_or_ne φ 0
+  · simp
+  obtain rfl | hψ := eq_or_ne ψ 0
+  · simp
   rcases exists_finsupp_eq_lexOrder_of_ne_zero hφ with ⟨p, hp⟩
   rcases exists_finsupp_eq_lexOrder_of_ne_zero hψ with ⟨q, hq⟩
   apply le_antisymm _ (lexOrder_mul_ge φ ψ)

@@ -3,14 +3,16 @@ Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Algebra.Squarefree.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -37,7 +39,7 @@ This is different from the radical of an ideal.
 
 ### For Euclidean domains
 
-- `EuclideanDomain.divRadical`: For an element `a` in an Euclidean domain, `a / radical a`.
+- `EuclideanDomain.divRadical`: For an element `a` in a Euclidean domain, `a / radical a`.
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
@@ -53,6 +55,8 @@ This is different from the radical of an ideal.
 - Make a comparison with `Ideal.radical`. Especially, for principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -156,17 +160,9 @@ def radical (a : M) : M :=
   (primeFactors a).prod id
 
 @[simp] theorem radical_zero : radical (0 : M) = 1 := by simp [radical]
-@[deprecated (since := "2025-05-31")] alias radical_zero_eq := radical_zero
-
 @[simp] theorem radical_one : radical (1 : M) = 1 := by simp [radical]
-@[deprecated (since := "2025-05-31")] alias radical_one_eq := radical_one
-
-lemma radical_eq_of_primeFactors_eq (h : primeFactors a = primeFactors b) :
-    radical a = radical b := by
-  simp only [radical, h]
-
-theorem radical_eq_of_associated (h : Associated a b) : radical a = radical b :=
-  radical_eq_of_primeFactors_eq h.primeFactors_eq
+theorem radical_eq_of_associated (h : Associated a b) : radical a = radical b := by
+  rw [radical, radical, Associated.primeFactors_eq h]
 
 lemma radical_associated (ha : IsRadical a) (ha' : a ≠ 0) :
     Associated (radical a) a := by
@@ -256,6 +252,16 @@ lemma squarefree_radical : Squarefree (radical a) := by
   simp +contextual [mem_primeFactors, mem_normalizedFactors_iff',
     dvd_radical_iff_of_irreducible, ha₀]
 
+lemma radical_eq_iff_primeFactors_eq :
+    radical a = radical b ↔ primeFactors a = primeFactors b :=
+  ⟨fun h => by rw [← primeFactors_radical, h]; exact primeFactors_radical,
+    fun h => by simp [radical, h]⟩
+
+@[deprecated "This lemma is deprecated in favor of using `radical_eq_iff_primeFactors_eq.mpr`. "
+   (since := "2025-11-09")]
+lemma radical_eq_of_primeFactors_eq (h : primeFactors a = primeFactors b) :
+    radical a = radical b := radical_eq_iff_primeFactors_eq.mpr h
+
 theorem radical_eq_one_iff : radical a = 1 ↔ a = 0 ∨ IsUnit a := by
   refine ⟨?_, (Or.elim · (by simp +contextual) radical_of_isUnit)⟩
   intro h
@@ -266,7 +272,7 @@ theorem radical_eq_one_iff : radical a = 1 ↔ a = 0 ∨ IsUnit a := by
 
 @[simp]
 lemma radical_radical : radical (radical a) = radical a :=
-  radical_eq_of_primeFactors_eq primeFactors_radical
+  radical_eq_iff_primeFactors_eq.mpr primeFactors_radical
 
 lemma radical_dvd_radical_iff_normalizedFactors_subset_normalizedFactors :
     radical a ∣ radical b ↔ normalizedFactors a ⊆ normalizedFactors b := by
@@ -353,34 +359,6 @@ namespace UniqueFactorizationDomain
 variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R] {a b : R}
 
-/-- Coprime elements have disjoint prime factors (as multisets). -/
-@[deprecated "UniqueFactorizationMonoid.disjoint_normalizedFactors, IsCoprime.isRelPrime"
-  (since := "2025-05-31")]
-theorem disjoint_normalizedFactors (hc : IsCoprime a b) :
-    Disjoint (normalizedFactors a) (normalizedFactors b) :=
-  UniqueFactorizationMonoid.disjoint_normalizedFactors hc.isRelPrime
-
-/-- Coprime elements have disjoint prime factors (as finsets). -/
-@[deprecated "UniqueFactorizationMonoid.disjoint_primeFactors, IsCoprime.isRelPrime"
-  (since := "2025-05-31")]
-theorem disjoint_primeFactors (hc : IsCoprime a b) :
-    Disjoint (primeFactors a) (primeFactors b) :=
-  UniqueFactorizationMonoid.disjoint_primeFactors hc.isRelPrime
-
-set_option linter.deprecated false in
-@[deprecated "UniqueFactorizationMonoid.primeFactors_mul_eq_disjUnion, IsCoprime.isRelPrime"
-  (since := "2025-05-31")]
-theorem mul_primeFactors_disjUnion
-    (hc : IsCoprime a b) : primeFactors (a * b) =
-    (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc) :=
-  UniqueFactorizationMonoid.primeFactors_mul_eq_disjUnion hc.isRelPrime
-
-/-- Radical is multiplicative for coprime elements. -/
-@[deprecated "UniqueFactorizationMonoid.radical_mul, IsCoprime.isRelPrime" (since := "2025-05-31")]
-theorem radical_mul (hc : IsCoprime a b) :
-    radical (a * b) = radical a * radical b :=
-  UniqueFactorizationMonoid.radical_mul hc.isRelPrime
-
 @[simp]
 theorem radical_neg : radical (-a) = radical a :=
   radical_eq_of_associated Associated.rfl.neg_left
@@ -395,7 +373,7 @@ namespace EuclideanDomain
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]
   {a b u x : E}
 
-/-- Division of an element by its radical in an Euclidean domain. -/
+/-- Division of an element by its radical in a Euclidean domain. -/
 def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical : radical a * divRadical a = a := by
@@ -446,17 +424,17 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
 namespace Nat
 
 @[simp] theorem radical_le_self_iff {n : ℕ} : radical n ≤ n ↔ n ≠ 0 :=
-  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by omega) radical_dvd_self⟩
+  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by lia) radical_dvd_self⟩
 
 @[simp] theorem two_le_radical_iff {n : ℕ} : 2 ≤ radical n ↔ 2 ≤ n := by
   refine ⟨?_, ?_⟩
   · match n with | 0 | 1 | _ + 2 => simp
   · intro hn
-    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by omega)
+    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by lia)
     trans p
     · apply hp.two_le
     · apply Nat.le_of_dvd (Nat.pos_of_ne_zero radical_ne_zero)
-      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by omega)]
+      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by lia)]
 
 @[simp] theorem one_lt_radical_iff {n : ℕ} : 1 < radical n ↔ 1 < n := two_le_radical_iff
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Union
 
 /-!
 # Finite sets in `Option α`
@@ -23,6 +25,8 @@ Then we prove some basic lemmas about these definitions.
 
 finset, option
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}

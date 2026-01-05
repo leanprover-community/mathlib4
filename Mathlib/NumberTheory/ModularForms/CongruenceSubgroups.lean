@@ -3,8 +3,10 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.Integer
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Integer
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!
 # Congruence subgroups
@@ -15,6 +17,8 @@ natural number.
 It also contains basic results about congruence subgroups.
 
 -/
+
+@[expose] public section
 
 open Matrix.SpecialLinearGroup Matrix
 
@@ -229,11 +233,6 @@ lemma conjGL_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
   simp_rw [mem_conjGL, ← map_inv, ← map_mul, toGL_injective.eq_iff, map_intCast_injective.eq_iff,
     exists_eq_right, toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
-@[deprecated (since := "2025-05-15")] alias conjGLPos := conjGL
-@[deprecated (since := "2025-05-15")] alias conjGLPos_coe := conjGL_coe
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos := mem_conjGL
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos' := mem_conjGL'
-
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)
 
@@ -280,7 +279,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     conv_rhs => rw [← A₁.inv_denom_smul_num, ← A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
     simp only [Matrix.smul_mul, Matrix.mul_smul, Matrix.map_smul (Int.cast : ℤ → ℚ) M (by simp),
       Matrix.map_mul_intCast]
-    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← MulAction.mul_smul, ← MulAction.mul_smul,
+    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← SemigroupAction.mul_smul, ← SemigroupAction.mul_smul,
       mul_comm a₁ a₂, Nat.cast_mul, Nat.cast_mul, mul_assoc _ _ (M : ℚ), mul_comm _ (M : ℚ),
       inv_mul_cancel_left₀ (mod_cast A₂.den_ne_zero),
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
@@ -340,10 +339,13 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
     exact (finiteIndex_conjGL g).index_ne_zero
 
 /-- Conjugation by `GL(2, ℚ)` preserves arithmetic subgroups. -/
-lemma IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] (g : GL (Fin 2) ℚ) :
+lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
+    (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
-  ⟨((Commensurable.commensurable_conj _).mp Subgroup.IsArithmetic.is_commensurable).trans
+  ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
+
+@[deprecated (since := "2025-09-17")] alias IsArithmetic.conj := _root_.Subgroup.IsArithmetic.conj
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/
 lemma IsCongruenceSubgroup.conjGL {Γ : Subgroup SL(2, ℤ)} (hΓ : IsCongruenceSubgroup Γ)

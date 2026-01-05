@@ -3,10 +3,12 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.ExtendFrom
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Topology.Order.T5
+module
+
+public import Mathlib.Topology.Order.ExtendFrom
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.T5
 
 /-!
 # Rolle's Theorem (topological part)
@@ -22,6 +24,8 @@ to prove several versions of Rolle's Theorem from calculus.
 ## Keywords
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
+
+@[expose] public section
 
 open Filter Set Topology
 

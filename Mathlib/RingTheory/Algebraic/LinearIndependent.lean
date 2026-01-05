@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.RingTheory.Algebraic.Defs
+module
+
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.RingTheory.Algebraic.Defs
 
 /-!
 # Linear independence of transcendental elements
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Algebraic.Defs
 * `Transcendental.linearIndependent_sub_inv`: let `x : E` transcendental over `F`,
   then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`.
 -/
+
+@[expose] public section
 
 open Polynomial
 

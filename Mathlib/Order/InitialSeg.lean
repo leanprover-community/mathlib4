@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Hom.Lex
-import Mathlib.Order.RelIso.Set
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Hom.Lex
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Order.WellFounded
 
 /-!
 # Initial and principal segments
@@ -40,6 +42,8 @@ These notations belong to the `InitialSeg` locale.
 * `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
 * `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
 -/
+
+@[expose] public section
 
 /-! ### Initial segment embeddings -/
 
@@ -168,9 +172,12 @@ protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
 theorem eq_relIso [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
   InitialSeg.eq g.toInitialSeg f a
 
+set_option backward.privateInPublic true in
 private theorem antisymm_aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
   (f.trans g).eq (InitialSeg.refl _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If we have order embeddings between `α` and `β` whose ranges are initial segments, and `β` is a
 well order, then `α` and `β` are order-isomorphic. -/
 def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
@@ -450,8 +457,8 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
   rfl
 
 /-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
-abbrev pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
-  (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false
+abbrev pemptyToPunit : @emptyRelation PEmpty ≺i @emptyRelation PUnit :=
+  (@ofIsEmpty _ _ emptyRelation _ _ PUnit.unit) fun _ => not_false
 
 protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   (f : r ≼i s).acc a
@@ -510,6 +517,7 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
       fun b h => trans_trichotomous_left (IH b h).2 (f.map_rel_iff.2 h)
     ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
 
+set_option backward.privateInPublic true in
 private theorem collapseF_lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
   change _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
@@ -523,6 +531,8 @@ private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
   dsimp only
   exact WellFounded.not_lt_min _ _ _ h
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
 subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.
 

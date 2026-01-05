@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Localization.Finiteness
-import Mathlib.RingTheory.RingHom.FiniteType
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+module
+
+public import Mathlib.RingTheory.Localization.Finiteness
+public import Mathlib.RingTheory.RingHom.FiniteType
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
 /-!
 
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 The main result is `RingHom.finitePresentation_isLocal`.
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise TensorProduct
 
@@ -114,6 +118,28 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     apply h
   exact of_span_eq_top_target_aux f' hf' t ht Ht
 
+/-- Finite-presentation can be checked on a standard covering of the target. -/
+lemma of_span_eq_top_target_of_isLocalizationAway {ι : Type*} (s : ι → S)
+    (hs : Ideal.span (Set.range s) = ⊤) (T : ι → Type*) [∀ i, CommRing (T i)] [∀ i, Algebra R (T i)]
+    [∀ i, Algebra S (T i)] [∀ i, IsScalarTower R S (T i)] [∀ i, IsLocalization.Away (s i) (T i)]
+    [∀ i, Algebra.FinitePresentation R (T i)] :
+    Algebra.FinitePresentation R S := by
+  apply of_span_eq_top_target _ hs
+  rintro - ⟨i, rfl⟩
+  exact .equiv <| (IsLocalization.algEquiv (.powers <| s i) _ (T i)).symm |>.restrictScalars R
+
+instance pi {ι : Type*} [Finite ι] (S : ι → Type*) [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)]
+    [∀ i, Algebra.FinitePresentation R (S i)] :
+    Algebra.FinitePresentation R (∀ a, S a) := by
+  classical
+  let (i : ι) : Algebra (Π a, S a) (S i) := (Pi.evalAlgHom R S i).toAlgebra
+  have (i : ι) : IsLocalization.Away (Pi.single i 1 : ∀ a, S a) (S i) := by
+    refine IsLocalization.away_of_isIdempotentElem ?_ (RingHom.ker_evalRingHom _ _)
+      ((Pi.evalRingHom S i).surjective)
+    simp [IsIdempotentElem, ← Pi.single_mul_left]
+  exact Algebra.FinitePresentation.of_span_eq_top_target_of_isLocalizationAway
+    _ (Ideal.span_single_eq_top S) (fun i ↦ S i)
+
 end Algebra.FinitePresentation
 
 namespace RingHom
@@ -133,10 +159,8 @@ theorem finitePresentation_isStableUnderBaseChange :
     IsStableUnderBaseChange @FinitePresentation := by
   apply IsStableUnderBaseChange.mk
   · exact finitePresentation_respectsIso
-  · introv h
-    rw [finitePresentation_algebraMap] at h
-    suffices Algebra.FinitePresentation S (S ⊗[R] T) by
-      rw [RingHom.FinitePresentation]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
+  · simp only [finitePresentation_algebraMap]
+    intros
     infer_instance
 
 /-- Being finitely-presented is preserved by localizations. -/

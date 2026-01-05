@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Prod
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # The derivative of bounded bilinear maps
@@ -14,6 +16,8 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 This file contains the usual formulas (and existence assertions) for the derivative of
 bounded bilinear maps.
 -/
+
+@[expose] public section
 
 
 open Asymptotics Topology

@@ -3,18 +3,19 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # The category of types is a (symmetric) monoidal category
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits MonoidalCategory
-
-open Tactic
 
 universe v u
 
@@ -117,7 +118,7 @@ theorem CartesianMonoidalCategory.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g :
 -- but it would be nice to state how monoidal functors preserve these.
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st Cartesian power
 of a type to the image of that type, tensored with the image of the nth Cartesian power. -/
-noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
+noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category* C] [MonoidalCategory C]
     (F : Type _ ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
   Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫ (Functor.Monoidal.μIso F β (Fin n → β)).symm

@@ -3,15 +3,19 @@ Copyright (c) 2025 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.FGModuleCat.Colimits
-import Mathlib.Algebra.Category.FGModuleCat.Limits
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+module
+
+public import Mathlib.Algebra.Category.FGModuleCat.Colimits
+public import Mathlib.Algebra.Category.FGModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!
 # `FGModuleCat K` is an abelian category.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

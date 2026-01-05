@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Geometry.Manifold.IsManifold.Basic
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.Metrizable.Urysohn
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
+public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.Metrizable.Urysohn
 
 /-!
 # Metrizability of a σ-compact manifold
@@ -14,6 +16,8 @@ import Mathlib.Topology.Metrizable.Urysohn
 In this file we show that a σ-compact Hausdorff topological manifold over a finite-dimensional real
 vector space is metrizable.
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace
