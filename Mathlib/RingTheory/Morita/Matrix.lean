@@ -100,7 +100,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup 
     (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι).obj (.of R M) ≃ₗ[R]
     MatrixModCat.toModuleCatObj R (ι := ι) (ι → M) default where
   __ := AddEquiv.refl _
-  map_smul' r x := Subtype.ext <| scalar_smul _ _
+  map_smul' _ _ := Subtype.ext <| scalar_smul _ _
 
 /-- auxilary isomorphism showing that compose two functors gives `id` on objects. -/
 @[simps]
