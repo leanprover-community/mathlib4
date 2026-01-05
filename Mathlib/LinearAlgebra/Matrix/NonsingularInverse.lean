@@ -194,9 +194,6 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
 
-@[deprecated (since := "2025-04-22")]
-alias nonsing_inv_eq_ring_inverse := nonsing_inv_eq_ringInverse
-
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 
@@ -339,11 +336,11 @@ variable [DecidableEq m] {R K : Type*} [CommRing R] [Field K] [Fintype m]
 
 theorem vecMul_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
-  rw [vecMul_surjective_iff_exists_left_inverse, exists_left_inverse_iff_isUnit]
+  rw [vecMul_surjective_iff_exists_left_inverse, isUnit_iff_exists_inv']
 
 theorem mulVec_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.mulVec ↔ IsUnit A := by
-  rw [mulVec_surjective_iff_exists_right_inverse, exists_right_inverse_iff_isUnit]
+  rw [mulVec_surjective_iff_exists_right_inverse, isUnit_iff_exists_inv]
 
 theorem vecMul_injective_iff_isUnit {A : Matrix m m K} :
     Function.Injective A.vecMul ↔ IsUnit A := by

@@ -25,7 +25,7 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts.
 -/
 
-@[expose] public section
+public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
@@ -64,7 +64,7 @@ theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * 
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
   simp only [prod_eq_foldr, foldr_map]
-  rw [← foldr_hom₂ l f _ _ ((fun x y => f (f₁ x) (f₂ x) * y) ) _ _ (by simp [hf]), hf']
+  rw [← foldr_hom₂ l f _ _ ((fun x y => f (f₁ x) (f₂ x) * y)) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :

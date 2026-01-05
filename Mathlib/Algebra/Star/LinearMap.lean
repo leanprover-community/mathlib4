@@ -109,7 +109,7 @@ lemma intrinsicStarModule : StarModule R (E →ₗ[R] F) where
 
 scoped[IntrinsicStar] attribute [instance] LinearMap.intrinsicStarModule
 
-section TensorProduct
+section CommSemiring
 variable {R E F G H : Type*} [CommSemiring R] [StarRing R]
   [AddCommMonoid E] [StarAddMonoid E] [Module R E] [StarModule R E]
   [AddCommMonoid F] [StarAddMonoid F] [Module R F] [StarModule R F]
@@ -126,7 +126,24 @@ theorem intrinsicStar_lTensor (f : F →ₗ[R] G) : star (lTensor E f) = lTensor
 theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor G (star f) := by
   simp [rTensor, TensorProduct.intrinsicStar_map]
 
-end TensorProduct
+theorem intrinsicStar_eq_comp (f : E →ₗ[R] F) :
+    star f = (starLinearEquiv R).toLinearMap ∘ₛₗ f ∘ₛₗ (starLinearEquiv R).toLinearMap := rfl
+
+theorem IntrinsicStar.starLinearEquiv_eq_arrowCongr :
+    starLinearEquiv R (A := E →ₗ[R] F) = (starLinearEquiv R).arrowCongr (starLinearEquiv R) := rfl
+
+end CommSemiring
+
+section starAddMonoidSemiring
+variable {S : Type*} [Semiring S] [StarAddMonoid S] [StarModule S S] [Module S E] [StarModule S E]
+
+@[simp] theorem intrinsicStar_toSpanSingleton (a : E) :
+    star (toSpanSingleton S E a) = toSpanSingleton S E (star a) := by ext; simp
+
+theorem intrinsicStar_smulRight [Module S F] [StarModule S F] (f : E →ₗ[S] S) (x : F) :
+    star (f.smulRight x) = (star f).smulRight (star x) := by ext; simp
+
+end starAddMonoidSemiring
 
 end LinearMap
 

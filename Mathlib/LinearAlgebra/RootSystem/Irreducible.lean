@@ -84,7 +84,7 @@ lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
 /-- A root pairing is irreducible if it is non-trivial and contains no proper invariant submodules.
 -/
 @[mk_iff] class IsIrreducible : Prop where
-  nontrivial  : Nontrivial M
+  nontrivial : Nontrivial M
   nontrivial' : Nontrivial N
   eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
     (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
@@ -111,7 +111,8 @@ instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
 
 lemma invtSubmodule_reflection_of_invtSubmodule_coreflection (i : ι) (q : Submodule R N)
     (hq : q ∈ invtSubmodule (P.coreflection i)) :
-    q.dualAnnihilator.map P.toPerfPair.symm ∈ invtSubmodule (P.reflection i) := by
+    q.dualAnnihilator.map (P.toPerfPair.symm : Module.Dual R N →ₗ[R] M) ∈
+      invtSubmodule (P.reflection i) := by
   rw [LinearEquiv.map_mem_invtSubmodule_iff, LinearEquiv.symm_symm, toPerfPair_conj_reflection,
     Module.End.mem_invtSubmodule, ← Submodule.map_le_iff_le_comap]
   exact (Submodule.dualAnnihilator_map_dualMap_le _ _).trans <| Submodule.dualAnnihilator_anti hq
@@ -136,7 +137,7 @@ lemma isIrreducible_iff_invtRootSubmodule
     {K : Type*} [Field K] [Module K M] [Module K N] [Nontrivial M] (P : RootPairing ι K M N) :
     P.IsIrreducible ↔ IsSimpleOrder P.invtRootSubmodule := by
   refine ⟨fun h ↦ ⟨fun ⟨q, hq⟩ ↦ ?_⟩, fun h ↦ IsIrreducible.mk' P fun q hq hq' ↦ ?_⟩
-  · simp only [invtRootSubmodule.bot_mem,  invtRootSubmodule.top_mem, Subtype.mk_eq_bot_iff,
+  · simp only [invtRootSubmodule.bot_mem, invtRootSubmodule.top_mem, Subtype.mk_eq_bot_iff,
       Subtype.mk_eq_top_iff]
     rw [mem_invtRootSubmodule_iff] at hq
     have := IsIrreducible.eq_top_of_invtSubmodule_reflection q hq

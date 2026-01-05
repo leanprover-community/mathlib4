@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 -/
 
-@[expose] public section
+public section
 
 open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
 
@@ -141,19 +141,19 @@ variable {IB}
 theorem mdifferentiableOn_coordChangeL :
     MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
-  (contMDiffOn_coordChangeL e e').mdifferentiableOn le_rfl
+  (contMDiffOn_coordChangeL e e').mdifferentiableOn one_ne_zero
 
 theorem mdifferentiableOn_symm_coordChangeL :
     MDifferentiableOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) :=
-  (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn le_rfl
+  (contMDiffOn_symm_coordChangeL e e').mdifferentiableOn one_ne_zero
 
 variable {e e'}
 
 theorem mdifferentiableAt_coordChangeL {x : B}
     (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     MDifferentiableAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B ↦ (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
-  (contMDiffAt_coordChangeL h h').mdifferentiableAt le_rfl
+  (contMDiffAt_coordChangeL h h').mdifferentiableAt one_ne_zero
 
 variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
@@ -488,7 +488,7 @@ lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι �
       (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u x₀ := by
   classical
   induction s using Finset.induction_on with
-  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt le_rfl
+  | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt one_ne_zero
   | insert i s hi h =>
     simpa [Finset.sum_insert hi] using mdifferentiableWithinAt_add_section (hs i) h
 

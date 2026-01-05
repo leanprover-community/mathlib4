@@ -64,13 +64,13 @@ def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
       apply propext
       constructor
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.hom.left, by rw [Category.assoc, MonoOver.w, w]⟩
+        exact ⟨i ≫ h.hom.hom.left, by rw [Category.assoc, Over.w h.hom.hom, w]⟩
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.inv.left, by rw [Category.assoc, MonoOver.w, w]⟩)
+        exact ⟨i ≫ h.inv.hom.left, by rw [Category.assoc, Over.w h.inv.hom, w]⟩)
 
 @[simp]
 theorem mk_factors_iff {X Y Z : C} (f : Y ⟶ X) [Mono f] (g : Z ⟶ X) :
-    (Subobject.mk f).Factors g ↔ (MonoOver.mk' f).Factors g :=
+    (Subobject.mk f).Factors g ↔ (MonoOver.mk f).Factors g :=
   Iff.rfl
 
 theorem mk_factors_self (f : X ⟶ Y) [Mono f] : (mk f).Factors f :=

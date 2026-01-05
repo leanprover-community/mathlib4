@@ -27,7 +27,7 @@ function when the base is coprime to the modulus.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
