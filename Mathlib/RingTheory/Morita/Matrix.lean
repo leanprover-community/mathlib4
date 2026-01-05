@@ -67,7 +67,7 @@ lemma mem_toModuleCatObj (i : ι) {x : M} :
 variable {R ι} in
 /-- An `R`-linear map between `Eᵢᵢ • M` and `Eᵢᵢ • N` induced by an `Mₙ(R)`-linear map
   from `M` to `N` -/
-@[simps]
+@[simps!]
 def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i : ι)
     [Module R N] [IsScalarTower R (Matrix ι ι R) N] [Module R M] [IsScalarTower R (Matrix ι ι R) M]
     (f : M →ₗ[Matrix ι ι R] N) : toModuleCatObj R M i →ₗ[R] toModuleCatObj R N i :=
@@ -115,13 +115,11 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
   invFun x := ⟨Pi.single i x, Function.const ι x, by
-    ext i
-    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, LinearMap.coe_mk, AddHom.coe_mk,
-      DistribMulAction.toAddMonoidHom_apply, Module.smul_apply, Function.const_apply,
-      Pi.single_apply]
-    split_ifs with h
-    · simp [h, single]
-    · simp [Ne.symm h]⟩
+    ext j
+    simp [single, Finset.sum_ite, Pi.single_apply,
+      show Finset.card {x | i = j ∧ i = x} = if i = j then 1 else 0 by
+      if h : i = j then simp [h, Finset.card_eq_one (s := {x | j = x})|>.2
+        ⟨i, by ext; simp [h, eq_comm]⟩] else simp [h], eq_comm]⟩
   left_inv := fun ⟨x, hx⟩ ↦ by
     obtain ⟨y, hy⟩ := mem_toModuleCatObj i|>.1 hx
     ext j
