@@ -220,7 +220,7 @@ private lemma aux_tsum_identity_2 (d : ℕ+) :
 private lemma aux_tendsto_tsum_cexp_pnat :
     Tendsto (fun N : ℕ+ ↦ ∑' (n : ℕ+), cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) atTop (𝓝 0) := by
   have := tendsto_zero_geometric_tsum_pnat (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨-1 / z,
-    by simpa using (pnat_div_upperHalfPlane_im_pos 1 z)⟩)
+    by simpa using (im_pnat_div_pos 1 z)⟩)
   simp only [coe_mk_subtype, ← exp_nsmul, nsmul_eq_mul, Nat.cast_mul] at *
   exact this.congr fun n ↦ by grind
 
@@ -236,10 +236,10 @@ private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
       (∑' n : ℕ+, cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) + 2 / N) := by
     ext N
     have h2 := cot_series_rep (UpperHalfPlane.coe_mem_integerComplement
-      (⟨-N / z, pnat_div_upperHalfPlane_im_pos N z⟩))
+      (⟨-N / z, im_pnat_div_pos N z⟩))
     rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add',coe_mk_subtype, one_div, inv_div, neg_mul] at *
     rw [← h2, ← tsum_zero_pnat_eq_tsum_nat
-      (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, pnat_div_upperHalfPlane_im_pos N z⟩)]
+      (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, im_pnat_div_pos N z⟩)]
     field_simp [ne_zero z]
     ring
   rw [H0]
