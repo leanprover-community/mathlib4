@@ -18,7 +18,7 @@ specialized form in some other files, in particular in those related to the topo
 convergence of probability measures and finite measures.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology

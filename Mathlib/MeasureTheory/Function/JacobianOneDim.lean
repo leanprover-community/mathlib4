@@ -24,7 +24,7 @@ the change of variables formula in dimension 1 for non-monotone functions, formu
 the interval integral and with stronger requirements on the integrand.
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics

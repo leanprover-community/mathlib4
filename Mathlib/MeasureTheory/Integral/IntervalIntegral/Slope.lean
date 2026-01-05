@@ -24,7 +24,7 @@ at most `f (b + c) - f a`.
 interval integrable, interval integral, monotone, slope
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set
 

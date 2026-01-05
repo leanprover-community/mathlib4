@@ -16,7 +16,7 @@ In this file we compare `MeasureTheory.eLpNorm'` and `MeasureTheory.eLpNorm` for
 exponents.
 -/
 
-@[expose] public section
+public section
 
 open Filter ENNReal
 open scoped Topology

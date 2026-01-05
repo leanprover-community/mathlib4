@@ -35,7 +35,7 @@ In this file we prove Fubini's theorem.
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

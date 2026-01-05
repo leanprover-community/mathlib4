@@ -27,7 +27,7 @@ We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_aver
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Set TopologicalSpace

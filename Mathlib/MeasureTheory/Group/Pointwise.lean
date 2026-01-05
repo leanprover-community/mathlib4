@@ -15,7 +15,7 @@ In this file we prove several versions of the following fact: if `s` is a measur
 no `MeasurableSet.mul` etc.
 -/
 
-@[expose] public section
+public section
 
 
 open Pointwise

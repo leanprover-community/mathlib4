@@ -24,7 +24,7 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter
 

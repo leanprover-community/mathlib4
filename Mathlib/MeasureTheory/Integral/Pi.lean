@@ -16,7 +16,7 @@ that its integral is the product of the individual integrals,
 in `MeasureTheory.integral_fintype_prod_eq_prod`.
 -/
 
-@[expose] public section
+public section
 
 open Fintype MeasureTheory MeasureTheory.Measure
 

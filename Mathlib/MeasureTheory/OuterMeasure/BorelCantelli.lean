@@ -26,7 +26,7 @@ For the *second* Borel-Cantelli lemma (applying to independent sets in a probabi
 see `ProbabilityTheory.measure_limsup_eq_one`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped ENNReal Topology

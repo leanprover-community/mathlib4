@@ -19,7 +19,7 @@ the composition, as we are dealing with classes of functions, but it has already
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory RCLike
 open scoped ENNReal NNReal
