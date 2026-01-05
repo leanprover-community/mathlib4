@@ -124,8 +124,8 @@ noncomputable def triangleLEGE (a b : ℤ) (h : a + 1 = b) : C ⥤ Triangle C :=
 noncomputable def triangleLEGEIsoTriangleLTGE (a b : ℤ) (h : a + 1 = b) :
     t.triangleLEGE a b h ≅ t.triangleLTGE b := by
   refine Triangle.functorIsoMk _ _ (t.truncLEIsoTruncLT a b h) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
   · ext
     dsimp [truncGEδLE]
     simp only [assoc, id_comp, ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id, comp_id]
@@ -146,8 +146,8 @@ noncomputable def triangleLEGT (n : ℤ) : C ⥤ Triangle C :=
 noncomputable def triangleLEGTIsoTriangleLEGE (a b : ℤ) (h : a + 1 = b) :
     t.triangleLEGT a ≅ t.triangleLEGE a b h := by
   refine Triangle.functorIsoMk _ _ (Iso.refl _) (Iso.refl _) (t.truncGTIsoTruncGE a b h) ?_ ?_ ?_
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
   · ext
     dsimp [truncGTδLE]
     subst h
@@ -617,7 +617,7 @@ lemma natTransTruncLEOfLE_ι_app (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (X : C) :
 
 @[reassoc (attr := simp)]
 lemma natTransTruncLEOfLE_ι (a b : ℤ) (h : a ≤ b) :
-    t.natTransTruncLEOfLE a b h ≫ t.truncLEι b = t.truncLEι a := by aesop_cat
+    t.natTransTruncLEOfLE a b h ≫ t.truncLEι b = t.truncLEι a := by cat_disch
 
 @[simp]
 lemma natTransTruncLEOfLE_refl (a : ℤ) :
@@ -660,7 +660,7 @@ lemma isIso_truncLTmap_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
       infer_instance
     apply to_truncLT_obj_ext
     refine Eq.trans ?_ e.hom.comm₁
-    aesop_cat
+    cat_disch
 
 lemma isIso_truncLEmap_iff {X Y : C} (f : X ⟶ Y) (a b : ℤ) (h : a + 1 = b) :
     IsIso ((t.truncLE a).map f) ↔
@@ -681,11 +681,11 @@ lemma isIso_truncGEmap_iff {Y Z : C} (g : Y ⟶ Z) (n₀ n₁ : ℤ) (hn₁ : n�
       inferInstance⟩
     refine Iso.symm (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       (asIso ((t.truncGE n₁).map g)) ?_ ?_ ?_)
-    · aesop_cat
+    · cat_disch
     · dsimp
       rw [id_comp]
       exact ((t.truncGEπ n₁).naturality g).symm
-    · aesop_cat
+    · cat_disch
   · rintro ⟨X, f, h, mem, _⟩
     obtain ⟨e, he⟩ := t.triangle_iso_exists
       (t.triangleLEGE_distinguished n₀ n₁ hn₁ Y) mem (Iso.refl _) n₀ n₁
@@ -726,13 +726,13 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
 instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGT b).obj X) a :=
   t.isGE_of_iso ((t.truncGTIsoTruncGE b (b+1) (by lia)).symm.app X) a
 
-noncomputable def truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
+noncomputable abbrev truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
 
-noncomputable def truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
+noncomputable abbrev truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
 
-noncomputable def truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLE b
+noncomputable abbrev truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLE b
 
-noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
+noncomputable abbrev truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
 noncomputable def truncGELEIsoTruncGELT (a b b' : ℤ) (hb' : b + 1 = b') :
     t.truncGELE a b ≅ t.truncGELT a b' :=
