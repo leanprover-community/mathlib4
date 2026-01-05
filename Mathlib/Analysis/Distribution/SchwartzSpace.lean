@@ -357,6 +357,15 @@ instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
+open Classical in
+@[simp]
+theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → 𝓢(E, F)) (x : E) :
+    (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
+  apply Finset.induction_on (motive := fun s ↦ (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x)
+  · simp
+  · intro i s his h
+    simp [his, h]
+
 variable (E F)
 
 /-- Coercion as an additive homomorphism. -/

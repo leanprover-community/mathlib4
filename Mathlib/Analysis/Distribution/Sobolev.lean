@@ -116,6 +116,15 @@ theorem memSobolev_besselPotential_iff {s r : ℝ} {p : ℝ≥0∞} [hp : Fact (
     MemSobolev s p (besselPotential E F r f) ↔ MemSobolev (r + s) p f := by
   simp [MemSobolev]
 
+/-- Schwartz functions are in every Sobolev space. -/
+theorem memSobolev_toTemperedDistributionCLM {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : 𝓢(E, F)) :
+    MemSobolev s p (f : 𝓢'(E, F)) := by
+  use (𝓕⁻ f).toLp p
+  simp
+  sorry
+
+#exit
+
 variable (E F) in
 def Sobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] : Submodule ℂ 𝓢'(E, F) where
   carrier := MemSobolev s p
