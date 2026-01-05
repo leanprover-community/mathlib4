@@ -91,27 +91,21 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) {R R₁ : �
               rw [Function.iterate_succ, Function.comp_apply] at IH ⊢
               rw [← iteratedDeriv_eq_iterate] at this ⊢
               rw [← iteratedDeriv_succ, this]
-        · conv => enter [1, 1]; ext z; rw [hR1 z]
-          simp (disch := fun_prop)
-        · rw [mul_add, Nat.sub_sub r k 1, ← add_mul];
-          simp only [mul_assoc]; congr; norm_cast; grind [mul_assoc]
-        · simp only [one_mul, ← mul_assoc]; nth_rw 5 [mul_comm]
-          simp only [← add_assoc, mul_assoc]; rw [← mul_add]; simp only [← mul_assoc]
-          nth_rw 6 [mul_comm]; nth_rw 7 [mul_comm]; simp only [← mul_assoc]; nth_rw 7 [mul_comm]
-          simp only [mul_assoc, ← mul_add]
+        · conv => enter [1, 1]; ext z; rw [hR1 z];; simp (disch := fun_prop)
+        · rw [mul_add, Nat.sub_sub r k 1, ← add_mul, mul_assoc]; congr; norm_cast; grind [mul_assoc]
+        · simp only [one_mul, ← mul_assoc]; nth_rw 5 [mul_comm]; simp only [← add_assoc, mul_assoc]
+          rw [← mul_add]; simp only [← mul_assoc]; nth_rw 6 [mul_comm]; nth_rw 7 [mul_comm];
+          simp only [← mul_assoc]; nth_rw 7 [mul_comm]; simp only [mul_assoc, ← mul_add]
           have : (z - z₀) ^ (r - k) = (z - z₀) ^ (r - (k + 1)) * (z - z₀) ^ 1 := by
             rw [← pow_add]; congr; grind
           rw [this]; clear this
-          simp only [mul_assoc, ← mul_add, pow_one, mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
-          left; rw [← mul_assoc, ← add_mul]
+          rw [mul_assoc, ← mul_add, pow_one, mul_eq_mul_left_iff]; left; rw [← mul_assoc, ← add_mul]
           nth_rw 1 [← one_mul (a := (r.factorial / (r - k).factorial : ℂ)), ← add_mul]
-          rw [add_assoc]; simp only [mul_assoc]; rw [← mul_add]; nth_rw 2 [add_comm]
-          norm_cast; simp only [← mul_assoc, mul_div]
+          rw [add_assoc]; simp only [mul_assoc]; rw [← mul_add]; nth_rw 2 [add_comm]; norm_cast;
+          simp only [← mul_assoc, mul_div]
           have HR : ↑(r - (k + 1) + 1) = ↑(r - k) := by grind
-          rw [Nat.sub_sub r k 1, HR]; simp only [add_assoc]
-          congr 1
-          simp only [mul_eq_mul_right_iff]; left
-          nth_rw 2 [← Nat.mul_factorial_pred (hn := by grind)]; rw [Nat.sub_sub r k 1]
+          simp only [Nat.sub_sub r k 1, HR, add_assoc]; congr 1; simp only [mul_eq_mul_right_iff]
+          left; nth_rw 2 [← Nat.mul_factorial_pred (hn := by grind)]; rw [Nat.sub_sub r k 1]
           ring_nf; nth_rw 2 [mul_comm]; nth_rw 3 [mul_comm]
           rw [Nat.cast_mul, mul_inv_rev, ← mul_assoc, mul_eq_mul_right_iff, inv_eq_zero,
             Nat.cast_eq_zero, mul_assoc, mul_inv_cancel₀ (h := by simp; grind)]
