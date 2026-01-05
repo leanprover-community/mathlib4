@@ -1080,11 +1080,6 @@ private lemma concatenation_split {g : ContextFreeGrammar T}
     ∃ u v : List (Symbol T g.NT), g.Derives [s] u ∧ g.Derives [t] v ∧ u ++ v = x :=
   head_tail_split x s [t] hyp
 
-/-- Helper: split a derivation from two symbols into two derivations. -/
-private lemma concatenation_split {g : ContextFreeGrammar T}
-    (x : List (Symbol T g.NT)) (s t : Symbol T g.NT) (hyp : g.Derives [s, t] x) :
-    ∃ u v : List (Symbol T g.NT), g.Derives [s] u ∧ g.Derives [t] v ∧ u ++ v = x := by
-  sorry -- This requires a detailed inductive proof on the derivation structure
 
 private lemma in_concat_of_in_left_and_right {w₁ w₂ : List T}
     (hw₁ : w₁ ∈ g₁.language) (hw₂ : w₂ ∈ g₂.language) :
@@ -1092,13 +1087,17 @@ private lemma in_concat_of_in_left_and_right {w₁ w₂ : List T}
   refine concat_derives_both_initials.trans ?_
   rw [List.map_append]
   have h1 : (w₁.map Symbol.terminal).map (Symbol.map (some ∘ Sum.inl : g₁.NT → (g₁.concat g₂).NT)) =
-      w₁.map Symbol.terminal := by simp [Symbol.map]
+      w₁.map Symbol.terminal := by
+    induction w₁ with
+    | nil => rfl
+    | cons _ _ ih => simp [Symbol.map, ih]
   have h2 : (w₂.map Symbol.terminal).map (Symbol.map (some ∘ Sum.inr : g₂.NT → (g₁.concat g₂).NT)) =
-      w₂.map Symbol.terminal := by simp [Symbol.map]
+      w₂.map Symbol.terminal := by
+    induction w₂ with
+    | nil => rfl
+    | cons _ _ ih => simp [Symbol.map, ih]
   rw [← h1, ← h2]
-  have hd1 := @g₁g_concat.derives_map _ g₁ g₂ _ _ hw₁
-  have hd2 := @g₂g_concat.derives_map _ g₁ g₂ _ _ hw₂
-  exact hd1.append_right _ |>.trans (hd2.append_left _)
+  exact (g₁g_concat.derives_map hw₁).append_right _ |>.trans ((g₂g_concat.derives_map hw₂).append_left _)
 
 lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
     w ∈ (g₁.concat g₂).language ↔ ∃ w₁ ∈ g₁.language, ∃ w₂ ∈ g₂.language, w = w₁ ++ w₂ := by
