@@ -20,7 +20,7 @@ open scoped Nat NNReal ContDiff
 
 open Asymptotics
 
-variable {𝕜 R D E F G H : Type*}
+variable {ι 𝕜 R D E F G H : Type*}
 
 namespace Function
 
@@ -110,7 +110,7 @@ lemma HasTemperateGrowth.zero :
   simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
   positivity
 
-@[fun_prop]
+@[fun_prop, simp]
 lemma HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
@@ -199,6 +199,30 @@ theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
   convert hf.add hg.neg using 1
   grind
 
+@[fun_prop]
+theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
+    (hf : ∀ i ∈ s, (f i).HasTemperateGrowth) : (∑ i ∈ s, f i ·).HasTemperateGrowth := by
+  by_cases! h : s.Nonempty; swap
+  · simp [h]
+  rw [hasTemperateGrowth_iff_isBigO] at *
+  refine ⟨ContDiff.sum <| fun i hi ↦ (hf i hi).1, fun n ↦ ?_⟩
+  have hf' : ∀ i ∈ s, ∃ k, iteratedFDeriv ℝ n (f i) =O[⊤] fun x ↦ (1 + ‖x‖) ^ k :=
+    fun i hi ↦ (hasTemperateGrowth_iff_isBigO.mp <| hf i hi).2 n
+  choose k hk using hf'
+  classical
+  set k' := fun i ↦ if h : i ∈ s then k i h else 0
+  have hk' : ∀ (i : ι) (_ : i ∈ s), iteratedFDeriv ℝ n (f i) =O[⊤] fun x ↦ (1 + ‖x‖) ^ k' i := by
+    intro i hi
+    unfold k'
+    simp [hi, hk]
+  use Finset.sup' s h k'
+  rw [iteratedFDeriv_sum (fun i hi ↦ ((hf i hi).1.of_le <| mod_cast le_top))]
+  have : 1 ≤ᶠ[⊤] fun (x : E) ↦ 1 + ‖x‖ := by
+    filter_upwards with _ using (le_add_iff_nonneg_right _).mpr (by positivity)
+  have : ∀ i ∈ s, iteratedFDeriv ℝ n (f i) =O[⊤] fun x ↦ (1 + ‖x‖) ^ s.sup' h k' :=
+    fun i hi ↦ (hk' i hi).trans <| IsBigO.pow_of_le_right this (Finset.le_sup' k' hi)
+  simpa using Asymptotics.IsBigO.sum this
+
 end Addition
 
 section Multiplication
@@ -262,7 +286,7 @@ theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
-  | zero => simpa using HasTemperateGrowth.const 1
+  | zero => simpa only [pow_zero] using HasTemperateGrowth.const 1
   | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
@@ -272,10 +296,27 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
   apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
-    simpa [this] using .const _
+    simp [this]
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
+  (Complex.ofRealCLM).hasTemperateGrowth
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_ofReal [RCLike 𝕜] : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
+  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
+
 variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+
+@[fun_prop]
+theorem hasTemperateGrowth_inner_left (c : H) : (inner ℝ · c).HasTemperateGrowth :=
+  ((innerSL ℝ).flip c).hasTemperateGrowth
+
+@[fun_prop]
+theorem hasTemperateGrowth_inner_right (c : H) : (inner ℝ c ·).HasTemperateGrowth :=
+  (innerSL ℝ c).hasTemperateGrowth
 
 variable (H) in
 @[fun_prop]
