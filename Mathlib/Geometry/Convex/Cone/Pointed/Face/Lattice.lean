@@ -137,32 +137,6 @@ instance : Inhabited (Face C) := ⟨⊤⟩
 
 instance : Nonempty (Face C) := ⟨⊤⟩
 
-/-!
-### `OrderHom` for some operations
--/
-
-/-- The order homomorphism mapping a face `F₁` of `C₁` to the face `F₁ ⊓ F₂ ≤ C₁ ⊓ C₂` for
-  some face `F₂` of `C₂`. -/
-def inf_face_orderHom (F₂ : Face C₂) : Face C₁ →o Face (C₁ ⊓ C₂) where
-  toFun F := ⟨_, F.isFaceOf.inf F₂.isFaceOf⟩
-  monotone' F₁ F₂ h x := by
-    simp only [mem_coe, toPointedCone, Submodule.mem_inf, and_imp]
-    exact fun xF₁ xC₂ => ⟨h.subset xF₁, xC₂⟩
-
-/-- The order homomorphism mapping a face `F` of `C₁` to the face `F ⊓ C₂ ≤ C₁ ⊓ C₂`. -/
-def inf_orderHom (C₂ : PointedCone R M) : Face C₁ →o Face (C₁ ⊓ C₂) :=
-  inf_face_orderHom (self C₂)
-
-/-- The order homomorphism mapping the product of faces `F₁ ≤ C₁` and `F₂ ≤ C₂` to
-  the face `F₁ ⊓ F₂ ≤ C₁ ⊓ C₂`. -/
-def prod_inf_face_orderHom : Face C₁ × Face C₂ →o Face (C₁ ⊓ C₂) where
-  toFun F := ⟨_, F.1.isFaceOf.inf F.2.isFaceOf⟩
-  monotone' F₁ F₂ h x := by
-    simp only [mem_coe, toPointedCone, Submodule.mem_inf, and_imp]
-    intros xF₁ xF₂
-    simp only [LE.le, mem_coe] at h
-    exact ⟨h.1 xF₁, h.2 xF₂⟩
-
 end Semiring
 
 section Field

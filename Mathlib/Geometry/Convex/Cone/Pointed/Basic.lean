@@ -41,8 +41,11 @@ section Definitions
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
   {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
+@[coe]
+abbrev ofSubmodule (S : Submodule R E) : PointedCone R E := S.restrictScalars _
+
 /- Every submodule can be turned into a pointed cone by restricting to nonnegative scalars. -/
-instance : Coe (Submodule R E) (PointedCone R E) := ⟨restrictScalars _⟩
+instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
 /-- Every pointed cone is a convex cone. -/
 @[coe]

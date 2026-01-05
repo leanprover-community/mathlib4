@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Geometry.Convex.Cone.Pointed.Basic
 
-open Submodule
-
 /-!
 # Faces of pointed cones
 
@@ -30,6 +28,8 @@ rings.
 since it is too restrictive. E.g. no subcone of the integer lattice could be considered a face then.
 
 -/
+
+open Submodule
 
 @[expose] public section
 
