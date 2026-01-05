@@ -141,20 +141,8 @@ theorem ofRat_mul (x y : β) :
 theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-private theorem zero_def : 0 = mk (abv := abv) 0 :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-private theorem one_def : 1 = mk (abv := abv) 1 :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
-  Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.ring mk Quotient.mk'_surjective (by rfl) (by rfl)
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -181,10 +169,8 @@ section
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
-  Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.commRing mk Quotient.mk'_surjective (by rfl) (by rfl)
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
