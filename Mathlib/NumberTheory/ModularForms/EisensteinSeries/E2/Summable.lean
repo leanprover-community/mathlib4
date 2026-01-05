@@ -104,8 +104,7 @@ variable (z : ℍ)
 private lemma one_div_linear_sub_one_div_linear_eq (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ b ≠ 0)) :
     1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
   rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div]
-  · simp only [one_div, add_sub_add_left_eq_sub, mul_inv_rev]
-    ring
+  · grind [one_div, add_sub_add_left_eq_sub, mul_inv_rev]
   · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, a]) (by aesop)
   · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, b]) (by aesop)
 
@@ -171,17 +170,13 @@ private lemma telescope_aux (z : ℂ) (m : ℤ) (b : ℕ) :
 lemma tsum_symmetricIco_linear_sub_linear_add_one_eq_zero (m : ℤ) :
     ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   apply HasSum.tsum_eq
-  rw [hasSum_symmetricIco_int_iff]
-  conv =>
-    enter [1, N]
-    rw [telescope_aux z m N]
+  simp_rw [hasSum_symmetricIco_int_iff, telescope_aux z m]
   simpa using Filter.Tendsto.sub (tendsto_zero_inv_linear_sub z m) (tendsto_zero_inv_linear z m)
 
 /- We split the sum over `ℤ` into a sum over `ℕ+` but of four terms.-/
 private lemma aux_tsum_identity_1 (d : ℕ+) :
     ∑' (m : ℤ), (1 / ((m : ℂ) * z - d) - 1 / (m * z + d)) = -(2 / d) +
-    ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - 1 / ((m : ℂ) * z + d) -
-    1 / (-m * z + d)) := by
+    ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - 1 / (m * z + d) -1 / (-m * z + d)) := by
   rw [eq_neg_add_iff_add_eq (b := 2 / (d : ℂ)), tsum_int_eq_zero_add_tsum_pnat]
   · simp only [Int.cast_zero, zero_mul, zero_sub, one_div, zero_add, Int.cast_natCast, Int.cast_neg,
       neg_mul]
@@ -197,15 +192,12 @@ private lemma aux_tsum_identity_1 (d : ℕ+) :
   · apply (summable_left_one_div_linear_sub_one_div_linear z (-d) d).congr
     grind [Int.cast_neg, Int.cast_natCast, one_div, sub_left_inj, inv_inj]
 
-/- This sum of four terms can now be combined into a sum where `z` has changed for `-1 / z`.-/
+/- The sum of four terms can now be combined into a sum where `z` has changed for `-1 / z`.-/
 private lemma aux_tsum_identity_2 (d : ℕ+) :
     ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - (1 / (m * z + d)) -
     1 / (-m * z + d)) = 2 / z * ∑' m : ℕ+, (1 / (-(d : ℂ) / z - m) + 1 / (-d / z + m)) := by
   rw [← Summable.tsum_mul_left]
-  · apply tsum_congr (fun m ↦ ?_)
-    simp_rw [sub_eq_add_neg, ← div_neg, add_comm]
-    ring_nf
-    field_simp [ne_zero z]
+  · apply tsum_congr (fun m ↦ by grind [sub_eq_add_neg, ← div_neg, ne_zero z])
   · have := (Summable_cotTerm (x := -d / (z : ℂ))
       (by simpa using UpperHalfPlane.int_div_mem_integerComplement z (n := -d) (by aesop)))
     simp only [cotTerm, one_div] at *
@@ -222,7 +214,8 @@ private lemma aux_tendsto_tsum_cexp_pnat :
   simp only [coe_mk_subtype, ← exp_nsmul, nsmul_eq_mul, Nat.cast_mul] at *
   exact this.congr fun n ↦ by grind
 
-/- Now this sum of terms with `-1 / z` tendsto `-2 * π * I / z` which is exactly `D2_S`.-/
+/- Now this sum of terms with `-1 / z` tendsto `-2 * π * I / z` which is exactly `D2_S`. The key is
+to use the cotangent series to write this as a sum of exponentials.-/
 private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
     ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m))) atTop (𝓝 (-2 * π * I / z)) := by
   suffices Tendsto (fun n : ℕ+ ↦ (2 / (z : ℂ) * ∑' (m : ℕ+),
@@ -245,6 +238,9 @@ private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
   apply Tendsto.const_mul
   simpa using tendsto_comp_val_Ioi_atTop.mpr (tendsto_zero_inv_linear z 0)
 
+/- This shows that the limit of the conditional sum over larger intervals tends
+to `-2 * π * I / z`. We will then show, in `tsum_tsum_symmetricIco_sub_eq` that if we swap the
+order of the sum it tends to `0` instead. -/
 lemma tendsto_tsum_one_div_linear_sub_succ_eq :
     Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Ico (-N : ℤ) N,
     ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) := by
@@ -272,7 +268,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
 
 /- These are the two key lemmas, which show that swapping the order of summation gives
 results differing by the term `-2 * π * I / z`. -/
-lemma tsumFilter_tsum_sub_eq :
+lemma tsum_symmetricIco_tsum_sub_eq :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     -2 * π * I / z := by
   apply HasSum.tsum_eq
@@ -283,7 +279,7 @@ lemma tsumFilter_tsum_sub_eq :
     simpa using H.congr (by simp)
   exact tendsto_comp_val_Ioi_atTop.mp (tendsto_tsum_one_div_linear_sub_succ_eq z)
 
-lemma tsum_tsumFilter_sub_eq :
+lemma tsum_tsum_symmetricIco_sub_eq :
     ∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   convert tsum_zero
   exact tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z _

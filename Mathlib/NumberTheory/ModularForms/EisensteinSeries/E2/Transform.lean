@@ -111,7 +111,7 @@ private lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ 
 /-- This shows `G2` can be defined as a certain absolutely convergent double sum. -/
 lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := by
   set t := ∑' m, ∑' n, (G2Term z ![m, n])
-  rw [G2, show t = t + 0 by ring, ← tsum_tsumFilter_sub_eq z, ← Summable.tsum_add]
+  rw [G2, show t = t + 0 by ring, ← tsum_tsum_symmetricIco_sub_eq z, ← Summable.tsum_add]
   · rw [← tsum_eq_of_summable_unconditional (L := symmetricIcc ℤ)]
     · congr
       ext a
@@ -134,7 +134,7 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
 
 private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z =
     ∑' n : ℤ, ∑' m : ℤ, G2Term z ![m, n] := by
-  rw [← tsumFilter_tsum_sub_eq z, ← (tsum_symmetricIco_tsum_eq_S_act z),
+  rw [← tsum_symmetricIco_tsum_sub_eq z, ← (tsum_symmetricIco_tsum_eq_S_act z),
     ← tsum_eq_of_summable_unconditional (L := symmetricIco ℤ), ← Summable.tsum_sub]
   · apply tsum_congr (fun N ↦ ?_)
     rw [← Summable.tsum_sub]
