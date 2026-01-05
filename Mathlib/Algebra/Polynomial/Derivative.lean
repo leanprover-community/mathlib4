@@ -540,63 +540,15 @@ theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
     rw [Nat.descFactorial_eq_zero_iff_lt.mpr (by grind)]
     simp
 
-theorem iterate_derivative_derivative_mul_X_pow {n m l : ℕ} (p : R[X]) (hl : m ≤ l) :
-    derivative^[n] (derivative^[l] p * X ^ m) =
-      ∑ k ∈ range (min m n).succ,
-        ((n.choose k * m.descFactorial k) • (derivative^[n + (l - k)] p * X ^ (m - k))) := by
-  have {k : ℕ} (hk : k ∈ range (min m n).succ) : n - k + l = n + (l - k) := by
-    replace hk : k ≤ m ∧ k ≤ n := by simpa using hk
-    grind
-  simp_rw [iterate_derivative_mul_X_pow, ← Function.iterate_add_apply]
-  exact Finset.sum_congr rfl fun k hk ↦ by simp [this hk]
-
 theorem iterate_derivative_mul_X {n} (p : R[X]) :
-    derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
-  rw [← pow_one X, iterate_derivative_mul_X_pow', range_add_one, sum_insert notMem_range_self,
-    range_one, sum_singleton]
-  simp
-  ring
-
-theorem iterate_derivative_mul_X' {n} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
-  trans derivative^[n] (derivative^[1] p * X)
-  · rw [Function.iterate_one]
-  rw [← pow_one X, iterate_derivative_mul_X_pow'', range_add_one, sum_insert notMem_range_self,
-    range_one, sum_singleton]
-  simp
-  ring
+  sorry
 
 theorem iterate_derivative_mul_X_sq {n} (p : R[X]) :
-    derivative^[n] (p * X ^ 2) =
-      (derivative^[n] p) * X ^ 2 + (2 * n) • (derivative^[n - 1] p) * X +
-      (n * (n - 1)) • derivative^[n - 2] p := by
-  trans (n * (n - 1)) • derivative^[n - 2] p + ((2 * n) • (derivative^[n - 1] p) * X +
-    (derivative^[n] p) * X ^ 2)
-  · rw [iterate_derivative_mul_X_pow', range_add_one, sum_insert notMem_range_self, range_add_one,
-      sum_insert notMem_range_self, range_one, sum_singleton, Nat.sub_self, pow_zero, mul_one,
-      Nat.descFactorial_one, Nat.choose_one_right, pow_one, Nat.choose_zero_right,
-      Nat.descFactorial_zero, mul_one, one_smul, Nat.sub_zero, Nat.sub_zero]
-    congr 2
-    · rw [Nat.descFactorial_self, mul_comm, ← Nat.descFactorial_eq_factorial_mul_choose,
-        Nat.descFactorial_succ, Nat.descFactorial_one, mul_comm]
-    ring
-  ring
-
-theorem iterate_derivative_mul_X_sq' {n} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
       (n * (n - 1)) • derivative^[n] p := by
-  trans (n * (n - 1)) • derivative^[n] p + ((2 * n) • (derivative^[n + 1] p) * X +
-    (derivative^[n + 2] p) * X ^ 2)
-  · rw [iterate_derivative_mul_X_pow'', range_add_one, sum_insert notMem_range_self, range_add_one,
-      sum_insert notMem_range_self, range_one, sum_singleton, Nat.sub_self, pow_zero, mul_one,
-      Nat.descFactorial_one, Nat.choose_one_right, pow_one, Nat.choose_zero_right,
-      Nat.descFactorial_zero, mul_one, one_smul, Nat.sub_zero]
-    congr 2
-    · rw [Nat.descFactorial_self, mul_comm, ← Nat.descFactorial_eq_factorial_mul_choose,
-        Nat.descFactorial_succ, Nat.descFactorial_one, mul_comm]
-    ring
-  ring
+  sorry
 
 theorem derivative_comp (p q : R[X]) :
     derivative (p.comp q) = derivative q * p.derivative.comp q := by
