@@ -41,6 +41,8 @@ respect to `⟪⬝, ⬝⟫.im`
 Define the Tomita conjugation, prove Tomita's theorem, prove the KMS condition.
 -/
 
+@[expose] public section
+
 open ContinuousLinearMap
 open scoped ComplexInnerProductSpace
 
