@@ -633,6 +633,15 @@ def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) where
 noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := by
   use Fintype.equivFinOfCardEq hc; simp [overFin]
 
+noncomputable def completeBipartiteGraph.overFinIso {α β : Type*} [Fintype α] [Fintype β]
+    {s t : ℕ} (hc₁ : Fintype.card α = s) (hc₂ : Fintype.card β = t) :
+    completeBipartiteGraph α β ≃g completeBipartiteGraph (Fin s) (Fin t) where
+  toFun := Sum.map (Fintype.equivFinOfCardEq hc₁) (Fintype.equivFinOfCardEq hc₂)
+  invFun := Sum.map (Fintype.equivFinOfCardEq hc₁).symm (Fintype.equivFinOfCardEq hc₂).symm
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_rel_iff' := by simp
+
 end Finite
 
 end SimpleGraph
