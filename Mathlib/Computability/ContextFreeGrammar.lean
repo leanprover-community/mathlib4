@@ -373,9 +373,6 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
   projectNT : g.NT → Option g₀.NT
   /-- The two mappings are essentially inverses. -/
   projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
-  /-- Inverse property: if projectNT recognizes a nonterminal, it must be in the image of
-  embedNT. -/
-  embedNT_projectNT : ∀ n : g.NT, ∀ n₀ : g₀.NT, projectNT n = some n₀ → embedNT n₀ = n
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
   embed_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.map embedNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal is recognized by the smaller grammar
@@ -387,11 +384,6 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
 
 namespace ContextFreeGrammar.Embedding
 variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
-
-lemma projectNT_inverse_embedNT {n : g.NT} {n₀ : g₀.NT}
-    (hn : G.projectNT n = some n₀) :
-    Option.map G.embedNT (G.projectNT n) = some n := by
-  rw [hn, Option.map_some, G.embedNT_projectNT n n₀ hn]
 
 /-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
 lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
@@ -418,7 +410,7 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
 terminal. -/
 inductive Good (G : g₀.Embedding g) : Symbol T g.NT → Prop
   | terminal (t : T) : Good G (.terminal t)
-  | nonterminal {n : g.NT} {n₀ : g₀.NT} (hn : G.projectNT n = n₀) : Good G (.nonterminal n)
+  | nonterminal (n₀ : g₀.NT) : Good G (.nonterminal (G.embedNT n₀))
 
 /-- A string is good iff every `Symbol` in it is good. -/
 def GoodString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
@@ -438,12 +430,13 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  cases (show G.Good (Symbol.nonterminal r.input) by apply hw₁; simp) with
-  | nonterminal hn =>
-    rcases G.preimage_of_rules r rin _ (by
-      simpa [G.projectNT_inverse_embedNT hn, Option.map_some] using
-        congr_arg (Option.map G.embedNT) hn.symm)
-      with ⟨r₀, hr₀, hrr₀⟩
+  have good_input : G.Good (Symbol.nonterminal r.input) := by apply hw₁; simp
+  revert good_input
+  generalize hr_eq : r.input = n
+  intro good_input
+  cases good_input with
+  | nonterminal n₀ =>
+    rcases G.preimage_of_rules r rin n₀ hr_eq.symm with ⟨r₀, hr₀, hrr₀⟩
     constructor
     · refine ⟨r₀, hr₀, ?_⟩
       rw [ContextFreeRule.rewrites_iff]
@@ -480,7 +473,7 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
       rw [← hs]
       cases s with
       | terminal t => simp [Symbol.map] at hs
-      | nonterminal s' => exact Good.nonterminal (G.projectNT_embedNT s')
+      | nonterminal s' => exact Good.nonterminal s'
 
 lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
     (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
