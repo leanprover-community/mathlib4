@@ -8,13 +8,31 @@ module
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
 
-/-! # The Laplacian on Schwartz functions -/
+/-! # The Laplacian on Schwartz functions
+
+We define the Laplacian on Schwartz functions.
+
+## Main definitions
+
+* `LineDeriv.laplacian`: The abstract definition of a Laplacian as a sum over the second
+  derivatives.
+* `SchwartzMap.instLaplacian`: The Laplacian for `𝓢(E, F)` as an instance of the notation type-class
+  `Laplacian`.
+
+## Main statements
+* `SchwartzMap.laplacian_eq_sum`: The Laplacian is equal to the sum of second derivatives in any
+  orthonormal basis.
+* `SchwartzMap.integral_bilinear_laplacian_right_eq_left`: Integration by parts for the Laplacian.
+
+-/
 
 @[expose] public noncomputable section
 
 variable {ι 𝕜 R E F F₁ F₂ F₃ V₁ V₂ V₃ : Type*}
 
 namespace LineDeriv
+
+/-! ## Laplacian of `LineDeriv` -/
 
 variable [Ring R]
   [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -61,6 +79,8 @@ variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 
 namespace SchwartzMap
 
+/-! ## Laplacian on `𝓢(E, F)` -/
+
 variable [NormedSpace ℝ F]
 
 open Laplacian LineDeriv
@@ -95,6 +115,8 @@ theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢(
   rw [laplacian_apply, coe_laplacian_eq_sum b]
 
 open MeasureTheory
+
+/-! ### Integration by parts -/
 
 variable
   [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
