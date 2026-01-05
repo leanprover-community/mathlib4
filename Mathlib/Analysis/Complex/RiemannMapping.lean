@@ -1,9 +1,14 @@
+/-
+Copyright (c) 2026 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 module
 
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-public import Mathlib.Analysis.Complex.CoveringMaps
+public import Mathlib.Analysis.Complex.CoveringMap
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Complex.UnitDisc.Shift
 public import Mathlib.Analysis.Complex.Schwarz
@@ -13,6 +18,10 @@ public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.SimpleRing.Principal
 public import Mathlib.Topology.Homotopy.Lifting
 import Mathlib.Topology.UniformSpace.Ascoli
+
+/-!
+# Riemann mapping theorem (draft)
+-/
 
 open Set Metric Function Filter
 open scoped Pointwise Topology ComplexConjugate Real BigOperators Uniformity
@@ -75,11 +84,6 @@ theorem Metric.isPreconnected_ball {E : Type*} [NormedAddCommGroup E] [NormedSpa
 theorem Metric.isPreconnected_closedBall {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {x : E} {r : ℝ} : IsPreconnected (closedBall x r) :=
   (convex_closedBall _ _).isPreconnected
-
-@[to_additive (attr := simp)]
-theorem Set.smul_set_eq_univ {G α : Type*} [Group G] [MulAction G α] {g : G} {s : Set α} :
-    g • s = univ ↔ s = univ := by
-  rw [smul_eq_iff_eq_inv_smul, smul_set_univ]
 
 theorem IsCompact.finite_diff_of_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] {K : Set X}
     (hK : IsCompact K) {s : Set X} (hs : s ∈ codiscreteWithin K) : (K \ s).Finite := by
@@ -408,7 +412,7 @@ theorem eqOn_zero_or_forall_ne_zero_of_tendstoLocallyUniformlyOn {ι : Type*} {U
     · replace this := this.resolve_left (by simp)
       norm_cast at this
       refine ne_of_gt ?_ this
-      apply pos_finsum_cond -- TODO: rename
+      apply finsum_cond_pos
       · simp
       · use c
         suffices ∃ᶠ (x : ℂ) in 𝓝 c, f x ≠ 0 by
