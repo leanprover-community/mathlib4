@@ -592,7 +592,6 @@ variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 spectrum of `↑x : A` is connected, then `spectrum 𝕜 x = spectrum 𝕜 (x : A)`. -/
 lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ 𝕜 (x : A))ᶜ) :
     σ 𝕜 x = σ 𝕜 (x : A) := by
-  nontriviality A
   suffices σ 𝕜 x \ σ 𝕜 (x : A) = ∅ by
     rw [spectrum_sUnion_connectedComponentIn, this]
     simp

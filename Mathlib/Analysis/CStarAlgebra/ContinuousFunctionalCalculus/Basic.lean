@@ -227,7 +227,6 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
     (ha₁ : SpectrumRestricts a ContinuousMap.realToNNReal)
     (ha₂ : SpectrumRestricts (-a) ContinuousMap.realToNNReal) :
     a = 0 := by
-  nontriviality A
   rw [SpectrumRestricts.nnreal_iff] at ha₁ ha₂
   apply CFC.eq_zero_of_spectrum_subset_zero (R := ℝ) a
   rw [Set.subset_singleton_iff]
@@ -379,7 +378,6 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
           exact spectrum_star_mul_self_nonneg
         | zero =>
           rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnreal_iff]
-          nontriviality A
           simp
         | add x y _ _ hx hy =>
           simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),
