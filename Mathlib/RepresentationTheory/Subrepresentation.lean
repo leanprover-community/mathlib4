@@ -85,12 +85,12 @@ lemma toSubmodule_inf (ρ₁ ρ₂ : Subrepresentation ρ) :
   (ρ₁ ⊓ ρ₂).toSubmodule = ρ₁.toSubmodule ⊓ ρ₂.toSubmodule := rfl
 
 instance : Lattice (Subrepresentation ρ) :=
-  toSubmodule_injective.lattice _ toSubmodule_sup toSubmodule_inf
+  toSubmodule_injective.lattice _ .rfl .rfl toSubmodule_sup toSubmodule_inf
 
 instance : BoundedOrder (Subrepresentation ρ) where
   top := ⟨⊤, by simp⟩
-  le_top _ _ := by simp
+  le_top _ := le_top (α := Submodule _ _)
   bot := ⟨⊥, by simp⟩
-  bot_le _ _ := by simp +contextual
+  bot_le _ := bot_le (α := Submodule _ _)
 
 end Subrepresentation
