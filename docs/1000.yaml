@@ -1654,6 +1654,7 @@ Q1434805:
 
 Q1443036:
   title: Parseval's theorem
+  decl: tsum_sq_fourierCoeff
 
 Q1452678:
   title: Penrose–Hawking singularity theorems
@@ -3602,6 +3603,11 @@ Q7245073:
 
 Q7249519:
   title: Prokhorov's theorem
+  decls:
+    - isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
+    - isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le
+    - isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le
+    - isCompact_closure_of_isTightMeasureSet
 
 Q7255475:
   title: Pseudorandom generator theorem
