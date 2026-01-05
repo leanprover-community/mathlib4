@@ -37,7 +37,10 @@ variable
 section definition
 
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
-Schwartz space. -/
+Schwartz space.
+
+This definition is only to define the Fourier transform, use `FourierTransform.fourierCLM` instead.
+-/
 def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
   refine mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_
   · intro f g x
