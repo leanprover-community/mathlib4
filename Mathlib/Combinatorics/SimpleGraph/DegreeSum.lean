@@ -122,6 +122,37 @@ theorem sum_degrees_support_eq_twice_card_edges :
 
 end DegreeSum
 
+@[expose] public section card
+
+open scoped Cardinal
+
+private lemma mk_eq_sum_fiber {A B : Type _} (f : A → B) :
+    #A = Cardinal.sum (fun b : B => #{a : A // f a = b}) := by
+  have e : A ≃ Σ b : B, {a : A // f a = b} :=
+  { toFun := fun a => ⟨f a, ⟨a, rfl⟩⟩
+    invFun := fun s => s.2.1
+    left_inv := by intro a; rfl
+    right_inv := by rintro ⟨b, ⟨a, h⟩⟩; cases h; rfl }
+  simpa [Cardinal.mk_sigma] using (Cardinal.mk_congr e)
+
+lemma card_darts (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
+  let f : G.Dart → G.edgeSet := fun ⟨⟨v, w⟩, hvw⟩ => ⟨s(v, w), hvw⟩
+  suffices fib_size : ∀ e, #{d // f d = e} = 2 from by
+    simp[mk_eq_sum_fiber f, fib_size, mul_comm]
+  rintro ⟨e, he⟩
+  obtain ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
+  have hadj : G.Adj v w := G.mem_edgeSet.mp (by simp [he, hvw])
+  set d₀ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨v, w⟩, hadj⟩, by grind⟩
+  set d₁ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨w, v⟩, hadj.symm⟩, by simp [f]; aesop⟩
+  refine (Cardinal.mk_eq_two_iff' d₀).mpr ⟨d₁, ⟨fun _ => (G.loopless v).elim (by grind), ?_⟩⟩
+  rintro ⟨⟨⟨u₁, u₂⟩, hadj⟩, hd⟩ h₀
+  simp only [ne_eq, Subtype.mk.injEq, Dart.mk.injEq, Prod.mk.injEq, d₀, d₁, f] at h₀ hd ⊢
+  have := hvw ▸ hd
+  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at this
+  exact Or.elim this h₀.elim id
+
+end card
+
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
 theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even #{v | Odd (G.degree v)} := by
