@@ -26,7 +26,7 @@ where we equip that space with the natural metric induced by the `α⁻¹`-Hausd
 Snowflake metrics are used regularly in the geometry of metric spaces where, among other things,
 they characterize doubling metrics. In particular, a metric is doubling if and only
 if every `α`-snowflaking (with `0 < α < 1`) of it is bilipschitz equivalent to a subset of some
-Euclidean space (the dimension of the Euclidean space depends on `α`).
+Euclidean space (the dimension of the Euclidean space depends on `α`). See [heinonen2001].
 
 Another reason to introduce this definition is the following.
 In the proof of his version of the Morse-Sard theorem,
