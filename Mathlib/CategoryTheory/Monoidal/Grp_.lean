@@ -41,7 +41,7 @@ class GrpObj (X : C) extends MonObj X where
 namespace MonObj
 
 @[inherit_doc] scoped notation "ι" => GrpObj.inv
-@[inherit_doc] scoped notation "ι["G"]" => GrpObj.inv (X := G)
+@[inherit_doc] scoped notation "ι[" G "]" => GrpObj.inv (X := G)
 
 end MonObj
 
