@@ -22,7 +22,7 @@ equipped with the subspace topology.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 

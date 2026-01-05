@@ -12,7 +12,7 @@ public import Mathlib.Topology.Order.DenselyOrdered
 # Lemmas about `extendFrom` in an order topology.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Topology
 

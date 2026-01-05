@@ -44,7 +44,7 @@ open map, closed map, embedding, quotient map, identification map
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function

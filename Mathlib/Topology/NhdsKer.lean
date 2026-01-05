@@ -18,7 +18,7 @@ Note that this construction has no standard name in the literature.
 In this file we prove basic properties of this operation.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 open scoped Topology

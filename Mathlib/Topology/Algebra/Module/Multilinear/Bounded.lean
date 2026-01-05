@@ -27,7 +27,7 @@ the family `∀ i, E i` has to be essentially finite
 proving theorems without a `[Finite ι]` assumption saves us some typeclass searches here and there.
 -/
 
-@[expose] public section
+public section
 
 open Bornology Filter Set Function
 open scoped Topology

@@ -25,7 +25,7 @@ Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Set Topology
 

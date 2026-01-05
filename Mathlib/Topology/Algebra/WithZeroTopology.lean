@@ -33,7 +33,7 @@ a linearly ordered commutative group with zero. You can locally activate this to
 `open WithZeroTopology`.
 -/
 
-@[expose] public section
+public section
 
 open Topology Filter TopologicalSpace Filter Set Function
 

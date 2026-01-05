@@ -20,7 +20,7 @@ This file provides lemmas relating sums of constants to the cardinality of the d
 + Provide versions which sum over the whole type.
 -/
 
-@[expose] public section
+public section
 
 open Set Function
 

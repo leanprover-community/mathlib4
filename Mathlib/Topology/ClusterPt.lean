@@ -18,7 +18,7 @@ clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map 
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 

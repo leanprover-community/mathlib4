@@ -27,7 +27,7 @@ Furthermore, we have the following results:
   `Mathlib/Topology/Separation/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 

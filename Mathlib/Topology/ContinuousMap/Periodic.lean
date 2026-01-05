@@ -13,7 +13,7 @@ public import Mathlib.Topology.ContinuousMap.Algebra
 
 -/
 
-@[expose] public section
+public section
 assert_not_exists StoneCech StarModule
 
 namespace ContinuousMap
