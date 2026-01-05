@@ -230,29 +230,4 @@ lemma ComposableArrows.exact_iff_exact_evaluation
           intro i
           exact (hS i).exact k }
 
-namespace ComposableArrows
-
-section
-
-omit [Abelian C]
-
-lemma isIso_iff₀ {S₁ S₂ : ComposableArrows C 0} (f : S₁ ⟶ S₂) :
-    IsIso f ↔ IsIso (f.app 0) := by
-  rw [NatTrans.isIso_iff_isIso_app]
-  exact ⟨fun h ↦ h 0, fun _ i ↦ by fin_cases i; assumption⟩
-
-lemma isIso_iff₁ {S₁ S₂ : ComposableArrows C 1} (f : S₁ ⟶ S₂) :
-    IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) := by
-  rw [NatTrans.isIso_iff_isIso_app]
-  exact ⟨fun h ↦ ⟨h 0, h 1⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
-
-lemma isIso_iff₂ {S₁ S₂ : ComposableArrows C 2} (f : S₁ ⟶ S₂) :
-    IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) ∧ IsIso (f.app 2) := by
-  rw [NatTrans.isIso_iff_isIso_app]
-  exact ⟨fun h ↦ ⟨h 0, h 1, h 2⟩, fun _ i ↦ by fin_cases i <;> tauto⟩
-
-end
-
-end ComposableArrows
-
 end CategoryTheory

@@ -59,6 +59,14 @@ lemma twoδ₁Toδ₀_app_zero :
 lemma twoδ₁Toδ₀_app_one :
     (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
 
+instance [IsIso g] : IsIso (twoδ₂Toδ₁ f g fg h) := by
+  rw [isIso_iff₁]
+  constructor <;> dsimp <;> infer_instance
+
+instance [IsIso f] : IsIso (twoδ₁Toδ₀ f g fg h) := by
+  rw [isIso_iff₁]
+  constructor <;> dsimp <;> infer_instance
+
 end
 
 section
