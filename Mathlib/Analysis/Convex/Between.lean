@@ -3,12 +3,14 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Convex.Segment
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Interval.Set.Group
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Betweenness in affine spaces
@@ -22,6 +24,8 @@ This file defines notions of a point in an affine space being between two given 
 * `Sbtw R x y z`: The point `y` is strictly between `x` and `z`.
 
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) {V V' P P' : Type*}
@@ -40,6 +44,11 @@ def affineSegment [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V]
 
 variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
+
+lemma affineSegment_subset_affineSpan (x y : P) : affineSegment R x y ⊆ line[R, x, y] := by
+  rw [affineSegment, Set.subset_def]
+  rintro p ⟨r, -, rfl⟩
+  exact lineMap_mem_affineSpan_pair _ _ _
 
 variable {R} in
 @[simp]
@@ -168,6 +177,19 @@ theorem Function.Injective.wbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : F
 theorem Function.Injective.sbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : Function.Injective f) :
     Sbtw R (f x) (f y) (f z) ↔ Sbtw R x y z := by
   simp_rw [Sbtw, hf.wbtw_map_iff, hf.ne_iff]
+
+lemma Set.InjOn.wbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} {s : AffineSubspace R P}
+    (hf : Set.InjOn f s) (hx : x ∈ s) (hy : y ∈ s) (hz : z ∈ s) :
+    Wbtw R (f x) (f y) (f z) ↔ Wbtw R x y z := by
+  refine ⟨fun h => ?_, fun h => h.map _⟩
+  rwa [Wbtw, ← affineSegment_image, hf.mem_image_iff
+    ((affineSegment_subset_affineSpan R x z).trans (affineSpan_le.2 (Set.pair_subset hx hz))) hy]
+    at h
+
+lemma Set.InjOn.sbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} {s : AffineSubspace R P}
+    (hf : Set.InjOn f s) (hx : x ∈ s) (hy : y ∈ s) (hz : z ∈ s) :
+    Sbtw R (f x) (f y) (f z) ↔ Sbtw R x y z := by
+  simp_rw [Sbtw, hf.wbtw_map_iff hx hy hz, hf.ne_iff hy hx, hf.ne_iff hy hz]
 
 @[simp]
 theorem AffineEquiv.wbtw_map_iff {x y z : P} (f : P ≃ᵃ[R] P') :
@@ -364,6 +386,32 @@ theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
     exact wbtw_self_left R x x
 
 end OrderedRing
+
+section lift
+
+variable [ZeroLEOneClass R]
+variable (R' : Type*) [Ring R'] [PartialOrder R']
+variable [Module R' V] [Module R' R] [IsScalarTower R' R V] [SMulPosMono R' R]
+
+theorem affineSegment.lift (x y : P) : affineSegment R' x y ⊆ affineSegment R x y := by
+  rintro p ⟨a, ⟨⟨ha₀, ha₁⟩, rfl⟩⟩
+  refine ⟨a • 1, ⟨?_, ?_⟩, by simp [lineMap_apply]⟩
+  · rw [← zero_smul R' (1 : R)]
+    exact smul_le_smul_of_nonneg_right ha₀ zero_le_one
+  · nth_rw 2 [← one_smul R' 1]
+    exact smul_le_smul_of_nonneg_right ha₁ zero_le_one
+
+variable {R'} in
+/-- Lift a `Wbtw` predicate from one ring to another along a scalar tower. -/
+theorem Wbtw.lift {x y z : P} (h : Wbtw R' x y z) : Wbtw R x y z :=
+  affineSegment.lift R R' x z h
+
+variable {R'} in
+/-- Lift a `Sbtw` predicate from one ring to another along a scalar tower. -/
+theorem Sbtw.lift {x y z : P} (h : Sbtw R' x y z) : Sbtw R x y z :=
+  ⟨h.wbtw.lift R, h.2⟩
+
+end lift
 
 @[simp]
 theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
@@ -573,6 +621,113 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   have ha' := ha s (w₁ - w₂) hw₁w₂ hz i his
   rwa [Pi.sub_apply, sub_eq_zero] at ha'
 
+namespace Affine
+
+namespace Simplex
+
+/-- The closed interior of a 1-simplex is a segment between its vertices. -/
+lemma closedInterior_eq_affineSegment (s : Simplex R P 1) :
+    s.closedInterior = affineSegment R (s.points 0) (s.points 1) := by
+  ext p
+  constructor
+  · rintro ⟨w, hw, h01, rfl⟩
+    have h : w = Finset.affineCombinationLineMapWeights 0 1 (w 1) := by
+      rw [Fin.sum_univ_two] at hw
+      ext i
+      fin_cases i <;> simp [← hw]
+    rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _)]
+    exact Set.mem_image_of_mem _ (h01 _)
+  · rintro ⟨r, ⟨h0, h1⟩, rfl⟩
+    rw [← Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _), affineCombination_mem_closedInterior_iff
+        (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
+    intro i
+    fin_cases i <;> simp [h0, h1]
+
+/-- A point lies in the closed interior of a 1-simplex if and only if it lies weakly between its
+vertices. -/
+lemma mem_closedInterior_iff_wbtw {s : Simplex R P 1} {p : P} :
+    p ∈ s.closedInterior ↔ Wbtw R (s.points 0) p (s.points 1) := by
+  rw [closedInterior_eq_affineSegment, Wbtw]
+
+/-- The closed interior of a 1-dimensional face of a simplex is a segment between its vertices. -/
+lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : Fin (n + 1)}
+    (h : i ≠ j) :
+    (s.face (Finset.card_pair h)).closedInterior = affineSegment R (s.points i) (s.points j) := by
+  have h' : affineSegment R (s.points i) (s.points j) =
+      affineSegment R (s.points (min i j)) (s.points (max i j)) := by
+    rcases h.lt_or_gt with hij | hji
+    · simp [min_eq_left hij.le, max_eq_right hij.le]
+    · nth_rw 2 [affineSegment_comm]
+      simp [max_eq_left hji.le, min_eq_right hji.le]
+  rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment, face_points, face_points]
+  congr 2
+  · convert Finset.orderEmbOfFin_zero _ _
+    · exact (Finset.min'_pair i j).symm
+    · lia
+  · convert Finset.orderEmbOfFin_last _ _
+    · exact (Finset.max'_pair i j).symm
+    · lia
+
+/-- A point lies in the closed interior of a 1-dimensional face of a simplex if and only if it lies
+weakly between its vertices. -/
+lemma mem_closedInterior_face_iff_wbtw {n : ℕ} (s : Simplex R P n) {p : P} {i j : Fin (n + 1)}
+    (h : i ≠ j) :
+    p ∈ (s.face (Finset.card_pair h)).closedInterior ↔ Wbtw R (s.points i) p (s.points j) := by
+  rw [s.closedInterior_face_eq_affineSegment h, Wbtw]
+
+/-- The interior of a 1-simplex is a segment between its vertices. -/
+lemma interior_eq_image_Ioo (s : Simplex R P 1) :
+    s.interior = AffineMap.lineMap (s.points 0) (s.points 1) '' Set.Ioo (0 : R) 1 := by
+  ext p
+  constructor
+  · rintro ⟨w, hw, h01, rfl⟩
+    have h : w = Finset.affineCombinationLineMapWeights 0 1 (w 1) := by
+      rw [Fin.sum_univ_two] at hw
+      ext i
+      fin_cases i <;> simp [← hw]
+    rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _)]
+    exact Set.mem_image_of_mem _ (h01 _)
+  · rintro ⟨r, ⟨h0, h1⟩, rfl⟩
+    rw [← Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _), affineCombination_mem_interior_iff
+        (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
+    intro i
+    fin_cases i <;> simp [h0, h1]
+
+/-- A point lies in the interior of a 1-simplex if and only if it lies strictly between its
+vertices. -/
+lemma mem_interior_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {s : Simplex R P 1} {p : P} :
+    p ∈ s.interior ↔ Sbtw R (s.points 0) p (s.points 1) := by
+  rw [interior_eq_image_Ioo, sbtw_iff_mem_image_Ioo_and_ne]
+  simp [s.independent.injective.ne (by decide : (0 : Fin 2) ≠ 1)]
+
+/-- A point lies in the interior of a 1-dimensional face of a simplex if and only if it lies
+strictly between its vertices. -/
+lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : ℕ}
+    (s : Simplex R P n) {p : P} {i j : Fin (n + 1)} (h : i ≠ j) :
+    p ∈ (s.face (Finset.card_pair h)).interior ↔ Sbtw R (s.points i) p (s.points j) := by
+  have h' : Sbtw R (s.points i) p (s.points j) ↔
+      Sbtw R (s.points (min i j)) p (s.points (max i j)) := by
+    rcases h.lt_or_gt with hij | hji
+    · simp [min_eq_left hij.le, max_eq_right hij.le]
+    · nth_rw 2 [sbtw_comm]
+      simp [max_eq_left hji.le, min_eq_right hji.le]
+  rw [h', mem_interior_iff_sbtw, face_points, face_points]
+  congr! 4
+  · convert Finset.orderEmbOfFin_zero _ _
+    · exact (Finset.min'_pair i j).symm
+    · lia
+  · convert Finset.orderEmbOfFin_last _ _
+    · exact (Finset.max'_pair i j).symm
+    · lia
+
+end Simplex
+
+end Affine
+
 end OrderedRing
 
 section StrictOrderedCommRing
@@ -621,7 +776,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h₂₃ : i₂ ≠ i₃ := by
     rintro rfl
     simp at h₁
-  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by omega
+  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by lia
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
     decide +revert
@@ -736,8 +891,7 @@ theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     rw [Set.mem_Ici] at hr
     rcases hr.lt_or_eq with (hrlt | rfl)
     · exact Set.mem_image_of_mem _ hrlt
-    · exfalso
-      simp at h
+    · simp at h
   · rcases h with ⟨hne, r, hr, rfl⟩
     rw [Set.mem_Ioi] at hr
     refine
@@ -913,8 +1067,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
       smul_add]
     convert (one_smul R (y -ᵥ x)).symm
-    field_simp [(add_pos hr₁ hr₂).ne', hr₂.ne']
-    ring
+    field
 
 /-- If `T` is an affine independent family of points,
 then any 3 distinct points form a triangle. -/

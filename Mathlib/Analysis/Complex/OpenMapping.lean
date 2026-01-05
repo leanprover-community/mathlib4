@@ -3,10 +3,12 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -29,6 +31,8 @@ That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
   theorem around a point;
 * `AnalyticOnNhd.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
 -/
+
+@[expose] public section
 
 
 open Set Filter Metric Complex
@@ -141,8 +145,8 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     simpa only [ray, gray, w, smul_smul, mul_inv_cancel₀ h', one_smul, add_sub_cancel,
       Function.comp_apply, coe_smul] using h3 (↑‖z - z₀‖) h4
   · right
+    simp only [not_forall] at h
     -- Otherwise, it is open along at least one direction and that implies the result
-    push_neg at h
     obtain ⟨z, hz, hrz⟩ := h
     specialize h1 z hz 0 (mem_ball_self hr)
     have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left hrz
@@ -160,7 +164,7 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
   by_cases h : ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
   · obtain ⟨z₀, hz₀, h⟩ := h
     exact Or.inl ⟨g z₀, hg.eqOn_of_preconnected_of_eventuallyEq analyticOnNhd_const hU hz₀ h⟩
-  · push_neg at h
+  · simp only [not_exists, not_and] at h
     refine Or.inr fun s hs1 hs2 => isOpen_iff_mem_nhds.mpr ?_
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))

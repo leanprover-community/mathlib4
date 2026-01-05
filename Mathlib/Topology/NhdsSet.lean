@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Neighborhoods of a set
@@ -20,10 +22,12 @@ There are a couple different notions equivalent to `s ∈ 𝓝ˢ t`:
 
 Furthermore, we have the following results:
 * `monotone_nhdsSet`: `𝓝ˢ` is monotone
-* In T₁-spaces, `𝓝ˢ`is strictly monotone and hence injective:
+* In T₁-spaces, `𝓝ˢ` is strictly monotone and hence injective:
   `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in
   `Mathlib/Topology/Separation/Basic.lean`.
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -160,7 +164,7 @@ theorem IsClosed.nhdsSet_le_sup (h : IsClosed t) : 𝓝ˢ s ≤ 𝓝ˢ (s ∩ t)
   calc
     𝓝ˢ s = 𝓝ˢ (s ∩ t ∪ s ∩ tᶜ) := by rw [Set.inter_union_compl s t]
     _ = 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (s ∩ tᶜ) := by rw [nhdsSet_union]
-    _ ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (tᶜ) := sup_le_sup_left (monotone_nhdsSet inter_subset_right) _
+    _ ≤ 𝓝ˢ (s ∩ t) ⊔ 𝓝ˢ (tᶜ) := by nth_grw 2 [inter_subset_right]
     _ = 𝓝ˢ (s ∩ t) ⊔ 𝓟 (tᶜ) := by rw [h.isOpen_compl.nhdsSet_eq]
 
 variable (s) in

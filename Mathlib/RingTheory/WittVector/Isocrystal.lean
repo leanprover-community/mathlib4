@@ -3,7 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.RingTheory.WittVector.FrobeniusFractionField
+module
+
+public import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 
 /-!
 
@@ -33,7 +35,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `Isocrystal`.
+This file introduces notation in the scope `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
@@ -49,6 +51,8 @@ This file introduces notation in the locale `Isocrystal`.
 * <https://www.math.ias.edu/~lurie/205notes/Lecture26-Isocrystals.pdf>
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -203,8 +207,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     StandardOneDimIsocrystal.frobenius_apply]
   unfold StandardOneDimIsocrystal
   rw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
-  simp only [hax,
-    LinearEquiv.map_smulₛₗ, Algebra.id.smul_eq_mul]
+  simp only [hax, map_smulₛₗ, smul_eq_mul]
   simp only [← mul_smul]
   congr 1
   linear_combination φ(p, k) c * hmb

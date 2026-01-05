@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.NAry
-import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Order.SupClosed
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Set family operations
@@ -19,7 +21,7 @@ This file defines a few binary operations on `Set α` for use in set family comb
 
 ## Notation
 
-We define the following notation in locale `SetFamily`:
+We define the following notation in scope `SetFamily`:
 * `s ⊻ t`
 * `s ⊼ t`
 
@@ -27,6 +29,8 @@ We define the following notation in locale `SetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
+
+@[expose] public section
 
 
 open Function
@@ -293,11 +297,7 @@ theorem iUnion_image_inf_right : ⋃ b ∈ t, (· ⊓ b) '' s = s ⊼ t :=
   iUnion_image_right _
 
 @[simp]
-theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by
-  have : (s ×ˢ t).image (uncurry (· ⊓ ·)) = Set.image2 (fun x x_1 => x ⊓ x_1) s t := by
-    simp only [Set.image_uncurry_prod]
-  rw [← this]
-  exact image_uncurry_prod _ _ _
+theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := rfl
 
 theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image2_assoc inf_assoc
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementaryMaps
+module
+
+public import Mathlib.ModelTheory.ElementaryMaps
 
 /-!
 # Elementary Substructures
@@ -19,6 +21,8 @@ import Mathlib.ModelTheory.ElementaryMaps
   `FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
   substructure to be elementary.
 -/
+
+@[expose] public section
 
 
 open FirstOrder
@@ -80,9 +84,6 @@ theorem subtype_injective (S : L.ElementarySubstructure M) : Function.Injective 
 @[simp]
 theorem coe_subtype (S : L.ElementarySubstructure M) : ⇑S.subtype = Subtype.val :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 /-- The substructure `M` of the structure `M` is elementary. -/
 instance instTop : Top (L.ElementarySubstructure M) :=

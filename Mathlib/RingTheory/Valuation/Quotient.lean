@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # The valuation on a quotient ring
@@ -14,6 +16,8 @@ with `h : J ⊆ supp v` then the induced valuation
 on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 -/
+
+@[expose] public section
 
 
 namespace Valuation
@@ -77,8 +81,6 @@ namespace AddValuation
 variable {R Γ₀ : Type*}
 variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
 variable (v : AddValuation R Γ₀)
-
--- attribute [local reducible] AddValuation -- Porting note: reducible not supported
 
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
 Note: it's just the function; the valuation is `onQuot hJ`. -/

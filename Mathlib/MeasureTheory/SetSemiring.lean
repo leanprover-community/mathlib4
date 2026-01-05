@@ -3,10 +3,12 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
 
@@ -48,6 +50,8 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 
 -/
 
+@[expose] public section
+
 open Finset Set
 
 namespace MeasureTheory
@@ -84,8 +88,6 @@ lemma empty_notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t 
   simp only [disjointOfDiff, mem_sdiff, Finset.mem_singleton,
     not_true, and_false, not_false_iff]
 
-@[deprecated (since := "2025-05-24")] alias empty_nmem_disjointOfDiff := empty_notMem_disjointOfDiff
-
 lemma subset_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ↑(hC.disjointOfDiff hs ht) ⊆ C := by
   classical
@@ -117,8 +119,6 @@ lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     rwa [← h]
   rw [← hC.sUnion_disjointOfDiff hs ht]
   exact subset_sUnion_of_mem hs_mem
-
-@[deprecated (since := "2025-05-24")] alias nmem_disjointOfDiff := notMem_disjointOfDiff
 
 lemma sUnion_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C)
     (ht : t ∈ C) (hst : t ⊆ s) :
@@ -180,7 +180,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   let J' : Finset (Set α) := Finset.biUnion (Finset.univ : Finset J) fun u ↦ Ju u (h_ss u.prop)
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
-    simp only [J' ,univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
+    simp only [J', univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
       mem_iUnion, Finset.exists_coe, exists₂_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
@@ -229,9 +229,6 @@ lemma empty_notMem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
   classical
   simp only [disjointOfDiffUnion, mem_sdiff, Finset.mem_singleton,
     not_true, and_false, not_false_iff]
-
-@[deprecated (since := "2025-05-24")]
-alias empty_nmem_disjointOfDiffUnion := empty_notMem_disjointOfDiffUnion
 
 lemma disjointOfDiffUnion_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ↑(hC.disjointOfDiffUnion hs hI) ⊆ C := by
@@ -345,7 +342,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     have ht1' : ∀ x ∈ J, K1 x = K x := fun x hx ↦ hK1_of_ne _ (fun h_eq ↦ hJ (h_eq ▸ hx))
     have ht2 : (⋃ x ∈ J, (K1 x : Set (Set α))) = ⋃ x ∈ J, ((K x : Set (Set α))) := by
       apply iUnion₂_congr
-      intros x hx
+      intro x hx
       exact_mod_cast hK1_of_ne _ (ne_of_mem_of_not_mem hx hJ)
     simp only [hK1s]
     refine ⟨?_, ⟨hC.disjointOfDiffUnion_subset h1.1 h1.2, ?_⟩, ?_,
@@ -369,7 +366,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
           rw [Set.disjoint_iff_inter_eq_empty] at h7
           exact_mod_cast h7
         exact ⟨h8, Disjoint.symm h8⟩
-    · intros i hi
+    · intro i hi
       rw [ht1' i hi]
       exact hK1 i hi
     · simp only [iUnion_iUnion_eq_or_left]
@@ -378,19 +375,19 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
         exact hC.pairwiseDisjoint_disjointOfDiffUnion h1.1 h1.2
       · simpa [ht2]
       · simp only [mem_coe, mem_iUnion, exists_prop, ne_eq, id_eq, forall_exists_index, and_imp]
-        intros i hi j x hx h3 h4
+        intro i hi j x hx h3 h4
         obtain ki : i ⊆ s \ ⋃₀ J := hC.subset_of_diffUnion_disjointOfDiffUnion h1.1 h1.2 _
           (hK1s ▸ hi)
         obtain hx2 : j ⊆ x := subset_trans (subset_sUnion_of_mem (ht1' x hx ▸ h3)) (hK3 x hx)
         obtain kj : j ⊆ ⋃₀ J := hx2.trans <| subset_sUnion_of_mem hx
         exact disjoint_of_subset ki kj disjoint_sdiff_left
-    · intros a ha
+    · intro a ha
       simp_rw [hK1_of_ne _ (ne_of_mem_of_not_mem ha hJ)]
       change ∀ t' ∈ (K a : Set (Set α)), t' ⊆ a
       rw [← sUnion_subset_iff]
       exact hK3 a ha
     · refine ⟨hC.empty_notMem_disjointOfDiffUnion h1.1 h1.2, ?_⟩
-      intros a ha
+      intro a ha
       rw [ht1' a ha]
       exact hK4 a ha
     · simp only [iUnion_iUnion_eq_or_left, sUnion_union, ht2, K1]
@@ -434,9 +431,6 @@ lemma subset_of_mem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj
 lemma empty_notMem_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     ∅ ∉ hC.disjointOfUnion hJ j :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.1 j hj
-
-@[deprecated (since := "2025-05-24")]
-alias empty_nmem_disjointOfUnion := empty_notMem_disjointOfUnion
 
 lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J :=
@@ -494,12 +488,7 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
 lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
     (hs : ∀ i ∈ t, s i ∈ C) :
     t.sup s ∈ C := by
-  classical
-  induction t using Finset.induction_on with
-  | empty => exact hC.empty_mem
-  | insert m t hm ih =>
-    simpa only [sup_insert] using
-      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
+  simpa using biUnion_mem hC _ hs
 
 lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :
@@ -524,7 +513,7 @@ theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n �
   | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
 
 theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
-    Accumulate s n ∈ C := by
+    accumulate s n ∈ C := by
   induction n with
   | zero => simp [hs 0]
   | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)

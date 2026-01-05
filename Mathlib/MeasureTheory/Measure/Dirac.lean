@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Dirac measure
@@ -15,6 +17,8 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 In this file we define the Dirac measure `MeasureTheory.Measure.dirac a`
 and prove some basic facts about it.
 -/
+
+@[expose] public section
 
 open Function Set
 open scoped ENNReal
@@ -78,6 +82,7 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
 @[simp] lemma dirac_ne_zero : dirac a ≠ 0 :=
   fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
 
+@[simp]
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
   classical
   exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
@@ -104,7 +109,7 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
 
 /-- Two measures on a countable space are equal if they agree on singletons. -/
 theorem ext_of_singleton [Countable α] {μ ν : Measure α} (h : ∀ a, μ {a} = ν {a}) : μ = ν :=
-  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by aesop)
+  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by simp_all)
 
 /-- Two measures on a countable space are equal if and only if they agree on singletons. -/
 theorem ext_iff_singleton [Countable α] {μ ν : Measure α} : μ = ν ↔ ∀ a, μ {a} = ν {a} :=
@@ -212,6 +217,9 @@ lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} 
 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
+
+instance [hα : Nonempty α] : Nonempty {μ : Measure α // IsProbabilityMeasure μ} :=
+  ⟨Measure.dirac hα.some, inferInstance⟩
 
 /-! Extra instances to short-circuit type class resolution -/
 

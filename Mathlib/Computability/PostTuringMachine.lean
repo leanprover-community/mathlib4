@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Tape
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Computability.Tape
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.PFun
 
 /-!
 # Turing machines
@@ -32,7 +34,7 @@ computation. These are the parameters for the language:
 
 All of these variables denote "essentially finite" types, but for technical reasons it is
 convenient to allow them to be infinite anyway. When using an infinite type, we will be interested
-to prove that only finitely many values of the type are ever interacted with.
+in proving that only finitely many values of the type are ever interacted with.
 
 Given these parameters, there are a few common structures for the model that arise:
 
@@ -57,6 +59,8 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -378,7 +382,7 @@ def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
     | Stmt.write a => T.write a⟩
 
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
-  starting from `s₁` after a finite number of steps from `s₂`. -/
+  starting from `s₁` after a finite number of steps. -/
 def Reaches (M : Machine Γ Λ) : Cfg Γ Λ → Cfg Γ Λ → Prop := ReflTransGen fun a b ↦ b ∈ step M a
 
 /-- The initial configuration. -/
@@ -825,9 +829,9 @@ Because our construction in the previous section reducing `TM1` to `TM0` doesn't
 alphabet, we can do the alphabet reduction on `TM1` instead of `TM0` directly.
 
 The basic idea is to use a bijection between `Γ` and a subset of `Vector Bool n`, where `n` is a
-fixed constant. Each tape element is represented as a block of `n` bools. Whenever the machine
+fixed constant. Each tape element is represented as a block of `n` `Bool`s. Whenever the machine
 wants to read a symbol from the tape, it traverses over the block, performing `n` `branch`
-instructions to each any of the `2^n` results.
+instructions to reach any of the `2^n` results.
 
 For the `write` instruction, we have to use a `goto` because we need to follow a different code
 path depending on the local state, which is not available in the TM1 model, so instead we jump to
@@ -891,7 +895,7 @@ then return to the original position with `n` moves to the left. -/
 def read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) : Stmt Bool (Λ' Γ Λ σ) σ :=
   readAux n fun v ↦ move n Dir.left <| f (dec v)
 
-/-- Write a list of bools on the tape. -/
+/-- Write a list of `Bool`s on the tape. -/
 def write : List Bool → Stmt Bool (Λ' Γ Λ σ) σ → Stmt Bool (Λ' Γ Λ σ) σ
   | [], q => q
   | a :: l, q => (Stmt.write fun _ _ ↦ a) <| Stmt.move Dir.right <| write l q
@@ -1078,8 +1082,8 @@ theorem tr_respects :
       refine ReflTransGen.head rfl ?_
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
-        trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
-      apply IH
+        trTape'_move_left enc0]
+      simpa using IH ..
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH
@@ -1167,7 +1171,7 @@ end TM1to1
 
 To establish that TM0 and TM1 are equivalent computational models, we must also have a TM0 emulator
 in TM1. The main complication here is that TM0 allows an action to depend on the value at the head
-and local state, while TM1 doesn't (in order to have more programming language-like semantics).
+and local state, while TM1 does not (in order to have more programming language-like semantics).
 So we use a computed `goto` to go to a state that performs the desired action and then returns to
 normal execution.
 

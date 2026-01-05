@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.Topology.Sheaves.SheafOfFunctions
-import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+module
+
+public import Mathlib.Topology.Sheaves.SheafOfFunctions
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Functions satisfying a local predicate form a sheaf.
@@ -33,6 +35,8 @@ to the types in the ambient type family.
 
 We give conditions sufficient to show that this map is injective and/or surjective.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -221,7 +225,7 @@ end PrelocalPredicate
 -/
 @[simps!]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
-  obj U := { f : ∀ x : U.unop , T x // P.pred f }
+  obj U := { f : ∀ x : U.unop, T x // P.pred f }
   map {_ _} i f := ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
@@ -329,14 +333,14 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective' tV
   -- Decompose everything into its constituent parts:
   dsimp
-  simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
+  simp only [stalkToFiber, Types.Colimit.ι_desc_apply] at h
   specialize w (unop U) (unop V) fU hU fV hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.
   refine ⟨op W, fun w ↦ fU (iU w : (unop U).1), P.res ?_ _ hU, ?_⟩
   · rcases W with ⟨W, m⟩
     exact iU
-  · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
+  · exact ⟨colimit_sound iU.op (Subtype.ext rfl), colimit_sound iV.op (Subtype.ext (funext w).symm)⟩
 
 universe u
 

@@ -3,29 +3,28 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Tactic.Finiteness
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
 # First Baire theorem
 
-In this file we prove that a completely metrizable topological space is a Baire space.
-Since `Mathlib` does not have the notion of a completely metrizable topological space yet,
-we state it for a complete uniform space with countably generated uniformity filter.
+In this file we prove that a completely pseudometrizable topological space is a Baire space.
 -/
 
-open Filter EMetric Set
-open scoped Topology Uniformity ENNReal
+@[expose] public section
 
-variable {X : Type*} [UniformSpace X] [CompleteSpace X] [(𝓤 X).IsCountablyGenerated]
+open Filter EMetric Set TopologicalSpace
+open scoped Uniformity ENNReal
 
-/-- **First Baire theorem**: a completely metrizable topological space has Baire property.
+variable {X : Type*} [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
 
-Since `Mathlib` does not have the notion of a completely metrizable topological space yet,
-we state it for a complete uniform space with countably generated uniformity filter. -/
-instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : BaireSpace X := by
-  let _ := UniformSpace.pseudoMetricSpace X
+/-- **First Baire theorem**: a completely pseudometrizable topological space has Baire property. -/
+instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace X := by
+  let _ := upgradeIsCompletelyPseudoMetrizable X
   refine ⟨fun f ho hd => ?_⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := fun n ↦

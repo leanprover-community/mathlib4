@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Center
-import Mathlib.Algebra.Group.Subsemigroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Center
+public import Mathlib.Algebra.Group.Subsemigroup.Defs
 
 /-!
 # Centers of semigroups, as subsemigroups.
@@ -23,6 +25,8 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
   [cabreragarciarodriguezpalacios2014]
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso Finset
 
 /-! ### `Set.center` as a `Subsemigroup`. -/
@@ -39,8 +43,6 @@ everything in `M` -/]
 def center : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center
-
--- Porting note: `coe_center` is now redundant
 
 variable {M}
 

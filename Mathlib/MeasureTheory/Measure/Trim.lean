@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Restriction of a measure to a sub-σ-algebra
@@ -15,11 +17,13 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 -/
 
+@[expose] public section
+
 open scoped ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-- Restriction of a measure to a sub-σ-algebra.
 It is common to see a measure `μ` on a measurable space structure `m0` as being also a measure on
@@ -36,7 +40,7 @@ def Measure.trim {m m0 : MeasurableSpace α} (μ : @Measure α m0) (hm : m ≤ m
 theorem trim_eq_self [MeasurableSpace α] {μ : Measure α} : μ.trim le_rfl = μ := by
   simp [Measure.trim]
 
-variable {m m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
+variable {m m0 : MeasurableSpace α} {mβ : MeasurableSpace β} {μ : Measure α} {s : Set α}
 
 theorem toOuterMeasure_trim_eq_trim_toOuterMeasure (μ : Measure α) (hm : m ≤ m0) :
     @Measure.toOuterMeasure _ m (μ.trim hm) = @OuterMeasure.trim _ m μ.toOuterMeasure := by
@@ -56,6 +60,22 @@ theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
 lemma trim_eq_map (hm : m ≤ m0) : μ.trim hm = @Measure.map _ _ _ m id μ := by
   refine @Measure.ext α m _ _ (fun s hs ↦ ?_)
   rw [Measure.map_apply (measurable_id'' hm) hs, trim_measurableSet_eq hm hs, Set.preimage_id]
+
+lemma map_trim_comap {f : α → β} (hf : Measurable f) :
+    @Measure.map _ _ (mβ.comap f) _ f (μ.trim hf.comap_le) = μ.map f := by
+  ext s hs
+  rw [Measure.map_apply hf hs, Measure.map_apply _ hs, trim_measurableSet_eq]
+  · exact ⟨s, hs, rfl⟩
+  · exact Measurable.of_comap_le le_rfl
+
+lemma trim_comap_apply {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
+    μ.trim hf.comap_le (f ⁻¹' s) = μ.map f s := by
+  rw [← map_trim_comap hf, Measure.map_apply (Measurable.of_comap_le le_rfl) hs]
+
+lemma ae_map_iff_ae_trim {f : α → β} (hf : Measurable f)
+    {p : β → Prop} (hp : MeasurableSet { x | p x }) :
+    (∀ᵐ y ∂μ.map f, p y) ↔ ∀ᵐ x ∂(μ.trim hf.comap_le), p (f x) := by
+  rw [← map_trim_comap hf, ae_map_iff (Measurable.of_comap_le le_rfl).aemeasurable hp]
 
 lemma trim_add {ν : Measure α} (hm : m ≤ m0) : (μ + ν).trim hm = μ.trim hm + ν.trim hm :=
   @Measure.ext _ m _ _ (fun s hs ↦ by simp [trim_measurableSet_eq hm hs])
@@ -124,5 +144,12 @@ lemma Measure.AbsolutelyContinuous.trim {ν : Measure α} (hμν : μ ≪ ν) (h
   refine Measure.AbsolutelyContinuous.mk (fun s hs hsν ↦ ?_)
   rw [trim_measurableSet_eq hm hs] at hsν ⊢
   exact hμν hsν
+
+theorem _root_.ae_eq_trim_of_measurable {α β} {m m0 : MeasurableSpace α} {μ : Measure α}
+    [MeasurableSpace β] [MeasurableEq β]
+    (hm : m ≤ m0) {f g : α → β} (hf : Measurable[m] f) (hg : Measurable[m] g) (hfg : f =ᵐ[μ] g) :
+    f =ᵐ[μ.trim hm] g := by
+  rwa [Filter.EventuallyEq, ae_iff, trim_measurableSet_eq hm _]
+  measurability
 
 end MeasureTheory

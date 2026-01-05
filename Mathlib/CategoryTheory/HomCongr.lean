@@ -3,7 +3,9 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Conjugate morphisms by isomorphisms
@@ -20,6 +22,8 @@ As corollaries, an isomorphism `α : X ≅ Y` defines
   `α.conjAut f = α.symm ≪≫ f ≪≫ α`
 which can be found in  `CategoryTheory.Conj`.
 -/
+
+@[expose] public section
 
 
 set_option mathlib.tactic.category.grind true
@@ -93,7 +97,6 @@ theorem map_homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f 
 
 theorem map_isoCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ≅ Y) :
     F.mapIso (Iso.isoCongr α β f) = Iso.isoCongr (F.mapIso α) (F.mapIso β) (F.mapIso f) := by
-  ext
   simp
 
 end Functor

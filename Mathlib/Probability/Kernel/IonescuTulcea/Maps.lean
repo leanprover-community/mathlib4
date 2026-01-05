@@ -3,13 +3,17 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.Order.Restriction
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.Order.Restriction
 
 /-! # Auxiliary maps for Ionescu-Tulcea theorem
 
 This file contains auxiliary maps which are used to prove the Ionescu-Tulcea theorem.
 -/
+
+@[expose] public section
 
 open Finset Preorder
 
@@ -25,7 +29,7 @@ def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i))
     then x.1 ⟨i, mem_Ioc.2 ⟨(mem_Ioc.1 i.2).1, h⟩⟩
     else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, (mem_Ioc.1 i.2).2⟩⟩
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_IocProdIoc [∀ i, MeasurableSpace (X i)] {a b c : ι} :
     Measurable (IocProdIoc (X := X) a b c) := by
   refine measurable_pi_lambda _ (fun i ↦ ?_)
@@ -76,7 +80,7 @@ lemma IicProdIoc_comp_restrict₂ {a b : ι} :
 
 variable [∀ i, MeasurableSpace (X i)]
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_IicProdIoc {m n : ι} : Measurable (IicProdIoc (X := X) m n) := by
   refine measurable_pi_lambda _ (fun i ↦ ?_)
   by_cases h : i ≤ m

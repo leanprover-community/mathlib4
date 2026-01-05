@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Adjoints of fully faithful functors
@@ -29,6 +31,8 @@ See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
 `CategoryTheory.Adjunction.isIso_counit_of_iso`.
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -48,7 +52,7 @@ variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-/-- If the left adjoint is faithful, then each component of the unit is an monomorphism. -/
+/-- If the left adjoint is faithful, then each component of the unit is a monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=
     L.map_injective <| (h.homEquiv Y (L.obj X)).injective <| by simpa using hfg

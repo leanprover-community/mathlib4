@@ -3,15 +3,19 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Order.Filter.ListTraverse
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Order.Filter.ListTraverse
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on lists and vectors
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Set Filter

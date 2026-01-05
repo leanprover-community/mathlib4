@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Kernel of a filter
@@ -14,6 +16,8 @@ to be the intersection of all its sets.
 We also prove that `Filter.principal` and `Filter.ker` form a Galois coinsertion
 and prove other basic theorems about `Filter.ker`.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -67,5 +71,14 @@ theorem ker_sSup (S : Set (Filter α)) : ker (sSup S) = ⋃ f ∈ S, ker f := by
 @[simp]
 theorem ker_sup (f g : Filter α) : ker (f ⊔ g) = ker f ∪ ker g := by
   rw [← sSup_pair, ker_sSup, biUnion_pair]
+
+@[simp]
+lemma ker_prod (f : Filter α) (g : Filter β) : ker (f ×ˢ g) = ker f ×ˢ ker g := by
+  simp [Set.prod_eq, Filter.prod_eq_inf]
+
+@[simp]
+lemma ker_pi {ι : Type*} {α : ι → Type*} (f : (i : ι) → Filter (α i)) :
+    ker (Filter.pi f) = univ.pi (fun i => ker (f i)) := by
+  simp [Set.pi_def, Filter.pi]
 
 end Filter
