@@ -25,7 +25,7 @@ as well as the infinite sum representation of cotangent (also known as the Mitta
 expansion): `π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
 -/
 
-@[expose] public section
+public section
 
 open Real Complex
 

@@ -24,7 +24,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 * Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial.Chebyshev
 

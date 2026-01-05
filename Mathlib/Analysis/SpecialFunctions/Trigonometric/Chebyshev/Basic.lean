@@ -17,7 +17,7 @@ This file gives the trigonometric characterizations of Chebyshev polynomials, fo
 (`Complex.cosh`) hyperbolic cosine.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial.Chebyshev

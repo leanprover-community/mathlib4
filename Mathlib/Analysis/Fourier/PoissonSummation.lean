@@ -27,7 +27,7 @@ easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
 `SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that `f` is a Schwartz function. -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

@@ -38,7 +38,7 @@ latter lemma to prove that the function `fun x => x⁻¹` is integrable on `a..b
 integrable function
 -/
 
-@[expose] public section
+public section
 
 
 open scoped MeasureTheory Topology Interval NNReal ENNReal

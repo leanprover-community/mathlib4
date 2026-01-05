@@ -21,7 +21,7 @@ We prove various versions of the formula for the Gaussian integral:
 * `Complex.Gamma_one_half_eq`: the formula `Γ (1 / 2) = √π`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

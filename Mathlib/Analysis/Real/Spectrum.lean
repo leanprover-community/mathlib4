@@ -14,7 +14,7 @@ public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 -/
 
-@[expose] public section
+public section
 
 namespace SpectrumRestricts
 

@@ -21,7 +21,7 @@ computed.
 sin, cos, tan, angle
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

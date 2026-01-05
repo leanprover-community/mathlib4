@@ -13,7 +13,7 @@ public import Mathlib.Analysis.RCLike.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Set Algebra Filter
 open scoped Topology

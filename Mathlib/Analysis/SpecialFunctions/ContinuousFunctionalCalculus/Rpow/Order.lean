@@ -33,7 +33,7 @@ C⋆-algebra. The proof makes use of the integral representation of `rpow` in
   (see Lemma 2.8)
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped NNReal
