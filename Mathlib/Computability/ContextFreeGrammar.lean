@@ -784,9 +784,13 @@ private lemma impossible_rule {r : ContextFreeRule T (g₁.union g₂).NT}
     (hg : [Symbol.nonterminal (g₁.union g₂).initial] =
       ([] : List (Symbol T (g₁.union g₂).NT)) ++ [Symbol.nonterminal r.input] ++
       ([] : List (Symbol T (g₁.union g₂).NT)))
-    (hr : r ∈
-      g₁.rules.map ⟨(ContextFreeRule.map · (Option.some ∘ Sum.inl)), map_inl_injective⟩ ∪
-      g₂.rules.map ⟨(ContextFreeRule.map · (Option.some ∘ Sum.inr)), map_inr_injective⟩) :
+    (hr : letI : DecidableEq T := Classical.decEq T;
+          letI : DecidableEq g₁.NT := Classical.decEq g₁.NT;
+          letI : DecidableEq g₂.NT := Classical.decEq g₂.NT;
+          letI : DecidableEq (Option (g₁.NT ⊕ g₂.NT)) := Classical.decEq _;
+          letI : DecidableEq (ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))) := Classical.decEq _;
+          r ∈ (g₁.rules.map ⟨(ContextFreeRule.map · (Option.some ∘ Sum.inl)), map_inl_injective⟩ ∪
+               g₂.rules.map ⟨(ContextFreeRule.map · (Option.some ∘ Sum.inr)), map_inr_injective⟩)) :
     False := by
   letI : DecidableEq T := Classical.decEq T
   letI : DecidableEq g₁.NT := Classical.decEq g₁.NT
@@ -798,16 +802,12 @@ private lemma impossible_rule {r : ContextFreeRule T (g₁.union g₂).NT}
   cases hr with
   | inl hr' =>
     rw [Finset.mem_map] at hr'
-    rcases hr' with ⟨r₀, _, hr_eq⟩
-    simp [ContextFreeRule.map] at hr_eq
-    rw [← hr_eq.left] at rule_root
-    exact Option.noConfusion rule_root
+    rcases hr' with ⟨r₀, _, rfl⟩
+    simp [ContextFreeRule.map] at rule_root
   | inr hr' =>
     rw [Finset.mem_map] at hr'
-    rcases hr' with ⟨r₀, _, hr_eq⟩
-    simp [ContextFreeRule.map] at hr_eq
-    rw [← hr_eq.left] at rule_root
-    exact Option.noConfusion rule_root
+    rcases hr' with ⟨r₀, _, rfl⟩
+    simp [ContextFreeRule.map] at rule_root
 
 private lemma in_language_of_in_union (hw : w ∈ (g₁.union g₂).language) :
     w ∈ g₁.language ∨ w ∈ g₂.language := by
