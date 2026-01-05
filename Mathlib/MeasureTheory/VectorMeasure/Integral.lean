@@ -3,9 +3,11 @@ Copyright (c) 2025 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.MeasureTheory.Integral.SetToL1
-import Mathlib.MeasureTheory.VectorMeasure.Variation.Lemmas
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.MeasureTheory.Integral.SetToL1
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Lemmas
 
 /-!
 # Integral of vector-valued function against vector measure
@@ -46,6 +48,8 @@ We often consider L1 functions with respect to the total variation of `Bμ.vecto
 * `α →₁[Bμ.vectorMeasure.variation.ennrealToVectorMeasure] E` : `E`-valued functions in L1 space.
 
 -/
+
+@[expose] public section
 
 open ENNReal Set MeasureTheory VectorMeasure ContinuousLinearMap
 
