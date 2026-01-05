@@ -110,7 +110,7 @@ lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
 
 end T1Space
 
-/-- The closure of image of a proper cone under a `R`-linear map is a proper cone. We
+/-- The closure of image of a proper cone under an `R`-linear map is a proper cone. We
 use continuous maps here so that the comap of f is also a map between proper cones. -/
 abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
   ClosedSubmodule.comap (f.restrictScalars R≥0) C

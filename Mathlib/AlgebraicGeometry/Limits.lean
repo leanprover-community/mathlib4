@@ -95,7 +95,7 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
 instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
-instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u+1}) :=
+instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u + 1}) :=
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
@@ -117,7 +117,7 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 /-- `Spec 0` is the initial object in the category of schemes. -/
-noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u+1}) :=
+noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u + 1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
@@ -356,7 +356,7 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
     Nonempty (IsColimit <| BinaryCofan.mk f g) := by
   let c' : Cofan fun j ↦ (WalkingPair.casesOn j X Y : Scheme.{u}) :=
     .mk S fun j ↦ WalkingPair.casesOn j f g
-  let i : BinaryCofan.mk f g ≅ c' := Cofan.ext (Iso.refl _) (by rintro (b|b) <;> rfl)
+  let i : BinaryCofan.mk f g ≅ c' := Cofan.ext (Iso.refl _) (by rintro (b | b) <;> rfl)
   refine ⟨IsColimit.ofIsoColimit (Nonempty.some ?_) i.symm⟩
   let fi (j : WalkingPair) : WalkingPair.casesOn j X Y ⟶ S := WalkingPair.casesOn j f g
   convert nonempty_isColimit_cofanMk_of fi _ _
@@ -516,12 +516,32 @@ instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
 
 end Coproduct
 
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    (i : WalkingPair) : Mono ((span f g ⋙ Scheme.forget).map (WidePushoutShape.Hom.init i)) := by
+  rw [mono_iff_injective]
+  cases i
+  · simpa using f.isOpenEmbedding.injective
+  · simpa using g.isOpenEmbedding.injective
+
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
+  obtain (a | (a | a)) := t
+  · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
+    infer_instance
+  · simpa
+  · simpa
+
+-- Test that instances on locally directed colimits fire correctly.
+example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
+    [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
+  inferInstance
+
 instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
 instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
 
 section IsAffine
 
-lemma Scheme.isAffine_of_isLimit {I : Type*} [Category I] {D : I ⥤ Scheme.{u}}
+lemma Scheme.isAffine_of_isLimit {I : Type*} [Category* I] {D : I ⥤ Scheme.{u}}
     (c : Cone D) (hc : IsLimit c) [∀ i, IsAffine (D.obj i)] :
     IsAffine c.pt := by
   let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit

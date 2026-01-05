@@ -220,8 +220,7 @@ theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
-    | Sum.inr x => rfl
-    ]
+    | Sum.inr x => rfl]
   rcases h : f b with a | b'; · rfl
   dsimp [Corec.f, destruct]
   apply congr_arg; apply Subtype.ext
@@ -346,8 +345,6 @@ theorem of_think_terminates {s : Computation α} : Terminates (think s) → Term
   | ⟨⟨a, h⟩⟩ => ⟨⟨a, of_think_mem h⟩⟩
 
 theorem notMem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradiction
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => notMem_empty a h
 

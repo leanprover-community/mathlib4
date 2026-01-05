@@ -16,7 +16,7 @@ This file defines isomorphisms between objects of a category.
 ## Main definitions
 
 - `structure Iso` : a bundled isomorphism between two objects of a category;
-- `class IsIso` : an unbundled version of `iso`;
+- `class IsIso` : an unbundled version of `Iso`;
   note that `IsIso f` is a `Prop`, and only asserts the existence of an inverse.
   Of course, this inverse is unique, so it doesn't cost us much to use choice to retrieve it.
 - `inv f`, for the inverse of a morphism with `[IsIso f]`
@@ -519,7 +519,7 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
 
 section
 
-variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
+variable {D : Type*} [Category* D] {X Y : C} (e : X ≅ Y)
 
 @[reassoc (attr := simp), grind =]
 lemma map_hom_inv_id (F : C ⥤ D) :

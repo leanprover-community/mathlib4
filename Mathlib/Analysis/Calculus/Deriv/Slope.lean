@@ -20,7 +20,7 @@ use `slope f x y = (y - x)⁻¹ • (f y - f x)` instead of division.
 We also prove some estimates on the upper/lower limits of the slope in terms of the derivative.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 

@@ -148,7 +148,7 @@ variable {F}
 isomorphisms of cowedges. -/
 @[simps!]
 def ext {W₁ W₂ : Cowedge F} (e : W₁.pt ≅ W₂.pt)
-    (he : ∀ j : J, W₁.π j ≫ e.hom  = W₂.π j := by cat_disch) : W₁ ≅ W₂ :=
+    (he : ∀ j : J, W₁.π j ≫ e.hom = W₂.π j := by cat_disch) : W₁ ≅ W₂ :=
   Cocones.ext e (fun j =>
     match j with
     | .right _ => he _
@@ -293,7 +293,7 @@ noncomputable def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F :=
 
 @[reassoc]
 lemma coend.condition {i j : J} (f : i ⟶ j) :
-     (F.map f.op).app i ≫ ι F i  = (F.obj (op j)).map f ≫ ι F j := by
+     (F.map f.op).app i ≫ ι F i = (F.obj (op j)).map f ≫ ι F j := by
   apply Cowedge.condition
 
 variable {F}
@@ -320,7 +320,7 @@ variable {F' : Jᵒᵖ ⥤ J ⥤ C} [HasCoend F'] (f : F ⟶ F')
 
 /-- A natural transformation of functors F ⟶ F' induces a map coend F ⟶ coend F'. -/
 noncomputable def coend.map : coend F ⟶ coend F' :=
-  coend.desc (fun x ↦ (f.app (op x)).app x ≫ coend.ι _ _ ) (fun j j' φ ↦ by
+  coend.desc (fun x ↦ (f.app (op x)).app x ≫ coend.ι _ _) (fun j j' φ ↦ by
     simp [coend.condition])
 
 @[reassoc (attr := simp)]

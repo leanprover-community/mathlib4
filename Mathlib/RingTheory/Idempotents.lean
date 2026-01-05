@@ -78,9 +78,6 @@ lemma OrthogonalIdempotents.mul_sum_of_notMem (he : OrthogonalIdempotents e)
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
 
-@[deprecated (since := "2025-05-23")]
-alias OrthogonalIdempotents.mul_sum_of_not_mem := OrthogonalIdempotents.mul_sum_of_notMem
-
 lemma OrthogonalIdempotents.map (he : OrthogonalIdempotents e) :
     OrthogonalIdempotents (f ∘ e) := by
   classical
@@ -380,7 +377,7 @@ theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingH
     eq_of_isNilpotent_sub_of_isIdempotentElem hx he₂
       (h _ (by rw [RingHom.mem_ker, map_sub, hx', sub_self]))⟩
 
-/-- A family of orthogonal idempotents induces an surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
+/-- A family of orthogonal idempotents induces a surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
     (he : OrthogonalIdempotents e) :
     Function.Surjective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by

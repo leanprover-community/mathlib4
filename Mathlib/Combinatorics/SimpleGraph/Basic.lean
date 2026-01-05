@@ -625,10 +625,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 
 @[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
-  rintro v w
-  simp +contextual only [fromEdgeSet_adj, Ne, not_false_iff,
-    and_true, and_imp]
-  exact fun vws _ => h vws
+  simpa using Set.diff_subset_diff h fun _ a ↦ a
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
   conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
@@ -643,6 +640,9 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   infer_instance
 
 end FromEdgeSet
+
+theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
+  simp [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
 
 /-! ### Incidence set -/
 
@@ -695,8 +695,6 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
   Iff.rfl
 
 lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_neighborSet_self := notMem_neighborSet_self
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -758,14 +756,8 @@ theorem commonNeighbors_symm (v w : V) : G.commonNeighbors v w = G.commonNeighbo
 theorem notMem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.1 rfl
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_left := notMem_commonNeighbors_left
-
 theorem notMem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.2 rfl
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_right := notMem_commonNeighbors_right
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=

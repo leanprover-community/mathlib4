@@ -28,7 +28,7 @@ universe u
 
 open CategoryTheory Limits MonoidalCategory
 
-variable {V : Type*} [Category V] {G : Type*} [Monoid G]
+variable {V : Type*} [Category* V] {G : Type*} [Monoid G]
 
 namespace Action
 
@@ -286,7 +286,7 @@ namespace CategoryTheory.Functor
 
 open Action
 
-variable {W : Type*} [Category W] [MonoidalCategory V] [MonoidalCategory W]
+variable {W : Type*} [Category* W] [MonoidalCategory V] [MonoidalCategory W]
   (F : V ⥤ W)
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal

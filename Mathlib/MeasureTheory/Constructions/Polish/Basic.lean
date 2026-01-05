@@ -839,7 +839,7 @@ theorem MeasurableSet.image_of_measurable_injOn {f : γ → α}
       tγ _ _ _ (continuous_id_of_le t't) s hs
   exact
     @MeasurableSet.image_of_continuousOn_injOn γ
-      _ _ _ _  s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
+      _ _ _ _ s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
       M (@Continuous.continuousOn γ _ t' _ f s f_cont) f_inj
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
@@ -924,7 +924,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
   let t' := t ∩ g ⁻¹' u
   have ht' : MeasurableSet t' := by
-    have : t' = ⋃ c ∈ u, t ∩ g⁻¹' {c} := by ext; simp [t']
+    have : t' = ⋃ c ∈ u, t ∩ g ⁻¹' {c} := by ext; simp [t']
     rw [this]
     apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
     obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
@@ -936,8 +936,8 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
     intro x hx y hy hxy
     contrapose! hxy
-    wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
+    wlog! H : x < y generalizing x y with h
+    · have : y < x := lt_of_le_of_ne H hxy.symm
       exact (h hy hx hxy.symm this).symm
     intro h
     exact hx.2 ⟨hx.1, x, y, hx.1, hy.1, H, rfl, h.symm⟩

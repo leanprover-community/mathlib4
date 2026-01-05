@@ -30,7 +30,7 @@ theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
       b * (l.zipWith (fun a i => a * b ^ i) (List.range l.length)).sum := by
   suffices
     l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
-      l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
+      l.zipWith (fun a i => b * (a * b ^ i)) (List.range l.length)
     by simp [this]
   congr; ext; ring
 
@@ -63,7 +63,7 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
     exact div_eq_of_lt h
 
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
-    (b.digits n).length ≤ k ↔ n < b ^ k  := by
+    (b.digits n).length ≤ k ↔ n < b ^ k := by
   by_cases h : n = 0
   · have : 0 < b ^ k := by positivity
     simpa [h]
@@ -143,7 +143,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert @pow_length_le_mul_ofDigits b (digits (b+2) m)
+  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m)
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
@@ -182,7 +182,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length := List.length_pos_iff.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
-            ← this, sum_Ico_consecutive _  h₁ <| (le_add_right tl.length 1),
+            ← this, sum_Ico_consecutive _ h₁ <| (le_add_right tl.length 1),
             ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
@@ -262,7 +262,7 @@ theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b 
       rw [Nat.ofDigits_mod_eq_head! _ _]
       exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
           Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
-  · rcases n with _ | _ <;> simp_all [show b = 0 by cutsat]
+  · rcases n with _ | _ <;> simp_all [show b = 0 by lia]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by

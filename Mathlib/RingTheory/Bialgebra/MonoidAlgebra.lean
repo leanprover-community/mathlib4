@@ -36,7 +36,7 @@ namespace MonoidAlgebra
 variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M] [Monoid N] [Monoid O]
 
 variable (R A M) in
-instance instBialgebra : Bialgebra R (MonoidAlgebra A M) where
+instance instBialgebra : Bialgebra R A[M] where
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
   mul_compr₂_counit := by ext; simp
   comul_one := by
@@ -51,22 +51,22 @@ instance instBialgebra : Bialgebra R (MonoidAlgebra A M) where
       LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
--- TODO: Generalise to `MonoidAlgebra A M →ₐc[R] MonoidAlgebra A N` under `Bialgebra R A`
+-- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
 variable (R) in
 /-- If `f : M → N` is a monoid hom, then `MonoidAlgebra.mapDomain f` is a bialgebra hom between
 their monoid algebras. -/
 @[simps!]
-noncomputable def mapDomainBialgHom (f : M →* N) : MonoidAlgebra R M →ₐc[R] MonoidAlgebra R N :=
+noncomputable def mapDomainBialgHom (f : M →* N) : R[M] →ₐc[R] R[N] :=
   .ofAlgHom (mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
-@[simp] lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id _ _ := by ext; simp
+@[simp] lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id R R[M] := by ext; simp
 
 @[simp]
 lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
     mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
   ext; simp [Finsupp.mapDomain_comp]
 
-lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : MonoidAlgebra R M) :
+lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M]) :
     mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
   ext; simp
 

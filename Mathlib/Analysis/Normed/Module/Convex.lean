@@ -66,10 +66,9 @@ theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 open Pointwise in
-theorem convexHull_sphere_eq_closedBall [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
+theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
     convexHull ℝ (sphere x r) = closedBall x r := by
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
     rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
