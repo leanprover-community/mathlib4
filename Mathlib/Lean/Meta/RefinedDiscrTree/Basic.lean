@@ -51,8 +51,9 @@ inductive Key where
   | proj (typeName : Name) (idx nargs : Nat)
   deriving Inhabited, BEq
 
-/-
-At the root, `.const` is the most common key, and it is very uncommon
+/-- Compute the hash of a `RefinedDiscrTree.Key`.
+
+Note: at the root, `.const` is the most common key, and it is very uncommon
 to get the same constant name with a different arity.
 So for performance, we just use `hash name` to hash `.const name _`.
 -/
@@ -71,6 +72,7 @@ protected def Key.hash : Key → UInt64
 
 instance : Hashable Key := ⟨Key.hash⟩
 
+/-- Format a `RefinedDiscrTree.Key`. -/
 def Key.format : Key → Format
   | .star                   => f!"*"
   | .labelledStar id        => f!"*{id}"
@@ -179,6 +181,7 @@ inductive StackEntry where
   /-- `.expr` is an expression that will be indexed. -/
   | expr (info : ExprInfo)
 
+/-- Format a `RefinedDiscrTree.StackEntry`. -/
 def StackEntry.format : StackEntry → Format
   | .star => f!".star"
   | .expr info => f!".expr {info.expr}"
@@ -230,6 +233,7 @@ def mkInitLazyEntry (labelledStars : Bool) : MetaM LazyEntry :=
     labelledStars? := if labelledStars then some #[] else none
   }
 
+/-- Format a `RefinedDiscrTree.LazyEntry`. -/
 def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
   let mut parts := #[f!"stack: {entry.stack}"]
   unless entry.computedKeys == [] do
@@ -289,6 +293,7 @@ namespace RefinedDiscrTree
 
 variable {α : Type}
 
+/-- Format a `RefinedDiscrTree`. -/
 partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   let lines := tree.root.fold (init := #[]) fun lines key trie =>
     lines.push (Format.nest 2 f!"{key} =>{Format.line}{go trie}")
