@@ -46,8 +46,8 @@ variable (data : presM.RestrictScalarsData presB)
 given a presentation of `M` as a `B`-module, a presentation of `B` as an `A`-module,
 and an additional data. -/
 noncomputable def restrictScalars : Presentation A M :=
-  ofExact (g := LinearMap.restrictScalars A presM.π) (presB.finsupp presM.G) data
-    presM.exact presM.surjective_π (by
+  ofAddExact (g := LinearMap.restrictScalars A presM.π) (presB.finsupp presM.G) data
+    presM.addExact presM.surjective_π (by
       ext v
       dsimp
       simp only [Submodule.mem_top, iff_true]

@@ -275,7 +275,7 @@ theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddC
   have ⟨_, K, ϕ, hK⟩ := FinitePresentation.exists_fin R P
   haveI : Module.Finite R K := Module.Finite.iff_fg.mpr hK
   have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
-    simp_rw [comp_assoc, (LinearMap.exact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
+    simp_rw [comp_assoc, (LinearMap.addExact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
   obtain ⟨k, a, y, hay, ha⟩ := exists_factorization_of_comp_eq_zero_of_free this
   use k, (K.liftQ a (by rwa [← range_le_ker_iff, Submodule.range_subtype] at ha)) ∘ₗ ϕ, y
   apply (cancel_right ϕ.symm.surjective).mp

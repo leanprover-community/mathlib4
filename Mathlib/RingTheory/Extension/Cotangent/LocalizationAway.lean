@@ -198,14 +198,14 @@ noncomputable
 def cotangentCompLocalizationAwayEquiv :
     ((localizationAway T g).comp P).toExtension.Cotangent ≃ₗ[T]
       T ⊗[S] P.toExtension.Cotangent × (Generators.localizationAway T g).toExtension.Cotangent :=
-  ((Cotangent.exact (localizationAway g (S := T)) P).splitSurjectiveEquiv
+  ((Cotangent.addExact (localizationAway g (S := T)) P).splitSurjectiveEquiv
     (liftBaseChange_injective_of_isLocalizationAway _ P)
     ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).1
 
 lemma cotangentCompLocalizationAwayEquiv_symm_inr :
     (cotangentCompLocalizationAwayEquiv g P hx).symm
       (0, cMulXSubOneCotangent T g) = x := by
-  simpa [cotangentCompLocalizationAwayEquiv, Function.Exact.splitSurjectiveEquiv] using
+  simpa [cotangentCompLocalizationAwayEquiv, Function.AddExact.splitSurjectiveEquiv] using
     cotangentCompAwaySec_apply g P x
 
 lemma cotangentCompLocalizationAwayEquiv_symm_comp_inl :
@@ -213,7 +213,7 @@ lemma cotangentCompLocalizationAwayEquiv_symm_comp_inl :
       .inl T (T ⊗[S] P.toExtension.Cotangent) (localizationAway T g).toExtension.Cotangent =
       .liftBaseChange T
         (Extension.Cotangent.map ((localizationAway T g).toComp P).toExtensionHom) :=
-  ((Cotangent.exact (localizationAway g (S := T)) P).splitSurjectiveEquiv
+  ((Cotangent.addExact (localizationAway g (S := T)) P).splitSurjectiveEquiv
     (liftBaseChange_injective_of_isLocalizationAway _ P)
     ⟨cotangentCompAwaySec g P x,
       map_comp_cotangentCompAwaySec g P hx⟩).2.left.symm
@@ -228,7 +228,7 @@ lemma snd_comp_cotangentCompLocalizationAwayEquiv :
     LinearMap.snd T (T ⊗[S] P.toExtension.Cotangent) (localizationAway T g).toExtension.Cotangent ∘ₗ
       (cotangentCompLocalizationAwayEquiv g P hx).toLinearMap =
       Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom :=
-  ((Cotangent.exact (localizationAway T g) P).splitSurjectiveEquiv
+  ((Cotangent.addExact (localizationAway T g) P).splitSurjectiveEquiv
     (liftBaseChange_injective_of_isLocalizationAway _ P)
     ⟨cotangentCompAwaySec g P x, map_comp_cotangentCompAwaySec g P hx⟩).2.right.symm
 

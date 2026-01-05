@@ -85,7 +85,8 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
   have hP : Function.Injective P.toExtension.cotangentComplex := by
     rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot]
     exact FormallySmooth.subsingleton_h1Cotangent
-  obtain ⟨l, hl⟩ := ((P.toExtension.exact_cotangentComplex_toKaehler.split_tfae'.out 0 1 rfl rfl).mp
+  obtain ⟨l, hl⟩ :=
+    ((P.toExtension.addExact_cotangentComplex_toKaehler.split_tfae'.out 0 1 rfl rfl).mp
     ⟨P.toExtension.subsingleton_h1Cotangent.mp FormallySmooth.subsingleton_h1Cotangent,
       Module.projective_lifting_property _ _ P.toExtension.toKaehler_surjective⟩).2
   obtain ⟨g, hg⟩ := retractionKerCotangentToTensorEquivSection (R := R) P.algebraMap_surjective
@@ -288,7 +289,7 @@ theorem iff_split_injection
   rw [formallySmooth_iff, and_comm,
     Module.Projective.iff_split_of_projective (KaehlerDifferential.mapBaseChange R P A)
       (mapBaseChange_surjective R P A hf), ← kerCotangentToTensor_injective_iff hf]
-  convert (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae'
+  convert (((addExact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae'
     (g := (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out 0 1) using 2
   · rw [← (LinearMap.extendScalarsOfSurjectiveEquiv hf).exists_congr_right]
     simp [LinearMap.ext_iff]

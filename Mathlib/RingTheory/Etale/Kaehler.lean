@@ -38,10 +38,11 @@ Also see `S ⊗[R] Ω[A⁄R] ≃ₗ[S] Ω[S ⊗[R] A⁄S]` at `KaehlerDifferenti
 def KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale [Algebra.FormallyEtale S T] :
     T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R] := by
   refine LinearEquiv.ofBijective (mapBaseChange R S T)
-    ⟨?_, fun x ↦ (KaehlerDifferential.exact_mapBaseChange_map R S T x).mp (Subsingleton.elim _ _)⟩
+    ⟨?_, fun x ↦ (KaehlerDifferential.addExact_mapBaseChange_map R S T x).mp
+      (Subsingleton.elim _ _)⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
-  obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.exact_δ_mapBaseChange R S T x).mp hx
+  obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.addExact_δ_mapBaseChange R S T x).mp hx
   rw [Subsingleton.elim x 0, map_zero]
 
 lemma KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap
@@ -242,8 +243,8 @@ def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.
     ext x
     simp
   · intro x
-    have : Function.Exact (h1Cotangentι.baseChange T) (P.cotangentComplex.baseChange T) :=
-      Module.Flat.lTensor_exact T (LinearMap.exact_subtype_ker_map _)
+    have : Function.AddExact (h1Cotangentι.baseChange T) (P.cotangentComplex.baseChange T) :=
+      Module.Flat.lTensor_addExact T (LinearMap.addExact_subtype_ker_map _)
     obtain ⟨a, ha⟩ := (this ((Extension.tensorCotangent f halg H₂).symm x.1)).mp (by
       apply (Extension.tensorCotangentSpace f H₁).injective
       rw [LinearEquiv.map_zero, ← x.2]

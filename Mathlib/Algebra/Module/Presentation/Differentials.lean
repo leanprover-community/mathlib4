@@ -132,8 +132,8 @@ noncomputable def differentialsSolution :
   linearCombination_var_relation r := by
     simp only [differentialsRelations_G, LinearMap.coe_comp, LinearEquiv.coe_coe,
       Function.comp_apply, ← comm₂₃', ← comm₁₂_single]
-    apply DFunLike.congr_fun (Function.Exact.linearMap_comp_eq_zero
-      (pres.toExtension.exact_cotangentComplex_toKaehler))
+    apply DFunLike.congr_fun (Function.AddExact.linearMap_comp_eq_zero
+      (pres.toExtension.addExact_cotangentComplex_toKaehler))
 
 lemma differentials.comm₂₃ :
     pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =
@@ -148,13 +148,13 @@ lemma differentialsSolution_isPresentation :
   · rw [← Module.Relations.Solution.surjective_π_iff_span_eq_top, ← comm₂₃]
     exact Extension.toKaehler_surjective.comp pres.cotangentSpaceBasis.repr.symm.surjective
   · rw [← Module.Relations.range_map]
-    exact Function.Exact.linearMap_ker_eq
-      ((LinearMap.exact_iff_of_surjective_of_bijective_of_injective
+    exact Function.AddExact.linearMap_ker_eq
+      ((LinearMap.addExact_iff_of_surjective_of_bijective_of_injective
       _ _ _ _ (hom₁ pres)
       pres.cotangentSpaceBasis.repr.symm.toLinearMap .id
       (comm₁₂ pres) (by simpa using comm₂₃ pres) (surjective_hom₁ pres)
         (LinearEquiv.bijective _) (Equiv.refl _).injective).2
-        pres.toExtension.exact_cotangentComplex_toKaehler)
+        pres.toExtension.addExact_cotangentComplex_toKaehler)
 
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
 of `S` as an `R`-algebra. -/

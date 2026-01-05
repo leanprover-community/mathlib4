@@ -34,8 +34,8 @@ variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R 
 lemma Module.Flat.ker_lTensor_eq [Module.Flat R M] :
     LinearMap.ker (AlgebraTensorModule.lTensor S M f) =
       LinearMap.range (AlgebraTensorModule.lTensor S M (LinearMap.ker f).subtype) := by
-  rw [← LinearMap.exact_iff]
-  exact Module.Flat.lTensor_exact M (LinearMap.exact_subtype_ker_map f)
+  rw [← LinearMap.addExact_iff]
+  exact Module.Flat.lTensor_addExact M (LinearMap.addExact_subtype_ker_map f)
 
 lemma Module.Flat.eqLocus_lTensor_eq [Module.Flat R M] :
     LinearMap.eqLocus (AlgebraTensorModule.lTensor S M f)

@@ -379,7 +379,7 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
       rwa [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,
         ← IsLocalRing.subsingleton_tensorProduct (R := R)]
     -- Whence `M ≃ l(M)` is projective and the result follows.
-    have := (AddExact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
+    have := (l.addExact_map_mkQ_range.split_tfae this (Submodule.mkQ_surjective _)).out 0 1
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
 

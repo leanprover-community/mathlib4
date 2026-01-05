@@ -86,8 +86,8 @@ instance [Small.{v} R] (S : Submonoid R) : (ModuleCat.localizedModule_functor S)
 lemma localizedModule_functor_map_exact [Small.{v} R] (S : Submonoid R)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
     (T.map (ModuleCat.localizedModule_functor S)).Exact := by
-  rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
-  exact IsLocalizedModule.map_exact S (T.X₁.localizedModuleMkLinearMap S)
+  rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_addExact] at h ⊢
+  exact IsLocalizedModule.map_addExact S (T.X₁.localizedModuleMkLinearMap S)
     (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S) _ _ h
 
 instance [Small.{v} R] (S : Submonoid R) :

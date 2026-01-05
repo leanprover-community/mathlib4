@@ -197,7 +197,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) :
     Basis κ S Ω[S⁄R] := by
   apply P.cotangentSpaceBasis.ofSplitExact (sectionCotangent_comp P)
-    Extension.exact_cotangentComplex_toKaehler Extension.toKaehler_surjective hf (b := P.map)
+    Extension.addExact_cotangentComplex_toKaehler Extension.toKaehler_surjective hf (b := P.map)
   · intro i
     apply sectionCotangent_zero_of_notMem_range _ _
     simp [← hcompl.compl_eq]
