@@ -540,22 +540,6 @@ theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
     rw [Nat.descFactorial_eq_zero_iff_lt.mpr (by grind)]
     simp
 
-theorem iterate_derivative_mul_X_pow' {n m} (p : R[X]) :
-    derivative^[n] (p * X ^ m) =
-      ∑ k ∈ range m.succ,
-      ((n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k))) := by
-  rw [iterate_derivative_mul_X_pow p]
-  by_cases! n ≤ m
-  case neg h => rw [min_eq_left_of_lt h]
-  case pos h =>
-    rw [min_eq_right h, ← add_zero (∑ k ∈ range n.succ, _),
-      show range m.succ = range n.succ ∪ Ico n.succ m.succ by grind,
-      sum_union (by rw [range_eq_Ico]; apply Ico_disjoint_Ico_consecutive)]
-    congr 1
-    refine (sum_eq_zero (fun k hk => ?_)).symm
-    rw [Nat.choose_eq_zero_of_lt (by grind)]
-    simp
-
 theorem iterate_derivative_mul_X_pow'' {n m} (p : R[X]) :
     derivative^[n] (derivative^[m] p * X ^ m) =
       ∑ k ∈ range m.succ,
