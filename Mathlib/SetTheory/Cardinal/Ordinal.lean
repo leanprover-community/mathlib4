@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Ordinal.Principal
 This file collects results about the cardinality of different ordinal operations.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 open Cardinal Ordinal Set

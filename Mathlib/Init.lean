@@ -62,7 +62,7 @@ All linters imported here have no bulk imports;
 
 -/
 
-@[expose] public section
+public section
 
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 

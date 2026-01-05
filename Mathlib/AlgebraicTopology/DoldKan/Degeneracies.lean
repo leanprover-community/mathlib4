@@ -27,7 +27,7 @@ statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits

@@ -15,7 +15,7 @@ This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instan
 types.
 -/
 
-@[expose] public section
+public section
 
 namespace Plausible
 

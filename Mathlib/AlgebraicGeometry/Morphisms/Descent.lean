@@ -30,7 +30,7 @@ that `P` descends along `P'` from a codescent property of ring homomorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
