@@ -36,23 +36,23 @@ suppress_compilation
 open CategoryTheory Limits
 open scoped MonoidAlgebra
 
-universe u
+universe u v w
 
 /-- The category of `k`-linear representations of a monoid `G`. -/
-abbrev Rep (k G : Type u) [Ring k] [Monoid G] :=
-  Action (ModuleCat.{u} k) G
+abbrev Rep (k : Type u) (G : Type v) [Ring k] [Monoid G] :=
+  Action (ModuleCat.{w} k) G
 
-instance (k G : Type u) [CommRing k] [Monoid G] : Linear k (Rep k G) := by infer_instance
+instance (k : Type u) (G : Type v) [CommRing k] [Monoid G] : Linear k (Rep k G) := by infer_instance
 
 namespace Rep
 
-variable {k G : Type u} [CommRing k]
+variable {k : Type u} {G : Type v} [CommRing k]
 
 section
 
 variable [Monoid G]
 
-instance : CoeSort (Rep k G) (Type u) :=
+instance : CoeSort (Rep k G) (Type w) :=
   ⟨fun V => V.V⟩
 
 instance (V : Rep k G) : AddCommGroup V := by
@@ -69,15 +69,15 @@ def ρ (V : Rep k G) : Representation k G V :=
   (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
 
 /-- Lift an unbundled representation to `Rep`. -/
-abbrev of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
+abbrev of {V : Type w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
   ⟨ModuleCat.of k V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
 
-theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
-    (of ρ : Type u) = V :=
+theorem coe_of {V : Type w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
+    (of ρ : Type w) = V :=
   rfl
 
 @[simp]
-theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : (of ρ).ρ = ρ :=
+theorem of_ρ {V : Type w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : (of ρ).ρ = ρ :=
   rfl
 
 theorem Action_ρ_eq_ρ {A : Rep k G} :
@@ -97,12 +97,12 @@ theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
 variable (k G)
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
-abbrev trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
+abbrev trivial (V : Type w) [AddCommGroup V] [Module k V] : Rep k G :=
   Rep.of (Representation.trivial k G V)
 
 variable {k G}
 
-theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
+theorem trivial_def {V : Type w} [AddCommGroup V] [Module k V] (g : G) :
     (trivial k G V).ρ g = LinearMap.id :=
   rfl
 
@@ -118,19 +118,19 @@ abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
 instance (X : ModuleCat k) : ((trivialFunctor k G).obj X).IsTrivial where
 
-instance {V : Type u} [AddCommGroup V] [Module k V] :
+instance {V : Type w} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
-instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
+instance {V : Type w} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
 
-instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
+instance {H V : Type*} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
 
 section Commutative
 
-variable {k G : Type u} [CommRing k] [CommMonoid G]
+variable {k : Type u} {G : Type v} [CommRing k] [CommMonoid G]
 variable (A : Rep k G)
 
 /-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
@@ -193,10 +193,10 @@ def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
   hom := ModuleCat.ofHom <| Submodule.mkQ _
   comm _ := rfl
 
-instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{w} k)) :=
   Action.preservesLimits_forget _ _
 
-instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{w} k)) :=
   Action.preservesColimits_forget _ _
 
 theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
@@ -220,11 +220,11 @@ open MonoidalCategory in
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 @[simp]
-lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) :
+lemma res_obj_ρ {H : Type w} [Monoid H] (f : G →* H) (A : Rep k H) :
     ρ ((Action.res _ f).obj A) = A.ρ.comp f := rfl
 
 @[simp]
-lemma coe_res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
+lemma coe_res_obj_ρ {H : Type w} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
 section Linearization
