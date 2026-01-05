@@ -27,7 +27,7 @@ open CategoryTheory
 
 namespace ModuleCat
 
-universe u
+universe u v
 
 variable (R : Type u)
 
@@ -38,9 +38,9 @@ variable [Ring R]
 /-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
-def free : Type u ⥤ ModuleCat R where
+def free (R : Type v) [Ring R] : Type u ⥤ ModuleCat.{max u v} R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ f
+  map {_ _} f := ModuleCat.ofHom <| Finsupp.lmapDomain _ _ f
   map_id := by intros; ext : 1; exact Finsupp.lmapDomain_id _ _
   map_comp := by intros; ext : 1; exact Finsupp.lmapDomain_comp _ _ _ _
 
@@ -50,7 +50,7 @@ variable {R}
 noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
 
 @[ext 1200]
-lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
+lemma free_hom_ext {X : Type u} {M : ModuleCat R} {f g : (free R).obj X ⟶ M}
     (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
     f = g :=
   ModuleCat.hom_ext (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))

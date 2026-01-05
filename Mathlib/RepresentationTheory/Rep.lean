@@ -229,11 +229,11 @@ lemma coe_res_obj_ρ {H : Type w} [Monoid H] (f : G →* H) (A : Rep k H) (g : G
 
 section Linearization
 
-variable (k G : Type u) [CommRing k] [Monoid G]
+variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-def linearization : (Action (Type u) G) ⥤ (Rep k G) :=
+def linearization : (Action (Type w) G) ⥤ (Rep k G) :=
   (ModuleCat.free k).mapAction G
 
 instance : (linearization k G).Monoidal := by
@@ -243,25 +243,25 @@ instance : (linearization k G).Monoidal := by
 variable {k G}
 
 @[simp]
-theorem coe_linearization_obj (X : Action (Type u) G) :
+theorem coe_linearization_obj (X : Action (Type w) G) :
     (linearization k G).obj X = (X.V →₀ k) := rfl
 
-theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+theorem linearization_obj_ρ (X : Action (Type w) G) (g : G) :
     ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) :=
   rfl
 
 @[simp]
-theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
+theorem coe_linearization_obj_ρ (X : Action (Type w) G) (g : G) :
     @DFunLike.coe (no_index G →* ((X.V →₀ k) →ₗ[k] (X.V →₀ k))) _
       (fun _ => (X.V →₀ k) →ₗ[k] (X.V →₀ k)) _
       ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) := rfl
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
-theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
+theorem linearization_single (X : Action (Type w) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   simp
 
-variable {X Y : Action (Type u) G} (f : X ⟶ Y)
+variable {X Y : Action (Type w) G} (f : X ⟶ Y)
 
 @[simp]
 theorem linearization_map_hom : ((linearization k G).map f).hom =
@@ -300,14 +300,14 @@ variable (k G)
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
 @[simps! hom_hom inv_hom]
-def linearizationTrivialIso (X : Type u) :
+def linearizationTrivialIso (X : Type w) :
     (linearization k G).obj (Action.mk X 1) ≅ trivial k G (X →₀ k) :=
   Action.mkIso (Iso.refl _) fun _ => ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext
     fun _ => linearization_single ..
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
+abbrev ofMulAction (H : Type w) [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
