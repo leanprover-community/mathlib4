@@ -75,7 +75,7 @@ def bitCasesOn {motive : Nat → Sort u} (n) (bit : ∀ b n, motive (bit b n)) :
   congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp <;> omega
+  cases b <;> simp <;> lia
 
 private abbrev binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
     (bit : ∀ b n, motive n → motive (bit b n)) :
