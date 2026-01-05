@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
@@ -352,6 +353,43 @@ theorem integral_one_div_one_add_sq :
 @[simp]
 theorem integral_inv_one_add_sq : (∫ x : ℝ in a..b, (↑1 + x ^ 2)⁻¹) = arctan b - arctan a := by
   simp only [← one_div, integral_one_div_one_add_sq]
+
+@[simp]
+theorem integral_inv_sqrt_one_sub_sq :
+    ∫ x : ℝ in a..b, (√(1 - x ^ 2))⁻¹ = arcsin b - arcsin a := by
+  convert_to (∫ x : ℝ in a..-1, (√(1 - x ^ 2))⁻¹) + ∫ x : ℝ in -1..b, (√(1 - x ^ 2))⁻¹ =
+      (arcsin (-1) - arcsin a) + (arcsin b - arcsin (-1)) using 1
+  · simp [integral_add_adjacent_intervals]
+  · ring
+  suffices ∀ t, ∫ x : ℝ in -1..t, (√(1 - x ^ 2))⁻¹ = arcsin t - arcsin (-1) by
+    congr 2
+    · rw [integral_symm, this a, neg_sub]
+    · rw [this b]
+  intro t
+  wlog ht : t ≤ 1
+  · replace ht := le_of_not_ge ht
+    calc
+      _ = (∫ x : ℝ in -1..1, (√(1 - x ^ 2))⁻¹) + ∫ x : ℝ in 1..t, (√(1 - x ^ 2))⁻¹ := by
+        simp [integral_add_adjacent_intervals]
+      _ = π + ∫ x : ℝ in 1..t, 0 := by
+        congr 1
+        · simpa using @this 0 0 1 (by norm_num)
+        · refine integral_congr fun x hx => ?_
+          rw [inv_eq_zero, sqrt_eq_zero']
+          suffices x ≤ -1 ∨ x ≥ 1 by rcases this with this | this <;> nlinarith only [this]
+          simp [Set.uIcc] at hx
+          grind only
+      _ = _ := by simp [← pi_div_two_eq_arcsin.mpr ht]
+  calc
+    _ = ∫ x : ℝ in -1..t, deriv arcsin x := by simp [deriv_arcsin]
+    _ = _ := by
+      apply integral_deriv_eq_sub_uIoo
+      · apply continuous_arcsin.continuousOn
+      · intro x hx
+        simp [uIoo] at hx
+        rw [differentiableAt_arcsin]
+        grind only
+      · simp
 
 section RpowCpow
 
