@@ -3,7 +3,9 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Comparability and incomparability relations
@@ -31,6 +33,8 @@ to the other, use `not_compRel_iff` and `not_incompRel_iff`.
 
 These definitions should be linked to `IsChain` and `IsAntichain`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -71,7 +75,7 @@ instance [IsRefl α r] : IsRefl α (CompRel r) where
 theorem CompRel.symm : CompRel r a b → CompRel r b a :=
   Or.symm
 
-instance : IsSymm α (CompRel r) where
+instance : Std.Symm (CompRel r) where
   symm _ _ := CompRel.symm
 
 theorem compRel_comm {a b : α} : CompRel r a b ↔ CompRel r b a :=
@@ -204,7 +208,7 @@ variable {r}
 theorem IncompRel.symm : IncompRel r a b → IncompRel r b a :=
   And.symm
 
-instance : IsSymm α (IncompRel r) where
+instance : Std.Symm (IncompRel r) where
   symm _ _ := IncompRel.symm
 
 theorem incompRel_comm {a b : α} : IncompRel r a b ↔ IncompRel r b a :=

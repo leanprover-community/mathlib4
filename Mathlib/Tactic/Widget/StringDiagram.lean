@@ -3,12 +3,14 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Component.Panel.Basic
-import ProofWidgets.Presentation.Expr
-import ProofWidgets.Component.HtmlDisplay
-import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+module
+
+public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Component.Panel.Basic
+public meta import ProofWidgets.Presentation.Expr
+public meta import ProofWidgets.Component.HtmlDisplay
+public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
 /-!
 # String Diagram Widget
@@ -49,14 +51,15 @@ and unitors from lean expressions. This operation is performed using the `Tactic
 function.
 
 A monoidal category can be viewed as a bicategory with a single object. The program in this
-file can also be used to display the string diagram for general bicategories (see the wip
-PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
-categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
-Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib/CategoryTheory/Bicategory/SingleObj.lean`, although the string diagram widget does not use
-it directly.
+file can also be used to display the string diagram for general bicategories. With this in mind we
+will sometimes refer to objects and morphisms in monoidal categories as 1-morphisms and 2-morphisms
+respectively, borrowing the terminology of bicategories. Note that the relation between monoidal
+categories and bicategories is formalized in `Mathlib/CategoryTheory/Bicategory/SingleObj.lean`,
+although the string diagram widget does not use it directly.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

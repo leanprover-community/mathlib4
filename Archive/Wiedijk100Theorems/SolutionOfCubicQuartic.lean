@@ -115,7 +115,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d = a * (y ^ 3 + 3 * p * y - 2 * q) := by
-    simp [hp, hq, field, h9, h54]; ring
+    simp only [hp, h9, hq, h54, y]; field
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, cubic_depressed_eq_zero_iff hω hp_nonzero hr hs3 ht]
   simp_rw [y, eq_sub_iff_add_eq]
@@ -136,10 +136,10 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
     calc
       a * x ^ 3 + b * x ^ 2 + c * x + d =
       a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) := by
-        field_simp; ring
+        field
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
-        simp only [hb2, hb3]; field_simp; ring
-      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; simp [field, h54]; ring
+        simp only [hb2, hb3]; field
+      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by simp only [hs3, hq, h54]; field
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by
     intro x
@@ -211,7 +211,7 @@ theorem quartic_eq_zero_iff (ha : a ≠ 0)
   have h256 : (256 : K) = 2 ^ 8 := by norm_num
   have h₁ : a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e =
       a * (y ^ 4 + p * y ^ 2 + q * y + r) := by
-    simp [hp, hq, hr, field, y, h4, h8, h16, h256]; ring
+    simp only [h4, hp, h8, hq, hr, h16, h256, y]; field
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, quartic_depressed_eq_zero_iff hq_nonzero hu hs hv hw]
   simp_rw [y, eq_sub_iff_add_eq]
@@ -234,7 +234,7 @@ theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
   have h256 : (256 : K) = 2 ^ 8 := by norm_num
   have h₁ : a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e = a * (y ^ 4 + p * y ^ 2 + r) := by
     simp only [hp, hr, y, h4, h8, h16, h256]
-    linear_combination (norm := (field_simp; ring)) (4 * a * x + b) * hqz / a ^ 3 / 2 ^ 5
+    linear_combination (norm := field) (4 * a * x + b) * hqz / a ^ 3 / 2 ^ 5
   rw [h₁, ha.isUnit.mul_right_eq_zero]
   calc
     _ ↔ 1 * (y ^ 2 * y ^ 2) + p * y ^ 2 + r = 0 := by

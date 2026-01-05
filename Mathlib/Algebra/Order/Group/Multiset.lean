@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Multiset.Fold
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Multisets form an ordered monoid
@@ -16,6 +18,8 @@ This file contains the ordered monoid instance on multisets, and lemmas related 
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 open List Nat
 
@@ -39,10 +43,12 @@ instance instAddCancelCommMonoid : AddCancelCommMonoid (Multiset α) where
   nsmul := nsmulRec
 
 lemma mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s) : a ∈ s := by
-  induction' n with n ih
-  · rw [zero_nsmul] at h
+  induction n with
+  | zero =>
+    rw [zero_nsmul] at h
     exact absurd h (notMem_zero _)
-  · rw [succ_nsmul, mem_add] at h
+  | succ n ih =>
+    rw [succ_nsmul, mem_add] at h
     exact h.elim ih id
 
 @[simp]
@@ -178,9 +184,9 @@ end
 @[ext]
 lemma addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g := by
   ext s
-  induction' s using Multiset.induction_on with a s ih
-  · simp only [_root_.map_zero]
-  · simp only [← singleton_add, _root_.map_add, ih, h]
+  induction s using Multiset.induction_on with
+  | empty => simp only [_root_.map_zero]
+  | cons a s ih => simp only [← singleton_add, _root_.map_add, ih, h]
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
   ⟨(s.map fun a => count a s).fold max 0,

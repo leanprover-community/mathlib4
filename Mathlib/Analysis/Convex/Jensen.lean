@@ -3,9 +3,11 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Jensen's inequality and maximum principle for convex functions
@@ -30,6 +32,8 @@ As corollaries, we get:
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
 
+@[expose] public section
+
 
 open Finset LinearMap Set Convex Pointwise
 
@@ -40,9 +44,9 @@ variable {𝕜 E F β ι : Type*}
 
 section Jensen
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
-  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E] [Module 𝕜 β]
-  [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [AddCommGroup β]
+  [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E] [Module 𝕜 β] [IsStrictOrderedModule 𝕜 β]
+  {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
 
 /-- Convex **Jensen's inequality**, `Finset.centerMass` version. -/
 theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
@@ -242,7 +246,7 @@ section MaximumPrinciple
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
   [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E]
-  [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {w : ι → 𝕜} {p : ι → E}
+  [Module 𝕜 β] [IsStrictOrderedModule 𝕜 β] {s : Set E} {f : E → β} {w : ι → 𝕜} {p : ι → E}
   {x y z : E}
 
 theorem ConvexOn.le_sup_of_mem_convexHull {t : Finset E} (hf : ConvexOn 𝕜 s f) (hts : ↑t ⊆ s)

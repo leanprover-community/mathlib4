@@ -3,9 +3,10 @@ Copyright (c) 2024 Sam van Gool. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sam van Gool
 -/
+module
 
-import Mathlib.Order.PrimeIdeal
-import Mathlib.Order.Zorn
+public import Mathlib.Order.PrimeIdeal
+public import Mathlib.Order.Zorn
 
 /-!
 # Separating prime filters and ideals
@@ -24,6 +25,8 @@ ideal, filter, prime, distributive lattice
 * [M. H. Stone, Topological representations of distributive lattices and Brouwerian logics
 (1938)][Sto1938]
 -/
+
+@[expose] public section
 
 
 universe u
@@ -109,7 +112,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have ineq : c₁ ⊓ c₂ ≤ b ⊔ (a₁ ⊓ a₂) :=
   calc
     c₁ ⊓ c₂ ≤ (b₁ ⊔ a₁) ⊓ (b₂ ⊔ a₂) := inf_le_inf cba₁ cba₂
-    _       ≤ (b  ⊔ a₁) ⊓ (b  ⊔ a₂) := by gcongr; exacts [le_sup_left, le_sup_right]
+    _       ≤ (b ⊔ a₁) ⊓ (b ⊔ a₂) := by gcongr; exacts [le_sup_left, le_sup_right]
     _       = b ⊔ (a₁ ⊓ a₂) := (sup_inf_left b a₁ a₂).symm
   -- Note that c₁ ⊓ c₂ ∈ F, since c₁ and c₂ are both in F and F is a filter.
   -- Since F is an upper set, it now follows that b ⊔ (a₁ ⊓ a₂) ∈ F.

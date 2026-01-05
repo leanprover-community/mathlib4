@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Int.GCD
-import Mathlib.RingTheory.Coprime.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Int.GCD
+public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
@@ -19,6 +21,8 @@ Notably, this includes lemmas about `Finset.prod` as this requires importing Big
 lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -55,6 +59,17 @@ theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a
     IsCoprime (a : R) (b : R) :=
   mod_cast h.isCoprime.intCast
 
+theorem Rat.isCoprime_num_den (x : ℚ) : IsCoprime x.num x.den :=
+  x.reduced.cast.of_isCoprime_of_dvd_left Int.dvd_natAbs_self
+
+theorem Int.isCoprime_gcdA {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdA y) y := by
+  use x, x.gcdB y
+  rwa [mul_comm _ y, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
+
+theorem Int.isCoprime_gcdB {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdB y) x := by
+  use y, x.gcdA y
+  rwa [add_comm, mul_comm, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
+
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
     (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
   IsCoprime.ne_zero_or_ne_zero (R := A) <| by
@@ -87,22 +102,20 @@ theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i ∈ t, s i)) (i : I) (h
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
 
-theorem Finset.prod_dvd_of_coprime :
-    (Hs : (t : Set I).Pairwise (IsCoprime on s)) → (Hs1 : (∀ i ∈ t, s i ∣ z)) →
+theorem Finset.prod_dvd_of_coprime
+    (Hs : (t : Set I).Pairwise (IsCoprime on s)) (Hs1 : (∀ i ∈ t, s i ∣ z)) :
     (∏ x ∈ t, s x) ∣ z := by
   classical
-  exact Finset.induction_on t (fun _ _ ↦ one_dvd z)
-    (by
-      intro a r har ih Hs Hs1
-      rw [Finset.prod_insert har]
-      have aux1 : a ∈ (↑(insert a r) : Set I) := Finset.mem_insert_self a r
-      refine
-        (IsCoprime.prod_right fun i hir ↦
-              Hs aux1 (Finset.mem_insert_of_mem hir) <| by
-                rintro rfl
-                exact har hir).mul_dvd
-          (Hs1 a aux1) (ih (Hs.mono ?_) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi)
-      simp only [Finset.coe_insert, Set.subset_insert])
+  induction t using Finset.induction_on with
+  | empty => simp
+  | insert a r har ih =>
+    rw [Finset.prod_insert har]
+    refine IsCoprime.mul_dvd ?_ ?_ ?_
+    · refine IsCoprime.prod_right fun i hir ↦ ?_
+      exact Hs (by simp) (by simp [hir]) (ne_of_mem_of_not_mem hir har).symm
+    · exact Hs1 a (Finset.mem_insert_self a r)
+    · refine ih (Hs.mono ?_) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi
+      simp only [Finset.coe_insert, Set.subset_insert]
 
 theorem Fintype.prod_dvd_of_coprime [Fintype I] (Hs : Pairwise (IsCoprime on s))
     (Hs1 : ∀ i, s i ∣ z) : (∏ x, s x) ∣ z :=
@@ -172,13 +185,13 @@ theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [Decida
 
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
+  rw [Finset.pairwise_subtype_iff_pairwise_finset']
   refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
-    obtain ⟨hj, ji⟩ := hj
-    refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (Subtype.coe_inj.mpr h).symm
-  · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
+    exact (hp hj.1 hi hj.2).symm
+  · rintro i hi j hj h
     apply IsCoprime.prod_right_iff.mp (hp i hi)
-    exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
+    exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h (Finset.mem_singleton.mp f).symm⟩
 
 variable {m n : ℕ}
 

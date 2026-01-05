@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Adjunction.Parametrized
+module
+
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Lifting properties and parametrized adjunctions
@@ -32,6 +34,8 @@ we show that `sq₁₂.ι` has the left lifting property with respect to
 to `sq₁₃.π`: this is the lemma `ParametrizedAdjunction.hasLiftingProperty_iff`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

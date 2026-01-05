@@ -3,8 +3,10 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # (Co)products in functor categories
@@ -13,6 +15,8 @@ Given `f : α → D ⥤ C`, we prove the isomorphisms
 `(∏ᶜ f).obj d ≅ ∏ᶜ (fun s => (f s).obj d)` and `(∐ f).obj d ≅ ∐ (fun s => (f s).obj d)`.
 
 -/
+
+@[expose] public section
 
 universe w v v₁ v₂ u u₁ u₂
 

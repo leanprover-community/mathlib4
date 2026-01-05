@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Tactic.Common
 
 /-!
 # Square root of integers
@@ -12,6 +14,8 @@ import Mathlib.Tactic.Common
 This file defines the square root function on integers. `Int.sqrt z` is the greatest integer `r`
 such that `r * r ≤ z`. If `z ≤ 0`, then `Int.sqrt z = 0`.
 -/
+
+@[expose] public section
 
 
 namespace Int

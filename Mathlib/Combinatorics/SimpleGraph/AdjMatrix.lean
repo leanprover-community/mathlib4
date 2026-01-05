@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Adjacency Matrices
@@ -33,6 +35,8 @@ properties to computational properties of the matrix.
   pair of vertices.
 
 -/
+
+@[expose] public section
 
 
 open Matrix

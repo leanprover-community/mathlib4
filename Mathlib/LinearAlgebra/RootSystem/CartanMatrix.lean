@@ -3,12 +3,14 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Algebra.Module.Submodule.Union
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
+module
+
+public import Mathlib.Algebra.CharZero.Infinite
+public import Mathlib.Algebra.Module.Submodule.Union
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.LinearAlgebra.RootSystem.Base
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
 /-!
 # Cartan matrices for root systems
@@ -24,6 +26,8 @@ This file contains definitions and basic results about Cartan matrices of root p
 * `RootPairing.Base.equivOfCartanMatrixEq`: a root system is determined by its Cartan matrix.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -63,7 +67,7 @@ lemma cartanMatrixIn_apply_same [FaithfulSMul S R] (i : b.support) :
 /- If we generalised the notion of `RootPairing.Base` to work relative to an assumption
 `[P.IsValuedIn S]` then such a base would provide basis of `P.rootSpan S` and we could avoid
 using `Matrix.map` below. -/
-lemma cartanMatrixIn_mul_diagonal_eq {P : RootSystem ι R M N} [P.IsValuedIn S]
+lemma cartanMatrixIn_mul_diagonal_eq {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsValuedIn S]
     (B : P.InvariantForm) (b : P.Base) [DecidableEq ι] :
     (b.cartanMatrixIn S).map (algebraMap S R) *
       (Matrix.diagonal fun i : b.support ↦ B.form (P.root i) (P.root i)) =
@@ -72,7 +76,8 @@ lemma cartanMatrixIn_mul_diagonal_eq {P : RootSystem ι R M N} [P.IsValuedIn S]
   simp [B.two_mul_apply_root_root]
 
 lemma cartanMatrixIn_nondegenerate [IsDomain R] [NeZero (2 : R)] [FaithfulSMul S R] [IsDomain S]
-    {P : RootSystem ι R M N} [P.IsValuedIn S] [Fintype ι] [P.IsAnisotropic] (b : P.Base) :
+    {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsValuedIn S] [Fintype ι] [P.IsAnisotropic]
+    (b : P.Base) :
     (b.cartanMatrixIn S).Nondegenerate := by
   classical
   obtain ⟨B, hB⟩ : ∃ B : P.InvariantForm, B.form.Nondegenerate :=
@@ -112,7 +117,6 @@ variable [IsDomain R]
 lemma cartanMatrix_apply_eq_zero_iff_symm {i j : b.support} :
     b.cartanMatrix i j = 0 ↔ b.cartanMatrix j i = 0 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   simp only [cartanMatrix_apply_eq_zero_iff_pairing, P.pairing_eq_zero_iff]
 
 variable [Finite ι]
@@ -160,7 +164,7 @@ lemma cartanMatrix_map_abs [DecidableEq ι] :
   ext; simp [abs_cartanMatrix_apply, Matrix.ofNat_apply]
 
 lemma cartanMatrix_nondegenerate
-    {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) :
+    {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic] (b : P.Base) :
     b.cartanMatrix.Nondegenerate :=
   let _i : Fintype ι := Fintype.ofFinite ι
   cartanMatrixIn_nondegenerate ℤ b
@@ -170,7 +174,6 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     (p : b.support → Prop) {i j : b.support} (hi : p i)
     (hp : ∀ i j, p i → b.cartanMatrix j i ≠ 0 → p j) :
     p j := by
-  have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero i⟩
   let q : Submodule R M := span R (P.root ∘ (↑) '' {i | p i})
   have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
   have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by
@@ -204,7 +207,8 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   simp [← hq_mem, IsIrreducible.eq_top_of_invtSubmodule_reflection q hq hq₀]
 
 open scoped Matrix in
-lemma injective_pairingIn {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) :
+lemma injective_pairingIn {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic]
+    (b : P.Base) :
     Injective (fun i (k : b.support) ↦ P.pairingIn ℤ i k) := by
   classical
   intro i j hij
@@ -239,7 +243,7 @@ lemma injective_pairingIn {P : RootSystem ι R M N} [P.IsCrystallographic] (b : 
 
 lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
     {K : Type*} [Field K] [CharZero K] [Module K M] [Module K N]
-    {P : RootSystem ι K M N} [P.IsCrystallographic] (b : P.Base) :
+    {P : RootPairing ι K M N} [P.IsRootSystem] [P.IsCrystallographic] (b : P.Base) :
     ∃ d ∈ span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K)),
       (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) := by
   set p := span K (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : K))
@@ -264,8 +268,8 @@ lemma exists_mem_span_pairingIn_ne_zero_and_pairwise_ne
 section Uniqueness
 
 variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
-  {P : RootSystem ι R M N} [P.IsCrystallographic] [P.IsReduced] (b : P.Base)
-  {P₂ : RootSystem ι₂ R M₂ N₂} [P₂.IsCrystallographic] (b₂ : P₂.Base)
+  {P : RootPairing ι R M N} [P.IsRootSystem] [P.IsCrystallographic] [P.IsReduced] (b : P.Base)
+  {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic] (b₂ : P₂.Base)
   (e : b.support ≃ b₂.support)
 
 lemma apply_mem_range_root_of_cartanMatrixEq
@@ -292,9 +296,9 @@ lemma apply_mem_range_root_of_cartanMatrixEq
     exact mem_range_self _
 
 /-- A root system is determined by its Cartan matrix. -/
-def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsReduced]
+def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
     (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :
-    P.Equiv P₂.toRootPairing :=
+    P.Equiv P₂ :=
   let f : M ≃ₗ[R] M₂ := b.toWeightBasis.equiv b₂.toWeightBasis e
   have hf : ∀ m, f m ∈ range P₂.root ↔ m ∈ range P.root := by
     refine fun m ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩

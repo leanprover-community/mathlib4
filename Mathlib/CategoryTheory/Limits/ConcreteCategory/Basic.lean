@@ -3,16 +3,20 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Types.Images
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Images
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Facts about (co)limits of functors into concrete categories
 -/
+
+@[expose] public section
 
 
 universe s t w v u r
@@ -23,7 +27,7 @@ namespace CategoryTheory.Types
 
 open Limits
 
-/-! The forgetful fuctor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
+/-! The forgetful functor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
 over to `forget (Type u)`.
 
 We currently have two instances for `HasForget (Type u)`:

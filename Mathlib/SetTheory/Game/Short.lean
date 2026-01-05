@@ -3,11 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 
-import Mathlib.Data.Fintype.Basic
-import Mathlib.SetTheory.Cardinal.Regular
-import Mathlib.SetTheory.Game.Birthday
-import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Short` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -23,6 +24,8 @@ We prove that the order relations `â‰¤` and `<`, and the equivalence relation `â
 short games, although unfortunately in practice `decide` doesn't seem to be able to
 prove anything using these instances.
 -/
+
+@[expose] public section
 
 -- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
 -- trigger this error.

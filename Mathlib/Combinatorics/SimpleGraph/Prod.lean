@@ -3,8 +3,10 @@ Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Graph products
@@ -26,6 +28,8 @@ two edges is a square.
 
 Define all other graph products!
 -/
+
+@[expose] public section
 
 variable {α β γ : Type*}
 
@@ -61,8 +65,6 @@ theorem neighborSet_boxProd (x : α × β) :
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm]
-
-@[deprecated (since := "2025-05-08")] alias boxProd_neighborSet := neighborSet_boxProd
 
 variable (G H)
 
@@ -144,9 +146,6 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
     · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
 
-@[deprecated (since := "2025-03-30")]
-alias ofBoxProdLeft_boxProdRight := ofBoxProdRight_boxProdRight
-
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
     w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
@@ -207,8 +206,6 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
 theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 
-@[deprecated (since := "2025-05-08")] alias boxProd_connected := connected_boxProd
-
 instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
     Fintype ((G □ H).neighborSet x) :=
@@ -230,15 +227,11 @@ theorem neighborFinset_boxProd (x : α × β)
   convert_to (G □ H).neighborFinset x = _ using 2
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
-@[deprecated (since := "2025-05-08")] alias boxProd_neighborFinset := neighborFinset_boxProd
-
 theorem degree_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
-
-@[deprecated (since := "2025-05-08")] alias boxProd_degree := degree_boxProd
 
 lemma reachable_boxProd {x y : α × β} :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
@@ -248,8 +241,6 @@ lemma reachable_boxProd {x y : α × β} :
     exact ⟨⟨w.ofBoxProdLeft⟩, ⟨w.ofBoxProdRight⟩⟩
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
-
-@[deprecated (since := "2025-05-08")] alias boxProd_reachable := reachable_boxProd
 
 @[simp]
 lemma edist_boxProd (x y : α × β) :
@@ -268,13 +259,11 @@ lemma edist_boxProd (x y : α × β) :
     have w_len : w_app.length = wG.length + wH.length := by
       unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
-    ·  calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
+    · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := by exact_mod_cast w_len
           _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
-
-@[deprecated (since := "2025-05-08")] alias boxProd_edist := edist_boxProd
 
 end SimpleGraph

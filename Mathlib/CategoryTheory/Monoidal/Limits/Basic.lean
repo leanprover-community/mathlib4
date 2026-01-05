@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
@@ -18,6 +20,8 @@ satisfying the laws of a lax monoidal functor.
 ## TODO
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 
@@ -45,11 +49,11 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
             { app := fun j => limit.π F j ⊗ₘ limit.π G j
               naturality := fun j j' f => by
                 dsimp
-                simp only [Category.id_comp, ← tensor_comp, limit.w] } })
+                simp only [Category.id_comp, tensorHom_comp_tensorHom, limit.w] } })
     (μ_natural := fun f g ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
-        NatTrans.comp_app, Category.assoc, ← tensor_comp, limMap_π]))
+        NatTrans.comp_app, Category.assoc, tensorHom_comp_tensorHom, limMap_π]))
     (associativity := fun F G H ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π,

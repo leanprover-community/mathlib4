@@ -3,10 +3,12 @@ Copyright (c) 2022 Sam van Gool and Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sam van Gool, Jake Levinson
 -/
-import Mathlib.Topology.Sheaves.Presheaf
-import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.Topology.Sheaves.Presheaf
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 
@@ -25,6 +27,8 @@ In this file we formulate two notions for what it means for
 We prove that these are equivalent.
 
 -/
+
+@[expose] public section
 
 
 universe v u

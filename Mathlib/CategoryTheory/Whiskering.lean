@@ -3,9 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.CategoryTheory.IsoReassoc
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.FullyFaithful
+module
+
+public import Mathlib.Tactic.CategoryTheory.IsoReassoc
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Whiskering
@@ -21,9 +23,11 @@ This operation is functorial in `F`, and we package this as `whiskeringLeft`. He
 
 We also provide analogues for composition on the right, and for these operations on isomorphisms.
 
-We show the associators an unitor natural isomorphisms satisfy the triangle and pentagon
+We show the associator and unitor natural isomorphisms satisfy the triangle and pentagon
 identities.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -108,7 +112,7 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
 `(whiskeringRight C D E).obj F : (C ⥤ D) ⥤ C ⥤ E`. -/
 @[simps]
 def FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
-    (C : Type*) [Category C] :
+    (C : Type*) [Category* C] :
     ((whiskeringRight C D E).obj F).FullyFaithful where
   preimage f :=
     { app := fun X => hF.preimage (f.app X)
@@ -123,6 +127,7 @@ theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (𝟭 _) = 𝟭 _ :=
 
 /-- The isomorphism between left-whiskering on the identity functor and the identity of the functor
 between the resulting functor categories. -/
+@[simps!]
 def whiskeringLeftObjIdIso : (whiskeringLeft C C E).obj (𝟭 _) ≅ 𝟭 _ :=
   Iso.refl _
 
@@ -133,6 +138,7 @@ theorem whiskeringLeft_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤
 
 /-- The isomorphism between left-whiskering on the composition of functors and the composition
 of two left-whiskering applications. -/
+@[simps!]
 def whiskeringLeftObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
     (whiskeringLeft C D' E).obj (F ⋙ G) ≅
     (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
@@ -143,10 +149,9 @@ theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (𝟭 _) = 𝟭 _ :
 
 /-- The isomorphism between right-whiskering on the identity functor and the identity of the functor
 between the resulting functor categories. -/
+@[simps!]
 def whiskeringRightObjIdIso : (whiskeringRight E C C).obj (𝟭 _) ≅ 𝟭 _ :=
   Iso.refl _
-
-@[deprecated (since := "2025-04-04")] alias wiskeringRightObjIdIso := whiskeringRightObjIdIso
 
 theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
     (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G =
@@ -155,6 +160,7 @@ theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C �
 
 /-- The isomorphism between right-whiskering on the composition of functors and the composition
 of two right-whiskering applications. -/
+@[simps!]
 def whiskeringRightObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
     (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G ≅
     (whiskeringRight E C D').obj (F ⋙ G) :=
@@ -365,8 +371,8 @@ theorem pentagon :
         (associator F (G ⋙ H) K).hom ≫ whiskerLeft F (associator G H K).hom =
       (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by cat_disch
 
-variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category D₁] [Category D₂] [Category D₃] (E : Type*) [Category E]
+variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* D₁] [Category* D₂] [Category* D₃] (E : Type*) [Category* E]
 
 /-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
 @[simps!]
@@ -438,14 +444,14 @@ variable {E}
 /-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
 `(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E'`. -/
 @[simps!]
-def postcompose₂ {E' : Type*} [Category E'] :
+def postcompose₂ {E' : Type*} [Category* E'] :
     (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E' :=
   whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
 
 /-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
 `(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E'`. -/
 @[simps!]
-def postcompose₃ {E' : Type*} [Category E'] :
+def postcompose₃ {E' : Type*} [Category* E'] :
     (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E' :=
   whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
 

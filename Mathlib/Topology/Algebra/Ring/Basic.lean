@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Topology.Algebra.Group.GroupTopology
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
 
@@ -25,6 +27,8 @@ of topological (semi)rings.
 - The product of two topological (semi)rings is a topological (semi)ring.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -45,9 +49,6 @@ mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
 class IsTopologicalSemiring [TopologicalSpace R] [NonUnitalNonAssocSemiring R] : Prop
     extends ContinuousAdd R, ContinuousMul R
 
-@[deprecated (since := "2025-02-14")] alias TopologicalSemiring :=
-  IsTopologicalSemiring
-
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
@@ -56,9 +57,6 @@ multiplication as it is multiplication with `-1`. (See
 `topological_semiring.to_topological_add_group`) -/
 class IsTopologicalRing [TopologicalSpace R] [NonUnitalNonAssocRing R] : Prop
     extends IsTopologicalSemiring R, ContinuousNeg R
-
-@[deprecated (since := "2025-02-14")] alias TopologicalRing :=
-  IsTopologicalRing
 
 variable {R}
 
@@ -75,9 +73,6 @@ proving `continuous_neg`. -/
 theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace R] [NonAssocRing R]
     (_ : IsTopologicalSemiring R) : IsTopologicalRing R where
   toContinuousNeg := IsTopologicalSemiring.continuousNeg_of_mul
-
-@[deprecated (since := "2025-02-14")] alias TopologicalSemiring.toTopologicalRing :=
-  IsTopologicalSemiring.toIsTopologicalRing
 
 -- See note [lower instance priority]
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
@@ -180,12 +175,12 @@ section
 
 variable {S : Type*} [TopologicalSpace R] [TopologicalSpace S]
 
-/-- The product topology on the cartesian product of two topological semirings
+/-- The product topology on the Cartesian product of two topological semirings
   makes the product into a topological semiring. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [IsTopologicalSemiring R]
     [IsTopologicalSemiring S] : IsTopologicalSemiring (R × S) where
 
-/-- The product topology on the cartesian product of two topological rings
+/-- The product topology on the Cartesian product of two topological rings
   makes the product into a topological ring. -/
 instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [IsTopologicalRing R]
     [IsTopologicalRing S] : IsTopologicalRing (R × S) where
@@ -392,6 +387,7 @@ theorem ext {f g : RingTopology R} (h : f.IsOpen = g.IsOpen) : f = g :=
 instance : PartialOrder (RingTopology R) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
+set_option backward.privateInPublic true in
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
   let _ := sInf (toTopologicalSpace '' S)
   { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
@@ -401,6 +397,8 @@ private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
     toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousNeg }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Ring topologies on `R` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.
 

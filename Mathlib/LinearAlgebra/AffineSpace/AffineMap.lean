@@ -3,14 +3,16 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.AddTorsor.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Affine maps
 
@@ -21,7 +23,7 @@ This file defines affine maps.
 * `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`.  Various
   basic examples of affine maps are defined, including `const`, `id`, `lineMap` and `homothety`.
 
-## Notations
+## Notation
 
 * `P1 →ᵃ[k] P2` is a notation for `AffineMap k P1 P2`;
 * `AffineSpace V P`: a localized notation for `AddTorsor V P` defined in
@@ -42,6 +44,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
+
+@[expose] public section
 
 open Affine
 
@@ -295,7 +299,15 @@ theorem vadd_apply (f : P1 →ᵃ[k] V2) (g : P1 →ᵃ[k] P2) (p : P1) : (f +�
   rfl
 
 @[simp]
+theorem vadd_linear (f : P1 →ᵃ[k] V2) (g : P1 →ᵃ[k] P2) : (f +ᵥ g).linear = f.linear + g.linear :=
+  rfl
+
+@[simp]
 theorem vsub_apply (f g : P1 →ᵃ[k] P2) (p : P1) : (f -ᵥ g : P1 →ᵃ[k] V2) p = f p -ᵥ g p :=
+  rfl
+
+@[simp]
+theorem vsub_linear (f g : P1 →ᵃ[k] P2) : (f -ᵥ g).linear = f.linear - g.linear :=
   rfl
 
 /-- `Prod.fst` as an `AffineMap`. -/
@@ -354,6 +366,7 @@ instance : Inhabited (P1 →ᵃ[k] P1) :=
   ⟨id k P1⟩
 
 /-- Composition of affine maps. -/
+@[simps linear]
 def comp (f : P2 →ᵃ[k] P3) (g : P1 →ᵃ[k] P2) : P1 →ᵃ[k] P3 where
   toFun := f ∘ g
   linear := f.linear.comp g.linear
@@ -594,10 +607,7 @@ lemma lineMap_mono [LinearOrder k] [Preorder V1] [AddRightMono V1] [SMulPosMono 
     {p₀ p₁ : V1} (h : p₀ ≤ p₁) :
     Monotone (lineMap (k := k) p₀ p₁) := by
   intro x y hxy
-  simp? [lineMap] says
-    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
-      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
-      Function.const_apply, add_le_add_iff_right]
+  suffices x • (p₁ - p₀) ≤ y • (p₁ - p₀) by simpa [lineMap]
   gcongr
   simpa
 
@@ -605,10 +615,7 @@ lemma lineMap_anti [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k
     {p₀ p₁ : V1} (h : p₁ ≤ p₀) :
     Antitone (lineMap (k := k) p₀ p₁) := by
   intro x y hxy
-  simp? [lineMap] says
-    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
-      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
-      Function.const_apply, add_le_add_iff_right]
+  suffices y • (p₁ - p₀) ≤ x • (p₁ - p₀) by simpa [lineMap]
   rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
   gcongr
   simpa
@@ -625,7 +632,7 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
 are the same. -/
 theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
   rw [decomp]
-  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
+  simp only [map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 
 theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
     (f : k →ᵃ[k] k) (a b : k) :
@@ -727,6 +734,7 @@ map into a family of affine spaces.
 
 This is the affine version of `LinearMap.pi`.
 -/
+@[simps linear]
 def pi (f : (i : ι) → (P1 →ᵃ[k] φp i)) : P1 →ᵃ[k] ((i : ι) → φp i) where
   toFun m a := f a m
   linear := LinearMap.pi (fun a ↦ (f a).linear)
@@ -811,8 +819,15 @@ theorem homothety_def (c : P1) (r : k) :
     homothety c r = r • (id k P1 -ᵥ const k P1 c) +ᵥ const k P1 c :=
   rfl
 
+theorem coe_homothety (c : P1) (r : k) : homothety c r = fun p => r • (p -ᵥ c) +ᵥ c :=
+  rfl
+
 theorem homothety_apply (c : P1) (r : k) (p : P1) : homothety c r p = r • (p -ᵥ c : V1) +ᵥ c :=
   rfl
+
+@[simp]
+theorem homothety_linear (c : P1) (r : k) : (homothety c r).linear = r • LinearMap.id := by
+  simp [homothety]
 
 theorem homothety_eq_lineMap (c : P1) (r : k) (p : P1) : homothety c r p = lineMap c p r :=
   rfl

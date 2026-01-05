@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Subgroup
-import Mathlib.Analysis.Normed.Group.Uniform
+module
+
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Subgroup
+public import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Normed groups homomorphisms
@@ -24,6 +26,8 @@ Some easy other constructions are related to subgroups of normed groups.
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when needed.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -329,8 +333,7 @@ theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAdd
         norm_le_zero_iff.1
           (calc
             _ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-            _ = _ := by rw [hn, zero_mul]
-            ))
+            _ = _ := by rw [hn, zero_mul]))
     fun hf => by rw [hf, opNorm_zero]
 
 @[simp]

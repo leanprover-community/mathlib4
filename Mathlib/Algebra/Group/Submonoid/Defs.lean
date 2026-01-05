@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Tactic.FastInstance
-import Mathlib.Data.Set.Insert
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Defs
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Submonoids: definition
@@ -45,6 +47,8 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 ## Tags
 submonoid, submonoids
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 
@@ -123,9 +127,17 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
 namespace Submonoid
 
 @[to_additive]
+lemma toSubsemigroup_injective : (toSubsemigroup : Submonoid M → Subsemigroup M).Injective :=
+  fun ⟨s, hs⟩ ⟨t, ht⟩ ↦ by congr!
+
+@[to_additive (attr := simp)]
+lemma toSubsemigroup_inj {s t : Submonoid M} : s.toSubsemigroup = t.toSubsemigroup ↔ s = t :=
+  toSubsemigroup_injective.eq_iff
+
+@[to_additive]
 instance : SetLike (Submonoid M) M where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' := SetLike.coe_injective.comp toSubsemigroup_injective
 
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
@@ -180,7 +192,7 @@ protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M wher
 
 variable {S : Submonoid M}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_copy {s : Set M} (hs : s = S) : (S.copy s hs : Set M) = s :=
   rfl
 
@@ -228,13 +240,22 @@ theorem mem_bot {x : M} : x ∈ (⊥ : Submonoid M) ↔ x = 1 :=
 theorem mem_top (x : M) : x ∈ (⊤ : Submonoid M) :=
   Set.mem_univ x
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : Submonoid M) : Set M) = Set.univ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
   rfl
+
+@[to_additive (attr := simp)]
+lemma mk_eq_top (toSubsemigroup : Subsemigroup M) (one_mem') :
+    mk toSubsemigroup one_mem' = ⊤ ↔ toSubsemigroup = ⊤ := by simp [← SetLike.coe_set_eq]
+
+@[to_additive (attr := simp)]
+lemma mk_eq_bot (toSubsemigroup : Subsemigroup M) (one_mem') :
+    mk toSubsemigroup one_mem' = ⊥ ↔ (toSubsemigroup : Set M) = {1} := by
+  simp [← SetLike.coe_set_eq]
 
 /-- The inf of two submonoids is their intersection. -/
 @[to_additive /-- The inf of two `AddSubmonoid`s is their intersection. -/]
@@ -244,7 +265,7 @@ instance : Min (Submonoid M) :=
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
@@ -290,6 +311,9 @@ def eqLocusM (f g : M →* N) : Submonoid M where
   carrier := { x | f x = g x }
   one_mem' := by rw [Set.mem_setOf_eq, f.map_one, g.map_one]
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
+
+@[to_additive (attr := simp)]
+theorem mem_eqLocusM {f g : M →* N} {x : M} : x ∈ f.eqLocusM g ↔ f x = g x := Iff.rfl
 
 @[to_additive (attr := simp)]
 theorem eqLocusM_same (f : M →* N) : f.eqLocusM f = ⊤ :=
@@ -362,6 +386,9 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
+
+instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
+  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.1) eq)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
@@ -457,24 +484,6 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_in
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
-
-/-- A submonoid of a left cancellative unital magma inherits left cancellation. -/
-@[to_additive
-  /-- An `AddSubmonoid` of a left cancellative unital additive magma inherits left cancellation. -/]
-instance isLeftCancelMul [IsLeftCancelMul M] (S : Submonoid M) : IsLeftCancelMul S :=
-  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
-
-/-- A submonoid of a right cancellative unital magma inherits right cancellation. -/
-@[to_additive
-  /-- An `AddSubmonoid` of a right cancellative unital additive magma inherits right
-  cancellation. -/]
-instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancelMul S :=
-  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
-
-/-- A submonoid of a cancellative unital magma inherits cancellation. -/
-@[to_additive
-/-- An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation. -/]
-instance isCancelMul [IsCancelMul M] (S : Submonoid M) : IsCancelMul S where
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]
