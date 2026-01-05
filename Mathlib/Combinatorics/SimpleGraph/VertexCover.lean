@@ -195,8 +195,8 @@ theorem vertexCoverNum_mono (h : G ≤ G') : vertexCoverNum G ≤ vertexCoverNum
   IsContained.vertexCoverNum_le_vertexCoverNum ⟨(Hom.ofLE h), Function.injective_id⟩
 
 theorem vertexCoverNum_congr (f : G ≃g H) : vertexCoverNum G = vertexCoverNum H :=
-  le_antisymm (IsContained.vertexCoverNum_le_vertexCoverNum ⟨f.toHom, f.injective⟩)
-    (IsContained.vertexCoverNum_le_vertexCoverNum ⟨f.symm.toHom, f.symm.injective⟩)
+  le_antisymm f.isContained.vertexCoverNum_le_vertexCoverNum
+    f.isContained.vertexCoverNum_le_vertexCoverNum
 
 end vertexCoverNum
 end SimpleGraph
