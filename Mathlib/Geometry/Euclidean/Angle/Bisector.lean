@@ -296,28 +296,30 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
       orthogonalProjection line[ℝ, p₁, p₃] p
   · suffices p = p₁ by simp [this]
     have hs := orthogonalProjection_sup_of_orthogonalProjection_eq ho
+    have hinf : line[ℝ, p₁, p₂] ⊓ line[ℝ, p₁, p₃] = affineSpan ℝ {p₁} := by
+      convert (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2})
+      · simp [Set.image_insert_eq]
+      · simp [Set.image_insert_eq]
+      · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by
+          convert this
+          grind
+        simp
+    have hsup : line[ℝ, p₁, p₂] ⊔ line[ℝ, p₁, p₃] = ⊤ := by
+      rw [← AffineSubspace.span_union]
+      convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
+      · simp
+        grind
+      · simpa using Fact.out
     have hp : orthogonalProjection (line[ℝ, p₁, p₂]) p = p₁ := by
       suffices (orthogonalProjection (line[ℝ, p₁, p₂]) p : P) ∈ affineSpan ℝ {p₁} by
         simpa using this
       have hi : (orthogonalProjection (line[ℝ, p₁, p₂]) p : P) ∈
           line[ℝ, p₁, p₂] ⊓ line[ℝ, p₁, p₃] :=
         ⟨orthogonalProjection_mem _, ho ▸ orthogonalProjection_mem _⟩
-      convert hi
-      convert (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2}).symm
-      · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by
-          convert this
-          grind
-        simp
-      · simp [Set.image_insert_eq]
-      · simp [Set.image_insert_eq]
+      rwa [hinf] at hi
     rw [← orthogonalProjection_sup_of_orthogonalProjection_eq ho] at hp
-    rw [← hp, eq_comm, orthogonalProjection_eq_self_iff]
-    convert AffineSubspace.mem_top ℝ V p
-    rw [← AffineSubspace.span_union]
-    convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
-    · simp
-      grind
-    · simpa using Fact.out
+    rw [← hp, eq_comm, orthogonalProjection_eq_self_iff, hsup]
+    exact AffineSubspace.mem_top ℝ V p
   have hp := oangle_eq_of_dist_orthogonalProjection_eq
     (left_mem_affineSpan_pair _ _ _) (left_mem_affineSpan_pair _ _ _) ho h
   have h₂₁ : p₂ ≠ p₁ := ha.injective.ne (by decide : (1 : Fin 3) ≠ 0)
