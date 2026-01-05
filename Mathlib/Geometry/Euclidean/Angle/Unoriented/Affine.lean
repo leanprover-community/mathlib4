@@ -383,9 +383,7 @@ theorem _root_.Sbtw.angle_eq_right {p₂ p₃ p : P} (p₁ : P) (h : Sbtw ℝ p�
 the same ray. -/
 theorem _root_.Sbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Sbtw ℝ p₂ p₁ p) :
     ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
-  rw [angle_comm]
-  nth_rw 2 [angle_comm]
-  exact Sbtw.angle_eq_right p₃ h
+  simpa only [angle_comm] using h.angle_eq_right p₃
 
 /-- An Unoriented angle is unchanged by replacing the third point by one weakly further away on the
 same ray. -/
