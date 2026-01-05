@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 # Supporting lemmas for Geck's construction of a Lie algebra associated to a root system
 -/
 
-@[expose] public section
+public section
 
 open Set
 open FaithfulSMul (algebraMap_injective)
