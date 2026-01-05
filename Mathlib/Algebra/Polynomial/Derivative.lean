@@ -556,7 +556,30 @@ theorem iterate_derivative_mul_X_sq' {n} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
       (n * (n - 1)) • derivative^[n] p := by
-  sorry
+  rw [iterate_derivative_mul_X_pow]
+  by_cases n = 0
+  case pos h => simp [h]
+  case neg h =>
+    by_cases n = 1
+    case pos h' =>
+      rw [h', min_eq_right (by norm_num), show range 2 = {0, 1} by grind]
+      simp; ring
+    case neg h' =>
+      rw [min_eq_left (by omega), show range 3 = {0, 1, 2} by grind,
+        show derivative^[n] p = derivative^[n - 2 + 2] p by grind,
+        show derivative^[n + 1] p = derivative^[n - 1 + 2] p by grind]
+      have cf₁ : Nat.descFactorial 2 1 = 2 := by simp
+      have cf₂ :
+        (n.choose 2 : R[X]) * (Nat.descFactorial 2 2 : R[X]) = ((n * (n - 1) : ℕ) : R[X]) := by
+        norm_cast
+        congr 1
+        rw [Nat.choose_two_right, Nat.descFactorial_self, Nat.factorial_two, Nat.div_mul_cancel]
+        cases n with
+        | zero => simp
+        | succ n =>
+          rw [Nat.add_sub_cancel, mul_comm]
+          exact Nat.two_dvd_mul_add_one n
+      simp [-Nat.descFactorial_succ, cf₁, cf₂]; ring
 
 theorem derivative_comp (p q : R[X]) :
     derivative (p.comp q) = derivative q * p.derivative.comp q := by
