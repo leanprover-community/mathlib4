@@ -3930,6 +3930,9 @@ Q8064722:
 
 Q8066611:
   title: Kövari–Sós–Turán theorem
+  decl: SimpleGraph.zarankiewicz_le
+  authors: Mitchell Horner
+  date: 2026
 
 Q8066795:
   title: Zariski's main theorem
