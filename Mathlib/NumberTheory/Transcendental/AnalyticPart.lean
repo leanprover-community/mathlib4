@@ -71,14 +71,12 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) {R R₁ : �
          (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))), ?_⟩
     · refine ⟨fun z ↦ by fun_prop, fun z ↦ ?_⟩
       · calc _ =  deriv (deriv^[k] R) z := ?_
-
              _ = 1 * ((z - z₀) ^ (r - (k + 1)) *(↑r.factorial / ↑(r - k).factorial * R₁ z)) +
                  ↑(r - k - 1) * ((z - z₀) ^ (r - (k + 1)) *
                  (↑r.factorial / ↑(r - k).factorial * R₁ z)) +
                  ↑(r - k) * (z - z₀) ^ (r - (k + 1)) * ((z - z₀) * R₂ z) +
                  (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
                  deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := ?_
-
              _ = (z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - (k + 1)).factorial *
                  R₁ z + (z - z₀) *(fun z ↦ ↑(r - k) * R₂ z + (↑r.factorial / ↑(r - k).factorial *
                  deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))) z) := ?_
@@ -129,7 +127,7 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) {R R₁ : �
           grind
 
 lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (z₀ : ℂ) (n : ℕ) :
-  ∀ (f : ℂ → ℂ) (_ : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
+  ∀ (f : ℂ → ℂ) (_ : AnalyticAt ℂ f z₀) (_ : analyticOrderAt f z₀ ≠ ⊤),
     (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) ↔ analyticOrderAt f z₀ = n := by
   induction n with
   | zero =>
