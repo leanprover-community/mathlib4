@@ -22,7 +22,7 @@ hom-based `AddGroupSeminormClass.toSeminormedAddGroup f` construction. To help a
 the argument is an autoparam that resolves by definitional equality when using these constructions.
 -/
 
-@[expose] public section
+public section
 
 variable {F α : Type*} [FunLike F α ℝ]
 

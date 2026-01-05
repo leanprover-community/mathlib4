@@ -16,7 +16,7 @@ public import Mathlib.Order.Basic
 predicate.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
