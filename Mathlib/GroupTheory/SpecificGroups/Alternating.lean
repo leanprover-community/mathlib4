@@ -90,6 +90,10 @@ namespace Equiv.Perm
 theorem mem_alternatingGroup {f : Perm α} : f ∈ alternatingGroup α ↔ sign f = 1 :=
   sign.mem_ker
 
+theorem mul_mem_alternatingGroup_of_isSwap {g g' : Perm α} (hg : IsSwap g) (hg' : IsSwap g') :
+    g * g' ∈ alternatingGroup α := by
+  simp [mem_alternatingGroup, map_mul, hg.sign_eq, hg'.sign_eq]
+
 theorem prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
     (hl : ∀ g ∈ l, IsSwap g) : l.prod ∈ alternatingGroup α ↔ Even l.length := by
   rw [mem_alternatingGroup, sign_prod_list_swap hl, neg_one_pow_eq_one_iff_even]

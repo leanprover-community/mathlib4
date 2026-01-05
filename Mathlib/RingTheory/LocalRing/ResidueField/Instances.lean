@@ -32,7 +32,7 @@ instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable p.ResidueField q.Resid
   refine Algebra.IsSeparable.of_equiv_equiv
     (.symm <| .ofBijective _ p.bijective_algebraMap_quotient_residueField)
     (.symm <| .ofBijective _ q.bijective_algebraMap_quotient_residueField) ?_
-  ext x
+  apply RingHom.ext fun x ↦ ?_
   obtain ⟨x, rfl⟩ :=
     (RingEquiv.ofBijective _ p.bijective_algebraMap_quotient_residueField).surjective x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x

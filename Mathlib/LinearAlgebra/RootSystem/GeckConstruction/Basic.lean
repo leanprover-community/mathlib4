@@ -27,7 +27,7 @@ reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
 
 ## Alternative approaches
 
-The are at least three ways to construct a Lie algebra from a root system:
+There are at least three ways to construct a Lie algebra from a root system:
 1. As a quotient of a free Lie algebra, using the Serre relations
 2. Directly defining the Lie bracket on $H ⊕ K^∣Φ|$
 3. The Geck construction

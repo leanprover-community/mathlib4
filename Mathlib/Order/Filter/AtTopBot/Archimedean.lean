@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields
@@ -40,6 +41,9 @@ theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing
     [Archimedean R] :
     Tendsto ((↑) : ℕ → R) atTop atTop :=
   Nat.mono_cast.tendsto_atTop_atTop exists_nat_ge
+
+lemma tendsto_PNat_val_atTop_atTop : Tendsto PNat.val atTop atTop :=
+  tendsto_atTop_atTop_of_monotone (fun _ _ h ↦ h) fun a ↦ ⟨Nat.succPNat a, Nat.le_succ a⟩
 
 theorem Filter.Eventually.natCast_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] {p : R → Prop}
@@ -151,11 +155,11 @@ namespace Filter
 variable {l : Filter α} {f : α → R} {r : R}
 
 theorem map_add_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
-    [IsDirected α (· ≤ ·)] (k : α) : map (fun a => a + k) atTop = atTop :=
+    [IsDirectedOrder α] (k : α) : map (fun a => a + k) atTop = atTop :=
   map_atTop_eq_of_gc (fun a => a - k) 0 add_left_mono (by simp [le_sub_iff_add_le]) (by simp)
 
 theorem map_sub_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
-    [IsDirected α (· ≤ ·)] (k : α) : map (fun a => a - k) atTop = atTop := by
+    [IsDirectedOrder α] (k : α) : map (fun a => a - k) atTop = atTop := by
   simp_rw [sub_eq_add_neg]
   apply map_add_atTop_eq
 

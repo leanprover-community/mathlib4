@@ -73,7 +73,7 @@ structure LaxTrans (F G : OplaxFunctor B C) where
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
     cat_disch
-  naturality_id (a : B):
+  naturality_id (a : B) :
       naturality (𝟙 a) ≫ F.mapId a ▷ app a =
         app a ◁ G.mapId a ≫ (ρ_ (app a)).hom ≫ (λ_ (app a)).inv := by
     cat_disch
@@ -97,7 +97,7 @@ def id : LaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (λ_ (F.map f)).hom ≫ (ρ_ (F.map f)).inv
 
-instance : Inhabited (LaxTrans F F ) :=
+instance : Inhabited (LaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/
@@ -207,8 +207,6 @@ structure OplaxTrans (F G : B ⥤ᵒᵖᴸ C) where
 
 attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.naturality_id
   OplaxTrans.naturality_comp
-
-@[deprecated (since := "2025-04-23")] alias _root_.CategoryTheory.OplaxNatTrans := OplaxTrans
 
 namespace OplaxTrans
 
@@ -331,8 +329,6 @@ structure StrongTrans (F G : B ⥤ᵒᵖᴸ C) where
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (naturality g).hom ≫
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
     cat_disch
-
-@[deprecated (since := "2025-04-23")] alias StrongOplaxNatTrans := StrongTrans
 
 attribute [nolint docBlame] CategoryTheory.Oplax.StrongTrans.app
   CategoryTheory.Oplax.StrongTrans.naturality

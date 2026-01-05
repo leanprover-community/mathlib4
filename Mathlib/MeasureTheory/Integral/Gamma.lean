@@ -16,7 +16,7 @@ In this file, we collect several integrals over `ℝ` or `ℂ` that evaluate in 
 
 -/
 
-@[expose] public section
+public section
 
 open Real Set MeasureTheory MeasureTheory.Measure
 

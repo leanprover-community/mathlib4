@@ -21,7 +21,7 @@ the left lifting property with respect to `p.left`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

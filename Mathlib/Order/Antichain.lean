@@ -330,10 +330,10 @@ protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s
   let ⟨_, hac, hbc⟩ := directed_of r a b
   h.eq ha hb hac hbc
 
-protected theorem flip [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
+protected theorem flip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
   fun _ ha _ hb h c => (hs ha hb h c).imp (mt <| symm_of r) (mt <| symm_of r)
 
-theorem swap [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
+theorem swap [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
   hs.flip
 
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)
@@ -388,8 +388,8 @@ protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ s = ∅ 
   simp only [IsMaxAntichain, h', IsAntichain.empty, empty_subset, forall_const, true_and] at h
   exact singleton_ne_empty x (h IsAntichain.singleton).symm
 
-protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s ≠ ∅ := by
-  grind [not_nonempty_iff, IsMaxAntichain.isEmpty_iff]
+protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s.Nonempty :=
+  not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
 
 protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
   ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩

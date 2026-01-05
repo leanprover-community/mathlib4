@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Real
 # Subcomplexes
 
 In this file we discuss subcomplexes of CW complexes.
-The definintion of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
+The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 
 ## Main results
 * `RelCWComplex.Subcomplex.instRelCWComplex`: a subcomplex of a (relative) CW complex is again a

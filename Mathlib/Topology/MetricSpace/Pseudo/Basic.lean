@@ -10,6 +10,8 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
+import Mathlib.Topology.Metrizable.Basic
+
 /-!
 ## Pseudo-metric spaces
 
@@ -17,7 +19,7 @@ Further results about pseudo-metric spaces.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology

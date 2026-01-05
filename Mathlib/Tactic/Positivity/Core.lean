@@ -536,3 +536,4 @@ We register `positivity` with the `hint` tactic.
 -/
 
 register_hint 1000 positivity
+register_try?_tactic (priority := 1000) positivity
