@@ -222,80 +222,57 @@ variable {kf : KernelFork S.g} {cc : CokernelCofork S.f}
   (fac : kf.ι ≫ cc.π = π ≫ ι)
   [Epi π] [Mono ι]
 
-noncomputable def isoK : kf.pt ≅ S.cycles :=
-  IsLimit.conePointUniqueUpToIso hkf S.cyclesIsKernel
-
-@[reassoc (attr := simp)]
-lemma isoK_inv_ι : (isoK S hkf).inv ≫ kf.ι = S.iCycles :=
-  IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingParallelPair.zero
-
-@[reassoc (attr := simp)]
-lemma isoK_hom_iCycles : (isoK S hkf).hom ≫ S.iCycles = kf.ι := by
-  rw [← isoK_inv_ι S hkf, Iso.hom_inv_id_assoc]
-
-noncomputable def isoQ : cc.pt ≅ S.opcycles :=
-  IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel
-
-@[reassoc (attr := simp)]
-lemma π_isoQ_hom : cc.π ≫ (isoQ S hcc).hom = S.pOpcycles :=
-  IsColimit.comp_coconePointUniqueUpToIso_hom _ _ WalkingParallelPair.one
-
-@[reassoc (attr := simp)]
-lemma pOpcycles_isoQ_inv : S.pOpcycles ≫ (isoQ S hcc).inv = cc.π := by
-  rw [← π_isoQ_hom S hcc, assoc, Iso.hom_inv_id, comp_id]
-
 noncomputable def isoImage : H ≅ image (S.iCycles ≫ S.pOpcycles) := by
-  have : ((isoK S hkf).inv ≫ π) ≫ ι ≫ (isoQ S hcc).hom = S.iCycles ≫ S.pOpcycles := by
-    simp only [assoc, ← reassoc_of% fac, π_isoQ_hom, isoK_inv_ι_assoc]
+  have : ((S.isoCyclesOfIsLimit hkf).inv ≫ π) ≫ ι ≫
+    (S.isoOpcyclesOfIsColimit hcc).hom = S.iCycles ≫ S.pOpcycles := by
+    simp [← reassoc_of% fac]
   exact image.isoStrongEpiMono _ _ this
 
 @[reassoc (attr := simp)]
 lemma isoImage_ι :
     (isoImage S hkf hcc fac).hom ≫ image.ι (S.iCycles ≫ S.pOpcycles) =
-      ι ≫ (isoQ S hcc).hom := by
+      ι ≫ (S.isoOpcyclesOfIsColimit hcc).hom := by
   apply image.isoStrongEpiMono_hom_comp_ι
-  simp only [assoc, ← reassoc_of% fac, π_isoQ_hom, isoK_inv_ι_assoc]
+  simp [← reassoc_of% fac]
 
 noncomputable def isoHomology : H ≅ S.homology :=
   isoImage S hkf hcc fac ≪≫ S.homologyIsoImageICyclesCompPOpcycles.symm
 
 @[reassoc (attr := simp)]
 lemma π_comp_isoHomology_hom :
-    π ≫ (isoHomology S hkf hcc fac).hom = (isoK S hkf).hom ≫ S.homologyπ := by
+    π ≫ (isoHomology S hkf hcc fac).hom = (S.isoCyclesOfIsLimit hkf).hom ≫ S.homologyπ := by
   dsimp [isoHomology]
-  simp only [← cancel_mono (S.homologyIsoImageICyclesCompPOpcycles.hom), assoc,
-    Iso.inv_hom_id, comp_id, ← cancel_mono (image.ι (S.iCycles ≫ S.pOpcycles)),
-    isoImage_ι, homologyIsoImageICyclesCompPOpcycles_ι, homology_π_ι, ← reassoc_of% fac,
-    π_isoQ_hom, isoK_hom_iCycles_assoc]
+  simp [← cancel_mono (S.homologyIsoImageICyclesCompPOpcycles.hom),
+    ← cancel_mono (image.ι (S.iCycles ≫ S.pOpcycles)),
+    ← reassoc_of% fac]
 
 @[reassoc (attr := simp)]
 lemma isoHomology_hom_comp_ι :
-    (isoHomology S hkf hcc fac).inv ≫ ι = S.homologyι ≫ (isoQ S hcc).inv := by
-  rw [← cancel_epi S.homologyπ, ← cancel_epi (isoK S hkf).hom,
-    homology_π_ι_assoc, ← π_comp_isoHomology_hom_assoc S hkf hcc fac, Iso.hom_inv_id_assoc,
-    ← fac, isoK_hom_iCycles_assoc, pOpcycles_isoQ_inv]
+    (isoHomology S hkf hcc fac).inv ≫ ι = S.homologyι ≫ (S.isoOpcyclesOfIsColimit hcc).inv := by
+  simp [← cancel_epi S.homologyπ, ← cancel_epi (S.isoCyclesOfIsLimit hkf).hom,
+    ← π_comp_isoHomology_hom_assoc S hkf hcc fac, ← fac]
 
-lemma f'_eq : hkf.lift (KernelFork.ofι S.f S.zero) = S.toCycles ≫ (isoK S hkf).inv := by
-  have : Mono kf.ι := ⟨fun _ _ h => Fork.IsLimit.hom_ext hkf h⟩
-  rw [← cancel_mono kf.ι]
-  simp only [Fork.ofι_pt, Fork.IsLimit.lift_ι, Fork.ι_ofι, assoc,
-    isoK_inv_ι, toCycles_i]
+lemma f'_eq :
+    hkf.lift (KernelFork.ofι S.f S.zero) =
+      S.toCycles ≫ (S.isoCyclesOfIsLimit hkf).inv := by
+  have := Fork.IsLimit.mono hkf
+  simp [← cancel_mono kf.ι]
 
 lemma g'_eq : hcc.desc (CokernelCofork.ofπ S.g S.zero) =
-    (isoQ S hcc).hom ≫ S.fromOpcycles := by
-  have : Epi cc.π := ⟨fun _ _ h => Cofork.IsColimit.hom_ext hcc h⟩
-  rw [← cancel_epi cc.π]
-  simp only [Cofork.IsColimit.π_desc, Cofork.π_ofπ, π_isoQ_hom_assoc, p_fromOpcycles]
+    (S.isoOpcyclesOfIsColimit hcc).hom ≫ S.fromOpcycles := by
+  have := Cofork.IsColimit.epi hcc
+  simp [← cancel_epi cc.π]
 
 lemma homologyπ_isoHomology_inv :
-    S.homologyπ ≫ (isoHomology S hkf hcc fac).inv = (isoK S hkf).inv ≫ π := by
+    S.homologyπ ≫ (isoHomology S hkf hcc fac).inv = (S.isoCyclesOfIsLimit hkf).inv ≫ π := by
   simp only [← cancel_mono (isoHomology S hkf hcc fac).hom, assoc, Iso.inv_hom_id, comp_id,
     π_comp_isoHomology_hom, Iso.inv_hom_id_assoc]
 
 lemma isoHomology_inv_homologyι :
-    (isoHomology S hkf hcc fac).hom ≫ S.homologyι = ι ≫ (isoQ S hcc).hom := by
-  rw [← cancel_mono (isoQ S hcc).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
-    ← isoHomology_hom_comp_ι S hkf hcc fac, Iso.hom_inv_id_assoc]
+    (isoHomology S hkf hcc fac).hom ≫ S.homologyι =
+    ι ≫ (S.isoOpcyclesOfIsColimit hcc).hom := by
+  rw [← cancel_mono (S.isoOpcyclesOfIsColimit hcc).inv, assoc, assoc, Iso.hom_inv_id,
+    comp_id, ← isoHomology_hom_comp_ι S hkf hcc fac, Iso.hom_inv_id_assoc]
 
 @[simps]
 noncomputable def leftHomologyData : S.LeftHomologyData where
@@ -313,14 +290,13 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
   hπ := by
     dsimp
     let e : parallelPair (hkf.lift (KernelFork.ofι S.f S.zero) ≫ 𝟙 _) 0 ≅
-        parallelPair S.toCycles 0 := parallelPair.ext (Iso.refl _) (isoK S hkf)
+        parallelPair S.toCycles 0 := parallelPair.ext (Iso.refl _) (S.isoCyclesOfIsLimit hkf)
           (by cat_disch) (by cat_disch)
     refine IsColimit.precomposeInvEquiv e _ ?_
     exact IsColimit.ofIsoColimit S.homologyIsCokernel
       (Cofork.ext (isoHomology S hkf hcc fac).symm (homologyπ_isoHomology_inv S _ _ _))
 
-attribute [local simp] f'_eq g'_eq
-
+attribute [local simp] g'_eq in
 @[simps]
 noncomputable def rightHomologyData : S.RightHomologyData where
   Q := cc.pt
@@ -335,8 +311,8 @@ noncomputable def rightHomologyData : S.RightHomologyData where
       isoHomology_hom_comp_ι_assoc, Iso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
   hι := by
     let e : parallelPair (𝟙 _ ≫ hcc.desc (CokernelCofork.ofπ S.g S.zero)) 0 ≅
-        parallelPair S.fromOpcycles 0 := parallelPair.ext (isoQ S hcc) (Iso.refl _)
-          (by cat_disch) (by cat_disch)
+        parallelPair S.fromOpcycles 0 := parallelPair.ext (S.isoOpcyclesOfIsColimit hcc)
+          (Iso.refl _) (by cat_disch) (by cat_disch)
     refine IsLimit.postcomposeHomEquiv e _ ?_
     exact IsLimit.ofIsoLimit S.homologyIsKernel
       (Iso.symm (Fork.ext (isoHomology S hkf hcc fac) (isoHomology_inv_homologyι S hkf hcc fac)))

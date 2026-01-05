@@ -971,6 +971,25 @@ noncomputable def cyclesIsoKernel [HasKernel S.g] : S.cycles ≅ kernel S.g wher
   hom := kernel.lift S.g S.iCycles (by simp)
   inv := S.liftCycles (kernel.ι S.g) (by simp)
 
+section
+
+variable {kf : KernelFork S.g} (hkf : IsLimit kf)
+
+/-- The isomorphism from the point of a limit kernel fork of `S.g` to `S.cycles`. -/
+noncomputable def isoCyclesOfIsLimit :
+    kf.pt ≅ S.cycles :=
+  IsLimit.conePointUniqueUpToIso hkf S.cyclesIsKernel
+
+@[reassoc (attr := simp)]
+lemma isoCyclesOfIsLimit_inv_ι : (S.isoCyclesOfIsLimit hkf).inv ≫ kf.ι = S.iCycles :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingParallelPair.zero
+
+@[reassoc (attr := simp)]
+lemma isoCyclesOfIsLimit_hom_iCycles : (S.isoCyclesOfIsLimit hkf).hom ≫ S.iCycles = kf.ι :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
+
+end
+
 /-- The morphism `A ⟶ S.leftHomology` obtained from a morphism `k : A ⟶ S.X₂`
 such that `k ≫ S.g = 0.` -/
 @[simp]
