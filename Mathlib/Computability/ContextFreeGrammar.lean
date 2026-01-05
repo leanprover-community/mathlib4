@@ -1152,12 +1152,14 @@ lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
         -- Use splitting to get two separate derivations
         obtain ⟨u'', v'', hu'', hv'', huv''⟩ := concatenation_split _ _ _ hg
         -- Extract words from the combined grammar back to original grammars
-        have good_u : @g₁g_concat.GoodString T g₁ g₂ [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
-          intro a ha; simp at ha; rw [ha]; exact ⟨g₁.initial, rfl⟩
-        have good_v : @g₂g_concat.GoodString T g₁ g₂ [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
-          intro a ha; simp at ha; rw [ha]; exact ⟨g₂.initial, rfl⟩
-        have hu_filter := g₁g_concat.derives_filterMap hu'' good_u
-        have hv_filter := g₂g_concat.derives_filterMap hv'' good_v
+        have good_u : (@g₁g_concat T g₁ g₂).GoodString
+            [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
+          intro a ha; simp at ha; rw [ha]; exact Embedding.Good.nonterminal g₁.initial
+        have good_v : (@g₂g_concat T g₁ g₂).GoodString
+            [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
+          intro a ha; simp at ha; rw [ha]; exact Embedding.Good.nonterminal g₂.initial
+        have hu_filter := (@g₁g_concat T g₁ g₂).derives_filterMap hu'' good_u
+        have hv_filter := (@g₂g_concat T g₁ g₂).derives_filterMap hv'' good_v
         -- Extract the terminal words
         set w₁ := extractTerminals u''
         set w₂ := extractTerminals v''
@@ -1166,23 +1168,26 @@ lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
           intro x hx
           have : x ∈ u'' ++ v'' := List.mem_append_left v'' hx
           rw [huv''] at this
-          simp at this
-          exact ⟨this, rfl⟩
+          simp [List.mem_map] at this
+          obtain ⟨t, _, rfl⟩ := this
+          exact ⟨t, rfl⟩
         have v_terminals : ∀ x ∈ v'', ∃ t : T, x = Symbol.terminal t := by
           intro x hx
           have : x ∈ u'' ++ v'' := List.mem_append_right u'' hx
           rw [huv''] at this
-          simp at this
-          exact ⟨this, rfl⟩
+          simp [List.mem_map] at this
+          obtain ⟨t, _, rfl⟩ := this
+          exact ⟨t, rfl⟩
         -- Show these are in the languages
         use w₁, ?_, w₂, ?_, ?_
         · -- w₁ ∈ g₁.language
           have eq1 : w₁.map Symbol.terminal = u''.filterMap (Symbol.filterMap g₁g_concat.projectNT) := by
             have : w₁ = extractTerminals (u''.filterMap (Symbol.filterMap g₁g_concat.projectNT)) := by
-              rw [extractTerminals_filterMap_terminals g₁g_concat.projectNT u'' u_terminals]
+              rw [(extractTerminals_filterMap_terminals g₁g_concat.projectNT u'' u_terminals).symm]
+
             rw [this]
-            exact (extractTerminals_map_terminal _).symm
-          rw [eq1]
+            #check (extractTerminals_map_terminal (List.filterMap (Symbol.filterMap g₁g_concat.projectNT) u''))
+          simp only [mem_language_iff, eq1]
           exact hu_filter
         · -- w₂ ∈ g₂.language
           have eq2 : w₂.map Symbol.terminal = v''.filterMap (Symbol.filterMap g₂g_concat.projectNT) := by
