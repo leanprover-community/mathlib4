@@ -296,7 +296,7 @@ theorem d₂₁_comp_d₁₀ : d₂₁ A ≫ d₁₀ A = 0 := by
   simp [d₁₀, d₂₁, sum_add_index', sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem d₃₂_comp_d₂₁ : d₃₂ A ≫ d₂₁ A = 0 := by
+theorem d₃₂_comp_d₂₁ (A : Rep.{u} k G) : d₃₂ A ≫ d₂₁ A = 0 := by
   simp [← cancel_mono (chainsIso₁ A).inv, ← eq_d₂₁_comp_inv, ← eq_d₃₂_comp_inv_assoc]
 
 open ShortComplex
@@ -382,7 +382,7 @@ theorem single_mem_cycles₂_iff (g : G × G) (a : A) :
   rw [← (mapRange_injective (α := G) _ (map_zero _) (A.ρ.apply_bijective g.1⁻¹).1).eq_iff]
   simp [mem_cycles₂_iff, mapRange_add, eq_comm]
 
-theorem d₃₂_apply_mem_cycles₂ (x : G × G × G →₀ A) :
+theorem d₃₂_apply_mem_cycles₂ {A : Rep.{u} k G} (x : G × G × G →₀ A) :
     d₃₂ A x ∈ cycles₂ A :=
   congr($(d₃₂_comp_d₂₁ A) x)
 
@@ -442,13 +442,13 @@ theorem single_inv_ρ_self_add_single_mem_boundaries₁ (g : G) (a : A) :
 
 section
 
-lemma mem_cycles₂_of_mem_boundaries₂ (x : G × G →₀ A) (h : x ∈ boundaries₂ A) :
+lemma mem_cycles₂_of_mem_boundaries₂ {A : Rep.{u} k G} (x : G × G →₀ A) (h : x ∈ boundaries₂ A) :
     x ∈ cycles₂ A := by
   rcases h with ⟨x, rfl⟩
   exact d₃₂_apply_mem_cycles₂ x
 
 variable (A) in
-lemma boundaries₂_le_cycles₂ : boundaries₂ A ≤ cycles₂ A :=
+lemma boundaries₂_le_cycles₂ (A : Rep.{u} k G) : boundaries₂ A ≤ cycles₂ A :=
   mem_cycles₂_of_mem_boundaries₂
 
 variable (A) in
@@ -634,8 +634,8 @@ def cyclesOfIsCycle₁ (x : G →₀ A) (hx : IsCycle₁ x) :
 
 theorem isCycle₁_of_mem_cycles₁
     (x : G →₀ A) (hx : x ∈ cycles₁ (Rep.ofDistribMulAction k G A)) :
-    IsCycle₁ x := by
-  simpa using (mem_cycles₁_iff (A := Rep.ofDistribMulAction k G A) x).1 hx
+    IsCycle₁ x :=
+  (mem_cycles₁_iff (A := Rep.ofDistribMulAction k G A) x).1 hx
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a finsupp
 `x : G →₀ A` satisfying the 1-boundary condition, produces a 1-boundary for the representation
