@@ -134,8 +134,7 @@ noncomputable def FinitePlace.embedding : WithVal (v.valuation K) →+* adicComp
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
-noncomputable
-instance : (v.valuation K).RankOne where
+noncomputable instance : (v.valuation K).RankOne where
   hom := {
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
