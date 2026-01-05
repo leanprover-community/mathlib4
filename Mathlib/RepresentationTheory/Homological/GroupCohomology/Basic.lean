@@ -116,7 +116,7 @@ end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] (n) (A : Rep k G)
+variable [Group G] (n) (A : Rep.{u} k G)
 
 open inhomogeneousCochains Rep
 
