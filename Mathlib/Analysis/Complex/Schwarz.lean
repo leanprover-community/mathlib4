@@ -121,10 +121,18 @@ variable {E F : Type*}
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
 open AffineMap in
+/-- Let `f : E → F` be a complex analytic map
+sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
+If `f w - f c = o(‖w - c‖ ^ n)`, then for any `z` in the ball in the domain,
+we have `dist (f z) (f c) ≤ R₂ * (dist z c / R₁) ^ (n + 1)`.
+
+For `n = 0`, this theorem gives a usual Schwarz lemma,
+see `dist_le_div_mul_dist_of_mapsTo_ball` below.
+-/
 theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} {R₁ R₂ : ℝ} {n : ℕ}
     (hd : DifferentiableOn ℂ f (ball c R₁)) (h_maps : MapsTo f (ball c R₁) (closedBall (f c) R₂))
     (hn : (f · - f c) =o[𝓝 c] (fun w ↦ ‖w - c‖ ^ n)) (hz : z ∈ ball c R₁) :
-    dist (f z) (f c) ≤ R₂ * (‖z - c‖ / R₁) ^ (n + 1) := by
+    dist (f z) (f c) ≤ R₂ * (dist z c / R₁) ^ (n + 1) := by
   have hR₁ : 0 < R₁ := nonempty_ball.mp ⟨_, hz⟩
   have hR₂ : 0 ≤ R₂ := nonempty_closedBall.mp ⟨_, h_maps hz⟩
   rcases eq_or_ne (f z) (f c) with heq | hfne
@@ -164,7 +172,7 @@ theorem dist_le_div_mul_dist_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c
   refine dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO (n := 0) hd h_maps ?_ hz |>.trans_eq ?_
   · simpa using hd.continuousOn.continuousAt
       (ball_mem_nhds _ <| nonempty_ball.mp ⟨_, hz⟩) |>.sub_const (f c)
-  · simp [dist_eq_norm_sub, field]
+  · simp [field]
 
 /-- The **Schwarz Lemma**. Let `f : E → F` be a complex analytic function
 on an open ball with center `c` and positive radius `R₁`.
