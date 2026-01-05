@@ -809,6 +809,7 @@ public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.Algebra.MvPolynomial.Invertible
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
+public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
@@ -1443,7 +1444,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
+public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.Skeleton
@@ -3313,6 +3316,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Tutte
 public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
+public import Mathlib.Combinatorics.SimpleGraph.VertexCover
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
@@ -5869,6 +5873,7 @@ public import Mathlib.RingTheory.DedekindDomain.Different
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+public import Mathlib.RingTheory.DedekindDomain.GaussLemma
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.DedekindDomain.Instances

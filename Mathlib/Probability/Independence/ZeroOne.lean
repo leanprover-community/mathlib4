@@ -21,7 +21,7 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   σ-algebras `s` has probability 0 or 1.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory MeasurableSpace
 

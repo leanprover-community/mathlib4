@@ -12,7 +12,7 @@ public import Mathlib.Tactic.TypeStar
 
 /-! # Lemmas about inequalities with `1`. -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 
