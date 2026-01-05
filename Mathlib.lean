@@ -5653,7 +5653,6 @@ public import Mathlib.Order.Nucleus
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.OrderType
 public import Mathlib.Order.PFilter
 public import Mathlib.Order.Part
 public import Mathlib.Order.PartialSups
@@ -5703,6 +5702,8 @@ public import Mathlib.Order.SymmDiff
 public import Mathlib.Order.Synonym
 public import Mathlib.Order.TeichmullerTukey
 public import Mathlib.Order.TransfiniteIteration
+public import Mathlib.Order.Types.Defs
+public import Mathlib.Order.Types.Basic
 public import Mathlib.Order.TypeTags
 public import Mathlib.Order.Types.Defs
 public import Mathlib.Order.ULift
