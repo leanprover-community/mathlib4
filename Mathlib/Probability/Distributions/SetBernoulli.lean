@@ -74,9 +74,8 @@ variable [Countable ι]
 
 lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
   classical
-  change _ = _
-  simp only [Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem, Set.setOf_exists, Set.setOf_and,
-    measure_iUnion_null_iff]
+  simp only [Filter.Eventually, mem_ae_iff, Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem,
+    Set.setOf_exists, Set.setOf_and, measure_iUnion_null_iff]
   rintro i
   by_cases hi : i ∈ u
   · simp [*]

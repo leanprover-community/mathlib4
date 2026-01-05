@@ -81,8 +81,6 @@ theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈
 theorem notMem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_graph_snd_zero := notMem_graph_snd_zero
-
 @[simp]
 theorem image_fst_graph [DecidableEq α] (f : α →₀ M) : f.graph.image Prod.fst = f.support := by
   classical
@@ -702,8 +700,6 @@ theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ �
 
 theorem zero_notMem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
 
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_frange := zero_notMem_frange
-
 theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr =>
   let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
   ht2 ▸ by
@@ -949,14 +945,15 @@ theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
   rw [← sum_uncurry_index', uncurry_curry]
 
-/-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
-currying and uncurrying. -/
+/-- The equivalence between `α × β →₀ M` and `α →₀ β →₀ M` given by currying/uncurrying. -/
 @[simps]
-def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
+def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
   left_inv := uncurry_curry
   right_inv := curry_uncurry
+
+@[deprecated (since := "2026-01-03")] alias finsuppProdEquiv := curryEquiv
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
@@ -964,6 +961,20 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
   simp [filter_apply, apply_ite (DFunLike.coe · b)]
 
 end Curry
+
+section
+variable [DecidableEq α] [AddZeroClass M]
+
+/-- The additive monoid isomorphism between `α × β →₀ M` and `α →₀ β →₀ M` given by
+currying/uncurrying. -/
+@[simps! symm_apply]
+noncomputable def curryAddEquiv : (α × β →₀ M) ≃+ (α →₀ β →₀ M) where
+  __ := curryEquiv
+  map_add' _ _ := by ext; simp
+
+@[simp] lemma coe_curryAddEquiv : (curryAddEquiv : (α × β →₀ M) → α →₀ β →₀ M) = .curry := rfl
+
+end
 
 /-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
 
