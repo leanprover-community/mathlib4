@@ -117,15 +117,8 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
   invFun x := ⟨Pi.single i x, Function.const ι x, by simp⟩
   left_inv := fun ⟨x, hx⟩ ↦ by
     obtain ⟨y, hy⟩ := mem_toModuleCatObj i|>.1 hx
-    ext j
-    simp only [Pi.single_apply]
-    split_ifs with h
-    · simp only [← hy, single, smul_def, of_apply, ite_smul, one_smul, zero_smul, h,
-      true_and, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
-      rw [Finset.sum_eq_single i (by
-        simpa using fun b hb ↦ Finset.sum_eq_zero (ι := ι) (by grind)) (by simp)]
-      simp
-    · simp [← hy, single, Ne.symm h]
+    rw [single_smul] at hy
+    simp [← hy]
   right_inv x := by simp
 
 /-- the natural isomorphism showing that `toModuleCat` is the left inverse of `toMatrixModCat` -/
