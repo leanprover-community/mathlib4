@@ -108,7 +108,7 @@ theorem sectionsCurry_sectionUncurry {X : Over I} {A : C} {v : A ⟶ (sections I
   cat_disch
 
 @[simp]
-theorem sections_uncurry_curry {X : Over I} {A : C} {u : (toOver I).obj A ⟶ X} :
+theorem sectionsUncurry_sectionsCurry {X : Over I} {A : C} {u : (toOver I).obj A ⟶ X} :
     sectionsUncurry (sectionsCurry u) = u := by
   dsimp [sectionsCurry, sectionsUncurry]
   ext
