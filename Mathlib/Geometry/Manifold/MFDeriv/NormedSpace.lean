@@ -17,7 +17,7 @@ differentiability.
 
 -/
 
-@[expose] public section
+public section
 
 open Set ChartedSpace IsManifold
 open scoped Topology Manifold
