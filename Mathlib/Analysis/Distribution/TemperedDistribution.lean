@@ -377,6 +377,8 @@ instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
 instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
 
+section embedding
+
 variable [CompleteSpace F]
 
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
@@ -396,13 +398,23 @@ theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
     rw [fourierTransform_toTemperedDistributionCLM_eq]
   _ = _ := fourierInv_fourier_eq _
 
+end embedding
+
 open LineDeriv Real
 
-theorem lineDerivOp_fourier_eq (f : 𝓢'(E, F)) (m : E) :
-    ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
-  ext1 u
-  simp
-  sorry
+@[fun_prop]
+theorem inner_hasTemperateGrowth_left (c : E) : (inner ℝ · c).HasTemperateGrowth :=
+  ((innerSL ℝ).flip c).hasTemperateGrowth
+
+theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
+    𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕 f) := by
+  ext u
+  simp only [fourierTransform_apply, lineDerivOp_apply_apply,
+    UniformConvergenceCLM.smul_apply, smulLeftCLM_apply_apply,
+    SchwartzMap.lineDerivOp_fourier_eq, neg_smul, FourierTransform.fourier_neg (R := ℂ),
+    fourier_smul, map_smul, neg_neg]
+  rw [← smulLeftCLM_ofReal ℂ (by fun_prop)]
+  rfl
 
 end Fourier
 

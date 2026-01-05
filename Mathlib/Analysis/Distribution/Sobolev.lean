@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.TemperedDistribution
+public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Fourier.LpSpace
 
 /-! # Sobolev spaces (Bessel potential spaces)
@@ -115,11 +115,12 @@ theorem memSobolev_besselPotential_iff {s r : ℝ} {p : ℝ≥0∞} [hp : Fact (
 /-- Schwartz functions are in every Sobolev space. -/
 theorem memSobolev_toTemperedDistributionCLM {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : 𝓢(E, F)) :
     MemSobolev s p (f : 𝓢'(E, F)) := by
-  use (𝓕⁻ f).toLp p
-  simp
-  sorry
-
-#exit
+  use (SchwartzMap.fourierMultiplierCLM F (fun (x : E) ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ)) f).toLp p
+  rw [besselPotential, Lp.toTemperedDistribution_toLp_eq,
+    fourierMultiplierCLM_toTemperedDistributionCLM_eq (by fun_prop)]
+  congr 1
+  apply SchwartzMap.fourierMultiplierCLM_ofReal ℂ
+    (Function.hasTemperateGrowth_one_add_norm_sq_rpow E (s / 2))
 
 variable (E F) in
 def Sobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] : Submodule ℂ 𝓢'(E, F) where
@@ -265,10 +266,47 @@ theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁
   rw [mul_comm]
   congr
 
-/- What needs to be done for the Laplacian:
-* ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1) is bounded
-  => Δ maps H^(s+2) to H^s
--/
+section LineDeriv
+
+open scoped LineDeriv Laplacian Real
+
+/-- The Laplacian maps `H^{s}` to `H^{s - 2}`.
+
+The other implication is slightly harder :-) -/
+theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
+    MemSobolev (s - 2) 2 (Δ f) := by
+  rw [SubNegMonoid.sub_eq_add_neg s 2, add_comm]
+  rw [← memSobolev_besselPotential_iff]
+  have : ((besselPotential E F (-2)) (Δ f)) =
+      fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
+        -(2 * π) ^ 2 * ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := by
+    rw [laplacian_eq_fourierMultiplierCLM]
+    rw [besselPotential]
+    rw [ContinuousLinearMap.map_smul_of_tower]
+    rw [fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
+    --rw [ContinuousLinearMap.map_smul_of_tower]
+
+    sorry
+  rw [this]
+  apply memSobolev_fourierMultiplierCLM_bounded (by fun_prop) _ hf
+  use (2 * π) ^ 2
+  intro x
+  rw [Real.rpow_neg (by positivity)]
+  norm_cast
+  simp only [pow_one, norm_mul, norm_pow, norm_inv, Real.norm_eq_abs]
+  simp only [abs_neg, abs_pow, abs_mul, Nat.abs_ofNat, abs_norm]
+  have : 0 < π := by positivity
+  rw [abs_of_pos this]
+  rw [mul_inv_le_iff₀]
+  · gcongr
+    grind
+  norm_cast
+  positivity
+
+
+example (s : ℝ) : s - 2 = s + (-2) := by exact SubNegMonoid.sub_eq_add_neg s 2
+
+end LineDeriv
 
 namespace Sobolev
 

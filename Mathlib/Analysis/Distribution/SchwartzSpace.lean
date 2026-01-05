@@ -769,6 +769,24 @@ theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ 
   intro i hi
   simp [hg i hi]
 
+variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F]
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
+  (Complex.ofRealCLM).hasTemperateGrowth
+
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_ofReal : (RCLike.ofReal (K := 𝕜')).HasTemperateGrowth :=
+  (RCLike.ofRealCLM (K := 𝕜')).hasTemperateGrowth
+
+variable (𝕜') in
+theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F (fun x ↦ RCLike.ofReal (K := 𝕜') (g x)) f =
+    smulLeftCLM F g f := by
+  ext x
+  rw [smulLeftCLM_apply_apply (by fun_prop), smulLeftCLM_apply_apply (by fun_prop),
+    algebraMap_smul]
+
 end smul
 
 variable [NormedSpace 𝕜 E]

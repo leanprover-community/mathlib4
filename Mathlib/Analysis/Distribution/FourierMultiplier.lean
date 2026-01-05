@@ -26,14 +26,6 @@ open FourierTransform
 
 variable [CompleteSpace F]
 
-@[fun_prop]
-theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
-  (Complex.ofRealCLM).hasTemperateGrowth
-
-@[fun_prop]
-theorem RCLike.hasTemperateGrowth_ofReal : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
-  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
-
 variable (F) in
 def fourierMultiplierCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
   (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L (smulLeftCLM F g) ∘L
@@ -49,9 +41,7 @@ theorem fourierMultiplierCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) 
     fourierMultiplierCLM F g f := by
   simp_rw [fourierMultiplierCLM_apply]
   congr 1
-  ext x
-  rw [smulLeftCLM_apply_apply (by fun_prop), smulLeftCLM_apply_apply (by fun_prop),
-    algebraMap_smul]
+  exact smulLeftCLM_ofReal 𝕜 hg (𝓕 f)
 
 @[simp]
 theorem fourierMultiplierCLM_const_apply (f : 𝓢(E, F)) (c : 𝕜) :
@@ -78,10 +68,6 @@ theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢(E, F)) :
     ∂_{m} f = (2 * π * Complex.I) • fourierMultiplierCLM F (inner ℝ · m) f := by
   rw [fourierMultiplierCLM_apply, ← FourierTransform.fourierInv_smul, ← fourier_lineDerivOp_eq,
     FourierTransform.fourierInv_fourier_eq]
-
-@[fun_prop]
-theorem inner_hasTemperateGrowth_left (c : E) : (inner ℝ · c).HasTemperateGrowth :=
-  ((innerSL ℝ).flip c).hasTemperateGrowth
 
 theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢(E, F)) :
     Δ f = -(2 * π) ^ 2 • fourierMultiplierCLM F (‖·‖ ^ 2) f := by
@@ -142,32 +128,54 @@ theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → ℂ}
     fourierMultiplierCLM F (g₁ * g₂) f := by
   simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
 
+section embedding
+
 variable [CompleteSpace F]
 
-theorem fourierMultiplierCLM_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (g : E → ℂ)
-    (hg : g.HasTemperateGrowth) :
+theorem fourierMultiplierCLM_toTemperedDistributionCLM_eq {g : E → ℂ}
+    (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
     fourierMultiplierCLM F g (f : 𝓢'(E, F)) = SchwartzMap.fourierMultiplierCLM F g f := by
   ext u
   simp [SchwartzMap.integral_fourier_smul_eq, SchwartzMap.fourierMultiplierCLM_apply g f,
     ← SchwartzMap.integral_fourierInv_smul_eq, hg, smul_smul, mul_comm]
 
-open LineDeriv Laplacian Real
+end embedding
 
-variable [CompleteSpace E]
+variable (F) in
+theorem fourierMultiplierCLM_sum {g : ι → E → ℂ} {s : Finset ι}
+    (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
+    fourierMultiplierCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, fourierMultiplierCLM F (g i) := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_sum hg, UniformConvergenceCLM.sum_apply, fourier_sum (R := ℂ)]
+
+open LineDeriv Laplacian Real
 
 theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢'(E, F)) :
     ∂_{m} f = (2 * π * Complex.I) • fourierMultiplierCLM F (inner ℝ · m) f := by
   rw [fourierMultiplierCLM_apply, ← FourierTransform.fourierInv_smul, ← fourier_lineDerivOp_eq,
     FourierTransform.fourierInv_fourier_eq]
-  ext u
-  simp [SchwartzMap.lineDeriv_eq_fourierMultiplierCLM m u]
-  congr 2
-  rw [← SchwartzMap.fourierMultiplierCLM_ofReal ℂ (by fun_prop)]
-  simp [SchwartzMap.fourierMultiplierCLM_apply]
 
-
-  rw [SchwartzMap.lineDeriv_eq_fourierMultiplierCLM m u]
-  sorry
+theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢'(E, F)) :
+    Δ f = -(2 * π) ^ 2 • fourierMultiplierCLM F (fun x ↦ Complex.ofReal (‖x‖ ^ 2)) f := by
+  let ι := Fin (Module.finrank ℝ E)
+  let b := stdOrthonormalBasis ℝ E
+  have : ∀ i (hi : i ∈ Finset.univ),
+      (fun x ↦ Complex.ofReal (inner ℝ x (b i)) ^ 2).HasTemperateGrowth := by
+    fun_prop
+  simp_rw [laplacian_eq_sum b, ← b.sum_sq_inner_left, Complex.ofReal_sum, Complex.ofReal_pow,
+    fourierMultiplierCLM_sum F this,
+    ContinuousLinearMap.coe_sum', Finset.sum_apply, Finset.smul_sum]
+  congr 1
+  ext i x
+  simp_rw [lineDeriv_eq_fourierMultiplierCLM, map_smul, smul_smul]
+  rw [fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
+  rw [← Complex.coe_smul (-(2 * π) ^ 2)]
+  congr 4
+  · ring_nf
+    simp
+  · ext y
+    simp
+    ring
 
 
 end TemperedDistribution

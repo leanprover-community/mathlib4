@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-! # Type classes for the Fourier transform
 
@@ -81,9 +82,12 @@ attribute [simp] fourier_smul
 attribute [simp] FourierInvModule.fourierInv_add
 attribute [simp] FourierInvModule.fourierInv_smul
 
-variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
-
 section fourierₗ
+
+section AddCommMonoid
+
+variable {ι R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E]
+  [Module R F]
 
 variable [FourierModule R E F]
 
@@ -101,9 +105,27 @@ lemma fourierₗ_apply (f : E) : fourierₗ R E F f = 𝓕 f := rfl
 lemma fourier_zero : 𝓕 (0 : E) = 0 :=
   (fourierₗ R E F).map_zero
 
+@[simp]
+lemma fourier_sum {s : Finset ι} (f : ι → E) : 𝓕 (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕 (f i) :=
+  map_sum (fourierₗ R E F) f s
+
+end AddCommMonoid
+
+variable {R E F : Type*} [Semiring R] [AddCommGroup E] [AddCommGroup F] [Module R E] [Module R F]
+
+@[simp]
+lemma fourier_neg [FourierModule R E F] (f : E) : 𝓕 (- f) = - 𝓕 f :=
+  (fourierₗ R E F).map_neg f
+
+@[simp]
+lemma fourier_sub [FourierModule R E F] (f g : E) : 𝓕 (f - g) = 𝓕 f - 𝓕 g :=
+  (fourierₗ R E F).map_sub f g
+
 end fourierₗ
 
 section fourierInvₗ
+
+variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
 
 variable [FourierInvModule R E F]
 
