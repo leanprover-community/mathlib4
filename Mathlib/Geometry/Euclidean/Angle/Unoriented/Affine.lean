@@ -390,8 +390,7 @@ same ray. -/
 theorem _root_.Wbtw.angle_eq_right {p₂ p₃ p : P} (p₁ : P) (h : Wbtw ℝ p₂ p₃ p) (hp₃p₂ : p₃ ≠ p₂) :
     ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p := by
   by_cases hp₃p : p₃ = p; · simp [hp₃p]
-  apply Sbtw.angle_eq_right
-  exact ⟨h, hp₃p₂, hp₃p⟩
+  exact Sbtw.angle_eq_right _ ⟨h, hp₃p₂, hp₃p⟩
 
 /-- An Unoriented angle is unchanged by replacing the first point by one weakly further away on the
 same ray. -/
