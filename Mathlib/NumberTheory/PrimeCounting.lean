@@ -3,9 +3,12 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Nat.Nth
-import Mathlib.NumberTheory.SmoothNumbers
+module
+
+public import Mathlib.Data.Nat.Prime.Nth
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.NumberTheory.SmoothNumbers
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The Prime Counting Function
@@ -32,6 +35,8 @@ function (and `π'` to represent the reindexed version).
 
 -/
 
+@[expose] public section
+
 
 namespace Nat
 
@@ -56,6 +61,10 @@ def primeCounting (n : ℕ) : ℕ :=
 
 open scoped Nat.Prime
 
+@[simp]
+theorem primeCounting_sub_one (n : ℕ) : π (n - 1) = π' n := by
+  cases n <;> rfl
+
 theorem monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime
 
@@ -66,43 +75,72 @@ theorem monotone_primeCounting : Monotone primeCounting :=
 theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
   count_nth_of_infinite infinite_setOf_prime _
 
+/-- The `n`th prime is greater or equal to `n + 2`. -/
+theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
+  nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
+
+theorem surjective_primeCounting' : Function.Surjective π' :=
+  Nat.surjective_count_of_infinite_setOf infinite_setOf_prime
+
+theorem surjective_primeCounting : Function.Surjective π := by
+  suffices Function.Surjective (π ∘ fun n => n - 1) from this.of_comp
+  convert surjective_primeCounting'
+  ext
+  exact primeCounting_sub_one _
+
+open Filter
+
+theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
+  apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
+  simp [Set.range_eq_univ.mpr surjective_primeCounting']
+
+theorem tendsto_primeCounting : Tendsto π atTop atTop :=
+  (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
+
+@[deprecated (since := "2025-07-08")] alias tensto_primeCounting := tendsto_primeCounting
+
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 
+@[simp]
+lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 := by
+  rw [primeCounting', Nat.count_eq_zero ⟨_, Nat.prime_two⟩, Nat.nth_prime_zero_eq_two]
+
+@[simp]
+lemma primeCounting_eq_zero_iff {n : ℕ} : n.primeCounting = 0 ↔ n ≤ 1 := by
+  simp [primeCounting, -Order.add_one_le_iff]
+
+@[simp]
+lemma primeCounting_zero : primeCounting 0 = 0 :=
+  primeCounting_eq_zero_iff.mpr zero_le_one
+
+@[simp]
+lemma primeCounting_one : primeCounting 1 = 0 :=
+  primeCounting_eq_zero_iff.mpr le_rfl
+
 /-- The cardinality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
-lemma primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
+theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = primeCounting' n := by
   simp only [primesBelow, primeCounting']
   exact (count_eq_card_filter_range Prime n).symm
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
-theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
+theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
-    π' (k + n) ≤ ((range k).filter Prime).card + ((Ico k (k + n)).filter Prime).card := by
+    π' (k + n) ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
       rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, ←
         Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
-    _ ≤ π' k + ((Ico k (k + n)).filter Prime).card := by
+    _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by
       rw [primeCounting', count_eq_card_filter_range]
-    _ ≤ π' k + ((Ico k (k + n)).filter (Coprime a)).card := by
-      refine add_le_add_left (card_le_card ?_) k.primeCounting'
-      simp only [subset_iff, and_imp, mem_filter, mem_Ico]
-      intro p succ_k_le_p p_lt_n p_prime
-      constructor
-      · exact ⟨succ_k_le_p, p_lt_n⟩
-      · rw [coprime_comm]
-        exact coprime_of_lt_prime h0 (gt_of_ge_of_gt succ_k_le_p h1) p_prime
+    _ ≤ π' k + #{b ∈ Ico k (k + n) | a.Coprime b} := by
+      gcongr with p hp
+      rw [coprime_comm]
+      exact coprime_of_lt_prime h0 <| h1.trans_le (mem_Ico.1 hp).1
     _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0
-
-@[simp]
-theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
-
-/-- The `n`th prime is greater or equal to `n + 2`. -/
-lemma add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
 end Nat

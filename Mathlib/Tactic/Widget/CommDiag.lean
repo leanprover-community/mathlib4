@@ -3,12 +3,16 @@ Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki
 -/
-import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Presentation.Expr
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Presentation.Expr
+public meta import Mathlib.CategoryTheory.Category.Basic
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
+
+public meta section
 
 open Lean in
 /-- If the expression is a function application of `fName` with 7 arguments, return those arguments.
@@ -93,6 +97,7 @@ def commTriangleM? (e : Expr) : MetaM (Option Html) := do
     #[("A", A), ("B", B), ("C", C),
       ("f", f), ("g", g), ("h", lhs)]
 
+/-- Presenter for a commutative triangle -/
 @[expr_presenter]
 def commutativeTrianglePresenter : ExprPresenter where
   userName := "Commutative triangle"
@@ -126,6 +131,7 @@ def commSquareM? (e : Expr) : MetaM (Option Html) := do
     #[("A", A), ("B", B), ("C", C), ("D", D),
       ("f", f), ("g", g), ("h", h), ("i", i)]
 
+/-- Presenter for a commutative square -/
 @[expr_presenter]
 def commutativeSquarePresenter : ExprPresenter where
   userName := "Commutative square"

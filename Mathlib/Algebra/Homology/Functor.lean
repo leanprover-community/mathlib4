@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Complexes in functor categories
@@ -15,6 +17,8 @@ a functor from `T` to complexes valued in `V`.
 In fact this is an equivalence of categories.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -30,22 +34,22 @@ variable {ι : Type*} {c : ComplexShape ι}
 
 /-- A complex of functors gives a functor to complexes. -/
 @[simps obj map]
-def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
+def asFunctor {T : Type*} [Category* T] (C : HomologicalComplex (T ⥤ V) c) :
     T ⥤ HomologicalComplex V c where
   obj t :=
     { X := fun i => (C.X i).obj t
       d := fun i j => (C.d i j).app t
       d_comp_d' := fun i j k _ _ => by
         have := C.d_comp_d i j k
-        rw [NatTrans.ext_iff, Function.funext_iff] at this
+        rw [NatTrans.ext_iff, funext_iff] at this
         exact this t
       shape := fun i j h => by
         have := C.shape _ _ h
-        rw [NatTrans.ext_iff, Function.funext_iff] at this
+        rw [NatTrans.ext_iff, funext_iff] at this
         exact this t }
   map h :=
     { f := fun i => (C.X i).map h
-      comm' := fun i j _ => NatTrans.naturality _ _ }
+      comm' := fun _ _ _ => NatTrans.naturality _ _ }
   map_id t := by
     ext i
     dsimp
@@ -58,7 +62,7 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
 -- TODO in fact, this is an equivalence of categories.
 /-- The functorial version of `HomologicalComplex.asFunctor`. -/
 @[simps]
-def complexOfFunctorsToFunctorToComplex {T : Type*} [Category T] :
+def complexOfFunctorsToFunctorToComplex {T : Type*} [Category* T] :
     HomologicalComplex (T ⥤ V) c ⥤ T ⥤ HomologicalComplex V c where
   obj C := C.asFunctor
   map f :=

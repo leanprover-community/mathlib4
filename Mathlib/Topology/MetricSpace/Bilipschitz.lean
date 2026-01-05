@@ -3,8 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Topology.MetricSpace.Antilipschitz
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-! # Bilipschitz equivalence
 
@@ -26,6 +28,8 @@ terms of the induced uniformity and bornology, which means users will need to do
 choose to use these convenience lemmas. This encourages good hygiene in the development of type
 synonyms.
 -/
+
+@[expose] public section
 
 open NNReal
 
@@ -55,7 +59,7 @@ instance : UniformSpace α := (inferInstance : UniformSpace β).comap f
 in order to avoid abuse of the definitional equality `α := β`. -/
 lemma uniformity_eq_of_bilipschitz (hf₁ : AntilipschitzWith K₁ f) (hf₂ : LipschitzWith K₂ f) :
     𝓤[(inferInstance : UniformSpace β).comap f] = 𝓤 α :=
-  hf₁.uniformInducing hf₂.uniformContinuous |>.comap_uniformity
+  hf₁.isUniformInducing hf₂.uniformContinuous |>.comap_uniformity
 
 end Uniformity
 

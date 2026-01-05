@@ -1,10 +1,13 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Topology.Algebra.Monoid
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topological (sub)algebras over `Rat`
@@ -14,6 +17,8 @@ import Mathlib.Topology.Algebra.Monoid
 This is just a minimal stub for now!
 
 -/
+
+@[expose] public section
 
 section DivisionRing
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inverse
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inverse
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 /-!
 # Inverse function theorem, 1D case
@@ -13,6 +15,8 @@ In this file we prove a version of the inverse function theorem for maps `f : �
 We use `ContinuousLinearEquiv.unitsEquivAut` to translate `HasStrictDerivAt f f' a` and
 `f' ≠ 0` into `HasStrictFDerivAt f (_ : 𝕜 ≃L[𝕜] 𝕜) a`.
 -/
+
+@[expose] public section
 
 open Filter
 open scoped Topology
@@ -49,5 +53,3 @@ variable {f}
 theorem isOpenMap_of_hasStrictDerivAt {f' : 𝕜 → 𝕜}
     (hf : ∀ x, HasStrictDerivAt f (f' x) x) (h0 : ∀ x, f' x ≠ 0) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => ((hf x).map_nhds_eq (h0 x)).ge
-@[deprecated (since := "2024-03-23")]
-alias open_map_of_strict_deriv := isOpenMap_of_hasStrictDerivAt

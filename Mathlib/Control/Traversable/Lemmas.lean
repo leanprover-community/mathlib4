@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
+module
+
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
 
 /-!
 # Traversing collections
@@ -16,6 +18,8 @@ This file proves basic properties of traversable and applicative functors and de
 
 Inspired by [The Essence of the Iterator Pattern][gibbons2009].
 -/
+
+@[expose] public section
 
 
 universe u
@@ -39,7 +43,6 @@ variable [Applicative F] [LawfulApplicative F]
 variable [Applicative G] [LawfulApplicative G]
 variable {α β γ : Type u}
 variable (g : α → F β)
-variable (h : β → G γ)
 variable (f : β → γ)
 
 /-- The natural applicative transformation from the identity functor
@@ -47,7 +50,7 @@ to `F`, defined by `pure : Π {α}, α → F α`. -/
 def PureTransformation :
     ApplicativeTransformation Id F where
   app := @pure F _
-  preserves_pure' x := rfl
+  preserves_pure' _ := rfl
   preserves_seq' f x := by
     simp only [map_pure, seq_pure]
     rfl
@@ -56,22 +59,21 @@ def PureTransformation :
 theorem pureTransformation_apply {α} (x : id α) : PureTransformation F x = pure x :=
   rfl
 
-variable {F G} (x : t β)
+variable {F G}
 
--- Porting note: need to specify `m/F/G := Id` because `id` no longer has a `Monad` instance
-theorem map_eq_traverse_id : map (f := t) f = traverse (m := Id) (pure ∘ f) :=
+theorem map_eq_traverse_id : map (f := t) f = Id.run ∘ traverse (pure ∘ f) :=
   funext fun y => (traverse_eq_map_id f y).symm
 
 theorem map_traverse (x : t α) : map f <$> traverse g x = traverse (map f ∘ g) x := by
   rw [map_eq_traverse_id f]
   refine (comp_traverse (pure ∘ f) g x).symm.trans ?_
-  congr; apply Comp.applicative_comp_id
+  congr 1; apply Comp.applicative_comp_id
 
 theorem traverse_map (f : β → F γ) (g : α → β) (x : t α) :
     traverse f (g <$> x) = traverse (f ∘ g) x := by
   rw [@map_eq_traverse_id t _ _ _ _ g]
   refine (comp_traverse (G := Id) f (pure ∘ g) x).symm.trans ?_
-  congr; apply Comp.applicative_id_comp
+  congr 1; apply Comp.applicative_id_comp
 
 theorem pure_traverse (x : t α) : traverse pure x = (pure x : F (t α)) := by
   have : traverse pure x = pure (traverse (m := Id) pure x) :=

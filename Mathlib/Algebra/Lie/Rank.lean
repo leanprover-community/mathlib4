@@ -3,10 +3,12 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Lie.EngelSubalgebra
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Module.LinearMap.Polynomial
-import Mathlib.LinearAlgebra.Eigenspace.Zero
+module
+
+public import Mathlib.Algebra.Lie.EngelSubalgebra
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Module.LinearMap.Polynomial
+public import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Rank of a Lie algebra and regular elements
@@ -29,6 +31,10 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
+
+@[expose] public section
+
+open Module
 
 variable {R A L M ι ιₘ : Type*}
 variable [CommRing R]
@@ -65,13 +71,13 @@ lemma rank_eq_natTrailingDegree [Nontrivial R] [DecidableEq ι] :
     rank R L M = (polyCharpoly φ b).natTrailingDegree := by
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
-open FiniteDimensional
+open Module
 
 include bₘ in
 lemma rank_le_card [Nontrivial R] : rank R L M ≤ Fintype.card ιₘ :=
   nilRank_le_card _ bₘ
 
-open FiniteDimensional
+open Module
 lemma rank_le_finrank [Nontrivial R] : rank R L M ≤ finrank R M :=
   nilRank_le_finrank _
 
@@ -103,7 +109,7 @@ section IsDomain
 variable (L)
 variable [IsDomain R]
 
-open Cardinal FiniteDimensional MvPolynomial in
+open Cardinal Module MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
     ∃ x : L, IsRegular R M x :=
   LinearMap.exists_isNilRegular_of_finrank_le_card _ h
@@ -138,7 +144,7 @@ lemma rank_eq_natTrailingDegree [Nontrivial R] [DecidableEq ι] :
     rank R L = (polyCharpoly (ad R L).toLinearMap b).natTrailingDegree := by
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
-open FiniteDimensional
+open Module
 
 include b in
 lemma rank_le_card [Nontrivial R] : rank R L ≤ Fintype.card ι :=
@@ -175,7 +181,7 @@ section IsDomain
 variable (L)
 variable [IsDomain R]
 
-open Cardinal FiniteDimensional MvPolynomial in
+open Cardinal Module MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
     ∃ x : L, IsRegular R x :=
   LinearMap.exists_isNilRegular_of_finrank_le_card _ h
@@ -191,11 +197,11 @@ namespace LieAlgebra
 
 variable (K : Type*) {L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra
+open Module LieSubalgebra
 
 lemma finrank_engel (x : L) :
     finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
-  (ad K L x).finrank_maxGenEigenspace
+  (ad K L x).finrank_maxGenEigenspace_zero_eq
 
 lemma rank_le_finrank_engel (x : L) :
     rank K L ≤ finrank K (engel K x) :=

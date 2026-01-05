@@ -3,7 +3,9 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
+module
+
+public import Mathlib.Algebra.Module.Submodule.Ker
 
 /-!
 # The submodule of elements `x : M` such that `f x = g x`
@@ -16,6 +18,8 @@ import Mathlib.Algebra.Module.Submodule.Ker
 linear algebra, vector space, module
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} {R₂ : Type*}
 variable {M : Type*} {M₂ : Type*}
@@ -44,7 +48,7 @@ def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
       simpa only [map_smulₛₗ _] using congr_arg (τ₁₂ r • ·) hx }
 
 @[simp]

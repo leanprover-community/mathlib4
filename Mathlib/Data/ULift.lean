@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Control.ULift
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Control.ULift
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Extra lemmas about `ULift` and `PLift`
@@ -13,6 +15,8 @@ In this file we provide `Subsingleton`, `Unique`, `DecidableEq`, and `isEmpty` i
 `ULift α` and `PLift α`. We also prove `ULift.forall`, `ULift.exists`, `PLift.forall`, and
 `PLift.exists`.
 -/
+
+@[expose] public section
 
 universe u v u' v'
 
@@ -46,9 +50,7 @@ theorem up_surjective : Surjective (@up α) :=
 theorem up_bijective : Bijective (@up α) :=
   Equiv.plift.symm.bijective
 
-@[simp]
-theorem up_inj {x y : α} : up x = up y ↔ x = y :=
-  up_injective.eq_iff
+theorem up_inj {x y : α} : up x = up y ↔ x = y := by simp
 
 theorem down_surjective : Surjective (@down α) :=
   Equiv.plift.surjective
@@ -103,9 +105,7 @@ theorem up_surjective : Surjective (@up α) :=
 theorem up_bijective : Bijective (@up α) :=
   Equiv.ulift.symm.bijective
 
-@[simp]
-theorem up_inj {x y : α} : up x = up y ↔ x = y :=
-  up_injective.eq_iff
+theorem up_inj {x y : α} : up x = up y ↔ x = y := by simp
 
 theorem down_surjective : Surjective (@down α) :=
   Equiv.ulift.surjective
@@ -134,5 +134,12 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 @[ext]
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
   congrArg up h
+
+@[simp]
+lemma rec_update {β : ULift α → Type*} [DecidableEq α]
+    (f : ∀ a, β (.up a)) (a : α) (x : β (.up a)) :
+    ULift.rec (update f a x) = update (ULift.rec f) (.up a) x :=
+  Function.rec_update up_injective (ULift.rec ·) (fun _ _ => rfl) (fun
+    | _, _, .up _, h => (h _ rfl).elim) _ _ _
 
 end ULift

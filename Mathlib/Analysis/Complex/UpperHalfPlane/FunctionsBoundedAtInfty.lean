@@ -3,17 +3,21 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
+module
+
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
 # Bounded at infinity
 
-For complex valued functions on the upper half plane, this file defines the filter
+For complex-valued functions on the upper half plane, this file defines the filter
 `UpperHalfPlane.atImInfty` required for defining when functions are bounded at infinity and zero at
 infinity. Both of which are relevant for defining modular forms.
 -/
+
+@[expose] public section
 
 open Complex Filter
 
@@ -26,6 +30,11 @@ namespace UpperHalfPlane
 /-- Filter for approaching `i∞`. -/
 def atImInfty :=
   Filter.atTop.comap UpperHalfPlane.im
+
+instance : atImInfty.NeBot := by
+  refine comap_neBot_iff_frequently.mpr (Eventually.frequently ?_)
+  filter_upwards [eventually_gt_atTop 0] with t ht
+    using ⟨⟨I * t, by simp [ht]⟩, by simp [← coe_im]⟩
 
 theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻¹' Set.Ici i :=
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis
@@ -53,18 +62,37 @@ def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ →
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra _ atImInfty
 
-nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
-    (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
-  simpa only [Pi.one_apply, mul_one, norm_eq_abs] using hf.mul hg
-
-theorem bounded_mem (f : ℍ → ℂ) :
-    IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ M := by
+theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
+    IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ M := by
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
-theorem zero_at_im_infty (f : ℍ → ℂ) :
-    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε :=
-  (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by
-    simp only [true_and, mem_closedBall_zero_iff]; rfl
+theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
+  (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
+
+theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
+    (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
+  hf.boundedAtFilter
+
+lemma tendsto_comap_im_ofComplex :
+    Tendsto ofComplex (comap Complex.im atTop) atImInfty := by
+  simp only [atImInfty, tendsto_comap_iff, Function.comp_def]
+  refine tendsto_comap.congr' ?_
+  filter_upwards [preimage_mem_comap (Ioi_mem_atTop 0)] with z hz
+  simp only [ofComplex_apply_of_im_pos hz, ← UpperHalfPlane.coe_im, coe_mk_subtype]
+
+lemma tendsto_coe_atImInfty :
+    Tendsto UpperHalfPlane.coe atImInfty (comap Complex.im atTop) := by
+  simpa only [atImInfty, tendsto_comap_iff, Function.comp_def,
+    funext UpperHalfPlane.coe_im] using tendsto_comap
+
+lemma tendsto_smul_atImInfty {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+    Tendsto (fun τ ↦ g • τ) atImInfty atImInfty := by
+  suffices Tendsto (fun τ ↦ |g 0 0 / g 1 1| * τ.im) atImInfty atTop by
+    simpa [atImInfty, Function.comp_def, im_smul, num, denom, hg, abs_div, abs_mul,
+      abs_of_pos (UpperHalfPlane.im_pos _), mul_div_right_comm]
+  apply tendsto_comap.const_mul_atTop
+  simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
 
 end UpperHalfPlane

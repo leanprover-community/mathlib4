@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Ring.Subring.MulOpposite
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Ring.Subring.MulOpposite
 
 /-!
 
@@ -15,6 +17,8 @@ subalgebras of `A / R` and that of `Aᵐᵒᵖ / R`.
 
 -/
 
+@[expose] public section
+
 namespace Subalgebra
 
 section Semiring
@@ -22,25 +26,23 @@ section Semiring
 variable {ι : Sort*} {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- Pull a subalgebra back to an opposite subalgebra along `MulOpposite.unop` -/
-@[simps toSubsemiring]
+@[simps! coe toSubsemiring]
 protected def op (S : Subalgebra R A) : Subalgebra R Aᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   algebraMap_mem' := S.algebraMap_mem
 
-@[simp, norm_cast]
-theorem op_coe (S : Subalgebra R A) : S.op = MulOpposite.unop ⁻¹' (S : Set A) := rfl
+attribute [norm_cast] coe_op
 
 @[simp]
 theorem mem_op {x : Aᵐᵒᵖ} {S : Subalgebra R A} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
-/-- Pull an subalgebra subring back to a subalgebra along `MulOpposite.op` -/
-@[simps toSubsemiring]
+/-- Pull a subalgebra back to a subalgebra along `MulOpposite.op` -/
+@[simps! coe toSubsemiring]
 protected def unop (S : Subalgebra R Aᵐᵒᵖ) : Subalgebra R A where
   toSubsemiring := S.toSubsemiring.unop
   algebraMap_mem' := S.algebraMap_mem
 
-@[simp, norm_cast]
-theorem unop_coe (S : Subalgebra R Aᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Aᵐᵒᵖ) := rfl
+attribute [norm_cast] coe_unop
 
 @[simp]
 theorem mem_unop {x : A} {S : Subalgebra R Aᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
@@ -67,7 +69,7 @@ theorem op_le_op_iff {S₁ S₂ : Subalgebra R A} : S₁.op ≤ S₂.op ↔ S₁
 theorem unop_le_unop_iff {S₁ S₂ : Subalgebra R Aᵐᵒᵖ} : S₁.unop ≤ S₂.unop ↔ S₁ ≤ S₂ :=
   MulOpposite.unop_surjective.forall
 
-/-- A subalgebra `S` of `A / R` determines a subring `S.op` of the opposite ring `Aᵐᵒᵖ / R`. -/
+/-- A subalgebra `S` of `A / R` determines a subalgebra `S.op` of the opposite ring `Aᵐᵒᵖ / R`. -/
 @[simps]
 def opEquiv : Subalgebra R A ≃o Subalgebra R Aᵐᵒᵖ where
   toFun := Subalgebra.op

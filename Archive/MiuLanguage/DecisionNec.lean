@@ -5,9 +5,7 @@ Authors: Gihan Marasingha
 -/
 import Archive.MiuLanguage.Basic
 import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Count
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.Ring
 
 /-!
 # Decision procedure: necessary condition
@@ -55,10 +53,10 @@ example : CountEquivOrEquivTwoMulMod3 "IUIM" "MI" :=
 -/
 theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
     (h2 : b % 3 = a % 3 ∨ b % 3 = 2 * a % 3) : b % 3 = 1 ∨ b % 3 = 2 := by
-  cases' h2 with h2 h2
+  rcases h2 with h2 | h2
   · rw [h2]; exact h1
-  · cases' h1 with h1 h1
-    · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
+  · rcases h1 with h1 | h1
+    · right; simp [h2, mul_mod, h1]
     · left; simp only [h2, mul_mod, h1, mod_mod]
 
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that
@@ -67,18 +65,24 @@ is 1 or 2 modulo 3.
 theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
     Derivable en → count I en % 3 = 1 ∨ count I en % 3 = 2 := by
   intro h
-  induction' h with _ _ h_ih _ _ h_ih _ _ _ h_ih _ _ _ h_ih
-  · left; rfl
-  any_goals apply mod3_eq_1_or_mod3_eq_2 h_ih
-  -- Porting note: `simp_rw [count_append]` usually doesn't work
-  · left; rw [count_append, count_append]; rfl
-  · right; simp_rw [count_append, count_cons, beq_iff_eq, ite_false, add_zero, two_mul]
-  · left; rw [count_append, count_append, count_append]
-    simp_rw [count_cons_self, count_nil, count_cons, beq_iff_eq, ite_false, add_right_comm,
-      add_mod_right]
+  induction h with
+  | mk => left; rfl
+  | r1 _ h_ih =>
+    apply mod3_eq_1_or_mod3_eq_2 h_ih; left
+    rw [count_append, count_append]; rfl
+  | r2 _ h_ih =>
+    apply mod3_eq_1_or_mod3_eq_2 h_ih; right
+    simp_rw [count_append, count_cons, beq_iff_eq, reduceCtorEq, ite_false, add_zero, two_mul]
+  | r3 _ h_ih =>
+    apply mod3_eq_1_or_mod3_eq_2 h_ih; left
+    rw [count_append, count_append, count_append]
+    simp_rw [count_cons_self, count_nil, count_cons, beq_iff_eq, reduceCtorEq, ite_false,
+      add_right_comm, add_mod_right]
     simp
-  · left; rw [count_append, count_append, count_append]
-    simp only [ne_eq, not_false_eq_true, count_cons_of_ne, count_nil, add_zero]
+  | r4 _ h_ih =>
+    apply mod3_eq_1_or_mod3_eq_2 h_ih; left
+    rw [count_append, count_append, count_append]
+    simp only [ne_eq, not_false_eq_true, count_cons_of_ne, count_nil, add_zero, reduceCtorEq]
 
 /-- Using the above theorem, we solve the MU puzzle, showing that `"MU"` is not derivable.
 Once we have proved that `Derivable` is an instance of `DecidablePred`, this will follow
@@ -99,7 +103,7 @@ string to be derivable, namely that the string must start with an M and contain 
 /-- `Goodm xs` holds if `xs : Miustr` begins with `M` and has no `M` in its tail.
 -/
 def Goodm (xs : Miustr) : Prop :=
-  List.headI xs = M ∧ ¬M ∈ List.tail xs
+  List.headI xs = M ∧ M ∉ List.tail xs
 
 instance : DecidablePred Goodm := by unfold Goodm; infer_instance
 
@@ -116,33 +120,28 @@ We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st`
 -/
 
 
-theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : Goodm (xs ++ ↑[I])) :
-    Goodm (xs ++ ↑[I, U]) := by
-  cases' h₂ with mhead nmtail
-  have : xs ≠ nil := by rintro rfl; contradiction
+theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Goodm (xs ++ [I])) :
+    Goodm (xs ++ [I, U]) := by
+  obtain ⟨mhead, nmtail⟩ := h₂
   constructor
-  · -- Porting note: Original proof was `rwa [head_append] at * <;> exact this`.
-    -- However, there is no `headI_append`
-    cases xs
-    · contradiction
-    exact mhead
-  · change ¬M ∈ tail (xs ++ ↑([I] ++ [U]))
+  · cases xs <;> simp_all
+  · change M ∉ tail (xs ++ ([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
-    · simp_rw [mem_append, mem_singleton, or_false]; exact nmtail
-    · exact append_ne_nil_of_left_ne_nil this _
+    · simp_rw [mem_append, mem_singleton, reduceCtorEq, or_false]; exact nmtail
+    · simp
 
 theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :
-    Goodm (↑(M :: xs) ++ xs) := by
+    Goodm ((M :: xs) ++ xs) := by
   constructor
   · rfl
-  · cases' h₂ with mhead mtail
+  · obtain ⟨mhead, mtail⟩ := h₂
     contrapose! mtail
     rw [cons_append] at mtail
     exact or_self_iff.mp (mem_append.mp mtail)
 
-theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++ bs))
-    (h₂ : Goodm (as ++ ↑[I, I, I] ++ bs)) : Goodm (as ++ ↑(U :: bs)) := by
-  cases' h₂ with mhead nmtail
+theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs))
+    (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ (U :: bs)) := by
+  obtain ⟨mhead, nmtail⟩ := h₂
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · cases as
@@ -150,9 +149,7 @@ theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++
     exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
-    -- Porting note: `simp_rw [cons_append]` didn't work
-    rw [cons_append] at nmtail; rw [cons_append, cons_append]
-    dsimp only [tail] at nmtail ⊢
+    simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail
 
 /-!
@@ -160,9 +157,9 @@ The proof of the next lemma is identical, on the tactic level, to the previous p
 -/
 
 
-theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs))
-    (h₂ : Goodm (as ++ ↑[U, U] ++ bs)) : Goodm (as ++ bs) := by
-  cases' h₂ with mhead nmtail
+theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
+    (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
+  obtain ⟨mhead, nmtail⟩ := h₂
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · cases as
@@ -170,9 +167,7 @@ theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs
     exact mhead
   · contrapose! nmtail
     rcases exists_cons_of_ne_nil k with ⟨x, xs, rfl⟩
-    -- Porting note: `simp_rw [cons_append]` didn't work
-    rw [cons_append] at nmtail; rw [cons_append, cons_append]
-    dsimp only [tail] at nmtail ⊢
+    simp_rw [cons_append] at nmtail ⊢
     simpa using nmtail
 
 /-- Any derivable string must begin with `M` and have no `M` in its tail.

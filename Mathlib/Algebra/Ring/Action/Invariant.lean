@@ -3,11 +3,22 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Algebra.Ring.Subring.Basic
+module
 
-/-! # Subrings invariant under an action -/
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Algebra.Ring.Subring.Defs
 
+/-! # Subrings invariant under an action
+
+If a monoid acts on a ring via a `MulSemiringAction`, then `IsInvariantSubring` is
+a predicate on subrings asserting that the subring is fixed elementwise by the
+action.
+
+-/
+
+@[expose] public section
+
+assert_not_exists RelIso
 
 section Ring
 
@@ -25,12 +36,12 @@ class IsInvariantSubring : Prop where
 instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] :
     MulSemiringAction M S where
   smul m x := ⟨m • ↑x, IsInvariantSubring.smul_mem m x.2⟩
-  one_smul s := Subtype.eq <| one_smul M (s : R)
-  mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ (s : R)
-  smul_add m s₁ s₂ := Subtype.eq <| smul_add m (s₁ : R) (s₂ : R)
-  smul_zero m := Subtype.eq <| smul_zero m
-  smul_one m := Subtype.eq <| smul_one m
-  smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m (s₁ : R) (s₂ : R)
+  one_smul s := Subtype.ext <| one_smul M (s : R)
+  mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ (s : R)
+  smul_add m s₁ s₂ := Subtype.ext <| smul_add m (s₁ : R) (s₂ : R)
+  smul_zero m := Subtype.ext <| smul_zero m
+  smul_one m := Subtype.ext <| smul_one m
+  smul_mul m s₁ s₂ := Subtype.ext <| smul_mul' m (s₁ : R) (s₂ : R)
 
 end Ring
 
@@ -44,14 +55,12 @@ variable (U : Subring R') [IsInvariantSubring M U]
 def IsInvariantSubring.subtypeHom : U →+*[M] R' :=
   { U.subtype with map_smul' := fun _ _ ↦ rfl }
 
--- Porting note: changed `coe` to `Subtype.val`
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom :
     (IsInvariantSubring.subtypeHom M U : U → R') = Subtype.val := rfl
 
--- Porting note: added `toRingHom`
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom' :
-    ((IsInvariantSubring.subtypeHom M U).toRingHom : U →+* R') = U.subtype := rfl
+    ((IsInvariantSubring.subtypeHom M U) : U →+* R') = U.subtype := rfl
 
 end

@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2020. All rights reserved.
+Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Massot
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Algebra.Group.Commutator
+module
+
+public meta import Mathlib.Tactic.Ring
+public meta import Mathlib.Tactic.FailIfNoProgress
+public meta import Mathlib.Algebra.Group.Commutator
 
 /-!
 # `group` tactic
@@ -21,6 +23,8 @@ some `ring` invocations.
 
 group_theory
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Group
 
@@ -48,10 +52,10 @@ syntax (name := aux_group₁) "aux_group₁" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₁ $[at $location]?) =>
-  `(tactic| simp (config := {decide := false, failIfUnchanged := false}) only
+  `(tactic| simp -decide -failIfUnchanged only
     [commutatorElement_def, mul_one, one_mul,
       ← zpow_neg_one, ← zpow_natCast, ← zpow_mul,
-      Int.ofNat_add, Int.ofNat_mul,
+      Int.natCast_add, Int.natCast_mul,
       Int.mul_neg, Int.neg_mul, neg_neg,
       one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
       ← mul_assoc,
@@ -64,7 +68,7 @@ syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₂ $[at $location]?) =>
-  `(tactic| ring_nf $[at $location]?)
+  `(tactic| ring_nf -failIfUnchanged $[at $location]?)
 
 /-- Tactic for normalizing expressions in multiplicative groups, without assuming
 commutativity, using only the group axioms without any information about which group
@@ -87,3 +91,9 @@ macro_rules
   `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
 
 end Mathlib.Tactic.Group
+
+/-!
+We register `group` with the `hint` tactic.
+-/
+
+register_hint 900 group

@@ -3,9 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.NumberTheory.DirichletCharacter.GaussSum
+module
+
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.NumberTheory.DirichletCharacter.GaussSum
 
 /-!
 # Fourier theory on `ZMod N`
@@ -23,6 +26,8 @@ Basic definitions and properties of the discrete Fourier transform for functions
   primitive Dirichlet character `χ` is a Gauss sum times `χ⁻¹`.
 -/
 
+@[expose] public section
+
 open MeasureTheory Finset AddChar ZMod
 
 namespace ZMod
@@ -38,6 +43,7 @@ prove a minimal set of lemmas about it, and then define the `LinearEquiv` using 
 **Do not add more lemmas about `auxDFT`**: it should be invisible to end-users.
 -/
 
+set_option backward.privateInPublic true in
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure). This definition is
 private because it is superseded by the bundled `LinearEquiv` version.
@@ -73,9 +79,11 @@ end private_defs
 
 section defs
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure), bundled as a linear
-equivalence.
+equivalence. Denoted as `𝓕` within the `ZMod` namespace.
 -/
 noncomputable def dft : (ZMod N → E) ≃ₗ[ℂ] (ZMod N → E) where
   toFun := auxDFT
@@ -129,8 +137,7 @@ lemma dft_eq_fourier {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [Com
     (Φ : ZMod N → E) (k : ZMod N) :
     𝓕 Φ k = Fourier.fourierIntegral toCircle Measure.count Φ k := by
   simp only [dft_apply, stdAddChar_apply, Fourier.fourierIntegral_def, Circle.smul_def,
-    integral_countable' <| .of_finite .., Measure.count_singleton, ENNReal.one_toReal, one_smul,
-    tsum_fintype]
+    integral_countable' <| .of_finite .., count_real_singleton, one_smul, tsum_fintype]
 
 end defs
 
@@ -177,13 +184,32 @@ lemma dft_comp_unitMul (Φ : ZMod N → E) (u : (ZMod N)ˣ) (k : ZMod N) :
   refine Fintype.sum_equiv u.mulLeft _ _ fun x ↦ ?_
   simp only [mul_comm u.val, u.mulLeft_apply, ← mul_assoc, u.mul_inv_cancel_right]
 
+section signs
+
+/-- The discrete Fourier transform of `Φ` is even if and only if `Φ` itself is. -/
+lemma dft_even_iff {Φ : ZMod N → ℂ} : (𝓕 Φ).Even ↔ Φ.Even := by
+  have h {f : ZMod N → ℂ} (hf : f.Even) : (𝓕 f).Even := by
+    simp only [Function.Even, ← congr_fun (dft_comp_neg f), funext hf, implies_true]
+  refine ⟨fun hΦ x ↦ ?_, h⟩
+  simpa only [neg_neg, smul_right_inj (NeZero.ne (N : ℂ)), dft_dft] using h hΦ (-x)
+
+/-- The discrete Fourier transform of `Φ` is odd if and only if `Φ` itself is. -/
+lemma dft_odd_iff {Φ : ZMod N → ℂ} : (𝓕 Φ).Odd ↔ Φ.Odd := by
+  have h {f : ZMod N → ℂ} (hf : f.Odd) : (𝓕 f).Odd := by
+    simp only [Function.Odd, ← congr_fun (dft_comp_neg f), funext hf, ← Pi.neg_apply, map_neg,
+      implies_true]
+  refine ⟨fun hΦ x ↦ ?_, h⟩
+  simpa only [neg_neg, dft_dft, ← smul_neg, smul_right_inj (NeZero.ne (N : ℂ))] using h hΦ (-x)
+
+end signs
+
 end ZMod
 
 namespace DirichletCharacter
 
-variable {N : ℕ} [NeZero N] (χ : DirichletCharacter ℂ N)
+variable {N : ℕ} [NeZero N]
 
-lemma fourierTransform_eq_gaussSum_mulShift (k : ZMod N) :
+lemma fourierTransform_eq_gaussSum_mulShift (χ : DirichletCharacter ℂ N) (k : ZMod N) :
     𝓕 χ k = gaussSum χ (stdAddChar.mulShift (-k)) := by
   simp only [dft_apply, smul_eq_mul]
   congr 1 with j
@@ -191,7 +217,8 @@ lemma fourierTransform_eq_gaussSum_mulShift (k : ZMod N) :
 
 /-- For a primitive Dirichlet character `χ`, the Fourier transform of `χ` is a constant multiple
 of `χ⁻¹` (and the constant is essentially the Gauss sum). -/
-lemma fourierTransform_eq_inv_mul_gaussSum (k : ZMod N) (hχ : IsPrimitive χ) :
+lemma IsPrimitive.fourierTransform_eq_inv_mul_gaussSum {χ : DirichletCharacter ℂ N}
+    (hχ : IsPrimitive χ) (k : ZMod N) :
     𝓕 χ k = χ⁻¹ (-k) * gaussSum χ stdAddChar := by
   rw [fourierTransform_eq_gaussSum_mulShift, gaussSum_mulShift_of_isPrimitive _ hχ]
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # Support of homological complexes
 
@@ -23,6 +25,8 @@ complementary embedding `e'`.)
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits ZeroObject
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
@@ -31,12 +35,12 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
-  (K L : HomologicalComplex C c') (e' : K ≅ L) (e : c.Embedding c')
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
+  (K L : HomologicalComplex C c') (e' : K ≅ L) (φ : K ⟶ L) (e : c.Embedding c')
 
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
 an embedding `e : c.Embedding c'` of complex shapes if `K.X i'` is zero
-wheneverm `i'` is not of the form `e.f i` for some `i`.-/
+whenever `i'` is not of the form `e.f i` for some `i`. -/
 class IsStrictlySupported : Prop where
   isZero (i' : ι') (hi' : ∀ i, e.f i ≠ i') : IsZero (K.X i')
 
@@ -51,9 +55,20 @@ lemma isStrictlySupported_of_iso [K.IsStrictlySupported e] : L.IsStrictlySupport
   isZero i' hi' := (K.isZero_X_of_isStrictlySupported e i' hi').of_iso
     ((eval _ _ i').mapIso e'.symm)
 
+@[simp]
+lemma isStrictlySupported_op_iff :
+    K.op.IsStrictlySupported e.op ↔ K.IsStrictlySupported e :=
+  ⟨(fun _ ↦ ⟨fun i' hi' ↦ (K.op.isZero_X_of_isStrictlySupported e.op i' hi').unop⟩),
+    (fun _ ↦ ⟨fun i' hi' ↦ (K.isZero_X_of_isStrictlySupported e i' hi').op⟩)⟩
+
+instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op := by
+  rw [isStrictlySupported_op_iff]
+  infer_instance
+
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
 an embedding `e : c.Embedding c'` of complex shapes if `K` is exact at `i'`
-whenever `i'` is not of the form `e.f i` for some `i`.-/
+whenever `i'` is not of the form `e.f i` for some `i`. -/
+@[mk_iff]
 class IsSupported : Prop where
   exactAt (i' : ι') (hi' : ∀ i, e.f i ≠ i') : K.ExactAt i'
 
@@ -67,27 +82,47 @@ lemma isSupported_of_iso [K.IsSupported e] : L.IsSupported e where
   exactAt i' hi' :=
     (K.exactAt_of_isSupported e i' hi').of_iso e'
 
+variable {K L} in
+lemma isSupported_iff_of_quasiIso [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+    [QuasiIso φ] :
+    K.IsSupported e ↔ L.IsSupported e := by
+  simp [isSupported_iff, exactAt_iff_of_quasiIsoAt φ]
+
 instance [K.IsStrictlySupported e] : K.IsSupported e where
   exactAt i' hi' := by
     rw [exactAt_iff]
     exact ShortComplex.exact_of_isZero_X₂ _ (K.isZero_X_of_isStrictlySupported e i' hi')
+
+@[simp]
+lemma isSupported_op_iff :
+    K.op.IsSupported e.op ↔ K.IsSupported e :=
+  ⟨fun _ ↦ ⟨fun i' hi' ↦ (K.op.exactAt_of_isSupported e.op i' hi').unop⟩,
+    fun _ ↦ ⟨fun i' hi' ↦ (K.exactAt_of_isSupported e i' hi').op⟩⟩
 
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupportedOutside e` holds for
 an embedding `e : c.Embedding c'` of complex shapes if `K.X (e.f i)` is zero for all `i`. -/
 structure IsStrictlySupportedOutside : Prop where
   isZero (i : ι) : IsZero (K.X (e.f i))
 
+@[simp]
+lemma isStrictlySupportedOutside_op_iff :
+    K.op.IsStrictlySupportedOutside e.op ↔ K.IsStrictlySupportedOutside e :=
+  ⟨fun h ↦ ⟨fun i ↦ (h.isZero i).unop⟩, fun h ↦ ⟨fun i ↦ (h.isZero i).op⟩⟩
+
 /-- If `K : HomologicalComplex C c'`, then `K.IsSupportedOutside e` holds for
 an embedding `e : c.Embedding c'` of complex shapes if `K` is exact at `e.f i` for all `i`. -/
 structure IsSupportedOutside : Prop where
   exactAt (i : ι) : K.ExactAt (e.f i)
 
+@[simp]
+lemma isSupportedOutside_op_iff :
+    K.op.IsSupportedOutside e.op ↔ K.IsSupportedOutside e :=
+  ⟨fun h ↦ ⟨fun i ↦ (h.exactAt i).unop⟩, fun h ↦ ⟨fun i ↦ (h.exactAt i).op⟩⟩
+
 variable {K e} in
 lemma IsStrictlySupportedOutside.isSupportedOutside (h : K.IsStrictlySupportedOutside e) :
     K.IsSupportedOutside e where
-  exactAt i := by
-    rw [exactAt_iff]
-    exact ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
+  exactAt i := ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
 
 instance [HasZeroObject C] : (0 : HomologicalComplex C c').IsStrictlySupported e where
   isZero i _ := (eval _ _ i).map_isZero (Limits.isZero_zero _)
@@ -110,14 +145,11 @@ lemma isZero_iff_isStrictlySupported_and_isStrictlySupportedOutside :
       exact h₂.isZero i
     · exact K.isZero_X_of_isStrictlySupported e _ (by simpa using hn)
 
-instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op where
-  isZero j hj' := (K.isZero_X_of_isStrictlySupported e j hj').op
-
 end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
   (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
 instance map_isStrictlySupported [K.IsStrictlySupported e] :

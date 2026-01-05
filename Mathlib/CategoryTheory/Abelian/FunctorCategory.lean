@@ -1,17 +1,21 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Shapes.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -25,8 +29,6 @@ namespace Abelian
 section
 
 universe z w v u
-
--- Porting note: removed restrictions on universes
 
 variable {C : Type u} [Category.{v} C]
 variable {D : Type w} [Category.{z} D] [Abelian D]
@@ -66,8 +68,8 @@ theorem coimageImageComparison_app :
   simp only [coimage_image_factorisation, PreservesKernel.iso_hom, Category.assoc,
     kernel.lift_ι, Category.comp_id, PreservesCokernel.iso_inv,
     cokernel.π_desc_assoc, Category.id_comp]
-  erw [kernelComparison_comp_ι _ ((evaluation C D).obj X),
-    π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
+  erw [kernelComparison_comp_ι _ ((evaluation C D).obj X)]
+  erw [π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
   conv_lhs => rw [← coimage_image_factorisation α]
   rfl
 
@@ -93,23 +95,6 @@ noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
   Abelian.ofCoimageImageComparisonIsIso
 
 end
-
--- Porting note: the following section should be unnecessary because there are no longer
---any universe restrictions for `functorCategoryAbelian`
---
---section
---
---universe u
---
---variable {C : Type u} [SmallCategory C]
---
---variable {D : Type (u + 1)} [LargeCategory D] [Abelian D]
---
---/-- A variant with specialized universes for a common case. -/
---noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
---  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
---
---end
 
 end Abelian
 

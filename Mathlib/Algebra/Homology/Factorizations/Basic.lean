@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 
 /-!
-# Basic definitions for factorizations lemmas
+# Basic definitions for factorization lemmas
 
 We define the class of morphisms
 `degreewiseEpiWithInjectiveKernel : MorphismProperty (CochainComplex C ℤ)`
@@ -19,10 +21,10 @@ fibrations for a model category structure on the bounded below
 category of cochain complexes in `C`. In this folder, we intend to prove two factorization
 lemmas in the category of bounded below cochain complexes (TODO):
 * CM5a: any morphism `K ⟶ L` can be factored as `K ⟶ K' ⟶ L` where `i : K ⟶ K'` is a
-trivial cofibration (a mono that is also a quasi-isomorphisms) and `p : K' ⟶ L` is a fibration.
+  trivial cofibration (a mono that is also a quasi-isomorphism) and `p : K' ⟶ L` is a fibration.
 * CM5b: any morphism `K ⟶ L` can be factored as `K ⟶ L' ⟶ L` where `i : K ⟶ L'` is a
-cofibration (i.e. a mono) and `p : L' ⟶ L` is a trivial fibration (i.e. a quasi-isomorphism
-which is also a fibration)
+  cofibration (i.e. a mono) and `p : L' ⟶ L` is a trivial fibration (i.e. a quasi-isomorphism
+  which is also a fibration)
 
 The difficult part is CM5a (whose proof uses CM5b). These lemmas shall be essential
 ingredients in the proof that the bounded below derived category of an abelian
@@ -32,10 +34,12 @@ of total derived functors (and a refactor of the sequence of derived functors).
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Abelian
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex
 

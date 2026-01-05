@@ -3,9 +3,11 @@ Copyright (c) 2022 Paul A. Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Convex bodies
@@ -21,13 +23,15 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 - define positive convex bodies, requiring the interior to be nonempty
 - introduce support sets
-- Characterise the interaction of the distance with algebraic operations, eg
+- Characterise the interaction of the distance with algebraic operations, e.g.
   `dist (a • K) (a • L) = ‖a‖ * dist K L`, `dist (a +ᵥ K) (a +ᵥ L) = dist K L`
 
 ## Tags
 
 convex, convex body
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise Topology NNReal
@@ -81,9 +85,9 @@ theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s 
   rfl
 
 /-- A convex body that is symmetric contains `0`. -/
-theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, - x ∈ K) : 0 ∈ K := by
+theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, -x ∈ K) : 0 ∈ K := by
   obtain ⟨x, hx⟩ := K.nonempty
-  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by field_simp]
+  rw [show 0 = (1 / 2 : ℝ) • x + (1 / 2 : ℝ) • (-x) by simp]
   apply convex_iff_forall_pos.mp K.convex hx (h_symm x hx)
   all_goals linarith
 
@@ -92,7 +96,7 @@ section ContinuousAdd
 instance : Zero (ConvexBody V) where
   zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 
@@ -109,20 +113,20 @@ instance : Add (ConvexBody V) where
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
--- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
 
-instance : AddMonoid (ConvexBody V) :=
-  SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
+noncomputable instance : AddMonoid (ConvexBody V) :=
+  SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 
-instance : AddCommMonoid (ConvexBody V) :=
-  SetLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
+noncomputable instance : AddCommMonoid (ConvexBody V) :=
+  SetLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 end ContinuousAdd
 
@@ -131,22 +135,22 @@ variable [ContinuousSMul ℝ V]
 instance : SMul ℝ (ConvexBody V) where
   smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
 variable [ContinuousAdd V]
 
-instance : DistribMulAction ℝ (ConvexBody V) :=
-  SetLike.coe_injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_smul
+noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
+  SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
 /-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals.
 -/
-instance : Module ℝ≥0 (ConvexBody V) where
+noncomputable instance : Module ℝ≥0 (ConvexBody V) where
   add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
   zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
 
@@ -181,7 +185,7 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
-  dist_triangle K L M := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
+  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
@@ -212,7 +216,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     rw [show (1 + u n : ℝ) • y - y = (u n : ℝ) • y by rw [add_smul, one_smul, add_sub_cancel_left],
       norm_smul, Real.norm_eq_abs]
     specialize hn n le_rfl
-    rw [_root_.lt_div_iff' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
+    rw [lt_div_iff₀' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
     refine lt_of_le_of_lt ?_ hn
     exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)

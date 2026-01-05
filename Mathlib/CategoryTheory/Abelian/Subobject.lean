@@ -3,18 +3,22 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
-universe v u
+universe w v u
 
 noncomputable section
 
@@ -23,9 +27,9 @@ namespace CategoryTheory.Abelian
 variable {C : Type u} [Category.{v} C]
 
 /-- In an abelian category, the subobjects and quotient objects of an object `X` are
-    order-isomorphic via taking kernels and cokernels.
-    Implemented here using subobjects in the opposite category,
-    since mathlib does not have a notion of quotient objects at the time of writing. -/
+order-isomorphic via taking kernels and cokernels.
+Implemented here using subobjects in the opposite category,
+since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
 def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
@@ -58,7 +62,8 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     · simp only [monoLift_comp]
 
 /-- A well-powered abelian category is also well-copowered. -/
-instance wellPowered_opposite [Abelian C] [WellPowered C] : WellPowered Cᵒᵖ where
+instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} C] :
+    WellPowered.{w} Cᵒᵖ where
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
 
 /-! # The exponential map from selfadjoint to unitary
 In this file, we establish various properties related to the map
@@ -17,6 +19,8 @@ In this file, we establish various properties related to the map
 * A unitary is in the path component of `1` if and only if it is a finite product of exponential
   unitaries.
 -/
+
+@[expose] public section
 
 open NormedSpace -- For `NormedSpace.exp`.
 
@@ -35,6 +39,16 @@ noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
       exp_mem_unitary_of_mem_skewAdjoint _ (a.prop.smul_mem_skewAdjoint conj_I)⟩
 
 open selfAdjoint
+
+@[simp]
+lemma selfAdjoint.expUnitary_zero : expUnitary (0 : selfAdjoint A) = 1 := by
+  ext
+  simp
+
+@[fun_prop]
+lemma selfAdjoint.continuous_expUnitary : Continuous (expUnitary : selfAdjoint A → unitary A) := by
+  simp only [continuous_induced_rng, Function.comp_def, selfAdjoint.expUnitary_coe]
+  fun_prop
 
 theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     expUnitary (a + b) = expUnitary a * expUnitary b := by

@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementarySubstructures
+module
+
+public import Mathlib.ModelTheory.ElementarySubstructures
 
 /-!
 # Skolem Functions and Downward Löwenheim–Skolem
@@ -24,6 +26,8 @@ import Mathlib.ModelTheory.ElementarySubstructures
 - Use `skolem₁` recursively to construct an actual Skolemization of a language.
 -/
 
+@[expose] public section
+
 
 universe u v w w'
 
@@ -32,8 +36,6 @@ namespace FirstOrder
 namespace Language
 
 open Structure Cardinal
-
-open Cardinal
 
 variable (L : Language.{u, v}) {M : Type w} [Nonempty M] [L.Structure M]
 
@@ -50,7 +52,7 @@ theorem card_functions_sum_skolem₁ :
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
-  · refine sum_le_sum _ _ fun n => ?_
+  · gcongr with n
     rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{v}]
     refine ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => ?_⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
@@ -82,11 +84,11 @@ theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
   apply (LHom.sumInl.substructureReduct S).isElementary_of_exists
   intro n φ x a h
   let φ' : (L.sum L.skolem₁).Functions n := LHom.sumInr.onFunction φ
-  exact
-    ⟨⟨funMap φ' ((↑) ∘ x), S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
-      exact fun i => (x i).2)⟩,
-      by exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
-          (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩⟩
+  use ⟨funMap φ' ((↑) ∘ x), ?_⟩
+  · exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
+          (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩
+  · exact S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
+      exact fun i => (x i).2)
 
 /-- Any `L.sum L.skolem₁`-substructure is an elementary `L`-substructure. -/
 noncomputable def elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructure M) :

@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableInter
+module
+
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Filters with countable intersections and countable separating families
@@ -69,6 +71,8 @@ We formalize several versions of this theorem in
 
 filter, countable
 -/
+
+@[expose] public section
 
 open Function Set Filter
 
@@ -167,7 +171,7 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
   · exact inter_mem
       (inter_mem hs ((countable_sInter_mem (hSc.mono inter_subset_left)).2 fun _ h ↦ h.2))
-      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem.2 id)
+      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem'.2 id)
 
 theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Set α → Prop)
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hne : s.Nonempty)

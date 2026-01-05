@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.TotalComplex
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+module
+
+public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 /-!
 # The action of a bifunctor on homological complexes
@@ -21,10 +23,13 @@ bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
 
+@[expose] public section
+
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
+variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
 
 namespace CategoryTheory
 
@@ -160,7 +165,7 @@ variable {K₁ K₂ F c} in
 lemma hom_ext {Y : D} {j : J} {f g : (mapBifunctor K₁ K₂ F c).X j ⟶ Y}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = j),
       ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ f = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ g) :
-      f = g :=
+    f = g :=
   HomologicalComplex₂.total.hom_ext _ h
 
 section
@@ -196,11 +201,11 @@ noncomputable def d₂ :
     (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).d₂ c i₁ i₂ j
 
-lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)):
+lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)) :
     d₁ K₁ K₂ F c i₁ i₂ j = 0 :=
   HomologicalComplex₂.d₁_eq_zero _ _ _ _ _ h
 
-lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)):
+lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)) :
     d₂ K₁ K₂ F c i₁ i₂ j = 0 :=
   HomologicalComplex₂.d₂_eq_zero _ _ _ _ _ h
 
@@ -277,3 +282,31 @@ lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
 end
 
 end HomologicalComplex
+
+namespace CategoryTheory.Functor
+
+variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c : ComplexShape J)
+  [DecidableEq J] [TotalComplexShape c₁ c₂ c]
+
+open HomologicalComplex
+
+/-- The bifunctor on homological complexes that is induced by a bifunctor. -/
+@[simps]
+noncomputable def map₂HomologicalComplex
+    [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂),
+      HasMapBifunctor K₁ K₂ F c] :
+    HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex D c where
+  obj K₁ :=
+    { obj K₂ := mapBifunctor K₁ K₂ F c
+      map g := mapBifunctorMap (𝟙 K₁) g _ _ }
+  map f := { app K₂ := mapBifunctorMap f (𝟙 K₂) _ _ }
+
+/-- The bifunctor on cochain complexes that is induced by a bifunctor. -/
+noncomputable abbrev map₂CochainComplex
+    [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)] :
+    CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ :=
+  F.map₂HomologicalComplex _ _ _
+
+end CategoryTheory.Functor

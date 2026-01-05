@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces
@@ -16,11 +18,11 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 ## TODO
 
 * `CompactlyGenerated` is a reflective subcategory of `TopCat`.
-* `CompactlyGenerated` is cartesian closed.
+* `CompactlyGenerated` is Cartesian closed.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
 
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+@[expose] public section
 
 universe u w
 
@@ -37,25 +39,34 @@ structure CompactlyGenerated where
 namespace CompactlyGenerated
 
 instance : Inhabited CompactlyGenerated.{u, w} :=
-  ⟨{ toTop := { α := ULift (Fin 37) } }⟩
+  ⟨{ toTop := TopCat.of (ULift (Fin 37)) }⟩
 
 instance : CoeSort CompactlyGenerated Type* :=
   ⟨fun X => X.toTop⟩
 
 attribute [instance] is_compactly_generated
 
-instance : Category.{w, w+1} CompactlyGenerated.{u, w} :=
-  InducedCategory.category toTop
+instance : Category.{w, w + 1} CompactlyGenerated.{u, w} :=
+  inferInstanceAs (Category (InducedCategory _ toTop))
 
-instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} :=
-  InducedCategory.concreteCategory _
+instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
+  InducedCategory.concreteCategory toTop
 
 variable (X : Type w) [TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X]
 
 /-- Constructor for objects of the category `CompactlyGenerated`. -/
-def of : CompactlyGenerated.{u, w} where
+abbrev of : CompactlyGenerated.{u, w} where
   toTop := TopCat.of X
   is_compactly_generated := ‹_›
+
+section
+
+variable {X} {Y : Type w} [TopologicalSpace Y] [UCompactlyGeneratedSpace.{u} Y]
+
+/-- Typecheck a `ContinuousMap` as a morphism in `CompactlyGenerated`. -/
+abbrev ofHom (f : C(X, Y)) : of X ⟶ of Y := ConcreteCategory.ofHom f
+
+end
 
 /-- The fully faithful embedding of `CompactlyGenerated` in `TopCat`. -/
 @[simps!]
@@ -73,8 +84,8 @@ instance : compactlyGeneratedToTop.{u, w}.Faithful := fullyFaithfulCompactlyGene
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps hom inv]
 def isoOfHomeo {X Y : CompactlyGenerated.{u, w}} (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
+  hom := ofHom ⟨f, f.continuous⟩
+  inv := ofHom ⟨f.symm, f.symm.continuous⟩
   hom_inv_id := by
     ext x
     exact f.symm_apply_apply x
@@ -87,10 +98,10 @@ def isoOfHomeo {X Y : CompactlyGenerated.{u, w}} (f : X ≃ₜ Y) : X ≅ Y wher
 def homeoOfIso {X Y : CompactlyGenerated.{u, w}} (f : X ≅ Y) : X ≃ₜ Y where
   toFun := f.hom
   invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+  left_inv := f.hom_inv_id_apply
+  right_inv := f.inv_hom_id_apply
+  continuous_toFun := f.hom.hom.hom.continuous
+  continuous_invFun := f.inv.hom.hom.continuous
 
 /-- The equivalence between isomorphisms in `CompactlyGenerated` and homeomorphisms
 of topological spaces. -/
@@ -98,11 +109,5 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompactlyGenerated.{u, w}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 end CompactlyGenerated

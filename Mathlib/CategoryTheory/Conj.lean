@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Conjugate morphisms by isomorphisms
@@ -20,6 +22,8 @@ using
 and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`
 which are defined in  `CategoryTheory.HomCongr`.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -63,16 +67,16 @@ theorem symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by
 theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
   α.symm.symm_self_conj f
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
--- Porting note (#11215): TODO: change definition so that `conjAut_apply` becomes a `rfl`?
-/-- `conj` defines a group isomorphisms between groups of automorphisms -/
+-- TODO: change definition so that `conjAut_apply` becomes a `rfl`?
+/-- `conj` defines a group isomorphism between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
 
-theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by aesop_cat
+theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by cat_disch
 
 @[simp]
 theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
@@ -83,7 +87,7 @@ theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
   simp only [conjAut_apply, Iso.trans_symm, Iso.trans_assoc]
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
   map_mul α.conjAut f g
 
@@ -91,11 +95,11 @@ theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjA
 theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪≫ α.conjAut g :=
   conjAut_mul α g f
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   map_pow α.conjAut f n
 
-/- Porting note (#10618): removed `@[simp]`; simp can prove this -/
+@[simp]
 theorem conjAut_zpow (f : Aut X) (n : ℤ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   map_zpow α.conjAut f n
 

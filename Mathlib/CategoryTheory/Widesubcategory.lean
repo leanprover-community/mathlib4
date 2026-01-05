@@ -3,8 +3,10 @@ Copyright (c) 2024 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Wide subcategories
@@ -24,6 +26,8 @@ whose objects are the objects of `C` and morphisms are the morphisms in `C` whic
 property `P`.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 universe v₁ v₂ u₁ u₂
@@ -33,13 +37,12 @@ open MorphismProperty
 section Induced
 
 variable {C : Type u₁} (D : Type u₂) [Category.{v₁} D]
-variable (F : C → D) (P : MorphismProperty D) [IsMultiplicative P]
+variable (F : C → D) (P : MorphismProperty D) [P.IsMultiplicative]
 
 /-- `InducedWideCategory D F P`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y` which satisfy a property `P : MorphismProperty D` that is multiplicative.
 -/
--- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def InducedWideCategory (_F : C → D) (_P : MorphismProperty D) [IsMultiplicative _P] :=
   C
@@ -55,13 +58,13 @@ instance InducedWideCategory.category :
     Category (InducedWideCategory D F P) where
   Hom X Y := {f : F X ⟶ F Y | P f}
   id X := ⟨𝟙 (F X), P.id_mem (F X)⟩
-  comp {X Y Z} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
+  comp {_ _ _} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
 
 /-- The forgetful functor from an induced wide category to the original category. -/
 @[simps]
 def wideInducedFunctor : InducedWideCategory D F P ⥤ D where
   obj := F
-  map {X Y} f := f.1
+  map {_ _} f := f.1
 
 /-- The induced functor `wideInducedFunctor F P : InducedWideCategory D F P ⥤ D`
 is faithful. -/

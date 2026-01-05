@@ -3,8 +3,10 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
+module
+
+public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 
 /-!
 # Conformal maps between inner product spaces
@@ -12,6 +14,8 @@ import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 A function between inner product spaces which has a derivative at `x`
 is conformal at `x` iff the derivative preserves inner products up to a scalar multiple.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -23,19 +27,19 @@ variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 open RealInnerProductSpace
 
 /-- A real differentiable map `f` is conformal at point `x` if and only if its
-    differential `fderiv ℝ f x` at that point scales every inner product by a positive scalar. -/
+differential `fderiv ℝ f x` at that point scales every inner product by a positive scalar. -/
 theorem conformalAt_iff' {f : E → F} {x : E} : ConformalAt f x ↔
     ∃ c : ℝ, 0 < c ∧ ∀ u v : E, ⟪fderiv ℝ f x u, fderiv ℝ f x v⟫ = c * ⟪u, v⟫ := by
   rw [conformalAt_iff_isConformalMap_fderiv, isConformalMap_iff]
 
 /-- A real differentiable map `f` is conformal at point `x` if and only if its
-    differential `f'` at that point scales every inner product by a positive scalar. -/
+differential `f'` at that point scales every inner product by a positive scalar. -/
 theorem conformalAt_iff {f : E → F} {x : E} {f' : E →L[ℝ] F} (h : HasFDerivAt f f' x) :
     ConformalAt f x ↔ ∃ c : ℝ, 0 < c ∧ ∀ u v : E, ⟪f' u, f' v⟫ = c * ⟪u, v⟫ := by
   simp only [conformalAt_iff', h.fderiv]
 
 /-- The conformal factor of a conformal map at some point `x`. Some authors refer to this function
-    as the characteristic function of the conformal map. -/
+as the characteristic function of the conformal map. -/
 def conformalFactorAt {f : E → F} {x : E} (h : ConformalAt f x) : ℝ :=
   Classical.choose (conformalAt_iff'.mp h)
 

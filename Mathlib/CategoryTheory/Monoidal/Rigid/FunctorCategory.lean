@@ -1,16 +1,20 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Functors from a groupoid into a right/left rigid category form a right/left rigid category.
 
 (Using the pointwise monoidal structure on the functor category.)
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -21,7 +25,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory.Monoidal
 
-variable {C D : Type*} [Groupoid C] [Category D] [MonoidalCategory D]
+variable {C D : Type*} [Groupoid C] [Category* D] [MonoidalCategory D]
 
 instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=
@@ -30,7 +34,7 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
       map_comp := fun f g => by simp [comp_rightAdjointMate] }
   exact :=
     { evaluation' :=
-        { app := fun X => ε_ _ _
+        { app := fun _ => ε_ _ _
           naturality := fun X Y f => by
             dsimp
             rw [Category.comp_id, Functor.map_inv, ← id_tensor_comp_tensor_id, Category.assoc,
@@ -38,7 +42,7 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
               rightAdjointMate_comp_evaluation, ← MonoidalCategory.whiskerLeft_comp_assoc,
               IsIso.hom_inv_id, MonoidalCategory.whiskerLeft_id, Category.id_comp] }
       coevaluation' :=
-        { app := fun X => η_ _ _
+        { app := fun _ => η_ _ _
           naturality := fun X Y f => by
             dsimp
             rw [Functor.map_inv, Category.id_comp, ← id_tensor_comp_tensor_id,
@@ -55,14 +59,12 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
       map_comp := fun f g => by simp [comp_leftAdjointMate] }
   exact :=
     { evaluation' :=
-        { app := fun X => ε_ _ _
+        { app := fun _ => ε_ _ _
           naturality := fun X Y f => by
-            dsimp
             simp [tensorHom_def, leftAdjointMate_comp_evaluation] }
       coevaluation' :=
-        { app := fun X => η_ _ _
+        { app := fun _ => η_ _ _
           naturality := fun X Y f => by
-            dsimp
             simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }
 
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where

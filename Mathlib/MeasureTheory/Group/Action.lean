@@ -3,32 +3,36 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.Dynamics.Minimal
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Group.Defs
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.Dynamics.Minimal
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measures invariant under group actions
 
 A measure `μ : Measure α` is said to be *invariant* under an action of a group `G` if scalar
-multiplication by `c : G` is a measure preserving map for all `c`. In this file we define a
+multiplication by `c : G` is a measure-preserving map for all `c`. In this file we define a
 typeclass for measures invariant under action of an (additive or multiplicative) group and prove
 some basic properties of such measures.
 -/
 
+@[expose] public section
 
-open scoped ENNReal NNReal Pointwise Topology
+
+open scoped ENNReal NNReal Pointwise Topology symmDiff
 open MeasureTheory.Measure Set Function Filter
 
 namespace MeasureTheory
 
 universe u v w
 
-variable {G : Type u} {M : Type v} {α : Type w} {s : Set α}
+variable {G : Type u} {M : Type v} {α : Type w}
 
 namespace SMulInvariantMeasure
 
@@ -61,13 +65,14 @@ variable {m : MeasurableSpace α} [SMul G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
 
 /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
-@[to_additive "See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`."]
+@[to_additive
+/-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/]
 theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) ≤ μ s :=
   (outerMeasure_le_iff (m := .map (c • ·) μ.1)).2
     (fun _s hs ↦ (SMulInvariantMeasure.measure_preimage_smul _ hs).le) _
 
 /-- See also `smul_ae`. -/
-@[to_additive "See also `vadd_ae`."]
+@[to_additive /-- See also `vadd_ae`. -/]
 theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
   eq_bot_mono (measure_preimage_smul_le μ c _) hs
 
@@ -99,6 +104,38 @@ theorem measure_preimage_smul (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) = 
 @[to_additive (attr := simp)]
 theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
   simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
+
+@[to_additive (attr := simp)]
+theorem measure_inter_inv_smul (c : G) (s t : Set α) : μ (s ∩ c⁻¹ • t) = μ (c • s ∩ t) := by
+  rw [← measure_smul _ c, smul_set_inter, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_inter (c : G) (s t : Set α) : μ (c⁻¹ • s ∩ t) = μ (s ∩ c • t) := by
+  simpa [inv_inv] using (measure_inter_inv_smul _ c⁻¹ _ _).symm
+
+@[to_additive (attr := simp)]
+theorem measure_union_inv_smul (c : G) (s t : Set α) : μ (s ∪ c⁻¹ • t) = μ (c • s ∪ t) := by
+  rw [← measure_smul _ c, smul_set_union, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_union (c : G) (s t : Set α) : μ (c⁻¹ • s ∪ t) = μ (s ∪ c • t) := by
+  simpa [inv_inv] using (measure_union_inv_smul _ c⁻¹ _ _).symm
+
+@[to_additive (attr := simp)]
+theorem measure_sdiff_inv_smul (c : G) (s t : Set α) : μ (s \ c⁻¹ • t) = μ (c • s \ t) := by
+  rw [← measure_smul _ c, smul_set_sdiff, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_sdiff (c : G) (s t : Set α) : μ (c⁻¹ • s \ t) = μ (s \ c • t) := by
+  simpa [inv_inv] using (measure_sdiff_inv_smul _ c⁻¹ _ _).symm
+
+@[to_additive (attr := simp)]
+theorem measure_symmDiff_inv_smul (c : G) (s t : Set α) : μ (s ∆ (c⁻¹ • t)) = μ ((c • s) ∆ t) := by
+  rw [← measure_smul _ c, smul_set_symmDiff, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_symmDiff (c : G) (s t : Set α) : μ ((c⁻¹ • s) ∆ t) = μ (s ∆ (c • t)) := by
+  simpa [inv_inv] using (measure_symmDiff_inv_smul _ c⁻¹ _ _).symm
 
 variable {μ}
 
@@ -148,7 +185,7 @@ theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
       exact SMulInvariantMeasure.measure_preimage_smul c hs }
 
 @[to_additive (attr := simp)]
-theorem map_smul : map (c • ·) μ = μ :=
+protected theorem map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 
 end MeasurableSMul
@@ -198,7 +235,7 @@ instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N 
 
 end SMulHomClass
 
-variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (c : G) (μ : Measure α)
+variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure α)
 
 variable [MeasurableSpace G] [MeasurableSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
@@ -215,7 +252,7 @@ variable [MeasurableSpace G] [MeasurableSMul G α] in
 
 - 5: for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, scalar multiplication by `c` is a measure preserving map. -/
+- 6: for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
 @[to_additive]
 theorem smulInvariantMeasure_tfae :
     List.TFAE
@@ -226,23 +263,17 @@ theorem smulInvariantMeasure_tfae :
         ∀ (c : G) (s), μ (c • s) = μ s,
         ∀ c : G, Measure.map (c • ·) μ = μ,
         ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
-  tfae_have 1 ↔ 2
-  · exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  tfae_have 1 → 6
-  · intro h c
-    exact (measurePreserving_smul c μ).map_eq
-  tfae_have 6 → 7
-  · exact fun H c => ⟨measurable_const_smul c, H c⟩
-  tfae_have 7 → 4
-  · exact fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
+  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 1 → 6 := fun h c => (measurePreserving_smul c μ).map_eq
+  tfae_have 6 → 7 := fun H c => ⟨measurable_const_smul c, H c⟩
+  tfae_have 7 → 4 := fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
   tfae_have 4 → 5
-  · exact fun H c s => by
-      rw [← preimage_smul_inv]
-      apply H
-  tfae_have 5 → 3
-  · exact fun H c s _ => H c s
+  | H, c, s => by
+    rw [← preimage_smul_inv]
+    apply H
+  tfae_have 5 → 3 := fun H c s _ => H c s
   tfae_have 3 → 2
-  · intro H c s hs
+  | H, c, s, hs => by
     rw [preimage_smul]
     exact H c⁻¹ s hs
   tfae_finish
@@ -261,7 +292,7 @@ theorem smulInvariantMeasure_tfae :
 
 - 5: for any `c : G`, vector addition of `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, vector addition of `c` is a measure preserving map. -/
+- 6: for any `c : G`, vector addition of `c` is a measure-preserving map. -/
 add_decl_doc vaddInvariantMeasure_tfae
 
 variable {G}
@@ -313,7 +344,7 @@ variable [Measure.Regular μ]
 @[to_additive]
 theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
     (hne : U.Nonempty) : 0 < μ U :=
-  let ⟨_K, hK, hμK⟩ := Regular.exists_compact_not_null.mpr hμ
+  let ⟨_K, hK, hμK⟩ := Regular.exists_isCompact_not_null.mpr hμ
   measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero G hK hμK hU hne
 
 @[to_additive]

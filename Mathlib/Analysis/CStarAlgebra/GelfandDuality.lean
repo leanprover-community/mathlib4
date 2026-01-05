@@ -3,14 +3,17 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Spectrum
-import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.Analysis.Normed.Algebra.Basic
-import Mathlib.Topology.ContinuousFunction.Units
-import Mathlib.Topology.ContinuousFunction.Compact
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousFunction.Ideals
-import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Spectrum
+public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Algebra.Basic
+public import Mathlib.Topology.ContinuousMap.Units
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.ContinuousMap.Ideals
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Gelfand Duality
@@ -59,6 +62,8 @@ Then `η₁ : id → F ∘ G := gelfandStarTransform` and
 
 Gelfand transform, character space, C⋆-algebra
 -/
+
+@[expose] public section
 
 
 open WeakDual
@@ -124,8 +129,7 @@ end ComplexBanachAlgebra
 
 section ComplexCStarAlgebra
 
-variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-variable [StarRing A] [CStarRing A] [StarModule ℂ A]
+variable {A : Type*} [CommCStarAlgebra A]
 
 theorem gelfandTransform_map_star (a : A) :
     gelfandTransform ℂ A (star a) = star (gelfandTransform ℂ A a) :=
@@ -135,7 +139,6 @@ variable (A)
 
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
-  nontriviality A
   refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => ?_
   /- By `spectrum.gelfandTransform_eq`, the spectra of `star a * a` and its
     `gelfandTransform` coincide. Therefore, so do their spectral radii, and since they are
@@ -170,7 +173,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
   have h : rng.topologicalClosure = rng := le_antisymm
     (StarSubalgebra.topologicalClosure_minimal le_rfl
-      (gelfandTransform_isometry A).closedEmbedding.isClosed_range)
+      (gelfandTransform_isometry A).isClosedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
   refine h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     _ (fun _ _ => ?_)
@@ -212,15 +215,12 @@ noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
     Continuous.subtype_mk
       (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
 
-variable (A)
-
+variable (A) in
 /-- `WeakDual.CharacterSpace.compContinuousMap` sends the identity to the identity. -/
 @[simp]
 theorem compContinuousMap_id :
     compContinuousMap (StarAlgHom.id 𝕜 A) = ContinuousMap.id (characterSpace 𝕜 A) :=
   ContinuousMap.ext fun _a => ext fun _x => rfl
-
-variable {A}
 
 /-- `WeakDual.CharacterSpace.compContinuousMap` is functorial. -/
 @[simp]
@@ -258,9 +258,7 @@ V                     V
 B  --- η B ---> C(characterSpace ℂ B, ℂ)
 ```
 -/
-theorem gelfandStarTransform_naturality {A B : Type*} [NormedCommRing A] [NormedAlgebra ℂ A]
-    [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A] [NormedCommRing B]
-    [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B]
+theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
     (φ : A →⋆ₐ[ℂ] B) :
     (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
       (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by

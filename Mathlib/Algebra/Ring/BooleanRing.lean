@@ -3,11 +3,14 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Algebra.PUnitInstances.Algebra
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Ring
-import Mathlib.Order.Hom.Lattice
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Ring
 
 /-!
 # Boolean rings
@@ -39,23 +42,26 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+@[expose] public section
+
 open scoped symmDiff
 
 variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
-  /-- Multiplication in a boolean ring is idempotent. -/
-  mul_self : ∀ a : α, a * a = a
+  /-- Multiplication in a Boolean ring is idempotent. -/
+  isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
+@[scoped simp]
+lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
+
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
-
-attribute [scoped simp] mul_self
 
 @[scoped simp]
 theorem add_self : a + a = 0 := by
@@ -64,7 +70,7 @@ theorem add_self : a + a = 0 := by
       a + a = (a + a) * (a + a) := by rw [mul_self]
       _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
       _ = a + a + (a + a) := by rw [mul_self]
-  rwa [self_eq_add_left] at this
+  rwa [right_eq_add] at this
 
 @[scoped simp]
 theorem neg_eq : -a = a :=
@@ -86,7 +92,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
       _ = a + a * b + (b * a + b) := by simp only [mul_self]
       _ = a + b + (a * b + b * a) := by abel
-  rwa [self_eq_add_right] at this
+  rwa [left_eq_add] at this
 
 @[scoped simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
@@ -137,11 +143,9 @@ theorem toBoolAlg_ofBoolAlg (a : AsBoolAlg α) : toBoolAlg (ofBoolAlg a) = a :=
 theorem ofBoolAlg_toBoolAlg (a : α) : ofBoolAlg (toBoolAlg a) = a :=
   rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
   Iff.rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
 
@@ -153,16 +157,15 @@ variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
 namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
-def sup : Sup α :=
+def sup : Max α :=
   ⟨fun x y => x + y + x * y⟩
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
-def inf : Inf α :=
+def inf : Min α :=
   ⟨(· * ·)⟩
 
--- Porting note (#11215): TODO: add priority 100. lower instance priority
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -221,7 +224,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
-      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
+      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by simp [mul_add, mul_self, add_self]
     top_le_sup_compl := fun a => by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
@@ -229,8 +232,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
--- Porting note (#11215): TODO: add priority 100. lower instance priority
-scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
 
@@ -355,11 +357,9 @@ theorem toBoolRing_ofBoolRing (a : AsBoolRing α) : toBoolRing (ofBoolRing a) = 
 theorem ofBoolRing_toBoolRing (a : α) : ofBoolRing (toBoolRing a) = a :=
   rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
   Iff.rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 
@@ -367,7 +367,7 @@ instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
 -- See note [reducible non-instances]
-/-- Every generalized Boolean algebra has the structure of a non unital commutative ring with the
+/-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)
@@ -414,7 +414,7 @@ abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   one := ⊤
   one_mul := top_inf_eq
   mul_one := inf_top_eq
-  mul_self := inf_idem
+  isIdempotentElem := inf_idem
 
 scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
@@ -525,7 +525,6 @@ instance : BooleanRing Bool where
   add_assoc := xor_assoc
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc
@@ -533,8 +532,8 @@ instance : BooleanRing Bool where
   mul_one := Bool.and_true
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
-  mul_self := Bool.and_self
-  zero_mul a := rfl
+  isIdempotentElem := Bool.and_self
+  zero_mul _ := rfl
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
   zsmul := zsmulRec

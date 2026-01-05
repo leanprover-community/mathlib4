@@ -3,17 +3,21 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.WithDensity
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
+
+@[expose] public section
 
 
 open MeasureTheory Filter ENNReal Set
 
 open NNReal ENNReal
 
-variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
 theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}

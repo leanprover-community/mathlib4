@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Matrices of multivariate polynomials
@@ -19,6 +21,8 @@ unique variable.
 matrix determinant, multivariate polynomial
 -/
 
+@[expose] public section
+
 
 variable {m n R S : Type*}
 
@@ -30,7 +34,7 @@ variable (m n R)
 noncomputable def mvPolynomialX [CommSemiring R] : Matrix m n (MvPolynomial (m × n) R) :=
   of fun i j => MvPolynomial.X (i, j)
 
--- TODO: set as an equation lemma for `mv_polynomial_X`, see mathlib4#3024
+-- TODO: set as an equation lemma for `mv_polynomial_X`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem mvPolynomialX_apply [CommSemiring R] (i j) :
     mvPolynomialX m n R i j = MvPolynomial.X (i, j) :=
@@ -68,7 +72,7 @@ theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [CommRing R] [Nont
     det (mvPolynomialX m m R) ≠ 0 := by
   intro h_det
   have := congr_arg Matrix.det (mvPolynomialX_mapMatrix_eval (1 : Matrix m m R))
-  rw [det_one, ← RingHom.map_det, h_det, RingHom.map_zero] at this
+  rw [det_one, ← RingHom.map_det, h_det, map_zero] at this
   exact zero_ne_one this
 
 end Matrix

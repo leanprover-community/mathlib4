@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Bornology.Constructions
+module
+
+public import Mathlib.Topology.Bornology.Constructions
 
 /-!
 # Bornology of order-bounded sets
@@ -17,6 +19,8 @@ of order-boundedness (sets that are bounded above and below).
 * `IsOrderBornology`: Typeclass predicate for a preorder to be equipped with its order-bornology.
 -/
 
+@[expose] public section
+
 open Bornology Set
 
 variable {α : Type*} {s t : Set α}
@@ -29,8 +33,8 @@ and below. -/
 def orderBornology : Bornology α := .ofBounded
   {s | BddBelow s ∧ BddAbove s}
   (by simp)
-  (fun s hs t hst ↦ ⟨hs.1.mono hst, hs.2.mono hst⟩)
-  (fun s hs t ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
+  (fun _ hs _ hst ↦ ⟨hs.1.mono hst, hs.2.mono hst⟩)
+  (fun _ hs _ ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
   (by simp)
 
 @[simp] lemma orderBornology_isBounded : orderBornology.IsBounded s ↔ BddBelow s ∧ BddAbove s := by

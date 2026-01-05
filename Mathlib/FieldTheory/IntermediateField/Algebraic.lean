@@ -3,31 +3,54 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.RingTheory.Algebraic
-import Mathlib.FieldTheory.Tower
-import Mathlib.FieldTheory.Minpoly.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Tower
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
 -/
 
-open FiniteDimensional
+@[expose] public section
 
-variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
+open Module
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
 
+theorem IntermediateField.coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
+    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x :=
+  isIntegral_algHom_iff (S.val.restrictScalars R) Subtype.val_injective
+
+/-- Turn an algebraic subalgebra into an intermediate field, `Subalgebra.IsAlgebraic` version. -/
+def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAlgebraic) :
+    IntermediateField K L where
+  toSubalgebra := S
+  inv_mem' x hx := Algebra.adjoin_le_iff.mpr
+    (Set.singleton_subset_iff.mpr hx) (hS x hx).isIntegral.inv_mem_adjoin
+
+/-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
+abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
+    IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
+
 namespace IntermediateField
+
+instance isAlgebraic_tower_bot [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic K S :=
+  Algebra.IsAlgebraic.of_injective S.val S.val.injective
+
+instance isAlgebraic_tower_top [Algebra.IsAlgebraic K L] : Algebra.IsAlgebraic S L :=
+  Algebra.IsAlgebraic.tower_top (K := K) S
 
 section FiniteDimensional
 
 variable (F E : IntermediateField K L)
 
-instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F :=
-  left K F L
-
-instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L :=
-  right K F L
+instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F := .left K F L
+instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L := .right K F L
 
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
@@ -38,11 +61,6 @@ theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :
   rfl
 
 variable {F} {E}
-
-@[simp]
-theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
-  rw [SetLike.ext_iff, SetLike.ext'_iff, Set.ext_iff]
-  rfl
 
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K] ≤ [F : K]` are finite,
 then `F = E`. -/
@@ -83,13 +101,42 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
+lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
+    Module.finrank E L < Module.finrank F L := by
+  letI := (IntermediateField.inclusion H.le).toAlgebra
+  have : IsScalarTower F E L := .of_algebraMap_eq' rfl
+  refine lt_of_le_of_ne ?_ ?_
+  · exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
+  · exact .symm (mt (eq_of_le_of_finrank_eq' H.le) H.ne)
+
+theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
+  let _ := (inclusion h).toRingHom.toAlgebra
+  have : IsScalarTower F E L := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
+  exact Dvd.intro_left (finrank F E) (finrank_mul_finrank F E L)
+
+theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
+  let _ := (inclusion h).toRingHom.toAlgebra
+  exact Dvd.intro (finrank F E) (finrank_mul_finrank K F E)
+
+theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E L ≤ finrank F L :=
+  Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_left h)
+
+theorem finrank_le_of_le_right [FiniteDimensional K E] (h : F ≤ E) : finrank K F ≤ finrank K E :=
+  Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_right h)
+
+/-- Mapping a finite-dimensional intermediate field along an algebra equivalence gives
+a finite-dimensional intermediate field. -/
+instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
+    FiniteDimensional K (E.map f) :=
+  LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
+
 end FiniteDimensional
 
 theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=
   (isAlgebraic_algebraMap_iff (algebraMap S L).injective).symm
 
-theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
-  rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
+theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) :=
+  (isIntegral_algHom_iff S.val S.val.injective).symm
 
 theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
   (minpoly.algebraMap_eq (algebraMap S L).injective x).symm

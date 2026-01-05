@@ -3,32 +3,32 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
 # First Baire theorem
 
-In this file we prove that a completely metrizable topological space is a Baire space.
-Since `Mathlib` does not have the notion of a completely metrizable topological space yet,
-we state it for a complete uniform space with countably generated uniformity filter.
+In this file we prove that a completely pseudometrizable topological space is a Baire space.
 -/
 
-open Filter EMetric Set
-open scoped Topology Uniformity ENNReal
+@[expose] public section
 
-variable {X : Type*} [UniformSpace X] [CompleteSpace X] [(𝓤 X).IsCountablyGenerated]
+open Filter EMetric Set TopologicalSpace
+open scoped Uniformity ENNReal
 
-/-- **First Baire theorem**: a completely metrizable topological space has Baire property.
+variable {X : Type*} [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
 
-Since `Mathlib` does not have the notion of a completely metrizable topological space yet,
-we state it for a complete uniform space with countably generated uniformity filter. -/
-instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : BaireSpace X := by
-  let _ := UniformSpace.pseudoMetricSpace X
+/-- **First Baire theorem**: a completely pseudometrizable topological space has Baire property. -/
+instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace X := by
+  let _ := upgradeIsCompletelyPseudoMetrizable X
   refine ⟨fun f ho hd => ?_⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := fun n ↦
-    ENNReal.div_pos one_ne_zero <| ENNReal.pow_ne_top ENNReal.coe_ne_top
+    ENNReal.div_pos one_ne_zero <| by finiteness
   /- Translate the density assumption into two functions `center` and `radius` associating
     to any n, x, δ, δpos a center and a positive radius such that
     `closedBall center radius` is included both in `f n` and in `closedBall x δ`.
@@ -95,7 +95,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
   -- this point `y` will be the desired point. We will check that it belongs to all
   -- `f n` and to `ball x ε`.
   use y
-  simp only [exists_prop, Set.mem_iInter]
+  simp only [Set.mem_iInter]
   have I : ∀ n, ∀ m ≥ n, closedBall (c m) (r m) ⊆ closedBall (c n) (r n) := by
     intro n
     refine Nat.le_induction ?_ fun m _ h => ?_
@@ -103,7 +103,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     · exact Subset.trans (incl m) (Subset.trans inter_subset_left h)
   have yball : ∀ n, y ∈ closedBall (c n) (r n) := by
     intro n
-    refine isClosed_ball.mem_of_tendsto ylim ?_
+    refine isClosed_closedBall.mem_of_tendsto ylim ?_
     refine (Filter.eventually_ge_atTop n).mono fun m hm => ?_
     exact I n m hm mem_closedBall_self
   constructor
@@ -112,5 +112,5 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     have : closedBall (c (n + 1)) (r (n + 1)) ⊆ f n :=
       Subset.trans (incl n) inter_subset_right
     exact this (yball (n + 1))
-  show edist y x ≤ ε
+  change edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)
