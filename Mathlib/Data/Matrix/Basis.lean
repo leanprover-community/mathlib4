@@ -52,6 +52,7 @@ theorem single_apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
 theorem single_apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
     single i j a i' j' = 0 := by simp [hj]
 
+@[grind =]
 lemma single_apply : single i j c i' j' = if i = i' ∧ j = j' then c else 0 := rfl
 
 end
