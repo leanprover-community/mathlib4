@@ -98,11 +98,10 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) {R R₁ : �
           simp only [← mul_assoc]; nth_rw 7 [mul_comm]; simp only [mul_assoc, ← mul_add]
           have : (z - z₀) ^ (r - k) = (z - z₀) ^ (r - (k + 1)) * (z - z₀) ^ 1 := by
             rw [← pow_add]; congr; grind
-          rw [this]; clear this
-          rw [mul_assoc, ← mul_add, pow_one, mul_eq_mul_left_iff]; left; rw [← mul_assoc, ← add_mul]
-          nth_rw 1 [← one_mul (a := (r.factorial / (r - k).factorial : ℂ)), ← add_mul]
-          rw [add_assoc]; simp only [mul_assoc]; rw [← mul_add]; nth_rw 2 [add_comm]; norm_cast;
-          simp only [← mul_assoc, mul_div]
+          rw [this, mul_assoc, ← mul_add, pow_one, mul_eq_mul_left_iff]; left;
+          nth_rw 1 [← mul_assoc, ← add_mul, ← one_mul (a := (r.factorial / (r - k).factorial : ℂ))]
+          nth_rw 1 [← add_mul]; rw [add_assoc]; simp only [mul_assoc]; rw [← mul_add];
+          nth_rw 2 [add_comm]; norm_cast; simp only [← mul_assoc, mul_div]
           have HR : ↑(r - (k + 1) + 1) = ↑(r - k) := by grind
           simp only [Nat.sub_sub r k 1, HR, add_assoc]; congr 1; simp only [mul_eq_mul_right_iff]
           left; nth_rw 2 [← Nat.mul_factorial_pred (hn := by grind)]; rw [Nat.sub_sub r k 1]
@@ -130,7 +129,7 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (z₀ : ℂ) (n : ℕ) :
         exact ENat.coe_ne_top (r - 1)
     · refine fun ho ↦ ⟨fun k hk ↦ (analyticOrderAt_ne_zero.mp ?_).2, ?_⟩
       · grind only [(Complex.analyticOrderAt_iterated_deriv f hf k (n + 1)
-          ho.symm (by grind) hk.le), @Nat.cast_ne_zero]
+          ho.symm (by grind) hk.le), Nat.cast_ne_zero]
       · have := Complex.analyticOrderAt_iterated_deriv f hf (n + 1) (n + 1)
           ho.symm (by grind) (by grind)
         grind only [AnalyticAt.analyticOrderAt_eq_zero (hf := iterated_deriv hf (n + 1))]
