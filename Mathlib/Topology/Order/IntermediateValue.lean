@@ -453,8 +453,14 @@ theorem isPreconnected_Ioi : IsPreconnected (Ioi a) :=
 theorem isPreconnected_Ioo : IsPreconnected (Ioo a b) :=
   ordConnected_Ioo.isPreconnected
 
+theorem isPreconnected_uIoo : IsPreconnected (uIoo a b) :=
+  isPreconnected_Ioo
+
 theorem isPreconnected_Ioc : IsPreconnected (Ioc a b) :=
   ordConnected_Ioc.isPreconnected
+
+theorem isPreconnected_uIoc : IsPreconnected (uIoc a b) :=
+  isPreconnected_Ioc
 
 theorem isPreconnected_Ico : IsPreconnected (Ico a b) :=
   ordConnected_Ico.isPreconnected
@@ -477,8 +483,14 @@ theorem isConnected_Icc (h : a ≤ b) : IsConnected (Icc a b) :=
 theorem isConnected_Ioo (h : a < b) : IsConnected (Ioo a b) :=
   ⟨nonempty_Ioo.2 h, isPreconnected_Ioo⟩
 
+theorem isConnected_uIoo (h : a ≠ b) : IsConnected (uIoo a b) :=
+  ⟨nonempty_uIoo.2 h, isPreconnected_uIoo⟩
+
 theorem isConnected_Ioc (h : a < b) : IsConnected (Ioc a b) :=
   ⟨nonempty_Ioc.2 h, isPreconnected_Ioc⟩
+
+theorem isConnected_uIoc (h : a ≠ b) : IsConnected (uIoc a b) :=
+  ⟨nonempty_uIoc.2 h, isPreconnected_uIoc⟩
 
 theorem isConnected_Ico (h : a < b) : IsConnected (Ico a b) :=
   ⟨nonempty_Ico.2 h, isPreconnected_Ico⟩
