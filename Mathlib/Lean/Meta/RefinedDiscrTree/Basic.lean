@@ -302,6 +302,7 @@ partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   else
     "Discrimination tree flowchart:" ++ Format.joinSep lines.toList "\n"
 where
+  /-- Auxiliary function for `RefinedDiscrTree.format`. -/
   go (trie : TrieIndex) : Format := Id.run do
     let { values, star, labelledStars, children, pending } := tree.tries[trie]!
     let mut lines := #[]
