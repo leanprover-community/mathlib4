@@ -29,7 +29,7 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
-@[expose] public section
+public section
 
 -- TODO. Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file

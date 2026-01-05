@@ -43,7 +43,7 @@ Primed versions of the three results above are also stated for when the endpoint
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
