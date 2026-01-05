@@ -204,7 +204,7 @@ protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v)
 protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
     (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
   Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
-    by_contra! hc
+    by_contra hc
     obtain ⟨p, hp⟩ := Reachable.exists_walk_length_eq_dist h
     exact hnadj (Walk.exists_length_eq_one_iff.mp ⟨p, hc ▸ hp⟩))
 
@@ -298,7 +298,7 @@ lemma Reachable.exists_path_of_dist (hr : G.Reachable u v) :
 
 lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
-  obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist  u v
+  obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
 @[simp]

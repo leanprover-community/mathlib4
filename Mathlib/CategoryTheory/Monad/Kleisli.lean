@@ -139,7 +139,7 @@ def fromCokleisli : Cokleisli U ⥤ C where
     rw [Comonad.coassoc]
     simp only [Category.assoc, NatTrans.naturality, Functor.comp_map]
 
-/-- The co-Kleisli adjunction which gives rise to the monad `(U, ε_ U, δ_ U)`. -/
+/-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y => Equiv.refl (U.obj X ⟶ Y)

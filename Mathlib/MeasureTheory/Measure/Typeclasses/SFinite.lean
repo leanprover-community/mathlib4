@@ -200,7 +200,7 @@ all members of the countable family of finite measure spanning sets has zero mea
 theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Measure α}
     [SigmaFinite μ] (s : Set α) : (∀ n, μ (s ∩ spanningSets μ n) = 0) ↔ μ s = 0 := by
   nth_rw 2 [show s = ⋃ n, s ∩ spanningSets μ n by
-      rw [← inter_iUnion, iUnion_spanningSets, inter_univ] ]
+      rw [← inter_iUnion, iUnion_spanningSets, inter_univ]]
   rw [measure_iUnion_null_iff]
 
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
