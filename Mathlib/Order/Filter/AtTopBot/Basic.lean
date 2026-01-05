@@ -16,7 +16,7 @@ public import Mathlib.Tactic.Subsingleton
 In this file we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

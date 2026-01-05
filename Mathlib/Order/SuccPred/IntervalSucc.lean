@@ -25,7 +25,7 @@ In this file we prove
 For the latter lemma, we also prove various order dual versions.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Order

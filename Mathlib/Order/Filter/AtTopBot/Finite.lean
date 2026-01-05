@@ -16,7 +16,7 @@ This file contains results on `Filter.atTop` and `Filter.atBot` that depend on
 the finiteness theory developed in Mathlib.
 -/
 
-@[expose] public section
+public section
 
 variable {ι ι' α β γ : Type*}
 

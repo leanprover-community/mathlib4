@@ -26,7 +26,7 @@ ideal, filter, prime, distributive lattice
 (1938)][Sto1938]
 -/
 
-@[expose] public section
+public section
 
 
 universe u

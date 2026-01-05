@@ -19,7 +19,7 @@ public import Mathlib.SetTheory.Cardinal.Subfield
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

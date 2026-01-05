@@ -25,7 +25,7 @@ satisfying relations associated to the Cartan matrix of the input root system.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

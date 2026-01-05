@@ -21,7 +21,7 @@ the injectivity part is `LinearMap.lcomp_injective_of_surjective` in the file
 
 -/
 
-@[expose] public section
+public section
 
 namespace LinearMap
 

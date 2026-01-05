@@ -21,7 +21,7 @@ The file contains results connecting perfect pairings and matrices.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 

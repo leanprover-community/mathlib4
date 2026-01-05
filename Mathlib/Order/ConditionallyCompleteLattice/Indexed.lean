@@ -15,7 +15,7 @@ rather than complete, lattice. We add a prefix `c` to distinguish them from the 
 complete lattices, giving names `ciSup_xxx` or `ciInf_xxx`.
 -/
 
-@[expose] public section
+public section
 
 -- Guard against import creep
 assert_not_exists Multiset

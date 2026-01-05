@@ -20,7 +20,7 @@ some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the 
 which is a special case of `mem_closure_of_tendsto` from `Topology/Basic`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 

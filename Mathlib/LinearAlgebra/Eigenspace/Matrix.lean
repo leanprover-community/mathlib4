@@ -19,7 +19,7 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
 
-@[expose] public section
+public section
 
 section SpectrumDiagonal
 

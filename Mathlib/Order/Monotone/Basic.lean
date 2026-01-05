@@ -51,7 +51,7 @@ monotone, strictly monotone, antitone, strictly antitone, increasing, strictly i
 decreasing, strictly decreasing
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual
 
