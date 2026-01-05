@@ -693,21 +693,25 @@ def frange (f : α →₀ M) : Finset M :=
   haveI := Classical.decEq M
   Finset.image f f.support
 
-theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ ∃ x, f x = y := by
+@[simp, grind =]
+theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ y ∈ Set.range f := by
   rw [frange, @Finset.mem_image _ _ (Classical.decEq _) _ f.support]
   exact ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
     ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
 
 theorem zero_notMem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
 
-theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr =>
-  let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
-  ht2 ▸ by
-    classical
-      rw [single_apply] at ht2 ⊢
-      split_ifs at ht2 ⊢
-      · exact Finset.mem_singleton_self _
-      · exact (t ht2.symm).elim
+theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := by
+  classical grind
+
+theorem mem_frange_of_mem {x} {f : α →₀ M} (h : x ∈ f.support) : f x ∈ f.frange := by
+  simp_all
+
+theorem range_subset_insert_frange (f : α →₀ M) : Set.range f ⊆ insert 0 f.frange := by
+  grind
+
+theorem finite_range (f : α →₀ M) : (Set.range f).Finite :=
+  .subset (by simp) (range_subset_insert_frange f)
 
 end Frange
 
