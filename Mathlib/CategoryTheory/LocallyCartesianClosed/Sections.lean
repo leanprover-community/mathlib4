@@ -125,8 +125,8 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
   homEquiv A X :=
     { toFun := sectionsCurry
       invFun := sectionsUncurry
-      left_inv {u} := sections_uncurry_curry
-      right_inv {v} := sections_curry_uncurry }
+      left_inv {u} := sectionsUncurry_sectionsCurry
+      right_inv {v} := sectionsCurry_sectionUncurry }
   homEquiv_naturality_left_symm := by
     intro A' A X g v
     dsimp [sectionsCurry, sectionsUncurry, curryRightUnitorHom]
