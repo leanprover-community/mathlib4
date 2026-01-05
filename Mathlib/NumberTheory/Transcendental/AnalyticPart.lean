@@ -72,31 +72,24 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) {R R₁ : �
     · refine ⟨fun z ↦ by fun_prop, fun z ↦ ?_⟩
       · calc _ =  deriv (deriv^[k] R) z := ?_
 
-             _ = 1 * ((z - z₀) ^ (r - (k + 1)) *
-         (↑r.factorial / ↑(r - k).factorial * R₁ z)) +
-          ↑(r - k - 1) * ((z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - k).factorial * R₁ z)) +
-         ↑(r - k) * (z - z₀) ^ (r - (k + 1)) * ((z - z₀) * R₂ z) +
-        (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
-          deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := ?_
+             _ = 1 * ((z - z₀) ^ (r - (k + 1)) *(↑r.factorial / ↑(r - k).factorial * R₁ z)) +
+                 ↑(r - k - 1) * ((z - z₀) ^ (r - (k + 1)) *
+                 (↑r.factorial / ↑(r - k).factorial * R₁ z)) +
+                 ↑(r - k) * (z - z₀) ^ (r - (k + 1)) * ((z - z₀) * R₂ z) +
+                 (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
+                 deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := ?_
 
-             _ = (z - z₀) ^ (r - (k + 1)) *
-            (↑r.factorial / ↑(r - (k + 1)).factorial * R₁ z + (z - z₀) *(fun z ↦ ↑(r - k) * R₂ z +
-             (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))) z)
-               := ?_
-
-        · have change_deriv (R : ℂ → ℂ) (z : ℂ) :
-          deriv (deriv^[k] R) z = deriv^[k] (deriv R) z := by
-            have : deriv^[k] (deriv R) z = deriv^[k+1] R z := by aesop
-            induction k generalizing r with
+             _ = (z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - (k + 1)).factorial *
+                 R₁ z + (z - z₀) *(fun z ↦ ↑(r - k) * R₂ z + (↑r.factorial / ↑(r - k).factorial *
+                 deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))) z) := ?_
+        · symm
+          have : deriv^[k] (deriv R) z = deriv^[k+1] R z := by aesop
+          induction k generalizing r with
             | zero => aesop
             | succ k IH =>
               rw [Function.iterate_succ, Function.comp_apply] at IH ⊢
               rw [← iteratedDeriv_eq_iterate] at this ⊢
               rw [← iteratedDeriv_succ, this]
-              simp
-          rw [Function.iterate_succ, Function.comp_apply]
-          simp only [← change_deriv R]
-
         · conv => enter [1, 1]; ext z; rw [hR1 z]
           have derivOfderivk : ∀ z, deriv (fun z ↦ (z - z₀) ^ (r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
@@ -105,7 +98,6 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) {R R₁ : �
             deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := fun z ↦ by simp (disch := fun_prop)
           rw [derivOfderivk, mul_add,Nat.sub_sub r k 1]
           rw [← add_mul]; simp only [mul_assoc]; congr; norm_cast; grind [mul_assoc]
-
         · simp only [one_mul, ← mul_assoc]; nth_rw 5 [mul_comm]
           simp only [← add_assoc, mul_assoc]; rw [← mul_add]; simp only [← mul_assoc]
           nth_rw 6 [mul_comm]; nth_rw 7 [mul_comm]; simp only [← mul_assoc]
@@ -121,29 +113,27 @@ lemma iterated_deriv_mul_pow_sub_of_analytic (r : ℕ) (z₀ : ℂ) {R R₁ : �
           rw [add_assoc]; simp only [mul_assoc]; rw [← mul_add]
           nth_rw 2 [add_comm]
           norm_cast
-          --rw [Nat.sub_sub r k 1, this]
           simp only [← mul_assoc, mul_div]
-          have : (↑(r - k) * r.factorial / ↑(r - k).factorial : ℂ) =
-            ↑r.factorial / ↑(r - (k + 1)).factorial := by
-              nth_rw 2 [← Nat.mul_factorial_pred (hn := by grind)]
-              · rw [Nat.sub_sub r k 1]
-                ring_nf
-                nth_rw 2 [mul_comm]; nth_rw 3 [mul_comm]
-                simp only [Nat.cast_mul, mul_inv_rev,
-                 ← mul_assoc, mul_eq_mul_right_iff, inv_eq_zero, Nat.cast_eq_zero]
-                rw [mul_assoc, mul_inv_cancel₀ (h := by simp; grind)]
-                · grind
           have HR : ↑(r - (k + 1) + 1) = ↑(r - k) := by grind
           rw [Nat.sub_sub r k 1, HR]
-          rw [this]
           simp only [add_assoc]
+          congr 1
+          simp only [mul_eq_mul_right_iff]
+          left
+          nth_rw 2 [← Nat.mul_factorial_pred (hn := by grind)]
+          rw [Nat.sub_sub r k 1]
+          ring_nf
+          nth_rw 2 [mul_comm]; nth_rw 3 [mul_comm]
+          rw [Nat.cast_mul, mul_inv_rev, ← mul_assoc, mul_eq_mul_right_iff, inv_eq_zero,
+            Nat.cast_eq_zero, mul_assoc, mul_inv_cancel₀ (h := by simp; grind)]
+          grind
 
 lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (z₀ : ℂ) (n : ℕ) :
   ∀ (f : ℂ → ℂ) (_ : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
     (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) ↔ analyticOrderAt f z₀ = n := by
   induction n with
   | zero =>
-  · simp only [ne_eq, not_lt_zero', IsEmpty.forall_iff, implies_true, true_and, CharP.cast_eq_zero]
+    simp only [ne_eq, not_lt_zero', IsEmpty.forall_iff, implies_true, true_and, CharP.cast_eq_zero]
     exact fun f hf ho ↦ (AnalyticAt.analyticOrderAt_eq_zero hf).symm
   | succ n IH =>
     refine fun f hf hfin ↦ ⟨fun ⟨hz, hnz⟩ ↦ ?_, ?_⟩
