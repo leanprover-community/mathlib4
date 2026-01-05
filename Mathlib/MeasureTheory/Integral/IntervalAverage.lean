@@ -18,9 +18,9 @@ formulas for this average:
 * `interval_average_eq`: `⨍ x in a..b, f x = (b - a)⁻¹ • ∫ x in a..b, f x`;
 * `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`;
 * `exists_eq_interval_average_of_measure`:
-    `∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
+    `∃ c ∈ Ι a b, f c = ⨍ x in Ι a b, f x ∂μ`.
 * `exists_eq_interval_average_of_noAtoms`:
-    `∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ`.
+    `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`.
 * `exists_eq_interval_average`:
     `∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x`.
 
@@ -69,27 +69,24 @@ theorem intervalAverage_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → 
 variable {f : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-then `∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ`. -/
+then `∃ c ∈ Ι a b, f c = ⨍ x in Ι a b, f x ∂μ`. -/
 theorem exists_eq_interval_average_of_measure
     (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
-    ∃ c ∈ Ι a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
-  have hint : IntegrableOn f (Ι a b) μ := hf.integrableOn_of_subset_isCompact
-    isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin
-  have hs_prec : IsPreconnected (Ι a b) := isPreconnected_Ioc
-  have hs_nemp : (Ι a b).Nonempty := by exact nonempty_of_measure_ne_zero hμ0
-  exact exists_eq_setAverage ⟨hs_nemp, hs_prec⟩ (hf.mono uIoc_subset_uIcc) hint hμfin hμ0
+    ∃ c ∈ Ι a b, f c = ⨍ x in Ι a b, f x ∂μ :=
+  exists_eq_setAverage ⟨nonempty_of_measure_ne_zero hμ0, isPreconnected_Ioc⟩
+    (hf.mono uIoc_subset_uIcc) (hf.integrableOn_of_subset_isCompact
+    isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin) hμfin hμ0
 
 /-- If `f : ℝ → ℝ` is continuous on `uIcc a b`, the interval has finite and nonzero `μ`-measure,
-and `μ` has no atoms, then `∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ`. -/
+and `μ` has no atoms, then `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`. -/
 theorem exists_eq_interval_average_of_noAtoms
     [NoAtoms μ] (hf : ContinuousOn f (uIcc a b)) (hμfin : μ (Ι a b) ≠ ⊤) (hμ0 : μ (Ι a b) ≠ 0) :
-    ∃ c ∈ uIoo a b, f c = ⨍ x in (Ι a b), f x ∂μ := by
+    ∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ := by
   have hint : IntegrableOn f (Ι a b) μ := hf.integrableOn_of_subset_isCompact
     isCompact_uIcc measurableSet_uIoc uIoc_subset_uIcc hμfin
-  have h : a ≠ b := by intro hab; subst hab; simp at hμ0
+  have h : a ≠ b := by intro hab; simp [hab] at hμ0
   let s := uIoo a b
   have hs' : s ⊆ Ι a b := by intro x hx; rcases hx with ⟨h1, h2⟩; grind
-  have hμfin' : μ s ≠ ⊤ := measure_ne_top_of_subset hs' hμfin
   have hs_ev : s =ᵐ[μ] Ι a b := by simpa using Ioo_ae_eq_Ioc
   have hμ0' : μ s ≠ 0 := by
     have hμ : μ s = μ (Ι a b) := by rw [measure_congr hs_ev]
@@ -103,15 +100,5 @@ There exists a point in an interval such that the mean of a continuous function 
 equals the value of the function at the point. -/
 theorem exists_eq_interval_average
     (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
-    ∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x := by
-  apply exists_eq_interval_average_of_noAtoms hf
-  · apply ne_of_lt
-    calc
-      _ ≤ volume [[a, b]] := measure_mono uIoc_subset_uIcc
-      _ < _ := by simp
-  · apply ne_of_gt
-    have h : (uIoo a b) ⊆ (Ι a b) := by intro x hx; rcases hx with ⟨h1, h2⟩; grind
-    calc
-      0 < volume (uIoo a b) := by
-        rwa [Real.volume_uIoo, ENNReal.ofReal_pos, abs_sub_comm, abs_sub_pos]
-      _ ≤ _ := measure_mono h
+    ∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x :=
+  exists_eq_interval_average_of_noAtoms hf (by simp) (by simpa using sub_ne_zero.mpr hab.symm)
