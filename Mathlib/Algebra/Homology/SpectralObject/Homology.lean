@@ -142,7 +142,7 @@ lemma dCokernelSequence_exact :
   have hx₂' := hx₂ =≫ X.ιE _ _ _ _ _ _ _ _
   simp only [assoc, zero_comp] at hx₂'
   rw [X.EMap_ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)
-    (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄ h₃₄) (by ext <;> simp <;> rfl)] at hx₂'
+    (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄ h₃₄) (by cat_disch)] at hx₂'
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄ _ rfl
     f₃₄ h₃₄).exact 1).exact_up_to_refinements (x₂ ≫ X.ιE _ _ _ _ _ _ _ _) (by
       dsimp [sequenceΨ, Precomp.map]

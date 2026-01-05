@@ -572,8 +572,6 @@ end
 
 section
 
-set_option backward.proofsInPublic true
-
 variable (n₀ n₁ n₂ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   {i₀ i₁ i₂ i₃ : ι}
@@ -582,22 +580,19 @@ variable (n₀ n₁ n₂ : ℤ)
   (f₁' : i₀' ⟶ i₁') (f₂' : i₁' ⟶ i₂') (f₃' : i₂' ⟶ i₃')
   (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃')
 
-
 @[reassoc]
 lemma cyclesIso_inv_cyclesMap
     (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
     (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1 (by lia) (by lia))
-    (naturality' α 1 2 (by lia) (by lia))) :
+      (naturality' α 1 2 (by lia) (by lia))) :
     (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
       ShortComplex.cyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) =
       X.cyclesMap n₁ n₂ hn₂ f₁ f₂ f₁' f₂' β ≫
         (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃').inv := by
   subst hβ
   rw [← cancel_mono (ShortComplex.iCycles _), assoc, assoc, ShortComplex.cyclesMap_i,
-    cyclesIso_inv_i_assoc, cyclesIso_inv_i, shortComplexEMap_τ₂]
-  symm
-  apply cyclesMap_i
-  rfl
+    cyclesIso_inv_i_assoc, cyclesIso_inv_i, shortComplexEMap_τ₂, cyclesMap_i]
+  dsimp
 
 @[reassoc]
 lemma opcyclesMap_opcyclesIso_hom
@@ -608,10 +603,8 @@ lemma opcyclesMap_opcyclesIso_hom
     (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.opcyclesMap n₀ n₁ hn₁ f₂ f₃ f₂' f₃' γ := by
   subst hγ
   rw [← cancel_epi (ShortComplex.pOpcycles _), ShortComplex.p_opcyclesMap_assoc,
-    p_opcyclesIso_hom, p_opcyclesIso_hom_assoc, shortComplexEMap_τ₂]
-  symm
-  apply p_opcyclesMap
-  rfl
+    p_opcyclesIso_hom, p_opcyclesIso_hom_assoc, shortComplexEMap_τ₂, p_opcyclesMap]
+  dsimp
 
 @[reassoc]
 lemma πE_EMap (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
