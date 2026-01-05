@@ -523,16 +523,10 @@ def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGra
       · rw [List.map_inj_right] at h_out
         · exact h_out
         · intros a b
-          intro map_h
-          cases a
-          · simp [Symbol.map] at map_h
-            cases b
-            · grind
-            · grind
-          · simp [Symbol.map] at map_h
-            cases b
-            · grind
-            · grind
+          intro hs
+          cases a <;> cases b <;> simp [Symbol.map] at hs ⊢
+          exact hs
+          exact hs
     have h₂ : f₂.Injective := by
       intro ⟨a_in, a_out⟩ ⟨b_in, b_out⟩ hab
       simp only [f₂, ContextFreeRule.map, Function.comp_apply, ContextFreeRule.mk.injEq] at hab ⊢
@@ -542,8 +536,9 @@ def ContextFreeGrammar.union (g₁ g₂ : ContextFreeGrammar T) : ContextFreeGra
       · have : (Symbol.map (T := T) (N₀ := g₂.NT) (N := Option (g₁.NT ⊕ g₂.NT)) (some ∘ Sum.inr)).Injective := by
           intro s1 s2 hs
           cases s1 <;> cases s2 <;> simp [Symbol.map] at hs ⊢
-          exact Sum.inr_injective (Option.some_injective _ hs)
-        exact List.map_injective this h_out
+          exact hs
+          exact hs
+        exact (List.map_inj_right this).mp h_out
     let mapped1 := g₁.rules.map ⟨f₁, h₁⟩
     let mapped2 := g₂.rules.map ⟨f₂, h₂⟩
     exact Finset.cons r1 (Finset.cons r2 (mapped1 ∪ mapped2) (by
