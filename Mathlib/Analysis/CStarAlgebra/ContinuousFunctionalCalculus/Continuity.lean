@@ -62,7 +62,7 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
 
 -/
 
-@[expose] public section
+public section
 
 open scoped UniformConvergence NNReal
 open Filter Topology
