@@ -15,7 +15,7 @@ This file contains the results concerning the interaction of multiset big operat
 groups with zeros.
 -/
 
-@[expose] public section
+public section
 
 namespace Multiset
 

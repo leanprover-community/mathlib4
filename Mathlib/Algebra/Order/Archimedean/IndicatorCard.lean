@@ -21,7 +21,7 @@ limsups of sums of indicators.
 finite, indicator, limsup, tendsto
 -/
 
-@[expose] public section
+public section
 
 namespace Set
 

@@ -35,7 +35,7 @@ ordered algebra
 `positivity` extension for `algebraMap`
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} [CommSemiring α] [PartialOrder α]
 

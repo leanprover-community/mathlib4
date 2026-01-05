@@ -21,7 +21,7 @@ In particular, this file contains the standard form of the Cauchy-Schwarz inequa
 some of its immediate consequences.
 -/
 
-@[expose] public section
+public section
 
 variable {ι R S : Type*}
 

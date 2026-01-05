@@ -24,7 +24,7 @@ This file contains results about two kinds of actions:
 Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other files.
 -/
 
-@[expose] public section
+public section
 
 
 variable {M N γ : Type*}

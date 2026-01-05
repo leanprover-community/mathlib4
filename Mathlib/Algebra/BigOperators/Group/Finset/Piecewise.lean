@@ -14,7 +14,7 @@ public import Mathlib.Data.Finset.Piecewise
 This file proves lemmas on the sum and product of piecewise functions, including `ite` and `dite`.
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ M β γ : Type*} {s : Finset ι}
 

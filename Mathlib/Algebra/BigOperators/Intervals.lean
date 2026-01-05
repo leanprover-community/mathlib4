@@ -16,7 +16,7 @@ public import Mathlib.Data.Nat.Factorial.Basic
 We prove results about big operators over intervals.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

@@ -13,7 +13,7 @@ public import Mathlib.Data.Finset.Density
 # Results about big operators with values in a field
 -/
 
-@[expose] public section
+public section
 
 open Fintype
 

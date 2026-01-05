@@ -13,7 +13,7 @@ public import Mathlib.Order.SuccPred.WithBot
 # Algebraic properties of the successor function on `WithBot`
 -/
 
-@[expose] public section
+public section
 
 namespace WithBot
 variable {α : Type*} [Preorder α] [OrderBot α] [AddMonoidWithOne α] [SuccAddOrder α]
