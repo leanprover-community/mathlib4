@@ -659,7 +659,8 @@ open Classical in
 /-- Composition of a `LinearPMap` with a `LinearMap`.
 
 The composition is well-defined if the range of the `LinearMap` is
-contained in the domain of the `LinearPMap`. -/
+contained in the domain of the `LinearPMap`.
+Otherwise it takes the junk value `0`. -/
 noncomputable def compLinearMap (f : F →ₗ.[R] G) (g : E →ₗ[R] F) : E →ₗ[R] G :=
   if hgf : LinearMap.range g ≤ f.domain then f.toFun.comp (g.codRestrict f.domain
     (fun x ↦ hgf (LinearMap.mem_range_self g x))) else 0
@@ -997,12 +998,8 @@ theorem inverse_domain : (inverse f).domain = LinearMap.range f.toFun := by
 
 section injective
 
-variable (hf : f.toFun.ker = ⊥)
-
-include hf
-
 /-- The graph of the inverse generates a `LinearPMap`. -/
-theorem mem_inverse_graph_snd_eq_zero (x : F × E)
+theorem mem_inverse_graph_snd_eq_zero (hf : f.toFun.ker = ⊥) (x : F × E)
     (hv : x ∈ (graph f).map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)))
     (hv' : x.fst = 0) : x.snd = 0 := by
   rcases x with ⟨x, y⟩
@@ -1013,30 +1010,33 @@ theorem mem_inverse_graph_snd_eq_zero (x : F × E)
   rw [LinearMap.ker_eq_bot'] at hf
   simp [hf z hz]
 
-theorem inverse_graph :
+theorem inverse_graph (hf : f.toFun.ker = ⊥) :
     (inverse f).graph = f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)) := by
   rw [inverse, Submodule.toLinearPMap_graph_eq _ (mem_inverse_graph_snd_eq_zero hf)]
 
-theorem graph_eq_inverse_graph_prodComm :
+theorem graph_eq_inverse_graph_prodComm (hf : f.toFun.ker = ⊥) :
     f.graph = f.inverse.graph.map (LinearEquiv.prodComm R F E : (F × E) →ₗ[R] (E × F)) := by
   rw [inverse_graph hf]
   ext x
   simp
 
-theorem inverse_range : LinearMap.range (inverse f).toFun = f.domain := by
+theorem inverse_range (hf : f.toFun.ker = ⊥) : LinearMap.range (inverse f).toFun = f.domain := by
   rw [inverse, Submodule.toLinearPMap_range _ (mem_inverse_graph_snd_eq_zero hf),
     ← graph_map_fst_eq_domain, ← LinearEquiv.snd_comp_prodComm, Submodule.map_comp]
 
-theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse f).graph := by
+theorem mem_inverse_graph (hf : f.toFun.ker = ⊥) (x : f.domain) :
+    (f x, (x : E)) ∈ (inverse f).graph := by
   simp only [inverse_graph hf, Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left,
     exists_eq_left, LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk,
     Prod.mk.injEq]
   exact ⟨(x : E), f x, ⟨x.2, Eq.refl _⟩, Eq.refl _, Eq.refl _⟩
 
-theorem mem_graph_of_inverse (y : f.inverse.domain) : (f.inverse y, (y : F)) ∈ f.graph := by
+theorem mem_graph_of_inverse (hf : f.toFun.ker = ⊥) (y : f.inverse.domain) :
+    (f.inverse y, (y : F)) ∈ f.graph := by
   simp [graph_eq_inverse_graph_prodComm hf]
 
-theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y) :
+theorem inverse_apply_eq (hf : f.toFun.ker = ⊥) {y : (inverse f).domain} {x : f.domain}
+    (hxy : f x = y) :
     (inverse f) y = x := by
   have := mem_inverse_graph hf x
   grind
@@ -1136,7 +1136,7 @@ variable [SMulCommClass R R E]
 This definition only agrees with the conventional one when `f` is closed, but if that is not
 the case, then the conventional definition yields that `resolvent_set f = ⊤`
 We use this definition for convience and since it makes fewer assumptions. -/
-def resolvent_set (f : E →ₗ.[R] E) : Set R :=
+def resolventSet (f : E →ₗ.[R] E) : Set R :=
   { z | Function.Bijective ((z • (LinearMap.id (R := R) (M := E))) +ᵥ (-f) : E →ₗ.[R] E) }
 
 /-- The resolvent of a `LinearPMap` as a `LinearMap`.
@@ -1150,13 +1150,13 @@ noncomputable def resolventLM (f : E →ₗ.[R] E) (z : R) : E →ₗ[R] E :=
 
 /-- The range of the resolvent `R(f, z)` is equal to the domain of `f` for any `z` in the resolvent
 set. -/
-theorem range_resolventLM (f : E →ₗ.[R] E) {z : R} (hz : z ∈ f.resolvent_set) :
+theorem range_resolventLM (f : E →ₗ.[R] E) {z : R} (hz : z ∈ f.resolventSet) :
     LinearMap.range (f.resolventLM z) = f.domain := by
   rw [inverse_asLinearMap_range hz, vadd_domain, neg_domain]
 
 /-- The first resolvent identity. -/
-theorem resolventLM_sub_resolventLM_eq {f : E →ₗ.[R] E} {z1 z2 : R} (hz1 : z1 ∈ f.resolvent_set)
-    (hz2 : z2 ∈ f.resolvent_set) :
+theorem resolventLM_sub_resolventLM_eq {f : E →ₗ.[R] E} {z1 z2 : R} (hz1 : z1 ∈ f.resolventSet)
+    (hz2 : z2 ∈ f.resolventSet) :
     f.resolventLM z1 - f.resolventLM z2 = (z2 - z1) • f.resolventLM z1 ∘ₗ f.resolventLM z2 := by
   rw [inverse_sub_inverse_eq hz1 hz2 (by simp), ← LinearMap.comp_smul]
   congr 1
@@ -1166,7 +1166,7 @@ theorem resolventLM_sub_resolventLM_eq {f : E →ₗ.[R] E} {z1 z2 : R} (hz1 : z
   · simp [f.range_resolventLM hz2, sub_domain]
 
 theorem resolventLM_commute [NoZeroSMulDivisors R E] {f : E →ₗ.[R] E} {z1 z2 : R}
-    (hz1 : z1 ∈ f.resolvent_set) (hz2 : z2 ∈ f.resolvent_set) :
+    (hz1 : z1 ∈ f.resolventSet) (hz2 : z2 ∈ f.resolventSet) :
     f.resolventLM z1 ∘ₗ f.resolventLM z2 = f.resolventLM z2 ∘ₗ f.resolventLM z1 := by
   by_cases hz : z1 = z2
   · rw [hz]
