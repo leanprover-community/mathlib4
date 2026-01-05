@@ -116,10 +116,7 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
   map_smul' r := fun ⟨x, hx⟩ ↦ by simp [Finset.smul_sum]
   invFun x := ⟨Pi.single i x, Function.const ι x, by
     ext j
-    simp [single, Finset.sum_ite, Pi.single_apply,
-      show Finset.card {x | i = j ∧ i = x} = if i = j then 1 else 0 by
-      if h : i = j then simp [h, Finset.card_eq_one (s := {x | j = x})|>.2
-        ⟨i, by ext; simp [h, eq_comm]⟩] else simp [h], eq_comm]⟩
+    simp [-Module.smul_apply]⟩
   left_inv := fun ⟨x, hx⟩ ↦ by
     obtain ⟨y, hy⟩ := mem_toModuleCatObj i|>.1 hx
     ext j

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Matrix.Basis
 public import Mathlib.LinearAlgebra.Pi
 
 /-!
@@ -56,6 +57,15 @@ lemma smul_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, fun 
 @[simp]
 lemma smul_apply (N : Matrix ι ι R) (v : ι → M) (i : ι) :
     (N • v) i = ∑ j : ι, N i j • v j := rfl
+
+@[simp]
+theorem single_smul (i j : ι) (r : R) (v : ι → M) :
+    Matrix.single i j r • v = Pi.single i (r • v j) := by
+  ext i'
+  dsimp
+  rw [Fintype.sum_eq_single j fun j' hj => ?_]
+  · obtain rfl | hi := eq_or_ne i i' <;> simp [*]
+  · simp [hj.symm]
 
 scoped instance (S : Type*) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
     IsScalarTower R (Matrix ι ι S) (ι → M) where
