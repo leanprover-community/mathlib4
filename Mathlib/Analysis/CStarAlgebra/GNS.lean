@@ -17,14 +17,14 @@ C*-algebra into the algebra of bounded linear operators on some Hilbert space.
 
 ## Main results
 
-- `f.GNS` : a type synonym of `NonUnitalCStarAlgebra` `A` that "forgets" the norm of `A` and bundles
-  in a fixed linear functional `f` so that we can construct an inner product and inner
+- `f.preGNS` : a type synonym of `NonUnitalCStarAlgebra` `A` that "forgets" the norm of `A` and
+  bundles in a fixed linear functional `f` so that we can construct an inner product and inner
   product-induced norm.
-- `f.GNS_HilbertSpace` : the Hilbert space completion of `f.GNS`.
-- `f.π` : The non-unital *-homomorphism from a non-unital `A` into the bounded linear operators on
-  `f.GNS_HilbertSpace`.
-- `f.π_unital` : The unital *-homomorphism from a unital `A` into the bounded linear operators on
-  `f.GNS_HilbertSpace`.
+- `f.GNS` : the Hilbert space completion of `f.GNS`.
+- `f.GNSHom` : The non-unital *-homomorphism from a non-unital `A` into the bounded linear operators
+  on `f.GNS`.
+- `f.GNSHomUnital` : The unital *-homomorphism from a unital `A` into the bounded linear operators
+  on `f.GNS`.
 -/
 
 @[expose] public section
@@ -39,48 +39,44 @@ set_option linter.unusedVariables false in
 /-- The GNS space on a non-unital C⋆-algebra with a positive linear functional. This is a type
 synonym of `A`. -/
 @[nolint unusedArguments]
-def GNS (f : A →ₚ[ℂ] ℂ) := A
+def preGNS (f : A →ₚ[ℂ] ℂ) := A
 
-instance : AddCommGroup f.GNS := inferInstanceAs (AddCommGroup A)
-instance : Module ℂ f.GNS := inferInstanceAs (Module ℂ A)
+instance : AddCommGroup f.preGNS := inferInstanceAs (AddCommGroup A)
+instance : Module ℂ f.preGNS := inferInstanceAs (Module ℂ A)
 
 /-- The map from the C⋆-algebra to the GNS space, as a linear equivalence. -/
-def toGNS : A ≃ₗ[ℂ] f.GNS := LinearEquiv.refl ℂ _
+def toPreGNS : A ≃ₗ[ℂ] f.preGNS := LinearEquiv.refl ℂ _
 
 /-- The map from the GNS space to the C⋆-algebra, as a linear equivalence. -/
-def ofGNS : f.GNS ≃ₗ[ℂ] A := (f.toGNS).symm
+def ofPreGNS : f.preGNS ≃ₗ[ℂ] A := (f.toPreGNS).symm
 
 @[simp]
-lemma toGNS_ofGNS (a : f.GNS) : f.toGNS (f.ofGNS a) = a := rfl
+lemma toPreGNS_ofPreGNS (a : f.preGNS) : f.toPreGNS (f.ofPreGNS a) = a := rfl
 
 @[simp]
-lemma ofGNS_toGNS (a : A) : f.ofGNS (f.toGNS a) = a := rfl
+lemma ofPreGNS_toPreGNS (a : A) : f.ofPreGNS (f.toPreGNS a) = a := rfl
 
 variable [StarOrderedRing A]
 
-/--
-The (semi-)inner product space whose elements are the elements of `A`, but which has an
-inner product-induced norm induced by `f` which is different from the norm on `A`.
--/
 @[simps]
-def GNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.GNS where
-  inner a b := f (star (f.ofGNS a) * f.ofGNS b)
+instance preGNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.preGNS where
+  inner a b := f (star (f.ofPreGNS a) * f.ofPreGNS b)
   conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
   re_inner_nonneg _ := RCLike.nonneg_iff.mp (f.map_nonneg (star_mul_self_nonneg _)) |>.1
   add_left _ _ _ := by rw [map_add, star_add, add_mul, map_add]
   smul_left := by simp [smul_mul_assoc]
 
-noncomputable instance : SeminormedAddCommGroup f.GNS :=
-  InnerProductSpace.Core.toSeminormedAddCommGroup (c := f.GNSInnerProdSpace)
-noncomputable instance : InnerProductSpace ℂ f.GNS :=
-  InnerProductSpace.ofCore f.GNSInnerProdSpace
+noncomputable instance : SeminormedAddCommGroup f.preGNS :=
+  InnerProductSpace.Core.toSeminormedAddCommGroup (c := f.preGNSInnerProdSpace)
+noncomputable instance : InnerProductSpace ℂ f.preGNS :=
+  InnerProductSpace.ofCore f.preGNSInnerProdSpace
 
-lemma GNS_norm_def (a : f.GNS) :
-    ‖a‖ = (f (star (f.ofGNS a) * f.ofGNS a)).re.sqrt := rfl
+lemma GNS_norm_def (a : f.preGNS) :
+    ‖a‖ = (f (star (f.ofPreGNS a) * f.ofPreGNS a)).re.sqrt := rfl
 
-lemma GNS_norm_sq (a : f.GNS) :
-    ‖a‖ ^ 2 = (f (star (f.ofGNS a) * f.ofGNS a)) := by
-  have : 0 ≤ f (star (f.ofGNS a) * f.ofGNS a) := map_nonneg f <| star_mul_self_nonneg _
+lemma GNS_norm_sq (a : f.preGNS) :
+    ‖a‖ ^ 2 = (f (star (f.ofPreGNS a) * f.ofPreGNS a)) := by
+  have : 0 ≤ f (star (f.ofPreGNS a) * f.ofPreGNS a) := map_nonneg f <| star_mul_self_nonneg _
   rw [GNS_norm_def, ← ofReal_pow, Real.sq_sqrt]
   · rw [conj_eq_iff_re.mp this.star_eq]
   · rwa [re_nonneg_iff_nonneg this.isSelfAdjoint]
@@ -88,36 +84,38 @@ lemma GNS_norm_sq (a : f.GNS) :
 /--
 The Hilbert space constructed from a positive linear functional on a C⋆-algebra.
 -/
-abbrev GNS_HilbertSpace := UniformSpace.Completion f.GNS
+abbrev GNS := UniformSpace.Completion f.preGNS
 
 /--
 The bounded operator on `f.GNS` that will be extended to a bounded operator on `f.GNS_HilbertSpace`.
 The map is defined as left multiplication by a fixed element `a : A`.
 -/
 @[simps!]
-noncomputable def GNS_op (a : A) : f.GNS →L[ℂ] f.GNS :=
-  (f.toGNS.toLinearMap ∘ₗ LinearMap.mul ℂ A a ∘ₗ f.ofGNS.toLinearMap).mkContinuous ‖a‖ fun x ↦ by
+noncomputable def leftMulMapPreGNS (a : A) : f.preGNS →L[ℂ] f.preGNS :=
+  (f.toPreGNS.toLinearMap ∘ₗ mul ℂ A a ∘ₗ f.ofPreGNS.toLinearMap).mkContinuous ‖a‖ fun x ↦ by
     rw [← sq_le_sq₀ (by positivity) (by positivity), mul_pow, ← RCLike.ofReal_le_ofReal (K := ℂ),
       RCLike.ofReal_pow, RCLike.ofReal_eq_complex_ofReal, GNS_norm_sq]
-    have : star (f.ofGNS x) * star a * (a * f.ofGNS x) ≤
-        ‖a‖ ^ 2 • star (f.ofGNS x) * f.ofGNS x := by
+    have : star (f.ofPreGNS x) * star a * (a * f.ofPreGNS x) ≤
+        ‖a‖ ^ 2 • star (f.ofPreGNS x) * f.ofPreGNS x := by
       rw [← mul_assoc, mul_assoc _ (star a), sq, ← CStarRing.norm_star_mul_self (x := a),
         smul_mul_assoc]
       exact CStarAlgebra.star_left_conjugate_le_norm_smul
     calc
-      _ ≤ f (‖a‖ ^ 2 • star (f.ofGNS x) * f.ofGNS x) := by simpa using OrderHomClass.mono f this
+      _ ≤ f (‖a‖ ^ 2 • star (f.ofPreGNS x) * f.ofPreGNS x) := by
+        simpa using OrderHomClass.mono f this
       _ = _ := by simp [← Complex.coe_smul, GNS_norm_sq, smul_mul_assoc]
 
 @[simp]
-lemma GNS_op_prod_eq_comp (a b : A) : f.GNS_op (a * b) = f.GNS_op (a) ∘ f.GNS_op (b) := by
+lemma leftMulMapGNS_mul_eq_comp (a b : A) :
+    f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS (a) ∘ f.leftMulMapPreGNS (b) := by
   ext c; simp [mul_assoc]
 
 /--
 The non-unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
 that is constructed from a linear functional `f` on a possibly non-unital C⋆-algebra.
 -/
-noncomputable def π : A →⋆ₙₐ[ℂ] (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
-  toFun a := mapCLM (f.GNS_op a)
+noncomputable def GNSHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
+  toFun a := mapCLM (f.leftMulMapPreGNS a)
   map_smul' r a := by
     ext x
     induction x using Completion.induction_on with
@@ -138,10 +136,11 @@ noncomputable def π : A →⋆ₙₐ[ℂ] (f.GNS_HilbertSpace →L[ℂ] f.GNS_H
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c =>
-      have := map_coe ((f.GNS_op a).comp (f.GNS_op b)).uniformContinuous
+      have := map_coe ((f.leftMulMapPreGNS a).comp (f.leftMulMapPreGNS b)).uniformContinuous
       simp_all
   map_star' a := by
-    refine (eq_adjoint_iff (mapCLM (f.GNS_op (star a))) (mapCLM (f.GNS_op a))).mpr ?_
+    refine (eq_adjoint_iff (mapCLM (f.leftMulMapPreGNS (star a)))
+      (mapCLM (f.leftMulMapPreGNS a))).mpr ?_
     intro x y
     induction x, y using Completion.induction_on₂ with
     | hp => apply isClosed_eq <;> fun_prop
@@ -149,24 +148,20 @@ noncomputable def π : A →⋆ₙₐ[ℂ] (f.GNS_HilbertSpace →L[ℂ] f.GNS_H
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
+@[simp]
+private lemma GNSHom_map_one : f.GNSHom 1 = 1 := by
+  ext b
+  induction b using Completion.induction_on with
+  | hp => apply isClosed_eq <;> fun_prop
+  | ih b => simp [GNSHom]
+
 /--
 The unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
 that is constructed from a linear functional `f` on a unital C⋆-algebra.
 -/
-noncomputable def π_unital : A →⋆ₐ[ℂ] (f.GNS_HilbertSpace →L[ℂ] f.GNS_HilbertSpace) where
-  toFun := f.π
-  map_one' := by
-    ext b
-    induction b using Completion.induction_on with
-    | hp => apply isClosed_eq <;> fun_prop
-    | ih b => simp [π]
-  commutes' r := by
-    dsimp [π]
-    simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, mapCLM]
-    congr; ext c; simp
-  map_mul' := map_mul f.π
-  map_zero' := map_zero f.π
-  map_add' := map_add f.π
-  map_star' := map_star f.π
+noncomputable def GNSHomUnital : A →⋆ₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
+  __ := f.GNSHom
+  map_one' := by simp
+  commutes' r := by simp [Algebra.algebraMap_eq_smul_one]
 
 end PositiveLinearMap
