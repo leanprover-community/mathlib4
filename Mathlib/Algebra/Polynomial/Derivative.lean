@@ -540,18 +540,15 @@ theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
     rw [Nat.descFactorial_eq_zero_iff_lt.mpr (by grind)]
     simp
 
-theorem iterate_derivative_mul_X_pow'' {n m} (p : R[X]) :
-    derivative^[n] (derivative^[m] p * X ^ m) =
-      ∑ k ∈ range m.succ,
-      ((n.choose k * m.descFactorial k) • (derivative^[n + (m - k)] p * X ^ (m - k))) := by
-  rw [iterate_derivative_mul_X_pow']
-  congr! 1 with k hk
-  by_cases! k ≤ n
-  case pos h =>
-    rw [← Function.iterate_add_apply, ← Nat.sub_add_comm h,
-      Nat.add_sub_assoc (mem_range_succ_iff.mp hk)]
-  case neg h =>
-    simp [Nat.choose_eq_zero_of_lt h]
+theorem iterate_derivative_derivative_mul_X_pow {n m l : ℕ} (p : R[X]) (hl : m ≤ l) :
+    derivative^[n] (derivative^[l] p * X ^ m) =
+      ∑ k ∈ range (min m n).succ,
+        ((n.choose k * m.descFactorial k) • (derivative^[n + (l - k)] p * X ^ (m - k))) := by
+  have {k : ℕ} (hk : k ∈ range (min m n).succ) : n - k + l = n + (l - k) := by
+    replace hk : k ≤ m ∧ k ≤ n := by simpa using hk
+    grind
+  simp_rw [iterate_derivative_mul_X_pow, ← Function.iterate_add_apply]
+  exact Finset.sum_congr rfl fun k hk ↦ by simp [this hk]
 
 theorem iterate_derivative_mul_X {n} (p : R[X]) :
     derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
