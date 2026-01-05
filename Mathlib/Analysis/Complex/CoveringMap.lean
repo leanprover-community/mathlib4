@@ -14,6 +14,8 @@ public import Mathlib.Topology.Covering.AddCircle
 # Covering maps involving the complex plane
 -/
 
+@[expose] public section
+
 open Topology
 
 namespace Complex
