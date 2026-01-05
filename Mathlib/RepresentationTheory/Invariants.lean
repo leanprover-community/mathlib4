@@ -156,7 +156,7 @@ section Rep
 
 variable {k : Type u} [CommRing k] {G : Type u} [Group G]
 
-theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
+theorem mem_invariants_iff_comm {X Y : Rep.{u} k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
   rw [← LinearMap.comp_assoc, ← ModuleCat.hom_ofHom (Y.ρ g), ← ModuleCat.hom_ofHom f,
@@ -232,7 +232,7 @@ variable {G} in
 `G ⧸ S`-representation it induces on `A^S`. -/
 @[simps obj_V map_hom]
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
-    Rep k G ⥤ Rep k (G ⧸ S) where
+    Rep.{u} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
   map {X Y} f := {
     hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map f)
