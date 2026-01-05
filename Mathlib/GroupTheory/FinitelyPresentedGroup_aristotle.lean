@@ -1,4 +1,17 @@
 /-
+This file was edited by Aristotle.
+
+Lean version: leanprover/lean4:v4.24.0
+Mathlib version: f897ebcf72cd16f89ab4577d0c826cd14afaafc7
+This project request had uuid: 4d935855-74ea-44f6-b058-509850d40896
+
+The following was proved by Aristotle:
+
+- theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype {G : Type*} [Group G] :
+    Group.FG G ↔ ∃ (α : Type) (_ : Fintype α) (φ : FreeGroup α →* G), Function.Surjective φ
+-/
+
+/-
 Copyright (c) Hang Lu Su 2025 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
@@ -6,6 +19,7 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 -/
 
 import Mathlib
+
 
 /-!
 # Finitely Presented Groups
@@ -118,50 +132,3 @@ instance [h : IsFinitelyPresented G] : Group.FG G := by
   rw [isFinitelyPresented_iff_fintype] at h
   obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
   use S, hSfinite, f, hfsurj
-
-/- instance [h : IsFinitelyPresented G] : PresentedGroup G := by
-  sorry
--/
-
-/-   lemma fpGroup_is_fgGroup (G: Type*) [Group G] (h: IsFinitelyPresented G) : Group.FG G := by
-  rw [Group.fg_iff_exists_freeGroup_hom_surjective]
-  apply isFinitelyPresented_iff at G
-  --constructor
-  sorry -/
-
-/- lemma isFinitelyPresented_stupid (α : Type) [Finite α] (s : Finset (FreeGroup α)) :
-    IsFinitelyPresented ((FreeGroup α) ⧸ normalClosure s) := by
-    rw [isFinitelyPresented_iff]
-    constructor
-    sorry -/
-
-/- namespace IsFinitelyPresented
-
-variable {G H : Type*} [Group G] [Group H]
-
--- Finitely presented groups are closed under isomorphism
-lemma of_equiv (e : G ≃* H) (h : IsFinitelyPresented G) :
-    IsFinitelyPresented H := by
-  sorry
-
--- Trivial group is finitely presented
-instance instTrivial : IsFinitelyPresented (Unit) := by
-  sorry
-
--- Finite groups are finitely presented
-instance instFinite [Finite G] : IsFinitelyPresented G := by
-  sorry
-
-end IsFinitelyPresented -/
-
-/- -- Free groups are finitely presented
-instance FreeGroup.instFinitelyPresented (α : Type*) [Fintype α] :
-    IsFinitelyPresented (FreeGroup α) := by
-  sorry
-
--- Cyclic groups are finitely presented
-instance Int.instFinitelyPresented : IsFinitelyPresented ℤ := by
-  sorry
-
-instance ZMod.instFinitelyPresented (n : ℕ) : IsFinitelyPresented (ZMod n) := by
-  sorry -/
