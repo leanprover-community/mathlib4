@@ -29,7 +29,7 @@ cases, we can take `q` to be any prime and see that `hd` does not hold, since `a
 to `1`.
 -/
 
-@[expose] public section
+public section
 
 
 /-- If `a^(p-1) = 1 mod p`, but `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`, then `p`

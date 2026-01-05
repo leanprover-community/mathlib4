@@ -28,7 +28,7 @@ This is a special case of the so-called *Kummer's lemma* (see for example [washi
 Theorem 5.36).
 -/
 
-@[expose] public section
+public section
 
 open NumberField Units InfinitePlace nonZeroDivisors Polynomial
 
