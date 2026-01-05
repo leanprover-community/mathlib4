@@ -298,6 +298,11 @@ theorem prodMap_comap_prod (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) (S :
     (Submodule.prod S S').comap (LinearMap.prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 
+theorem prodMap_map_prod (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) (S : Submodule R M)
+    (S' : Submodule R M₃) :
+    (Submodule.prod S S').map (LinearMap.prodMap f g) = (S.map f).prod (S'.map g) :=
+  SetLike.coe_injective <| Set.prodMap_image_prod f g _ _
+
 @[simp]
 theorem ker_prodMap (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) :
     ker (LinearMap.prodMap f g) = Submodule.prod (ker f) (ker g) := by
