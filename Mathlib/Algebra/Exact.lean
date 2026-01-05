@@ -410,16 +410,10 @@ lemma iff_of_ladder_linearEquiv
     (f₁₂ := f₁₂) (f₂₃ := f₂₃) (g₁₂ := g₁₂) (g₂₃ := g₂₃)
     (congr_arg LinearMap.toAddMonoidHom h₁₂) (congr_arg LinearMap.toAddMonoidHom h₂₃)
 
-@[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.iff_of_ladder_linearEquiv := iff_of_ladder_linearEquiv
-
 lemma of_ladder_linearEquiv_of_addExact
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃)
     (H : AddExact f₁₂ f₂₃) : AddExact g₁₂ g₂₃ := by
   rwa [iff_of_ladder_linearEquiv h₁₂ h₂₃]
-
-@[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.of_ladder_linearEquiv_of_exact := of_ladder_linearEquiv_of_addExact
 
 /-- Two maps `f : M →ₗ[R] N` and `g : N →ₗ[R] P` are exact if and only if the induced maps
 `LinearMap.range f → N → LinearMap.range g` are exact. -/
@@ -427,15 +421,21 @@ lemma iff_linearMap_rangeRestrict :
     AddExact f g ↔ AddExact (LinearMap.range f).subtype g.rangeRestrict :=
   iff_rangeFactorization (zero_mem (LinearMap.range g))
 
-@[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.iff_linearMap_rangeRestrict := iff_linearMap_rangeRestrict
-
 alias ⟨linearMap_rangeRestrict, _⟩ := iff_linearMap_rangeRestrict
 
-@[deprecated (since := "2026-01-05")]
-alias _root_.Function.Exact.linearMap_rangeRestrict := linearMap_rangeRestrict
-
 end AddExact
+
+@[deprecated (since := "2026-01-05")]
+alias Exact.iff_of_ladder_linearEquiv := AddExact.iff_of_ladder_linearEquiv
+
+@[deprecated (since := "2026-01-05")]
+alias Exact.of_ladder_linearEquiv_of_exact := AddExact.of_ladder_linearEquiv_of_addExact
+
+@[deprecated (since := "2026-01-05")]
+alias Exact.iff_linearMap_rangeRestrict := AddExact.iff_linearMap_rangeRestrict
+
+@[deprecated (since := "2026-01-05")]
+alias Exact.linearMap_rangeRestrict := AddExact.linearMap_rangeRestrict
 
 end Function
 
