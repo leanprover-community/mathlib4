@@ -10,17 +10,19 @@ public import Mathlib.Geometry.Convex.Cone.Pointed.Face.Basic
 /-!
 ## Face
 
-This file defines a bundled object for a face of a pointed cone and a complete lattice structure on
-them.
+This file defines the notion of face of a pointed cone as a bundled object and establishes the
+complete lattice structure thereon. The type `Face C` therefore also represents the face lattice
+of a pointed cone `C`.
 
 ## Main definitions
 
-* `Face C`: a bundled structure for a face of the pointed cone `C`.
-* `inf` and `sup`: infimum and supremum operations on `Face C`
+* `Face C`: the face lattice of `C`.
+* `inf` and `sup`: infimum and supremum operations on `Face C`.
 * `CompleteLattice` instance: the face lattice of a pointed cone using `inf` and `sup`.
 * `prod`: the product of two faces of pointed cones, together with projections `prod_left` and
   `prod_right`.
-* `prod_orderIso`: the order isomorphism defined by `prod`.
+* `prod_orderIso`: proves that the face lattices of a product cone is the product of the face
+  lattices of the individual cones.
 
 -/
 
@@ -31,7 +33,7 @@ namespace PointedCone
 variable {R M N : Type*}
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
-/-- A face of a pointed cone `C`, as a bundled structure. -/
+/-- A face of a pointed cone `C`. Represents also the face lattice of `C`. -/
 structure Face (C : PointedCone R M) extends PointedCone R M where
   isFaceOf : IsFaceOf toSubmodule C
 
@@ -43,16 +45,16 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Modul
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
 /-- A pointed cone `C` as a face of itself. -/
+@[coe]
 def self (C : PointedCone R M) : Face C := ⟨C, IsFaceOf.refl _⟩
 
 instance {C : PointedCone R M} : CoeDep (PointedCone R M) C (Face C) := ⟨self C⟩
 
-/- Convert a face of a pointed cone into a pointed cone. -/
+/- Converts a face of a pointed cone into a pointed cone. -/
 @[coe, simp]
 def toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
 
-instance : CoeOut (Face (C : PointedCone R M)) (PointedCone R M) where
-  coe := toPointedCone
+instance : CoeOut (Face (C : PointedCone R M)) (PointedCone R M) := ⟨toPointedCone⟩
 
 instance : SetLike (Face C) M where
   coe C := C.toPointedCone
@@ -116,7 +118,7 @@ instance : SemilatticeSup (Face C) where
   le_sup_right _ _ := le_sInf (fun _ Fs => Fs.2)
   sup_le _ _ _ h₁₂ h₂₃ := sInf_le (Set.mem_sep h₁₂ h₂₃)
 
-/-- The supremum of a set `S` of faces of `C` is the smallest face of `C` that comtains all
+/-- The supremum of a set `S` of faces of `C` is the smallest face of `C` that contains all
   members of `S`. -/
 instance : SupSet (Face C) where sSup S := sInf { F : Face C | ∀ F' ∈ S, F' ≤ F }
 
@@ -128,7 +130,7 @@ instance : CompleteSemilatticeSup (Face C) where
 
 instance : Lattice (Face C) where
 
-/-- The top element of the partial order on faces of `C` is `C` itself. -/
+/-- The top face of `C` is `C` itself. -/
 instance : OrderTop (Face C) where
   top := C
   le_top F := F.isFaceOf.le
@@ -144,12 +146,13 @@ section Field
 variable [Field R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
-/-- The face of a pointed cone `C` that is its lineal space. It is contained in all faces of `C`. -/
+/-- The linearlity space of a pointed cone `C` as a face of `C`.
+  It is contained in all faces of `C`. -/
 def lineal : Face C := ⟨_, IsFaceOf.lineal C⟩
 
 lemma lineal_le {C : PointedCone R M} (F : Face C) : lineal ≤ F := F.isFaceOf.lineal_le
 
-/-- The bottom element of the partial order on faces of `C` is `C.lineal`. -/
+/-- The bottom face of `C` is its lineality space. -/
 instance : OrderBot (Face C) where
   bot := lineal
   bot_le F := F.lineal_le
@@ -169,10 +172,10 @@ open Submodule
 `F₂ ≤ C₂`. -/
 def prod (F₁ : Face C₁) (F₂ : Face C₂) : Face (C₁.prod C₂) := ⟨_, F₁.isFaceOf.prod F₂.isFaceOf⟩
 
-/-- The face of `C₁` obtained by projecting to the left component of a face `F ≤ C₁ × C₂`. -/
+/-- The face of `C₁` obtained by projecting to the first component of a face `F ≤ C₁ × C₂`. -/
 def proj_fst (F : Face (C₁.prod C₂)) : Face C₁ := ⟨_, F.isFaceOf.fst⟩
 
-/-- The face of `C₁` obtained by projecting to the left component of a face `F ≤ C₁ × C₂`. -/
+/-- The face of `C₁` obtained by projecting to the second component of a face `F ≤ C₁ × C₂`. -/
 def proj_snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 
 @[simp]
@@ -201,8 +204,7 @@ theorem proj_fst_prod_proj_snd (G : Face (C₁.prod C₂)) : G.proj_fst.prod G.p
   · intro h; exact ⟨⟨x.2, h⟩, ⟨x.1, h⟩⟩
 
 theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} :
-  F₁ ≤ F₁' → F₂ ≤ F₂' → prod F₁ F₂ ≤ prod F₁' F₂' :=
-  Submodule.prod_mono
+    F₁ ≤ F₁' → F₂ ≤ F₂' → prod F₁ F₂ ≤ prod F₁' F₂' := Submodule.prod_mono
 
 /- The face lattice of the product of two cones is isomorphic to the product of their face
 lattices. -/

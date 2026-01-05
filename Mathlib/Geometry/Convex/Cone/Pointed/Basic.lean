@@ -233,24 +233,13 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
 
 end OrderedAddCommGroup
 
-section Salient
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
-
-/-- A pointed cone is salient iff the intersection of the cone with its negative
-is the set `{0}`. -/
-lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
-    (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
-  simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
-
-end Salient
-
 section Lineal
 
 open Pointwise
 
 variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
-/-- The lineality space of a cone `C`, namely the submodule with carrier `C ⊓ -C`. -/
+/-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
 def lineal (C : PointedCone R E) : Submodule R E where
   carrier := C ⊓ -C
   add_mem' hx hy := by simpa using ⟨C.add_mem hx.1 hy.1, C.add_mem hy.2 hx.2⟩
@@ -271,7 +260,7 @@ lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ 
 @[simp]
 lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := by simp
 
-/- The lineality space of a cone is the supremum of its submodules. -/
+/- The lineality space of a cone is the largest submodules contained in the cone. -/
 theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R E | S ≤ C} := by
   rw [le_antisymm_iff]
   refine ⟨le_sSup (lineal_le C), ?_⟩
@@ -280,5 +269,16 @@ theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R 
   exact mem_lineal.mpr ⟨hC hx, hC (neg_mem hx : -x ∈ _)⟩
 
 end Lineal
+
+section Salient
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+/-- A pointed cone is salient iff the intersection of the cone with its negative
+is the set `{0}`. -/
+lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
+    (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
+  simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
+
+end Salient
 
 end PointedCone
