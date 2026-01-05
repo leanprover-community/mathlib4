@@ -282,7 +282,6 @@ lemma IsMIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
     (hγ : IsMIntegralCurve γ v)
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (heq : γ a = γ b) : Periodic γ (a - b) := by
-  intro t
   apply congrFun <|
     isMIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
   rw [comp_apply, add_sub_cancel, heq]
