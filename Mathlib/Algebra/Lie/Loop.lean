@@ -8,8 +8,11 @@ module
 public import Mathlib.Algebra.Lie.BaseChange
 --public import Mathlib.Algebra.Lie.InvariantForm
 --public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.Algebra.Polynomial.Laurent
-public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.Data.Set.MulAntidiagonal
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+--public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -59,17 +62,11 @@ abbrev LoopAlgebra := LaurentPolynomial R ⊗[R] L
 
 namespace LoopAlgebra
 
-instance instLieRing : LieRing (LoopAlgebra R L) :=
+instance instLoopLieRing : LieRing (LoopAlgebra R L) :=
   ExtendScalars.instLieRing R (LaurentPolynomial R) L
 
-instance instLieAlgebra : LieAlgebra (LaurentPolynomial R) (LoopAlgebra R L) :=
+instance instLoopLaurentLieAlgebra : LieAlgebra (LaurentPolynomial R) (LoopAlgebra R L) :=
   ExtendScalars.instLieAlgebra R (LaurentPolynomial R) L
-
---instance : LieAlgebra R (LoopAlgebra R L) :=
---  LieAlgebra.RestrictScalars.lieAlgebra R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
-
---#synth Module R (LoopAlgebra R L) --succeeds
---#synth LieAlgebra R (LoopAlgebra R L) --fails
 
 instance instLieModule : LieModule (LaurentPolynomial R) (LoopAlgebra R L) (LoopAlgebra R L) :=
     lieAlgebraSelfModule (L := LoopAlgebra R L)
@@ -116,6 +113,143 @@ lemma toFinsupp_comp_monomial (n : ℤ) : toFinsupp R L ∘ (monomial R L n) = F
 lemma monomial_injective (n : ℤ) : Function.Injective (monomial R L n) := by
   rw [← toFinsupp_symm_single]
   exact (EmbeddingLike.comp_injective _ (toFinsupp R L).symm).mpr (Finsupp.single_injective n)
+
+open Pointwise in
+lemma finite_support_add {α A : Type*} [AddZeroClass A] {f g : α → A} (hf : Finite f.support)
+    (hg : Finite g.support) :
+    Finite (f + g).support := by
+  refine Finite.Set.subset (f.support ∪ g.support) ?_
+  intro n hn
+  contrapose! hn
+  simp only [Set.mem_union, Function.mem_support, ne_eq, not_or, not_not] at hn
+  simp [hn.1, hn.2]
+
+lemma add_finsupp {α A : Type*} [AddMonoid A] {f g : α → A} (hf : Finite f.support)
+    (hg : Finite g.support) :
+    Finsupp.ofSupportFinite f hf + Finsupp.ofSupportFinite g hg =
+      Finsupp.ofSupportFinite (f + g) (finite_support_add hf hg) := by
+  ext; simp [Finsupp.add_apply, Finsupp.ofSupportFinite_coe]
+--#find_home! add_finsupp --[Mathlib.Algebra.Group.Finsupp]
+
+/-- Generalize: replace ℤ with an abelian group -/
+lemma finite_support_bracket (n : ℤ) (x y : ℤ →₀ L) :
+    Finite (fun (k : Set.addAntidiagonal Set.univ Set.univ n) ↦ ⁅x k.1.1, y k.1.2⁆).support := by
+  refine Set.Finite.of_finite_image (f := fun k ↦ k.1.1) ?_ ?_
+  · refine Set.Finite.subset (Finite.of_fintype x.support) ?_
+    simp only [Set.image_subset_iff, Function.support_subset_iff, ne_eq, Set.mem_preimage,
+      SetLike.mem_coe, Finsupp.mem_support_iff, Subtype.forall, Set.mem_addAntidiagonal,
+      Set.mem_univ, true_and, Prod.forall]
+    intro k l _ h
+    contrapose! h
+    simp [h]
+  · exact fun _ _ _ _ h ↦ Set.AddAntidiagonal.eq_of_fst_eq_fst h
+
+/-- This needs to be generalized: replace ℤ with an abelian group and Lie bracket with any bilinear
+map -/
+lemma finite_support_finsum_bracket (x y : ℤ →₀ L) :
+    Finite (fun (n : ℤ) ↦
+      ∑ᶠ (k : Set.addAntidiagonal Set.univ Set.univ n), ⁅x k.1.1, y k.1.2⁆).support := by
+  refine Set.Finite.subset (s := Set.range (fun (k : x.support × y.support) ↦ k.1.1 + k.2.1)) ?_ ?_
+  · exact Set.finite_range fun (k : x.support × y.support) ↦ k.1.1 + k.2.1
+  · intro n hn
+    rw [Function.mem_support, ← finsum_mem_univ] at hn
+    obtain ⟨k, _, hk⟩ := exists_ne_zero_of_finsum_mem_ne_zero hn
+    simp only [Set.mem_range, Prod.exists, Subtype.exists, Finsupp.mem_support_iff, exists_prop]
+    contrapose! hk
+    obtain ⟨k', _, _, h⟩ := k
+    simp only
+    by_cases hx : x k'.1 = 0
+    · simp [hx]
+    · have hy : y k'.2 = 0 := by
+        by_contra
+        exact hk k'.1 hx k'.2 this h
+      simp [hy]
+
+/-theorem finite_finsum_on_fiber {α β M : Type*} [AddCommMonoid M] (f : α → β) (g : α → M)
+    (hg : (Function.support g).Finite) :
+    (Function.support fun b ↦ ∑ᶠ (a : α) (_ : f a = b), g a).Finite := by
+  have := Set.finite_coe_iff.mpr hg
+  refine Set.Finite.subset (Finite.Set.finite_image (Function.support g) f) ?_
+  intro b hb
+  obtain ⟨a, hab, ha⟩ := exists_ne_zero_of_finsum_mem_ne_zero hb
+  use a
+  exact ⟨ha, hab⟩
+-/
+
+theorem support_finsum_subset_image_support {α β M : Type*} [AddCommMonoid M] (f : α → β)
+    (g : α → M) (hg : (Function.support g).Finite) :
+    (Function.support fun b ↦ ∑ᶠ (a : α) (_ : f a = b), g a) ⊆
+      (Set.Finite.image f hg).toFinset := by
+  intro b hb
+  obtain ⟨a, h, ha⟩ := exists_ne_zero_of_finsum_mem_ne_zero hb
+  refine Finset.mem_coe.mpr ?_
+  refine (Set.Finite.mem_toFinset (Set.Finite.image f hg)).mpr ?_
+  refine (Set.mem_image f (Function.support g) b).mpr ?_
+  use a
+  exact ⟨ha, h⟩
+
+theorem finsum_fiberwise {α β M : Type*} [AddCommMonoid M] (f : α → β) (g : α → M)
+    (hg : (Function.support g).Finite) :
+    ∑ᶠ (b : β) (a : α) (_ : f a = b), g a = ∑ᶠ (a : α), g a := by
+  rw [finsum_eq_sum g hg]
+  have : (f '' (Function.support g)).Finite := Set.Finite.image f hg
+  rw [finsum_eq_sum_of_support_subset (s := (Set.Finite.image f hg).toFinset)]
+  swap; · exact support_finsum_subset_image_support f g hg
+  have (i : β) : (Function.support fun a ↦ ∑ᶠ (_ : f a = i), g a).Finite := by
+    refine (Set.Finite.subset hg fun a ha ha0 ↦ ?_)
+    rw [Function.mem_support, ha0, finsum_zero] at ha
+    exact ha rfl
+  have _ (a : α) (b : β) := Classical.propDecidable (f a = b)
+  simp_rw [finsum_eq_sum _ (this _), finsum_eq_if]
+  rw [Finset.sum_sigma']
+  refine Eq.symm (Finset.sum_of_injOn (fun x ↦ ⟨f x, x⟩) (fun _ _ _ _ _ ↦ by simp_all) ?_ ?_
+    (fun _ _ ↦ by simp))
+  · intro a h
+    simp only [Finset.coe_sigma, Set.Finite.coe_toFinset, Set.mem_sigma_iff, Set.mem_image,
+      Function.mem_support, ↓reduceIte]
+    have : g a ≠ 0 := by simpa using h
+    exact ⟨Exists.intro a ⟨this, rfl⟩, this⟩
+  · intro ⟨_, a⟩ _ h
+    simp only [Set.Finite.coe_toFinset, Set.mem_image, Function.mem_support, not_exists] at h
+    simp only [ite_eq_right_iff]
+    contrapose
+    simpa using h a
+--#find_home! finsum_fiberwise --[Mathlib.Algebra.BigOperators.Finprod]
+
+lemma finsum_fiberwise_quotient {α M : Type*} [AddCommMonoid M] (r : Setoid α) (f : α → M)
+    (hf : (Function.support f).Finite) :
+    ∑ᶠ (y : Quotient r) (x : (Quotient.mk r) ⁻¹' {y}), f x = ∑ᶠ x : α, f x := by
+  rw [← finsum_fiberwise (Quotient.mk r) _ hf, finsum_congr]
+  exact fun y ↦ finsum_set_coe_eq_finsum_mem (Quotient.mk r ⁻¹' {y})
+--#find_home! finsum_fiberwise' --[Mathlib.Algebra.BigOperators.Finprod]
+
+/-
+/-- A LieRing structure on finsupp -/
+def finsuppLieRing' : LieRing (ℤ →₀ L) where
+  bracket x y := Finsupp.ofSupportFinite
+    (fun n ↦ ∑ᶠ (k : Set.addAntidiagonal Set.univ Set.univ n), ⁅x k.1.1, y k.1.2⁆)
+    (finite_support_finsum_bracket L x y)
+  add_lie x y z := by
+    ext n
+    simp only [Finsupp.ofSupportFinite, Finsupp.coe_add, Pi.add_apply, add_lie, Finsupp.coe_mk]
+    rw [← finsum_add_distrib (finite_support_bracket L n x z) (finite_support_bracket L n y z)]
+  lie_add x y z := by
+    ext n
+    simp only [Finsupp.ofSupportFinite, Finsupp.coe_add, Pi.add_apply, lie_add, Finsupp.coe_mk]
+    rw [← finsum_add_distrib (finite_support_bracket L n x y) (finite_support_bracket L n x z)]
+  lie_self x := by
+    ext n
+    simp only [Finsupp.ofSupportFinite, Finsupp.coe_mk, Finsupp.coe_zero, Pi.zero_apply]
+    rw [← finsum_fiberwise_quotient  _ (finite_support_bracket L n x x),
+      finsum_eq_zero_of_forall_eq_zero]
+    intro y
+    by_cases h :
+    sorry
+  leibniz_lie x y z := by
+    ext
+    simp [Finsupp.ofSupportFinite]
+    sorry
+-/
 
 /-- A Lie ring structure on finitely supported functions on a Lie algebra `L`. -/
 def finsuppLieRing : LieRing (ℤ →₀ L) where
@@ -177,30 +311,13 @@ def finsuppRestrictLieAlgebra :
 -- define eval.LieModule
 -/
 
-open Pointwise in
-lemma finite_support_add {α A : Type*} [AddZeroClass A] {f g : α → A} (hf : Finite f.support)
-    (hg : Finite g.support) :
-    Finite (f + g).support := by
-  refine Finite.Set.subset (f.support ∪ g.support) ?_
-  intro n hn
-  contrapose! hn
-  simp only [Set.mem_union, Function.mem_support, ne_eq, not_or, not_not] at hn
-  simp [hn.1, hn.2]
-
-lemma add_finsupp {α A : Type*} [AddMonoid A] {f g : α → A} (hf : Finite f.support)
-    (hg : Finite g.support) :
-    Finsupp.ofSupportFinite f hf + Finsupp.ofSupportFinite g hg =
-      Finsupp.ofSupportFinite (f + g) (finite_support_add hf hg) := by
-  ext; simp [Finsupp.add_apply, Finsupp.ofSupportFinite_coe]
---#find_home! add_finsupp --[Mathlib.Algebra.Group.Finsupp]
-
 section CentralExt
 
 lemma residuePairing_finite_support (Φ : LinearMap.BilinForm R L) (f g : ℤ →₀ L) :
-    Finite (fun n ↦ n • (Φ (f (-n)) (g (n - 1)))).support := by
+    Finite (fun n ↦ n • (Φ (f (-n)) (g n))).support := by
   refine Finite.Set.subset ((fun (n : ℤ) ↦ (-n)) '' f.support) ?_
   intro n hn
-  simp only [Set.image_neg_eq_neg, Set.mem_neg, SetLike.mem_coe, Finsupp.mem_support_iff, ne_eq]
+  simp only [Set.image_neg_eq_neg, Set.mem_neg, SetLike.mem_coe, Finsupp.mem_support_iff]
   contrapose! hn
   simp [hn]
 
@@ -210,7 +327,7 @@ polynomials with coefficients in `L`, the pairing is given by `(f, g) ↦ Res f 
 def residuePairingFinsupp (Φ : LinearMap.BilinForm R L) :
     (ℤ →₀ L) →ₗ[R] (ℤ →₀ L) →ₗ[R] R where
   toFun f := {
-    toFun := fun g => ∑ᶠ (n : ℤ), n • (Φ (f (-n)) (g (n - 1)))
+    toFun := fun g => ∑ᶠ (n : ℤ), n • (Φ (f (-n)) (g n))
     map_add' x y := by
       rw [← finsum_add_distrib (residuePairing_finite_support R L Φ f x)
         (residuePairing_finite_support R L Φ f y), finsum_congr]
@@ -244,6 +361,8 @@ def residuePairingCochain (Φ : LinearMap.BilinForm R L) :
     LieModule.Cohomology.twoCochain R (ℤ →₀ L) (TrivialLieModule R (LoopAlgebra R L) R) where
   val := (residuePairingFinsupp R L Φ).compr₂
     ((TrivialLieModule.equiv R (LoopAlgebra R L) R).symm.toLinearMap)
+  property := sorry
+-/
 
 /-- The residue pairing on a Loop algebra, with values in a trivial module. -/
 def residuePairingLoop (Φ : LinearMap.BilinForm R L) :
@@ -252,26 +371,46 @@ def residuePairingLoop (Φ : LinearMap.BilinForm R L) :
     ((TrivialLieModule.equiv R (LoopAlgebra R L) R).symm.toLinearMap)).compl₂
     (toFinsupp R L).toLinearMap).comp (toFinsupp R L).toLinearMap
 
-/-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
-def twoCocycle_of_Bilinear' (Φ : LinearMap.BilinForm R L)
-    (hΦ : LinearMap.BilinForm.lieInvariant L Φ) :
+/- Problem: `TensorProduct.toAddCommMonoid` has default priority, while the chain
+`LieRing → AddCommGroup → AddCommMonoid` has reduced priority steps. -/
+
+/-- A 2-cochain on a loop algebra given by an invariant bilinear form. The alternating condition
+follows from the fact that Res f df = 0 -/
+def twoCochain_of_Bilinear (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ) :
     LieModule.Cohomology.twoCochain R (LoopAlgebra R L)
       (TrivialLieModule R (LoopAlgebra R L) R) where
   val := residuePairingLoop R L Φ
   property := by
-    sorry
+    simp only [LieModule.Cohomology.mem_twoCochain_iff]
+    intro f
+    simp only [residuePairingLoop, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearMap.compl₂_apply, LinearMap.compr₂_apply, residuePairingFinsupp_apply_apply,
+      EmbeddingLike.map_eq_zero_iff]
+    rw [← finsum_fiberwise (Int.natAbs) _ (residuePairing_finite_support R L Φ (toFinsupp R L f)
+      (toFinsupp R L f)), finsum_eq_zero_of_forall_eq_zero]
+    intro n
+    rw [finsum_eq_sum_of_support_subset (s := {(n : ℤ), -(n : ℤ)})]
+    · by_cases hn : n = 0
+      · simp [hn]
+      · simp [hn, hΦ.eq (toFinsupp R L f n) (toFinsupp R L f (-(n : ℤ)))]
+    · intro z hz
+      contrapose! hz
+      have : ¬ z.natAbs = n := by simpa [Int.natAbs_eq_iff] using hz
+      simp [this]
 
-
+-- need `public import Mathlib.Algebra.Lie.InvariantForm`
+/-
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
 def twoCocycle_of_Bilinear (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ) :
-    LieModule.Cohomology.twoCochain R (LoopAlgebra R L)
+    LieModule.Cohomology.twoCocycle R (LoopAlgebra R L)
       (TrivialLieModule R (LoopAlgebra R L) R) where
   val := residuePairingLoop R L Φ
 
   property :=
 
     sorry
+
 -/
 --⁅A ⊗ f(t), B ⊗ g(t)⁆ = ⁅A,B⁆ ⊗ f(t)*g(t) + (Res fdg) * (A,B) • K
 

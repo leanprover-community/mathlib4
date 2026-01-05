@@ -122,6 +122,9 @@ instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
   lie_smul _ _ _ := map_smul _ _ _
 
+instance instBaseLieAlgebra : LieAlgebra R (A ⊗[R] L) where
+  lie_smul r x y := by simp [bracket_def]
+
 end ExtendScalars
 
 namespace RestrictScalars
