@@ -24,7 +24,7 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
-@[expose] public section
+public section
 
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists IsOrderedRing

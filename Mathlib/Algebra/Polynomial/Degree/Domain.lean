@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.instDomain`: `R[X]` is a domain if `R` is
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -42,7 +42,7 @@ of Patrick Massot.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable (R : Type*) [CommRing R] [IsDomain R]

@@ -13,7 +13,7 @@ public import Mathlib.Data.Fintype.BigOperators
 # Finite sums over modules over a ring
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ α β R M : Type*}
 

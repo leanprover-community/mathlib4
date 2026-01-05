@@ -16,7 +16,7 @@ Some of the main results include
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

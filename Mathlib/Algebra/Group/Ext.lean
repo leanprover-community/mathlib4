@@ -27,7 +27,7 @@ former uses `HMul.hMul` which is the canonical spelling.
 monoid, group, extensionality
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

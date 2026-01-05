@@ -20,7 +20,7 @@ public import Mathlib.Algebra.GCDMonoid.Basic
   `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

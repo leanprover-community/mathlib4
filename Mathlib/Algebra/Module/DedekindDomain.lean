@@ -17,7 +17,7 @@ Therefore, as any finitely generated torsion module is `I`-torsion for some `I`,
 direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
