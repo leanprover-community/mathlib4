@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Completion
+public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
 # The GNS (Gelfand-Naimark-Segal) construction
@@ -137,7 +138,7 @@ noncomputable def GNSHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
       | hp => apply isClosed_eq <;> fun_prop
       | ih c =>
       have := map_coe ((f.leftMulMapPreGNS a).comp (f.leftMulMapPreGNS b)).uniformContinuous
-      simp_all
+      simp_all [mul_assoc]
   map_star' a := by
     refine (eq_adjoint_iff (mapCLM (f.leftMulMapPreGNS (star a)))
       (mapCLM (f.leftMulMapPreGNS a))).mpr ?_

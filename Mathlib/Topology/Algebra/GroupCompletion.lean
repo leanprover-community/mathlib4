@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
@@ -26,9 +25,6 @@ the main constructions deal with continuous group morphisms.
   to a complete separated group `H` to `Completion G`.
 * `AddMonoidHom.completion`: promotes a continuous group morphism
   from `G` to `H` into a continuous group morphism
-  from `Completion G` to `Completion H`.
-* `UniformSpace.Completion.mapCLM`: promotes a continuous semilinear map
-  from `G` to `H` into a continuous semilinear map
   from `Completion G` to `Completion H`.
 -/
 
@@ -218,30 +214,6 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
 
-/--
-Constructs a continuous semilinear map between completions of `AddCommGroup`s from a continuous
-semilinear map between the `AddCommGroup`s.
--/
-@[simps]
-def mapCLM {R₁ R₂ : Type*} [Semiring R₁] [Module R₁ α]
-  [UniformContinuousConstSMul R₁ α] [Semiring R₂] [UniformSpace β] [AddCommGroup β]
-  [IsUniformAddGroup β] [Module R₂ β] [UniformContinuousConstSMul R₂ β] {σ : R₁ →+* R₂}
-  (f : α →SL[σ] β) : (Completion α) →SL[σ] (Completion β) where
-  toFun := Completion.map <| f
-  map_add' x y := by
-    induction x, y using Completion.induction_on₂ with
-    | hp => exact isClosed_eq (by fun_prop) (by fun_prop)
-    | ih x y =>
-      simp [Completion.map_coe, ← Completion.coe_add, ContinuousLinearMap.uniformContinuous]
-  map_smul' r x := by
-    induction x using Completion.induction_on with
-    | hp =>
-      exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
-        (continuous_map.const_smul _)
-    | ih x =>
-      simp [map_coe, ← Completion.coe_smul, ContinuousLinearMap.uniformContinuous]
-  cont := continuous_map
-
 end UniformAddCommGroup
 
 end UniformSpace.Completion
@@ -286,6 +258,7 @@ theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) 
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
 
+@[simp]
 theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
     AddMonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
