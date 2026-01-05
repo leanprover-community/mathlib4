@@ -237,7 +237,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  (fg_top s).symm.trans Module.finite_def.symm
+  Module.Finite.iff_fg.symm
 
 end DivisionRing
 

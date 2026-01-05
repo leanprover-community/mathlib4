@@ -222,8 +222,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hs])
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
-    constructor
-    rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
+    rw [Module.Finite.iff_fg]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
   let f : LinearMap.ker (l ∘ₗ π) →ₗ[R] LinearMap.ker l := LinearMap.restrict π (fun x ↦ id)
   have e : π ∘ₗ Submodule.subtype _ = Submodule.subtype _ ∘ₗ f := by ext; rfl
   have hf : Function.Surjective f := by
@@ -255,8 +254,8 @@ lemma Module.finitePresentation_of_split_exact
   refine Module.finitePresentation_of_surjective (LinearMap.fst _ _ _ ∘ₗ e.toLinearMap)
     (Prod.fst_surjective.comp e.surjective) ?_
   rw [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm,
-    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← Submodule.map_top]
-  exact .map _ (.map _ (Module.Finite.fg_top))
+    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← LinearMap.range_comp]
+  exact Submodule.fg_range _
 
 /-- Given an exact sequence `0 → M → N → P → 0`
 with `N` finitely presented and `P` projective, then `M` is also finitely presented. -/
@@ -340,11 +339,10 @@ instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
   have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
     lTensor_exact A f.exact_subtype_ker_map hf
   rw [LinearMap.exact_iff] at this
-  rw [this, ← Submodule.map_top]
-  apply Submodule.FG.map
+  rw [this]
   have : Module.Finite R (LinearMap.ker f) :=
-    ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
-  exact Module.Finite.fg_top (R := A) (M := A ⊗[R] LinearMap.ker f)
+    Module.Finite.iff_fg.mpr (Module.FinitePresentation.fg_ker f hf)
+  exact Submodule.fg_range _
 
 open TensorProduct in
 lemma FinitePresentation.of_isBaseChange

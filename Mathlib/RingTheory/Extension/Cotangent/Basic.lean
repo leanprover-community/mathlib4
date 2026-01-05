@@ -582,7 +582,7 @@ instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
   have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
-  rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]
+  rw [Module.Finite.iff_fg, ← LinearMap.ker_rangeRestrict]
   have := Extension.Cotangent.finite P.fg_ker
   have : Module.FinitePresentation S (LinearMap.range P.toExtension.cotangentComplex) := by
     rw [← LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler]
