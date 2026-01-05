@@ -268,6 +268,19 @@ theorem mapOfLE_valuation_apply (R S : ValuationSubring K) (h : R ≤ S) (x : K)
 def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
   (IsLocalRing.maximalIdeal S).comap (R.inclusion S h)
 
+@[simp]
+theorem idealOfLE_self : A.idealOfLE A (refl _) = IsLocalRing.maximalIdeal A := rfl
+
+@[simp]
+theorem idealOfLE_top : A.idealOfLE ⊤ (fun _ _ => trivial) = ⊥ := by
+  rw [Submodule.eq_bot_iff, ValuationSubring.idealOfLE]
+  intro x hx
+  let := fieldTop K
+  simp only [IsLocalRing.maximalIdeal_eq_bot, Ideal.mem_comap, Submodule.mem_bot, Subtype.ext_iff,
+    ZeroMemClass.coe_zero] at hx ⊢
+  rw [← hx]
+  rfl
+
 instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
   (IsLocalRing.maximalIdeal S).comap_isPrime _
 
@@ -329,6 +342,13 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       ext
       simp [field]
     · simp
+
+@[simp]
+theorem ofPrime_bot : A.ofPrime (⊥ : Ideal A) = ⊤ := by
+  simp [← idealOfLE_top, ValuationSubring.ofPrime_idealOfLE]
+
+@[simp]
+theorem ofPrime_top : A.ofPrime (IsLocalRing.maximalIdeal A) = A := by simp [← idealOfLE_self]
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
