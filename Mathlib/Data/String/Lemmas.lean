@@ -14,7 +14,7 @@ public import Batteries.Tactic.Alias
 # Miscellaneous lemmas about strings
 -/
 
-@[expose] public section
+public section
 
 namespace String
 

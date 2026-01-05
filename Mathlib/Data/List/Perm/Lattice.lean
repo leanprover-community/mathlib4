@@ -16,7 +16,7 @@ public import Mathlib.Data.List.Nodup
 This file develops theory about the `List.Perm` relation and the lattice structure on lists.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

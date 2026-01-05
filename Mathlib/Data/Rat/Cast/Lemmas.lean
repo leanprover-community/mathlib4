@@ -19,7 +19,7 @@ In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
 -/
 
-@[expose] public section
+public section
 
 namespace Rat
 

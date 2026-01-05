@@ -17,7 +17,7 @@ In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 

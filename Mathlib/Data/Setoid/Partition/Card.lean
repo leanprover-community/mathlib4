@@ -16,7 +16,7 @@ public import Mathlib.Data.Setoid.Partition
 
 -/
 
-@[expose] public section
+public section
 
 section Finite
 

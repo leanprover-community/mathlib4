@@ -19,7 +19,7 @@ Note that this syntax is for `Finsupp` by default, but works for `DFinsupp` if t
 is correct.
 -/
 
-@[expose] public section
+public section
 
 namespace DFinsupp
 

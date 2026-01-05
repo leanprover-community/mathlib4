@@ -28,7 +28,7 @@ Note that we make no guarantees of being the longest sublist with this property;
 adjacent, chain, duplicates, remove, list, stutter, destutter
 -/
 
-@[expose] public section
+public section
 
 open Function
 

@@ -12,7 +12,7 @@ import all Init.Data.Array.Basic
 
 /-! ### lookmap -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

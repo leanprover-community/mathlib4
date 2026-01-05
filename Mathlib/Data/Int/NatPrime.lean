@@ -13,7 +13,7 @@ public import Mathlib.Data.Int.Basic
 # Lemmas about `Nat.Prime` using `Int`s
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

@@ -15,7 +15,7 @@ They are separated by now to minimize the porting requirements for tactics durin
 mathlib4. Please feel free to reorganize these two files.
 -/
 
-@[expose] public section
+public section
 
 open Function Nat
 

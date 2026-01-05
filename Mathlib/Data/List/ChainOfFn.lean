@@ -14,7 +14,7 @@ public import Mathlib.Data.List.OfFn
 This file provides lemmas involving both `List.IsChain` and `List.ofFn`.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

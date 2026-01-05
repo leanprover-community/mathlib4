@@ -11,7 +11,7 @@ public import Mathlib.Data.Set.Basic
 # Theorems about the `Disjoint` relation on `Set`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists HeytingAlgebra RelIso
 

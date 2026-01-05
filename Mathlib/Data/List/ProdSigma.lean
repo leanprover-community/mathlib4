@@ -15,7 +15,7 @@ living in `Prod` and `Sigma` types respectively. Their definitions can be found 
 [`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

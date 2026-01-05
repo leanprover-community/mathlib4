@@ -14,7 +14,7 @@ public import Mathlib.Order.Preorder.Chain
 In this file `Pairwise` results are applied to chains of sets.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

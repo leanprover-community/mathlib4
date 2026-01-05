@@ -22,7 +22,7 @@ It has been separated out to not burden `Mathlib/Data/Set/Card.lean` with extra 
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
 
-@[expose] public section
+public section
 
 variable {α ι : Type*}
 

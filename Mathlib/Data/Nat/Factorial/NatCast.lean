@@ -18,7 +18,7 @@ to be a unit.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsUnit
 

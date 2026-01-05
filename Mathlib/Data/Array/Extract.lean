@@ -13,7 +13,7 @@ public import Batteries.Data.Array.Lemmas
 Some useful lemmas about Array.extract
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable {α : Type u} {i : Nat}

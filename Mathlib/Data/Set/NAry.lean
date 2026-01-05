@@ -19,7 +19,7 @@ This file is very similar to `Mathlib/Data/Finset/NAry.lean`, `Mathlib/Order/Fil
 `Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

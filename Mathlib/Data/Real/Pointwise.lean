@@ -23,7 +23,7 @@ This is true more generally for conditionally complete linear order whose defaul
 don't have those yet.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
