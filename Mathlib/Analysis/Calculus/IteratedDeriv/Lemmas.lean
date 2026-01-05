@@ -276,4 +276,14 @@ lemma iteratedDerivWithin_mul {f g : 𝕜 → E} {s : Set 𝕜} (hs : IsOpen s) 
     · exact ContDiffOn.mul (hf.of_le (by aesop))
         (ContDiffOn.derivWithin hg hs.uniqueDiffOn (m := m) (by grind)) _ hx
 
+lemma IteratedDeriv_smul (a : E) (f : 𝕜 → E) (m : ℕ) :
+    iteratedDeriv m (a • f) = a • iteratedDeriv m f := by
+  induction m with
+  | zero => simp
+  | succ m hm =>
+    rw [iteratedDeriv_succ, iteratedDeriv_succ, hm]
+    ext x
+    rw [@Pi.smul_def]
+    exact deriv_const_smul' a ..
+
 end mul
