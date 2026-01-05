@@ -138,8 +138,9 @@ lemma ofUpperLimit_inj {a b : WithUpperLimit α} : ofUpperLimit a = ofUpperLimit
 
 /-- A recursor for `WithUpperLimit`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithUpperLimit α → Sort*} (h : ∀ a, β (toUpperLimit a)) : ∀ a, β a :=
-  fun a => h (ofUpperLimit a)
+protected def rec {motive : WithUpperLimit α → Sort*}
+    (toUpperLimit : ∀ a, motive (toUpperLimit a)) : ∀ a, motive a :=
+  fun a => toUpperLimit (ofUpperLimit a)
 
 instance [Nonempty α] : Nonempty (WithUpperLimit α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpperLimit α) := ‹Inhabited α›
