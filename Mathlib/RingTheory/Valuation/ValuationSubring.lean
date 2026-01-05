@@ -98,14 +98,11 @@ variable (K) in
 /-- If `K` is a field, then so is `K` viewed as a valuation subring
 of itself. (That is, `⊤ : ValuationSubring K`.) -/
 noncomputable abbrev fieldTop : Field (⊤ : ValuationSubring K) := by
-  apply Field.ofIsUnitOrEqZero
-  intro ⟨a, ha⟩
-  by_cases h0 : a = 0
-  · aesop
-  · left
-    rw [isUnit_iff_exists_inv']
-    use ⟨a⁻¹, ValuationSubring.mem_top _⟩
-    aesop
+  refine Field.ofIsUnitOrEqZero fun ⟨a, ha⟩ ↦ ?_
+  rw [Classical.or_iff_not_imp_right, isUnit_iff_exists_inv']
+  intro h
+  use ⟨a⁻¹, ValuationSubring.mem_top _⟩
+  aesop (add norm Subtype.ext_iff)
 
 instance : OrderTop (ValuationSubring K) where
   le_top := le_top
