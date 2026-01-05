@@ -14,8 +14,14 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 * For two maps `f : M → N` and `g : N → P`, with `One P`,
   `Function.Exact f g` says that `Set.range f = Set.preimage g {1}`
 
+* For two maps `f : M → N` and `g : N → P`, with `Zero P`,
+  `Function.AddExact f g` says that `Set.range f = Set.preimage g {0}`
+
 * For multiplicative maps `f : M →* N`  and `g : N →* P`,
   `Exact f g` says that `range f = ker g`
+
+* For additive maps `f : M →+ N`  and `g : N →+ P`,
+  `AddExact f g` says that `range f = ker g`
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
   `AddExact f g` says that `range f = ker g`

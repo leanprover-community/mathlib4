@@ -90,7 +90,7 @@ lemma FormallyUnramified.of_map_maximalIdeal
   have : FormallyUnramified R (ResidueField S) := .comp _ (ResidueField R) _
   rw [← subsingleton_tensorProduct (R := S)]
   refine subsingleton_of_forall_eq 0 fun x ↦ ?_
-  obtain ⟨x, rfl⟩ := (KaehlerDifferential.exact_kerCotangentToTensor_mapBaseChange R S
+  obtain ⟨x, rfl⟩ := (KaehlerDifferential.addExact_kerCotangentToTensor_mapBaseChange R S
     (ResidueField S) Ideal.Quotient.mk_surjective x).mp (Subsingleton.elim _ _)
   obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
   simp only [KaehlerDifferential.kerCotangentToTensor_toCotangent]
