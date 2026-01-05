@@ -34,7 +34,7 @@ The result is also used in `Topology.Instances.Real` as an ingredient in the cla
 subgroups of `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

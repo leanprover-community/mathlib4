@@ -17,7 +17,7 @@ public import Mathlib.Analysis.Normed.Operator.Prod
 
 -/
 
-@[expose] public section
+public section
 
 open Set ChartedSpace
 open scoped Topology Manifold

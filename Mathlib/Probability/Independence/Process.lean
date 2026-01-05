@@ -24,7 +24,7 @@ We prove an analogous condition for a family of stochastic processes.
 independence, stochastic processes
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory MeasurableSpace
 

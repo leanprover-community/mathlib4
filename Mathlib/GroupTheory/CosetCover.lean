@@ -45,7 +45,7 @@ set of all minimal polynomials (not proved here).
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

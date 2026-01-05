@@ -25,7 +25,7 @@ Although the first two options are equivalent, the last two are not if the index
 countable.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure ProbabilityTheory
 

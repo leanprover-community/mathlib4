@@ -27,7 +27,7 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory

@@ -30,7 +30,7 @@ If `τ` is a bounded stopping time and `σ` is another stopping time, then the v
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped MeasureTheory ENNReal

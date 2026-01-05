@@ -62,7 +62,7 @@ to `bcf`.
 independence, bounded continuous functions
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure ProbabilityTheory ENNReal
 open scoped BoundedContinuousFunction

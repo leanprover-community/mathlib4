@@ -24,7 +24,7 @@ This file mirrors `Mathlib/Analysis/ODE/Transform`.
 integral curve, vector field
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

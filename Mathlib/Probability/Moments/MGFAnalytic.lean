@@ -26,7 +26,7 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Filter Finset Real

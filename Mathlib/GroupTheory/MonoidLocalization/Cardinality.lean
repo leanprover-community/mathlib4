@@ -16,7 +16,7 @@ This file contains some results on cardinality of localizations.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

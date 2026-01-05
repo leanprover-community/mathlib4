@@ -29,7 +29,7 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set MeasureTheory

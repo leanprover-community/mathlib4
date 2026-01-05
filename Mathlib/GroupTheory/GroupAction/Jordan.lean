@@ -44,7 +44,7 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
 
 -/
 
-@[expose] public section
+public section
 
 open MulAction SubMulAction Subgroup
 

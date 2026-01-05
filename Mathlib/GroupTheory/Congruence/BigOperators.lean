@@ -15,7 +15,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 -/
 
-@[expose] public section
+public section
 
 namespace Con
 

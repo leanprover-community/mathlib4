@@ -51,7 +51,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 -/
 
-@[expose] public section
+public section
 
 open Finsupp
 

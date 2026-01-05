@@ -43,7 +43,7 @@ See also `MeasureTheory.integral_biUnion_eq_sum_powerset` for the version with i
 * Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
