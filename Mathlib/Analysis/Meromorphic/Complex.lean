@@ -12,7 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 # The Gamma function is meromorphic
 -/
 
-@[expose] public section
+public section
 
 open Set Complex
 

@@ -16,7 +16,7 @@ This is the key tool that is used to define `Submodule.orthogonalProjection` in
 `Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]

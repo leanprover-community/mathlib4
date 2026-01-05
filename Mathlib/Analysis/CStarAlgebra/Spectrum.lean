@@ -55,7 +55,7 @@ we can still establish a form of spectral permanence.
 
 -/
 
-@[expose] public section
+public section
 
 
 local notation "σ" => spectrum

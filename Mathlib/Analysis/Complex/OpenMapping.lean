@@ -32,7 +32,7 @@ That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
 * `AnalyticOnNhd.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Metric Complex

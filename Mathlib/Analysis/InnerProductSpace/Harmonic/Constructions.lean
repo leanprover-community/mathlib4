@@ -18,7 +18,7 @@ If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`
 part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f‖` is harmonic.
 -/
 
-@[expose] public section
+public section
 
 open Complex ComplexConjugate InnerProductSpace Topology
 

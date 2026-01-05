@@ -30,7 +30,7 @@ There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` 
 `fun x ↦ ∏ᶠ u, (x - u) ^ d u` is not continuous.
 -/
 
-@[expose] public section
+public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]

@@ -37,7 +37,7 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝕜 : Type*} [RCLike 𝕜]

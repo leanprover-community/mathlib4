@@ -22,7 +22,7 @@ equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that ac
 poles of `g` within the ball.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeromorphicAt MeromorphicOn Metric Real
 

@@ -44,7 +44,7 @@ useful for Ilyashenko's proof of the individual finiteness theorem (a polynomial
 real plane has only finitely many limit cycles).
 -/
 
-@[expose] public section
+public section
 
 open Set Function Filter Asymptotics Metric Complex Bornology
 open scoped Topology Filter Real
