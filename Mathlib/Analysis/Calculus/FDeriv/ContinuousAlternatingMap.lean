@@ -18,7 +18,7 @@ In this file we prove formulas for the derivatives of
 - application of a `ContinuousAlternatingMap` as a function of both the map and the vectors.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 ι E F G H : Type*}
   [NontriviallyNormedField 𝕜]

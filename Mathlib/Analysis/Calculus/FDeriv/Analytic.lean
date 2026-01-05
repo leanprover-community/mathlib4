@@ -63,7 +63,7 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Asymptotics Set
 

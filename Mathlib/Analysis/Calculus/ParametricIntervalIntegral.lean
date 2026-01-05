@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
 integrals. -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace MeasureTheory Filter Metric

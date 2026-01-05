@@ -55,7 +55,7 @@ We also provide versions of these theorems for set integrals.
 integral, derivative
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

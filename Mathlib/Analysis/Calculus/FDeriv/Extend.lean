@@ -20,7 +20,7 @@ the right endpoint of an interval, are given in `hasDerivWithinAt_Ici_of_tendsto
 one-dimensional derivative `deriv ℝ f`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
