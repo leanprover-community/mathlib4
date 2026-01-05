@@ -435,9 +435,15 @@ theorem order_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
   rw [order_of_ne <| support_nonempty_iff.mp <| Set.nonempty_of_mem hg,
     Set.IsWF.min_eq_of_le x.isWF_support hg hx]
 
-theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
+@[simp]
+theorem coeff_order_eq_zero {x : R⟦Γ⟧} : x.coeff x.order = 0 ↔ x = 0 := by
+  refine ⟨not_imp_not.1 fun hx ↦ ?_, by simp +contextual⟩
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
+
+@[deprecated coeff_order_eq_zero (since := "2025-12-09")]
+theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 :=
+  coeff_order_eq_zero.not.2 hx
 
 theorem order_le_of_coeff_ne_zero {Γ} [Zero Γ] [LinearOrder Γ] {x : R⟦Γ⟧}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=

@@ -221,6 +221,23 @@ instance : LieAlgebra R (ofTwoCocycle c) where
     simp only [bracket_ofTwoCocycle]
     exact Equiv.congr_arg (by simp [← smul_add, smul_sub])
 
+/-- An equivalence of extended Lie algebras induced by translation by a coboundary. -/
+@[simps]
+def LieEquiv.ofCoboundary (c' : twoCocycle R L M) (x : oneCochain R L M)
+    (h : c' = c + d₁₂ R L M x) :
+    ofTwoCocycle c ≃ₗ⁅R⁆ ofTwoCocycle c' where
+  toFun y :=
+    letI z := (ofProd c).symm y
+    ofProd c' (z.1, z.2 - x z.1)
+  invFun z :=
+    letI y := (ofProd c').symm z
+    ofProd c (y.1, y.2 + x y.1)
+  map_add' _ _ := by simp [← of_add]; abel
+  map_smul' := by simp [← of_smul, smul_sub]
+  map_lie' := ((ofProd c').apply_eq_iff_eq_symm_apply).2 <| by simp [bracket_ofTwoCocycle, h]; abel
+  left_inv y := by simp
+  right_inv z := by simp
+
 end Algebra
 
 namespace Extension
@@ -575,18 +592,17 @@ lemma apply_sub_apply_mem_ker (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L
 
 /-- The 1-cochain attached to a pair of splittings of an extension. -/
 @[simps]
-def oneCochainOfTwoSplitting (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
+noncomputable def oneCochainOfTwoSplitting (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
     (hs₁ : LeftInverse E.proj s₁) (hs₂ : LeftInverse E.proj s₂) :
     oneCochain R L M where
-  toFun x := E.toKer.symm ⟨(s₁ x) - (s₂ x), E.apply_sub_apply_mem_ker hs₁ hs₂ x⟩
+  toFun x :=
+    E.toKer.symm ⟨(s₁ x) - (s₂ x), LieHom.mem_ker.mpr (by rw [map_sub, sub_eq_zero, hs₁, hs₂])⟩
   map_add' _ _ := by
-    rw [← map_add, AddMemClass.mk_add_mk, EquivLike.apply_eq_iff_eq]
-    refine Subtype.mk_eq_mk.mpr ?_
-    rw [map_add, map_add, add_sub_add_comm]
+    rw [← map_add, AddMemClass.mk_add_mk, EquivLike.apply_eq_iff_eq, Subtype.mk_eq_mk, map_add,
+      map_add, add_sub_add_comm]
   map_smul' _ _ := by
-    rw [RingHom.id_apply, ← map_smul, EquivLike.apply_eq_iff_eq, SetLike.mk_smul_of_tower_mk]
-    refine Subtype.mk_eq_mk.mpr ?_
-    rw [LinearMap.map_smul_of_tower, smul_sub, LinearMap.map_smul_of_tower]
+    rw [RingHom.id_apply, ← map_smul, EquivLike.apply_eq_iff_eq, SetLike.mk_smul_of_tower_mk,
+      Subtype.mk_eq_mk, LinearMap.map_smul_of_tower, smul_sub, LinearMap.map_smul_of_tower]
 
 lemma d₁₂_oneCochainOfTwoSplitting [IsLieAbelian M] (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
     (hs₁ : LeftInverse E.proj s₁) (hs₂ : LeftInverse E.proj s₂) :
