@@ -1237,7 +1237,6 @@ theorem primeSpectrum_eq_of_KrullDimLEOne [IsDomain R] [hd : Ring.KrullDimLE 1 R
     (x : PrimeSpectrum R) : x = ⊥ ∨ x = ⊤ := by
   rw [or_iff_not_imp_left]
   intro hne
-  have := Ideal.bot_prime (α := R)
   rw [Ring.krullDimLE_one_iff_of_isPrime_bot] at hd
   simp [PrimeSpectrum.ext_iff, IsLocalRing.eq_maximalIdeal
     (hd _ (by simpa [PrimeSpectrum.ext_iff] using hne) x.isPrime)]

@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.Algebra.Ring.Action.Field
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 
@@ -392,6 +394,27 @@ instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
   max_def a b := congr_fun₂ sup_eq_maxDefault a b
   toDecidableLE := _
+
+section
+
+variable [Ring.KrullDimLE 1 A] {B : ValuationSubring K}
+
+variable {A} in
+theorem eq_self_or_eq_top_of_le (hle : A ≤ B) : A = B ∨ B = ⊤ := by
+  obtain h | h := IsLocalRing.primeSpectrum_eq_of_KrullDimLEOne
+    ((primeSpectrumEquiv A).symm ⟨B, hle⟩) <;>
+    (replace h := congr((primeSpectrumEquiv A) $h); simp_all [← idealOfLE_self])
+
+theorem eq_of_le_of_ne_top (hle : A ≤ B) (hTop : B ≠ ⊤) : A = B := by
+  obtain h | h := eq_self_or_eq_top_of_le hle <;> simp_all
+
+theorem eq_of_le_of_ne_self (hle : A ≤ B) (hne : A ≠ B) : B = ⊤ := by
+  obtain h | h := eq_self_or_eq_top_of_le hle <;> simp_all
+
+theorem eq_of_lt (hlt : A < B) : B = ⊤ := by
+  obtain h | h := eq_self_or_eq_top_of_le hlt.le <;> simp_all
+
+end
 
 end Order
 
