@@ -436,9 +436,8 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
           simp only [← Submodule.mkQ_apply, ← map_add, ← mem_ker,
            Submodule.ker_mkQ]
           convert hy
-          rw [eq_comm, ← sub_eq_iff_eq_add, eq_comm] at hu'
-          simp only [hu', smul_sub, sub_smul, one_smul, map_sub, map_smul]
-          abel
+          rw [← add_left_inj, hu', map_smul]
+          match_scalars <;> simp
         · aesop
       obtain ⟨f, hfu, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hu' inferInstance
       set v := (f u)⁻¹ • u with v_def
@@ -573,12 +572,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
           simp only [LinearEquiv.mul_apply, transvection.apply, t] at ha hb
           rw [LinearMap.add_apply, add_smul, ← add_assoc] at hb
           convert Submodule.sub_mem _ hb ha using 1
-          simp only [add_comm _ (g (e x) • _), ← add_assoc]
-          rw [sub_eq_add_neg]
-          simp only [add_sub_assoc, add_assoc]
-          simp only [add_right_inj]
-          simp only [sub_smul, smul_sub]
-          abel
+          match_scalars <;> simp [sub_eq_neg_add a b]
         exfalso
         set c := b - a
         by_cases hc : c = 0
@@ -599,8 +593,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
             convert hy using 1
             rw [eq_comm, ← sub_eq_iff_eq_add] at this
             rw [← this]
-            simp only [sub_smul, one_smul]
-            abel
+            match_scalars <;> simp [sub_mul]
           suffices ∃ w, g w ≠ 0 by
             obtain ⟨w, hw⟩ := this
             use (1 / g w) • e⁻¹ w
@@ -738,11 +731,8 @@ theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsEx
       apply smul_mem
       apply smul_mem
       exact hev
-    rw [sub_smul, one_smul]
-    rw [sub_eq_iff_eq_add, add_comm, ← sub_eq_iff_eq_add] at hx'
-    rw [← hx']
-    simp only [smul_sub]
-    abel
+    nth_rewrite 4 [← hx']
+    match_scalars <;> simp
   rw [← he', ← he'_fixed]
   apply mem_dilatransvections_pow_of_not_isExceptional
   rintro ⟨_, he'1, b, he'b⟩
@@ -754,12 +744,12 @@ theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsEx
       - (e x - a • x) + (e x - f (e x) • e v - b • x) by
       rw [this]
       exact add_mem (neg_mem_iff.mpr (hea x)) (he'b x)
-    simp only [sub_smul]; abel
+    match_scalars <;> simp [sub_eq_add_neg]
   have that : a = b := by
     rw [← sub_eq_zero]
     contrapose hv
     rw [← smul_mem_iff _ hv]
-    simpa only [hfv, zero_smul, sub_zero] using this v
+    simpa [hfv] using this v
   simp only [that, sub_self, zero_smul, zero_sub, neg_mem_iff] at this
   replace this : e v ∈ e.fixedSubmodule := by
     have : ∃ x, f x ≠ 0 := by
@@ -1122,8 +1112,7 @@ theorem mem_dilatransvections_pow :
         · rw [← hxcv, dilatransvection.apply, map_add, hle x hx, zero_add, LinearMap.map_smul]
           simp only [y, smul_eq_mul, ← mul_smul]
           rw [mul_inv_cancel₀ (by simp_all), one_smul]
-          simp only [sub_smul, one_smul]
-          abel
+          match_scalars <;> simp
       simp only [isUnit_iff_ne_zero, y, LinearMap.map_smul,
         LinearMap.map_add, map_neg, smul_add, hle x hx, neg_zero, smul_zero, zero_add]
       simp only [sub_smul, one_smul, ne_eq]
