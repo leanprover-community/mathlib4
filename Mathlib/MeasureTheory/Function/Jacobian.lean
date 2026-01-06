@@ -94,7 +94,7 @@ Change of variables in integrals
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
   TopologicalSpace

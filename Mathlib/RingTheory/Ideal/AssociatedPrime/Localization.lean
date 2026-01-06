@@ -23,7 +23,7 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] (S : Submonoid R) {R' : Type*} [CommRing R'] [Algebra R R']
   [IsLocalization S R']
