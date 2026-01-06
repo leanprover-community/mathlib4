@@ -152,8 +152,7 @@ section
 variable (R A)
 
 @[simp]
-theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id :=
-  ext fun _ => one_mul _
+theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id := ext one_mul
 
 @[simp]
 theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ a = 0 :=
@@ -161,7 +160,7 @@ theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ 
 
 @[simp]
 theorem mulRight_one [IsScalarTower R A A] : mulRight R (1 : A) = LinearMap.id :=
-  ext fun _ => mul_one _
+  ext mul_one
 
 @[simp]
 theorem mulRight_eq_zero_iff [IsScalarTower R A A] (a : A) : mulRight R a = 0 ↔ a = 0 :=
