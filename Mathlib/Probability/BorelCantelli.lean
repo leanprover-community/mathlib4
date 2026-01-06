@@ -26,7 +26,7 @@ filtration.
 in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal Topology
 open MeasureTheory

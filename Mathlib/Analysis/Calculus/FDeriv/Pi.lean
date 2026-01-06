@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Const
 # Derivatives on pi-types.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 ι : Type*} [DecidableEq ι] [Finite ι] [NontriviallyNormedField 𝕜]
 variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
