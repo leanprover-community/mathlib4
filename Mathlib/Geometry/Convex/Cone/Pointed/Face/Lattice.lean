@@ -75,7 +75,8 @@ theorem mem_coe {F : Face C} (x : M) : x ∈ F ↔ x ∈ F.toPointedCone := .rfl
 -/
 
 /-- The infimum of two faces `F₁`, `F₂` of `C` is the intersection of the cones `F₁` and `F₂`. -/
-def inf (F₁ F₂ : Face C) : Face C := ⟨F₁ ⊓ F₂, F₁.isFaceOf.inf_left F₂.isFaceOf⟩
+instance : Min (Face C) where
+  min F₁ F₂ := ⟨F₁ ⊓ F₂, F₁.isFaceOf.inf_left F₂.isFaceOf⟩
 
 instance : InfSet (Face C) where
  sInf S :=
@@ -91,7 +92,7 @@ instance : InfSet (Face C) where
   }
 
 instance : SemilatticeInf (Face C) where
-  inf := inf
+  inf := min
   inf_le_left _ _ _ xi := xi.1
   inf_le_right _ _ _ xi := xi.2
   le_inf _ _ _ h₁₂ h₂₃ _ xi := ⟨h₁₂ xi, h₂₃ xi⟩
@@ -110,10 +111,11 @@ instance : CompleteSemilatticeInf (Face C) where
 
 /-- The supremum of two faces `F₁`, `F₂` of `C` is the smallest face of `C` that contains both `F₁`
   and `F₂`. -/
-def sup (F₁ F₂ : Face C) : Face C := sInf {F : Face C | F₁ ≤ F ∧ F₂ ≤ F}
+instance : Max (Face C) where
+  max F₁ F₂ := sInf {F : Face C | F₁ ≤ F ∧ F₂ ≤ F}
 
 instance : SemilatticeSup (Face C) where
-  sup := sup
+  sup := max
   le_sup_left _ _ := le_sInf (fun _ Fs => Fs.1)
   le_sup_right _ _ := le_sInf (fun _ Fs => Fs.2)
   sup_le _ _ _ h₁₂ h₂₃ := sInf_le (Set.mem_sep h₁₂ h₂₃)
