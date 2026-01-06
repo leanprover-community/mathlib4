@@ -19,7 +19,7 @@ public import Mathlib.Data.Nat.Digits.Defs
 This provides lemma about the digits of natural numbers.
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
