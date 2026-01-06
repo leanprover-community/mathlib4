@@ -100,7 +100,7 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
     disjWithin c d ⊆ disjWithin a b := by
   grind [disjWithin]
 
-lemma subset_of_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b)
+lemma uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b)
       {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
     simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
     have := hnI.left i hi
@@ -108,7 +108,7 @@ lemma subset_of_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI :
     · simp only [le_inf_iff]; tauto
     · simp only [sup_le_iff]; tauto
 
-lemma union_subset_of_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b) :
+lemma biUnion_uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b) :
     (⋃ i ∈ Finset.range n, uIoc (I i).1 (I i).2) ⊆ uIoc a b := by
   simp only [iUnion_subset_iff, Finset.mem_range]
   exact fun i hi ↦ subset_of_disjWithin hnI hi
@@ -392,7 +392,7 @@ theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
   hf.boundedVariationOn.ae_differentiableAt_of_mem_uIcc
 
 /-- If `f` is interval integrable on `a..b` and `c ∈ uIcc a b`, then `fun x ↦ ∫ v in c..x, f v` is
-absolute continuous on `uIcc a b`. -/
+absolutely continuous on `uIcc a b`. -/
 theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral {f : ℝ → ℝ}
     {a b c : ℝ} (h : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
