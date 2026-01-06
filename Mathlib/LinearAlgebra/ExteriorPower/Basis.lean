@@ -5,7 +5,7 @@ Authors: Sophie Morel, Daniel Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.TensorPower
+public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.Order.Extension.Well
 public import Mathlib.RingTheory.Finiteness.Subalgebra
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
@@ -43,16 +43,14 @@ given by the coordinates of `b` indexed by elements of `s` (ordered using the gi
 `I`). -/
 noncomputable def ιMulti_dual {I : Type*} [LinearOrder I] (b : Basis I R M)
     (s : {a : Finset I // a.card = n}) : Module.Dual R (⋀[R]^n M) :=
-  linearForm R n (fun i ↦ b.coord (Finset.orderIsoOfFin s.1 s.2 i))
+  pairingDual R M n (ιMulti R n (fun i ↦ b.coord (Finset.orderIsoOfFin s.1 s.2 i)))
 
 @[simp]
 lemma ιMulti_dual_apply_ιMulti {I : Type*} [LinearOrder I] (b : Basis I R M)
     (s : {a : Finset I // a.card = n}) (v : Fin n → M) :
-    ιMulti_dual R n b s (ιMulti R n v) = ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
-      ∏ i, b.coord (Finset.orderIsoOfFin s.1 s.2 i) (v (σ i)) := by
-  rw [ιMulti_dual, linearForm_apply, toTensorPower_apply_ιMulti, map_sum]
-  refine Finset.sum_congr rfl fun σ _ => ?_
-  rw [LinearMap.map_smul_of_tower, PiTensorProduct.dprod_apply]
+    ιMulti_dual R n b s (ιMulti R n v) =
+    (Matrix.of fun i j => b.coord (Finset.orderIsoOfFin s.1 s.2 j) (v i)).det := by
+  rw [ιMulti_dual, pairingDual_ιMulti_ιMulti]
 
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
 of cardinality `n`. If we apply the linear form on `⋀[R]^n M` defined by `b` and `s`
@@ -61,30 +59,25 @@ lemma ιMulti_dual_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
     (s : {a : Finset I // a.card = n}) :
     ιMulti_dual R n b s (ιMulti_family R n b s) = 1 := by
   rw [ιMulti_family, ιMulti_dual_apply_ιMulti]
-  rw [Finset.sum_eq_single (Equiv.refl (Fin n)) _ (fun h => absurd (Finset.mem_univ _) h)]
-  · simp
-  · rintro σ - hσ
-    simp_rw [ne_eq, Equiv.ext_iff, not_forall, Equiv.refl_apply, ← ne_eq] at hσ
-    obtain ⟨i, hi⟩ := hσ
-    rw [smul_eq_zero_iff_eq, Finset.prod_eq_zero (Finset.mem_univ i)]
-    rw [Basis.coord_apply, Basis.repr_self, Finsupp.single_eq_of_ne]
-    simp only [Finset.coe_orderIsoOfFin_apply, ne_eq, EmbeddingLike.apply_eq_iff_eq]
-    exact hi.symm
+  suffices Matrix.of (fun i j => b.coord (Finset.orderIsoOfFin s.1 s.2 j)
+    (b (Finset.orderIsoOfFin s.1 s.2 i))) = 1 by
+    rw [this, Matrix.det_one]
+  ext
+  simp [Matrix.one_apply, Finsupp.single_apply]
 
 lemma ιMulti_apply_nondiag_aux {I : Type*} [LinearOrder I]
-    (s t : {a : Finset I // a.card = n}) (hst : s ≠ t) (σ : Equiv.Perm (Fin n)) :
-    ∃ (i : Fin n), (Finset.orderIsoOfFin s.1 s.2 i).1 ≠ (Finset.orderIsoOfFin t.1 t.2 (σ i)).1 := by
+    (s t : {a : Finset I // a.card = n}) (hst : s ≠ t) :
+    ∃ (i : Fin n), ∀ (j : Fin n),
+    (Finset.orderIsoOfFin s.1 s.2 i).1 ≠ (Finset.orderIsoOfFin t.1 t.2 j).1 := by
   by_contra! habs
   apply hst
   rw [Subtype.ext_iff]
   apply Finset.eq_of_subset_of_card_le _ (by rw [s.2, t.2])
   intro a has
-  let b := Finset.orderIsoOfFin t.1 t.2 (σ ((Finset.orderIsoOfFin s.1 s.2).symm ⟨a, has⟩))
-  have heq : a = b.1 := by
-    rw [← habs]
-    simp only [OrderIso.apply_symm_apply]
-  rw [heq]
-  exact b.2
+  obtain ⟨b, hb⟩ := habs ((Finset.orderIsoOfFin s.1 s.2).symm ⟨a, has⟩)
+  simp only [OrderIso.apply_symm_apply] at hb
+  rw [hb]
+  simp
 
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
 of cardinality `n`. Let `t` be a finset of `I` of cardinality `n` such that `s ≠ t`. If we apply
@@ -95,12 +88,11 @@ lemma ιMulti_dual_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
     ιMulti_dual R n b s (ιMulti_family R n b t) = 0 := by
   simp only [ιMulti_family]
   rw [ιMulti_dual_apply_ιMulti]
-  apply Finset.sum_eq_zero
-  intro σ _
-  have ⟨i, hi⟩ := ιMulti_apply_nondiag_aux n s t hst σ
-  apply smul_eq_zero_of_right
-  apply Finset.prod_eq_zero (Finset.mem_univ i)
-  rw [Basis.coord_apply, Basis.repr_self_apply, if_neg (ne_comm.mp hi)]
+  obtain ⟨j, hi⟩ := ιMulti_apply_nondiag_aux n s t hst
+  apply Matrix.det_eq_zero_of_column_eq_zero j
+  intro j
+  rw [Matrix.of_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_eq_of_ne]
+  exact hi j
 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), then the family
 `exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly

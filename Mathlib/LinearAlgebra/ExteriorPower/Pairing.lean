@@ -73,6 +73,24 @@ lemma pairingDual_ιMulti_ιMulti {n : ℕ} (f : (_ : Fin n) → Module.Dual R M
       Matrix.det (n := Fin n) (.of (fun i j ↦ f j (v i))) := by
   simp [pairingDual]
 
+variable {N : Type*} [AddCommGroup N] [Module R N]
+
+/-- If `f` is a family of linear forms on `M` (index by `Fin n`) and `p` is a linear map
+from `N` to `M`, then the composition of `exteriorPower.linearForm R n f` and
+of `exteriorPower.map p` is equal to the linear form induced by the family
+`fun i ↦ (f i).comp p`. -/
+lemma pairingDual_comp_map {n : ℕ} (f : Fin n → Module.Dual R M) (p : N →ₗ[R] M) :
+    (pairingDual R M n (ιMulti _ _ f)).comp (map n p) =
+    pairingDual R N n (ιMulti _ _ (fun (i : Fin n) => (f i).comp p)) := by
+  apply LinearMap.ext_on (ιMulti_span R n (M := N))
+  rintro x ⟨y, h⟩
+  simp [← h]
+
+lemma pairingDual_comp_map_apply {n : ℕ} (f : Fin n → Module.Dual R M)
+    (p : N →ₗ[R] M) (x : ⋀[R]^n N) :
+    (pairingDual R M n (ιMulti _ _ f)) (map n p x) =
+    pairingDual R N n (ιMulti _ _ (fun (i : Fin n) => (f i).comp p)) x := by
+  rw [← LinearMap.comp_apply, pairingDual_comp_map]
 
 section
 

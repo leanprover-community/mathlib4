@@ -405,7 +405,7 @@ lemma ιMulti_family_span_of_span {I : Type*} [LinearOrder I]
 range of `exteriorPower.ιMulti_family R n v`, i.e., of the family of `n`-fold exterior products
 of elements of `v`, is the image of the map of exterior powers induced by the inclusion of
 the span of `v` into `M`. -/
-lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
+lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
     LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
     Submodule.span R (Set.range (ιMulti_family R n v)) := by
   have ⟨f, hf⟩ : ∃ f : I → Submodule.span R (Set.range v), Submodule.subtype _ ∘ f = v :=
