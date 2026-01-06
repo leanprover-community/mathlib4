@@ -19,7 +19,7 @@ are motivated by the proof of the von Neumann Mean Ergodic Theorem,
 see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter
 open scoped Topology ENNReal Uniformity

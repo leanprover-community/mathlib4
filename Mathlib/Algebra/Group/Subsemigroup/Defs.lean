@@ -193,6 +193,14 @@ theorem coe_top : ((⊤ : Subsemigroup M) : Set M) = Set.univ :=
 theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
   rfl
 
+@[to_additive (attr := simp)]
+lemma mk_eq_top (carrier : Set M) (mul_mem') : mk carrier mul_mem' = ⊤ ↔ carrier = .univ := by
+  simp [← SetLike.coe_set_eq]
+
+@[to_additive (attr := simp)]
+lemma mk_eq_bot (carrier : Set M) (mul_mem') : mk carrier mul_mem' = ⊥ ↔ carrier = ∅ := by
+  simp [← SetLike.coe_set_eq]
+
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive /-- The inf of two `AddSubsemigroup`s is their intersection. -/]
 instance : Min (Subsemigroup M) :=
