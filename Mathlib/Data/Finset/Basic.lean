@@ -169,9 +169,6 @@ theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (s.erase a
 theorem subset_insert_iff_of_notMem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
   rw [subset_insert_iff, erase_eq_of_notMem h]
 
-@[deprecated (since := "2025-05-23")]
-alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
-
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
 
@@ -255,9 +252,6 @@ theorem sdiff_insert (s t : Finset α) (x : α) : s \ insert x t = (s \ t).erase
 theorem sdiff_insert_insert_of_mem_of_notMem {s t : Finset α} {x : α} (hxs : x ∈ s) (hxt : x ∉ t) :
     insert x (s \ insert x t) = s \ t := by
   grind
-
-@[deprecated (since := "2025-05-23")]
-alias sdiff_insert_insert_of_mem_of_not_mem := sdiff_insert_insert_of_mem_of_notMem
 
 theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
   grind

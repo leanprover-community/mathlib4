@@ -197,6 +197,8 @@ section lift₂
 variable {C : Sort*} (ih : ∀ i, F₁ i → F₂ i → C)
   (compat : ∀ i j h x y, ih i x y = ih j (f₁ i j h x) (f₂ i j h y))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
     {x : C // ∀ i (hzi : z.1 ≤ i) (hwi : w.1 ≤ i), x = ih i (f₁ _ _ hzi z.2) (f₂ _ _ hwi w.2)} := by
   choose j hzj hwj using exists_ge_ge z.1 w.1
@@ -204,6 +206,8 @@ private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
   have ⟨i, hji, hki⟩ := exists_ge_ge j k
   simp_rw [compat _ _ hji, compat _ _ hki, map_map']
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- To define a binary function from the direct limit, it suffices to provide one binary function
 from each component subject to a compatibility condition. -/
 protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
@@ -214,6 +218,8 @@ protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit
         (lift₂Aux ..).2 _ (hyj.trans hji) (hz.trans hki),
         ← map_map' _ hx hji, jeq, ← map_map' _ hz hki, ← keq, map_map']
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem lift₂_def₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
     DirectLimit.lift₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
   (lift₂Aux _ _ _ compat _ _).2 ..
@@ -476,16 +482,22 @@ variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
   (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
   (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private noncomputable def globalEquivAux (i : ι) :
     PEquivOn f (fun i hi ↦ (equivSucc i hi).1) (Iic i) :=
   SuccOrder.prelimitRecOn i
     (fun _ hi e ↦ pEquivOnSucc hi e fun i hi ↦ (equivSucc i hi).2)
     fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.2) (equivLim i hi).1 (equivLim i hi).2
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
 noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
     letI e := globalEquiv equivSucc equivLim
     e i (f h x) = piLTProj h (e j x) := by

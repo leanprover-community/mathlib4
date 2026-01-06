@@ -56,9 +56,6 @@ theorem exists_smul_notMem_of_subset_orbit_closure (S : Set G) (T : Set α) {a :
   simp_rw [SetLike.mem_coe, mem_stabilizer_iff, Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
   exact fun a ↦ ⟨fun h ↦ smul_inv_smul σ a ▸ key0 σ hσ (σ⁻¹ • a) h, key0 σ⁻¹ (hS σ hσ) a⟩
 
-@[deprecated (since := "2025-05-23")]
-alias exists_smul_not_mem_of_subset_orbit_closure := exists_smul_notMem_of_subset_orbit_closure
-
 variable [DecidableEq α]
 
 theorem finite_compl_fixedBy_swap {x y : α} : (fixedBy α (swap x y))ᶜ.Finite :=
@@ -118,7 +115,7 @@ theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f :
     · rw [← orbit_eq_iff.mpr (hf b), h1, orbit_eq_iff.mpr (hf a)]; apply mem_orbit_self
     · rw [← orbit_eq_iff.mpr (hf b), h2]; apply hf
     · exact hf b
-  · contrapose! hb
+  · contrapose hb
     simp_rw [notMem_compl_iff, mem_fixedBy, Perm.smul_def, Perm.mul_apply, swap_apply_def,
       apply_eq_iff_eq]
     by_cases hb' : f b = b
