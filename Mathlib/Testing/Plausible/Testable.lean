@@ -12,7 +12,7 @@ public import Mathlib.Logic.Basic
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.
 -/
 
-@[expose] public section
+public section
 
 namespace Plausible
 
