@@ -297,7 +297,7 @@ instance : SMul ℕ (M ⟶ N) where
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-instance : SMul ℕ (M ⟶ N) where
+instance : SMul ℤ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
 @[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
