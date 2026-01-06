@@ -6,8 +6,8 @@ Authors: Antoine Chambert-Loir, Johan Commelin, Andrew Yang
 module
 
 public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Tactic.ComputeDegree
 
