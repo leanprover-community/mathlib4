@@ -271,17 +271,18 @@ if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.
 is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative
 of `fun x => ∫ a in k, F x a ∂μ` in `x₀` can be computed as
 `∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
-theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Space α]
-    [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set α}
-    (hk : IsCompact k) (hk' : μ k < ⊤) (hF₁ : ContinuousOn F.uncurry (u ×ˢ k))
+theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
+    [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k s : Set α}
+    (hk : IsCompact k) (hs : MeasurableSet s) (hs' : μ s ≠ ⊤) (hsk : s ⊆ k)
+    (hF₁ : ContinuousOn F.uncurry (u ×ˢ k))
     (hF₂ : ∀ a ∈ k, DifferentiableOn 𝕜 (fun x ↦ F x a) u)
     (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ F y x.2) x.1) (u ×ˢ k)) :
-    HasFDerivAt (fun x => ∫ a in k, F x a ∂μ)
-      (∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ) x₀ := by
+    HasFDerivAt (fun x => ∫ a in s, F x a ∂μ)
+      (∫ a in s, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ) x₀ := by
   -- wlog shrink u to an open neighbourhood
   wlog hu' : IsOpen u with h
   · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
-    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hk' (hF₁.mono <| prod_mono_left hu'.1)
+    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hs hs' hsk (hF₁.mono <| prod_mono_left hu'.1)
       (fun a ha ↦ (hF₂ a ha).mono hu'.1) (hF₃.mono <| prod_mono_left hu'.1) hu'.2.1
   have hxu := mem_of_mem_nhds hu
   let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ F y x.2) x.1‖
@@ -302,15 +303,19 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Spa
     exact ⟨ε, hε, hε'.trans inter_subset_right, B + 1,
       fun x hx ↦ hv' <| prod_mono_left (hε'.trans inter_subset_left) hx⟩
   -- now apply `hasFDerivAt_integral_of_dominated_of_fderiv_le` with the obtained ε and bound
-  have hk'' : MeasurableSet k := hk.measurableSet
+  apply hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
+    (F' := fun x a ↦ fderiv 𝕜 (fun x ↦ F x a) x) (ball_mem_nhds x₀ hε)
+  /-
   have := isCompact_iff_compactSpace.1 hk
-  have : IsFiniteMeasure (Measure.comap ((↑) : k → α) μ) :=
-    ⟨by simp [(MeasurableEmbedding.subtype_coe hk'').comap_apply, hk']⟩
-  simp_rw [← integral_subtype_comap hk'']
+  have : IsFiniteMeasure (Measure.comap ((↑) : s → α) μ) :=
+    ⟨by simp [(MeasurableEmbedding.subtype_coe hs).comap_apply, hs'.lt_top]⟩
+  simp_rw [← integral_subtype_comap hs]
   refine hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
-    (F' := fun x (a : k) ↦ fderiv 𝕜 (fun x ↦ F x a) x) (ball_mem_nhds x₀ hε) ?_ ?_ ?_ ?_ ?_ ?_
+    (F' := fun x (a : s) ↦ fderiv 𝕜 (fun x ↦ F x a) x) (ball_mem_nhds x₀ hε) ?_ ?_ ?_ ?_ ?_ ?_ -/
   · refine eventually_nhds_iff.2 ⟨u, fun x hx ↦ ?_, hu', hxu⟩
-    refine Continuous.aestronglyMeasurable_of_compactSpace ?_
+    have W := (hF₁.uncurry_left _ hx).aestronglyMeasurable_of_isCompact (μ := μ)
+    have Z := W.aestronglyMeasurable_of_isSeparable
+    refine ContinuousOn.aestronglyMeasurable_of_isCompact
     exact (hF₁.uncurry_left x hx).comp_continuous (by fun_prop) (by simp)
   · refine integrableOn_univ.1 <| ContinuousOn.integrableOn_compact isCompact_univ <|
       continuousOn_univ.2 <| (hF₁.uncurry_left _ hxu).comp_continuous (by fun_prop) (by simp)
