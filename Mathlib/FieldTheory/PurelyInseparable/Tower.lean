@@ -43,7 +43,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial IntermediateField Field
 

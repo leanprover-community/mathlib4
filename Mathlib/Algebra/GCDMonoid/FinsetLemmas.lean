@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Coprime.Lemmas
 finset, lcm, prod, coprime
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
