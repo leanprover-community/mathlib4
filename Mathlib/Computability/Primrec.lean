@@ -566,19 +566,20 @@ theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Primrec f
 theorem option_map₁ {f : α → σ} (hf : Primrec f) : Primrec (Option.map f) :=
   option_map .id (hf.comp snd).to₂
 
-theorem option_getD_default [Inhabited α] : Primrec (fun o : Option α => o.getD default) :=
-  (option_casesOn .id (const <| @default α _) .right).of_eq fun o => by cases o <;> rfl
+theorem option_getD : Primrec₂ (@Option.getD α) :=
+  Primrec.of_eq (option_casesOn Primrec₂.left Primrec₂.right .right) fun ⟨o, a⟩ => by
+    cases o <;> rfl
 
+theorem option_getD_default [Inhabited α] : Primrec (fun o : Option α => o.getD default) :=
+  option_getD.comp .id (const default)
+
+set_option linter.deprecated false in
 @[deprecated option_getD_default (since := "2026-01-05")]
-theorem option_iget [Inhabited α] : Primrec (fun o : Option α => o.getD default) :=
+theorem option_iget [Inhabited α] : Primrec (@Option.iget α _) :=
   option_getD_default
 
 theorem option_isSome : Primrec (@Option.isSome α) :=
   (option_casesOn .id (const false) (const true).to₂).of_eq fun o => by cases o <;> rfl
-
-theorem option_getD : Primrec₂ (@Option.getD α) :=
-  Primrec.of_eq (option_casesOn Primrec₂.left Primrec₂.right .right) fun ⟨o, a⟩ => by
-    cases o <;> rfl
 
 theorem bind_decode_iff {f : α → β → Option σ} :
     (Primrec₂ fun a n => (@decode β _ n).bind (f a)) ↔ Primrec₂ f :=
