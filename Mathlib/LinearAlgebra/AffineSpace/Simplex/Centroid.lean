@@ -71,7 +71,7 @@ theorem centroid_eq_affineCombination (s : Simplex k P n) :
 
 /-- The centroid of a simplex does not lie in the affine span of any proper subset of its
  vertices. -/
-theorem centroid_notMem_affineSpan_ne_univ [CharZero k] (s : Simplex k P n)
+theorem centroid_notMem_affineSpan_of_ne_univ [CharZero k] (s : Simplex k P n)
     {t : Set (Fin (n + 1))} (ht : t ≠ Set.univ) :
     s.centroid ∉ affineSpan k (s.points '' t) := by
   intro h
@@ -191,7 +191,7 @@ theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n
     (i : Fin (n + 1)) :
     AffineIndependent k (Function.update s.points i s.centroid) := by
   have : s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) :=
-    s.centroid_notMem_affineSpan_ne_univ (by simp)
+    s.centroid_notMem_affineSpan_of_ne_univ (by simp)
   exact AffineIndependent.affineIndependent_update_of_notMem_affineSpan s.independent this
 
 theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
