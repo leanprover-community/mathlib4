@@ -485,6 +485,34 @@ theorem noncompactSpace_iff : NoncompactSpace (Compacts α) ↔ NoncompactSpace 
 instance [NoncompactSpace α] : NoncompactSpace (Compacts α) :=
   noncompactSpace_iff.mpr ‹_›
 
+instance [LocallyCompactSpace α] : LocallyCompactSpace (Compacts α) := by
+  refine ⟨fun K U hU => ?_⟩
+  rw [isTopologicalBasis.mem_nhds_iff, exists_mem_image] at hU
+  obtain ⟨u, ⟨hu₁, hu₂⟩, ⟨hKu₁, hKu₂⟩, huU⟩ := hU
+  grw [← huU]; clear U huU
+  obtain ⟨L, hL, hLK, hLu⟩ := exists_compact_between K.isCompact (isOpen_sUnion hu₂) hKu₁
+  choose! M hM hML hMU hMK using fun U (hU : U ∈ u) =>
+    show ∃ M : Set α, IsCompact M ∧ M ⊆ L ∧ M ⊆ U ∧ (↑K ∩ interior M).Nonempty by
+      obtain ⟨x, hxK, hxU⟩ := hKu₂ U hU
+      obtain ⟨M, hM, _⟩ := exists_compact_subset (U := U ∩ interior L)
+        ((hu₂ U hU).inter isOpen_interior) ⟨hxU, hLK hxK⟩
+      exact ⟨M, hM, by grind [interior_subset], by grind, x, by grind⟩
+  refine ⟨{N | ↑N ⊆ L ∧ ∀ U ∈ u, (↑N ∩ M U).Nonempty}, ?_, by gcongr; grind, ?_⟩
+  · filter_upwards [
+      (isOpen_subsets_of_isOpen isOpen_interior).mem_nhds hLK,
+      (Filter.eventually_all_finite hu₁).mpr fun U hU =>
+        (isOpen_inter_nonempty_of_isOpen isOpen_interior).mem_nhds (hMK U hU)] with K' h₁ h₂
+    exact ⟨h₁.trans interior_subset,
+      fun U hU => (h₂ U hU).mono (inter_subset_inter_right _ interior_subset)⟩
+  · rw [isEmbedding_coe.isCompact_iff]
+    refine vietoris.isCompact_aux hL (s := M '' u) (by grind) (by grind)
+      |>.of_subset_of_specializes (by grind) (fun s ⟨hsL, hsu⟩ => ?_)
+    rw [forall_mem_image] at hsu
+    let s' : Compacts α := ⟨L ∩ closure s, hL.inter_right isClosed_closure⟩
+    refine ⟨s', mem_image_of_mem _ ⟨inter_subset_left, fun U hU => (hsu hU).mono ?_⟩,
+      vietoris.specializes_of_subset_closure ?_ ?_⟩ <;>
+      grind [coe_mk, subset_closure]
+
 end Compacts
 
 namespace NonemptyCompacts
@@ -657,6 +685,24 @@ theorem noncompactSpace_iff : NoncompactSpace (NonemptyCompacts α) ↔ Noncompa
 
 instance [NoncompactSpace α] : NoncompactSpace (NonemptyCompacts α) :=
   noncompactSpace_iff.mpr ‹_›
+
+instance [LocallyCompactSpace α] : LocallyCompactSpace (NonemptyCompacts α) :=
+  isOpenEmbedding_toCompacts.locallyCompactSpace
+
+theorem locallyCompactSpace_iff :
+    LocallyCompactSpace (NonemptyCompacts α) ↔ LocallyCompactSpace α := by
+  refine ⟨fun _ => ⟨fun x U hU => ?_⟩, fun _ => inferInstance⟩
+  rw [← mem_interior_iff_mem_nhds, ← singleton_subset_iff, ← coe_singleton] at hU
+  obtain ⟨K, hK, hxK, hKU⟩ := exists_compact_subset (isOpen_subsets_of_isOpen isOpen_interior) hU
+  refine ⟨⋃ L ∈ K, L, ?_, iUnion₂_subset <| by grind [interior_subset],
+    isCompact_biUnion_coe_of_isCompact hK⟩
+  rw [mem_interior_iff_mem_nhds] at hxK
+  filter_upwards [continuous_singleton.tendsto x hxK] with y hy using mem_iUnion₂_of_mem hy rfl
+
+theorem _root_.TopologicalSpace.Compacts.locallyCompactSpace_iff :
+    LocallyCompactSpace (Compacts α) ↔ LocallyCompactSpace α :=
+  ⟨fun _ => NonemptyCompacts.locallyCompactSpace_iff.mp
+    isOpenEmbedding_toCompacts.locallyCompactSpace, fun _ => inferInstance⟩
 
 end NonemptyCompacts
 
