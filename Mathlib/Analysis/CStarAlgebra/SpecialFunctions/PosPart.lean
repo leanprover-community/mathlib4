@@ -10,7 +10,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
 
-@[expose] public section
+public section
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 

@@ -17,7 +17,7 @@ public import Mathlib.Order.Interval.Finset.Nat
 This file proves lemmas about `∏ x ∈ Ixx a b, f x` and `∑ x ∈ Ixx a b, f x`.
 -/
 
-@[expose] public section
+public section
 
 open Order
 

@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 We show some lemmas relating creation of (co)limits and pullbacks (resp. pushouts).
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 
