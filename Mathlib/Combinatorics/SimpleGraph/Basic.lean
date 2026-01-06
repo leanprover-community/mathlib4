@@ -462,12 +462,12 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
   Sym2.fromRel_bot
 
 @[simp]
-theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} :=
-  Sym2.fromRel_ne
+theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
+  Sym2.diagSet_compl_eq_fromRel_ne.symm
 
 @[simp]
-theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ {e | ¬e.IsDiag} :=
-  fun _ h => (Sym2.fromRel_irreflexive (sym := G.symm)).mp G.loopless h
+theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ Sym2.diagSetᶜ :=
+  Sym2.irreflexive_iff_fromRel_subset_diagSet_compl G.symm |>.mp G.loopless
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -495,15 +495,12 @@ variable {G G₁ G₂}
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
   rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
 
-/-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_from_edgeSet`,
-allows proving `(G \ from_edgeSet s).edge_set = G.edgeSet \ s` by `simp`. -/
+/-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
+allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
 @[simp]
 theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
-    G.edgeSet \ (s \ { e | e.IsDiag }) = G.edgeSet \ s := by
-  ext e
-  simp only [Set.mem_diff, Set.mem_setOf_eq, not_and, not_not, and_congr_right_iff]
-  intro h
-  simp only [G.not_isDiag_of_mem_edgeSet h, imp_false]
+    G.edgeSet \ (s \ Sym2.diagSet) = G.edgeSet \ s := by
+  grind [Sym2.mem_diagSet_iff_isDiag, not_isDiag_of_mem_edgeSet]
 
 /-- Two vertices are adjacent iff there is an edge between them. The
 condition `v ≠ w` ensures they are different endpoints of the edge,
@@ -520,11 +517,17 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
-theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
   simp [← le_bot_iff, le_iff_adj]
 
-theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  simp [eq_bot_iff_forall_not_adj]
+
+theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
   simp [← top_le_iff, le_iff_adj]
+
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  simp [eq_top_iff_forall_ne_adj]
 
 variable (G G₁ G₂)
 
@@ -579,7 +582,7 @@ theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w 
 -- Note: we need to make sure `fromEdgeSet_adj` and this lemma are confluent.
 -- In particular, both yield `s(u, v) ∈ (fromEdgeSet s).edgeSet` ==> `s(v, w) ∈ s ∧ v ≠ w`.
 @[simp]
-theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := by
+theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ Sym2.diagSet := by
   ext e
   exact Sym2.ind (by simp) e
 
@@ -589,9 +592,9 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
 
 @[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
-    fromEdgeSet s ≤ G ↔ s \ {e | e.IsDiag} ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
+    fromEdgeSet s ≤ G ↔ s \ Sym2.diagSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
-lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s {e | e.IsDiag} where
+lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s Sym2.diagSet where
   mp := by rintro rfl; simp +contextual [Set.disjoint_right]
   mpr := by rintro ⟨rfl, hs⟩; simp [hs]
 
@@ -600,7 +603,7 @@ theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
 
-@[simp] lemma fromEdgeSet_not_isDiag : fromEdgeSet {e : Sym2 V | ¬ e.IsDiag} = ⊤ := by ext; simp
+@[simp] lemma fromEdgeSet_not_isDiag : @fromEdgeSet V Sym2.diagSetᶜ = ⊤ := by ext; simp
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
@@ -628,15 +631,12 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 
 @[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
-  rintro v w
-  simp +contextual only [fromEdgeSet_adj, Ne, not_false_iff,
-    and_true, and_imp]
-  exact fun vws _ => h vws
+  simpa using Set.diff_subset_diff h fun _ a ↦ a
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
-  conv_rhs => rw [← Set.diff_union_inter s {e : Sym2 V | e.IsDiag}]
-  rw [← disjoint_edgeSet, edgeSet_fromEdgeSet, Set.disjoint_union_right, and_iff_left]
-  exact Set.disjoint_left.2 fun e he he' ↦ not_isDiag_of_mem_edgeSet _ he he'.2
+  conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
+  rw [← disjoint_edgeSet, edgeSet_fromEdgeSet]
+  grind [edgeSet_subset_setOf_not_isDiag]
 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
@@ -646,6 +646,9 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   infer_instance
 
 end FromEdgeSet
+
+theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
+  simp [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
 
 /-! ### Incidence set -/
 
@@ -698,8 +701,6 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
   Iff.rfl
 
 lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_neighborSet_self := notMem_neighborSet_self
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -761,14 +762,8 @@ theorem commonNeighbors_symm (v w : V) : G.commonNeighbors v w = G.commonNeighbo
 theorem notMem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.1 rfl
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_left := notMem_commonNeighbors_left
-
 theorem notMem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.2 rfl
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_right := notMem_commonNeighbors_right
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=

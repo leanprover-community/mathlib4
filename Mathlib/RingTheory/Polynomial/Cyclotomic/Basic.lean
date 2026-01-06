@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.RootsOfUnity.Complex
 For `n : ℕ` and an integral domain `R`, we define a modified version of the `n`-th cyclotomic
 polynomial with coefficients in `R`, denoted `cyclotomic' n R`, as `∏ (X - μ)`, where `μ` varies
 over the primitive `n`th roots of unity. If there is a primitive `n`th root of unity in `R` then
-this the standard definition. We then define the standard cyclotomic polynomial `cyclotomic n R`
+this is the standard definition. We then define the standard cyclotomic polynomial `cyclotomic n R`
 with coefficients in any ring `R`.
 
 ## Main definition
@@ -616,7 +616,7 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  convert congr_arg (eval (x/y) · * y ^ card (nthRootsFinset n (1 : K)))
+  convert congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K)))
     <| X_pow_sub_one_eq_prod hpos h
     using 1
   · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]
@@ -638,7 +638,7 @@ theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
   refine (prod_nbij (algebraMap R K) (fun a ha ↦ map_mem_nthRootsFinset_one ha _)
     (fun a _ b _ H ↦ FaithfulSMul.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)).symm
   have := Set.surj_on_of_inj_on_of_ncard_le (s := nthRootsFinset n (1 : R))
-    (t := nthRootsFinset n (1: K)) _ (fun _ hr ↦ map_mem_nthRootsFinset_one hr _)
+    (t := nthRootsFinset n (1 : K)) _ (fun _ hr ↦ map_mem_nthRootsFinset_one hr _)
     (fun a _ b _ H ↦ FaithfulSMul.algebraMap_injective R K H)
     (by simp [h.card_nthRootsFinset, h'.card_nthRootsFinset])
   obtain ⟨x, hx, hx1⟩ := this _ ha

@@ -61,8 +61,6 @@ theorem IsPrime.mul_notMem {I : Ideal α} (hI : I.IsPrime) {x y : α} :
     x ∉ I → y ∉ I → x * y ∉ I := fun hx hy h ↦
   hy ((hI.mem_or_mem h).resolve_left hx)
 
-@[deprecated (since := "2025-05-23")] alias IsPrime.mul_not_mem := IsPrime.mul_notMem
-
 theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
     x ∈ I ∨ y ∈ I :=
   hI.mem_or_mem (h.symm ▸ I.zero_mem)
@@ -98,6 +96,14 @@ theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsP
 theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n) :
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
+
+lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+
+lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
 
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where

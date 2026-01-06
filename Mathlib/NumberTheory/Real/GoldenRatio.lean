@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.LinearRecurrence
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Data.Int.Fib.Basic
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.NatFib
 public import Mathlib.Tactic.NormNum.Prime
@@ -248,6 +248,15 @@ theorem coe_fib_eq' :
 /-- **Binet's formula** as a dependent equality. -/
 theorem coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
   rw [← funext_iff, Real.coe_fib_eq']
+
+/-- **Binet's formula** for integer values. -/
+theorem coe_intFib_eq (n : ℤ) : (Int.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
+  obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
+  · exact coe_fib_eq n
+  · simp only [Int.fib_neg, Int.even_coe_nat, Int.fib_natCast, Int.cast_ite, Int.cast_neg,
+      Int.cast_natCast, zpow_neg, zpow_natCast, ← inv_pow, inv_goldenRatio, inv_goldenConj,
+      ← neg_one_mul ψ, ← neg_one_mul φ, mul_pow, neg_one_pow_eq_ite]
+    grind [coe_fib_eq]
 
 /-- Relationship between the Fibonacci Sequence, the golden ratio, and its conjugate's exponents. -/
 theorem fib_succ_sub_goldenRatio_mul_fib (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by

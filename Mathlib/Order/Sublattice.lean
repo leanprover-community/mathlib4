@@ -185,8 +185,6 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
   rw [← SetLike.mem_coe]; simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
   bot := ⊥

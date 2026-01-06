@@ -133,7 +133,7 @@ theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ 
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
 theorem sInf_le_sInf_of_subset_insert_top (h : s ⊆ insert ⊤ t) : sInf t ≤ sInf s :=
-  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _)).symm
+  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _))
 
 @[simp]
 theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=

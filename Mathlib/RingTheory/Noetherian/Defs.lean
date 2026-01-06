@@ -84,7 +84,7 @@ theorem isNoetherian_submodule {N : Submodule R M} :
     fun h => ⟨fun s => ?_⟩⟩
   have f := (Submodule.equivMapOfInjective N.subtype Subtype.val_injective s).symm
   have h₁ := h (s.map N.subtype) (Submodule.map_subtype_le N s)
-  have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f = ⊤ := by simp
+  have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f.toLinearMap = ⊤ := by simp
   have h₃ := ((Submodule.fg_top _).2 h₁).map (↑f : _ →ₗ[R] s)
   exact (Submodule.fg_top _).1 (h₂ ▸ h₃)
 
@@ -151,7 +151,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     rw [eq_of_le_of_not_lt (le_sup_right : N₀ ≤ _) (h₂
       ⟨_, Submodule.FG.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁⟩ <|
       sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e)]
-    exact (le_sup_left : (R ∙ x) ≤ _) (Submodule.mem_span_singleton_self _)
+    exact (le_sup_left : R ∙ x ≤ _) (Submodule.mem_span_singleton_self _)
 
 /-- A module is Noetherian iff every nonempty set of submodules has a maximal submodule among them.
 -/
@@ -205,3 +205,9 @@ theorem isNoetherianRing_iff {R} [Semiring R] : IsNoetherianRing R ↔ IsNoether
 theorem isNoetherianRing_iff_ideal_fg (R : Type*) [Semiring R] :
     IsNoetherianRing R ↔ ∀ I : Ideal R, I.FG :=
   isNoetherianRing_iff.trans isNoetherian_def
+
+lemma Ideal.fg_of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R] (I : Ideal R) :
+    I.FG :=
+  IsNoetherian.noetherian _
+
+alias Ideal.FG.of_isNoetherianRing := Ideal.fg_of_isNoetherianRing

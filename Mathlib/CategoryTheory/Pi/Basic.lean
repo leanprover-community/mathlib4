@@ -143,6 +143,13 @@ end
 
 variable {C}
 
+/-- A family of isomorphisms gives rise to an isomorphism of families. -/
+@[simps]
+def isoMk {X Y : ∀ i, C i} (iso : ∀ i, X i ≅ Y i) :
+    X ≅ Y where
+  hom := fun i => (iso i).hom
+  inv := fun i => (iso i).inv
+
 /-- An isomorphism between `I`-indexed objects gives an isomorphism between each
 pair of corresponding components. -/
 @[simps]
@@ -186,7 +193,7 @@ def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
 
 /-- The projections of `Functor.pi' F` are isomorphic to the functors of the family `F` -/
 @[simps!]
-def pi'CompEval {A : Type*} [Category A] (F : ∀ i, A ⥤ C i) (i : I) :
+def pi'CompEval {A : Type*} [Category* A] (F : ∀ i, A ⥤ C i) (i : I) :
     pi' F ⋙ Pi.eval C i ≅ F i :=
   Iso.refl _
 
@@ -238,7 +245,7 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
 @[simps]
-def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+def pi' {E : Type*} [Category* E] {F G : E ⥤ ∀ i, C i}
     (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i) : F ⟶ G where
   app := fun X i => (τ i).app X
   naturality _ _ f := by
@@ -263,7 +270,7 @@ def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G where
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
-def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+def pi' {E : Type*} [Category* E] {F G : E ⥤ ∀ i, C i}
     (e : ∀ i, F ⋙ Pi.eval C i ≅ G ⋙ Pi.eval C i) : F ≅ G where
   hom := NatTrans.pi' (fun i => (e i).hom)
   inv := NatTrans.pi' (fun i => (e i).inv)
