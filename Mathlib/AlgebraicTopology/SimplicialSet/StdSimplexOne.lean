@@ -93,6 +93,45 @@ lemma δ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.cas
     rw [Fin.succAbove_of_castSucc_lt _ _ hk, Fin.castSucc_lt_succ_iff]
     exact ⟨fun _ ↦ lt_of_lt_of_le hk (by simpa using h), fun h ↦ h.le⟩
 
+lemma σ_objMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
+    Δ[1].σ j (objMk₁.{u} i) = objMk₁ i.castSucc := by
+  ext k : 1
+  dsimp [SimplicialObject.σ, SimplexCategory.σ]
+  change objMk₁.{u} i (j.predAbove k) = _
+  by_cases hk : k < i
+  · rw [Fin.predAbove_of_le_castSucc _ _ (by
+      rw [Fin.le_castSucc_iff]
+      exact lt_of_lt_of_le hk (h.trans j.castSucc_le_succ)),
+      objMk₁_of_castSucc_lt _ _ (by simpa),
+      objMk₁_of_castSucc_lt _ _ (by simpa using hk)]
+  · simp at hk
+    rw [objMk₁_of_le_castSucc, objMk₁_of_le_castSucc _ _ (by simpa)]
+    by_cases hk' : k ≤ j.castSucc
+    · rwa [Fin.predAbove_of_le_castSucc _ _ hk', Fin.castSucc_castPred]
+    · simp only [not_le] at hk'
+      rw [Fin.predAbove_of_castSucc_lt _ _ hk']
+      refine h.trans ?_
+      rwa [Fin.castSucc_le_castSucc_iff, Fin.le_pred_iff, ← Fin.castSucc_lt_iff_succ_le]
+
+lemma σ_objMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
+    Δ[1].σ j (objMk₁.{u} i) = objMk₁ i.succ := by
+  ext k : 1
+  dsimp [SimplicialObject.σ, SimplexCategory.σ]
+  change objMk₁.{u} i (j.predAbove k) = _
+  by_cases hk : i < k
+  · obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hk)
+    rw [Fin.predAbove_of_castSucc_lt _ _ (h.trans hk),
+      objMk₁_of_le_castSucc _ _ (by simpa [Fin.le_castSucc_iff]),
+      objMk₁_of_le_castSucc _ _ (by simpa [Fin.le_castSucc_iff])]
+  · simp only [not_lt] at hk
+    rw [objMk₁_of_castSucc_lt i.succ k (by simpa),
+      objMk₁_of_castSucc_lt]
+    by_cases hk' : j.castSucc < k
+    · rwa [Fin.predAbove_of_castSucc_lt _ _ hk', Fin.castSucc_pred_lt_iff]
+    · simp only [not_lt] at hk'
+      rw [Fin.predAbove_of_le_castSucc _ _ hk']
+      exact lt_of_le_of_lt (by simpa) h
+
 lemma objMk₁_injective {n : ℕ} : Function.Injective (objMk₁ (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
