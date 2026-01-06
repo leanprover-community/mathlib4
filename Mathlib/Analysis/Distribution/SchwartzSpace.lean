@@ -749,6 +749,17 @@ theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
   ext x
   simp [smul_smul, hg₁, hg₂, hg₁.mul hg₂]
 
+theorem smulLeftCLM_smul_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) (f : 𝓢(E, F)) :
+    smulLeftCLM F (c • g) f = c • smulLeftCLM F g f := by
+  have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
+  convert (smulLeftCLM_smulLeftCLM_apply this hg f).symm using 1
+  simp
+
+theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  ext1 f
+  exact smulLeftCLM_smul_apply hg c f
+
 theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
     smulLeftCLM F g₁ ∘L smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
@@ -781,8 +792,7 @@ theorem RCLike.hasTemperateGrowth_ofReal : (RCLike.ofReal (K := 𝕜')).HasTempe
 
 variable (𝕜') in
 theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
-    smulLeftCLM F (fun x ↦ RCLike.ofReal (K := 𝕜') (g x)) f =
-    smulLeftCLM F g f := by
+    smulLeftCLM F (fun x ↦ RCLike.ofReal (K := 𝕜') (g x)) f = smulLeftCLM F g f := by
   ext x
   rw [smulLeftCLM_apply_apply (by fun_prop), smulLeftCLM_apply_apply (by fun_prop),
     algebraMap_smul]

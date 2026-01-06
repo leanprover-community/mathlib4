@@ -55,6 +55,16 @@ theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → 𝕜}
     fourierMultiplierCLM F (g₁ * g₂) f := by
   simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
 
+theorem fourierMultiplierCLM_smul_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜)
+    (f : 𝓢(E, F)) :
+    fourierMultiplierCLM F (c • g) f = c • fourierMultiplierCLM F g f := by
+  simp [fourierMultiplierCLM_apply, smulLeftCLM_smul hg]
+
+theorem fourierMultiplierCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
+    fourierMultiplierCLM F (c • g) = c • fourierMultiplierCLM F g := by
+  ext1 f
+  exact fourierMultiplierCLM_smul_apply hg c f
+
 variable (F) in
 theorem fourierMultiplierCLM_sum {g : ι → E → 𝕜} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
@@ -127,6 +137,16 @@ theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → ℂ}
     fourierMultiplierCLM F g₂ (fourierMultiplierCLM F g₁ f) =
     fourierMultiplierCLM F (g₁ * g₂) f := by
   simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
+
+theorem fourierMultiplierCLM_smul_apply {g : E → ℂ} (hg : g.HasTemperateGrowth) (c : ℂ)
+    (f : 𝓢'(E, F)) :
+    fourierMultiplierCLM F (c • g) f = c • fourierMultiplierCLM F g f := by
+  simp [fourierMultiplierCLM_apply, smulLeftCLM_smul hg]
+
+theorem fourierMultiplierCLM_smul {g : E → ℂ} (hg : g.HasTemperateGrowth) (c : ℂ) :
+    fourierMultiplierCLM F (c • g) = c • fourierMultiplierCLM F g := by
+  ext1 f
+  exact fourierMultiplierCLM_smul_apply hg c f
 
 section embedding
 

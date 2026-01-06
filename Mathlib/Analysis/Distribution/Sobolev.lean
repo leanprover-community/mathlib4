@@ -279,14 +279,20 @@ theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f)
   rw [← memSobolev_besselPotential_iff]
   have : ((besselPotential E F (-2)) (Δ f)) =
       fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
-        -(2 * π) ^ 2 * ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := by
-    rw [laplacian_eq_fourierMultiplierCLM]
-    rw [besselPotential]
-    rw [ContinuousLinearMap.map_smul_of_tower]
-    rw [fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
-    --rw [ContinuousLinearMap.map_smul_of_tower]
-
-    sorry
+        -(2 * π) ^ 2 * ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := calc
+      _ = -(2 * π) ^ 2 • (fourierMultiplierCLM F
+          (fun x ↦ Complex.ofReal <| (‖x‖ ^ 2) * (1 + ‖x‖ ^ 2) ^ (- (1 : ℝ)))) f := by
+        rw [laplacian_eq_fourierMultiplierCLM, besselPotential,
+          ContinuousLinearMap.map_smul_of_tower,
+          fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
+        congr
+        ext x
+        simp
+      _ = _ := by
+        rw [← Complex.coe_smul, ← fourierMultiplierCLM_smul_apply (by fun_prop)]
+        congr
+        ext x
+        simp [mul_assoc]
   rw [this]
   apply memSobolev_fourierMultiplierCLM_bounded (by fun_prop) _ hf
   use (2 * π) ^ 2
@@ -302,9 +308,6 @@ theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f)
     grind
   norm_cast
   positivity
-
-
-example (s : ℝ) : s - 2 = s + (-2) := by exact SubNegMonoid.sub_eq_add_neg s 2
 
 end LineDeriv
 
