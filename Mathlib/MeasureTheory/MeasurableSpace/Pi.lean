@@ -19,7 +19,7 @@ then the sets `{x | ∀ i, x i ∈ s i}`, where `s i ∈ C i`,
 generate the σ-algebra on the indexed product of `α i`s.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

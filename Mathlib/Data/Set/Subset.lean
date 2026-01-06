@@ -39,7 +39,7 @@ Theorem names refer to `↓∩` as `preimage_val`.
 subsets
 -/
 
-@[expose] public section
+public section
 
 open Set
 

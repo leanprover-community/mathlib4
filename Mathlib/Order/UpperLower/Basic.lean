@@ -23,7 +23,7 @@ on the underlying order (such as `PartialOrder` and `LinearOrder`).
 * Order equivalence between upper/lower sets and antichains.
 -/
 
-@[expose] public section
+public section
 
 open OrderDual Set
 
