@@ -22,7 +22,7 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 `Complex.deriv_eq_smul_circleIntegral`.
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
 

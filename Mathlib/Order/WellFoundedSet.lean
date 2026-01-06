@@ -305,7 +305,7 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
 -- TODO: prove this in terms of `IsAntichain.finite_of_wellQuasiOrdered`
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
-  refine not_infinite.1 fun hi => ?_
+  by_contra! hi
   obtain ⟨m, n, hmn, h⟩ := hp (hi.natEmbedding _)
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
@@ -338,7 +338,7 @@ protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r)
     PartiallyWellOrderedOn (insert a s) r :=
   partiallyWellOrderedOn_insert.2 h
 
-theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
+theorem partiallyWellOrderedOn_iff_finite_antichains [Std.Symm r] :
     s.PartiallyWellOrderedOn r ↔ ∀ t, t ⊆ s → IsAntichain r t → t.Finite := by
   refine ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), ?_⟩
   rw [partiallyWellOrderedOn_iff_exists_lt]
@@ -760,8 +760,6 @@ theorem exists_notMem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : 
   contrapose! this
   simpa [not_bddAbove_iff, and_comm]
 
-@[deprecated (since := "2025-05-23")] alias exists_not_mem_of_gt := exists_notMem_of_gt
-
 -- TODO: move this material to the main file on WQOs.
 
 /-- In the context of partial well-orderings, a bad sequence is a nonincreasing sequence
@@ -897,7 +895,7 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
       · exact hg' (Nat.zero_le 1)
 
 theorem imageProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO :=
+    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1) '' s).IsPWO :=
   IsPWO.image_of_monotone hαβ Prod.Lex.monotone_fst
 
 theorem fiberProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}

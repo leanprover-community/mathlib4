@@ -29,6 +29,8 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 @[expose] public section
 
+-- We want the theorems in this file to be intuitionistic.
+set_option linter.unusedDecidableInType false
 
 open Function
 

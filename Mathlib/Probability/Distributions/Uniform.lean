@@ -159,7 +159,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ‖x‖ₑ * s.indicator ind x = s.indicator (fun x => ‖x‖ₑ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
-  simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, Algebra.id.smul_eq_mul,
+  simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
   rw [lintegral_mul_const _ measurable_enorm]
   exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
@@ -240,9 +240,6 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
   simp [ha]
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
-
-@[deprecated (since := "2025-05-23")]
-alias uniformOfFinset_apply_of_not_mem := uniformOfFinset_apply_of_notMem
 
 @[simp]
 theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
@@ -365,9 +362,6 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 theorem ofMultiset_apply_of_notMem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
     ENNReal.natCast_ne_top, or_false] using ha
-
-@[deprecated (since := "2025-05-23")]
-alias ofMultiset_apply_of_not_mem := ofMultiset_apply_of_notMem
 
 section Measure
 

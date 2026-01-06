@@ -31,7 +31,7 @@ namespace GradedObject
 
 section LeftUnitor
 
-variable {C D I J : Type*} [Category C] [Category D]
+variable {C D I J : Type*} [Category* C] [Category* D]
   [Zero I] [DecidableEq I] [HasInitial C]
   (F : C ⥤ D ⥤ D) (X : C) (e : F.obj X ≅ 𝟭 D)
   [∀ (Y : D), PreservesColimit (Functor.empty.{0} C) (F.flip.obj Y)]
@@ -143,7 +143,7 @@ end LeftUnitor
 
 section RightUnitor
 
-variable {C D I J : Type*} [Category C] [Category D]
+variable {C D I J : Type*} [Category* C] [Category* D]
   [Zero I] [DecidableEq I] [HasInitial C]
   (F : D ⥤ C ⥤ D) (Y : C) (e : F.flip.obj Y ≅ 𝟭 D)
   [∀ (X : D), PreservesColimit (Functor.empty.{0} C) (F.obj X)]
@@ -307,7 +307,7 @@ end
 
 section Triangle
 
-variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category C₁] [Category C₂] [Category C₃] [Category D]
+variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category* C₁] [Category* C₂] [Category* C₃] [Category* D]
   [Zero I₂] [DecidableEq I₂] [HasInitial C₂]
   {F₁ : C₁ ⥤ C₂ ⥤ C₁} {F₂ : C₂ ⥤ C₃ ⥤ C₃} {G : C₁ ⥤ C₃ ⥤ D}
   (associator : bifunctorComp₁₂ F₁ G ≅ bifunctorComp₂₃ G F₂)

@@ -88,15 +88,19 @@ include hfg
 /-- If `f(p(t) = g(q(t))` for two paths `p` and `q`, then the induced path homotopy classes
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
 theorem heq_path_of_eq_image :
-    (πₘ (TopCat.ofHom f)).map ⟦p⟧ ≍ (πₘ (TopCat.ofHom g)).map (Path.Homotopic.Quotient.mk q) := by
-  simp only [map_eq, ← Path.Homotopic.Quotient.mk_map]
+    (πₘ (TopCat.ofHom f)).map ⟦p⟧ ≍ (πₘ (TopCat.ofHom g)).map ⟦q⟧ := by
+  simp only [map_eq]
   apply Path.Homotopic.hpath_hext
   exact hfg
 
+set_option backward.privateInPublic true in
 private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
+set_option backward.privateInPublic true in
 private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem eq_path_of_eq_image :
     (πₘ (TopCat.ofHom f)).map ⟦p⟧ =
         hcast (start_path hfg) ≫ (πₘ (TopCat.ofHom g)).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by

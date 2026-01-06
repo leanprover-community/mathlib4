@@ -19,7 +19,7 @@ eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
 
-@[expose] public section
+public section
 
 section SpectrumDiagonal
 
@@ -100,7 +100,7 @@ lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
   have aux (j : n) : (b.repr x j * d j) • b j = μ • (b.repr x j • b j) := by
     rcases hk j with hj | hj
     · simp [hj]
-    · rw [← hj.1, mul_comm, MulAction.mul_smul]
+    · rw [← hj.1, mul_comm, SemigroupAction.mul_smul]
   simp [toLin_apply, mulVec_eq_sum, diagonal_apply, aux, ← Finset.smul_sum]
 
 @[simp]

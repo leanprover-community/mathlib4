@@ -17,8 +17,9 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
 a lot of equivalences between various types and operations on these equivalences.
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 
@@ -710,6 +711,21 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   grind
 
+theorem swap_injective_of_left (a : α) :
+    Function.Injective (fun x ↦ Equiv.swap a x) := fun c d h ↦ by
+  simp only at h
+  rw [← Equiv.swap_apply_left a c, h, Equiv.swap_apply_left]
+
+theorem swap_injective_of_right (a : α) :
+    Function.Injective (fun x ↦ Equiv.swap x a) := by
+  simp_rw [swap_comm _ a]
+  exact swap_injective_of_left a
+
+instance (α : Type*) [Nontrivial α] : Nontrivial (Equiv.Perm α) := by
+  classical
+  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
+  exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
+
 lemma image_swap_of_mem_of_notMem {α : Type*} [DecidableEq α] {s : Set α} {i j : α}
     (hi : i ∈ s) (hj : j ∉ s) : s.image (swap i j) = insert j s \ {i} :=
   Set.ext fun a ↦ by
@@ -776,12 +792,7 @@ theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.d
 theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α → β}
     (hf : Function.Injective f) (x y z : α) :
     f (Equiv.swap x y z) = Equiv.swap (f x) (f y) (f z) := by
-  conv_rhs => rw [Equiv.swap_apply_def]
-  split_ifs with h₁ h₂
-  · -- We can't yet use `grind` here because of https://github.com/leanprover/lean4/issues/11088
-    rw [hf h₁, Equiv.swap_apply_left]
-  · rw [hf h₂, Equiv.swap_apply_right]
-  · grind
+  grind
 
 namespace Equiv
 

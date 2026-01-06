@@ -91,6 +91,8 @@ theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ �
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
 theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
@@ -101,10 +103,14 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
     (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by cat_disch
 
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (𝟙 (𝟙_ (Dial C)) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (f ⊗ₘ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp

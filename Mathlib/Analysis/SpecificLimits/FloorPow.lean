@@ -20,7 +20,7 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
   to `1/j^2`, up to a multiplicative constant.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset
 
@@ -68,7 +68,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by cutsat⟩
+      exact ⟨N, by lia⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -122,7 +122,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by cutsat⟩
+      exact ⟨N, by lia⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by

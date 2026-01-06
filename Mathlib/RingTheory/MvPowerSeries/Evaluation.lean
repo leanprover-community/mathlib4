@@ -117,6 +117,10 @@ theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
 
+theorem HasEval.pow (x : σ → S) (ha : HasEval x) {p : ℕ} (hp : 0 < p) :
+    HasEval (x ^ p) :=
+  mem_hasEvalIdeal_iff.mp <| Ideal.pow_mem_of_mem hasEvalIdeal ha p hp
+
 end
 
 /- ## Construction of an evaluation morphism for power series -/
@@ -131,9 +135,11 @@ variable {S : Type*} [CommRing S] [UniformSpace S]
 variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the product uniform structure
+set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries (Pi.uniformSpace _)
 
+set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom
