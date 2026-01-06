@@ -153,8 +153,11 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
   rw [Module.End.isUnit_iff, Iff.comm]
   exact IsUnit.isUnit_iff_mulLeft_bijective
 
-theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.linearMap R A := by
-  ext; simp
+theorem toSpanSingleton_one_eq_algebraLinearMap :
+    toSpanSingleton R A 1 = Algebra.linearMap R A := by ext; simp
+
+@[deprecated (since := "2025-12-30")] alias toSpanSingleton_eq_algebra_linearMap :=
+  toSpanSingleton_one_eq_algebraLinearMap
 
 variable (R A) in
 /-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
@@ -201,7 +204,3 @@ lemma comp_mul' (f : A →ₐ B) : f.toLinearMap ∘ₗ μ = μ[R] ∘ₗ (f.toL
   TensorProduct.ext' <| by simp
 
 end AlgHom
-
-lemma LinearMap.toSpanSingleton_one_eq_algebraLinearMap [CommSemiring R] [Semiring A]
-    [Algebra R A] : toSpanSingleton R A 1 = Algebra.linearMap R A := by
-  ext; simp
