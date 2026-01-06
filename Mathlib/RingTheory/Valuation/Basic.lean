@@ -502,14 +502,14 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
     [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid v) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
-  refine (Submonoid.nontrivial_iff_exists_ne_one (MonoidWithZeroHom.valueMonoid v)).mpr ?_
+  rw [Submonoid.nontrivial_iff_exists_ne_one]
   use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueMonoid v (Set.mem_range_self x)
   simpa [Units.ext_iff] using h1
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
     [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup v) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
-  refine (Subgroup.nontrivial_iff_exists_ne_one (MonoidWithZeroHom.valueGroup v)).mpr ?_
+  rw [Subgroup.nontrivial_iff_exists_ne_one]
   use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueGroup v (Set.mem_range_self x)
   simpa [Units.ext_iff] using h1
 
