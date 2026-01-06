@@ -20,7 +20,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field IsOrderedRing
 

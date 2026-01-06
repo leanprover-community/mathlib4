@@ -82,6 +82,10 @@ lemma linear_of_full_essSurj_comp [F.Full] [F.EssSurj] [Functor.Linear R (F ⋙ 
   simpa only [comp_map, map_smul, Linear.smul_comp, Linear.comp_smul, ← G.map_comp]
     using G.map eX.inv ≫= ((F ⋙ G).map_smul r f') =≫ G.map eY.hom
 
+lemma linear_comp_iff_of_full_of_essSurj [F.Full] [F.EssSurj] :
+    Functor.Linear R (F ⋙ G) ↔ Functor.Linear R G :=
+  ⟨fun _ ↦ linear_of_full_essSurj_comp F G, fun _ ↦ inferInstance⟩
+
 end
 
 variable (R) [F.Additive]
