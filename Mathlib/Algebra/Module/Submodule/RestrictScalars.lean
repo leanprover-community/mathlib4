@@ -105,28 +105,30 @@ theorem restrictScalars_top : restrictScalars S (⊤ : Submodule R M) = ⊤ :=
 theorem restrictScalars_eq_top_iff {p : Submodule R M} : restrictScalars S p = ⊤ ↔ p = ⊤ := by
   simp [SetLike.ext_iff]
 
-variable {R M}
+@[simp]
+lemma restrictScalars_sInf (s : Set (Submodule R M)) :
+    (sInf s).restrictScalars S = sInf (restrictScalars S '' s) := by
+  ext; simp
 
-@[simp] lemma restrictScalars_sInf (s : Set (Submodule R M)) :
-    (sInf s).restrictScalars S = sInf (restrictScalars S '' s) := by ext; simp
-
-@[simp] lemma restrictScalars_sSup (s : Set (Submodule R M)) :
+@[simp]
+lemma restrictScalars_sSup (s : Set (Submodule R M)) :
     (sSup s).restrictScalars S = sSup (restrictScalars S '' s) := by
   simp [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]
 
-variable (R M) in
 /-- If ring `S` acts on a ring `R` and `M` is a module over both (compatibly with this action) then
 we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `R`. -/
 def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S M) where
   toFun := restrictScalars S
-  map_sInf' := restrictScalars_sInf S
-  map_sSup' := restrictScalars_sSup S
+  map_sInf' := restrictScalars_sInf S R M
+  map_sSup' := restrictScalars_sSup S R M
 
-@[simp] lemma restrictScalars_inf (s t : Submodule R M) :
+@[simp]
+lemma restrictScalars_inf (s t : Submodule R M) :
     (s ⊓ t).restrictScalars S = (s.restrictScalars S) ⊓ (t.restrictScalars S) := by
   ext x; simp
 
-@[simp] lemma restrictScalars_sup (s t : Submodule R M) :
+@[simp]
+lemma restrictScalars_sup (s t : Submodule R M) :
     (s ⊔ t).restrictScalars S = (s.restrictScalars S) ⊔ (t.restrictScalars S) := by
   simpa [Set.image_insert_eq] using restrictScalars_sSup S (s := {s, t})
 

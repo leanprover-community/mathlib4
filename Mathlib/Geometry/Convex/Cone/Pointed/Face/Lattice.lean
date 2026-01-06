@@ -33,7 +33,7 @@ namespace PointedCone
 variable {R M N : Type*}
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
-/-- A face of a pointed cone `C`. Represents also the face lattice of `C`. -/
+/-- A face of a pointed cone `C`. Represents the face lattice of `C`. -/
 structure Face (C : PointedCone R M) extends PointedCone R M where
   isFaceOf : IsFaceOf toSubmodule C
 
@@ -146,7 +146,7 @@ section Field
 variable [Field R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
-/-- The linearlity space of a pointed cone `C` as a face of `C`.
+/-- The lineality space of a pointed cone `C` as a face of `C`.
   It is contained in all faces of `C`. -/
 def lineal : Face C := ⟨_, IsFaceOf.lineal C⟩
 

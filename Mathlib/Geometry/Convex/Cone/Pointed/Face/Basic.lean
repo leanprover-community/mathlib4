@@ -216,7 +216,7 @@ lemma lineal (C : PointedCone R M) : IsFaceOf C.lineal C := by
 lemma lineal_le (hF : F.IsFaceOf C) : C.lineal ≤ F :=
   fun _ hx => hF.mem_of_add_mem hx.1 hx.2 (by simp)
 
-/-- The linearlity space of a face of a cone agrees with the linearlity space of the cone. -/
+/-- The lineality space of a face of a cone agrees with the lineality space of the cone. -/
 lemma lineal_eq_lineal (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
   ext
   constructor <;> intro ⟨hx, hx'⟩

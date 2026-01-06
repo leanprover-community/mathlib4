@@ -260,7 +260,7 @@ lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ 
 @[simp]
 lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := by simp
 
-/- The lineality space of a cone is the largest submodules contained in the cone. -/
+/- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R E | S ≤ C} := by
   rw [le_antisymm_iff]
   refine ⟨le_sSup (lineal_le C), ?_⟩
