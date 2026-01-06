@@ -37,10 +37,10 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
     ((Ideal.Quotient.mkₐ R I).toLinearMap.comp (Shrink.linearEquiv.{v} R R).toLinearMap)
   have exac : Function.Exact Sf Sg := by
     intro x
-    have (z : R) : z ∈ I ↔ ∃ y, ↑((equivShrink I).symm y) = z := by
-      refine ⟨fun h ↦ ⟨(equivShrink I) ⟨z, h⟩, by simp⟩, fun ⟨y, hy⟩ ↦ by simp [← hy]⟩
-    simpa [Sf, Sg, Ideal.Quotient.eq_zero_iff_mem, AddEquiv.symm_apply_eq]
-      using this ((equivShrink R).symm x)
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, AlgHom.coe_toLinearMap,
+      Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply, EmbeddingLike.map_eq_zero_iff,
+      Submodule.coe_subtype, Set.mem_range, Ideal.Quotient.eq_zero_iff_mem, Sg, Sf]
+    refine ⟨fun h ↦ ⟨(equivShrink I) ⟨_, h⟩, by simp⟩, fun ⟨y, hy⟩ ↦ by simp [← hy]⟩
   have inj : Function.Injective Sf := by simpa [Sf] using (Shrink.linearEquiv R I).injective
   have surj : Function.Surjective Sg := by simpa [Sg] using Ideal.Quotient.mk_surjective
   let S : ShortComplex (ModuleCat.{v} R) := {
