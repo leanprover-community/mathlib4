@@ -26,16 +26,20 @@ namespace NormedSpace
 in the same direction as `x`. If `x = 0`, then `normalize x = 0`. -/
 def normalize (x : V) : V := (‖x‖⁻¹ : 𝕜) • x
 
-@[simp] theorem normalize_zero_eq_zero : normalize 𝕜 (0 : V) = 0 := by
+@[simp]
+theorem normalize_zero_eq_zero : normalize 𝕜 (0 : V) = 0 := by
   simp [normalize]
 
-@[simp] theorem normalize_eq_zero_iff (x : V) : normalize 𝕜 x = 0 ↔ x = 0 := by
+@[simp]
+theorem normalize_eq_zero_iff (x : V) : normalize 𝕜 x = 0 ↔ x = 0 := by
   by_cases hx : x = 0 <;> simp [normalize, hx]
 
-@[simp] theorem norm_smul_normalize (x : V) : (‖x‖ : 𝕜) • normalize 𝕜 x = x := by
+@[simp]
+theorem norm_smul_normalize (x : V) : (‖x‖ : 𝕜) • normalize 𝕜 x = x := by
   by_cases hx : x = 0 <;> simp [normalize, hx]
 
-@[simp] lemma norm_normalize_eq_one_iff {x : V} : ‖normalize 𝕜 x‖ = 1 ↔ x ≠ 0 := by
+@[simp]
+lemma norm_normalize_eq_one_iff {x : V} : ‖normalize 𝕜 x‖ = 1 ↔ x ≠ 0 := by
   by_cases hx : x = 0 <;> simp [normalize, hx, norm_smul]
 
 alias ⟨_, norm_normalize⟩ := norm_normalize_eq_one_iff
@@ -44,13 +48,15 @@ lemma normalize_eq_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) : normalize �
   simp [normalize, h]
 
 variable {𝕜} in
-@[simp] theorem normalize_normalize (x : V) : normalize 𝕜 (normalize 𝕜 x) = normalize 𝕜 x := by
+@[simp]
+theorem normalize_normalize (x : V) : normalize 𝕜 (normalize 𝕜 x) = normalize 𝕜 x := by
   by_cases hx : x = 0
   · simp [hx]
   · simp [normalize_eq_self_of_norm_eq_one, hx]
 
 variable {𝕜} in
-@[simp] theorem normalize_neg (x : V) : normalize 𝕜 (-x) = -normalize 𝕜 x := by
+@[simp]
+theorem normalize_neg (x : V) : normalize 𝕜 (-x) = -normalize 𝕜 x := by
   simp [normalize]
 
 open scoped ComplexOrder in
