@@ -196,7 +196,7 @@ theorem vertexCoverNum_mono (h : G ≤ G') : vertexCoverNum G ≤ vertexCoverNum
 
 theorem vertexCoverNum_congr (f : G ≃g H) : vertexCoverNum G = vertexCoverNum H :=
   le_antisymm f.isContained.vertexCoverNum_le_vertexCoverNum
-    f.isContained.vertexCoverNum_le_vertexCoverNum
+    f.symm.isContained.vertexCoverNum_le_vertexCoverNum
 
 end vertexCoverNum
 end SimpleGraph

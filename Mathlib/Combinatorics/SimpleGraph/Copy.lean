@@ -350,7 +350,6 @@ protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ 
 protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
 
 /-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
-@[deprecated "use Iso.symm.isIndContained" (since := "2026-01-05")]
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
 /-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
