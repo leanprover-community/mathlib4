@@ -546,7 +546,6 @@ def mcast {a b : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularF
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
     (h : a.fst = b.fst) (h2 : mcast h a.snd = b.snd) : a = b := by
   obtain ⟨i, a⟩ := a
-  obtain ⟨j, b⟩ := b
   cases h
   exact congr_arg _ h2
 
