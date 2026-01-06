@@ -20,8 +20,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Basic
   for a morphism from a commutative ring to a semiring.
 - `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
   for a morphism of algebras (over a commutative semiring)
-- `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
-  for a morphism from a commutative ring to a semiring.
 - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
   `ZMod`).
@@ -225,7 +223,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
     · exact fun j hj ↦ eq_zero_iff_mem.mpr (he j hj)
   choose e he using key
-  use mk _ (∑ i, f i*e i)
+  use mk _ (∑ i, f i * e i)
   ext i
   rw [quotientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
   · simp [(he i).1, hf]
@@ -539,6 +537,39 @@ lemma quotientKerAlgEquivOfSurjective_symm_apply {f : A →ₐ[R₁] B} (hf : Fu
     (a : A) : (Ideal.quotientKerAlgEquivOfSurjective hf).symm (f a) = a := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hf).injective
   simp
+
+section liftOfSurjective
+
+variable {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
+    [Algebra R A] [Algebra R B] [Algebra R C]
+
+/-- `AlgHom` version of `RingHom.liftOfSurjective` that descends an algebra homomorphism
+along a surjection. -/
+noncomputable
+def _root_.AlgHom.liftOfSurjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) : B →ₐ[R] C :=
+  .comp (Ideal.Quotient.liftₐ _ g H) (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
+
+@[simp]
+lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
+    AlgHom.liftOfSurjective f hf g H (f x) = g x := by
+  dsimp [AlgHom.liftOfSurjective]
+  erw [AlgEquiv.coe_algHom] -- fixed after #21031
+  rw [Ideal.quotientKerAlgEquivOfSurjective_symm_apply]
+  rfl
+
+lemma _root_.AlgHom.liftOfSurjective_comp (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) :
+    (AlgHom.liftOfSurjective f hf g H).comp f = g := by
+  ext; simp
+
+lemma _root_.AlgHom.liftOfSurjective_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom)
+    (hg : Function.Surjective g) : Function.Surjective (AlgHom.liftOfSurjective f hf g H) :=
+  .of_comp (g := f) (by convert hg; ext; simp)
+
+end liftOfSurjective
 
 end
 

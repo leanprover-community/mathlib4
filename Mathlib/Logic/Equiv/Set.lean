@@ -313,9 +313,6 @@ theorem sumCompl_symm_apply_of_notMem {α : Type u} {s : Set α} [DecidablePred 
     (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ :=
   sumCompl_symm_apply_of_neg hx
 
-@[deprecated (since := "2025-05-23")]
-alias sumCompl_symm_apply_of_not_mem := sumCompl_symm_apply_of_notMem
-
 @[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] (x : s) :
     (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
@@ -354,9 +351,6 @@ theorem sumDiffSubset_symm_apply_of_notMem {α} {s t : Set α} (h : s ⊆ t) [De
     {x : t} (hx : x.1 ∉ s) : (Equiv.Set.sumDiffSubset h).symm x = Sum.inr ⟨x, ⟨x.2, hx⟩⟩ := by
   apply (Equiv.Set.sumDiffSubset h).injective
   simp only [apply_symm_apply, sumDiffSubset_apply_inr, Set.inclusion_mk]
-
-@[deprecated (since := "2025-05-23")]
-alias sumDiffSubset_symm_apply_of_not_mem := sumDiffSubset_symm_apply_of_notMem
 
 /-- If `s` is a set with decidable membership, then the sum of `s ∪ t` and `s ∩ t` is equivalent
 to `s ⊕ t`. -/
@@ -617,13 +611,17 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
-theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
-    (e : β ≃ {x // p x})
-    (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
-    [∀ j, Decidable (p j)] :
-    (fun i : α => if h : p i then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
-      Function.update (fun i : α => if h : p i then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
-  grind
+theorem dite_comp_equiv_update
+    {α E : Type*} {β γ : Sort*} {p : α → Prop} [EquivLike E {x // p x} β]
+    (e : E) (v : β → γ) (w : α → γ) (j : β) (x : γ)
+    [DecidableEq β] [DecidableEq α] [∀ j, Decidable (p j)] :
+    (fun i : α => if h : p i then (update v j x) (e ⟨i, h⟩) else w i) =
+      update (fun i : α => if h : p i then v (e ⟨i, h⟩) else w i) (EquivLike.inv e j) x := by
+  ext i
+  by_cases h : p i
+  · simp only [h, update_apply]
+    aesop
+  · grind
 
 section Swap
 

@@ -81,7 +81,7 @@ theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (
 
 @[reassoc (attr := simp)]
 lemma Scheme.toSpecΓ_isoSpec_inv (X : Scheme.{u}) [IsAffine X] :
-    X.toSpecΓ ≫ X.isoSpec.inv  = 𝟙 _ :=
+    X.toSpecΓ ≫ X.isoSpec.inv = 𝟙 _ :=
   X.isoSpec.hom_inv_id
 
 @[reassoc (attr := simp)]
@@ -103,7 +103,7 @@ def AffineScheme.of (X : Scheme) [h : IsAffine X] : AffineScheme :=
 /-- Type check a morphism of schemes as a morphism in `AffineScheme`. -/
 def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     AffineScheme.of X ⟶ AffineScheme.of Y :=
-  f
+  InducedCategory.homMk f
 
 @[simp]
 theorem essImage_Spec {X : Scheme} : Scheme.Spec.essImage X ↔ IsAffine X :=

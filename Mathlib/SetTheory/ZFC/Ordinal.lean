@@ -191,8 +191,6 @@ theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y 
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_iff_subset := notMem_iff_subset
-
 theorem not_subset_iff_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : ¬ x ⊆ y ↔ y ∈ x := by
   rw [not_iff_comm, notMem_iff_subset hy hx]
 
@@ -366,7 +364,7 @@ namespace ZFSet
 open Ordinal
 
 theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
-  refine ⟨fun x hx y hy ↦ ?_, @fun z y x hz hy hx ↦ ?_⟩
+  refine ⟨fun x hx y hy ↦ ?_, fun {z y x} hz hy hx ↦ ?_⟩
   all_goals
     obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
     obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy
