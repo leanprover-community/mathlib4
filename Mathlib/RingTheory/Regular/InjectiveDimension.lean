@@ -375,8 +375,8 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       apply Functor.FullyFaithful.map_bijective
       exact ModuleCat.restrictScalars_fullyFaithful_of_surjective _ Ideal.Quotient.mk_surjective
   · rename_i n ih
-    let S := N.projective_shortComplex
-    have S_exact : S.ShortExact := N.projective_shortComplex_shortExact
+    let S := N.projectiveShortComplex
+    have S_exact : S.ShortExact := N.shortExact_projectiveShortComplex
     let _ : HasProjectiveDimensionLT (S.map Fr).X₂ 2 :=
       hasProjectiveDimensionLE_finsupp_quotient_regular N regR
     let MxM := (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M))
