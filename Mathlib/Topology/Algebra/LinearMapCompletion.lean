@@ -9,10 +9,10 @@ public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
-# Completion of (Semi-)Linear Maps Between AddCommGroups:
+# Completion of Continuous (Semi-)Linear Maps Between Modules:
 
-This file has a declaration that enables a (semi-)linear map between `AddCommGroup`s to be raised
-to a (semi-)linear map between their completions.
+This file has a declaration that enables a continuous (semi-)linear map between modules to be
+lifted.
 
 ## Main declarations:
 
@@ -31,10 +31,10 @@ variable {α β : Type*} {R₁ R₂ : Type*} [UniformSpace α] [AddCommGroup α]
   {σ : R₁ →+* R₂}
 
 /--
-Constructs a continuous semilinear map between completions of `AddCommGroup`s from a continuous
-semilinear map between the `AddCommGroup`s.
+Lift a continuous semilinear map to a continuous semilinear map between the
+`UniformSpace.Completion`s of the spaces. This is `UniformSpace.Completion.map` bundled as a
+continuous linear map when the input is itself a continuous linear map.
 -/
-@[simps]
 noncomputable def mapCLM (f : α →SL[σ] β) : (Completion α) →SL[σ] (Completion β) where
   __ := f.toAddMonoidHom.completion f.continuous
   map_smul' r x := by
@@ -45,7 +45,15 @@ noncomputable def mapCLM (f : α →SL[σ] β) : (Completion α) →SL[σ] (Comp
     | ih x => simp [← Completion.coe_smul]
   cont := continuous_map
 
+@[simp]
+lemma toAddMonoidHom_mapCLM (f : α →SL[σ] β) :
+    (mapCLM f).toAddMonoidHom = f.toAddMonoidHom.completion f.continuous := rfl
+
+lemma mapCLM_apply (f : α →SL[σ] β) :
+    mapCLM f = Completion.map f := rfl
+
+@[simp]
 theorem mapCLM_apply_coe (f : α →SL[σ] β) (a : α) :
-    mapCLM f a = f a := by simp
+    mapCLM f a = f a := by simp [mapCLM_apply, map_coe]
 
 end UniformSpace.Completion

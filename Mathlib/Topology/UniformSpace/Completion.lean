@@ -485,7 +485,6 @@ theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 
-@[simp]
 theorem map_coe (hf : UniformContinuous f) (a : α) : (Completion.map f) a = f a :=
   cPkg.map_coe cPkg hf a
 
