@@ -40,7 +40,7 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal
 
