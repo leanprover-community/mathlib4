@@ -123,12 +123,14 @@ variable {R A : Type*} [Semiring R]
 section nonUnitalSemiring
 variable (R A) [NonUnitalSemiring A] [Module R A]
 
-@[simp] theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
+@[simp]
+theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
     mulLeft R (a * b) = (mulLeft R a).comp (mulLeft R b) := by
   ext
   simp only [mulLeft_apply, comp_apply, mul_assoc]
 
-@[simp] theorem mulRight_mul [IsScalarTower R A A] (a b : A) :
+@[simp]
+theorem mulRight_mul [IsScalarTower R A A] (a b : A) :
     mulRight R (a * b) = (mulRight R b).comp (mulRight R a) := by
   ext
   simp only [mulRight_apply, comp_apply, mul_assoc]
@@ -149,15 +151,19 @@ variable [NonAssocSemiring A] [Module R A]
 section
 variable (R A)
 
-@[simp] theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id := ext one_mul
+@[simp]
+theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id := ext one_mul
 
-@[simp] theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ a = 0 :=
+@[simp]
+theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ a = 0 :=
   mulLeft_zero_eq_zero R A ▸ mulLeft_inj
 
-@[simp] theorem mulRight_one [IsScalarTower R A A] : mulRight R (1 : A) = LinearMap.id :=
+@[simp]
+theorem mulRight_one [IsScalarTower R A A] : mulRight R (1 : A) = LinearMap.id :=
   ext mul_one
 
-@[simp] theorem mulRight_eq_zero_iff [IsScalarTower R A A] (a : A) : mulRight R a = 0 ↔ a = 0 :=
+@[simp]
+theorem mulRight_eq_zero_iff [IsScalarTower R A A] (a : A) : mulRight R a = 0 ↔ a = 0 :=
   mulRight_zero_eq_zero R A ▸ mulRight_inj
 
 end
