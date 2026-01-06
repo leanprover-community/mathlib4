@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 module
 
 public import Mathlib.RingTheory.Flat.Localization
@@ -29,17 +34,6 @@ Show that `TensorProduct.toIntegralClosure` is bijective when `S` is `R`-smooth.
 
 open Polynomial TensorProduct
 
-instance (priority := low) {R A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
-    (s : Subalgebra A B) [Semiring R] [SMul R A] [Module R B] [IsScalarTower R A B] :
-    IsScalarTower R s B :=
-  .to₁₃₄ _ A _ _
-
-instance (priority := low) {R S A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
-    (s : Subalgebra A B) [Semiring R] [SMul R A] [Module R B] [IsScalarTower R A B]
-    [Semiring S] [SMul S A] [Module S B] [IsScalarTower S A B] [SMul R S] [IsScalarTower R S B] :
-    IsScalarTower R S s :=
-  .to₁₂₃ _ _ _ B
-#min_imports
 variable {R S B : Type*} [CommRing R] [CommRing S] [Algebra R S] [CommRing B] [Algebra R B]
 
 variable (R S) in
