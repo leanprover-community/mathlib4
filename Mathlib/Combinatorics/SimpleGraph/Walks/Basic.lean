@@ -134,7 +134,7 @@ def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
 @[simp]
 theorem support_nil {u : V} : (nil : G.Walk u u).support = [u] := rfl
 
-@[simp]
+@[simp, grind =]
 theorem support_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).support = u :: p.support := rfl
 
@@ -319,7 +319,7 @@ only if `p` has defeq endpoints. -/
 inductive Nil : {v w : V} → G.Walk v w → Prop
   | nil {u : V} : Nil (nil : G.Walk u u)
 
-@[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
+@[simp, grind .] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
 @[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 

@@ -24,7 +24,7 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w z
 

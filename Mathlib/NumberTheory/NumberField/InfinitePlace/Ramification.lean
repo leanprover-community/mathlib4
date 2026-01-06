@@ -475,7 +475,6 @@ open scoped Classical in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
     #{w : InfinitePlace K | w.IsUnramified k} =
       #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K := by
-  letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := {w : InfinitePlace k | w.IsUnramifiedIn K}), ← smul_eq_mul, ← sum_const]
@@ -499,7 +498,6 @@ open scoped Classical in
 lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     #({w : InfinitePlace K | w.IsUnramified k} : Finset _)ᶜ =
       #({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ * (finrank k K / 2) := by
-  letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := ({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ), ← smul_eq_mul, ← sum_const]
