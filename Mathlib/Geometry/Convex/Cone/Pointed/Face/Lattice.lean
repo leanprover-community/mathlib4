@@ -21,7 +21,7 @@ of a pointed cone `C`.
 * `CompleteLattice` instance: the face lattice of a pointed cone using `inf` and `sup`.
 * `prod`: the product of two faces of pointed cones, together with projections `prod_left` and
   `prod_right`.
-* `prod_orderIso`: proves that the face lattices of a product cone is the product of the face
+* `prodOrderIso`: proves that the face lattices of a product cone is the product of the face
   lattices of the individual cones.
 
 -/
@@ -170,24 +170,24 @@ open Submodule
 def prod (F₁ : Face C₁) (F₂ : Face C₂) : Face (C₁.prod C₂) := ⟨_, F₁.isFaceOf.prod F₂.isFaceOf⟩
 
 /-- The face of `C₁` obtained by projecting to the first component of a face `F ≤ C₁ × C₂`. -/
-def projFst (F : Face (C₁.prod C₂)) : Face C₁ := ⟨_, F.isFaceOf.fst⟩
+def fst (F : Face (C₁.prod C₂)) : Face C₁ := ⟨_, F.isFaceOf.fst⟩
 
 /-- The face of `C₁` obtained by projecting to the second component of a face `F ≤ C₁ × C₂`. -/
-def projSnd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
+def snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 
 @[simp]
-theorem prod_projFst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).projFst = F₁ := by
+theorem prod_fst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).fst = F₁ := by
   ext
-  simpa [projFst, prod] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
+  simpa [fst, prod] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
 
 @[simp]
-theorem prod_projSnd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).projSnd = F₂ := by
+theorem prod_snd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = F₂ := by
   ext
-  simpa [projSnd, prod] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
+  simpa [snd, prod] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
 
-theorem projFst_prod_projSnd (G : Face (C₁.prod C₂)) : G.projFst.prod G.projSnd = G := by
+theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   ext x
-  simp only [prod, toPointedCone, projFst, projSnd, mem_coe, mem_prod, mem_map,
+  simp only [prod, toPointedCone, fst, snd, mem_coe, mem_prod, mem_map,
     LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
   constructor
   · simp only [and_imp, forall_exists_index]
@@ -207,14 +207,14 @@ theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} :
 lattices. -/
 def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
     Face (C.prod D) ≃o Face C × Face D where
-  toFun G := ⟨projFst G, projSnd G⟩
+  toFun G := ⟨fst G, snd G⟩
   invFun G := G.1.prod G.2
-  left_inv G := by simp [projFst_prod_projSnd]
+  left_inv G := by simp [fst_prod_snd]
   right_inv G := by simp
   map_rel_iff' := by
     simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk, coe_le_iff]
     intro F₁ F₂; constructor <;> intro a
-    · simpa [projFst_prod_projSnd, coe_le_iff] using Face.prod_mono a.1 a.2
+    · simpa [fst_prod_snd, coe_le_iff] using Face.prod_mono a.1 a.2
     · constructor; all_goals
       try simpa only [prod_left, prod_right]
       exact fun _ d => Submodule.map_mono a d
