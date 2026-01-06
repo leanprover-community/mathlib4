@@ -60,11 +60,13 @@ open scoped Topology ComplexConjugate
 
 namespace Complex
 
-/-- An auxiliary lemma for `Complex.norm_dslope_le_div_of_mapsTo_ball`. -/
+/-- An auxiliary lemma for `Complex.dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO`. -/
 theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
     (hd : DifferentiableOn ℂ f (ball c R₁)) (h_maps : MapsTo f (ball c R₁) (closedBall (f c) R₂))
     (hn : (f · - f c) =o[𝓝 c] (fun w ↦ (w - c) ^ n)) (hz : z ∈ ball c R₁) :
     ‖f z - f c‖ ≤ R₂ * (‖z - c‖ / R₁) ^ (n + 1) := by
+  -- By slightly reducing `R₁`, we can assume that `f` is differentiable on `closedBall c R₁`
+  -- and it maps this ball to the closed ball in the codomain.
   have hR₁ : 0 < R₁ := nonempty_ball.1 ⟨z, hz⟩
   wlog hd' : DifferentiableOn ℂ f (closedBall c R₁) ∧
     MapsTo f (closedBall c R₁) (closedBall (f c) R₂) generalizing R₁
@@ -81,10 +83,15 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
     · exact (norm_nonneg _).trans_lt hzr
     · exact ⟨hd.mono <| closedBall_subset_ball hrR₁, h_maps.mono_left <|
         closedBall_subset_ball hrR₁⟩
+  -- Cleanup, discard the case `z = c`.
   clear hd h_maps
   rcases hd' with ⟨hd, h_maps⟩
   rcases eq_or_ne z c with rfl | hne
   · simp
+  -- Consider the function given by `g w := ((w - c) ^ (n + 1))⁻¹ * (f w - f c)`.
+  -- It is differentiable away from `c` and satisfies `g w = o((w - c)⁻¹)`,
+  -- thus it can be extended to a function g'` differentiable on the whole closed ball
+  -- with center c` and radius `R₁`.
   set g : ℂ → ℂ := fun w ↦ ((w - c) ^ (n + 1))⁻¹ * (f w - f c)
   set g' := update g c (limUnder (𝓝[≠] c) g)
   have hdg' : DifferentiableOn ℂ g' (closedBall c R₁) := by
@@ -99,6 +106,10 @@ theorem schwarz_aux {f : ℂ → ℂ} {c z : ℂ} {R₁ R₂ : ℝ} {n : ℕ}
       · refine eventually_mem_nhdsWithin.mono fun w hw ↦ ?_
         rw [mem_compl_singleton_iff, ← sub_ne_zero] at hw
         simp [pow_succ, field]
+  -- Finally, we apply the maximum modulus principle to this function.
+  -- On the sphere `dist w c = R₁`, its norm is bounded by `R₂ / R₁ ^ (n + 1)`,
+  -- thus it's bounded by the same constant on the whole closed ball,
+  -- in particular, at `w = z`.
   suffices ‖g' z‖ ≤ R₂ / R₁ ^ (n + 1) by
     have hz' : ‖z - c‖ ≠ 0 := by simpa [sub_eq_zero] using hne
     simpa [g', hne, g, div_pow, mul_comm, field] using this
@@ -133,13 +144,19 @@ theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} 
     (hd : DifferentiableOn ℂ f (ball c R₁)) (h_maps : MapsTo f (ball c R₁) (closedBall (f c) R₂))
     (hn : (f · - f c) =o[𝓝 c] (fun w ↦ ‖w - c‖ ^ n)) (hz : z ∈ ball c R₁) :
     dist (f z) (f c) ≤ R₂ * (dist z c / R₁) ^ (n + 1) := by
+  -- Note that `0 < R₁`, `0 ≤ R₂`, then discard the trivial case `f z = f c`.
   have hR₁ : 0 < R₁ := nonempty_ball.mp ⟨_, hz⟩
   have hR₂ : 0 ≤ R₂ := nonempty_closedBall.mp ⟨_, h_maps hz⟩
   rcases eq_or_ne (f z) (f c) with heq | hfne
   · trans 0 <;> [simp [heq]; positivity]
   have hne : z ≠ c := ne_of_apply_ne _ hfne
+  -- Let `g : F → ℂ` be a continuous linear function such that `‖g‖ = 1`
+  -- and `‖g (f z - f c)‖ = ‖f z - f c‖`.
   rcases exists_dual_vector ℂ _ (sub_ne_zero.mpr hfne) with ⟨g, hg, hgf⟩
+  -- Consider `h : ℂ → ℂ` given by `h w = g (f (c + w * (z - c)))`.
   set h : ℂ → ℂ := g ∘ f ∘ lineMap c z
+  -- This map is differentiable on the ball with center at the origin and radius `R₁ / dist z c`
+  -- and it sends this ball to the closed ball with center `h 0 = f c` and radius R₂`.
   have hmaps_line : MapsTo (lineMap c z) (ball (0 : ℂ) (R₁ / dist z c)) (ball c R₁) := by
     intro w hw
     simpa [lt_div_iff₀, hne, dist_comm c] using hw
@@ -148,6 +165,7 @@ theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} 
     simpa [hg, h] using g.lipschitz.mapsTo_closedBall (f c) R₂
   have hdiff : DifferentiableOn ℂ h (ball 0 (R₁ / dist z c)) :=
     g.differentiable.comp_differentiableOn <| hd.comp (lineMap c z).differentiableOn hmaps_line
+  -- This map also satisfies `h(w) - h(0) = o(w ^ n)`, thus we can apply the auxiliary lemma above.
   have hn : (h · - h 0) =o[𝓝 0] (fun w ↦ (w - 0) ^ n) := by
     simp only [h, ← map_sub, Function.comp_apply, sub_zero]
     refine (g.isBigO_comp _ _).trans_isLittleO ?_
