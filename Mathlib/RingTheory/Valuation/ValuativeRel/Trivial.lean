@@ -28,7 +28,6 @@ namespace ValuativeRel
 variable {R Γ : Type} [CommRing R] [DecidableEq R] [IsDomain R]
   [LinearOrderedCommGroupWithZero Γ]
 
-
 open WithZero
 
 /-- The trivial valuative relation on a domain `R`, such that all non-zero elements are related.
@@ -39,7 +38,7 @@ def trivialRel : ValuativeRel R where
   vle_total _ _ := by split_ifs <;> simp_all
   vle_trans _ _ := by split_ifs; simp_all
   vle_add _ _ := by split_ifs; simp_all
-  vle_mul_right _ := by split_ifs <;> simp_all
+  mul_vle_mul_left _ _ := by split_ifs at * <;> simp_all
   vle_mul_cancel _ := by split_ifs <;> simp_all
   not_vle_one_zero := by split_ifs <;> simp_all
 
