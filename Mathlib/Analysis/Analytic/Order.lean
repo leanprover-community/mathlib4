@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -78,6 +79,11 @@ lemma analyticOrderAt_eq_top : analyticOrderAt f z₀ = ⊤ ↔ ∀ᶠ z in 𝓝
   mpr hf := by unfold analyticOrderAt; simp [hf, analyticAt_congr hf, analyticAt_const]
 
 @[deprecated (since := "2025-05-03")] alias AnalyticAt.order_eq_top_iff := analyticOrderAt_eq_top
+
+lemma eventuallyConst_iff_analyticOrderAt_sub_eq_top :
+    EventuallyConst f (𝓝 z₀) ↔ analyticOrderAt (f · - f z₀) z₀ = ⊤ := by
+  simpa [eventuallyConst_iff_exists_eventuallyEq, analyticOrderAt_eq_top, sub_eq_zero]
+    using ⟨fun ⟨c, hc⟩ ↦ (show f z₀ = c from hc.self_of_nhds) ▸ hc, fun h ↦ ⟨_, h⟩⟩
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
@@ -395,6 +401,57 @@ theorem analyticOrderNatAt_pow (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
   simp [analyticOrderNatAt, analyticOrderAt_pow, hf]
 
 end NontriviallyNormedField
+
+section comp
+
+/-!
+## Vanishing Order at a Point: Composition
+-/
+variable {f : 𝕜 → E} {g : 𝕜 → 𝕜} {z₀ : 𝕜}
+
+/-- Analytic order of a composition of analytic functions. -/
+lemma AnalyticAt.analyticOrderAt_comp (hf : AnalyticAt 𝕜 f (g z₀)) (hg : AnalyticAt 𝕜 g z₀) :
+    analyticOrderAt (f ∘ g) z₀ = analyticOrderAt f (g z₀) * analyticOrderAt (g · - g z₀) z₀ := by
+  by_cases hg_nc : EventuallyConst g (𝓝 z₀)
+  · -- If `g` is eventually constant, both sides are either `⊤` or `0`.
+    have := hg_nc.comp f
+    rw [eventuallyConst_iff_analyticOrderAt_sub_eq_top] at hg_nc this
+    rw [hg_nc]
+    by_cases hf' : f (g z₀) = 0
+    · simpa [hf', show analyticOrderAt f (g z₀) ≠ 0 by grind [analyticOrderAt_ne_zero]]
+    · rw [show analyticOrderAt f (g z₀) = 0 from ?_, zero_mul] <;>
+      grind [hf.comp hg, AnalyticAt.analyticOrderAt_eq_zero]
+  by_cases hf' : analyticOrderAt f (g z₀) = ⊤
+  · -- If `f` is eventually constant but `g` is not, we have `⊤ = ⊤ * (non-zero thing)`
+    rw [hf', analyticOrderAt_eq_top.mpr
+      (EventuallyEq.comp_tendsto (analyticOrderAt_eq_top.mp hf') hg.continuousAt), ENat.top_mul]
+    rw [AnalyticAt.analyticOrderAt_ne_zero (by fun_prop), sub_eq_zero]
+  · -- The interesting case: both orders are finite. First unpack the data:
+    rw [eventuallyConst_iff_analyticOrderAt_sub_eq_top] at hg_nc
+    obtain ⟨r, hr⟩ := ENat.ne_top_iff_exists.mp hf'
+    obtain ⟨s, hs⟩ := ENat.ne_top_iff_exists.mp hg_nc
+    rw [← hr, ← hs, ← ENat.coe_mul, (hf.comp hg).analyticOrderAt_eq_natCast]
+    rw [Eq.comm, hf.analyticOrderAt_eq_natCast] at hr
+    rcases hr with ⟨F, hFa, hFne, hfF⟩
+    rw [Eq.comm, AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)] at hs
+    rcases hs with ⟨G, hGa, hGne, hgG⟩
+    -- Now write `f ∘ g` locally as the product of `(z - z₀) ^ (r * s)` and the
+    -- non-vanishing analytic function `fun z ↦ (G z) ^ r • F (g z)`.
+    refine ⟨fun z ↦ (G z) ^ r • F (g z), by fun_prop, by aesop, ?_⟩
+    filter_upwards [EventuallyEq.comp_tendsto hfF hg.continuousAt, hgG] with z hfz hgz
+    simp only [hfz, Function.comp_def, hgz, smul_eq_mul, mul_pow, mul_smul, mul_comm r s, pow_mul]
+
+/-- If `g` is analytic at `x`, and `g' x ≠ 0`, then the analytic order of
+`f ∘ g` at `x` is the analytic order of `f` at `g x` (even if `f` is not analytic). -/
+lemma analyticOrderAt_comp_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g z₀) (hg' : deriv g z₀ ≠ 0)
+    [CompleteSpace 𝕜] [CharZero 𝕜] :
+    analyticOrderAt (f ∘ g) z₀ = analyticOrderAt f (g z₀) := by
+  by_cases hf : AnalyticAt 𝕜 f (g z₀)
+  · simp [hf.analyticOrderAt_comp hg, hg.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hg']
+  · rw [analyticOrderAt_of_not_analyticAt hf, analyticOrderAt_of_not_analyticAt]
+    rwa [analyticAt_comp_iff_of_deriv_ne_zero hg hg']
+
+end comp
 
 /-!
 ## Level Sets of the Order Function
