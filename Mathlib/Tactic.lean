@@ -88,7 +88,6 @@ public import Mathlib.Tactic.Explode.Pretty
 public import Mathlib.Tactic.Ext
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.ExtractGoal
-public import Mathlib.Tactic.ExtractLets
 public import Mathlib.Tactic.FBinop
 public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.FastInstance
@@ -104,10 +103,8 @@ public import Mathlib.Tactic.Finiteness
 public import Mathlib.Tactic.Finiteness.Attr
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.FunProp.Attr
-public import Mathlib.Tactic.FunProp.ContDiff
 public import Mathlib.Tactic.FunProp.Core
 public import Mathlib.Tactic.FunProp.Decl
-public import Mathlib.Tactic.FunProp.Differentiable
 public import Mathlib.Tactic.FunProp.Elab
 public import Mathlib.Tactic.FunProp.FunctionData
 public import Mathlib.Tactic.FunProp.Mor
@@ -137,7 +134,6 @@ public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
-public import Mathlib.Tactic.LiftLets
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Frontend
@@ -176,6 +172,7 @@ public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PPRoundtrip
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
+public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
@@ -208,6 +205,7 @@ public import Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Irrational
 public import Mathlib.Tactic.NormNum.IsCoprime
+public import Mathlib.Tactic.NormNum.IsSquare
 public import Mathlib.Tactic.NormNum.LegendreSymbol
 public import Mathlib.Tactic.NormNum.ModEq
 public import Mathlib.Tactic.NormNum.NatFactorial

@@ -87,6 +87,16 @@ theorem aeval_X_left_eq_algebraMap (p : K[X]) :
     p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
   induction p using Polynomial.induction_on' <;> simp_all
 
+@[simp]
+lemma liftRingHom_C {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (x : K) :
+    liftRingHom φ hφ (C x) = φ (.C x) :=
+  RatFunc.liftRingHom_algebraMap _ _ _
+
+@[simp]
+lemma liftRingHom_X {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) :
+    RatFunc.liftRingHom φ hφ X = φ (.X) :=
+  RatFunc.liftRingHom_algebraMap _ _ _
+
 end Domain
 
 section Field
@@ -311,7 +321,7 @@ theorem valuation_le_one_of_valuation_X_le_one (hle : v RatFunc.X ≤ 1) (p : K[
 `1 / (monomial n a)` (as an element of the field of rational functions) is equal
 to `(v RatFunc.X) ^ (- n)`. -/
 lemma valuation_inv_monomial_eq_valuation_X_zpow (n : ℕ) {a : K} (ha : a ≠ 0) :
-    v (1 / monomial n a) = v RatFunc.X ^ (- (n : ℤ)) := by
+    v (1 / monomial n a) = v RatFunc.X ^ (-(n : ℤ)) := by
   simpa using valuation_monomial_eq_valuation_X_pow _ hv n ha
 
 end TrivialOnConstants

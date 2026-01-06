@@ -109,7 +109,8 @@ lemma leftKanExtensionUnit_leftKanExtensionObjIsoColimit_hom (X : C) :
 
 @[instance]
 theorem hasColimit_map_comp_ι_comp_grothendieckProj {X Y : D} (f : X ⟶ Y) :
-    HasColimit ((functor L).map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) :=
+    HasColimit (((functor L).map f).toFunctor ⋙ Grothendieck.ι (functor L) Y ⋙
+      grothendieckProj L ⋙ F) :=
   hasColimit_of_iso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
 
 @[deprecated (since := "2025-07-27")]
@@ -123,7 +124,7 @@ noncomputable def leftKanExtensionIsoFiberwiseColimit [HasLeftKanExtension L F] 
     leftKanExtension L F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
   letI : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) :=
       fun X => hasColimit_of_iso <| Iso.symm <|
-        isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
+        isoWhiskerRight (eqToIso congr($((functor L).map_id X).toFunctor)) _ ≪≫
         Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
   Iso.symm <| NatIso.ofComponents
     (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫

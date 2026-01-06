@@ -39,7 +39,7 @@ Note that all composite numbers are pseudoprimes to base 0 and 1, and that the d
 that 0 and 1 are probable primes to any base.
 
 The main theorems are
-- `Nat.exists_infinite_pseudoprimes`: there are infinite pseudoprimes to any base `b ≥ 1`
+- `Nat.exists_infinite_pseudoprimes`: there are infinitely many pseudoprimes to any base `b ≥ 1`
 -/
 
 @[expose] public section

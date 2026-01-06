@@ -19,7 +19,7 @@ then the sets `{x | ∀ i, x i ∈ s i}`, where `s i ∈ C i`,
 generate the σ-algebra on the indexed product of `α i`s.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -84,6 +84,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     rw [this, ← iUnion_univ_pi]
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom
+    -- `grind` can close the goal alone, but is slow
     apply mem_image_of_mem
     grind
   · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩

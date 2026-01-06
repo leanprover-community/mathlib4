@@ -218,7 +218,7 @@ theorem coeff_heval_zero (f : PowerSeries R) :
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp
   · intro n hn
-    simp only [coeff_toFun, smulFamily_toFun, HahnSeries.coeff_smul, smul_eq_mul]
+    simp only [coeff_apply, smulFamily_toFun, HahnSeries.coeff_smul, smul_eq_mul]
     refine mul_eq_zero_of_right (coeff n f) (coeff_eq_zero_of_lt_orderTop ?_)
     by_cases h : 0 < x.orderTop
     · refine (lt_of_lt_of_le ((nsmul_pos_iff hn).mpr h) ?_)

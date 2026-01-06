@@ -18,7 +18,7 @@ Although this notation works for all automorphism groups of algebras, we should 
 notation when `L/K` is an extension of fields.
 -/
 
-@[expose] public section
+public section
 
 section Notation
 
