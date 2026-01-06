@@ -28,8 +28,8 @@ C⋆-algebra into the algebra of bounded linear operators on some Hilbert space.
 
 ## TODO
 
-- Explicitly construct a unit norm cyclic vector ζ such that a ↦ ⟨(f.GNSHom(Unital) a) * ζ, ,ζ⟩ is a
-  state on `A` for both unital and non-unital cases.
+- Explicitly construct a unit norm cyclic vector ζ such that
+  a ↦ ⟨(f.gnsStarAlgHom(Unital) a) * ζ, ,ζ⟩ is a state on `A` for both unital and non-unital cases.
 
 -/
 
