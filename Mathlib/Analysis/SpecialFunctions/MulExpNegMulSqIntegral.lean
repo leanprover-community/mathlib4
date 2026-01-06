@@ -39,7 +39,7 @@ This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_i
 it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
 
@@ -115,9 +115,6 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
     apply Tendsto.const_mul (g x)
     simpa [mul_assoc, inv_mul_eq_div, ← neg_div] using
       tendsto_one_add_div_pow_exp (-(ε * (g x * g x)))
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_integral_mul_one_plus_inv_smul_sq_pow := tendsto_integral_mul_one_add_inv_smul_sq_pow
 
 theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hε : 0 < ε)

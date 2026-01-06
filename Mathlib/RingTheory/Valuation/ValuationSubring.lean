@@ -89,6 +89,9 @@ instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 instance : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
 
+@[simp]
+theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
+
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
   trivial
 

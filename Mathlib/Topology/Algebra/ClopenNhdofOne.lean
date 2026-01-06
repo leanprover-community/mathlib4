@@ -20,7 +20,7 @@ there exists an open normal subgroup contained within it.
 This file is split out from the file `OpenSubgroup` because it needs more imports.
 -/
 
-@[expose] public section
+public section
 
 namespace IsTopologicalGroup
 
@@ -33,10 +33,6 @@ theorem exist_openNormalSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [T
         isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ (H.normalCore_isClosed H.isClosed) }
   exact fun _ b ↦ hH (H.normalCore_le b)
 
-@[deprecated (since := "2025-05-22")]
-alias exist_openNormalSubgroup_sub_clopen_nhd_of_one :=
-  exist_openNormalSubgroup_sub_clopen_nhds_of_one
-
 end IsTopologicalGroup
 
 namespace ProfiniteGrp
@@ -48,8 +44,5 @@ theorem exist_openNormalSubgroup_sub_open_nhds_of_one {G : Type*} [Group G] [Top
     mem_nhds_iff.mpr (by use U)) with ⟨W, hW, h⟩
   rcases IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhds_of_one hW.2 hW.1 with ⟨H, hH⟩
   exact ⟨H, fun _ a ↦ h (hH a)⟩
-
-@[deprecated (since := "2025-05-22")]
-alias exist_openNormalSubgroup_sub_open_nhd_of_one := exist_openNormalSubgroup_sub_open_nhds_of_one
 
 end ProfiniteGrp

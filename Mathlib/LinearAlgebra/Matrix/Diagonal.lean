@@ -19,7 +19,7 @@ diagonal matrix (`range`, `ker` and `rank`).
 matrix, diagonal, linear_map
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

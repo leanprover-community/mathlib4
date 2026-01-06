@@ -440,8 +440,6 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
 
-@[deprecated (since := "2025-05-08")] alias ZSpan.isZLattice := instIsZLatticeRealSpan
-
 section NormedLinearOrderedField
 
 variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
