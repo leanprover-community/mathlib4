@@ -335,7 +335,7 @@ theorem bipartite_iff_all_cycles_even :
       aesop
     exact Colorable.mono_left (fun ⦃v w⦄ a => a) h_colorable
 
-theorem no_odd_cycles_implies_bipartite
+theorem IsBipartite.of_no_odd_cycle
 (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
     G.IsBipartite := (bipartite_iff_all_cycles_even G).mpr h
 
