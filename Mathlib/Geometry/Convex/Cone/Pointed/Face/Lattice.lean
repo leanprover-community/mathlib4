@@ -17,10 +17,9 @@ of a pointed cone `C`.
 ## Main definitions
 
 * `Face C`: the face lattice of `C`.
-* `inf` and `sup`: infimum and supremum operations on `Face C`.
-* `CompleteLattice` instance: the face lattice of a pointed cone using `inf` and `sup`.
-* `prod`: the product of two faces of pointed cones, together with projections `prod_left` and
-  `prod_right`.
+* `min`: minimum operation on `Face C`.
+* `CompleteLattice` instance: the face lattice of a pointed cone.
+* `prod`: the product of two faces of pointed cones, together with projections `fst` and `snd`.
 * `prodOrderIso`: proves that the face lattices of a product cone is the product of the face
   lattices of the individual cones.
 
@@ -82,16 +81,15 @@ instance : InfSet (Face C) where
  sInf S :=
   { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
     isFaceOf := by
-      constructor
-      · exact fun _ sm => sm.1
-      · simp only [Submodule.mem_inf, Submodule.mem_sInf, Set.mem_setOf_eq, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂]
-        intros _ _ a xc yc a0 _ h
-        simp only [xc, true_and]; intros F Fs
-        exact F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
+      refine ⟨fun _ sm => sm.1, ?_⟩
+      simp only [Submodule.mem_inf, Submodule.mem_sInf, Set.mem_setOf_eq, forall_exists_index,
+        and_imp, forall_apply_eq_imp_iff₂]
+      intros _ _ a xc yc a0 _ h
+      simpa [xc] using fun F Fs => F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
   }
 
 instance : SemilatticeInf (Face C) where
+  inf := min
   inf_le_left _ _ _ xi := xi.1
   inf_le_right _ _ _ xi := xi.2
   le_inf _ _ _ h₁₂ h₂₃ _ xi := ⟨h₁₂ xi, h₂₃ xi⟩
@@ -108,33 +106,14 @@ instance : CompleteSemilatticeInf (Face C) where
     refine ⟨f.isFaceOf.le, ?_⟩
     simpa [LE.le] using fun _ xf s sm => fS s sm xf
 
-/-- The supremum of two faces `F₁`, `F₂` of `C` is the smallest face of `C` that contains both `F₁`
-  and `F₂`. -/
-instance : Max (Face C) where
-  max F₁ F₂ := sInf {F : Face C | F₁ ≤ F ∧ F₂ ≤ F}
-
-instance : SemilatticeSup (Face C) where
-  sup := max
-  le_sup_left _ _ := le_sInf (fun _ Fs => Fs.1)
-  le_sup_right _ _ := le_sInf (fun _ Fs => Fs.2)
-  sup_le _ _ _ h₁₂ h₂₃ := sInf_le (Set.mem_sep h₁₂ h₂₃)
-
-/-- The supremum of a set `S` of faces of `C` is the smallest face of `C` that contains all
-  members of `S`. -/
-instance : SupSet (Face C) where sSup S := sInf { F : Face C | ∀ F' ∈ S, F' ≤ F }
-
-instance : CompleteSemilatticeSup (Face C) where
-  __ := instSemilatticeSup
-  sSup := sSup
-  sSup_le _ _ fS := sInf_le_of_le fS le_rfl
-  le_sSup _ f fS := le_sInf_iff.mpr <| fun _ a ↦ a f fS
-
-instance : Lattice (Face C) where
-
-/-- The top face of `C` is `C` itself. -/
-instance : OrderTop (Face C) where
+instance : CompleteLattice (Face C) where
+  inf := min
+  inf_le_left _ _ _ xi := xi.1
+  inf_le_right _ _ _ xi := xi.2
+  le_inf a b c alb blc := by simpa using ⟨alb, blc⟩
   top := C
   le_top F := F.isFaceOf.le
+  __ := completeLatticeOfCompleteSemilatticeInf _
 
 instance : Inhabited (Face C) := ⟨⊤⟩
 
