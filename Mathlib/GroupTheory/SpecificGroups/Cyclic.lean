@@ -626,7 +626,7 @@ theorem prime_card : (Nat.card α).Prime := by
       have hgn_int : g ∈ Subgroup.zpowers (g ^ (n : ℤ)) := by simpa [zpow_natCast]
       have hgcd_int :
           (n : ℤ).gcd (↑(orderOf g) : ℤ) = 1 :=
-        (mem_zpowers_pow_iff (g := g) (k := (n : ℤ))).1 hgn_int
+        (mem_zpowers_zpow_iff (g := g) (k := (n : ℤ))).1 hgn_int
       simp_all only [ne_eq, orderOf_eq_one_iff, Subgroup.mem_top, zpow_natCast,
         Int.gcd_natCast_natCast]
   apply Nat.prime_of_coprime

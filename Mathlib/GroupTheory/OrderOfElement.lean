@@ -17,7 +17,6 @@ public import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Order.Interval.Set.Infinite
-public import Mathlib.Algebra.EuclideanDomain.Defs
 
 /-!
 # Order of an element
@@ -916,8 +915,8 @@ lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
   rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
 
 @[to_additive]
-theorem mem_zpowers_pow_iff {g : G} {k : ℤ} :
-    g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (↑(orderOf g) : ℤ) = 1 := by
+theorem mem_zpowers_zpow_iff {g : G} {k : ℤ} :
+    g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (orderOf g) = 1 := by
   apply Iff.intro
   · intro hgk
     rcases (by simpa [Subgroup.zpowers] using hgk) with ⟨m, hm⟩
@@ -981,6 +980,11 @@ theorem mem_zpowers_pow_iff {g : G} {k : ℤ} :
           simp [this]
         _   = g ^ (a * k + b * n) := by simp [zpow_add]
         _   = g := by simp [hab1']
+
+@[to_additive]
+theorem mem_zpowers_pow_iff {g : G} {k : ℕ} :
+    g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (orderOf g) = 1 := by
+  rw [← zpow_natCast g k, mem_zpowers_zpow_iff, Int.gcd_natCast_natCast]
 
 section Finite
 variable [Finite G]
