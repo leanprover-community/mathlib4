@@ -291,6 +291,9 @@ instance of_iso_inv [NatTrans.CommShift e.hom A] :
   rw [← cancel_epi (e.hom.app (X⟦a⟧)), e.hom_inv_id_app_assoc, ← shift_app_comm_assoc,
     ← Functor.map_comp, e.hom_inv_id_app, Functor.map_id, Category.comp_id]⟩
 
+instance of_iso_symm [NatTrans.CommShift e.hom A] : NatTrans.CommShift e.symm.hom A :=
+  NatTrans.CommShift.of_iso_inv e A
+
 lemma of_isIso [IsIso τ] [NatTrans.CommShift τ A] :
     NatTrans.CommShift (inv τ) A := by
   haveI : NatTrans.CommShift (asIso τ).hom A := by assumption

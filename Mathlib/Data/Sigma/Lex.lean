@@ -99,16 +99,16 @@ instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
     · exact Lex.left _ _ hk
     · exact Lex.right _ _ (_root_.trans hab hc)⟩
 
-instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
+instance [Std.Symm r] [∀ i, Std.Symm (s i)] : Std.Symm (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
     · exact Lex.left _ _ (symm hij)
     · exact Lex.right _ _ (symm hab)
       ⟩
 
-attribute [local instance] IsAsymm.isIrrefl
+attribute [local instance] Std.Asymm.isIrrefl
 
-instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
+instance [Std.Asymm r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, _, hji⟩ | ⟨_, _, hba⟩)
     · exact (asymm hij hji).elim
