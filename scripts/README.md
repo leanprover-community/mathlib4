@@ -87,6 +87,33 @@ to learn about it as well!
   Generates `unused.md` containing a markdown table showing the unused imports,
   and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
 
+**CI debugging tools**
+- `find-ci-errors.sh`
+  Searches through recent failed CI workflow runs to find open PRs whose current CI
+  contains a specific error string. Useful for diagnosing widespread CI issues affecting
+  multiple PRs (e.g., infrastructure problems, toolchain bugs).
+
+  **Usage:**
+  ```bash
+  # Find all PRs currently failing with a specific error
+  ./scripts/find-ci-errors.sh "Error parsing args: cannot parse arguments"
+
+  # Find PRs and automatically add please-merge-master label to trigger rebuilds
+  ./scripts/find-ci-errors.sh --please-merge-master "cannot parse arguments"
+  ```
+
+  **Options:**
+  - `--please-merge-master`: Adds the `please-merge-master` label to all matching PRs,
+    except those with the `merge-conflict` label. The label is automatically removed
+    by CI once the build completes.
+
+  **Notes:**
+  - Downloads CI logs to `/tmp/gh-run-*.log` (cached to avoid re-downloading)
+  - Checks up to 200 recent failed runs
+  - Only reports PRs whose current CI status is failing (ignores PRs fixed by retries)
+
+  **Requirements:** `gh` (GitHub CLI) installed and authenticated, `jq` for JSON parsing.
+
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
