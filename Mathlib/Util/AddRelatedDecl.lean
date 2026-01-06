@@ -26,7 +26,7 @@ syntax optAttrArg := atomic(" (" &"attr" " := " Parser.Term.attrInstance,* ")")?
 def elabOptAttrArg : TSyntax ``optAttrArg → TermElabM (Array Attribute)
   | `(optAttrArg| (attr := $[$attrs],*)) => elabAttrs attrs
   | _ => pure #[]
-#check mkThmOrUnsafeDef
+
 /-- A helper function for constructing a related declaration from an existing one.
 
 This is currently used by the attributes `reassoc` and `elementwise`,
