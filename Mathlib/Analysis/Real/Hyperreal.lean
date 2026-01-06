@@ -165,7 +165,7 @@ theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
 
-/-! #### `ω` -/
+/-! #### ω -/
 
 /-- A sample infinite hyperreal ω = ⟦(0, 1, 2, 3, ⋯)⟧. -/
 def omega : ℝ* := ofSeq Nat.cast
@@ -198,7 +198,7 @@ theorem stdPart_omega : stdPart ω = 0 := by
   rw [stdPart_eq_zero]
   exact archimedeanClassMk_omega_neg.ne
 
-/-! #### `ε` -/
+/-! #### ε -/
 
 /-- A sample infinitesimal hyperreal ε = ⟦(0, 1, 1/2, 1/3, ⋯)⟧. -/
 def epsilon : ℝ* :=
