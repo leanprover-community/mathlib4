@@ -203,7 +203,7 @@ variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N
 
 open CategoryTheory
 
-/-- Given a linear map `f : M → N`, we can obtain a short complex `ker(f) → M → N`. -/
+/-- Given a linear map `f : M → N`, we can obtain a short complex `0 → ker(f) → M → N`. -/
 abbrev LinearMap.shortComplexKer (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
   g := ModuleCat.ofHom.{v} f

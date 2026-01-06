@@ -30,7 +30,7 @@ variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N
 
 open CategoryTheory Abelian
 
-/-- The standard short complex `N → P → M` with `P` projective. -/
+/-- The standard short complex `0 → N → P → M → 0` with `P= R^{⊕M}` free. -/
 noncomputable abbrev ModuleCat.projectiveShortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
     ShortComplex (ModuleCat.{v} R) :=
   let e : Module.Basis M R (M →₀ Shrink.{v} R) :=
@@ -46,7 +46,7 @@ theorem ModuleCat.shortExact_projectiveShortComplex [Small.{v} R] (M : ModuleCat
 instance [Small.{v} R] (M : ModuleCat.{v} R) : Module.Free R M.projectiveShortComplex.X₂ :=
   Module.Free.finsupp R _ _
 
-/-- The standard short complex `N → P → M` with `P` projective. -/
+/-- Given an injective presentaion `M → I`, the short complex `0 → M → I → N → 0`. -/
 noncomputable abbrev CategoryTheory.InjectivePresentation.shortComplex
     {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
