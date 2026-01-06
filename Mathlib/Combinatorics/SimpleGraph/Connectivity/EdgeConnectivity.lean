@@ -45,7 +45,7 @@ def IsEdgeConnected : Prop := ∀ u v, G.IsEdgeReachable k u v
 lemma IsEdgeReachable.symm (h : G.IsEdgeReachable k u v) : G.IsEdgeReachable k v u :=
   fun _ hk ↦ (h hk).symm
 
-lemma IsEdgeReachable_symm : G.IsEdgeReachable k u v ↔ G.IsEdgeReachable k v u :=
+lemma isEdgeReachable_comm : G.IsEdgeReachable k u v ↔ G.IsEdgeReachable k v u :=
   ⟨.symm, .symm⟩
 
 @[trans]
