@@ -235,11 +235,6 @@ theorem faceOppositeCentroid_mem_affineSpan_face [CharZero k] (s : Simplex k P n
     s.faceOppositeCentroid i ∈ affineSpan k (Set.range (s.faceOpposite i).points) :=
   centroid_mem_affineSpan (s.faceOpposite i)
 
-/-- The `faceOppositeCentroid` lies in the affine span of all simplex vertices. -/
-theorem faceOppositeCentroid_mem_affineSpan [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
-    s.faceOppositeCentroid i ∈ affineSpan k (Set.range s.points) := by
-  exact affineSpan_mono _ (by simp) (s.faceOppositeCentroid_mem_affineSpan_face i)
-
 /-- The `faceOppositeCentroid` is the affine combination of the complement vertices with equal
  weights `1/n`. -/
 theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i : Fin (n + 1)) :
