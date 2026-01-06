@@ -258,7 +258,7 @@ theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n 
 @[simp]
 theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     degree (map f p) = degree p ↔ f (leadingCoeff p) ≠ 0 ∨ p = 0 := by
-  rcases eq_or_ne p 0 with h|h
+  rcases eq_or_ne p 0 with h | h
   · simp [h]
   simp only [h, or_false]
   refine ⟨fun h2 ↦ ?_, degree_map_eq_of_leadingCoeff_ne_zero f⟩
@@ -270,7 +270,7 @@ theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
 @[simp]
 theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
-  rcases eq_or_ne (natDegree p) 0 with h|h
+  rcases eq_or_ne (natDegree p) 0 with h | h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 

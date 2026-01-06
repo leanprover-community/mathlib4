@@ -166,6 +166,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
 public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
@@ -325,7 +326,6 @@ public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 public import Mathlib.Algebra.GCDMonoid.Multiset
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.GCDMonoid.PUnit
-public import Mathlib.Algebra.GeomSum
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.Algebra.Group.Action.Basic
@@ -389,6 +389,7 @@ public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.Group.MinimalAxioms
 public import Mathlib.Algebra.Group.Nat.Defs
@@ -609,6 +610,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+public import Mathlib.Algebra.Homology.HomotopyCategory.SpectralObject
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.ImageToKernel
@@ -1157,7 +1159,6 @@ public import Mathlib.Algebra.Ring.Ext
 public import Mathlib.Algebra.Ring.Fin
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.GrindInstances
-public import Mathlib.Algebra.Ring.Hom.Basic
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Ring.Idempotent
@@ -1294,6 +1295,8 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
+public import Mathlib.AlgebraicGeometry.Morphisms.FlatMono
 public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
@@ -1314,6 +1317,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.AlgebraicGeometry.Normalization
 public import Mathlib.AlgebraicGeometry.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Over
 public import Mathlib.AlgebraicGeometry.PointsPi
@@ -1371,6 +1375,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
@@ -1425,6 +1430,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
+public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
+public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
@@ -1781,6 +1788,7 @@ public import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.Fourier.FourierTransformDeriv
 public import Mathlib.Analysis.Fourier.Inversion
+public import Mathlib.Analysis.Fourier.LpSpace
 public import Mathlib.Analysis.Fourier.Notation
 public import Mathlib.Analysis.Fourier.PoissonSummation
 public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
@@ -1985,6 +1993,7 @@ public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Analysis.Normed.Operator.Conformal
+public import Mathlib.Analysis.Normed.Operator.ContinuousAlgEquiv
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
@@ -2079,6 +2088,7 @@ public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Seminorm
 public import Mathlib.Analysis.SpecialFunctions.Arcosh
 public import Mathlib.Analysis.SpecialFunctions.Arsinh
+public import Mathlib.Analysis.SpecialFunctions.Artanh
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
 public import Mathlib.Analysis.SpecialFunctions.Choose
@@ -2127,6 +2137,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
+public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
@@ -2207,6 +2218,7 @@ public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Abelian.Indization
 public import Mathlib.CategoryTheory.Abelian.Injective.Basic
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+public import Mathlib.CategoryTheory.Abelian.Injective.Ext
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 public import Mathlib.CategoryTheory.Abelian.LeftDerived
@@ -2256,6 +2268,7 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Balanced
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Bicategory.CatEnriched
@@ -2265,6 +2278,7 @@ public import Mathlib.CategoryTheory.Bicategory.EqToHom
 public import Mathlib.CategoryTheory.Bicategory.Extension
 public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
+public import Mathlib.CategoryTheory.Bicategory.Functor.Cat.ObjectProperty
 public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
@@ -2281,6 +2295,7 @@ public import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.Bicategory.LocallyGroupoid
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Monad.Basic
@@ -2434,6 +2449,7 @@ public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Derived.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 public import Mathlib.CategoryTheory.Functor.EpiMono
@@ -2451,6 +2467,7 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Functor.RegularEpi
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Functor.TwoSquare
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
@@ -2561,6 +2578,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
@@ -2744,6 +2762,7 @@ public import Mathlib.CategoryTheory.Localization.StructuredArrow
 public import Mathlib.CategoryTheory.Localization.Triangulated
 public import Mathlib.CategoryTheory.Localization.Trifunctor
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 public import Mathlib.CategoryTheory.LocallyDirected
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.Monad.Adjunction
@@ -2806,7 +2825,6 @@ public import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
 public import Mathlib.CategoryTheory.Monoidal.DayConvolution.DayFunctor
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.End
-public import Mathlib.CategoryTheory.Monoidal.ExternalProduct
 public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
@@ -2898,6 +2916,7 @@ public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.PathCategory.Basic
 public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.CategoryTheory.Pi.Monoidal
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
@@ -2951,6 +2970,7 @@ public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
 public import Mathlib.CategoryTheory.Quotient.Preadditive
+public import Mathlib.CategoryTheory.RegularCategory.Basic
 public import Mathlib.CategoryTheory.RepresentedBy
 public import Mathlib.CategoryTheory.Retract
 public import Mathlib.CategoryTheory.Shift.Adjunction
@@ -3045,6 +3065,7 @@ public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 public import Mathlib.CategoryTheory.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.PseudofunctorSheafOver
 public import Mathlib.CategoryTheory.Sites.Pullback
+public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.CategoryTheory.Sites.SheafHom
@@ -3069,6 +3090,13 @@ public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 public import Mathlib.CategoryTheory.SmallRepresentatives
 public import Mathlib.CategoryTheory.Square
+public import Mathlib.CategoryTheory.Subfunctor.Basic
+public import Mathlib.CategoryTheory.Subfunctor.Equalizer
+public import Mathlib.CategoryTheory.Subfunctor.Finite
+public import Mathlib.CategoryTheory.Subfunctor.Image
+public import Mathlib.CategoryTheory.Subfunctor.OfSection
+public import Mathlib.CategoryTheory.Subfunctor.Sieves
+public import Mathlib.CategoryTheory.Subfunctor.Subobject
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
 public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.Subobject.Comma
@@ -3229,6 +3257,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
@@ -3261,7 +3290,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Matching
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Partition
-public import Mathlib.Combinatorics.SimpleGraph.Path
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
@@ -3281,6 +3309,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 public import Mathlib.Combinatorics.SimpleGraph.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Tutte
+public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
@@ -4500,6 +4529,7 @@ public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Complex.Orientation
 public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.ConvexSpace
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Mathlib.LinearAlgebra.DFinsupp
@@ -5045,6 +5075,7 @@ public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Portmanteau
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.MeasureTheory.Measure.Prokhorov
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.Measure.Regular
@@ -5219,6 +5250,7 @@ public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
+public import Mathlib.NumberTheory.ModularForms.Bounds
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
@@ -5270,7 +5302,6 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House
-public import Mathlib.NumberTheory.NumberField.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
@@ -5288,6 +5319,7 @@ public import Mathlib.NumberTheory.NumberField.Units.Regulator
 public import Mathlib.NumberTheory.Ostrowski
 public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.Complex
+public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.NumberTheory.Padics.Hensel
 public import Mathlib.NumberTheory.Padics.MahlerBasis
 public import Mathlib.NumberTheory.Padics.PadicIntegers
@@ -5324,6 +5356,7 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 public import Mathlib.NumberTheory.Transcendental.Liouville.Measure
 public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 public import Mathlib.NumberTheory.VonMangoldt
 public import Mathlib.NumberTheory.WellApproximable
@@ -5339,7 +5372,6 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Birkhoff
-public import Mathlib.Order.BooleanAlgebra
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Order.BooleanAlgebra.Defs
 public import Mathlib.Order.BooleanAlgebra.Set
@@ -5391,6 +5423,7 @@ public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.CompleteLattice.Group
 public import Mathlib.Order.CompleteLattice.Lemmas
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+public import Mathlib.Order.CompleteLattice.PiLex
 public import Mathlib.Order.CompleteLattice.SetLike
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompletePartialOrder
@@ -5740,13 +5773,9 @@ public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
 public import Mathlib.RepresentationTheory.FiniteIndex
-public import Mathlib.RepresentationTheory.GroupCohomology.Basic
-public import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
-public import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
-public import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
-public import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
@@ -6091,10 +6120,12 @@ public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.MvPolynomial
 public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.RingTheory.MvPolynomial.EulerIdentity
+public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.MvPolynomial.Groebner
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.Ideal
+public import Mathlib.RingTheory.MvPolynomial.IrreducibleQuadratic
 public import Mathlib.RingTheory.MvPolynomial.Localization
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
@@ -6534,7 +6565,6 @@ public import Mathlib.Tactic.Explode.Pretty
 public import Mathlib.Tactic.Ext
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.ExtractGoal
-public import Mathlib.Tactic.ExtractLets
 public import Mathlib.Tactic.FBinop
 public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.FastInstance
@@ -6550,10 +6580,8 @@ public import Mathlib.Tactic.Finiteness
 public import Mathlib.Tactic.Finiteness.Attr
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.FunProp.Attr
-public import Mathlib.Tactic.FunProp.ContDiff
 public import Mathlib.Tactic.FunProp.Core
 public import Mathlib.Tactic.FunProp.Decl
-public import Mathlib.Tactic.FunProp.Differentiable
 public import Mathlib.Tactic.FunProp.Elab
 public import Mathlib.Tactic.FunProp.FunctionData
 public import Mathlib.Tactic.FunProp.Mor
@@ -6583,7 +6611,6 @@ public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
-public import Mathlib.Tactic.LiftLets
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Frontend
@@ -6622,6 +6649,7 @@ public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PPRoundtrip
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
+public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
@@ -6890,7 +6918,6 @@ public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 public import Mathlib.Topology.Algebra.ProperConstSMul
-public import Mathlib.Topology.Algebra.RestrictedProduct
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.Ring.Basic
@@ -7001,11 +7028,9 @@ public import Mathlib.Topology.Closure
 public import Mathlib.Topology.ClusterPt
 public import Mathlib.Topology.Coherent
 public import Mathlib.Topology.CompactOpen
-public import Mathlib.Topology.Compactification.OnePoint
 public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 public import Mathlib.Topology.Compactification.OnePoint.Sphere
-public import Mathlib.Topology.Compactification.OnePointEquiv
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.Compactness.Compact
@@ -7065,7 +7090,9 @@ public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.GeneratedBy
 public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
+public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
 public import Mathlib.Topology.Defs.Induced
@@ -7335,7 +7362,6 @@ public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
-public import Mathlib.Topology.StoneCech
 public import Mathlib.Topology.TietzeExtension
 public import Mathlib.Topology.Ultrafilter
 public import Mathlib.Topology.UniformSpace.AbsoluteValue
@@ -7371,6 +7397,7 @@ public import Mathlib.Topology.UniformSpace.UniformApproximation
 public import Mathlib.Topology.UniformSpace.UniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Uniformizable
 public import Mathlib.Topology.UnitInterval
 public import Mathlib.Topology.UrysohnsBounded
 public import Mathlib.Topology.UrysohnsLemma

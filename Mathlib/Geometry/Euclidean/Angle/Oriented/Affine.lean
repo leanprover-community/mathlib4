@@ -46,7 +46,7 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
 
 @[inherit_doc] scoped notation "∡" => EuclideanGeometry.oangle
 
-/-- Oriented angles are continuous when neither end point equals the middle point. -/
+/-- Oriented angles are continuous when neither endpoint equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
   unfold oangle
@@ -214,7 +214,7 @@ theorem oangle_sign_eq_zero_iff_collinear {p₁ p₂ p₃ : P} :
 
 /-- An oriented angle is not zero and `π` if and only if the three points are not collinear. -/
 theorem oangle_ne_zero_and_ne_pi_iff_not_collinear {p₁ p₂ p₃ : P} :
-  ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ ¬ Collinear ℝ {p₁, p₂, p₃} := by
+    ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ ¬ Collinear ℝ {p₁, p₂, p₃} := by
   rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent, affineIndependent_iff_not_collinear_set]
 
 /-- If twice the oriented angles between two triples of points are equal, one triple is affinely

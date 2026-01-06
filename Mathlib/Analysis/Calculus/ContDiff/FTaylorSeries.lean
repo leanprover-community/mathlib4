@@ -216,14 +216,14 @@ theorem hasFTaylorSeriesUpToOn_top_iff' (hN : ∞ ≤ N) :
 
 /-- If a function has a Taylor series at order at least `1`, then the term of order `1` of this
 series is a derivative of `f`. -/
-theorem HasFTaylorSeriesUpToOn.hasFDerivWithinAt (h : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)
+theorem HasFTaylorSeriesUpToOn.hasFDerivWithinAt (h : HasFTaylorSeriesUpToOn n f p s) (hn : n ≠ 0)
     (hx : x ∈ s) : HasFDerivWithinAt f (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) s x := by
   have A : ∀ y ∈ s, f y = (continuousMultilinearCurryFin0 𝕜 E F) (p y 0) := fun y hy ↦
     (h.zero_eq y hy).symm
   suffices H : HasFDerivWithinAt (continuousMultilinearCurryFin0 𝕜 E F ∘ (p · 0))
     (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) s x from H.congr A (A x hx)
   rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
-  have : ((0 : ℕ) : ℕ∞) < n := zero_lt_one.trans_le hn
+  have : ((0 : ℕ) : ℕ∞) < n := pos_iff_ne_zero.mpr hn
   convert h.fderivWithin _ this x hx
   ext y v
   change (p x 1) (snoc 0 y) = (p x 1) (cons y v)
@@ -231,25 +231,25 @@ theorem HasFTaylorSeriesUpToOn.hasFDerivWithinAt (h : HasFTaylorSeriesUpToOn n f
   rw [Unique.eq_default (α := Fin 1) i]
   rfl
 
-theorem HasFTaylorSeriesUpToOn.differentiableOn (h : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n) :
+theorem HasFTaylorSeriesUpToOn.differentiableOn (h : HasFTaylorSeriesUpToOn n f p s) (hn : n ≠ 0) :
     DifferentiableOn 𝕜 f s := fun _x hx => (h.hasFDerivWithinAt hn hx).differentiableWithinAt
 
 /-- If a function has a Taylor series at order at least `1` on a neighborhood of `x`, then the term
 of order `1` of this series is a derivative of `f` at `x`. -/
-theorem HasFTaylorSeriesUpToOn.hasFDerivAt (h : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)
+theorem HasFTaylorSeriesUpToOn.hasFDerivAt (h : HasFTaylorSeriesUpToOn n f p s) (hn : n ≠ 0)
     (hx : s ∈ 𝓝 x) : HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) x :=
   (h.hasFDerivWithinAt hn (mem_of_mem_nhds hx)).hasFDerivAt hx
 
 /-- If a function has a Taylor series at order at least `1` on a neighborhood of `x`, then
 in a neighborhood of `x`, the term of order `1` of this series is a derivative of `f`. -/
 theorem HasFTaylorSeriesUpToOn.eventually_hasFDerivAt (h : HasFTaylorSeriesUpToOn n f p s)
-    (hn : 1 ≤ n) (hx : s ∈ 𝓝 x) :
+    (hn : n ≠ 0) (hx : s ∈ 𝓝 x) :
     ∀ᶠ y in 𝓝 x, HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p y 1)) y :=
   (eventually_eventually_nhds.2 hx).mono fun _y hy => h.hasFDerivAt hn hy
 
 /-- If a function has a Taylor series at order at least `1` on a neighborhood of `x`, then
 it is differentiable at `x`. -/
-theorem HasFTaylorSeriesUpToOn.differentiableAt (h : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)
+theorem HasFTaylorSeriesUpToOn.differentiableAt (h : HasFTaylorSeriesUpToOn n f p s) (hn : n ≠ 0)
     (hx : s ∈ 𝓝 x) : DifferentiableAt 𝕜 f x :=
   (h.hasFDerivAt hn hx).differentiableAt
 
@@ -750,12 +750,12 @@ theorem hasFTaylorSeriesUpTo_top_iff' (hN : ∞ ≤ N) :
 
 /-- If a function has a Taylor series at order at least `1`, then the term of order `1` of this
 series is a derivative of `f`. -/
-theorem HasFTaylorSeriesUpTo.hasFDerivAt (h : HasFTaylorSeriesUpTo n f p) (hn : 1 ≤ n) (x : E) :
+theorem HasFTaylorSeriesUpTo.hasFDerivAt (h : HasFTaylorSeriesUpTo n f p) (hn : n ≠ 0) (x : E) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) x := by
   rw [← hasFDerivWithinAt_univ]
   exact (hasFTaylorSeriesUpToOn_univ_iff.2 h).hasFDerivWithinAt hn (mem_univ _)
 
-theorem HasFTaylorSeriesUpTo.differentiable (h : HasFTaylorSeriesUpTo n f p) (hn : 1 ≤ n) :
+theorem HasFTaylorSeriesUpTo.differentiable (h : HasFTaylorSeriesUpTo n f p) (hn : n ≠ 0) :
     Differentiable 𝕜 f := fun x => (h.hasFDerivAt hn x).differentiableAt
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`

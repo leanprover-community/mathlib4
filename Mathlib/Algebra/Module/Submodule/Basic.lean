@@ -161,8 +161,6 @@ theorem notMem_of_ortho {x : M} {N : Submodule R M}
   intro hx
   simpa using ortho (-1) x hx
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_ortho := notMem_of_ortho
-
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=
   mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (notMem_of_ortho ortho)
