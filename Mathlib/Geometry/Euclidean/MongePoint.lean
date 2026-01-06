@@ -103,7 +103,7 @@ theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ
   field_simp
   have h : Invertible (n + 2 + 1 : ℝ) := by norm_cast; apply invertibleOfPos
   rw [smul_eq_iff_eq_invOf_smul, smul_sum]
-  rw [finset_centroid_eq, centroid_eq_affineCombination]
+  rw [univ_centroid_eq, centroid_eq_affineCombination]
   rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
   simp only [centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_ofNat,
     Nat.cast_one, invOf_eq_inv]

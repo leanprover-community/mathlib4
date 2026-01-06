@@ -57,7 +57,7 @@ variable {n : ℕ}
 /-- The centroid of a simplex is the `Finset.centroid` of the set of all its vertices. -/
 abbrev centroid (t : Affine.Simplex k P n) : P := Finset.univ.centroid k t.points
 
-theorem finset_centroid_eq (s : Simplex k P n) :
+theorem univ_centroid_eq (s : Simplex k P n) :
     Finset.univ.centroid k s.points = s.centroid := rfl
 
 /-- The centroid lines in the affine span of the simplex's vertices. -/
@@ -69,18 +69,19 @@ theorem centroid_mem_affineSpan [CharZero k] {n : ℕ} (s : Simplex k P n) :
 theorem centroid_eq_affineCombination (s : Simplex k P n) :
     s.centroid = affineCombination k univ s.points (centroidWeights k univ) := by rfl
 
-/-- The centroid does not lie in the affine span of the simplex's points with one vertex removed. -/
-theorem centroid_notMem_affineSpan_compl [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
-    s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := by
+/-- The centroid of a simplex does not lie in the affine span of any proper subset of its
+ vertices. -/
+theorem centroid_notMem_affineSpan_ne_univ [CharZero k] (s : Simplex k P n)
+    {t : Set (Fin (n + 1))} (ht : t ≠ Set.univ) :
+    s.centroid ∉ affineSpan k (s.points '' t) := by
   intro h
+  have hssubset : t ⊂ Set.univ := by grind
+  obtain ⟨i, hi⟩ := Set.exists_of_ssubset hssubset
   rw [s.centroid_eq_affineCombination] at h
   set w := (centroidWeights k (univ : Finset (Fin (n + 1)))) with wdef
-  have hw : ∑ i, w i = 1 := by
-    rw [sum_centroidWeights_eq_one_of_card_ne_zero]
-    simp
-  have hi : i ∉ ({i}ᶜ : Set (Fin (n+1))) := by simp
+  have hw : ∑ i, w i = 1 := by rw [sum_centroidWeights_eq_one_of_nonempty _ _ (by simp)]
   have h1 := AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan s.independent hw h
-    (by simp) hi
+    (by simp) hi.2
   have h2 : w i = (1 : k) / (n+1) := by
     simp [wdef, centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add,
       Nat.cast_one]
@@ -90,22 +91,13 @@ theorem centroid_notMem_affineSpan_compl [CharZero k] (s : Simplex k P n) (i : F
 /-- The vector from any point to the centroid is the average of vectors to the simplex vertices. -/
 theorem centroid_vsub_eq {n : ℕ} [CharZero k] (s : Simplex k P n) (p : P) :
     s.centroid -ᵥ p = ((n + 1) : k)⁻¹ • ∑ x, (s.points x -ᵥ p) := by
-  rw [centroid, Finset.centroid_def]
-  have hsum : ∑ i : Fin (n+1), centroidWeights k univ i = 1 := by
-    rw [sum_centroidWeights_eq_one_of_cast_card_ne_zero _ (by simp; norm_cast)]
-  rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hsum p]
-  simp only [weightedVSubOfPoint_apply, centroidWeights_apply, card_univ, Fintype.card_fin,
-    Nat.cast_add, Nat.cast_one, vadd_vsub, ← smul_sum]
-
-/-- The vector from a vertex to the centroid equals the average of vertex-to-vertex vectors. -/
-theorem centroid_vsub_point_eq_smul_sum_vsub {n : ℕ} [CharZero k] (s : Simplex k P n)
-    (i : Fin (n + 1)) :
-    s.centroid -ᵥ s.points i = ((n + 1) : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) :=
-  centroid_vsub_eq s (s.points i)
+  rw [centroid_vsub_const _ _ (by simp), centroid_def, affineCombination_eq_linear_combination
+    (hw := sum_centroidWeights_eq_one_of_nonempty _ _ (by simp))]
+  simp [smul_sum]
 
 theorem centroid_eq_smul_sum_vsub_vadd [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid = ((n + 1) : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) +ᵥ s.points i := by
-  rw [← centroid_vsub_point_eq_smul_sum_vsub s i, vsub_vadd]
+  rw [← s.centroid_vsub_eq, vsub_vadd]
 
 theorem smul_centroid_vsub_point_eq_sum_vsub [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
@@ -198,8 +190,9 @@ theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
 theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     AffineIndependent k (Function.update s.points i s.centroid) := by
-  have h : s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := centroid_notMem_affineSpan_compl s i
-  exact AffineIndependent.affineIndependent_update_of_notMem_affineSpan s.independent h
+  have : s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) :=
+    s.centroid_notMem_affineSpan_ne_univ (by simp)
+  exact AffineIndependent.affineIndependent_update_of_notMem_affineSpan s.independent this
 
 theorem centroid_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
     [AffineSpace V₂ P₂] {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂)
@@ -245,8 +238,7 @@ theorem faceOppositeCentroid_mem_affineSpan_face [CharZero k] (s : Simplex k P n
 /-- The `faceOppositeCentroid` lies in the affine span of all simplex vertices. -/
 theorem faceOppositeCentroid_mem_affineSpan [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i ∈ affineSpan k (Set.range s.points) := by
-  have h : Set.range (s.faceOpposite i).points ⊆ Set.range s.points := by simp
-  exact affineSpan_mono _ h (s.faceOppositeCentroid_mem_affineSpan_face i)
+  exact affineSpan_mono _ (by simp) (s.faceOppositeCentroid_mem_affineSpan_face i)
 
 /-- The `faceOppositeCentroid` is the affine combination of the complement vertices with equal
  weights `1/n`. -/
@@ -335,7 +327,7 @@ theorem faceOppositeCentroid_vsub_point_eq_smul_vsub [CharZero k] (s : Simplex k
     s.faceOppositeCentroid i -ᵥ s.points i =
     ((n + 1) : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) := by
   rw [← vsub_sub_vsub_cancel_right _ (s.centroid) (s.points i),
-    faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, centroid_vsub_point_eq_smul_sum_vsub,
+    faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, centroid_vsub_eq,
     ← sub_smul, smul_smul]
   congr
   rw [mul_sub, add_mul, mul_inv_cancel₀ (NeZero.ne (n : k)), mul_inv_cancel₀ (by norm_cast),
@@ -356,8 +348,8 @@ theorem point_vsub_centroid_eq_smul_vsub [CharZero k] (s : Simplex k P n) (i : F
   symm
   rw [← vsub_sub_vsub_cancel_right _ _ (s.points i),
     faceOppositeCentroid_vsub_point_eq_smul_sum_vsub,
-    centroid_vsub_point_eq_smul_sum_vsub, ← neg_vsub_eq_vsub_rev,
-    centroid_vsub_point_eq_smul_sum_vsub, ← sub_smul, smul_smul, ← neg_smul]
+    centroid_vsub_eq, ← neg_vsub_eq_vsub_rev,
+    centroid_vsub_eq, ← sub_smul, smul_smul, ← neg_smul]
   congr
   simp_rw [mul_sub, sub_eq_iff_eq_add, neg_add_eq_sub]
   symm
