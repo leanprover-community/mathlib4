@@ -67,7 +67,7 @@ theorem single_smul (i j : ι) (r : R) (v : ι → M) :
 
 @[simp]
 lemma diagonal_const_smul (r : R) (v : ι → M) :
-    Matrix.diagonal (n := ι) (fun _ ↦ r) • v = r • v := by
+    diagonal (fun _ : ι ↦ r) • v = r • v := by
   ext i
   simp [Matrix.diagonal_apply]
 
