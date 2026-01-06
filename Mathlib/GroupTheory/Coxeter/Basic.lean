@@ -356,7 +356,6 @@ theorem simple_determines_coxeterSystem :
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
-  intro i
   nth_rw 2 [h]
   simp [simple]
 

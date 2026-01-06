@@ -25,7 +25,7 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
   the second coefficient of the characteristic polynomial.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset

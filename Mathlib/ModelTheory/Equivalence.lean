@@ -145,7 +145,7 @@ protected theorem symm {φ ψ : L.BoundedFormula α n}
   rw [BoundedFormula.realize_iff, Iff.comm, ← BoundedFormula.realize_iff]
   exact h M v xs
 
-instance : IsSymm (L.BoundedFormula α n) T.Iff :=
+instance : Std.Symm (α := L.BoundedFormula α n) T.Iff :=
   ⟨fun _ _ => Iff.symm⟩
 
 @[trans]
