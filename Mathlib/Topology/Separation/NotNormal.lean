@@ -55,14 +55,6 @@ theorem mk_lt_two_pow_mk_dense [NormalSpace X] {s d : Set X} (hs : IsClosed s)
     [DiscreteTopology s] (hd : Dense d) : #s < 2 ^ #d :=
   (#s).cantor.trans_le <| hs.two_pow_mk_le_two_pow_mk_dense hd
 
-theorem not_normal_of_mk_two_pow_dense_le_mk_two_pow {s d : Set X} (hs : IsClosed s)
-    [DiscreteTopology s] (hd : Dense d) (hds : (2 : Cardinal) ^ #d < 2 ^ #s) : ¬NormalSpace X :=
-  fun _ ↦ (hs.two_pow_mk_le_two_pow_mk_dense hd).not_gt hds
-
-theorem not_normal_of_two_pow_mk_dense_le_mk {s d : Set X} (hs : IsClosed s)
-    [DiscreteTopology s] (hd : Dense d) (hds : 2 ^ #d ≤ #s) : ¬NormalSpace X :=
-  fun _ ↦ (hs.mk_lt_two_pow_mk_dense hd).not_ge hds
-
 variable [SeparableSpace X]
 
 theorem two_pow_mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
