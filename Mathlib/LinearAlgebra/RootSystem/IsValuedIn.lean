@@ -129,12 +129,17 @@ lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsS
 instance [P.IsCrystallographic] [Algebra ℚ R] : P.IsValuedIn ℚ :=
   IsValuedIn.trans P (T := ℤ) (S := ℚ)
 
+@[simp] lemma algebraMap_pairingIn' (T : Type*)
+    [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R] [P.IsValuedIn T] [P.IsValuedIn S]
+    [FaithfulSMul S R] (i j : ι) :
+    algebraMap T S (P.pairingIn T i j) = P.pairingIn S i j := by
+  apply FaithfulSMul.algebraMap_injective S R
+  rw [← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq]
+  simp
+
 @[simp] lemma pairingIn_rat [Nontrivial R] [P.IsCrystallographic] [Algebra ℚ R] (i j : ι) :
     P.pairingIn ℚ i j = P.pairingIn ℤ i j := by
-  apply FaithfulSMul.algebraMap_injective ℚ R
-  have : algebraMap ℤ R = algebraMap ℚ R ∘ algebraMap ℤ ℚ := by simp
-  rw [← eq_intCast (algebraMap ℤ ℚ), ← comp_apply (f := algebraMap ℚ R) (g := algebraMap ℤ ℚ),
-    ← this, algebraMap_pairingIn, algebraMap_pairingIn]
+  simp [← P.algebraMap_pairingIn' ℚ ℤ]
 
 lemma coroot'_apply_apply_mem_of_mem_span [Module S M] [IsScalarTower S R M] [P.IsValuedIn S]
     {x : M} (hx : x ∈ span S (range P.root)) (i : ι) :

@@ -39,7 +39,7 @@ the vanishing of certain `Ext` typs and length of maximal regular sequence in a 
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing LinearMap Module
 

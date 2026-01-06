@@ -20,7 +20,7 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 (see `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`).
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]

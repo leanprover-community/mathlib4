@@ -28,7 +28,7 @@ to call these lemmas, and give a straightforward proof by induction.
 
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 A : Type*}
 
