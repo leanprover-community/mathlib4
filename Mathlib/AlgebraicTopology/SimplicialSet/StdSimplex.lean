@@ -103,6 +103,10 @@ lemma objMk_apply {n m : ℕ} (f : Fin (m + 1) →o Fin (n + 1)) (i : Fin (m + 1
     objMk.{u} (n := ⦋n⦌) (m := op ⦋m⦌) f i = f i :=
   rfl
 
+lemma objMk_bijective {n : SimplexCategory} {m : SimplexCategoryᵒᵖ} :
+    Function.Bijective (objMk (n := n) (m := m)) :=
+  (objEquiv.trans homEquivOrderHom).symm.bijective
+
 /-- The `m`-simplices of the `n`-th standard simplex are
 the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
