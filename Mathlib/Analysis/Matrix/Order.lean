@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 /-!
 # The partial order on matrices
@@ -165,11 +165,12 @@ lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 @[deprecated CFC.isUnit_sqrt_iff (since := "2025-09-22")]
 lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A
 
-lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
+end sqrtDeprecated
+
+lemma inv_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
+    (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
   rw [eq_comm, CFC.sqrt_eq_iff _ _  hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
-
-end sqrtDeprecated
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem dotProduct_mulVec_zero_iff {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
@@ -283,6 +284,25 @@ lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜}
 
 @[deprecated (since := "2025-08-07")] alias PosDef.posDef_iff_eq_conjTranspose_mul_self :=
   CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
+
+/-- This is the polar decomposition for invertible matrices. -/
+theorem IsUnit.eq_unitaryGroup_mul_posDef [DecidableEq n] {A : Matrix n n 𝕜} (hA : IsUnit A) :
+    ∃ (U : unitaryGroup n 𝕜) (P : Matrix n n 𝕜) (_ : P.PosDef), A = U * P :=
+  have h : (CFC.abs A).PosDef := by
+    refine (IsUnit.isStrictlyPositive ?_ (CFC.abs_nonneg A)).posDef
+    exact (CFC.isUnit_sqrt_iff (star A * A)).mpr <| by simp [hA]
+  have : Invertible (CFC.abs A) := h.isStrictlyPositive.isUnit.invertible
+  let U := A * (CFC.abs A)⁻¹
+  have hAU : A = U * CFC.abs A := by simp [U, mul_assoc]
+  have : IsSelfAdjoint (CFC.abs A)⁻¹ := by
+    simp only [IsSelfAdjoint, CFC.abs, star_eq_conjTranspose]
+    rw [(posSemidef_conjTranspose_mul_self A).inv_sqrt,
+      (CFC.sqrt_nonneg (Aᴴ * A)⁻¹).isSelfAdjoint.isHermitian.eq]
+  have hU : U ∈ unitaryGroup n 𝕜 := by
+    simp only [mem_unitaryGroup_iff', StarMul.star_mul, U]
+    rw [mul_assoc, ← mul_assoc _ A, ← CFC.abs_mul_abs A]
+    simp [mul_assoc, this.star_eq]
+  ⟨⟨U, hU⟩, CFC.abs A, h, hAU⟩
 
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
