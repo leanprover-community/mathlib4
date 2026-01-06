@@ -360,25 +360,25 @@ theorem image_ofSnowflaking_emetricClosedBall (x : Snowflaking X α hα₀ hα�
 
 @[simp]
 theorem ediam_image_ofSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
-    EMetric.diam (ofSnowflaking '' s) = EMetric.diam s ^ α⁻¹ := by
+    ediam (ofSnowflaking '' s) = ediam s ^ α⁻¹ := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simp only [ENNReal.rpow_inv_le_iff hα₀, EMetric.diam_le_iff, Set.forall_mem_image,
+  simp only [ENNReal.rpow_inv_le_iff hα₀, ediam_le_iff, Set.forall_mem_image,
     edist_ofSnowflaking_ofSnowflaking]
 
 @[simp]
 theorem ediam_preimage_toSnowflaking (s : Set (Snowflaking X α hα₀ hα₁)) :
-    EMetric.diam (toSnowflaking ⁻¹' s) = EMetric.diam s ^ α⁻¹ := by
+    ediam (toSnowflaking ⁻¹' s) = ediam s ^ α⁻¹ := by
   rw [← image_ofSnowflaking_eq_preimage, ediam_image_ofSnowflaking]
 
 @[simp]
 theorem ediam_preimage_ofSnowflaking (s : Set X) :
-    EMetric.diam (ofSnowflaking ⁻¹' s : Set (Snowflaking X α hα₀ hα₁)) = EMetric.diam s ^ α := by
-  rw [← ENNReal.rpow_inv_rpow hα₀.ne' (EMetric.diam _), ← ediam_preimage_toSnowflaking,
+    ediam (ofSnowflaking ⁻¹' s : Set (Snowflaking X α hα₀ hα₁)) = ediam s ^ α := by
+  rw [← ENNReal.rpow_inv_rpow hα₀.ne' (ediam _), ← ediam_preimage_toSnowflaking,
     ← Set.preimage_comp, ofSnowflaking_comp_toSnowflaking, Set.preimage_id]
 
 @[simp]
 theorem ediam_image_toSnowflaking (s : Set X) :
-    EMetric.diam (toSnowflaking '' s : Set (Snowflaking X α hα₀ hα₁)) = EMetric.diam s ^ α := by
+    ediam (toSnowflaking '' s : Set (Snowflaking X α hα₀ hα₁)) = ediam s ^ α := by
   simp [image_toSnowflaking_eq_preimage]
 
 end PseudoEMetricSpace

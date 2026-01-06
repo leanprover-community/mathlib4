@@ -127,12 +127,12 @@ theorem infEdist_le_edist_add_infEdist : infEdist x s ≤ edist x y + infEdist y
   rw [add_comm]
   exact infEdist_le_infEdist_add_edist
 
-theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s + diam s := by
+theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s + Metric.ediam s := by
   simp_rw [infEdist, ENNReal.iInf_add]
   refine le_iInf₂ fun i hi => ?_
   calc
     edist x y ≤ edist x i + edist i y := edist_triangle _ _ _
-    _ ≤ edist x i + diam s := add_le_add le_rfl (edist_le_diam_of_mem hi hy)
+    _ ≤ edist x i + Metric.ediam s := add_le_add le_rfl (Metric.edist_le_ediam_of_mem hi hy)
 
 /-- The edist to a set depends continuously on the point -/
 @[continuity, fun_prop]
@@ -331,14 +331,14 @@ theorem hausdorffEdist_image (h : Isometry Φ) :
 
 /-- The Hausdorff distance is controlled by the diameter of the union. -/
 theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
-    hausdorffEdist s t ≤ diam (s ∪ t) := by
+    hausdorffEdist s t ≤ Metric.ediam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
   refine hausdorffEdist_le_of_mem_edist ?_ ?_
   · intro z hz
-    exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
+    exact ⟨y, yt, Metric.edist_le_ediam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
   · intro z hz
-    exact ⟨x, xs, edist_le_diam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
+    exact ⟨x, xs, Metric.edist_le_ediam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + hausdorffEdist t u := by

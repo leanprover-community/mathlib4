@@ -340,27 +340,27 @@ lemma thickening_biUnion {ι : Type*} (δ : ℝ) (f : ι → Set α) (I : Set ι
     thickening δ (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening δ (f i) := by simp only [thickening_iUnion]
 
 theorem ediam_cthickening_le (ε : ℝ≥0) :
-    EMetric.diam (cthickening ε s) ≤ EMetric.diam s + 2 * ε := by
-  refine diam_le fun x hx y hy => ENNReal.le_of_forall_pos_le_add fun δ hδ _ => ?_
+    ediam (cthickening ε s) ≤ ediam s + 2 * ε := by
+  refine ediam_le fun x hx y hy => ENNReal.le_of_forall_pos_le_add fun δ hδ _ => ?_
   rw [mem_cthickening_iff, ENNReal.ofReal_coe_nnreal] at hx hy
   have hε : (ε : ℝ≥0∞) < ε + δ := ENNReal.coe_lt_coe.2 (lt_add_of_pos_right _ hδ)
   replace hx := hx.trans_lt hε
   obtain ⟨x', hx', hxx'⟩ := infEdist_lt_iff.mp hx
   calc
     edist x y ≤ edist x x' + edist y x' := edist_triangle_right _ _ _
-    _ ≤ ε + δ + (infEdist y s + EMetric.diam s) :=
+    _ ≤ ε + δ + (infEdist y s + ediam s) :=
       add_le_add hxx'.le (edist_le_infEdist_add_ediam hx')
-    _ ≤ ε + δ + (ε + EMetric.diam s) := by grw [hy]
+    _ ≤ ε + δ + (ε + ediam s) := by grw [hy]
     _ = _ := by rw [two_mul]; ac_rfl
 
-theorem ediam_thickening_le (ε : ℝ≥0) : EMetric.diam (thickening ε s) ≤ EMetric.diam s + 2 * ε :=
-  (EMetric.diam_mono <| thickening_subset_cthickening _ _).trans <| ediam_cthickening_le _
+theorem ediam_thickening_le (ε : ℝ≥0) : ediam (thickening ε s) ≤ ediam s + 2 * ε :=
+  (ediam_mono <| thickening_subset_cthickening _ _).trans <| ediam_cthickening_le _
 
 theorem diam_cthickening_le {α : Type*} [PseudoMetricSpace α] (s : Set α) (hε : 0 ≤ ε) :
     diam (cthickening ε s) ≤ diam s + 2 * ε := by
   lift ε to ℝ≥0 using hε
   refine (toReal_le_add' (ediam_cthickening_le _) ?_ ?_).trans_eq ?_
-  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (self_subset_cthickening _)
+  · exact fun h ↦ top_unique <| h ▸ ediam_mono (self_subset_cthickening _)
   · simp [mul_eq_top]
   · simp [diam]
 

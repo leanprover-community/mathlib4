@@ -64,9 +64,9 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
-lemma IsCover.singleton_of_ediam_le (hA : EMetric.diam s ≤ ε) (hx : x ∈ s) :
+lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
-  fun _ h_mem ↦ ⟨x, by simp, (EMetric.edist_le_diam_of_mem h_mem hx).trans hA⟩
+  fun _ h_mem ↦ ⟨x, by simp, (edist_le_ediam_of_mem h_mem hx).trans hA⟩
 
 lemma isCover_iff_subset_iUnion_emetricClosedBall :
     IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by

@@ -139,10 +139,10 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ β) :=
       cases isEmpty_or_nonempty α
       · simp [edist_def]
       have : BddAbove <| .range fun x ↦ dist (toFun f x) (toFun g x) := by
-        use (EMetric.diam (.univ : Set β)).toReal
+        use (Metric.ediam (.univ : Set β)).toReal
         simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
           ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
-          EMetric.edist_le_diam_of_mem]
+          Metric.edist_le_ediam_of_mem]
       exact ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ by simp [edist_def, ciSup_le_iff this]
 
 lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :
@@ -157,8 +157,8 @@ noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ β) where
   bounded_univ := by
     rw [Metric.isBounded_iff_ediam_ne_top, ← lt_top_iff_ne_top]
     refine lt_of_le_of_lt ?_ <| BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-    simp only [EMetric.diam_le_iff, Set.mem_univ, edist_le, forall_const]
-    exact fun f g x ↦ EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _)
+    simp only [Metric.ediam_le_iff, Set.mem_univ, edist_le, forall_const]
+    exact fun f g x ↦ Metric.edist_le_ediam_of_mem (Set.mem_univ _) (Set.mem_univ _)
 
 noncomputable instance {β : Type*} [MetricSpace β] [BoundedSpace β] : MetricSpace (α →ᵤ β) :=
   .ofT0PseudoMetricSpace _
@@ -294,10 +294,10 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
       cases isEmpty_or_nonempty (⋃₀ 𝔖)
       · simp_all [edist_def]
       have : BddAbove (.range fun x : ⋃₀ 𝔖 ↦ dist (toFun 𝔖 f x) (toFun 𝔖 g x)) := by
-        use (EMetric.diam (.univ : Set β)).toReal
+        use (Metric.ediam (.univ : Set β)).toReal
         simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
           ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
-          EMetric.edist_le_diam_of_mem]
+          Metric.edist_le_ediam_of_mem]
       refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
       simp [edist_def, ciSup_le_iff this]
 
