@@ -54,6 +54,7 @@ abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 
+set_option linter.deprecated false in
 @[deprecated "Use `Option.getD`." (since := "2026-01-05")]
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
