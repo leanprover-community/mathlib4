@@ -6,6 +6,7 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.Normed.Module.Normalize
 
 /-!
 # Linear maps on inner product spaces
@@ -383,7 +384,7 @@ theorem rankOne_eq_rankOne_iff_comm {a c : H} {b d : I} :
 
 theorem exists_of_rankOne_eq_rankOne {a c : H} {b d : I}
     (ha : a ≠ 0) (hb : b ≠ 0) (h : rankOne 𝕜 a b = rankOne 𝕜 c d) :
-    ∃ α β : 𝕜ˣ, a = (α : 𝕜) • c ∧ b = (α * β : 𝕜) • d := by
+    ∃ (α : 𝕜ˣ) (β : NNRealˣ), a = (α : 𝕜) • c ∧ b = (α * (((β : NNReal) : ℝ) : 𝕜) : 𝕜) • d := by
   have h₂ := rankOne_eq_rankOne_iff_comm.mp h
   simp only [ContinuousLinearMap.ext_iff, rankOne_apply] at h h₂
   have h₃ := calc
@@ -393,12 +394,47 @@ theorem exists_of_rankOne_eq_rankOne {a c : H} {b d : I}
   have h₄ := calc
     b = (⟪a, a⟫_𝕜 / ⟪a, a⟫_𝕜) • b := by simp_all
     _ = (1 / ⟪a, a⟫_𝕜) • (⟪a, a⟫_𝕜 • b) := by simp only [smul_smul]; ring_nf
-    _ = ((⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) * (⟪c, c⟫_𝕜 / (⟪a, a⟫_𝕜))) • d := by
+    _ = ((⟪d, b⟫_𝕜 / ⟪b, b⟫_𝕜) * (⟪c, c⟫_𝕜 / ⟪a, a⟫_𝕜)) • d := by
       simp_rw [h₂, h₃, inner_smul_right, smul_smul]; ring_nf
   have h₅ : ⟪d, b⟫_𝕜 ≠ 0 := fun h ↦ by simp [h, hb] at h₄
   have h₆ : c ≠ 0 := fun h ↦ by simp [h, ha] at h₃
-  exact ⟨.mk0 _ (div_ne_zero h₅ <| by simpa),
-    .mk0 (⟪c, c⟫_𝕜 / ⟪a, a⟫_𝕜) <| div_ne_zero (by simpa) <| by simpa, h₃, h₄⟩
+  refine ⟨.mk0 _ (div_ne_zero h₅ <| by simpa),
+    .mk0 ⟨‖c‖ ^ 2 / ‖a‖ ^ 2, div_nonneg (by simp) (by simp)⟩ <| ?_, h₃, ?_⟩
+  · simp only [ne_eq, ← NNReal.coe_eq_zero, NNReal.coe_mk, div_eq_zero_iff, OfNat.ofNat_ne_zero,
+      not_false_eq_true, pow_eq_zero_iff, norm_eq_zero, not_or]
+    grind
+  · simpa using h₄
+
+open NormedSpace in
+/-- The `iff` version of `exists_of_rankOne_eq_rankOne`. -/
+theorem rankOne_normalize_eq_rankOne_normalize_iff
+    {V W : Type*} [NormedAddCommGroup V] [NormedAddCommGroup W] [InnerProductSpace ℝ V]
+    [InnerProductSpace ℝ W] {a c : V} {b d : W} (ha : a ≠ 0) (hb : b ≠ 0) :
+    rankOne ℝ (normalize a) (normalize b) = rankOne ℝ (normalize c) (normalize d) ↔
+      ∃ (α : ℝˣ) (β : NNRealˣ), a = (α : ℝ) • c ∧ b = (α * ((β : NNReal) : ℝ)) • d := by
+  refine ⟨fun h ↦ ?_, fun ⟨α, β, hα, hβ⟩ ↦ ?_⟩
+  · obtain ⟨hc, hd⟩ : c ≠ 0 ∧ d ≠ 0 := by aesop
+    obtain ⟨α, β, hα, hβ⟩ := exists_of_rankOne_eq_rankOne (by simpa) (by simpa) h
+    rw [← norm_smul_normalize a, ← norm_smul_normalize b, hα, hβ]
+    simp only [NormedSpace.normalize, smul_smul, exists_and_left]
+    set x : ℝˣ := .mk0 (‖a‖ * ((α : ℝ) * ‖c‖⁻¹)) (by aesop)
+    refine ⟨x, rfl, .mk0 ⟨x⁻¹ * (Units.mk0 (↑α * (‖b‖ * ↑β * ‖d‖⁻¹)) (by simp_all)), ?_⟩ ?_, ?_⟩
+    · simp only [x, Units.mk0_mul, Units.mk0_val, mul_inv_rev, Units.val_mul,
+        Units.val_inv_eq_inv_val, Units.val_mk0, inv_inv]
+      rw [mul_assoc ‖c‖, mul_comm _ ‖a‖⁻¹]
+      aesop (add simp mul_assoc)
+    · simp only [x, Units.mk0_mul, Units.mk0_val, mul_inv_rev, Units.val_mul,
+        Units.val_inv_eq_inv_val, Units.val_mk0, inv_inv]
+      simp_rw [ne_eq, mul_assoc ‖c‖, mul_comm _ ‖a‖⁻¹, mul_assoc, ← NNReal.coe_eq_zero]
+      aesop
+    · simp
+      grind
+  · simp only [hα, normalize_smul, map_smul, hβ, coe_smul', Pi.smul_apply, smul_smul]
+    if 0 < (α : ℝ) then aesop else if (α : ℝ) < 0 then
+      have : (((α : ℝ) * ↑↑β) : ℝ) < 0 := by simp_all [mul_neg_iff]
+      simp_all else
+    have : (α : ℝ) = 0 := by grind
+    aesop
 
 end Normed
 
