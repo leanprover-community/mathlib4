@@ -3,12 +3,13 @@ This file was edited by Aristotle.
 
 Lean version: leanprover/lean4:v4.24.0
 Mathlib version: f897ebcf72cd16f89ab4577d0c826cd14afaafc7
-This project request had uuid: 4d935855-74ea-44f6-b058-509850d40896
+This project request had uuid: c3d32a07-1f18-4e0a-b67f-3ee9e48be7ff
 
 The following was proved by Aristotle:
 
-- theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype {G : Type*} [Group G] :
-    Group.FG G ↔ ∃ (α : Type) (_ : Fintype α) (φ : FreeGroup α →* G), Function.Surjective φ
+- lemma isFinitelyPresented_iff_fintype' {G : Type*} [Group G] :
+    IsFinitelyPresented G ↔ ∃ (α : Type*) (_ : Fintype α) (f : FreeGroup α →* G),
+    Function.Surjective f ∧ IsNormalClosureFG (f.ker)
 -/
 
 /-
@@ -35,21 +36,24 @@ This file defines finitely presented groups and proves their basic properties.
 finitely presented group, normal closure finitely generated,
 -/
 
-/-- The kernel of a composition with an isomorphism equals the preimage (map by symm) of the
-kernel. -/
+/-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
+the homomorphism mapped by the inverse isomorphism. -/
 @[simp]
 lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
     (f : H →* K) (e : G ≃* H) : (f.comp e.toMonoidHom).ker = (Subgroup.map (↑e.symm) f.ker) := by
   rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm']
   rfl
 
+def FinitelyPresentedGroup (n : ℕ) (rels : Set (FreeGroup (Fin n))) (_h : rels.Finite) : Type :=
+  FreeGroup (Fin n) ⧸ Subgroup.normalClosure (rels : Set (FreeGroup (Fin n)))
+
 open Subgroup
 
--- We define a subgroup that is given by the normal closure of finitely many elements.
+/-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG {G : Type*} [Group G] (H : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = H
 
--- We state that this property is invariant under surjective homomorphism.
+/-- The above property is invariant under surjective homomorphism. -/
 lemma IsNormalClosureFG.map {G H : Type*} [Group G] [Group H]
   (f : G →* H) (hf : Function.Surjective f) (K : Subgroup G) (hK : IsNormalClosureFG K)
   : IsNormalClosureFG (K.map f) := by
@@ -59,21 +63,79 @@ lemma IsNormalClosureFG.map {G H : Type*} [Group G] [Group H]
   · exact hSfinite.image _
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
+/-- A finitely presented group is given by a surjective homomorphism from a free group on n
+elements whose normal closure of its kernel is finitely generated. -/
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)
 
-lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
-    IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Fintype α) (f : FreeGroup α →* G),
+lemma isFinitelyPresented_iff_fintype' {G : Type*} [Group G] :
+    IsFinitelyPresented G ↔ ∃ (α : Type*) (_ : Fintype α) (f : FreeGroup α →* G),
+    Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
+    constructor <;> intro h;
+    · obtain ⟨ n, f, hf₁, hf₂ ⟩ := h.out;
+      refine' ⟨ ULift ( Fin n ), inferInstance, _, _, _ ⟩;
+      exact f.comp ( FreeGroup.map fun x => x.down );
+      · intro g;
+        obtain ⟨ x, rfl ⟩ := hf₁ g;
+        refine' ⟨ FreeGroup.map ( fun x => ⟨ x ⟩ ) x, _ ⟩;
+        induction x using FreeGroup.induction_on <;> aesop;
+      · obtain ⟨ S, hS₁, hS₂ ⟩ := hf₂;
+        refine' ⟨ S.image ( FreeGroup.map fun x => ULift.up x ), _, _ ⟩;
+        · exact hS₁.image _;
+        · convert congr_arg ( Subgroup.map ( FreeGroup.map fun x => ULift.up x ) ) hS₂ using 1;
+          · refine' le_antisymm _ _;
+            · simp +decide [ Subgroup.normalClosure ];
+              simp +decide [ Set.subset_def, Group.conjugatesOfSet ];
+              simp +decide [ conjugatesOf ];
+              rintro x y hy z rfl;
+              refine' ⟨ FreeGroup.map ( fun x => x.down ) z * y * ( FreeGroup.map ( fun x => x.down ) z ) ⁻¹, _, _ ⟩ <;> simp +decide [ Subgroup.mem_closure ];
+              · exact fun K hK => hK y hy ⟨ FreeGroup.map ( fun x => x.down ) z, rfl ⟩;
+              · congr! 1;
+                · refine' FreeGroup.induction_on z _ _ _ _ <;> aesop;
+                · refine' FreeGroup.induction_on z _ _ _ _ <;> aesop;
+            · simp +decide [ Subgroup.map_le_iff_le_comap, Subgroup.normalClosure ];
+              simp +decide [ Set.subset_def, Group.conjugatesOfSet ];
+              simp +decide [ conjugatesOf ];
+              rintro x y hy z rfl;
+              exact Subgroup.subset_closure ( Set.mem_iUnion₂.2 ⟨ y, hy, ⟨ FreeGroup.map ( fun x => ULift.up x ) z, by simp +decide ⟩ ⟩ );
+          · ext; simp +decide [ MonoidHom.mem_ker ] ;
+            constructor;
+            · rename_i x;
+              refine' fun hx => ⟨ FreeGroup.map ( fun x => x.down ) x, hx, _ ⟩;
+              refine' FreeGroup.induction_on x _ _ _ _ <;> aesop;
+            · rintro ⟨ x, hx₁, rfl ⟩;
+              convert hx₁;
+              refine' FreeGroup.induction_on x _ _ _ _ <;> aesop;
+    · obtain ⟨ α, _hα, f, hf_surj, hf_ker ⟩ := h
+      have h_finite : ∃ (n : ℕ) (g : (FreeGroup (Fin n)) →* G),
+        Function.Surjective g ∧ IsNormalClosureFG (MonoidHom.ker g) := by
+          obtain ⟨n, g, hg⟩ : ∃ n : ℕ, ∃ g : FreeGroup (Fin n) ≃* FreeGroup α, True := by
+            refine' ⟨ Fintype.card α, _, trivial ⟩;
+            exact FreeGroup.freeGroupCongr ( Fintype.equivOfCardEq ( by simp +decide ) );
+          refine' ⟨ n, f.comp g.toMonoidHom, _, _ ⟩;
+          · exact hf_surj.comp g.surjective;
+          · convert hf_ker.map g.symm.toMonoidHom _;
+            · ext; simp +decide [ MonoidHom.mem_ker ] ; aesop;
+            · exact g.symm.surjective
+      exact ⟨ h_finite ⟩
+
+/- lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
+    IsFinitelyPresented G ↔ ∃ (α : Type*) (_ : Fintype α) (f : FreeGroup α →* G),
     Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
   constructor
-  · intro ⟨n, f, hfsurj, hkernel⟩
-    exact ⟨Fin n, inferInstance, f, hfsurj, hkernel⟩
+  · intro ⟨n, f, hfsurj, hfkernel⟩
+    -- use ULift (Fin n), inferInstance
+    refine ⟨ULift (Fin n), inferInstance, ?_, ?_, ?_⟩
+    · sorry
+    · sorry
+    · sorry
   · intro ⟨α, _, f, hfsurj, hfkernel⟩
-    let iso := FreeGroup.freeGroupCongr (Fintype.equivFin α).symm
+    let iso : FreeGroup (Fin (Fintype.card α)) ≃* FreeGroup α :=
+      FreeGroup.freeGroupCongr (Fintype.equivFin α).symm
     refine ⟨Fintype.card α, f.comp iso.toMonoidHom, hfsurj.comp iso.surjective, ?_⟩
     simp only [MonoidHom.ker_comp_mulEquiv] -- this could further be factored as a lemma I feel.
-    exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel
+    exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel -/
 
 /- lemma isFinitelyPresented_iff_set_finite {G : Type*} [Group G] :
     IsFinitelyPresented G ↔ ∃ (S : Set G), ∃ (_ : S.Finite) (f : FreeGroup S →* G),
@@ -88,7 +150,7 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       sorry
     · sorry -/
 
-variable (G : Type) [Group G] (g : G)
+variable (G : Type*) [Group G] (g : G)
 
 theorem Group.fg_iff_exists_freeGroup_hom_surjective' :
     Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite) (φ : FreeGroup S →* G), Function.Surjective φ := by
@@ -132,3 +194,19 @@ instance [h : IsFinitelyPresented G] : Group.FG G := by
   rw [isFinitelyPresented_iff_fintype] at h
   obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
   use S, hSfinite, f, hfsurj
+
+def IsPresentedGroup (G : Type*) [Group G] : Prop :=
+  ∃ (α : Type*) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
+
+/- Aristotle failed to load this code into its environment. Double check that the syntax is correct.
+
+Unknown identifier `isFinitelyPresented_iff_fintype.mp`
+Tactic `rcases` failed: `x✝ : ?m.4` is not an inductive datatype-/
+instance [h : IsFinitelyPresented G] : IsPresentedGroup G := by
+  obtain ⟨α, instα, f, hfsurj, hfkernel⟩ := isFinitelyPresented_iff_fintype.mp h
+  obtain ⟨S, hSfinite, hSclosure⟩ := hfkernel
+  use α, S
+  let iso := (QuotientGroup.quotientKerEquivOfSurjective f hfsurj).symm
+  refine ⟨?_⟩
+  convert iso
+  sorry
