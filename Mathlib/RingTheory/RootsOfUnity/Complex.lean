@@ -191,7 +191,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     rify at h₂
     linear_combination h₂
   · rify at h
-    linear_combination 2 * h + (n:ℝ) * one_pos (α := ℝ)
+    linear_combination 2 * h + (n : ℝ) * one_pos (α := ℝ)
 
 lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
     (hζ : ζ ∈ rootsOfUnity n ℂ) :

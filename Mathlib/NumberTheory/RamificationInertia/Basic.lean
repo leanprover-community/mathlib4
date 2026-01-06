@@ -350,7 +350,7 @@ See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
 lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
-  absNorm_eq_pow_inertiaDeg P ( Nat.prime_iff_prime_int.mp hp)
+  absNorm_eq_pow_inertiaDeg P (Nat.prime_iff_prime_int.mp hp)
 
 end absNorm
 section FinrankQuotientMap

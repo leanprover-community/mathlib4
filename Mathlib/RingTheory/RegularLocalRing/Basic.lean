@@ -100,7 +100,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         change (maximalIdeal (R ⧸ Ideal.span (S : Set R))).toCotangent ⟨(Ideal.Quotient.mkₐ R
           (Ideal.span (S : Set R))) x, _⟩ = 0 ↔ (maximalIdeal R).toCotangent x ∈ _
         simp only [Ideal.Quotient.mkₐ_eq_mk, Set.range_comp,
-          Submodule.span_image', Ideal.toCotangent_eq_zero]
+          Ideal.toCotangent_eq_zero, ← Submodule.map_span]
         have : maximalIdeal (R ⧸ Ideal.span (S : Set R)) =
           (maximalIdeal R).map (Ideal.Quotient.mk _) := by
           simp only [← ((local_hom_TFAE _).out 0 4).mp lochom,
