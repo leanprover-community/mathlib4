@@ -41,7 +41,7 @@ variable {R M N : Type*}
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
 /-- A pointed cone `F` is a face of another pointed cone `C` if `F ≤ C` and if `a • x + y` is in `F`
-for all `x, y` in `C` and positive scalars `a`, then `x` ist also in `F`. -/
+for all `x, y` in `C` and positive scalars `a`, then `x` is also in `F`. -/
 structure IsFaceOf (F C : PointedCone R M) where
   le : F ≤ C
   mem_of_smul_add_mem :
@@ -155,7 +155,7 @@ theorem map {f : M →ₗ[R] N} (hf : Function.Injective f) (hF : F.IsFaceOf C) 
 
 /-- The image of a face of a cone under an equivalence is a face of the image of the cone. -/
 theorem map_equiv (e : M ≃ₗ[R] N) (hF : F.IsFaceOf C) :
-    (PointedCone.map (e : M →ₗ[R] N) F).IsFaceOf (.map e C) := hF.map e.injective
+    (F.map (e : M →ₗ[R] N)).IsFaceOf (C.map e) := hF.map e.injective
 
 /-- The comap of a face of a cone under a linear map is a face of the comap of the cone. -/
 theorem comap {f : N →ₗ[R] M} (hF : F.IsFaceOf C) :
