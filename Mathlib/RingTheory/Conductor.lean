@@ -148,8 +148,8 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
       rw [Submonoid.mk_smul, smul_eq_mul, mul_one]
     rwa [← this]
   · -- The converse inclusion is trivial
-      rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
-      apply Ideal.le_comap_map
+    rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
+    apply Ideal.le_comap_map
 
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
 when `I` and `(conductor R x) ∩ R` are coprime. -/
