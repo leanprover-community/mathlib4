@@ -326,8 +326,6 @@ theorem tendsto_atBot_iff {x : ℝ*} : x.Tendsto atBot ↔ x < 0 ∧ mk x < 0 wh
     exact fun r ↦ ofSeq_le_ofSeq.1 <|
       (lt_of_mk_lt_mk_of_nonpos (h.2.trans_le <| archimedeanClassMk_coe_nonneg r) h.1.le).le
 
-  #exit
-
 /-! ### Deprecated API -/
 
 /-- Standard part predicate.
