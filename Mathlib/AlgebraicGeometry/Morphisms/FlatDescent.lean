@@ -165,7 +165,7 @@ instance (P : MorphismProperty Scheme) [P.DescendsAlong (@Surjective ⊓ @Flat �
     (.paste_vert (.of_hasPullback V.ι _) (.of_hasPullback f g)) ⟨⟨?_, inferInstance⟩,
       (quasiCompact_iff_compactSpace _).mpr (isCompact_iff_compactSpace.mp hV)⟩ ?_
   · exact ⟨fun x ↦ have ⟨y, hyV, e⟩ := e.ge (Set.mem_univ x); ⟨⟨y, hyV⟩, e⟩⟩
-  dsimp [MorphismProperty.isomorphisms] at H ⊢
-  exact IsZariskiLocalAtTarget.of_isPullback (.flip <| .of_hasPullback _ _) H
+  · dsimp [MorphismProperty.isomorphisms] at H ⊢
+    exact IsZariskiLocalAtTarget.of_isPullback (.flip <| .of_hasPullback _ _) H
 
 end AlgebraicGeometry
