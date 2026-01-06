@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {A : Type*} [Category A]
+variable {C : Type u} [Category.{v} C] {A : Type*} [Category* A]
 
 /-- The categorical data that is involved in a `1`-hypercover of an object `S`. This
 consists of a family of morphisms `f i : X i ⟶ S` for `i : I₀`, and for each

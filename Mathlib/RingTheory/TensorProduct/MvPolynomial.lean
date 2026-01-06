@@ -268,7 +268,7 @@ variable (S σ ι) in
 def tensorEquivSum :
     MvPolynomial σ S ⊗[R] MvPolynomial ι R ≃ₐ[S] MvPolynomial (σ ⊕ ι) S :=
   ((algebraTensorAlgEquiv _ _).restrictScalars _).trans
-    ((sumAlgEquiv _ _ _).symm.trans  (renameEquiv _ (.sumComm ι σ)))
+    ((sumAlgEquiv _ _ _).symm.trans (renameEquiv _ (.sumComm ι σ)))
 
 variable {R}
 

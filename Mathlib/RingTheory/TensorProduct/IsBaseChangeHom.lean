@@ -9,7 +9,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+public import Mathlib.LinearAlgebra.Determinant
 
 /-! # Base change properties for modules of linear maps
 
@@ -36,9 +37,9 @@ open LinearMap TensorProduct Module
 
 variable {R : Type*} [CommSemiring R]
     (S : Type*) [CommSemiring S] [Algebra R S]
-    (M : Type*) [AddCommMonoid M] [Module R M] -- [Module S M] [IsScalarTower R S M]
+    (M : Type*) [AddCommMonoid M] [Module R M]
     {N : Type*} [AddCommMonoid N] [Module R N]
-    {P : Type*} [AddCommMonoid P] [Module R P] -- [Module S P] [IsScalarTower R S P]
+    {P : Type*} [AddCommMonoid P] [Module R P]
 
 section LinearMapRight
 
@@ -160,6 +161,25 @@ theorem endHom_apply
     endHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
   rfl
 
+theorem endHom_comp_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (m : M) :
+    endHom j f (α m) = α (f m) := by
+  simp [endHom_apply, IsBaseChange.equiv_symm_apply]
+
+theorem endHom_comp
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
+    (endHom j f).restrictScalars R ∘ₗ α = α ∘ₗ f := by
+  ext; simp [endHom_comp_apply]
+
+theorem endHom_one {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    j.endHom 1 = 1 := by
+  ext p
+  induction p using j.inductionOn with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | smul _ _ h => simp [h]
+  | tmul m => simp [endHom_comp_apply]
+
 variable [Free R M] [Module.Finite R M]
 
 theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
@@ -171,5 +191,53 @@ theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
   simp [equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
 
 end End
+
+section Matrix
+
+variable {Q : Type*} [AddCommMonoid Q] [Module R Q] [Module S P] [IsScalarTower R S P]
+  [Module S Q] [IsScalarTower R S Q]
+  {α : M →ₗ[R] P} {β : N →ₗ[R] Q}
+  (ibcM : IsBaseChange S α) (ibcN : IsBaseChange S β)
+  {ι θ : Type*} [DecidableEq ι] [Fintype ι] [Fintype θ]
+  (b : Module.Basis ι R M) (c : Module.Basis θ R N)
+
+theorem linearMapLeftRightHom_toMatrix (f : M →ₗ[R] N) :
+    (linearMapLeftRightHom ibcM β f).toMatrix (ibcM.basis b) (ibcN.basis c) =
+      (f.toMatrix b c).map (algebraMap R S) := by
+  ext i j
+  simp only [toMatrix_apply, Matrix.map_apply, basis_apply,
+    linearMapLeftRightHom_comp_apply, basis_repr_comp_apply]
+
+theorem endHom_toMatrix (f : M →ₗ[R] M) :
+    (endHom ibcM f).toMatrix (ibcM.basis b) (ibcM.basis b) =
+      (f.toMatrix b b).map (algebraMap R S) := by
+  ext i j
+  simp only [toMatrix_apply, Matrix.map_apply]
+  simp only [basis_apply, endHom_comp_apply, basis_repr_comp_apply]
+
+
+end Matrix
+
+section determinant
+
+variable {R : Type*} [CommRing R]
+    (S : Type*) [CommRing S] [Algebra R S]
+    (M : Type*) [AddCommGroup M] [Module R M]
+    {P : Type*} [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P]
+
+variable [Free R M] [Module.Finite R M]
+
+theorem det_endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
+    LinearMap.det (endHom j f) = algebraMap R S (LinearMap.det f) := by
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · have : f = 1 := by
+      have : Subsingleton M := Module.subsingleton R M
+      exact Subsingleton.eq_one f
+    simp [this, endHom_one]
+  let b := Module.finBasis R M
+  rw [← f.det_toMatrix b, ← (j.endHom f).det_toMatrix (j.basis b),
+    endHom_toMatrix, ← RingHom.mapMatrix_apply, ← RingHom.map_det]
+
+end determinant
 
 end IsBaseChange

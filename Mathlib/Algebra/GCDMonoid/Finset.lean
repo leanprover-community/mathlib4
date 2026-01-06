@@ -200,7 +200,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
   classical
     trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
-    · rw [filter_union_filter_neg_eq]
+    · rw [filter_union_filter_not_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
     · exact gcd {x ∈ s | f x ≠ 0} f

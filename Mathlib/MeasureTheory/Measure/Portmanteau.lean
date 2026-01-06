@@ -82,7 +82,7 @@ probability measure
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -645,17 +645,7 @@ theorem tendsto_of_forall_isClosed_limsup_le
 lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyGenerated]
     (h : ∀ F : Set Ω, IsClosed F →
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
-    Tendsto μs L (𝓝 μ) := by
-  refine tendsto_of_forall_isClosed_limsup_le' fun F hF ↦ ?_
-  rcases L.eq_or_neBot with rfl | hne
-  · simp
-  specialize h F hF
-  simp only [Measure.real_def] at h
-  rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
-    ENNReal.toReal_le_toReal _ (by finiteness)] at h
-  refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
-  refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
-  exact isCoboundedUnder_le_of_le L (x := 0) (by simp)
+    Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
 
 end Closed
 
@@ -795,14 +785,13 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     simp [← hT, hr]
   rcases T_count.exists_eq_range this with ⟨f, hf⟩
   have G_eq : G = ⋃ n, f n := by simp [← hT, hf]
-  have : Tendsto (fun i ↦ ν (Accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
+  have : Tendsto (fun i ↦ ν (accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
     (ENNReal.tendsto_toNNReal_iff (by simp) (by simp)).2 tendsto_measure_iUnion_accumulate
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
   · convert hn
     simp [accumulate_def]
-    grind
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 
 /-- Assume that, applied to all the elements of a π-system, a sequence of probability measures

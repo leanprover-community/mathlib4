@@ -544,9 +544,6 @@ theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
   Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
-@[deprecated (since := "2025-06-17")]
-alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
-
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
@@ -573,7 +570,7 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
       (v.insertIdx a i).insertIdx b j.succ = (v.insertIdx b j).insertIdx a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
     refine Subtype.ext ?_
-    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
+    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.val_castAdd]
     apply List.insertIdx_comm
     · assumption
     · rw [hl]

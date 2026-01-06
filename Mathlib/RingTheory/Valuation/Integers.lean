@@ -56,7 +56,7 @@ structure Integers : Prop where
 
 -- typeclass shortcut
 instance : Algebra v.integer R :=
-  Algebra.ofSubring v.integer
+  inferInstance
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective

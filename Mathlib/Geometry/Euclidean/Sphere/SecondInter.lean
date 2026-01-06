@@ -5,6 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
+public import Mathlib.Analysis.Convex.Side
+public import Mathlib.Analysis.Convex.StrictCombination
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
@@ -190,5 +192,55 @@ theorem Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
   · rintro h
     rw [h, mem_sphere.1 ((Sphere.secondInter_mem _).2 hp)] at hp'
     exact lt_irrefl _ hp'
+
+/-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
+vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
+subtraction involving that vertex and a point in the interior of the opposite face, the given
+vertex and the result of `secondInter` are on opposite sides of that face. -/
+lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite {s : Sphere P}
+    {n : ℕ} [NeZero n] {sx : Affine.Simplex ℝ P n} {i : Fin (n + 1)} (hi : sx.points i ∈ s)
+    (hsx : ∀ j, dist (sx.points j) s.center ≤ s.radius) {p : P}
+    (hp : p ∈ (sx.faceOpposite i).interior) :
+    (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p -ᵥ (sx.points i))) :=
+  Sbtw.sOppSide_of_notMem_of_mem
+    (s.sbtw_secondInter hi ((sx.faceOpposite i).dist_lt_of_mem_interior_of_strictConvexSpace hp
+      (fun j ↦ hsx _)))
+    (by simp)
+    (Set.mem_of_mem_of_subset hp ((sx.faceOpposite i).interior_subset_closedInterior.trans
+      (sx.faceOpposite i).closedInterior_subset_affineSpan))
+
+attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
+
+/-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
+vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
+subtraction involving that vertex and a point in the interior of the simplex, the given vertex
+and the result of `secondInter` are on opposite sides of the face opposite that vertex. -/
+lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior {s : Sphere P}
+    {n : ℕ} [Nat.AtLeastTwo n] {sx : Affine.Simplex ℝ P n} {i : Fin (n + 1)} (hi : sx.points i ∈ s)
+    (hsx : ∀ j, dist (sx.points j) s.center ≤ s.radius) {p : P}
+    (hp : p ∈ sx.interior) :
+    (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p -ᵥ (sx.points i))) := by
+  obtain ⟨w, hw, hw01, rfl⟩ := hp
+  let r : ℝ := (1 - w i)⁻¹
+  have hrpos : 0 < r := by simp [inv_pos, sub_pos, r, (hw01 i).2]
+  let p' : P := AffineMap.lineMap (sx.points i) (Finset.univ.affineCombination ℝ sx.points w) r
+  have hp' : (p' -ᵥ (sx.points i)) =
+      r • (Finset.univ.affineCombination ℝ sx.points w -ᵥ (sx.points i)) := by simp [p']
+  suffices (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p' -ᵥ (sx.points i))) by
+    rwa [hp', s.secondInter_smul _ _ hrpos.ne'] at this
+  refine s.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite hi hsx ?_
+  simp_rw [p', ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ (sx.points)
+    (Finset.mem_univ i), AffineMap.lineMap_apply, Finset.affineCombination_vsub,
+    ← LinearMap.map_smul, Finset.weightedVSub_vadd_affineCombination,
+    Affine.Simplex.faceOpposite]
+  rw [Affine.Simplex.affineCombination_mem_interior_face_iff_pos]
+  · simp only [Finset.mem_compl, Finset.mem_singleton, Pi.add_apply, Pi.smul_apply, Pi.sub_apply,
+      smul_eq_mul, Decidable.not_not, forall_eq, Finset.affineCombinationSingleWeights_apply_self]
+    refine ⟨fun j hj ↦ ?_, by grind⟩
+    simp [hj, hrpos, (hw01 j).1]
+  · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw]
 
 end EuclideanGeometry
