@@ -106,7 +106,7 @@ private lemma IsNClique.insert_insert (h1 : G.IsNClique r (insert a s))
 private lemma IsNClique.insert_insert_erase (hs : G.IsNClique r (insert a s)) (hc : c ∈ s)
     (ha : a ∉ s) (hd : ∀ w ∈ insert a s, w ≠ c → G.Adj w b) :
     G.IsNClique r (insert a (insert b (erase s c))) := by
-  rw [insert_comm, ← erase_insert_of_ne (fun h : a = c ↦ ha (h ▸ hc)|>.elim)]
+  rw [insert_comm, ← erase_insert_of_ne (fun h : a = c ↦ ha (h ▸ hc) |>.elim)]
   simp_rw [adj_comm, ← notMem_singleton] at hd
   exact hs.insert_erase (fun _ h ↦ hd _ (mem_sdiff.1 h).1 (mem_sdiff.1 h).2) (mem_insert_of_mem hc)
 
@@ -339,7 +339,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
                wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz)
                  (fun h ↦ hav <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
   case h8 => exact hw.isNClique_snd_right.insert_insert_erase hbt hw.snd_notMem fun _ hz hZ ↦
-               wa (h2t hz) (fun h ↦  haw <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
+               wa (h2t hz) (fun h ↦ haw <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
   case h9 =>
     -- Finally check that this new `IsFiveWheelLike` structure has `k + 1` common clique
     -- vertices i.e. `#((insert x (s.erase a)) ∩ (insert x (s.erase b))) = k + 1`.

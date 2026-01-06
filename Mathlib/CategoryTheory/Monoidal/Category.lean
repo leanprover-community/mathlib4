@@ -985,6 +985,8 @@ end NatTrans
 
 section ObjectProperty
 
+open ObjectProperty
+
 /-- The restriction of a monoidal category along an object property
 that's closed under the monoidal structure. -/
 -- See note [reducible non-instances]
@@ -994,23 +996,14 @@ abbrev MonoidalCategory.fullSubcategory
     (tensorObj : ∀ X Y, P X → P Y → P (X ⊗ Y)) :
     MonoidalCategory P.FullSubcategory where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, tensorObj X.1 Y.1 X.2 Y.2⟩
-  whiskerLeft X _ _ f := X.1 ◁ f
-  whiskerRight f X := MonoidalCategoryStruct.whiskerRight (C := C) f X.1
-  tensorHom f g := MonoidalCategoryStruct.tensorHom (C := C) f g
+  whiskerLeft X _ _ f := homMk (X.obj ◁ f.hom)
+  whiskerRight f X := homMk (f.hom ▷ X.obj)
+  tensorHom f g := homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, tensorUnit⟩
   associator X Y Z := P.fullyFaithfulι.preimageIso (α_ X.1 Y.1 Z.1)
   leftUnitor X := P.fullyFaithfulι.preimageIso (λ_ X.1)
   rightUnitor X := P.fullyFaithfulι.preimageIso (ρ_ X.1)
-  tensorHom_def := tensorHom_def (C := C)
-  id_tensorHom_id X Y := id_tensorHom_id X.1 Y.1
-  tensorHom_comp_tensorHom := tensorHom_comp_tensorHom (C := C)
-  whiskerLeft_id X Y := MonoidalCategory.whiskerLeft_id X.1 Y.1
-  id_whiskerRight X Y := MonoidalCategory.id_whiskerRight X.1 Y.1
-  associator_naturality := associator_naturality (C := C)
-  leftUnitor_naturality := leftUnitor_naturality (C := C)
-  rightUnitor_naturality := rightUnitor_naturality (C := C)
-  pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
-  triangle X Y := triangle X.1 Y.1
+  tensorHom_def _ _ := by ext; apply tensorHom_def
 
 end ObjectProperty
 

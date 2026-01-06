@@ -105,7 +105,7 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     rw [Set.disjoint_iff]
     rintro _ ⟨hxs, ⟨x, hxt, rfl⟩⟩
     apply ht'.ne_zero ⟨x, hxt⟩
-    rw [Subtype.coe_mk, ← hsec x,mkQ_apply, Quotient.mk_eq_zero]
+    rw [Subtype.coe_mk, ← hsec x, mkQ_apply, Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
   refine ⟨s ∪ sec '' t, subset_union_left, ?_, ?_⟩
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
@@ -158,9 +158,6 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
   push_neg at this
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
-
-@[deprecated (since := "2025-05-23")]
-alias Submodule.exists_smul_not_mem_of_rank_lt := Submodule.exists_smul_notMem_of_rank_lt
 
 open Cardinal Basis Submodule Function Set LinearMap
 
