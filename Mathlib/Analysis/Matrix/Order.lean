@@ -292,17 +292,15 @@ theorem IsUnit.eq_unitaryGroup_mul_posDef [DecidableEq n] {A : Matrix n n 𝕜} 
     refine (IsUnit.isStrictlyPositive ?_ (CFC.abs_nonneg A)).posDef
     exact (CFC.isUnit_sqrt_iff (star A * A)).mpr <| by simp [hA]
   have : Invertible (CFC.abs A) := h.isStrictlyPositive.isUnit.invertible
-  let U := A * (CFC.abs A)⁻¹
-  have hAU : A = U * CFC.abs A := by simp [U, mul_assoc]
   have : IsSelfAdjoint (CFC.abs A)⁻¹ := by
     simp only [IsSelfAdjoint, CFC.abs, star_eq_conjTranspose]
     rw [(posSemidef_conjTranspose_mul_self A).inv_sqrt,
       (CFC.sqrt_nonneg (Aᴴ * A)⁻¹).isSelfAdjoint.isHermitian.eq]
-  have hU : U ∈ unitaryGroup n 𝕜 := by
-    simp only [mem_unitaryGroup_iff', StarMul.star_mul, U]
+  have hU : A * (CFC.abs A)⁻¹ ∈ unitaryGroup n 𝕜 := by
+    simp only [mem_unitaryGroup_iff', StarMul.star_mul]
     rw [mul_assoc, ← mul_assoc _ A, ← CFC.abs_mul_abs A]
     simp [mul_assoc, this.star_eq]
-  ⟨⟨U, hU⟩, CFC.abs A, h, hAU⟩
+  ⟨⟨A * (CFC.abs A)⁻¹, hU⟩, CFC.abs A, h, by simp [mul_assoc]⟩
 
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
