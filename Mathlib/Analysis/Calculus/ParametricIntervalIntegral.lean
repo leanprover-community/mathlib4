@@ -119,7 +119,7 @@ if there exists a neighbourhood `u` of `x₀` such that `f.uncurry : H × ℝ �
 derivative is continuous on `u ×ˢ [[a, b]]`, then a derivative of
 `fun x => ∫ t in a..b, f x t ∂μ` in `x₀` can be computed as
 `∫ t in a..b, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ`. -/
-theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasure μ] [NoAtoms μ]
+theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasure μ]
     {f : H → ℝ → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {a b : ℝ}
     (hF₁ : ContinuousOn f.uncurry (u ×ˢ [[a, b]]))
     (hF₂ : ∀ t ∈ [[a, b]], DifferentiableOn 𝕜 (fun x ↦ f x t) u)
@@ -130,15 +130,16 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasure μ] 
   · simp_rw [integral_symm b a]
     exact (h hu (uIcc_comm a b ▸ hF₁) (uIcc_comm a b ▸ hF₂) (uIcc_comm a b ▸ hF₃)
       (le_of_not_ge hab)).neg
-  simp_rw [integral_of_le hab, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab]
-  exact _root_.hasFDerivAt_integral_of_continuousOn_fderiv
-    hu isCompact_uIcc isCompact_uIcc.measure_lt_top hF₁ hF₂ hF₃
+  simp_rw [integral_of_le hab, ← uIoc_of_le hab]
+  apply _root_.hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space
+    hu isCompact_uIcc ?_ uIoc_subset_uIcc hF₁ hF₂ hF₃
+  exact ((measure_mono uIoc_subset_uIcc).trans_lt isCompact_uIcc.measure_lt_top).ne
 
 /-- A convenient special case of `intervalIntegral.hasFDerivAt_integral_of_dominated_of_fderiv_le`:
 if `f.uncurry : H × ℝ → E` is continuously differentiable on `u ×ˢ [[a, b]]` for a neighbourhood `u`
 of `x₀`, then a derivative of `fun x => ∫ t in a..b, f x t ∂μ` in `x₀` can be computed as
 `∫ t in a..b, fderiv ℝ (fun x ↦ f x t) x₀ ∂μ`. -/
-theorem hasFDerivAt_integral_of_contDiffOn [IsLocallyFiniteMeasure μ] [NoAtoms μ] {E : Type*}
+theorem hasFDerivAt_integral_of_contDiffOn [IsLocallyFiniteMeasure μ] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H → ℝ → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {a b : ℝ}
     (hF : ContDiffOn ℝ 1 f.uncurry (u ×ˢ [[a, b]])) :
@@ -148,9 +149,9 @@ theorem hasFDerivAt_integral_of_contDiffOn [IsLocallyFiniteMeasure μ] [NoAtoms 
   · obtain hab | hab := lt_or_eq_of_le <| le_of_not_gt hab
     · simpa only [integral_symm b a] using (h hu (uIcc_comm a b ▸ hF) hab).neg
     · simp [hab, hasFDerivAt_const]
-  simp_rw [integral_of_le hab.le, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab.le]
-  exact _root_.hasFDerivAt_integral_of_contDiffOn hu isCompact_uIcc isCompact_uIcc.measure_lt_top
-    (uIcc_of_le hab.le ▸ uniqueDiffOn_Icc hab) hF
+  simp_rw [integral_of_le hab.le, ← uIoc_of_le hab.le]
+  apply _root_.hasFDerivAt_integral_of_contDiffOn hu isCompact_uIcc ?_ uIoc_subset_uIcc hF
+  exact ((measure_mono uIoc_subset_uIcc).trans_lt isCompact_uIcc.measure_lt_top).ne
 
 end intervalIntegral
 
