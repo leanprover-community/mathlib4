@@ -38,21 +38,11 @@ variable {α β : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
-    IsOrderedMonoid α, OrderBot α where
-  /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
-  zero_le_one : (0 : α) ≤ 1
+    IsOrderedMonoid α, OrderBot α, ZeroLEOneClass α where
 
 /-- A linearly ordered commutative group with a zero element. -/
 class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
-
-instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
-    [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
-  { ‹LinearOrderedCommMonoidWithZero α› with }
-
-instance (priority := 100) CanonicallyOrderedAdd.toZeroLeOneClass
-    [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
-  ⟨zero_le 1⟩
 
 section LinearOrderedCommMonoidWithZero
 variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
@@ -75,7 +65,7 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
   __ := hf.linearOrder f le lt hinf hsup compare
   __ := hf.commMonoidWithZero f zero one mul npow
   __ := Function.Injective.isOrderedMonoid f mul le
-  zero_le_one := le.1 <| by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
+  zero_le_one := le.1 <| by simp only [zero, one, zero_le_one]
   bot_le a := le.1 <| bot ▸ bot_le
 
 @[simp] lemma zero_le' : 0 ≤ a := by
