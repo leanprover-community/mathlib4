@@ -65,6 +65,9 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   rw [← toNNReal_one]
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
+theorem poissonPMF_apply {r : ℝ≥0} {n : ℕ} :
+  poissonPMF r n = ENNReal.ofReal (poissonPMFReal r n) := rfl
+
 /-- The Poisson pmf is measurable. -/
 @[fun_prop]
 lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
@@ -72,6 +75,24 @@ lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) :=
 @[fun_prop]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
+
+lemma poissonPMFReal_mul_eq_succ_mul (r : ℝ≥0) (n : ℕ) :
+    poissonPMFReal r n * r = poissonPMFReal r (n + 1) * ↑(n + 1) := by
+  simp [poissonPMFReal, Nat.factorial_succ, pow_succ]
+  field_simp
+
+theorem poissonPMFReal_hasSum_nmul (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n * n) r := by
+  suffices HasSum _ (poissonPMFReal r 0 * (0 : ℕ) + 1 * r) by simpa using this
+  apply HasSum.zero_add
+  simpa only [← poissonPMFReal_mul_eq_succ_mul] using (poissonPMFRealSum r).mul_right r.toReal
+
+theorem poissonPMF_tsum_nmul (r : ℝ≥0) : ∑' n, poissonPMF r n * n = r := by
+  simp_rw [poissonPMF_apply, ENNReal.ofReal_eq_coe_nnreal poissonPMFReal_nonneg]
+  exact ENNReal.tsum_coe_eq <| NNReal.hasSum_coe.mp <| poissonPMFReal_hasSum_nmul r
+
+theorem poissonPMF_coe_tsum_nmul (r : ℝ≥0) : ∑' n, (poissonPMF r n).toReal * n = r := by
+  simp_rw [poissonPMF_apply, ENNReal.ofReal_eq_coe_nnreal poissonPMFReal_nonneg]
+  exact (poissonPMFReal_hasSum_nmul r).tsum_eq
 
 end PoissonPMF
 
