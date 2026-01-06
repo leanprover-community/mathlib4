@@ -238,7 +238,7 @@ theorem stdPart_of_tendsto {x : ℝ*} {r : ℝ} (hx : x.Tendsto (𝓝 r)) : stdP
 
 theorem archimedeanClassMk_pos_of_tendsto {x : ℝ*} (hx : x.Tendsto (𝓝 0)) : 0 < mk x := by
   apply (archimedeanClassMk_nonneg_of_tendsto hx).lt_of_ne'
-  rw [ ← stdPart_eq_zero, stdPart_of_tendsto hx]
+  rw [← stdPart_eq_zero, stdPart_of_tendsto hx]
 
 theorem archimedeanClassMk_epsilon_pos : 0 < mk ε :=
   archimedeanClassMk_pos_of_tendsto <|
