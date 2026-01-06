@@ -17,6 +17,7 @@ public import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Order.Interval.Set.Infinite
+public import Mathlib.Algebra.EuclideanDomain.Defs
 
 /-!
 # Order of an element
@@ -913,6 +914,74 @@ lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
   nth_rewrite 2 [← zpow_one x] at hl
   have h1 := (injective_zpow_iff_not_isOfFinOrder.mpr hx) hl
   rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
+
+@[to_additive]
+theorem mem_zpowers_pow_iff {g : G} {k : ℤ} :
+    g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (↑(orderOf g) : ℤ) = 1 := by
+  apply Iff.intro
+  · intro hgk
+    rcases (by simpa [Subgroup.zpowers] using hgk) with ⟨m, hm⟩
+    have hm' : g ^ (k * m) = g := by simpa [zpow_mul] using hm
+    have h1 : g ^ (k * m - 1) = 1 := by simp[zpow_sub, hm']
+    have hdiv : (↑(orderOf g) : ℤ) ∣ (k * m - 1) := orderOf_dvd_iff_zpow_eq_one.mpr h1
+    rcases hdiv with ⟨t, ht⟩
+    let d : ℤ := k.gcd (↑(orderOf g) : ℤ)
+    have dk : d ∣ k := Int.gcd_dvd_left k (↑(orderOf g) : ℤ)
+    have dn : d ∣ (↑(orderOf g) : ℤ) := Int.gcd_dvd_right k (↑(orderOf g) : ℤ)
+    have dkm : d ∣ k * m := dk.mul_right m
+    have dnt : d ∣ (↑(orderOf g) : ℤ) * t := dn.mul_right t
+    have hlin : k * m - (↑(orderOf g) : ℤ) * t = 1 := by omega
+    have d1 : d ∣ 1 := by
+      have : d ∣ k * m - (↑(orderOf g) : ℤ) * t := Int.dvd_sub dkm dnt
+      simpa [hlin] using this
+    have hd1: d = 1 := by
+      have habs : (Int.natAbs d : ℕ) ∣ 1 := by
+        rcases d1 with ⟨c, hc⟩
+        refine ⟨Int.natAbs c, ?_⟩
+        have := congrArg Int.natAbs hc
+        simpa [Int.natAbs_mul] using this
+      have habs1 : Int.natAbs d = 1 := Nat.dvd_one.mp habs
+      have hdpm : d = 1 ∨ d = -1 := by omega
+      cases hdpm with
+      | inl h => exact h
+      | inr h =>
+        exfalso
+        have : (0 : ℤ) ≤ -1 := by simp_all only [Int.reduceNeg, IsUnit.neg_iff, isUnit_one,
+          IsUnit.dvd, Int.natAbs_of_isUnit,reduceCtorEq]
+        omega
+    simpa [d] using hd1
+  · intro kgcd
+    by_cases h : orderOf g = 0
+    · rw [h] at kgcd
+      simp at kgcd
+      have hk : k = 1 ∨ k = -1 := Int.natAbs_eq_natAbs_iff.mp kgcd
+      cases hk <;> simp_all
+    · let n : ℤ := (↑(orderOf g) : ℤ)
+      have hbez :
+          (k.gcd n : ℤ) = k * Int.gcdA k n + n * Int.gcdB k n :=
+        Int.gcd_eq_gcd_ab k n
+      have hab1 : k * Int.gcdA k n + n * Int.gcdB k n = 1 := by
+        have : k.gcd n = 1 := by exact kgcd
+        simpa [this] using hbez.symm
+      let a : ℤ := Int.gcdA k n
+      let b : ℤ := Int.gcdB k n
+      have hab1' : a * k + b * n = 1 := by
+        simpa [a, b, n, mul_comm, mul_left_comm, mul_assoc, add_comm, add_left_comm, add_assoc]
+      have hn : g ^ n = 1 := by simp only [zpow_natCast, pow_orderOf_eq_one, n]
+      refine ⟨a, ?_⟩
+      calc
+        (g ^ k) ^ a = g ^ (k * a) := by simpa using (zpow_mul g k a).symm
+        _   = g ^ (a * k) * 1:= by simp [mul_comm]
+        _   = g ^ (a * k) * g ^ (b * n) := by
+          have : g ^ (b * n) = 1 := by
+            calc
+              g ^ (b * n) = g ^ (n * b) := by simp [mul_comm]
+              _ = (g ^ n) ^ b := by simpa using (zpow_mul g n b)
+              _ = 1 := by simp [hn]
+          simp [this]
+        _   = g ^ (a * k + b * n) := by simp [zpow_add]
+        _   = g := by simp [hab1']
+
 section Finite
 variable [Finite G]
 
