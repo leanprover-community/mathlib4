@@ -80,6 +80,10 @@ def IsVertexConnected : Prop :=
 lemma isVertexConnected_zero : G.IsVertexConnected 0 ↔ Nonempty V := by
   simp [IsVertexConnected, ENat.one_le_card_iff_nonempty]
 
+/-- A nonempty graph is 0-vertex-connected. -/
+lemma IsVertexConnected.zero [Nonempty V] : G.IsVertexConnected 0 :=
+  isVertexConnected_zero.mpr ‹_›
+
 /-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
 lemma isVertexReachable_one_iff :
     G.IsVertexReachable 1 u v ↔ G.Reachable u v := by
