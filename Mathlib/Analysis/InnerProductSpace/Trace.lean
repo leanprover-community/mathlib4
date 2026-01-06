@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Trace
 This file contains various results about traces of linear operators in inner product spaces.
 -/
 
-@[expose] public section
+public section
 
 namespace LinearMap
 

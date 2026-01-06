@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 We prove that polynomials are `C^∞`.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

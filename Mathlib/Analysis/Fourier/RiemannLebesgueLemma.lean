@@ -44,7 +44,7 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
