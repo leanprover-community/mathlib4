@@ -15,7 +15,6 @@ public import Mathlib.Order.Filter.FilterProduct
 
 @[expose] public section
 
-
 open ArchimedeanClass Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
@@ -135,6 +134,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 
 /-- The canonical map `ℝ → ℝ*` as an `OrderRingHom`. -/
+@[simps]
 def coeRingHom : ℝ →+*o ℝ* where
   toFun x := x
   map_zero' := rfl
@@ -168,15 +168,47 @@ theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in h
 theorem ofSeq_le_ofSeq {f g : ℕ → ℝ} : ofSeq f ≤ ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n ≤ g n :=
   Germ.coe_le
 
-/-- A sample infinitesimal hyperreal -/
+/-! #### `ω` -/
+
+/-- A sample infinite hyperreal ω = ⟦(0, 1, 2, 3, ⋯)⟧. -/
+def omega : ℝ* := ofSeq Nat.cast
+
+@[inherit_doc] scoped notation "ω" => Hyperreal.omega
+recommended_spelling "omega" for "ω" in [omega, «termω»]
+
+theorem coe_lt_omega (r : ℝ) : r < ω := by
+  apply ofSeq_lt_ofSeq.2 <| Filter.Eventually.filter_mono Nat.hyperfilter_le_atTop _
+  obtain ⟨n, hn⟩ := exists_nat_gt r
+  rw [eventually_atTop]
+  exact ⟨n, fun m hm ↦ hn.trans_le (mod_cast hm)⟩
+
+theorem omega_pos : 0 < ω :=
+  coe_lt_omega 0
+
+@[simp]
+theorem omega_ne_zero : ω ≠ 0 :=
+  omega_pos.ne'
+
+@[simp]
+theorem abs_omega : |ω| = ω :=
+  abs_of_pos omega_pos
+
+theorem archimedeanClassMk_omega_neg : mk ω < 0 :=
+  fun n ↦ by simpa using coe_lt_omega n
+
+@[simp]
+theorem stdPart_omega : stdPart ω = 0 := by
+  rw [stdPart_eq_zero]
+  exact archimedeanClassMk_omega_neg.ne
+
+/-! #### `ε` -/
+
+/-- A sample infinitesimal hyperreal ε = ⟦(0, 1, 1/2, 1/3, ⋯)⟧. -/
 def epsilon : ℝ* :=
   ofSeq fun n => n⁻¹
 
-/-- A sample infinite hyperreal -/
-def omega : ℝ* := ofSeq Nat.cast
-
 @[inherit_doc] scoped notation "ε" => Hyperreal.epsilon
-@[inherit_doc] scoped notation "ω" => Hyperreal.omega
+recommended_spelling "epsilon" for "ε" in [epsilon, «termε»]
 
 @[simp]
 theorem inv_omega : ω⁻¹ = ε :=
@@ -186,20 +218,20 @@ theorem inv_omega : ω⁻¹ = ε :=
 theorem inv_epsilon : ε⁻¹ = ω :=
   @inv_inv _ _ ω
 
-theorem omega_pos : 0 < ω :=
-  Germ.coe_pos.2 <| Nat.hyperfilter_le_atTop <| (eventually_gt_atTop 0).mono fun _ ↦ Nat.cast_pos.2
-
+@[simp]
 theorem epsilon_pos : 0 < ε :=
   inv_pos_of_pos omega_pos
 
+@[simp]
 theorem epsilon_ne_zero : ε ≠ 0 :=
   epsilon_pos.ne'
 
-theorem omega_ne_zero : ω ≠ 0 :=
-  omega_pos.ne'
-
+@[simp]
 theorem epsilon_mul_omega : ε * ω = 1 :=
   @inv_mul_cancel₀ _ _ ω omega_ne_zero
+
+theorem archimedeanClassMk_epsilon_pos : 0 < mk ε := by
+  simpa [← inv_omega] using archimedeanClassMk_omega_neg
 
 /-!
 ### Some facts about `Tendsto`
@@ -239,10 +271,6 @@ theorem stdPart_of_tendsto {x : ℝ*} {r : ℝ} (hx : x.Tendsto (𝓝 r)) : stdP
 theorem archimedeanClassMk_pos_of_tendsto {x : ℝ*} (hx : x.Tendsto (𝓝 0)) : 0 < mk x := by
   apply (archimedeanClassMk_nonneg_of_tendsto hx).lt_of_ne'
   rw [← stdPart_eq_zero, stdPart_of_tendsto hx]
-
-theorem archimedeanClassMk_epsilon_pos : 0 < mk ε :=
-  archimedeanClassMk_pos_of_tendsto <|
-    tendsto_inv_atTop_nhds_zero_nat.mono_left Nat.hyperfilter_le_atTop
 
 @[simp]
 theorem stdPart_epsilon : stdPart ε = 0 :=
