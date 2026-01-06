@@ -513,7 +513,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
 then it is the product of at most `finrank K (V ⧸ e.fixedSubmodule)` dilatransvections.
 
 This is the non-exceptional case in Dieudonné's theorem. -/
-theorem mem_dilatransvections_pow_of_not_isExceptional
+theorem mem_transvections_pow_mul_dilatransvections_of_notIsExceptional
     {e : V ≃ₗ[K] V} (he : ¬ IsExceptional e) :
     e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V := by
   simp only [not_and_or] at he
@@ -523,11 +523,13 @@ theorem mem_dilatransvections_pow_of_not_isExceptional
   · exact mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one he
   · exact mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id he
 
-/-- If an element of `V ≃ₗ[K] V` is exceptional, then it is the product
-of `finrank K (V ⧸ e.fixedSubmodule)` transvections and one dilatransvection.
-(Fourth part of Dieudonné's theorem). -/
-theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsExceptional e) :
+/-- Any element of `V ≃ₗ[K] V`, is the product of `finrank K (V ⧸ e.fixedSubmodule)`
+transvections and one dilatransvection. (Fourth part of Dieudonné's theorem). -/
+theorem mem_transvections_pow_mul_dilatransvections :
     e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule)) * dilatransvections K V := by
+  wlog he : IsExceptional e
+  · obtain ⟨x, hx, y, hy, he⟩ := mem_transvections_pow_mul_dilatransvections_of_notIsExceptional he
+    exact ⟨x, transvections_pow_mono (Nat.sub_le _ _) hx, y, hy, he⟩
   wlog finrank_le_add : 2 ≤ finrank K (V ⧸ e.fixedSubmodule)
   · rw [← one_mul e]
     apply Set.mul_mem_mul
@@ -616,7 +618,7 @@ theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsEx
     simp only [smul_sub]
     abel
   rw [← he', ← he'_fixed]
-  apply mem_dilatransvections_pow_of_not_isExceptional
+  apply mem_transvections_pow_mul_dilatransvections_of_notIsExceptional
   rintro ⟨_, he'1, b, he'b⟩
   apply hv
   simp only [fixedReduce_eq_smul_iff, he'_apply] at he'b
@@ -667,15 +669,10 @@ theorem subgroup_closure_dilatransvections_eq_top :
     Subgroup.closure (dilatransvections K V) = ⊤ := by
   rw [eq_top_iff]
   intro e _
-  suffices ∃ n, e ∈ (transvections K V) ^ n * dilatransvections K V by
-    simp only [Set.mem_mul] at this
-    obtain ⟨n, ⟨x, hx, y, hy, rfl⟩⟩ := this
-    apply mul_mem _ (Subgroup.mem_closure_of_mem hy)
-    apply Subgroup.closure_mono transvections_subset_dilatransvections
-    exact closure_pow_le (Subgroup.mem_closure_of_mem hx)
-  by_cases he : IsExceptional e
-  · refine ⟨_, he.mem_mul_transvections_pow_mul_dilatransvections ⟩
-  · refine ⟨_, mem_dilatransvections_pow_of_not_isExceptional he⟩
+  obtain ⟨x, hx, y, hy, rfl⟩ := mem_transvections_pow_mul_dilatransvections e
+  apply mul_mem _ (Subgroup.mem_closure_of_mem hy)
+  apply Subgroup.closure_mono transvections_subset_dilatransvections
+  exact closure_pow_le (Subgroup.mem_closure_of_mem hx)
 
 end LinearEquiv
 
