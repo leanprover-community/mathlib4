@@ -21,6 +21,7 @@ public import Mathlib.Algebra.Ring.Subring.IntPolynomial
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.NumberTheory.Padics.ProperSpace
+public import Mathlib.NumberTheory.NumberField.AdeleRing
 
 /-!
 # Finite places of number fields
@@ -697,7 +698,7 @@ instance : IsDiscreteValuationRing (Valued.integer (v.adicCompletion K)) :=
   inferInstanceAs (IsDiscreteValuationRing (v.adicCompletionIntegers K))
 
 open Valued integer Rat.HeightOneSpectrum IsLocalRing in
-theorem compact_adicCompletionIntegers :
+instance compact_adicCompletionIntegers :
     CompactSpace (v.adicCompletionIntegers K) where
   isCompact_univ := by
     rw [isCompact_iff_totallyBounded_isComplete]
@@ -709,5 +710,7 @@ theorem compact_adicCompletionIntegers :
         (adicCompletionIntegers.padicIntEquiv 𝔭).toHomeomorph.symm.compactSpace).2.2
     let _ := instFiniteIntegers 𝔭 v
     exact ResidueField.finite_of_finite this (S := v.adicCompletionIntegers K)
+
+open RestrictedProduct
 
 end IsDedekindDomain.HeightOneSpectrum
