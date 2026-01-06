@@ -377,6 +377,40 @@ lemma cuspFunction_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
   exact cuspFunction_mul (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
     (analyticAt_cuspFunction_zero g hh hΓ).continuousAt
 
+lemma cuspFunction_smul {f : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
+    cuspFunction h (a • f) = a • cuspFunction h f := by
+  simp only [cuspFunction, Periodic.cuspFunction] at *
+  ext y
+  obtain rfl | hy := eq_or_ne y 0; swap
+  · simp [hy]
+  · simpa using Filter.Tendsto.limUnder_eq (Filter.Tendsto.const_mul _ (by simpa using hfcts))
+
+lemma cuspFunction_neg {f : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
+    cuspFunction h (-f) = - cuspFunction h f := by
+  simpa using cuspFunction_smul hfcts (-1)
+
+lemma cuspFunction_add {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
+  simp only [cuspFunction, Periodic.cuspFunction]
+  ext y
+  obtain rfl | hy := eq_or_ne y 0; swap
+  · simp [hy]
+  · have : ((f + g) ∘ ↑ofComplex) ∘ Periodic.invQParam h =
+      (f ∘ ↑ofComplex) ∘ Periodic.invQParam h + (g ∘ ↑ofComplex) ∘ Periodic.invQParam h := by
+      ext y
+      simp
+    simp only [Pi.add_apply, update_self] at *
+    rw [this, Filter.Tendsto.limUnder_eq]
+    exact Tendsto.add (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendto_ndhs_zero hfcts)))
+      (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendto_ndhs_zero hgcts)))
+
+lemma cuspFunction_sub {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g := by
+  simp_rw [sub_eq_add_neg, ← (cuspFunction_neg hgcts)]
+  apply cuspFunction_add hfcts (by simp [cuspFunction_neg hgcts, hgcts])
+
 open Nat in
 lemma qExpansion_mul {f g : ℍ → ℂ} {s : Set ℂ} (hsO : IsOpen s) (hs : 0 ∈ s)
     (hf : ContDiffOn ℂ ⊤ (cuspFunction h f) s) (hg : ContDiffOn ℂ ⊤ (cuspFunction h g) s) :
@@ -419,48 +453,6 @@ lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (
     exact (differentiableAt_cuspFunction f hh hΓ (by simpa using hy)).differentiableWithinAt
   · refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
     exact (differentiableAt_cuspFunction g hh hΓ (by simpa using hy)).differentiableWithinAt
-
-lemma cuspFunction_sub {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
-    (hgcts : ContinuousAt (cuspFunction h g) 0) :
-    cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g := by
-  simp only [cuspFunction, Periodic.cuspFunction]
-  ext y
-  obtain rfl | hy := eq_or_ne y 0; swap
-  · simp [hy]
-  · have : ((f - g) ∘ ↑ofComplex) ∘ Periodic.invQParam h = (f ∘ ↑ofComplex) ∘ Periodic.invQParam h
-        - (g ∘ ↑ofComplex) ∘ Periodic.invQParam h := by
-      ext y
-      simp
-    simp only [Pi.sub_apply, update_self] at *
-    rw [this, Filter.Tendsto.limUnder_eq]
-    apply Tendsto.sub
-    · exact tendsto_nhds_limUnder (Exists.intro _ ( periodic_tendto_ndhs_zero hfcts))
-    · exact tendsto_nhds_limUnder (Exists.intro _ ( periodic_tendto_ndhs_zero hgcts))
-
-lemma cuspFunction_smul {f : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
-    cuspFunction h (a • f) = a • cuspFunction h f := by
-  simp only [cuspFunction, Periodic.cuspFunction] at *
-  ext y
-  obtain rfl | hy := eq_or_ne y 0; swap
-  · simp [hy]
-  · simpa using Filter.Tendsto.limUnder_eq (Filter.Tendsto.const_mul _ (by simpa using hfcts))
-
-lemma cuspFunction_add {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
-    (hgcts : ContinuousAt (cuspFunction h g) 0) :
-    cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
-  simp only [cuspFunction, Periodic.cuspFunction]
-  ext y
-  obtain rfl | hy := eq_or_ne y 0; swap
-  · simp [hy]
-  · have : ((f + g) ∘ ↑ofComplex) ∘ Periodic.invQParam h = (f ∘ ↑ofComplex) ∘ Periodic.invQParam h
-        + (g ∘ ↑ofComplex) ∘ Periodic.invQParam h := by
-      ext y
-      simp
-    simp only [Pi.add_apply, update_self] at *
-    rw [this, Filter.Tendsto.limUnder_eq]
-    apply Tendsto.add
-    · exact tendsto_nhds_limUnder (Exists.intro _ ( periodic_tendto_ndhs_zero hfcts))
-    · exact tendsto_nhds_limUnder (Exists.intro _ ( periodic_tendto_ndhs_zero hgcts))
 
 lemma qExpansion_add [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
@@ -519,8 +511,8 @@ lemma qExpansion_one [Γ.HasDetPlusMinusOne] : qExpansion h (1 : ModularForm Γ 
   · simpa [hm, cuspFunction, Periodic.cuspFunction] using
       Filter.Tendsto.limUnder_eq tendsto_const_nhds
   · simp only [cuspFunction, Periodic.cuspFunction, one_coe_eq_one, Pi.one_comp,
-      PowerSeries.coeff_one, hm, ↓reduceIte, mul_eq_zero, inv_eq_zero, Nat.cast_eq_zero]
-    right
+    PowerSeries.coeff_one, hm, ↓reduceIte, mul_eq_zero, inv_eq_zero, Nat.cast_eq_zero,
+    Nat.factorial_ne_zero, false_or]
     have := iteratedDeriv_const (𝕜 := ℂ) (F := ℂ) (x := 0) (c := 1) (n := m)
     simp only [hm] at this
     convert this
