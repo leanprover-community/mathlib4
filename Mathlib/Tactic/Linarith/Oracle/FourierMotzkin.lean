@@ -313,8 +313,8 @@ def elimVarM (a : ℕ) : LinarithM Unit := do
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
     update (vs - 1) (← pos.foldlM (fun s p => do
       Lean.Core.checkSystem decl_name%.toString
-      -- FIXME: `.foldl .insert` should be equivalent to `.union`,
-      -- but this breaks a test.
+      -- FIXME: `.foldl .insert` should be equivalent to `.union`, but this breaks the test from
+      -- https://github.com/leanprover-community/mathlib4/issues/8875
       pure ((elimWithSet a p neg).foldl .insert s)) notPresent)
   else
     pure ()
