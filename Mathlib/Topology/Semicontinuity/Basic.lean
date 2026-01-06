@@ -58,7 +58,7 @@ ones for lower semicontinuous functions using `OrderDual`.
   and `r := (fun x s ↦ s ∈ 𝓝ˢ (f x))`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open Topology ENNReal
 

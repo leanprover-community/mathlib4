@@ -723,6 +723,10 @@ theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
   discreteTopology_iff_toPiLocalization_surjective.trans
     (and_iff_right <| toPiLocalization_injective _).symm
 
+lemma toPiLocalization_bijective {R : Type*} [CommRing R]
+    [DiscreteTopology (PrimeSpectrum R)] : Function.Bijective (toPiLocalization R) :=
+  discreteTopology_iff_toPiLocalization_bijective.mp inferInstance
+
 end DiscreteTopology
 
 section Order
