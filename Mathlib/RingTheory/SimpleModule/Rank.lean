@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 # A module over a division ring is simple iff it has rank one
 -/
 
-@[expose] public section
+public section
 
 theorem isSimpleModule_iff_finrank_eq_one {R M} [DivisionRing R] [AddCommGroup M] [Module R M] :
     IsSimpleModule R M ↔ Module.finrank R M = 1 :=

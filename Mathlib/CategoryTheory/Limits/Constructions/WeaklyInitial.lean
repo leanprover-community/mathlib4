@@ -20,7 +20,7 @@ This file gives constructions related to weakly initial objects, namely:
 These are primarily useful to show the General Adjoint Functor Theorem.
 -/
 
-@[expose] public section
+public section
 
 
 universe v u

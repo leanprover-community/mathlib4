@@ -182,6 +182,9 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
 theorem toAlgHom_eq_coe : e.toAlgHom = e :=
   rfl
 
+theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
+  rfl
+
 @[simp, norm_cast]
 theorem coe_algHom : DFunLike.coe (e.toAlgHom) = DFunLike.coe e :=
   rfl
