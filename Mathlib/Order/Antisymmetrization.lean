@@ -151,10 +151,8 @@ protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} 
     (∀ a, p <| toAntisymmetrization r a) → ∀ q, p q :=
   Quot.ind
 
-@[elab_as_elim]
-protected theorem Antisymmetrization.induction_on {p : Antisymmetrization α r → Prop}
-    (a : Antisymmetrization α r) (h : ∀ a, p <| toAntisymmetrization r a) : p a :=
-  Quotient.inductionOn' a h
+@[deprecated (since := "2026-01-06")]
+protected alias Antisymmetrization.induction_on := Antisymmetrization.ind
 
 @[simp]
 theorem toAntisymmetrization_ofAntisymmetrization (a : Antisymmetrization α r) :
