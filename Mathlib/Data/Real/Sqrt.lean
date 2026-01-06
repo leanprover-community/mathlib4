@@ -417,12 +417,8 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
 
 theorem sqrt_prod {ι : Type*} (s : Finset ι) {x : ι → ℝ} (hx : ∀ i ∈ s, 0 ≤ x i) :
     √(∏ i ∈ s, x i) = ∏ i ∈ s, √(x i) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert i s hnis h =>
-    rw [Finset.prod_insert hnis, Real.sqrt_mul (hx _ (by grind))]
-    grind
+  convert congr_arg NNReal.toReal <| map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s <;>
+    simp +contextual [-map_prod, NNReal.sqrtHom, hx]
 
 end Real
 
