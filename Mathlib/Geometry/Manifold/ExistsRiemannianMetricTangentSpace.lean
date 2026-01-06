@@ -38,7 +38,7 @@ variable
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ω B] [SigmaCompactSpace B] [T2Space B]
 
-noncomputable instance : TopologicalSpace (TotalSpace EB (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) :=
+noncomputable instance : TopologicalSpace (TotalSpace EB (TangentSpace (M := B) IB)) :=
   inferInstanceAs (TopologicalSpace (TangentBundle IB B))
 
 section
@@ -72,7 +72,7 @@ noncomputable instance : VectorBundle ℝ (F →L[ℝ] ℝ) (V E) := by
   infer_instance
 
 noncomputable instance :
-VectorBundle ℝ (EB →L[ℝ] ℝ) (V (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) := by
+VectorBundle ℝ (EB →L[ℝ] ℝ) (V (TangentSpace (M := B) IB)) := by
   unfold V
   infer_instance
 
@@ -339,7 +339,7 @@ lemma g_bilin_eq (i b : B)
         contradiction
       rw [if_neg hhc, if_neg hhb]
 
-lemma g_nonneg (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
+lemma g_nonneg (j b : B) (v : (TangentSpace (M := B) IB) b) :
   0 ≤ ((((g_bilin_2 j b)).toFun v)).toFun v := by
     unfold g_bilin_2
     simp
@@ -359,7 +359,7 @@ lemma g_nonneg (j b : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) :
     · simp
 
 lemma g_pos (i b : B) (hp : b ∈ (extChartAt IB i).source)
-            (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b) (hv : v ≠ 0) :
+            (v : (TangentSpace (M := B) IB) b) (hv : v ≠ 0) :
   0 < ((((g_bilin_2 i b)).toFun v)).toFun v := by
   unfold g_bilin_2
   simp
@@ -805,13 +805,13 @@ noncomputable instance (x : B) : NormedAddCommGroup (W (TangentSpace IB) x) :=
 
 noncomputable instance :
   TopologicalSpace (TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
-                   (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) := by
+                   (W (TangentSpace (M := B) IB))) := by
     unfold W
     infer_instance
 
 noncomputable
 def g_global_bilin_2 (f : SmoothPartitionOfUnity B IB B) (p : B) :
-    W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p := ∑ᶠ (j : B), (f j) p • g_bilin_2 j p
+    W (TangentSpace (M := B) IB) p := ∑ᶠ (j : B), (f j) p • g_bilin_2 j p
 
 lemma finsum_image_eq_sum {B E F : Type*} [AddCommMonoid E] [AddCommMonoid F]
  (φ : E →+ F) (f : B → E) (h_fin : Finset B)
@@ -851,7 +851,7 @@ lemma h_need (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB 
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
       rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
 
-    let h : (j : B) → W ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) b :=
+    let h : (j : B) → W ((TangentSpace (M := B) IB)) b :=
       fun j ↦ (f j) b • g_bilin_2 j b
 
     have h_inc : (Function.support h) ⊆ h_fin.toFinset :=
@@ -924,7 +924,7 @@ lemma h_need' (f : SmoothPartitionOfUnity B IB B)
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
     rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
 
-  let h : (j : B) → W ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) b :=
+  let h : (j : B) → W ((TangentSpace (M := B) IB)) b :=
     fun j ↦ (f j) b • g_bilin_2 j b
 
   let h' x := f x b * ((g_bilin_2 x b).toFun v).toFun v
@@ -1124,7 +1124,7 @@ lemma g_bilin_1_smooth_on_chart (i : B) :
 
 noncomputable
 def g_global_bilin_1 (f : SmoothPartitionOfUnity B IB B) (p : B) :
-    W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p :=
+    W (TangentSpace (M := B) IB) p :=
       ∑ᶠ (j : B), (f j) p • (g_bilin_1 (IB := IB) j p).snd
 
 lemma g_global_bilin_1_smooth (f : SmoothPartitionOfUnity B IB B)
@@ -1167,7 +1167,7 @@ def g_global_smooth_section_1
     (f : SmoothPartitionOfUnity B IB B)
     (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
     ContMDiffSection (I := IB) (F := (EB →L[ℝ] EB →L[ℝ] ℝ)) (n := ∞)
-      (V := (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) :=
+      (V := (W (TangentSpace (M := B) IB))) :=
   { toFun := g_global_bilin_1 f
     contMDiff_toFun := g_global_bilin_1_smooth f h_sub}
 
@@ -1228,7 +1228,7 @@ def riemannian_metric_exists_1
     (f : SmoothPartitionOfUnity B IB B)
     (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
     ContMDiffRiemannianMetric (IB := IB) (n := ∞) (F := EB)
-     (E := @TangentSpace ℝ _ _ _ _ _ _ IB B _ _) :=
+     (E := TangentSpace (M := B) IB) :=
   { inner := g_global_bilin_1 f
     symm := by
       exact riemannian_metric_symm_1 f
