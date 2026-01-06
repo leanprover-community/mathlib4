@@ -233,7 +233,7 @@ noncomputable
 def extendScalars (P : Generators R T ι) : Generators S T ι where
   val := P.val
   σ' x := map (algebraMap R S) (P.σ x)
-  aeval_val_σ' s := by simp [@aeval_def S, ← @aeval_def R]
+  aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/

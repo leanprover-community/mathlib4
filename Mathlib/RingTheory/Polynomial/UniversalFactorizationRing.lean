@@ -546,7 +546,7 @@ def UniversalCoprimeFactorizationRing.factor₂ : MonicDegreeEq 𝓡' k :=
 lemma UniversalCoprimeFactorizationRing.factor₁_mul_factor₂ :
     (factor₁ m k hn p).1 * (factor₂ m k hn p).1 = p.map (algebraMap R 𝓡') := by
   simp [factor₁, factor₂, ← Polynomial.map_mul, UniversalFactorizationRing.factor₁_mul_factor₂,
-    Polynomial.map_map]
+    Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
 
 lemma UniversalCoprimeFactorizationRing.isCoprime_factor₁_factor₂ :
     IsCoprime (factor₁ m k hn p).1 (factor₂ m k hn p).1 := by

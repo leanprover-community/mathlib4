@@ -311,7 +311,7 @@ variable {A : Type*} (B C : Type*) [CommSemiring A] [CommSemiring B] [Semiring C
   [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
 
 theorem mapAlg_comp (p : A[X]) : (mapAlg A C) p = (mapAlg B C) (mapAlg A B p) := by
-  simp [mapAlg_eq_map, map_map]
+  simp [mapAlg_eq_map, map_map, IsScalarTower.algebraMap_eq A B C]
 
 theorem coeff_zero_of_isScalarTower (p : A[X]) :
     (algebraMap B C) ((algebraMap A B) (p.coeff 0)) = (mapAlg A C p).coeff 0 := by

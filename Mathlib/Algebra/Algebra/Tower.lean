@@ -119,15 +119,9 @@ variable (R S A)
 variable [Algebra R A] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
-@[simp]
-theorem _root_.algebraMap_comp_algebraMap :
-    (algebraMap S A).comp (algebraMap R S) = algebraMap R A :=
+theorem algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) :=
   RingHom.ext fun x => by
     simp_rw [RingHom.comp_apply, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
-
--- TODO Drop / deprecate this theorem
-theorem algebraMap_eq : algebraMap R A = (algebraMap S A).comp (algebraMap R S) :=
-  (algebraMap_comp_algebraMap _ _ _).symm
 
 theorem algebraMap_apply (x : R) : algebraMap R A x = algebraMap S A (algebraMap R S x) := by
   rw [algebraMap_eq R S A, RingHom.comp_apply]

@@ -59,8 +59,8 @@ instance [IsDomain S] [FaithfulSMul R S] [Algebra.IsIntegral R S] [IsIntegrallyC
       Localization.AtPrime.comap_maximalIdeal
   intro x hx
   obtain ⟨a, ha, haQ⟩ : ∃ a, x • a ∈ Ideal.map (algebraMap R S) p ∧ a ∉ Q := by
-    simpa [Algebra.smul_def, IsScalarTower.algebraMap_eq R S SQ, -algebraMap_comp_algebraMap,
-      ← Ideal.map_map, IsLocalization.mem_map_algebraMap_iff Q.primeCompl, ← map_mul] using hx
+    simpa [Algebra.smul_def, IsScalarTower.algebraMap_eq R S SQ, ← Ideal.map_map,
+      IsLocalization.mem_map_algebraMap_iff Q.primeCompl, ← map_mul] using hx
   obtain ⟨f, hfm, hfa, hf⟩ := exists_monic_aeval_eq_zero_forall_mem_of_mem_map ha
   obtain ⟨i, hi, hip⟩ : ∃ i ≠ (minpoly R a).natDegree, (minpoly R a).coeff i ∉ p := by
     set g := minpoly R a

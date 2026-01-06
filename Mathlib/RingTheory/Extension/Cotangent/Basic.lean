@@ -81,19 +81,14 @@ def _root_.KaehlerDifferential.cotangentComplexBaseChange
     [Algebra R P] [Algebra S A] [IsScalarTower P S A] :
     A ⊗[P] RingHom.ker (algebraMap P S) →ₗ[A] A ⊗[P] Ω[P⁄R] :=
   LinearMap.liftBaseChange _ (KaehlerDifferential.kerToTensor _ _ _ ∘ₗ Submodule.inclusion
-    (by
-      rw [IsScalarTower.algebraMap_eq P S A]
-      intro
-      aesop (erase simp algebraMap_comp_algebraMap)))
+    (by rw [IsScalarTower.algebraMap_eq P S A]; intro; aesop))
 
 omit [Algebra R S] in
 lemma _root_.KaehlerDifferential.cotangentComplexBaseChange_tmul
     {P A : Type*} [CommRing P] [CommRing A] [Algebra P S]
     [Algebra P A] [Algebra R P] [Algebra S A] [IsScalarTower P S A] (a b) :
   cotangentComplexBaseChange R S P A (a ⊗ₜ b) =
-    a • kerToTensor R P A ⟨b.1, by
-      rw [IsScalarTower.algebraMap_eq P S A]
-      aesop (erase simp algebraMap_comp_algebraMap)⟩ := rfl
+    a • kerToTensor R P A ⟨b.1, by rw [IsScalarTower.algebraMap_eq P S A]; aesop⟩ := rfl
 
 variable (A) in
 lemma cotangentComplexBaseChange_eq_lTensor_cotangentComplex :

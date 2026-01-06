@@ -292,7 +292,7 @@ instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] (Q :
     [Q.IsPrime] [Q.LiesOver P] [Q.LiesOver p] :
     IsScalarTower (Localization.AtPrime p) (Localization.AtPrime P) (Localization.AtPrime Q) :=
   .of_algebraMap_eq' <| by
-    simp [RingHom.algebraMap_toAlgebra, ← localRingHom_comp]
+    simp [RingHom.algebraMap_toAlgebra, ← localRingHom_comp, ← IsScalarTower.algebraMap_eq]
 
 end
 

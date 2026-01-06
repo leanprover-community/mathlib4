@@ -636,7 +636,7 @@ theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
       (KaehlerDifferential.kerTotal R B).restrictScalars _ := by
   rw [Submodule.map_sup, ← kerTotal_map R R A B h, Submodule.map_span, ← Set.range_comp]
   congr
-  ext; simp [IsScalarTower.algebraMap_eq R A B, -algebraMap_comp_algebraMap]
+  ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 section
 variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B] [SMulCommClass S A B]
