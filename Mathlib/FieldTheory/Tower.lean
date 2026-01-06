@@ -24,7 +24,7 @@ tower law
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w u₁ v₁ w₁
