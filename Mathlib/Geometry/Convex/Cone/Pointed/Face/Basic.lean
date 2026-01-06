@@ -118,8 +118,8 @@ theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
     simp [this.eq_zero]
 
 theorem mem_iff_add_mem (hF : F.IsFaceOf C) {x y : M}
-    (hx : x ∈ C) (hy : y ∈ C) : x ∈ F ∧ y ∈ F ↔ x + y ∈ F := by
-  refine ⟨fun ⟨hx, hy⟩ => F.add_mem hx hy, ?_⟩
+    (hx : x ∈ C) (hy : y ∈ C) : x + y ∈ F ↔  x ∈ F ∧ y ∈ F := by
+  refine ⟨?_, fun ⟨hx, hy⟩ => F.add_mem hx hy⟩
   exact fun h => ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
 
 theorem mem_of_sum_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
