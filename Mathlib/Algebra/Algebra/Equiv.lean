@@ -182,6 +182,9 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
 theorem toAlgHom_eq_coe : e.toAlgHom = e :=
   rfl
 
+theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
+  rfl
+
 @[simp, norm_cast]
 theorem coe_algHom : DFunLike.coe (e.toAlgHom) = DFunLike.coe e :=
   rfl
@@ -545,6 +548,18 @@ theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →
 theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
     (f.trans g).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
   rfl
+
+@[simp] theorem linearEquivConj_mulLeft (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulLeft R x) = .mulLeft R (f x) := by
+  ext; simp [LinearEquiv.conj_apply]
+
+@[simp] theorem linearEquivConj_mulRight (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulRight R x) = .mulRight R (f x) := by
+  ext; simp [LinearEquiv.conj_apply]
+
+@[simp] theorem linearEquivConj_mulLeftRight (f : A₁ ≃ₐ[R] A₂) (x : A₁ × A₁) :
+    f.toLinearEquiv.conj (.mulLeftRight R x) = .mulLeftRight R (Prod.map f f x) := by
+  cases x; ext; simp [LinearEquiv.conj_apply]
 
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=

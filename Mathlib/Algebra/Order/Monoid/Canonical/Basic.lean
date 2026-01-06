@@ -12,7 +12,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 # Extra lemmas about canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 variable {ι α : Type*} [AddCommMonoid α] [LinearOrder α] [OrderBot α] [CanonicallyOrderedAdd α]

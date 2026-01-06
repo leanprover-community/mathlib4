@@ -17,7 +17,7 @@ This file allows calculating the binomial coefficient `a.choose b` as an element
 of characteristic `0`.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

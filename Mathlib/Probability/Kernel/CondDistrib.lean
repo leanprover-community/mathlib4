@@ -227,7 +227,6 @@ lemma condDistrib_fst_prod {γ : Type*} {mγ : MeasurableSpace γ}
     condDistrib (fun ω ↦ Y ω.1) (fun ω ↦ X ω.1) (μ.prod ν) =ᵐ[μ.map X] condDistrib Y X μ := by
   by_cases hX : AEMeasurable X μ
   swap; · simp [Measure.map_of_not_aemeasurable hX, Filter.EventuallyEq]
-  have : μ = (μ.prod ν).map (fun ω ↦ ω.1) := by simp [Measure.map_fst_prod]
   have h_map := condDistrib_map (X := X) (Y := Y) (f := Prod.fst (α := α) (β := γ))
       (ν := μ.prod ν) (mα := inferInstance) (mβ := inferInstance)
       (by simpa) (by simpa) (by fun_prop)
@@ -240,7 +239,6 @@ lemma condDistrib_snd_prod {γ : Type*} {mγ : MeasurableSpace γ}
     condDistrib (fun ω ↦ Y ω.2) (fun ω ↦ X ω.2) (ν.prod μ) =ᵐ[μ.map X] condDistrib Y X μ := by
   by_cases hX : AEMeasurable X μ
   swap; · simp [Measure.map_of_not_aemeasurable hX, Filter.EventuallyEq]
-  have : μ = (μ.prod ν).map (fun ω ↦ ω.1) := by simp [Measure.map_fst_prod]
   have h_map := condDistrib_map (X := X) (Y := Y) (f := Prod.snd (β := α) (α := γ))
       (ν := ν.prod μ) (mα := inferInstance) (mβ := inferInstance)
       (by simpa) (by simpa) (by fun_prop)

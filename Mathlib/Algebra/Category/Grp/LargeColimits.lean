@@ -18,7 +18,7 @@ by the relations given by the morphisms in the diagram) is `w`-small.
 
 -/
 
-@[expose] public section
+public section
 
 universe w u v
 
