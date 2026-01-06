@@ -283,127 +283,178 @@ instance distribLattice : DistribLattice (Digraph V) where
 
 
 set_option maxHeartbeats 1000000 in
-noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) where
+noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
+  ({H : Digraph V | distribLattice.le H G ∧ H.verts = G.verts}) where
   sup H₁ H₂ := by
-    cases H₁ with | mk H₁ H₁_prop
-    cases H₂ with | mk H₂ H₂_prop
+    obtain ⟨H₁, H₁_sub, H₁_verts_eq⟩ := H₁
+    obtain ⟨H₂, H₂_sub, H₂_verts_eq⟩ := H₂
     constructor
     case val =>
       exact (max H₁ H₂)
     case property =>
-      simp_all
+      simp_all [max, SemilatticeSup.sup]
+      constructor
+      · rintro v h
+        simp at h
+        exact h
+      · intro v w adj
+        simp only at adj
+        obtain (hH₁ |hH₂) := adj
+        · apply H₁_sub.right hH₁
+        · apply H₂_sub.right hH₂
+
   le_sup_left := by
-    intro a b
-    simp_all only
-    apply distribLattice.le_sup_left
+    intro ⟨H₁, H₁_sub, H₁_verts⟩ ⟨H₂, H₂_sub, H₂_verts⟩
+    simp
+
   le_sup_right := by
-    intro a b
-    simp_all only
-    apply distribLattice.le_sup_right
+    intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩
+    simp
+
   sup_le := by
-    intro a b c
-    simp_all only
-    apply distribLattice.sup_le
+    intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩ ⟨H₃, ⟨H₃_sub, H₃_verts⟩⟩
+    intro H₁_sub_H₃ H₂_sub_H₃
+    simp only [Set.mem_setOf_eq, Subtype.mk_le_mk, sup_le_iff]
+    tauto
+
 
   inf H₁ H₂ := by
-    cases H₁ with | mk H₁ H₁_prop
-    cases H₂ with | mk H₂ H₂_prop
+    obtain ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ := H₁
+    obtain ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩ := H₂
     constructor
     case val =>
       exact (min H₁ H₂)
     case property =>
-      simp_all only [Set.mem_Iic]
-      apply le_trans
-      apply inf_le_left
-      exact H₁_prop
+      simp only [Set.mem_setOf_eq, LE.le, min, SemilatticeInf.inf, Lattice.inf]
+      constructor
+      · constructor
+        rw [H₁_verts, H₂_verts]
+        exact Set.inter_subset_left
+        intro v w ⟨hH₁, hH₂⟩
+        apply H₁_sub.right
+        exact hH₁
+      · rw [H₁_verts, H₂_verts]
+        simp only [Set.inter_self]
 
   inf_le_left := by
-    intros
-    simp_all only
-    apply distribLattice.inf_le_left
+    intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩
+    simp_all
+
 
   inf_le_right := by
-    intros
-    simp_all only
-    apply distribLattice.inf_le_right
+    intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩
+    simp_all
+
 
   le_inf := by
-    intros
-    simp_all only
-    apply distribLattice.le_inf
-    all_goals
-      simp only [Subtype.coe_le_coe]
-      assumption
-  top := ⟨G, by apply distribLattice.le_refl⟩
-  le_top := by
-    intro H
-    cases H with | mk H Hprop
-    simp at Hprop
-    simp_all [Subtype.mk_le_mk]
+    intro ⟨H₁, ⟨H₁_sub, H₁_verts⟩⟩ ⟨H₂, ⟨H₂_sub, H₂_verts⟩⟩ ⟨H₃, ⟨H₃_sub, H₃_verts⟩⟩
+    simp_all
 
-  bot := ⟨Digraph.emptyDigraph V, by
-        simp [Digraph.emptyDigraph,
-          LE.le]⟩
+
+  top := ⟨G, by simp⟩
+
+  le_top := by
+    intro ⟨H, ⟨H_sub, H_verts⟩⟩
+    simp_all
+
+  bot := ⟨⟨G.verts, fun _ _ => False, by simp, by simp⟩,
+    by simp [LE.le]⟩
 
   bot_le := by
-    intro H
-    cases H with | mk H Hprop
-    simp at Hprop
-    simp [Digraph.emptyDigraph, LE.le]
+    intro ⟨H, ⟨H_sub, H_verts⟩⟩
+    simp_all [LE.le]
 
   compl H := by
-    obtain ⟨H, Hprop⟩ := H
+    obtain ⟨H, ⟨H_sub, H_verts⟩⟩ := H
     constructor
     case val => exact {
-      verts := G.verts \ H.verts
+      verts := H.verts
       -- The complement is defined w.r.t H.verts and G.Adj
-      Adj v w := G.Adj v w ∧ ¬ H.Adj v w ∧ v ∈ (G.verts \ H.verts) ∧ (w ∈ G.verts \ H.verts)
+      Adj v w := G.Adj v w ∧ ¬ H.Adj v w ∧ v ∈ H.verts ∧ w ∈ H.verts
     }
     case property =>
-      simp at Hprop
       simp_all [LE.le]
-      apply Set.diff_subset
+
 
   sSup ℋ := by
+    classical
     constructor
     case val =>
-      exact sSup {H | ∃p , ⟨H,p⟩ ∈ ℋ}
+      if _h : Nonempty ℋ then
+        exact sSup {H | ∃p , ⟨H,p⟩ ∈ ℋ}
+      else
+        exact ⟨G.verts, fun _ _ => False, by aesop, by aesop⟩
     case property =>
-      simp_all [sSup]
-      constructor
-      · simp only [LE.le]
-        rw [Set.subset_def]
-        intro _ ⟨H, ⟨⟨⟨h, _⟩,_⟩, h'⟩⟩
-        solve_by_elim
-      · intro v w
-        simp only [LE.le]
-        intro ⟨H, ⟨⟨⟨_, h⟩, _⟩, _⟩⟩
-        solve_by_elim
+      split_ifs
+      case pos h =>
+        obtain ⟨⟨H, ⟨H_sub, H_verts⟩⟩, H_mem⟩ := hnonempty
+        simp [sSup, LE.le]
+        constructor
+        · constructor
+          · simp only [Set.subset_def, Set.mem_setOf_eq, forall_exists_index, and_imp,
+            forall_and_index]
+            intro v H' _ _ H'hverts _ hvH'_verts
+            rw [H'hverts] at hvH'_verts
+            assumption
+          · intro v w H' _ H'adj hv_H'adj _
+            tauto
+        · ext v
+          constructor
+          · intro hv
+            rw [Set.mem_setOf_eq] at hv
+            obtain ⟨H', ⟨H'_sub, H'_verts⟩, H'_mem⟩ := hv
+            apply H'_sub.left.left H'_mem
+          · intro h_vG
+            rw [Set.mem_setOf_eq]
+            use H
+            simp_all only [Set.coe_setOf, Set.mem_setOf_eq, subset_refl, true_and, and_true,
+              exists_prop]
+            apply H_sub.right
+      case neg h =>
+        simp [Set.mem_setOf_eq, LE.le]
+
 
   le_sSup := by
-    intro ℋ ⟨H, ⟨H_vert_prop, H_Adj_prop⟩⟩ hH
-    simp_all only [LE.le, sSup, Set.mem_Iic, Set.subset_def, Set.mem_setOf_eq]
-    constructor
-    · intro v vHverts
-      use H
-      tauto
-    · intro v w Hadj
-      use H
-      tauto
+    intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ hH
+    simp_all only [LE.le, sSup, Set.subset_def, Set.mem_setOf_eq]
+    split_ifs
+    case pos h =>
+      constructor
+      · intro v vHverts
+        use H
+        simp_all only [Set.coe_setOf, nonempty_subtype, Subtype.exists, implies_true, true_and,
+          and_true, exists_prop]
+        apply H_sub.right
+      · intro v w Hadj
+        use H
+        tauto
+    case neg h =>
+      simp only [imp_self, implies_true, true_and]
+      
 
   sSup_le := by
-    intro ℋ ⟨H, H_prop⟩ h
-    simp_all only [LE.le, Subtype.forall, Set.mem_Iic, forall_and_index, sSup, Set.mem_setOf_eq,
-      forall_exists_index, Set.subset_def]
-    constructor
-    · intro v H' H'_prop hadj h_mem
-      simp at H_prop
-      specialize h H' H'_prop hadj h_mem
-      tauto
-    · intro v w H' H'_prop hadj h_mem
-      specialize h H' H'_prop hadj h_mem
-      tauto
+    intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ h
+    simp_all only [LE.le, Subtype.forall, forall_and_index, sSup, Set.mem_setOf_eq,
+      Set.subset_def]
+    split_ifs
+    case pos hnon =>
+      constructor
+      · intro v hv
+        rw [Set.mem_setOf_eq] at hv
+        obtain ⟨H', ⟨H'_sub, H'_mem⟩, H'_in_ℋ⟩ := hv
+        specialize h H' H'_sub.left.left H'_sub.left.right H'_sub.right H'_mem
+        tauto
+      · intro v w hadj
+        simp at hadj
+        obtain ⟨H', ⟨H'_sub, H'_mem⟩, H'_in_ℋ⟩ := hadj
+        specialize h H' H'_sub.left.left H'_sub.left.right H'_sub.right H'_mem
+        tauto
 
+    case neg hnon =>
+      simp only [imp_self, implies_true, true_and]
+
+      sorry
+#exit
   top_le_sup_compl := by
     intro ⟨H, H_prop⟩
     simp_all only [LE.le, max, SemilatticeSup.sup, true_and]
@@ -490,7 +541,7 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra (Set.Iic G) wher
     · rw[Set.union_inter_distrib_left]
     · intros
       tauto
-
+  #exit
   inf_compl_le_bot := by
     intro ⟨H, H_prop⟩
     simp [LE.le, min, SemilatticeInf.inf, Lattice.inf]
