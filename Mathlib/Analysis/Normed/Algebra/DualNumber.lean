@@ -19,7 +19,7 @@ These are just restatements of similar statements about `TrivSqZeroExt R M`.
 
 -/
 
-@[expose] public section
+public section
 
 open NormedSpace -- For `NormedSpace.exp`.
 

@@ -45,7 +45,7 @@ Note that a version of Statement (1) in
 Nakayama, Jacobson
 -/
 
-@[expose] public section
+public section
 
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]

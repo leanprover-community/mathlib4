@@ -30,7 +30,7 @@ covered by a countable union of closed sets, then the union of their interiors i
 We also prove that in Baire spaces, the `residual` sets are exactly those containing a dense Gδ set.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
