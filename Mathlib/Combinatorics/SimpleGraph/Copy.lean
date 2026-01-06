@@ -353,7 +353,7 @@ protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
 /-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toHom, e.injective⟩
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toCopy⟩
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
