@@ -395,7 +395,10 @@ def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
 
 /--
 The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.
--/
+
+This is also known as a rank-one operator.
+See `ContinuousLinearMap.smulRightL` for the continuous version of this, and see
+`InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
   toFun f :=
     { toFun := LinearMap.smulRight f
