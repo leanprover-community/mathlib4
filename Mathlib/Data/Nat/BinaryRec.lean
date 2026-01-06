@@ -77,6 +77,7 @@ def bitCasesOn {motive : Nat → Sort u} (n) (bit : ∀ b n, motive (bit b n)) :
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> lia
 
+/-- Auxiliary definition for `Nat.binaryRec`. -/
 abbrev binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
     (bit : ∀ b n, motive n → motive (bit b n)) :
     ∀ fuel n : Nat, n < 2 ^ fuel → motive n
@@ -90,28 +91,28 @@ abbrev binaryRecAux {motive : Nat → Sort u} (zero : motive 0)
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
 @[elab_as_elim, specialize]
-def binaryRec {motive : Nat → Sort u} (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n))
-    (n : Nat) : motive n :=
+def binaryRecImpl {motive : Nat → Sort u} (zero : motive 0)
+    (bit : ∀ b n, motive n → motive (bit b n)) (n : Nat) : motive n :=
   if n0 : n = 0 then congrArg motive n0 ▸ zero
   else
-    let x := bit (1 &&& n != 0) (n >>> 1) (binaryRec zero bit (n >>> 1))
+    let x := bit (1 &&& n != 0) (n >>> 1) (binaryRecImpl zero bit (n >>> 1))
     congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
 decreasing_by exact bitwise_rec_lemma n0
 
-/-- A kernel-reducible version of `binaryRec`. -/
+/-- A kernel-reducible version of `binaryRecImpl`. -/
 @[elab_as_elim]
-def binaryRecₖ {motive : Nat → Sort u} (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n))
+def binaryRec {motive : Nat → Sort u} (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n))
     (n : Nat) : motive n :=
   if h : n = 0 then binaryRecAux zero bit 0 _ (by simp [h])
     else binaryRecAux zero bit _ _ n.lt_log2_self
 
-/-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
+/-- The same as `binaryRecImpl`, but the induction step can assume that if `n=0`,
   the bit being appended is `true` -/
 @[elab_as_elim, specialize]
 def binaryRec' {motive : Nat → Sort u} (zero : motive 0)
     (bit : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :
     ∀ n, motive n :=
-  binaryRec zero fun b n ih =>
+  binaryRecImpl zero fun b n ih =>
     if h : n = 0 → b = true then bit b n h ih
     else
       have : n.bit b = 0 := by
@@ -119,7 +120,7 @@ def binaryRec' {motive : Nat → Sort u} (zero : motive 0)
         cases n <;> cases b <;> simp at h ⊢
       congrArg motive this ▸ zero
 
-/-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
+/-- The same as `binaryRecImpl`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim, specialize]
 def binaryRecFromOne {motive : Nat → Sort u} (zero : motive 0) (one : motive 1)
     (bit : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
@@ -162,37 +163,37 @@ theorem bitCasesOn_bit (h : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
   intros; rfl
 
 @[simp]
-theorem binaryRecₖ_zero (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
-    binaryRecₖ zero bit 0 = zero := rfl
+theorem binaryRec_zero (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
+    binaryRec zero bit 0 = zero := rfl
 
 @[simp]
-theorem binaryRec_zero (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
-    binaryRec zero bit 0 = zero := by
-  rw [binaryRec]
+theorem binaryRecImpl_zero (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
+    binaryRecImpl zero bit 0 = zero := by
+  rw [binaryRecImpl]
   simp
 
 @[simp]
-theorem binaryRecₖ_one (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
-    binaryRecₖ (motive := motive) zero bit 1 = bit true 0 zero := rfl
+theorem binaryRec_one (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
+    binaryRec (motive := motive) zero bit 1 = bit true 0 zero := rfl
 
 @[simp]
-theorem binaryRec_one (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
-    binaryRec (motive := motive) zero bit 1 = bit true 0 zero := by
-  rw [binaryRec]
-  simp only [add_one_ne_zero, ↓reduceDIte, Nat.reduceShiftRight, binaryRec_zero]
+theorem binaryRecImpl_one (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n)) :
+    binaryRecImpl (motive := motive) zero bit 1 = bit true 0 zero := by
+  rw [binaryRecImpl]
+  simp only [add_one_ne_zero, ↓reduceDIte, Nat.reduceShiftRight, binaryRecImpl_zero]
   rfl
 
-theorem binaryRec_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit b n)}
+theorem binaryRecImpl_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit b n)}
     (b n) (h : bit false 0 zero = zero ∨ (n = 0 → b = true)) :
-    binaryRec zero bit (n.bit b) = bit b n (binaryRec zero bit n) := by
+    binaryRecImpl zero bit (n.bit b) = bit b n (binaryRecImpl zero bit n) := by
   by_cases h' : n.bit b = 0
   case pos =>
     obtain ⟨rfl, rfl⟩ := bit_eq_zero_iff.mp h'
     simp only [Bool.false_eq_true, imp_false, not_true_eq_false, or_false] at h
-    unfold binaryRec
+    unfold binaryRecImpl
     exact h.symm
   case neg =>
-    rw [binaryRec, dif_neg h']
+    rw [binaryRecImpl, dif_neg h']
     change congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one ▸ bit _ _ _ = _
     generalize congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
@@ -202,13 +203,13 @@ theorem log2_eq_succ_log2_shiftRight {n : Nat} (hn : n >>> 1 ≠ 0) : n.log2 = (
   (log2_eq_iff (by rintro rfl; exact hn rfl)).mpr
     ⟨Nat.mul_le_of_le_div _ _ _ (log2_self_le hn), (div_lt_iff_lt_mul <| by decide).mp lt_log2_self⟩
 
-theorem binaryRecₖ_apply_eq_binaryRec {zero : motive 0}
+theorem binaryRec_apply_eq_binaryRecImpl {zero : motive 0}
     {bit : ∀ b n, motive n → motive (bit b n)} {n : Nat} :
-    binaryRecₖ (motive := motive) zero bit n = binaryRec zero bit n := by
+    binaryRec (motive := motive) zero bit n = binaryRecImpl zero bit n := by
   obtain rfl | ne := Classical.em (n = 0)
   · simp
-  rw [binaryRecₖ, binaryRec, dif_neg ne, dif_neg ne, binaryRecAux,
-    ← binaryRecₖ_apply_eq_binaryRec, binaryRecₖ]
+  rw [binaryRec, binaryRecImpl, dif_neg ne, dif_neg ne, binaryRecAux,
+    ← binaryRec_apply_eq_binaryRecImpl, binaryRec]
   obtain eq | ne := Classical.em (n >>> 1 = 0)
   · have : n.log2 = 0 := by
       rw [← n.bit_testBit_zero_shiftRight_one, eq]
@@ -216,25 +217,30 @@ theorem binaryRecₖ_apply_eq_binaryRec {zero : motive 0}
     simp only [dif_pos eq, this]
   · simp only [dif_neg ne, log2_eq_succ_log2_shiftRight ne]
 
-@[csimp] theorem binaryRecₖ_eq_binaryRec : @binaryRecₖ = @binaryRec := by
+@[csimp] theorem binaryRec_eq_binaryRecImpl : @binaryRec = @binaryRecImpl := by
   ext motive zero bit n
-  exact binaryRecₖ_apply_eq_binaryRec
+  exact binaryRec_apply_eq_binaryRecImpl
+
+theorem binaryRec_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit b n)}
+    (b n) (h : bit false 0 zero = zero ∨ (n = 0 → b = true)) :
+    binaryRec zero bit (n.bit b) = bit b n (binaryRec zero bit n) := by
+  simpa only [binaryRec_eq_binaryRecImpl] using binaryRecImpl_eq b n h
 
 @[simp] theorem binaryRec'_zero (zero : motive 0)
     (bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)) :
     binaryRec' zero bit 0 = zero := by
-  rw [binaryRec', Nat.binaryRec_zero]
+  rw [binaryRec', binaryRecImpl_zero]
 
 @[simp] theorem binaryRec'_one (zero : motive 0)
     (bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)) :
     binaryRec' (motive := motive) zero bit 1 = bit true 0 (by simp) zero := by
-  rw [binaryRec', Nat.binaryRec_one, dif_pos]
+  rw [binaryRec', binaryRecImpl_one, dif_pos]
 
 theorem binaryRec'_eq {zero : motive 0}
     {bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)}
     (b n) (h : n = 0 → b = true) :
     binaryRec' zero bit (n.bit b) = bit b n h (binaryRec' zero bit n) := by
-  rw [binaryRec', binaryRec_eq _ _ (by simp), dif_pos h, binaryRec']
+  rw [binaryRec', binaryRecImpl_eq _ _ (by simp), dif_pos h, binaryRec']
 
 @[simp] theorem binaryRecFromOne_zero (zero : motive 0) (one : motive 1)
     (bit : (b : Bool) → (n : Nat) → n ≠ 0 → motive n → motive (n.bit b)) :
