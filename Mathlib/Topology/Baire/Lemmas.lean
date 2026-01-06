@@ -59,7 +59,7 @@ theorem IsGδ.baireSpace_of_dense {s : Set X} (hG : IsGδ s) (hd : Dense s) : Ba
     exact ⟨g, hg1, hg2, fun n => (hg3 n).symm⟩
   have h_inter_dense : Dense (⋂ n, g n ∩ V n) :=
     BaireSpace.baire_property (fun n ↦ g n ∩ V n) (fun n => (hg1 n).inter (hV.1 n))
-      (fun n => (hg2 n).inter_of_isOpen_left (Dense.mono (by simp [hV.2, iInter_subset]) hd)
+      (fun n => (hg2 n).inter_of_isOpen_left (hd.mono (by simp [hV.2, iInter_subset]))
       (hg1 n))
   have h_inter_eq : ⋂ n, g n ∩ V n = ⋂ n, f n := by
     ext
