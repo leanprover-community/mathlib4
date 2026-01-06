@@ -46,6 +46,9 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 
+protected theorem div_right_comm : a / b / c = a / c / b := by
+  simp only [div_eq_mul_inv, mul_right_comm]
+
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 

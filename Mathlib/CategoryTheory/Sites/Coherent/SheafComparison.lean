@@ -22,7 +22,8 @@ of coherent sheaves on `C` and `D` are equivalent (see
 `CategoryTheory.coherentTopology.equivalence`).
 
 The main application of this equivalence is the characterisation of condensed sets as coherent
-sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file `Condensed/Equivalence.lean`
+sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file
+`Mathlib/Condensed/Equivalence.lean`.
 
 We give the corresponding result for the regular topology as well (see
 `CategoryTheory.regularTopology.equivalence`).

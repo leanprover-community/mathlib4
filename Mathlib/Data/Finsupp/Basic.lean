@@ -81,8 +81,6 @@ theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈
 theorem notMem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_graph_snd_zero := notMem_graph_snd_zero
-
 @[simp]
 theorem image_fst_graph [DecidableEq α] (f : α →₀ M) : f.graph.image Prod.fst = f.support := by
   classical
@@ -579,6 +577,12 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
   rfl
 
+theorem mapDomain_comapDomain_nat_add_one (l : ℕ →₀ M) :
+    mapDomain (· + 1) (comapDomain.addMonoidHom (add_left_injective 1) l) = l.erase 0 := by
+  refine .trans ?_ (mapDomain_comapDomain _ (add_left_injective 1) _ fun _ ↦ ?_)
+  · congr; ext; simp
+  · simp_all [Nat.pos_iff_ne_zero]
+
 theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
     comapDomain f (mapDomain f l) hf.injOn = l := by
   ext; rw [comapDomain_apply, mapDomain_apply hf]
@@ -689,23 +693,25 @@ def frange (f : α →₀ M) : Finset M :=
   haveI := Classical.decEq M
   Finset.image f f.support
 
-theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ ∃ x, f x = y := by
+@[simp, grind =]
+theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ y ∈ Set.range f := by
   rw [frange, @Finset.mem_image _ _ (Classical.decEq _) _ f.support]
   exact ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
     ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
 
 theorem zero_notMem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
 
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_frange := zero_notMem_frange
+theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := by
+  classical grind
 
-theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr =>
-  let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
-  ht2 ▸ by
-    classical
-      rw [single_apply] at ht2 ⊢
-      split_ifs at ht2 ⊢
-      · exact Finset.mem_singleton_self _
-      · exact (t ht2.symm).elim
+theorem mem_frange_of_mem {x} {f : α →₀ M} (h : x ∈ f.support) : f x ∈ f.frange := by
+  simp_all
+
+theorem range_subset_insert_frange (f : α →₀ M) : Set.range f ⊆ insert 0 f.frange := by
+  grind
+
+theorem finite_range (f : α →₀ M) : (Set.range f).Finite :=
+  .subset (by simp) (range_subset_insert_frange f)
 
 end Frange
 
@@ -943,14 +949,15 @@ theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
   rw [← sum_uncurry_index', uncurry_curry]
 
-/-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
-currying and uncurrying. -/
+/-- The equivalence between `α × β →₀ M` and `α →₀ β →₀ M` given by currying/uncurrying. -/
 @[simps]
-def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
+def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
   left_inv := uncurry_curry
   right_inv := curry_uncurry
+
+@[deprecated (since := "2026-01-03")] alias finsuppProdEquiv := curryEquiv
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
@@ -958,6 +965,20 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
   simp [filter_apply, apply_ite (DFunLike.coe · b)]
 
 end Curry
+
+section
+variable [DecidableEq α] [AddZeroClass M]
+
+/-- The additive monoid isomorphism between `α × β →₀ M` and `α →₀ β →₀ M` given by
+currying/uncurrying. -/
+@[simps! symm_apply]
+noncomputable def curryAddEquiv : (α × β →₀ M) ≃+ (α →₀ β →₀ M) where
+  __ := curryEquiv
+  map_add' _ _ := by ext; simp
+
+@[simp] lemma coe_curryAddEquiv : (curryAddEquiv : (α × β →₀ M) → α →₀ β →₀ M) = .curry := rfl
+
+end
 
 /-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
 
@@ -1119,7 +1140,9 @@ theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
 
 theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, P a) :
     (subtypeDomain P f).extendDomain = f := by
-  ext a; by_cases P a <;> simp [*]; grind
+  ext
+  simp only [extendDomain_apply, subtypeDomain_apply, dite_eq_ite, ite_eq_left_iff]
+  grind
 
 @[simp]
 theorem extendDomain_single (a : Subtype P) (m : M) :

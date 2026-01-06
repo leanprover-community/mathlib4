@@ -6,7 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.Analysis.NormedSpace.Normalize
+public import Mathlib.Analysis.Normed.Module.Normalize
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
@@ -332,6 +332,10 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
   refine ⟨fun h => ?_, fun h => by rw [h, sin_pi_div_two]⟩
   rw [← cos_eq_zero_iff_angle_eq_pi_div_two, ← abs_eq_zero, abs_cos_eq_sqrt_one_sub_sin_sq, h]
   simp
+
+/-- If the angle between two vectors of equal norm is equal to 0, then the vectors are equal. -/
+lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
+  grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
 
 /-- The angle between a normalized vector and another vector is equal to the angle
 between the original vectors. -/

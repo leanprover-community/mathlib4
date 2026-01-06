@@ -567,7 +567,6 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     by_cases hn : n = 0
     · rw [hn, pow_zero, degree_one]
     · rw [zero_pow hn, degree_zero]
-  nontriviality R
   apply degree_pow_of_pow_leadingCoeff_ne_zero
   apply IsReduced.pow_ne_zero
   rw [leadingCoeff_ne_zero_iff]
@@ -656,9 +655,7 @@ theorem degree_prod [NoZeroDivisors R] {ι : Type*} {P : ι → MvPolynomial σ 
   | inr _ =>
     apply m.toSyn.injective
     refine le_antisymm degree_prod_le (m.le_degree ?_)
-    rw [mem_support_iff, m.coeff_prod_sum_degree]
-    simp only [ne_eq, Finset.prod_eq_zero_iff, leadingCoeff_eq_zero_iff, not_exists, not_and]
-    exact H
+    simpa [m.coeff_prod_sum_degree, Finset.prod_eq_zero_iff]
 
 lemma degree_mul' [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f * g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
@@ -819,7 +816,7 @@ lemma sPolynomial_def (f g : MvPolynomial σ R) :
     rw [sPolynomial, this, this, sup_comm]
   intro f g
   ext a
-  obtain (h|h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
+  obtain (h | h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
 
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
