@@ -19,7 +19,7 @@ linear maps from `E` to `F` is equivalent to the completeness of `F`.
 A similar statement holds for spaces of continuous multilinear maps
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology
