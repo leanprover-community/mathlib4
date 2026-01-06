@@ -135,7 +135,6 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
@@ -150,10 +149,8 @@ theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
     (∑ x ∈ s, cramer A (fun j => f j x) i) = (∑ x ∈ s, cramer A fun j => f j x) i :=
       (Finset.sum_apply i s _).symm
     _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
-      rw [sum_cramer, cramer_apply, cramer_apply]
-      simp only [updateCol]
+      rw [sum_cramer, cramer_apply]
       congr with j
-      congr
       apply Finset.sum_apply
 
 theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) :
@@ -295,7 +292,6 @@ theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 @[simp]

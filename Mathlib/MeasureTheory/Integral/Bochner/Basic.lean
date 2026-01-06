@@ -85,7 +85,7 @@ integrable function.
 Another method is using the following steps.
 See `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` for a complicated example, which proves
 that `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
-function `f : α → ℝ`, and second and third integral sign being the integral on `ℝ≥0∞`-valued
+function `f : α → ℝ`, and the second and third integral signs being integrals on `ℝ≥0∞`-valued
 functions (called `lintegral`). The proof of `integral_eq_lintegral_pos_part_sub_lintegral_neg_part`
 is scattered in sections with the name `posPart`.
 
@@ -997,8 +997,6 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
 @[simp]
 theorem setIntegral_measure_zero (f : α → G) {μ : Measure α} {s : Set α} (hs : μ s = 0) :
     ∫ x in s, f x ∂μ = 0 := Measure.restrict_eq_zero.mpr hs ▸ integral_zero_measure f
-
-@[deprecated (since := "2025-06-17")] alias setIntegral_zero_measure := setIntegral_measure_zero
 
 lemma integral_of_isEmpty [IsEmpty α] {f : α → G} : ∫ x, f x ∂μ = 0 :=
   μ.eq_zero_of_isEmpty ▸ integral_zero_measure _

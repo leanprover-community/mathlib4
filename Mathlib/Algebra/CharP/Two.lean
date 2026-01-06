@@ -17,7 +17,7 @@ The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_
 elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Algebra LinearMap
 
