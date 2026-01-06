@@ -128,7 +128,7 @@ theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
 
 instance {R : CommRingCat} [IsArtinianRing R] :
     IsArtinianScheme (Spec R) :=
-    (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec R)).mpr
+  (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec R)).mpr
     ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩
 
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
