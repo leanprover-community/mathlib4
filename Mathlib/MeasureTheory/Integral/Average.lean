@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Yaël Dillies
+Authors: Yury Kudryashov, Yaël Dillies, Louis (Yiyang) Liu
 -/
 module
 
@@ -33,7 +33,7 @@ function, we provide a convenience lemma `MeasureTheory.Integrable.to_average`.
 
 ## Tags
 
-integral, center mass, average value
+integral, center mass, average value, set average
 -/
 
 @[expose] public section
@@ -796,5 +796,21 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
   have := L0.add (hg.smul_const c)
   simp only [one_smul, zero_add] at this
   exact Tendsto.congr' I this
+
+/-- If `s` is a connected set of finite, nonzero `μ`-measure and `f : α → ℝ` is continuous on `s`
+and integrable on `s` w.r.t. `μ`, then `f` attains its `μ`-average on `s`. -/
+theorem exists_eq_setAverage
+    [TopologicalSpace α] {f : α → ℝ} (hs : IsConnected s) (hf : ContinuousOn f s)
+    (hint : IntegrableOn f s μ) (hμfin : μ s ≠ ⊤) (hμ0 : μ s ≠ 0) :
+    ∃ c ∈ s, f c = ⨍ x in s, f x ∂μ := by
+  let ave := ⨍ x in s, f x ∂μ
+  let S₁ : Set α := {x | x ∈ s ∧ f x ≤ ave}
+  let S₂ : Set α := {x | x ∈ s ∧ ave ≤ f x}
+  have hS₁ : 0 < μ S₁ := measure_le_setAverage_pos hμ0 hμfin hint
+  have hS₂ : 0 < μ S₂ := measure_setAverage_le_pos hμ0 hμfin hint
+  rcases nonempty_of_measure_ne_zero hS₁.ne' with ⟨c₁, hc₁⟩
+  rcases nonempty_of_measure_ne_zero hS₂.ne' with ⟨c₂, hc₂⟩
+  apply hs.isPreconnected.intermediate_value hc₁.1 hc₂.1 hf
+  grind
 
 end MeasureTheory

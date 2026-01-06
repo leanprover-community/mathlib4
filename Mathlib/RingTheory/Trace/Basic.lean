@@ -628,7 +628,4 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   simp only [map_mul, map_div₀, map_pow]
   ring
 
-@[deprecated (since := "2025-06-25")] alias traceForm_dualBasis_powerBasis_eq :=
-  Module.Basis.traceDual_powerBasis_eq
-
 end Basis
