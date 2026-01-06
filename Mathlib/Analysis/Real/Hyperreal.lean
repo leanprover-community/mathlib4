@@ -22,6 +22,8 @@ open ArchimedeanClass Filter Germ Topology
 def Hyperreal : Type :=
   Germ (hyperfilter ℕ : Filter ℕ) ℝ
 
+noncomputable section
+
 #adaptation_note
 /-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
 as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
@@ -30,19 +32,19 @@ namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
-noncomputable instance : Field ℝ* :=
+instance : Field ℝ* :=
   inferInstanceAs (Field (Germ _ _))
 
-noncomputable instance : LinearOrder ℝ* :=
+instance : LinearOrder ℝ* :=
   inferInstanceAs (LinearOrder (Germ _ _))
 
 instance : IsStrictOrderedRing ℝ* :=
   inferInstanceAs (IsStrictOrderedRing (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
-@[coe] noncomputable def ofReal : ℝ → ℝ* := const
+@[coe] def ofReal : ℝ → ℝ* := const
 
-noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
+instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : ℝ} : (x : ℝ*) = y ↔ x = y :=
@@ -132,20 +134,46 @@ theorem coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max ↑x ↑y :=
 theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 
+/-- The canonical map `ℝ → ℝ*` as an `OrderRingHom`. -/
+def coeRingHom : ℝ →+*o ℝ* where
+  toFun x := x
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+  monotone' _ _ := coe_le_coe.2
+
+@[simp]
+theorem archimedeanClassMk_coe_nonneg (x : ℝ) : 0 ≤ mk (x : ℝ*) :=
+  mk_map_nonneg_of_archimedean coeRingHom x
+
+@[simp]
+theorem archimdeanClassMk_coe {x : ℝ} (hx : x ≠ 0) : mk (x : ℝ*) = 0 :=
+  mk_map_of_archimedean' coeRingHom hx
+
+@[simp]
+theorem stdPart_coe (x : ℝ) : stdPart (x : ℝ*) = x :=
+  stdPart_of_archimedean coeRingHom x
+
+/-! ### Basic constants -/
+
 /-- Construct a hyperreal number from a sequence of real numbers. -/
-noncomputable def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
+def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
 
+theorem ofSeq_le_ofSeq {f g : ℕ → ℝ} : ofSeq f ≤ ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n ≤ g n :=
+  Germ.coe_le
+
 /-- A sample infinitesimal hyperreal -/
-noncomputable def epsilon : ℝ* :=
+def epsilon : ℝ* :=
   ofSeq fun n => n⁻¹
 
 /-- A sample infinite hyperreal -/
-noncomputable def omega : ℝ* := ofSeq Nat.cast
+def omega : ℝ* := ofSeq Nat.cast
 
 @[inherit_doc] scoped notation "ε" => Hyperreal.epsilon
 @[inherit_doc] scoped notation "ω" => Hyperreal.omega
@@ -159,8 +187,7 @@ theorem inv_epsilon : ε⁻¹ = ω :=
   @inv_inv _ _ ω
 
 theorem omega_pos : 0 < ω :=
-  Germ.coe_pos.2 <| Nat.hyperfilter_le_atTop <| (eventually_gt_atTop 0).mono fun _ ↦
-    Nat.cast_pos.2
+  Germ.coe_pos.2 <| Nat.hyperfilter_le_atTop <| (eventually_gt_atTop 0).mono fun _ ↦ Nat.cast_pos.2
 
 theorem epsilon_pos : 0 < ε :=
   inv_pos_of_pos omega_pos
@@ -283,21 +310,9 @@ theorem tendsto_atBot_iff {x : ℝ*} : x.Tendsto atBot ↔ x < 0 ∧ mk x < 0 wh
     exact fun r ↦ ofSeq_le_ofSeq.1 <|
       (lt_of_mk_lt_mk_of_nonpos (h.2.trans_le <| archimedeanClassMk_coe_nonneg r) h.1.le).le
 
-theorem lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
-    ∀ {r : ℝ}, 0 < r → ofSeq f < (r : ℝ*) := fun hr ↦
-  ofSeq_lt_ofSeq.2 <| (hf.eventually <| gt_mem_nhds hr).filter_mono Nat.hyperfilter_le_atTop
-
-theorem neg_lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
-    ∀ {r : ℝ}, 0 < r → (-r : ℝ*) < ofSeq f := fun hr =>
-  have hg := hf.neg
-  neg_lt_of_neg_lt (by rw [neg_zero] at hg; exact lt_of_tendsto_zero_of_pos hg hr)
-
-theorem gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
-    ∀ {r : ℝ}, r < 0 → (r : ℝ*) < ofSeq f := fun {r} hr => by
-  rw [← neg_neg r, coe_neg]; exact neg_lt_of_tendsto_zero_of_pos hf (neg_pos.mpr hr)
-
-theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
-  lt_of_tendsto_zero_of_pos tendsto_inv_atTop_nhds_zero_nat
+/-!
+### Some facts about standard parts
+-/
 
 /-- Standard part predicate -/
 def IsSt (x : ℝ*) (r : ℝ) :=
@@ -305,7 +320,7 @@ def IsSt (x : ℝ*) (r : ℝ) :=
 
 open scoped Classical in
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
-noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
+def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
 
 /-- A hyperreal number is infinitesimal if its standard part is 0 -/
 def Infinitesimal (x : ℝ*) :=
@@ -322,10 +337,6 @@ def InfiniteNeg (x : ℝ*) :=
 /-- A hyperreal number is infinite if it is infinite positive or infinite negative -/
 def Infinite (x : ℝ*) :=
   InfinitePos x ∨ InfiniteNeg x
-
-/-!
-### Some facts about `st`
--/
 
 theorem isSt_ofSeq_iff_tendsto {f : ℕ → ℝ} {r : ℝ} :
     IsSt (ofSeq f) r ↔ Tendsto f (hyperfilter ℕ) (𝓝 r) :=
@@ -847,6 +858,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
   infinite_mul_of_infinite_not_infinitesimal hx hy.not_infinitesimal
 
 end Hyperreal
+end
 
 /-
 Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `positivity` plugin
