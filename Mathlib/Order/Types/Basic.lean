@@ -56,7 +56,7 @@ instance instIsEmptyIioZero : IsEmpty (Set.Iio (0 : OrderType)) := by
 
 instance : Add OrderType.{u} where
   add := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s)⟩)
-   fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩
+    fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (Classical.choice ha) (Classical.choice hb)⟩
 
 instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hAdd := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s)⟩)
@@ -64,7 +64,7 @@ instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
 
 instance : AddMonoid OrderType where
   add_assoc o₁ o₂ o₃ :=
-    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.orderType_eq (OrderIso.sumLexAssoc α β γ))
+    inductionOn₃ o₁ o₂ o₃ fun α _ β _ γ _ ↦ (OrderIso.sumLexAssoc α β γ).orderType_eq
   zero_add o :=
     inductionOn o (fun α _ ↦ RelIso.orderType_eq (Classical.choice (OrderIso.emptySumLex α)))
   add_zero o :=
