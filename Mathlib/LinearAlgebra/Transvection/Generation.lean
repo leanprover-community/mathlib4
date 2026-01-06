@@ -632,7 +632,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
 then it is the product of at most `finrank K (V ⧸ e.fixedSubmodule)` dilatransvections.
 
 This is the non-exceptional case in Dieudonné's theorem. -/
-theorem mem_dilatransvections_pow_of_not_isExceptional
+theorem mem_transvections_pow_mul_dilatransvections_of_notIsExceptional
     {e : V ≃ₗ[K] V} (he : ¬ IsExceptional e) :
     e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V := by
   simp only [not_and_or] at he
@@ -647,8 +647,14 @@ theorem mem_dilatransvections_pow_of_not_isExceptional
 /-- If an element of `V ≃ₗ[K] V` is exceptional, then it is the product
 of `finrank K (V ⧸ e.fixedSubmodule)` transvections and one dilatransvection.
 (Fourth part of Dieudonné's theorem). -/
-theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsExceptional e) :
+theorem mem_transvections_pow_mul_dilatransvections :
     e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule)) * dilatransvections K V := by
+  by_cases he : IsExceptional e; swap
+  · have := mem_transvections_pow_mul_dilatransvections_of_notIsExceptional he
+    rw [Set.mem_mul] at this ⊢
+    obtain ⟨x, hx, y, hy, he⟩ := this
+    refine ⟨x, ?_, y, hy, he⟩
+    exact transvections_pow_mono (Nat.sub_le _ 1) hx
   wlog finrank_le_add : 2 ≤ finrank K (V ⧸ e.fixedSubmodule)
   · rw [← one_mul e]
     apply Set.mul_mem_mul
@@ -734,7 +740,7 @@ theorem IsExceptional.mem_mul_transvections_pow_mul_dilatransvections (he : IsEx
     nth_rewrite 4 [← hx']
     match_scalars <;> simp
   rw [← he', ← he'_fixed]
-  apply mem_dilatransvections_pow_of_not_isExceptional
+  apply mem_transvections_pow_mul_dilatransvections_of_notIsExceptional
   rintro ⟨_, he'1, b, he'b⟩
   apply hv
   simp only [fixedReduce_eq_smul_iff, he'_apply] at he'b
@@ -947,7 +953,7 @@ theorem fixedReduce_mem_transvections_mul_dilatransvections_pow
   rw [← Subtype.coe_inj]
   aesop
 
-theorem not_mem_transvections_mul_dilatransvections_pow
+theorem notMem_transvections_mul_dilatransvections_pow
   (hV : 1 ≤ finrank K V) (a : K) (ha : a ≠ 1) (hea : ∀ x, e x = a • x) :
     e ∉ transvections K V * dilatransvections K V ^ (finrank K V - 1) := by
   rw [Set.mem_mul]
@@ -995,7 +1001,7 @@ theorem notIsExceptional_of_mem_transvections_mul_dilatransvections_pow
     simp [LinearEquiv.one_eq_refl, fixedReduce_eq_one, he1]
   have hV1 : 1 ≤ finrank K (V ⧸ e.fixedSubmodule) :=
     Nat.one_le_of_lt hrank
-  refine not_mem_transvections_mul_dilatransvections_pow _ hV1 (a := c) ?_ hec
+  refine notMem_transvections_mul_dilatransvections_pow _ hV1 (a := c) ?_ hec
     (fixedReduce_mem_transvections_mul_dilatransvections_pow _ hV1 he)
   contrapose he_reduce
   ext; simp [hec, he_reduce]
