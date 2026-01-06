@@ -204,6 +204,7 @@ theorem type_le_type {α β}
 
 alias _root_.OrderEmbedding.type_le_type := type_le_type
 
+@[simp]
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
   inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type)
 
