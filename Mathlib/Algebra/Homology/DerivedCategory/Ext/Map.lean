@@ -287,10 +287,9 @@ lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
     ((F.mapCochainComplexSingleFunctor 0).app Z) α β h']
 
+attribute [local instance] HasDerivedCategory.standard in
 lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex C}
     (hS : S.ShortExact) : hS.extClass.mapExactFunctor F = (hS.map_of_exact F).extClass := by
-  let _ := HasDerivedCategory.standard C
-  let _ := HasDerivedCategory.standard D
   ext
   rw [Ext.mapExactFunctor_hom, hS.extClass_hom]
   exact (F.mapShiftedHom_singleδ hS).trans (hS.map_of_exact F).extClass_hom.symm
