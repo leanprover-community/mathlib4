@@ -366,7 +366,7 @@ variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) := by
   rw [one_eq_span, LinearMap.span_singleton_eq_range,
-    LinearMap.toSpanSingleton_eq_algebra_linearMap]
+    LinearMap.toSpanSingleton_one_eq_algebraLinearMap]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
   simp [one_eq_range]
