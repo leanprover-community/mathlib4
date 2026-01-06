@@ -6,15 +6,11 @@ Authors: Arthur Paulino
 
 import Batteries.Data.String.Matcher
 import Cache.Hashing
+import Cache.Init
 
 namespace Cache.Requests
 
 open System (FilePath)
-
--- Cloudflare cache may be flaky: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
-initialize useCloudflareCache : Bool ← do
-  let cache ← IO.getEnv "MATHLIB_CACHE_USE_CLOUDFLARE"
-  return cache == some "1" || cache == some "true"
 
 /--
 Structure to hold repository information with priority ordering
@@ -244,11 +240,14 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
   return {repo := repo, useFirst := false}
 
 /-- Public URL for mathlib cache -/
-def URL : String :=
-  if useCloudflareCache then
-    "https://mathlib4.lean-cache.cloud"
-  else
-    "https://lakecache.blob.core.windows.net/mathlib4"
+initialize URL : String ← do
+  let url? ← IO.getEnv "MATHLIB_CACHE_GET_URL"
+  let defaultUrl :=
+    if useCloudflareCache then
+      "https://mathlib4.lean-cache.cloud"
+    else
+      "https://lakecache.blob.core.windows.net/mathlib4"
+  return url?.getD defaultUrl
 
 /-- Retrieves the azure token from the environment -/
 def getToken : IO String := do
@@ -467,7 +466,7 @@ where
   printLakeOutput out := do
     unless out.stdout.isEmpty do
       IO.eprintln "lake stdout:"
-      IO.eprint out.stderr
+      IO.eprint out.stdout
     unless out.stderr.isEmpty do
       IO.eprintln "lake stderr:"
       IO.eprint out.stderr
@@ -508,11 +507,14 @@ end Get
 section Put
 
 /-- Cloudflare cache S3 URL -/
-def UPLOAD_URL : String :=
-  if useCloudflareCache then
-    "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
-  else
-    URL
+initialize UPLOAD_URL : String ← do
+  let url? ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
+  let defaultUrl :=
+    if useCloudflareCache then
+      "https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4"
+    else
+      "https://lakecache.blob.core.windows.net/mathlib4"
+  return url?.getD defaultUrl
 
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (repo : String) (fileNames : Array String) (token : String) : IO String := do
