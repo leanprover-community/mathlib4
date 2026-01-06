@@ -57,7 +57,7 @@ variable (hg₁ : Function.Exact g₁ g₂) (hg₂ : Function.Exact g₂ g₃) (
 include hf₂ hg₁ hg₂ hc₁ hc₂ hc₃ in
 /-- One four lemma in terms of groups. For a diagram explaining the variables,
 see the module docstring. -/
-@[to_additive /-- One four lemma in terms of (additive) groups.
+@[to_additive /-- One four lemma in terms of additive groups.
 For a diagram explaining the variables, see the module docstring. -/]
 lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₃ : Function.Surjective i₃) (hi₄ : Function.Injective i₄) :
@@ -74,13 +74,13 @@ lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surj
 
 include hf₁ hg₁ hc₁ hc₂ in
 -- Need to remove hybrid addition/multiplication instances on `Unit` so that `to_additive` can
--- correctly convert the multiplicative instances on `Unit` to addive instances
+-- correctly convert the multiplicative instances on `Unit` to additive instances
 attribute [-instance] PUnit.commRing in
 attribute [-instance] PUnit.cancelCommMonoidWithZero in
 /-- A special case of one four lemma such that the left-most term is one in terms of
 groups. For a diagram explaining the variables, see the module docstring. -/
 @[to_additive /-- A special case of one four lemma such that the left-most term is zero in terms
-of (additive) groups. For a diagram explaining the variables, see the module docstring. -/]
+of additive groups. For a diagram explaining the variables, see the module docstring. -/]
 lemma surjective_of_surjective_of_injective_of_left_exact (hi₂ : Function.Surjective i₂)
     (hi₃ : Function.Injective i₃) (hg₀ : Function.Injective g₁) : Function.Surjective i₁ := by
   refine surjective_of_surjective_of_surjective_of_injective (1 : Unit →* M₁) f₁ f₂ (1 : Unit →* N₁)
@@ -91,7 +91,7 @@ lemma surjective_of_surjective_of_injective_of_left_exact (hi₂ : Function.Surj
 include hf₁ hf₂ hg₁ hc₁ hc₂ hc₃ in
 /-- One four lemma in terms of groups. For a diagram explaining the variables,
 see the module docstring. -/
-@[to_additive /-- One four lemma in terms of (additive) groups.
+@[to_additive /-- One four lemma in terms of additive groups.
 For a diagram explaining the variables, see the module docstring. -/]
 lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Injective i₂) (hi₄ : Function.Injective i₄) : Function.Injective i₃ := by
@@ -110,13 +110,13 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
 
 include hf₁ hg₁ hc₁ hc₂ in
 -- Need to remove hybrid addition/multiplication instances on `Unit` so that `to_additive` can
--- correctly convert the multiplicative instances on `Unit` to addive instances
+-- correctly convert the multiplicative instances on `Unit` to additive instances
 attribute [-instance] PUnit.commRing in
 attribute [-instance] PUnit.cancelCommMonoidWithZero in
 /-- A special case of one four lemma such that the right-most term is one in terms of
 groups. For a diagram explaining the variables, see the module docstring. -/
 @[to_additive /-- A special case of one four lemma such that the right-most term is zero in terms
-of (additive) groups. For a diagram explaining the variables, see the module docstring. -/]
+of additive groups. For a diagram explaining the variables, see the module docstring. -/]
 lemma injective_of_surjective_of_injective_of_right_exact (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Injective i₂) (hf₂ : Function.Surjective f₂) : Function.Injective i₃ :=
   injective_of_surjective_of_injective_of_injective f₁ f₂ (1 : M₃ →* Unit) g₁ g₂ (1 : N₃ →* Unit)
@@ -126,7 +126,7 @@ lemma injective_of_surjective_of_injective_of_right_exact (hi₁ : Function.Surj
 include hf₁ hf₂ hf₃ hg₁ hg₂ hg₃ hc₁ hc₂ hc₃ hc₄ in
 /-- The five lemma in terms of groups. For a diagram explaining the variables,
 see the module docstring. -/
-@[to_additive /-- The five lemma in terms of (additive) groups.
+@[to_additive /-- The five lemma in terms of additive groups.
 For a diagram explaining the variables, see the module docstring. -/]
 lemma bijective_of_surjective_of_bijective_of_bijective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Bijective i₂) (hi₄ : Function.Bijective i₄) (hi₅ : Function.Injective i₅) :
@@ -139,7 +139,7 @@ lemma bijective_of_surjective_of_bijective_of_bijective_of_injective (hi₁ : Fu
 include hf₁ hg₁ hc₁ hc₂ in
 /-- A special case of the five lemma in terms of groups. For a diagram explaining the
 variables, see the module docstring. -/
-@[to_additive /-- A special case of the five lemma in terms of (additive) groups.
+@[to_additive /-- A special case of the five lemma in terms of additive groups.
 For a diagram explaining the variables, see the module docstring. -/]
 lemma bijective_of_bijective_of_injective_of_left_exact (hi₂ : Function.Bijective i₂)
     (hi₃ : Function.Injective i₃) (hf₀ : Function.Injective f₁) (hg₀ : Function.Injective g₁) :
@@ -151,7 +151,7 @@ lemma bijective_of_bijective_of_injective_of_left_exact (hi₂ : Function.Biject
 include hf₁ hg₁ hc₁ hc₂ in
 /-- A special case of the five lemma in terms of groups. For a diagram explaining the
 variables, see the module docstring. -/
-@[to_additive /-- A special case of the five lemma in terms of (additive) groups.
+@[to_additive /-- A special case of the five lemma in terms of additive groups.
 For a diagram explaining the variables, see the module docstring. -/]
 lemma bijective_of_surjective_of_bijective_of_right_exact (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Bijective i₂) (hf₂ : Function.Surjective f₂) (hg₂ : Function.Surjective g₂) :
@@ -224,7 +224,7 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
     (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₃ x) hf₁ hf₂ hg₁ hi₁ hi₂ hi₄
 
 include hf₁ hg₁ hc₁ hc₂ in
-/-- A special case of one four lemma such that the right-most term is zero in terms of (additive)
+/-- A special case of one four lemma such that the right-most term is zero in terms of additive
 groups. For a diagram explaining the variables, see the module docstring. -/
 lemma injective_of_surjective_of_injective_of_right_addExact (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Injective i₂) (hf₂ : Function.Surjective f₂) : Function.Injective i₃ :=

@@ -39,7 +39,7 @@ def KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale [Algebra.FormallyEtale
     T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R] := by
   refine LinearEquiv.ofBijective (mapBaseChange R S T)
     ⟨?_, fun x ↦ (KaehlerDifferential.addExact_mapBaseChange_map R S T x).mp
-      (Subsingleton.elim _ _)⟩
+      (Subsingleton.elim ..)⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
   obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.addExact_δ_mapBaseChange R S T x).mp hx
