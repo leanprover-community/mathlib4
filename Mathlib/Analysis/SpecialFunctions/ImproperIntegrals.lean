@@ -27,7 +27,7 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 - `Mathlib/Analysis/SpecialFunctions/JapaneseBracket.lean`-- integrability of `(1+‖x‖)^(-r)`.
 -/
 
-@[expose] public section
+public section
 
 
 open Real Set Filter MeasureTheory intervalIntegral

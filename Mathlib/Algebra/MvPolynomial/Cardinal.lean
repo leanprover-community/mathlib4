@@ -17,7 +17,7 @@ the cardinality of `MvPolynomial σ R` is bounded above by the maximum of `#R`, 
 and `ℵ₀`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

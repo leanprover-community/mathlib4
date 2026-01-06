@@ -16,7 +16,7 @@ some results on asymptotics as `x → 0` (those which are not just continuity st
 located here.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
