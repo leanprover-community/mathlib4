@@ -77,8 +77,6 @@ theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike 
     · rw [Matrix.diagonal_apply_ne _ h, Finsupp.single_eq_of_ne h]
   -- Now we map everything through the linear equiv `M ≃ₗ (ι → ℤ)`,
   -- which maps `(M ⧸ N)` to `Π i, ZMod (a i).nat_abs`.
-  haveI : ∀ i, NeZero (a i).natAbs := fun i ↦
-    ⟨Int.natAbs_ne_zero.mpr (smithNormalFormCoeffs_ne_zero b h i)⟩
   simp_rw [Nat.card_congr (quotientEquivPiZMod N b h).toEquiv, Nat.card_pi, Nat.card_zmod, a]
 
 /-- Let `b` be a basis for `M` over `ℤ` and `bN` a basis for `N` over `ℤ` of the same dimension.

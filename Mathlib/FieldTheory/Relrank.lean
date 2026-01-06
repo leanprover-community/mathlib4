@@ -425,7 +425,6 @@ variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
   rw [relrank_eq_rank_of_le h]
   letI : Algebra A B := (inclusion h).toAlgebra
-  haveI : IsScalarTower F A B := IsScalarTower.of_algebraMap_eq' rfl
   exact rank_mul_rank F A B
 
 variable {A B} in
