@@ -37,13 +37,13 @@ open ArchimedeanClass Filter Germ Topology
 def Hyperreal : Type :=
   Germ (hyperfilter ℕ : Filter ℕ) ℝ
 
+noncomputable section
+
 #adaptation_note
 /-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
 as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
 for adding this! -/
 namespace Hyperreal
-
-noncomputable section
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
@@ -202,8 +202,7 @@ theorem inv_epsilon : ε⁻¹ = ω :=
   @inv_inv _ _ ω
 
 theorem omega_pos : 0 < ω :=
-  Germ.coe_pos.2 <| Nat.hyperfilter_le_atTop <| (eventually_gt_atTop 0).mono fun _ ↦
-    Nat.cast_pos.2
+  Germ.coe_pos.2 <| Nat.hyperfilter_le_atTop <| (eventually_gt_atTop 0).mono fun _ ↦ Nat.cast_pos.2
 
 theorem epsilon_pos : 0 < ε :=
   inv_pos_of_pos omega_pos
@@ -254,7 +253,7 @@ theorem stdPart_of_tendsto {x : ℝ*} {r : ℝ} (hx : x.Tendsto (𝓝 r)) : stdP
 
 theorem archimedeanClassMk_pos_of_tendsto {x : ℝ*} (hx : x.Tendsto (𝓝 0)) : 0 < mk x := by
   apply (archimedeanClassMk_nonneg_of_tendsto hx).lt_of_ne'
-  rw [ ← stdPart_eq_zero, stdPart_of_tendsto hx]
+  rw [← stdPart_eq_zero, stdPart_of_tendsto hx]
 
 theorem archimedeanClassMk_epsilon_pos : 0 < mk ε :=
   archimedeanClassMk_pos_of_tendsto <|
@@ -264,10 +263,11 @@ theorem archimedeanClassMk_epsilon_pos : 0 < mk ε :=
 theorem stdPart_epsilon : stdPart ε = 0 :=
   stdPart_eq_zero.2 <| archimedeanClassMk_epsilon_pos.ne'
 
-theorem epsilon_lt_of_pos {r : ℝ} (hr : 0 < r) : ε < r := by
-  apply lt_of_mk_lt_mk_of_nonneg _ (mod_cast hr.le)
-  rw [archimdeanClassMk_coe hr.ne']
-  exact archimedeanClassMk_epsilon_pos
+theorem epsilon_lt_of_pos {r : ℝ} : 0 < r → ε < r :=
+  lt_of_pos_of_archimedean coeRingHom archimedeanClassMk_epsilon_pos
+
+theorem epsilon_lt_of_neg {r : ℝ} : r < 0 → r < ε :=
+  lt_of_neg_of_archimedean coeRingHom archimedeanClassMk_epsilon_pos
 
 @[deprecated (since := "2026-01-05")]
 alias epsilon_lt_pos := epsilon_lt_of_pos
@@ -1074,6 +1074,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
 
 end
 end Hyperreal
+end
 
 /-
 Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `positivity` plugin
