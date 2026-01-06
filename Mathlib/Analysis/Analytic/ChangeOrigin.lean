@@ -238,9 +238,8 @@ theorem radius_le_radius_derivSeries : p.radius ≤ p.derivSeries.radius := by
 theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0 := by
   suffices p.changeOriginSeries 1 n = 0 by ext v; simp [derivSeries, this]
   apply Finset.sum_eq_zero (fun s hs ↦ ?_)
-  ext v
   have : p (1 + n) = 0 := p.congr_zero (by abel) hp
-  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.zero_apply, this]
+  simp [changeOriginSeriesTerm, this]
 
 end
 

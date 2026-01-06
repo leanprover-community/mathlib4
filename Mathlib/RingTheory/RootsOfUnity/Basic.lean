@@ -177,7 +177,6 @@ theorem Units.val_set_image_rootsOfUnity [NeZero k] :
     fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
 theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
-  ext x
   simp
 
 end CommMonoid
