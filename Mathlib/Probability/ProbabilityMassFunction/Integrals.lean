@@ -37,7 +37,7 @@ theorem lintegral_eq_tsum (p : PMF α) (f : α → ℝ≥0∞) :
   _ = ∑' a, p a * f a := tsum_subtype_eq_of_support_subset (Function.support_mul_subset_left p f)
 
 theorem lintegral_eq_sum [Fintype α] (p : PMF α) (f : α → ℝ≥0∞) :
-    ∫⁻ a, f a ∂(p.toMeasure) = ∑ a, (p a) * f a := by
+    ∫⁻ a, f a ∂(p.toMeasure) = ∑ a, p a * f a := by
   rw [p.lintegral_eq_tsum, tsum_fintype]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
