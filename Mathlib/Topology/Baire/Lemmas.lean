@@ -57,8 +57,8 @@ theorem IsGδ.baireSpace_of_dense {s : Set X} (hG : IsGδ s) (hd : Dense s) : Ba
     ∀ n, f n = Subtype.val ⁻¹' g n := by
     choose g hg1 hg2 hg3 using fun n => exists_open_dense_of_open_dense_subtype hd (hof n) (hdf n)
     exact ⟨g, hg1, hg2, fun n => (hg3 n).symm⟩
-  have h_inter_dense : Dense (⋂ n, g n ∩ V n) := by
-    exact BaireSpace.baire_property (fun n ↦ g n ∩ V n) (fun n => IsOpen.inter (hg1 n) (hV.1 n))
+  have h_inter_dense : Dense (⋂ n, g n ∩ V n) :=
+    BaireSpace.baire_property (fun n ↦ g n ∩ V n) (fun n => (hg1 n).inter (hV.1 n))
       (fun n => (hg2 n).inter_of_isOpen_left (Dense.mono (by simp [hV.2, iInter_subset]) hd)
       (hg1 n))
   have h_inter_eq : ⋂ n, g n ∩ V n = ⋂ n, f n := by
