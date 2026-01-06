@@ -153,7 +153,7 @@ theorem archimdeanClassMk_coe {x : ℝ} (hx : x ≠ 0) : mk (x : ℝ*) = 0 :=
 
 @[simp]
 theorem stdPart_coe (x : ℝ) : stdPart (x : ℝ*) = x :=
-  stdPart_of_archimedean coeRingHom x
+  stdPart_map_real coeRingHom x
 
 /-! ### Basic constants -/
 
