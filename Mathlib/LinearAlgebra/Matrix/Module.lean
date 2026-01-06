@@ -66,10 +66,14 @@ theorem single_smul (i j : ι) (r : R) (v : ι → M) :
   · simp [hj.symm]
 
 @[simp]
+lemma diagonal_smul (r : R) (v : ι → M) :
+    Matrix.diagonal (n := ι) (fun _ ↦ r) • v = r • v := by
+  ext i
+  simp [Matrix.diagonal_apply]
+
 lemma scalar_smul (r : R) (v : ι → M) :
     Matrix.scalar ι r • v = r • v := by
-  ext i
-  simp [Matrix.scalar_apply, Matrix.diagonal_apply]
+  simp
 
 scoped instance (S : Type*) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
     IsScalarTower R (Matrix ι ι S) (ι → M) where
