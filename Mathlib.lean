@@ -546,6 +546,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
@@ -853,6 +854,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.List
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
@@ -1666,6 +1668,7 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Complex.Conformal
 public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Complex.CoveringMap
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.Complex.Hadamard
@@ -2768,6 +2771,7 @@ public import Mathlib.CategoryTheory.Localization.Trifunctor
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ExponentiableMorphism
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.Sections
 public import Mathlib.CategoryTheory.LocallyDirected
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.Monad.Adjunction
@@ -3317,6 +3321,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Tutte
 public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
+public import Mathlib.Combinatorics.SimpleGraph.VertexCover
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
@@ -4990,6 +4995,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.MeanValue
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule
@@ -5005,6 +5011,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
+public import Mathlib.MeasureTheory.Integral.MeanValue
 public import Mathlib.MeasureTheory.Integral.PeakFunction
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Integral.Prod
@@ -5217,6 +5224,8 @@ public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+public import Mathlib.NumberTheory.Height.Basic
+public import Mathlib.NumberTheory.Height.Instances
 public import Mathlib.NumberTheory.JacobiSum.Basic
 public import Mathlib.NumberTheory.KummerDedekind
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
@@ -5902,6 +5911,7 @@ public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Etale.QuasiFinite
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension.Basic
@@ -7233,6 +7243,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.MetricSpace.Sequences
 public import Mathlib.Topology.MetricSpace.ShrinkingLemma
 public import Mathlib.Topology.MetricSpace.Similarity
+public import Mathlib.Topology.MetricSpace.Snowflaking
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 public import Mathlib.Topology.MetricSpace.Thickening
 public import Mathlib.Topology.MetricSpace.TransferInstance

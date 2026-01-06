@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Polynomial.Tower
 We prove basic properties of integral elements in a ring extension.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Submodule
 
