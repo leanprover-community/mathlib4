@@ -22,7 +22,7 @@ This file contains two main results:
   a monic polynomial of degree two times another monic factor.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial.IsMonicOfDegree
 

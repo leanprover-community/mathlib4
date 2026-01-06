@@ -21,7 +21,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
