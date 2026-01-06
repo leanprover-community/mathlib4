@@ -163,7 +163,7 @@ theorem implicitFunction_unique (h : IsContDiffImplicitAt n f f' a) :
   have huniq := h.implicitFunctionData.eq_implicitFunction_of_prodFun_eq
   rw [implicitFunctionData_pt, ImplicitFunctionData.prodFun_apply,
       implicitFunctionData_leftFun_pt, implicitFunctionData_rightFun_pt, nhds_prod_eq, nhds_prod_eq,
-      nhds_prod_eq, eventually_swap4_prod_iff, eventually_assoc_symm_iff] at huniq
+      nhds_prod_eq, eventually_swap4_prod_iff, eventually_assoc_iff'] at huniq
   replace huniq := huniq.curry.diag_of_prod_left
   rw [← nhds_prod_eq] at huniq
   filter_upwards [huniq] with xy hxy

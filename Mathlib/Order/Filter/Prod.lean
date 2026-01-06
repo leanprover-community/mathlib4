@@ -317,13 +317,13 @@ theorem eventually_assoc_iff {α β γ : Type*}
     {f : Filter α} {g : Filter β} {h : Filter γ} {p : (α × β) × γ → Prop} :
     (∀ᶠ x : (α × β) × γ in (f ×ˢ g) ×ˢ h, p x) ↔
       ∀ᶠ y : α × β × γ in f ×ˢ g ×ˢ h, p ((y.1, y.2.1), y.2.2) := by
-  rw [← prod_assoc]; rfl
+  simp [← prod_assoc]
 
-theorem eventually_assoc_symm_iff {α β γ : Type*}
+theorem eventually_assoc_iff' {α β γ : Type*}
     {f : Filter α} {g : Filter β} {h : Filter γ} {p : α × β × γ → Prop} :
     (∀ᶠ x : α × β × γ in f ×ˢ g ×ˢ h, p x) ↔
       ∀ᶠ y : (α × β) × γ in (f ×ˢ g) ×ˢ h, p (y.1.1, y.1.2, y.2) := by
-  rw [← prod_assoc_symm]; rfl
+  rw [eventually_assoc_iff]
 
 /-- A useful lemma when dealing with uniformities. -/
 theorem map_swap4_prod {h : Filter γ} {k : Filter δ} :
