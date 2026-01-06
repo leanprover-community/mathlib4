@@ -430,7 +430,7 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
         tauto
     case neg h =>
       simp only [imp_self, implies_true, true_and]
-      
+
 
   sSup_le := by
     intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ h
