@@ -792,6 +792,16 @@ theorem map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α)
 
 end Monotone
 
+theorem exists_ge_and_iff_exists [SemilatticeSup α] {P : α → Prop} {x₀ : α} (hP : Monotone P) :
+    (∃ x, x₀ ≤ x ∧ P x) ↔ ∃ x, P x :=
+  ⟨fun h => h.imp fun _ h => h.2, fun ⟨x, hx⟩ => ⟨x ⊔ x₀, le_sup_right, hP le_sup_left hx⟩⟩
+
+theorem exists_and_iff_of_monotone [SemilatticeSup α] {P Q : α → Prop}
+    (hP : Monotone P) (hQ : Monotone Q) :
+    ((∃ x, P x) ∧ ∃ x, Q x) ↔ (∃ x, P x ∧ Q x) :=
+  ⟨fun ⟨⟨x, hPx⟩, ⟨y, hQx⟩⟩ ↦ ⟨x ⊔ y, ⟨hP le_sup_left hPx, hQ le_sup_right hQx⟩⟩,
+    fun ⟨x, hPx, hQx⟩ ↦ ⟨⟨x, hPx⟩, ⟨x, hQx⟩⟩⟩
+
 namespace MonotoneOn
 variable {f : α → β} {s : Set α} {x y : α}
 
@@ -881,6 +891,15 @@ theorem map_inf [SemilatticeSup β] {f : α → β} (hf : Antitone f) (x y : α)
   hf.dual_right.map_inf x y
 
 end Antitone
+
+theorem exists_le_and_iff_exists [SemilatticeInf α] {P : α → Prop} {x₀ : α} (hP : Antitone P) :
+    (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
+  exists_ge_and_iff_exists <| hP.dual_left
+
+theorem exists_and_iff_of_antitone [SemilatticeInf α] {P Q : α → Prop}
+    (hP : Antitone P) (hQ : Antitone Q) : ((∃ x, P x) ∧ ∃ x, Q x) ↔ (∃ x, P x ∧ Q x) :=
+  ⟨fun ⟨⟨x, hPx⟩, ⟨y, hQx⟩⟩ ↦ ⟨x ⊓ y, ⟨hP inf_le_left hPx, hQ inf_le_right hQx⟩⟩,
+    fun ⟨x, hPx, hQx⟩ ↦ ⟨⟨x, hPx⟩, ⟨x, hQx⟩⟩⟩
 
 namespace AntitoneOn
 variable {f : α → β} {s : Set α} {x y : α}
