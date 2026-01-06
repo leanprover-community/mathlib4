@@ -216,7 +216,7 @@ theorem Specializes.clusterPt {f : Filter X} (h : x ⤳ y) (hx : ClusterPt x f) 
     ClusterPt y f :=
   Filter.NeBot.mono hx <| inf_le_inf_right _ h
 
-theorem IsCompact.subset_of_specializes {s t : Set X} (hs : IsCompact s) (hts : t ⊆ s)
+theorem IsCompact.of_subset_of_specializes {s t : Set X} (hs : IsCompact s) (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, x ⤳ y) : IsCompact t := by
   intro f _ hf
   obtain ⟨x, hxs, hxf⟩ := hs <| hf.trans <| Filter.monotone_principal hts
