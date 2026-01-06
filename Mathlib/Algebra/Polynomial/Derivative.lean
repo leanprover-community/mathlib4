@@ -534,6 +534,11 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
     simp [Nat.choose_eq_zero_of_lt hk']
   · simp [Nat.descFactorial_eq_zero_iff_lt.mpr hkm]
 
+theorem iterate_derivative_mul_X {n : ℕ} (p : R[X]) :
+    derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
+  convert p.iterate_derivative_mul_X_pow n 1; · simp
+  rcases n with rfl | n <;> simp [sum_range_succ]
+
 theorem iterate_derivative_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
   convert (derivative p).iterate_derivative_mul_X_pow n 1; · simp
