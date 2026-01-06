@@ -272,6 +272,50 @@ theorem specializes_of_subset_closure {s t : Set α} (hst : s ⊆ t) (hts : t �
 theorem specializes_closure {s : Set α} : s ⤳ closure s :=
   specializes_of_subset_closure subset_closure .rfl
 
+theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} := by
+  rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
+  · convert isPreconnected_empty
+    grind [Set.not_nonempty_empty]
+  conv => arg 1; equals ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s =>
+    refine subset_antisymm (fun t ht => ?_)
+      (iUnion_subset fun _ => image_subset_iff.mpr fun f hf =>
+        ⟨range_nonempty _, finite_range _, by grind⟩)
+    obtain ⟨ht₁, ht₂, hts⟩ := ht
+    obtain ⟨n, f, -, rfl⟩ := ht₂.fin_param
+    rw [range_subset_iff] at hts
+    rw [range_nonempty_iff_nonempty] at ht₁
+    lift n to ℕ+ using Fin.pos'
+    exact mem_iUnion_of_mem n <| mem_image_of_mem _ <| mem_univ_pi.mpr hts
+  exact isPreconnected_iUnion
+    ⟨{x}, mem_iInter_of_mem fun n => ⟨fun _ => x, by grind⟩⟩
+    (fun n => .image (isPreconnected_univ_pi fun _ => hs) _ (by fun_prop))
+
+theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
+    (h : ∃ t ∈ s, IsPreconnected t) : IsPreconnected (⋃₀ s) := by
+  obtain ⟨t, hts, ht⟩ := h
+  have hts' := subset_sUnion_of_mem hts
+  intro U V hU hV hUV
+  by_cases! ht' : t ⊆ U ∨ t ⊆ V
+  · wlog htU : t ⊆ U generalizing U V
+    · grind
+    rintro - ⟨y, hys, hyV⟩
+    obtain ⟨u, hus, hyu⟩ := mem_sUnion.mpr hys
+    have : s ⊆ {v | (v ∩ V).Nonempty} ∪ U.powerset := by
+      simp_rw [← diff_subset_iff, ← not_disjoint_iff_nonempty_inter]
+      grind
+    obtain ⟨v, hvs, hvU, hvV⟩ :=
+      hs _ _ (isOpen_inter_nonempty_of_isOpen hV) hU.powerset_vietoris this
+        ⟨u, hus, y, hyu, hyV⟩ ⟨t, by grind⟩
+    apply hvU.mono
+    grind
+  · rintro - -
+    grw [← hts'] at hUV ⊢
+    have htU : ¬ Disjoint t U := by grind
+    have htV : ¬ Disjoint t V := by grind
+    rw [not_disjoint_iff_nonempty_inter] at htU htV
+    exact ht U V hU hV hUV htU htV
+
 end vietoris
 
 namespace Compacts
@@ -443,6 +487,21 @@ theorem noncompactSpace_iff : NoncompactSpace (Compacts α) ↔ NoncompactSpace 
 instance [NoncompactSpace α] : NoncompactSpace (Compacts α) :=
   noncompactSpace_iff.mpr ‹_›
 
+theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} := by
+  rw [← isEmbedding_coe.isPreconnected_image]
+  convert vietoris.isPreconnected_nonempty_finite_subsets hs
+  exact subset_antisymm (image_subset_iff.mpr .rfl) (fun t ht => ⟨⟨t, ht.2.1.isCompact⟩, ht, rfl⟩)
+
+theorem isPreconnected_nonempty_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ ↑K ⊆ s} := by
+  refine (isPreconnected_nonempty_finite_subsets hs).subset_closure (by grind) ?_
+  conv_lhs => rw [setOf_and]
+  conv_rhs => rw [setOf_and]
+  simp_rw [nonempty_iff_ne_empty, ← coe_bot, SetLike.coe_ne_coe, Ne, ← compl_singleton_eq]
+  grw [← isClopen_singleton_bot.compl.isOpen.inter_closure, closure_finite_subsets,
+    ← subset_closure]
+
 end Compacts
 
 namespace NonemptyCompacts
@@ -590,6 +649,55 @@ theorem noncompactSpace_iff : NoncompactSpace (NonemptyCompacts α) ↔ Noncompa
 
 instance [NoncompactSpace α] : NoncompactSpace (NonemptyCompacts α) :=
   noncompactSpace_iff.mpr ‹_›
+
+theorem isPreconnected_finite_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} := by
+  rw [← isEmbedding_toCompacts.isPreconnected_image]
+  convert Compacts.isPreconnected_nonempty_finite_subsets hs
+  exact subset_antisymm
+    (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+    (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+
+theorem isPreconnected_subsets {s : Set α} (hs : IsPreconnected s) :
+    IsPreconnected {K : NonemptyCompacts α | ↑K ⊆ s} := by
+  rw [← isEmbedding_toCompacts.isPreconnected_image]
+  convert Compacts.isPreconnected_nonempty_subsets hs
+  exact subset_antisymm
+    (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+    (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+
+instance [PreconnectedSpace α] : PreconnectedSpace (NonemptyCompacts α) where
+  isPreconnected_univ := by
+    convert isPreconnected_subsets (α := α) isPreconnected_univ
+    simp
+
+@[simp]
+theorem preconnectedSpace_iff : PreconnectedSpace (NonemptyCompacts α) ↔ PreconnectedSpace α := by
+  refine ⟨fun h => ?_, fun h => inferInstance⟩
+  rw [preconnectedSpace_iff_clopen] at h ⊢
+  intro s hs
+  rcases (h {K | ↑K ⊆ s}
+    ⟨isClosed_subsets_of_isClosed hs.isClosed, isOpen_subsets_of_isOpen hs.isOpen⟩) with h | h
+  · left
+    rw [Set.eq_empty_iff_forall_notMem] at h ⊢
+    exact fun x hx => h {x} (Set.singleton_subset_iff.mpr hx)
+  · right
+    rw [Set.eq_univ_iff_forall] at h ⊢
+    exact fun x => Set.singleton_subset_iff.mp (h {x})
+
+instance [ConnectedSpace α] : ConnectedSpace (NonemptyCompacts α) where
+  toNonempty := inferInstance
+
+@[simp]
+theorem connectedSpace_iff : ConnectedSpace (NonemptyCompacts α) ↔ ConnectedSpace α := by
+  refine ⟨fun h => ?_, fun _ => inferInstance⟩
+  have := preconnectedSpace_iff.mp h.toPreconnectedSpace;
+  constructor
+  rw [← not_isEmpty_iff]
+  intro
+  absurd h.toNonempty
+  rw [not_nonempty_iff]
+  infer_instance
 
 end NonemptyCompacts
 
