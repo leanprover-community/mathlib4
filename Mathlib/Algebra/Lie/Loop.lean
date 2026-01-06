@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Scott Carnahan. All rights reserved.
+Copyright (c) 2026 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
@@ -27,11 +27,14 @@ We implement the basic theory using `AddMonoidAlgebra` instead of `LaurentPolyno
 flexibility. The classical loop algebra is then written `LoopAlgebra R ℤ L`.
 
 ## Main definitions
-* Loop Algebra
-* Evaluation representation
-* Construction of central extensions from invariant forms. (todo)
-* representation with fixed central character (todo)
-* Positive energy representation (todo)
+* `LieAlgebra.LoopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
+* `LieAlgebra.LoopAlgebra.twoCochain_of_Bilinear`: The 2-cochain for a loop algebra with trivial
+  coefficients attached to a symmetric bilinear form on the base Lie algebra.
+
+## TODO
+* Evaluation representations
+* Construction of central extensions from invariant forms.
+* Positive energy representations induced from a fixed central character
 
 ## Tags
 lie ring, lie algebra, base change, Laurent polynomial
