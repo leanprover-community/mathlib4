@@ -32,9 +32,9 @@ the vanishing of certain `Ext` typs and length of maximal regular sequence in a 
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
     zero locus of `I`, `∀ i < n, Ext N M i = 0`
   · `∀ i < n, Ext (A⧸I) M i = 0`
-  · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+  · there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
     zero locus of `I`, `∀ i < n, Ext N M i = 0`
-  · there exist a `M`-regular sequence of length `n` with every element in `I`
+  · there exists a `M`-regular sequence of length `n` with every element in `I`
 
 -/
 
@@ -135,19 +135,17 @@ lemma Ideal.quotient_smul_top_lt_of_le_smul_top (I : Ideal R) {M : Type*} [AddCo
 
 variable [Small.{v} R]
 
-lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
-    ∀ M : ModuleCat.{v} R, [Module.Finite R M] →
-    I • (⊤ : Submodule R M) < ⊤ → (∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
-    Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) →
+lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (exists_N : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
+      Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) :
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
-  induction n with
+  induction n generalizing M with
   | zero =>
-    intro M M_fin smul_lt exists_N
     let : Nontrivial M := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt _ _ smul_lt)
     use []
     simp [isRegular_iff]
   | succ n ih =>
-    intro M M_fin smul_lt exists_N
     rcases exists_N with ⟨N, ntr, fin, h_supp, h_ext⟩
     have h_supp' := h_supp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
@@ -204,14 +202,15 @@ lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
 
 lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
-    (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I) :
-    ∀ M : ModuleCat.{v} R, [Module.Finite R M] → I • (⊤ : Submodule R M) < ⊤ →
-    (∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs) →
+    (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
+    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (exists_rs : ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs) :
     ∀ i < n, Subsingleton (Ext N M i) := by
-  induction n with
+  induction n generalizing M with
   | zero => simp
   | succ n ih =>
-    rintro M Mfin smul_lt ⟨rs, len, mem, reg⟩ i hi
+    rcases exists_rs with ⟨rs, len, mem, reg⟩
+    rintro i hi
     have le_rad := Nsupp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_subset_zeroLocus_iff] at le_rad
     match rs with
@@ -261,9 +260,9 @@ For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated an
 · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · `∀ i < n, Ext (A⧸I) M i = 0`
-· there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+· there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
-· there exist a `M`-regular sequence of length `n` with every element in `I`
+· there exists a `M`-regular sequence of length `n` with every element in `I`
 -/
 lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
