@@ -313,7 +313,7 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
       intro i hi
       apply hU_contains i (t j)
       cases hi with
-      | inl h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.coe_castSucc]
+      | inl h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def]
       | inr h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ]
     -- Take the path component of γ(t_j) in the intersection
     refine ⟨pathComponentIn U_inter (γ (t j)),

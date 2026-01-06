@@ -546,7 +546,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       have h_mono : (t i.castSucc : ℝ) < (t i.succ : ℝ) := by
         simp only [t]
         have hij : (i.castSucc : ℕ) < (i.succ : ℕ) := by
-          rw [Fin.coe_castSucc]
+          rw [Fin.val_castSucc]
           simp
         have hij' : (i.castSucc : ℝ) < (i.succ : ℝ) := Nat.cast_lt.mpr hij
         have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
