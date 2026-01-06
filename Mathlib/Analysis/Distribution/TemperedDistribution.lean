@@ -26,6 +26,7 @@ map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
 * `TemperedDistribution.mulLeftCLM`: Multiplication with temperate growth function as a continuous
 linear map.
+* `TemperedDistribution.instLineDeriv`: The directional derivative on tempered distributions.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -41,7 +42,7 @@ open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {E F F₁ F₂ : Type*}
+variable {𝕜 E F F₁ F₂ : Type*}
 
 section definition
 
@@ -226,6 +227,8 @@ end Embeddings
 
 namespace TemperedDistribution
 
+/-! ### Scalar multiplication with temperate growth functions -/
+
 section Multiplication
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -258,6 +261,69 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasT
   simp [hg₁, hg₂]
 
 end Multiplication
+
+/-! ### Derivatives -/
+
+section deriv
+
+variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+variable (F) in
+/-- The 1-dimensional derivative on tempered distribution as a continuous `ℂ`-linear map. -/
+def derivCLM : 𝓢'(ℝ, F) →L[ℂ] 𝓢'(ℝ, F) :=
+  PointwiseConvergenceCLM.precomp F (-SchwartzMap.derivCLM ℂ ℂ)
+
+@[simp]
+theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
+    derivCLM F f g = f (-SchwartzMap.derivCLM ℂ ℂ g) := rfl
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+variable (𝕜) in
+theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
+    derivCLM F (f : 𝓢'(ℝ, F)) = SchwartzMap.derivCLM 𝕜 F f := by
+  ext1 g
+  simp [integral_smul_deriv_right_eq_neg_left, integral_neg]
+
+end deriv
+
+section lineDeriv
+
+open LineDeriv
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+
+/-- The partial derivative (or directional derivative) in the direction `m : E` as a
+continuous linear map on tempered distributions. -/
+instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
+
+instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+
+instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
+
+instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+  continuous_lineDerivOp m :=
+    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
+
+theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
+  PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
+
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := rfl
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
+  {μ : Measure E} [μ.IsAddHaarMeasure]
+
+theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
+    ∂_{m} (toTemperedDistributionCLM E F μ f) = toTemperedDistributionCLM E F μ (∂_{m} f) := by
+  ext1 g
+  simp [integral_smul_lineDerivOp_right_eq_neg_left g f, integral_neg]
+
+end lineDeriv
 
 /-! ### Fourier transform -/
 
