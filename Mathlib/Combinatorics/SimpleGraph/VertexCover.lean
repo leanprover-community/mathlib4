@@ -192,7 +192,7 @@ theorem IsContained.vertexCoverNum_le_vertexCoverNum (h : G ⊑ H) :
 
 @[gcongr]
 theorem vertexCoverNum_mono (h : G ≤ G') : vertexCoverNum G ≤ vertexCoverNum G' :=
-  IsContained.vertexCoverNum_le_vertexCoverNum ⟨(Hom.ofLE h), Function.injective_id⟩
+  (IsContained.of_le h).vertexCoverNum_le_vertexCoverNum
 
 theorem vertexCoverNum_congr (f : G ≃g H) : vertexCoverNum G = vertexCoverNum H :=
   le_antisymm f.isContained.vertexCoverNum_le_vertexCoverNum
