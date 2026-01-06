@@ -349,7 +349,7 @@ set_option backward.privateInPublic.warn false in
 instance : SMul ℤ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommGroup (M ⟶ N) :=
   Function.Injective.addCommGroup (Hom.hom) hom_injective
