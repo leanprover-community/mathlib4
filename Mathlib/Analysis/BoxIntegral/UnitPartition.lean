@@ -185,7 +185,7 @@ variable [Fintype ι]
 theorem diam_boxIcc (ν : ι → ℤ) :
     Metric.diam (Box.Icc (box n ν)) ≤ 1 / n := by
   rw [BoxIntegral.Box.Icc_eq_pi]
-  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| EMetric.diam_pi_le_of_le (fun i ↦ ?_)
+  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| Metric.ediam_pi_le_of_le fun i ↦ ?_
   simp_rw [Real.ediam_Icc, box.upper_sub_lower, le_rfl]
 
 @[simp]
