@@ -46,7 +46,7 @@ set_option linter.deprecated false in
 open scoped Classical in
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
 @[deprecated stdPart (since := "2026-01-05")]
-def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
+noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
 
 set_option linter.deprecated false in
 @[deprecated "`st` is deprecated" (since := "2026-01-05")]
