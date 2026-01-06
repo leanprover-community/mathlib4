@@ -227,9 +227,8 @@ theorem epsilon_ne_zero : ε ≠ 0 :=
 theorem epsilon_mul_omega : ε * ω = 1 :=
   @inv_mul_cancel₀ _ _ ω omega_ne_zero
 
-@[simp]
 theorem archimedeanClassMk_epsilon_pos : 0 < mk ε := by
-  simp [← inv_omega]
+  simpa [← inv_omega] using archimedeanClassMk_omega_neg
 
 @[simp]
 theorem stdPart_epsilon : stdPart ε = 0 :=
