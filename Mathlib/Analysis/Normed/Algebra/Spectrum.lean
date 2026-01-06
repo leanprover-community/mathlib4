@@ -274,7 +274,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   simp only [← add_assoc]
   refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
-  grw [hN (n + N + 1) (by cutsat)]
+  grw [hN (n + N + 1) (by lia)]
 
 end SpectrumCompact
 
@@ -592,7 +592,6 @@ variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 spectrum of `↑x : A` is connected, then `spectrum 𝕜 x = spectrum 𝕜 (x : A)`. -/
 lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ 𝕜 (x : A))ᶜ) :
     σ 𝕜 x = σ 𝕜 (x : A) := by
-  nontriviality A
   suffices σ 𝕜 x \ σ 𝕜 (x : A) = ∅ by
     rw [spectrum_sUnion_connectedComponentIn, this]
     simp

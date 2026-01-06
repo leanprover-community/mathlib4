@@ -20,7 +20,7 @@ namespace MonObj
 
 open CategoryTheory MonoidalCategory MonoidalOpposite
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
 
 section mop
 
@@ -89,7 +89,6 @@ instance unmop_isMonHom {N : Cᴹᵒᵖ} [MonObj N]
 end unmop
 
 variable (C) in
-
 /-- The equivalence of categories between monoids internal to `C`
 and monoids internal to the monoidal opposite of `C`. -/
 @[simps!]

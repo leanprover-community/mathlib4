@@ -15,7 +15,7 @@ public import Mathlib.Topology.UniformSpace.Matrix
 # Analytic properties of the `star` operation on matrices
 
 This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m` to
-`Matrix m n 𝕜`. See the file `Analysis.Matrix` for many other matrix norms.
+`Matrix m n 𝕜`. See the file `Mathlib/Analysis/Matrix.lean` for many other matrix norms.
 
 ## Main definitions
 
@@ -31,10 +31,6 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
-
-## TODO
-
-* Show that `‖diagonal (v : n → 𝕜)‖ = ‖v‖`.
 
 -/
 
@@ -117,19 +113,9 @@ lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
 lemma toEuclideanCLM_toLp (A : Matrix n n 𝕜) (x : n → 𝕜) :
     toEuclideanCLM (n := n) (𝕜 := 𝕜) A (toLp _ x) = toLp _ (A *ᵥ x) := rfl
 
-@[deprecated toEuclideanCLM_toLp (since := "2025-05-07")]
-lemma toEuclideanCLM_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
-    toEuclideanCLM (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (A *ᵥ x) := rfl
-
 @[simp]
 lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ ofLp x := rfl
-
-@[deprecated ofLp_toEuclideanCLM (since := "2025-05-07")]
-lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ (WithLp.equiv _ _ x) :=
-  rfl
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/
@@ -219,11 +205,34 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
 
+lemma l2_opNorm_toEuclideanCLM (A : Matrix n n 𝕜) :
+    ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ = ‖A‖ := rfl
+
+@[simp]
+lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
+  set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v)
+  rw [← l2_opNorm_toEuclideanCLM]
+  refine le_antisymm ?_ ?_
+  · refine T.opNorm_le_bound (norm_nonneg _) fun x ↦ ?_
+    refine (sq_le_sq₀ (by positivity) (by positivity)).mp ?_
+    simp only [(T x).norm_sq_eq, ofLp_toEuclideanCLM, mulVec_diagonal, norm_mul, T]
+    calc _ ≤ _ := Finset.sum_le_sum fun i _ ↦ by grw [mul_pow, norm_le_pi_norm v i]
+      _ = _ := by simp [mul_pow, EuclideanSpace.norm_sq_eq x, Finset.mul_sum]
+  · refine (pi_norm_le_iff_of_nonneg (norm_nonneg T)).mpr fun i ↦ ?_
+    calc _ = ‖T (toLp 2 (Pi.single i (1 : 𝕜)))‖ := by
+          rw [toEuclideanCLM_toLp (diagonal v) (Pi.single i (1 : 𝕜))]
+          simp
+      _ ≤ _ := by grw [T.le_opNorm]; simp
+
+@[simp]
+lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
+  Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
+
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 def instL2OpNormedSpace : NormedSpace 𝕜 (Matrix m n 𝕜) where
   norm_smul_le r x := by
-    rw [l2_opNorm_def, LinearEquiv.map_smul]
+    rw [l2_opNorm_def, map_smul]
     exact norm_smul_le r ((toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap x)
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedSpace

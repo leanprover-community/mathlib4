@@ -183,6 +183,8 @@ variable {F : C ⥤ D}
       ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ₘ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
         cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
 `whiskerLeft` and `whiskerRight`.
@@ -804,8 +806,6 @@ instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
 
 end
 
-@[deprecated (since := "2025-06-08")] alias prod_comp_fst := CategoryTheory.prod_comp_fst
-@[deprecated (since := "2025-06-08")] alias prod_comp_snd := CategoryTheory.prod_comp_snd
 -- TODO: when clearing these deprecations, remove the `CategoryTheory.` in the proof below.
 
 /-- The functor `C ⥤ D × E` obtained from two monoidal functors is monoidal. -/
