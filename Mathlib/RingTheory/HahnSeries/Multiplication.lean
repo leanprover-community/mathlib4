@@ -719,7 +719,7 @@ instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
 
 instance [Semiring R] : Semiring R⟦Γ⟧ where
 
-theorem leadingCoeff_pow_of_nonzero {Γ} [AddCommMonoid Γ] [LinearOrder Γ]
+theorem leadingCoeff_pow_of_ne_zero {Γ} [AddCommMonoid Γ] [LinearOrder Γ]
     [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : HahnSeries Γ R} {n : ℕ}
     (h : x.leadingCoeff ^ n ≠ 0) :
     (x ^ n).leadingCoeff = x.leadingCoeff ^ n := by
@@ -728,7 +728,7 @@ theorem leadingCoeff_pow_of_nonzero {Γ} [AddCommMonoid Γ] [LinearOrder Γ]
   | succ n ih =>
     rw [pow_succ] at h
     specialize ih (left_ne_zero_of_mul h)
-    rw [pow_succ, pow_succ, leadingCoeff_mul_of_nonzero (ih ▸ h), ih]
+    rw [pow_succ, pow_succ, leadingCoeff_mul_of_ne_zero (ih ▸ h), ih]
 
 theorem orderTop_pow_of_nonzero {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R] {x : HahnSeries Γ R} {n : ℕ} (h : x.leadingCoeff ^ n ≠ 0) :
@@ -739,7 +739,7 @@ theorem orderTop_pow_of_nonzero {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrde
   | succ n ih =>
     rw [pow_succ] at h
     specialize ih (left_ne_zero_of_mul h)
-    rw [pow_succ, orderTop_mul_of_nonzero (leadingCoeff_pow_of_nonzero (left_ne_zero_of_mul h) ▸ h),
+    rw [pow_succ, orderTop_mul_of_ne_zero (leadingCoeff_pow_of_ne_zero (left_ne_zero_of_mul h) ▸ h),
       ih, succ_nsmul]
 
 theorem orderTop_nsmul_le_orderTop_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ]
@@ -1019,7 +1019,7 @@ theorem order_mul {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMo
     [NonUnitalNonAssocSemiring R]
     [NoZeroDivisors R] {x y : R⟦Γ⟧} (hx : x ≠ 0) (hy : y ≠ 0) :
     (x * y).order = x.order + y.order :=
-  order_mul_of_nonzero (mul_ne_zero (leadingCoeff_ne_zero.mpr hx) (leadingCoeff_ne_zero.mpr hy))
+  order_mul_of_ne_zero (mul_ne_zero (leadingCoeff_ne_zero.mpr hx) (leadingCoeff_ne_zero.mpr hy))
 
 @[simp]
 theorem order_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
@@ -1117,7 +1117,7 @@ theorem pow_leadingCoeff {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCanc
   induction n with
   | zero => simp
   | succ n ihn =>
-    rw [pow_succ, leadingCoeff_mul_of_nonzero, ihn, pow_succ]
+    rw [pow_succ, leadingCoeff_mul_of_ne_zero, ihn, pow_succ]
     rw [ihn, ← pow_succ]
     by_contra
     simp_all [IsNilpotent]
@@ -1527,3 +1527,5 @@ end Domain
 end Algebra
 
 end HahnSeries
+
+set_option linter.style.longFile 1700

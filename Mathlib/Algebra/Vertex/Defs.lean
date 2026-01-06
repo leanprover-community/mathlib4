@@ -109,10 +109,8 @@ theorem coeff_zero_if_lt_order (a b : V) (n : ℤ) (h : n < order Y a b) :
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_nonzero_at_order (a b : V) (h : Y a b ≠ 0) :
-    HVertexOperator.coeff (Y a) (order Y a b) b ≠ 0 := by
-  rw [order, HVertexOperator.coeff]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk]
-  exact HahnSeries.coeff_order_ne_zero h
+    HVertexOperator.coeff (Y a) (order Y a b) b ≠ 0 :=
+  HahnSeries.coeff_order_eq_zero.not.mpr h
 
 theorem ncoeff_zero_if_neg_order_leq (a b : V) (n : ℤ) (h : -order Y a b ≤ n) :
     ncoeff (Y a) n b = 0 := by

@@ -542,28 +542,6 @@ def twoCocycleProj : (ofTwoCocycle c) →ₗ⁅R⁆ L where
 lemma surjective_of_cocycle : Surjective (twoCocycleProj c) :=
   fun x ↦ Exists.intro ((ofProd c) (x, 0)) rfl
 
-/-- An equivalence of extended Lie algebras induced by translation by a coboundary. -/
-@[simps]
-def LieEquiv.ofCoboundary (c' : twoCocycle R L M) (x : oneCochain R L M)
-    (h : c' = c + d₁₂ R L M x) :
-    LieEquiv R (ofTwoCocycle c) (ofTwoCocycle c') where
-  toFun y := ofProd c' (((ofProd c).symm y).1, ((ofProd c).symm y).2 - x ((ofProd c).symm y).1)
-  map_add' _ _ := by
-    simp only [← of_add]
-    exact Equiv.congr_arg (by simp; abel)
-  map_smul' _ _ := by
-    simp only [← of_smul]
-    simp [smul_sub]
-  map_lie' {a b} := by
-    refine (Equiv.apply_eq_iff_eq_symm_apply (ofProd c')).mpr ?_
-    simp only [bracket_ofTwoCocycle, Equiv.symm_apply_apply, h, Submodule.coe_add,
-      LinearMap.add_apply, Prod.mk.injEq, true_and]
-    simp only [twoCochain_val_apply (d₁₂ R L M x), d₁₂_apply_apply, lie_sub]
-    abel
-  invFun z := ofProd c (((ofProd c').symm z).1, ((ofProd c').symm z).2 + x ((ofProd c').symm z).1)
-  left_inv y := by simp
-  right_inv z := by simp
-
 end Algebra
 
 namespace Extension

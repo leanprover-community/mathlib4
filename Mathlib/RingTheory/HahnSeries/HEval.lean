@@ -104,7 +104,7 @@ theorem support_prod_subset_add_support [AddCommMonoid Γ] [PartialOrder Γ] [Co
     exact support_single_subset
   · intros _ _ _ his _ hg
     simp_all only [prod_cons, mem_support, ne_eq, sum_cons]
-    exact support_mul_subset_add_support.trans (Set.add_subset_add (fun ⦃a⦄ a ↦ a) his) hg
+    exact support_mul_subset.trans (Set.add_subset_add (fun ⦃a⦄ a ↦ a) his) hg
 
 theorem support_MVpow_subset_closure_support [AddCommMonoid Γ] [PartialOrder Γ] [CommSemiring R]
     [IsOrderedCancelAddMonoid Γ] (σ : Type*) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
@@ -120,7 +120,7 @@ theorem support_MVpow_subset_closure_support [AddCommMonoid Γ] [PartialOrder Γ
     have hi : (x i ^ n i).support ⊆ AddSubmonoid.closure (⋃ i, (x i).support) :=
       (support_pow_subset_closure (x i) (n i)).trans <| AddSubmonoid.closure_mono <|
         Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
-    exact (support_mul_subset_add_support (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
+    exact (support_mul_subset (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
 
 theorem support_MVpow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [CommSemiring R]
     [IsOrderedCancelAddMonoid Γ] {σ : Type*} (s : Finset σ) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
@@ -136,7 +136,7 @@ theorem support_MVpow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [CommS
     have hi : (x i ^ n i).support ⊆ AddSubmonoid.closure (⋃ i, (x i).support) :=
       (support_pow_subset_closure (x i) (n i)).trans <| AddSubmonoid.closure_mono <|
         Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
-    exact (support_mul_subset_add_support (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
+    exact (support_mul_subset (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
 
 theorem isPWO_iUnion_support_MVpow_support [LinearOrder Γ] [AddCommMonoid Γ] [CommSemiring R]
     [IsOrderedCancelAddMonoid Γ] (σ : Type*) (x : σ →₀ HahnSeries Γ R)
