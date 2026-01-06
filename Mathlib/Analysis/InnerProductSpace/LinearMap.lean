@@ -304,7 +304,7 @@ open ContinuousLinearMap
 variable (𝕜) in
 /-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`.
 
-This is also sometimes referred to as an outer product of vectors on a Hilbert space.\
+This is also sometimes referred to as an outer product of vectors on a Hilbert space.
 This corresponds to the matrix outer product `Matrix.vecMulVec`, see
 `InnerProductSpace.toMatrix_rankOne` and `InnerProductSpace.symm_toEuclideanLin_rankOne` in
 `Mathlib/Analysis/InnerProductSpace/PiL2.lean`. -/
