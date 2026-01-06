@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Discrete Valuations
@@ -118,10 +119,10 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneD
 lemma generator_ne_zero : (generator v : Γ) ≠ 0 := by simp
 
 instance : IsCyclic <| valueGroup v := by
-  rw [← generator_zpowers_eq_valueGroup, Subgroup.isCyclic_iff_exists_zpowers_eq_top]
-  use (generator v)
+  rw [← generator_zpowers_eq_valueGroup]
+  exact isCyclic_zpowers (generator v)
 
-instance [IsRankOneDiscrete v] : v.IsNontrivial := by
+instance : v.IsNontrivial := by
   apply IsNontrivial.mk
   by_contra! h1
   have hvalueGroup : valueGroup v = ⊥ := by
