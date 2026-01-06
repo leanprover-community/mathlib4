@@ -17,7 +17,7 @@ See also `Mathlib/Data/Finset/Lattice/Fold.lean`, which is concerned with foldin
 operations over a finset.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 

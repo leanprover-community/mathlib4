@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Adjoin.FG
   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
 
-@[expose] public section
+public section
 
 
 open Pointwise
