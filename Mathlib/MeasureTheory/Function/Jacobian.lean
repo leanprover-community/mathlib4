@@ -229,7 +229,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       rcases s_subset x xs with ⟨n, z, _⟩
       exact ⟨z⟩
     inhabit ↥T
-    exact ⟨_, Encodable.surjective_decode_iget (ℕ × T × ℕ)⟩
+    exact ⟨_, Encodable.surjective_decode_getD (ℕ × T × ℕ) default⟩
   -- these sets `t q = K n z p` will do
   refine
     ⟨fun q => K (F q).1 (F q).2.1 (F q).2.2, fun q => f' (F q).2.1, fun n => K_closed _ _ _,

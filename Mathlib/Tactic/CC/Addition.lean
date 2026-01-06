@@ -607,7 +607,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     let state ← get
     if state.ignoreInstances then
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
-    if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
+    if state.hoFns.isSome && fn.isConst && !((state.hoFns.getD default).contains fn.constName) then
       for h : i in [:apps.size] do
         let arg := apps[i].appArg!
         addOccurrence e arg false

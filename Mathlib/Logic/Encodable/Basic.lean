@@ -77,9 +77,14 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
+theorem surjective_decode_getD (α : Type*) [Encodable α] (d : α) :
+    Surjective fun n => (Encodable.decode n).getD d := fun x =>
+  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]; rfl⟩
+
+@[deprecated surjective_decode_getD (since := "2026-01-05")]
 theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
-    Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
-  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
+    Surjective fun n => ((Encodable.decode n).getD default : α) :=
+  surjective_decode_getD α default
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
 best way to infer decidability. -/
