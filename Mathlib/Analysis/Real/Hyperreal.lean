@@ -15,8 +15,7 @@ public import Mathlib.Order.Filter.FilterProduct
 
 @[expose] public section
 
-
-open Filter Germ Topology
+open ArchimedeanClass Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=
