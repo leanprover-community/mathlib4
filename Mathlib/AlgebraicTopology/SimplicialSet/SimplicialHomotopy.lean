@@ -27,7 +27,7 @@ namespace stdSimplex
 lemma δ_objEquiv_symm_apply
     {n : ℕ} {m : SimplexCategory} (f : .mk (n + 1) ⟶ m) (i : Fin (n + 2)) :
     (stdSimplex.obj _).δ i (objEquiv.symm f) =
-      objEquiv.symm (SimplexCategory.δ i ≫ f) := by
+      (objEquiv (n := m) (m := (op ⦋n⦌))).symm (SimplexCategory.δ i ≫ f) := by
   rfl
 
 @[simp]
@@ -102,10 +102,11 @@ noncomputable def toSimplicialHomotopy (H : Homotopy f g) :
     dsimp
     apply congr_arg
     ext i : 2
-    · dsimp
-      erw [stdSimplex.δ_objEquiv_symm_apply, SimplexCategory.δ_comp_σ_self,
-        stdSimplex.yonedaEquiv_symm_app_objEquiv_symm]
-      simp
+    · have := SimplexCategory.δ_comp_σ_self (i := (0 : Fin (n + 1)))
+      dsimp at this ⊢
+      rw [stdSimplex.δ_objEquiv_symm_apply, this,
+        stdSimplex.yonedaEquiv_symm_app_objEquiv_symm,
+        op_id, FunctorToTypes.map_id_apply]
     · rw [stdSimplex.δ_objMk₁_of_lt _ _ (by tauto)]
       rfl
   h_last_comp_δ_last n := by
