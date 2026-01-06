@@ -99,7 +99,7 @@ lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
   rw [comp_apply, Pi.smul_apply, hasDerivWithinAt_iff_hasFDerivWithinAt,
-    ← ContinuousLinearMap.smulRight_comp]
+    ← ContinuousLinearMap.toSpanSingleton_comp_toSpanSingleton]
   refine (hγ (t * a) ht |>.hasFDerivWithinAt).comp (t := s) _ ?_ (fun _ ht' ↦ ht')
   apply HasFDerivAt.hasFDerivWithinAt
   rw [← hasDerivAt_iff_hasFDerivAt]
