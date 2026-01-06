@@ -313,7 +313,9 @@ def elimVarM (a : ℕ) : LinarithM Unit := do
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
     update (vs - 1) (← pos.foldlM (fun s p => do
       Lean.Core.checkSystem decl_name%.toString
-      pure (s.union (elimWithSet a p neg))) notPresent)
+      -- FIXME: `.foldl .insert` should be equivalent to `.union`,
+      -- but this breaks a test.
+      pure ((elimWithSet a p neg).foldl .insert s)) notPresent)
   else
     pure ()
 
