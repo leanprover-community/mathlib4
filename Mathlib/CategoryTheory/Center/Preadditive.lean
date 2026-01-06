@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Center.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

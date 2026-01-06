@@ -15,7 +15,7 @@ We develop properties of integrals with a group as domain.
 This file contains properties about integrability and Bochner integration.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
