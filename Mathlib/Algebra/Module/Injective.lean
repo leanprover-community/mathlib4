@@ -208,6 +208,7 @@ abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
 
 variable {f}
 
+set_option backward.privateInPublic true in
 private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSingleton i f y) :
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
@@ -217,11 +218,15 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
   rcases b_mem with ⟨z, eq2⟩
   exact ⟨⟨a, a_mem⟩, z, by rw [← eq1, ← eq2]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`. -/
 def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
     (extensionOfMax i f).domain :=
   (extensionOfMax_adjoin.aux1 i x).choose
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`. -/
 def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R :=
   (extensionOfMax_adjoin.aux1 i x).choose_spec.choose

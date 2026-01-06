@@ -371,9 +371,6 @@ theorem mem_compl_zeroLocus_iff_notMem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
-@[deprecated (since := "2025-05-23")]
-alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
-
 @[simp]
 lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s := by
   rw [← Set.union_singleton, zeroLocus_union, zeroLocus_singleton_zero, Set.inter_univ]

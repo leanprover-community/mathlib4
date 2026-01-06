@@ -6,7 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Order.Module.Algebra
+public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
@@ -256,7 +256,7 @@ def RayVector.mapLinearEquiv (e : M ≃ₗ[R] N) : RayVector R M ≃ RayVector R
 
 /-- An equivalence between modules implies an equivalence between rays. -/
 def Module.Ray.map (e : M ≃ₗ[R] N) : Module.Ray R M ≃ Module.Ray R N :=
-  Quotient.congr (RayVector.mapLinearEquiv e) fun _ _=> (SameRay.sameRay_map_iff _).symm
+  Quotient.congr (RayVector.mapLinearEquiv e) fun _ _ => (SameRay.sameRay_map_iff _).symm
 
 @[simp]
 theorem Module.Ray.map_apply (e : M ≃ₗ[R] N) (v : M) (hv : v ≠ 0) :

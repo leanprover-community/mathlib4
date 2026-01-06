@@ -34,7 +34,7 @@ instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
   obj A := CommGrpCat.of A.X
-  map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f).hom
+  map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/
 noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
@@ -44,7 +44,8 @@ noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
         { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
-  map f := GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrpCat GrpCat).map f)
+  map f := InducedCategory.homMk
+    (GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrpCat GrpCat).map f))
 
 @[simp]
 theorem inverse_obj_X {A : CommGrpCat.{u}} : (inverse.obj A).X = A := rfl

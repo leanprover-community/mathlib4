@@ -158,7 +158,7 @@ instance self : Module.Free R R :=
 instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
 
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
-  of_basis.{u,z,z} (Basis.empty N : Basis PEmpty R N)
+  of_basis.{u, z, z} (Basis.empty N : Basis PEmpty R N)
 
 -- This was previously a global instance,
 -- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
