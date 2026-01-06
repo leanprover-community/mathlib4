@@ -466,7 +466,7 @@ where
   printLakeOutput out := do
     unless out.stdout.isEmpty do
       IO.eprintln "lake stdout:"
-      IO.eprint out.stderr
+      IO.eprint out.stdout
     unless out.stderr.isEmpty do
       IO.eprintln "lake stderr:"
       IO.eprint out.stderr
