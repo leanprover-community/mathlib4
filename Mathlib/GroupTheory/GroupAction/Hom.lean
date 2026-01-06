@@ -331,7 +331,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁) = MulActionHom.id M := by
   ext
-  simpa using Function.LeftInverse.eq h₁ _
+  simpa using h₁.eq _
 
 @[to_additive]
 theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
@@ -339,7 +339,7 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
   ext
-  simpa using Function.RightInverse.eq h₂ _
+  simpa using h₂.eq _
 
 /-- If actions of `M` and `N` on `α` commute,
   then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
