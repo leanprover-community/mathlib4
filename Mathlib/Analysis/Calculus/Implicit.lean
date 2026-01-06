@@ -216,19 +216,6 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
   simp [ContinuousLinearEquiv.eq_symm_apply, *]
 
-theorem eq_implicitFunction_of_prodFun_eq :
-    ∀ᶠ xyz in 𝓝 (φ.pt, φ.prodFun φ.pt),
-      letI x := xyz.1
-      letI y := xyz.2.1
-      letI z := xyz.2.2
-      φ.prodFun x = (y, z) → x = φ.implicitFunction y z := by
-  rw [nhds_prod_eq]
-  apply φ.implicitFunction_apply_image.prod_mk φ.prod_map_implicitFunction |>.mono
-  rintro ⟨x, y, z⟩ ⟨hx, -⟩ hprod
-  rw [Prod.ext_iff] at hprod
-  dsimp at hx hprod
-  rw [← hx, hprod.1, hprod.2]
-
 theorem eventuallyEq_implicitFunction {ψ : F → G → E}
     (h : ∀ᶠ x in 𝓝 φ.pt, ψ (φ.leftFun x) (φ.rightFun x) = x) :
     Function.uncurry ψ =ᶠ[𝓝 (φ.prodFun φ.pt)] Function.uncurry φ.implicitFunction :=
