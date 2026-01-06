@@ -132,16 +132,10 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
   | inl hp =>
     have : Fact p.Prime := ⟨hp⟩
     let _ := compatibleRingOfRing (AlgebraicClosure (ZMod p))
-    have : CharP (AlgebraicClosure (ZMod p)) p :=
-      charP_of_injective_algebraMap
-        (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
     exact ⟨⟨AlgebraicClosure (ZMod p)⟩⟩
   | inr hp =>
     subst hp
     let _ := compatibleRingOfRing (AlgebraicClosure ℚ)
-    have : CharP (AlgebraicClosure ℚ) 0 :=
-      charP_of_injective_algebraMap
-        (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
     exact ⟨⟨AlgebraicClosure ℚ⟩⟩
 
 open Cardinal

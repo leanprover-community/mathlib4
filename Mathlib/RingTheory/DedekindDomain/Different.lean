@@ -483,8 +483,6 @@ lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
     [FiniteDimensional (FractionRing A) (FractionRing B)] :
     coeSubmodule (FractionRing B) (differentIdeal A B) =
       1 / Submodule.traceDual A (FractionRing A) 1 := by
-  have : IsIntegralClosure B A (FractionRing B) :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [coeSubmodule, differentIdeal, Submodule.map_comap_eq, inf_eq_right]
   have := FractionalIdeal.dual_inv_le (A := A) (K := FractionRing A)
     (1 : FractionalIdeal B⁰ (FractionRing B))
@@ -544,9 +542,6 @@ theorem differentIdeal_ne_bot [Module.Finite A B]
     differentIdeal A B ≠ ⊥ := by
   let K := FractionRing A
   let L := FractionRing B
-  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
-    IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
   simp
 
@@ -857,9 +852,6 @@ lemma dvd_differentIdeal_of_not_isSeparable
       (by rw [pow_two, ha]; exact mul_dvd_mul_left _ hPa)
   let K := FractionRing A
   let L := FractionRing B
-  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
-    IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have habot : a ≠ ⊥ := fun ha' ↦ hp' (by simpa [ha'] using ha)
@@ -918,7 +910,6 @@ theorem not_dvd_differentIdeal_iff
     simp only [Submodule.zero_eq_bot, differentIdeal_ne_bot, not_false_eq_true, true_iff]
     let K := FractionRing A
     let L := FractionRing B
-    have : FiniteDimensional K L := .of_isLocalization A B A⁰
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
       convert (inferInstanceAs
         (IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B))))
