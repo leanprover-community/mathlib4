@@ -38,8 +38,7 @@ Also see `S ⊗[R] Ω[A⁄R] ≃ₗ[S] Ω[S ⊗[R] A⁄S]` at `KaehlerDifferenti
 def KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale [Algebra.FormallyEtale S T] :
     T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R] := by
   refine LinearEquiv.ofBijective (mapBaseChange R S T)
-    ⟨?_, fun x ↦ (KaehlerDifferential.addExact_mapBaseChange_map R S T x).mp
-      (Subsingleton.elim ..)⟩
+    ⟨?_, fun x ↦ (KaehlerDifferential.addExact_mapBaseChange_map R S T x).1 (Subsingleton.elim ..)⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
   obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.addExact_δ_mapBaseChange R S T x).mp hx
