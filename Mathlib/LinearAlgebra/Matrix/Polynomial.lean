@@ -26,7 +26,7 @@ In particular, we give results about the polynomial given by
 matrix determinant, polynomial
 -/
 
-@[expose] public section
+public section
 
 
 open Matrix Polynomial

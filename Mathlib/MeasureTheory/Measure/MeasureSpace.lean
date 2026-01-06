@@ -496,7 +496,7 @@ theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsCodirectedOrder ι]
 (not necessarily measurable) sets is the supremum of the measures of the partial unions. -/
 theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {f : ι → Set α} :
-    μ (⋃ i, f i) = ⨆ i, μ (Accumulate f i) := by
+    μ (⋃ i, f i) = ⨆ i, μ (accumulate f i) := by
   rw [← iUnion_accumulate]
   exact monotone_accumulate.measure_iUnion
 
@@ -590,7 +590,7 @@ sets is the limit of the measures of the partial unions. -/
 theorem tendsto_measure_iUnion_accumulate {α ι : Type*}
     [Preorder ι] [IsCountablyGenerated (atTop : Filter ι)]
     {_ : MeasurableSpace α} {μ : Measure α} {f : ι → Set α} :
-    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+    Tendsto (fun i ↦ μ (accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   refine .of_neBot_imp fun h ↦ ?_
   have := (atTop_neBot_iff.1 h).2
   rw [measure_iUnion_eq_iSup_accumulate]
@@ -1036,15 +1036,19 @@ instance {_ : MeasurableSpace α} : InfSet (Measure α) :=
 theorem sInf_apply (hs : MeasurableSet s) : sInf m s = sInf (toOuterMeasure '' m) s :=
   toMeasure_apply _ _ hs
 
+set_option backward.privateInPublic true in
 private theorem measure_sInf_le (h : μ ∈ m) : sInf m ≤ μ :=
   have : sInf (toOuterMeasure '' m) ≤ μ.toOuterMeasure := sInf_le (mem_image_of_mem _ h)
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
+set_option backward.privateInPublic true in
 private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m :=
   have : μ.toOuterMeasure ≤ sInf (toOuterMeasure '' m) :=
     le_sInf <| forall_mem_image.2 fun _ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instCompleteSemilatticeInf {_ : MeasurableSpace α} : CompleteSemilatticeInf (Measure α) :=
   { (by infer_instance : PartialOrder (Measure α)),
     (by infer_instance : InfSet (Measure α)) with

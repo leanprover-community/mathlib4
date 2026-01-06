@@ -29,7 +29,7 @@ open Mathlib.Tactic
 
 namespace CategoryTheory
 
-theorem Iso.eq_whisker {C : Type*} [Category C]
+theorem Iso.eq_whisker {C : Type*} [Category* C]
     {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
     f ≪≫ h = g ≪≫ h := by rw [w]
 

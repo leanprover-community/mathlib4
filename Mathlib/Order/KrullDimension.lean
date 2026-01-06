@@ -466,7 +466,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
     obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
-    use p ⟨n, by omega⟩
+    use p ⟨n, by lia⟩
     constructor
     · rw [← hp]
       apply LTSeries.strictMono
@@ -710,7 +710,7 @@ lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l
   rcases n with - | n
   · rw [ENat.coe_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
     simp
-  · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast, Nat.lt_succ_iff]
+  · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast]
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   iSup_le fun p ↦ le_sSup ⟨p.map f hf, rfl⟩

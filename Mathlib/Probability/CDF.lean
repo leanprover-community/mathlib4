@@ -52,7 +52,7 @@ namespace ProbabilityTheory
 for probability measures. In that case, it satisfies `cdf μ x = μ.real (Iic x)` (see
 `ProbabilityTheory.cdf_eq_real`). -/
 noncomputable
-def cdf (μ : Measure ℝ) : StieltjesFunction :=
+def cdf (μ : Measure ℝ) : StieltjesFunction ℝ :=
   condCDF ((dirac Unit.unit).prod μ) Unit.unit
 
 section ExplicitMeasureArg
@@ -92,7 +92,7 @@ lemma measure_cdf [IsProbabilityMeasure μ] : (cdf μ).measure = μ := by
 
 end ExplicitMeasureArg
 
-lemma cdf_measure_stieltjesFunction (f : StieltjesFunction) (hf0 : Tendsto f atBot (𝓝 0))
+lemma cdf_measure_stieltjesFunction (f : StieltjesFunction ℝ) (hf0 : Tendsto f atBot (𝓝 0))
     (hf1 : Tendsto f atTop (𝓝 1)) :
     cdf f.measure = f := by
   refine (cdf f.measure).eq_of_measure_of_tendsto_atBot f ?_ (tendsto_cdf_atBot _) hf0

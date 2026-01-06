@@ -121,7 +121,7 @@ theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
 
 @[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-10-16")]
 alias sorted := pairwise
 
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
@@ -232,7 +232,7 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
   induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-10-16")]
 alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
 
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
