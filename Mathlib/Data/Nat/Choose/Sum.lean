@@ -150,6 +150,17 @@ lemma sum_range_add_choose (n k : ℕ) :
   convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
   rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
 
+lemma sum_range_multichoose (n k : ℕ) (h : k ≠ 0) :
+    ∑ i ∈ Finset.range (n + 1), k.multichoose i = (n + k).choose k := by
+  have h1 : k - 1 + 1 = k := by lia
+  have h2 : n + (k - 1) + 1 = n + k := by lia
+  simp only [← h1 ▸ h2 ▸ (sum_Icc_choose (n + (k - 1)) (k - 1)), multichoose_eq]
+  apply Finset.sum_bij' (fun x _ => x + (k - 1)) (fun x _ => x - (k - 1))
+      (by grind) (by grind) (by grind) (by grind)
+  intro x
+  have _ := choose_symm (k := k - 1) (n := x + (k - 1)) (by lia)
+  grind
+
 end Nat
 
 theorem Int.alternating_sum_range_choose_eq_choose {n m : ℕ} :
