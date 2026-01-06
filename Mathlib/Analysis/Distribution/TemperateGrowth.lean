@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Tactic.MoveAdd
-public import Mathlib.Tactic.ToFun
 
 /-! # Functions and measures of temperate growth -/
 
@@ -160,7 +159,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
     _ = _ := by rw [mul_pow, ← pow_mul, pow_add]; ring
 
 /-- Composition of two temperate growth functions is of temperate growth. -/
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 theorem HasTemperateGrowth.comp [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     (hg : g.HasTemperateGrowth) (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
   apply hf.comp' (t := Set.univ)
@@ -284,7 +283,7 @@ theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateG
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
     convert (2 • innerSL ℝ).hasTemperateGrowth
-  · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
+  · exact .norm_sq ℝ differentiable_id
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]
     exact le_add_of_nonneg_left (by positivity)

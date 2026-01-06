@@ -525,7 +525,7 @@ def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
   map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
-    ↑(skeletalFunctor.map f).hom = f.toOrderHom :=
+    ↑(skeletalFunctor.map f).hom.hom = f.toOrderHom :=
   rfl
 
 theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
@@ -538,7 +538,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 namespace SkeletalFunctor
 
 instance : skeletalFunctor.Full where
-  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom, rfl⟩
+  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom.hom, rfl⟩
 
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
@@ -554,8 +554,8 @@ instance : skeletalFunctor.EssSurj where
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
         refine
-          { hom := LinOrd.ofHom ⟨f, hf.monotone⟩
-            inv := LinOrd.ofHom ⟨f.symm, ?_⟩
+          { hom := InducedCategory.homMk (LinOrd.ofHom ⟨f, hf.monotone⟩)
+            inv := InducedCategory.homMk (LinOrd.ofHom ⟨f.symm, ?_⟩)
             hom_inv_id := by ext; apply f.symm_apply_apply
             inv_hom_id := by ext; apply f.apply_symm_apply }
         intro i j h

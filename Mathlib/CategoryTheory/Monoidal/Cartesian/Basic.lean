@@ -101,8 +101,6 @@ class CartesianMonoidalCategory (C : Type u) [Category.{v} C] extends
   /-- The monoidal product is the categorical product. -/
   tensorProductIsBinaryProduct (X Y : C) : IsLimit <| BinaryFan.mk (fst X Y) (snd X Y)
 
-@[deprecated (since := "2025-05-15")] alias ChosenFiniteProducts := CartesianMonoidalCategory
-
 namespace CartesianMonoidalCategory
 
 export SemiCartesianMonoidalCategory (isTerminalTensorUnit fst snd fst_def snd_def toUnit
@@ -223,8 +221,6 @@ omit 𝒯 in
 in `C`. -/
 noncomputable abbrev ofHasFiniteProducts [HasFiniteProducts C] : CartesianMonoidalCategory C :=
   .ofChosenFiniteProducts (getLimitCone (.empty C)) (getLimitCone <| pair · ·)
-
-@[deprecated (since := "2025-05-08")] alias ofFiniteProducts := ofHasFiniteProducts
 
 end OfChosenFiniteProducts
 
@@ -467,10 +463,6 @@ This is not an instance to prevent diamonds. -/
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
-@[deprecated (since := "2025-05-15")]
-alias _root_.CategoryTheory.BraidedCategory.ofChosenFiniteProducts :=
-  BraidedCategory.ofCartesianMonoidalCategory
-
 instance : Nonempty (BraidedCategory C) := ⟨.ofCartesianMonoidalCategory⟩
 
 instance : Subsingleton (BraidedCategory C) where
@@ -698,10 +690,6 @@ noncomputable def isLimitCartesianMonoidalCategoryOfPreservesLimits :
     (tensorProductIsBinaryProduct A B).ofIsoLimit <|
       isoBinaryFanMk (BinaryFan.mk (fst A B) (snd A B))
 
-@[deprecated (since := "2025-05-15")]
-alias isLimitChosenFiniteProductsOfPreservesLimits :=
-  isLimitCartesianMonoidalCategoryOfPreservesLimits
-
 /-- If `F` preserves the limit of the pair `(A, B)`, then `prodComparison F A B` is an isomorphism.
 -/
 noncomputable def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
@@ -799,14 +787,15 @@ instance fullSubcategory
       (P.prop_of_isLimit isTerminalTensorUnit (by simp))
       (fun X Y hX hY ↦ P.prop_of_isLimit (tensorProductIsBinaryProduct X Y)
         (by rintro (_ | _) <;> assumption))
-  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ toUnit X.1) fun _ _ ↦ by ext
-  fst X Y := fst X.1 Y.1
-  snd X Y := snd X.1 Y.1
+  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ ObjectProperty.homMk (toUnit X.1))
+    fun _ _ ↦ by ext; apply toUnit_unique
+  fst X Y := ObjectProperty.homMk (fst X.1 Y.1)
+  snd X Y := ObjectProperty.homMk (snd X.1 Y.1)
   tensorProductIsBinaryProduct X Y :=
-    BinaryFan.IsLimit.mk _ (lift (C := C)) (lift_fst (C := C)) (lift_snd (C := C))
-      (by rintro T f g m rfl rfl; symm; exact lift_comp_fst_snd _)
-  fst_def X Y := fst_def X.1 Y.1
-  snd_def X Y := snd_def X.1 Y.1
+    BinaryFan.IsLimit.mk _ (fun f g ↦ ObjectProperty.homMk (lift f.hom g.hom))
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  fst_def X Y := by ext; exact fst_def X.1 Y.1
+  snd_def X Y := by ext; exact snd_def X.1 Y.1
 
 end CartesianMonoidalCategory
 
@@ -969,15 +958,16 @@ variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImage
 
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
-lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = lift (T := T.1) f g := rfl
+lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = ObjectProperty.homMk (lift f.hom g.hom) := rfl
 
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
-    (α_ X Y Z).hom = (α_ X.obj Y.obj Z.obj).hom := rfl
+    (α_ X Y Z).hom = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).hom := rfl
 
 lemma associator_inv_def (X Y Z : F.EssImageSubcategory) :
-    (α_ X Y Z).inv = (α_ X.obj Y.obj Z.obj).inv := rfl
+    (α_ X Y Z).inv = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).inv := rfl
 
-lemma toUnit_def (X : F.EssImageSubcategory) : toUnit X = toUnit X.obj := toUnit_unique ..
+lemma toUnit_def (X : F.EssImageSubcategory) :
+    toUnit X = ObjectProperty.homMk (toUnit X.obj) := rfl
 
 end Functor.EssImageSubcategory
 
