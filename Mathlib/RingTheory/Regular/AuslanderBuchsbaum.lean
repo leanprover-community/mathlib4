@@ -245,7 +245,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     simp only [K, S, LinearEquiv.annihilator_eq (Shrink.linearEquiv R (R ⧸ maximalIdeal R)),
       Ideal.annihilator_quotient]
     rw [← (ModuleCat.homLinearEquiv (S := R)).symm_apply_apply
-      (ModuleCat.ofHom (LinearMap.ker f).subtype), ← Submodule.mem_comap]
+      (ModuleCat.ofHom (LinearMap.ker f).subtype)]
     apply Submodule.smul_top_le_comap_smul_top
     apply mem_smul_top_of_range_le_smul_top
     intro x hx
