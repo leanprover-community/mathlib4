@@ -409,7 +409,6 @@ theorem get_thinkN (n) : get (thinkN s n) = get s :=
 theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
 
 theorem mem_of_promises {a} (p : s ~> a) : a ∈ s := by
-  obtain ⟨h⟩ := h
   obtain ⟨a', h⟩ := h
   rw [p h]
   exact h

@@ -51,7 +51,6 @@ theorem lex_iff : Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec 
     · exact Or.inl hij
     · exact Or.inr ⟨rfl, hab⟩
   · obtain ⟨i, a⟩ := a
-    obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
@@ -153,7 +152,6 @@ theorem lex_iff {a b : Σ' i, α i} :
     · exact Or.inl hij
     · exact Or.inr ⟨rfl, hab⟩
   · obtain ⟨i, a⟩ := a
-    obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
