@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
@@ -277,5 +278,45 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
     ← (map_injective_of_injective (injective_subtype _)).eq_iff, map_span, Set.image_singleton,
     Submodule.map_top, range_subtype, eq_comm (a := maximalIdeal R)]
   exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
+
+lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
+    (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) := by
+  have eqtop (S : Set (maximalIdeal R)) : Submodule.span R S = ⊤ ↔
+    Submodule.span R ((Submodule.subtype (maximalIdeal R)) '' S) = maximalIdeal R := by
+    simp only [← Submodule.map_span, ← (maximalIdeal R).range_subtype , ← Submodule.map_top,
+    (Submodule.map_injective_of_injective (maximalIdeal R).injective_subtype).eq_iff]
+  have fg : Module.Finite (ResidueField R) (CotangentSpace R) := inferInstance
+  have fg' : Submodule.FG (maximalIdeal R) := Ideal.fg_of_isNoetherianRing (maximalIdeal R)
+  have : Submodule.spanFinrank (⊤ : Submodule (ResidueField R) (CotangentSpace R)) =
+    Module.rank (ResidueField R) (CotangentSpace R) := by
+    rw [← Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg.1, Submodule.rank_eq_spanRank_of_free]
+  simp only [← Module.finrank_eq_rank, Nat.cast_inj] at this
+  rw [← this]
+  apply le_antisymm
+  · have span : Submodule.span R
+      ((⊤ : Submodule (ResidueField R) (CotangentSpace R)).generators.image Quotient.out) = ⊤ := by
+      apply IsLocalRing.CotangentSpace.span_image_eq_top_iff.mp
+      convert Submodule.span_generators (⊤ : Submodule (ResidueField R) (CotangentSpace R))
+      have : ⇑(maximalIdeal R).toCotangent ∘ Quotient.out = id := by
+        ext
+        exact Submodule.Quotient.mk_out _
+      rw [← Set.image_comp, this, Set.image_id]
+    rw [eqtop, ← Set.image_comp] at span
+    rw [← Submodule.FG.generators_ncard fg.1, ← congrArg Submodule.spanFinrank span]
+    apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite
+      (Set.Finite.image _ fg.1.finite_generators)) (Set.ncard_image_le fg.1.finite_generators)
+  · let G := ({x | x.1 ∈ (maximalIdeal R).generators} : Set (maximalIdeal R))
+    have : Submodule.span R G = ⊤ := by
+      simp only [eqtop, Submodule.subtype_apply, Ideal.submodule_span_eq, G]
+      convert (maximalIdeal R).span_generators
+      ext
+      simpa using fun a ↦ Submodule.FG.generators_mem (maximalIdeal R) a
+    have fin : G.Finite :=
+      fg'.finite_generators.of_injOn (by simp [Set.MapsTo, G]) Set.injOn_subtype_val
+    rw [← IsLocalRing.CotangentSpace.span_image_eq_top_iff.mpr this,
+      ← Submodule.FG.generators_ncard fg']
+    apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (fin.image _))
+    exact le_trans (Set.ncard_image_le fin) (Set.ncard_le_ncard_of_injOn Subtype.val (by simp [G])
+      Set.injOn_subtype_val fg'.finite_generators)
 
 end IsLocalRing

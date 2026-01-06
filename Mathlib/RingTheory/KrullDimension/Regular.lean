@@ -175,12 +175,13 @@ lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
     have := ((IsLocalRing.local_hom_TFAE _).out 0 4).mp lochom
     simpa [← mem_comap, this] using hS (Finset.mem_insert_self a S)
 
-lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤)
-    (fg : I.FG) : ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
-  let _ : Fintype I.generators := (Submodule.FG.finite_generators fg).fintype
+lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
+  let fg : Submodule.FG I := I.fg_of_isNoetherianRing
+  let _ : Fintype I.generators := fg.finite_generators.fintype
   have eq : Ideal.span I.generators.toFinset = I := by
     simpa using Submodule.span_generators I
-  rw [← Submodule.FG.generators_ncard fg, Set.ncard_eq_toFinset_card',
+  rw [← fg.generators_ncard, Set.ncard_eq_toFinset_card',
     ← ringKrullDim_eq_of_ringEquiv (Ideal.quotEquivOfEq eq)]
   apply ringKrullDim_le_ringKrullDim_add_card
   simpa using (Submodule.FG.generators_mem I).trans (le_maximalIdeal h)
