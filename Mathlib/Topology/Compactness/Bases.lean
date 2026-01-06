@@ -12,7 +12,7 @@ public import Mathlib.Topology.Compactness.Compact
 # Topological bases in compact sets and compact spaces
 -/
 
-@[expose] public section
+public section
 
 open Set TopologicalSpace
 
