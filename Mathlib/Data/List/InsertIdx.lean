@@ -13,7 +13,7 @@ public import Mathlib.Data.List.Basic
 Proves various lemmas about `List.insertIdx`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Set.range Preorder
 

@@ -26,7 +26,7 @@ endowed with a topology.
 interior, closure, frontier
 -/
 
-@[expose] public section
+public section
 
 open Set
 

@@ -23,7 +23,7 @@ chain rule, manifolds, higher derivative
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Set Topology
 open scoped Manifold ContDiff
