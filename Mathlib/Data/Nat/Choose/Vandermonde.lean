@@ -20,7 +20,7 @@ https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
 
 -/
 
-@[expose] public section
+public section
 
 
 open Polynomial Finset Finset.Nat
