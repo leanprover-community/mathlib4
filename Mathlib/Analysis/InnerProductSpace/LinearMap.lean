@@ -432,9 +432,10 @@ theorem rankOne_normalize_eq_rankOne_normalize_iff
   · simp only [hα, normalize_smul, map_smul, hβ, coe_smul', Pi.smul_apply, smul_smul]
     if 0 < (α : ℝ) then aesop else if (α : ℝ) < 0 then
       have : (((α : ℝ) * ↑↑β) : ℝ) < 0 := by simp_all [mul_neg_iff]
-      simp_all else
-    have : (α : ℝ) = 0 := by grind
-    aesop
+      simp_all
+    else
+      have : (α : ℝ) = 0 := by grind
+      aesop
 
 end Normed
 
