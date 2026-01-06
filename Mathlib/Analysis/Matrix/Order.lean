@@ -296,6 +296,31 @@ theorem IsUnit.eq_unitaryGroup_mul_posDef [DecidableEq n] {A : Matrix n n 𝕜} 
   refine ⟨⟨A * (CFC.abs A)⁻¹, mem_unitaryGroup_iff'.mpr ?_⟩, CFC.abs A, h, by simp [mul_assoc]⟩
   simp [star_mul, mul_assoc, ← mul_assoc _ A, ← CFC.abs_mul_abs, this.star_eq]
 
+/-- The polar decomposition for Hermitian matrices. -/
+theorem IsHermitian.eq_unitaryGroup_mul_posSemidef [DecidableEq n] (A : Matrix n n 𝕜)
+    (hA : A.IsHermitian) :
+    ∃ (U : unitaryGroup n 𝕜) (P : Matrix n n 𝕜) (_ : P.PosSemidef), A = U * P := by
+  let α (i : n) : 𝕜 :=
+    if hA.eigenvalues i = 0 then 1 else (↑(hA.eigenvalues i / ‖hA.eigenvalues i‖) : 𝕜)
+  set U := Unitary.conjStarAlgAut 𝕜 (Matrix m m 𝕜) hA.eigenvectorUnitary (diagonal α)
+  set P := Unitary.conjStarAlgAut 𝕜 (Matrix m m 𝕜) hA.eigenvectorUnitary
+    (diagonal fun i ↦ (‖hA.eigenvalues i‖ : 𝕜))
+  refine ⟨⟨U, ?_⟩, P, ?_, ?_⟩
+  · simp only [mem_unitaryGroup_iff', U, ← map_star, ← map_mul, EmbeddingLike.map_eq_one_iff,
+      star_eq_conjTranspose, diagonal_conjTranspose, diagonal_mul_diagonal]
+    ext
+    simp only [diagonal, Real.norm_eq_abs, Pi.star_apply, RCLike.star_def, mul_ite,
+      mul_one, of_apply, one_apply, α]
+    simp_rw [apply_ite, map_one, RCLike.conj_ofReal, ite_mul, one_mul, ite_eq_right_iff,
+      ← RCLike.ofReal_mul]
+    grind
+  · simp only [← nonneg_iff_posSemidef, P]
+    exact map_nonneg _ <| by simp [nonneg_iff_posSemidef]
+  · conv_lhs => rw [hA.spectral_theorem]
+    simp only [U, P, ← map_mul, diagonal_mul_diagonal]
+    congr 2
+    aesop
+
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toMatrixSeminormedAddCommGroup`, `Matrix.toMatrixNormedAddCommGroup`,
