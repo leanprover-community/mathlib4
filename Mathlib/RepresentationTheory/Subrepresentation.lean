@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Span.Defs
 /-!
 # Subrepresentations
 
-This file defines subrepresentations of a monoid representation.
+This file defines subrepresentations for a monoid representation.
 
 -/
 
