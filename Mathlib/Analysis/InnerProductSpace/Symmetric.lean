@@ -220,6 +220,12 @@ theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommG
 
 end LinearMap
 
+theorem LinearMap.IsSymmetric.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    T.symm.IsSymmetric := fun x y ↦ by simpa using hT (T.symm x) (T.symm y) |>.symm
+
+@[simp] theorem LinearEquiv.isSymmetric_symm_iff {T : E ≃ₗ[𝕜] E} :
+    T.symm.IsSymmetric ↔ T.IsSymmetric := ⟨.toLinearMap_symm, .toLinearMap_symm⟩
+
 end Seminormed
 
 section Normed
@@ -343,11 +349,8 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
 
 end LinearMap
 
-open ContinuousLinearMap in
-/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
-theorem ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
-    {T : E →L[𝕜] E} (h : IsIdempotentElem T) :
-    T.IsSymmetric ↔ T.rangeᗮ = T.ker :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
+@[deprecated (since := "2025-12-28")] alias
+  ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
 
 end Normed

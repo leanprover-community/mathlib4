@@ -17,7 +17,7 @@ object `X` of `D` there exists an object `W` of `C` with an effective epi `π : 
 category `C` is `Preregular`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

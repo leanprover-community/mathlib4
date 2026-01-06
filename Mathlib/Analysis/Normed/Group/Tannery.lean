@@ -19,7 +19,7 @@ order to avoid some unnecessary hypotheses that appear when specialising the gen
 measure-theoretic result.
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
