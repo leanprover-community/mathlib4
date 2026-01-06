@@ -71,7 +71,7 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped ENNReal NNReal

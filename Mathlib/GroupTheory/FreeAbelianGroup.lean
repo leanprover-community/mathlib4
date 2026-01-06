@@ -593,8 +593,6 @@ def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
     exact zsmul_int_one n
   map_add' := map_add _
 
-@[deprecated (since := "2025-06-16")] alias punitEquiv := uniqueEquiv
-
 /-- Isomorphic types have isomorphic free abelian groups. -/
 def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
   toFun := map f
