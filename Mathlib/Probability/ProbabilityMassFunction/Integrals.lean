@@ -27,6 +27,19 @@ open MeasureTheory NNReal ENNReal TopologicalSpace
 section General
 
 variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
+
+theorem lintegral_eq_tsum (p : PMF α) (f : α → ℝ≥0∞) :
+    ∫⁻ a, f a ∂(p.toMeasure) = ∑' a, p a * f a := calc
+  _ = ∫⁻ (a : α) in p.support, f a ∂p.toMeasure := by rw [p.restrict_toMeasure_support]
+  _ = ∑' (a : p.support), f a * p.toMeasure {↑a} := lintegral_countable _ p.support_countable
+  _ = ∑' (a : p.support), p a * f a := by
+    simp_rw [p.toMeasure_apply_singleton _ (measurableSet_singleton _), mul_comm]
+  _ = ∑' a, p a * f a := tsum_subtype_eq_of_support_subset (Function.support_mul_subset_left p f)
+
+theorem lintegral_eq_sum [Fintype α] (p : PMF α) (f : α → ℝ≥0∞) :
+    ∫⁻ a, f a ∂(p.toMeasure) = ∑ a, (p a) * f a := by
+  rw [p.lintegral_eq_tsum, tsum_fintype]
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
@@ -46,11 +59,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
-  rw [integral_fintype _ .of_finite]
-  congr with x
-  rw [measureReal_def]
-  congr 2
-  exact PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
+  rw [p.integral_eq_tsum _ .of_finite, tsum_fintype]
 
 end General
 
