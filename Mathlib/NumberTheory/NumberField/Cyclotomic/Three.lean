@@ -99,7 +99,6 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
   replace hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K) := by
     obtain ⟨n, x, hx⟩ := hcong
     exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
-  have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
   fin_cases this
   · left; rfl
