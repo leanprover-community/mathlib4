@@ -710,7 +710,7 @@ alias isMulOneCocycle_of_mem_oneCocycles := isMulCocycle₁_of_mem_cocycles₁
 @[simps]
 def coboundariesOfIsMulCoboundary₁ {f : G → M} (hf : IsMulCoboundary₁ f) :
     coboundaries₁ (Rep.ofMulDistribMulAction G M) :=
-  ⟨f, hf.choose, funext hf.choose_spec⟩
+  ⟨Additive.ofMul ∘ f, hf.choose, funext hf.choose_spec⟩
 
 theorem isMulCoboundary₁_of_mem_coboundaries₁
     (f : G → M) (hf : f ∈ coboundaries₁ (Rep.ofMulDistribMulAction G M)) :
@@ -742,7 +742,7 @@ alias isMulTwoCocycle_of_mem_twoCocycles := isMulCocycle₂_of_mem_cocycles₂
 2-coboundary for the representation on `M` induced by the `MulDistribMulAction`. -/
 def coboundariesOfIsMulCoboundary₂ {f : G × G → M} (hf : IsMulCoboundary₂ f) :
     coboundaries₂ (Rep.ofMulDistribMulAction G M) :=
-  ⟨f, hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
+  ⟨Additive.ofMul ∘ f, hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
 
 theorem isMulCoboundary₂_of_mem_coboundaries₂
     (f : G × G → M) (hf : f ∈ coboundaries₂ (Rep.ofMulDistribMulAction G M)) :

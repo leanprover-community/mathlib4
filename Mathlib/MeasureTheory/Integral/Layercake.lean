@@ -58,7 +58,7 @@ function, is given in `Mathlib/Analysis/SpecialFunctions/Pow/Integral.lean`.
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
