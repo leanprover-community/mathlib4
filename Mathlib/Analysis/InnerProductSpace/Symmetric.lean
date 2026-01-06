@@ -91,7 +91,7 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
 
 theorem isSymmetric_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset ι)
     (hT : ∀ i ∈ s, (T i).IsSymmetric) : (∑ i ∈ s, T i).IsSymmetric := fun _ _ ↦ by
-  simpa [sum_inner, inner_sum] using Finset.sum_congr rfl fun _ hi => hT _ hi _ _
+  simpa [sum_inner, inner_sum] using Finset.sum_congr rfl fun _ hi ↦ hT _ hi _ _
 
 @[aesop safe apply]
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
