@@ -43,6 +43,17 @@ instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
   have := preservesColimitsOfShape_of_isCardinalPresentable M κ J
   exact preservesColimitsOfShape_of_natIso e.symm
 
+-- TODO: add variants of this result for `yoneda` and `shrinkYoneda`
+instance {C : Type u} [SmallCategory C]
+    [HasColimitsOfSize.{w, w} (Type (max u u'))]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] (X : C) :
+    IsCardinalPresentable (uliftYoneda.{u'}.obj X) κ where
+  preservesColimitOfShape J _ _ := by
+    let e : (coyoneda.obj (op (uliftYoneda.{u'}.obj X))) ≅
+        (evaluation _ _).obj (op X) ⋙ uliftFunctor :=
+      NatIso.ofComponents (fun P ↦ Equiv.toIso (uliftYonedaEquiv.trans Equiv.ulift.symm))
+    exact preservesColimitsOfShape_of_natIso e.symm
+
 lemma isStrongGenerator
     {A : Type u'} [Category.{v'} A] {P : ObjectProperty A} (hP : P.IsStrongGenerator)
     [HasCoproducts.{w} A] [HasPullbacks A] (C : Type w) [SmallCategory C] :
