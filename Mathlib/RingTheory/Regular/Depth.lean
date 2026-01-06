@@ -21,19 +21,19 @@ public import Mathlib.RingTheory.Support
 In this section we proved the rees theorem for depth, which build the relation between
 the vanishing of certain `Ext` typs and length of maximal regular sequence in a certain ideal.
 
-# Main results
+## Main results
 
-* `IsSMulRegular.subsingleton_linearMap_iff` : for finitely generated `R`-module `N M`,
-  `N →ₗ[R] M = 0` iff there is a `M`-regular in `Module.annihilator R N`.
+* `IsSMulRegular.subsingleton_linearMap_iff` : for finitely generated `R`-module `M, N`,
+  `Hom(N, M) = 0` iff there is an `M`-regular element in `Module.annihilator R N`.
   This is the case for `n = 0` in the Rees theorem.
 
 * `exists_isRegular_tfae` : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
   finitely generated and nontrivial `R`-module `M` satisfying `IM < M`, we proved TFAE:
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
-    zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+    zero locus of `I`, `∀ i < n, Ext N M i = 0`
   · `∀ i < n, Ext (A⧸I) M i = 0`
   · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-    zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+    zero locus of `I`, `∀ i < n, Ext N M i = 0`
   · there exist a `M`-regular sequence of length `n` with every element in `I`
 
 -/
@@ -184,7 +184,8 @@ lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Idea
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
-lemma pow_mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
+lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
+    (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
     (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
     N (add_zero i)))) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
     N (add_zero i))) := by
@@ -248,7 +249,7 @@ lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n
             (ih (ModuleCat.of R M') smul_lt' ⟨rs', len, mem.2, reg.2⟩ (i - 1) (by omega))
         let gk := (AddCommGrpCat.ofHom
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
-        have mono_gk := pow_mono_of_mono a kpos i mono_g
+        have mono_gk := Ext.pow_mono_of_mono a kpos i mono_g
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
         have zero_gk : gk = 0 := smul_id_postcomp_eq_zero_of_mem_ann hk i
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
@@ -258,10 +259,10 @@ The Rees theorem
 For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated and nontrivial
 `R`-module `M` satisfying `IM < M`, we proved TFAE:
 · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
-  zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+  zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · `∀ i < n, Ext (A⧸I) M i = 0`
 · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-  zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+  zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · there exist a `M`-regular sequence of length `n` with every element in `I`
 -/
 lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
