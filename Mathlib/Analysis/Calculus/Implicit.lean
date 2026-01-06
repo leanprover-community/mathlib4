@@ -218,7 +218,9 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
 
 theorem eq_implicitFunction_of_prodFun_eq :
     ∀ᶠ xyz in 𝓝 (φ.pt, φ.prodFun φ.pt),
-      have ⟨x, y, z⟩ := xyz
+      letI x := xyz.1
+      letI y := xyz.2.1
+      letI z := xyz.2.2
       φ.prodFun x = (y, z) → x = φ.implicitFunction y z := by
   rw [nhds_prod_eq]
   apply φ.implicitFunction_apply_image.prod_mk φ.prod_map_implicitFunction |>.mono
@@ -227,12 +229,10 @@ theorem eq_implicitFunction_of_prodFun_eq :
   dsimp at hx hprod
   rw [← hx, hprod.1, hprod.2]
 
-theorem implicitFunction_unique {ψ : F → G → E}
+theorem eventuallyEq_implicitFunction {ψ : F → G → E}
     (h : ∀ᶠ x in 𝓝 φ.pt, ψ (φ.leftFun x) (φ.rightFun x) = x) :
-    ∀ᶠ yz in 𝓝 (φ.prodFun φ.pt), ψ yz.1 yz.2 = φ.implicitFunction yz.1 yz.2 := by
-  rw [implicitFunction, toOpenPartialHomeomorph, ← HasStrictFDerivAt.localInverse]
-  simp_rw [Function.curry_apply, ← Function.uncurry_apply_pair ψ]
-  exact HasStrictFDerivAt.localInverse_unique _ h
+    Function.uncurry ψ =ᶠ[𝓝 (φ.prodFun φ.pt)] Function.uncurry φ.implicitFunction :=
+  HasStrictFDerivAt.localInverse_unique _ h
 
 end ImplicitFunctionData
 
