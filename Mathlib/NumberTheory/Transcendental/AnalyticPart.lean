@@ -39,9 +39,9 @@ lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero (z₀ : ℂ) (f : ℂ → ℂ)
       exact Metric.ball_subset_ball (min_le_right r₁ r₂) hz
     simp
 
-lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred (z₀ : ℂ) (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀)
-    (n : ℕ) (hzero : f z₀ = 0) (horder : analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ)) (hn : 0 < n) :
-    analyticOrderAt f z₀ = n := by
+lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred {z₀ : ℂ} {f : ℂ → ℂ} (hf : AnalyticAt ℂ f z₀)
+    {n : ℕ} (hzero : f z₀ = 0) (horder : analyticOrderAt (deriv f) z₀ = n) :
+    analyticOrderAt f z₀ = n + 1 := by
   cases Hn' : analyticOrderAt f z₀ with
   | top => grind [ENat.coe_ne_top, analyticOrderAt_deriv_eq_top_iff_of_eq_zero]
   | coe n' =>
@@ -120,8 +120,8 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (z₀ : ℂ) (n : ℕ) :
   | succ n IH =>
     refine fun f hf hfin ↦ ⟨fun ⟨hz, hnz⟩ ↦ ?_, ?_⟩
     · have IH' := IH (deriv f) (AnalyticAt.deriv hf) ?_
-      · exact analyticOrderAt_eq_succ_iff_deriv_order_eq_pred z₀ f hf (n + 1) (hz 0 (by grind))
-          (by simpa using ((IH').1 ⟨fun k hk => hz (k + 1) (Nat.succ_lt_succ hk), hnz⟩)) (by simp)
+      · exact analyticOrderAt_eq_succ_iff_deriv_order_eq_pred hf (hz 0 (by grind))
+          (by simpa using ((IH').1 ⟨fun k hk => hz (k + 1) (Nat.succ_lt_succ hk), hnz⟩))
       · obtain ⟨r, hr⟩ := (WithTop.ne_top_iff_exists).mp hfin
         specialize hz 0 (by grind)
         rw [Complex.analyticOrderAt_deriv_of_pos (n := r) hf hr.symm (by grind [ENat.coe_lt_coe.mp
@@ -140,34 +140,17 @@ lemma analyticOrderAt_eq_nat_imp_iteratedDeriv_eq_zero
   (analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero z₀ n f hf (h.symm ▸ ENat.coe_ne_top n)).mpr h
 
 lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero (n : ℕ) z₀
-  (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤) :
-   (∀ k < n, (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by
-    intros hkn
-    have notTop (m : ℕ∞) : m ≠ ⊤ → ∃ n : ℕ, m = n :=
+    (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤) :
+    (∀ k < n, (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by
+  intro hkn
+  have notTop (m : ℕ∞) : m ≠ ⊤ → ∃ n : ℕ, m = n :=
       (Option.ne_none_iff_exists'.mp ·)
-    obtain ⟨m, Hm⟩ := notTop (analyticOrderAt f z₀) ho
-    rw [Hm, ENat.coe_le_coe]
-    rw [← analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero z₀ m f hf ho] at Hm
-    by_contra! h
-    exact Hm.2 (hkn m h)
+  obtain ⟨m, Hm⟩ := notTop (analyticOrderAt f z₀) ho
+  rw [Hm, ENat.coe_le_coe]
+  rw [← analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero z₀ m f hf ho] at Hm
+  by_contra! h
+  exact Hm.2 (hkn m h)
 
-lemma add_mem_emetric_ball_left {x y z : ℂ} (r : ENNReal) :
-    x ∈ EMetric.ball y r → z + x ∈ EMetric.ball (z + y) r := by
+lemma mul_mem_emetric_ball_iff {E : Type _} [SeminormedAddCommGroup E] {a b c : E} (r : ENNReal) :
+    a + c ∈ EMetric.ball (b + c) r  ↔ a ∈ EMetric.ball b r:= by
   simp
-
-lemma hasFPowerSeriesWithinAt_nhds_iff (f : ℂ → ℂ) (p : FormalMultilinearSeries ℂ ℂ ℂ)
-    (U : Set ℂ) (z : ℂ) (hU : U ∈ nhds z) :
-  HasFPowerSeriesWithinAt f p U z ↔ HasFPowerSeriesAt f p z := by
-    refine ⟨fun ⟨renn, r_le, r_pos, hs⟩ ↦ ?_,
-      fun ⟨r, hr⟩ ↦ ⟨r, HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall hr⟩⟩
-    · have hzmem := mem_of_mem_nhds hU
-      rw [Metric.mem_nhds_iff] at hU
-      obtain ⟨r', hr', hball⟩ := hU
-      use min renn (Option.some ⟨r', by linarith⟩)
-      refine ⟨by aesop, by aesop, fun hy s ↦ hs (U := s) (y := _) (by aesop) (by aesop)⟩
-
-lemma AnalyticOn.analyticAt (f : ℂ → ℂ) (z : ℂ) (U : Set ℂ) (hU : U ∈ nhds z) :
-  AnalyticOn ℂ f U → AnalyticAt ℂ f z := by
-  intros HA
-  obtain ⟨p, hp⟩ := HA z (mem_of_mem_nhds hU)
-  exact ⟨p, hasFPowerSeriesWithinAt_nhds_iff f p U z hU |>.mp hp⟩

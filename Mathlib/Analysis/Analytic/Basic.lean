@@ -361,6 +361,17 @@ lemma HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall (hf : HasFPowerSeriesOnB
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   exact hf.mono (subset_univ _)
 
+lemma hasFPowerSeriesWithinAt_nhds_iff (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) {U : Set E}
+    (hU : U ∈ nhds x) :
+    HasFPowerSeriesWithinAt f p U x ↔ HasFPowerSeriesAt f p x := by
+  refine ⟨fun ⟨renn, r_le, r_pos, hs⟩ ↦ ?_,
+    fun ⟨r, hr⟩ ↦ ⟨r, HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall hr⟩⟩
+  · have hzmem := mem_of_mem_nhds hU
+    rw [Metric.mem_nhds_iff] at hU
+    obtain ⟨r', hr', hball⟩ := hU
+    use min renn (Option.some ⟨r', by linarith⟩)
+    refine ⟨by aesop, by aesop, fun hy s ↦ hs (U := s) (y := _) (by aesop) (by aesop)⟩
+
 lemma HasFPowerSeriesWithinAt.mono (hf : HasFPowerSeriesWithinAt f p s x) (h : t ⊆ s) :
     HasFPowerSeriesWithinAt f p t x := by
   obtain ⟨r, hp⟩ := hf
@@ -524,6 +535,12 @@ lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
 @[simp] theorem analyticWithinAt_insert {f : E → F} {s : Set E} {x y : E} :
     AnalyticWithinAt 𝕜 f (insert y s) x ↔ AnalyticWithinAt 𝕜 f s x := by
   simp [AnalyticWithinAt]
+
+lemma AnalyticOn.analyticAt (f : E → F) (z : E) (s : Set E) (hU : s ∈ nhds z) :
+    AnalyticOn 𝕜 f s → AnalyticAt 𝕜 f z := by
+  intros HA
+  obtain ⟨p, hp⟩ := HA z (mem_of_mem_nhds hU)
+  exact ⟨p, hasFPowerSeriesWithinAt_nhds_iff f p hU |>.mp hp⟩
 
 /-!
 ### Composition with linear maps
