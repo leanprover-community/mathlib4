@@ -539,30 +539,18 @@ theorem iterate_derivative_derivative_mul_X {n : ℕ} (p : R[X]) :
   convert (derivative p).iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
-theorem iterate_derivative_mul_X_sq' {n} (p : R[X]) :
+theorem iterate_derivative_derivative_mul_X_sq {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
-      (n * (n - 1)) • derivative^[n] p := by
-  rw [iterate_derivative_mul_X_pow]
-  by_cases n = 0
-  case pos h => simp [h]
-  case neg h =>
-    by_cases n = 1
-    case pos h' =>
-      rw [h', min_eq_right (by norm_num), show range 2 = {0, 1} by grind]
-      simp; ring
-    case neg h' =>
-      rw [min_eq_left (by omega), show range 3 = {0, 1, 2} by grind,
-        show derivative^[n] p = derivative^[n - 2 + 2] p by grind,
-        show derivative^[n + 1] p = derivative^[n - 1 + 2] p by grind]
-      have cf₁ : Nat.descFactorial 2 1 = 2 := by simp
-      have cf₂ :
-        (n.choose 2 : R[X]) * (Nat.descFactorial 2 2 : R[X]) = ((n * (n - 1) : ℕ) : R[X]) := by
-        norm_cast
-        congr 1
-        grind [Nat.choose_two_right, Nat.descFactorial_self, Nat.factorial_two,
-          Nat.two_dvd_mul_sub_one]
-      simp [-Nat.descFactorial_succ, cf₁, cf₂]; ring
+        (n * (n - 1)) • derivative^[n] p := by
+  convert (derivative^[2] p).iterate_derivative_mul_X_pow n 2
+  rcases n with rfl | n; · simp
+  rcases n with rfl | n; · simp [sum_range_succ, ← mul_assoc]
+  suffices ((n + 1 + 1) * (n + 1) / 2) * 2 = (n + 1 + 1) * (n + 1) by
+    simp [this, -nsmul_eq_mul, sum_range_succ, Nat.choose_two_right]
+    ring
+  rw [mul_comm (n + 1 + 1)]
+  exact Nat.div_mul_cancel (Nat.two_dvd_mul_add_one _)
 
 theorem derivative_comp (p q : R[X]) :
     derivative (p.comp q) = derivative q * p.derivative.comp q := by
