@@ -126,12 +126,15 @@ theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
       ⟨inferInstance, inferInstance⟩,
       toCompactSpace := inferInstance}⟩
 
+instance {R : CommRingCat} [IsArtinianRing R] :
+    IsArtinianScheme (Spec R) :=
+    (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec R)).mpr
+    ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩
+
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
-theorem Scheme.isArtinianRing_iff_isArtinianScheme (R : Type*) [CommRing R] :
-    IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) :=
-  ⟨fun _ ↦ (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
-    ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩,
-  fun _ => RingEquiv.isArtinianRing
-    (AlgebraicGeometry.Scheme.ΓSpecIso (CommRingCat.of R)).commRingCatIsoToRingEquiv⟩
+theorem Scheme.isArtinianScheme_Spec {R : CommRingCat} :
+    IsArtinianScheme (Spec R) ↔ IsArtinianRing R :=
+  ⟨fun _ ↦ RingEquiv.isArtinianRing (AlgebraicGeometry.Scheme.ΓSpecIso R).commRingCatIsoToRingEquiv,
+  fun _ ↦ inferInstance⟩
 
 end AlgebraicGeometry
