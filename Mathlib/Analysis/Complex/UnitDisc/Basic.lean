@@ -18,8 +18,8 @@ introduce some basic operations on this disc.
 
 @[expose] public section
 
-
-open Set Function Metric
+open Set Function Metric Filter
+open scoped Topology
 
 noncomputable section
 
@@ -175,6 +175,12 @@ theorem pow_eq_zero {z : 𝔻} {n : ℕ+} : z ^ n = 0 ↔ z = 0 := by
 instance : PNatPowAssoc 𝔻 where
   ppow_add m n z := mod_cast pow_add (z : ℂ) m n
   ppow_one z := by simp [← coe_inj]
+
+theorem tendsto_pow_atTop_nhds_zero (z : 𝔻) :
+    Tendsto (fun n : ℕ+ ↦ z ^ n) atTop (𝓝 0) := by
+  simp only [isEmbedding_coe.tendsto_nhds_iff, comp_def, coe_pow]
+  exact tendsto_pow_atTop_nhds_zero_iff_norm_lt_one.mpr z.norm_lt_one
+    |>.comp tendsto_PNat_val_atTop_atTop
 
 /-- Real part of a point of the unit disc. -/
 def re (z : 𝔻) : ℝ :=
