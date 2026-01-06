@@ -129,6 +129,9 @@ alias nonZeroDivisorsRight_eq_nonZeroSMulDivisors := nonZeroDivisorsLeft_eq_nonZ
 theorem mem_nonZeroDivisors_iff :
     r ∈ M₀⁰ ↔ (∀ x, r * x = 0 → x = 0) ∧ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 
+theorem mem_nonZeroDivisors_iff' :
+    r ∈ M₀⁰ ↔ r ∈ nonZeroDivisorsLeft M₀ ∧ r ∈ nonZeroDivisorsRight M₀ := Iff.rfl
+
 lemma notMem_nonZeroDivisors_iff :
     r ∉ M₀⁰ ↔ {s | r * s = 0 ∧ s ≠ 0}.Nonempty ∨ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
   simp [-not_and, not_and_or, mem_nonZeroDivisors_iff, Set.nonempty_def]
@@ -153,6 +156,26 @@ lemma IsUnit.mem_nonZeroDivisors (hx : IsUnit x) : x ∈ M₀⁰ :=
 
 variable (M₀) in
 lemma isUnit_le_nonZeroDivisors : IsUnit.submonoid M₀ ≤ M₀⁰ := fun _ ↦ (·.mem_nonZeroDivisors)
+
+lemma mul_mem_nonZeroDivisorsLeft_of_mem_nonZeroDivisorsLeft (hx : x ∈ nonZeroDivisorsLeft M₀)
+    (hy : y ∈ nonZeroDivisorsLeft M₀) :
+    x * y ∈ nonZeroDivisorsLeft M₀ := by
+  rw [mem_nonZeroDivisorsLeft_iff] at ⊢ hx hy
+  intro _ h
+  exact hy _ <| hx _ <| mul_assoc x y _ ▸ h
+
+lemma mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight (hx : x ∈ nonZeroDivisorsRight M₀)
+    (hy : y ∈ nonZeroDivisorsRight M₀) :
+    x * y ∈ nonZeroDivisorsRight M₀ := by
+  rw [mem_nonZeroDivisorsRight_iff] at ⊢ hx hy
+  intro _ h
+  exact hx _ <| hy _ <| mul_assoc _ x y ▸ h
+
+lemma mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors (hx : x ∈ M₀⁰) (hy : y ∈ M₀⁰) :
+    x * y ∈ M₀⁰ :=
+  mem_nonZeroDivisors_iff'.mpr
+    ⟨mul_mem_nonZeroDivisorsLeft_of_mem_nonZeroDivisorsLeft hx.1 hy.1,
+      mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight hx.2 hy.2⟩
 
 section Nontrivial
 variable [Nontrivial M₀]
