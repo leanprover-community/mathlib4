@@ -134,6 +134,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 
 /-- The canonical map `ℝ → ℝ*` as an `OrderRingHom`. -/
+@[simps]
 def coeRingHom : ℝ →+*o ℝ* where
   toFun x := x
   map_zero' := rfl
