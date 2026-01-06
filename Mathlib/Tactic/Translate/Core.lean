@@ -584,7 +584,7 @@ These auxiliary declarations may be private or not, independent of whether `pre`
 -/
 def findAuxDecls (e : Expr) (pre : Name) (env : Environment) : NameSet :=
   e.foldConsts ∅ fun n l ↦
-    if (env.find? n).any (·.hasValue) &&
+    if (env.find? n).any (·.hasValue (allowOpaque := true)) &&
       ((match n with | .str _ s => "_proof_".isPrefixOf s | _ => false) ||
       (privateToUserName n).getPrefix == privateToUserName pre || n.hasMacroScopes) then
       l.insert n
