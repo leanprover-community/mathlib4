@@ -430,7 +430,7 @@ theorem infinite_iff {x : ℝ*} : Infinite x ↔ mk x < 0 := by
   aesop
 
 set_option linter.deprecated false in
-@[deprecated tendsto_ofSeq_iff_forall (since := "2026-01-05")]
+@[deprecated tendsto_iff_forall (since := "2026-01-05")]
 theorem isSt_ofSeq_iff_tendsto {f : ℕ → ℝ} {r : ℝ} :
     IsSt (ofSeq f) r ↔ Tendsto f (hyperfilter ℕ) (𝓝 r) :=
   Iff.trans (forall₂_congr fun _ _ ↦ (ofSeq_lt_ofSeq.and ofSeq_lt_ofSeq).trans eventually_and.symm)
@@ -808,41 +808,44 @@ theorem infiniteNeg_add_not_infinite {x y : ℝ*} :
 set_option linter.deprecated false in
 @[deprecated "`InfinitePos` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_of_tendsto_top {f : ℕ → ℝ} (hf : Tendsto f atTop atTop) :
-    InfinitePos (ofSeq f) := fun r =>
-  have hf' := tendsto_atTop_atTop.mp hf
-  let ⟨i, hi⟩ := hf' (r + 1)
-  have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
-  have hS : { a : ℕ | r < f a }ᶜ ⊆ { a : ℕ | a ≤ i } := by
-    simp only [Set.compl_setOf, not_lt]
-    exact fun a har => le_of_lt (hi' a (lt_of_le_of_lt har (lt_add_one _)))
-  Germ.coe_lt.2 <| mem_hyperfilter_of_finite_compl <| (Set.finite_le_nat _).subset hS
+    InfinitePos (ofSeq f) := by
+  replace hf := hf.mono_left Nat.hyperfilter_le_atTop
+  rw [infinitePos_iff]
+  exact ⟨lt_of_tendsto_atTop 0 hf, archimedeanClassMk_neg_of_tendsto_atTop hf⟩
 
+set_option linter.deprecated false in
+@[deprecated "`InfiniteNeg` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_of_tendsto_bot {f : ℕ → ℝ} (hf : Tendsto f atTop atBot) :
-    InfiniteNeg (ofSeq f) := fun r =>
-  have hf' := tendsto_atTop_atBot.mp hf
-  let ⟨i, hi⟩ := hf' (r - 1)
-  have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
-  have hS : { a : ℕ | f a < r }ᶜ ⊆ { a : ℕ | a ≤ i } := by
-    simp only [Set.compl_setOf, not_lt]
-    exact fun a har => le_of_lt (hi' a (lt_of_lt_of_le (sub_one_lt _) har))
-  Germ.coe_lt.2 <| mem_hyperfilter_of_finite_compl <| (Set.finite_le_nat _).subset hS
+    InfiniteNeg (ofSeq f) := by
+  replace hf := hf.mono_left Nat.hyperfilter_le_atTop
+  rw [infiniteNeg_iff]
+  exact ⟨lt_of_tendsto_atBot 0 hf, archimedeanClassMk_neg_of_tendsto_atBot hf⟩
 
-#exit
+set_option linter.deprecated false in
+@[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem not_infinite_neg {x : ℝ*} : ¬Infinite x → ¬Infinite (-x) := mt infinite_neg.mp
 
+set_option linter.deprecated false in
+@[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem not_infinite_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : ¬Infinite (x + y) :=
   have ⟨r, hr⟩ := exists_st_of_not_infinite hx
   have ⟨s, hs⟩ := exists_st_of_not_infinite hy
   not_infinite_of_exists_st <| ⟨r + s, hr.add hs⟩
 
+set_option linter.deprecated false in
+@[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem not_infinite_iff_exist_lt_gt {x : ℝ*} : ¬Infinite x ↔ ∃ r s : ℝ, (r : ℝ*) < x ∧ x < s :=
   ⟨fun hni ↦ let ⟨r, hr⟩ := exists_st_of_not_infinite hni; ⟨r - 1, r + 1, hr 1 one_pos⟩,
     fun ⟨r, s, hr, hs⟩ hi ↦ hi.elim (fun hp ↦ (hp s).not_gt hs) (fun hn ↦ (hn r).not_gt hr)⟩
 
+set_option linter.deprecated false in
+@[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem not_infinite_real (r : ℝ) : ¬Infinite r := by
   rw [not_infinite_iff_exist_lt_gt]
   exact ⟨r - 1, r + 1, coe_lt_coe.2 <| sub_one_lt r, coe_lt_coe.2 <| lt_add_one r⟩
 
+set_option linter.deprecated false in
+@[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem Infinite.ne_real {x : ℝ*} : Infinite x → ∀ r : ℝ, x ≠ r := fun hi r hr =>
   not_infinite_real r <| @Eq.subst _ Infinite _ _ hr hi
 
@@ -850,25 +853,33 @@ theorem Infinite.ne_real {x : ℝ*} : Infinite x → ∀ r : ℝ, x ≠ r := fun
 ### Facts about `st` that require some infinite machinery
 -/
 
+set_option linter.deprecated false in
+@[deprecated stdPart_mul (since := "2026-01-05")]
 theorem IsSt.mul {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) : IsSt (x * y) (r * s) :=
   hxr.map₂ hys continuous_mul.continuousAt
 
---AN INFINITE LEMMA THAT REQUIRES SOME MORE ST MACHINERY
+set_option linter.deprecated false in
+@[deprecated mk_mul (since := "2026-01-05")]
 theorem not_infinite_mul {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : ¬Infinite (x * y) :=
   have ⟨_r, hr⟩ := exists_st_of_not_infinite hx
   have ⟨_s, hs⟩ := exists_st_of_not_infinite hy
   (hr.mul hs).not_infinite
 
----
+set_option linter.deprecated false in
+@[deprecated stdPart_add (since := "2026-01-05")]
 theorem st_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x + y) = st x + st y :=
   (isSt_st' (not_infinite_add hx hy)).unique ((isSt_st' hx).add (isSt_st' hy))
 
+set_option linter.deprecated false in
+@[deprecated stdPart_neg (since := "2026-01-05")]
 theorem st_neg (x : ℝ*) : st (-x) = -st x := by
   classical
   by_cases h : Infinite x
   · rw [h.st_eq, (infinite_neg.2 h).st_eq, neg_zero]
   · exact (isSt_st' (not_infinite_neg h)).unique (isSt_st' h).neg
 
+set_option linter.deprecated false in
+@[deprecated stdPart_mul (since := "2026-01-05")]
 theorem st_mul {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x * y) = st x * st y :=
   have hx' := isSt_st' hx
   have hy' := isSt_st' hy
@@ -879,106 +890,148 @@ theorem st_mul {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x * y)
 ### Basic lemmas about infinitesimal
 -/
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_def {x : ℝ*} : Infinitesimal x ↔ ∀ r : ℝ, 0 < r → -(r : ℝ*) < x ∧ x < r := by
   simp [Infinitesimal, IsSt]
 
+set_option linter.deprecated false in
+@[deprecated lt_of_pos_of_archimedean (since := "2026-01-05")]
 theorem lt_of_pos_of_infinitesimal {x : ℝ*} : Infinitesimal x → ∀ r : ℝ, 0 < r → x < r :=
   fun hi r hr => ((infinitesimal_def.mp hi) r hr).2
 
+set_option linter.deprecated false in
+@[deprecated lt_of_neg_of_archimedean (since := "2026-01-05")]
 theorem lt_neg_of_pos_of_infinitesimal {x : ℝ*} : Infinitesimal x → ∀ r : ℝ, 0 < r → -↑r < x :=
   fun hi r hr => ((infinitesimal_def.mp hi) r hr).1
 
+set_option linter.deprecated false in
+@[deprecated lt_of_neg_of_archimedean (since := "2026-01-05")]
 theorem gt_of_neg_of_infinitesimal {x : ℝ*} (hi : Infinitesimal x) (r : ℝ) (hr : r < 0) : ↑r < x :=
   neg_neg r ▸ (infinitesimal_def.1 hi (-r) (neg_pos.2 hr)).1
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem abs_lt_real_iff_infinitesimal {x : ℝ*} : Infinitesimal x ↔ ∀ r : ℝ, r ≠ 0 → |x| < |↑r| :=
   ⟨fun hi r hr ↦ abs_lt.mpr (coe_abs r ▸ infinitesimal_def.mp hi |r| (abs_pos.2 hr)), fun hR ↦
     infinitesimal_def.mpr fun r hr => abs_lt.mp <| (abs_of_pos <| coe_pos.2 hr) ▸ hR r <| hr.ne'⟩
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_zero : Infinitesimal 0 := isSt_refl_real 0
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem Infinitesimal.eq_zero {r : ℝ} : Infinitesimal r → r = 0 := eq_of_isSt_real
 
-@[simp] theorem infinitesimal_real_iff {r : ℝ} : Infinitesimal r ↔ r = 0 :=
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
+theorem infinitesimal_real_iff {r : ℝ} : Infinitesimal r ↔ r = 0 :=
   isSt_real_iff_eq
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 nonrec theorem Infinitesimal.add {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
     Infinitesimal (x + y) := by simpa only [add_zero] using hx.add hy
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 nonrec theorem Infinitesimal.neg {x : ℝ*} (hx : Infinitesimal x) : Infinitesimal (-x) := by
   simpa only [neg_zero] using hx.neg
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 @[simp] theorem infinitesimal_neg {x : ℝ*} : Infinitesimal (-x) ↔ Infinitesimal x :=
   ⟨fun h => neg_neg x ▸ h.neg, Infinitesimal.neg⟩
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 nonrec theorem Infinitesimal.mul {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
     Infinitesimal (x * y) := by simpa only [mul_zero] using hx.mul hy
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_of_tendsto_zero {f : ℕ → ℝ} (h : Tendsto f atTop (𝓝 0)) :
     Infinitesimal (ofSeq f) :=
   isSt_of_tendsto h
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_epsilon : Infinitesimal ε :=
   infinitesimal_of_tendsto_zero tendsto_inv_atTop_nhds_zero_nat
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem not_real_of_infinitesimal_ne_zero (x : ℝ*) : Infinitesimal x → x ≠ 0 → ∀ r : ℝ, x ≠ r :=
   fun hi hx r hr =>
   hx <| hr.trans <| coe_eq_zero.2 <| IsSt.unique (hr.symm ▸ isSt_refl_real r : IsSt x r) hi
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem IsSt.infinitesimal_sub {x : ℝ*} {r : ℝ} (hxr : IsSt x r) : Infinitesimal (x - ↑r) := by
   simpa only [sub_self] using hxr.sub (isSt_refl_real r)
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_sub_st {x : ℝ*} (hx : ¬Infinite x) : Infinitesimal (x - ↑(st x)) :=
   (isSt_st' hx).infinitesimal_sub
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
-    InfinitePos x ↔ Infinitesimal x⁻¹ ∧ 0 < x⁻¹ :=
-  ⟨fun hip =>
-    ⟨infinitesimal_def.mpr fun r hr =>
-        ⟨lt_trans (coe_lt_coe.2 (neg_neg_of_pos hr)) (inv_pos.2 (hip 0)),
-          inv_lt_of_inv_lt₀ (coe_lt_coe.2 hr) (by convert hip r⁻¹)⟩,
-      inv_pos.2 <| hip 0⟩,
-    fun ⟨hi, hp⟩ r =>
-    @_root_.by_cases (r = 0) (↑r < x) (fun h => Eq.substr h (inv_pos.mp hp)) fun h =>
-      lt_of_le_of_lt (coe_le_coe.2 (le_abs_self r))
-        ((inv_lt_inv₀ (inv_pos.mp hp) (coe_lt_coe.2 (abs_pos.2 h))).mp
-          ((infinitesimal_def.mp hi) |r|⁻¹ (inv_pos.2 (abs_pos.2 h))).2)⟩
+    InfinitePos x ↔ Infinitesimal x⁻¹ ∧ 0 < x⁻¹ := by
+  rw [infinitePos_iff, infinitesimal_iff]
+  simp [and_comm]
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_iff_infinitesimal_inv_neg {x : ℝ*} :
     InfiniteNeg x ↔ Infinitesimal x⁻¹ ∧ x⁻¹ < 0 := by
   rw [← infinitePos_neg, infinitePos_iff_infinitesimal_inv_pos, inv_neg, neg_pos, infinitesimal_neg]
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_inv_of_infinite {x : ℝ*} : Infinite x → Infinitesimal x⁻¹ := fun hi =>
   Or.casesOn hi (fun hip => (infinitePos_iff_infinitesimal_inv_pos.mp hip).1) fun hin =>
     (infiniteNeg_iff_infinitesimal_inv_neg.mp hin).1
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinite_of_infinitesimal_inv {x : ℝ*} (h0 : x ≠ 0) (hi : Infinitesimal x⁻¹) :
     Infinite x := by
   rcases lt_or_gt_of_ne h0 with hn | hp
   · exact Or.inr (infiniteNeg_iff_infinitesimal_inv_neg.mpr ⟨hi, inv_lt_zero.mpr hn⟩)
   · exact Or.inl (infinitePos_iff_infinitesimal_inv_pos.mpr ⟨hi, inv_pos.mpr hp⟩)
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinite_iff_infinitesimal_inv {x : ℝ*} (h0 : x ≠ 0) : Infinite x ↔ Infinitesimal x⁻¹ :=
   ⟨infinitesimal_inv_of_infinite, infinite_of_infinitesimal_inv h0⟩
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_pos_iff_infinitePos_inv {x : ℝ*} :
     InfinitePos x⁻¹ ↔ Infinitesimal x ∧ 0 < x :=
   infinitePos_iff_infinitesimal_inv_pos.trans <| by rw [inv_inv]
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_neg_iff_infiniteNeg_inv {x : ℝ*} :
     InfiniteNeg x⁻¹ ↔ Infinitesimal x ∧ x < 0 :=
   infiniteNeg_iff_infinitesimal_inv_neg.trans <| by rw [inv_inv]
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitesimal_iff_infinite_inv {x : ℝ*} (h : x ≠ 0) : Infinitesimal x ↔ Infinite x⁻¹ :=
   Iff.trans (by rw [inv_inv]) (infinite_iff_infinitesimal_inv (inv_ne_zero h)).symm
 
-/-!
-### `Hyperreal.st` stuff that requires infinitesimal machinery
--/
-
+set_option linter.deprecated false in
+@[deprecated stdPart_inv (since := "2026-01-05")]
 theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) : IsSt x⁻¹ r⁻¹ :=
   hr.map <| continuousAt_inv₀ <| by rintro rfl; exact hi hr
 
+set_option linter.deprecated false in
+@[deprecated stdPart_inv (since := "2026-01-05")]
 theorem st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
   by_cases h0 : x = 0
   · rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
@@ -988,16 +1041,14 @@ theorem st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
   · rw [(infinitesimal_inv_of_infinite h2).st_eq, h2.st_eq, inv_zero]
   exact ((isSt_st' h2).inv h1).st_eq
 
-/-!
-### Infinite stuff that requires infinitesimal machinery
--/
-
 theorem infinitePos_omega : InfinitePos ω :=
   infinitePos_iff_infinitesimal_inv_pos.mpr ⟨infinitesimal_epsilon, epsilon_pos⟩
 
 theorem infinite_omega : Infinite ω :=
   (infinite_iff_infinitesimal_inv omega_ne_zero).mpr infinitesimal_epsilon
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
     InfinitePos x → ¬Infinitesimal y → 0 < y → InfinitePos (x * y) := fun hx hy₁ hy₂ r => by
   have hy₁' := not_forall.mp (mt infinitesimal_def.2 hy₁)
@@ -1007,53 +1058,77 @@ theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
   rw [← div_mul_cancel₀ r (ne_of_gt hyr.1), coe_mul]
   exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_mul_of_not_infinitesimal_pos_infinitePos {x y : ℝ*} :
     ¬Infinitesimal x → 0 < x → InfinitePos y → InfinitePos (x * y) := fun hx hp hy =>
   mul_comm y x ▸ infinitePos_mul_of_infinitePos_not_infinitesimal_pos hy hx hp
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_mul_of_infiniteNeg_not_infinitesimal_neg {x y : ℝ*} :
     InfiniteNeg x → ¬Infinitesimal y → y < 0 → InfinitePos (x * y) := by
   rw [← infinitePos_neg, ← neg_pos, ← neg_mul_neg, ← infinitesimal_neg]
   exact infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_mul_of_not_infinitesimal_neg_infiniteNeg {x y : ℝ*} :
     ¬Infinitesimal x → x < 0 → InfiniteNeg y → InfinitePos (x * y) := fun hx hp hy =>
   mul_comm y x ▸ infinitePos_mul_of_infiniteNeg_not_infinitesimal_neg hy hx hp
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_mul_of_infinitePos_not_infinitesimal_neg {x y : ℝ*} :
     InfinitePos x → ¬Infinitesimal y → y < 0 → InfiniteNeg (x * y) := by
   rw [← infinitePos_neg, ← neg_pos, neg_mul_eq_mul_neg, ← infinitesimal_neg]
   exact infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_mul_of_not_infinitesimal_neg_infinitePos {x y : ℝ*} :
     ¬Infinitesimal x → x < 0 → InfinitePos y → InfiniteNeg (x * y) := fun hx hp hy =>
   mul_comm y x ▸ infiniteNeg_mul_of_infinitePos_not_infinitesimal_neg hy hx hp
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_mul_of_infiniteNeg_not_infinitesimal_pos {x y : ℝ*} :
     InfiniteNeg x → ¬Infinitesimal y → 0 < y → InfiniteNeg (x * y) := by
   rw [← infinitePos_neg, ← infinitePos_neg, neg_mul_eq_neg_mul]
   exact infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_mul_of_not_infinitesimal_pos_infiniteNeg {x y : ℝ*} :
     ¬Infinitesimal x → 0 < x → InfiniteNeg y → InfiniteNeg (x * y) := fun hx hp hy => by
   rw [mul_comm]; exact infiniteNeg_mul_of_infiniteNeg_not_infinitesimal_pos hy hx hp
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_mul_infinitePos {x y : ℝ*} :
     InfinitePos x → InfinitePos y → InfinitePos (x * y) := fun hx hy =>
   infinitePos_mul_of_infinitePos_not_infinitesimal_pos hx hy.not_infinitesimal (hy 0)
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_mul_infiniteNeg {x y : ℝ*} :
     InfiniteNeg x → InfiniteNeg y → InfinitePos (x * y) := fun hx hy =>
   infinitePos_mul_of_infiniteNeg_not_infinitesimal_neg hx hy.not_infinitesimal (hy 0)
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinitePos_mul_infiniteNeg {x y : ℝ*} :
     InfinitePos x → InfiniteNeg y → InfiniteNeg (x * y) := fun hx hy =>
   infiniteNeg_mul_of_infinitePos_not_infinitesimal_neg hx hy.not_infinitesimal (hy 0)
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infiniteNeg_mul_infinitePos {x y : ℝ*} :
     InfiniteNeg x → InfinitePos y → InfiniteNeg (x * y) := fun hx hy =>
   infiniteNeg_mul_of_infiniteNeg_not_infinitesimal_pos hx hy.not_infinitesimal (hy 0)
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinite_mul_of_infinite_not_infinitesimal {x y : ℝ*} :
     Infinite x → ¬Infinitesimal y → Infinite (x * y) := fun hx hy =>
   have h0 : y < 0 ∨ 0 < y := lt_or_gt_of_ne fun H0 => hy (Eq.substr H0 (isSt_refl_real 0))
@@ -1065,14 +1140,17 @@ theorem infinite_mul_of_infinite_not_infinitesimal {x y : ℝ*} :
       (fun H0 Hx => Or.inl (infinitePos_mul_of_infiniteNeg_not_infinitesimal_neg Hx hy H0))
       fun H0 Hx => Or.inr (infiniteNeg_mul_of_infiniteNeg_not_infinitesimal_pos Hx hy H0))
 
+set_option linter.deprecated false in
+@[deprecated "`Infinitesimal` is deprecated" (since := "2026-01-05")]
 theorem infinite_mul_of_not_infinitesimal_infinite {x y : ℝ*} :
     ¬Infinitesimal x → Infinite y → Infinite (x * y) := fun hx hy => by
   rw [mul_comm]; exact infinite_mul_of_infinite_not_infinitesimal hy hx
 
+set_option linter.deprecated false in
+@[deprecated "`Infinite` is deprecated" (since := "2026-01-05")]
 theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * y) := fun hx hy =>
   infinite_mul_of_infinite_not_infinitesimal hx hy.not_infinitesimal
 
-end
 end Hyperreal
 end
 
