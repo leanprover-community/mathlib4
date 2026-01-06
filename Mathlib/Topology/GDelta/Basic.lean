@@ -152,7 +152,7 @@ theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) :
 /- The preimage of a Gδ set under a continuous map is Gδ. -/
 theorem isGδ_induced [TopologicalSpace Y] {f : X → Y} {s : Set Y} (hf : Continuous f)
     (hs : IsGδ s) : IsGδ (f ⁻¹' s) := by
-  obtain ⟨U, hU1, hU2⟩ := IsGδ.eq_iInter_nat hs
+  obtain ⟨U, hU1, hU2⟩ := hs.eq_iInter_nat
   simp_all only [preimage_iInter]
   exact IsGδ.iInter_of_isOpen (fun i => hf.isOpen_preimage (U i) (hU1 i))
 
