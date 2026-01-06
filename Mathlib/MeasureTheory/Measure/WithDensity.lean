@@ -350,6 +350,27 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
   aemeasurable_withDensity_ennreal_iff' <| hf.aemeasurable
 
+theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac' hf hs, dirac_apply' _ hs,
+    Set.indicator]
+
+theorem dirac_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac, Set.indicator]
+
+theorem count_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity' hf _]
+
+theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity]
+
 open MeasureTheory.SimpleFunc
 
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable
