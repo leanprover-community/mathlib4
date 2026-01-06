@@ -51,15 +51,20 @@ notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
-class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+@[deprecated "Use `[SemilinearMapClass F σ M M₂] [ContinuousMapClass F M M₂]` instead."
+  (since := "2026-01-01")]
+structure ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
     (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M]
     (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [FunLike F M M₂] : Prop
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂
 
+set_option linter.deprecated false in
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
 `ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
+@[deprecated "Use `[LinearMapClass F R M M₂] [ContinuousMapClass F M M₂]` instead."
+  (since := "2026-01-01")]
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
@@ -100,11 +105,14 @@ instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective' _ _ h := coe_injective (DFunLike.coe_injective h)
 
-instance continuousSemilinearMapClass :
-    ContinuousSemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
+instance semilinearMapClass :
+    SemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_add f := map_add f.toLinearMap
-  map_continuous f := f.2
   map_smulₛₗ f := f.toLinearMap.map_smul'
+
+instance continuousMapClass :
+    ContinuousMapClass (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+  map_continuous f := f.2
 
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
   rfl

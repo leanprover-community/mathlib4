@@ -45,6 +45,17 @@ theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass �
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
 
+@[to_additive (attr := simp) enorm_map]
+theorem enorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+    ‖f x‖ₑ = ‖x‖ₑ := by
+  simp [enorm]
+
+@[to_additive (attr := simp) IsometryClass.isComplete_image_iff]
+theorem IsometryClass.isComplete_image_iff' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F]
+    (f : 𝓕) {s : Set E} :
+    IsComplete (f '' s) ↔ IsComplete s :=
+  _root_.isComplete_image_iff (IsometryClass.isometry f).isUniformInducing
+
 @[to_additive (attr := simp)]
 theorem dist_mul_self_right (a b : E) : dist b (a * b) = ‖a‖ := by
   rw [← dist_one_left, ← dist_mul_right 1 a b, one_mul]

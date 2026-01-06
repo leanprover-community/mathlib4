@@ -94,9 +94,13 @@ theorem ext [TopologicalSpace F] {𝔖 : Set (Set E)} {f g : UniformConvergenceC
     (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-instance instContinuousSemilinearMapClass [TopologicalSpace F] (𝔖 : Set (Set E)) :
-    ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
-  ContinuousLinearMap.continuousSemilinearMapClass
+instance instSemilinearMapClass [TopologicalSpace F] (𝔖 : Set (Set E)) :
+    SemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
+  ContinuousLinearMap.semilinearMapClass
+
+instance instContinuousMapClass [TopologicalSpace F] (𝔖 : Set (Set E)) :
+    ContinuousMapClass (UniformConvergenceCLM σ F 𝔖) E F :=
+  ContinuousLinearMap.continuousMapClass
 
 instance instTopologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
