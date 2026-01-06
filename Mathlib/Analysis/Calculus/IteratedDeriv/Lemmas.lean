@@ -38,6 +38,13 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     rw [iteratedDerivWithin_succ, iteratedDerivWithin_succ]
     exact derivWithin_congr (IH hfg) (IH hfg hy)
 
+lemma iteratedDeriv_eq_iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) {s : Set 𝕜} (hs : IsOpen s)
+    {z : 𝕜} (hz : z ∈ s) : iteratedDeriv n f z = iteratedDerivWithin n f s z := by
+  simp_rw [← iteratedDerivWithin_univ, iteratedDerivWithin]
+  rw [iteratedFDerivWithin_congr_set]
+  apply Filter.EventuallyEq.symm
+  simpa [Filter.eventuallyEq_univ] using hs.mem_nhds hz
+
 include h hx in
 theorem iteratedDerivWithin_add
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :

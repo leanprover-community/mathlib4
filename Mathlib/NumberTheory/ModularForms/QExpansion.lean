@@ -32,11 +32,10 @@ We also define the `q`-expansion of a modular form, either as a power series or 
   of its `cuspFunction`), bundled as a `PowerSeries`.
 * `ModularFormClass.hasSum_qExpansion`: the `q`-expansion evaluated at `𝕢 n τ` sums to `f τ`, for
   `τ` in the upper half plane.
+* `qExpansionRingHom` defines the ring homomorphism from the graded ring of modular forms to power
+  series given by taking `q`-expansions.
+* `qExpansion_coeffs_unique` shows that q-expansion coefficients are uniquely determined.
 
-## TO DO:
-
-* define the `q`-expansion map on modular form spaces as a linear map (or even a ring hom from
-  the graded ring of all modular forms?)
 -/
 
 
@@ -372,21 +371,14 @@ lemma cuspFunction_mul {f g : ℍ → ℂ}
     apply cuspFunction_mul_zero hfcts hgcts
   · simp [cuspFunction, Periodic.cuspFunction, H]
 
-lemma modularForm_cuspFunction_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
+lemma cuspFunction_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     cuspFunction h (f.mul g) = cuspFunction h f * cuspFunction h g := by
   exact cuspFunction_mul (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
     (analyticAt_cuspFunction_zero g hh hΓ).continuousAt
 
-lemma iteratedDeriv_eq_iteratedDerivWithin (n : ℕ) (f : ℂ → ℂ) (s : Set ℂ) (hs : IsOpen s)
-    (z : ℂ) (hz : z ∈ s) : iteratedDeriv n f z = iteratedDerivWithin n f s z := by
-  simp_rw [← iteratedDerivWithin_univ, iteratedDerivWithin]
-  rw [iteratedFDerivWithin_congr_set]
-  apply EventuallyEq.symm
-  simpa [eventuallyEq_univ] using IsOpen.mem_nhds hs hz
-
 open Nat in
-lemma qExpansion_mul {f g : ℍ → ℂ} (s : Set ℂ) (hsO : IsOpen s) (hs : 0 ∈ s)
+lemma qExpansion_mul {f g : ℍ → ℂ} {s : Set ℂ} (hsO : IsOpen s) (hs : 0 ∈ s)
     (hf : ContDiffOn ℂ ⊤ (cuspFunction h f) s) (hg : ContDiffOn ℂ ⊤ (cuspFunction h g) s) :
     qExpansion h (f * g) = qExpansion h f * qExpansion h g := by
   ext m
@@ -398,34 +390,31 @@ lemma qExpansion_mul {f g : ℍ → ℂ} (s : Set ℂ) (hsO : IsOpen s) (hs : 0 
   | succ m hm =>
     have H := cuspFunction_mul (hf.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
       (hg.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
-    simp only [qExpansion_coeff,  H,
-      PowerSeries.coeff_mul] at *
     have := iteratedDerivWithin_mul hsO hs (m + 1) (hf.of_le le_top) (hg.of_le le_top)
-    · simp_rw [← iteratedDeriv_eq_iteratedDerivWithin (m + 1) _ s hsO 0 hs] at this
-      conv at this =>
-        enter [2,2,n]
-        rw [← iteratedDeriv_eq_iteratedDerivWithin n _ s hsO 0 hs,
-          ← iteratedDeriv_eq_iteratedDerivWithin (m + 1 - n) _ s hsO 0 hs]
-      rw [this, Nat.succ_eq_add_one]
-      have h0 : ((m + 1)! : ℂ) ≠ 0 := by
-        norm_cast
-        exact Nat.factorial_ne_zero (m + 1)
-      rw [inv_mul_eq_iff_eq_mul₀ h0, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-        Finset.mul_sum, Nat.succ_eq_add_one]
-      have ht (x : ℕ) : ↑(m + 1)! *
-        ((↑x !)⁻¹ * iteratedDeriv x (cuspFunction h f) 0 *
-          ((↑(m + 1 - x)!)⁻¹ * iteratedDeriv (m + 1 - x) (cuspFunction h g) 0)) =
-          (↑(m + 1)! *
-        ((↑x !)⁻¹ * ((↑(m + 1 - x)!)⁻¹) * iteratedDeriv x (cuspFunction h f) 0 *
-          iteratedDeriv (m + 1 - x) (cuspFunction h g) 0)) := by ring
-      simp_rw [ht]
-      apply Finset.sum_congr rfl (fun x hx ↦ ?_)
-      grind [Nat.cast_choose ℂ (b := m + 1) (a := x) (by grind)]
+    simp_rw [← iteratedDeriv_eq_iteratedDerivWithin (m + 1) _ hsO hs] at this
+    conv at this =>
+      enter [2,2,n]
+      rw [← iteratedDeriv_eq_iteratedDerivWithin n _ hsO hs,
+        ← iteratedDeriv_eq_iteratedDerivWithin (m + 1 - n) _ hsO hs]
+    simp only [qExpansion_coeff,  H, PowerSeries.coeff_mul, this, Nat.succ_eq_add_one]
+    have h0 : ((m + 1)! : ℂ) ≠ 0 := by
+      simp [Nat.factorial_ne_zero (m + 1)]
+    rw [inv_mul_eq_iff_eq_mul₀ h0, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+      Finset.mul_sum, Nat.succ_eq_add_one]
+    have ht (x : ℕ) : ↑(m + 1)! *
+      ((↑x !)⁻¹ * iteratedDeriv x (cuspFunction h f) 0 *
+        ((↑(m + 1 - x)!)⁻¹ * iteratedDeriv (m + 1 - x) (cuspFunction h g) 0)) =
+        (↑(m + 1)! *
+      ((↑x !)⁻¹ * ((↑(m + 1 - x)!)⁻¹) * iteratedDeriv x (cuspFunction h f) 0 *
+        iteratedDeriv (m + 1 - x) (cuspFunction h g) 0)) := by ring
+    simp_rw [ht]
+    apply Finset.sum_congr rfl (fun x hx ↦ ?_)
+    grind [Nat.cast_choose ℂ (b := m + 1) (a := x) (by grind)]
 
-lemma modularForm_qExpansion_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (a b : ℤ)
+lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (a b : ℤ)
     (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     qExpansion h (f.mul g) = qExpansion h f * qExpansion h g := by
-  apply qExpansion_mul (Metric.ball 0 1) (isOpen_ball) (by simp)
+  apply qExpansion_mul (s := Metric.ball 0 1) (isOpen_ball) (by simp)
   · refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
     exact (differentiableAt_cuspFunction f hh hΓ (by simpa using hy)).differentiableWithinAt
   · refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
@@ -515,6 +504,7 @@ lemma qExpansion_injective [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
   ext z
   simp [← (hasSum_qExpansion f hh hΓ z).tsum_eq, h]
 
+/-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (i : ℤ) : ModularForm Γ i →+ PowerSeries ℂ where
   toFun f := qExpansion h f
@@ -541,13 +531,14 @@ lemma qExpansion_one [Γ.HasDetPlusMinusOne] : qExpansion h (1 : ModularForm Γ 
       · simp [hz]
 
 open scoped DirectSum in
+/-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
 def qExpansionRingHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : (⨁ i, ModularForm Γ i) →+* (PowerSeries ℂ) := by
   apply DirectSum.toSemiring (qExpansionAddHom hh hΓ)
   · simpa [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk] using qExpansion_one
   · intro a b f g
     simpa [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-      using modularForm_qExpansion_mul a b f g hh hΓ
+      using qExpansion_modularForm_mul a b f g hh hΓ
 
 @[simp]
 lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
@@ -578,9 +569,7 @@ end ring
 
 section uniqueness
 
-open Metric Set
-
-open scoped Topology
+open Metric Topology
 
 lemma hasSum_cuspFunction_of_hasSum [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {F : Type*}
     [FunLike F ℍ ℂ] {k : ℤ} [ModularFormClass F Γ k]
@@ -589,12 +578,12 @@ lemma hasSum_cuspFunction_of_hasSum [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ
     (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
   have h1 := Function.Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1
   have h2 := hf ⟨(Periodic.invQParam h q), h1⟩
-  have := eq_cuspFunction (h := h) f
-    ⟨(Periodic.invQParam h q), h1⟩ hΓ (by grind)
+  have := eq_cuspFunction (h := h) f ⟨(Periodic.invQParam h q), h1⟩ hΓ (by grind)
   simp only [smul_eq_mul, ne_eq, coe_mk_subtype] at *
   rw [Function.Periodic.qParam_right_inv (by grind) hq1] at this h2
   simpa [← this] using h2
 
+-- This is a bit ugly, is there a nicer way to prove this?
 lemma cuspfFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ]
      {h : ℝ} [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
      (c : ℕ → ℂ) (f : F) [ModularFormClass F Γ k]
@@ -604,7 +593,7 @@ lemma cuspfFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ
   have (q : ℂ) := hasSum_cuspFunction_of_hasSum hh hΓ c f hf (q := q)
   have htt : Tendsto (fun q ↦ ∑' m, c m * q ^ m) (𝓝[≠] 0) (𝓝 (c 0)) := by
     have hD := tendsto_tsum_of_dominated_convergence (𝓕 := (𝓝[≠] (0 : ℂ)))
-      (f := fun q : ℂ ↦ fun m : ℕ ↦ c m * q ^ m) (g := fun m : ℕ ↦ c m * 0 ^ m)
+      (f := fun q : ℂ ↦ fun m : ℕ ↦ c m * q ^ m) (g := fun m ↦ c m * 0 ^ m)
       (bound := fun m ↦ ‖c m‖ * (1 / 2 ) ^ m ) ?_ ?_ ?_
     · convert hD
       rw [Summable.tsum_eq_zero_add (by simpa [← summable_nat_add_iff 1] using summable_zero)]
@@ -617,13 +606,11 @@ lemma cuspfFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ
       use {z | (z : ℂ) ≠ 0 ∧ ‖z‖ < 1 / 2}
       constructor
       · rw [@mem_nhdsWithin_iff]
-        refine ⟨1 / 2, by norm_num, fun y hy ↦ ?_⟩
-        simp at *
-        grind
+        refine ⟨1 / 2, by norm_num, fun y hy ↦ by aesop⟩
       · intro y hy k
         simp only [norm_mul, norm_pow]
         gcongr
-        simpa using hy.2.le
+        grind
   apply htt.congr'
   rw [@eventuallyEq_nhdsWithin_iff, eventually_nhds_iff_ball]
   refine ⟨1, by simpa using fun y hy hy0 ↦ (this y hy hy0).tsum_eq⟩
@@ -633,13 +620,12 @@ lemma modularForm_q_exp_cuspFuntion [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ
     (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) : ∀ q : ℂ, ‖q‖ < 1 →
     HasSum (fun m : ℕ ↦ c m • q ^ m) (cuspFunction h f q) := by
   intro q hq
-  by_cases hq1 : q ≠ 0
-  · exact hasSum_cuspFunction_of_hasSum hh hΓ c f hf hq hq1
-  · simp only [ne_eq, Decidable.not_not] at hq1
-    simp_rw [hq1, cuspfFunction_zero_eq_const_coeff hh hΓ c f hf, smul_eq_mul]
+  by_cases hq1 : q = 0
+  · simp_rw [hq1, cuspfFunction_zero_eq_const_coeff hh hΓ c f hf, smul_eq_mul]
     rw [Summable.hasSum_iff (by simpa [← summable_nat_add_iff 1] using summable_zero),
       Summable.tsum_eq_zero_add (by simpa [← summable_nat_add_iff 1] using summable_zero)]
     simp
+  · exact hasSum_cuspFunction_of_hasSum hh hΓ c f hf hq hq1
 
 private lemma qParam_onto_annulus (r h : ℝ) (hr : 0 < r) (hr2 : r < 1) (hh : 0 < h) :
     ∃ (z : ℍ), ‖𝕢 h z‖ = r := by
@@ -650,8 +636,8 @@ private lemma qParam_onto_annulus (r h : ℝ) (hr : 0 < r) (hr2 : r < 1) (hh : 0
     right
     refine ⟨div_neg_of_neg_of_pos (by simp [hh]) (Real.two_pi_pos), (Real.log_neg_iff hr).mpr hr2⟩
 
-lemma qExpansion_coeffs_unique (c : ℕ → ℂ) [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k)
+lemma qExpansion_coeffs_unique [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (c : ℕ → ℂ) (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k]
     (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
     c = (fun m ↦ (qExpansion h f).coeff m) := by
   -- idea: use uniqueness of formal multilinear series representing a function.
@@ -660,8 +646,7 @@ lemma qExpansion_coeffs_unique (c : ℕ → ℂ) [Γ.HasDetPlusMinusOne] [Discre
   let qExpansion2 : PowerSeries ℂ := .mk fun m ↦ c m
   let qq : FormalMultilinearSeries ℂ ℂ ℂ :=
     fun m ↦ (qExpansion2).coeff m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
-  have hqq2 : ∀ m , ‖qq m‖ = ‖qExpansion2.coeff m‖ := by
-    intro m
+  have hqq2 (m : ℕ) : ‖qq m‖ = ‖qExpansion2.coeff m‖ := by
     unfold qq
     rw [← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
     simp only [_root_.map_smul, smul_eq_mul, norm_mul,
@@ -673,8 +658,7 @@ lemma qExpansion_coeffs_unique (c : ℕ → ℂ) [Γ.HasDetPlusMinusOne] [Discre
         apply FormalMultilinearSeries.le_radius_of_summable
         simp only [hqq2, PowerSeries.coeff_mk, qExpansion2]
         by_cases hr0 : r = 0
-        · rw [hr0, ← summable_nat_add_iff 1]
-          simpa using summable_zero
+        · simpa [hr0, ← summable_nat_add_iff 1] using summable_zero
         · obtain ⟨z, hz⟩ := qParam_onto_annulus r h ((by simp [pos_iff_ne_zero.mpr hr0] ))
             (by simpa using hr) hh
           simpa [NNReal.coe_pow, ← hz] using (summable_norm_iff.mpr (hf z).summable)
