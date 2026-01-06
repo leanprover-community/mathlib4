@@ -12,6 +12,7 @@ public import Mathlib.Data.Nat.Bits
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Data.Nat.Digits.Defs
+import Mathlib.Data.List.Lemmas
 
 /-!
 # Digits of a natural number
@@ -331,18 +332,17 @@ see `Nat.setInvOn_digitsAppend_ofDigits`.
 If `n ≥ b ^ l`, then the list of digits of `n` in base `b` is of length at least `l` and
 this function just return `b.digits n`.
 -/
-def digitsAppend (b l n : ℕ) : List ℕ :=
-  b.digits n ++ replicate (l - (b.digits n).length) 0
+abbrev digitsAppend (b l n : ℕ) : List ℕ :=
+  (b.digits n).rightpad l 0
 
 theorem length_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) (hn : n < b ^ l) :
     (digitsAppend b l n).length = l := by
-  rw [digitsAppend, length_append, length_replicate, Nat.add_sub_cancel']
-  rwa [digits_length_le_iff hb]
+  rw [length_rightpad, max_eq_left ((digits_length_le_iff hb _).2 hn)]
 
 theorem lt_of_mem_digitsAppend {b : ℕ} (hb : 1 < b) (l i : ℕ)
     (hi : i ∈ digitsAppend b l n) : i < b := by
-  rw [digitsAppend, mem_append, mem_replicate] at hi
-  obtain hi | ⟨_, rfl⟩  := hi
+  rw [mem_rightpad] at hi
+  obtain hi | ⟨_, rfl⟩ := hi
   · exact digits_lt_base hb hi
   · linarith
 
@@ -361,10 +361,9 @@ theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
 theorem setInvOn_digitsAppend_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InvOn (digitsAppend b l) (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}
       {n | n < b ^ l} := by
-  refine ⟨fun L hL ↦ ?_, fun _ _ ↦ by rw [digitsAppend, ofDigits_append_replicate_zero,
-    ofDigits_digits]⟩
+  refine ⟨fun L hL ↦ ?_, fun _ _ ↦ by rw [ofDigits_rightpad_zero, ofDigits_digits]⟩
   refine (injOn_ofDigits hb l) ⟨?_, ?_⟩ hL
-    (by rw [digitsAppend, ofDigits_append_replicate_zero, ofDigits_digits])
+    (by rw [ofDigits_rightpad_zero, ofDigits_digits])
   · rw [length_digitsAppend hb _ (mapsTo_ofDigits hb _ hL)]
   · exact fun x hx ↦ lt_of_mem_digitsAppend hb l x hx
 
@@ -388,7 +387,7 @@ theorem sum_digits_ofDigits_eq_sum {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List �
     (hL : L ∈ {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}) :
     (b.digits (ofDigits b L)).sum = L.sum := by
   nth_rewrite 2 [← (setInvOn_digitsAppend_ofDigits hb l).1 hL]
-  rw [digitsAppend, List.sum_append_nat, List.sum_replicate, nsmul_zero, add_zero]
+  rw [List.sum_rightpad_zero]
 
 end Nat
 

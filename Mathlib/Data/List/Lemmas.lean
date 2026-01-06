@@ -73,7 +73,13 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
   (foldl_range_subset_of_range_subset hfg.le a).antisymm
     (foldl_range_subset_of_range_subset hfg.ge a)
 
+theorem mem_leftpad {x : α} {l : List α} {n : ℕ} {a : α} :
+    x ∈ l.leftpad n a ↔ x ∈ l ∨ l.length < n ∧ x = a := by
+  grind
 
+theorem mem_rightpad {x : α} {l : List α} {n : ℕ} {a : α} :
+    x ∈ l.rightpad n a ↔ x ∈ l ∨ l.length < n ∧ x = a := by
+  grind
 
 /-!
   ### MapAccumr and Foldr

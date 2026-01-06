@@ -82,7 +82,7 @@ section MulOneClass
 variable [MulOneClass M]
 
 @[to_additive]
-instance Semigroup.to_isLawfulIdentity : Std.LawfulIdentity (α := M) (· * ·) 1 where
+instance MulOneClass.to_isLawfulIdentity : Std.LawfulIdentity (α := M) (· * ·) 1 where
   left_id := one_mul
   right_id := mul_one
 
