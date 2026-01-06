@@ -184,15 +184,18 @@ and optionally checks the type annotation. -/
 def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (arg : ChooseArg) :
     TermElabM (ElimStatus × MVarId) := do
   let (status, fvar, g) ← choose1 g nondep h arg.name
-  g.withContext do
+  let g ← g.withContext do
     Term.addLocalVarInfo arg.ref fvar
-    -- Check type annotation if provided
+    -- Check type annotation if provided, and use the user-specified type
     if let some expectedTypeStx := arg.expectedType? then
       let actualType ← inferType fvar
       let expectedType ← Term.elabType expectedTypeStx
       unless ← isDefEq actualType expectedType do
         throwErrorAt arg.ref m!"type mismatch for '{arg.name}'\n\
           {← mkHasTypeButIsExpectedMsg actualType expectedType}"
+      -- Change the local declaration to use the user-specified type
+      return ← g.changeLocalDecl fvar.fvarId! expectedType
+    return g
   pure (status, g)
 
 /-- A loop around `choose1`. The main entry point for the `choose` tactic. -/
@@ -210,14 +213,16 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
       let (fvar, g) ← if arg.name == `_ then g.intro1 else g.intro arg.name
       g.withContext do
         Term.addLocalVarInfo arg.ref (.fvar fvar)
-        -- Check type annotation if provided
+        -- Check type annotation if provided, and use the user-specified type
         if let some expectedTypeStx := arg.expectedType? then
           let actualType ← inferType (.fvar fvar)
           let expectedType ← Term.elabType expectedTypeStx
           unless ← isDefEq actualType expectedType do
             throwErrorAt arg.ref m!"type mismatch for '{arg.name}'\n\
               {← mkHasTypeButIsExpectedMsg actualType expectedType}"
-      return g
+          -- Change the local declaration to use the user-specified type
+          return ← g.changeLocalDecl fvar expectedType
+        return g
   | arg::args, status, g => do
     let (status', g) ← choose1WithInfo g nondep h arg
     elabChoose nondep none args (status.merge status') g
