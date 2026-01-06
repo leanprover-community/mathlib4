@@ -384,7 +384,7 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     let g : Ext S.X₁ MxM n →+ Ext S.X₃ MxM (n + 1) := S_exact.extClass.precomp MxM (add_comm 1 n)
     have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
       (Ext.contravariant_sequence_exact₁' S_exact MxM n (n + 1) (add_comm 1 n))
-    have surj1 : Function.Surjective g := extClass_precomp_surjective_of_projective_X₂ MxM S_exact n
+    have surj1 : Function.Surjective g := precomp_extClass_surjective_of_projective_X₂ MxM S_exact n
     let f' : Ext (S.map Fr).X₂ M (n + 1) →+ Ext (S.map Fr).X₁ M (n + 1) :=
       (Ext.mk₀ (S.map Fr).f).precomp M (zero_add (n + 1))
     let g' : Ext (S.map Fr).X₁ M (n + 1) →+ Ext (S.map Fr).X₃ M (n + 2) :=
