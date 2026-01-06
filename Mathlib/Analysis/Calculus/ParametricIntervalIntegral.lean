@@ -157,7 +157,7 @@ end intervalIntegral
 /-- If `f.uncurry : H × ℝ → E` is Cⁿ on `u ×ˢ [[a, b]]`, the parametric integral
 `fun x ↦ ∫ t in a..b, f x t ∂μ` is Cⁿ on `u` too. -/
 lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
-    [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
+    {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H → ℝ → E} {u : Set H} (hu : IsOpen u) {a b : ℝ} {n : ℕ∞}
     (hf : ContDiffOn ℝ n f.uncurry (u ×ˢ [[a, b]])) :
     ContDiffOn ℝ n (fun x ↦ ∫ t in a..b, f x t ∂μ) u := by
@@ -166,14 +166,15 @@ lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFinite
     · simp_rw [intervalIntegral.integral_symm b a]
       exact (h hu (uIcc_comm a b ▸ hf) hab).neg
     · simp [hab, contDiffOn_const]
-  simp_rw [intervalIntegral.integral_of_le hab.le, ← integral_Icc_eq_integral_Ioc,
-    ← uIcc_of_le hab.le]
-  apply hf.parametric_integral hu isCompact_uIcc le_rfl
+  simp_rw [intervalIntegral.integral_of_le hab.le]
+  apply hf.parametric_integral hu isCompact_Icc
+  · simpa [hab.le] using Ioc_subset_Icc_self
+  · exact ((measure_mono Ioc_subset_Icc_self).trans_lt isCompact_Icc.measure_lt_top).ne
 
 /-- If `f : H × ℝ → E` is Cⁿ, the parametric integral
 `fun x ↦ ∫ t in a..b, f (x, t) ∂μ` is Cⁿ too. -/
 lemma ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
-    [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
+    {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H × ℝ → E} {a b : ℝ} {n : ℕ∞}
     (hf : ContDiff ℝ n f) : ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
   contDiffOn_univ.1 <| hf.contDiffOn.parametric_intervalIntegral isOpen_univ
