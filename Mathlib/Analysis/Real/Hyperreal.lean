@@ -165,6 +165,8 @@ theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
 
+/-! #### `ω` -/
+
 /-- A sample infinite hyperreal ω = ⟦(0, 1, 2, 3, ⋯)⟧. -/
 def omega : ℝ* := ofSeq Nat.cast
 
@@ -195,6 +197,8 @@ theorem archimedeanClassMk_omega_neg : mk ω < 0 :=
 theorem stdPart_omega : stdPart ω = 0 := by
   rw [stdPart_eq_zero]
   exact archimedeanClassMk_omega_neg.ne
+
+/-! #### `ε` -/
 
 /-- A sample infinitesimal hyperreal ε = ⟦(0, 1, 1/2, 1/3, ⋯)⟧. -/
 def epsilon : ℝ* :=
@@ -253,6 +257,10 @@ theorem gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 
     ∀ {r : ℝ}, r < 0 → (r : ℝ*) < ofSeq f := fun {r} hr => by
   rw [← neg_neg r, coe_neg]; exact neg_lt_of_tendsto_zero_of_pos hf (neg_pos.mpr hr)
 
+/-!
+### Some facts about standard parts
+-/
+
 /-- Standard part predicate -/
 def IsSt (x : ℝ*) (r : ℝ) :=
   ∀ δ : ℝ, 0 < δ → (r - δ : ℝ*) < x ∧ x < r + δ
@@ -276,10 +284,6 @@ def InfiniteNeg (x : ℝ*) :=
 /-- A hyperreal number is infinite if it is infinite positive or infinite negative -/
 def Infinite (x : ℝ*) :=
   InfinitePos x ∨ InfiniteNeg x
-
-/-!
-### Some facts about `st`
--/
 
 theorem isSt_ofSeq_iff_tendsto {f : ℕ → ℝ} {r : ℝ} :
     IsSt (ofSeq f) r ↔ Tendsto f (hyperfilter ℕ) (𝓝 r) :=
