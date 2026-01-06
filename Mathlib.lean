@@ -13118,6 +13118,7 @@ public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Etale.QuasiFinite
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension.Basic
