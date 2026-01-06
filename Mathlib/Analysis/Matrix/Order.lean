@@ -302,8 +302,8 @@ theorem IsHermitian.eq_unitaryGroup_mul_posSemidef [DecidableEq n] (A : Matrix n
     ∃ (U : unitaryGroup n 𝕜) (P : Matrix n n 𝕜) (_ : P.PosSemidef), A = U * P := by
   let α (i : n) : 𝕜 :=
     if hA.eigenvalues i = 0 then 1 else (↑(hA.eigenvalues i / ‖hA.eigenvalues i‖) : 𝕜)
-  set U := Unitary.conjStarAlgAut 𝕜 (Matrix m m 𝕜) hA.eigenvectorUnitary (diagonal α)
-  set P := Unitary.conjStarAlgAut 𝕜 (Matrix m m 𝕜) hA.eigenvectorUnitary
+  set U := Unitary.conjStarAlgAut 𝕜 (Matrix n n 𝕜) hA.eigenvectorUnitary (diagonal α)
+  set P := Unitary.conjStarAlgAut 𝕜 (Matrix n n 𝕜) hA.eigenvectorUnitary
     (diagonal fun i ↦ (‖hA.eigenvalues i‖ : 𝕜))
   refine ⟨⟨U, ?_⟩, P, ?_, ?_⟩
   · simp only [mem_unitaryGroup_iff', U, ← map_star, ← map_mul, EmbeddingLike.map_eq_one_iff,
