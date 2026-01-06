@@ -1090,26 +1090,6 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
 
 variable {E}
 
-section DiracDelta
-
-/-- The Dirac delta distribution -/
-def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
-  (BoundedContinuousFunction.evalCLM 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
-
-@[simp]
-theorem delta_apply (x₀ : E) (f : 𝓢(E, F)) : delta 𝕜 F x₀ f = f x₀ :=
-  rfl
-
-open MeasureTheory MeasureTheory.Measure
-
-variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [CompleteSpace F]
-
-/-- Integrating against the Dirac measure is equal to the delta distribution. -/
-@[simp]
-theorem integralCLM_dirac_eq_delta (x : E) : integralCLM 𝕜 (dirac x) = delta 𝕜 F x := by aesop
-
-end DiracDelta
-
 end BoundedContinuousFunction
 
 section ZeroAtInfty
