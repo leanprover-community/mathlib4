@@ -158,10 +158,6 @@ instance : OrderBot (Face C) where
   bot := lineal
   bot_le F := F.lineal_le
 
-instance : BoundedOrder (Face C) where
-
-instance : CompleteLattice (Face C) where
-
 /-!
 ### Product
 -/
@@ -209,7 +205,7 @@ theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} :
 
 /-- The face lattice of the product of two cones is isomorphic to the product of their face
 lattices. -/
-def prod_orderIso (C : PointedCone R M) (D : PointedCone R N) :
+def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
     Face (C.prod D) ≃o Face C × Face D where
   toFun G := ⟨projFst G, projSnd G⟩
   invFun G := G.1.prod G.2

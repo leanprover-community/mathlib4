@@ -251,7 +251,7 @@ def lineal (C : PointedCone R E) : Submodule R E where
       simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
 
 @[simp]
-lemma lineal_eq_inf_neg (C : PointedCone R E) : C.lineal = C ⊓ -C :=
+lemma coe_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
   rfl
 
 lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by

@@ -123,7 +123,7 @@ theorem mem_iff_add_mem (hF : F.IsFaceOf C) {x y : M}
   exact fun h => ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
 
 theorem mem_of_sum_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
-    (hsC : ∀ i : ι, f i ∈ C) (hs : ∑ i : ι, f i ∈ F) (i : ι) : f i ∈ F := by
+    (hsC : ∀ i, f i ∈ C) (hs : ∑ i, f i ∈ F) (i : ι) : f i ∈ F := by
   classical
   refine hF.mem_of_add_mem (hsC i) (sum_mem (fun j (_ : j ∈ Finset.univ.erase i) => hsC j)) ?_
   simp [hs]
@@ -134,12 +134,12 @@ variable [AddCommGroup N] [Module R N]
 
 /-- The image of a face of a cone under an injective linear map is a face of the
   image of the cone. -/
-theorem map {f : M →ₗ[R] N} (hf : Function.Injective f) (hF : F.IsFaceOf C) :
+theorem map (f : M →ₗ[R] N) (hf : Function.Injective f) (hF : F.IsFaceOf C) :
     (F.map f).IsFaceOf (C.map f) := by
   refine ⟨map_mono hF.le, ?_⟩
   simp only [mem_map, forall_exists_index, and_imp]
   intro _ _ a b bC fbx _ cC fcy ha _ x'F h
-  refine ⟨b, ⟨?_, fbx⟩⟩
+  refine ⟨b, ?_, fbx⟩
   apply hF.mem_of_smul_add_mem bC cC ha
   convert x'F
   apply hf
@@ -150,7 +150,7 @@ theorem map_equiv (e : M ≃ₗ[R] N) (hF : F.IsFaceOf C) :
     (F.map (e : M →ₗ[R] N)).IsFaceOf (C.map e) := hF.map e.injective
 
 /-- The comap of a face of a cone under a linear map is a face of the comap of the cone. -/
-theorem comap {f : N →ₗ[R] M} (hF : F.IsFaceOf C) :
+theorem comap (f : N →ₗ[R] M) (hF : F.IsFaceOf C) :
     (F.comap f).IsFaceOf (C.comap f) := by
   refine ⟨comap_mono hF.le, ?_⟩
   simp only [mem_comap, map_add, map_smul]
