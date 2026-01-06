@@ -11,7 +11,7 @@ public import Mathlib.Data.Set.Finite.Basic
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

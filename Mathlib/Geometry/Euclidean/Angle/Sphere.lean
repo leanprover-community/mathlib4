@@ -16,7 +16,7 @@ This file proves results about angles in circles and spheres.
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
