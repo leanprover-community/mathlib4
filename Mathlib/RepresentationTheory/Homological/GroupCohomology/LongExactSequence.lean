@@ -27,7 +27,7 @@ to specialize API about long exact sequences to group cohomology.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
