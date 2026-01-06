@@ -484,17 +484,25 @@ lemma qExpansion_neg [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     qExpansion h (-f) = - (qExpansion h f) := by
   simpa using (qExpansion_smul hh hΓ (-1 : ℂ) f)
 
-@[simp]
-lemma qExpansion_zero [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) : qExpansion h 0 = 0 := by
-  simpa using (qExpansion_smul (a := (0 : ℂ)) (f := (0 : ModularForm Γ 1)) hh hΓ)
+lemma qExpansion_zero (hh : 0 < h) : qExpansion h 0 = 0 := by
+  ext m
+  have := cuspFunction_smul (f := 0) (h := h) ?_ 0
+  · simp only [smul_zero, zero_smul, qExpansion, PowerSeries.coeff_mk, map_zero, mul_eq_zero,
+      inv_eq_zero, Nat.cast_eq_zero] at *
+    rw [this]
+    by_cases hm : m = 0
+    · simp only [hm, Nat.factorial_zero, one_ne_zero, iteratedDeriv_zero, Pi.zero_apply, or_true]
+    · right
+      simpa [hm] using iteratedDeriv_const (𝕜 := ℂ) (F := ℂ) (x := 0) (c := 0) (n := m)
+  apply (Function.Periodic.differentiableAt_cuspFunction_zero hh (by simp) (by simp) _).continuousAt
+  simpa using ZeroAtFilter.boundedAtFilter (zero_zeroAtFilter I∞)
 
 lemma qExpansion_injective [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (i : ℤ) (f : ModularForm Γ i) :
     qExpansion h f = 0 ↔ f = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (by simp [h, qExpansion_zero hh hΓ])⟩
+  refine ⟨fun H ↦ ?_, fun H ↦ (by simp [H, qExpansion_zero hh])⟩
   ext z
-  simp [← (hasSum_qExpansion f hh hΓ z).tsum_eq, h]
+  simp [← (hasSum_qExpansion f hh hΓ z).tsum_eq, H]
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
