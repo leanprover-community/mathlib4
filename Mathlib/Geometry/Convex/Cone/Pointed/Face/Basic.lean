@@ -40,8 +40,8 @@ namespace PointedCone
 variable {R M N : Type*}
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
-/-- A pointed cone `F` is a face of another pointed cone `C` if `F ≤ C` and if `a • x + y` is in `F`
-for all `x, y` in `C` and positive scalars `a`, then `x` is also in `F`. -/
+/-- A sub-cone `F` of a pointed cone `C` is a face of `C` if any two points of `C` with a strictly
+positive combination in `F` are also in `F`. -/
 structure IsFaceOf (F C : PointedCone R M) where
   le : F ≤ C
   mem_of_smul_add_mem :
