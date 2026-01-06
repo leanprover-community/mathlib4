@@ -138,6 +138,21 @@ theorem _root_.TopologicalSpace.IsTopologicalBasis.vietoris
     grw [← hfU U hU]
     exact ht₂ hU
 
+theorem closure_finite_subsets (s : Set α) :
+    closure {t | t.Finite ∧ t ⊆ s} = (closure s).powerset := by
+  refine subset_antisymm ?_ (fun K hKs => ?_)
+  · rw [isClosed_closure.powerset_vietoris.closure_subset_iff]
+    exact fun K ⟨_, h⟩ => h.trans subset_closure
+  · rw [isTopologicalBasis.mem_closure_iff, forall_mem_image]
+    rintro u ⟨hu₁, hu₂⟩ ⟨ht₁, ht₂⟩
+    choose x hxU hxs using fun U : u => show (↑U ∩ s).Nonempty by
+      obtain ⟨x, hxK, hxV⟩ := ht₂ U U.prop
+      exact mem_closure_iff.mp (hKs hxK) _ (hu₂ _ U.prop) hxV
+    have := hu₁.to_subtype
+    exact ⟨range x, ⟨range_subset_iff.mpr fun V => mem_sUnion_of_mem (hxU V) V.prop,
+      fun U hU => ⟨x ⟨U, hU⟩, mem_range_self _, hxU ⟨U, hU⟩⟩⟩,
+      finite_range _, range_subset_iff.mpr hxs⟩
+
 private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     {s : Set (Set α)} (hsK : s ⊆ K.powerset) (hs : ∀ L ∈ s, IsCompact L) :
     IsCompact {t ⊆ K | ∀ L ∈ s, (t ∩ L).Nonempty} := by
@@ -226,6 +241,17 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
   convert vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
+
+theorem closure_finite_subsets (s : Set α) :
+    closure {K : Compacts α | (K : Set α).Finite ∧ ↑K ⊆ s} = {K : Compacts α | ↑K ⊆ closure s} := by
+  change closure (SetLike.coe ⁻¹' {K : Set α | K.Finite ∧ K ⊆ s}) =
+    SetLike.coe ⁻¹' (closure s).powerset
+  rw [isEmbedding_coe.closure_eq_preimage_closure_image, image_preimage_eq_of_subset ?_,
+    vietoris.closure_finite_subsets]
+  exact fun K ⟨hK, _⟩ => ⟨⟨K, hK.isCompact⟩, rfl⟩
+
+theorem dense_setOf_finite : Dense {K : Compacts α | (K : Set α).Finite} := by
+  simpa [dense_iff_closure_eq] using closure_finite_subsets (α := α) Set.univ
 
 /-- Given a basis `B` on a topological space `α`, the topology of `Compacts α` has a basis
 consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
@@ -367,6 +393,15 @@ theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : NonemptyCompacts α | (↑K ∩ F).Nonempty} :=
   (vietoris.isClosed_inter_nonempty_of_isClosed h).preimage continuous_coe
+
+theorem closure_finite_subsets (s : Set α) :
+    closure {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} =
+      {K : NonemptyCompacts α | ↑K ⊆ closure s} := by
+  simpa only [isOpenEmbedding_toCompacts.isOpenMap.preimage_closure_eq_closure_preimage
+    continuous_toCompacts] using congr(toCompacts ⁻¹' $(Compacts.closure_finite_subsets s))
+
+theorem dense_setOf_finite : Dense {K : NonemptyCompacts α | (K : Set α).Finite} :=
+  Compacts.dense_setOf_finite.preimage isOpenEmbedding_toCompacts.isOpenMap
 
 /-- Given a basis `B` on a topological space `α`, the topology of `NonemptyCompacts α` has a basis
 consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
