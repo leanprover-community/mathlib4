@@ -395,6 +395,15 @@ instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
 theorem discreteTopology_iff : DiscreteTopology (Compacts α) ↔ DiscreteTopology α :=
   ⟨fun _ => isEmbedding_singleton.discreteTopology, fun _ => inferInstance⟩
 
+instance [SecondCountableTopology α] : SecondCountableTopology (Compacts α) := by
+  obtain ⟨b, hb₁, -, hb₂⟩ := exists_countable_basis α
+  exact hb₂.compacts.secondCountableTopology <| (countable_setOf_finite_subset hb₁).image _
+
+@[simp]
+theorem secondCountableTopolgy_iff :
+    SecondCountableTopology (Compacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
+
 theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
     IsCompact {L : Compacts α | ↑L ⊆ K} := by
   rw [isEmbedding_coe.isCompact_iff]
@@ -553,6 +562,14 @@ instance [DiscreteTopology α] : DiscreteTopology (NonemptyCompacts α) :=
 @[simp]
 theorem discreteTopology_iff : DiscreteTopology (NonemptyCompacts α) ↔ DiscreteTopology α :=
   ⟨fun _ => isEmbedding_singleton.discreteTopology, fun _ => inferInstance⟩
+
+instance [SecondCountableTopology α] : SecondCountableTopology (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.secondCountableTopology
+
+@[simp]
+theorem secondCountableTopolgy_iff :
+    SecondCountableTopology (NonemptyCompacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
 
 instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   isClosedEmbedding_toCompacts.compactSpace
