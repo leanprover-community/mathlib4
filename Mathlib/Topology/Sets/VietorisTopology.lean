@@ -270,6 +270,19 @@ theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 �
       (isOpen_inter_nonempty_of_isOpen hV).prod (isOpen_inter_nonempty_of_isOpen hW),
       ⟨x, hx, hxV⟩, ⟨y, hy, hyW⟩⟩
 
+instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
+  rw [discreteTopology_iff_isOpen_singleton]
+  intro K
+  convert (isOpen_subsets_of_isOpen (isOpen_discrete (K : Set α))).inter
+    (K.isCompact.finite_of_discrete.isOpen_biInter fun x hx =>
+      isOpen_inter_nonempty_of_isOpen (isOpen_discrete {x}))
+  simp_rw [← setOf_forall, inter_singleton_nonempty, ← Set.subset_def, ← setOf_and,
+    ← subset_antisymm_iff, SetLike.coe_set_eq, setOf_eq_eq_singleton]
+
+@[simp]
+theorem discreteTopology_iff : DiscreteTopology (Compacts α) ↔ DiscreteTopology α :=
+  ⟨fun _ => isEmbedding_singleton.discreteTopology, fun _ => inferInstance⟩
+
 theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
     IsCompact {L : Compacts α | ↑L ⊆ K} := by
   rw [isEmbedding_coe.isCompact_iff]
@@ -389,6 +402,13 @@ theorem continuous_prod :
     Continuous fun p : NonemptyCompacts α × NonemptyCompacts β => p.1 ×ˢ p.2 := by
   simp_rw [isEmbedding_toCompacts.continuous_iff, Function.comp_def, toCompacts_prod]
   fun_prop
+
+instance [DiscreteTopology α] : DiscreteTopology (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.discreteTopology
+
+@[simp]
+theorem discreteTopology_iff : DiscreteTopology (NonemptyCompacts α) ↔ DiscreteTopology α :=
+  ⟨fun _ => isEmbedding_singleton.discreteTopology, fun _ => inferInstance⟩
 
 instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   isClosedEmbedding_toCompacts.compactSpace
