@@ -132,7 +132,7 @@ Since `f` is `C^1`, `f'` is continuous in the first argument.
 At any given point `(x, α) : E × F`, write down the function
 `C(Icc tmin tmax, E) → Icc tmin tmax → E`, and then show it is continuous when evaluated at every
 `α : C(Icc tmin tmax, E)`.
-The function is `∫ τ in t₀ .. t, f' (α τ) (dα τ) - dα t`
+The function is `dα ↦ t ↦ ∫ τ in t₀ .. t, f' (α τ) (dα τ) - dα t`
 Showing it is continuous will require the compactness of `Icc`
 
 -/
@@ -150,7 +150,7 @@ noncomputable def implicitEquation.rightDerivAux (f' : E → E →L[ℝ] E) (x :
 valid when `x ∈ u` and `range α ⊆ u` -/
 -- assume `f'` is continuous on `u` because `f'` is the derivative of a `C^1` function `f`
 lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
-    (x : E) (α dα : C(Icc tmin tmax, E)) :
+    (x : E) {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) (dα : C(Icc tmin tmax, E)) :
     Continuous (implicitEquation.rightDerivAux t₀ f' x α dα) := by
   rw [implicitEquation.rightDerivAux]
   apply Continuous.add (Continuous.neg (ContinuousMapClass.map_continuous _))
@@ -163,7 +163,29 @@ lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' 
   apply ContinuousOn.comp_continuous (s := Icc tmin tmax) _ (by fun_prop) (by simp)
   nth_rw 14 [← Set.uIcc_of_le (le_of_Icc t₀)]
   apply intervalIntegral.continuousOn_primitive_interval'
-  · apply ContinuousOn.intervalIntegrable
+  · apply Continuous.intervalIntegrable
+    have h1 : ContinuousOn (fun xx : E × E ↦ f' xx.1 xx.2) (range α ×ˢ univ) := by
+      apply continuousOn_prod_of_continuousOn_lipschitzOnWith'
+      /-
+      We need that `f'` is uniformly Lipschitz in the second component for every `x ∈ range α` in
+      the first component. At each `x`, `f' x` has the Lipschitz constant `‖f' x‖₊`. Since `f'` is
+      continuous in `x`, and the operator norm is continuous in the operator, `‖f' x‖₊` is
+      continuous in `x` and therefore bounded in the compact domain `range α`. The fact that the
+      operator norm is continuous in the operator is not in Mathlib.
+      -/
+      sorry
+    have h2 :
+      (fun τ ↦ f' (α (projIcc tmin tmax (le_of_Icc t₀) τ))
+        (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) =
+      (fun xx : E × E ↦ f' xx.1 xx.2) ∘ (fun τ ↦ (α (projIcc tmin tmax (le_of_Icc t₀) τ),
+        dα (projIcc tmin tmax (le_of_Icc t₀) τ))) := rfl
+    rw [h2]
+    apply ContinuousOn.comp_continuous h1 (by continuity)
+    intro τ
+    simp only [mem_prod, mem_univ, and_true]
+    apply hα
+    simp
+
     -- can use `continuousOn_prod_of_continuousOn_lipschitzOnWith` on `f'`
     -- `hf'` gives continuity in the first component (fixing second component)
     -- lipschitz in second component comes from `E →L[ℝ] E`, which itself is lipschitz,
