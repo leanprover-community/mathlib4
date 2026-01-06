@@ -433,11 +433,11 @@ See also (`IsGenerating`). -/
 def IsReproducing [AddCommGroup M] (C : ConvexCone R M) : Prop :=
   (C : Set M) - (C : Set M) = Set.univ
 
-/-- A sufficient criteria for a convex cone `C` to be reproducing is that `Set.univ` is a subset
+/-- A sufficient criterion for a convex cone `C` to be reproducing is that `Set.univ` is a subset
 of `C - C`. -/
 theorem IsReproducing.of_univ_subset [AddCommGroup M] {C : ConvexCone R M}
     (h : Set.univ ⊆ (C : Set M) - (C : Set M)) : C.IsReproducing :=
-  Set.eq_univ_iff_forall.mpr fun _ ↦ h trivial
+  Set.eq_univ_iff_forall.mpr fun _ ↦ h (Set.mem_univ _)
 
 /-- The set difference of a reproducing cone with itself equals `Set.univ`. -/
 lemma IsReproducing.sub_eq_univ [AddCommGroup M] {C : ConvexCone R M} (hC : C.IsReproducing) :
@@ -645,9 +645,6 @@ theorem coe_strictlyPositive : ↑(strictlyPositive R M) = Set.Ioi (0 : M) :=
   rfl
 
 lemma strictlyPositive_le_positive : strictlyPositive R M ≤ positive R M := fun _ => le_of_lt
-
-@[deprecated (since := "2025-05-29")]
-alias positive_le_strictlyPositive := strictlyPositive_le_positive
 
 /-- The strictly positive cone of an ordered module is always salient. -/
 theorem salient_strictlyPositive : Salient (strictlyPositive R M) :=

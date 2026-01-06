@@ -30,8 +30,8 @@ namespace Orientation
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
-/-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
-form. -/
+/-- The angle at the center of a circle equals twice the angle at the circumference, oriented vector
+angle form. -/
 theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
     (hxy : ‖x‖ = ‖y‖) (hxz : ‖x‖ = ‖z‖) : o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) := by
   have hy : y ≠ 0 := by
@@ -50,8 +50,8 @@ theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) 
       rw [o.oangle_sub_right (sub_ne_zero_of_ne hxyne) (sub_ne_zero_of_ne hxzne) hx]
     _ = (2 : ℤ) • o.oangle (y - x) (z - x) := by rw [← oangle_neg_neg, neg_sub, neg_sub]
 
-/-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
-form with radius specified. -/
+/-- The angle at the center of a circle equals twice the angle at the circumference, oriented vector
+angle form with the radius specified. -/
 theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real {x y z : V} (hxyne : x ≠ y) (hxzne : x ≠ z)
     {r : ℝ} (hx : ‖x‖ = r) (hy : ‖y‖ = r) (hz : ‖z‖ = r) :
     o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) :=
@@ -150,7 +150,8 @@ local notation "o" => Module.Oriented.positiveOrientation
 
 namespace Sphere
 
-/-- Angle at center of a circle equals twice angle at circumference, oriented angle version. -/
+/-- The angle at the center of a circle equals twice the angle at the circumference, oriented angle
+version. -/
 theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃) :
     ∡ p₁ s.center p₃ = (2 : ℤ) • ∡ p₁ p₂ p₃ := by

@@ -119,7 +119,7 @@ theorem directSumLeft_symm_lof_tmul (i : ι₁) (x : M₁ i) (y : M₂') :
 @[simp]
 lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
     directSumLeft R M₁ M₂' (m ⊗ₜ[R] n) i = (m i) ⊗ₜ[R] n := by
-  suffices (DirectSum.component R ι₁ _ i) ∘ₗ(directSumLeft R M₁ M₂').toLinearMap ∘ₗ
+  suffices (DirectSum.component R ι₁ _ i) ∘ₗ (directSumLeft R M₁ M₂').toLinearMap ∘ₗ
       ((TensorProduct.mk R (⨁ i, M₁ i) M₂').flip n) =
         ((TensorProduct.mk R (M₁ i) M₂').flip n) ∘ₗ (DirectSum.component R ι₁ M₁ i) by
     simpa using LinearMap.congr_fun this m
