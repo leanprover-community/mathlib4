@@ -16,7 +16,7 @@ We also show that we can commute `IsLimit.lift` of a preserved limit with `Funct
 `(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
-`preserves/shapes.lean`.
+the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
 -/
 
 @[expose] public section

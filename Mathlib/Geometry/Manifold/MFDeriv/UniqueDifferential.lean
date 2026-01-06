@@ -21,7 +21,7 @@ In this file, we prove various properties of unique derivative sets in manifolds
   its preimage under the tangent bundle projection also has
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -199,6 +199,6 @@ variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle �
 theorem Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]
     (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
     e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
-  ⟨e.contMDiffOn.mdifferentiableOn le_rfl, e.contMDiffOn_symm.mdifferentiableOn le_rfl⟩
+  ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
 
 end UniqueMDiff

@@ -558,15 +558,16 @@ abbrev isoPresheafedSpace :
   𝖣.gluedIso forgetToPresheafedSpace
 
 theorem ι_isoPresheafedSpace_inv (i : D.J) :
-    D.toPresheafedSpaceGlueData.toGlueData.ι i ≫ D.isoPresheafedSpace.inv = 𝖣.ι i :=
+    D.toPresheafedSpaceGlueData.toGlueData.ι i ≫ D.isoPresheafedSpace.inv = (𝖣.ι i).hom :=
   𝖣.ι_gluedIso_inv _ _
 
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+  dsimp [IsOpenImmersion]
   rw [← D.ι_isoPresheafedSpace_inv]
   have := D.toPresheafedSpaceGlueData.ιIsOpenImmersion i
   infer_instance
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
+theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).hom.base y = x :=
   𝖣.ι_jointly_surjective (SheafedSpace.forget _ ⋙ CategoryTheory.forget TopCat) x
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
@@ -624,12 +625,15 @@ abbrev toSheafedSpaceGlueData : SheafedSpace.GlueData CommRingCat :=
 abbrev isoSheafedSpace : 𝖣.glued.toSheafedSpace ≅ D.toSheafedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToSheafedSpace
 
+@[reassoc]
 theorem ι_isoSheafedSpace_inv (i : D.J) :
-    D.toSheafedSpaceGlueData.toGlueData.ι i ≫ D.isoSheafedSpace.inv = (𝖣.ι i).1 :=
+    D.toSheafedSpaceGlueData.toGlueData.ι i ≫ D.isoSheafedSpace.inv =
+      (𝖣.ι i).toShHom :=
   𝖣.ι_gluedIso_inv forgetToSheafedSpace i
 
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
-  delta IsOpenImmersion; rw [← D.ι_isoSheafedSpace_inv]
+  dsimp [IsOpenImmersion]
+  rw [← D.ι_isoSheafedSpace_inv]
   apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
   -- Porting note: this was automatic
   exact (D.toSheafedSpaceGlueData).ιIsOpenImmersion i

@@ -192,6 +192,7 @@ theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
   ⟨fun h ↦ by rw [← ennreal_coeFn_eq_coeFn_toMeasure, h, ENNReal.coe_zero],
    fun h ↦ congrArg ENNReal.toNNReal h⟩
 
+@[gcongr]
 theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
   exact FiniteMeasure.apply_mono _ h
@@ -211,12 +212,8 @@ protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
 @[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
   simpa using apply_mono μ (subset_univ s)
 
-theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω := by
-  by_contra maybe_empty
-  have zero : (μ : Measure Ω) univ = 0 := by
-    rw [univ_eq_empty_iff.mpr (not_nonempty_iff.mp maybe_empty), measure_empty]
-  rw [measure_univ] at zero
-  exact zero_ne_one zero.symm
+theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω :=
+  nonempty_of_isProbabilityMeasure μ
 
 @[ext]
 theorem eq_of_forall_toMeasure_apply_eq (μ ν : ProbabilityMeasure Ω)
@@ -241,7 +238,7 @@ theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.m
   refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
   refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using h)⟩, ?_⟩
   ext s hs
-  rfl
+  simp
 
 theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
   simp [← FiniteMeasure.mass_nonzero_iff]
@@ -323,6 +320,8 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
   injective _μ _ν h := Subtype.ext <| congr_arg FiniteMeasure.toMeasure h
+
+instance R1Space : R1Space (ProbabilityMeasure Ω) := (toFiniteMeasure_isEmbedding Ω).r1Space
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :

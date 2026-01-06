@@ -148,7 +148,7 @@ theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
     {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
     PosSemidef (∑ i ∈ s, x i) := by
   refine ⟨isSelfAdjoint_sum s fun _ hi => h _ hi |>.1, fun y => ?_⟩
-  simp[sum_apply, Finset.mul_sum,Finset.sum_mul, Finsupp.sum_finsetSum_comm,
+  simp [sum_apply, Finset.mul_sum, Finset.sum_mul, Finsupp.sum_finsetSum_comm,
     Finset.sum_nonneg fun _ hi => (h _ hi).2 _]
 
 /-!
@@ -302,12 +302,15 @@ lemma of_dotProduct_mulVec_nonneg {M : Matrix n n R} (hM1 : M.IsHermitian)
     (hM2 : ∀ x, 0 ≤ star x ⬝ᵥ (M *ᵥ x)) : M.PosSemidef :=
   posSemidef_iff_dotProduct_mulVec.mpr ⟨hM1, hM2⟩
 
+omit [Fintype m] in variable [Finite m] in
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix n m R) :
     PosSemidef (Bᴴ * A * B) := by
+  have := Fintype.ofFinite m
   refine of_dotProduct_mulVec_nonneg (isHermitian_conjTranspose_mul_mul B hA.1) fun x ↦ ?_
   simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using
       hA.dotProduct_mulVec_nonneg (B *ᵥ x)
 
+omit [Fintype m] in variable [Finite m] in
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix m n R) :
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
@@ -341,13 +344,16 @@ lemma trace_nonneg [AddLeftMono R] {A : Matrix n n R} (hA : A.PosSemidef) : 0 �
 
 end PosSemidef
 
+omit [Fintype n] in variable [Finite n] in
 /-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (Aᴴ * A) := by
+  have := Fintype.ofFinite n
   refine .of_dotProduct_mulVec_nonneg (isHermitian_conjTranspose_mul_self _) fun x => ?_
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
+omit [Fintype m] in variable [Finite m] in
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
 theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (A * Aᴴ) := by
@@ -394,11 +400,13 @@ theorem IsUnit.posSemidef_star_right_conjugate_iff (hU : IsUnit U) :
 
 end conjugate
 
+omit [Fintype n] [Fintype m] in variable [Finite n] [Finite m] in
 /-- The matrix `vecMulVec a (star a)` is always positive semi-definite. -/
 theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
     (vecMulVec a (star a)).PosSemidef := by
   simp [vecMulVec_eq Unit, ← conjTranspose_replicateCol, posSemidef_self_mul_conjTranspose]
 
+omit [Fintype n] in variable [Finite n] in
 /-- The matrix `vecMulVec (star a) a` is always positive semi-definite. -/
 theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
     (vecMulVec (star a) a).PosSemidef := by
@@ -529,9 +537,11 @@ section SchurComplement
 
 variable [StarOrderedRing R']
 
+omit [Fintype n] in variable [Finite n] in
 theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     (B : Matrix m n R') (D : Matrix n n R') (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
+  have := Fintype.ofFinite n
   rw [posSemidef_iff_dotProduct_mulVec, IsHermitian.fromBlocks₁₁ _ _ hA.1]
   constructor
   · refine fun h => .of_dotProduct_mulVec_nonneg h.1 fun x => ?_
@@ -546,6 +556,7 @@ theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     · rw [← dotProduct_mulVec (star (x ∘ Sum.inr))]
       apply (posSemidef_iff_dotProduct_mulVec.mp h).2
 
+omit [Fintype m] in variable [Finite m] in
 theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (B : Matrix m n R') {D : Matrix n n R'} (hD : D.PosDef) [Invertible D] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by

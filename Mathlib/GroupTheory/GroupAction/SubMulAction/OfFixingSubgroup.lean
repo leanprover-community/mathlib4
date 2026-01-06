@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.Tactic.Group
+
 /-!
 # SubMulActions on complements of invariant subsets
 
@@ -315,6 +316,7 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
   map_one' := by simp
   map_mul' _ _ := by simp [← Subtype.coe_inj]
 
+set_option backward.proofsInPublic true in
 variable (M s t) in
 /-- The identity between the iterated `SubMulAction`
   of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
@@ -430,6 +432,7 @@ section Construction
 
 open Function.Embedding Fin.Embedding
 
+set_option backward.proofsInPublic true in
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/]
@@ -446,6 +449,7 @@ noncomputable def ofFixingSubgroup.append
   simp only [trans_apply, Function.Embedding.subtype_apply] at H
   simpa [H] using Subtype.coe_prop (y j)
 
+set_option backward.proofsInPublic true in
 @[to_additive]
 theorem ofFixingSubgroup.append_left {n : ℕ} [Finite s]
     (x : Fin n ↪ ofFixingSubgroup M s) (i : Fin s.ncard) :

@@ -1153,6 +1153,12 @@ theorem PosDef.anisotropic {Q : QuadraticMap R₂ M N} (hQ : Q.PosDef) : Q.Aniso
       rw [hQx] at this
       exact this
 
+theorem PosDef.le_zero_iff {Q : QuadraticMap R₂ M N} (hQ : PosDef Q) {x : M} :
+    Q x ≤ 0 ↔ x = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  have : Q x = 0 := le_antisymm h (hQ.nonneg x)
+  rwa [← hQ.anisotropic]
+
 theorem posDef_of_nonneg {Q : QuadraticMap R₂ M N} (h : ∀ x, 0 ≤ Q x) (h0 : Q.Anisotropic) :
     PosDef Q :=
   fun x hx => lt_of_le_of_ne (h x) (Ne.symm fun hQx => hx <| h0 _ hQx)
@@ -1288,7 +1294,6 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   induction d generalizing V with
   | zero => exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
   | succ d ih =>
-  haveI := finrank_pos_iff.1 (hd.symm ▸ Nat.succ_pos d : 0 < finrank K V)
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0
   · let b := Module.finBasis K V
@@ -1297,8 +1302,8 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_map hx)] at hd
-  let B' :=  B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B )
-    (Submodule.orthogonalBilin (K ∙ x) B )
+  let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B)
+    (Submodule.orthogonalBilin (K ∙ x) B)
   obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=

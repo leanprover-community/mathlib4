@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Number field discriminant
@@ -28,7 +29,7 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
-@[expose] public section
+public section
 
 -- TODO. Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
