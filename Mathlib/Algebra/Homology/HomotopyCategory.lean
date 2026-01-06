@@ -260,12 +260,12 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     (F.mapHomotopyCategory c).Additive :=
-  let := Functor.additive_of_iso (F.mapHomotopyCategoryFactors c).symm
+  have := Functor.additive_of_iso (F.mapHomotopyCategoryFactors c).symm
   (HomotopyCategory.quotient V c).additive_of_full_essSurj_comp (F.mapHomotopyCategory c)
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Linear R V] [Linear R W] [F.Linear R] :
     Functor.Linear R (F.mapHomotopyCategory c) :=
-  let := Functor.linear_of_iso R (F.mapHomotopyCategoryFactors c).symm
+  have := Functor.linear_of_iso R (F.mapHomotopyCategoryFactors c).symm
   (HomotopyCategory.quotient V c).linear_of_full_essSurj_comp (F.mapHomotopyCategory c)
 
 end CategoryTheory

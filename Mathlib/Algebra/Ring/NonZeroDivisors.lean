@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Basic
 # Non-zero divisors in a ring
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

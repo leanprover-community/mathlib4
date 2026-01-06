@@ -18,7 +18,7 @@ Although this can be used to prove that real or complex transcendental numbers e
 proof is given by `Liouville.transcendental`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
