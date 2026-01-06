@@ -32,7 +32,7 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 
 public section
 
-open MeasureTheory ProbabilityTheory Complex NormedSpace
+open MeasureTheory ProbabilityTheory Complex
 open scoped ENNReal NNReal Real Topology
 
 namespace ProbabilityTheory.IsGaussian
