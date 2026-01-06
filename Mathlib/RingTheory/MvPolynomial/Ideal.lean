@@ -133,12 +133,12 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
   classical
   constructor
-  · rw [pow_idealOfVars_eq_span, Ideal.span]
+  · rw [pow_idealOfVars_eq_span]
     refine Submodule.span_induction (fun u u_in x hx ↦ ?_) ?_ (fun _ _ _ _ h h' _ hx ↦ ?_)
       (fun q r _ h s hx ↦ ?_)
     · simp only [Set.mem_image, Set.mem_setOf_eq] at u_in
       rcases u_in with ⟨v, v_sum, hv⟩
-      rw [← hv, coeff_monomial, if_neg (by intro; grind only)]
+      rw [← hv, coeff_monomial, if_neg (by grind only)]
     · simp
     · rw [coeff_add, h _ hx, h' _ hx, zero_add]
     rw [smul_eq_mul, coeff_mul]
