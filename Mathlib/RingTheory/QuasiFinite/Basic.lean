@@ -16,14 +16,14 @@ public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.Topology.DiscreteSubset
 
 /-!
-# Quasi-finite
+# Quasi-finite algebras
 
 In this file, we define the notion of quasi-finite algebras and prove basic properties about them
 
 ## Main definition and results
 - `Algebra.QuasiFinite`: The class of quasi-finite algebras.
   We say that an `R`-algebra `S` is quasi-finite
-  if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all prime `p` of `R`.
+  if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all primes `p` of `R`.
 - `Algebra.QuasiFinite.finite_specComap_preimage_singleton`:
   Quasi-finite algebras have finite fibers.
 - `Algebra.QuasiFinite.iff_of_isArtinianRing`:
@@ -49,10 +49,11 @@ namespace Algebra
 variable (R S) in
 /--
 We say that an `R`-algebra `S` is quasi-finite
-if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all prime `p` of `R`.
+if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all primes `p` of `R`.
 
-This is slightly different from the stacks projects definition,
-but works better when `S` is not of finite type over `R` (e.g. the stalk of a finite-type algebra).
+This is slightly different from the
+[stacks projects definition](https://stacks.math.columbia.edu/tag/00PL),
+which requires `S` to be of finite type over `R`.
 
 Also see `Algebra.QuasiFinite.iff_finite_specComap_preimage_singleton` that
 this is equivalent to having finite fibers for finite-type algebas.
@@ -286,8 +287,8 @@ lemma iff_finite_primesOver [FiniteType R S] :
   simp [(PrimeSpectrum.equivSubtype S).exists_congr_left, PrimeSpectrum.ext_iff, eq_comm,
     PrimeSpectrum.equivSubtype, Ideal.primesOver, and_comm, Ideal.liesOver_iff, Ideal.under]
 
-/-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra,
-then `T` is quasi-finite over `R` -/
+/-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra
+(away from an element), then `T` is quasi-finite over `R` -/
 lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R T]
     (s : S) [IsLocalization.Away s T] : Algebra.QuasiFinite R T := by
   let A := Algebra.adjoin R {s}
