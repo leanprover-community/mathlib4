@@ -64,7 +64,6 @@ theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : 
   refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
-  obtain ⟨_, hi⟩ := i
   simp only [Fin.default_eq_zero, Finset.univ_unique,
     Finset.sum_singleton] at sum_eq
   convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
@@ -208,7 +207,7 @@ variable {M R : Type*} [Ring R] [Nontrivial R] [IsAddTorsionFree R]
 
 /--
 Let `A` be a subgroup of an additive commutative group `M` that is also an `R`-module.
-Construct a basis of `A` as a `ℤ`-basis from a `R`-basis of `E` that generates `A`.
+Construct a basis of `A` as a `ℤ`-basis from an `R`-basis of `E` that generates `A`.
 -/
 noncomputable def addSubgroupOfClosure (h : A = .closure (Set.range b)) :
     Basis ι ℤ A.toIntSubmodule :=

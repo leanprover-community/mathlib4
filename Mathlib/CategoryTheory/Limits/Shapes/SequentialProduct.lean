@@ -38,7 +38,7 @@ lemma functorObj_eq_pos {n m : ℕ} (h : m < n) :
 lemma functorObj_eq_neg {n m : ℕ} (h : ¬(m < n)) :
     (fun i ↦ if _ : i < n then M i else N i) m = N m := dif_neg h
 
-variable [Category C] (f : ∀ n, M n ⟶ N n) [HasProductsOfShape ℕ C]
+variable [Category* C] (f : ∀ n, M n ⟶ N n) [HasProductsOfShape ℕ C]
 
 variable (M N) in
 /-- The product of the `m` first objects of `M` and the rest of the rest of `N` -/
@@ -95,7 +95,7 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
           eqToHom (functorObj_eq_pos (by lia)) ≫ f m := by
   cases m with
   | zero =>
-      have : n = 0 := by omega
+      have : n = 0 := by lia
       subst this
       simp [functorMap]
   | succ m =>
@@ -130,7 +130,7 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
       Discrete.natTrans_app, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
       limMap_π_assoc]
     split
-    · simp [dif_pos (by omega : m < n + 1)]
+    · simp [dif_pos (by lia : m < n + 1)]
     · split
       all_goals simp
 
@@ -163,7 +163,7 @@ with cone point `∏ M` is indeed a limit cone.
 noncomputable def isLimit : IsLimit (cone f) where
   lift s := Pi.lift fun m ↦
     s.π.app ⟨m + 1⟩ ≫ Pi.π (fun i ↦ if _ : i < m + 1 then M i else N i) m ≫
-      eqToHom (dif_pos (by omega : m < m + 1))
+      eqToHom (dif_pos (by lia : m < m + 1))
   fac s := by
     intro ⟨n⟩
     apply Pi.hom_ext
@@ -172,7 +172,7 @@ noncomputable def isLimit : IsLimit (cone f) where
     · simp only [Category.assoc, cone_π_app_comp_Pi_π_pos f _ _ h]
       simp only [dite_eq_ite, Functor.ofOpSequence_obj, limit.lift_π_assoc, Fan.mk_pt,
         Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc, eqToHom_trans]
-      have hh : m + 1 ≤ n := by omega
+      have hh : m + 1 ≤ n := by lia
       rw [← s.w (homOfLE hh).op]
       simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
         Category.assoc]
@@ -185,15 +185,15 @@ noncomputable def isLimit : IsLimit (cone f) where
         simp only [Functor.ofOpSequence_obj, Nat.succ_eq_add_one, homOfLE_leOfHom,
           Functor.ofOpSequence_map_homOfLE_succ, Category.assoc]
         have h₁ : (if _ : m < m + 1 then M m else N m) = if _ : m < n then M m else N m := by
-          rw [dif_pos (by omega), dif_pos (by omega)]
+          rw [dif_pos (by lia), dif_pos (by lia)]
         have h₂ : (if _ : m < n then M m else N m) = if _ : m < n + 1 then M m else N m := by
-          rw [dif_pos h, dif_pos (by omega)]
+          rw [dif_pos h, dif_pos (by lia)]
         rw [← eqToHom_trans h₁ h₂]
-        slice_lhs 2 4 => rw [ih (by omega)]
+        slice_lhs 2 4 => rw [ih (by lia)]
         simp only [functorMap, dite_eq_ite, Pi.π, limMap_π_assoc, Discrete.functor_obj_eq_as,
           Discrete.natTrans_app]
         split_ifs
-        rw [dif_pos (by omega)]
+        rw [dif_pos (by lia)]
         simp
     · simp only [Category.assoc]
       rw [cone_π_app_comp_Pi_π_neg f _ _ h]
@@ -206,7 +206,7 @@ noncomputable def isLimit : IsLimit (cone f) where
     intro n
     simp only [Functor.ofOpSequence_obj, dite_eq_ite, limit.lift_π, Fan.mk_pt,
       Fan.mk_π_app, ← h ⟨n + 1⟩, Category.assoc]
-    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f (n + 1) _ (by omega)]
+    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f (n + 1) _ (by lia)]
     simp
 
 section

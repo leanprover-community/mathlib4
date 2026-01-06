@@ -71,7 +71,7 @@ theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
   Finsupp.neg_apply _ _
 
-@[simp]
+@[simp, grind =]
 theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
   Finsupp.sub_apply _ _ _
 
@@ -180,7 +180,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by
   rw [degreeOf_lt_iff h]
-  grind [degreeOf_lt_iff, mem_support_iff, coeff_sub]
+  grind [degreeOf_lt_iff]
 
 end DegreeOf
 

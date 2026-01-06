@@ -508,12 +508,12 @@ def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) 
 @[simp]
 theorem init_snoc : init (snoc p x) = p := by
   ext i
-  simp only [init, snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [init, snoc, val_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 
 @[simp]
 theorem snoc_castSucc : snoc p x i.castSucc = p i := by
-  simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [snoc, val_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 
 @[simp]
@@ -1088,6 +1088,7 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
+set_option backward.privateInPublic true in
 private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
     { i : Fin n // p i ∧ ∀ j < i, ¬ p j } := go n (by grind) where
   go (m : Nat) (hj : ∀ j (hm : j < n - m), ¬p ⟨j, by grind⟩) := match m with
@@ -1095,6 +1096,8 @@ private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p
     then ⟨_, ⟨hnm, (hj ·.val)⟩⟩ else go m (by grind)
   | 0 => absurd h (fun ⟨⟨_, _⟩, _⟩ => by grind)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `Fin.find p h` returns the smallest index `k : Fin n` where `p k` is satisfied,
   given that it is satisfied for some `k`. -/
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
@@ -1110,7 +1113,7 @@ grind_pattern Fin.find_spec => Fin.find p h
 protected theorem find_min (h : ∃ k, p k) : ∀ {j : Fin n}, j < Fin.find p h → ¬ p j :=
   @(Fin.findX p h).2.2
 
-/-- For `m : Fin n`, if `m` satsifies `p`, then `Fin.find p h ≤ m`. -/
+/-- For `m : Fin n`, if `m` satisfies `p`, then `Fin.find p h ≤ m`. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :
     p j → Fin.find p h ≤ j := (j.find_min _ <| lt_of_not_ge ·).mtr
 
@@ -1208,10 +1211,7 @@ lemma find_of_find_le {p : Fin (m + n) → Prop} [DecidablePred p]
 
 theorem find?_eq_dite {p : Fin n → Bool} :
     find? p = if h : ∃ i, p i then some (Fin.find (p ·) h) else none := by
-  split_ifs with h
-  · simp_rw [find?_eq_some_iff, Fin.find_spec h, lt_find_iff]
-    grind
-  · simpa [find?_eq_none_iff] using h
+  split_ifs <;> grind
 
 theorem find?_decide_eq_dite :
     find? (p ·) = if h : ∃ i, p i then some (Fin.find p h) else none := by

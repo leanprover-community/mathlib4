@@ -184,6 +184,7 @@ section LT
 
 variable [LT α] {a b : α}
 
+@[to_dual self]
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
 
@@ -196,6 +197,7 @@ alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
 alias LT.lt.exists_lt_lt := exists_lt_lt_of_not_covBy
 
 /-- In a dense order, nothing covers anything. -/
+@[to_dual self]
 theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
   let ⟨_, hc⟩ := exists_between h.1
   h.2 hc.1 hc.2
@@ -204,16 +206,18 @@ theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
-@[simp]
+@[to_dual self, simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
-@[simp]
+@[to_dual self, simp]
 theorem ofDual_covBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b ⋖ a :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
+@[to_dual self]
 alias ⟨_, CovBy.toDual⟩ := toDual_covBy_toDual_iff
 
+@[to_dual self]
 alias ⟨_, CovBy.ofDual⟩ := ofDual_covBy_ofDual_iff
 
 end LT

@@ -104,7 +104,7 @@ theorem mk_le_mk {x y : α} : Quotient.mk s x ≤ Quotient.mk s y ↔ x ≤ y �
     exact fun h ↦ ((H _).out h₁.symm rfl ⟨h₂, h.le⟩).symm
   · exact .inr (_root_.trans h₁ h₂)
 
-instance [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
+instance instLinearOrder [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
   le_antisymm x y h₁ h₂ := by
     induction x using Quotient.inductionOn with | h x
     induction y using Quotient.inductionOn with | h y

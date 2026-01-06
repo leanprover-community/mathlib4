@@ -266,7 +266,7 @@ theorem iSupIndep.subtype_ne_bot_le_finrank_aux
     _ = Cardinal.lift.{w} (finrank R M : Cardinal.{v}) := by rw [finrank_eq_rank]
     _ = Cardinal.lift.{v} (finrank R M : Cardinal.{w}) := by simp
 
-/-- If `p` is an independent family of submodules of a `R`-finite module `M`, then the
+/-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
 noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
     {p : ι → Submodule R M} (hp : iSupIndep p) :
@@ -277,7 +277,7 @@ noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
   refine lt_of_le_of_lt hp.subtype_ne_bot_le_finrank_aux ?_
   simp [Cardinal.nat_lt_aleph0]
 
-/-- If `p` is an independent family of submodules of a `R`-finite module `M`, then the
+/-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is bounded above by the dimension of `M`.
 
 Note that the `Fintype` hypothesis required here can be provided by
