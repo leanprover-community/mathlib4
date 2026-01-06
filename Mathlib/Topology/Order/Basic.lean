@@ -750,7 +750,7 @@ theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α)
 instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     IsCountablyGenerated (atTop : Filter α) := by
   obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsTop x}
-  · rcases exists_countable_dense α with ⟨s, s_count, hs⟩
+  · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
     have : atTop = generate (Ici '' s) := by
       refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
       simp only [eq_empty_iff_forall_notMem, IsTop, mem_setOf_eq, not_forall, not_le] at h
