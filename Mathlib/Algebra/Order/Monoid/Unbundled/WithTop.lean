@@ -692,26 +692,4 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
 
-lemma WithTop.add_le_add_cast_iff_right {α : Type*} [Add α] [LE α] [AddRightMono α]
-  [AddRightReflectLE α] (a b : WithBot (WithTop α)) (c : α) : a + c ≤ b + c ↔ a ≤ b := by
-  induction a with
-  | bot => simp
-  | coe a =>
-    induction b with
-    | bot => simp
-    | coe b =>
-      norm_cast
-      exact WithTop.add_le_add_iff_right WithTop.coe_ne_top
-
-lemma WithTop.add_le_add_cast_iff_left {α : Type*} [Add α] [LE α] [AddLeftMono α]
-  [AddLeftReflectLE α] (a b : WithBot (WithTop α)) (c : α) : c + a ≤ c + b ↔ a ≤ b := by
-  induction a with
-  | bot => simp
-  | coe a =>
-    induction b with
-    | bot => simp
-    | coe b =>
-      norm_cast
-      exact WithTop.add_le_add_iff_left WithTop.coe_ne_top
-
 end WithBot
