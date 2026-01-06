@@ -337,10 +337,6 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space [TopologicalSpace
   rw [measure_toMeasurable]
   exact hs'.lt_top
 
-#check HasFTaylorSeriesUpToOn
-
-#check Continuous.clm_comp
-
 /-- A convenient special case of `hasFDerivAt_integral_of_continuousOn_fderiv`:
 if `f.uncurry : H × H' → E` is continuously differentiable on `u ×ˢ k` for a neighbourhood `u`
 of `x₀` and a nice compact set `k`, then a derivative of `fun x => ∫ a in k, f x a ∂μ` in `x₀` can
@@ -379,6 +375,7 @@ theorem hasFDerivAt_integral_of_contDiffOn {μ : Measure H'} {f : H → H' → E
     · intro z hz
       exact oo'w ⟨hz, hy.2⟩
   apply ContinuousWithinAt.congr_of_mem ?_ this xoo'
+  have := (hp.cont 1 le_rfl).mono oo'w x xoo'
   fun_prop
 
 /-- Iterated differentiation under integral of `x ↦ ∫ F x a` on an open set `s`, assuming that each
