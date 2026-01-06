@@ -5,7 +5,7 @@ Authors: Sven Holtrop, Leonid Ryvkin
 -/
 module
 
-import Mathlib.RingTheory.Derivation.Lie
+public import Mathlib.RingTheory.Derivation.Lie
 
 /-!
 # Lie Rinehart algebras
@@ -26,8 +26,7 @@ Lie-Rinehart algebra
 Derivation
 -/
 
-
-
+@[expose] public section
 
 /-- A Lie-Rinehart algebra over a commutative Ring `R` is a commutative `R`-algebra `A` together
 with an `A`-module `L` equipped with a Lie bracket and a Lie algebra and module homomorphism
@@ -42,10 +41,6 @@ class LieRinehartAlgebra (R A L : Type*) [CommRing R] [CommRing A] [Algebra R A]
 left_linearity : ∀ (a b : A) (x : L) , ⁅a•x, b⁆ = a * ⁅x, b⁆
 leibnizA : ∀ (x : L) (a : A) (b : A), ⁅x, a•b⁆ = a•⁅x, b⁆ + ⁅x, a⁆•b
 leibnizL : ∀ (x : L) (a : A) (y : L), ⁅x, a•y⁆ = a•⁅x, y⁆ + ⁅x, a⁆•y
-
-attribute [simp] LieRinehartAlgebra.left_linearity
-attribute [simp] LieRinehartAlgebra.leibnizA
-attribute [simp] LieRinehartAlgebra.leibnizL
 
 section instDerivationLieRinehartAlgebra
 
@@ -121,7 +116,6 @@ instance : CoeFun (L →ₗ⁅σ⁆ L') (fun _ => L → L') := ⟨fun f => f.toL
 @[simp]
 lemma lem_map_lie (f : L →ₗ⁅σ⁆ L') (x y : L) : f (⁅x, y⁆) = ⁅f x, f y⁆ := f.map_lie' x y
 
-@[simp]
 lemma lem_anchorcomp (f : L →ₗ⁅σ⁆ L') (l : L) (a : A): σ ⁅l, a⁆ = ⁅f l, σ a⁆ :=
   f.anchorcomp a l
 
