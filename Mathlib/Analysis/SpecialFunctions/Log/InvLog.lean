@@ -19,7 +19,7 @@ We prove properties of the function `x ↦ (log x)⁻¹`.
 - `deriv_inv_log` gives a formula for the derivative which holds for all values.
 -/
 
-@[expose] public section
+public section
 
 namespace Real
 
