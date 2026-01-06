@@ -21,7 +21,7 @@ In this file, we prove various properties of unique derivative sets in manifolds
   its preimage under the tangent bundle projection also has
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
