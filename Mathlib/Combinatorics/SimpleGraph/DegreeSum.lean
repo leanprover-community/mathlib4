@@ -37,7 +37,7 @@ of the corresponding vertex and that (2) the map from darts to edges is 2-to-1.
 simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field TwoSidedIdeal
 

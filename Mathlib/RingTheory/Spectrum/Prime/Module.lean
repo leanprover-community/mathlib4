@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.Support
 
 -/
 
-@[expose] public section
+public section
 
 variable {R A M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   [CommRing A] [Algebra R A] [Module A M]

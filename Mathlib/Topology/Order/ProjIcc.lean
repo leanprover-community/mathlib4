@@ -15,7 +15,7 @@ In this file we prove that the projection `Set.projIcc f a b h` is a quotient ma
 to show that `Set.IccExtend h f` is continuous if and only if `f` is continuous.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Topology

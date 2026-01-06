@@ -169,8 +169,8 @@ open Localization
 
 instance [h : HasExt.{w'} D] (X Y : C) : HasSmallLocalizedShiftedHom.{w'}
     (HomologicalComplex.quasiIso D (ComplexShape.up ℤ)) ℤ
-    (((F ⋙ CochainComplex.singleFunctor D 0).obj X))
-    (((F ⋙ CochainComplex.singleFunctor D 0).obj Y)) :=
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj X)
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj Y) :=
   h (F.obj X) (F.obj Y)
 
 /-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
@@ -181,48 +181,42 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
 open Functor in
-lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
+lemma Abelian.Ext.mapExactFunctor_hom
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ} (e : Ext X Y n) :
     (e.mapExactFunctor F).hom =
     (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫ e.hom.map F.mapDerivedCategory ≫
     ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧' := by
-  rw [← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
-  simp only [Ext.hom, Ext.homEquiv, comp_obj]
-  apply Eq.trans ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).equiv_smallShiftedHomMap
-    DerivedCategory.Q DerivedCategory.Q
-    ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
-    F.mapDerivedCategory F.mapDerivedCategoryFactors.symm e)
-  simp only [comp_obj, mapHomologicalComplexUpToQuasiIsoLocalizerMorphism_functor, Iso.app_inv,
-    Iso.symm_hom, Iso.symm_inv, Iso.app_hom]
+  have : (e.mapExactFunctor F).hom = _ :=
+    ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
+      (.up ℤ)).equiv_smallShiftedHomMap DerivedCategory.Q DerivedCategory.Q
+        ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
+          F.mapDerivedCategory F.mapDerivedCategoryFactors.symm e)
+  rw [this, ← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
   congr 2
-  · simp only [mapCochainComplexSingleFunctor, mapDerivedCategorySingleFunctor,
-      DerivedCategory.singleFunctorIsoCompQ, isoWhiskerRight_refl, isoWhiskerLeft_refl,
-      Iso.refl_trans, Iso.trans_inv, Iso.refl_inv, Category.id_comp, isoWhiskerRight_inv,
-      Iso.symm_inv, Category.assoc, isoWhiskerLeft_inv, NatTrans.comp_app, comp_obj, Iso.refl_symm,
-      associator_inv_app, whiskerRight_app, associator_hom_app, whiskerLeft_app, Category.comp_id]
-    exact (Category.id_comp _).symm
+  · dsimp [mapDerivedCategorySingleFunctor, DerivedCategory.singleFunctorIsoCompQ]
+    simp only [Category.comp_id, Category.id_comp, Category.assoc]
+    congr 1
+    change _ = _ ≫ F.mapDerivedCategory.map (𝟙 _)
+    simp
   · congr 1
-    simp only [mapCochainComplexSingleFunctor, mapDerivedCategorySingleFunctor,
-      DerivedCategory.singleFunctorIsoCompQ, isoWhiskerRight_refl, isoWhiskerLeft_refl,
-      Iso.refl_symm, Iso.refl_trans, Iso.trans_hom, isoWhiskerLeft_hom, Iso.symm_hom,
-      isoWhiskerRight_hom, Iso.refl_hom, NatTrans.comp_app, comp_obj, associator_hom_app,
-      whiskerLeft_app, associator_inv_app, whiskerRight_app, NatTrans.id_app, Category.id_comp]
-    nth_rw 2 [← Category.assoc]
-    exact (Category.comp_id _).symm.trans (Category.id_comp _).symm
+    dsimp [mapDerivedCategorySingleFunctor, DerivedCategory.singleFunctorIsoCompQ]
+    simp only [map_id, Category.id_comp, NatIso.cancel_natIso_hom_left, comp_obj]
+    exact (Category.comp_id _).symm
 
-attribute [local simp] Abelian.Ext.mapExactFunctor_eq_shiftedHom_map
+section
+
+attribute [local simp] Abelian.Ext.mapExactFunctor_hom
 attribute [local instance] HasDerivedCategory.standard
 
+variable [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
+
 @[simp]
-lemma Abelian.Ext.mapExactFunctor_zero [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    (0 : Ext X Y n).mapExactFunctor F  = 0 := by
+lemma Abelian.Ext.mapExactFunctor_zero : (0 : Ext X Y n).mapExactFunctor F  = 0 := by
   aesop
 
 @[simp]
-lemma Abelian.Ext.mapExactFunctor_add [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (f g : Ext.{w} X Y n) :
+lemma Abelian.Ext.mapExactFunctor_add (f g : Ext.{w} X Y n) :
     (f + g).mapExactFunctor F  = f.mapExactFunctor F + g.mapExactFunctor F := by
   aesop
 
@@ -234,17 +228,16 @@ noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) 
   map_add' := by simp
 
 @[simp]
-lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    ⇑(F.mapExtAddHom X Y n) = Ext.mapExactFunctor F := rfl
+lemma Functor.mapExtAddHom_coe : ⇑(F.mapExtAddHom X Y n) = Ext.mapExactFunctor F := rfl
 
-lemma Functor.mapExtAddHom_apply [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) (e : Ext X Y n) :
-    F.mapExtAddHom X Y n e = e.mapExactFunctor F := rfl
+lemma Functor.mapExtAddHom_apply (e : Ext X Y n) : F.mapExtAddHom X Y n e = e.mapExactFunctor F :=
+  rfl
 
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
 
 @[simp]
-lemma Functor.mapExactFunctor_smul [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (r : R) (f : Ext.{w} X Y n) : (r • f).mapExactFunctor F  = r • (f.mapExactFunctor F) := by
+lemma Functor.mapExactFunctor_smul (r : R) (f : Ext.{w} X Y n) :
+    (r • f).mapExactFunctor F  = r • (f.mapExactFunctor F) := by
   aesop
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
@@ -254,21 +247,20 @@ noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : 
   map_smul' := by simp
 
 @[simp]
-lemma Functor.mapExtLinearMap_toAddMonoidHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n := rfl
+lemma Functor.mapExtLinearMap_toAddMonoidHom : F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n :=
+  rfl
 
-lemma Functor.mapExtLinearMap_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    ⇑(F.mapExtLinearMap R X Y n) = Ext.mapExactFunctor F := rfl
+lemma Functor.mapExtLinearMap_coe : ⇑(F.mapExtLinearMap R X Y n) = Ext.mapExactFunctor F := rfl
 
-lemma Functor.mapExtLinearMap_apply [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (e : Ext X Y n) : F.mapExtLinearMap R X Y n e = e.mapExactFunctor F := rfl
+lemma Functor.mapExtLinearMap_apply (e : Ext X Y n) :
+    F.mapExtLinearMap R X Y n e = e.mapExactFunctor F := rfl
+
+end
 
 namespace Abelian.Ext
 
 lemma mapExt_mk₀_eq_mk₀_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
-  let _ : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).functor.CommShift ℤ := F.commShiftMapCochainComplex
   simp only [Ext.mapExactFunctor, Functor.comp_obj, Int.cast_ofNat_Int, mk₀]
   rw [(F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
     (ComplexShape.up ℤ)).smallShiftedHomMap_mk₀
@@ -288,8 +280,6 @@ lemma mapExactFunctor₀ [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) :
 lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b : ℕ}
     (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
     (α.comp β h).mapExactFunctor F = (α.mapExactFunctor F).comp (β.mapExactFunctor F) h := by
-  let _ : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).functor.CommShift ℤ := F.commShiftMapCochainComplex
   simp only [mapExactFunctor, Functor.comp_obj, comp]
   have h' : b + a = (c : ℤ) := by simp [← h, add_comm]
   rw [(F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
@@ -297,12 +287,11 @@ lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y)
     ((F.mapCochainComplexSingleFunctor 0).app Z) α β h']
 
+attribute [local instance] HasDerivedCategory.standard in
 lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex C}
     (hS : S.ShortExact) : hS.extClass.mapExactFunctor F = (hS.map_of_exact F).extClass := by
-  let _ := HasDerivedCategory.standard C
-  let _ := HasDerivedCategory.standard D
   ext
-  rw [Ext.mapExactFunctor_eq_shiftedHom_map, hS.extClass_hom]
+  rw [Ext.mapExactFunctor_hom, hS.extClass_hom]
   exact (F.mapShiftedHom_singleδ hS).trans (hS.map_of_exact F).extClass_hom.symm
 
 end Abelian.Ext

@@ -183,4 +183,29 @@ theorem repr_algebraMap {ι : Type*} {B : Basis ι R S} {i : ι} (hBi : B i = 1)
     B.repr (algebraMap R S r) = Finsupp.single i r := by
   ext j; simp [Algebra.algebraMap_eq_smul_one, ← hBi]
 
-end Module.Basis
+end Basis
+
+namespace End
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
+
+theorem mem_center_iff {f : End R M} :
+    f ∈ Set.center (End R M) ↔ ∃ (α : R) (hα : α ∈ Set.center R), f = smulLeft α hα := by
+  simp only [Semigroup.mem_center_iff, LinearMap.ext_iff, mul_apply]
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  by_cases! Subsingleton M
+  · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩
+  let b := Free.chooseBasis R M
+  let i := b.index_nonempty.some
+  have H x : f x = b.repr (f (b i)) i • x := by simpa using (h ((b.coord i).smulRight x) (b i)).symm
+  exact ⟨b.coord i <| f <| b i, fun r ↦ by simpa using congr(b.coord i $(H <| r • b i)), H⟩
+
+theorem mem_submonoidCenter_iff {f : End R M} :
+    f ∈ Submonoid.center (End R M) ↔ ∃ (α : R) (hα : α ∈ Submonoid.center R), f = smulLeft α hα :=
+  mem_center_iff
+
+theorem mem_subsemigroupCenter_iff {f : End R M} :
+    f ∈ Subsemigroup.center (End R M) ↔
+      ∃ (α : R) (hα : α ∈ Subsemigroup.center R), f = smulLeft α hα :=
+  mem_center_iff
+
+end Module.End
