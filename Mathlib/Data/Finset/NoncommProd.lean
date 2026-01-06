@@ -234,10 +234,7 @@ open scoped Function -- required for scoped `on` notation
 @[to_additive]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) :
-    Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := by
-  simp_rw [Multiset.mem_map]
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _
-  exact comm.of_refl ha hb
+    Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := Multiset.map_set_pairwise comm
 
 /-- Product of a `s : Finset α` mapped with `f : α → β` with `[Monoid β]`,
 given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
