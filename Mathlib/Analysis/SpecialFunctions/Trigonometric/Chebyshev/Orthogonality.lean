@@ -19,7 +19,6 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 # Chebyshev polynomials over the reals: orthogonality
 
 Chebyshev T polynomials are orthogonal with respect to `1 / √ (1 - x ^ 2)`.
-Chebyshev U polynomials are orthogonal with respect to `√ (1 - x ^ 2)`.
 
 ## Main statements
 
