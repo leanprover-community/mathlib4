@@ -160,14 +160,14 @@ theorem implicitFunction_unique (h : IsContDiffImplicitAt n f f' a) :
         x = h.implicitFunctionData.implicitFunction x.1 y from by
     filter_upwards [H] with xy hxy heq
     rw [implicitFunction, implicitFunctionAux, ← hxy.self_of_nhds (by rw [← heq]; rfl)]
-  have huniq' := h.implicitFunctionData.implicitFunction_apply_image.prod_mk
+  have huniq := h.implicitFunctionData.implicitFunction_apply_image.prod_mk
     h.implicitFunctionData.prod_map_implicitFunction
   rw [implicitFunctionData_pt, ImplicitFunctionData.prodFun_apply,
       implicitFunctionData_leftFun_pt, implicitFunctionData_rightFun_pt, nhds_prod_eq, nhds_prod_eq,
-      eventually_swap4_prod_iff, eventually_assoc_iff'] at huniq'
-  replace huniq' := huniq'.curry.diag_of_prod_left
-  rw [← nhds_prod_eq] at huniq'
-  filter_upwards [huniq'] with xy hxy
+      eventually_swap4_prod_iff, eventually_assoc_iff'] at huniq
+  replace huniq := huniq.curry.diag_of_prod_left
+  rw [← nhds_prod_eq] at huniq
+  filter_upwards [huniq] with xy hxy
   filter_upwards [hxy] with fa hfa heq
   simp_all
 
