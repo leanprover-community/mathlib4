@@ -1005,7 +1005,7 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
   exact ⟨_, hf₁ ⟨x, hx⟩⟩
 
 /-- If `φ` is a monomorphism in `CommRingCat`, it is not in general true that `Spec φ` is an epi.
-(`ℤ ⊆ ℤ[1/2]` but `Spec ℤ[1/2] ⟶ Spec ℤ` is not epi, since epic open immersion are isomorphisms)
+(`ℤ ⊆ ℤ[1/2]` but `Spec ℤ[1/2] ⟶ Spec ℤ` is not epi, since epic open immersions are isomorphisms)
 But if the range of `f g : Spec R ⟶ X` are contained in an common affine open `U`, one can still
 cancel `Spec.map φ ≫ f = Spec.map φ ≫ g` to get `f = g`. -/
 lemma eq_of_SpecMap_comp_eq_of_isAffineOpen {R S : CommRingCat} {X : Scheme}
