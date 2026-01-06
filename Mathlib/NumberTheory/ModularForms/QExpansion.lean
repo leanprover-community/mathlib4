@@ -486,13 +486,13 @@ lemma qExpansion_neg [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
 
 @[simp]
 lemma qExpansion_zero [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) : qExpansion h (0 : ModularForm Γ k) = 0 := by
-  simpa using (qExpansion_smul (a := (0 : ℂ)) (f := (0 : ModularForm Γ k)) hh hΓ)
+    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) : qExpansion h 0 = 0 := by
+  simpa using (qExpansion_smul (a := (0 : ℂ)) (f := (0 : ModularForm Γ 1)) hh hΓ)
 
 lemma qExpansion_injective [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (i : ℤ) (f : ModularForm Γ i) :
     qExpansion h f = 0 ↔ f = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (by simp only [h, qExpansion_zero hh hΓ])⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ (by simp [h, qExpansion_zero hh hΓ])⟩
   ext z
   simp [← (hasSum_qExpansion f hh hΓ z).tsum_eq, h]
 
