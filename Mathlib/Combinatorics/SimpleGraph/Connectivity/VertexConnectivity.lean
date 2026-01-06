@@ -6,7 +6,7 @@ Authors: Youheng Luo
 module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.Set.Card
-
+public import Mathlib.Combinatorics.SimpleGraph.IsolateVerts
 /-!
 # Vertex Connectivity
 
@@ -26,31 +26,15 @@ namespace SimpleGraph
 
 variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ∞} {u v : V}
 
-/-- `G.isolateVerts s` is the graph where all vertices in `s` are isolated. -/
-def isolateVerts (G : SimpleGraph V) (s : Set V) : SimpleGraph V where
-  Adj u v := u ∉ s ∧ v ∉ s ∧ G.Adj u v
-  symm _ _ h := ⟨h.2.1, h.1, h.2.2.symm⟩
-
-@[simp]
-lemma isolateVerts_empty : G.isolateVerts ∅ = G := by
-  ext; simp [isolateVerts]
-
-@[simp]
-lemma isolateVerts_bot (s : Set V) : (⊥ : SimpleGraph V).isolateVerts s = ⊥ := by
-  ext; simp [isolateVerts]
-
-@[simp]
-lemma isolateVerts_le (s : Set V) : G.isolateVerts s ≤ G :=
-  fun _ _ h ↦ h.2.2
-
 variable (G k u v) in
 /-- Two vertices are `k`-vertex-reachable if they remain reachable after removing
 strictly fewer than `k` other vertices. -/
 def IsVertexReachable : Prop :=
   ∀ ⦃s : Set V⦄, s.encard < k → u ∉ s → v ∉ s → (G.isolateVerts s).Reachable u v
 
+variable (u) in
 @[simp]
-lemma IsVertexReachable.refl (u : V) : G.IsVertexReachable k u u :=
+lemma IsVertexReachable.refl : G.IsVertexReachable k u u :=
   fun _ _ _ _ ↦ .refl _
 
 @[symm]
@@ -74,10 +58,11 @@ lemma IsVertexReachable.anti (hkl : k ≤ l) (h : G.IsVertexReachable l u v) :
 lemma IsVertexReachable.zero : G.IsVertexReachable 0 u v :=
   fun _ hs ↦ absurd hs not_lt_zero
 
-lemma IsVertexReachable.of_adj (h : G.Adj u v) (k : ℕ∞) : G.IsVertexReachable k u v :=
-  fun _ _ hu hv ↦ (Adj.reachable ⟨hu, hv, h⟩)
+variable (k) in
+lemma IsVertexReachable.of_adj (h : G.Adj u v) : G.IsVertexReachable k u v :=
+  fun _ _ hu hv ↦ Adj.reachable ⟨hu, hv, h⟩
 
-alias _root_.SimpleGraph.Adj.isVertexReachable := IsVertexReachable.of_adj
+alias Adj.isVertexReachable := IsVertexReachable.of_adj
 
 /-- A vertex pair is reachable if it is `k`-vertex-reachable for `k ≠ 0`. -/
 lemma IsVertexReachable.reachable (hk : k ≠ 0) (h : G.IsVertexReachable k u v) :
@@ -85,7 +70,7 @@ lemma IsVertexReachable.reachable (hk : k ≠ 0) (h : G.IsVertexReachable k u v)
   rw [← G.isolateVerts_empty]
   apply h <;> simp [pos_of_ne_zero hk]
 
-variable (G) (k : ℕ∞) in
+variable (G k) in
 /-- A graph is `k`-vertex-connected if it has more than `k` vertices
 and any two vertices are `k`-vertex-reachable. -/
 def IsVertexConnected : Prop :=
@@ -93,50 +78,43 @@ def IsVertexConnected : Prop :=
 
 @[simp]
 lemma isVertexConnected_zero : G.IsVertexConnected 0 ↔ Nonempty V := by
-  rw [IsVertexConnected]
-  have h0 : (0 : ℕ∞) + 1 = 1 := rfl
-  rw [h0]
-  simp [ENat.one_le_card_iff_nonempty]
+  simp [IsVertexConnected, ENat.one_le_card_iff_nonempty]
+
+/-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
+lemma isVertexReachable_one_iff :
+    G.IsVertexReachable 1 u v ↔ G.Reachable u v := by
+  constructor
+  · exact fun h ↦ h.reachable (by simp)
+  · rintro h s hs hu hv
+    rw [ENat.lt_one_iff_eq_zero, Set.encard_eq_zero] at hs
+    rw [hs, isolateVerts_empty]
+    exact h
 
 /-- 1-vertex-connectivity is equivalent to being a connected graph with at least 2 vertices. -/
+@[simp]
 lemma isVertexConnected_one :
-    G.IsVertexConnected 1 ↔ 2 ≤ ENat.card V ∧ G.Connected := by
-  rw [IsVertexConnected]
-  have h1 : (1 : ℕ∞) + 1 = 2 := rfl
-  rw [h1]
+    G.IsVertexConnected 1 ↔ Nontrivial V ∧ G.Connected := by
+  rw [IsVertexConnected, ENat.add_one_le_iff (by simp), ENat.one_lt_card_iff_nontrivial]
   constructor
-  · rintro ⟨h_card, h_reach⟩
-    refine ⟨h_card, ?_⟩
-    rw [connected_iff_exists_forall_reachable]
-    have h_ne : Nonempty V := by
-      rw [← ENat.one_le_card_iff_nonempty]
-      exact (self_le_add_right (1 : ℕ∞) 1).trans h_card
-    rcases h_ne with ⟨x⟩
-    refine ⟨x, fun y ↦ (h_reach x y).reachable (by simp)⟩
-  · rintro ⟨h_card, h_conn⟩
-    refine ⟨h_card, fun u v s hs _ _ ↦ ?_⟩
-    have : s = ∅ := by
-      rw [← Set.encard_eq_zero, ← ENat.lt_one_iff_eq_zero]
-      exact hs
-    subst this
-    rw [isolateVerts_empty]
-    exact h_conn.preconnected u v
+  · rintro ⟨h_nt, h_reach⟩
+    refine ⟨h_nt, ?_⟩
+    haveI : Nontrivial V := h_nt
+    exact {
+      nonempty := inferInstance
+      preconnected := fun u v ↦ (h_reach u v).reachable (by simp)
+    }
+  · rintro ⟨h_nt, h_conn⟩
+    exact ⟨h_nt, fun u v ↦ isVertexReachable_one_iff.mpr (h_conn.preconnected u v)⟩
 
 /-- Vertex connectivity is antitonic in `k`. -/
-lemma IsVertexConnected.anti {k l : ℕ∞} (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
-    G.IsVertexConnected l := by
-  constructor
-  · let h_le := add_le_add_right hkl 1
-    let h_card := hc.1
-    have h1 : l + 1 = 1 + l := add_comm ..
-    have h2 : k + 1 = 1 + k := add_comm ..
-    rw [h1]
-    rw [h2] at h_card
-    exact h_le.trans h_card
-  · exact fun u v ↦ (hc.2 u v).anti hkl
+@[gcongr]
+lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
+    G.IsVertexConnected l :=
+  ⟨by exact (add_le_add hkl le_rfl).trans hc.1, fun u v ↦ (hc.2 u v).anti hkl⟩
 
 /-- Vertex connectivity is monotonic in the graph. -/
-lemma IsVertexConnected.mono {k : ℕ∞} (hGH : G ≤ H) (hc : G.IsVertexConnected k) :
+@[gcongr]
+lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) :
     H.IsVertexConnected k :=
   ⟨hc.1, fun u v ↦ (hc.2 u v).mono hGH⟩
 
@@ -150,6 +128,6 @@ lemma isVertexConnected_top [Fintype V] [Nonempty V] :
   · intro u v
     by_cases h : u = v
     · subst h; exact .refl _
-    · exact IsVertexReachable.of_adj h _
+    · exact IsVertexReachable.of_adj _ h
 
 end SimpleGraph
