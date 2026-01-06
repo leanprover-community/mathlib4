@@ -292,7 +292,7 @@ theorem IsUnit.eq_unitaryGroup_mul_posDef [DecidableEq n] {A : Matrix n n 𝕜} 
     refine (IsUnit.isStrictlyPositive ?_ (CFC.abs_nonneg A)).posDef
     exact (CFC.isUnit_sqrt_iff (star A * A)).mpr <| by simp [hA]
   have : Invertible (CFC.abs A) := h.isStrictlyPositive.isUnit.invertible
-  have : 0 ≤ (CFC.abs A)⁻¹ := (star_mul_self_nonneg A).posSemidef.inv_sqrt ▸ (CFC.sqrt_nonneg _)
+  have : 0 ≤ (CFC.abs A)⁻¹ := (star_mul_self_nonneg A).posSemidef.inv_sqrt ▸ CFC.sqrt_nonneg _
   have hU : A * (CFC.abs A)⁻¹ ∈ unitaryGroup n 𝕜 := by
     simp only [mem_unitaryGroup_iff', StarMul.star_mul]
     rw [mul_assoc, ← mul_assoc _ A, ← CFC.abs_mul_abs A]
