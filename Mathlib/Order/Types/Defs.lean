@@ -87,7 +87,7 @@ instance : One OrderType where
 lemma one_def : (1 : OrderType) = type PUnit := rfl
 
 @[simp]
-theorem type_ordtoType (o : OrderType) : type o.ToType = o := surjInv_eq Quot.exists_rep o
+theorem type_toType (o : OrderType) : type o.ToType = o := surjInv_eq Quot.exists_rep o
 
 theorem type_eq {α β} [LinearOrder α] [LinearOrder β] :
     type α = type β ↔ Nonempty (α ≃o β) :=
@@ -125,14 +125,14 @@ theorem type_eq_one [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
 
 @[simp]
 theorem isEmpty_toType_iff {o : OrderType} : IsEmpty o.ToType ↔ o = 0 := by
-  rw [← @type_eq_zero o.ToType, type_ordtoType]
+  rw [← @type_eq_zero o.ToType, type_toType]
 
 instance isEmpty_toType_zero : IsEmpty (ToType 0) :=
  isEmpty_toType_iff.2 rfl
 
 @[simp]
 theorem nonempty_toType_iff {o : OrderType} : Nonempty o.ToType ↔ o ≠ 0 := by
-  rw [← @type_ne_zero_iff o.ToType, type_ordtoType]
+  rw [← @type_ne_zero_iff o.ToType, type_toType]
 
 protected theorem one_ne_zero : (1 : OrderType) ≠ 0 :=
   type_ne_zero
@@ -144,7 +144,7 @@ instance nontrivial : Nontrivial OrderType.{u} :=
 @[elab_as_elim]
 theorem inductionOn {C : OrderType → Prop} (o : OrderType)
     (H : ∀ α [LinearOrder α], C (type α)) : C o :=
-  Quot.inductionOn o (fun α ↦ H α.carrier)
+  Quot.inductionOn o (fun α ↦ H α)
 
 /-- `Quotient.inductionOn₂` specialized to `OrderType`. -/
 @[elab_as_elim]
@@ -169,12 +169,10 @@ def liftOn {δ : Sort v} (o : OrderType) (f : ∀ (α) [LinearOrder α], δ)
     fun w₁ w₂ h ↦ c w₁ w₂ (Quotient.sound h)
 
 @[simp]
-theorem liftOnLinOrd_type {δ : Sort v} (f : ∀ (α) [LinearOrder α], δ)
+theorem liftOn_type {δ : Sort v} (f : ∀ (α) [LinearOrder α], δ)
     (c : ∀ (α) [LinearOrder α] (β) [LinearOrder β],
       type α = type β → f α = f β) {γ} [inst : LinearOrder γ] :
-    liftOn (type γ) f c = f γ := by
-  change Quotient.liftOn' ⟦_⟧ _ _ = _
-  rw [Quotient.liftOn'_mk]
+    liftOn (type γ) f c = f γ := rfl
 
 /-! ### The order on `OrderType` -/
 
@@ -182,14 +180,13 @@ theorem liftOnLinOrd_type {δ : Sort v} (f : ∀ (α) [LinearOrder α], δ)
 The order is defined so that `type α ≤ type β` iff there exists an order embedding `α ↪o β`.
 -/
 instance : Preorder OrderType where
-  le a b :=
-    Quotient.liftOn₂ a b (fun r s ↦ Nonempty (r ↪o s))
+  le o₁ o₂ :=
+    Quotient.liftOn₂ o₁ o₂ (fun r s ↦ Nonempty (r ↪o s))
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
       ⟨fun ⟨h⟩ ↦ ⟨(f.symm.toOrderEmbedding.trans h).trans g.toOrderEmbedding⟩, fun ⟨h⟩ ↦
         ⟨(f.toOrderEmbedding.trans h).trans g.symm.toOrderEmbedding⟩⟩
-  le_refl := Quot.ind fun _ ↦ ⟨(OrderIso.refl _).toOrderEmbedding⟩
-  le_trans a b c :=
-    Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
+  le_refl o := inductionOn o (fun α _ ↦ ⟨(OrderIso.refl _).toOrderEmbedding⟩)
+  le_trans o₁ o₂ o₃ := inductionOn₃ o₁ o₂ o₃ fun _ _ _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
 
 instance instNeZeroOne : NeZero (1 : OrderType) :=
   ⟨OrderType.one_ne_zero⟩
@@ -208,7 +205,7 @@ alias _root_.OrderEmbedding.type_le_type := type_le_type
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
   inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type)
 
-instance : OrderBot OrderType where
+instance instOrdBot : OrderBot OrderType where
   bot := 0
   bot_le := OrderType.zero_le
 
@@ -219,6 +216,10 @@ theorem bot_eq_zero : (⊥ : OrderType) = 0 :=
 @[simp]
 protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
   not_lt_bot
+
+@[simp]
+theorem pos_of_ne_zero (o : OrderType) : 0 < o → o ≠ 0 :=
+  ne_bot_of_gt
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 public def omega0 : OrderType := type ℕ

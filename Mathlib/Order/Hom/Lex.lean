@@ -143,16 +143,6 @@ theorem sumLexIicIoi_symm_apply_Iic (a : Iic x) : (sumLexIicIoi x).symm a = Sum.
 theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = Sum.inr a :=
   sumLexIicIoi_symm_apply_of_lt a.2
 
-lemma sumLexEmpty (α : Type*) {β : Type*} [LinearOrder α] [IsEmpty β] [LinearOrder β] :
-    Nonempty (Lex (α ⊕ β) ≃o α) :=
-  ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := α) (β := β)).symm.trans
-    (RelIso.sumLexEmpty (β := β) (α := α) (r := (· < ·)) (s := (· < ·))))⟩
-
-lemma emptySumLex (α : Type*) {β : Type*} [LinearOrder α] [IsEmpty β] [LinearOrder β] :
-    Nonempty (Lex (β ⊕ α) ≃o α) :=
-  ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := β) (β := α)).trans
-    (RelIso.emptySumLex (β := α) (α := β) (r := (· < ·)) (s := (· < ·))))⟩
-
 end OrderIso
 
 /-! ### Degenerate products -/
