@@ -300,7 +300,7 @@ instance : SMul ℕ (M ⟶ N) where
 instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
