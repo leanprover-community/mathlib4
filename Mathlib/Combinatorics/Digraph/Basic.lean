@@ -476,7 +476,7 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
     · simp_rw [H_verts, Set.subset_def]
       simp [max, LE.le, SemilatticeSup.sup]
       intro v hv
-      
+
       done
     · done
 
