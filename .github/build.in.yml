@@ -395,7 +395,7 @@ jobs:
           # do not try to upload files just downloaded
 
           echo "Uploading cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -451,8 +451,8 @@ jobs:
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
