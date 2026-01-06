@@ -75,7 +75,7 @@ instance [IsRefl α r] : IsRefl α (CompRel r) where
 theorem CompRel.symm : CompRel r a b → CompRel r b a :=
   Or.symm
 
-instance : IsSymm α (CompRel r) where
+instance : Std.Symm (CompRel r) where
   symm _ _ := CompRel.symm
 
 theorem compRel_comm {a b : α} : CompRel r a b ↔ CompRel r b a :=
@@ -208,7 +208,7 @@ variable {r}
 theorem IncompRel.symm : IncompRel r a b → IncompRel r b a :=
   And.symm
 
-instance : IsSymm α (IncompRel r) where
+instance : Std.Symm (IncompRel r) where
   symm _ _ := IncompRel.symm
 
 theorem incompRel_comm {a b : α} : IncompRel r a b ↔ IncompRel r b a :=
