@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Normed.Module.Ball.Action
+public import Mathlib.Algebra.Group.PNatPowAssoc
 
 /-!
 # Poincaré disc
@@ -17,8 +18,8 @@ introduce some basic operations on this disc.
 
 @[expose] public section
 
-
-open Set Function Metric
+open Set Function Metric Filter
+open scoped Topology
 
 noncomputable section
 
@@ -49,6 +50,12 @@ theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
 
 @[simp, norm_cast]
 theorem coe_inj {z w : 𝔻} : (z : ℂ) = w ↔ z = w := Subtype.val_inj
+
+@[fun_prop]
+theorem isEmbedding_coe : Topology.IsEmbedding ((↑) : 𝔻 → ℂ) := .subtypeVal
+
+@[fun_prop]
+theorem continuous_coe : Continuous ((↑) : 𝔻 → ℂ) := isEmbedding_coe.continuous
 
 theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
   mem_ball_zero_iff.1 z.2
@@ -148,6 +155,32 @@ instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : �
 @[simp, norm_cast]
 theorem coe_smul_closedBall (z : closedBall (0 : ℂ) 1) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
+
+instance : Pow UnitDisc ℕ+ where
+  pow z n := ⟨z ^ (n : ℕ), by simp [pow_lt_one_iff_of_nonneg, z.norm_lt_one]⟩
+
+@[simp, norm_cast]
+theorem coe_pow (z : 𝔻) (n : ℕ+) : ((z ^ n : 𝔻) : ℂ) = z ^ (n : ℕ) := rfl
+
+@[fun_prop]
+theorem continuous_pow (n : ℕ+) : Continuous (· ^ n : 𝔻 → 𝔻) := by
+  simp only [isEmbedding_coe.continuous_iff, Function.comp_def, coe_pow]
+  fun_prop
+
+@[simp]
+theorem pow_eq_zero {z : 𝔻} {n : ℕ+} : z ^ n = 0 ↔ z = 0 := by
+  rw [← coe_inj, coe_pow]
+  simp
+
+instance : PNatPowAssoc 𝔻 where
+  ppow_add m n z := mod_cast pow_add (z : ℂ) m n
+  ppow_one z := by simp [← coe_inj]
+
+theorem tendsto_pow_atTop_nhds_zero (z : 𝔻) :
+    Tendsto (fun n : ℕ+ ↦ z ^ n) atTop (𝓝 0) := by
+  simp only [isEmbedding_coe.tendsto_nhds_iff, comp_def, coe_pow]
+  exact tendsto_pow_atTop_nhds_zero_iff_norm_lt_one.mpr z.norm_lt_one
+    |>.comp tendsto_PNat_val_atTop_atTop
 
 /-- Real part of a point of the unit disc. -/
 def re (z : 𝔻) : ℝ :=
