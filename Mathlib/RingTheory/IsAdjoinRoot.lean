@@ -444,7 +444,7 @@ theorem modByMonicHom_map (g : R[X]) : h.modByMonicHom (h.map g) = g %ₘ f :=
 theorem map_modByMonicHom (x : S) : h.map (h.modByMonicHom x) = x := by
   simp [modByMonicHom, map_modByMonic, map_repr]
 
-@[simp]
+@[simp, grind =]
 theorem modByMonicHom_root_pow {n : ℕ} (hdeg : n < natDegree f) :
     h.modByMonicHom (h.root ^ n) = X ^ n := by
   nontriviality R
@@ -512,7 +512,7 @@ def powerBasis : PowerBasis R S where
   basis := h.basis
   basis_eq_pow := h.basis_apply
 
-@[simp]
+@[simp, grind =]
 theorem basis_repr (x : S) (i : Fin (natDegree f)) :
     h.basis.repr x i = (h.modByMonicHom x).coeff (i : ℕ) := by
   simp [IsAdjoinRootMonic.basis, toFinsupp_apply]
@@ -568,20 +568,7 @@ theorem coeff_apply (z : S) (i : ℕ) :
   · exact h.coeff_apply_le z i (le_of_not_gt hi)
 
 theorem coeff_root_pow {n} (hn : n < natDegree f) : h.coeff (h.root ^ n) = Pi.single n 1 := by
-  ext i
-  rw [coeff_apply]
-  split_ifs with hi
-  · calc
-      h.basis.repr (h.root ^ n) ⟨i, _⟩ = h.basis.repr (h.basis ⟨n, hn⟩) ⟨i, hi⟩ := by
-        rw [h.basis_apply, Fin.val_mk]
-      _ = Pi.single (M := fun _ => R) ((⟨n, hn⟩ : Fin _) : ℕ) (1 : (fun _ => R) n)
-        ↑(⟨i, _⟩ : Fin _) := by
-        rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
-          Finsupp.single_apply_left Fin.val_injective]
-      _ = Pi.single (M := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
-  · rw [Pi.single_eq_of_ne]
-    rintro rfl
-    simp [hi] at hn
+  grind [coeff_apply]
 
 theorem coeff_one [Nontrivial S] : h.coeff 1 = Pi.single 0 1 := by
   rw [← h.coeff_root_pow h.deg_pos, pow_zero]
