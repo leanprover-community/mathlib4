@@ -21,24 +21,24 @@ public import Mathlib.RingTheory.Support
 In this section we proved the rees theorem for depth, which build the relation between
 the vanishing of certain `Ext` typs and length of maximal regular sequence in a certain ideal.
 
-# Main results
+## Main results
 
-* `IsSMulRegular.subsingleton_linearMap_iff` : for finitely generated `R`-module `N M`,
-  `N →ₗ[R] M = 0` iff there is a `M`-regular in `Module.annihilator R N`.
+* `IsSMulRegular.subsingleton_linearMap_iff` : for finitely generated `R`-module `M, N`,
+  `Hom(N, M) = 0` iff there is an `M`-regular element in `Module.annihilator R N`.
   This is the case for `n = 0` in the Rees theorem.
 
 * `exists_isRegular_tfae` : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
   finitely generated and nontrivial `R`-module `M` satisfying `IM < M`, we proved TFAE:
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
-    zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+    zero locus of `I`, `∀ i < n, Ext N M i = 0`
   · `∀ i < n, Ext (A⧸I) M i = 0`
-  · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-    zero lucus of `I`, `∀ i < n, Ext N M i = 0`
-  · there exist a `M`-regular sequence of length `n` with every element in `I`
+  · there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+    zero locus of `I`, `∀ i < n, Ext N M i = 0`
+  · there exists a `M`-regular sequence of length `n` with every element in `I`
 
 -/
 
-public section
+@[expose] public section
 
 open IsLocalRing LinearMap Module
 
@@ -135,19 +135,17 @@ lemma Ideal.quotient_smul_top_lt_of_le_smul_top (I : Ideal R) {M : Type*} [AddCo
 
 variable [Small.{v} R]
 
-lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
-    ∀ M : ModuleCat.{v} R, [Module.Finite R M] →
-    I • (⊤ : Submodule R M) < ⊤ → (∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
-    Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) →
+lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (exists_N : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
+      Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) :
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
-  induction n with
+  induction n generalizing M with
   | zero =>
-    intro M M_fin smul_lt exists_N
     let : Nontrivial M := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt _ _ smul_lt)
     use []
     simp [isRegular_iff]
   | succ n ih =>
-    intro M M_fin smul_lt exists_N
     rcases exists_N with ⟨N, ntr, fin, h_supp, h_ext⟩
     have h_supp' := h_supp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
@@ -184,7 +182,8 @@ lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Idea
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
-lemma pow_mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
+lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono
+    (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
     (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
     N (add_zero i)))) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
     N (add_zero i))) := by
@@ -203,14 +202,15 @@ lemma pow_mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleC
 
 lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
-    (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I) :
-    ∀ M : ModuleCat.{v} R, [Module.Finite R M] → I • (⊤ : Submodule R M) < ⊤ →
-    (∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs) →
+    (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
+    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (exists_rs : ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs) :
     ∀ i < n, Subsingleton (Ext N M i) := by
-  induction n with
+  induction n generalizing M with
   | zero => simp
   | succ n ih =>
-    rintro M Mfin smul_lt ⟨rs, len, mem, reg⟩ i hi
+    rcases exists_rs with ⟨rs, len, mem, reg⟩
+    rintro i hi
     have le_rad := Nsupp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_subset_zeroLocus_iff] at le_rad
     match rs with
@@ -248,7 +248,7 @@ lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n
             (ih (ModuleCat.of R M') smul_lt' ⟨rs', len, mem.2, reg.2⟩ (i - 1) (by omega))
         let gk := (AddCommGrpCat.ofHom
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
-        have mono_gk := pow_mono_of_mono a kpos i mono_g
+        have mono_gk := Ext.pow_mono_of_mono a kpos i mono_g
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
         have zero_gk : gk = 0 := smul_id_postcomp_eq_zero_of_mem_ann hk i
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
@@ -258,11 +258,11 @@ The Rees theorem
 For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated and nontrivial
 `R`-module `M` satisfying `IM < M`, we proved TFAE:
 · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
-  zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+  zero locus of `I`, `∀ i < n, Ext N M i = 0`
 · `∀ i < n, Ext (A⧸I) M i = 0`
-· there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-  zero lucus of `I`, `∀ i < n, Ext N M i = 0`
-· there exist a `M`-regular sequence of length `n` with every element in `I`
+· there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+  zero locus of `I`, `∀ i < n, Ext N M i = 0`
+· there exists a `M`-regular sequence of length `n` with every element in `I`
 -/
 lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
