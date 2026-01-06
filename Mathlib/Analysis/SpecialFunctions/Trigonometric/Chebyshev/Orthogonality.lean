@@ -77,10 +77,7 @@ theorem integral_T_real (n : ℤ) :
         simp
       · refine MeasureTheory.ae_restrict_of_forall_mem measurableSet_Icc (fun x hx => ?_)
         simp_rw [T_real_cos, norm_mul, norm_eq_abs]
-        calc
-          |cos (n * arccos x)| * |-(1 / √(1 - x ^ 2))| ≤ 1 * |-(1 / √(1 - x ^ 2))| := by
-            gcongr; exact abs_cos_le_one _
-          _ = |(1 / √(1 - x ^ 2))| := by simp
+        dsimp; grw [abs_cos_le_one]; simp
   _ = ∫ θ in 0..π, cos (n * θ) := by simp
 
 theorem integral_T_real_zero :
