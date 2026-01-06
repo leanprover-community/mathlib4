@@ -39,9 +39,9 @@ The anchor is later derived as a consequence of the definition.
 class LieRinehartAlgebra (R A L : Type*) [CommRing R] [CommRing A] [Algebra R A]
 [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L] [LieRingModule L A]
 [LieModule R L A] where
-left_linearity : ∀ (a b : A) (x : L) , ⁅a • x, b⁆ = a * ⁅x, b⁆
-leibnizA : ∀ (x : L) (a : A) (b : A),  ⁅x, a•b⁆ = a•⁅x, b⁆ + ⁅x, a⁆•b
-leibnizL : ∀ (x : L) (a : A) (y : L),  ⁅x, a•y⁆ = a•⁅x, y⁆ + ⁅x, a⁆•y
+left_linearity : ∀ (a b : A) (x : L) , ⁅a•x, b⁆ = a * ⁅x, b⁆
+leibnizA : ∀ (x : L) (a : A) (b : A), ⁅x, a•b⁆ = a•⁅x, b⁆ + ⁅x, a⁆•b
+leibnizL : ∀ (x : L) (a : A) (y : L), ⁅x, a•y⁆ = a•⁅x, y⁆ + ⁅x, a⁆•y
 
 attribute [simp] LieRinehartAlgebra.left_linearity
 attribute [simp] LieRinehartAlgebra.leibnizA
@@ -52,8 +52,8 @@ section instDerivationLieRinehartAlgebra
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
 
-instance instDerLieRingModule : LieRingModule (Derivation R A A) A where
-bracket := fun X a ↦ X ( a )
+instance : LieRingModule (Derivation R A A) A where
+bracket := fun X a ↦ X a
 add_lie := by simp
 lie_add := by simp
 leibniz_lie := fun _ _ _ ↦ Eq.symm (add_eq_of_eq_sub rfl)
@@ -63,7 +63,7 @@ smul_lie := fun _ _ _ ↦ rfl
 lie_smul := fun _ _ _ ↦ Derivation.map_smul_of_tower _ _ _
 
 @[simp]
-lemma bracketmul (X : Derivation R A A) (a : A) : ⁅ X ,a ⁆ = X a := rfl
+lemma bracketmul (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
 
 
 /-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra
@@ -110,8 +110,8 @@ structure Hom (σ : A →ₐ[R] A') (L L' : Type*) [LieRing L] [Module A L] [Lie
 [Module A' L'] [LieAlgebra R L'] [IsScalarTower R A' L'] [LieRingModule L' A'] [LieModule R L' A']
 [LieRinehartAlgebra R A' L']
 extends LinearMap (R := A) (S := A') σ.toRingHom L L' where
-map_lie' : ∀ (x y : L), toLinearMap ⁅x,y⁆ = ⁅ toLinearMap x, toLinearMap y ⁆
-anchorcomp: ∀ (a : A) (l : L), σ (⁅l, a⁆)  =  ⁅(toLinearMap l), (σ a)⁆
+map_lie' : ∀ (x y : L), toLinearMap ⁅x, y⁆ = ⁅toLinearMap x, toLinearMap y⁆
+anchorcomp: ∀ (a : A) (l : L), σ (⁅l, a⁆) = ⁅(toLinearMap l), (σ a)⁆
 
 @[inherit_doc]
 notation:25 L " →ₗ⁅" σ:25 "⁆ " L':0 => LieRinehartAlgebra.Hom σ L L'
@@ -119,14 +119,14 @@ notation:25 L " →ₗ⁅" σ:25 "⁆ " L':0 => LieRinehartAlgebra.Hom σ L L'
 instance : CoeFun (L →ₗ⁅σ⁆ L') (fun _ => L → L') := ⟨fun f => f.toLinearMap⟩
 
 @[simp]
-lemma lem_map_lie (f : L →ₗ⁅σ⁆ L') (x y : L) : f (⁅x,y⁆) = ⁅ f (x), f (y) ⁆ := f.map_lie' x y
+lemma lem_map_lie (f : L →ₗ⁅σ⁆ L') (x y : L) : f (⁅x, y⁆) = ⁅f x, f y⁆ := f.map_lie' x y
 
 @[simp]
-lemma lem_anchorcomp (f : L →ₗ⁅σ⁆ L') (l : L) (a : A ): σ (⁅l, a⁆)  =  ⁅f (l), σ (a)⁆ :=
+lemma lem_anchorcomp (f : L →ₗ⁅σ⁆ L') (l : L) (a : A): σ ⁅l, a⁆ = ⁅f l, σ a⁆ :=
   f.anchorcomp a l
 
 
-/-- Recovers the Lie algebra morphism underlying a Lie-Rinehart algbera homomorophism
+/-- Recovers the Lie algebra morphism underlying a Lie-Rinehart algebra homomorphism
 -/
 def Hom.toLieHom (f : L →ₗ⁅σ⁆ L') : L →ₗ⁅R⁆ L' := {
   toFun := f.toFun
@@ -144,7 +144,7 @@ lemma ModHomeqLieHom (f : L →ₗ⁅σ⁆ L') (x : L) : f.toLinearMap x = (f.to
 
 /-- The composition of Lie Rinehart algebra homomorphisms is again a homomorphism
 -/
-def comp (f : L →ₗ⁅σ⁆ L') (g : L' →ₗ⁅σ'⁆ L'') : L →ₗ⁅(AlgHom.comp σ' σ)⁆ L'' :=
+def Hom.comp (f : L →ₗ⁅σ⁆ L') (g : L' →ₗ⁅σ'⁆ L'') : L →ₗ⁅(AlgHom.comp σ' σ)⁆ L'' :=
   {
     toLinearMap := by
       haveI h: RingHomCompTriple σ.toRingHom σ'.toRingHom (σ'.comp σ).toRingHom := ⟨rfl⟩
