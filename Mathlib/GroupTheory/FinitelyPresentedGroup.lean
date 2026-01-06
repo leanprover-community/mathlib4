@@ -54,62 +54,11 @@ class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)
 
-lemma isFinitelyPresented_iff_fintype' {G : Type*} [Group G] :
-    IsFinitelyPresented G ↔ ∃ (α : Type*) (_ : Fintype α) (f : FreeGroup α →* G),
-    Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
-    constructor <;> intro h;
-    · obtain ⟨ n, f, hf₁, hf₂ ⟩ := h.out;
-      refine' ⟨ ULift ( Fin n ), inferInstance, _, _, _ ⟩;
-      exact f.comp ( FreeGroup.map fun x => x.down );
-      · intro g;
-        obtain ⟨ x, rfl ⟩ := hf₁ g;
-        refine' ⟨ FreeGroup.map ( fun x => ⟨ x ⟩ ) x, _ ⟩;
-        induction x using FreeGroup.induction_on <;> aesop;
-      · obtain ⟨ S, hS₁, hS₂ ⟩ := hf₂;
-        refine' ⟨ S.image ( FreeGroup.map fun x => ULift.up x ), _, _ ⟩;
-        · exact hS₁.image _;
-        · convert congr_arg ( Subgroup.map ( FreeGroup.map fun x => ULift.up x ) ) hS₂ using 1;
-          · refine' le_antisymm _ _;
-            · simp +decide [ Subgroup.normalClosure ];
-              simp +decide [ Set.subset_def, Group.conjugatesOfSet ];
-              simp +decide [ conjugatesOf ];
-              rintro x y hy z rfl;
-              refine' ⟨ FreeGroup.map ( fun x => x.down ) z * y * ( FreeGroup.map ( fun x => x.down ) z ) ⁻¹, _, _ ⟩ <;> simp +decide [ Subgroup.mem_closure ];
-              · exact fun K hK => hK y hy ⟨ FreeGroup.map ( fun x => x.down ) z, rfl ⟩;
-              · congr! 1;
-                · refine' FreeGroup.induction_on z _ _ _ _ <;> aesop;
-                · refine' FreeGroup.induction_on z _ _ _ _ <;> aesop;
-            · simp +decide [ Subgroup.map_le_iff_le_comap, Subgroup.normalClosure ];
-              simp +decide [ Set.subset_def, Group.conjugatesOfSet ];
-              simp +decide [ conjugatesOf ];
-              rintro x y hy z rfl;
-              exact Subgroup.subset_closure ( Set.mem_iUnion₂.2 ⟨ y, hy, ⟨ FreeGroup.map ( fun x => ULift.up x ) z, by simp +decide ⟩ ⟩ );
-          · ext; simp +decide [ MonoidHom.mem_ker ] ;
-            constructor;
-            · rename_i x;
-              refine' fun hx => ⟨ FreeGroup.map ( fun x => x.down ) x, hx, _ ⟩;
-              refine' FreeGroup.induction_on x _ _ _ _ <;> aesop;
-            · rintro ⟨ x, hx₁, rfl ⟩;
-              convert hx₁;
-              refine' FreeGroup.induction_on x _ _ _ _ <;> aesop;
-    · obtain ⟨ α, _hα, f, hf_surj, hf_ker ⟩ := h
-      have h_finite : ∃ (n : ℕ) (g : (FreeGroup (Fin n)) →* G),
-        Function.Surjective g ∧ IsNormalClosureFG (MonoidHom.ker g) := by
-          obtain ⟨n, g, hg⟩ : ∃ n : ℕ, ∃ g : FreeGroup (Fin n) ≃* FreeGroup α, True := by
-            refine' ⟨ Fintype.card α, _, trivial ⟩;
-            exact FreeGroup.freeGroupCongr ( Fintype.equivOfCardEq ( by simp +decide ) );
-          refine' ⟨ n, f.comp g.toMonoidHom, _, _ ⟩;
-          · exact hf_surj.comp g.surjective;
-          · convert hf_ker.map g.symm.toMonoidHom _;
-            · ext; simp +decide [ MonoidHom.mem_ker ] ; aesop;
-            · exact g.symm.surjective
-      exact ⟨ h_finite ⟩
-
 lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
     IsFinitelyPresented G ↔ ∃ (α : Type*) (_ : Fintype α) (f : FreeGroup α →* G),
     Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
   constructor
-  · intro ⟨n, f, hfsurj, hfkernel⟩
+  · intro ⟨n, f, hfsurj, hfker⟩
     let e : ULift (Fin n) ≃ Fin n := Equiv.ulift
     let iso : FreeGroup (ULift (Fin n)) ≃* FreeGroup (Fin n) :=
       FreeGroup.freeGroupCongr e
@@ -117,35 +66,15 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
     use inferInstance
     use f.comp iso
     use hfsurj.comp iso.surjective
-    use IsNormalClosureFG.map iso.toMonoidHom iso.surjective (f.comp iso).ker hfkernel
-    sorry
-    -- · refine ⟨ IsNormalClosureFG.map (FreeGroup.map ULift.up) _ _ _ ⟩
-    --   convert hfkernel.map _ _;
-    --   rotate_left;
-    --   -- Define the homomorphism from the free group on Fin n to the free group on ULift (Fin n) by mapping each generator to the corresponding generator in ULift (Fin n).
-    --   let g : FreeGroup (Fin n) →* FreeGroup (ULift (Fin n)) := FreeGroup.map ULift.up;
-    --   exact g;
-    --   · intro x;
-    --     refine' FreeGroup.induction_on x _ _ _ _;
-    --     · exact ⟨ 1, by simp +decide ⟩;
-    --     · exact fun x => ⟨ FreeGroup.of x.down, by simp +decide ⟩;
-    --     · exact fun x hx => ⟨ hx.choose⁻¹, by simp +decide [ hx.choose_spec ] ⟩;
-    --     · rintro x y ⟨ a, rfl ⟩ ⟨ b, rfl ⟩ ; exact ⟨ a * b, by simp +decide ⟩;
-    --   · -- The kernel of the composition is the preimage of the kernel of $f$ under the map $g$.
-    --     ext; simp [MonoidHom.mem_ker, Function.comp];
-    --     constructor;
-    --     · rename_i x;
-    --       refine' fun hx => ⟨ FreeGroup.map ULift.down x, hx, _ ⟩;
-    --       refine' FreeGroup.induction_on x _ _ _ _ <;> aesop;
-    --     · rintro ⟨ x, hx, rfl ⟩;
-    --       convert hx;
-    --       refine' FreeGroup.induction_on x _ _ _ _ <;> aesop
-  · intro ⟨α, _, f, hfsurj, hfkernel⟩
+    have hfcompker := IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+    rw [← MonoidHom.comap_ker, comap_equiv_eq_map_symm]
+    convert hfcompker
+  · intro ⟨α, _, f, hfsurj, hfker⟩
     let iso : FreeGroup (Fin (Fintype.card α)) ≃* FreeGroup α :=
       FreeGroup.freeGroupCongr (Fintype.equivFin α).symm
     refine ⟨Fintype.card α, f.comp iso.toMonoidHom, hfsurj.comp iso.surjective, ?_⟩
     simp only [MonoidHom.ker_comp_mulEquiv] -- this could further be factored as a lemma I feel.
-    exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfkernel
+    exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
 
 /- lemma isFinitelyPresented_iff_set_finite {G : Type*} [Group G] :
     IsFinitelyPresented G ↔ ∃ (S : Set G), ∃ (_ : S.Finite) (f : FreeGroup S →* G),
