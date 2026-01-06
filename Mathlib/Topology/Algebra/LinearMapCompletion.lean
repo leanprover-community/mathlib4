@@ -42,11 +42,10 @@ noncomputable def mapCLM (f : α →SL[σ] β) : (Completion α) →SL[σ] (Comp
     | hp =>
       exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
         (continuous_map.const_smul _)
-    | ih x => simp [← Completion.coe_smul, AddMonoidHom.completion_coe]
+    | ih x => simp [← Completion.coe_smul]
   cont := continuous_map
 
-@[simp]
 theorem mapCLM_apply_coe (f : α →SL[σ] β) (a : α) :
-    mapCLM f a = f a := by simp [mapCLM, AddMonoidHom.completion_coe]
+    mapCLM f a = f a := by simp
 
 end UniformSpace.Completion
