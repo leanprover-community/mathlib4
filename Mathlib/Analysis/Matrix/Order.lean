@@ -287,17 +287,14 @@ lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜}
 
 /-- This is the polar decomposition for invertible matrices. -/
 theorem IsUnit.eq_unitaryGroup_mul_posDef [DecidableEq n] {A : Matrix n n 𝕜} (hA : IsUnit A) :
-    ∃ (U : unitaryGroup n 𝕜) (P : Matrix n n 𝕜) (_ : P.PosDef), A = U * P :=
+    ∃ (U : unitaryGroup n 𝕜) (P : Matrix n n 𝕜) (_ : P.PosDef), A = U * P := by
   have h : (CFC.abs A).PosDef := by
     refine (IsUnit.isStrictlyPositive ?_ (CFC.abs_nonneg A)).posDef
     exact (CFC.isUnit_sqrt_iff (star A * A)).mpr <| by simp [hA]
   have : Invertible (CFC.abs A) := h.isStrictlyPositive.isUnit.invertible
   have : 0 ≤ (CFC.abs A)⁻¹ := (star_mul_self_nonneg A).posSemidef.inv_sqrt ▸ CFC.sqrt_nonneg _
-  have hU : A * (CFC.abs A)⁻¹ ∈ unitaryGroup n 𝕜 := by
-    simp only [mem_unitaryGroup_iff', StarMul.star_mul]
-    rw [mul_assoc, ← mul_assoc _ A, ← CFC.abs_mul_abs A]
-    simp [mul_assoc, this.star_eq]
-  ⟨⟨A * (CFC.abs A)⁻¹, hU⟩, CFC.abs A, h, by simp [mul_assoc]⟩
+  refine ⟨⟨A * (CFC.abs A)⁻¹, mem_unitaryGroup_iff'.mpr ?_⟩, CFC.abs A, h, by simp [mul_assoc]⟩
+  simp [star_mul, mul_assoc, ← mul_assoc _ A, ← CFC.abs_mul_abs, this.star_eq]
 
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
