@@ -41,6 +41,10 @@ variable [MonoidWithZero α]
 theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟x :=
   Ring.inverse_unit (unitOfInvertible _)
 
+/-- A variant of `Ring.inv_unit`. -/
+theorem Ring.inv_invertible [Inv α] [LawfulInv α] (x : α) [Invertible x] : x⁻¹ = ⅟x :=
+  Ring.inv_unit (unitOfInvertible _)
+
 end MonoidWithZero
 
 section GroupWithZero

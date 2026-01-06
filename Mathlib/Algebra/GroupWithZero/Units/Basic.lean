@@ -148,57 +148,97 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
 
+open Classical in
 /-- Class expressing the fact that a type has an inverse which behaves like
   `Ring.inverse`. -/
 class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] [Inv M₀] where
-  ringInverse_eq_inv (x : M₀) : Ring.inverse x = x⁻¹
+  inv_eq (x : M₀) : x⁻¹ = if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
-export LawfulInv (ringInverse_eq_inv)
-attribute [simp, grind =] ringInverse_eq_inv
+export LawfulInv (inv_eq)
 
 namespace Ring
 
 variable [Inv M₀] [LawfulInv M₀]
 
+theorem inv_unit (u : M₀ˣ) : (u : M₀)⁻¹ = (u⁻¹ : M₀ˣ) := by simp [inv_eq]
+
+theorem inv_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ = ((h.unit⁻¹ : M₀ˣ) : M₀) := by
+  simp [inv_eq, h]
+
 /-- By definition, if `x` is not invertible then `x⁻¹ = 0`. -/
 @[simp]
-theorem inv_non_unit (x : M₀) (h : ¬IsUnit x) : x⁻¹ = 0 := by
-  rw [← ringInverse_eq_inv x, inverse_non_unit x h]
+theorem inv_non_unit (x : M₀) (h : ¬IsUnit x) : x⁻¹ = 0 := by simp [inv_eq, h]
 
 grind_pattern inv_non_unit => IsUnit x, x⁻¹
 
-@[grind →]
 theorem mul_inv_cancel (x : M₀) (h : IsUnit x) : x * x⁻¹ = 1 := by
-  rw [← ringInverse_eq_inv]
-  exact mul_inverse_cancel x h
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.mul_inv]
 
-@[grind →]
 theorem inv_mul_cancel (x : M₀) (h : IsUnit x) : x⁻¹ * x = 1 := by
-  rw [← ringInverse_eq_inv]
-  exact inverse_mul_cancel x h
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.inv_mul]
 
-theorem inv_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : x⁻¹ * y = z ↔ y = x * z := by
-  rw [← ringInverse_eq_inv]
-  exact inverse_mul_eq_iff_eq_mul x y z h
+@[grind =]
+theorem isUnit_iff_mul_inv_cancel (x : M₀) : IsUnit x ↔ x * x⁻¹ = 1 ∧ x⁻¹ * x = 1 := by
+  refine ⟨fun h => ⟨mul_inv_cancel x h, inv_mul_cancel x h⟩, fun h => ?_⟩
+  rw [isUnit_iff_exists]
+  exact ⟨x⁻¹, h.1, h.2⟩
+
+theorem mul_inv_cancel_right (x y : M₀) (h : IsUnit x) : y * x * x⁻¹ = y := by grind
+
+theorem inv_mul_cancel_right (x y : M₀) (h : IsUnit x) : y * x⁻¹ * x = y := by grind
+
+theorem mul_inv_cancel_left (x y : M₀) (h : IsUnit x) : x * (x⁻¹ * y) = y := by grind
+
+theorem inv_mul_cancel_left (x y : M₀) (h : IsUnit x) : x⁻¹ * (x * y) = y := by grind
+
+theorem inv_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : x⁻¹ * y = z ↔ y = x * z :=
+  ⟨fun h1 => by rw [← h1, mul_inv_cancel_left _ _ h],
+  fun h1 => by rw [h1, inv_mul_cancel_left _ _ h]⟩
 
 theorem eq_mul_inv_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * z⁻¹ ↔ x * z = y := by
-  rw [← ringInverse_eq_inv]
-  exact eq_mul_inverse_iff_mul_eq x y z h
+  grind
+
+theorem _root_.IsUnit.inv' {a : M₀} : IsUnit a → IsUnit a⁻¹
+  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inv_unit u).symm⟩
 
 @[simp, grind =]
-theorem inv_one : (1 : M₀)⁻¹ = 1 := by
-  rw [← ringInverse_eq_inv]
-  exact inverse_one M₀
+theorem isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a :=
+  ⟨fun h => by
+    cases subsingleton_or_nontrivial M₀
+    · convert h
+    · contrapose h
+      rw [Ring.inv_non_unit _ h]
+      exact not_isUnit_zero,
+    IsUnit.inv'⟩
+
+variable (M₀)
+
+@[simp, grind =]
+theorem inv_one : (1 : M₀)⁻¹ = 1 := inv_unit 1
 
 @[simp, grind =]
 theorem inv_zero : (0 : M₀)⁻¹ = 0 := by
-  rw [← ringInverse_eq_inv]
-  exact inverse_zero M₀
+  nontriviality
+  exact inv_non_unit _ not_isUnit_zero
 
-@[simp, grind =]
-theorem isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a := by
-  rw [← ringInverse_eq_inv]
-  exact isUnit_ringInverse
+section ofLawful
+
+open Classical in
+/-- Inverse that can be defined on any monoid with zero: `x⁻¹` is equal to the inverse of `x`
+whenever `x` is invertible, and zero otherwise. This can either be used as a local instance in a
+proof, or to define an inverse on a particular type. -/
+noncomputable def invOfLawful (M₀' : Type*) [MonoidWithZero M₀'] : Inv M₀' where
+  inv x := if h : IsUnit x then ((h.unit⁻¹ : M₀'ˣ) : M₀') else 0
+
+attribute [local instance] invOfLawful
+
+theorem lawfulInv_invOfLawful (M₀' : Type*) [MonoidWithZero M₀'] : LawfulInv M₀' where
+  inv_eq _ := rfl
+
+end ofLawful
+
 
 end Ring
 
@@ -435,7 +475,11 @@ theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 
 instance : LawfulInv G₀ where
-  ringInverse_eq_inv a := Ring.inverse_eq_inv a
+  inv_eq a := by
+    apply Eq.symm
+    obtain rfl | ha := eq_or_ne a 0
+    · simp
+    · simp; grind
 
 end GroupWithZero
 

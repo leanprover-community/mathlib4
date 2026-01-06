@@ -195,7 +195,11 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
 
 instance : LawfulInv (Matrix n n α) where
-  ringInverse_eq_inv A := (nonsing_inv_eq_ringInverse A).symm
+  inv_eq A := by
+    by_cases h_det : IsUnit A.det
+    · have := A.isUnit_iff_isUnit_det.mpr h_det
+      simp [this]
+    · grind [A.isUnit_iff_isUnit_det, nonsing_inv_apply_not_isUnit]
 
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]

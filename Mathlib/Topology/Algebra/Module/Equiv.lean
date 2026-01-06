@@ -1193,11 +1193,16 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   exact Ring.inverse_one _
 
 instance : LawfulInv (M →L[R] M) where
-  ringInverse_eq_inv f := by rw [ringInverse_eq_inverse]; rfl
+  inv_eq f := by
+    change f⁻¹ = Ring.inverse f
+    rw [ringInverse_eq_inverse]
+    rfl
 
 @[simp]
 theorem inv_equiv (e : M ≃L[R] M) : (e : M →L[R] M)⁻¹ = e.symm := by
-  rw [← ringInverse_eq_inv, ringInverse_equiv]
+  rw [inv_eq]
+  change Ring.inverse (e : M →L[R] M) = e.symm
+  rw [ringInverse_equiv]
   simp
 
 namespace IsInvertible
