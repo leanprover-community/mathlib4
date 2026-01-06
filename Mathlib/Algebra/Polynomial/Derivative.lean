@@ -516,29 +516,23 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
         Nat.cast_mul]
       ring
 
-theorem iterate_derivative_mul_X_pow {n m} (p : R[X]) :
+theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
     derivative^[n] (p * X ^ m) =
       ∑ k ∈ range (min m n).succ,
-      ((n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k))) := by
+        (n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k)) := by
   have hsum : derivative^[n] (p * X ^ m) =
       ∑ k ∈ range n.succ,
-      ((n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k))) := by
-    rw [iterate_derivative_mul]
-    congr! 1 with k hk
-    rw [iterate_derivative_X_pow_eq_smul, ← smul_smul]
+        (n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k)) := by
+    simp_rw [iterate_derivative_mul, iterate_derivative_X_pow_eq_smul, mul_smul]
+    congr! 2 with k hk
     norm_cast
     ring
   rw [hsum]
-  by_cases! n ≤ m
-  case pos h => simp [h]
-  case neg h =>
-    rw [min_eq_left_of_lt h, ← add_zero (∑ k ∈ range m.succ, _),
-      show range n.succ = range m.succ ∪ Ico m.succ n.succ by grind,
-      sum_union (by rw [range_eq_Ico]; apply Ico_disjoint_Ico_consecutive)]
-    congr 1
-    refine sum_eq_zero (fun k hk => ?_)
-    rw [Nat.descFactorial_eq_zero_iff_lt.mpr (by grind)]
-    simp
+  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by aesop) (by simp)
+  rcases le_or_gt k m with hkm | hkm
+  · replace hk' : n < k := by simpa [hkm] using hk'
+    simp [Nat.choose_eq_zero_of_lt hk']
+  · simp [Nat.descFactorial_eq_zero_iff_lt.mpr hkm]
 
 theorem iterate_derivative_mul_X' {n} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
