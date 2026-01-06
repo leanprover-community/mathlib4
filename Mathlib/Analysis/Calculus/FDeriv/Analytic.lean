@@ -144,6 +144,10 @@ theorem AnalyticAt.hasStrictFDerivAt (h : AnalyticAt 𝕜 f x) :
   rw [hp.fderiv_eq]
   exact hp.hasStrictFDerivAt
 
+lemma AnalyticAt.hasStrictDerivAt {f : 𝕜 → F} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
+    HasStrictDerivAt f (deriv f x) x := by
+  simpa [hasStrictDerivAt_iff_hasStrictFDerivAt, toSpanSingleton_deriv] using hf.hasStrictFDerivAt
+
 theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) :
     DifferentiableOn 𝕜 f (insert x s ∩ EMetric.ball x r) := by
