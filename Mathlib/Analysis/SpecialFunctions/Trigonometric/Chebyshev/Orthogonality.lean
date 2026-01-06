@@ -14,6 +14,7 @@ import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Chebyshev polynomials over the reals: orthogonality
@@ -34,31 +35,14 @@ namespace Polynomial.Chebyshev
 
 open Real intervalIntegral
 
-theorem integrable_T_real (n : ℤ) :
-    IntervalIntegrable (fun x => (T ℝ n).eval x * (1 / √(1 - x ^ 2)))
-    MeasureTheory.volume (-1) 1 := by
-  rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)]
-  refine ⟨?_, ?_⟩
-  · suffices MeasureTheory.AEStronglyMeasurable
-      (fun x ↦ (T ℝ n).eval (cos (arccos x)) * (1 / √(1 - x ^ 2)))
-      (MeasureTheory.volume.restrict (Set.Ioc (-1) 1)) by
-      apply MeasureTheory.AEStronglyMeasurable.congr this
-      refine MeasureTheory.ae_restrict_of_forall_mem measurableSet_Ioc (fun x hx => ?_)
-      dsimp; congr 2
-      rw [cos_arccos (by grind) (by grind)]
-    measurability
-  · apply MeasureTheory.HasFiniteIntegral.mono (g := fun x => (1 / √(1 - x ^ 2)))
-    · suffices MeasureTheory.IntegrableOn (fun x ↦ (1 / √(1 - x ^ 2))) (Set.Ioc (-1) 1) from this.2
-      refine integrableOn_deriv_of_nonneg (g := -arccos)
-        continuous_arccos.neg.continuousOn (fun x hx => ?_) (by simp)
-      · convert (@hasDerivAt_arccos x (by aesop) (by aesop)).neg using 1
-        simp
-    · refine MeasureTheory.ae_restrict_of_forall_mem measurableSet_Ioc (fun x hx => ?_)
-      simp_rw [norm_mul, norm_eq_abs]
-      calc
-        |(T ℝ n).eval x| * |(1 / √(1 - x ^ 2))| ≤ 1 * |(1 / √(1 - x ^ 2))| := by
-          gcongr; exact abs_eval_T_real_le_one n (by grind)
-        _ = |(1 / √(1 - x ^ 2))| := by simp
+theorem integrable_poly_T (P : ℝ[X]) :
+    IntervalIntegrable (fun x => P.eval x * (1 / √(1 - x ^ 2))) MeasureTheory.volume (-1) 1 := by
+  refine IntervalIntegrable.continuousOn_mul ?_ P.continuous.continuousOn
+  rw [intervalIntegrable_iff]
+  refine integrableOn_deriv_of_nonneg (g := -arccos)
+    continuous_arccos.neg.continuousOn (fun x hx => ?_) (by simp)
+  · convert (@hasDerivAt_arccos x (by aesop) (by aesop)).neg using 1
+    simp
 
 theorem integral_T_real (n : ℤ) :
     ∫ x in -1..1, (T ℝ n).eval x * (1 / √(1 - x ^ 2)) = ∫ θ in 0..π, cos (n * θ) := calc
@@ -121,13 +105,8 @@ theorem integral_T_real_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
 theorem integrable_T_real_mul_T (n m : ℤ) :
     IntervalIntegrable (fun x => (T ℝ n).eval x * (T ℝ m).eval x * (1 / √(1 - x ^ 2)))
     MeasureTheory.volume (-1) 1 := by
-  suffices IntervalIntegrable (fun x => (2 * T ℝ n * T ℝ m).eval x * (1 / √(1 - x ^ 2)))
-      MeasureTheory.volume (-1) 1 by
-    simp_rw [eval_mul, eval_ofNat, mul_assoc] at this
-    convert IntervalIntegrable.const_mul this (1 / 2) using 1
-    grind
-  simp_rw [T_mul_T, eval_add, add_mul]
-  exact IntervalIntegrable.add (integrable_T_real _) (integrable_T_real _)
+  simp_rw [← eval_mul]
+  apply integrable_poly_T
 
 theorem integral_T_real_mul_T_real (n m : ℤ) :
     ∫ x in -1..1, (T ℝ n).eval x * (T ℝ m).eval x * (1 / √(1 - x ^ 2)) =
@@ -140,7 +119,7 @@ theorem integral_T_real_mul_T_real (n m : ℤ) :
     rw [integral_const_mul] at this
     grind
   simp_rw [T_mul_T, eval_add, add_mul]
-  rw [integral_add (integrable_T_real _) (integrable_T_real _)]
+  rw [integral_add (integrable_poly_T _) (integrable_poly_T _)]
 
 theorem integral_T_real_mul_T_real_of_ne {n m : ℕ} (h : n ≠ m) :
     ∫ x in -1..1, (T ℝ n).eval x * (T ℝ m).eval x * (1 / √(1 - x ^ 2)) = 0 := by
