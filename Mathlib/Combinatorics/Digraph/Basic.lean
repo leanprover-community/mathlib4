@@ -281,6 +281,18 @@ instance distribLattice : DistribLattice (Digraph V) where
       · intro v w hGH gGI
         tauto
 
+abbrev spanningLE (H : Digraph V) (G : Digraph V) : Prop :=
+  distribLattice.le H G ∧ H.verts = G.verts
+
+
+abbrev spanningSubgraph_compl (H G : Digraph V) : Digraph V where
+  verts := G.verts
+  Adj v w := ¬ H.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts ∧ G.Adj v w
+
+lemma spanningSubgraph_compl_subgraph (H G : Digraph V) :
+  distribLattice.le (spanningSubgraph_compl H G) G := by
+  unfold spanningSubgraph_compl
+  simp [LE.le]
 
 set_option maxHeartbeats 1000000 in
 noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
@@ -365,15 +377,13 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
     simp_all [LE.le]
 
   compl H := by
-    obtain ⟨H, ⟨H_sub, H_verts⟩⟩ := H
     constructor
     case val => exact {
-      verts := H.verts
-      -- The complement is defined w.r.t H.verts and G.Adj
-      Adj v w := G.Adj v w ∧ ¬ H.Adj v w ∧ v ∈ H.verts ∧ w ∈ H.verts
+      verts := H.val.verts
+      Adj v w := G.Adj v w ∧ ¬ H.val.Adj v w ∧ v ∈ H.val.verts ∧ w ∈ H.val.verts
     }
     case property =>
-      simp_all [LE.le]
+      simp_all [LE.le, H.property.right]
 
 
   sSup ℋ := by
@@ -386,7 +396,7 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
         exact ⟨G.verts, fun _ _ => False, by aesop, by aesop⟩
     case property =>
       split_ifs
-      case pos h =>
+      case pos hnonempty =>
         obtain ⟨⟨H, ⟨H_sub, H_verts⟩⟩, H_mem⟩ := hnonempty
         simp [sSup, LE.le]
         constructor
@@ -429,8 +439,11 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
         use H
         tauto
     case neg h =>
-      simp only [imp_self, implies_true, true_and]
-      
+      exfalso
+      simp at h
+      specialize h H H_sub.left H_sub.right H_verts
+      exact h hH
+
 
   sSup_le := by
     intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ h
@@ -452,25 +465,22 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
 
     case neg hnon =>
       simp only [imp_self, implies_true, true_and]
+      intro h v hFalse
+      exfalso
+      exact hFalse
 
-      sorry
-#exit
   top_le_sup_compl := by
-    intro ⟨H, H_prop⟩
-    simp_all only [LE.le, max, SemilatticeSup.sup, true_and]
+    intro ⟨H, ⟨H_sub, H_verts⟩⟩
+    simp only [Set.mem_setOf_eq, Set.coe_setOf, ge_iff_le]
     constructor
-    · rw [(Set.union_diff_cancel' (fun ⦃a⦄ a_1 => a_1) H_prop.left)]
-    · intro v w G_adj
-      obtain ⟨H_verts, H_adj⟩ := H_prop
-      by_cases hadj : H.Adj v w <;> simp_all
-      · constructor
-        · constructor
-          · apply G.left_mem_verts_of_adj G_adj
-          · sorry
-        · constructor
-          · apply G.right_mem_verts_of_adj G_adj
-          · sorry
+    · simp_rw [H_verts, Set.subset_def]
+      simp [max, LE.le, SemilatticeSup.sup]
+      intro v hv
+      
+      done
+    · done
 
+#exit
   sInf ℋ := by
     classical
     constructor
