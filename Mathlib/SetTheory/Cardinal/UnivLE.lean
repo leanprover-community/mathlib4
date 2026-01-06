@@ -12,7 +12,7 @@ public import Mathlib.SetTheory.Ordinal.Basic
 # UnivLE and cardinals
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

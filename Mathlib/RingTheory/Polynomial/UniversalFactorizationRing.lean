@@ -345,8 +345,7 @@ lemma finite_universalFactorizationMap :
   have H₁ (i : _) : (universalFactorizationMap R n m k hn).IsIntegralElem (.X i ⊗ₜ 1) := by
     obtain ⟨p, hp, hp'⟩ : (universalFactorizationMap ℤ n m k hn).IsIntegralElem (.X i ⊗ₜ 1) := by
       simpa [coeff_freeMonic] using Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
-        (by simp [((monic_freeMonic _ _).map _).leadingCoeff, isIntegral_one])
-        ⟨_, universalFactorizationMap_freeMonic ℤ n m k hn⟩ i
+        ((monic_freeMonic _ _).map _) ⟨_, universalFactorizationMap_freeMonic ℤ n m k hn⟩ i
     refine ⟨p.map (MvPolynomial.map (algebraMap ℤ R)), hp.map _, ?_⟩
     apply_fun F.toRingHom at hp'
     rw [Polynomial.hom_eval₂, ← MvPolynomial.universalFactorizationMap_comp_map] at hp'
@@ -354,7 +353,7 @@ lemma finite_universalFactorizationMap :
   have H₂ (i : _) : (universalFactorizationMap R n m k hn).IsIntegralElem (1 ⊗ₜ .X i) := by
     obtain ⟨p, hp, hp'⟩ : (universalFactorizationMap ℤ n m k hn).IsIntegralElem (1 ⊗ₜ .X i) := by
       simpa [coeff_freeMonic] using Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
-        (by simp [((monic_freeMonic _ _).map _).leadingCoeff, isIntegral_one])
+        ((monic_freeMonic _ _).map _)
         ⟨_, (universalFactorizationMap_freeMonic ℤ n m k hn).trans (mul_comm _ _)⟩ i
     refine ⟨p.map (MvPolynomial.map (algebraMap ℤ R)), hp.map _, ?_⟩
     apply_fun F.toRingHom at hp'

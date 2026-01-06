@@ -19,7 +19,7 @@ as those morphisms which are objectwise surjective on `Stonean` (see
 `CondensedSet.epi_iff_surjective_on_stonean` and `CondensedMod.epi_iff_surjective_on_stonean`).
 -/
 
-@[expose] public section
+public section
 
 universe v u w u' v'
 

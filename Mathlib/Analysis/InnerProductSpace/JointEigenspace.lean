@@ -39,7 +39,7 @@ symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
 
-@[expose] public section
+public section
 
 open Module.End
 
