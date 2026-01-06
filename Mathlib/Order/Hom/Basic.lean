@@ -889,7 +889,7 @@ def prodComm : α × β ≃o β × α where
 def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
     (α × β) × γ ≃o α × (β × γ) where
   toEquiv := .prodAssoc α β γ
-  map_rel_iff' := @fun ⟨⟨_ , _⟩ , _⟩ ⟨⟨_, _⟩ , _⟩ => by simp [Equiv.prodAssoc, and_assoc]
+  map_rel_iff' := @fun ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ ↦ by simp [Equiv.prodAssoc, and_assoc]
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
