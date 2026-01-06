@@ -125,8 +125,8 @@ def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
   map_one' := renameFun_monomial f 0 1
   map_mul' := renameFun_mul f
   map_zero' := by ext; simp [coeff_renameFun]
-  map_add' := by
-    intros; dsimp only [renameFun]
+  map_add' _ _ := by
+    dsimp only [renameFun]
     nth_rw 1 [← add_zero (0 : (τ →₀ ℕ) → R), Function.extend_add]
   commutes' := renameFun_monomial f 0
 }
@@ -296,8 +296,8 @@ variable (R)
 def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R := {
   rename e with
   invFun := rename e.symm
-  left_inv := by simp [Function.LeftInverse]
-  right_inv := by simp [Function.RightInverse, Function.LeftInverse]
+  left_inv _ := by simp
+  right_inv _ := by simp
 }
 
 @[simp]
