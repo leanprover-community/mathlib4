@@ -155,12 +155,13 @@ theorem colex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder
   simp_rw [le_iff_lt_or_eq, Pi.Colex.lt_iff_of_unique, ← ofColex_inj, funext_iff, Unique.forall_iff,
     ofColex_apply]
 
-section Lex
-
-variable [LinearOrder ι] [WellFoundedLT ι] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
-  {a : β i}
+section PartialOrder
+variable [LinearOrder ι] {x : ∀ i, β i} {i : ι} {a : β i} [∀ i, PartialOrder (β i)]
 
 open Function
+
+section Lex
+variable [WellFoundedLT ι]
 
 theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
   or_iff_not_imp_left.2 fun hne =>
@@ -210,11 +211,7 @@ theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x 
 end Lex
 
 section Colex
-
-variable [LinearOrder ι] [WellFoundedGT ι] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
-  {a : β i}
-
-open Function
+variable [WellFoundedGT ι]
 
 theorem toColex_monotone : Monotone (@toColex (∀ i, β i)) :=
   toLex_monotone (ι := ιᵒᵈ)
@@ -239,6 +236,33 @@ theorem toColex_update_le_self_iff : toColex (update x i a) ≤ toColex x ↔ a 
   toLex_update_le_self_iff (ι := ιᵒᵈ)
 
 end Colex
+
+end PartialOrder
+
+section LinearOrder
+variable [LinearOrder ι] {x y : ∀ i, β i} {i : ι} {a : β i} [∀ i, LinearOrder (β i)]
+
+section Lex
+
+theorem apply_le_of_toLex (hxy : toLex x ≤ toLex y) (h : ∀ j < i, x j = y j) : x i ≤ y i := by
+  contrapose! hxy
+  apply not_le_of_gt
+  use i
+  aesop
+
+end Lex
+
+section Colex
+
+theorem apply_le_of_toColex (hxy : toColex x ≤ toColex y) (h : ∀ j > i, x j = y j) : x i ≤ y i := by
+  contrapose! hxy
+  apply not_le_of_gt
+  use i
+  aesop
+
+end Colex
+
+end LinearOrder
 
 instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
     OrderBot (Lex (∀ a, β a)) where

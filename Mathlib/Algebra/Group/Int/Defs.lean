@@ -52,7 +52,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul_neg' m n := by simp only [negSucc_eq, natCast_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
--- Thise instance can also be found from the `LinearOrderedCommMonoidWithZero ℤ` instance by
+-- This instance can also be found from the `LinearOrderedCommMonoidWithZero ℤ` instance by
 -- typeclass search, but it is better practice to not rely on algebraic order theory to prove
 -- purely algebraic results on concrete types. Eg the results can be made available earlier.
 

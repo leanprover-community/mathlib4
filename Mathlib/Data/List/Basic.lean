@@ -348,12 +348,16 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
     rw [getLast?_cons_cons] at hc
     rw [dropLast_cons₂, cons_append, dropLast_append_getLast? _ hc]
 
-theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.iget
+theorem getLastI_eq_getLast?_getD [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default
   | [] => by simp [getLastI]
   | [_] => rfl
   | [_, _] => rfl
   | [_, _, _] => rfl
-  | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
+  | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast?_getD (c :: l)]
+
+@[deprecated getLastI_eq_getLast?_getD (since := "2026-01-05")]
+theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default :=
+  getLastI_eq_getLast?_getD
 
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
@@ -394,7 +398,12 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
     l.head hl = l[0]'(length_pos_iff.2 hl) :=
   (getElem_zero _).symm
 
-theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
+theorem head!_eq_head?_getD [Inhabited α] (l : List α) : head! l = (head? l).getD default := by
+  cases l <;> rfl
+
+@[deprecated head!_eq_head?_getD (since := "2026-01-05")]
+theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).getD default :=
+  head!_eq_head?_getD l
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
 
@@ -533,8 +542,6 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
   idxOf_eq_length_iff.2
 
-@[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
-
 theorem idxOf_eq_zero_iff_eq_nil_or_head_eq {l : List α} (a : α) :
     l.idxOf a = 0 ↔ l = [] ∨ l.head? = a := by
   cases l
@@ -549,8 +556,6 @@ theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) =
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by grind
-
-@[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
 theorem IsPrefix.idxOf_le (hl : l₁ <+: l₂) (a : α) : l₁.idxOf a ≤ l₂.idxOf a := by
   obtain ⟨l₃, rfl⟩ := hl
@@ -662,7 +667,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
   refine ext_get (by convert h) (by grind)
 
 end deprecated
@@ -858,8 +863,6 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
       ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
-
-@[deprecated (since := "2025-05-23")] alias append_cons_inj_of_not_mem := append_cons_inj_of_notMem
 
 section FoldlEqFoldr
 

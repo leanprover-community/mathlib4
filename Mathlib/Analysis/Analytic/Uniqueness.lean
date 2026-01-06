@@ -18,7 +18,7 @@ We show that two analytic functions which coincide around a point coincide on wh
 in `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]

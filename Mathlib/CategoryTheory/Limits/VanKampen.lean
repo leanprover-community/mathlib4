@@ -39,7 +39,7 @@ namespace CategoryTheory
 universe v' u' v u
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
-variable {K : Type*} [Category K] {D : Type*} [Category D]
+variable {K : Type*} [Category* K] {D : Type*} [Category* D]
 
 section NatTrans
 
@@ -66,7 +66,7 @@ theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : 
     Equifibered (whiskerRight α H) :=
   fun _ _ f => (hα f).map H
 
-theorem NatTrans.Equifibered.whiskerLeft {K : Type*} [Category K] {F G : J ⥤ C} {α : F ⟶ G}
+theorem NatTrans.Equifibered.whiskerLeft {K : Type*} [Category* K] {F G : J ⥤ C} {α : F ⟶ G}
     (hα : Equifibered α) (H : K ⥤ J) : Equifibered (whiskerLeft H α) :=
   fun _ _ f => hα (H.map f)
 
@@ -216,7 +216,7 @@ theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone
     apply (IsVanKampenColimit.precompose_isIso_iff e.inv).mp
     exact hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) (fun j => (by simp [e])))⟩
 
-theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
+theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
     IsUniversalColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα H
@@ -231,13 +231,13 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J �
     refine (H (e.inverse.obj k)).paste_vert ?_
     exact IsPullback.of_vert_isIso ⟨by simp⟩
 
-theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category K] (e : J ≌ K)
+theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} :
     IsUniversalColimit (c.whisker e.functor) ↔ IsUniversalColimit c :=
   ⟨fun hc ↦ ((hc.whiskerEquivalence e.symm).precompose_isIso (e.invFunIdAssoc F).inv).of_iso
       (Cocones.ext (Iso.refl _) (by simp)), IsUniversalColimit.whiskerEquivalence e⟩
 
-theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
+theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα
@@ -262,7 +262,7 @@ theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category K] (e : J �
   · ext k
     simpa using congr_app e' (e.inverse.obj k)
 
-theorem IsVanKampenColimit.whiskerEquivalence_iff {K : Type*} [Category K] (e : J ≌ K)
+theorem IsVanKampenColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} :
     IsVanKampenColimit (c.whisker e.functor) ↔ IsVanKampenColimit c :=
   ⟨fun hc ↦ ((hc.whiskerEquivalence e.symm).precompose_isIso (e.invFunIdAssoc F).inv).of_iso
@@ -455,7 +455,7 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
       intro A f
       suffices IsColimit (BinaryCofan.mk (𝟙 A) (𝟙 A)) by
         obtain ⟨l, h₁, h₂⟩ := Limits.BinaryCofan.IsColimit.desc' this (f ≫ initial.to A) (𝟙 A)
-        rcases(Category.id_comp _).symm.trans h₂ with rfl
+        rcases (Category.id_comp _).symm.trans h₂ with rfl
         exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
       refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> simp)
         (mapPair_equifibered _) ?_).some

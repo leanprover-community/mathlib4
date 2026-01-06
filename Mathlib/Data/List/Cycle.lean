@@ -271,9 +271,8 @@ theorem nextOr_infix_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLa
   · have ⟨_, _⟩ := l.dropLast_prefix
     grind
   by_cases hi₁ : i = 1
-  · subst hi₁
-    grind [next, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
-  grind [getElem?_idxOf, mem_of_mem_dropLast]
+  · grind [next, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
+  · grind [getElem?_idxOf, mem_of_mem_dropLast]
 
 theorem nextOr_getLast_of_notMem_dropLast {l : List α} (hl : l ≠ []) (h : l.getLast hl ∉ l.dropLast)
     (d : α) : l.nextOr (l.getLast hl) d = d := by
@@ -300,7 +299,7 @@ theorem next_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
 
 theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     l.next l[i] (get_mem ..) = l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi)) := by
-  grind [next_eq_getElem, idxOf_getElem]
+  grind [next_eq_getElem]
 
 theorem prev_eq_getElem?_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a ∈ l)
     (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : l.prev a ha = l[l.idxOf a - 1]? := by
@@ -338,7 +337,7 @@ theorem prev_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     l.prev l[i] (get_mem ..) = l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia)) := by
-  grind [prev_eq_getElem, idxOf_getElem]
+  grind [prev_eq_getElem]
 
 @[simp]
 theorem next_getLast_eq_head (l : List α) (h : l ≠ []) (hn : l.Nodup) :
@@ -385,7 +384,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
     prev l.reverse x (mem_reverse.mpr hx) = next l x hx := by
   obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
-  have key : l.length - 1 - k < l.length := by omega
+  have key : l.length - 1 - k < l.length := by lia
   rw [← getElem_pmap l.next (fun _ h => h) (by simpa using hk)]
   simp_rw [getElem_eq_getElem_reverse (l := l), pmap_next_eq_rotate_one _ h]
   rw [← getElem_pmap l.reverse.prev fun _ h => h]
@@ -497,8 +496,6 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
 @[simp]
 theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''

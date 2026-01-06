@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Number field discriminant
@@ -28,7 +29,7 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
-@[expose] public section
+public section
 
 -- TODO. Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
@@ -46,7 +47,7 @@ open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
 
 theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     discr K = (basisMatrix K).det ^ 2 := by
-  rw [show (discr K : ℂ) = (discr K : ℚ) by rfl, coe_discr, basisMatrix_eq_embeddingsMatrixReindex,
+  rw [← Rat.cast_intCast, coe_discr, basisMatrix_eq_embeddingsMatrixReindex,
     ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
     Algebra.discr_reindex, eq_ratCast]
 
