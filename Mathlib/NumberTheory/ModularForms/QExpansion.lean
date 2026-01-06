@@ -454,9 +454,9 @@ lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (
   · refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
     exact (differentiableAt_cuspFunction g hh hΓ (by simpa using hy)).differentiableWithinAt
 
-lemma qExpansion_add [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
-    (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
-    qExpansion h (f + g) = qExpansion h f + qExpansion h g := by
+lemma qExpansion_add {G : Type*} [FunLike G ℍ ℂ] [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
+    {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G) [ModularFormClass G Γ b] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : qExpansion h (f + g) = qExpansion h f + qExpansion h g := by
   ext m
   have := cuspFunction_add (f := f) (g := g) (h := h)
    (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
@@ -472,7 +472,7 @@ lemma qExpansion_add [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
       exact (differentiableAt_cuspFunction g hh hΓ (by simpa using hy)).differentiableWithinAt
 
 lemma qExpansion_smul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ) (f : ModularForm Γ k) :
+    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ) (f : F) [ModularFormClass F Γ k] :
     (qExpansion h (a • f)) = (a • qExpansion h f) := by
   ext m
   simp_rw [_root_.map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk,
@@ -480,7 +480,7 @@ lemma qExpansion_smul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
   grind [Pi.smul_apply, smul_eq_mul]
 
 lemma qExpansion_neg [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
-    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) :
+    (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k] :
     qExpansion h (-f) = - (qExpansion h f) := by
   simpa using (qExpansion_smul hh hΓ (-1 : ℂ) f)
 
@@ -508,8 +508,7 @@ lemma qExpansion_injective [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
 def qExpansionAddHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (i : ℤ) : ModularForm Γ i →+ PowerSeries ℂ where
   toFun f := qExpansion h f
-  map_zero' := by
-    rw [qExpansion_injective hh hΓ]
+  map_zero' := by rw [qExpansion_injective hh hΓ]
   map_add' f g := qExpansion_add f g hh hΓ
 
 lemma qExpansion_one [Γ.HasDetPlusMinusOne] : qExpansion h (1 : ModularForm Γ 0) = 1 := by
