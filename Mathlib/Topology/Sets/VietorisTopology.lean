@@ -377,6 +377,15 @@ theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 �
       (isOpen_inter_nonempty_of_isOpen hV).prod (isOpen_inter_nonempty_of_isOpen hW),
       ⟨x, hx, hxV⟩, ⟨y, hy, hyW⟩⟩
 
+instance [SecondCountableTopology α] : SecondCountableTopology (Compacts α) := by
+  obtain ⟨b, hb₁, -, hb₂⟩ := exists_countable_basis α
+  exact hb₂.compacts.secondCountableTopology <| (countable_setOf_finite_subset hb₁).image _
+
+@[simp]
+theorem secondCountableTopolgy_iff :
+    SecondCountableTopology (Compacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
+
 theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
     IsCompact {L : Compacts α | ↑L ⊆ K} := by
   rw [isEmbedding_coe.isCompact_iff]
@@ -528,6 +537,14 @@ theorem continuous_prod :
     Continuous fun p : NonemptyCompacts α × NonemptyCompacts β => p.1 ×ˢ p.2 := by
   simp_rw [isEmbedding_toCompacts.continuous_iff, Function.comp_def, toCompacts_prod]
   fun_prop
+
+instance [SecondCountableTopology α] : SecondCountableTopology (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.secondCountableTopology
+
+@[simp]
+theorem secondCountableTopolgy_iff :
+    SecondCountableTopology (NonemptyCompacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
 
 instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   isClosedEmbedding_toCompacts.compactSpace
