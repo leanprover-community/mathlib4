@@ -117,6 +117,11 @@ theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
     have := Module.subsingleton R M
     simp [this.eq_zero]
 
+theorem mem_iff_add_mem (hF : F.IsFaceOf C) {x y : M}
+    (hx : x ∈ C) (hy : y ∈ C) : x ∈ F ∧ y ∈ F ↔ x + y ∈ F := by
+  refine ⟨fun ⟨hx, hy⟩ => F.add_mem hx hy, ?_⟩
+  exact fun h => ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
+
 theorem mem_of_sum_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
     (hsC : ∀ i : ι, f i ∈ C) (hs : ∑ i : ι, f i ∈ F) (i : ι) : f i ∈ F := by
   classical
@@ -129,29 +134,16 @@ variable [AddCommGroup N] [Module R N]
 
 /-- The image of a face of a cone under an injective linear map is a face of the
   image of the cone. -/
-theorem map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
-     F.IsFaceOf C ↔ (F.map f).IsFaceOf (C.map f) := by
-  constructor <;> intro ⟨sub, hF⟩
-  · refine ⟨map_mono sub, ?_⟩
-    simp only [mem_map, forall_exists_index, and_imp]
-    intro _ _ a b bC fbx _ cC fcy ha _ x'F h
-    refine ⟨b, ⟨?_, fbx⟩⟩
-    apply hF bC cC ha
-    convert x'F
-    apply hf
-    simp [h, fbx, fcy]
-  · refine ⟨fun x xf => ?_, fun hx hy ha h => ?_⟩
-    · obtain ⟨y, yC, hy⟩ := mem_map.mp <| sub (mem_map_of_mem xf)
-      rwa [hf hy] at yC
-    · simp only [mem_map, forall_exists_index, and_imp] at hF
-      obtain ⟨_, ⟨hx', hhx'⟩⟩ := hF _ hx rfl _ hy rfl ha _ h (by simp)
-      convert hx'
-      exact hf hhx'.symm
-
-/-- The image of a face of a cone under an injective linear map is a face of the
-  image of the cone. -/
 theorem map {f : M →ₗ[R] N} (hf : Function.Injective f) (hF : F.IsFaceOf C) :
-    (F.map f).IsFaceOf (C.map f) := (map_iff hf).mp hF
+    (F.map f).IsFaceOf (C.map f) := by
+  refine ⟨map_mono hF.le, ?_⟩
+  simp only [mem_map, forall_exists_index, and_imp]
+  intro _ _ a b bC fbx _ cC fcy ha _ x'F h
+  refine ⟨b, ⟨?_, fbx⟩⟩
+  apply hF.mem_of_smul_add_mem bC cC ha
+  convert x'F
+  apply hf
+  simp [h, fbx, fcy]
 
 /-- The image of a face of a cone under an equivalence is a face of the image of the cone. -/
 theorem map_equiv (e : M ≃ₗ[R] N) (hF : F.IsFaceOf C) :
@@ -174,6 +166,20 @@ theorem of_comap_surjective {f : N →ₗ[R] M} (hf : Function.Surjective f)
     rw [← (hf x).choose_spec] at h ⊢ xC
     rw [← (hf y).choose_spec] at h yC
     exact hc.2 xC yC a0 (by simpa)
+
+/-- The image of a face of a cone under an injective linear map is a face of the
+  image of the cone. -/
+theorem map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
+     F.IsFaceOf C ↔ (F.map f).IsFaceOf (C.map f) := by
+  refine ⟨map hf, ?_⟩
+  · intro ⟨sub, hF⟩
+    refine ⟨fun x xf => ?_, fun hx hy ha h => ?_⟩
+    · obtain ⟨y, yC, hy⟩ := mem_map.mp <| sub (mem_map_of_mem xf)
+      rwa [hf hy] at yC
+    · simp only [mem_map, forall_exists_index, and_imp] at hF
+      obtain ⟨_, ⟨hx', hhx'⟩⟩ := hF _ hx rfl _ hy rfl ha _ h (by simp)
+      convert hx'
+      exact hf hhx'.symm
 
 end Map
 

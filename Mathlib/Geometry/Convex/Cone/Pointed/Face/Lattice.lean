@@ -77,8 +77,8 @@ theorem mem_coe {F : Face C} (x : M) : x ∈ F ↔ x ∈ F.toPointedCone := .rfl
 /-- The infimum of two faces `F₁`, `F₂` of `C` is the intersection of the cones `F₁` and `F₂`. -/
 def inf (F₁ F₂ : Face C) : Face C := ⟨F₁ ⊓ F₂, F₁.isFaceOf.inf_left F₂.isFaceOf⟩
 
-instance : InfSet (Face C) :=
-⟨fun S =>
+instance : InfSet (Face C) where
+ sInf S :=
   { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
     isFaceOf := by
       constructor
@@ -88,7 +88,7 @@ instance : InfSet (Face C) :=
         intros _ _ a xc yc a0 _ h
         simp only [xc, true_and]; intros F Fs
         exact F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
-}⟩
+  }
 
 instance : SemilatticeInf (Face C) where
   inf := inf
@@ -173,24 +173,24 @@ open Submodule
 def prod (F₁ : Face C₁) (F₂ : Face C₂) : Face (C₁.prod C₂) := ⟨_, F₁.isFaceOf.prod F₂.isFaceOf⟩
 
 /-- The face of `C₁` obtained by projecting to the first component of a face `F ≤ C₁ × C₂`. -/
-def proj_fst (F : Face (C₁.prod C₂)) : Face C₁ := ⟨_, F.isFaceOf.fst⟩
+def projFst (F : Face (C₁.prod C₂)) : Face C₁ := ⟨_, F.isFaceOf.fst⟩
 
 /-- The face of `C₁` obtained by projecting to the second component of a face `F ≤ C₁ × C₂`. -/
-def proj_snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
+def projSnd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 
 @[simp]
-theorem prod_proj_fst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).proj_fst = F₁ := by
+theorem prod_projFst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).projFst = F₁ := by
   ext
-  simpa [proj_fst, prod] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
+  simpa [projFst, prod] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
 
 @[simp]
-theorem prod_proj_snd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).proj_snd = F₂ := by
+theorem prod_projSnd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).projSnd = F₂ := by
   ext
-  simpa [proj_snd, prod] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
+  simpa [projSnd, prod] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
 
-theorem proj_fst_prod_proj_snd (G : Face (C₁.prod C₂)) : G.proj_fst.prod G.proj_snd = G := by
+theorem projFst_prod_projSnd (G : Face (C₁.prod C₂)) : G.projFst.prod G.projSnd = G := by
   ext x
-  simp only [prod, toPointedCone, proj_fst, proj_snd, mem_coe, mem_prod, mem_map,
+  simp only [prod, toPointedCone, projFst, projSnd, mem_coe, mem_prod, mem_map,
     LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
   constructor
   · simp only [and_imp, forall_exists_index]
@@ -210,14 +210,14 @@ theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} :
 lattices. -/
 def prod_orderIso (C : PointedCone R M) (D : PointedCone R N) :
     Face (C.prod D) ≃o Face C × Face D where
-  toFun G := ⟨proj_fst G, proj_snd G⟩
+  toFun G := ⟨projFst G, projSnd G⟩
   invFun G := G.1.prod G.2
-  left_inv G := by simp [proj_fst_prod_proj_snd]
+  left_inv G := by simp [projFst_prod_projSnd]
   right_inv G := by simp
   map_rel_iff' := by
     simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk, coe_le_iff]
     intro F₁ F₂; constructor <;> intro a
-    · simpa [proj_fst_prod_proj_snd, coe_le_iff] using Face.prod_mono a.1 a.2
+    · simpa [projFst_prod_projSnd, coe_le_iff] using Face.prod_mono a.1 a.2
     · constructor; all_goals
       try simpa only [prod_left, prod_right]
       exact fun _ d => Submodule.map_mono a d
