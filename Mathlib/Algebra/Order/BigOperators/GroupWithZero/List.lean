@@ -15,7 +15,7 @@ This file contains the results concerning the interaction of list big operators 
 groups with zeros.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 variable {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]
