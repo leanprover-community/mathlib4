@@ -919,7 +919,7 @@ theorem mem_zpowers_zpow_iff {g : G} {k : ℤ} :
     g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (orderOf g) = 1 := by
   apply Iff.intro
   · intro hgk
-    rcases (by simpa [Subgroup.zpowers] using hgk) with ⟨m, hm⟩
+    rcases (Subgroup.mem_zpowers_iff.mp hgk) with ⟨m, hm⟩
     have hm' : g ^ (k * m) = g := by simpa [zpow_mul] using hm
     have h1 : g ^ (k * m - 1) = 1 := by simp[zpow_sub, hm']
     have hdiv : (↑(orderOf g) : ℤ) ∣ (k * m - 1) := orderOf_dvd_iff_zpow_eq_one.mpr h1
@@ -952,7 +952,7 @@ theorem mem_zpowers_zpow_iff {g : G} {k : ℤ} :
   · intro kgcd
     by_cases h : orderOf g = 0
     · rw [h] at kgcd
-      simp at kgcd
+      simp only [CharP.cast_eq_zero, Int.gcd_zero] at kgcd
       have hk : k = 1 ∨ k = -1 := Int.natAbs_eq_natAbs_iff.mp kgcd
       cases hk <;> simp_all
     · let n : ℤ := (↑(orderOf g) : ℤ)
