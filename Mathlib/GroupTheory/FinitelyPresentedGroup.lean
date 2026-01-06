@@ -110,11 +110,36 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
     Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
   constructor
   · intro ⟨n, f, hfsurj, hfkernel⟩
-    refine ⟨ULift (Fin n), inferInstance, ?_, ?_, ?_⟩
-    · let iso := @Equiv.ulift (Fin n)
-      sorry
-    · sorry
-    · sorry
+    let e : ULift (Fin n) ≃ Fin n := Equiv.ulift
+    let iso : FreeGroup (ULift (Fin n)) ≃* FreeGroup (Fin n) :=
+      FreeGroup.freeGroupCongr e
+    use ULift (Fin n)
+    use inferInstance
+    use f.comp iso
+    use hfsurj.comp iso.surjective
+    use IsNormalClosureFG.map iso.toMonoidHom iso.surjective (f.comp iso).ker hfkernel
+    sorry
+    -- · refine ⟨ IsNormalClosureFG.map (FreeGroup.map ULift.up) _ _ _ ⟩
+    --   convert hfkernel.map _ _;
+    --   rotate_left;
+    --   -- Define the homomorphism from the free group on Fin n to the free group on ULift (Fin n) by mapping each generator to the corresponding generator in ULift (Fin n).
+    --   let g : FreeGroup (Fin n) →* FreeGroup (ULift (Fin n)) := FreeGroup.map ULift.up;
+    --   exact g;
+    --   · intro x;
+    --     refine' FreeGroup.induction_on x _ _ _ _;
+    --     · exact ⟨ 1, by simp +decide ⟩;
+    --     · exact fun x => ⟨ FreeGroup.of x.down, by simp +decide ⟩;
+    --     · exact fun x hx => ⟨ hx.choose⁻¹, by simp +decide [ hx.choose_spec ] ⟩;
+    --     · rintro x y ⟨ a, rfl ⟩ ⟨ b, rfl ⟩ ; exact ⟨ a * b, by simp +decide ⟩;
+    --   · -- The kernel of the composition is the preimage of the kernel of $f$ under the map $g$.
+    --     ext; simp [MonoidHom.mem_ker, Function.comp];
+    --     constructor;
+    --     · rename_i x;
+    --       refine' fun hx => ⟨ FreeGroup.map ULift.down x, hx, _ ⟩;
+    --       refine' FreeGroup.induction_on x _ _ _ _ <;> aesop;
+    --     · rintro ⟨ x, hx, rfl ⟩;
+    --       convert hx;
+    --       refine' FreeGroup.induction_on x _ _ _ _ <;> aesop
   · intro ⟨α, _, f, hfsurj, hfkernel⟩
     let iso : FreeGroup (Fin (Fintype.card α)) ≃* FreeGroup α :=
       FreeGroup.freeGroupCongr (Fintype.equivFin α).symm
