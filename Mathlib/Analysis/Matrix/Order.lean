@@ -191,15 +191,9 @@ end PosSemidef
 
 theorem IsHermitian.det_cfcAbs [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
     det (CFC.abs A) = ‖det A‖ := by
-  suffices CFC.abs A = hA.cfc abs by
-    rw [this]
-    change (Unitary.conjStarAlgAut 𝕜 (Matrix n n 𝕜) _ _).det = _
-    simp [-Unitary.conjStarAlgAut_apply, hA.det_eq_prod_eigenvalues]
-  apply CFC.sqrt_unique (b := hA.cfc abs) ?_ <| map_nonneg _ <| by simp [nonneg_iff_posSemidef]
-  rw [star_eq_conjTranspose, hA.eq, ← hA.cfc_eq, ← cfc_mul _ _ A, hA.cfc_eq, ← sq]
-  conv_rhs => rw [hA.spectral_theorem]
-  rw [← map_pow, diagonal_pow, IsHermitian.cfc]
-  simp [diagonal, sq]
+  rw [CFC.abs_eq_cfc_norm A, hA.cfc_eq]
+  change (Unitary.conjStarAlgAut 𝕜 (Matrix n n 𝕜) _ _).det = _
+  simp [-Unitary.conjStarAlgAut_apply, hA.det_eq_prod_eigenvalues]
 
 /-- A matrix is positive semidefinite if and only if it has the form `Bᴴ * B` for some `B`. -/
 @[deprecated CStarAlgebra.nonneg_iff_eq_star_mul_self (since := "2025-09-22")]
