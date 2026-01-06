@@ -697,6 +697,7 @@ public import Mathlib.Algebra.Lie.Weights.IsSimple
 public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.Algebra.Lie.Weights.RootSystem
+public import Mathlib.Algebra.LieRinehartAlgebra.Defs
 public import Mathlib.Algebra.LinearRecurrence
 public import Mathlib.Algebra.ModEq
 public import Mathlib.Algebra.Module.Basic
