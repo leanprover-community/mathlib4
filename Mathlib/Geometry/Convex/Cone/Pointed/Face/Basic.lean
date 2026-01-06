@@ -40,6 +40,8 @@ namespace PointedCone
 variable {R M N : Type*}
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M] in
+/-- A pointed cone `F` is a face of another pointed cone `C` if `F ≤ C` and if `a • x + y` is in `F`
+for all `x, y` in `C` and positive scalars `a`, then `x` ist also in `F`. -/
 structure IsFaceOf (F C : PointedCone R M) where
   le : F ≤ C
   mem_of_smul_add_mem :
@@ -82,7 +84,7 @@ theorem iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) : F₁.IsFaceOf
   rw [iff_mem_of_smul_add_smul_mem] at ⊢ h₁
   exact ⟨h, fun hx hy => h₁.2 (h₂.le hx) (h₂.le hy)⟩
 
-/- A face of a cone is an extreme subset of the cone. -/
+/-- A face of a cone is an extreme subset of the cone. -/
 theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
   apply iff_mem_of_smul_add_smul_mem.mp at h
   refine ⟨h.1, ?_⟩
@@ -90,7 +92,7 @@ theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
   apply h.2 xc yc a0 b0
   rwa [← hz] at zf
 
-/- The intersection of two faces of two cones is a face of the intersection of the cones. -/
+/-- The intersection of two faces of two cones is a face of the intersection of the cones. -/
 theorem inf (h₁ : F₁.IsFaceOf C₁) (h₂ : F₂.IsFaceOf C₂) :
     (F₁ ⊓ F₂).IsFaceOf (C₁ ⊓ C₂) := by
   use le_inf_iff.mpr ⟨Set.inter_subset_left.trans h₁.le, Set.inter_subset_right.trans h₂.le⟩
@@ -99,11 +101,11 @@ theorem inf (h₁ : F₁.IsFaceOf C₁) (h₂ : F₂.IsFaceOf C₂) :
   · exact h₁.mem_of_smul_add_mem xc₁ yc₁ a0 hz₁
   · exact h₂.mem_of_smul_add_mem xc₂ yc₂ a0 hz₂
 
-/- The intersection of two faces of a cone is a face of the cone. -/
+/-- The intersection of two faces of a cone is a face of the cone. -/
 theorem inf_left (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) : (F₁ ⊓ F₂).IsFaceOf C :=
   inf_idem C ▸ inf h₁ h₂
 
-/- If a cone is a face of two cones simultaneously, then it is also a face of their intersection. -/
+/-- If a cone is a face of two cones simultaneously, then it's also a face of their intersection. -/
 theorem inf_right (h₁ : F.IsFaceOf C₁) (h₂ : F.IsFaceOf C₂) : F.IsFaceOf (C₁ ⊓ C₂) :=
   inf_idem F ▸ inf h₁ h₂
 
@@ -192,7 +194,7 @@ theorem iff_mem_of_add_mem :
     convert smul_mem _ (inv_nonneg.mpr (le_of_lt c0)) cxF
     simp [← smul_assoc, smul_eq_mul, mul_comm, Field.mul_inv_cancel _ (ne_of_lt c0).symm]
 
-/- If the positive combination of points of a cone is in a face, then all the points are
+/-- If the positive combination of points of a cone is in a face, then all the points are
   in the face. -/
 theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι → R}
     (hF : F.IsFaceOf C) (hsC : ∀ i : ι, f i ∈ C) (hc : ∀ i, 0 ≤ c i) (hs : ∑ i : ι, c i • f i ∈ F)

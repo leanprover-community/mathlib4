@@ -50,7 +50,7 @@ def self (C : PointedCone R M) : Face C := ⟨C, IsFaceOf.refl _⟩
 
 instance {C : PointedCone R M} : CoeDep (PointedCone R M) C (Face C) := ⟨self C⟩
 
-/- Converts a face of a pointed cone into a pointed cone. -/
+/-- Converts a face of a pointed cone into a pointed cone. -/
 @[coe, simp]
 def toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
 
@@ -206,7 +206,7 @@ theorem proj_fst_prod_proj_snd (G : Face (C₁.prod C₂)) : G.proj_fst.prod G.p
 theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} :
     F₁ ≤ F₁' → F₂ ≤ F₂' → prod F₁ F₂ ≤ prod F₁' F₂' := Submodule.prod_mono
 
-/- The face lattice of the product of two cones is isomorphic to the product of their face
+/-- The face lattice of the product of two cones is isomorphic to the product of their face
 lattices. -/
 def prod_orderIso (C : PointedCone R M) (D : PointedCone R N) :
     Face (C.prod D) ≃o Face C × Face D where
