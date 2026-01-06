@@ -571,8 +571,8 @@ section uniqueness
 
 open Metric Topology
 
-lemma hasSum_cuspFunction_of_hasSum [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {F : Type*}
-    [FunLike F ℍ ℂ] {k : ℤ} [ModularFormClass F Γ k]
+private lemma hasSum_cuspFunction_of_hasSum_annulus [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
+    {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (c : ℕ → ℂ) (f : F)
     (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) {q : ℂ} (hq : ‖q‖ < 1)
     (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
@@ -590,7 +590,7 @@ lemma cuspfFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ
      (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) : cuspFunction h f 0 = c 0 := by
   rw [cuspFunction, Function.Periodic.cuspFunction_zero_eq_limUnder_nhds_ne]
   apply Filter.Tendsto.limUnder_eq
-  have (q : ℂ) := hasSum_cuspFunction_of_hasSum hh hΓ c f hf (q := q)
+  have (q : ℂ) := hasSum_cuspFunction_of_hasSum_annulus hh hΓ c f hf (q := q)
   have htt : Tendsto (fun q ↦ ∑' m, c m * q ^ m) (𝓝[≠] 0) (𝓝 (c 0)) := by
     have hD := tendsto_tsum_of_dominated_convergence (𝓕 := (𝓝[≠] (0 : ℂ)))
       (f := fun q : ℂ ↦ fun m : ℕ ↦ c m * q ^ m) (g := fun m ↦ c m * 0 ^ m)
@@ -615,17 +615,16 @@ lemma cuspfFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ
   rw [@eventuallyEq_nhdsWithin_iff, eventually_nhds_iff_ball]
   refine ⟨1, by simpa using fun y hy hy0 ↦ (this y hy hy0).tsum_eq⟩
 
-lemma modularForm_q_exp_cuspFuntion [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
+lemma hasSum_cuspFunction_of_hasSum [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (c : ℕ → ℂ) (f : F) [ModularFormClass F Γ k]
-    (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) : ∀ q : ℂ, ‖q‖ < 1 →
+    (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ c m • q ^ m) (cuspFunction h f q) := by
-  intro q hq
   by_cases hq1 : q = 0
   · simp_rw [hq1, cuspfFunction_zero_eq_const_coeff hh hΓ c f hf, smul_eq_mul]
     rw [Summable.hasSum_iff (by simpa [← summable_nat_add_iff 1] using summable_zero),
       Summable.tsum_eq_zero_add (by simpa [← summable_nat_add_iff 1] using summable_zero)]
     simp
-  · exact hasSum_cuspFunction_of_hasSum hh hΓ c f hf hq hq1
+  · exact hasSum_cuspFunction_of_hasSum_annulus hh hΓ c f hf hq hq1
 
 private lemma qParam_onto_annulus (r h : ℝ) (hr : 0 < r) (hr2 : r < 1) (hh : 0 < h) :
     ∃ (z : ℍ), ‖𝕢 h z‖ = r := by
@@ -666,7 +665,7 @@ lemma qExpansion_coeffs_unique [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (c 
     intro y hy
     simp only [EMetric.mem_ball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
       ← NNReal.coe_lt_one, coe_nnnorm, zero_add] at hy ⊢
-    apply (modularForm_q_exp_cuspFuntion hh hΓ c f hf y hy).congr
+    apply (hasSum_cuspFunction_of_hasSum hh hΓ c f hf hy).congr
     simp [smul_eq_mul, PowerSeries.coeff_mk, qq, qExpansion2]
   have h3 : HasFPowerSeriesAt (cuspFunction h f) qq 0 := by
     use 1
