@@ -19,7 +19,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 We also prove differentiability and provide derivatives for the power functions `x ^ y`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
