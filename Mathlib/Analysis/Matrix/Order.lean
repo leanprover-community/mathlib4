@@ -165,12 +165,11 @@ lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 @[deprecated CFC.isUnit_sqrt_iff (since := "2025-09-22")]
 lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A
 
-end sqrtDeprecated
-
-lemma inv_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
-    (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
+lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
   rw [eq_comm, CFC.sqrt_eq_iff _ _  hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
+
+end sqrtDeprecated
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem dotProduct_mulVec_zero_iff {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
