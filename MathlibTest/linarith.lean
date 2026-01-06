@@ -686,6 +686,19 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     False := by
   intros; linarith
 
+/--
+error: linarith failed to find a contradiction
+case h1.h
+a b c d e : ℚ
+ha : 2 * a + b + c + d + e = 4
+hb : a + 2 * b + c + d + e = 5
+hc : a + b + 2 * c + d + e = 6
+hd : a + b + c + 2 * d + e = 7
+he : a + b + c + d + 2 * e = 8
+a✝ : e < 3
+⊢ False
+failed
+-/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/8875 -/
 example (a b c d e : ℚ)
