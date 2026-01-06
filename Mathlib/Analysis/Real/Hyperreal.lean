@@ -595,13 +595,6 @@ theorem isSt_iff_abs_sub_lt_delta {x : ℝ*} {r : ℝ} : IsSt x r ↔ ∀ δ : �
 
 set_option linter.deprecated false in
 @[deprecated "`IsSt` is deprecated" (since := "2026-01-05")]
-theorem stdPart_map {x : ℝ*} {r : ℝ} (hxr : IsSt x r) {f : ℝ → ℝ} (hf : ContinuousAt f r) :
-    IsSt (x.map f) (f r) := by
-  rcases ofSeq_surjective x with ⟨g, rfl⟩
-  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (isSt_ofSeq_iff_tendsto.1 hxr)
-
-set_option linter.deprecated false in
-@[deprecated "`IsSt` is deprecated" (since := "2026-01-05")]
 theorem IsSt.map {x : ℝ*} {r : ℝ} (hxr : IsSt x r) {f : ℝ → ℝ} (hf : ContinuousAt f r) :
     IsSt (x.map f) (f r) := by
   rcases ofSeq_surjective x with ⟨g, rfl⟩
