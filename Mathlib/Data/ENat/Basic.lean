@@ -610,8 +610,7 @@ lemma WithBot.one_add_cancel (a b : WithBot ℕ∞) : 1 + a = 1 + b ↔ a = b :=
   (IsAddLeftRegular.all 1).withTop.withBot.eq_iff
 
 lemma WithBot.add_le_add_natCast_right_iff (a b : WithBot ℕ∞) (c : ℕ) : a + c ≤ b + c ↔ a ≤ b :=
-  ⟨fun h ↦ (Contravariant.AddLECancellable (a := c)).withTop.withBot.add_le_add_iff_right.mp h,
-    fun h ↦ add_le_add_left h c⟩
+  (Contravariant.AddLECancellable (a := c)).withTop.withBot.add_le_add_iff_right
 
 lemma WithBot.add_le_add_one_right_iff (a b : WithBot ℕ∞) : a + 1 ≤ b + 1 ↔ a ≤ b :=
   WithBot.add_le_add_natCast_right_iff a b 1
