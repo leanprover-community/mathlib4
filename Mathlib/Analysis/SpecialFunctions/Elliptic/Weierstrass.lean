@@ -36,7 +36,7 @@ public import Mathlib.Analysis.Meromorphic.Order
 - `PeriodPair.weierstrassP_neg`: `℘'` is odd.
 - `PeriodPair.deriv_weierstrassP`: `deriv ℘ = ℘'`. This is true globally because of junk values.
 - `PeriodPair.analyticOnNhd_weierstrassP`: `℘` is analytic away from the lattice points.
-- `PeriodPair.meromorphicAt_weierstrassP`: `℘` is meromorphic on the whole plane.
+- `PeriodPair.meromorphic_weierstrassP`: `℘` is meromorphic on the whole plane.
 - `PeriodPair.order_weierstrassP`: `℘` has a pole of order 2 at each of the lattice points.
 
 ## tags
@@ -636,6 +636,9 @@ each `aᵢ` can be writen as a sum over `l ∈ L`, i.e.
 
 We show that the double sum converges if `z` falls in a ball centered at `x` that doesn't touch `L`.
 -/
+-- We should be able to skip this computation via some general complex-analytic machinery but
+-- they are missing at the moment.
+-- Consider refactoring once we have developed more of the missing API.
 lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     (hx : ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ < ‖l - x‖) :
     Summable (Function.uncurry fun b c ↦ L.weierstrassPExceptSummand l₀ x b c * (z - x) ^ b) := by
@@ -828,7 +831,8 @@ lemma ite_eq_one_sub_sq_mul_weierstrassP (l₀ : ℂ) (hl₀ : l₀ ∈ L.lattic
       (z - l₀) ^ 2 * L.weierstrassPExcept l₀ z + 1 - (z - l₀) ^ 2 / l₀ ^ 2 := by
   grind [L.weierstrassPExcept_add ⟨_, hl₀⟩]
 
-lemma meromorphicAt_weierstrassP (x : ℂ) : MeromorphicAt ℘[L] x := by
+lemma meromorphic_weierstrassP : Meromorphic ℘[L] := by
+  intro x
   by_cases hx : x ∈ L.lattice
   · simp_rw [← funext <| L.weierstrassPExcept_add ⟨x, hx⟩]
     have := (analyticOnNhd_weierstrassPExcept L x x (by simp)).meromorphicAt
@@ -838,7 +842,7 @@ lemma meromorphicAt_weierstrassP (x : ℂ) : MeromorphicAt ℘[L] x := by
 lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
     meromorphicOrderAt ℘[L] l₀ = -2 := by
   trans ↑(-2 : ℤ)
-  · rw [meromorphicOrderAt_eq_int_iff (L.meromorphicAt_weierstrassP l₀)]
+  · rw [meromorphicOrderAt_eq_int_iff (L.meromorphic_weierstrassP l₀)]
     refine ⟨fun z ↦ (z - l₀) ^ 2 * ℘[L - l₀] z + 1 - (z - l₀) ^ 2 / l₀ ^ 2, ?_, ?_, ?_⟩
     · have : AnalyticAt ℂ ℘[L - l₀] l₀ := L.analyticOnNhd_weierstrassPExcept l₀ l₀ (by simp)
       suffices AnalyticAt ℂ (fun z ↦ (z - l₀) ^ 2 / l₀ ^ 2) l₀ by fun_prop
