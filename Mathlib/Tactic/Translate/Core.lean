@@ -95,14 +95,12 @@ syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   If no arguments are reordered then the attribute is redundant, which the `translateRedundant`
   linter will warn about.
 
-- `private` indicates that the translated declaration should not get a user-facing name,
+- `none` indicates that the translated declaration should not get a user-facing name,
   instead being named like an auxiliary declaration. This is particularly useful for `to_dual` when
   using the `reassoc` attribute, because the dual of a right associated term is left associated,
-  but we only want to see right associated terms in user-facing lemmas.
-
-  Note: `private` does not make the translated declaration `private`. It will still be exported
-  if and only if the original declaration is exported. -/
-syntax translationHint := (ppSpace (&"existing" <|> &"self" <|> "private"))?
+  but we only want user-facing lemmas with right associated terms.
+-/
+syntax translationHint := (ppSpace (&"existing" <|> &"self" <|> &"none"))?
 
 syntax attrArgs :=
   translationHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
@@ -290,7 +288,7 @@ structure Config : Type where
   self : Bool := false
   /-- An optional flag for not giving the new declaration a user-facing name.
   This is achieved by appending e.g. `_to_dual_1` to the name of the original declaration. -/
-  priv : Bool := false
+  none : Bool := false
   deriving Repr
 
 -- See https://github.com/leanprover/lean4/issues/10295
@@ -778,7 +776,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     if cfg.tgt != .anonymous then
       logWarning m!"`{t.attrName} self` ignores the provided name {cfg.tgt}"
     return src
-  if cfg.priv then
+  if cfg.none then
     if cfg.tgt != .anonymous then
       logWarning m!"`{t.attrName} private` ignores the provided name {cfg.tgt}"
     return ← withDeclNameForAuxNaming src do
@@ -1007,11 +1005,11 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (dont_translate := $[$types]*)) =>
         dontTranslate := dontTranslate ++ (← types.toList.mapM (elabArgStx declName argNames xs))
       | _ => throwUnsupportedSyntax
-    let mut existing := false; let mut self := false; let mut priv := false
+    let mut existing := false; let mut self := false; let mut none := false
     match hint with
     | `(translationHint| existing) => existing := true
     | `(translationHint| self) => existing := true; self := true
-    | `(translationHint| private) => priv := true
+    | `(translationHint| none) => none := true
     | _ => pure ()
     if self && !attrs.isEmpty then
       throwError "invalid `(attr := ...)` after `self`, \
@@ -1050,9 +1048,9 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | _ => throwUnsupportedSyntax
     return {
       trace := !stx[1].isNone
-      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, priv
-      ref := match tgt with | some tgt => tgt.raw | none => stx[0] }
+      tgt := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
+      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, none
+      ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax
 
 mutual
