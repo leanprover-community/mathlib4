@@ -272,7 +272,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
         (Ext.contravariant_sequence_exact₁' T_exact N n (n + 1) (add_comm 1 n))
     have surj1 : Function.Surjective g :=
-      extClass_precomp_surjective_of_projective_X₂ N T_exact n
+      precomp_extClass_surjective_of_projective_X₂ N T_exact n
     let f' : Ext TS.X₂ NS n →ₗ[S] Ext TS.X₁ NS n := {
       __ := (mk₀ TS.f).precomp NS (zero_add n)
       map_smul' s x := by simp }
@@ -282,7 +282,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     have exac2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
         (Ext.contravariant_sequence_exact₁' TS_exact NS n (n + 1) (add_comm 1 n))
     have surj2 : Function.Surjective g' :=
-      extClass_precomp_surjective_of_projective_X₂ NS TS_exact n
+      precomp_extClass_surjective_of_projective_X₂ NS TS_exact n
     let h₁ : Ext T.X₂ N n →ₗ[R] Ext TS.X₂ NS n := extendScalars'.mapExtLinearMap.{v, v'} S T.X₂ N n
     let h₂ : Ext T.X₁ N n →ₗ[R] Ext TS.X₁ NS n := extendScalars'.mapExtLinearMap.{v, v'} S T.X₁ N n
     let h₃ : Ext T.X₃ N (n + 1) →ₗ[R] Ext TS.X₃ NS (n + 1) :=
