@@ -30,33 +30,20 @@ variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N
 
 open CategoryTheory Abelian
 
-/-- Given a linear map `f : M → N`, we can obtain a short complex `ker(f) → M → N`. -/
-abbrev LinearMap.shortComplexKer (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
-  f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-  g := ModuleCat.ofHom.{v} f
-  zero := by ext; simp
-
-theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.Surjective f) :
-    f.shortComplexKer.ShortExact where
-  exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr
-    fun _ ↦ by simp [shortComplexKer]
-  mono_f := (ModuleCat.mono_iff_injective _).mpr (LinearMap.ker f).injective_subtype
-  epi_g := (ModuleCat.epi_iff_surjective _).mpr h
-
 /-- The standard short complex `N → P → M` with `P` projective. -/
-noncomputable abbrev ModuleCat.projective_shortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
+noncomputable abbrev ModuleCat.projectiveShortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
     ShortComplex (ModuleCat.{v} R) :=
   let e : Module.Basis M R (M →₀ Shrink.{v} R) :=
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
   (e.constr ℕ id).shortComplexKer
 
-theorem ModuleCat.projective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
-    M.projective_shortComplex.ShortExact := by
+theorem ModuleCat.shortExact_projectiveShortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
+    M.projectiveShortComplex.ShortExact := by
   apply LinearMap.shortExact_shortComplexKer
   refine fun m ↦ ⟨Finsupp.single m 1, ?_⟩
   simp [Module.Basis.constr_apply]
 
-instance [Small.{v} R] (M : ModuleCat.{v} R) : Module.Free R M.projective_shortComplex.X₂ :=
+instance [Small.{v} R] (M : ModuleCat.{v} R) : Module.Free R M.projectiveShortComplex.X₂ :=
   Module.Free.finsupp R _ _
 
 /-- The standard short complex `N → P → M` with `P` projective. -/
@@ -64,7 +51,7 @@ noncomputable abbrev CategoryTheory.InjectivePresentation.shortComplex
     {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
 
-theorem CategoryTheory.InjectivePresentation.shortComplex_shortExact {M : ModuleCat.{v} R}
+theorem CategoryTheory.InjectivePresentation.shortExact_shortComplex {M : ModuleCat.{v} R}
     (ip : InjectivePresentation M) : ip.shortComplex.ShortExact :=
   { exact := ShortComplex.exact_cokernel ip.3
     mono_f := ip.4
@@ -74,7 +61,7 @@ instance {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : Injective ip.sho
 
 /-- The connection maps in the contravariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is projective. -/
-theorem extClass_precomp_surjective_of_projective_X₂ [Small.{v} R]
+theorem precomp_extClass_surjective_of_projective_X₂ [Small.{v} R]
     (M : ModuleCat.{v} R) {S : ShortComplex (ModuleCat.{v} R)} (h : S.ShortExact) (n : ℕ)
     [Projective S.X₂] : Function.Surjective (h.extClass.precomp M (add_comm 1 n)) := by
   let _ := Ext.subsingleton_of_projective S.X₂ M
@@ -84,7 +71,7 @@ theorem extClass_precomp_surjective_of_projective_X₂ [Small.{v} R]
 
 /-- The connection maps in the covariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is injective. -/
-theorem extClass_postcomp_surjective_of_projective_X₂ [Small.{v} R]
+theorem postcomp_extClass_surjective_of_projective_X₂ [Small.{v} R]
     {S : ShortComplex (ModuleCat.{v} R)} (h : S.ShortExact) (M : ModuleCat.{v} R) (n : ℕ)
     [Injective S.X₂] : Function.Surjective (h.extClass.postcomp M (rfl : n + 1 = n + 1)) := by
   let _ := Ext.subsingleton_of_injective M S.X₂
