@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 /-!
 # The partial order on matrices
@@ -168,6 +168,19 @@ lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff 
 lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
   rw [eq_comm, CFC.sqrt_eq_iff _ _  hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
+
+omit hA in
+theorem Matrix.IsHermitian.det_cfcAbs {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+    det (CFC.abs A) = ‖det A‖ := by
+  suffices CFC.abs A = hA.cfc abs by
+    rw [this]
+    change (Unitary.conjStarAlgAut 𝕜 (Matrix n n 𝕜) _ _).det = _
+    simp [-Unitary.conjStarAlgAut_apply, hA.det_eq_prod_eigenvalues]
+  apply CFC.sqrt_unique (b := hA.cfc abs) ?_ <| map_nonneg _ <| by simp [nonneg_iff_posSemidef]
+  rw [star_eq_conjTranspose, hA.eq, ← hA.cfc_eq, ← cfc_mul _ _ A, hA.cfc_eq, ← sq]
+  conv_rhs => rw [hA.spectral_theorem]
+  rw [← map_pow, diagonal_pow, IsHermitian.cfc]
+  simp [diagonal, sq]
 
 end sqrtDeprecated
 
