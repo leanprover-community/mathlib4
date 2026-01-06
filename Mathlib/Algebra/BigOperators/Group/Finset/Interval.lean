@@ -17,7 +17,7 @@ This file contains some lemmas about sums and products over integer intervals `I
 
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
