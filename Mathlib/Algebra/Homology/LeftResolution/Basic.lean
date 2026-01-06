@@ -164,7 +164,7 @@ lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
   ext n
   induction n with
   | zero => simp
-  | succ n hn => obtain _|n := n <;> simp [hn]
+  | succ n hn => obtain _ | n := n <;> simp [hn]
 
 @[reassoc, simp]
 lemma chainComplexMap_comp :

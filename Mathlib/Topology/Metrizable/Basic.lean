@@ -14,7 +14,7 @@ In this file we define metrizable topological spaces, i.e., topological spaces f
 exists a metric space structure that generates the same topology.
 We define it without any reference to metric spaces in order to avoid importing the real numbers.
 For the proof that metrizable spaces admit a compatible metric,
-see `Mathlib/Topology/Metrizable/Uniformity`.
+see `Mathlib/Topology/Metrizable/Uniformity.lean`.
 -/
 
 -- don't import the real numbers
@@ -31,7 +31,7 @@ variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSp
 
 /-- A topological space is *pseudometrizable* if there exists a pseudometric space structure
 compatible with the topology. To minimize imports, we implement this class in terms of the
-existence of a countably generated unifomity inducing the topology, which is mathematically
+existence of a countably generated uniformity inducing the topology, which is mathematically
 equivalent.
 To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.
@@ -109,7 +109,7 @@ instance PseudoMetrizableSpace.regularSpace [PseudoMetrizableSpace X] : RegularS
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
 topology. To minimize imports, we implement this class in terms of the existence of a
-countably generated unifomity inducing the topology, which is mathematically
+countably generated uniformity inducing the topology, which is mathematically
 equivalent.
 To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.

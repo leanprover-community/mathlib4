@@ -24,7 +24,7 @@ namespace CategoryTheory.ObjectProperty
 variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
 
 /-- A predicate `C → Prop` on the objects of a category is stable under retracts
-if whenever `P Y`, then all the objects `X` that are retracts of `X` also satisfy `P X`. -/
+if whenever `P Y`, then all the objects `X` that are retracts of `Y` also satisfy `P X`. -/
 class IsStableUnderRetracts where
   of_retract {X Y : C} (_ : Retract X Y) (_ : P Y) : P X
 

@@ -183,6 +183,8 @@ variable {F : C ⥤ D}
       ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ₘ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
         cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
 `whiskerLeft` and `whiskerRight`.

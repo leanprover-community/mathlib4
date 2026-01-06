@@ -241,6 +241,11 @@ theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
 
 @[simp] lemma div_self (h : a ≠ 0) : a / a = 1 := h.isUnit.div_self
 
+@[simp]
+lemma div_self_eq_one₀ : a / a = 1 ↔ a ≠ 0 where
+  mp := by contrapose!; simp +contextual
+  mpr := div_self
+
 lemma eq_mul_inv_iff_mul_eq₀ (hc : c ≠ 0) : a = b * c⁻¹ ↔ a * c = b :=
   hc.isUnit.eq_mul_inv_iff_mul_eq
 
