@@ -104,11 +104,8 @@ instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
 
 lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
     (rootsOfUnity m M ⊓ rootsOfUnity n M) = rootsOfUnity (m.gcd n) M := by
-  refine le_antisymm ?_ ?_
-  · intro
-    simp +contextual [pow_gcd_eq_one]
-  · rw [le_inf_iff]
-    exact ⟨rootsOfUnity_le_of_dvd (m.gcd_dvd_left n), rootsOfUnity_le_of_dvd (m.gcd_dvd_right n)⟩
+  ext
+  simp
 
 lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
     Disjoint (rootsOfUnity m M) (rootsOfUnity n M) := by
