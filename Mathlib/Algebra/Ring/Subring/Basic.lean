@@ -160,6 +160,15 @@ theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
 
+@[simp] lemma toSubsemiring_top : (⊤ : Subring R).toSubsemiring = ⊤ := rfl
+@[simp] lemma toAddSubgroup_top : (⊤ : Subring R).toAddSubgroup = ⊤ := rfl
+
+@[simp] lemma toSubsemiring_eq_top {S : Subring R} : S.toSubsemiring = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
+@[simp] lemma toAddSubgroup_eq_top {S : Subring R} : S.toAddSubgroup = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
 /-- The ring equiv between the top element of `Subring R` and `R`. -/
 @[simps!]
 def topEquiv : (⊤ : Subring R) ≃+* R :=
