@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
   `dim M/(r₁, …, rₙ)M + n = dim M`.
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 
