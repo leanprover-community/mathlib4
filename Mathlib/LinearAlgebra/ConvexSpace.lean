@@ -154,6 +154,4 @@ theorem convexComboPair_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t 
     convexComboPair s t hs ht h x x = x := by
   unfold convexComboPair
   convert ConvexSpace.single x
-  ext a
-  simp only [StdSimplex.duple, StdSimplex.single]
-  rw [← Finsupp.single_add, h]
+  simp only [StdSimplex.duple, StdSimplex.single, ← Finsupp.single_add, h]
