@@ -19,7 +19,7 @@ that every module is the direct limit of its finitely generated submodules and t
 product preserves colimits.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

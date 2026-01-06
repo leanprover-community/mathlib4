@@ -13,7 +13,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 # Cardinality of sets under pointwise group with zero operations
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
