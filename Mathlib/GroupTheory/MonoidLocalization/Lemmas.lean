@@ -15,7 +15,7 @@ public import Mathlib.GroupTheory.MonoidLocalization.Basic
 that requires additional imports.
 -/
 
-@[expose] public section
+public section
 
 namespace Submonoid.IsLocalizationMap
 
