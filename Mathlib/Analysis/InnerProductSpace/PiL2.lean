@@ -488,8 +488,6 @@ lemma sum_sq_norm_inner_right (b : OrthonormalBasis ι 𝕜 E) (x : E) :
   rw [Real.sq_sqrt]
   exact Fintype.sum_nonneg fun _ ↦ by positivity
 
-@[deprecated (since := "2025-06-23")] alias sum_sq_norm_inner := sum_sq_norm_inner_right
-
 lemma sum_sq_norm_inner_left (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ∑ i, ‖⟪x, b i⟫‖ ^ 2 = ‖x‖ ^ 2 := by
   convert sum_sq_norm_inner_right b x using 2 with i -
@@ -1235,10 +1233,13 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
 
 /-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` and `b₂`
 is equal to `vecMulVec (star b₂) (star (b.repr x))`. -/
-theorem toMatrix_innerSL_apply [Fintype n] [DecidableEq n] [Fintype m]
+theorem LinearMap.toMatrix_innerₛₗ_apply [Fintype n] [DecidableEq n] [Fintype m]
     (b : OrthonormalBasis n 𝕜 E) (b₂ : OrthonormalBasis m 𝕜 𝕜) (x : E) :
-    (innerSL 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
+    (innerₛₗ 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
   ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
+
+@[deprecated (since := "2026-01-03")] alias toMatrix_innerSL_apply :=
+  LinearMap.toMatrix_innerₛₗ_apply
 
 end Matrix
 
@@ -1250,12 +1251,12 @@ theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike �
     (rankOne 𝕜 x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by
   rw [rankOne_def', ContinuousLinearMap.coe_comp, toLinearMap_toSpanSingleton,
     toMatrix_comp _ (OrthonormalBasis.singleton Unit 𝕜).toBasis, toMatrix_toSpanSingleton,
-    toMatrix_innerSL_apply, OrthonormalBasis.toBasis_singleton, Basis.coe_singleton,
-    Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one, Matrix.one_vecMulVec,
-    Matrix.vecMulVec_eq Unit]
+    toLinearMap_innerSL_apply, toMatrix_innerₛₗ_apply, OrthonormalBasis.toBasis_singleton,
+    Basis.coe_singleton, Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one,
+    Matrix.one_vecMulVec, Matrix.vecMulVec_eq Unit]
 
-theorem Matrix.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m] [Fintype n]
-    [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
-    toEuclideanLin.symm (InnerProductSpace.rankOne 𝕜 x y) = vecMulVec x (star y) := by
-  simp [toEuclideanLin, LinearMap.toMatrix', ← ext_iff, vecMulVec_apply,
-    EuclideanSpace.inner_single_right, mul_comm]
+open Matrix LinearMap EuclideanSpace in
+theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
+    [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
+    toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
+  simp [toEuclideanLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]

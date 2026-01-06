@@ -172,6 +172,9 @@ theorem coe_innerSL_apply (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
 theorem innerSL_apply_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
+@[simp] theorem ContinuousLinearMap.toLinearMap_innerSL_apply (v : E) :
+    (innerSL 𝕜 v).toLinearMap = innerₛₗ 𝕜 v := rfl
+
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
 def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
   @ContinuousLinearMap.flipₗᵢ' 𝕜 𝕜 𝕜 E E 𝕜 _ _ _ _ _ _ _ _ _ (RingHom.id 𝕜) (starRingEnd 𝕜) _ _
@@ -301,9 +304,9 @@ open ContinuousLinearMap
 variable (𝕜) in
 /-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`.
 
-This is also sometimes referred to as an outer product of vectors on a Hilbert space.\
+This is also sometimes referred to as an outer product of vectors on a Hilbert space.
 This corresponds to the matrix outer product `Matrix.vecMulVec`, see
-`InnerProductSpace.toMatrix_rankOne` and `Matrix.symm_toEuclideanLin_rankOne` in
+`InnerProductSpace.toMatrix_rankOne` and `InnerProductSpace.symm_toEuclideanLin_rankOne` in
 `Mathlib/Analysis/InnerProductSpace/PiL2.lean`. -/
 noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
   .flip <| .comp (.smulRightL 𝕜 _ _) (innerSL 𝕜)
