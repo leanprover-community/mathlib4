@@ -21,6 +21,7 @@ For instances, it is typical that we also don't want to have multiple of the sam
 
 public meta section
 
+namespace Mathlib.Tactic.DuplicateDecls
 open Lean Meta
 
 /-- Clear all universe levels from an expression, so that they are ignored.
@@ -79,6 +80,7 @@ where
   | .lam _ _ b _ => isConstBVarApp b
   | _ => false
 
+/-- An inductive type for the kind of duplicate declarations to search for. -/
 inductive Target where
   /-- Search for duplicate theorems. -/
   | theorems
@@ -124,43 +126,49 @@ def duplicateDeclarations (cfg : Target) : CoreM (Array (Name × Name)) := MetaM
   return dups
 
 /-- Get a number by which to sort the libraries. -/
-def libraryNumber (module : Name) : Nat :=
+private def libraryNumber (module : Name) : Nat :=
   #[`Init, `Lean, `Std, `Batteries, `Mathlib].idxOf module.getRoot
 
-structure ModuleWithNum where
+/-- Structure used for sorting imported modules. -/
+private structure ModuleWithNum where
   number : Nat
   name : String
 
-instance : Ord ModuleWithNum := ⟨fun a b ↦ (compare a.1 b.1).then (compare a.2 b.2)⟩
-instance : LT ModuleWithNum := ltOfOrd
-instance : LE ModuleWithNum := leOfOrd
+private instance : Ord ModuleWithNum := ⟨fun a b ↦ (compare a.1 b.1).then (compare a.2 b.2)⟩
+private instance : LT ModuleWithNum := ltOfOrd
+private instance : LE ModuleWithNum := leOfOrd
 
 /-- Return the object by which to sort the module that `name` is from.
 That is, the `libraryNumber` followed by the module as a string. -/
-def toModule (name : Name) (env : Environment) : ModuleWithNum :=
+private def mkModuleWithNum (name : Name) (env : Environment) : ModuleWithNum :=
   let { module, .. } := env.header.modules[env.const2ModIdx[name]!]!
   { number := libraryNumber module, name := module.toString }
 
+/-- Return the list of pairs of duplicate declarations, grouped by the name of the module
+of one of the two lemmas. -/
 def sortedDuplicateDeclarations (cfg : Target) :
-    CoreM (Std.TreeMap ModuleWithNum (Std.TreeMap ModuleWithNum (Array (Name × Name)))) := do
+    CoreM (Array (String × Array (Name × Name))) := do
   let env ← getEnv
   let dups ← duplicateDeclarations cfg
-  let mut result := {}
+  let mut result : Std.TreeMap ModuleWithNum (Std.TreeMap ModuleWithNum (Array (Name × Name))) := {}
   for (a, b) in dups do
-    let A := toModule a env
-    let B := toModule b env
+    let A := mkModuleWithNum a env
+    let B := mkModuleWithNum b env
     if A < B then
       result := result.alter B (·.getD ∅ |>.alter A (·.getD #[] |>.push (b, a)))
     else
       result := result.alter A (·.getD ∅ |>.alter B (·.getD #[] |>.push (a, b)))
-  return result
+  return result.toArray.map fun (a, map) ↦ (a.2, map.valuesArray.flatten)
 
+/-- Format the list of pairs of duplicate declarations. -/
 def duplicateDeclarationsMessage (cfg : Target) : CoreM MessageData := do
   let dups ← sortedDuplicateDeclarations cfg
-  let dups := dups.toArray.map fun (a, map) ↦ (a.2, map.valuesArray.flatten)
   let mut msg := m!"Number of duplicates: {dups.foldl (init := 0) (· + ·.2.size)}"
   for (module, dups) in dups do
     msg := msg ++ s!"\n\n-- {module}"
     for (a, b) in dups do
-      msg := msg ++ m!"\n\n{a} : {(← getConstInfo a).type}\n{b} : {(← getConstInfo b).type}"
+      msg := msg ++ m!"\n\n{.ofConstName a} : {(← getConstInfo a).type}\n\
+                           {.ofConstName b} : {(← getConstInfo b).type}"
   return msg
+
+end Mathlib.Tactic.DuplicateDecls
