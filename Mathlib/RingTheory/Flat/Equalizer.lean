@@ -221,7 +221,7 @@ to get `0 → A ⊗ K → A ⊗ M` exact.
   rw [Subsingleton.elim (SnakeLemma.δ' ..) 0] at this
   simpa using this
 
-/-- Given surjection `f : M → N` with `N` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
+/-- Given surjection `f : N → P` with `P` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
 Also see `LinearMap.tensorKerEquiv` for the version with `A` flat instead. -/
 def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
     (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] :
