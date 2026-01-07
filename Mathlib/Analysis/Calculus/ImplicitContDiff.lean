@@ -102,12 +102,12 @@ lemma implicitFunctionData_pt (h : IsContDiffImplicitAt n f f' a) :
     h.implicitFunctionData.pt = a := rfl
 
 @[simp]
-lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.leftFun a = a.1 := rfl
+lemma implicitFunctionData_leftFun_apply {h : IsContDiffImplicitAt n f f' a} {xy : E × F} :
+    h.implicitFunctionData.leftFun xy = xy.1 := rfl
 
 @[simp]
-lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.rightFun a = f a := rfl
+lemma implicitFunctionData_rightFun_apply {h : IsContDiffImplicitAt n f f' a} {xy : E × F} :
+    h.implicitFunctionData.rightFun xy = f xy := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
@@ -130,6 +130,10 @@ lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
     h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, f a)).2 :=
   rfl
 
+@[simp]
+lemma implicitFunction_apply (h : IsContDiffImplicitAt n f f' a) (x : E) :
+    h.implicitFunction x = (h.implicitFunctionData.implicitFunction x (f a)).2 := rfl
+
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by
@@ -148,10 +152,8 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
 
 theorem eventually_implicitFunction_apply_eq (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ xy in 𝓝 a, f xy = f a → h.implicitFunction xy.1 = xy.2 := by
-  refine h.implicitFunctionData.hasStrictFDerivAt.eventually_left_inverse.mono fun xy h₁ h₂ ↦ ?_
-  change (h.implicitFunctionData.implicitFunction xy.1 (f a)).2 = xy.2
-  change h.implicitFunctionData.implicitFunction xy.1 (f xy) = xy at h₁
-  aesop
+  refine h.implicitFunctionData.implicitFunction_apply_image.mono fun xy h₁ h₂ ↦ ?_
+  simp_all
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
