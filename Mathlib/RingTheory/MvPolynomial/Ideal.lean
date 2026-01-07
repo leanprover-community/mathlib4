@@ -113,7 +113,7 @@ theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (
       rw [← t_sbst y y_in]
       exact sum_le_sum_index hy (by simp [Monotone]) (by simp)
     rw [this, sum_empty] at hc
-    simp [hc] at h
+    exact absurd hc.symm h
   rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
   simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, h, imp_false,
     Decidable.not_not, Set.mem_setOf_eq, forall_eq']
