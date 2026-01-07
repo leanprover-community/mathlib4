@@ -288,8 +288,6 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
     -- negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
     ``«term¬_»,
-    -- subtraction, the pretty-printer prefers `a-b` in every case
-    «term_-_»,
   ]
   depth := none
 
@@ -299,6 +297,8 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     -- notation for `upShadow`, the pretty-printer prefers `∂⁺ ` over `∂⁺` *always*
     `FinsetFamily.«term∂⁺»,
     `Mathlib.Tactic.superscriptTerm, `Mathlib.Tactic.subscript,
+    -- subtraction, the pretty-printer prefers `a-b` in every case
+    ``«term_-_»,
   ]
   depth := some 2
 

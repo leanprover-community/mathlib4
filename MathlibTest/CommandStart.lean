@@ -104,9 +104,53 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 warning: remove space in the source
 
 This part of the code
-  '-  (π'
+  '+  (π'
 should be written as
-  '- (π'
+  '+ (π'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '(π  0'
+should be written as
+  '(π 0'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '0  1)'
+should be written as
+  '0 1)'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example := (π  0  1) + 0 +  (π  0  1)
+
+/--
+warning: remove space in the source
+
+This part of the code
+  '(π  0'
+should be written as
+  '(π 0'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '0  1)'
+should be written as
+  '0 1)'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -151,16 +195,6 @@ This part of the code
   '0  1)'
 should be written as
   '0 1)'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: remove space in the source
-
-This part of the code
-  '-  (π'
-should be written as
-  '- (π'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
@@ -777,7 +811,17 @@ example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
 declare_aesop_rule_sets [$id](default := true)
 
 -- `library_note` may not have a space between `""` and `/-- -/`
--- TODO: currently, this does not error!
+/--
+warning: add space in the source
+
+This part of the code
+  '"a"/--'
+should be written as
+  '"a" /--'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
 #guard_msgs in
 library_note "a"/-- Avoid empty doc-string -/
 library_note "b" /-- Avoid empty doc-string -/
