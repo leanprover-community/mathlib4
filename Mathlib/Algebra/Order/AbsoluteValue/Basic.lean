@@ -414,7 +414,7 @@ If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should
 @[positivity _]
 meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
   let (.app f a) ← whnfR e | throwError "not abv ·"
-  if !f.isFVar then
+  if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
   pure (.nonnegative pa')
