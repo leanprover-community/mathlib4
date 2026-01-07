@@ -173,7 +173,7 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
       · apply (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x)).add
           (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₂ x))
       · exact fun _ _ ↦ posLog_mul
-    _ = circleAverage (log⁺ ‖f₁ ·‖) 0 + circleAverage (log⁺ ‖f₂ ·‖) 0:= by
+    _ = circleAverage (log⁺ ‖f₁ ·‖) 0 + circleAverage (log⁺ ‖f₂ ·‖) 0 := by
       ext r
       apply circleAverage_add
       · exact circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x)

@@ -96,8 +96,8 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
       Relation x z -- There's always a `map` relation
   | map :
     ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j),
-      Relation (Prequotient.of j' ((F.map f) x))
-        (Prequotient.of j x)-- Then one relation per operation, describing the interaction with `of`
+      -- Then one relation per operation, describing the interaction with `of`
+      Relation (Prequotient.of j' ((F.map f) x)) (Prequotient.of j x)
   | mul : ∀ (j) (x y : F.obj j), Relation (Prequotient.of j (x * y))
       (mul (Prequotient.of j x) (Prequotient.of j y))
   | one : ∀ j, Relation (Prequotient.of j 1) one -- Then one relation per argument of each operation
