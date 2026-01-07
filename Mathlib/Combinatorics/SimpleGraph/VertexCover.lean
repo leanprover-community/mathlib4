@@ -179,8 +179,9 @@ theorem vertexCoverNum_top : vertexCoverNum (completeGraph V) = ENat.card V - 1 
   have := @ht₂ a b (by simp [hne])
   grind
 
-theorem vertexCoverNum_le_vertexCoverNum_of_injective (f : G →g H) (hf : Function.Injective f) :
+theorem IsContained.vertexCoverNum_le_vertexCoverNum (h : G ⊑ H) :
     vertexCoverNum G ≤ vertexCoverNum H := by
+  have ⟨f, hf⟩ := h
   obtain ⟨s, hs₁, hs₂⟩ := vertexCoverNum_exists H
   have := H.isIndepSet_iff_isAntichain_adj.mp <| isIndepSet_compl_iff_isVertexCover.mpr hs₂
   have : IsAntichain G.Adj (f ⁻¹' sᶜ) := this.preimage hf (fun _ _ hadj ↦ f.map_rel' hadj)
@@ -191,11 +192,11 @@ theorem vertexCoverNum_le_vertexCoverNum_of_injective (f : G →g H) (hf : Funct
 
 @[gcongr]
 theorem vertexCoverNum_mono (h : G ≤ G') : vertexCoverNum G ≤ vertexCoverNum G' :=
-  vertexCoverNum_le_vertexCoverNum_of_injective (Hom.ofLE h) Function.injective_id
+  (IsContained.of_le h).vertexCoverNum_le_vertexCoverNum
 
 theorem vertexCoverNum_congr (f : G ≃g H) : vertexCoverNum G = vertexCoverNum H :=
-  le_antisymm (vertexCoverNum_le_vertexCoverNum_of_injective f.toHom f.injective)
-    (vertexCoverNum_le_vertexCoverNum_of_injective f.symm.toHom f.symm.injective)
+  le_antisymm f.isContained.vertexCoverNum_le_vertexCoverNum
+    f.symm.isContained.vertexCoverNum_le_vertexCoverNum
 
 end vertexCoverNum
 end SimpleGraph
