@@ -322,6 +322,8 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     -- notation for `upShadow`, the pretty-printer prefers `∂⁺ ` over `∂⁺` *always*
     `FinsetFamily.«term∂⁺»,
     `Mathlib.Tactic.superscriptTerm, `Mathlib.Tactic.subscript,
+    -- negation, the pretty-printer prefers `-b` in every case (even for expressions `-b + a`)
+    ``«term-_»,
     -- subtraction, the pretty-printer prefers `a-b` in every case
     ``«term_-_»,
   ]
