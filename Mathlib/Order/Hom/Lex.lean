@@ -187,7 +187,8 @@ def prodLexAssoc (α β γ : Type*)
       .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) <| toLex
   map_rel_iff' := by
     simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
-    Equiv.prodAssoc_apply]; grind [EmbeddingLike.apply_eq_iff_eq, ofLex_toLex]
+      Equiv.prodAssoc_apply]
+    grind [EmbeddingLike.apply_eq_iff_eq, ofLex_toLex]
 
 /-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products.
 
