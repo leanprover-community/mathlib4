@@ -13,7 +13,7 @@ public import Mathlib.Data.List.InsertIdx
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ : Type*}
 
