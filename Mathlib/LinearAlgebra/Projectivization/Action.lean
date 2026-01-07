@@ -9,7 +9,7 @@ public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.Transvection
+public import Mathlib.LinearAlgebra.Transvection.Basic
 
 /-!
 # Group actions on projectivization
