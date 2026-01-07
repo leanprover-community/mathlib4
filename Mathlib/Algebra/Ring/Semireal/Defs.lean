@@ -48,9 +48,7 @@ theorem isSemireal_iff_not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] :
   mp _ := IsSemireal.not_isSumSq_neg_one _
   mpr h := ⟨by aesop (add simp add_eq_zero_iff_neg_eq)⟩
 
-variable {R} in
-theorem IsSemireal.of_not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] (h : ¬ IsSumSq (-1 : R)) :
-    IsSemireal R := isSemireal_iff_not_isSumSq_neg_one.mpr h
+alias ⟨_, IsSemireal.of_not_isSumSq_neg_one⟩ := isSemireal_iff_not_isSumSq_neg_one
 
 /--
 Linearly ordered semirings with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`)
