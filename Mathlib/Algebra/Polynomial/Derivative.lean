@@ -550,6 +550,11 @@ theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
   · simp [hij, Multiset.cons_erase hj]
   · simp [hij]
 
+theorem derivative_prod_finset [DecidableEq ι] {s : Finset ι} {f : ι → R[X]} :
+    derivative (∏ b ∈ s, f b) =
+      ∑ a ∈ s, (∏ b ∈ s.erase a, f b) * derivative (f a) := by
+  simpa using derivative_prod
+
 end CommSemiring
 
 section Ring
@@ -626,6 +631,58 @@ theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
 theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
     derivative^[n] ((X - C c) ^ n) = n.factorial := by
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
+
+theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degree < k) :
+    derivative^[k] P = 0 := by
+  induction k generalizing P
+  case zero => exact degree_eq_bot.mp <| WithBot.lt_coe_bot.mp h
+  case succ k ind =>
+    by_cases P = 0
+    case pos hP => simp [hP]
+    case neg hP =>
+      rw [Function.iterate_add_apply, Function.iterate_one]
+      by_cases derivative P = 0
+      case pos hP' => simp [hP']
+      case neg hP' =>
+        have hP'' : P.natDegree ≠ 0 := by
+          contrapose! hP'
+          exact derivative_of_natDegree_zero hP'
+        refine ind <| (natDegree_lt_iff_degree_lt hP').mp ?_
+        linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']
+
+theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
+    derivative^[k] (∏ a ∈ S, (X - C a)) =
+    k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
+  classical
+  induction k
+  case zero => simp
+  case succ k ind =>
+    specialize ind (Nat.le_of_succ_le hk)
+    nth_rewrite 1 [add_comm]
+    rw [Function.iterate_add_apply, Function.iterate_one, ind, ← nsmul_eq_mul, derivative_smul,
+      nsmul_eq_mul, derivative_sum, Nat.factorial_succ, mul_comm (k + 1), Nat.cast_mul, mul_assoc]
+    congr 1
+    calc
+      ∑ T ∈ S.powersetCard (#S - k), derivative (∏ a ∈ T, (X - C a)) =
+      ∑ T ∈ S.powersetCard (#S - k), ∑ i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
+        congr! with T hT
+        simp_rw [derivative_prod_finset, derivative_X_sub_C, mul_one]
+      _ = ∑ (T ∈ S.powersetCard (#S - k)) (i ∈ S) with i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
+        rw [← sum_finset_product']
+        grind
+      _ = ∑ (T ∈ S.powersetCard (#S - (k + 1))) (i ∈ S) with i ∉ T, ∏ a ∈ T, (X - C a) := by
+        apply sum_bij' (fun ⟨T, i⟩ _ => ⟨T.erase i, i⟩) (fun ⟨T, i⟩ _ => ⟨insert i T, i⟩)
+        · intro r hr; dsimp at hr ⊢; congr 1; grind
+        · intro r hr; dsimp at hr ⊢; congr 1; grind
+        all_goals grind
+      _ = ∑ T ∈ S.powersetCard (#S - (k + 1)), ∑ i ∈ S \ T, ∏ a ∈ T, (X - C a) := by
+        rw [← sum_finset_product']
+        grind
+      _ = (k + 1) * ∑ T ∈ S.powersetCard (#S - (k + 1)), ∏ a ∈ T, (X - C a) := by
+        rw [mul_sum]
+        congr! 1 with T hT
+        simp [sum_const, show #(S \ T) = k + 1 by grind]
+      _ = _ := by grind
 
 end CommRing
 
