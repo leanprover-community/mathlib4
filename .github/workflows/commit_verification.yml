@@ -1,0 +1,59 @@
+# Commit Verification CI
+# Verifies transient commits in PRs have zero net effect
+#
+# Transient commits (prefix: "transient") must have zero net effect on the final tree
+
+name: Commit Verification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: commit-verification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TRANSIENT_PREFIX: "transient: "
+
+jobs:
+  verify:
+    name: Verify Transient Commits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          # Checkout the actual PR head, not the merge commit GitHub creates
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Fetch full history to access all PR commits
+          fetch-depth: 0
+
+      - name: Check for transient commits
+        id: check
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          # Check if any commits have transient prefix
+          HAS_TRANSIENT=$(git log --format="%s" "$BASE_SHA..$HEAD_SHA" | \
+            grep -E "^${TRANSIENT_PREFIX}" || true)
+
+          if [[ -n "$HAS_TRANSIENT" ]]; then
+            echo "has_transient=true" >> "$GITHUB_OUTPUT"
+            echo "Found transient commits requiring verification:"
+            echo "$HAS_TRANSIENT"
+          else
+            echo "has_transient=false" >> "$GITHUB_OUTPUT"
+            echo "No transient commits found"
+          fi
+
+      - name: Verify transient commits
+        if: steps.check.outputs.has_transient == 'true'
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          ./scripts/verify_commits.sh "$BASE_SHA"
