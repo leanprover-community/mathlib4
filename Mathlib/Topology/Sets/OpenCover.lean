@@ -18,6 +18,14 @@ longer than its content; but giving it a name serves as a way of standardizing A
 @[expose] public section
 
 open Set Topology
+#check Equiv.setSubtypeComm
+theorem TopologicalSpace.Opens.exists {α : Type*} [TopologicalSpace α]
+    {p : Opens α → Prop} : (∃ U, p U) ↔ ∃ (U : Set α) (hU : IsOpen U), p ⟨U, hU⟩ :=
+  ⟨(⟨_, _, ·.choose_spec⟩), (⟨_, ·.choose_spec.choose_spec⟩)⟩
+
+-- open Set.Notation in
+-- theorem exists_set_set_iff {α : Type*} (s : Set α)
+--     {p : Set s → Prop} : (∃ t, p t) ↔ ∃ (t : Set α) (ht : t ⊆ s), p (s ↓∩ t) := by
 
 namespace TopologicalSpace
 
@@ -62,6 +70,21 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
   isTopologicalBasis_of_cover (fun i ↦ (u i).2) hu.iSup_set_eq_univ hB
 
 end IsOpenCover
+
+lemma Opens.IsBasis.isOpenCover {S : Set (Opens X)} (hS : Opens.IsBasis S) :
+    IsOpenCover (fun U : S ↦ (U : Opens X)) :=
+  top_le_iff.mp (subset_trans hS.2.superset (by simp))
+
+/-- Given an open cover and a basis,
+the set of basis elements contained in any of the covers is still a cover. -/
+lemma Opens.IsBasis.isOpenCover_mem_and_le {S : Set (Opens X)} (hS : Opens.IsBasis S)
+    {U : ι → Opens X} (hU : IsOpenCover U) :
+    IsOpenCover (fun V : { x : Opens X × ι // x.1 ∈ S ∧ x.1 ≤ U x.2 } ↦ V.1.1) := by
+  refine top_le_iff.mp fun x _ ↦ ?_
+  obtain ⟨i, hxi⟩ := hU.exists_mem x
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hS.exists_subset_of_mem_open hxi (U i).2
+  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk, Set.mem_iUnion, SetLike.mem_coe]
+  exact ⟨⟨(V, i), hV, hVU⟩, hxV⟩
 
 end TopologicalSpace
 
