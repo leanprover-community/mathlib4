@@ -43,7 +43,7 @@ theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟x 
 
 /-- A variant of `Ring.inv_unit`. -/
 theorem Ring.inv_invertible [Inv α] [LawfulInv α] (x : α) [Invertible x] : x⁻¹ = ⅟x :=
-  Ring.inv_unit (unitOfInvertible _)
+  inv_unit (unitOfInvertible _)
 
 end MonoidWithZero
 
