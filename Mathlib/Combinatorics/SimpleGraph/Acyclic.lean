@@ -424,7 +424,7 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (h
   have : (F ⊔ fromEdgeSet {e}).IsAcyclic := by
     apply hF'.2.2.anti
     refine sup_le_iff.mpr ⟨by grind, ?_⟩
-    rw [←F'.fromEdgeSet_edgeSet]
+    rw [← F'.fromEdgeSet_edgeSet]
     grind [fromEdgeSet_mono]
   have e_ndiag : ¬ e.IsDiag := by
     suffices e ∈ Sym2.diagSetᶜ by simpa using this

@@ -508,7 +508,7 @@ Then, `Y ⟶ X` is the coequalizer of `p₁` and `p₂`. -/
 noncomputable def EffectiveEpiStruct.isColimitCoforkOfIsPullback
     {X Y Z : C} {p : Y ⟶ X} (hp : EffectiveEpiStruct p) {p₁ p₂ : Z ⟶ Y}
     (sq : IsPullback p₁ p₂ p p) :
-    IsColimit (Cofork.ofπ  p sq.w) :=
+    IsColimit (Cofork.ofπ p sq.w) :=
   Cofork.IsColimit.mk _ (fun s ↦ hp.desc s.π (fun {T} g₁ g₂ h ↦ by
       obtain ⟨l, rfl, rfl⟩ := sq.exists_lift g₁ g₂ h
       simp [s.condition]))

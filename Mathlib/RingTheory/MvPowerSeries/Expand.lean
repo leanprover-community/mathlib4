@@ -154,7 +154,7 @@ section MvPolynomial
 `MvPowerSeries.expand p hp ↑φ` coincide. -/
 @[simp]
 theorem expand_eq_expand {φ : MvPolynomial σ R} :
-    expand p hp (↑φ) = (φ.expand p : MvPowerSeries σ R)  := by
+    expand p hp (↑φ) = (φ.expand p : MvPowerSeries σ R) := by
   ext n
   simp only [MvPolynomial.coeff_coe]
   by_cases! h : ∀ i, p ∣ n i

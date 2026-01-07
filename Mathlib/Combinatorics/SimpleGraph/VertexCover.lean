@@ -82,7 +82,7 @@ theorem isVertexCover_preimage_iso (f : G ≃g H) {c : Set W} :
 
 @[simp]
 theorem isVertexCover_image_iso (f : G ≃g H) {c : Set V} :
-    IsVertexCover H (f '' c) ↔ IsVertexCover G c  := by
+    IsVertexCover H (f '' c) ↔ IsVertexCover G c := by
   simp [RelIso.image_eq_preimage_symm]
 
 end IsVertexCover

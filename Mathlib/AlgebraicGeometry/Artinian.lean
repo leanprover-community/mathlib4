@@ -64,7 +64,7 @@ lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAf
     DiscreteTopology X := by
   have F := Scheme.isoSpec X
   apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
-  exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X,⊤)))
+  exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X, ⊤)))
 
 instance [h : IsLocallyArtinian X] {U : X.Opens} :
     IsLocallyArtinian U where
@@ -90,7 +90,7 @@ lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     IsLocallyArtinian X := by
   refine { isArtinianRing_presheaf_obj := ?_ }
   intro U
-  have _ : IsNoetherianRing Γ(X,U) := IsLocallyNoetherian.component_noetherian U
+  have _ : IsNoetherianRing Γ(X, U) := IsLocallyNoetherian.component_noetherian U
   apply isArtinianRing_iff_krullDimLE_zero.mpr
   rw [Ring.KrullDimLE, Order.krullDimLE_iff, ← ringKrullDim, Nat.cast_zero,
     ← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(X, U)]
