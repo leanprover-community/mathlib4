@@ -638,6 +638,21 @@ open scoped Set.Notation
 lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
+/-- If `s` is dense in `X` and `u` is open and dense in `s`, then `u = v ∩ s` for some `v` that is
+open and dense in `X`. -/
+lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : IsOpen u)
+    (hud : Dense u) :
+    ∃ v : Set X, IsOpen v ∧ Dense v ∧ Subtype.val ⁻¹' v = u := by
+  choose v hv1 hv2 using huo
+  refine ⟨v, hv1, ?_, hv2⟩
+  rw [dense_iff_inter_open] at *
+  intro t ht ht'
+  subst hv2
+  refine nonempty_of_nonempty_preimage (f := (Subtype.val : s → X)) (hud (Subtype.val ⁻¹' t) ?_ ?_)
+  · exact IsOpen.preimage_val ht
+  · obtain ⟨x, hx⟩ := hs t ht ht'
+    simpa using ⟨⟨x, hx.2⟩, hx.1⟩
+
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
