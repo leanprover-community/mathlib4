@@ -17,6 +17,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  TRANSIENT_PREFIX: "transient"
+
 jobs:
   verify:
     name: Verify Transient Commits
@@ -38,7 +41,7 @@ jobs:
 
           # Check if any commits have transient prefix
           HAS_TRANSIENT=$(git log --format="%s" "$BASE_SHA..$HEAD_SHA" | \
-            grep -E "^transient" || true)
+            grep -E "^${TRANSIENT_PREFIX}" || true)
 
           if [[ -n "$HAS_TRANSIENT" ]]; then
             echo "has_transient=true" >> "$GITHUB_OUTPUT"
