@@ -334,6 +334,23 @@ theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
   simpa using h
 
 @[to_additive]
+theorem mk_le_mk_of_mabs {a b : M} (h : |a|ₘ ≤ |b|ₘ) : mk b ≤ mk a := by
+  rw [← mk_mabs a, ← mk_mabs]
+  have ha := one_le_mabs a
+  exact mk_antitoneOn ha (ha.trans h) h
+
+@[to_additive]
+theorem min_le_mk_of_le_of_le {x y z : M} (hy : y ≤ x) (hz : x ≤ z) : min (mk y) (mk z) ≤ mk x := by
+  have H := mabs_le_max_mabs_mabs hy hz
+  rw [← mabs_of_one_le (le_max_of_le_left (one_le_mabs y))] at H
+  apply (mk_le_mk_of_mabs H).trans'
+  obtain h | h := le_total |y|ₘ |z|ₘ
+  · rw [max_eq_right h, min_eq_right, mk_mabs]
+    exact mk_le_mk_of_mabs h
+  · rw [max_eq_left h, min_eq_left, mk_mabs]
+    exact mk_le_mk_of_mabs h
+
+@[to_additive]
 theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   by_contra! h
   rw [lt_min_iff] at h
