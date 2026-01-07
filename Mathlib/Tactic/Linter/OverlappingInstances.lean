@@ -113,12 +113,7 @@ def overlappingInstances : Linter where
             pure (decl.lctx, some decl.localInstances, some decl.type)
           | .ofTermInfo i
           | .ofPartialTermInfo i => pure (i.lctx, none, i.expectedType?)
-          | _ => continue -- Unreachable. TODO: refactor?
-        let namingCtx : NamingContext := {
-          currNamespace := ← getCurrNamespace
-          openDecls     := ← getOpenDecls
-        }
-        let outerEnv ← getEnv
+          | _ => continue -- Ought to be unreachable. TODO: check or refactor?
         ctx.runMetaMWithMessages lctx (localInstances := localInstances) <|
           withRef (← getRef) do
           /- If there's a remaining expected type, then telescope into it in case it contains more
