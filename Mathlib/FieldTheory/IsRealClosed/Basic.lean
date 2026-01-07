@@ -52,8 +52,8 @@ theorem of_orderedField [LinearOrder R] [IsStrictOrderedRing R]
     IsRealClosed R where
   isSquare_or_isSquare_neg {x} := by
     rcases le_or_gt x 0 with (neg | pos)
-    · exact Or.inr <| isSquare_of_nonneg (by linarith)
-    · exact Or.inl <| isSquare_of_nonneg (by linarith)
+    · exact Or.inr <| isSquare_of_nonneg (neg_nonneg_of_nonpos neg)
+    · exact Or.inl <| isSquare_of_nonneg pos.le
   exists_isRoot_of_odd_natDegree := exists_isRoot_of_odd_natDegree
 
 variable [IsRealClosed R]
@@ -62,7 +62,7 @@ theorem exists_eq_pow_of_odd (x : R) {n : ℕ} (hn : Odd n) : ∃ r, x = r ^ n :
   rcases exists_isRoot_of_odd_natDegree (f := X ^ n - C x) (by simp [hn]) with ⟨r, hr⟩
   exact ⟨r, by linear_combination - (by simpa using hr : r ^ n - x = 0)⟩
 
-theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n > 0) :
+theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n ≠ 0) :
     ∃ r, x = r ^ n := by
   induction n using Nat.strong_induction_on generalizing x with
   | h n ih =>
@@ -74,22 +74,21 @@ theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n > 
         exact ⟨r, by simp [hm, pow_add, ← hr, hs]⟩
     · exact exists_eq_pow_of_odd x odd
 
-section ordered
+section LinearOrderedField
 
 variable [LinearOrder R] [IsStrictOrderedRing R]
 
 theorem nonneg_iff_isSquare {x : R} : 0 ≤ x ↔ IsSquare x where
   mp h := by
     suffices IsSquare (-x) → x = 0 by aesop
-    intro hc
-    linarith [IsSquare.nonneg hc]
+    exact fun hc ↦ le_antisymm (nonpos_of_neg_nonneg (IsSquare.nonneg hc)) h
   mpr := IsSquare.nonneg
 
-alias ⟨isSquare_of_nonneg, _⟩ := nonneg_iff_isSquare
+alias ⟨_root_.IsSquare.of_nonneg, _⟩ := nonneg_iff_isSquare
 
-theorem exists_eq_pow_of_nonneg {x : R} (hx : 0 ≤ x) {n : ℕ} (hn : n > 0) : ∃ r, x = r ^ n :=
-  exists_eq_pow_of_isSquare (isSquare_of_nonneg hx) hn
+theorem exists_eq_pow_of_nonneg {x : R} (hx : 0 ≤ x) {n : ℕ} (hn : n ≠ 0) : ∃ r, x = r ^ n :=
+  exists_eq_pow_of_isSquare (.of_nonneg hx) hn
 
-end ordered
+end LinearOrderedField
 
 end IsRealClosed
