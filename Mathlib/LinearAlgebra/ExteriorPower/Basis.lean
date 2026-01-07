@@ -123,7 +123,7 @@ lemma basis_apply {I : Type*} [LinearOrder I] (b : Basis I R M) (s : {a : Finset
 /-- If `b` is a basis of `M` indexed by a linearly ordered type `I` and `B` is the corresponding
 basis of the `n`th exterior power of `M`, indexed by the set of finsets `s` of `I` of cardinality
 `n`, then the coordinate function of `B` at `s` is the linear form on the `n`th exterior power
-defined by `b` and `s` in `exteriorPower.linearFormOfBasis`. -/
+defined by `b` and `s` in `exteriorPower.ιMulti_dual`. -/
 lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
     (s : {a : Finset I // a.card = n}) :
     Basis.coord (Basis.exteriorPower R n b) s = ιMulti_dual R n b s := by
