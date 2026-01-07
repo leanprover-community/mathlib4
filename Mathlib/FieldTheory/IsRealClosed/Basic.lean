@@ -58,6 +58,9 @@ theorem of_linearOrderedField [LinearOrder R] [IsStrictOrderedRing R]
 
 variable [IsRealClosed R]
 
+@[aesop 50%]
+theorem _root_.IsSquare.of_not_isSquare_neg {x : R} (hx : ¬ IsSquare (-x)) : IsSquare x := by aesop
+
 theorem exists_eq_pow_of_odd (x : R) {n : ℕ} (hn : Odd n) : ∃ r, x = r ^ n := by
   rcases exists_isRoot_of_odd_natDegree (f := X ^ n - C x) (by simp [hn]) with ⟨r, hr⟩
   exact ⟨r, by linear_combination - (by simpa using hr : r ^ n - x = 0)⟩
