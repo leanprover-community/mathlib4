@@ -280,8 +280,12 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
+/- Todo: get rid of the `DecidableLE` argument (this current causes some breakage)
+of this instance firing and looping when it previously failed
+Related to
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/conflicting.20simp-normal.20form.3A.20bot.20vs.200/with/566807522 -/
 open Classical in
-instance : LinearOrder (Ideal A) :=
+noncomputable instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
   Lattice.toLinearOrder (Ideal A)
 
 end
