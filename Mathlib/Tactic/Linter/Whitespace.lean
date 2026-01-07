@@ -306,6 +306,8 @@ public def mkWindow (orig : String) (start ctx : Nat) : String :=
 
 @[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  if Linter.getLinterValue linter.style.commandStart (← getLinterOptions) do
+    logWarningAt stx "`linter.style.commandStart` is deprecated, use `linter.style.whitespace` instead."
   unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
