@@ -181,15 +181,14 @@ verify_transient() {
 
     CHERRY_PICK_FAILED=false
     for commit in "${NON_TRANSIENT_COMMITS[@]}"; do
-      if ! git cherry-pick --no-commit "$commit" 2>/dev/null; then
-        # Cherry-pick failed - this might be expected if commits depend on transient ones
-        # Reset and try with a different strategy
-        git reset --hard HEAD
-        git cherry-pick --no-commit "$commit" -X theirs 2>/dev/null || {
-          CHERRY_PICK_FAILED=true
-          TRANSIENT_ERROR="Cherry-pick of $(git log -1 --format='%h: %s' "$commit") failed"
-          break
-        }
+      local cp_output
+      if ! cp_output=$(git cherry-pick --no-commit "$commit" 2>&1); then
+        # Cherry-pick failed - transient commits don't cleanly separate
+        echo "$cp_output" >&2
+        git cherry-pick --abort 2>/dev/null || git reset --hard HEAD >/dev/null 2>&1
+        CHERRY_PICK_FAILED=true
+        TRANSIENT_ERROR="Cherry-pick of $(git log -1 --format='%h: %s' "$commit") failed - transient commits may have side effects"
+        break
       fi
     done
 
