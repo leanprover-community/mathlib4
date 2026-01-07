@@ -38,8 +38,8 @@ lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 0 ≤
     inner_self_eq_one_of_norm_eq_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
   grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
 
-lemma inner_normalize_ortho (x y : V) : ⟪y, normalize (ortho y x)⟫ = 0 := by
-  simp only [NormedSpace.normalize, real_inner_smul_right, mul_eq_zero, inv_eq_zero, norm_eq_zero]
+lemma inner_normalize_ortho (x y : V) : ⟪y, normalize ℝ (ortho y x)⟫ = 0 := by
+  simp only [NormedSpace.normalize, real_inner_smul_right, mul_eq_zero]
   right; rw [ortho, real_inner_comm, Submodule.starProjection_inner_eq_zero]
   exact Submodule.mem_span_singleton_self y
 
@@ -48,7 +48,7 @@ variable (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hz : ‖z‖ = 1)
 
 include hx hy
 lemma inner_normalized_ortho_sq_add_inner_sq_eq_one :
-    ⟪x, normalize (ortho y x)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
+    ⟪x, normalize ℝ (ortho y x)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
   rw [NormedSpace.normalize, real_inner_smul_right, ortho_eq_sub_inner _ hy, inner_sub_right,
     real_inner_smul_right]
   by_cases h₁ : x = y
@@ -70,19 +70,19 @@ lemma inner_normalized_ortho_sq_add_inner_sq_eq_one :
     ring
   field_simp; exact H2
 
-lemma inner_ortho_right_eq_sin_angle : ⟪x, normalize (ortho y x)⟫ = Real.sin (angle x y) := by
-  have H : ⟪x, normalize (ortho y x)⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
+lemma inner_ortho_right_eq_sin_angle : ⟪x, normalize ℝ (ortho y x)⟫ = Real.sin (angle x y) := by
+  have H : ⟪x, normalize ℝ (ortho y x)⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
     simp [Real.sin_sq, ← inner_eq_cos_angle_of_norm_eq_one hx hy,
       ← inner_normalized_ortho_sq_add_inner_sq_eq_one hx hy]
   rw [sq_eq_sq_iff_abs_eq_abs, abs_of_nonneg (sin_angle_nonneg x y)] at H
-  have H0 : 0 ≤ ⟪x, normalize (ortho y x)⟫ := by
+  have H0 : 0 ≤ ⟪x, normalize ℝ (ortho y x)⟫ := by
     rw [NormedSpace.normalize, real_inner_smul_right]
     exact Left.mul_nonneg (inv_nonneg_of_nonneg (norm_nonneg (ortho y x)))
       (inner_ortho_nonneg hx hy)
   simp_all [abs_of_nonneg H0]
 
 lemma angle_le_angle_add_angle_aux :
-    x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize (ortho y x) := by
+    x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize ℝ (ortho y x) := by
   rw [← inner_ortho_right_eq_sin_angle hx hy, ← inner_eq_cos_angle_of_norm_eq_one hx hy,
     ortho_eq_sub_inner _ hy]
   by_cases hxy : x - ⟪x, y⟫ • y = 0
@@ -119,18 +119,17 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
   have H1 : ⟪x, z⟫ = ⟪x, z⟫ := rfl
   nth_rw 2 [angle_le_angle_add_angle_aux hx hy, angle_le_angle_add_angle_aux hz hy] at H1
   simp only [inner_add_left, inner_add_right, real_inner_smul_left, real_inner_smul_right,
-    real_inner_comm y (normalize _), real_inner_self_eq_norm_sq, hy, angle_comm z y,
+    real_inner_comm y (normalize ℝ _), real_inner_self_eq_norm_sq, hy, angle_comm z y,
     inner_normalize_ortho] at H1
   norm_num at H1
   rw [mul_comm (Real.cos (angle y z))] at H1
   rw [Real.cos_add, ← inner_eq_cos_angle_of_norm_eq_one hx hz, H1]
-  have H2 : -1 ≤ ⟪normalize (ortho y x), normalize (ortho y z)⟫ := by
+  have H2 : -1 ≤ ⟪normalize ℝ (ortho y x), normalize ℝ (ortho y z)⟫ := by
     by_cases H3 : ortho y x = 0
     · simp [*]
     by_cases H4 : ortho y z = 0
     · simp [*]
-    exact neg_one_le_real_inner_of_norm_eq_one
-      (norm_normalize_eq_one_iff.mpr H3) (norm_normalize_eq_one_iff.mpr H4)
+    exact neg_one_le_real_inner_of_norm_eq_one (norm_normalize ℝ H3) (norm_normalize ℝ H4)
   have := sin_angle_nonneg x y; have := sin_angle_nonneg y z
   grw [← H2]
   apply le_of_eq
@@ -165,21 +164,21 @@ lemma angle_expression_of_angle_eq_angle_sum :
   have H6 : ⟪x, z⟫ = ⟪x, z⟫ := rfl
   nth_rw 2 [angle_le_angle_add_angle_aux hx hy, angle_le_angle_add_angle_aux hz hy] at H6
   simp only [inner_add_left, inner_add_right, real_inner_smul_left, real_inner_smul_right,
-             real_inner_comm y (normalize _), real_inner_self_eq_norm_sq, hy, angle_comm z y,
+             real_inner_comm y (normalize ℝ _), real_inner_self_eq_norm_sq, hy, angle_comm z y,
              inner_normalize_ortho] at H6
   norm_num at H6
   rw [inner_eq_cos_angle_of_norm_eq_one hx hz, H0, Real.cos_add] at H6
   ring_nf at H6
   have Hw : Real.sin (angle x y) * Real.sin (angle y z) ≠ 0 := by
     grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
-  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = - 1 := by
+  have H8 : ⟪normalize ℝ (ortho y x), normalize ℝ (ortho y z)⟫ = - 1 := by
     grind
   have H9 : ortho y x ≠ 0 := by
     grind [ortho_ne_zero_of_not_collinear, angle_comm]
   have H10 : ortho y z ≠ 0 := by
     grind [ortho_ne_zero_of_not_collinear]
-  have H11 : ‖normalize (ortho y x)‖ = 1 := norm_normalize_eq_one_iff.mpr H9
-  have H12 : ‖normalize (ortho y z)‖ = 1 := norm_normalize_eq_one_iff.mpr H10
+  have H11 : ‖normalize ℝ (ortho y x)‖ = 1 := norm_normalize _ H9
+  have H12 : ‖normalize ℝ (ortho y z)‖ = 1 := norm_normalize _ H10
   rw [inner_eq_neg_one_iff_of_norm_eq_one H11 H12] at H8
   nth_rw 2 [angle_le_angle_add_angle_aux hx hy]
   nth_rw 3 [angle_le_angle_add_angle_aux hz hy]
@@ -197,8 +196,8 @@ public theorem angle_le_angle_add_angle (x y z : V) :
   · simpa [hy] using angle_le_pi x z
   by_cases hz : z = 0
   · simpa [hz] using angle_nonneg x y
-  simpa using angle_le_angle_add_angle_of_norm_eq_one (norm_normalize_eq_one_iff.mpr hx)
-    (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
+  simpa using angle_le_angle_add_angle_of_norm_eq_one (norm_normalize ℝ hx)
+    (norm_normalize ℝ hy) (norm_normalize ℝ hz)
 
 /-- The triangle inequality is an equality if the middle vector is a nonnegative linear combination
 of the other two vectors. See `angle_add_angle_eq_pi_of_angle_eq_pi` for the other equality case. -/
@@ -264,8 +263,8 @@ public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
       grind [sin_angle_nonneg, norm_nonneg, div_nonneg_iff, mul_nonneg_iff]
     have hnonzero : (⟨Real.sin (angle x z) / ‖y‖, hnneg₃⟩ : ℝ≥0) ≠ 0 := by
       simp; grind
-    have h₁ := angle_expression_of_angle_eq_angle_sum (norm_normalize_eq_one_iff.mpr hx)
-        (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
+    have h₁ := angle_expression_of_angle_eq_angle_sum (norm_normalize ℝ hx)
+        (norm_normalize ℝ hy) (norm_normalize ℝ hz)
     simp only [angle_normalize_right, angle_normalize_left] at h₁
     have h₂ := h₁ hxz₁ h
     have h₃ : (⟨_, hnneg₃⟩ : ℝ≥0) • y = (⟨_, hnneg₁⟩ : ℝ≥0) • x + (⟨_, hnneg₂⟩ : ℝ≥0) • z := by
