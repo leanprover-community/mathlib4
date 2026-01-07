@@ -556,7 +556,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     have B : Continuous (g p) := by
       refine hg.comp_continuous (.prodMk_right _) fun x => ?_
       simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
-    rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H|H
+    rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H | H
     · simp [H] at hx
     · exact H
   /- Since `G` is locally compact, one may thicken `k` a little bit into a larger compact set
