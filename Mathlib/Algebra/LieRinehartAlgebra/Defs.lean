@@ -178,4 +178,5 @@ def anchor [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L]
   map_lie' := fun _ _ ↦ by ext a; simp [Derivation.commutator_apply]
   anchorcomp := by simp
 }
+
 end LieRinehartAlgebra
