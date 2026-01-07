@@ -18,7 +18,7 @@ open Filter Finset Function
 
 section ConstSMul
 
-variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribSMul γ α]
+variable [TopologicalSpace α] [AddCommMonoid α] [DistribSMul γ α]
   [ContinuousConstSMul γ α] {f : β → α} {L : SummationFilter β}
 
 theorem HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a L) :

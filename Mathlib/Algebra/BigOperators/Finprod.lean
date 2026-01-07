@@ -627,7 +627,7 @@ theorem finsum_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {
 
 /-- See also `smul_finsum` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem smul_finsum' {R M : Type*} [Monoid R] [AddCommMonoid M] [DistribSMul R M] (c : R)
+theorem smul_finsum' {R M : Type*} [AddCommMonoid M] [DistribSMul R M] (c : R)
     {f : ι → M} (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
   (DistribSMul.toAddMonoidHom M c).map_finsum hf
 
