@@ -16,7 +16,7 @@ lifted.
 
 ## Main declarations:
 
-* `UniformSpace.Completion.mapCLM`: promotes a continuous semilinear map
+* `ContinuousLinearMap.completion`: promotes a continuous semilinear map
   from `G` to `H` into a continuous semilinear map
   from `Completion G` to `Completion H`.
 -/
