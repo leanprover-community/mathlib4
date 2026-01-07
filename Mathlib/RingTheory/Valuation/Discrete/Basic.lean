@@ -282,7 +282,7 @@ variable {v} [hv : v.IsRankOneDiscrete]
 theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (H : Associated π₁ π₂) : IsUniformizer v π₂ := by
   obtain ⟨u, hu⟩ := H
-  have : v (u.1 : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <|integer.integers v).mp u.isUnit
+  have : v (u.1 : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
   rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, map_mul, this, mul_one, ← IsUniformizer.iff]
 
 /-- If two elements of `K₀` are uniformizers, then they are associated. -/
@@ -397,7 +397,7 @@ theorem ideal_isPrincipal [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)] 
     · rw [← Subring.coe_mul, SetLike.coe_eq_coe] at hu
       rw [hu, Ideal.mul_unit_mem_iff_mem P u.isUnit,
         IsPrime.pow_mem_iff_mem hP _ (pos_iff_ne_zero.mpr hn), ← Ideal.span_singleton_le_iff_mem,
-        ← π.is_generator ] at hx_mem
+        ← π.is_generator] at hx_mem
       rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
       exact ⟨π.1, π.is_generator⟩
 
@@ -433,9 +433,9 @@ instance isRankOneDiscrete :
     IsRankOneDiscrete ((maximalIdeal A).valuation K) := by
   have : Nontrivial ↥(valueGroup (valuation K (maximalIdeal A))) := by
     let v := (maximalIdeal A).valuation K
-    let π := valuation_exists_uniformizer K (maximalIdeal A)|>.choose
+    let π := valuation_exists_uniformizer K (maximalIdeal A) |>.choose
     have hπ : v π = ↑(ofAdd (-1 : ℤ)) :=
-      valuation_exists_uniformizer K (maximalIdeal A)|>.choose_spec
+      valuation_exists_uniformizer K (maximalIdeal A) |>.choose_spec
     rw [Subgroup.nontrivial_iff_exists_ne_one]
     use Units.mk0 (v π) (by simp [hπ])
     constructor

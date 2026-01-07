@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
@@ -82,5 +83,15 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
     isoClosure_iSup, isoClosure_eq_self]
 
 end
+
+@[simp]
+lemma ι_map_top (P : ObjectProperty C) :
+    (⊤ : ObjectProperty _).map P.ι = P.isoClosure := by
+  ext X
+  constructor
+  · rintro ⟨⟨Y, hY⟩, _, ⟨e⟩⟩
+    exact ⟨Y, hY, ⟨e.symm⟩⟩
+  · rintro ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨⟨Y, hY⟩, by simp, ⟨e.symm⟩⟩
 
 end CategoryTheory.ObjectProperty

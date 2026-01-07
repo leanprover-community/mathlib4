@@ -693,7 +693,7 @@ instance isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] 
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (prod.map f g) :=
   (prod.mapIso (asIso f) (asIso g)).isIso_hom
 
-instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
+instance prod.map_mono {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryProduct W X] [HasBinaryProduct Y Z] : Mono (prod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
@@ -798,7 +798,7 @@ instance isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (coprod.map f g) :=
   (coprod.mapIso (asIso f) (asIso g)).isIso_hom
 
-instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
+instance coprod.map_epi {C : Type*} [Category* C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] : Epi (coprod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
@@ -1328,8 +1328,6 @@ def IsLimit.binaryFanSwap (I : IsLimit s) : IsLimit s.swap where
     specialize w ⟨WalkingPair.swap j⟩
     cases j <;> exact w
 
-@[deprecated (since := "2025-05-04")] alias IsLimit.swapBinaryFan := IsLimit.binaryFanSwap
-
 /-- Construct `HasBinaryProduct Y X` from `HasBinaryProduct X Y`.
 This can't be an instance, as it would cause a loop in typeclass search. -/
 lemma HasBinaryProduct.swap (X Y : C) [HasBinaryProduct X Y] : HasBinaryProduct Y X :=
@@ -1397,6 +1395,8 @@ lemma BinaryFan.assocInv_fst (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
 lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
     (assocInv P s).snd = s.snd ≫ sYZ.snd := rfl
 
+-- TODO: find a good way to fix the linter; simp applies to two goals with different simp sets
+set_option linter.flexible false in
 /-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone. -/
 @[simps]
 protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}

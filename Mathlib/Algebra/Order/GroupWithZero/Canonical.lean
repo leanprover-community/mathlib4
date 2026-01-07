@@ -160,11 +160,11 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
 
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) where
   neg_top := inv_zero (G₀ := α)
-  add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
+  add_neg_cancel_of_ne_top _a := mul_inv_cancel₀ (G₀ := α)
 
 instance : LinearOrderedAddCommGroupWithTop (Additive α)ᵒᵈ where
   neg_top := inv_zero (G₀ := α)
-  add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
+  add_neg_cancel_of_ne_top _a := mul_inv_cancel₀ (G₀ := α)
 
 -- Counterexample with monoid for the backward direction:
 -- Take `Mᵐ⁰` where `M := ℚ ×ₗ ℕ`.
@@ -227,11 +227,9 @@ theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
     OrderDual.ofDual (0 : Multiplicative αᵒᵈ).toAdd = ⊤ := rfl
 
 instance [LinearOrderedAddCommGroupWithTop α] :
-    LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
-  { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
-    Multiplicative.instNontrivial with
-    inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
-    mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
+    LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) where
+  inv_zero := LinearOrderedAddCommGroupWithTop.neg_top (α := α)
+  mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel_of_ne_top (α := α)
 
 namespace WithZero
 
@@ -278,7 +276,7 @@ lemma unbot_le_iff (hx : x ≠ 0) : unzero hx ≤ b ↔ x ≤ b := WithBot.unbot
 @[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
 
 @[simp] lemma unzero_le_unzero (hx : x ≠ 0) (hy : y ≠ 0) : unzero hx ≤ unzero hy ↔ x ≤ y :=
-  WithBot.unbot_le_unbot ..
+  WithBot.unbot_le_unbot_iff ..
 
 end LE
 

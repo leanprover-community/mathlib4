@@ -6,7 +6,7 @@ Authors: Kyle Miller, Gabriel Ebner, Yuyang Zhao
 module
 
 public meta import Lean.Meta.Tactic.Delta
-public meta import Mathlib.Lean.Expr.Basic
+public import Mathlib.Init
 
 /-!
 # Term elaborators for reduction

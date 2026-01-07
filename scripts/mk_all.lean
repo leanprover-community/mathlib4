@@ -30,7 +30,7 @@ def getLeanLibs : IO (Array String) := do
     | throw <| IO.userError "failed to load Lake workspace"
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
-  return if package.name == `mathlib then
+  return if package.baseName == `mathlib then
     libs.erase "Cache" |>.erase "LongestPole" |>.erase "MathlibTest"
       |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else

@@ -63,7 +63,7 @@ def vanishingIdeal (V : Set (σ → K)) : Ideal (MvPolynomial σ k) where
   zero_mem' _ _ := map_zero _
   add_mem' {p q} hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, map_add]
   smul_mem' p q hq x hx := by
-    simp only [hq x hx, Algebra.id.smul_eq_mul, mul_zero, map_mul]
+    simp only [hq x hx, smul_eq_mul, mul_zero, map_mul]
 
 @[simp]
 theorem mem_vanishingIdeal_iff {V : Set (σ → K)} {p : MvPolynomial σ k} :

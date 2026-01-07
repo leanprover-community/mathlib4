@@ -232,15 +232,14 @@ def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
 theorem radius_le_radius_derivSeries : p.radius ≤ p.derivSeries.radius := by
   apply (p.le_changeOriginSeries_radius 1).trans (radius_le_of_le (fun n ↦ ?_))
   apply (ContinuousLinearMap.norm_compContinuousMultilinearMap_le _ _).trans
-  apply mul_le_of_le_one_left (norm_nonneg  _)
+  apply mul_le_of_le_one_left (norm_nonneg _)
   exact ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
 theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0 := by
   suffices p.changeOriginSeries 1 n = 0 by ext v; simp [derivSeries, this]
   apply Finset.sum_eq_zero (fun s hs ↦ ?_)
-  ext v
   have : p (1 + n) = 0 := p.congr_zero (by abel) hp
-  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.zero_apply, this]
+  simp [changeOriginSeriesTerm, this]
 
 end
 

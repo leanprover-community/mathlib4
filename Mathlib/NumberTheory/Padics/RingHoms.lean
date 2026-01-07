@@ -80,26 +80,6 @@ theorem modPart_lt_p : modPart p r < p := by
 theorem modPart_nonneg : 0 ≤ modPart p r :=
   Int.emod_nonneg _ <| mod_cast hp_prime.1.ne_zero
 
-theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : ℤ_[p]) := by
-  rw [isUnit_iff]
-  apply le_antisymm (r.den : ℤ_[p]).2
-  rw [← not_lt, coe_natCast]
-  intro norm_denom_lt
-  have hr : ‖(r * r.den : ℚ_[p])‖ = ‖(r.num : ℚ_[p])‖ := by
-    congr
-    rw_mod_cast [@Rat.mul_den_eq_num r]
-  rw [padicNormE.mul] at hr
-  have key : ‖(r.num : ℚ_[p])‖ < 1 := by
-    calc
-      _ = _ := hr.symm
-      _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one
-      _ = 1 := mul_one 1
-  have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by
-    simp only [← norm_int_lt_one_iff_dvd, ← padic_norm_e_of_padicInt]
-    exact ⟨key, norm_denom_lt⟩
-  apply hp_prime.1.not_dvd_one
-  rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.natCast_dvd, ← Int.natCast_dvd_natCast]
-
 theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     ↑p ∣ r.num - r.num * r.den.gcdA p % p * ↑r.den := by
   rw [← ZMod.intCast_zmod_eq_zero_iff_dvd]
@@ -600,7 +580,7 @@ theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   change _ < _ at hε
   use 1
   intro j hj
-  haveI : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow (by cutsat) hp_prime.1.one_lt⟩
+  haveI : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow (by lia) hp_prime.1.one_lt⟩
   suffices (ZMod.cast (1 : ZMod (p ^ j)) : ℚ) = 1 by simp [nthHomSeq, nthHom, this, hε]
   rw [ZMod.cast_eq_val, ZMod.val_one, Nat.cast_one]
 

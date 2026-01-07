@@ -37,11 +37,6 @@ lemma mulSupport_eq_preimage (f : ι → M) : mulSupport f = f ⁻¹' {1}ᶜ := 
 @[to_additive]
 lemma notMem_mulSupport : x ∉ mulSupport f ↔ f x = 1 := not_not
 
-@[deprecated (since := "2025-05-24")] alias nmem_support := notMem_support
-
-@[to_additive existing, deprecated (since := "2025-05-24")]
-alias nmem_mulSupport := notMem_mulSupport
-
 @[to_additive]
 lemma compl_mulSupport : (mulSupport f)ᶜ = {x | f x = 1} := ext fun _ ↦ notMem_mulSupport
 
@@ -230,6 +225,12 @@ lemma mulSupport_mulSingle_of_ne (h : a ≠ 1) : mulSupport (mulSingle i a) = {i
 @[to_additive]
 lemma mulSupport_mulSingle [DecidableEq M] :
     mulSupport (mulSingle i a) = if a = 1 then ∅ else {i} := by split_ifs with h <;> simp [h]
+
+@[to_additive]
+lemma subsingleton_mulSupport_mulSingle : (mulSupport (mulSingle i a)).Subsingleton := by
+  classical
+  rw [mulSupport_mulSingle]
+  split_ifs with h <;> simp
 
 @[to_additive]
 lemma mulSupport_mulSingle_disjoint (ha : a ≠ 1) (hb : b ≠ 1) :

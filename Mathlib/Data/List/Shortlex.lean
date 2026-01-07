@@ -91,15 +91,15 @@ namespace Shortlex
 instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
   ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
 
-instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) :=
-  inferInstanceAs <| IsAsymm (List α) (InvImage _ _)
+instance asymm [Std.Asymm r] : Std.Asymm (Shortlex r) :=
+  inferInstanceAs <| Std.Asymm (InvImage _ _)
 
 theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s₂) :
     Shortlex r s₁ (s₂ ++ t) := by
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append]
-    cutsat
+    lia
   cases t with
   | nil =>
     rw [List.append_nil]
@@ -107,14 +107,14 @@ theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s�
   | cons head tail =>
     apply of_length_lt
     rw [List.length_append, List.length_cons]
-    cutsat
+    lia
 
 theorem append_left {t₁ t₂ : List α} (h : Shortlex r t₁ t₂) (s : List α) :
     Shortlex r (s ++ t₁) (s ++ t₂) := by
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append, List.length_append]
-    cutsat
+    lia
   cases s with
   | nil =>
     rw [List.nil_append, List.nil_append]
