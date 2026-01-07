@@ -1042,7 +1042,11 @@ noncomputable def inverse : (M →L[R] M₂) → M₂ →L[R] M := fun f =>
 noncomputable instance : Inv (M →L[R] M) where
   inv := inverse
 
-@[simp] lemma isInvertible_equiv {f : M ≃L[R] M₂} : IsInvertible (f : M →L[R] M₂) := ⟨f, rfl⟩
+@[grind =]
+lemma inverse_eq_inv {f : M →L[R] M} : f.inverse = f⁻¹ := rfl
+
+@[simp, grind ←]
+lemma isInvertible_equiv {f : M ≃L[R] M₂} : IsInvertible (f : M →L[R] M₂) := ⟨f, rfl⟩
 
 /-- By definition, if `f` is invertible then `inverse f = f.symm`. -/
 @[simp]
@@ -1277,6 +1281,11 @@ instance : LawfulInv (M →L[R] M) where
 
 @[simp]
 theorem inv_equiv (e : M ≃L[R] M) : (e : M →L[R] M)⁻¹ = e.symm := inverse_equiv e
+
+@[simp] theorem inv_id : (ContinuousLinearMap.id R M)⁻¹ = .id R M := by
+  change (1 : M →L[R] M)⁻¹ = .id R M
+  rw [Ring.inv_one]
+  rfl
 
 end ContinuousLinearMap
 

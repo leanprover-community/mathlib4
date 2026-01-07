@@ -493,13 +493,13 @@ protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻�
   have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
   · let _ := hM.isUnit.invertible
     simpa using this.conjTranspose
-  · simp only [vecMul_injective_iff_isUnit, Ring.isUnit_inv_iff, hM.isUnit]
+  · simp only [vecMul_injective_iff_isUnit, isUnit_inv_iff, hM.isUnit]
 
 @[simp]
 theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     M⁻¹.PosDef ↔ M.PosDef :=
   ⟨fun h =>
-    letI := (Ring.isUnit_inv_iff.1 <| h.isUnit).invertible
+    letI := (isUnit_inv_iff.1 <| h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
 
 end Field
