@@ -168,7 +168,17 @@ verify_transient() {
     CHERRY_PICK_FAILED=false
     for commit in "${NON_TRANSIENT_COMMITS[@]}"; do
       local cp_output
-      if ! cp_output=$(git cherry-pick --no-commit "$commit" 2>&1); then
+      # Check if this is a merge commit (has more than one parent)
+      local parent_count
+      parent_count=$(git rev-list --parents -n 1 "$commit" | awk '{print NF-1}')
+
+      local cp_args=(--no-commit)
+      if [[ "$parent_count" -gt 1 ]]; then
+        # For merge commits, use -m 1 to cherry-pick relative to first parent
+        cp_args+=(-m 1)
+      fi
+
+      if ! cp_output=$(git cherry-pick "${cp_args[@]}" "$commit" 2>&1); then
         # Cherry-pick failed - transient commits don't cleanly separate
         echo "$cp_output" >&2
         git cherry-pick --abort 2>/dev/null || git reset --hard HEAD >/dev/null 2>&1

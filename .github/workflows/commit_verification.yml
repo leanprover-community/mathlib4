@@ -22,9 +22,11 @@ jobs:
     name: Verify Transient Commits
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR head
         uses: actions/checkout@v4
         with:
+          # Checkout the actual PR head, not the merge commit GitHub creates
+          ref: ${{ github.event.pull_request.head.sha }}
           # Fetch full history to access all PR commits
           fetch-depth: 0
 
