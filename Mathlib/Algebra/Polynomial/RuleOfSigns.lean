@@ -126,7 +126,7 @@ section OrderedRing
 
 variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] (P : Polynomial R) {x : R}
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /-- The number of sign changes does not change if we negate. -/
 @[simp]
 theorem signVariations_neg : signVariations (-P) = signVariations P := by

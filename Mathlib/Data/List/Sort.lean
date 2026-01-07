@@ -249,7 +249,7 @@ alias sorted_insertionSort := pairwise_insertionSort
 
 end TotalAndTransitive
 
-set_option linter.style.commandStart false in -- manual alignment is not recognised
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
 -/
@@ -275,7 +275,7 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
 
 variable [Std.Antisymm r] [IsTotal α r] [IsTrans α r]
 
-set_option linter.style.commandStart false in -- manual alignment is not recognised
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
 additionally requires `Std.Antisymm r`, `IsTotal α r` and `IsTrans α r`.

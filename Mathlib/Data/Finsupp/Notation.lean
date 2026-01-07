@@ -26,7 +26,7 @@ open Lean Parser Term
 meta def fun₀.matchAlts : Parser :=
   leading_parser withPosition <| ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
 
-set_option linter.style.commandStart false in -- linter false positive
+set_option linter.style.whitespace false in -- linter false positive
 /-- `fun₀ | i => a` is notation for `Finsupp.single i a`, and with multiple match arms,
 `fun₀ ... | i => a` is notation for `Finsupp.update (fun₀ ...) i a`.
 

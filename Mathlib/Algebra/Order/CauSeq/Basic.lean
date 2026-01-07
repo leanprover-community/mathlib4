@@ -212,7 +212,7 @@ variable (abv) in
 /-- The constant Cauchy sequence. -/
 def const (x : β) : CauSeq β abv := ⟨fun _ ↦ x, IsCauSeq.const _⟩
 
-set_option linter.style.commandStart false in -- linter false positive
+set_option linter.style.whitespace false in -- linter false positive
 /-- The constant Cauchy sequence -/
 local notation "const" => const abv
 
@@ -568,7 +568,7 @@ end DivisionRing
 
 section Abs
 
-set_option linter.style.commandStart false in -- false positive in the linter
+set_option linter.style.whitespace false in -- false positive in the linter
 /-- The constant Cauchy sequence -/
 local notation "const" => const abs
 

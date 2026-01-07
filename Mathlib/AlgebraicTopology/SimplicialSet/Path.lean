@@ -54,12 +54,12 @@ namespace Path
 
 variable {n : ℕ} {X : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
 abbrev vertex (f : Path X m) (i : Fin (m + 1)) : X _⦋0⦌ₙ₊₁ :=
   Path₁.vertex f i
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /-- A path includes the data of `n` 1-simplices in `X`. -/
 abbrev arrow (f : Path X m) (i : Fin m) : X _⦋1⦌ₙ₊₁ :=
   Path₁.arrow f i
@@ -125,14 +125,14 @@ def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
     simp only [← f.arrow_tgt i]
     exact congr (σ.naturality (tr (δ 0)).op) rfl |>.symm
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]
 lemma map_vertex (f : Path X m) (σ : X ⟶ Y) (i : Fin (m + 1)) :
     (f.map σ).vertex i = σ.app (op ⦋0⦌ₙ₊₁) (f.vertex i) :=
   rfl
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /- We write this lemma manually to ensure it refers to `Path.arrow`. -/
 @[simp]
 lemma map_arrow (f : Path X m) (σ : X ⟶ Y) (i : Fin m) :
@@ -148,7 +148,7 @@ end Path
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
 def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : Path X m where
@@ -174,7 +174,7 @@ lemma trunc_spine (k m : ℕ) (h : m ≤ k + 1) (hₙ : k ≤ n) :
 
 variable (m : ℕ) (hₘ : m ≤ n + 1)
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]
 lemma spine_vertex (Δ : X _⦋m⦌ₙ₊₁) (i : Fin (m + 1)) :
@@ -182,14 +182,14 @@ lemma spine_vertex (Δ : X _⦋m⦌ₙ₊₁) (i : Fin (m + 1)) :
       X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op Δ :=
   rfl
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 /- We write this lemma manually to ensure it refers to `Path.arrow`. -/
 @[simp]
 lemma spine_arrow (Δ : X _⦋m⦌ₙ₊₁) (i : Fin m) :
     (X.spine m hₘ Δ).arrow i = X.map (tr (mkOfSucc i)).op Δ :=
   rfl
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     (φ : ⦋a⦌ₙ₊₁ ⟶ ⦋m⦌ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a hₐ (X.map φ.op Δ)).vertex i =
@@ -198,7 +198,7 @@ lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
   rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp',
     SimplexCategory.const_comp]
 
-set_option linter.style.commandStart false in -- linter suggestion is undesirable
+set_option linter.style.whitespace false in -- linter suggestion is undesirable
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
     X.spine l (by lia) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
