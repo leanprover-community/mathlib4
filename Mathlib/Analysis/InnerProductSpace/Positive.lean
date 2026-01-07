@@ -393,7 +393,7 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
     Function.comp_apply, coe_comp']
-  simp_rw [← coe_coe, U.starProjection_isSymmetric _ , hT.isSymmetric _,
+  simp_rw [← coe_coe, U.starProjection_isSymmetric _, hT.isSymmetric _,
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
