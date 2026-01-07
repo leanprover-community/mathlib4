@@ -51,9 +51,10 @@ def toModuleCatObj (i : ι) : Submodule R M :=
     { __ := DistribMulAction.toAddMonoidHom M (single i i 1 : Matrix ι ι R)
       map_smul' r x := by
         dsimp
-        rw [← smul_assoc r, Matrix.smul_eq_diagonal_mul, show (diagonal fun x : ι ↦ r) *
-          single _ _ 1 = single i i 1 * diagonal (fun _ ↦ r) by
-          ext; simp [Matrix.single], SemigroupAction.mul_smul, ← Matrix.smul_one_eq_diagonal]
+        have : Commute (diagonal fun x : ι ↦ r) (single i i 1) := by
+          ext; simp [Matrix.single]
+        rw [← smul_assoc r, Matrix.smul_eq_diagonal_mul, this.eq,
+          SemigroupAction.mul_smul, ← Matrix.smul_one_eq_diagonal]
         nth_rw 1 [← one_smul (Matrix ι ι R) x]
         rw [smul_assoc] }
 
