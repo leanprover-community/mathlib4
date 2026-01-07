@@ -78,7 +78,7 @@ theorem exists_eq_interval_average
   have h_vol_fin2 : volume (uIoc a b) ≠ ⊤ := by simp [h.le]
   have h_intble : IntegrableOn f (uIoc a b) := by
     have : IntegrableOn f (uIcc a b) := hf.integrableOn_uIcc
-    rwa [uIcc_of_lt h,integrableOn_Icc_iff_integrableOn_Ioc, ←uIoc_of_le (le_of_lt h)] at this
+    rwa [uIcc_of_lt h, integrableOn_Icc_iff_integrableOn_Ioc, ← uIoc_of_le (le_of_lt h)] at this
   let S1 := {x | x ∈ uIoc a b ∧ f x ≤ ave}
   let S2 := {x | x ∈ uIoc a b ∧ ave ≤ f x}
   have h_meas1 : volume (S1 \ {b}) ≠ 0 := by
