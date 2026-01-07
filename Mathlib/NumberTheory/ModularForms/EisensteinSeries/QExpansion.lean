@@ -32,7 +32,7 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 
 -/
 
-@[expose] public section
+public section
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
