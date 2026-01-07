@@ -684,7 +684,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
   carrier := { x : R⟦Γ⟧ˣ | 0 < (x.val - 1).orderTop}
   mul_mem' := by
     intro x y hx hy
-    obtain (_|_) := subsingleton_or_nontrivial R
+    obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
     · simp_all only [Set.mem_setOf_eq, orderTop_self_sub_one_pos_iff]
       have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
@@ -694,7 +694,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
   one_mem' := by simp
   inv_mem' {y} h := by
     suffices 0 < (y.inv - 1).orderTop by exact this
-    obtain (_|_) := subsingleton_or_nontrivial R
+    obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
     · have : 0 < (y.val - 1).orderTop := h
       rw [orderTop_self_sub_one_pos_iff] at this
