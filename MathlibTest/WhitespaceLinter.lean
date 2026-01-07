@@ -543,11 +543,11 @@ info: #[srcNat: 4, srcPos: 4, fmtPos: 5, msg: missing space, length: 1
 -- Starting from `c` (due to the `"d ef gh".length` input), form a "window" of successive sizes
 -- `1, 2,..., 6`.  The output is trimmed and contains only full words, even partially overlapping
 -- with the given lengths.
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 1 == "cd"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 2 == "cd"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 3 == "cd ef"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 4 == "cd ef"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 5 == "cd ef"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 6 == "cd ef gh"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 1 == "cd"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 2 == "cd"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 3 == "cd ef"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 4 == "cd ef"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 5 == "cd ef"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 6 == "cd ef gh"
 
 end internal
