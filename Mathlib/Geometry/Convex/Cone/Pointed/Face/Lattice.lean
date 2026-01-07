@@ -121,6 +121,7 @@ instance : OrderBot (Face C) where
   bot := ⟨_, IsFaceOf.lineal C⟩
   bot_le F := F.isFaceOf.lineal_le
 
+/-- The lineality space of a cone `C` as a face of `C`. It is contained in all faces of `C`. -/
 abbrev lineal : Face C := ⊥
 
 /-!
