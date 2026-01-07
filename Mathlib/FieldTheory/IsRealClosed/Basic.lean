@@ -46,7 +46,7 @@ universe u
 
 variable {R : Type u} [Field R]
 
-theorem of_orderedField [LinearOrder R] [IsStrictOrderedRing R]
+theorem of_linearOrderedField [LinearOrder R] [IsStrictOrderedRing R]
     (isSquare_of_nonneg : ∀ {x : R}, 0 ≤ x → IsSquare x)
     (exists_isRoot_of_odd_natDegree : ∀ {f : R[X]}, Odd f.natDegree → ∃ x, f.IsRoot x) :
     IsRealClosed R where
