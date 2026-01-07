@@ -91,7 +91,7 @@ theorem poissonPMF_tsum_nmul (r : ℝ≥0) : ∑' n, poissonPMF r n * n = r := b
   exact ENNReal.tsum_coe_eq <| NNReal.hasSum_coe.mp <| poissonPMFReal_hasSum_nmul r
 
 theorem poissonPMF_coe_tsum_nmul (r : ℝ≥0) : ∑' n, (poissonPMF r n).toReal * n = r := by
-  simp_rw [poissonPMF_apply, ENNReal.ofReal_eq_coe_nnreal poissonPMFReal_nonneg]
+  simp_rw [poissonPMF_apply, ENNReal.toReal_ofReal poissonPMFReal_nonneg]
   exact (poissonPMFReal_hasSum_nmul r).tsum_eq
 
 end PoissonPMF
