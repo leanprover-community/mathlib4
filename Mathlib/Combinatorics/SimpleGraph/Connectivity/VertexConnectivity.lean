@@ -85,53 +85,40 @@ lemma IsVertexConnected.zero [Nonempty V] : G.IsVertexConnected 0 :=
   isVertexConnected_zero.mpr ‹_›
 
 /-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
-lemma isVertexReachable_one_iff :
-    G.IsVertexReachable 1 u v ↔ G.Reachable u v := by
-  constructor
-  · exact fun h ↦ h.reachable (by simp)
-  · rintro h s hs hu hv
-    rw [ENat.lt_one_iff_eq_zero, Set.encard_eq_zero] at hs
-    rw [hs, isolateVerts_empty]
-    exact h
+@[simp]
+lemma isVertexReachable_one_iff : G.IsVertexReachable 1 u v ↔ G.Reachable u v := by
+  refine ⟨(·.reachable one_ne_zero), fun h s hs hu hv ↦ ?_⟩
+  rwa [Set.encard_eq_zero.mp <| ENat.lt_one_iff_eq_zero.mp hs, isolateVerts_empty]
 
 /-- 1-vertex-connectivity is equivalent to being a connected graph with at least 2 vertices. -/
 @[simp]
-lemma isVertexConnected_one :
-    G.IsVertexConnected 1 ↔ Nontrivial V ∧ G.Connected := by
-  rw [IsVertexConnected, ENat.add_one_le_iff (by simp), ENat.one_lt_card_iff_nontrivial]
-  constructor
-  · rintro ⟨h_nt, h_reach⟩
-    refine ⟨h_nt, ?_⟩
-    haveI : Nontrivial V := h_nt
-    exact {
-      nonempty := inferInstance
-      preconnected := fun u v ↦ (h_reach u v).reachable (by simp)
-    }
-  · rintro ⟨h_nt, h_conn⟩
-    exact ⟨h_nt, fun u v ↦ isVertexReachable_one_iff.mpr (h_conn.preconnected u v)⟩
+lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ Nontrivial V ∧ G.Connected := by
+  rw [IsVertexConnected, ENat.add_one_le_iff ENat.one_ne_top, ENat.one_lt_card_iff_nontrivial]
+  refine ⟨fun ⟨h_nt, h_reach⟩ ↦ ⟨h_nt, ⟨fun u v ↦ ?_⟩⟩, fun ⟨h_nt, h_conn⟩ ↦ ⟨h_nt, fun u v ↦ ?_⟩⟩
+  exacts [isVertexReachable_one_iff.mp <| h_reach u v, isVertexReachable_one_iff.mpr <| h_conn u v]
+
+/-- A preconnected nontrivial graph is 1-vertex-connected. -/
+lemma Preconnected.isVertexConnected_one [Nontrivial V] (h : G.Preconnected) :
+    G.IsVertexConnected 1 :=
+  G.isVertexConnected_one.mpr ⟨‹_›, ⟨h⟩⟩
 
 /-- Vertex connectivity is antitonic in `k`. -/
 @[gcongr]
-lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
-    G.IsVertexConnected l :=
-  ⟨by exact (add_le_add hkl le_rfl).trans hc.1, fun u v ↦ (hc.2 u v).anti hkl⟩
+lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) : G.IsVertexConnected l :=
+  ⟨(add_le_add_left hkl 1).trans hc.1, fun u v ↦ (hc.2 u v).anti hkl⟩
 
 /-- Vertex connectivity is monotonic in the graph. -/
 @[gcongr]
-lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) :
-    H.IsVertexConnected k :=
+lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) : H.IsVertexConnected k :=
   ⟨hc.1, fun u v ↦ (hc.2 u v).mono hGH⟩
 
 /-- The complete graph on `n` vertices is `(n-1)`-vertex-connected. -/
 lemma isVertexConnected_top [Fintype V] [Nonempty V] :
     (⊤ : SimpleGraph V).IsVertexConnected (Fintype.card V - 1) := by
-  constructor
+  refine ⟨?_, fun u v ↦ ?_⟩
   · rw [ENat.card_eq_coe_fintype_card]
-    norm_cast
-    exact Nat.sub_add_cancel Fintype.card_pos |>.le
-  · intro u v
-    by_cases h : u = v
-    · subst h; exact .refl _
-    · exact IsVertexReachable.of_adj _ h
+    exact_mod_cast Nat.sub_add_cancel Fintype.card_pos |>.le
+  · by_cases h : u = v
+    exacts [h ▸ .refl _, .of_adj _ h]
 
 end SimpleGraph
