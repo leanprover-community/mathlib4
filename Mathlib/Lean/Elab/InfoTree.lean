@@ -119,6 +119,24 @@ def getDeclsByBody (t : InfoTree) : List Name :=
       else decls
     | _ => decls
 
+/-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
+should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
+either of these conditions. -/
+def getDeclBodyInfos (t : InfoTree) : List (ContextInfo × Info) :=
+  t.foldInfoTree (init := []) fun ctx t acc =>
+    match t with
+    | .node (.ofCustomInfo i) body =>
+      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+        if h : 0 < body.size then
+          -- See through `.context`s instead of just matching on `.node`:
+          let result? := body[0].onHighestNode? (ctx? := ctx) fun ctx i _ => (ctx, i)
+          if let some result := result? then
+            result :: acc
+          else acc
+        else acc
+      else acc
+    | _ => acc
+
 /--
 Get the declarations elaborated in the infotree `t` which are theorems according to the
 environment. This includes e.g. `instance`s of `Prop` classes in addition to declarations declared
