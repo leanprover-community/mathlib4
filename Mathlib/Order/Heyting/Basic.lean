@@ -293,11 +293,12 @@ an implication holds iff the conclusion follows from the hypothesis. -/
 @[to_dual (attr := simp)]
 theorem himp_eq_top_iff : a ⇨ b = ⊤ ↔ a ≤ b := by rw [← top_le_iff, le_himp_iff, top_inf_eq]
 
-/-- `p → true`, `true → p ↔ p` -/
+/-- `p → true` -/
 @[to_dual (attr := simp) bot_sdiff]
 theorem himp_top : a ⇨ ⊤ = ⊤ :=
   himp_eq_top_iff.2 le_top
 
+/-- `true → p ↔ p` -/
 @[to_dual (attr := simp) sdiff_bot]
 theorem top_himp : ⊤ ⇨ a = a :=
   eq_of_forall_le_iff fun b => by rw [le_himp_iff, inf_top_eq]
