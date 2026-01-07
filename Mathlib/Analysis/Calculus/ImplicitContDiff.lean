@@ -146,23 +146,12 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   · rw [h1]
   · rfl
 
-theorem implicitFunction_unique (h : IsContDiffImplicitAt n f f' a) :
-    ∀ᶠ xy in 𝓝 a, f xy = f a → xy.2 = h.implicitFunction xy.1 := by
-  suffices H : ∀ᶠ x in 𝓝 a, ∀ᶠ y in 𝓝 (f a),
-      h.implicitFunctionData.prodFun x = (x.1, y) →
-        x = h.implicitFunctionData.implicitFunction x.1 y from by
-    filter_upwards [H] with xy hxy heq
-    rw [implicitFunction, implicitFunctionAux, ← hxy.self_of_nhds (by rw [← heq]; rfl)]
-  have huniq := h.implicitFunctionData.implicitFunction_apply_image.prod_mk
-    h.implicitFunctionData.prod_map_implicitFunction
-  rw [implicitFunctionData_pt, ImplicitFunctionData.prodFun_apply,
-      implicitFunctionData_leftFun_pt, implicitFunctionData_rightFun_pt, nhds_prod_eq, nhds_prod_eq,
-      eventually_swap4_prod_iff, eventually_assoc_iff'] at huniq
-  replace huniq := huniq.curry.diag_of_prod_left
-  rw [← nhds_prod_eq] at huniq
-  filter_upwards [huniq] with xy hxy
-  filter_upwards [hxy] with fa hfa heq
-  simp_all
+theorem eventually_implicitFunction_apply_eq (h : IsContDiffImplicitAt n f f' a) :
+    ∀ᶠ xy in 𝓝 a, f xy = f a → h.implicitFunction xy.1 = xy.2 := by
+  refine h.implicitFunctionData.hasStrictFDerivAt.eventually_left_inverse.mono fun xy h₁ h₂ ↦ ?_
+  change (h.implicitFunctionData.implicitFunction xy.1 (f a)).2 = xy.2
+  change h.implicitFunctionData.implicitFunction xy.1 (f xy) = xy at h₁
+  aesop
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
