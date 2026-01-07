@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 # Lemmas about the support of a finitely supported function
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

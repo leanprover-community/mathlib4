@@ -18,7 +18,7 @@ clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map 
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 
@@ -240,9 +240,6 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
 
 lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_closure_iff_nhdsWithin_eq_bot := notMem_closure_iff_nhdsWithin_eq_bot
 
 theorem mem_interior_iff_not_clusterPt_compl : x ∈ interior s ↔ ¬ClusterPt x (𝓟 sᶜ) := by
   rw [← mem_closure_iff_clusterPt, closure_compl, mem_compl_iff, not_not]

@@ -277,9 +277,6 @@ theorem nhdsNE_of_nhdsNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space 
     exact s.toFinite.diff.isClosed.union (isClosed_compl_iff.2 ht)
   · tauto_set
 
-@[deprecated (since := "2025-05-22")]
-alias nhdNE_of_nhdNE_sdiff_finite := nhdsNE_of_nhdsNE_sdiff_finite
-
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
 More precisely: `s` is codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood
 intersect `U \ s` in only finitely many points. -/
