@@ -20,7 +20,7 @@ rather than in `Analysis.PSeries` in order to keep the prerequisites of the form
 p-series, Cauchy condensation test
 -/
 
-@[expose] public section
+public section
 
 lemma Complex.summable_one_div_nat_cpow {p : ℂ} :
     Summable (fun n : ℕ ↦ 1 / (n : ℂ) ^ p) ↔ 1 < re p := by

@@ -37,7 +37,7 @@ theorems that need it.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

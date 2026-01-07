@@ -157,12 +157,12 @@ variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 @[simp]
 lemma taylor_mem_degreeLT : taylor r f ∈ R[X]_n ↔ f ∈ R[X]_n := by simp [mem_degreeLT]
 
-lemma comap_taylorEquiv_degreeLT : (R[X]_n).comap (taylorEquiv r) = R[X]_n := by
+lemma comap_taylorEquiv_degreeLT : (R[X]_n).comap (taylorEquiv r : R[X] →ₗ[R] R[X]) = R[X]_n := by
   ext; simp [taylorEquiv]
 
-lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n := by
-  nth_rw 1 [← comap_taylorEquiv_degreeLT (r := r),
-    Submodule.map_comap_eq_of_surjective (taylorEquiv r).surjective]
+lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r : R[X] →ₗ[R] R[X]) = R[X]_n := by
+  nth_rw 1 [← comap_taylorEquiv_degreeLT (r := r), Submodule.map_comap_eq_of_surjective]
+  exact (taylorEquiv r).surjective
 
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/

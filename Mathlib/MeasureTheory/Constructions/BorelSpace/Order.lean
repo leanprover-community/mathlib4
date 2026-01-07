@@ -539,7 +539,7 @@ theorem ext_of_Icc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
 /-- Two measures which are finite on closed intervals are equal if they agree on all
 closed intervals. -/
 theorem ext_of_Icc {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
-    [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [CompactIccSpace α]
     [BorelSpace α] (μ ν : Measure α) [IsLocallyFiniteMeasure μ]
     (h : ∀ ⦃a b⦄, a ≤ b → μ (Icc a b) = ν (Icc a b)) : μ = ν :=
   μ.ext_of_Icc' ν (fun _ _ _ => measure_Icc_lt_top.ne) h
@@ -1014,9 +1014,6 @@ theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
   .limsup' hf atTop_countable_basis fun _ => to_countable _
 
 end ConditionallyCompleteLinearOrder
-
-@[deprecated (since := "2025-05-30")]
-alias Homemorph.toMeasurableEquiv := Homeomorph.toMeasurableEquiv
 
 end BorelSpace
 
