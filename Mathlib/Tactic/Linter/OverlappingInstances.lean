@@ -39,26 +39,22 @@ private partial def getStructureDataProjections (e : Expr) (acc : Array Expr := 
     else
       return acc
 
-/-- An overlap between two local instances. This is introduced for readability, as all fields are
-`Expr`s. -/
-structure Overlap where
-  /-- A local instance free variable whose data-carrying projections overlap with `fvar₂`. The
-  `Bool` indicates whether `fvar₁ == overlap`; this guides the logic and is used for error
-  reporting. -/
-  fvar₁ : Expr × Bool
-  /-- A local instance free variable whose data-carrying projections overlap with `fvar₁`. The
-  `Bool` indicates whether `fvar₂ == overlap`; this guides the logic and is used for error
-  reporting. -/
-  fvar₂ : Expr × Bool
-  /-- A type class on which `fvar₁` and `fvar₂`'s data-carrying projections overlap. -/
-  overlap : Expr
-deriving Inhabited, Repr
+/-- Stores the local instance overlaps per class. The keys are the class, and the values are local
+instances which have the class as a projection. The `Bool` value of each entry indicates whether
+its type is exactly the key class. There may be assumed to be at least two local instances per
+class. -/
+abbrev Overlaps := ExprMap (ExprMap Bool)
+
+/-- Inserts an overlap into `Overlaps`. -/
+def Overlaps.insert (cls : Expr) (fvar₁ fvar₂ : Expr × Bool) (overlaps : Overlaps) : Overlaps :=
+  overlaps.alter cls fun map? =>
+    map?.getD ∅ |>.insert fvar₁.1 fvar₁.2 |>.insert fvar₂.1 fvar₂.2
 
 /-- Find data-carrying overlaps between the current local instances of the `MetaM` context. -/
-def findOverlappingDataInstances : MetaM (Array Overlap) := do
-  let mut overlaps : Array Overlap := #[]
-  /- The `Bool` indicates whether the given class key is exactly the type of the associated `fvar`
-  value. This is used for error reporting. -/
+def findOverlappingDataInstances : MetaM Overlaps := do
+  let mut overlaps : Overlaps := {}
+  /- Records all instances encountered, and so is distinct from `overlaps`. The `Bool` indicates
+  whether the given class key is exactly the type of the associated `fvar` value. -/
   let mut insts : Std.HashMap Expr (Expr × Bool) := {}
   for { fvar := fvar₁, .. } in ← getLocalInstances do
     unless (← fvar₁.fvarId!.getBinderInfo).isInstImplicit do continue
@@ -74,10 +70,7 @@ def findOverlappingDataInstances : MetaM (Array Overlap) := do
       let cls := projClasses[clsIdx]
       if let some (fvar₂, isTypeOfFVar₂) := insts[cls]? then
         unless done.contains fvar₂ do
-          overlaps := overlaps.push {
-              fvar₁ := (fvar₁, clsIdx = 0)
-              fvar₂ := (fvar₂, isTypeOfFVar₂)
-              overlap := cls }
+          overlaps := overlaps.insert cls (fvar₁, clsIdx = 0) (fvar₂, isTypeOfFVar₂)
           if clsIdx = 0 || isTypeOfFVar₂ then
             done := done.push fvar₂ -- Don't consider `fvar₂` any more
       else
@@ -138,14 +131,6 @@ def overlappingInstances : Linter where
           forallTelescope? remainingType? do
             let overlaps ← findOverlappingDataInstances
             unless overlaps.isEmpty do
-              /- The fvars overlapping on a given class. For each class belonging to some overlap,
-              assign to it the fvars which have it as a projection, preserving the data as to
-              whether these fvars were instances of the class itself (as opposed to projecting to
-              it) in the `Bool`. -/
-              let mut collectedByOverlap : Std.HashMap Expr (Std.HashSet (Expr × Bool)) := {}
-              for { fvar₁, fvar₂, overlap } in overlaps do
-                collectedByOverlap := collectedByOverlap.alter overlap fun set? =>
-                  (set?.getD ∅).insert fvar₁ |>.insert fvar₂
 
               -- For now, no hovers, since the name clashes with the aux decl of the same name in
               -- the lctx. TODO: account for this.
@@ -156,7 +141,7 @@ def overlappingInstances : Linter where
                   "current declaration"} \
                 has instance hypotheses which overlap on data-carrying components."
 
-              for (overlap, fvars) in collectedByOverlap do
+              for (overlap, fvars) in overlaps do
                 let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
                   if isDirect then .inl fvar else .inr fvar
                 let overlapType := m!"`{.ofInstanceType overlap}`"
