@@ -10,7 +10,7 @@ public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.ToDual
+import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -24,7 +24,7 @@ and proves some basic lemmas about them.
 /-! ### Unbundled classes -/
 
 /-- An empty relation does not relate any elements. -/
-@[nolint unusedArguments] def EmptyRelation {α : Sort*} := fun _ _ : α ↦ False
+@[deprecated (since := "2025-12-22")] alias EmptyRelation := emptyRelation
 
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
@@ -36,21 +36,17 @@ class IsRefl (α : Sort*) (r : α → α → Prop) : Prop where
   refl : ∀ a, r a a
 
 /-- `IsSymm X r` means the binary relation `r` on `X` is symmetric. -/
-class IsSymm (α : Sort*) (r : α → α → Prop) : Prop where
-  symm : ∀ a b, r a b → r b a
+@[deprecated Std.Symm (since := "2025-12-26")]
+abbrev IsSymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Symm r
 
 /-- `IsAsymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
 `r a b → ¬ r b a`. -/
-class IsAsymm (α : Sort*) (r : α → α → Prop) : Prop where
-  asymm : ∀ a b, r a b → ¬r b a
+@[deprecated Std.Asymm (since := "2026-01-03")]
+abbrev IsAsymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Asymm r
 
 /-- `IsAntisymm X r` means the binary relation `r` on `X` is antisymmetric. -/
-class IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop where
-  antisymm : ∀ a b, r a b → r b a → a = b
-
-instance (priority := 100) IsAsymm.toIsAntisymm {α : Sort*} (r : α → α → Prop) [IsAsymm α r] :
-    IsAntisymm α r where
-  antisymm _ _ hx hy := (IsAsymm.asymm _ _ hx hy).elim
+@[deprecated Std.Antisymm (since := "2026-01-06")]
+abbrev IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Antisymm r
 
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
@@ -72,16 +68,16 @@ and transitive. -/
 class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends IsRefl α r, IsTrans α r
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
-`IsPreorder X r` and `IsAntisymm X r`. -/
-class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsAntisymm α r
+`IsPreorder X r` and `Std.Antisymm r`. -/
+class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Antisymm r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
 class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, IsTotal α r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
-is, `IsPreorder X r` and `IsSymm X r`. -/
-class IsEquiv (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsSymm α r
+is, `IsPreorder X r` and `Std.Symm r`. -/
+class IsEquiv (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Symm r
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
 `IsIrrefl X r` and `IsTrans X r`. -/
@@ -124,15 +120,14 @@ local infixl:50 " ≺ " => r
 lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
 lemma refl [IsRefl α r] (a : α) : a ≺ a := IsRefl.refl a
 lemma trans [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := IsTrans.trans _ _ _
-lemma symm [IsSymm α r] : a ≺ b → b ≺ a := IsSymm.symm _ _
-lemma antisymm [IsAntisymm α r] : a ≺ b → b ≺ a → a = b := IsAntisymm.antisymm _ _
-lemma asymm [IsAsymm α r] : a ≺ b → ¬b ≺ a := IsAsymm.asymm _ _
+lemma symm [Std.Symm r] : a ≺ b → b ≺ a := Std.Symm.symm _ _
+lemma antisymm [Std.Antisymm r] : a ≺ b → b ≺ a → a = b := Std.Antisymm.antisymm _ _
+lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 
 lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
 
-instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
-    IsAsymm α r :=
+instance (priority := 90) asymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] : Std.Asymm r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
 instance IsIrrefl.decide [DecidableRel r] [IsIrrefl α r] :
@@ -147,16 +142,16 @@ instance IsTrans.decide [DecidableRel r] [IsTrans α r] :
     IsTrans α (fun a b => decide (r a b) = true) where
   trans := fun a b c => by simpa using trans a b c
 
-instance IsSymm.decide [DecidableRel r] [IsSymm α r] :
-    IsSymm α (fun a b => decide (r a b) = true) where
+instance Std.Symm.decide [DecidableRel r] [Std.Symm r] :
+    Std.Symm (fun a b => decide (r a b) = true) where
   symm := fun a b => by simpa using symm a b
 
-instance IsAntisymm.decide [DecidableRel r] [IsAntisymm α r] :
-    IsAntisymm α (fun a b => decide (r a b) = true) where
+instance Std.Antisymm.decide [DecidableRel r] [Std.Antisymm r] :
+    Std.Antisymm (fun a b => decide (r a b) = true) where
   antisymm a b h₁ h₂ := antisymm (r := r) _ _ (by simpa using h₁) (by simpa using h₂)
 
-instance IsAsymm.decide [DecidableRel r] [IsAsymm α r] :
-    IsAsymm α (fun a b => decide (r a b) = true) where
+instance Std.Asymm.decide [DecidableRel r] [Std.Asymm r] :
+    Std.Asymm (fun a b => decide (r a b) = true) where
   asymm := fun a b => by simpa using asymm a b
 
 instance IsTotal.decide [DecidableRel r] [IsTotal α r] :
@@ -172,8 +167,8 @@ variable (r)
 @[elab_without_expected_type] lemma irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a := irrefl a
 @[elab_without_expected_type] lemma refl_of [IsRefl α r] (a : α) : a ≺ a := refl a
 @[elab_without_expected_type] lemma trans_of [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := _root_.trans
-@[elab_without_expected_type] lemma symm_of [IsSymm α r] : a ≺ b → b ≺ a := symm
-@[elab_without_expected_type] lemma asymm_of [IsAsymm α r] : a ≺ b → ¬b ≺ a := asymm
+@[elab_without_expected_type] lemma symm_of [Std.Symm r] : a ≺ b → b ≺ a := symm
+@[elab_without_expected_type] lemma asymm_of [Std.Asymm r] : a ≺ b → ¬b ≺ a := asymm
 
 @[elab_without_expected_type]
 lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total _ _
@@ -186,7 +181,7 @@ section
 /-- `IsRefl` as a definition, suitable for use in proofs. -/
 def Reflexive := ∀ x, x ≺ x
 
-/-- `IsSymm` as a definition, suitable for use in proofs. -/
+/-- `Std.Symm` as a definition, suitable for use in proofs. -/
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
@@ -195,7 +190,7 @@ def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 /-- `IsIrrefl` as a definition, suitable for use in proofs. -/
 def Irreflexive := ∀ x, ¬x ≺ x
 
-/-- `IsAntisymm` as a definition, suitable for use in proofs. -/
+/-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
 /-- `IsTotal` as a definition, suitable for use in proofs. -/
@@ -318,12 +313,12 @@ variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b
   | _, _, .refl _ => refl _
 
-theorem comm [IsSymm α r] {a b : α} : r a b ↔ r b a :=
+theorem comm [Std.Symm r] {a b : α} : r a b ↔ r b a :=
   ⟨symm, symm⟩
 
-theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
+theorem antisymm' [Std.Antisymm r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
 
-theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
+theorem antisymm_iff [IsRefl α r] [Std.Antisymm r] {a b : α} : r a b ∧ r b a ↔ a = b :=
   ⟨fun h => antisymm h.1 h.2, by
     rintro rfl
     exact ⟨refl _, refl _⟩⟩
@@ -332,27 +327,29 @@ theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b 
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
-theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
+theorem antisymm_of (r : α → α → Prop) [Std.Antisymm r] {a b : α} : r a b → r b a → a = b :=
   antisymm
 
 /-- A version of `antisymm'` with `r` explicit.
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
-theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
+theorem antisymm_of' (r : α → α → Prop) [Std.Antisymm r] {a b : α} : r a b → r b a → b = a :=
   antisymm'
 
 /-- A version of `comm` with `r` explicit.
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
-theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
+theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b a :=
   comm
 
-protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
-  ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
+protected theorem Std.Asymm.antisymm (r : α → α → Prop) [Std.Asymm r] : Std.Antisymm r :=
+  inferInstance
 
-protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
-  ⟨fun _ h => _root_.asymm h h⟩
+@[deprecated (since := "2026-01-06")] alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
+
+protected theorem Std.Asymm.isIrrefl [Std.Asymm r] : IsIrrefl α r :=
+  ⟨Std.instIrreflOfAsymm r |>.irrefl⟩
 
 protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
@@ -374,19 +371,19 @@ theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
   Subsingleton.elim x y ▸ refl x
 
 @[simp]
-theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
+theorem empty_relation_apply (a b : α) : emptyRelation a b ↔ False :=
   Iff.rfl
 
-instance : IsIrrefl α EmptyRelation :=
+instance : IsIrrefl α emptyRelation :=
   ⟨fun _ => id⟩
 
-theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
+theorem rel_congr_left [Std.Symm r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
   ⟨trans_of r (symm_of r h), trans_of r h⟩
 
-theorem rel_congr_right [IsSymm α r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
+theorem rel_congr_right [Std.Symm r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
   ⟨(trans_of r · h), (trans_of r · (symm_of r h))⟩
 
-theorem rel_congr [IsSymm α r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
+theorem rel_congr [Std.Symm r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
     r a c ↔ r b d := by
   rw [rel_congr_left h₁, rel_congr_right h₂]
 
