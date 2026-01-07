@@ -66,7 +66,7 @@ def idealOfVars : Ideal (MvPolynomial σ R) := .span (Set.range (MvPolynomial.X)
 
 /-- The `n`th power of `idealOfVars` is spanned by all monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
-    Ideal.span ((fun x ↦ monomial x 1) '' {x | x.sum (fun _ => id) = n}) := by
+    .span ((fun x ↦ monomial x 1) '' {x | x.sum (fun _ => id) = n}) := by
   classical
   by_cases h' : Subsingleton R
   · exact Subsingleton.allEq ..
@@ -117,7 +117,7 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
   rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
   simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, Classical.not_imp,
     Set.mem_setOf_eq, and_imp, forall_eq']
-  intro h''; specialize h x x_in
+  intro; specialize h x x_in
   clear * - h; revert n
   induction x using Finsupp.induction with
   | zero => simp_all
