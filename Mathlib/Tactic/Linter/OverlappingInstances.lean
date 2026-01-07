@@ -1,21 +1,25 @@
 /-
 Copyright (c) 2026 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jovan Gerbscheid
+Authors: Jovan Gerbscheid, Thomas R. Murrills
 -/
 module
 
-public import Mathlib.Init
+public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Lean.Elab.Command
+public meta import Mathlib.Lean.ContextInfo
 
-/-
+/-!
 # A linter to declarations with local instances that have overlapping data
 
 We want to avoid this because this lead to instance diamonds
 -/
 
-open Lean Meta Batteries Tactic Lint
+open Lean Meta Elab
 
 public meta section
+
+namespace Mathlib.Tactic.OverlappingInstances
 
 /-- Given an instance `e`, conpute return all data carrying classes that are
 the type of `e` itself, or a child class. -/
