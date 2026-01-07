@@ -1,8 +1,8 @@
 module
 
 public import Aesop.Frontend.Command
-import all Mathlib.Tactic.Linter.CommandStart
-public import Mathlib.Tactic.Linter.CommandStart
+import all Mathlib.Tactic.Linter.Whitespace
+public import Mathlib.Tactic.Linter.Whitespace
 import Mathlib.Tactic.Lemma
 public import Lean.Elab.Command
 public meta import Lean.Meta.Tactic.TryThis
