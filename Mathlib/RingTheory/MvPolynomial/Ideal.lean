@@ -163,6 +163,10 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
   · simp [h']
   exact (monomial_mem_pow_idealOfVars_iff _ _ h').mpr (h x x_in)
 
+theorem mem_pow_idealOfVars_iff' (n : ℕ) (p : MvPolynomial σ R) :
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
+  grind only [mem_pow_idealOfVars_iff, mem_support_iff]
+
 end idealOfVars
 
 end MvPolynomial
