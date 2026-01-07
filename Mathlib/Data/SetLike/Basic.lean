@@ -241,10 +241,11 @@ variable [LE A] [IsConcreteLE A B] {p q : A}
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := by
   simp [← coe_subset_coe, Set.subset_def]
 
-alias ⟨mem_of_le_of_mem, _⟩ := le_def
-
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias GCongr.mem_of_le_of_mem := mem_of_le_of_mem
+alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
+
+@[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
+
 @[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
