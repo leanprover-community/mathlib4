@@ -317,6 +317,16 @@ theorem exists_compact_closed_between [LocallyCompactSpace X] [RegularSpace X]
   ⟨closure L, L_comp.closure, isClosed_closure, KL.trans <| interior_mono subset_closure,
     L_comp.closure_subset_of_isOpen hU LU⟩
 
+/-- In a (possibly non-Hausdorff) locally compact regular space, for every compact set `K`,
+`𝓝ˢ K` has a basis consisting of closed compact sets. -/
+theorem IsCompact.nhdsSet_basis_isCompact_isClosed
+    [LocallyCompactSpace X] [RegularSpace X] {K : Set X} (hK : IsCompact K) :
+    (𝓝ˢ K).HasBasis (fun L ↦ L ∈ 𝓝ˢ K ∧ IsCompact L ∧ IsClosed L) id := by
+  rw [hasBasis_self, (hasBasis_nhdsSet _).forall_iff (by grind)]
+  intro U ⟨hU, h_KU⟩
+  obtain ⟨L, hL, hL', hKL, hLU⟩ := exists_compact_closed_between hK hU h_KU
+  exact ⟨L, by rwa [← subset_interior_iff_mem_nhdsSet], ⟨hL, hL'⟩, hLU⟩
+
 /-- In a locally compact regular space, given a compact set `K` inside an open set `U`, we can find
 an open set `V` between these sets with compact closure: `K ⊆ V` and the closure of `V` is
 inside `U`. -/
