@@ -24,7 +24,7 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
