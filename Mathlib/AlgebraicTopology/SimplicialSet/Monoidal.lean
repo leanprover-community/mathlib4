@@ -33,6 +33,9 @@ namespace SSet
 instance : CartesianMonoidalCategory SSet.{u} :=
   (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
 
+instance : SymmetricCategory SSet.{u} :=
+  (inferInstance : SymmetricCategory (SimplexCategoryᵒᵖ ⥤ Type u))
+
 instance : MonoidalClosed (SSet.{u}) :=
   inferInstanceAs (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ Type u))
 
