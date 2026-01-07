@@ -486,6 +486,7 @@ lemma map_sub_roots_sprod_eq_prod_map_eval
   trans ((s ×ˢ g.roots).map fun ij ↦ (-1) * (ij.1 - ij.2)).prod
   · rw [← Multiset.map_swap_product, Multiset.map_map]; simp
   · rw [Multiset.prod_map_mul]; simp [map_sub_sprod_roots_eq_prod_map_eval _ _ hg hg']
+
 end CommRing
 
 section DivisionSemiring

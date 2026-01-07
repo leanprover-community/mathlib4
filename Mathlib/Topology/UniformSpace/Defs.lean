@@ -734,6 +734,16 @@ theorem UniformSpace.mem_closure_iff_ball {s : Set α} {x} :
     x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → (ball x V ∩ s).Nonempty := by
   simp [mem_closure_iff_nhds_basis' (nhds_basis_uniformity' (𝓤 α).basis_sets)]
 
+theorem UniformSpace.closure_subset_preimage
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.preimage s := by
+  intro x hx
+  obtain ⟨y, hxy, hy⟩ := mem_closure_iff_ball.mp hx hU
+  exact ⟨y, hy, hxy⟩
+
+theorem UniformSpace.closure_subset_image
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.image s :=
+  closure_subset_preimage (symm_le_uniformity hU) s
+
 theorem nhds_eq_uniformity {x : α} : 𝓝 x = (𝓤 α).lift' (ball x) :=
   (nhds_basis_uniformity' (𝓤 α).basis_sets).eq_biInf
 

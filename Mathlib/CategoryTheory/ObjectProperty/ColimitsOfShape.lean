@@ -116,7 +116,7 @@ def toCostructuredArrow
     {X : C} (p : P.ColimitOfShape J X) :
     J ⥤ CostructuredArrow P.ι X where
   obj j := CostructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.ι.app j)
-  map f := CostructuredArrow.homMk (by exact p.diag.map f)
+  map f := CostructuredArrow.homMk (ObjectProperty.homMk (by exact p.diag.map f))
 
 end ColimitOfShape
 

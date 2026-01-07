@@ -127,7 +127,7 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {0} A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
-  (iff_adjoin_eq_top _ _ _).2  <| by simpa
+  (iff_adjoin_eq_top _ _ _).2 <| by simpa
 
 theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by

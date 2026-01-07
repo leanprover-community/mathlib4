@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Subpresheaf.Basic
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 Given a subpresheaf `G` of a presheaf of types `F : Cᵒᵖ ⥤ Type w` and
 a section `s : F.obj U`, we define a sieve `G.sieveOfSection s : Sieve (unop U)`
-and the associated compatible family of elements with values in `G.toPresheaf`.
+and the associated compatible family of elements with values in `G.toFunctor`.
 
 -/
 
@@ -21,11 +21,11 @@ and the associated compatible family of elements with values in `G.toPresheaf`.
 
 universe w v u
 
-namespace CategoryTheory.Subpresheaf
+namespace CategoryTheory.Subfunctor
 
 open Opposite
 
-variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ Type w} (G : Subpresheaf F)
+variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ Type w} (G : Subfunctor F)
 
 /-- Given a subpresheaf `G` of `F`, an `F`-section `s` on `U`, we may define a sieve of `U`
 consisting of all `f : V ⟶ U` such that the restriction of `s` along `f` is in `G`. -/
@@ -39,7 +39,7 @@ def sieveOfSection {U : Cᵒᵖ} (s : F.obj U) : Sieve (unop U) where
 /-- Given an `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
 `G` consisting of the restrictions of `s` -/
 def familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
-    (G.sieveOfSection s).1.FamilyOfElements G.toPresheaf := fun _ i hi => ⟨F.map i.op s, hi⟩
+    (G.sieveOfSection s).1.FamilyOfElements G.toFunctor := fun _ i hi => ⟨F.map i.op s, hi⟩
 
 theorem family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
     (G.familyOfElementsOfSection s).Compatible := by
@@ -48,4 +48,10 @@ theorem family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
   rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
 
-end CategoryTheory.Subpresheaf
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.sieveOfSection := sieveOfSection
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.familyOfElementsOfSection :=
+  familyOfElementsOfSection
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.family_of_elements_compatible :=
+  family_of_elements_compatible
+
+end CategoryTheory.Subfunctor

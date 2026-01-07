@@ -17,7 +17,7 @@ public import Mathlib.Order.Interval.Set.Union
 The Riesz–Markov–Kakutani representation theorem relates linear functionals on spaces of continuous
 functions on a locally compact space to measures.
 
-There are many closely related variations of the theorem. This file contains that proof of the
+There are many closely related variations of the theorem. This file contains the proof of the
 version where the space is a locally compact T2 space, the linear functionals are real and the
 continuous functions have compact support.
 
@@ -199,7 +199,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
   obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * μ.real K + |a| + b) hε
   let ε' := (b - a) / N
-  replace hε' : 0 < ε' ∧  ε' * (2 * μ.real K + |a| + b + ε') ≤ ε :=
+  replace hε' : 0 < ε' ∧ ε' * (2 * μ.real K + |a| + b + ε') ≤ ε :=
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
   -- Take a partition of the support of `f` into sets `E` by partitioning the range.
   obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N <| by
@@ -478,15 +478,12 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     exact Measure.exists_regular_eq_of_compactSpace μ'
   refine ⟨ν'.map Subtype.val, Measure.InnerRegular.map_of_continuous (by fun_prop),
     by infer_instance, fun g ↦ ?_⟩
-  let g' : K →ᵇ ℝ := g.compContinuous ⟨Subtype.val, by fun_prop⟩
-  convert hν' g'
-  · change _ = ∫ x, g (Subtype.val x) ∂μ'
+  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
-    congr
-    simp only [map_comap_subtype_coe hK.measurableSet, μ']
-    exact (Measure.restrict_eq_self_of_ae_mem h).symm
+    simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]
   · rw [integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
-    rfl
+    simp
 
 end Compact
 

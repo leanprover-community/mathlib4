@@ -161,7 +161,7 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
 
 lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
-  refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
+  refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real)
   rw [isLittleO_const_left]
   exact Or.inr
     (tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real)
@@ -229,7 +229,7 @@ lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 
   apply (linear_inv_isBigO_left d hz).abs_right.pow
 
 lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa [sub_eq_add_neg] using (linear_inv_isBigO_right c₂ z).mul

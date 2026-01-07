@@ -40,7 +40,7 @@ allows us to avoid inserting `ContinuousLinearMap.restrictScalars` here and ther
 
 ## Main results
 
-We prove that `curveIntegral` well behaves with respect to
+We prove that `curveIntegral` behaves well with respect to
 
 - operations on `Path`s, see `curveIntegral_refl`, `curveIntegral_symm`, `curveIntegral_trans` etc;
 - algebraic operations on 1-forms, see `curveIntegral_add` etc.
@@ -62,7 +62,7 @@ We use the name “curve integral” instead of other names for the following re
 - for many people whose mother tongue is not English,
   “line integral” sounds like an integral along a straight line;
 
-- we reserve the name "path integral" for Feynmann-style integrals over the space of paths.
+- we reserve the name "path integral" for Feynman-style integrals over the space of paths.
 
 ### Usage of `ContinuousLinearMap`s for 1-forms
 

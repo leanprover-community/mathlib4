@@ -1053,6 +1053,13 @@ theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
     dualDistrib R M N (f ⊗ₜ g) (m ⊗ₜ n) = f m * g n :=
   rfl
 
+/-- Simultaneously swapping both the ordering of the applied duals and the ordering of the
+tensor product argument preserves evaluation. -/
+lemma dualDistrib_apply_comm (w : Dual R N ⊗[R] Dual R M) (z : M ⊗[R] N) :
+    dualDistrib R N M w (TensorProduct.comm R M N z) =
+      dualDistrib R M N (TensorProduct.comm R _ _ w) z := by
+  induction w <;> induction z <;> simp_all [mul_comm]
+
 end
 
 namespace AlgebraTensorModule

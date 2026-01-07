@@ -5,15 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
-# Comparison between `Subpresheaf`, `MonoOver` and `Subobject`
+# Comparison between `Subfunctor`, `MonoOver` and `Subobject`
 
-Given a presheaf of types `F : Cᵒᵖ ⥤ Type w`, we define an equivalence
-of categories `Subpresheaf.equivalenceMonoOver F : Subpresheaf F ≌ MonoOver F`
-and an order isomorphism `Subpresheaf.orderIsoSubject F : Subpresheaf F ≃o Subobject F`.
+Given a type-valued functor `F : C ⥤ Type w`, we define an equivalence
+of categories `Subfunctor.equivalenceMonoOver F : Subfunctor F ≌ MonoOver F`
+and an order isomorphism `Subfunctor.orderIsoSubject F : Subfunctor F ≃o Subobject F`.
 
 -/
 
@@ -23,18 +23,18 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type w)
+variable {C : Type u} [Category.{v} C] (F : C ⥤ Type w)
 
-namespace Subpresheaf
+namespace Subfunctor
 
-/-- The equivalence of categories `Subpresheaf F ≌ MonoOver F`. -/
+/-- The equivalence of categories `Subfunctor F ≌ MonoOver F`. -/
 @[simps]
-noncomputable def equivalenceMonoOver : Subpresheaf F ≌ MonoOver F where
+noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where
   functor :=
-    { obj A := MonoOver.mk' A.ι
-      map {A B} f := MonoOver.homMk (Subpresheaf.homOfLe (leOfHom f)) }
+    { obj A := MonoOver.mk A.ι
+      map {A B} f := MonoOver.homMk (Subfunctor.homOfLe (leOfHom f)) }
   inverse :=
-    { obj X := Subpresheaf.range X.arrow
+    { obj X := Subfunctor.range X.arrow
       map {X Y} f := homOfLE (by
         rw [← MonoOver.w f]
         apply range_comp_le ) }
@@ -44,7 +44,7 @@ noncomputable def equivalenceMonoOver : Subpresheaf F ≌ MonoOver F where
 
 variable {F} in
 @[simp]
-lemma range_subobjectMk_ι (A : Subpresheaf F) :
+lemma range_subobjectMk_ι (A : Subfunctor F) :
     range (Subobject.mk A.ι).arrow = A :=
   (((equivalenceMonoOver F).trans
     (ThinSkeleton.equivalence _).symm).unitIso.app A).to_eq.symm
@@ -56,11 +56,11 @@ lemma subobjectMk_range_arrow (X : Subobject F) :
   (((equivalenceMonoOver F).trans
     (ThinSkeleton.equivalence _).symm).counitIso.app X).to_eq
 
-/-- The order isomorphism `Subpresheaf F ≃o MonoOver F`. -/
+/-- The order isomorphism `Subfunctor F ≃o MonoOver F`. -/
 @[simps]
-noncomputable def orderIsoSubobject : Subpresheaf F ≃o Subobject F where
+noncomputable def orderIsoSubobject : Subfunctor F ≃o Subobject F where
   toFun A := Subobject.mk A.ι
-  invFun X := Subpresheaf.range X.arrow
+  invFun X := Subfunctor.range X.arrow
   left_inv A := by simp
   right_inv X := by simp
   map_rel_iff' {A B} := by
@@ -74,6 +74,12 @@ noncomputable def orderIsoSubobject : Subpresheaf F ≃o Subobject F where
       exact leOfHom (((equivalenceMonoOver F).trans
         (ThinSkeleton.equivalence _).symm).functor.map (homOfLE h))
 
-end Subpresheaf
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equivalenceMonoOver := equivalenceMonoOver
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_subobjectMk_ι := range_subobjectMk_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.subobjectMk_range_arrow :=
+  subobjectMk_range_arrow
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.orderIsoSubobject := orderIsoSubobject
+
+end Subfunctor
 
 end CategoryTheory

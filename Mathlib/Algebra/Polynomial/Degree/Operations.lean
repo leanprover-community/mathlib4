@@ -334,9 +334,7 @@ theorem natDegree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 
 theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
-  unfold leadingCoeff
-  rw [natDegree_mul' h, coeff_mul_degree_add_degree]
-  rfl
+  simp [← coeff_natDegree, natDegree_mul' h, coeff_mul_degree_add_degree]
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   Nat.recOn n (by simp) fun n ih h => by

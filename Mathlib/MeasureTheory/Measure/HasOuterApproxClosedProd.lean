@@ -60,13 +60,17 @@ open scoped Topology ENNReal NNReal
 
 namespace Measure
 
-variable {ι κ Z T : Type*} [Fintype ι] [Fintype κ] {X : ι → Type*} {Y : κ → Type*}
+variable {ι κ Z T : Type*} {X : ι → Type*} {Y : κ → Type*}
   {mX : ∀ i, MeasurableSpace (X i)} [∀ i, TopologicalSpace (X i)] [∀ i, BorelSpace (X i)]
   [∀ i, HasOuterApproxClosed (X i)]
   {mY : ∀ j, MeasurableSpace (Y j)} [∀ j, TopologicalSpace (Y j)] [∀ j, BorelSpace (Y j)]
   [∀ j, HasOuterApproxClosed (Y j)]
   {mZ : MeasurableSpace Z} [TopologicalSpace Z] [BorelSpace Z] [HasOuterApproxClosed Z]
   {mT : MeasurableSpace T} [TopologicalSpace T] [BorelSpace T] [HasOuterApproxClosed T]
+
+section fintype
+
+variable [Fintype ι] [Fintype κ]
 
 /-- A finite measure `μ` over `(Π i, X i) × (Π j, Y j)` is determined by the values
 `∫⁻ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂μ`, for `f : (i : ι) → X i → ℝ≥0`
@@ -185,15 +189,6 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
       (∏ j, (g j).compContinuous ⟨Function.eval j ∘ Prod.snd, by fun_prop⟩))).ne
     simp
 
-lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction'
-    {μ ν : Measure ((Π i, X i) × (Π j, Y j))} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ),
-      ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
-    μ = ν := by
-  refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
-  convert h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩)
-    (∏ j, (g j).compContinuous ⟨Function.eval j, by fun_prop⟩) <;> simp
-
 /-- The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
 for all families of real bounded continuous functions `f` and `g` we have
 `∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ =
@@ -206,14 +201,6 @@ lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction {μ : Measure 
       (∫ x, ∏ i, f i (x i) ∂μ) * (∫ y, ∏ j, g j (y j) ∂ν)) :
     ξ = μ.prod ν :=
   ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
-
-lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction' {μ : Measure (Π i, X i)}
-    {ν : Measure (Π j, Y j)} {ξ : Measure ((Π i, X i) × (Π j, Y j))}
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
-    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ),
-      ∫ p, f p.1 * g p.2 ∂ξ = (∫ x, f x ∂μ) * (∫ y, g y ∂ν)) :
-    ξ = μ.prod ν :=
-  ext_of_integral_prod_mul_prod_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
 
 set_option linter.flexible false in -- simp followed by fun_prop
 lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i, X i) × T)}
@@ -233,14 +220,6 @@ lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i
   rw [integral_map_equiv, integral_map_equiv]
   simpa [e] using h f (g ())
 
-lemma ext_of_integral_prod_mul_boundedContinuousFunction' {μ ν : Measure ((Π i, X i) × T)}
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : T →ᵇ ℝ),
-      ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
-    μ = ν := by
-  refine ext_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
-  convert h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩) g <;> simp
-
 lemma eq_prod_of_integral_prod_mul_boundedContinuousFunction {μ : Measure (Π i, X i)}
     {ν : Measure T} {ξ : Measure ((Π i, X i) × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
@@ -248,14 +227,6 @@ lemma eq_prod_of_integral_prod_mul_boundedContinuousFunction {μ : Measure (Π i
       ∫ p, (∏ i, f i (p.1 i)) * g p.2 ∂ξ = (∫ x, ∏ i, f i (x i) ∂μ) * (∫ t, g t ∂ν)) :
     ξ = μ.prod ν :=
   ext_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
-
-lemma eq_prod_of_integral_prod_mul_boundedContinuousFunction' {μ : Measure (Π i, X i)}
-    {ν : Measure T} {ξ : Measure ((Π i, X i) × T)}
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
-    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : T →ᵇ ℝ),
-      ∫ p, f p.1 * g p.2 ∂ξ = (∫ x, f x ∂μ) * (∫ t, g t ∂ν)) :
-    ξ = μ.prod ν :=
-  ext_of_integral_prod_mul_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
 
 lemma ext_of_integral_mul_prod_boundedContinuousFunction {μ ν : Measure (Z × (Π j, Y j))}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
@@ -271,13 +242,6 @@ lemma ext_of_integral_mul_prod_boundedContinuousFunction {μ ν : Measure (Z × 
   rw [integral_map_equiv, integral_map_equiv]
   simpa [e, mul_comm] using h g f
 
-lemma ext_of_integral_mul_prod_boundedContinuousFunction' {μ ν : Measure (Z × (Π i, Y i))}
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : ∀ (f : Z →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ), ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
-    μ = ν := by
-  refine ext_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
-  convert h f (∏ j, (g j).compContinuous ⟨Function.eval j, by fun_prop⟩) <;> simp
-
 lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction {μ : Measure Z}
     {ν : Measure (Π j, Y j)} {ξ : Measure (Z × (Π j, Y j))}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
@@ -285,14 +249,6 @@ lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction {μ : Measure Z}
       ∫ p, f p.1 * (∏ j, g j (p.2 j)) ∂ξ = (∫ z, f z ∂μ) * (∫ y, ∏ j, g j (y j) ∂ν)) :
     ξ = μ.prod ν :=
   ext_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
-
-lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction' {μ : Measure Z}
-    {ν : Measure (Π j, Y j)} {ξ : Measure (Z × (Π j, Y j))}
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
-    (h : ∀ (f : Z →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ),
-      ∫ p, f p.1 * g p.2 ∂ξ = (∫ z, f z ∂μ) * (∫ y, g y ∂ν)) :
-    ξ = μ.prod ν :=
-  ext_of_integral_mul_prod_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
 
 set_option linter.flexible false in -- simp followed by fun_prop
 /-- A finite measure `μ` over `X × Y` is determined by the values `∫ p, f p.1 * g p.2 ∂μ`,
@@ -322,5 +278,64 @@ lemma eq_prod_of_integral_mul_boundedContinuousFunction {μ : Measure Z}
     (h : ∀ (f : Z →ᵇ ℝ) (g : T →ᵇ ℝ), ∫ p, f p.1 * g p.2 ∂ξ = (∫ z, f z ∂μ) * (∫ t, g t ∂ν)) :
     ξ = μ.prod ν :=
   ext_of_integral_mul_boundedContinuousFunction fun f g ↦ by rw [h, ← integral_prod_mul]
+
+end fintype
+
+section finite
+
+variable [Finite ι] [Finite κ]
+
+lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction'
+    {μ ν : Measure ((Π i, X i) × (Π j, Y j))} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ),
+      ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
+    μ = ν := by
+  have := Fintype.ofFinite ι; have := Fintype.ofFinite κ
+  refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
+  convert h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩)
+    (∏ j, (g j).compContinuous ⟨Function.eval j, by fun_prop⟩) <;> simp
+
+lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction' {μ : Measure (Π i, X i)}
+    {ν : Measure (Π j, Y j)} {ξ : Measure ((Π i, X i) × (Π j, Y j))}
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
+    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ),
+      ∫ p, f p.1 * g p.2 ∂ξ = (∫ x, f x ∂μ) * (∫ y, g y ∂ν)) :
+    ξ = μ.prod ν :=
+  ext_of_integral_prod_mul_prod_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
+
+lemma ext_of_integral_prod_mul_boundedContinuousFunction' {μ ν : Measure ((Π i, X i) × T)}
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : T →ᵇ ℝ),
+      ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
+    μ = ν := by
+  have := Fintype.ofFinite ι
+  refine ext_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
+  convert h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩) g <;> simp
+
+lemma eq_prod_of_integral_prod_mul_boundedContinuousFunction' {μ : Measure (Π i, X i)}
+    {ν : Measure T} {ξ : Measure ((Π i, X i) × T)}
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
+    (h : ∀ (f : (Π i, X i) →ᵇ ℝ) (g : T →ᵇ ℝ),
+      ∫ p, f p.1 * g p.2 ∂ξ = (∫ x, f x ∂μ) * (∫ t, g t ∂ν)) :
+    ξ = μ.prod ν :=
+  ext_of_integral_prod_mul_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
+
+lemma ext_of_integral_mul_prod_boundedContinuousFunction' {μ ν : Measure (Z × (Π i, Y i))}
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (f : Z →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ), ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
+    μ = ν := by
+  have := Fintype.ofFinite κ
+  refine ext_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
+  convert h f (∏ j, (g j).compContinuous ⟨Function.eval j, by fun_prop⟩) <;> simp
+
+lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction' {μ : Measure Z}
+    {ν : Measure (Π j, Y j)} {ξ : Measure (Z × (Π j, Y j))}
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
+    (h : ∀ (f : Z →ᵇ ℝ) (g : (Π j, Y j) →ᵇ ℝ),
+      ∫ p, f p.1 * g p.2 ∂ξ = (∫ z, f z ∂μ) * (∫ y, g y ∂ν)) :
+    ξ = μ.prod ν :=
+  ext_of_integral_mul_prod_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
+
+end finite
 
 end Measure

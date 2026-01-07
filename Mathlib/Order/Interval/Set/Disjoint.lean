@@ -263,7 +263,7 @@ theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range
   simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
 
 theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
-  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
+  refine Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
   gcongr
   exact Iio_subset_Iic_self
 

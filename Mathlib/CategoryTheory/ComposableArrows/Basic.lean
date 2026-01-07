@@ -42,6 +42,8 @@ TODO (@joelriou):
 
 @[expose] public section
 
+set_option backward.privateInPublic true
+
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.
 

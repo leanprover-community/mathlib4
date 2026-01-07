@@ -148,7 +148,7 @@ theorem Indep.cRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cRk I :=
   (M.cRk_le_cardinalMk I).antisymm' (hI.isBasis_self.cardinalMk_le_cRk)
 
 @[simp] theorem cRk_map_image_lift (M : Matroid α) (hf : InjOn f M.E) (X : Set α)
-    (hX : X ⊆ M.E := by aesop_mat) : lift.{u,v} ((M.map f hf).cRk (f '' X)) = lift (M.cRk X) := by
+    (hX : X ⊆ M.E := by aesop_mat) : lift.{u, v} ((M.map f hf).cRk (f '' X)) = lift (M.cRk X) := by
   nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup (bddAbove_range _), cRk, cRank, cRk, cRank]
   nth_rw 2 [lift_iSup (bddAbove_range _)]
   simp only [ciSup_le_iff (bddAbove_range _), ge_iff_le, Subtype.forall, isBase_restrict_iff',
@@ -171,7 +171,7 @@ theorem cRk_map_eq {β : Type u} {f : α → β} {X : Set β} (M : Matroid α) (
     cRk_inter_ground]
 
 @[simp] theorem cRk_comap_lift (M : Matroid β) (f : α → β) (X : Set α) :
-    lift.{v,u} ((M.comap f).cRk X) = lift (M.cRk (f '' X)) := by
+    lift.{v, u} ((M.comap f).cRk X) = lift (M.cRk (f '' X)) := by
   nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup (bddAbove_range _), cRk, cRank, cRk, cRank]
   nth_rw 2 [lift_iSup (bddAbove_range _)]
   simp only [ciSup_le_iff (bddAbove_range _), ge_iff_le, Subtype.forall, isBase_restrict_iff',
@@ -341,7 +341,7 @@ instance invariantCardinalRank_map (M : Matroid α) [InvariantCardinalRank M] (h
   obtain rfl : X = X' := by
     rwa [InjOn.image_eq_image_iff hf hIX.subset_ground hJX.subset_ground] at h'
   have hcard := hIX.cardinalMk_diff_comm hJX
-  rwa [← lift_inj.{u,v},
+  rwa [← lift_inj.{u, v},
     ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hIX.indep.diff _).subset_ground)),
     ← mk_image_eq_of_injOn_lift _ _ (hf.mono ((hJX.indep.diff _).subset_ground)),
     lift_inj, (hf.mono hIX.indep.subset_ground).image_diff,
@@ -354,7 +354,7 @@ instance invariantCardinalRank_comap (M : Matroid β) [InvariantCardinalRank M] 
   refine ⟨fun I J X hI hJ ↦ ?_⟩
   obtain ⟨hI, hfI, hIX⟩ := comap_isBasis_iff.1 hI
   obtain ⟨hJ, hfJ, hJX⟩ := comap_isBasis_iff.1 hJ
-  rw [← lift_inj.{u,v}, ← mk_image_eq_of_injOn_lift _ _ (hfI.mono diff_subset),
+  rw [← lift_inj.{u, v}, ← mk_image_eq_of_injOn_lift _ _ (hfI.mono diff_subset),
     ← mk_image_eq_of_injOn_lift _ _ (hfJ.mono diff_subset), lift_inj, hfI.image_diff,
     hfJ.image_diff, ← diff_union_diff_cancel inter_subset_left (image_inter_subset f I J),
     inter_comm, diff_inter_self_eq_diff, mk_union_of_disjoint, hI.cardinalMk_diff_comm hJ,

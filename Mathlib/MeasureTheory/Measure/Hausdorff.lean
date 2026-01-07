@@ -26,7 +26,7 @@ The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
     (ht : ∀ n, EMetric.diam (t n) ≤ r), ∑' n, EMetric.diam (t n) ^ d
 ```
 
-For every set `s` for any `d < d'` we have either `μH[d] s = ∞` or `μH[d'] s = 0`, see
+For every set `s` and any `d < d'` we have either `μH[d] s = ∞` or `μH[d'] s = 0`, see
 `MeasureTheory.Measure.hausdorffMeasure_zero_or_top`. In
 `Mathlib/Topology/MetricSpace/HausdorffDimension.lean` we use this fact to define the Hausdorff
 dimension `dimH` of a set in an (extended) metric space.

@@ -27,7 +27,7 @@ These give logarithmically weighted sums of primes and prime powers.
 - `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
 - `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
 - `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `psi` to `theta`.
-- `Chevyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
+- `Chebyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
 
 ## Notation
 
@@ -145,7 +145,7 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
       = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
   trans ∑ ⟨k, p⟩ ∈ Icc 1 ⌊log x / log 2⌋₊ ×ˢ (Ioc 0 ⌊x⌋₊).filter Nat.Prime
-    with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f ( p ^ k)
+    with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f (p ^ k)
   · refine (sum_bij (i := fun ⟨k, p⟩ _ ↦ p ^ k) ?_ ?_ ?_ ?_).symm
     · simp +contextual [hx, rpow_nonneg, le_floor_iff, ← Nat.pos_iff_ne_zero, Prime.isPrimePow,
         one_le_iff_ne_zero, le_rpow_inv_iff_of_pos, isPrimePow_pow_iff, Nat.prime_iff]
@@ -174,7 +174,7 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
     simp_all only [mem_Icc, one_div, true_and, and_true]
     grw [h.1.2, floor_le_floor]
     apply rpow_le_self_of_one_le _ (by bound)
-    have := one_le_floor_iff _|>.mp <| le_trans (one_le_cast.mp h.2.one_le) h.1.2
+    have := one_le_floor_iff _ |>.mp <| le_trans (one_le_cast.mp h.2.one_le) h.1.2
     contrapose! this
     apply rpow_lt_one hx this (by bound)
 
@@ -201,7 +201,7 @@ theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
   exact sum_nonneg fun _ _ ↦ theta_nonneg _
 
 --Note that a more careful argument could remove the log x in the following with a worse constant.
-/-- `|ψ x - θ x| ≤ c x √ x` with an explicit constant c. -/
+/-- `|ψ x - θ x| ≤ c √ x log x` with an explicit constant c. -/
 theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
     |ψ x - θ x| ≤ 2 * x.sqrt * x.log := by
   by_cases! hx : x < 2
@@ -225,7 +225,7 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
       · exact floor_le (by bound)
     apply le_floor
     norm_cast
-    apply one_le_div _|>.mpr <;> bound
+    apply one_le_div _ |>.mpr <;> bound
   _ = (log 4 / log 2) * x.sqrt * x.log := by field
   _ = _ := by
     congr
@@ -243,7 +243,7 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
     · exact theta_le_log4_mul_x (by linarith)
   _ = _ := by ring
 
-/- Chebyshev's bound `ψ x ≤ c x` with an explicit constant.
+/-- Chebyshev's bound `ψ x ≤ c x` with an explicit constant.
 Note that `Chebyshev.psi_le` gives a sharper bound with a better main term. -/
 theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
     ψ x ≤ (log 4 + 4) * x := by

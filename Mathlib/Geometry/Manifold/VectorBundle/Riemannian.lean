@@ -60,7 +60,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 variable (IB n F E) in
 /-- Consider a real vector bundle in which each fiber is endowed with a scalar product.
-We that the bundle is Riemannian if the scalar product depends smoothly on the base point.
+We say that the bundle is Riemannian if the scalar product depends smoothly on the base point.
 This assumption is spelled `IsContMDiffRiemannianBundle IB n F E` where `IB` is the model space of
 the base, `n` is the smoothness, `F` is the model fiber, and `E : B → Type*` is the bundle. -/
 class IsContMDiffRiemannianBundle : Prop where

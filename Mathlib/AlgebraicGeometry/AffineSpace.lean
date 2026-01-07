@@ -49,7 +49,7 @@ def AffineSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
 namespace AffineSpace
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`. -/
-scoped [AlgebraicGeometry] notation "𝔸("n"; "S")" => AffineSpace n S
+scoped[AlgebraicGeometry] notation "𝔸("n"; "S")" => AffineSpace n S
 
 variable {n} in
 lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g (.X i)) : f = g := by
@@ -307,8 +307,8 @@ lemma map_SpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
       ← Spec.map_comp, ← CommRingCat.ofHom_comp]
     rw [map_comp_C, CommRingCat.ofHom_comp, CommRingCat.ofHom_hom]
   · simp only [TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, CommRingCat.comp_apply]
-    conv_lhs => enter[2]; tactic => exact map_appTop_coord _ _
-    conv_rhs => enter[2]; tactic => exact SpecIso_inv_appTop_coord _ _
+    conv_lhs => enter [2]; tactic => exact map_appTop_coord _ _
+    conv_rhs => enter [2]; tactic => exact SpecIso_inv_appTop_coord _ _
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
         CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, map_X]
 
@@ -397,7 +397,7 @@ lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
       (P := topologically @IsOpenMap) S.affineCover).mpr ?_
     intro i
     have := this (n := n) (S.affineCover.X i) ⟨_, rfl⟩
-    rwa [← (isPullback_map (n := n)  (S.affineCover.f i)).isoPullback_hom_snd,
+    rwa [← (isPullback_map (n := n) (S.affineCover.f i)).isoPullback_hom_snd,
       MorphismProperty.cancel_left_of_respectsIso (P := topologically @IsOpenMap)] at this
   obtain ⟨R, rfl⟩ := hS
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := topologically @IsOpenMap)

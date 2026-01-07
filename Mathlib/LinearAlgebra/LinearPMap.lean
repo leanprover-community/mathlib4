@@ -258,6 +258,7 @@ theorem le_of_eqLocus_ge {f g : E →ₗ.[R] F} (H : f.domain ≤ f.eqLocus g) :
 theorem domain_mono : StrictMono (@domain R _ E _ _ F _ _) := fun _f _g hlt =>
   lt_of_le_of_ne hlt.1.1 fun heq => ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) heq
 
+set_option backward.privateInPublic true in
 private theorem sup_aux (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) :
     ∃ fg : ↥(f.domain ⊔ g.domain) →ₗ[R] F,
@@ -286,6 +287,8 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
     apply fg_eq
     simp only [coe_smul, ← smul_add, hxy, RingHom.id_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given two partial linear maps that agree on the intersection of their domains,
 `f.sup g h` is the unique partial linear map on `f.domain ⊔ g.domain` that agrees
 with `f` and `g`. -/
@@ -555,6 +558,7 @@ theorem supSpanSingleton_apply_mk_of_mem (f : E →ₗ.[K] F) {x : E} (y : F) (h
 
 end
 
+set_option backward.privateInPublic true in
 private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₗ[R] F, (⟨_, f⟩ : E →ₗ.[R] F) ∈ upperBounds c := by
   rcases c.eq_empty_or_nonempty with ceq | cne
@@ -587,6 +591,8 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm ?_⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
   ⟨_, Classical.choose <| sSup_aux c hc⟩
 

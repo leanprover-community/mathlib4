@@ -20,7 +20,7 @@ We show that
 Suppose an open partial homeomorphism `e` is differentiable. This file shows
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
-  there are also spelling with trivial kernel and full range
+  there are also spellings with trivial kernel and full range
 
 In particular, (extended) charts have bijective differential.
 

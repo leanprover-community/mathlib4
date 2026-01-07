@@ -86,27 +86,51 @@ instance : Inhabited (Grp C) where
 @[deprecated (since := "2025-06-15")] alias mk' := mk
 
 instance : Category (Grp C) :=
-  InducedCategory.category Grp.toMon
+  inferInstanceAs (Category (InducedCategory _ Grp.toMon))
 
 @[simp]
-theorem id_hom (A : Grp C) : Mon.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
 @[simp]
-theorem comp_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+theorem comp_hom_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
+    Mon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
+
+@[deprecated (since := "2025-12-18")] alias id_hom := id_hom_hom
+@[deprecated (since := "2025-12-18")] alias comp_hom := comp_hom_hom
 
 @[ext]
-theorem hom_ext {A B : Grp C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon.Hom.ext h
+theorem hom_ext {A B : Grp C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
+  InducedCategory.hom_ext (Mon.Hom.ext h)
+
+/-- Constructor for morphisms in `Grp C`. -/
+@[simps]
+def homMk' {A B : Grp C} (f : A.toMon ⟶ B.toMon) : A ⟶ B where
+  hom := f
+
+/-- Construct a morphism `A ⟶ B` of `Grp C` from a map `f : A.X ⟶ A.X` and a `IsMonHom f`
+instance. -/
+@[simps!]
+def homMk {A B : Grp C} (f : A.X ⟶ B.X) [IsMonHom f] : A ⟶ B :=
+  homMk' (.mk f)
+
+/-- Constructor for morphisms in `Grp_ C`. -/
+@[simps!]
+def homMk'' {A B : Grp C} (f : A.X ⟶ B.X)
+    (one_f : η ≫ f = η := by cat_disch)
+    (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch) : A ⟶ B :=
+  haveI : IsMonHom f := ⟨one_f, mul_f⟩
+  homMk f
 
 @[simp]
-lemma id' (A : Grp C) : (𝟙 A : A.toMon ⟶ A.toMon) = 𝟙 (A.toMon) := rfl
+lemma id' (A : Grp C) :
+    (InducedCategory.Hom.hom (𝟙 A) : A.toMon ⟶ A.toMon) = 𝟙 (A.toMon) := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : Grp C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon ⟶ A₃.toMon) = @CategoryStruct.comp (Mon C) _ _ _ _ f g := rfl
+    (InducedCategory.Hom.hom (f ≫ g : A₁ ⟶ A₃) : A₁.toMon ⟶ A₃.toMon) =
+      f.hom ≫ g.hom := rfl
 
 end Grp
 
@@ -314,7 +338,8 @@ theorem forget₂Mon_obj_mul (A : Grp C) : μ[((forget₂Mon C).obj A).X] = μ[A
   rfl
 
 @[simp]
-theorem forget₂Mon_map_hom {A B : Grp C} (f : A ⟶ B) : ((forget₂Mon C).map f).hom = f.hom :=
+theorem forget₂Mon_map_hom {A B : Grp C} (f : A ⟶ B) :
+    ((forget₂Mon C).map f).hom = f.hom.hom :=
   rfl
 
 variable (C)
@@ -329,7 +354,7 @@ instance : (forget C).Faithful where
 @[simp]
 theorem forget₂Mon_comp_forget : forget₂Mon C ⋙ Mon.forget C = forget C := rfl
 
-instance {G H : Grp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
+instance {G H : Grp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom.hom :=
   inferInstanceAs <| IsIso <| (forget C).map f
 
 end
@@ -348,8 +373,12 @@ abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
+@[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom
+
 instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
-  Mon.uniqueHomFromTrivial A.toMon
+  Equiv.unique (show _ ≃ (Mon.trivial C ⟶ A.toMon) from
+    InducedCategory.homEquiv)
 
 instance : HasInitial (Grp C) :=
   hasInitial_of_unique (trivial C)
@@ -361,9 +390,9 @@ variable [BraidedCategory C] {G H H₁ H₂ : Grp C}
 @[simps! tensorObj_X tensorHom_hom]
 instance instMonoidalCategoryStruct : MonoidalCategoryStruct (Grp C) where
   tensorObj G H := ⟨G.X ⊗ H.X⟩
-  tensorHom := tensorHom (C := Mon C)
-  whiskerRight f G := whiskerRight (C := Mon C) f G.toMon
-  whiskerLeft G _ _ f := MonoidalCategoryStruct.whiskerLeft (C := Mon C) G.toMon f
+  tensorHom f g := homMk' (tensorHom (C := Mon C) f.hom g.hom)
+  whiskerRight f G := homMk' (whiskerRight (C := Mon C) f.hom G.toMon)
+  whiskerLeft G _ _ f := homMk' (MonoidalCategoryStruct.whiskerLeft (C := Mon C) G.toMon f.hom)
   tensorUnit := ⟨𝟙_ C⟩
   associator X Y Z :=
     (Grp.fullyFaithfulForget₂Mon C).preimageIso (associator X.toMon Y.toMon Z.toMon)
@@ -378,19 +407,30 @@ instance instMonoidalCategoryStruct : MonoidalCategoryStruct (Grp C) where
 @[simp] lemma tensorObj_one (G H : Grp C) : η[(G ⊗ H).X] = η[G.X ⊗ H.X] := rfl
 @[simp] lemma tensorObj_mul (G H : Grp C) : μ[(G ⊗ H).X] = μ[G.X ⊗ H.X] := rfl
 
-@[simp] lemma whiskerLeft_hom {G H : Grp C} (f : G ⟶ H) (I : Grp C) :
-    (f ▷ I).hom = f.hom ▷ I.X := rfl
+@[simp] lemma whiskerLeft_hom_hom {G H : Grp C} (f : G ⟶ H) (I : Grp C) :
+    (f ▷ I).hom.hom = f.hom.hom ▷ I.X := rfl
 
-@[simp] lemma whiskerRight_hom (G : Grp C) {H I : Grp C} (f : H ⟶ I) :
-    (G ◁ f).hom = G.X ◁ f.hom := rfl
+@[simp] lemma whiskerRight_hom_hom (G : Grp C) {H I : Grp C} (f : H ⟶ I) :
+    (G ◁ f).hom.hom = G.X ◁ f.hom.hom := rfl
 
-@[simp] lemma leftUnitor_hom_hom (G : Grp C) : (λ_ G).hom.hom = (λ_ G.X).hom := rfl
-@[simp] lemma leftUnitor_inv_hom (G : Grp C) : (λ_ G).inv.hom = (λ_ G.X).inv := rfl
-@[simp] lemma rightUnitor_hom_hom (G : Grp C) : (ρ_ G).hom.hom = (ρ_ G.X).hom := rfl
-@[simp] lemma rightUnitor_inv_hom (G : Grp C) : (ρ_ G).inv.hom = (ρ_ G.X).inv := rfl
 
-@[simp] lemma associator_hom_hom (G H I : Grp C) : (α_ G H I).hom.hom = (α_ G.X H.X I.X).hom := rfl
-@[simp] lemma associator_inv_hom (G H I : Grp C) : (α_ G H I).inv.hom = (α_ G.X H.X I.X).inv := rfl
+@[simp] lemma leftUnitor_hom_hom_hom (G : Grp C) : (λ_ G).hom.hom.hom = (λ_ G.X).hom := rfl
+@[simp] lemma leftUnitor_inv_hom_hom (G : Grp C) : (λ_ G).inv.hom.hom = (λ_ G.X).inv := rfl
+@[simp] lemma rightUnitor_hom_hom_hom (G : Grp C) : (ρ_ G).hom.hom.hom = (ρ_ G.X).hom := rfl
+@[simp] lemma rightUnitor_inv_hom_hom (G : Grp C) : (ρ_ G).inv.hom.hom = (ρ_ G.X).inv := rfl
+@[simp] lemma associator_hom_hom_hom (G H I : Grp C) :
+    (α_ G H I).hom.hom.hom = (α_ G.X H.X I.X).hom := rfl
+@[simp] lemma associator_inv_hom_hom (G H I : Grp C) :
+    (α_ G H I).inv.hom.hom = (α_ G.X H.X I.X).inv := rfl
+
+@[deprecated (since := "2025-12-18")] alias whiskerLeft_hom := whiskerLeft_hom_hom
+@[deprecated (since := "2025-12-18")] alias whiskerRight_hom := whiskerRight_hom_hom
+@[deprecated (since := "2025-12-18")] alias leftUnitor_hom_hom := leftUnitor_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias leftUnitor_inv_hom := leftUnitor_inv_hom_hom
+@[deprecated (since := "2025-12-18")] alias rightUnitor_hom_hom := rightUnitor_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias rightUnitor_inv_hom := rightUnitor_inv_hom_hom
+@[deprecated (since := "2025-12-18")] alias associator_hom_hom := associator_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias associator_inv_hom := associator_inv_hom_hom
 
 instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
@@ -398,18 +438,21 @@ instance instMonoidalCategory : MonoidalCategory (Grp C) where
 
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
   isTerminalTensorUnit :=
-    .ofUniqueHom (fun G ↦ toUnit G.toMon) fun G f ↦ by ext; exact toUnit_unique ..
-  fst G H := fst G.toMon H.toMon
-  snd G H := snd G.toMon H.toMon
+    .ofUniqueHom (fun G ↦ homMk' (toUnit G.toMon)) fun G f ↦ by ext; exact toUnit_unique ..
+  fst G H := homMk' (fst G.toMon H.toMon)
+  snd G H := homMk' (snd G.toMon H.toMon)
   tensorProductIsBinaryProduct G H :=
     BinaryFan.IsLimit.mk _ (fun {T} f g ↦ .mk (lift f.hom g.hom))
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
-  fst_def G H := Mon.Hom.ext <| fst_def _ _
-  snd_def G H := Mon.Hom.ext <| snd_def _ _
+  fst_def G H := by ext; apply fst_def
+  snd_def G H := by ext; apply snd_def
 
-@[simp] lemma lift_hom (f : G ⟶ H₁) (g : G ⟶ H₂) : (lift f g).hom = lift f.hom g.hom := rfl
-@[simp] lemma fst_hom (G H : Grp C) : (fst G H).hom = fst G.X H.X := rfl
-@[simp] lemma snd_hom (G H : Grp C) : (snd G H).hom = snd G.X H.X := rfl
+@[simp] lemma lift_hom (f : G ⟶ H₁) (g : G ⟶ H₂) : (lift f g).hom = (lift f.hom g.hom) := rfl
+@[simp] lemma fst_hom_hom (G H : Grp C) : (fst G H).hom.hom = fst G.X H.X := rfl
+@[simp] lemma snd_hom_hom (G H : Grp C) : (snd G H).hom.hom = snd G.X H.X := rfl
+
+@[deprecated (since := "2025-12-18")] alias fst_hom := fst_hom_hom
+@[deprecated (since := "2025-12-18")] alias snd_hom := snd_hom_hom
 
 @[simps]
 instance : (forget₂Mon C).Monoidal where
@@ -422,8 +465,11 @@ attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
 instance instBraidedCategory : BraidedCategory (Grp C) :=
   .ofFaithful (forget₂Mon C) fun G H ↦ Grp.mkIso (β_ G.X H.X)
 
-@[simp] lemma braiding_hom_hom (G H : Grp C) : (β_ G H).hom.hom = (β_ G.X H.X).hom := rfl
-@[simp] lemma braiding_inv_hom (G H : Grp C) : (β_ G H).inv.hom = (β_ G.X H.X).inv := rfl
+@[simp] lemma braiding_hom_hom_hom (G H : Grp C) : (β_ G H).hom.hom.hom = (β_ G.X H.X).hom := rfl
+@[simp] lemma braiding_inv_hom_hom (G H : Grp C) : (β_ G H).inv.hom.hom = (β_ G.X H.X).inv := rfl
+
+@[deprecated (since := "2025-12-18")] alias braiding_hom_hom := braiding_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias braiding_inv_hom := braiding_inv_hom_hom
 
 end Grp
 
@@ -460,19 +506,21 @@ variable (F) in
 @[simps!]
 def mapGrp : Grp C ⥤ Grp D where
   obj A := .mk (F.obj A.X)
-  map f := F.mapMon.map f
+  map f := Grp.homMk' (F.mapMon.map f.hom)
 
 protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
-  map_injective hfg := F.mapMon.map_injective hfg
-
-protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full where
-  map_surjective := F.mapMon.map_surjective
+  map_injective hfg :=
+    (Grp.forget₂Mon _).map_injective
+      (F.mapMon.map_injective ((Grp.forget₂Mon _).congr_map hfg))
 
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `GrpCat(F) : GrpCat C ⥤ GrpCat D` is fully faithful too. -/
 @[simps]
 protected def FullyFaithful.mapGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
-  preimage f := .mk <| hF.preimage f.hom
+  preimage f := Grp.homMk' (hF.mapMon.preimage f.hom)
+
+protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full :=
+  ((FullyFaithful.ofFullyFaithful F).mapGrp).full
 
 @[simp]
 theorem mapGrp_id_one (A : Grp C) :
@@ -507,7 +555,7 @@ def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]
 def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
-  app X := .mk' (f.app _)
+  app X := Grp.homMk' ((mapMonNatTrans f).app X.toMon)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[simps!]
@@ -519,7 +567,7 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
   obj F := F.1.mapGrp
-  map {F G} α := { app A := .mk' (α.app A.X) }
+  map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/
 @[simps]
@@ -557,14 +605,20 @@ noncomputable instance mapGrp.instMonoidal : F.mapGrp.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
   { εIso := (Grp.fullyFaithfulForget₂Mon _).preimageIso (εIso F.mapMon)
     μIso X Y := (Grp.fullyFaithfulForget₂Mon _).preimageIso (μIso F.mapMon X.toMon Y.toMon)
-    μIso_hom_natural_left f Z := by convert μ_natural_left F.mapMon f Z.toMon using 1
-    μIso_hom_natural_right Z f := by convert μ_natural_right F.mapMon Z.toMon f using 1
-    associativity X Y Z := by convert associativity F.mapMon X.toMon Y.toMon Z.toMon using 1
-    left_unitality X := by convert left_unitality F.mapMon X.toMon using 1
-    right_unitality X := by convert right_unitality F.mapMon X.toMon using 1 }
+    μIso_hom_natural_left f Z :=
+      (Grp.forget₂Mon _).map_injective (μ_natural_left F.mapMon f.hom Z.toMon)
+    μIso_hom_natural_right Z f :=
+      (Grp.forget₂Mon _).map_injective (μ_natural_right F.mapMon Z.toMon f.hom)
+    associativity X Y Z :=
+      (Grp.forget₂Mon _).map_injective (associativity F.mapMon X.toMon Y.toMon Z.toMon)
+    left_unitality X :=
+      (Grp.forget₂Mon _).map_injective (left_unitality F.mapMon X.toMon)
+    right_unitality X :=
+      (Grp.forget₂Mon _).map_injective (right_unitality F.mapMon X.toMon) }
 
 noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
-  braided X Y := by convert Braided.braided (F := F.mapMon) X.toMon Y.toMon using 1
+  braided X Y :=
+    (Grp.forget₂Mon _).map_injective (Braided.braided X.toMon Y.toMon)
 
 end Braided
 end Functor

@@ -853,7 +853,7 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
   induction p with
   | nil => simp
   | cons _ _ ih =>
-    simp only [Walk.transfer, cons_isPath_iff, support_transfer _ ] at pp ⊢
+    simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
 protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :

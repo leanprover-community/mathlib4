@@ -130,7 +130,7 @@ def toΓSpecCApp :
       X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
   -- note: the explicit type annotations were not needed before
   -- https://github.com/leanprover-community/mathlib4/pull/19757
-  CommRingCat.ofHom  <|
+  CommRingCat.ofHom <|
     IsLocalization.Away.lift
       (R := Γ.obj (op X))
       (S := (structureSheaf ↑(Γ.obj (op X))).val.obj (op (basicOpen r)))
@@ -172,26 +172,27 @@ def toΓSpecCBasicOpens :
     apply X.presheaf.map_comp
 
 /-- The canonical morphism of sheafed spaces from `X` to the spectrum of its global sections. -/
-@[simps]
-def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.obj (op X))) where
-  base := X.toΓSpecBase
-  c :=
-    TopCat.Sheaf.restrictHomEquivHom (structureSheaf (Γ.obj (op X))).1 _ isBasis_basic_opens
-      X.toΓSpecCBasicOpens
+@[simps! -isSimp]
+def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.obj (op X))) :=
+  InducedCategory.homMk
+    { base := X.toΓSpecBase
+      c :=
+        TopCat.Sheaf.restrictHomEquivHom (structureSheaf (Γ.obj (op X))).1 _ isBasis_basic_opens
+          X.toΓSpecCBasicOpens }
 
 theorem toΓSpecSheafedSpace_app_eq :
-    X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
+    X.toΓSpecSheafedSpace.hom.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   apply TopCat.Sheaf.extend_hom_app _ _ _
 
 @[reassoc] theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
-    toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) =
+    toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.hom.c.app (op (basicOpen r)) =
       X.toToΓSpecMapBasicOpen r :=
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
 stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
-    toStalk _ _ ≫ X.toΓSpecSheafedSpace.stalkMap x = X.presheaf.Γgerm x := by
+    toStalk _ _ ≫ X.toΓSpecSheafedSpace.hom.stalkMap x = X.presheaf.Γgerm x := by
   rw [PresheafedSpace.Hom.stalkMap,
     ← toOpen_germ _ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
     ← Category.assoc, Category.assoc (toOpen _ _), stalkFunctor_map_germ, ← Category.assoc,
@@ -202,10 +203,8 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
 
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps! base]
-def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
-  __ := X.toΓSpecSheafedSpace
-  prop := by
-    intro x
+def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) :=
+  LocallyRingedSpace.homMk (X.toΓSpecSheafedSpace) (fun x ↦ by
     let p : PrimeSpectrum (Γ.obj (op X)) := X.toΓSpecFun x
     constructor
     -- show stalk map is local hom ↓
@@ -222,7 +221,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rw [← toStalk_stalkMap_toΓSpec, CommRingCat.comp_apply]
     erw [← he]
     rw [map_mul]
-    exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _
+    exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _)
 
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
 of `Γ(X, ⊤)` under `toΓSpec` agrees with the associated zero locus on `X`. -/
@@ -250,11 +249,11 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
         f ≫ X.presheaf.map (homOfLE le_top : (Opens.map β.base).obj (basicOpen r) ⟶ _).op =
           toOpen R (basicOpen r) ≫ β.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
-  ext1
-  refine Spec.basicOpen_hom_ext w ?_
+  refine LocallyRingedSpace.forgetToSheafedSpace.map_injective
+    (Spec.basicOpen_hom_ext w ?_)
   intro r U
-  rw [LocallyRingedSpace.comp_c_app]
-  erw [toOpen_comp_comap_assoc]
+  erw [SheafedSpace.comp_hom_c_app, toOpen_comp_comap_assoc]
+  dsimp
   rw [Category.assoc]
   erw [toΓSpecSheafedSpace_app_spec, ← X.presheaf.map_comp]
   exact h r

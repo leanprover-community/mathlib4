@@ -450,6 +450,7 @@ so that it is definitionally equal to the one coming from the topologies on `E` 
 protected def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le fun c f ↦ f.opNorm_smul_le c
 
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_seminorm :
     𝓤 (ContinuousMultilinearMap 𝕜 E G) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
   refine (ContinuousMultilinearMap.seminorm 𝕜 E G).uniformity_eq_of_hasBasis
@@ -480,6 +481,8 @@ private lemma uniformity_eq_seminorm :
       _ ≤ δ * ε ^ Fintype.card ι := by have := (norm_nonneg x).trans hx; gcongr
       _ ≤ r := (mul_comm _ _).trans_le hδ.le
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap 𝕜 E G) :=
   .replaceUniformity
     (ContinuousMultilinearMap.seminorm 𝕜 E G).toSeminormedAddCommGroup.toPseudoMetricSpace
