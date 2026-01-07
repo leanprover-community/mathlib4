@@ -202,26 +202,12 @@ theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
 @[fun_prop]
 theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
     (hf : ∀ i ∈ s, (f i).HasTemperateGrowth) : (∑ i ∈ s, f i ·).HasTemperateGrowth := by
-  by_cases! h : s.Nonempty; swap
-  · simp [h]
-  rw [hasTemperateGrowth_iff_isBigO] at *
-  refine ⟨ContDiff.sum <| fun i hi ↦ (hf i hi).1, fun n ↦ ?_⟩
-  have hf' : ∀ i ∈ s, ∃ k, iteratedFDeriv ℝ n (f i) =O[⊤] fun x ↦ (1 + ‖x‖) ^ k :=
-    fun i hi ↦ (hasTemperateGrowth_iff_isBigO.mp <| hf i hi).2 n
-  choose k hk using hf'
   classical
-  set k' := fun i ↦ if h : i ∈ s then k i h else 0
-  have hk' : ∀ (i : ι) (_ : i ∈ s), iteratedFDeriv ℝ n (f i) =O[⊤] fun x ↦ (1 + ‖x‖) ^ k' i := by
-    intro i hi
-    unfold k'
-    simp [hi, hk]
-  use Finset.sup' s h k'
-  rw [iteratedFDeriv_sum (fun i hi ↦ ((hf i hi).1.of_le <| mod_cast le_top))]
-  have : 1 ≤ᶠ[⊤] fun (x : E) ↦ 1 + ‖x‖ := by
-    filter_upwards with _ using (le_add_iff_nonneg_right _).mpr (by positivity)
-  have : ∀ i ∈ s, iteratedFDeriv ℝ n (f i) =O[⊤] fun x ↦ (1 + ‖x‖) ^ s.sup' h k' :=
-    fun i hi ↦ (hk' i hi).trans <| IsBigO.pow_of_le_right this (Finset.le_sup' k' hi)
-  simpa using Asymptotics.IsBigO.sum this
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s has ih => 
+    obtain ⟨hf, h⟩ := by simpa using hf
+    simpa [has] using hf.add (ih h)
 
 end Addition
 
