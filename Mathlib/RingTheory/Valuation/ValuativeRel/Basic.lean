@@ -84,8 +84,6 @@ class ValuativeRel (R : Type*) [CommRing R] where
 
 macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.vle $a $b)
 
-attribute [gcongr] ValuativeRel.mul_vle_mul_left
-
 namespace Valuation
 
 variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
@@ -132,7 +130,7 @@ lemma srel_iff {x y : R} : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
 
 @[deprecated (since := "2025-12-20")] alias not_srel_iff := not_vlt
 
-@[simp]
+@[simp, refl]
 lemma vle_refl (x : R) : x ≤ᵥ x := by
   cases vle_total x x <;> assumption
 
@@ -167,7 +165,6 @@ lemma zero_vlt_one : (0 : R) <ᵥ 1 :=
 lemma vle_mul_right {x y : R} (z) (h : x ≤ᵥ y) : x * z ≤ᵥ y * z :=
   mul_vle_mul_left h z
 
-@[gcongr]
 lemma mul_vle_mul_right {x y : R} (h : x ≤ᵥ y) (z) : z * x ≤ᵥ z * y := by
   rw [mul_comm z x, mul_comm z y]
   exact mul_vle_mul_left h z
