@@ -205,7 +205,7 @@ theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert a s has ih => 
+  | insert a s has ih =>
     obtain ⟨hf, h⟩ := by simpa using hf
     simpa [has] using hf.add (ih h)
 
