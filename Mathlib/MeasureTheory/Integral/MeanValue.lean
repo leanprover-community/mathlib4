@@ -45,7 +45,7 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
   have hρ_ae : AEMeasurable ρ (μ.restrict s) := by
     apply AEMeasurable.ennreal_ofReal
     exact hg.aestronglyMeasurable.aemeasurable
-  have hρ_top : ∀ᵐ x ∂ μ.restrict s, ρ x < ⊤ := by simp [ρ]
+  have hρ_top : ∀ᵐ x ∂μ.restrict s, ρ x < ⊤ := by simp [ρ]
   have h_toReal_ae : (fun x ↦ (ρ x).toReal) =ᵐ[μ.restrict s] g := by
     apply hg0.mono
     intro x hx

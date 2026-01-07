@@ -243,7 +243,7 @@ theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, 
   rfl
 
 @[simp]
-theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦  c) f = c • f := by
+theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦ c) f = c • f := by
   ext1; simp
 
 @[simp]
@@ -400,7 +400,7 @@ variable [NormedSpace ℝ E]
 
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢'(E, ℂ) :=
-  toPointwiseConvergenceCLM _ _ _ _  <|
+  toPointwiseConvergenceCLM _ _ _ _ <|
     (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 
 @[deprecated (since := "2025-12-23")]
