@@ -62,6 +62,7 @@ variable
   [LineDerivAdd E V₂ V₃] [LineDerivSMul R E V₂ V₃] [ContinuousLineDeriv E V₂ V₃]
 
 variable (R E V₁) in
+/-- The Laplacian defined by iterated `lineDerivOp` as a continuous linear map. -/
 def laplacianCLM : V₁ →L[R] V₃ :=
   ∑ i, lineDerivOpCLM R V₂ (stdOrthonormalBasis ℝ E i) ∘L
     lineDerivOpCLM R V₁ (stdOrthonormalBasis ℝ E i)
@@ -88,13 +89,11 @@ open Laplacian LineDeriv
 instance instLaplacian : Laplacian 𝓢(E, F) 𝓢(E, F) where
   laplacian := LineDeriv.laplacian E
 
+@[simp]
+theorem laplacian_eq (f : 𝓢(E, F)) : LineDeriv.laplacian E f = Δ f := rfl
+
 theorem laplacian_eq_sum' (f : 𝓢(E, F)) :
     Δ f = ∑ i, ∂_{stdOrthonormalBasis ℝ E i} (∂_{stdOrthonormalBasis ℝ E i} f) := rfl
-
-@[simp]
-theorem laplacianCLM_apply [RCLike 𝕜] [NormedSpace 𝕜 F] (f : 𝓢(E, F)) :
-    laplacianCLM 𝕜 E 𝓢(E, F) f = Δ f :=
-  LineDeriv.laplacianCLM_apply f
 
 theorem coe_laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢(E, F)) :
     Δ (f : E → F) = ∑ i, ∂_{b i} (∂_{b i} f) := by
@@ -162,6 +161,5 @@ theorem integral_clm_comp_laplacian_right_eq_left (f : 𝓢(E, F₁ →L[𝕜] F
     ∫ x, f x (Δ g x) ∂μ = ∫ x, Δ f x (g x) ∂μ :=
   integral_bilinear_laplacian_right_eq_left f g
     ((ContinuousLinearMap.id 𝕜 (F₁ →L[𝕜] F₂)).bilinearRestrictScalars ℝ)
-
 
 end SchwartzMap
