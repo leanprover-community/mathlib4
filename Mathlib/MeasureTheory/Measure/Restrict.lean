@@ -303,8 +303,8 @@ theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : Meas
 theorem restrict_inter_toMeasurable (h : μ s ≠ ∞) (ht : MeasurableSet t) (hst : s ⊆ t) :
     μ.restrict (t ∩ toMeasurable μ s) = μ.restrict s := by
   ext u hu
-  rw [Measure.restrict_apply hu, Measure.restrict_apply hu, inter_comm t, inter_comm, inter_assoc,
-    Measure.measure_toMeasurable_inter (ht.inter hu) h]
+  rw [restrict_apply hu, restrict_apply hu, inter_comm t, inter_comm, inter_assoc,
+    measure_toMeasurable_inter (ht.inter hu) h]
   congr 1
   grind
 
