@@ -44,7 +44,7 @@ The key results proved here are:
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
 
-@[expose] public section
+public section
 
 open Nat
 open scoped FinsetFamily

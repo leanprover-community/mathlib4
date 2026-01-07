@@ -185,7 +185,7 @@ variable [Fintype ι]
 theorem diam_boxIcc (ν : ι → ℤ) :
     Metric.diam (Box.Icc (box n ν)) ≤ 1 / n := by
   rw [BoxIntegral.Box.Icc_eq_pi]
-  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| EMetric.diam_pi_le_of_le (fun i ↦ ?_)
+  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| Metric.ediam_pi_le_of_le fun i ↦ ?_
   simp_rw [Real.ediam_Icc, box.upper_sub_lower, le_rfl]
 
 @[simp]
@@ -286,7 +286,8 @@ private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
   rw [le_div_iff₀' h, le_sub_iff_add_le,
     show (n : ℝ) * a + 1 = (n * a + 1 : ℤ) by norm_cast,
-    Int.cast_le, Int.add_one_le_ceil_iff, Int.cast_mul, Int.cast_natCast, mul_lt_mul_iff_right₀ h]
+    Int.cast_le, Int.add_one_le_iff, Int.lt_ceil, Int.cast_mul, Int.cast_natCast,
+    mul_lt_mul_iff_right₀ h]
 
 private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
     x ≤ a ↔ (⌈n * x⌉ - 1 + 1) / (n : ℝ) ≤ a := by

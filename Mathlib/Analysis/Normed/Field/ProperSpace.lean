@@ -25,7 +25,7 @@ This is a special case of `ProperSpace.of_locallyCompactSpace` from
 with a proof that requires fewer imports.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists FiniteDimensional
 

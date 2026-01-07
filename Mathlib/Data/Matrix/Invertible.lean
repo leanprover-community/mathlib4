@@ -178,7 +178,6 @@ lemma add_mul_mul_invOf_mul_eq_one' :
       rw [sub_right_inj, Matrix.mul_add]
       simp_rw [Matrix.mul_assoc]
     _ = 1 + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*(⅟C + V*⅟A*U)*C*V := by
-      congr 1
       simp only [Matrix.mul_add, Matrix.add_mul, ← Matrix.mul_assoc,
         Matrix.invOf_mul_cancel_right]
     _ = 1 := by

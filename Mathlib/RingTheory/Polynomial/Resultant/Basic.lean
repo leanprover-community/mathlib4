@@ -284,7 +284,7 @@ lemma resultant_C_mul_right (r : R) :
           lt_add_iff_pos_right, zero_lt_one, coeff_C_mul, M₁]
         induction j₂ using Fin.addCases with
         | left j₂ => simp
-        | right i => simp at hi; lia
+        | right i => simp at hi
       lia
   rw [resultant, resultant, ← this m le_rfl]
   congr 1

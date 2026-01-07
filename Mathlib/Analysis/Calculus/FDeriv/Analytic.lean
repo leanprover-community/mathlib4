@@ -63,7 +63,7 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Asymptotics Set
 
@@ -143,6 +143,10 @@ theorem AnalyticAt.hasStrictFDerivAt (h : AnalyticAt 𝕜 f x) :
   rcases h with ⟨p, hp⟩
   rw [hp.fderiv_eq]
   exact hp.hasStrictFDerivAt
+
+lemma AnalyticAt.hasStrictDerivAt {f : 𝕜 → F} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
+    HasStrictDerivAt f (deriv f x) x := by
+  simpa [hasStrictDerivAt_iff_hasStrictFDerivAt, toSpanSingleton_deriv] using hf.hasStrictFDerivAt
 
 theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) :
