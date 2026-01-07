@@ -288,6 +288,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
     -- negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
     ``«term¬_»,
+    -- subtraction, the pretty-printer prefers `a-b` in every case
+    «term_-_»,
   ]
   depth := none
 
