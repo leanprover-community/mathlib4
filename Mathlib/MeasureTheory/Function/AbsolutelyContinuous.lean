@@ -26,13 +26,13 @@ and `AbsolutelyContinuousOnInterval.disjWithin` and prove its equivalence with t
 definition in `absolutelyContinuousOnInterval_iff`.
 
 We use the filter version to prove that absolutely continuous functions are closed under
-* addition - `AbsolutelyContinuousOnInterval.fun_add`, `AbsolutelyContinuousOnInterval.add`;
-* negation - `AbsolutelyContinuousOnInterval.fun_neg`, `AbsolutelyContinuousOnInterval.neg`;
-* subtraction - `AbsolutelyContinuousOnInterval.fun_sub`, `AbsolutelyContinuousOnInterval.sub`;
+* addition - `AbsolutelyContinuousOnInterval.add`;
+* negation - `AbsolutelyContinuousOnInterval.neg`;
+* subtraction - `AbsolutelyContinuousOnInterval.sub`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
 `AbsolutelyContinuousOnInterval.const_mul`;
-* multiplication - `AbsolutelyContinuousOnInterval.fun_smul`, `AbsolutelyContinuousOnInterval.smul`,
-`AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
+* multiplication - `AbsolutelyContinuousOnInterval.smul`,
+`AbsolutelyContinuousOnInterval.mul`;
 and that absolutely continuous implies uniformly continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
@@ -140,7 +140,9 @@ lemma tendsto_volume_restrict_totalLengthFilter_disjWithin_nhds_zero (a b : ℝ)
   · apply tendsto_volume_totalLengthFilter_nhds_zero.mono_left
     simp
   · intro; simp
-  · intro E; simp; apply Measure.restrict_le_self
+  · intro E
+    simp only [Finset.mem_range]
+    apply Measure.restrict_le_self
 
 /-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
