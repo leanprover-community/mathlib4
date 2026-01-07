@@ -466,20 +466,6 @@ theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, 
         Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
     fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
 
-theorem exists_le_card_eq {n} {s : Multiset α} (h : n ≤ s.card) :
-    ∃ t, t ≤ s ∧ t.card = n := by
-  revert n h
-  induction s using Multiset.induction_on with
-  | empty => simp
-  | cons a s ih =>
-    intro n h
-    cases n with
-    | zero => use 0; simp [Multiset.zero_le]
-    | succ n =>
-      rw [Multiset.card_cons, Nat.add_le_add_iff_right] at h
-      obtain ⟨t, ht_le, ht_card⟩ := ih h
-      use a ::ₘ t; simpa [ht_card]
-
 /-! ### Map for partial functions -/
 
 @[simp]
