@@ -18,12 +18,6 @@ public import Mathlib.Algebra.Order.Antidiag.Prod
 Discrete convolution over monoids: `(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`
 where `mulFiber x = {(a, b) | a * b = x}`.
 
-## Examples
-
-Power series (additive index ℕ): `(f ⋆ g)(3) = f(0)·g(3) + f(1)·g(2) + f(2)·g(1) + f(3)·g(0)`
-
-Group algebras (multiplicative index G): `(f ⋆ g)(x) = ∑_{a·b=x} f(a)·g(b)`
-
 ## Design
 
 Uses bilinear map `L : E →ₗ[S] E' →ₗ[S] F` to combine values, following `MeasureTheory.convolution`.
@@ -34,6 +28,8 @@ Coefficient ring requires `[CommSemiring R]` for bilinearity of `LinearMap.mul`.
 Example: `FreeMonoid α ≃ List α` enables convolution on lists.
 
 `@[to_additive]` generates multiplicative and additive versions from a single definition.
+The `mul/add` distinction refers to the index monoid `M`: multiplicative sums over
+`mulFiber x = {(a,b) | a * b = x}`, additive sums over `addFiber x = {(a,b) | a + b = x}`.
 
 ## Relation to `MeasureTheory.convolution`
 
