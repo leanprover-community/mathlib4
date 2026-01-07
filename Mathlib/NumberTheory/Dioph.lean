@@ -418,7 +418,7 @@ open Vector3
 
 open scoped Vector3
 
-set_option linter.style.commandStart false -- TODO: decide on spacing around ::!
+set_option linter.style.whitespace false -- TODO: decide on spacing around ::!
 
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=

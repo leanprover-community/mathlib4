@@ -27,7 +27,7 @@ universe v u u' w
 
 noncomputable section
 
-set_option linter.style.commandStart false -- linter false positive
+set_option linter.style.whitespace false in -- linter false positive
 local notation "forget" => forget TopCat
 
 namespace TopCat

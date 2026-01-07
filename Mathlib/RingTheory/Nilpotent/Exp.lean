@@ -78,7 +78,7 @@ theorem exp_smul_eq_sum {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M]
   refine sum_eq_zero fun r h₂ ↦ ?_
   rw [smul_assoc, ← pow_sub_mul_pow a (mem_Ico.1 h₂).1, mul_smul, h, smul_zero, smul_zero]
 
-set_option linter.style.commandStart false -- don't lint around factorial notation for now
+set_option linter.style.whitespace false in -- don't lint around factorial notation for now
 -- TODO: make this an exception at the linter level!
 theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp (a + b) = exp a * exp b := by
