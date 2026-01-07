@@ -325,7 +325,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("square", ["Even"]),
   ("mconv", ["Conv"]),
   ("irreducible", ["Add", "Irreducible"]),
-  ("mlconvolution", ["LConvolution"])]
+  ("mlconvolution", ["LConvolution"]),
+  ("mulExact", ["Exact"])]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
 def abbreviationDict : Std.HashMap String String := .ofList [
@@ -371,7 +372,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
-  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap")]
+  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
+  ("addExact", "exact")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
