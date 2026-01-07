@@ -1,20 +1,23 @@
 /-
 Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
+Authors: David Loeffler, Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection
-public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 
 /-!
 # Group actions on projectivization
 
-Show that (among other groups), the general linear group of `V` acts on `ℙ K V`.
+Show that (among other groups), the general linear group
+and the special linear groups of `V` act on `ℙ K V`.
+
+Prove that this action is 2-transitive.
 -/
 
 @[expose] public section
@@ -81,7 +84,7 @@ theorem LinearEquiv.exists_restrict_eq
   exact Module.rank_lt_aleph0 K ↥W
 
 variable (K V) in
-theorem linearEquiv_is_two_pretransitive :
+instance linearEquiv_is_two_pretransitive :
     MulAction.IsMultiplyPretransitive (V ≃ₗ[K] V) (ℙ K V) 2 := by
   rw [MulAction.is_two_pretransitive_iff]
   intro D D' E E' hD hE
@@ -108,8 +111,15 @@ theorem linearEquiv_is_two_pretransitive :
     simp [f]
 
 variable (K V) in
-theorem generalLinearGroup_is_two_pretransitive :
-    MulAction.IsMultiplyPretransitive (LinearMap.GeneralLinearGroup K V) (ℙ K V) 2 := sorry
+instance generalLinearGroup_is_two_pretransitive :
+    MulAction.IsMultiplyPretransitive (LinearMap.GeneralLinearGroup K V) (ℙ K V) 2 := by
+  let f : ℙ K V →ₑ[LinearMap.GeneralLinearGroup.ofLinearEquiv (R := K) (M := V)] ℙ K V := {
+    toFun := id
+    map_smul' e D := by
+      simp only [id_eq]
+      rw [← mk_rep D, smul_mk, smul_mk]
+      congr }
+  exact MulAction.IsPretransitive.of_embedding (f := f) Function.surjective_id
 
 end DivisionRing
 
@@ -151,7 +161,7 @@ theorem _root_.LinearMap.transvection.det (f : Module.Dual K V) (v : V) :
     (LinearMap.transvection f v).det = 1 + f v := sorry
 
 variable (K V) in
-theorem specialLinearGroup_is_two_pretransitive :
+instance specialLinearGroup_is_two_pretransitive :
     MulAction.IsMultiplyPretransitive (SpecialLinearGroup K V) (ℙ K V) 2 := by
   have := linearEquiv_is_two_pretransitive K V
   rw [MulAction.is_two_pretransitive_iff] at this ⊢
@@ -161,45 +171,52 @@ theorem specialLinearGroup_is_two_pretransitive :
   · suffices ∀ a : Kˣ, ∃ h : V ≃ₗ[K] V, h.det = a ∧ h • D = D ∧ h • D' = D' by
       obtain ⟨h, hdet, hD, hE⟩ := this (g.det)⁻¹
       use ⟨g * h, by simp [hdet]⟩
-      simp [specialLinearGroup_smul_def, SpecialLinearGroup.toLinearEquiv_eq_coe, mul_smul, gD, hD, gE, hE]
+      simp [specialLinearGroup_smul_def,
+        SpecialLinearGroup.toLinearEquiv_eq_coe, mul_smul, gD, hD, gE, hE]
     intro a
     rw [← linearIndependent_pair_iff_ne] at hD
     have := linearIndependentOn_pair D D'
     let s := (linearIndependentOn_pair D D').extend (Set.subset_univ _)
     let b : Module.Basis s K V := Module.Basis.extend this
     rw [← Projectivization.mk_rep D, ← Projectivization.mk_rep D']
-    have hD_mem : D.rep ∈ s := by
-      apply LinearIndepOn.subset_extend
-      simp
+    have hD_mem : D.rep ∈ s := LinearIndepOn.subset_extend _ _ (by simp)
+    have hD'_mem : D'.rep ∈ s := LinearIndepOn.subset_extend _ _ (by simp)
     refine ⟨LinearEquiv.dilatransvection_of_isUnit (b.coord ⟨D.rep, hD_mem⟩)
       ((a.val - 1) • b ⟨D.rep, hD_mem⟩) (by simp), ?_, ?_, ?_⟩
-    · simp [← Units.val_inj, LinearEquiv.coe_det, LinearEquiv.coe_dilatransvection_of_isUnit, LinearMap.transvection.det]
+    · simp [← Units.val_inj, LinearEquiv.coe_det,
+        LinearEquiv.coe_dilatransvection_of_isUnit, LinearMap.transvection.det]
     · rw [Projectivization.smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use a
-      rw [← LinearEquiv.coe_coe, LinearEquiv.coe_dilatransvection_of_isUnit, LinearMap.transvection.apply]
+      rw [← LinearEquiv.coe_coe, LinearEquiv.coe_dilatransvection_of_isUnit,
+        LinearMap.transvection.apply]
       rw [Module.Basis.coord_apply]
       suffices (b.repr D.rep) ⟨D.rep, hD_mem⟩ = 1 by
         rw [this, Module.Basis.extend_apply_self, Units.smul_def]
         module
-      sorry
+      nth_rewrite 1 [show D.rep = (⟨D.rep, hD_mem⟩ : s) from by rfl]
+      rw [← Module.Basis.extend_apply_self, Module.Basis.repr_self]
+      simp
     · rw [Projectivization.smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use 1
-      rw [one_smul, ← LinearEquiv.coe_coe, LinearEquiv.coe_dilatransvection_of_isUnit, LinearMap.transvection.apply]
+      rw [one_smul, ← LinearEquiv.coe_coe,
+        LinearEquiv.coe_dilatransvection_of_isUnit, LinearMap.transvection.apply]
       rw [Module.Basis.coord_apply]
       suffices (b.repr D'.rep) ⟨D.rep, hD_mem⟩ = 0 by
         rw [Module.Basis.extend_apply_self]
         simp [this]
-      sorry
-
-
-
-
+      nth_rewrite 1 [show D'.rep = (⟨D'.rep, hD'_mem⟩ : s) from by rfl]
+      rw [← Module.Basis.extend_apply_self, Module.Basis.repr_self]
+      apply Finsupp.single_eq_of_ne
+      simp only [ne_eq, ← Subtype.coe_inj]
+      intro h
+      apply Fin.zero_ne_one
+      apply hD.injective
+      simp [h]
   use ⟨g, by
     rw [← Units.val_inj, LinearEquiv.coe_det]
     apply LinearMap.det_eq_one_of_not_module_finite hV⟩
-  simp [← gD, ← gE]
+  simp [← gD, ← gE, specialLinearGroup_smul_def, SpecialLinearGroup.toLinearEquiv_eq_coe]
 
-#where
 end Field
 
 end Projectivization
