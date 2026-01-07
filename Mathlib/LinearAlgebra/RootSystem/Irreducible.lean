@@ -84,7 +84,7 @@ lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
 /-- A root pairing is irreducible if it is non-trivial and contains no proper invariant submodules.
 -/
 @[mk_iff] class IsIrreducible : Prop where
-  nontrivial  : Nontrivial M
+  nontrivial : Nontrivial M
   nontrivial' : Nontrivial N
   eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
     (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
