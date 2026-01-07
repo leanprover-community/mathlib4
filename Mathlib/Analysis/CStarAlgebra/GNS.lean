@@ -64,6 +64,10 @@ lemma ofPreGNS_toPreGNS (a : A) : f.ofPreGNS (f.toPreGNS a) = a := rfl
 
 variable [StarOrderedRing A]
 
+/--
+The (semi-)inner product space whose elements are the elements of `A`, but which has an
+inner product-induced norm induced by `f` which is different from the norm on `A`.
+-/
 abbrev preGNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.preGNS where
   inner a b := f (star (f.ofPreGNS a) * f.ofPreGNS b)
   conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
