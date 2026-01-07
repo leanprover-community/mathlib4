@@ -721,8 +721,13 @@ theorem sumLexDualAntidistrib_symm_inr :
 def sumLexEmpty (α β : Type*) [Preorder α] [IsEmpty β] [Preorder β] :
     Lex (α ⊕ β) ≃o α := RelIso.sumLexEmpty ..
 
+/-- `Equiv.emptySum` as an `OrderIso` with the lexicographic sum. -/
 def emptySumLex (α β : Type*) [Preorder α] [IsEmpty β] [Preorder β] :
-    Lex (β ⊕ α) ≃o α := @RelIso.emptySumLex β α _ _ _
+    Lex (β ⊕ α) ≃o α := RelIso.emptySumLex ..
+
+@[simp]
+lemma sumLexEmpty_apply_inl (α β : Type*) [Preorder α] [IsEmpty β] [Preorder β] (x : α) :
+  sumLexEmpty α β (toLex <| .inl x) = x := rfl
 
 end OrderIso
 
