@@ -766,31 +766,16 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
   ext1 f
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
 
-@[fun_prop]
-theorem HasTemperateGrowth.sum {g : ι → E → 𝕜} {s : Finset ι}
-    (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) : (∑ i ∈ s, g i ·).HasTemperateGrowth := by
-  sorry
-
 theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
   ext f x
-  simp only [HasTemperateGrowth.sum hg, smulLeftCLM_apply_apply, ContinuousLinearMap.coe_sum',
-    Finset.sum_apply, sum_apply, Finset.sum_smul]
+  simp only [Function.HasTemperateGrowth.sum hg, smulLeftCLM_apply_apply,
+    ContinuousLinearMap.coe_sum', Finset.sum_apply, sum_apply, Finset.sum_smul]
   apply Finset.sum_congr (refl _)
   intro i hi
   simp [hg i hi]
 
-variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F]
-
-@[fun_prop]
-theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
-  (Complex.ofRealCLM).hasTemperateGrowth
-
-@[fun_prop]
-theorem RCLike.hasTemperateGrowth_ofReal : (RCLike.ofReal (K := 𝕜')).HasTemperateGrowth :=
-  (RCLike.ofRealCLM (K := 𝕜')).hasTemperateGrowth
-
-variable (𝕜') in
+variable (𝕜' : Type*) [RCLike 𝕜'] [NormedSpace 𝕜' F] in
 theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
     smulLeftCLM F (fun x ↦ RCLike.ofReal (K := 𝕜') (g x)) f = smulLeftCLM F g f := by
   ext x
