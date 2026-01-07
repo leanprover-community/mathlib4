@@ -977,8 +977,7 @@ theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
 
 theorem derivative_T_eval_one (n : ℤ) :
     (derivative (T R n)).eval 1 = n ^ 2 := by
-  rw [T_derivative_eq_U, eval_mul, eval_intCast, U_eval_one, Int.cast_sub, Int.cast_one,
-    sub_add_cancel, sq]
+  simp [T_derivative_eq_U, sq]
 
 theorem derivative_U_eval_one (n : ℤ) :
     3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
