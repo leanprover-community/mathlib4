@@ -117,8 +117,7 @@ lemma restrictScalars_sSup (s : Set (Submodule R M)) :
     (sSup s).restrictScalars S = sSup (restrictScalars S '' s) := by
   simp [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]
 
-variable (R M)
-
+variable (R M) in
 /-- If ring `S` acts on a ring `R` and `M` is a module over both (compatibly with this action) then
 we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `R`. -/
 def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S M) where
