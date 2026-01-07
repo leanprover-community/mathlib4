@@ -40,7 +40,7 @@ Given a type `C` with associated `groupoid C` instance.
 
 ## Implementation details
 
-The structure of this file is copied from/inspired by `Mathlib/GroupTheory/Subgroup/Basic.lean`
+The structure of this file is copied from/inspired by `Mathlib/Algebra/Group/Subgroup/Basic.lean`
 and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
 
 ## TODO

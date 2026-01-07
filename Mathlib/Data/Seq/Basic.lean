@@ -161,7 +161,7 @@ theorem take_succ_cons {n : ℕ} {x : α} {s : Seq α} :
 theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
     (s.take k)[n]? = if n < k then s.get? n else none
   | n, 0, s => by simp [take]
-  | n, k+1, s => by
+  | n, k + 1, s => by
     rw [take]
     cases h : destruct s with
     | none =>
@@ -172,7 +172,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 => simp [List.getElem?_cons_succ, getElem?_take]
+        | n + 1 => simp [List.getElem?_cons_succ, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = some x) : x ∈ s.take n := by
@@ -923,7 +923,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
   by_cases ha : a.Terminates; swap
   · simp [length'_of_not_terminates ha]
   simp only [length'_of_terminates ha, length'_le_iff]
-  by_contra! hb
+  by_contra hb
   have hb_cons : b.drop (a.length ha) ≠ .nil := by
     intro hb'
     simp only [← length'_eq_zero_iff_nil, drop_length', tsub_eq_zero_iff_le, length'_le_iff] at hb'

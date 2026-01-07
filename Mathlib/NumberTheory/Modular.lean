@@ -5,7 +5,7 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
 module
 
-public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.Topology.Instances.Matrix
@@ -506,6 +506,52 @@ theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ �
   simp [eq_zero_of_mem_fdo_of_T_zpow_mem_fdo hz hg, one_smul]
 
 end UniqueRepresentative
+
+section Truncated
+
+/-- The standard fundamental domain truncated at height `y`. -/
+def truncatedFundamentalDomain (y : ℝ) : Set ℍ := { τ | τ ∈ 𝒟 ∧ τ.im ≤ y }
+
+/-- Explicit description of the truncated fundamental domain as a subset of `ℂ`, given by
+obviously closed conditions. -/
+lemma coe_truncatedFundamentalDomain (y : ℝ) :
+    Subtype.val '' truncatedFundamentalDomain y =
+    {z | 0 ≤ z.im ∧ z.im ≤ y ∧ |z.re| ≤ 1 / 2 ∧ 1 ≤ ‖z‖} := by
+  ext z
+  constructor
+  · rintro ⟨⟨z, hz⟩, h, rfl⟩
+    exact ⟨hz.le, h.2, h.1.2, by simpa [Complex.normSq_eq_norm_sq] using h.1.1⟩
+  · rintro ⟨hz, h1, h2, h3⟩
+    have hz' : 0 < z.im := by
+      apply hz.lt_of_ne
+      contrapose! h3
+      simpa [← sq_lt_one_iff₀ (norm_nonneg _), ← Complex.normSq_eq_norm_sq, Complex.normSq,
+        ← h3, ← sq] using h2.trans_lt (by norm_num)
+    exact ⟨⟨z, hz'⟩, ⟨⟨by simpa [Complex.normSq_eq_norm_sq], h2⟩, h1⟩, rfl⟩
+
+/-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
+lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
+    IsCompact (truncatedFundamentalDomain y) := by
+  rw [Subtype.isCompact_iff, coe_truncatedFundamentalDomain, Metric.isCompact_iff_isClosed_bounded]
+  constructor
+  · -- show closed
+    apply (isClosed_le continuous_const Complex.continuous_im).inter
+    apply (isClosed_le Complex.continuous_im continuous_const).inter
+    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
+    exact isClosed_le continuous_const continuous_norm
+  · -- show bounded
+    refine (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
+    simp only [mem_closedBall_zero_iff]
+    refine le_of_sq_le_sq ?_ (by positivity)
+    rw [Real.sq_sqrt (by positivity), Complex.norm_eq_sqrt_sq_add_sq, Real.sq_sqrt (by positivity)]
+    apply add_le_add
+    · rw [sq_le_sq, abs_of_pos <| one_half_pos (α := ℝ)]
+      exact hz.2.2.1
+    · rw [sq_le_sq₀ hz.1 (hz.1.trans hz.2.1)]
+      exact hz.2.1
+
+
+end Truncated
 
 end FundamentalDomain
 
