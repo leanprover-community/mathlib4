@@ -391,6 +391,8 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
 
 end Field
 
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+
 /-- Determinant of a transvection, over a domain.
 
 See `LinearMap.transvection.det` for the general case. -/
