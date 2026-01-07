@@ -60,12 +60,12 @@ section EMetric
 open EMetric
 
 @[to_additive (attr := simp)]
-theorem infEdist_inv_inv (x : E) (s : Set E) : infEdist x⁻¹ s⁻¹ = infEdist x s := by
-  rw [← image_inv_eq_inv, infEdist_image isometry_inv]
+theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist x s := by
+  rw [← image_inv_eq_inv, infEDist_image isometry_inv]
 
 @[to_additive]
-theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹ := by
-  rw [← infEdist_inv_inv, inv_inv]
+theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
+  rw [← infEDist_inv_inv, inv_inv]
 
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
@@ -80,12 +80,12 @@ variable (δ s x y)
 
 @[to_additive (attr := simp)]
 theorem inv_thickening : (thickening δ s)⁻¹ = thickening δ s⁻¹ := by
-  simp_rw [thickening, ← infEdist_inv]
+  simp_rw [thickening, ← infEDist_inv]
   rfl
 
 @[to_additive (attr := simp)]
 theorem inv_cthickening : (cthickening δ s)⁻¹ = cthickening δ s⁻¹ := by
-  simp_rw [cthickening, ← infEdist_inv]
+  simp_rw [cthickening, ← infEDist_inv]
   rfl
 
 @[to_additive (attr := simp)]
