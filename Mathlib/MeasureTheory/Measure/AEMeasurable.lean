@@ -172,21 +172,26 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
   rw [map_apply_of_aemeasurable hg hs, map_apply₀ hf (hg.nullMeasurable hs),
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem fst {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).1) μ :=
   measurable_fst.comp_aemeasurable hf
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem snd {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).2) μ :=
   measurable_snd.comp_aemeasurable hf
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => (f x, g x)) μ :=
   ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
+
+theorem _root_.nullMeasurableSet_eq_fun [MeasurableEq β]
+    {f g : α → β} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    NullMeasurableSet { x | f x = g x } μ :=
+  (hf.prodMk hg).nullMeasurableSet_preimage measurableSet_diagonal
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
@@ -340,7 +345,7 @@ lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β
     simp [NeZero.ne b]
   · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff hs).mpr hfm.restrict

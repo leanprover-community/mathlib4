@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Extension.Presentation.Basic
 /-!
 # Presentation of the module of differentials
 
-Given a presentation of a `R`-algebra `S`, we obtain a presentation
+Given a presentation of an `R`-algebra `S`, we obtain a presentation
 of the `S`-module `Ω[S⁄R]`.
 
 Assume `pres : Algebra.Presentation R S` is a presentation of `S` as an `R`-algebra.
@@ -157,7 +157,7 @@ lemma differentialsSolution_isPresentation :
         pres.toExtension.exact_cotangentComplex_toKaehler)
 
 /-- The presentation of the `S`-module `Ω[S⁄R]` deduced from a presentation
-of `S` as a `R`-algebra. -/
+of `S` as an `R`-algebra. -/
 noncomputable def differentials : Module.Presentation S Ω[S⁄R] where
   G := ι
   R := σ

@@ -628,6 +628,9 @@ lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithBot β} :
 lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithBot β} :
     n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
+@[simp] lemma bot_lt_natCast [LT α] (n : ℕ) : (⊥ : WithBot α) < n :=
+  WithBot.bot_lt_coe _
+
 end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=

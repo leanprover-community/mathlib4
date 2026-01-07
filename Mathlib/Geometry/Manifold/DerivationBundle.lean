@@ -30,7 +30,7 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 open scoped Manifold ContDiff
 
--- the following two instances prevent poorly understood type class inference timeout problems
+-- the following two instances prevent poorly understood typeclass inference timeout problems
 instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
 
 instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
@@ -113,8 +113,8 @@ namespace Derivation
 variable {I}
 
 /-- The evaluation at a point as a linear map. -/
-def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[𝕜] PointDerivation I x :=
-  (ContMDiffFunction.evalAt I x).compDer
+def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩]
+  PointDerivation I x := (ContMDiffFunction.evalAt I x).compDer
 
 theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
   rfl

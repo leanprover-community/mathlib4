@@ -125,7 +125,7 @@ theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
     exact ne_of_lt (show ⊥ < ↑1 from WithBot.bot_lt_coe 1) hx
   have key := minpoly.aeval A x
   rw [eq_X_add_C_of_degree_eq_one hx, (minpoly.monic h).leadingCoeff, C_1, one_mul, aeval_add,
-    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← RingHom.map_neg] at key
+    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← map_neg] at key
   exact ⟨-(minpoly A x).coeff 0, key.symm⟩
 
 /-- The defining property of the minimal polynomial of an element `x`:

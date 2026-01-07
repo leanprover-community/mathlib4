@@ -23,7 +23,7 @@ namely that cofibrations are stable under composition and cobase change.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits MorphismProperty
 
@@ -31,7 +31,7 @@ namespace HomotopicalAlgebra
 
 namespace ModelCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   [CategoryWithCofibrations C] [CategoryWithFibrations C] [CategoryWithWeakEquivalences C]
   [(weakEquivalences C).HasTwoOutOfThreeProperty]
 

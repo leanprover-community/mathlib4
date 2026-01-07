@@ -8,7 +8,6 @@ module
 public import Mathlib.Logic.IsEmpty
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Batteries.WF
 
 /-!
 # Unbundled relation classes
@@ -39,7 +38,7 @@ theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
 theorem IsAntisymm.swap (r) [IsAntisymm α r] : IsAntisymm α (swap r) :=
   ⟨fun _ _ h₁ h₂ => _root_.antisymm h₂ h₁⟩
 
-theorem IsAsymm.swap (r) [IsAsymm α r] : IsAsymm α (swap r) :=
+theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
 
 theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
@@ -57,7 +56,7 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
+theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
 
 /-- Construct a partial order from an `isStrictOrder` relation.
@@ -115,9 +114,9 @@ theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α
     (h₁ : ¬r a b) (h₂ : ¬r b c) : ¬r a c :=
   mt (IsOrderConnected.conn a b c) <| by simp [h₁, h₂]
 
-theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected α r] :
+theorem isStrictWeakOrder_of_isOrderConnected [Std.Asymm r] [IsOrderConnected α r] :
     IsStrictWeakOrder α r :=
-  { @IsAsymm.isIrrefl α r _ with
+  { @Std.Asymm.isIrrefl α r _ with
     trans := fun _ _ c h₁ h₂ => (IsOrderConnected.conn _ c _ h₁).resolve_right (asymm h₂),
     incomp_trans := fun _ _ _ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ =>
       ⟨IsOrderConnected.neg_trans h₁ h₃, IsOrderConnected.neg_trans h₄ h₂⟩ }
@@ -134,8 +133,8 @@ theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Funct
     IsTrichotomous β (InvImage r f) where
   trichotomous a b := trichotomous (f a) (f b) |>.imp3 id (h ·) id
 
-instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
-  asymm a b h h2 := IsAsymm.asymm (f a) (f b) h h2
+instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f) where
+  asymm a b h h2 := Std.Asymm.asymm (f a) (f b) h h2
 
 /-! ### Well-order -/
 
@@ -221,39 +220,31 @@ theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : Wel
   @WellFoundedRelation.asymmetric₃ _ ⟨_, h⟩ _ _ _
 
 -- see Note [lower instance priority]
-instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
+instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : Std.Asymm r :=
   ⟨IsWellFounded.wf.asymmetric⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
-  IsAsymm.isIrrefl
+  Std.Asymm.isIrrefl
 
 instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
   ⟨i.wf.transGen⟩
 
 /-- A class for a well-founded relation `<`. -/
+@[to_dual /-- A class for a well-founded relation `>`. -/]
 abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 
-/-- A class for a well-founded relation `>`. -/
-abbrev WellFoundedGT (α : Type*) [LT α] : Prop :=
-  IsWellFounded α (· > ·)
-
+@[to_dual wellFounded_gt]
 lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
-lemma wellFounded_gt [LT α] [WellFoundedGT α] : @WellFounded α (· > ·) := IsWellFounded.wf
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
   h
 
--- See note [lower instance priority]
-instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFoundedLT αᵒᵈ :=
-  h
-
+@[to_dual]
 theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
-
-theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
@@ -277,7 +268,7 @@ instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Is
   infer_instance
 
 -- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsAsymm α r := by
+instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Std.Asymm r := by
   infer_instance
 
 namespace WellFoundedLT
@@ -285,56 +276,34 @@ namespace WellFoundedLT
 variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
+@[to_dual /-- Inducts on a well-founded `>` relation. -/]
 theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, y < x → C y) → C x) : C a :=
   IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
+@[to_dual /-- All values are accessible under the well-founded `>`. -/]
 theorem apply : ∀ a : α, Acc (· < ·) a :=
   IsWellFounded.apply _
 
 /-- Creates data, given a way to generate a value from all that compare as lesser. See also
 `WellFoundedLT.fix_eq`. -/
+@[to_dual /-- Creates data, given a way to generate a value from all that compare as greater.
+See also `WellFoundedGT.fix_eq`. -/]
 def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
   IsWellFounded.fix (· < ·)
 
 /-- The value from `WellFoundedLT.fix` is built from the previous ones as specified. -/
+@[to_dual /-- The value from `WellFoundedGT.fix` is built from the successive ones as specified. -/]
 theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, y < x → C y) → C x) :
     ∀ x, fix F x = F x fun y _ => fix F y :=
   IsWellFounded.fix_eq _ F
 
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
+@[to_dual /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
 def toWellFoundedRelation : WellFoundedRelation α :=
   IsWellFounded.toWellFoundedRelation (· < ·)
 
 end WellFoundedLT
-
-namespace WellFoundedGT
-
-variable [LT α] [WellFoundedGT α]
-
-/-- Inducts on a well-founded `>` relation. -/
-theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, x < y → C y) → C x) : C a :=
-  IsWellFounded.induction _ _ ind
-
-/-- All values are accessible under the well-founded `>`. -/
-theorem apply : ∀ a : α, Acc (· > ·) a :=
-  IsWellFounded.apply _
-
-/-- Creates data, given a way to generate a value from all that compare as greater. See also
-`WellFoundedGT.fix_eq`. -/
-def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, x < y → C y) → C x) → ∀ x : α, C x :=
-  IsWellFounded.fix (· > ·)
-
-/-- The value from `WellFoundedGT.fix` is built from the successive ones as specified. -/
-theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, x < y → C y) → C x) :
-    ∀ x, fix F x = F x fun y _ => fix F y :=
-  IsWellFounded.fix_eq _ F
-
-/-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/
-def toWellFoundedRelation : WellFoundedRelation α :=
-  IsWellFounded.toWellFoundedRelation (· > ·)
-
-end WellFoundedGT
 
 open Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
@@ -354,7 +323,7 @@ theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr 
     trans := fun a b _ h => (not_rel_of_subsingleton r a b h).elim,
     wf := ⟨fun a => ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
 
-instance [Subsingleton α] : IsWellOrder α EmptyRelation :=
+instance [Subsingleton α] : IsWellOrder α emptyRelation :=
   Subsingleton.isWellOrder _
 
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where
@@ -434,10 +403,10 @@ instance instIsRefl [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
 instance instIsIrrefl [IsIrrefl α r] {f : β → α} : IsIrrefl β (f ⁻¹'o r) :=
   ⟨fun _ => irrefl_of r _⟩
 
-instance instIsSymm [IsSymm α r] {f : β → α} : IsSymm β (f ⁻¹'o r) :=
+instance instIsSymm [Std.Symm r] {f : β → α} : Std.Symm (f ⁻¹'o r) :=
   ⟨fun _ _ ↦ symm_of r⟩
 
-instance instIsAsymm [IsAsymm α r] {f : β → α} : IsAsymm β (f ⁻¹'o r) :=
+instance instAsymm [Std.Asymm r] {f : β → α} : Std.Asymm (f ⁻¹'o r) :=
   ⟨fun _ _ ↦ asymm_of r⟩
 
 instance instIsTrans [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
@@ -466,7 +435,7 @@ end Order.Preimage
 
 
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
-strict relation `s`. Compare `Preorder.lt_iff_le_not_ge`. This is mostly meant to provide dot
+strict relation `s`. Compare `lt_iff_le_not_ge`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
 class IsNonstrictStrictOrder (α : Type*) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) :
     Prop where
@@ -554,7 +523,7 @@ lemma ne_of_ssuperset [IsIrrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → b ≠ a
 @[trans]
 lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
 
-lemma ssubset_asymm [IsAsymm α (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
+lemma ssubset_asymm [Std.Asymm (α := α) (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
 
 alias Eq.trans_ssubset := ssubset_of_eq_of_ssubset
 
@@ -667,109 +636,80 @@ end SubsetSsubset
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
 
 
+@[to_dual instIsReflGe]
 instance [Preorder α] : IsRefl α (· ≤ ·) :=
   ⟨le_refl⟩
 
-instance [Preorder α] : IsRefl α (· ≥ ·) :=
-  IsRefl.swap _
-
+@[to_dual instIsTransGe]
 instance [Preorder α] : IsTrans α (· ≤ ·) :=
   ⟨@le_trans _ _⟩
 
-instance [Preorder α] : IsTrans α (· ≥ ·) :=
-  IsTrans.swap _
-
+@[to_dual instIsPreorderGe]
 instance [Preorder α] : IsPreorder α (· ≤ ·) where
 
-instance [Preorder α] : IsPreorder α (· ≥ ·) where
-
+@[to_dual instIsIrreflGt]
 instance [Preorder α] : IsIrrefl α (· < ·) :=
   ⟨lt_irrefl⟩
 
-instance [Preorder α] : IsIrrefl α (· > ·) :=
-  IsIrrefl.swap _
-
+@[to_dual instIsTransGt]
 instance [Preorder α] : IsTrans α (· < ·) :=
   ⟨@lt_trans _ _⟩
 
-instance [Preorder α] : IsTrans α (· > ·) :=
-  IsTrans.swap _
-
-instance [Preorder α] : IsAsymm α (· < ·) :=
+@[to_dual instAsymmGt]
+instance instAsymmLt [Preorder α] : Std.Asymm (α := α) (· < ·) :=
   ⟨@lt_asymm _ _⟩
 
-instance [Preorder α] : IsAsymm α (· > ·) :=
-  IsAsymm.swap _
-
+@[to_dual instIsAntisymmGt]
 instance [Preorder α] : IsAntisymm α (· < ·) :=
-  IsAsymm.isAntisymm _
+  Std.Asymm.isAntisymm _
 
-instance [Preorder α] : IsAntisymm α (· > ·) :=
-  IsAsymm.isAntisymm _
-
+@[to_dual instIsStrictOrderGt]
 instance [Preorder α] : IsStrictOrder α (· < ·) where
 
-instance [Preorder α] : IsStrictOrder α (· > ·) where
-
+@[to_dual instIsNonstrictStrictOrderGeGt]
 instance [Preorder α] : IsNonstrictStrictOrder α (· ≤ ·) (· < ·) :=
   ⟨@lt_iff_le_not_ge _ _⟩
 
+@[to_dual instIsAntisymmGe]
 instance [PartialOrder α] : IsAntisymm α (· ≤ ·) :=
   ⟨@le_antisymm _ _⟩
 
-instance [PartialOrder α] : IsAntisymm α (· ≥ ·) :=
-  IsAntisymm.swap _
-
+@[to_dual instIsPartialOrderGe]
 instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
-instance [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
-
+@[to_dual isTotal']
 instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
   ⟨le_total⟩
 
-instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
-  IsTotal.swap _
-
+@[to_dual instIsLinearOrderGe]
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
-instance [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
-
+@[to_dual instIsTrichotomousGt]
 instance [LinearOrder α] : IsTrichotomous α (· < ·) :=
   ⟨lt_trichotomy⟩
 
-instance [LinearOrder α] : IsTrichotomous α (· > ·) :=
-  IsTrichotomous.swap _
-
+@[to_dual instIsTrichotomousGe]
 instance [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
   IsTotal.isTrichotomous _
 
-instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
-  IsTotal.isTrichotomous _
-
+@[to_dual instIsStrictTotalOrderGt]
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
-instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
-
+@[to_dual transitive_ge]
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
   transitive_of_trans _
 
+@[to_dual transitive_gt]
 theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
   transitive_of_trans _
 
-theorem transitive_ge [Preorder α] : Transitive (@GE.ge α _) :=
-  transitive_of_trans _
-
-theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
-  transitive_of_trans _
-
+@[to_dual isTotal_ge]
 instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
   @IsTotal.swap α _ h
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
 
+@[to_dual isWellOrder_gt]
 instance (priority := 100) isWellOrder_lt [LinearOrder α] [WellFoundedLT α] :
     IsWellOrder α (· < ·) where
-
-instance (priority := 100) isWellOrder_gt [LinearOrder α] [WellFoundedGT α] :
-    IsWellOrder α (· > ·) where

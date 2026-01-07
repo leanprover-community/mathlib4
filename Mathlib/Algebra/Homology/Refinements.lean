@@ -14,15 +14,15 @@ public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 This file contains lemmas about "refinements" that are specific to
 the study of the homology of `HomologicalComplex`. General
 lemmas about refinements and the case of `ShortComplex` appear
-in the file `CategoryTheory.Abelian.Refinements`.
+in the file `Mathlib/CategoryTheory/Abelian/Refinements.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   (K : HomologicalComplex C c)
 
 namespace HomologicalComplex

@@ -223,7 +223,7 @@ instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimen
     have h_elemexp_bound (a : L) : elemExponent K a ≤ e :=
       Nat.le_log_of_pow_le (Nat.Prime.one_lt <| ringExpChar.eq K p ▸ hp)
         (minpoly_natDegree_eq K a ▸ minpoly.natDegree_le a)
-    rw [RingHom.map_pow, algebraMap_elemReduct_eq, ← pow_mul, ← pow_add,
+    rw [map_pow, algebraMap_elemReduct_eq, ← pow_mul, ← pow_add,
       Nat.add_sub_cancel' (h_elemexp_bound a)]
 
 end Field
@@ -244,6 +244,7 @@ to avoid problems with definitional equality when using the semilinear map versi
 variable [Field K] [Field L] [Algebra K L] [HasExponent K L]
 variable (p : ℕ) [ExpChar K p]
 
+set_option backward.privateInPublic true in
 private noncomputable def iterateFrobeniusAux (n : ℕ) : L → K :=
   fun a ↦ elemReduct K a ^ p ^ (n - elemExponent K a)
 
@@ -251,11 +252,13 @@ variable {L} in
 /-- Action of `iterateFrobeniusAux` on the top field. -/
 private theorem algebraMap_iterateFrobeniusAux {n : ℕ} (hn : exponent K L ≤ n) (a : L) :
     algebraMap K L (iterateFrobeniusAux K L p n a) = a ^ p ^ n := by
-  rw [iterateFrobeniusAux, RingHom.map_pow, algebraMap_elemReduct_eq' K p, ← pow_mul, ← pow_add,
+  rw [iterateFrobeniusAux, map_pow, algebraMap_elemReduct_eq' K p, ← pow_mul, ← pow_add,
     Nat.add_sub_cancel' <| (elemExponent_le_exponent K a).trans hn]
 
 section RingHom
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Iterated Frobenius map (ring homomorphism) for purely inseparable field extension with exponent.
 If `n ≥ exponent K L`, it acts like `x ↦ x ^ p ^ n` but the codomain is the base field `K`. -/
 noncomputable def iterateFrobenius {n : ℕ} (hn : exponent K L ≤ n) : L →+* K where

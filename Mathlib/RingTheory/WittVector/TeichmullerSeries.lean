@@ -29,7 +29,7 @@ then they are equal.
 Show that the Teichmuller series is unique.
 -/
 
-@[expose] public section
+public section
 
 open Ideal Quotient
 namespace WittVector
@@ -57,8 +57,7 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
     simp only [ha, not_false_eq_true, Finset.sum_insert]
     have : ∀ (n : ℕ), (x a).coeff n = 0 ∨ (∑ s ∈ S', x s).coeff n = 0 := by
       simp only [hind]
-      by_contra! h
-      obtain ⟨m, hma, hmS'⟩ := h
+      by_contra! ⟨m, hma, hmS'⟩
       have := Finset.sum_eq_zero.mt hmS'
       push_neg at this
       choose b hb hb' using this

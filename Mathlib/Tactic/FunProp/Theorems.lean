@@ -170,6 +170,8 @@ structure FunctionTheorem where
   form : TheoremForm
   deriving Inhabited, BEq
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
 set_option linter.style.docString.empty false in
@@ -288,7 +290,7 @@ Examples:
   theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
       Continuous (fun x => (f x) + (g x))
 ```
-- mor - the head of function body has to be ``DFunLike.code
+- mor - the head of function body has to be `DFunLike.coe`
 ```
   theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
       (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :

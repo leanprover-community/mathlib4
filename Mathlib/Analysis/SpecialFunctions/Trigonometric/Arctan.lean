@@ -203,6 +203,20 @@ theorem arctan_one : arctan 1 = π / 4 :=
   arctan_eq_of_tan_eq tan_pi_div_four <| by constructor <;> linarith [pi_pos]
 
 @[simp]
+theorem arctan_sqrt_three : arctan (√3) = π / 3 := by
+  rw [← tan_pi_div_three, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
+theorem arctan_inv_sqrt_three : arctan (√3)⁻¹ = π / 6 := by
+  rw [inv_eq_one_div, ← tan_pi_div_six, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
 theorem arctan_eq_pi_div_four : arctan x = π / 4 ↔ x = 1 := arctan_injective.eq_iff' arctan_one
 
 @[simp]
@@ -257,12 +271,11 @@ theorem arctan_inv_of_neg (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := 
 section ArctanAdd
 
 lemma arctan_ne_mul_pi_div_two : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 2 := by
-  by_contra!
-  obtain ⟨k, h⟩ := this
+  by_contra! ⟨k, h⟩
   obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
   rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at lb
   rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at ub
-  norm_cast at lb ub; change -1 < _ at lb; cutsat
+  norm_cast at lb ub; change -1 < _ at lb; lia
 
 lemma arctan_add_arctan_lt_pi_div_two (h : x * y < 1) : arctan x + arctan y < π / 2 := by
   rcases le_or_gt y 0 with hy | hy
@@ -353,7 +366,7 @@ theorem sin_arctan_nonneg : 0 ≤ sin (arctan x) ↔ 0 ≤ x := by
 theorem sin_arctan_le_zero : sin (arctan x) ≤ 0 ↔ x ≤ 0 := by
   simpa using sin_arctan_strictMono.le_iff_le (b := 0)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_arctan : Continuous arctan :=
   continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
 

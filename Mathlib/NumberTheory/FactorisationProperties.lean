@@ -97,23 +97,23 @@ theorem weird_seventy : Weird 70 := by
 lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 lemma perfect_iff_not_abundant_and_not_deficient (hn : 0 ≠ n) :
     Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 lemma abundant_iff_not_perfect_and_not_deficient (hn : 0 ≠ n) :
     Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 /-- A positive natural number is either deficient, perfect, or abundant -/
 theorem deficient_or_perfect_or_abundant (hn : 0 ≠ n) :
     Deficient n ∨ Abundant n ∨ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  cutsat
+  lia
 
 theorem Perfect.pseudoperfect (h : Perfect n) : Pseudoperfect n :=
   ⟨h.2, ⟨properDivisors n, ⟨fun ⦃_⦄ a ↦ a, h.1⟩⟩⟩
