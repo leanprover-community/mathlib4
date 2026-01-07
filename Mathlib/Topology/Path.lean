@@ -131,7 +131,7 @@ lemma target_mem_range (γ : Path x y) : y ∈ range ⇑γ :=
 /-- The constant path from a point to itself -/
 @[refl, simps! (attr := grind =)]
 def refl (x : X) : Path x x where
-  toContinuousMap  := .const I x
+  toContinuousMap := .const I x
   source' := rfl
   target' := rfl
 
