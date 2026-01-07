@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 0xTerencePrime. All rights reserved.
+Copyright (c) 2025 Youheng Luo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: 0xTerencePrime
+Authors: Youheng Luo
 -/
 module
 
@@ -23,11 +23,6 @@ This file defines the notion of subpolynomial growth for functions.
 * `IsSubpolynomial.mul`: Subpolynomial functions are closed under multiplication.
 * `IsSubpolynomial.pow`: Subpolynomial functions are closed under powers.
 * `isSubpolynomial_iff_one_add`: Equivalent characterization using `(1 + ‖g‖)^k`.
-
-## References
-
-* Issue: https://github.com/leanprover-community/mathlib4/issues/32658
-
 -/
 
 open Filter Asymptotics
