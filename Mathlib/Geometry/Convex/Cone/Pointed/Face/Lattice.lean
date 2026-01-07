@@ -43,10 +43,6 @@ section Semiring
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
-/-- A pointed cone `C` as a face of itself. -/
-@[coe]
-def self (C : PointedCone R M) : Face C := ⟨C, IsFaceOf.refl _⟩
-
 /-- Converts a face of a pointed cone into a pointed cone. -/
 @[coe, simp]
 def toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
@@ -105,7 +101,7 @@ instance : CompleteSemilatticeInf (Face C) where
     simpa [LE.le] using fun _ xf s sm => fS s sm xf
 
 instance : CompleteLattice (Face C) where
-  top := self C
+  top := ⟨C, IsFaceOf.refl _⟩
   le_top F := F.isFaceOf.le
   __ := completeLatticeOfCompleteSemilatticeInf _
 
@@ -120,16 +116,12 @@ section Field
 variable [Field R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {C C₁ : PointedCone R M} {C₂ : PointedCone R N}
 
-/-- The lineality space of a pointed cone `C` as a face of `C`.
-  It is contained in all faces of `C`. -/
-def lineal : Face C := ⟨_, IsFaceOf.lineal C⟩
-
-lemma lineal_le {C : PointedCone R M} (F : Face C) : lineal ≤ F := F.isFaceOf.lineal_le
-
 /-- The bottom face of `C` is its lineality space. -/
 instance : OrderBot (Face C) where
-  bot := lineal
-  bot_le F := F.lineal_le
+  bot := ⟨_, IsFaceOf.lineal C⟩
+  bot_le F := F.isFaceOf.lineal_le
+
+abbrev lineal : Face C := ⊥
 
 /-!
 ### Product
