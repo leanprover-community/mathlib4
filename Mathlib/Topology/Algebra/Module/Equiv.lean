@@ -1159,6 +1159,16 @@ lemma IsInvertible.inverse_comp_apply_of_right {g : M₂ →L[R] M₃} {f : M �
     (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
   simp only [hf.inverse_comp_of_right, coe_comp', Function.comp_apply]
 
+@[grind _=_]
+lemma isInvertible_iff_isUnit {f : M →L[R] M} : f.IsInvertible ↔ IsUnit f := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · obtain ⟨e, he⟩ := h
+    rw [← he]
+    exact ⟨(ContinuousLinearEquiv.unitsEquiv _ _).symm e, rfl⟩
+  · obtain ⟨u, hu⟩ := h
+    rw [← hu]
+    exact ⟨(ContinuousLinearEquiv.unitsEquiv _ _) u, rfl⟩
+
 theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M →L[R] M) := by
   suffices Ring.inverse ((ContinuousLinearEquiv.unitsEquiv _ _).symm e : M →L[R] M) = inverse ↑e by
     convert this
@@ -1191,30 +1201,6 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
-
-instance : LawfulInv (M →L[R] M) where
-  inv_unit f := by
-    have hf : ContinuousLinearMap.IsInvertible (f : M →L[R] M) := by sorry
-    let e := ContinuousLinearEquiv.unitsEquiv _ _ f
-    ext x
-
-
-
-
-    sorry
-  inv_of_not_isUnit f hf := by
-    sorry
-  --inv_eq f := by
-  --  change f⁻¹ = Ring.inverse f
-  --  rw [ringInverse_eq_inverse]
-  --  rfl
-
-@[simp]
-theorem inv_equiv (e : M ≃L[R] M) : (e : M →L[R] M)⁻¹ = e.symm := by
-  rw [inv_eq]
-  change Ring.inverse (e : M →L[R] M) = e.symm
-  rw [ringInverse_equiv]
-  simp
 
 namespace IsInvertible
 
@@ -1275,6 +1261,22 @@ end IsInvertible
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :
     f.coprod g ∘L ContinuousLinearEquiv.prodComm R M₃ M₂ = g.coprod f := by
   ext <;> simp
+
+instance : LawfulInv (M →L[R] M) where
+  inv_unit f := by
+    let e := ContinuousLinearEquiv.unitsEquiv _ _ f
+    change (f : M →L[R] M)⁻¹ = e.symm
+    rw [← ContinuousLinearMap.inverse_equiv e]
+    rfl
+  inv_of_not_isUnit f hf := by
+    change f.inverse = 0
+    refine ContinuousLinearMap.inverse_of_not_isInvertible ?_
+    intro hinv
+    rw [isInvertible_iff_isUnit] at hinv
+    exact hf hinv
+
+@[simp]
+theorem inv_equiv (e : M ≃L[R] M) : (e : M →L[R] M)⁻¹ = e.symm := inverse_equiv e
 
 end ContinuousLinearMap
 
