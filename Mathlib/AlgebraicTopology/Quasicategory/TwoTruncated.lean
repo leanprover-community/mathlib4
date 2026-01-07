@@ -40,9 +40,6 @@ open CategoryTheory SimplicialObject.Truncated
 namespace SSet.Truncated
 open Edge CompStruct
 
-set_option linter.style.commandStart false -- this file causes **lots** of linter warnings;
--- TODO diagnose and fix the real underlying reason
-
 /--
 A 2-truncated quasicategory is a 2-truncated simplicial set with the properties:
 * (2, 1)-filling: given two consecutive `Edge`s `e₀₁` and `e₁₂`, there exists a `CompStruct`

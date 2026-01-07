@@ -44,9 +44,6 @@ namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
 open SimplexCategory.Truncated SimplicialObject.Truncated
 
-set_option linter.style.commandStart false -- TODO: the linter yields lots of warnings in this file
--- investigate and fix!
-
 universe v u
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _⦋0⦌₂` as its underlying

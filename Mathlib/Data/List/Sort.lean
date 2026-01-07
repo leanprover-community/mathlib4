@@ -191,7 +191,6 @@ theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : Lis
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
   induction xs <;> grind
 
-set_option linter.style.commandStart false in -- TODO decide!
 theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : ∀ a' ∈ c, a ≼ a') :
     a :: c <+ orderedInsert r a l := by
   induction l <;> grind

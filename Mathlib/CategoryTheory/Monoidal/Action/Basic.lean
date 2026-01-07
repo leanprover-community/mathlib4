@@ -410,10 +410,9 @@ scoped notation "αᵣ " => MonoidalRightActionStruct.actionAssocIso
 
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ⊙ᵣ 𝟙_ C  ≅ -`. -/
 scoped notation "ρᵣ " => MonoidalRightActionStruct.actionUnitIso
-set_option linter.style.commandStart false in -- TODO fix linter!
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ⊙ᵣ 𝟙_ C  ≅ -`,
 allowing one to specify the acting category. -/
-scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
+scoped notation "ρᵣ[" J "]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 
 end MonoidalRightAction
 

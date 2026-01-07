@@ -43,8 +43,6 @@ open ContinuousMap
 proof_wanted ContinuousMap.HomotopyEquiv.nonempty_homeomorph_sphere [T2Space M]
     (n : ℕ) [ChartedSpace ℝⁿ M] : M ≃ₕ 𝕊ⁿ → Nonempty (M ≃ₜ 𝕊ⁿ)
 
-set_option linter.style.commandStart false -- TODO: investigate and fix the bug!
-
 /-- The 3-dimensional topological Poincaré conjecture (proven by Perelman) -/
 proof_wanted SimplyConnectedSpace.nonempty_homeomorph_sphere_three
     [T2Space M] [ChartedSpace ℝ³ M] [SimplyConnectedSpace M] [CompactSpace M] :

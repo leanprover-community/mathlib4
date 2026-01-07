@@ -496,7 +496,6 @@ lemma dual_isLoop_iff_isColoop : M✶.IsLoop e ↔ M.IsColoop e :=
 lemma singleton_isCocircuit : M.IsCocircuit {e} ↔ M.IsColoop e := by
   simp
 
-set_option linter.style.commandStart false -- linter false positive; TODO diagnose and fix!
 lemma isColoop_tfae (M : Matroid α) (e : α) : List.TFAE [
     M.IsColoop e,
     e ∈ M.coloops,

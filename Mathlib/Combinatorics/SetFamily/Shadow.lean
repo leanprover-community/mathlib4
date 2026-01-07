@@ -71,9 +71,6 @@ open FinsetFamily
 theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
   rfl
 
-set_option linter.style.commandStart false -- Linter false positive related to
--- iterated differential; disable for now.
-
 @[simp] lemma shadow_iterate_empty (k : ℕ) : ∂^[k] (∅ : Finset (Finset α)) = ∅ := by
   induction k <;> simp [*, shadow_empty]
 
@@ -232,8 +229,6 @@ lemma mem_upShadow_iff_exists_mem_card_add_one :
   rw [card_sdiff_of_subset hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 
--- Linter false positive related to iterated differential; disable for now.
-set_option linter.style.commandStart false in
 lemma mem_upShadow_iterate_iff_exists_card :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ u : Finset α, #u = k ∧ u ⊆ t ∧ t \ u ∈ 𝒜 := by
   induction k generalizing t with
@@ -248,8 +243,6 @@ lemma mem_upShadow_iterate_iff_exists_card :
       rw [insert_subset_iff] at hut
       exact ⟨a, hut.1, _, rfl, ⟨hut.2, hau⟩, htu⟩
 
--- Linter false positive related to iterated differential; disable for now.
-set_option linter.style.commandStart false in
 /-- `t` is in the upper shadow of `𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
 
 See also `Finset.mem_upShadow_iff_exists_mem_card_add`. -/
@@ -261,8 +254,6 @@ lemma mem_upShadow_iterate_iff_exists_sdiff : t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s �
   · rintro ⟨s, hs, hst, rfl⟩
     exact ⟨_, rfl, sdiff_subset, by rwa [sdiff_sdiff_eq_self hst]⟩
 
--- Linter false positive related to iterated differential; disable for now.
-set_option linter.style.commandStart false in
 /-- `t ∈ ∂⁺^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
 
 See also `Finset.mem_upShadow_iterate_iff_exists_sdiff`. -/
