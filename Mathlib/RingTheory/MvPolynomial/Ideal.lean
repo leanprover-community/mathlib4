@@ -109,8 +109,7 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     · apply support_add at h
       grind only [= mem_union]
     rw [smul_eq_mul] at hx
-    apply support_mul at hx
-    obtain ⟨u, u_in, v, v_in, huv⟩ := mem_add.mp hx
+    obtain ⟨u, u_in, v, v_in, huv⟩ := mem_add.mp (support_mul _ _ hx)
     rw [← huv, sum_add_index' (by simp) (by simp)]
     grind only
   intro h; rw [as_sum p]
