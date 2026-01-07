@@ -551,7 +551,7 @@ lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
   simp [one_lt_inv₀ (zero_lt_iff.mpr (by simp [h0] : v x ≠ 0)), h1]
 
 lemma IsNontrivial_iff_exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    {v : Valuation K Γ₀} : v.IsNontrivial ↔ ∃ x, 1 < v x  :=
+    {v : Valuation K Γ₀} : v.IsNontrivial ↔ ∃ x, 1 < v x :=
   ⟨fun h ↦ by simpa using h.exists_one_lt (v := v), fun ⟨x, hx1⟩ ↦ ⟨x, by aesop⟩⟩
 
 end Field
