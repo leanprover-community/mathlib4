@@ -104,7 +104,7 @@ private lemma negOnePow_mul_le {α : ℝ} {i : ℕ} (hα : α ∈ Set.Icc (-1) 1
   rw [abs_mul, abs_neg_one_pow, one_mul]
   exact abs_le.mpr hα
 
-/-- For a polynomial `P` and coefficient function `c`, sumNodes `n` `c` `P` is a linear combination
+/-- For a polynomial `P` and coefficient function `c`, `sumNodes n c P` is a linear combination
 of `P` evaluated at the `n`'th order Chebyshev nodes, with coefficients taken from `c`. -/
 noncomputable def sumNodes (n : ℕ) (c : ℕ → ℝ) (P : ℝ[X]) := ∑ i ≤ n, P.eval (node n i) * (c i)
 
