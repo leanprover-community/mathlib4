@@ -28,7 +28,7 @@ Derivation
 
 @[expose] public section
 
-/-- A Lie-Rinehart algebra over a commutative Ring `R` is a commutative `R`-algebra `A` together
+/-- A Lie-Rinehart algebra over a commutative ring `R` is a commutative `R`-algebra `A` together
 with an `A`-module `L` equipped with a Lie bracket and a Lie algebra and module homomorphism
 `ρ:L→ Der_R(A,A)` to the derivations of `A`, such that the Leibniz rule `⁅x,a•y⁆=a•⁅x,y⁆+ρ(x)(a)•y`
 is satisfied.
