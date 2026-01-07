@@ -386,7 +386,8 @@ lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
     obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
     obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
     set j := fun z ↦ (z - g x) ^ r • f z
-    have := ((han.fun_inv hne).fun_pow r).fun_smul (hr.restrictScalars.comp' hg)
+    have : AnalyticAt 𝕜 (fun i ↦ (h i)⁻¹ ^ r • j (g i)) x :=
+      ((han.fun_inv hne).fun_pow r).fun_smul (hr.restrictScalars.comp' hg)
     refine ⟨n * r, this.congr ?_⟩
     filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
     simp only [j, inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
