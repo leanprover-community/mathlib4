@@ -1193,10 +1193,21 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   exact Ring.inverse_one _
 
 instance : LawfulInv (M →L[R] M) where
-  inv_eq f := by
-    change f⁻¹ = Ring.inverse f
-    rw [ringInverse_eq_inverse]
-    rfl
+  inv_unit f := by
+    have hf : ContinuousLinearMap.IsInvertible (f : M →L[R] M) := by sorry
+    let e := ContinuousLinearEquiv.unitsEquiv _ _ f
+    ext x
+
+
+
+
+    sorry
+  inv_of_not_isUnit f hf := by
+    sorry
+  --inv_eq f := by
+  --  change f⁻¹ = Ring.inverse f
+  --  rw [ringInverse_eq_inverse]
+  --  rfl
 
 @[simp]
 theorem inv_equiv (e : M ≃L[R] M) : (e : M →L[R] M)⁻¹ = e.symm := by
