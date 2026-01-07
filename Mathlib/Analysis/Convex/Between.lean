@@ -1069,6 +1069,30 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     convert (one_smul R (y -ᵥ x)).symm
     field
 
+lemma wbtw_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
+    Wbtw R x y z ∨ Wbtw R x z y := by
+  rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
+  · rw [vsub_eq_zero_iff_eq] at h
+    simp [h]
+  · rw [vsub_eq_zero_iff_eq] at h
+    simp [h]
+  · by_cases hr : r₂ ≤ r₁
+    · left
+      refine ⟨r₂ / r₁, ⟨div_nonneg hr₂.le hr₁.le, div_le_one_of_le₀ hr hr₁.le⟩, ?_⟩
+      have h' : y = r₁⁻¹ • r₂ • (z -ᵥ x) +ᵥ x := by simp [← h, hr₁.ne']
+      rw [eq_comm]
+      simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, eq_vadd_iff_vsub_eq, vsub_self,
+        add_zero]
+      ring_nf
+    · simp only [not_le] at hr
+      right
+      refine ⟨r₁ / r₂, ⟨div_nonneg hr₁.le hr₂.le, div_le_one_of_le₀ hr.le hr₂.le⟩, ?_⟩
+      have h' : z = r₂⁻¹ • r₁ • (y -ᵥ x) +ᵥ x := by simp [h, hr₂.ne']
+      rw [eq_comm]
+      simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, eq_vadd_iff_vsub_eq, vsub_self,
+        add_zero]
+      ring_nf
+
 /-- If `T` is an affine independent family of points,
 then any 3 distinct points form a triangle. -/
 theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
