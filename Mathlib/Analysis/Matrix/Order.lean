@@ -169,7 +169,7 @@ end sqrtDeprecated
 
 lemma inv_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
     (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
-  rw [eq_comm, CFC.sqrt_eq_iff _ _  hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
+  rw [eq_comm, CFC.sqrt_eq_iff _ _ hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
