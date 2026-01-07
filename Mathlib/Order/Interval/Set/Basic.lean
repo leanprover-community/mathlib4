@@ -559,43 +559,23 @@ theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
 
 theorem notMem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_ge h.1
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_lt := notMem_Icc_of_lt
-
 theorem notMem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_ge h.2
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_gt := notMem_Icc_of_gt
 
 theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_ge h.1
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ico_of_lt := notMem_Ico_of_lt
-
 theorem notMem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_ge h.2
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioc_of_gt := notMem_Ioc_of_gt
 
 theorem notMem_Ioi_self : a ∉ Ioi a := lt_irrefl _
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioi_self := notMem_Ioi_self
-
 theorem notMem_Iio_self : b ∉ Iio b := lt_irrefl _
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iio_self := notMem_Iio_self
 
 theorem notMem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioc_of_le := notMem_Ioc_of_le
-
 theorem notMem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Ico_of_ge := notMem_Ico_of_ge
 
 theorem notMem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioo_of_le := notMem_Ioo_of_le
-
 theorem notMem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioo_of_ge := notMem_Ioo_of_ge
 
 section matched_intervals
 
