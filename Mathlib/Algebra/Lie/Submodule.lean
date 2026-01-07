@@ -462,8 +462,6 @@ variable {N N'}
 
 instance : Add (LieSubmodule R L M) where add := max
 
-instance : Zero (LieSubmodule R L M) where zero := ⊥
-
 instance : AddCommMonoid (LieSubmodule R L M) where
   add_assoc := sup_assoc
   zero_add := bot_sup_eq

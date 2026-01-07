@@ -26,9 +26,6 @@ namespace PLift
 
 variable {α : Sort u} {β : Sort v} {f : α → β}
 
-instance [Subsingleton α] : Subsingleton (PLift α) :=
-  Equiv.plift.subsingleton
-
 instance [Nonempty α] : Nonempty (PLift α) :=
   Equiv.plift.nonempty
 
@@ -80,9 +77,6 @@ end PLift
 namespace ULift
 
 variable {α : Type u} {β : Type v} {f : α → β}
-
-instance [Subsingleton α] : Subsingleton (ULift α) :=
-  Equiv.ulift.subsingleton
 
 instance [Nonempty α] : Nonempty (ULift α) :=
   Equiv.ulift.nonempty
