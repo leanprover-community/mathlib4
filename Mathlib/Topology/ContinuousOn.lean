@@ -22,7 +22,7 @@ equipped with the subspace topology.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 
@@ -88,9 +88,6 @@ theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
-
-@[deprecated (since := "2025-05-23")]
-alias continuousWithinAt_of_not_mem_closure := continuousWithinAt_of_notMem_closure
 
 /-!
 ## `ContinuousOn`
