@@ -688,13 +688,13 @@ theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l 
   ext i j
   simp [LinearMap.toMatrix_apply, Matrix.one_apply, Finsupp.single_apply, eq_comm]
 
-theorem LinearMap.toMatrix_smulBasis_left {G} [DistribSMul G M₁]
+theorem LinearMap.toMatrix_smulBasis_left {G} [Group G] [DistribMulAction G M₁]
     [SMulCommClass G R M₁] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix (g • v₁) v₂ f =
       LinearMap.toMatrix v₁ v₂ (f ∘ₗ DistribSMul.toLinearMap _ _ g) := by
   rfl
 
-theorem LinearMap.toMatrix_smulBasis_right {G} [DistribSMul G M₂]
+theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M₂]
     [SMulCommClass G R M₂] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ (g • v₂) f =
       LinearMap.toMatrix v₁ v₂ (DistribSMul.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
