@@ -159,8 +159,6 @@ theorem eRank_zero {m n : Type*} [Nontrivial R] : eRank (0 : Matrix m n R) = 0 :
 
 theorem rank_le_card_width [Nontrivial R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card n := by
-  haveI : Module.Finite R (n → R) := Module.Finite.pi
-  haveI : Module.Free R (n → R) := Module.Free.pi _ _
   exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
 
 theorem rank_le_width [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
@@ -278,11 +276,8 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   cases nonempty_fintype m
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).equiv v₂ (Equiv.refl _)
-  have range_e₂ : LinearMap.range e₂ = ⊤ := by
-    rw [LinearMap.range_eq_top]
-    exact e₂.surjective
   refine LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ ?_)
-  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) range_e₂]
+  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) e₂.range]
   congr 1
   apply LinearMap.pi_ext'
   rintro i
@@ -296,8 +291,6 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
 
 theorem rank_le_card_height [Fintype m] [Nontrivial R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card m := by
-  haveI : Module.Finite R (m → R) := Module.Finite.pi
-  haveI : Module.Free R (m → R) := Module.Free.pi _ _
   exact (Submodule.finrank_le _).trans (finrank_pi R).le
 
 theorem rank_le_height [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :

@@ -298,13 +298,13 @@ theorem le_hsum_support_mem {s : SummableFamily Γ R α} {g g' : Γ}
   exact hg i g' hi
 
 theorem hsum_orderTop_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
-    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
+    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀ b : α, b ≠ a → (s b).coeff g = 0) :
     s.hsum.orderTop = g :=
   orderTop_eq_of_le (ne_of_eq_of_ne (by rw [coeff_hsum, finsum_eq_single (fun i ↦ (s i).coeff g) a
     hna]) (coeff_orderTop_ne ha.symm)) fun _ hg' => le_hsum_support_mem hg hg'
 
 theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
-    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
+    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀ b : α, b ≠ a → (s b).coeff g = 0) :
     s.hsum.leadingCoeff = (s a).coeff g := by
   have := hsum_orderTop_of_le ha hg hna
   rw [orderTop] at this

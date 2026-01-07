@@ -12,7 +12,7 @@ public import Mathlib.Data.Multiset.Sections
 
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
-@[expose] public section
+public section
 
 
 variable {ι M M₀ R : Type*}

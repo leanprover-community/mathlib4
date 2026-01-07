@@ -18,7 +18,7 @@ the Yoneda embedding as a fully faithful functor `yoneda : C ⥤ Cᵒᵖ ⥤ Typ
 In addition to `yoneda`, we also define `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁)`
 with the additional universe parameter `w`. When `C` is locally `w`-small,
 one may also use `shrinkYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type w` from the file
-`CategoryTheory.ShrinkYoneda`.
+`Mathlib/CategoryTheory/ShrinkYoneda.lean`.
 
 The naturality of the bijection `yonedaEquiv` involved in the
 Yoneda lemma is also expressed as a natural isomorphism
@@ -186,8 +186,7 @@ def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
   fullyFaithful.preimageIso
     (NatIso.ofComponents (fun Z =>
       { hom := q
-        inv := p })
-    ) |>.unop
+        inv := p })) |>.unop
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/

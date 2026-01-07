@@ -90,12 +90,6 @@ namespace IsCyclotomicExtension
 
 section Basic
 
-variable {S B} in
-@[deprecated exists_isPrimitiveRoot (since := "2025-05-21")]
-theorem exists_prim_root [IsCyclotomicExtension S A B] {n : ℕ} (ha : n ∈ S) (ha' : n ≠ 0) :
-    ∃ r : B, IsPrimitiveRoot r n :=
-  exists_isPrimitiveRoot A B ha ha'
-
 /-- A reformulation of `IsCyclotomicExtension` that uses `⊤`. -/
 theorem iff_adjoin_eq_top :
     IsCyclotomicExtension S A B ↔
@@ -127,7 +121,7 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {0} A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
-  (iff_adjoin_eq_top _ _ _).2  <| by simpa
+  (iff_adjoin_eq_top _ _ _).2 <| by simpa
 
 theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
@@ -205,7 +199,24 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
     rw [← adjoin_adjoin_coe_preimage, preimage_setOf_eq]
     norm_cast
 
-variable {n S}
+variable {n}
+
+/-- If there exists a primitive root of unity of order `n` in `B`, then
+`IsCyclotomicExtension S A B` implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
+theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
+    (hr : IsPrimitiveRoot r n) :
+    IsCyclotomicExtension (S ∪ {n}) A B := by
+  by_cases hn : n = 0
+  · rwa [hn, eq_self_sdiff_zero, Set.union_diff_right, ← eq_self_sdiff_zero]
+  rw [iff_adjoin_eq_top]
+  refine ⟨fun m hm₁ hm₂ ↦ ?_, le_antisymm (by aesop) ?_⟩
+  · obtain hm₁ | rfl := hm₁
+    · exact exists_isPrimitiveRoot A B hm₁ hm₂
+    · use r
+  · rw [← ((iff_adjoin_eq_top _ _ _).mp hB).2]
+    exact Algebra.adjoin_mono (by aesop)
+
+variable {S}
 
 /-- If there exists a nonzero `s ∈ S` such that `n ∣ s`, then `IsCyclotomicExtension S A B`
 implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
@@ -883,16 +894,10 @@ theorem IsSepClosed.isCyclotomicExtension (h : ∀ a ∈ S, a ≠ 0 → NeZero (
     (degree_cyclotomic_pos a K (Nat.pos_of_ne_zero ha')).ne' (separable_cyclotomic a K)
   exact ⟨r, by rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr⟩
 
-@[deprecated (since := "2025-06-22")]
-alias IsAlgClosed.isCyclotomicExtension := IsSepClosed.isCyclotomicExtension
-
 instance IsSepClosedOfCharZero.isCyclotomicExtension [CharZero K] :
     ∀ S, IsCyclotomicExtension S K K := fun S => by
   rw [IsCyclotomicExtension.eq_self_sdiff_zero]
   exact IsSepClosed.isCyclotomicExtension _ K fun _ _ h ↦ ⟨Nat.cast_ne_zero.mpr h⟩
-
-@[deprecated (since := "2025-06-22")]
-alias IsAlgClosedOfCharZero.isCyclotomicExtension := IsSepClosedOfCharZero.isCyclotomicExtension
 
 end IsSepClosed
 
