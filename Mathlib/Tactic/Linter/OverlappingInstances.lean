@@ -114,8 +114,9 @@ def overlappingInstances : Linter where
           | .ofTermInfo i
           | .ofPartialTermInfo i => pure (i.lctx, none, i.expectedType?)
           | _ => continue -- Ought to be unreachable. TODO: check or refactor?
+        let outerRef ← getRef
         ctx.runMetaMWithMessages lctx (localInstances := localInstances) <|
-          withRef (← getRef) do
+          withRef outerRef do
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or remaining type for anything,
           but these could be passed to `k`. -/
