@@ -129,7 +129,7 @@ The non-unital ⋆-homomorphism/⋆-representation of A into the bounded operato
 that is constructed from a positive linear functional `f` on a possibly non-unital C⋆-algebra.
 -/
 noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
-  toFun a := mapCLM (f.leftMulMapPreGNS a)
+  toFun a := completion (f.leftMulMapPreGNS a)
   map_smul' r a := by
     ext x
     induction x using Completion.induction_on with
@@ -153,15 +153,15 @@ noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] 
       have := map_coe ((f.leftMulMapPreGNS a).comp (f.leftMulMapPreGNS b)).uniformContinuous
       simp_all [mul_assoc]
   map_star' a := by
-    refine (eq_adjoint_iff (mapCLM (f.leftMulMapPreGNS (star a)))
-      (mapCLM (f.leftMulMapPreGNS a))).mpr ?_
+    refine (eq_adjoint_iff (completion (f.leftMulMapPreGNS (star a)))
+      (completion (f.leftMulMapPreGNS a))).mpr ?_
     intro x y
     induction x, y using Completion.induction_on₂ with
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y => simp [mul_assoc, preGNS_inner_def]
 
 lemma gnsNonUnitalStarAlgHom_apply {a : A} :
-    f.gnsNonUnitalStarAlgHom a = mapCLM (f.leftMulMapPreGNS a) := rfl
+    f.gnsNonUnitalStarAlgHom a = completion (f.leftMulMapPreGNS a) := rfl
 
 @[simp]
 lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.preGNS} :

@@ -23,7 +23,9 @@ lifted.
 
 @[expose] public section
 
-namespace UniformSpace.Completion
+namespace ContinuousLinearMap
+
+open UniformSpace UniformSpace.Completion
 
 variable {α β : Type*} {R₁ R₂ : Type*} [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
   [Semiring R₁] [Module R₁ α] [UniformContinuousConstSMul R₁ α] [Semiring R₂] [UniformSpace β]
@@ -35,7 +37,7 @@ Lift a continuous semilinear map to a continuous semilinear map between the
 `UniformSpace.Completion`s of the spaces. This is `UniformSpace.Completion.map` bundled as a
 continuous linear map when the input is itself a continuous linear map.
 -/
-noncomputable def mapCLM (f : α →SL[σ] β) : (Completion α) →SL[σ] (Completion β) where
+noncomputable def completion (f : α →SL[σ] β) : (Completion α) →SL[σ] (Completion β) where
   __ := f.toAddMonoidHom.completion f.continuous
   map_smul' r x := by
     induction x using Completion.induction_on with
@@ -47,13 +49,13 @@ noncomputable def mapCLM (f : α →SL[σ] β) : (Completion α) →SL[σ] (Comp
 
 @[simp]
 lemma toAddMonoidHom_mapCLM (f : α →SL[σ] β) :
-    (mapCLM f).toAddMonoidHom = f.toAddMonoidHom.completion f.continuous := rfl
+    (completion f).toAddMonoidHom = f.toAddMonoidHom.completion f.continuous := rfl
 
 lemma mapCLM_apply (f : α →SL[σ] β) :
-    mapCLM f = Completion.map f := rfl
+    completion f = Completion.map f := rfl
 
 @[simp]
 theorem mapCLM_apply_coe (f : α →SL[σ] β) (a : α) :
-    mapCLM f a = f a := by simp [mapCLM_apply, map_coe]
+    completion f a = f a := by simp [mapCLM_apply, map_coe]
 
-end UniformSpace.Completion
+end ContinuousLinearMap
