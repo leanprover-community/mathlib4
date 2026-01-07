@@ -136,16 +136,14 @@ either of these conditions. -/
 def getDeclBodyInfos (t : InfoTree) : List (ContextInfo × Info) :=
   t.foldInfoTree (init := []) fun ctx t acc =>
     match t with
-    | .node (.ofCustomInfo i) body =>
+    | .node (.ofCustomInfo i) body => Id.run do
       if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
         if h : 0 < body.size then
           -- See through `.context`s instead of just matching on `.node`:
           let result? := body[0].getHighestInfo? ctx
           if let some result := result? then
-            result :: acc
-          else acc
-        else acc
-      else acc
+            return result :: acc
+      return acc
     | _ => acc
 
 /--
