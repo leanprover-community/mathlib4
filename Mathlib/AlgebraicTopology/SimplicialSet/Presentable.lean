@@ -34,7 +34,7 @@ instance (n : SimplexCategory) :
   inferInstanceAs (IsFinitelyPresentable.{u} (uliftYoneda.obj n))
 
 lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
-    ∃ (Y : SSet.{u}) (_ : Y.Finite ) (_ : IsFinitelyPresentable.{u} Y)
+    ∃ (Y : SSet.{u}) (_ : Y.Finite) (_ : IsFinitelyPresentable.{u} Y)
       (p : Y ⟶ X), Epi p := by
   refine ⟨∐ (fun (s : X.N) ↦ Δ[s.dim]), inferInstance, ?_,
     Sigma.desc (fun s ↦ yonedaEquiv.symm s.simplex), ?_⟩
