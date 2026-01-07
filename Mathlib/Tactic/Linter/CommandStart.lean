@@ -147,6 +147,25 @@ def unSubscript : String → String
   | s => s
 
 /--
+Convert a single-character superscript string into the corresponding normal single-character string.
+-/
+def unSuperscript : String → String
+  | "⁰" => "0"
+  | "¹" => "1"
+  | "²" => "2"
+  | "³" => "3"
+  | "⁴" => "4"
+  | "⁵" => "5"
+  | "⁶" => "6"
+  | "⁷" => "7"
+  | "⁸" => "8"
+  | "⁹" => "9"
+  | "⁺" => "+"
+  | "ⁿ" => "n"
+  | "ᵐ" => "m"
+  | s => s
+
+/--
 Compares the two substrings `s` and `t`, with the expectation that `t` starts with `s`,
 up to whitespace and guillemets (`«` and `»`).
 
@@ -180,6 +199,12 @@ def readWhile (s t : Substring.Raw) : Substring.Raw :=
     else
     if unSubscript t1.toString == s1.toString then
       let tdrop := if unSubscript ((t.drop 2).take 1).toString == ((t.drop 2).take 1).toString then
+        t.drop 1
+      else
+        t.drop 2
+      readWhile (s.drop 1) tdrop
+    else if unSuperscript t1.toString == s1.toString then
+      let tdrop := if unSuperscript ((t.drop 2).take 1).toString == ((t.drop 2).take 1).toString then
         t.drop 1
       else
         t.drop 2
