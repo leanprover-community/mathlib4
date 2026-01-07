@@ -9,16 +9,166 @@ public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.BigOperators
 
 
-
 @[expose] public section
 
 open scoped nonZeroDivisors Pointwise BigOperators
 
 open IsLocalization IsFractionRing FractionalIdeal
 
+section CommRing
+
+variable (R : Type*) [CommRing R]
+
+private lemma ideal_fg_of_isUnit_fractionalIdeal (I : Ideal R)
+    (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
+    (I : Submodule R R).FG := by
+  -- This is exactly `Ideal.fg_of_isUnit` specialized to the fraction field.
+  simpa using
+    (Ideal.fg_of_isUnit (S := (R⁰)) (P := FractionRing R)
+      (inj := IsFractionRing.injective R (FractionRing R)) I hI)
+
+lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R} {J : Ideal R}
+    (hJspan : J = Ideal.span (Set.range c))
+    (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
+    ∃ (K : FractionalIdeal R⁰ (FractionRing R)),
+      (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1 ∧
+        ∃ ℓ : Fin n → FractionRing R,
+          (∀ i, ℓ i ∈ K) ∧
+            (Finset.univ : Finset (Fin n)).sum
+                (fun i => algebraMap R (FractionRing R) (c i) * ℓ i) = 1 := by
+  rcases hJunit with ⟨u, hu⟩
+  let K : FractionalIdeal R⁰ (FractionRing R) := (↑(u⁻¹) : FractionalIdeal R⁰ (FractionRing R))
+  have hJK : (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1 := by
+    calc
+      (J : FractionalIdeal R⁰ (FractionRing R)) * K =
+          (↑u : FractionalIdeal R⁰ (FractionRing R)) *
+            (↑(u⁻¹) : FractionalIdeal R⁰ (FractionRing R)) := by
+            simp [K, hu]
+      _ = 1 := by simp
+  refine ⟨K, hJK, ?_⟩
+  -- Induct on the proof that `1 ∈ J * K` in the `R`-submodule `FractionRing R`.
+  let C : FractionRing R → Prop :=
+    fun r =>
+      ∃ ℓ : Fin n → FractionRing R,
+        (∀ i, ℓ i ∈ K) ∧
+          (Finset.univ : Finset (Fin n)).sum
+              (fun i => algebraMap R (FractionRing R) (c i) * ℓ i) = r
+  have hr : (1 : FractionRing R) ∈ (J : FractionalIdeal R⁰ (FractionRing R)) * K := by
+    simpa [hJK] using
+      (FractionalIdeal.one_mem_one (S := (R⁰)) (P := FractionRing R))
+  have hC1 : C 1 := by
+    refine
+      FractionalIdeal.mul_induction_on (I := (J : FractionalIdeal R⁰ (FractionRing R))) (J := K)
+        (r := (1 : FractionRing R)) hr ?_ ?_
+    · intro i hi j hj
+      rcases (FractionalIdeal.mem_coeIdeal (S := (R⁰)) (P := FractionRing R) (I := J) (x := i)).1
+          hi with
+        ⟨y, hyJ, rfl⟩
+      have hyspan : y ∈ Ideal.span (Set.range c) := by simpa [hJspan] using hyJ
+      have hyspan' : y ∈ Submodule.span R (Set.range c) := by
+        -- Avoid simp loops between `Ideal.span` and `Submodule.span`.
+        simpa using hyspan
+      rcases (Submodule.mem_span_range_iff_exists_fun (R := R) (v := c) (x := y)).1 hyspan' with
+        ⟨a, ha⟩
+      refine ⟨fun k => a k • j, ?_, ?_⟩
+      · intro k
+        exact (K : Submodule R (FractionRing R)).smul_mem (a k) hj
+      · have hy :
+            (Finset.univ : Finset (Fin n)).sum (fun k => a k * c k) = y := by
+          simpa using ha
+        have hy_map :
+            (Finset.univ : Finset (Fin n)).sum
+                (fun k => algebraMap R (FractionRing R) (a k * c k)) =
+              algebraMap R (FractionRing R) y := by
+          simpa [map_sum] using congrArg (algebraMap R (FractionRing R)) hy
+        have hterm :
+            ∀ k : Fin n,
+              algebraMap R (FractionRing R) (c k) * (a k • j) =
+                algebraMap R (FractionRing R) (a k * c k) * j := by
+          intro k
+          -- Use that `a • j = algebraMap a * j`, and commute scalars past `c k`.
+          simp [Algebra.smul_def, mul_left_comm, mul_comm]
+        calc
+          (Finset.univ : Finset (Fin n)).sum
+              (fun k => algebraMap R (FractionRing R) (c k) * (a k • j)) =
+              (Finset.univ : Finset (Fin n)).sum
+                (fun k => algebraMap R (FractionRing R) (a k * c k) * j) := by
+                refine Finset.sum_congr rfl ?_
+                intro k _
+                exact hterm k
+          _ =
+              ((Finset.univ : Finset (Fin n)).sum
+                  (fun k => algebraMap R (FractionRing R) (a k * c k))) * j := by
+                simpa using
+                  (Finset.sum_mul (s := (Finset.univ : Finset (Fin n)))
+                        (f := fun k => algebraMap R (FractionRing R) (a k * c k)) (a := j)).symm
+          _ = algebraMap R (FractionRing R) y * j := by
+                exact congrArg (fun t => t * j) hy_map
+    · intro x y hx hy
+      rcases hx with ⟨ℓx, hℓx, hxsum⟩
+      rcases hy with ⟨ℓy, hℓy, hysum⟩
+      refine ⟨fun k => ℓx k + ℓy k, ?_, ?_⟩
+      · intro k
+        exact (K : Submodule R (FractionRing R)).add_mem (hℓx k) (hℓy k)
+      · -- Distribute multiplication over addition, then use the two induction hypotheses.
+        simp [mul_add, Finset.sum_add_distrib, hxsum, hysum]
+  rcases hC1 with ⟨ℓ, hℓ, hsum⟩
+  exact ⟨ℓ, hℓ, by simpa using hsum⟩
+
+lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
+    (hJspan : J = Ideal.span (Set.range c))
+    {K : FractionalIdeal R⁰ (FractionRing R)}
+    (hJK : (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1)
+    {ℓ : Fin n → FractionRing R} (hℓK : ∀ i, ℓ i ∈ K)
+    {x : R} {b : Fin n → R}
+    (hb :
+      ∀ i,
+        algebraMap R (FractionRing R) (b i) =
+          algebraMap R (FractionRing R) x * ℓ i) :
+    ∀ i j : Fin n, x ∣ c i * b j := by
+  intro i j
+  have hcJ : c i ∈ J := by
+    have : c i ∈ Ideal.span (Set.range c) :=
+      Ideal.subset_span (by exact ⟨i, rfl⟩)
+    simpa [hJspan] using this
+  have hci :
+      algebraMap R (FractionRing R) (c i) ∈
+        (J : FractionalIdeal R⁰ (FractionRing R)) :=
+    FractionalIdeal.mem_coeIdeal_of_mem (S := (R⁰)) (P := FractionRing R) hcJ
+  have hij :
+      algebraMap R (FractionRing R) (c i) * ℓ j ∈
+        (J : FractionalIdeal R⁰ (FractionRing R)) * K :=
+    FractionalIdeal.mul_mem_mul hci (hℓK j)
+  have hij1 :
+      algebraMap R (FractionRing R) (c i) * ℓ j ∈ (1 : FractionalIdeal R⁰ (FractionRing R)) := by
+    simpa [hJK] using hij
+  rcases (FractionalIdeal.mem_one_iff (S := (R⁰)) (P := FractionRing R)).1 hij1 with ⟨r, hr⟩
+  refine ⟨r, ?_⟩
+  have hinj : Function.Injective (algebraMap R (FractionRing R)) :=
+    IsFractionRing.injective R (FractionRing R)
+  have hmap :
+      algebraMap R (FractionRing R) (x * r) =
+        algebraMap R (FractionRing R) (c i * b j) := by
+    calc
+      algebraMap R (FractionRing R) (x * r)
+          = algebraMap R (FractionRing R) x * algebraMap R (FractionRing R) r := by
+              simp [map_mul]
+      _ = algebraMap R (FractionRing R) x *
+            (algebraMap R (FractionRing R) (c i) * ℓ j) := by
+              simp [hr]
+      _ = algebraMap R (FractionRing R) (c i) *
+            (algebraMap R (FractionRing R) x * ℓ j) := by
+              simp [mul_left_comm, mul_comm]
+      _ = algebraMap R (FractionRing R) (c i) * algebraMap R (FractionRing R) (b j) := by
+              simp [hb j]
+      _ = algebraMap R (FractionRing R) (c i * b j) := by
+              simp [map_mul]
+  have hxrr : x * r = c i * b j := hinj (by simpa [map_mul] using hmap)
+  exact hxrr.symm
+
 section Domain
 
-variable (R : Type*) [CommRing R] [IsDomain R]
+variable [IsDomain R]
 
 lemma ideal_ne_bot_of_isUnit_fractionalIdeal {I : Ideal R}
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) : I ≠ ⊥ := by
@@ -34,15 +184,9 @@ lemma exists_ne_zero_mem_of_isUnit_fractionalIdeal {I : Ideal R}
   rcases Submodule.exists_mem_ne_zero_of_ne_bot hne with ⟨f, hfI, hf0⟩
   exact ⟨f, hfI, hf0⟩
 
-/-!
-### The main commutative algebra input (proof sketch)
+namespace FractionalIdeal
 
-This lemma is the heart of the proof sketch. It should be filled in by implementing the
-localization/factorization argument described in the prompt.
--/
-
-/-- In a UFD, an integral ideal that is invertible as a fractional ideal is principal. -/
-lemma fractionalIdeal_isPrincipal_of_num_isPrincipal
+lemma isPrincipal_of_num_isPrincipal
     (I : FractionalIdeal R⁰ (FractionRing R)) (hI : I.num.IsPrincipal) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   -- Put the principal structure on `I.num` so we can use its generator.
@@ -52,14 +196,13 @@ lemma fractionalIdeal_isPrincipal_of_num_isPrincipal
       FractionalIdeal.spanSingleton (R⁰) (algebraMap R (FractionRing R) g) := by
     -- `I.num = (g)` as an ideal, hence as a fractional ideal.
     have hg : (I.num : Ideal R) = Ideal.span ({g} : Set R) := by
-      simp [g] --using (Ideal.span_singleton_generator (I := I.num)).symm
+      simp [g]
     calc
       (I.num : FractionalIdeal R⁰ (FractionRing R)) =
           ((Ideal.span ({g} : Set R) : Ideal R) : FractionalIdeal R⁰ (FractionRing R)) := by
             simp [hg]
       _ = FractionalIdeal.spanSingleton (R⁰) (algebraMap R (FractionRing R) g) := by
-            simp-- using
-              --(FractionalIdeal.coeIdeal_span_singleton (S := (R⁰)) (P := FractionRing R) g)
+            simp
   -- Clear denominators using `den_mul_self_eq_num'`, and cancel the principal fractional ideal
   -- generated by the denominator.
   have hdenmul :
@@ -84,43 +227,224 @@ lemma fractionalIdeal_isPrincipal_of_num_isPrincipal
   refine (FractionalIdeal.isPrincipal_iff (S := (R⁰)) (P := FractionRing R) I).2 ?_
   exact ⟨_, this⟩
 
-end Domain
+end FractionalIdeal
 
-section UFD
+lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) :
+    ∃ (x : R) (_hx0 : x ≠ 0) (b : Fin n → R),
+      ∀ i,
+        algebraMap R (FractionRing R) (b i) =
+          algebraMap R (FractionRing R) x * ℓ i := by
+  -- Use the `commonDenom/integerMultiple` API for clearing denominators in a localization.
+  let x₀ : R⁰ := IsLocalization.commonDenom (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
+    (S := FractionRing R) ℓ
+  let x : R := (x₀ : R)
+  let b : Fin n → R :=
+    fun i =>
+      IsLocalization.integerMultiple (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
+          (S := FractionRing R) ℓ ⟨i, by simp⟩
+  refine ⟨x, ?_, b, ?_⟩
+  · simp [x]
+  · intro i
+    have hbi :
+        algebraMap R (FractionRing R) (b i) =
+          IsLocalization.commonDenom (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
+              (S := FractionRing R) ℓ •
+            ℓ i := by
+      exact map_integerMultiple R⁰ Finset.univ ℓ ⟨i, of_eq_true (Finset.mem_univ._simp_1 i)⟩
+    -- Rewrite the scalar multiplication as multiplication by `algebraMap x`.
+    calc
+      algebraMap R (FractionRing R) (b i) =
+          IsLocalization.commonDenom (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
+              (S := FractionRing R) ℓ •
+            ℓ i := hbi
+      _ = algebraMap R (FractionRing R) x * ℓ i := by
+          -- `•` here is the scalar action of `R⁰`; rewrite it to the `R`-action and then to
+          -- multiplication by `algebraMap`.
+          simp [x₀, x, Submonoid.smul_def, Algebra.smul_def]
 
-variable (R : Type*) [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
 
-/-!
-### The main commutative algebra input (proof sketch)
+lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
+    (hJspan : J = Ideal.span (Set.range c))
+    --{K : FractionalIdeal R⁰ (FractionRing R)}
+    {ℓ : Fin n → FractionRing R}
+    (hsum :
+      (Finset.univ : Finset (Fin n)).sum
+          (fun i => algebraMap R (FractionRing R) (c i) * ℓ i) = 1)
+    {x : R} {b : Fin n → R}
+    (hb :
+      ∀ i,
+        algebraMap R (FractionRing R) (b i) =
+          algebraMap R (FractionRing R) x * ℓ i) :
+    x ∈ J * Ideal.span (Set.range b) := by
+  let B : Ideal R := Ideal.span (Set.range b)
+  have hinj : Function.Injective (algebraMap R (FractionRing R)) :=
+    IsFractionRing.injective R (FractionRing R)
+  have hx_eq_sum : x = (Finset.univ : Finset (Fin n)).sum (fun i => c i * b i) := by
+    -- Work in the fraction field, then pull back by injectivity.
+    apply hinj
+    let ax : FractionRing R := algebraMap R (FractionRing R) x
+    have hmul_ax :
+        ((Finset.univ : Finset (Fin n)).sum
+            (fun i => algebraMap R (FractionRing R) (c i) * ℓ i)) *
+          ax =
+        ax := by
+      have := congrArg (fun t => t * ax) hsum
+      simpa [ax] using this
+    have hsum_ax :
+        (Finset.univ : Finset (Fin n)).sum
+            (fun i => (algebraMap R (FractionRing R) (c i) * ℓ i) * ax) =
+          ax := by
+      -- Move the right multiplication by `ax` inside the sum.
+      have hsum_mul :=
+        Finset.sum_mul (s := (Finset.univ : Finset (Fin n)))
+          (f := fun i => algebraMap R (FractionRing R) (c i) * ℓ i) (a := ax)
+      -- `hsum_mul : (∑ f) * ax = ∑ (f * ax)`
+      calc
+        (Finset.univ : Finset (Fin n)).sum
+            (fun i => (algebraMap R (FractionRing R) (c i) * ℓ i) * ax) =
+            ((Finset.univ : Finset (Fin n)).sum
+                (fun i => algebraMap R (FractionRing R) (c i) * ℓ i)) * ax := by
+              simpa using hsum_mul.symm
+        _ = ax := hmul_ax
+    have hterm :
+        ∀ i : Fin n,
+          (algebraMap R (FractionRing R) (c i) * ℓ i) * ax =
+            algebraMap R (FractionRing R) (c i * b i) := by
+      intro i
+      -- Rewrite using `hb i : algebraMap (b i) = ax * ℓ i`, and commutativity.
+      calc
+        (algebraMap R (FractionRing R) (c i) * ℓ i) * ax =
+            algebraMap R (FractionRing R) (c i) * (ax * ℓ i) := by
+              simp [mul_left_comm, mul_comm]
+        _ = algebraMap R (FractionRing R) (c i) * algebraMap R (FractionRing R) (b i) := by
+              simpa [ax]
+                using congrArg (fun t => algebraMap R (FractionRing R) (c i) * t) (hb i).symm
+        _ = algebraMap R (FractionRing R) (c i * b i) := by
+              simp [map_mul]
+    have : (Finset.univ : Finset (Fin n)).sum
+          (fun i => algebraMap R (FractionRing R) (c i * b i)) = ax := by
+      calc
+        (Finset.univ : Finset (Fin n)).sum
+            (fun i => algebraMap R (FractionRing R) (c i * b i)) =
+            (Finset.univ : Finset (Fin n)).sum
+              (fun i => (algebraMap R (FractionRing R) (c i) * ℓ i) * ax) := by
+                refine Finset.sum_congr rfl ?_
+                intro i _
+                simpa using (hterm i).symm
+        _ = ax := hsum_ax
+    -- Rewrite `algebraMap` of the sum on the right.
+    simpa [ax, map_sum] using this.symm
+  -- Prove the sum is in the product ideal, then rewrite using `hx_eq_sum`.
+  have hsum_mem :
+      (Finset.univ : Finset (Fin n)).sum (fun i => c i * b i) ∈ J * B := by
+    refine Ideal.sum_mem (I := J * B) ?_
+    intro i hi
+    have hcJ : c i ∈ J := by
+      have : c i ∈ Ideal.span (Set.range c) :=
+        Ideal.subset_span (by exact ⟨i, rfl⟩)
+      simpa [hJspan] using this
+    have hbB : b i ∈ B := by
+      exact Ideal.subset_span (by exact ⟨i, rfl⟩)
+    -- `c i * b i` is a product of an element of `J` with an element of `B`.
+    simpa [B, mul_comm, mul_left_comm, mul_assoc] using Ideal.mul_mem_mul hcJ hbB
+  have hxmem : x ∈ J * B := by
+    simpa [hx_eq_sum] using hsum_mem
+  simpa [B] using hxmem
 
-This lemma is the heart of the proof sketch. It should be filled in by implementing the
-localization/factorization argument described in the prompt.
--/
+lemma exists_relations_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R} {J : Ideal R}
+    (hJspan : J = Ideal.span (Set.range c))
+    (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
+    ∃ (x : R) (_hx0 : x ≠ 0) (b : Fin n → R),
+      (∀ i j : Fin n, x ∣ c i * b j) ∧
+      x ∈ J * Ideal.span (Set.range b) := by
+  rcases
+      exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span (R := R) (c := c) (J := J) hJspan
+        hJunit with
+    ⟨K, hJK, ℓ, hℓK, hsum₁⟩
+  rcases exists_clearDenoms_fin (R := R) (n := n) ℓ with ⟨x, hx0, b, hb⟩
+  refine ⟨x, hx0, b, ?_, ?_⟩
+  · exact
+      dvd_relations_of_bezout_and_clearDenoms (R := R) (c := c) (J := J) hJspan (K := K) hJK hℓK
+        hb
+  · exact
+      mem_mul_span_of_bezout_and_clearDenoms (R := R) (c := c) (J := J) (ℓ := ℓ) hJspan
+        hsum₁ hb
 
 /-- A family `c : Fin n → R` has “unit gcd” if every common divisor is a unit. -/
 def CommonDivisorsAreUnits {n : ℕ} (c : Fin n → R) : Prop :=
   ∀ d : R, (∀ i : Fin n, d ∣ c i) → IsUnit d
 
-/-!
-### Lemma 1 (sketch): invertible fractional ideals are finitely generated
--/
+lemma ideal_eq_top_of_relations {n : ℕ} {c : Fin n → R} {J : Ideal R}
+    (hJspan : J = Ideal.span (Set.range c))
+    (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)))
+    (hc : CommonDivisorsAreUnits (R := R) c) {x : R} (hx0 : x ≠ 0) {b : Fin n → R}
+    (hdiv : ∀ i j : Fin n, x ∣ c i * b j)
+    (hxmem : x ∈ J * Ideal.span (Set.range b))
+    (hb : ∀ j : Fin n, x ∣ b j) :
+    J = ⊤ := by
+  -- Keep these hypotheses around: they are produced upstream (and are part of the sketch), but the
+  -- conclusion below only needs the explicit relations.
+  have _ := hJunit
+  have _ := hc
+  -- We do not use `hJunit` or `hc` here: once the relations are available, the conclusion follows
+  -- from ideal arithmetic and cancellation by a nonzero principal ideal.
+  let B : Ideal R := Ideal.span (Set.range b)
+  have hxmem' : x ∈ J * B := by simpa [B] using hxmem
+  -- `B ≤ (x)` since all generators are divisible by `x`.
+  have hB_le : B ≤ Ideal.span ({x} : Set R) := by
+    refine (Ideal.span_le).2 ?_
+    rintro z ⟨j, rfl⟩
+    rcases hb j with ⟨t, ht⟩
+    refine (Ideal.mem_span_singleton').2 ?_
+    refine ⟨t, ?_⟩
+    simpa [mul_comm, mul_left_comm, mul_assoc] using ht.symm
+  -- `J * B = (x)`: inclusion `≤` from `hdiv`, and inclusion `≥` from `hxmem`.
+  have hJB_le : J * B ≤ Ideal.span ({x} : Set R) := by
+    -- Rewrite `J * B` as the span of pairwise products of generators.
+    have hmul :
+        J * B = Ideal.span ((Set.range c) * (Set.range b)) := by
+      calc
+        J * B = Ideal.span (Set.range c) * Ideal.span (Set.range b) := by
+          simp [hJspan, B]
+        _ = Ideal.span ((Set.range c) * (Set.range b)) := by
+          simpa using (Ideal.span_mul_span' (S := (Set.range c)) (T := (Set.range b)) (R := R))
+    rw [hmul]
+    refine (Ideal.span_le).2 ?_
+    rintro z hz
+    rcases hz with ⟨z₁, hz₁, z₂, hz₂, rfl⟩
+    rcases hz₁ with ⟨i, rfl⟩
+    rcases hz₂ with ⟨j, rfl⟩
+    rcases hdiv i j with ⟨t, ht⟩
+    refine (Ideal.mem_span_singleton').2 ?_
+    refine ⟨t, ?_⟩
+    -- `t * x = c i * b j`, using commutativity.
+    simpa [mul_comm, mul_left_comm, mul_assoc] using ht.symm
+  have hspan_le : Ideal.span ({x} : Set R) ≤ J * B :=
+    (Ideal.span_singleton_le_iff_mem (I := J * B) (x := x)).2 hxmem'
+  have hJB : J * B = Ideal.span ({x} : Set R) := le_antisymm hJB_le hspan_le
+  -- From `J * B = (x)` and `B ≤ (x)`, deduce `J * (x) = (x)`.
+  have hJx : J * Ideal.span ({x} : Set R) = Ideal.span ({x} : Set R) := by
+    apply le_antisymm
+    · -- `J * (x) ≤ (x)` since `J ≤ ⊤`.
+      have : J * Ideal.span ({x} : Set R) ≤ (⊤ : Ideal R) * Ideal.span ({x} : Set R) :=
+        Ideal.mul_mono_left (le_top : J ≤ (⊤ : Ideal R))
+      simpa using this
+    · -- `(x) = J * B ≤ J * (x)`.
+      have : J * B ≤ J * Ideal.span ({x} : Set R) := Ideal.mul_mono_right hB_le
+      simpa [hJB] using this
+  -- Cancel the nonzero principal ideal `(x)` on the right.
+  have hxcomm : Ideal.span ({x} : Set R) * J = Ideal.span ({x} : Set R) := by
+    simpa [mul_comm] using hJx
+  have : Ideal.span ({x} : Set R) * J = Ideal.span ({x} : Set R) * ⊤ := by
+    calc
+      Ideal.span ({x} : Set R) * J = Ideal.span ({x} : Set R) := hxcomm
+      _ = Ideal.span ({x} : Set R) * ⊤ := (Ideal.mul_top _).symm
+  exact (Ideal.span_singleton_mul_right_inj (R := R) hx0).1 this
 
-omit [IsDomain R] [UniqueFactorizationMonoid R] in
-lemma ideal_fg_of_isUnit_fractionalIdeal (I : Ideal R)
-    (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
-    (I : Submodule R R).FG := by
-  -- This is exactly `Ideal.fg_of_isUnit` specialized to the fraction field.
-  simpa using
-    (Ideal.fg_of_isUnit (S := (R⁰)) (P := FractionRing R)
-      (inj := IsFractionRing.injective R (FractionRing R)) I hI)
 
-/-!
-### GCD normalization (sketch)
+section UFD
 
-From `I` invertible as a fractional ideal, choose finitely many generators `aᵢ` of `I`,
-extract a gcd `y` (up to units), and write `aᵢ = y * cᵢ`. Let `J = (cᵢ)`.
-Then `I = (y) * J`, `J` is invertible as a fractional ideal, and the `cᵢ` have unit gcd.
--/
+variable [UniqueFactorizationMonoid R]
 
 lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
@@ -253,305 +577,6 @@ lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
   refine ⟨y, n, hn, c, J, ?_, rfl, hJunit, hc⟩
   exact hIJ
 
-/-!
-### Producing `x` and `bᵢ` from invertibility (sketch)
-
-From `J * J⁻¹ = 1`, obtain a linear combination `∑ cᵢ ℓᵢ = 1` with `ℓᵢ ∈ J⁻¹`;
-clear denominators to get `bᵢ ∈ R` and `x ≠ 0` with:
-* `x ∈ J * (bᵢ)` (corresponding to `x = ∑ cᵢ bᵢ`), and
-* `x ∣ cᵢ * bⱼ` for all `i, j`.
--/
-
-omit [IsDomain R] [UniqueFactorizationMonoid R] in
-lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R} {J : Ideal R}
-    (hJspan : J = Ideal.span (Set.range c))
-    (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
-    ∃ (K : FractionalIdeal R⁰ (FractionRing R)),
-      (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1 ∧
-        ∃ ℓ : Fin n → FractionRing R,
-          (∀ i, ℓ i ∈ K) ∧
-            (Finset.univ : Finset (Fin n)).sum
-                (fun i => algebraMap R (FractionRing R) (c i) * ℓ i) = 1 := by
-  rcases hJunit with ⟨u, hu⟩
-  let K : FractionalIdeal R⁰ (FractionRing R) := (↑(u⁻¹) : FractionalIdeal R⁰ (FractionRing R))
-  have hJK : (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1 := by
-    calc
-      (J : FractionalIdeal R⁰ (FractionRing R)) * K =
-          (↑u : FractionalIdeal R⁰ (FractionRing R)) *
-            (↑(u⁻¹) : FractionalIdeal R⁰ (FractionRing R)) := by
-            simp [K, hu]
-      _ = 1 := by simp
-  refine ⟨K, hJK, ?_⟩
-  -- Induct on the proof that `1 ∈ J * K` in the `R`-submodule `FractionRing R`.
-  let C : FractionRing R → Prop :=
-    fun r =>
-      ∃ ℓ : Fin n → FractionRing R,
-        (∀ i, ℓ i ∈ K) ∧
-          (Finset.univ : Finset (Fin n)).sum
-              (fun i => algebraMap R (FractionRing R) (c i) * ℓ i) = r
-  have hr : (1 : FractionRing R) ∈ (J : FractionalIdeal R⁰ (FractionRing R)) * K := by
-    simpa [hJK] using
-      (FractionalIdeal.one_mem_one (S := (R⁰)) (P := FractionRing R))
-  have hC1 : C 1 := by
-    refine
-      FractionalIdeal.mul_induction_on (I := (J : FractionalIdeal R⁰ (FractionRing R))) (J := K)
-        (r := (1 : FractionRing R)) hr ?_ ?_
-    · intro i hi j hj
-      rcases (FractionalIdeal.mem_coeIdeal (S := (R⁰)) (P := FractionRing R) (I := J) (x := i)).1
-          hi with
-        ⟨y, hyJ, rfl⟩
-      have hyspan : y ∈ Ideal.span (Set.range c) := by simpa [hJspan] using hyJ
-      have hyspan' : y ∈ Submodule.span R (Set.range c) := by
-        -- Avoid simp loops between `Ideal.span` and `Submodule.span`.
-        simpa using hyspan
-      rcases (Submodule.mem_span_range_iff_exists_fun (R := R) (v := c) (x := y)).1 hyspan' with
-        ⟨a, ha⟩
-      refine ⟨fun k => a k • j, ?_, ?_⟩
-      · intro k
-        exact (K : Submodule R (FractionRing R)).smul_mem (a k) hj
-      · have hy :
-            (Finset.univ : Finset (Fin n)).sum (fun k => a k * c k) = y := by
-          simpa using ha
-        have hy_map :
-            (Finset.univ : Finset (Fin n)).sum
-                (fun k => algebraMap R (FractionRing R) (a k * c k)) =
-              algebraMap R (FractionRing R) y := by
-          simpa [map_sum] using congrArg (algebraMap R (FractionRing R)) hy
-        have hterm :
-            ∀ k : Fin n,
-              algebraMap R (FractionRing R) (c k) * (a k • j) =
-                algebraMap R (FractionRing R) (a k * c k) * j := by
-          intro k
-          -- Use that `a • j = algebraMap a * j`, and commute scalars past `c k`.
-          simp [Algebra.smul_def, mul_left_comm, mul_comm]
-        calc
-          (Finset.univ : Finset (Fin n)).sum
-              (fun k => algebraMap R (FractionRing R) (c k) * (a k • j)) =
-              (Finset.univ : Finset (Fin n)).sum
-                (fun k => algebraMap R (FractionRing R) (a k * c k) * j) := by
-                refine Finset.sum_congr rfl ?_
-                intro k _
-                exact hterm k
-          _ =
-              ((Finset.univ : Finset (Fin n)).sum
-                  (fun k => algebraMap R (FractionRing R) (a k * c k))) * j := by
-                simpa using
-                  (Finset.sum_mul (s := (Finset.univ : Finset (Fin n)))
-                        (f := fun k => algebraMap R (FractionRing R) (a k * c k)) (a := j)).symm
-          _ = algebraMap R (FractionRing R) y * j := by
-                exact congrArg (fun t => t * j) hy_map
-    · intro x y hx hy
-      rcases hx with ⟨ℓx, hℓx, hxsum⟩
-      rcases hy with ⟨ℓy, hℓy, hysum⟩
-      refine ⟨fun k => ℓx k + ℓy k, ?_, ?_⟩
-      · intro k
-        exact (K : Submodule R (FractionRing R)).add_mem (hℓx k) (hℓy k)
-      · -- Distribute multiplication over addition, then use the two induction hypotheses.
-        simp [mul_add, Finset.sum_add_distrib, hxsum, hysum]
-  rcases hC1 with ⟨ℓ, hℓ, hsum⟩
-  exact ⟨ℓ, hℓ, by simpa using hsum⟩
-
-omit [UniqueFactorizationMonoid R] in
-lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) :
-    ∃ (x : R) (hx0 : x ≠ 0) (b : Fin n → R),
-      ∀ i,
-        algebraMap R (FractionRing R) (b i) =
-          algebraMap R (FractionRing R) x * ℓ i := by
-  -- Use the `commonDenom/integerMultiple` API for clearing denominators in a localization.
-  let x₀ : R⁰ := IsLocalization.commonDenom (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
-    (S := FractionRing R) ℓ
-  let x : R := (x₀ : R)
-  let b : Fin n → R :=
-    fun i =>
-      IsLocalization.integerMultiple (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
-          (S := FractionRing R) ℓ ⟨i, by simp⟩
-  refine ⟨x, ?_, b, ?_⟩
-  · simp [x] --using (nonZeroDivisors.coe_ne_zero x₀)
-  · intro i
-    have hbi :
-        algebraMap R (FractionRing R) (b i) =
-          IsLocalization.commonDenom (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
-              (S := FractionRing R) ℓ •
-            ℓ i := by
-      simp [b] --using
-        --(IsLocalization.map_integerMultiple (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
-          --(S := FractionRing R) ℓ ⟨i, by simp⟩)
-    -- Rewrite the scalar multiplication as multiplication by `algebraMap x`.
-    calc
-      algebraMap R (FractionRing R) (b i) =
-          IsLocalization.commonDenom (M := (R⁰)) (s := (Finset.univ : Finset (Fin n)))
-              (S := FractionRing R) ℓ •
-            ℓ i := hbi
-      _ = algebraMap R (FractionRing R) x * ℓ i := by
-          -- `•` here is the scalar action of `R⁰`; rewrite it to the `R`-action and then to
-          -- multiplication by `algebraMap`.
-          simp [x₀, x, Submonoid.smul_def, Algebra.smul_def]
-
-omit [IsDomain R] [UniqueFactorizationMonoid R] in
-lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
-    (hJspan : J = Ideal.span (Set.range c))
-    {K : FractionalIdeal R⁰ (FractionRing R)}
-    (hJK : (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1)
-    {ℓ : Fin n → FractionRing R} (hℓK : ∀ i, ℓ i ∈ K)
-    {x : R} {b : Fin n → R}
-    (hb :
-      ∀ i,
-        algebraMap R (FractionRing R) (b i) =
-          algebraMap R (FractionRing R) x * ℓ i) :
-    ∀ i j : Fin n, x ∣ c i * b j := by
-  intro i j
-  have hcJ : c i ∈ J := by
-    have : c i ∈ Ideal.span (Set.range c) :=
-      Ideal.subset_span (by exact ⟨i, rfl⟩)
-    simpa [hJspan] using this
-  have hci :
-      algebraMap R (FractionRing R) (c i) ∈
-        (J : FractionalIdeal R⁰ (FractionRing R)) :=
-    FractionalIdeal.mem_coeIdeal_of_mem (S := (R⁰)) (P := FractionRing R) hcJ
-  have hij :
-      algebraMap R (FractionRing R) (c i) * ℓ j ∈
-        (J : FractionalIdeal R⁰ (FractionRing R)) * K :=
-    FractionalIdeal.mul_mem_mul hci (hℓK j)
-  have hij1 :
-      algebraMap R (FractionRing R) (c i) * ℓ j ∈ (1 : FractionalIdeal R⁰ (FractionRing R)) := by
-    simpa [hJK] using hij
-  rcases (FractionalIdeal.mem_one_iff (S := (R⁰)) (P := FractionRing R)).1 hij1 with ⟨r, hr⟩
-  refine ⟨r, ?_⟩
-  have hinj : Function.Injective (algebraMap R (FractionRing R)) :=
-    IsFractionRing.injective R (FractionRing R)
-  have hmap :
-      algebraMap R (FractionRing R) (x * r) =
-        algebraMap R (FractionRing R) (c i * b j) := by
-    calc
-      algebraMap R (FractionRing R) (x * r)
-          = algebraMap R (FractionRing R) x * algebraMap R (FractionRing R) r := by
-              simp [map_mul]
-      _ = algebraMap R (FractionRing R) x *
-            (algebraMap R (FractionRing R) (c i) * ℓ j) := by
-              simp [hr]
-      _ = algebraMap R (FractionRing R) (c i) *
-            (algebraMap R (FractionRing R) x * ℓ j) := by
-              simp [mul_left_comm, mul_comm]
-      _ = algebraMap R (FractionRing R) (c i) * algebraMap R (FractionRing R) (b j) := by
-              simp [hb j]
-      _ = algebraMap R (FractionRing R) (c i * b j) := by
-              simp [map_mul]
-  have hxrr : x * r = c i * b j := hinj (by simpa [map_mul] using hmap)
-  exact hxrr.symm
-
-omit [UniqueFactorizationMonoid R] in
-lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
-    (hJspan : J = Ideal.span (Set.range c))
-    --{K : FractionalIdeal R⁰ (FractionRing R)}
-    {ℓ : Fin n → FractionRing R}
-    (hsum :
-      (Finset.univ : Finset (Fin n)).sum
-          (fun i => algebraMap R (FractionRing R) (c i) * ℓ i) = 1)
-    {x : R} {b : Fin n → R}
-    (hb :
-      ∀ i,
-        algebraMap R (FractionRing R) (b i) =
-          algebraMap R (FractionRing R) x * ℓ i) :
-    x ∈ J * Ideal.span (Set.range b) := by
-  let B : Ideal R := Ideal.span (Set.range b)
-  have hinj : Function.Injective (algebraMap R (FractionRing R)) :=
-    IsFractionRing.injective R (FractionRing R)
-  have hx_eq_sum : x = (Finset.univ : Finset (Fin n)).sum (fun i => c i * b i) := by
-    -- Work in the fraction field, then pull back by injectivity.
-    apply hinj
-    let ax : FractionRing R := algebraMap R (FractionRing R) x
-    have hmul_ax :
-        ((Finset.univ : Finset (Fin n)).sum
-            (fun i => algebraMap R (FractionRing R) (c i) * ℓ i)) *
-          ax =
-        ax := by
-      have := congrArg (fun t => t * ax) hsum
-      simpa [ax] using this
-    have hsum_ax :
-        (Finset.univ : Finset (Fin n)).sum
-            (fun i => (algebraMap R (FractionRing R) (c i) * ℓ i) * ax) =
-          ax := by
-      -- Move the right multiplication by `ax` inside the sum.
-      have hsum_mul :=
-        Finset.sum_mul (s := (Finset.univ : Finset (Fin n)))
-          (f := fun i => algebraMap R (FractionRing R) (c i) * ℓ i) (a := ax)
-      -- `hsum_mul : (∑ f) * ax = ∑ (f * ax)`
-      calc
-        (Finset.univ : Finset (Fin n)).sum
-            (fun i => (algebraMap R (FractionRing R) (c i) * ℓ i) * ax) =
-            ((Finset.univ : Finset (Fin n)).sum
-                (fun i => algebraMap R (FractionRing R) (c i) * ℓ i)) * ax := by
-              simpa using hsum_mul.symm
-        _ = ax := hmul_ax
-    have hterm :
-        ∀ i : Fin n,
-          (algebraMap R (FractionRing R) (c i) * ℓ i) * ax =
-            algebraMap R (FractionRing R) (c i * b i) := by
-      intro i
-      -- Rewrite using `hb i : algebraMap (b i) = ax * ℓ i`, and commutativity.
-      calc
-        (algebraMap R (FractionRing R) (c i) * ℓ i) * ax =
-            algebraMap R (FractionRing R) (c i) * (ax * ℓ i) := by
-              simp [mul_left_comm, mul_comm]
-        _ = algebraMap R (FractionRing R) (c i) * algebraMap R (FractionRing R) (b i) := by
-              simpa [ax]
-                using congrArg (fun t => algebraMap R (FractionRing R) (c i) * t) (hb i).symm
-        _ = algebraMap R (FractionRing R) (c i * b i) := by
-              simp [map_mul]
-    have : (Finset.univ : Finset (Fin n)).sum
-          (fun i => algebraMap R (FractionRing R) (c i * b i)) = ax := by
-      calc
-        (Finset.univ : Finset (Fin n)).sum
-            (fun i => algebraMap R (FractionRing R) (c i * b i)) =
-            (Finset.univ : Finset (Fin n)).sum
-              (fun i => (algebraMap R (FractionRing R) (c i) * ℓ i) * ax) := by
-                refine Finset.sum_congr rfl ?_
-                intro i _
-                simpa using (hterm i).symm
-        _ = ax := hsum_ax
-    -- Rewrite `algebraMap` of the sum on the right.
-    simpa [ax, map_sum] using this.symm
-  -- Prove the sum is in the product ideal, then rewrite using `hx_eq_sum`.
-  have hsum_mem :
-      (Finset.univ : Finset (Fin n)).sum (fun i => c i * b i) ∈ J * B := by
-    refine Ideal.sum_mem (I := J * B) ?_
-    intro i hi
-    have hcJ : c i ∈ J := by
-      have : c i ∈ Ideal.span (Set.range c) :=
-        Ideal.subset_span (by exact ⟨i, rfl⟩)
-      simpa [hJspan] using this
-    have hbB : b i ∈ B := by
-      exact Ideal.subset_span (by exact ⟨i, rfl⟩)
-    -- `c i * b i` is a product of an element of `J` with an element of `B`.
-    simpa [B, mul_comm, mul_left_comm, mul_assoc] using Ideal.mul_mem_mul hcJ hbB
-  have hxmem : x ∈ J * B := by
-    simpa [hx_eq_sum] using hsum_mem
-  simpa [B] using hxmem
-
-omit [UniqueFactorizationMonoid R] in
-lemma exists_relations_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R} {J : Ideal R}
-    (hJspan : J = Ideal.span (Set.range c))
-    (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
-    ∃ (x : R) (_hx0 : x ≠ 0) (b : Fin n → R),
-      (∀ i j : Fin n, x ∣ c i * b j) ∧
-      x ∈ J * Ideal.span (Set.range b) := by
-  rcases
-      exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span (R := R) (c := c) (J := J) hJspan
-        hJunit with
-    ⟨K, hJK, ℓ, hℓK, hsum₁⟩
-  rcases exists_clearDenoms_fin (R := R) (n := n) ℓ with ⟨x, hx0, b, hb⟩
-  refine ⟨x, hx0, b, ?_, ?_⟩
-  · exact
-      dvd_relations_of_bezout_and_clearDenoms (R := R) (c := c) (J := J) hJspan (K := K) hJK hℓK
-        hb
-  · exact
-      mem_mul_span_of_bezout_and_clearDenoms (R := R) (c := c) (J := J) (ℓ := ℓ) hJspan
-        hsum₁ hb
-
-/-!
-### Lemma 2 (sketch): “unit gcd” divisibility lemma in a UFD
--/
-
 lemma dvd_of_dvd_mul_of_commonDivisorsAreUnits {n : ℕ} {c : Fin n → R}
     (hc : CommonDivisorsAreUnits (R := R) c) {x b : R} (hx0 : x ≠ 0)
     (h : ∀ i : Fin n, x ∣ c i * b) : x ∣ b := by
@@ -594,81 +619,6 @@ lemma dvd_of_dvd_mul_of_commonDivisorsAreUnits {n : ℕ} {c : Fin n → R}
       exact mul_dvd_mul_left p ha
   exact hP hx0 b h
 
-/-!
-### Concluding `J = ⊤` (sketch)
-
-Using the relations `x ∣ cᵢ * bⱼ` and Lemma 2, show `x ∣ bⱼ` for all `j`, hence
-`(bᵢ) ≤ (x)`. Then `J * (bᵢ) = (x)` (by the relations), hence `J * (x) = (x)`, and
-cancelling the (invertible) principal fractional ideal `(x)` yields `J = 1`.
--/
-
-omit [UniqueFactorizationMonoid R] in
-lemma ideal_eq_top_of_relations {n : ℕ} {c : Fin n → R} {J : Ideal R}
-    (hJspan : J = Ideal.span (Set.range c))
-    (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)))
-    (hc : CommonDivisorsAreUnits (R := R) c) {x : R} (hx0 : x ≠ 0) {b : Fin n → R}
-    (hdiv : ∀ i j : Fin n, x ∣ c i * b j)
-    (hxmem : x ∈ J * Ideal.span (Set.range b))
-    (hb : ∀ j : Fin n, x ∣ b j) :
-    J = ⊤ := by
-  -- Keep these hypotheses around: they are produced upstream (and are part of the sketch), but the
-  -- conclusion below only needs the explicit relations.
-  have _ := hJunit
-  have _ := hc
-  -- We do not use `hJunit` or `hc` here: once the relations are available, the conclusion follows
-  -- from ideal arithmetic and cancellation by a nonzero principal ideal.
-  let B : Ideal R := Ideal.span (Set.range b)
-  have hxmem' : x ∈ J * B := by simpa [B] using hxmem
-  -- `B ≤ (x)` since all generators are divisible by `x`.
-  have hB_le : B ≤ Ideal.span ({x} : Set R) := by
-    refine (Ideal.span_le).2 ?_
-    rintro z ⟨j, rfl⟩
-    rcases hb j with ⟨t, ht⟩
-    refine (Ideal.mem_span_singleton').2 ?_
-    refine ⟨t, ?_⟩
-    simpa [mul_comm, mul_left_comm, mul_assoc] using ht.symm
-  -- `J * B = (x)`: inclusion `≤` from `hdiv`, and inclusion `≥` from `hxmem`.
-  have hJB_le : J * B ≤ Ideal.span ({x} : Set R) := by
-    -- Rewrite `J * B` as the span of pairwise products of generators.
-    have hmul :
-        J * B = Ideal.span ((Set.range c) * (Set.range b)) := by
-      calc
-        J * B = Ideal.span (Set.range c) * Ideal.span (Set.range b) := by
-          simp [hJspan, B]
-        _ = Ideal.span ((Set.range c) * (Set.range b)) := by
-          simpa using (Ideal.span_mul_span' (S := (Set.range c)) (T := (Set.range b)) (R := R))
-    rw [hmul]
-    refine (Ideal.span_le).2 ?_
-    rintro z hz
-    rcases hz with ⟨z₁, hz₁, z₂, hz₂, rfl⟩
-    rcases hz₁ with ⟨i, rfl⟩
-    rcases hz₂ with ⟨j, rfl⟩
-    rcases hdiv i j with ⟨t, ht⟩
-    refine (Ideal.mem_span_singleton').2 ?_
-    refine ⟨t, ?_⟩
-    -- `t * x = c i * b j`, using commutativity.
-    simpa [mul_comm, mul_left_comm, mul_assoc] using ht.symm
-  have hspan_le : Ideal.span ({x} : Set R) ≤ J * B :=
-    (Ideal.span_singleton_le_iff_mem (I := J * B) (x := x)).2 hxmem'
-  have hJB : J * B = Ideal.span ({x} : Set R) := le_antisymm hJB_le hspan_le
-  -- From `J * B = (x)` and `B ≤ (x)`, deduce `J * (x) = (x)`.
-  have hJx : J * Ideal.span ({x} : Set R) = Ideal.span ({x} : Set R) := by
-    apply le_antisymm
-    · -- `J * (x) ≤ (x)` since `J ≤ ⊤`.
-      have : J * Ideal.span ({x} : Set R) ≤ (⊤ : Ideal R) * Ideal.span ({x} : Set R) :=
-        Ideal.mul_mono_left (le_top : J ≤ (⊤ : Ideal R))
-      simpa using this
-    · -- `(x) = J * B ≤ J * (x)`.
-      have : J * B ≤ J * Ideal.span ({x} : Set R) := Ideal.mul_mono_right hB_le
-      simpa [hJB] using this
-  -- Cancel the nonzero principal ideal `(x)` on the right.
-  have hxcomm : Ideal.span ({x} : Set R) * J = Ideal.span ({x} : Set R) := by
-    simpa [mul_comm] using hJx
-  have : Ideal.span ({x} : Set R) * J = Ideal.span ({x} : Set R) * ⊤ := by
-    calc
-      Ideal.span ({x} : Set R) * J = Ideal.span ({x} : Set R) := hxcomm
-      _ = Ideal.span ({x} : Set R) * ⊤ := (Ideal.mul_top _).symm
-  exact (Ideal.span_singleton_mul_right_inj (R := R) hx0).1 this
 
 /-- In a UFD, an integral ideal that is invertible as a fractional ideal is principal. -/
 theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
@@ -717,7 +667,7 @@ theorem fractionalIdeal_isPrincipal_of_ufd (I : (FractionalIdeal R⁰ (FractionR
             (algebraMap R (FractionRing R)
               (((I : FractionalIdeal R⁰ (FractionRing R)).den : R⁰) : R))) := by
       refine ⟨toPrincipalIdeal R (FractionRing R) u, ?_⟩
-      simp [u] --using (coe_toPrincipalIdeal (R := R) (K := FractionRing R) u)
+      simp [u]
     have hmul :
         FractionalIdeal.spanSingleton (R⁰)
             (algebraMap R (FractionRing R)
@@ -732,7 +682,7 @@ theorem fractionalIdeal_isPrincipal_of_ufd (I : (FractionalIdeal R⁰ (FractionR
     ideal_isPrincipal_of_isUnit_fractionalIdeal (R := R) J hJunit
   -- If the numerator ideal is principal, the fractional ideal is principal.
   simpa [J] using
-    fractionalIdeal_isPrincipal_of_num_isPrincipal (R := R)
+    FractionalIdeal.isPrincipal_of_num_isPrincipal (R := R)
       (I := (I : FractionalIdeal R⁰ (FractionRing R))) hJprin
 
 /-- In a UFD, every class in the ideal class group is `1`. -/
@@ -751,3 +701,6 @@ instance instSubsingletonClassGroupOfUniqueFactorizationMonoid : Subsingleton (C
     _ = y := (classGroup_eq_one_of_ufd (R := R) y).symm
 
 end UFD
+
+end Domain
+end CommRing
