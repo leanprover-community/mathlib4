@@ -198,7 +198,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
     (∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2)) ^ 2 =
         ∫ p : ℝ × ℝ, cexp (-b * (p.1 : ℂ) ^ 2) * cexp (-b * (p.2 : ℂ) ^ 2) := by
       rw [pow_two, ← integral_prod_mul]; rfl
-    _ = ∫ p : ℝ × ℝ, cexp (-b * ((p.1 : ℂ)^ 2 + (p.2 : ℂ) ^ 2)) := by
+    _ = ∫ p : ℝ × ℝ, cexp (-b * ((p.1 : ℂ) ^ 2 + (p.2 : ℂ) ^ 2)) := by
       congr
       ext1 p
       rw [← Complex.exp_add, mul_add]
@@ -372,5 +372,5 @@ values of the gamma function in terms of `Nat.doubleFactorial`. -/
 lemma Real.Gamma_nat_add_half (k : ℕ) :
     Gamma (k + 1 / 2) = (2 * k - 1 : ℕ)‼ * √π / (2 ^ k) := by
   cases k with
-  | zero => simp [- one_div, Gamma_one_half_eq]
+  | zero => simp [-one_div, Gamma_one_half_eq]
   | succ k => simpa [-one_div, mul_add] using Gamma_nat_add_one_add_half k
