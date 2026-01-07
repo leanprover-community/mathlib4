@@ -73,7 +73,8 @@ instance : Coe (ClosedSubmodule R M) (Submodule R M) where
 @[simp, norm_cast]
 lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s := rfl
 
-lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
+@[simp]
+lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s ↔ x ∈ s.toSubmodule := by
   rfl
 
 @[simp]
@@ -195,6 +196,18 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
 lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
   Iff.rfl
 
+@[simp]
+lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
+  ext
+  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe,
+    ClosedSubmodule.mem_toSubmodule_iff]
+  rw [closure_eq_iff_isClosed.mpr]
+  · rfl
+  · exact s.isClosed'
+
+lemma closure_eq' {s : Submodule R M} (hs : IsClosed s.carrier) : s.closure = ⟨s, hs⟩ := by
+  ext; simp
+
 end Submodule
 
 namespace ClosedSubmodule
@@ -203,8 +216,7 @@ variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
 @[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
-  ext x
-  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
+  ext; simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
