@@ -657,8 +657,10 @@ initialize addLinter whitespaceLinter
 
 open Lean Elab Command in
 /-- Show correlations between string positions and syntax nodes
-in a command `cmd`. This function is not used for the actual linter, but kept for debugging
-odd linter behaviour. -/
+in a command `cmd`. This logic is the backbone of how the linter matches the input string with the
+pretty printed one.
+
+This function is not used for the actual linter, but kept for debugging odd linter behaviour. -/
 elab "#show_corr " cmd:command : command => do
   elabCommand cmd
   let orig := cmd.raw.getSubstring?.getD default
