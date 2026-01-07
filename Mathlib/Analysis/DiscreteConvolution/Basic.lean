@@ -55,8 +55,8 @@ Parallel API:
   `hL : ∀ x y z, L₂ (L x y) z = L₃ x (L₄ y z)`.
 
 Differences (discrete ↔ MeasureTheory):
-- Domain: `Monoid M` ↔ `AddGroup G` (no subtraction needed)
-- Bilinear map: `E →ₗ[S] E' →ₗ[S] F` ↔ `E →L[𝕜] E' →L[𝕜] F` (no continuity needed)
+- Domain: `Monoid M` ↔ `AddGroup G`, no subtraction needed for discrete
+- Bilinear map: `E →ₗ[S] E' →ₗ[S] F` ↔ `E →L[𝕜] E' →L[𝕜] F`, no continuity needed
 - Associativity: `Summable` ↔ `AEStronglyMeasurable` + norm convolution conditions
 - `@[to_additive]`: Discrete supports both mul/add versions; MeasureTheory is additive only
 
