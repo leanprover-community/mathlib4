@@ -647,16 +647,6 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
   let value := trgDecl.value! (allowOpaque := true)
   trace[translate] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
-  try
-    -- make sure that the type is correct,
-    -- and emit a more helpful error message if it fails
-    withoutExporting <| MetaM.run' <| check value
-  catch
-    | Exception.error _ msg => throwError "@[{t.attrName}] failed. \
-      The translated value is not type correct. For help, see the docstring \
-      of `to_additive`, section `Troubleshooting`. \
-      Failed to add declaration\n{tgt}:\n{msg}"
-    | _ => panic! "unreachable"
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
   has executable code.
@@ -669,11 +659,24 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
   errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
   (which is inaccessible here), so we cannot test for `noncomputable section` directly. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
-  if isNoncomputable env src then
-    addDecl trgDecl.toDeclaration!
-    setEnv <| addNoncomputable (← getEnv) tgt
-  else
-    addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
+  try
+    -- set `Elab.async` to `false` in order to be able to catch kernel errors
+    withOptions (Elab.async.set · false) do
+    if isNoncomputable env src then
+      addDecl trgDecl.toDeclaration!
+      setEnv <| addNoncomputable (← getEnv) tgt
+    else
+      addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
+  catch ex =>
+    -- Try to emit a better error message if the kernel throws an error.
+    try
+      withoutExporting <| MetaM.run' <| check value
+      throwError "@[{t.attrName}] failed.\n{ex.toMessageData}"
+    catch ex =>
+      throwError "@[{t.attrName}] failed. \
+        The translated value is not type correct. For help, see the docstring \
+        of `to_additive`, section `Troubleshooting`. \
+        Failed to add declaration\n{tgt}:\n{ex.toMessageData}"
   if let .defnInfo { hints := .abbrev, .. } := trgDecl then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
