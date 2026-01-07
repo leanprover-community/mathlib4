@@ -403,6 +403,12 @@ theorem homeomorph_comp_iff {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) :
 
 end IsCoveringMap
 
+theorem IsCoveringMapOn.of_isCoveringMap_subtype {s : Set X} (hs : IsOpen s) {f : E → X}
+    (h : ∀ x, f x ∈ s) (hf : IsCoveringMap fun x ↦ (⟨f x, h x⟩ : s)) : IsCoveringMapOn f s :=
+  have eq : f ⁻¹' s = .univ := by simpa [Set.range, Set.subset_def] using h
+  of_isCoveringMap_restrictPreimage _ hs (by simp [eq]) <|
+    hf.comp_homeomorph ((Homeomorph.setCongr eq).trans (Homeomorph.Set.univ E))
+
 variable {f}
 
 protected theorem IsFiberBundle.isCoveringMap {F : Type*} [TopologicalSpace F] [DiscreteTopology F]
@@ -451,7 +457,7 @@ Then `f` admits a `Trivialization` over the base set `V`. -/
       refine Prod.ext (f_inv _ hx.1) ?_
       rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
       by_contra h; exact (disjoint h).le_bot ⟨idx_U .., inv_U _ _⟩ }
-  have open_preim {W} (hWV: W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
+  have open_preim {W} (hWV : W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
     convert isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
     rw [← Set.inter_iUnion, eq_comm, Set.inter_eq_left]
     exact (Set.preimage_mono hWV).trans exhaustive'
