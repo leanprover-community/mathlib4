@@ -534,8 +534,8 @@ There is a total ordering on the elements of an encodable type, induced by the m
 def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 
-instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isAntisymm
+instance {α} [Encodable α] : Std.Antisymm (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).antisymm
 
 instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isTotal

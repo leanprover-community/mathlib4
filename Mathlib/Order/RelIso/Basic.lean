@@ -298,14 +298,18 @@ protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
 protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
 
-protected theorem isSymm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
+protected theorem symm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
+
+@[deprecated (since := "2026-01-06")] protected alias isSymm := RelEmbedding.symm
 
 protected theorem asymm (f : r ↪r s) [Std.Asymm s] : Std.Asymm r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
 
-protected theorem isAntisymm : ∀ (_ : r ↪r s) [IsAntisymm β s], IsAntisymm α r
+protected theorem antisymm : ∀ (_ : r ↪r s) [Std.Antisymm s], Std.Antisymm r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ h₁ h₂ => f.inj' (H _ _ (o.2 h₁) (o.2 h₂))⟩
+
+@[deprecated (since := "2026-01-06")] protected alias isAntisymm := RelEmbedding.antisymm
 
 protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
@@ -317,7 +321,7 @@ protected theorem isPreorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder 
   | f, _ => { f.isRefl, f.isTrans with }
 
 protected theorem isPartialOrder : ∀ (_ : r ↪r s) [IsPartialOrder β s], IsPartialOrder α r
-  | f, _ => { f.isPreorder, f.isAntisymm with }
+  | f, _ => { f.isPreorder, f.antisymm with }
 
 protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLinearOrder α r
   | f, _ => { f.isPartialOrder, f.isTotal with }
@@ -420,14 +424,14 @@ namespace RelEmbedding
 /-- To define a relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
 -/
-def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
+def ofMapRelIff (f : α → β) [Std.Antisymm r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     r ↪r s where
   toFun := f
   inj' _ _ h := antisymm ((hf _ _).1 (h ▸ refl _)) ((hf _ _).1 (h ▸ refl _))
   map_rel_iff' := hf _ _
 
 @[simp]
-theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
+theorem ofMapRelIff_coe (f : α → β) [Std.Antisymm r] [IsRefl β s]
     (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     (ofMapRelIff f hf : r ↪r s) = f :=
   rfl

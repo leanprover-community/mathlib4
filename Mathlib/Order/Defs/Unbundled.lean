@@ -45,12 +45,8 @@ abbrev IsSymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Symm r
 abbrev IsAsymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Asymm r
 
 /-- `IsAntisymm X r` means the binary relation `r` on `X` is antisymmetric. -/
-class IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop where
-  antisymm : ∀ a b, r a b → r b a → a = b
-
-instance (priority := 100) Std.Asymm.toIsAntisymm {α : Sort*} (r : α → α → Prop) [Std.Asymm r] :
-    IsAntisymm α r where
-  antisymm := Std.instAntisymmOfAsymm r |>.antisymm
+@[deprecated Std.Antisymm (since := "2026-01-06")]
+abbrev IsAntisymm (α : Sort*) (r : α → α → Prop) : Prop := Std.Antisymm r
 
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort*) (r : α → α → Prop) : Prop where
@@ -72,8 +68,8 @@ and transitive. -/
 class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends IsRefl α r, IsTrans α r
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
-`IsPreorder X r` and `IsAntisymm X r`. -/
-class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsAntisymm α r
+`IsPreorder X r` and `Std.Antisymm r`. -/
+class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Antisymm r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
@@ -125,7 +121,7 @@ lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
 lemma refl [IsRefl α r] (a : α) : a ≺ a := IsRefl.refl a
 lemma trans [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := IsTrans.trans _ _ _
 lemma symm [Std.Symm r] : a ≺ b → b ≺ a := Std.Symm.symm _ _
-lemma antisymm [IsAntisymm α r] : a ≺ b → b ≺ a → a = b := IsAntisymm.antisymm _ _
+lemma antisymm [Std.Antisymm r] : a ≺ b → b ≺ a → a = b := Std.Antisymm.antisymm _ _
 lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 
 lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
@@ -150,8 +146,8 @@ instance Std.Symm.decide [DecidableRel r] [Std.Symm r] :
     Std.Symm (fun a b => decide (r a b) = true) where
   symm := fun a b => by simpa using symm a b
 
-instance IsAntisymm.decide [DecidableRel r] [IsAntisymm α r] :
-    IsAntisymm α (fun a b => decide (r a b) = true) where
+instance Std.Antisymm.decide [DecidableRel r] [Std.Antisymm r] :
+    Std.Antisymm (fun a b => decide (r a b) = true) where
   antisymm a b h₁ h₂ := antisymm (r := r) _ _ (by simpa using h₁) (by simpa using h₂)
 
 instance Std.Asymm.decide [DecidableRel r] [Std.Asymm r] :
@@ -194,7 +190,7 @@ def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 /-- `IsIrrefl` as a definition, suitable for use in proofs. -/
 def Irreflexive := ∀ x, ¬x ≺ x
 
-/-- `IsAntisymm` as a definition, suitable for use in proofs. -/
+/-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
 /-- `IsTotal` as a definition, suitable for use in proofs. -/
@@ -320,9 +316,9 @@ theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b
 theorem comm [Std.Symm r] {a b : α} : r a b ↔ r b a :=
   ⟨symm, symm⟩
 
-theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
+theorem antisymm' [Std.Antisymm r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
 
-theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
+theorem antisymm_iff [IsRefl α r] [Std.Antisymm r] {a b : α} : r a b ∧ r b a ↔ a = b :=
   ⟨fun h => antisymm h.1 h.2, by
     rintro rfl
     exact ⟨refl _, refl _⟩⟩
@@ -331,14 +327,14 @@ theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b 
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
-theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
+theorem antisymm_of (r : α → α → Prop) [Std.Antisymm r] {a b : α} : r a b → r b a → a = b :=
   antisymm
 
 /-- A version of `antisymm'` with `r` explicit.
 
 This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
-theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
+theorem antisymm_of' (r : α → α → Prop) [Std.Antisymm r] {a b : α} : r a b → r b a → b = a :=
   antisymm'
 
 /-- A version of `comm` with `r` explicit.
@@ -347,8 +343,10 @@ This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is m
 theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b a :=
   comm
 
-protected theorem Std.Asymm.isAntisymm (r) [Std.Asymm r] : IsAntisymm α r :=
+protected theorem Std.Asymm.antisymm (r : α → α → Prop) [Std.Asymm r] : Std.Antisymm r :=
   inferInstance
+
+@[deprecated (since := "2026-01-06")] alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
 
 protected theorem Std.Asymm.isIrrefl [Std.Asymm r] : IsIrrefl α r :=
   ⟨Std.instIrreflOfAsymm r |>.irrefl⟩
