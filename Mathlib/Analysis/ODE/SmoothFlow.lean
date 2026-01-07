@@ -150,62 +150,102 @@ noncomputable def implicitEquation.rightDerivAux (f' : E → E →L[ℝ] E) (x :
         f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))
     else 0
 
+lemma implicitEquation.intervalIntegrable {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
+    {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) (dα : C(Icc tmin tmax, E)) (a b : ℝ) :
+    IntervalIntegrable (fun τ ↦ (f' (α (projIcc tmin tmax (le_of_Icc t₀) τ))
+      (dα (projIcc tmin tmax (le_of_Icc t₀) τ)))) volume a b := by
+  apply Continuous.intervalIntegrable
+  have h1 : ContinuousOn (fun xx : E × E ↦ f' xx.1 xx.2) (range α ×ˢ univ) := by
+    set K := sSup ((fun x ↦ ‖f' x‖₊) '' range α) with hK
+    apply continuousOn_prod_of_continuousOn_lipschitzOnWith' _ K
+    · intro x hx
+      rw [lipschitzOnWith_univ]
+      apply ContinuousLinearMap.lipschitz (f' x) |>.weaken
+      rw [hK]
+      apply le_csSup _ (mem_image_of_mem _ hx)
+      apply IsCompact.bddAbove_image (isCompact_range α.continuous) <|
+        Continuous.comp_continuousOn continuous_nnnorm (hf'.mono hα)
+    · intro x _
+      exact ContinuousOn.clm_apply (hf'.mono hα) continuousOn_const
+  have h2 :
+    (fun τ ↦ f' (α (projIcc tmin tmax (le_of_Icc t₀) τ))
+      (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) =
+    (fun xx : E × E ↦ f' xx.1 xx.2) ∘ (fun τ ↦ (α (projIcc tmin tmax (le_of_Icc t₀) τ),
+      dα (projIcc tmin tmax (le_of_Icc t₀) τ))) := rfl
+  rw [h2]
+  apply ContinuousOn.comp_continuous h1 (by continuity)
+  intro τ
+  simp only [mem_prod, mem_univ, and_true]
+  simp
+
 variable {u} in
 /-- The first term of the right (`F`) component of the first derivative of the implicit equation,
 valid when `x ∈ u` and `range α ⊆ u` -/
 -- assume `f'` is continuous on `u` because `f'` is the derivative of a `C^1` function `f`
 lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
-    (x : E) {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) (dα : C(Icc tmin tmax, E)) :
+    (x : E) (α dα : C(Icc tmin tmax, E)) :
     Continuous (implicitEquation.rightDerivAux u t₀ f' x α dα) := by
-  rw [implicitEquation.rightDerivAux, if_pos hα]
-  apply Continuous.add (Continuous.neg (ContinuousMapClass.map_continuous _))
-  have : (fun t : Icc tmin tmax ↦ ∫ τ in t₀..t,
-    f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) =
-      (fun t ↦ ∫ τ in t₀..t,
-        f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) ∘
-      (fun t : Icc tmin tmax ↦ (t : ℝ)) := by rfl
-  rw [this]
-  apply ContinuousOn.comp_continuous (s := Icc tmin tmax) _ (by fun_prop) (by simp)
-  nth_rw 14 [← Set.uIcc_of_le (le_of_Icc t₀)]
-  apply intervalIntegral.continuousOn_primitive_interval'
-  · apply Continuous.intervalIntegrable
-    have h1 : ContinuousOn (fun xx : E × E ↦ f' xx.1 xx.2) (range α ×ˢ univ) := by
-      set K := sSup ((fun x ↦ ‖f' x‖₊) '' range α) with hK
-      apply continuousOn_prod_of_continuousOn_lipschitzOnWith' _ K
-      · intro x hx
-        rw [lipschitzOnWith_univ]
-        apply ContinuousLinearMap.lipschitz (f' x) |>.weaken
-        rw [hK]
-        apply le_csSup _ (mem_image_of_mem _ hx)
-        apply IsCompact.bddAbove_image (isCompact_range α.continuous) <|
-          Continuous.comp_continuousOn continuous_nnnorm (hf'.mono hα)
-      · intro x _
-        exact ContinuousOn.clm_apply (hf'.mono hα) continuousOn_const
-    have h2 :
-      (fun τ ↦ f' (α (projIcc tmin tmax (le_of_Icc t₀) τ))
-        (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) =
-      (fun xx : E × E ↦ f' xx.1 xx.2) ∘ (fun τ ↦ (α (projIcc tmin tmax (le_of_Icc t₀) τ),
-        dα (projIcc tmin tmax (le_of_Icc t₀) τ))) := rfl
-    rw [h2]
-    apply ContinuousOn.comp_continuous h1 (by continuity)
-    intro τ
-    simp only [mem_prod, mem_univ, and_true]
-    simp
-  · rw [Set.uIcc_of_le (le_of_Icc t₀)]
+  by_cases hα : range α ⊆ u
+  · rw [implicitEquation.rightDerivAux, if_pos hα]
+    apply Continuous.add (Continuous.neg (ContinuousMapClass.map_continuous _))
+    have : (fun t : Icc tmin tmax ↦ ∫ τ in t₀..t,
+      f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) =
+        (fun t ↦ ∫ τ in t₀..t,
+          f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) ∘
+        (fun t : Icc tmin tmax ↦ (t : ℝ)) := by rfl
+    rw [this]
+    apply ContinuousOn.comp_continuous (s := Icc tmin tmax) _ (by fun_prop) (by simp)
+    nth_rw 14 [← Set.uIcc_of_le (le_of_Icc t₀)]
+    apply intervalIntegral.continuousOn_primitive_interval'
+      (implicitEquation.intervalIntegrable u t₀ hf' hα _ _ _)
+    rw [Set.uIcc_of_le (le_of_Icc t₀)]
     exact Subtype.coe_prop _
+  · rw [rightDerivAux, if_neg hα]
+    exact continuous_zero
 
 variable {u} in
 open Classical in
 noncomputable def implicitEquation.rightDerivAux' {f' : E → E →L[ℝ] E}
     (hf' : ContinuousOn f' u) (x : E) (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) → C(Icc tmin tmax, E) :=
-  fun dα ↦
-    if hα : range α ⊆ u then
-      ⟨implicitEquation.rightDerivAux u t₀ f' x α dα,
-        implicitEquation.continuous_rightDerivAux t₀ hf' x hα dα⟩
-    else 0
+  fun dα ↦ ⟨implicitEquation.rightDerivAux u t₀ f' x α dα,
+    implicitEquation.continuous_rightDerivAux t₀ hf' x α dα⟩
 
 -- map_add, map_smul for implicitEquation.rightDerivAux'
+lemma implicitEquation.rightDerivAux'_add {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
+    (x : E) (α dα dα' : C(Icc tmin tmax, E)) :
+    implicitEquation.rightDerivAux' t₀ hf' x α (dα + dα') =
+      implicitEquation.rightDerivAux' t₀ hf' x α dα +
+        implicitEquation.rightDerivAux' t₀ hf' x α dα' := by
+  simp only [implicitEquation.rightDerivAux']
+  congr
+  simp only [ContinuousMap.coe_mk, implicitEquation.rightDerivAux]
+  by_cases hα : range α ⊆ u
+  · simp only [if_pos hα]
+    rw [ContinuousMap.coe_add, neg_add]
+    simp_rw [Pi.add_apply, map_add]
+    funext t
+    simp only [Pi.add_apply, Pi.neg_apply]
+    rw [intervalIntegral.integral_add (implicitEquation.intervalIntegrable u t₀ hf' hα _ _ _)
+      (implicitEquation.intervalIntegrable u t₀ hf' hα _ _ _), add_add_add_comm]
+  · simp [if_neg hα]
+
+lemma implicitEquation.rightDerivAux'_smul {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
+    (x : E) (α : C(Icc tmin tmax, E)) (r : ℝ) (dα : C(Icc tmin tmax, E)) :
+    implicitEquation.rightDerivAux' t₀ hf' x α (r • dα) =
+      r • implicitEquation.rightDerivAux' t₀ hf' x α dα := by
+  simp only [implicitEquation.rightDerivAux']
+  congr
+  simp only [ContinuousMap.coe_mk, implicitEquation.rightDerivAux]
+  by_cases hα : range α ⊆ u
+  · simp only [if_pos hα]
+    rw [ContinuousMap.coe_smul, ← neg_smul]
+    simp_rw [Pi.smul_apply, map_smul]
+    funext t
+    simp only [Pi.smul_apply, Pi.add_apply, smul_add]
+    rw [intervalIntegral.integral_smul]
+    simp
+  · simp [if_neg hα]
 
 lemma implicitEquation.continuous_rightDerivAux' {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
     (x : E) (α : C(Icc tmin tmax, E)) :
@@ -217,10 +257,9 @@ noncomputable def implicitEquation.rightDeriv {f' : E → E →L[ℝ] E} (hf' : 
     (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) where
   toFun := implicitEquation.rightDerivAux' t₀ hf' x α
-  map_add' dα1 dα2 := sorry
-  map_smul' r dα := sorry
+  map_add' _ _ := implicitEquation.rightDerivAux'_add ..
+  map_smul' _ _ := implicitEquation.rightDerivAux'_smul ..
   cont := implicitEquation.continuous_rightDerivAux' u t₀ hf' x α
-
 
 -- namespace test
 
