@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Analysis.SpecialFunctions.Choose
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.Probability.ProbabilityMassFunction.Binomial
 
 /-! # Poisson distributions over ℕ
 
@@ -65,6 +65,10 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
+
+lemma poissonPMFReal_ofReal_eq_poissonPMF (r : ℝ≥0) (n : ℕ) :
+    ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n := by
+  simpa only [poissonPMF] using by rfl
 
 /-- The Poisson pmf is measurable. -/
 @[fun_prop]
@@ -148,5 +152,26 @@ lemma tendsto_poissonPMFReal_pow_of_tendsto_mul_atTop (r : ℝ≥0)
     (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) : Tendsto
     (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k)) atTop (𝓝 (poissonPMFReal r k)) :=
   tendsto_choose_mul_pow_of_tendsto_mul_atTop k hr
+
+open ENNReal in
+lemma PMFbinomial_tendsto_poissonPMFReal_atTop (r : ℝ≥0) (p : ℕ → ℝ≥0) (h : ∀ n, p n ≤ 1)
+    (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) : Tendsto (fun n ↦ PMF.binomial (p n) (h n) n
+    (Fin.ofNat (n + 1) k)) atTop (𝓝 (poissonPMF r k)) := by
+  have t1 : Tendsto (fun n => (ENNReal.ofReal (n.choose k * (p n) ^ k * (1 - p n) ^ (n - k) : ℝ)))
+    atTop (𝓝 (ENNReal.ofReal (poissonPMFReal r k))) :=
+    tendsto_ofReal (tendsto_poissonPMFReal_pow_of_tendsto_mul_atTop k r (by norm_cast))
+  rw [poissonPMFReal_ofReal_eq_poissonPMF r k] at t1
+  refine Tendsto.congr' ?_ t1
+  simp only [PMF.binomial_apply, EventuallyEq, Fin.ofNat_eq_cast, Fin.val_natCast, Fin.val_last,
+    eventually_atTop, ge_iff_le]
+  use k
+  intro b hb
+  set x : ℝ := NNReal.toReal (p b) with hx
+  have eq0 : k % (b + 1) = k := by simpa using Order.lt_add_one_iff.mpr hb
+  have eq1 : 1 - (p b : ℝ≥0∞) = ENNReal.ofReal (1 - x : ℝ) := by norm_cast
+  have : 1 - x ≥ 0 := by simp [hx, h b]
+  rw [eq0, eq1, coe_nnreal_eq (p b), mul_rotate (↑(b.choose k)) (x ^ k) ((1 - x) ^ (b - k)),
+    ofReal_mul, ENNReal.ofReal_mul, ofReal_pow, ofReal_pow, ofReal_natCast]
+  repeat positivity
 
 end ProbabilityTheory
