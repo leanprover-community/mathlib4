@@ -33,6 +33,23 @@ log_ok()    { echo -e "${GREEN}[OK]${NC} $*"; }
 log_warn()  { echo -e "${YELLOW}[WARN]${NC} $*"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
 
+# Show a truncated diff stat between two trees
+show_diff_stat() {
+  local tree1="$1"
+  local tree2="$2"
+  local max_lines="${3:-20}"
+  local diff_output
+  diff_output=$(git diff-tree --stat "$tree1" "$tree2")
+  local line_count
+  line_count=$(echo "$diff_output" | wc -l)
+  if [[ $line_count -gt $max_lines ]]; then
+    echo "$diff_output" | head -"$max_lines"
+    echo "  ... and $((line_count - max_lines)) more lines"
+  else
+    echo "$diff_output"
+  fi
+}
+
 usage() {
   echo "Usage: $0 <base_ref> [--json | --json-file <path>]"
   echo ""
@@ -178,7 +195,7 @@ verify_transient() {
 
     if [[ "$CHERRY_PICK_FAILED" == "false" ]]; then
       # Get the tree of the cherry-picked result
-      git add -A 2>/dev/null || true
+      # cherry-pick --no-commit stages changes, so write-tree works directly
       EXPECTED_TREE=$(git write-tree)
     fi
 
@@ -194,8 +211,10 @@ verify_transient() {
     TRANSIENT_VERIFIED=true
     return 0
   else
-    TRANSIENT_ERROR="Tree mismatch: HEAD=$FINAL_TREE, without-transient=$EXPECTED_TREE"
+    TRANSIENT_ERROR="Tree mismatch: transient commits have net effect"
     log_error "Transient verification failed: $TRANSIENT_ERROR"
+    log_error "Diff between HEAD and tree-without-transient-commits:"
+    show_diff_stat "$EXPECTED_TREE" "$FINAL_TREE"
     return 1
   fi
 }
@@ -227,6 +246,10 @@ verify_auto_commit() {
   # Checkout parent in detached HEAD
   git checkout -q --detach "$parent"
 
+  # Record untracked files before running command (to exclude pre-existing ones)
+  local untracked_before
+  untracked_before=$(git ls-files --others --exclude-standard | sort)
+
   # Run command with timeout
   local cmd_exit=0
   timeout "$TIMEOUT_SECONDS" bash -c "$command" || cmd_exit=$?
@@ -241,8 +264,16 @@ verify_auto_commit() {
     return 1
   fi
 
-  # Compare trees
-  git add -A
+  # Stage changes: update tracked files and add only NEW untracked files
+  git add -u  # Stage modifications to tracked files
+  local untracked_after
+  untracked_after=$(git ls-files --others --exclude-standard | sort)
+  # Add only files that are new (not in untracked_before)
+  local new_files
+  new_files=$(comm -13 <(echo "$untracked_before") <(echo "$untracked_after"))
+  if [[ -n "$new_files" ]]; then
+    echo "$new_files" | xargs -r git add
+  fi
   local actual_tree
   actual_tree=$(git write-tree)
 
@@ -253,8 +284,10 @@ verify_auto_commit() {
     log_ok "Auto commit $short_sha verified"
     return 0
   else
-    AUTO_RESULTS["$commit"]="Tree mismatch: expected=$expected_tree, got=$actual_tree"
+    AUTO_RESULTS["$commit"]="Tree mismatch: command output differs from commit"
     log_error "Auto commit $short_sha: tree mismatch"
+    log_error "Diff between expected and actual:"
+    show_diff_stat "$expected_tree" "$actual_tree"
     return 1
   fi
 }
@@ -285,6 +318,11 @@ verify_auto_commits() {
 if ! verify_transient; then
   OVERALL_SUCCESS=false
 fi
+
+# Restore to original state before auto verification
+# (transient verification may have left us in detached HEAD)
+restore_state
+save_state
 
 if ! verify_auto_commits; then
   OVERALL_SUCCESS=false
