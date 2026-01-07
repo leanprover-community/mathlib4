@@ -47,7 +47,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     hs.closure isClosed_closure (by simpa using hx)
   let f' : StrongDual 𝕜 (WeakSpace 𝕜 E) :=
     { toLinearMap := (f : E →ₗ[𝕜] 𝕜).comp ((toWeakSpace 𝕜 E).symm : WeakSpace 𝕜 E →ₗ[𝕜] E)
-      cont := WeakBilin.eval_continuous (topDualPairing 𝕜 E).flip _ }
+      continuous_toFun := WeakBilin.eval_continuous (topDualPairing 𝕜 E).flip _ }
   have hux' : u < RCLike.reCLM.comp (f'.restrictScalars ℝ) (toWeakSpace 𝕜 E x) := by simpa [f']
   have hus' : closure (toWeakSpace 𝕜 E '' s) ⊆
       {y | RCLike.reCLM.comp (f'.restrictScalars ℝ) y ≤ u} := by

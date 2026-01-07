@@ -163,7 +163,7 @@ variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 their weak topologies. -/
 def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
   { f with
-    cont :=
+    continuous_toFun :=
       WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
 
 theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
@@ -185,7 +185,7 @@ variable (𝕜 E) in
 This definition implements it as a continuous linear map. -/
 def toWeakSpaceCLM : E →L[𝕜] WeakSpace 𝕜 E where
   __ := toWeakSpace 𝕜 E
-  cont := by
+  continuous_toFun := by
     apply WeakBilin.continuous_of_continuous_eval
     exact ContinuousLinearMap.continuous
 
@@ -200,7 +200,7 @@ theorem toWeakSpaceCLM_bijective :
 
 /-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
 theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
-  IsOpenMap.of_inverse (toWeakSpaceCLM 𝕜 E).cont
+  IsOpenMap.of_inverse (toWeakSpaceCLM 𝕜 E).continuous_toFun
     (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
 
 /-- A set in `E` which is open in the weak topology is open. -/

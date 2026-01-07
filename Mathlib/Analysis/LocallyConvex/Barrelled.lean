@@ -188,7 +188,7 @@ protected def continuousLinearMapOfTendsto (hq : WithSeminorms q)
     [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
     E →SL[σ₁₂] F where
   toLinearMap := linearMapOfTendsto _ _ h
-  cont := by
+  continuous_toFun := by
     -- Since the filter `l` is countably generated and nontrivial, we can find a sequence
     -- `u : ℕ → α` that tends to `l`. By considering `g ∘ u` instead of `g`, we can thus assume
     -- that `α = ℕ` and `l = atTop`

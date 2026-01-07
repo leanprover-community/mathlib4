@@ -148,7 +148,7 @@ theorem continuous_of_bound (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m,
 /-- Construct a continuous alternating map
 from an alternating map satisfying a boundedness condition. -/
 def mkContinuous (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : E [⋀^ι]→L[𝕜] F :=
-  { f with cont := f.continuous_of_bound C H }
+  { f with continuous_toFun := f.continuous_of_bound C H }
 
 @[simp] theorem coe_mkContinuous (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
     (f.mkContinuous C H : (ι → E) → F) = f :=
@@ -568,9 +568,9 @@ def ContinuousLinearEquiv.continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] F)
   __ := ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : F →L[𝕜] E)
   toFun g := g.compContinuousLinearMap (f.symm : F →L[𝕜] E)
   continuous_invFun :=
-    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F)).cont
+    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F)).continuous_toFun
   continuous_toFun :=
-    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : F →L[𝕜] E)).cont
+    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : F →L[𝕜] E)).continuous_toFun
 
 variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']

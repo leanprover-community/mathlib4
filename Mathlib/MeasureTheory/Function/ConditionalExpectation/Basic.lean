@@ -353,7 +353,8 @@ theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommG
             T.integral_comp_comm integrable_condExp.restrict
           _ = T (∫ x in s, f x ∂μ) := congrArg T (setIntegral_condExp hm hf_int ms)
           _ = ∫ x in s, (T ∘ f) x ∂μ := (T.integral_comp_comm hf_int.restrict).symm
-      · exact T.cont.comp_aestronglyMeasurable stronglyMeasurable_condExp.aestronglyMeasurable
+      · exact T.continuous_toFun.comp_aestronglyMeasurable
+          stronglyMeasurable_condExp.aestronglyMeasurable
     · simp [condExp_of_not_sigmaFinite hm hμ]
   · simp [condExp_of_not_le hm]
 

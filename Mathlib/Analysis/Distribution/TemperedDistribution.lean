@@ -116,8 +116,8 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTem
   toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-  cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
-    fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
+  continuous_toFun := PointwiseConvergenceCLM.continuous_of_continuous_eval
+    fun g ↦ (integralCLM ℂ μ).continuous_toFun.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
 
 @[simp]
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
@@ -191,13 +191,14 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
   toFun := toTemperedDistribution
   map_add' f g := by simp [Lp.toTemperedDistribution]
   map_smul' a f := by simp [Lp.toTemperedDistribution]
-  cont := by
+  continuous_toFun := by
     apply PointwiseConvergenceCLM.continuous_of_continuous_eval
     intro g
     haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
     have hpq : ENNReal.HolderConjugate p (1 - p⁻¹)⁻¹ :=
       ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
-    exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹).flip (g.toLp (1 - p⁻¹)⁻¹ μ)).cont
+    exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹).flip
+      (g.toLp (1 - p⁻¹)⁻¹ μ)).continuous_toFun
 
 @[simp]
 theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :

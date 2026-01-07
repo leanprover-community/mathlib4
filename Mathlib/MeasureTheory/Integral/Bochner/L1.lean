@@ -626,7 +626,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
       (fun f : α →₁[μ] ℝ => integral f = ‖Lp.posPart f‖ - ‖Lp.negPart f‖)
       (simpleFunc.denseRange one_ne_top) (isClosed_eq ?_ ?_) ?_ f
   · simp only [integral]
-    exact cont _
+    exact continuous_toFun _
   · refine Continuous.sub (continuous_norm.comp Lp.continuous_posPart)
       (continuous_norm.comp Lp.continuous_negPart)
   -- Show that the property holds for all simple functions in the `L¹` space.

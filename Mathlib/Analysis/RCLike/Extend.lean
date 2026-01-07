@@ -124,7 +124,8 @@ Norm properties of this extension can be found in
 `Mathlib/Analysis/Normed/Module/RCLike/Extend.lean`. -/
 noncomputable def extendTo𝕜' (fr : StrongDual ℝ F) : StrongDual 𝕜 F where
   __ := fr.toLinearMap.extendTo𝕜'
-  cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop
+  continuous_toFun :=
+    show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop
 
 theorem extendTo𝕜'_apply (fr : StrongDual ℝ F) (x : F) :
     fr.extendTo𝕜' x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl

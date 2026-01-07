@@ -85,7 +85,7 @@ def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze 
 def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
   { ContinuousLinearMap.snd R R M with
     toFun := snd
-    cont := continuous_snd }
+    continuous_toFun := continuous_snd }
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
 @[simps]

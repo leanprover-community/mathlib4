@@ -49,7 +49,7 @@ lemma range_toUniformOnFun [DecidableEq ι] [TopologicalSpace F] :
   ext f
   constructor
   · rintro ⟨f, rfl⟩
-    exact ⟨f.cont, f.map_update_add, f.map_update_smul⟩
+    exact ⟨f.continuous_toFun, f.map_update_add, f.map_update_smul⟩
   · rintro ⟨hcont, hadd, hsmul⟩
     exact ⟨⟨⟨f, by intro; convert hadd, by intro; convert hsmul⟩, hcont⟩, rfl⟩
 
@@ -261,7 +261,7 @@ def apply [ContinuousConstSMul 𝕜 F] (m : Π i, E i) : ContinuousMultilinearMa
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_eval_const m
+  continuous_toFun := continuous_eval_const m
 
 variable {𝕜 E F}
 

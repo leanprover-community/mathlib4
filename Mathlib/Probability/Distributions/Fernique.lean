@@ -106,7 +106,7 @@ def _root_.ContinuousLinearMap.rotation (θ : ℝ) : E × E →L[ℝ] E × E whe
     simp only [Prod.fst_add, smul_add, Prod.snd_add, neg_smul, Prod.mk_add_mk]
     abel_nf
   map_smul' c x := by simp [smul_comm c]
-  cont := by fun_prop
+  continuous_toFun := by fun_prop
 
 lemma _root_.ContinuousLinearMap.rotation_apply (θ : ℝ) (x : E × E) :
     ContinuousLinearMap.rotation θ x

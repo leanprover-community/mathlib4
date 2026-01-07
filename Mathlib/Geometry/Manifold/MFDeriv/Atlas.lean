@@ -180,8 +180,8 @@ protected def mfderiv (he : e.MDifferentiable I I') {x : M} (hx : x ∈ e.source
     TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
   { mfderiv I I' e x with
     invFun := mfderiv I' I e.symm (e x)
-    continuous_toFun := (mfderiv I I' e x).cont
-    continuous_invFun := (mfderiv I' I e.symm (e x)).cont
+    continuous_toFun := (mfderiv I I' e x).continuous_toFun
+    continuous_invFun := (mfderiv I' I e.symm (e x)).continuous_toFun
     left_inv := fun y => by
       have : (ContinuousLinearMap.id _ _ : TangentSpace I x →L[𝕜] TangentSpace I x) y = y := rfl
       conv_rhs => rw [← this, ← he.symm_comp_deriv hx]

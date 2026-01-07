@@ -788,8 +788,8 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
       (fun v i c x ↦ by
         simp only [applyOrderedFinpartition_update_right,
           ContinuousMultilinearMap.map_update_smul])
-  cont := by
-    apply f.cont.comp
+  continuous_toFun := by
+    apply f.continuous_toFun.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
     fun_prop
 

@@ -197,7 +197,7 @@ noncomputable def cfcₙL {a : A} (ha : p a) : C(σₙ R a, R)₀ →L[R] A :=
   { cfcₙHom ha with
     toFun := cfcₙHom ha
     map_smul' := map_smul _
-    cont := (cfcₙHom_isClosedEmbedding ha).continuous }
+    continuous_toFun := (cfcₙHom_isClosedEmbedding ha).continuous }
 
 end cfcₙL
 

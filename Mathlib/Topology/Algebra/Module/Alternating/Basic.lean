@@ -76,12 +76,12 @@ instance funLike : FunLike (M [⋀^ι]→L[R] N) (ι → M) N where
   coe_injective' _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
 
 instance continuousMapClass : ContinuousMapClass (M [⋀^ι]→L[R] N) (ι → M) N where
-  map_continuous f := f.cont
+  map_continuous f := f.continuous_toFun
 
 initialize_simps_projections ContinuousAlternatingMap (toFun → apply)
 
 @[continuity]
-theorem coe_continuous : Continuous f := f.cont
+theorem coe_continuous : Continuous f := f.continuous_toFun
 
 @[simp]
 theorem coe_toContinuousMultilinearMap : ⇑f.toContinuousMultilinearMap = f :=
@@ -107,7 +107,8 @@ theorem toAlternatingMap_injective :
 theorem range_toAlternatingMap :
     Set.range (toAlternatingMap : M [⋀^ι]→L[R] N → (M [⋀^ι]→ₗ[R] N)) =
       {f : M [⋀^ι]→ₗ[R] N | Continuous f} :=
-  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
+  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.continuous_toFun,
+    fun h => ⟨{ f with continuous_toFun := h }, DFunLike.ext' rfl⟩⟩
 
 @[simp]
 theorem map_update_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :

@@ -303,7 +303,7 @@ def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K 
   toFun f := ofSupportedIn K_sub_Ω f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_ofSupportedIn K_sub_Ω
+  continuous_toFun := continuous_ofSupportedIn K_sub_Ω
 
 @[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
 
@@ -345,7 +345,7 @@ protected def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V
     𝓓^{n}(Ω, F) →L[𝕜] V :=
   letI Φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] V := ⟨⟨toFun, map_add⟩, map_smul⟩
   { toLinearMap := Φ
-    cont := show Continuous Φ by rwa [TestFunction.continuous_iff_continuous_comp] }
+    continuous_toFun := show Continuous Φ by rwa [TestFunction.continuous_iff_continuous_comp] }
 
 end Topology
 

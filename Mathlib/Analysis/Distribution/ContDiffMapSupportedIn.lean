@@ -494,7 +494,7 @@ We call these "structure maps" because they define the topology on `𝓓^{n}_{K}
 noncomputable def structureMapCLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ (E [×i]→L[ℝ] F) where
   toLinearMap := structureMapLM 𝕜 n i
-  cont := continuous_iInf_dom continuous_induced_dom
+  continuous_toFun := continuous_iInf_dom continuous_induced_dom
 
 @[simp]
 lemma structureMapCLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
@@ -656,7 +656,7 @@ theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
 functions as a continuous `𝕜`-linear map. -/
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
   toLinearMap := toBoundedContinuousFunctionLM 𝕜
-  cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
+  continuous_toFun := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
     refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
     simp [norm_toBoundedContinuousFunction 𝕜 f]
@@ -701,7 +701,7 @@ variable {𝕜} in
 noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}_{K}(E, F') where
   toLinearMap := postcompLM T
-  cont := show Continuous (postcompLM T) by
+  continuous_toFun := show Continuous (postcompLM T) by
     refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
     simpa [NNReal.smul_def] using seminorm_postcompLM_le 𝕜 T f

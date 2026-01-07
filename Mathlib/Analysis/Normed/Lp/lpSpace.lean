@@ -997,7 +997,7 @@ variable (𝕜 p E) in
 /-- `lp.single` as a continuous linear map. -/
 def singleContinuousLinearMap [Fact (1 ≤ p)] (i : α) : E i →L[𝕜] lp E p where
   __ := lsingle p i
-  cont := isometry_single i |>.continuous
+  continuous_toFun := isometry_single i |>.continuous
 
 @[simp]
 theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] (i : α) (x : E i) :

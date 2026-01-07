@@ -82,7 +82,8 @@ variable [CompleteSpace 𝕜] [T2Space E] [FiniteDimensional 𝕜 E]
 
 theorem AnalyticOnNhd.eval_linearMap (f : E →ₗ[𝕜] σ → B) (p : MvPolynomial σ B) :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f x) p) Set.univ :=
-  AnalyticOnNhd.eval_continuousLinearMap { f with cont := f.continuous_of_finiteDimensional } p
+  AnalyticOnNhd.eval_continuousLinearMap { f with
+    continuous_toFun := f.continuous_of_finiteDimensional } p
 
 theorem AnalyticOnNhd.eval_linearMap' (f : σ → E →ₗ[𝕜] B) (p : MvPolynomial σ B) :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ := AnalyticOnNhd.eval_linearMap (.pi f) p

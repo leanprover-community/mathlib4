@@ -417,7 +417,7 @@ instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
 def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
-  { φ.toLinearMap with cont := map_continuous φ }
+  { φ.toLinearMap with continuous_toFun := map_continuous φ }
 
 @[simp]
 theorem coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=

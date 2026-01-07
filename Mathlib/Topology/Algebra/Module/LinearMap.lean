@@ -36,9 +36,9 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by continuity
+  continuous_toFun : Continuous toFun := by continuity
 
-attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
+attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.continuous_toFun
 
 @[inherit_doc]
 notation:25 M " →SL[" σ "] " M₂ => ContinuousLinearMap σ M M₂
@@ -157,7 +157,7 @@ theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
 definitional equalities. -/
 protected def copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : M₁ →SL[σ₁₂] M₂ where
   toLinearMap := f.toLinearMap.copy f' h
-  cont := show Continuous f' from h.symm ▸ f.continuous
+  continuous_toFun := show Continuous f' from h.symm ▸ f.continuous
 
 @[simp]
 theorem coe_copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : ⇑(f.copy f' h) = f' :=
@@ -613,7 +613,7 @@ instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
 /-- Restrict codomain of a continuous linear map. -/
 def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
     M₁ →SL[σ₁₂] p where
-  cont := f.continuous.subtype_mk _
+  continuous_toFun := f.continuous.subtype_mk _
   toLinearMap := (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h
 
 @[norm_cast]
@@ -643,7 +643,7 @@ theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂]
 
 /-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
 def _root_.Submodule.subtypeL (p : Submodule R₁ M₁) : p →L[R₁] M₁ where
-  cont := continuous_subtype_val
+  continuous_toFun := continuous_subtype_val
   toLinearMap := p.subtype
 
 @[simp, norm_cast]
@@ -676,7 +676,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂]
 See also `ContinuousLinearMap.smulRightₗ` and `ContinuousLinearMap.smulRightL`. -/
 @[simps coe]
 def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
-  { c.toLinearMap.smulRight f with cont := c.2.smul continuous_const }
+  { c.toLinearMap.smulRight f with continuous_toFun := c.2.smul continuous_const }
 
 @[simp]
 theorem smulRight_apply {c : M₁ →L[R] S} {f : M₂} {x : M₁} :
@@ -709,7 +709,7 @@ variable [ContinuousSMul R₁ M₁]
 linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
-  cont := continuous_id.smul continuous_const
+  continuous_toFun := continuous_id.smul continuous_const
 
 @[simp]
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=

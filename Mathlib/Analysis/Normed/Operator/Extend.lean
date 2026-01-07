@@ -77,7 +77,7 @@ def extend : Eₗ →SL[σ₁₂] F :=
         rw [← map_smul]
         simp only [eq]
         exact map_smulₛₗ _ _ _
-    cont }
+  }
   else 0
 
 variable {e}
@@ -86,7 +86,7 @@ variable {e}
 theorem extend_eq (h_dense : DenseRange e) (h_e : IsUniformInducing e) (x : E) :
     extend f e (e x) = f x := by
   simp only [extend, h_dense, h_e, and_self, ↓reduceDIte, coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
-  exact IsDenseInducing.extend_eq (h_e.isDenseInducing h_dense) f.cont _
+  exact IsDenseInducing.extend_eq (h_e.isDenseInducing h_dense) f.continuous_toFun _
 
 theorem extend_unique (h_dense : DenseRange e) (h_e : IsUniformInducing e) (g : Eₗ →SL[σ₁₂] F)
     (H : g.comp e = f) : extend f e = g := by
@@ -125,7 +125,7 @@ theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * 
         (h_e x).trans (mul_nonpos_of_nonpos_of_nonneg hN (norm_nonneg _))⟩
       obtain rfl : f = 0 := Subsingleton.elim ..
       simp
-  · exact (cont _).norm
+  · exact (continuous_toFun _).norm
   · exact continuous_const.mul continuous_norm
   · rw [extend_eq _ h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing]
     calc

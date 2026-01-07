@@ -876,7 +876,7 @@ lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Fin
       (Set.Icc 0 1) := by
     refine continuousOn_of_forall_continuousAt
       fun t ht ↦ ((continuousAt_sign_of_ne_zero ?_).comp
-        (((s.signedInfDist j).cont.comp ?_).continuousAt))
+        (((s.signedInfDist j).continuous_toFun.comp ?_).continuousAt))
     · intro h0
       rw [← abs_eq_zero, abs_signedInfDist_eq_dist_of_mem_affineSpan_range] at h0
       · rw [orthogonalProjectionSpan, dist_orthogonalProjection_eq_zero_iff] at h0
@@ -893,7 +893,7 @@ lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Fin
       · exact AffineMap.lineMap_mem _ h.excenter_mem_affineSpan_range
           (s.touchpoint_mem_affineSpan_simplex _ _)
     · rw [← ContinuousAffineMap.lineMap_toAffineMap]
-      exact ContinuousAffineMap.cont _
+      exact ContinuousAffineMap.continuous_toFun _
   refine ((isConnected_Icc zero_le_one).image _ hc).isPreconnected.subsingleton
     (Set.mem_image_of_mem _ hr) ?_
   convert Set.mem_image_of_mem _ (Set.left_mem_Icc.2 (zero_le_one' ℝ))
