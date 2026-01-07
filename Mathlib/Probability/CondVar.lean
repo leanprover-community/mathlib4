@@ -105,7 +105,7 @@ lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X
 -- `condVar_ae_eq_condExp_sq_sub_condExp_sq` is a bit ridiculous, so we exceptionally denote it by
 -- `sq_` as it were a prefix.
 lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
-    Var[X; μ | m] =ᵐ[μ] μ[X ^ 2 | m] - μ[X|m] ^ 2 := by
+    Var[X; μ | m] =ᵐ[μ] μ[X ^ 2|m] - μ[X|m] ^ 2 := by
   calc
     Var[X; μ | m]
     _ = μ[X ^ 2 - 2 * X * μ[X|m] + μ[X|m] ^ 2|m] := by rw [condVar, sub_sq]
@@ -114,7 +114,7 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
       have aux₁ : Integrable (2 * X * μ[X|m]) μ := by
         rw [mul_assoc]
         exact (memLp_one_iff_integrable.1 <| hX.condExp.mul hX).const_mul _
-      have aux₂ : Integrable (μ[X | m] ^ 2) μ := hX.condExp.integrable_sq
+      have aux₂ : Integrable (μ[X|m] ^ 2) μ := hX.condExp.integrable_sq
       filter_upwards [condExp_add (m := m) (aux₀.sub aux₁) aux₂, condExp_sub (m := m) aux₀ aux₁,
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
           ((hX.integrable one_le_two).const_mul _), condExp_ofNat (m := m) 2 X]
@@ -122,24 +122,24 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
       simp [hω₀, hω₁, hω₂, hω₃,
         condExp_of_stronglyMeasurable hm (stronglyMeasurable_condExp.pow _) aux₂]
       simp [mul_assoc, sq]
-    _ = μ[X ^ 2 | m] - μ[X | m] ^ 2 := by ring
+    _ = μ[X ^ 2|m] - μ[X|m] ^ 2 := by ring
 
 lemma condVar_ae_le_condExp_sq (hm : m ≤ m₀) [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
-    Var[X; μ | m] ≤ᵐ[μ] μ[X ^ 2 | m] := by
+    Var[X; μ | m] ≤ᵐ[μ] μ[X ^ 2|m] := by
   filter_upwards [condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX] with ω hω
   dsimp at hω
   nlinarith
 
 /-- **Law of total variance** -/
 lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeasure μ]
-    (hX : MemLp X 2 μ) : μ[Var[X; μ | m]] + Var[μ[X | m]; μ] = Var[X; μ] := by
+    (hX : MemLp X 2 μ) : μ[Var[X; μ | m]] + Var[μ[X|m]; μ] = Var[X; μ] := by
   calc
-    μ[Var[X; μ | m]] + Var[μ[X | m]; μ]
-    _ = μ[(μ[X ^ 2 | m] - μ[X | m] ^ 2 : Ω → ℝ)] + (μ[μ[X | m] ^ 2] - μ[μ[X | m]] ^ 2) := by
+    μ[Var[X; μ | m]] + Var[μ[X|m]; μ]
+    _ = μ[(μ[X ^ 2|m] - μ[X|m] ^ 2 : Ω → ℝ)] + (μ[μ[X|m] ^ 2] - μ[μ[X|m]] ^ 2) := by
       congr 1
       · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX
       · exact variance_eq_sub hX.condExp
-    _ = μ[X ^ 2] - μ[μ[X | m] ^ 2] + (μ[μ[X | m] ^ 2] - μ[X] ^ 2) := by
+    _ = μ[X ^ 2] - μ[μ[X|m] ^ 2] + (μ[μ[X|m] ^ 2] - μ[X] ^ 2) := by
       rw [integral_sub' integrable_condExp, integral_condExp hm, integral_condExp hm]
       exact hX.condExp.integrable_sq
     _ = Var[X; μ] := by rw [variance_eq_sub hX]; ring
@@ -162,7 +162,7 @@ lemma condVar_bot [IsProbabilityMeasure μ] (hX : AEMeasurable X μ) :
 lemma condVar_smul (c : ℝ) (X : Ω → ℝ) : Var[c • X; μ | m] =ᵐ[μ] c ^ 2 • Var[X; μ | m] := by
   calc
     Var[c • X; μ | m]
-    _ =ᵐ[μ] μ[c ^ 2 • (X - μ[X | m]) ^ 2 | m] := by
+    _ =ᵐ[μ] μ[c ^ 2 • (X - μ[X|m]) ^ 2|m] := by
       rw [condVar]
       refine condExp_congr_ae ?_
       filter_upwards [condExp_smul (m := m) c X] with ω hω
