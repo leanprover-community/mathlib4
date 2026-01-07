@@ -627,7 +627,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
         · exact summable_of_finite_support ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp_all))
     · have h₁ (l : L.lattice) : l.1 ≠ l₀ := fun e ↦ hl₀ (e ▸ l.2)
       simp [h₁, tsum_mul_left, sumInvPow, add_assoc,
-        one_add_one_eq_two, ← zpow_natCast, - neg_add_rev]
+        one_add_one_eq_two, ← zpow_natCast, -neg_add_rev]
 
 /--
 In the power series expansion of `℘(z) = ∑ᵢ aᵢ (z - x)ⁱ` at some `x ∉ L`,
