@@ -44,7 +44,7 @@ variable (f : M → N) (g : N → P) (g' : P → P')
   `g y = 0` iff `y` belongs to the image of `f`. -/]
 def MulExact [One P] : Prop := ∀ y, g y = 1 ↔ y ∈ Set.range f
 
-variable {f g g'}
+variable {f g}
 
 namespace MulExact
 
