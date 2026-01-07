@@ -42,9 +42,13 @@ private partial def getStructureDataProjections (e : Expr) (acc : Array Expr := 
 /-- An overlap between two local instances. This is introduced for readability, as all fields are
 `Expr`s. -/
 structure Overlap where
-  /-- A local instance free variable whose data-carrying projections overlap with `fvar₂`. -/
+  /-- A local instance free variable whose data-carrying projections overlap with `fvar₂`. The
+  `Bool` indicates whether `fvar₁ == overlap`; this guides the logic and is used for error
+  reporting. -/
   fvar₁ : Expr × Bool
-  /-- A local instance free variable whose data-carrying projections overlap with `fvar₁`. -/
+  /-- A local instance free variable whose data-carrying projections overlap with `fvar₁`. The
+  `Bool` indicates whether `fvar₂ == overlap`; this guides the logic and is used for error
+  reporting. -/
   fvar₂ : Expr × Bool
   /-- A type class on which `fvar₁` and `fvar₂`'s data-carrying projections overlap. -/
   overlap : Expr
