@@ -22,7 +22,7 @@ version.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Metric TopologicalSpace Function Filter
 

@@ -46,8 +46,10 @@ namespace leftExactFunctorForgetEquivalence
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
 attribute [local instance] AddCommGrpCat.cartesianMonoidalCategoryAddCommGrp
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : CartesianMonoidalCategory C := .ofHasFiniteProducts
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidalCategory
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
@@ -65,7 +67,7 @@ instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :=
-  ObjectProperty.lift _ inverseAux inferInstance
+  ObjectProperty.lift _ inverseAux (by simp only [leftExactFunctor_iff]; infer_instance)
 
 open scoped MonObj
 
