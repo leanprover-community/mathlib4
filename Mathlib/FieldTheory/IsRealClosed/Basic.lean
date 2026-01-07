@@ -1,0 +1,91 @@
+/-
+Copyright (c) 2025 Artie Khovanov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Artie Khovanov
+-/
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.Algebra.Ring.Semireal.Defs
+import Mathlib.Tactic.LinearCombination
+
+/-!
+# Real Closed Field
+
+In this file we define real closed fields and prove some of their properties.
+
+## Main Definitions
+
+- `IsRealClosed R` is the typeclass saying `F` is a real closed field.
+
+## Tags
+
+real closed
+
+-/
+
+open Polynomial
+
+/-- A field `R` is real closed if
+    1. `R` is real
+    2. for all `x ∈ R`, either `x` or `-x` is a square
+    3. every odd-degree polynomial has a root.
+-/
+class IsRealClosed (R : Type*) [Field R] : Prop extends IsSemireal R where
+  isSquare_or_isSquare_neg (x : R) : IsSquare x ∨ IsSquare (-x)
+  exists_isRoot_of_odd_natDegree {f : R[X]} (hf : Odd f.natDegree) : ∃ x, f.IsRoot x
+
+attribute [aesop 90% forward] IsRealClosed.isSquare_or_isSquare_neg
+
+namespace IsRealClosed
+
+universe u
+
+variable {R : Type u} [Field R]
+
+theorem of_orderedField [LinearOrder R] [IsStrictOrderedRing R]
+    (isSquare_of_nonneg : ∀ {x : R}, 0 ≤ x → IsSquare x)
+    (exists_isRoot_of_odd_natDegree : ∀ {f : R[X]}, Odd f.natDegree → ∃ x, f.IsRoot x) :
+    IsRealClosed R where
+  isSquare_or_isSquare_neg {x} := by
+    rcases le_or_gt x 0 with (neg | pos)
+    · exact Or.inr <| isSquare_of_nonneg (by linarith)
+    · exact Or.inl <| isSquare_of_nonneg (by linarith)
+  exists_isRoot_of_odd_natDegree := exists_isRoot_of_odd_natDegree
+
+variable [IsRealClosed R]
+
+theorem exists_eq_pow_of_odd (x : R) {n : ℕ} (hn : Odd n) : ∃ r, x = r ^ n := by
+  rcases exists_isRoot_of_odd_natDegree (f := X ^ n - C x) (by simp [hn]) with ⟨r, hr⟩
+  exact ⟨r, by linear_combination - (by simpa using hr : r ^ n - x = 0)⟩
+
+theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n > 0) :
+    ∃ r, x = r ^ n := by
+  induction n using Nat.strong_induction_on generalizing x with
+  | h n ih =>
+    rcases Nat.even_or_odd n with (even | odd)
+    · rcases even with ⟨m, hm⟩
+      rcases hx with ⟨s, hs⟩
+      rcases isSquare_or_isSquare_neg s with (h | h) <;>
+        rcases ih m (by omega) h (by omega) with ⟨r, hr⟩ <;>
+        exact ⟨r, by simp [hm, pow_add, ← hr, hs]⟩
+    · exact exists_eq_pow_of_odd x odd
+
+section ordered
+
+variable [LinearOrder R] [IsStrictOrderedRing R]
+
+theorem nonneg_iff_isSquare {x : R} : 0 ≤ x ↔ IsSquare x where
+  mp h := by
+    suffices IsSquare (-x) → x = 0 by aesop
+    intro hc
+    linarith [IsSquare.nonneg hc]
+  mpr := IsSquare.nonneg
+
+alias ⟨isSquare_of_nonneg, _⟩ := nonneg_iff_isSquare
+
+theorem exists_eq_pow_of_nonneg {x : R} (hx : 0 ≤ x) {n : ℕ} (hn : n > 0) : ∃ r, x = r ^ n :=
+  exists_eq_pow_of_isSquare (isSquare_of_nonneg hx) hn
+
+end ordered
+
+end IsRealClosed
