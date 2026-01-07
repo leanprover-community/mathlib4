@@ -243,7 +243,7 @@ theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, 
   rfl
 
 @[simp]
-theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦  c) f = c • f := by
+theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦ c) f = c • f := by
   ext1; simp
 
 @[simp]
@@ -409,10 +409,6 @@ end embedding
 
 open LineDeriv Real
 
-@[fun_prop]
-theorem inner_hasTemperateGrowth_left (c : E) : (inner ℝ · c).HasTemperateGrowth :=
-  ((innerSL ℝ).flip c).hasTemperateGrowth
-
 theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
     𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕 f) := by
   ext u
@@ -425,5 +421,54 @@ theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
 
 end Fourier
 
+section DiracDelta
+
+variable [NormedAddCommGroup E]
+
+section definition
+
+variable [NormedSpace ℝ E]
+
+/-- The Dirac delta distribution -/
+def delta (x : E) : 𝓢'(E, ℂ) :=
+  toPointwiseConvergenceCLM _ _ _ _ <|
+    (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
+
+@[deprecated (since := "2025-12-23")]
+noncomputable alias _root_.SchwartzMap.delta := delta
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
+  rfl
+
+@[deprecated (since := "2025-12-23")]
+alias _root_.SchwartzMap.delta_apply := delta_apply
+
+open MeasureTheory MeasureTheory.Measure
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- Dirac measure considered as a tempered distribution is the delta distribution. -/
+@[simp]
+theorem toTemperedDistribution_dirac_eq_delta (x : E) :
+  (dirac x).toTemperedDistribution = delta x := by aesop
+
+@[deprecated (since := "2025-12-23")]
+alias _root_.SchwartzMap.integralCLM_dirac_eq_delta := toTemperedDistribution_dirac_eq_delta
+
+end definition
+
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+open FourierTransform
+
+/-- The Fourier transform of the delta distribution is equal to the volume.
+
+Informally, this is usually represented as `𝓕 δ = 1`. -/
+theorem fourier_delta_zero : 𝓕 (delta (0 : E)) = volume.toTemperedDistribution := by
+  ext f
+  simp [SchwartzMap.fourier_coe, Real.fourier_eq]
+
+end DiracDelta
 
 end TemperedDistribution

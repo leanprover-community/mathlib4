@@ -576,6 +576,9 @@ theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=
 
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f; rfl
 
+theorem finite_range_coeff (f : R[X]) : (Set.range f.coeff).Finite :=
+  Finsupp.finite_range _
+
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [coeff, Finsupp.single_apply]
 

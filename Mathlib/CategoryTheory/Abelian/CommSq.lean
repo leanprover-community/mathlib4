@@ -25,7 +25,7 @@ We study the associated exact sequence `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

@@ -393,7 +393,7 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
     Function.comp_apply, coe_comp']
-  simp_rw [← coe_coe, U.starProjection_isSymmetric _ , hT.isSymmetric _,
+  simp_rw [← coe_coe, U.starProjection_isSymmetric _, hT.isSymmetric _,
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
@@ -490,7 +490,7 @@ theorem IsIdempotentElem.TFAE [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsIde
   tfae_have 2 ↔ 3 := hp.isSelfAdjoint_iff_isStarNormal.symm
   tfae_have 3 ↔ 4 := hp.isPositive_iff_isSelfAdjoint.symm
   tfae_have 3 ↔ 1 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
-    (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
+    (LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp.toLinearMap)
   tfae_finish
 
 end ContinuousLinearMap
@@ -517,3 +517,9 @@ theorem LinearMap.IsPositive.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsP
 
 @[simp] theorem LinearEquiv.isPositive_symm_iff {T : E ≃ₗ[𝕜] E} :
     T.symm.IsPositive ↔ T.IsPositive := ⟨.toLinearMap_symm, .toLinearMap_symm⟩
+
+@[simp] lemma InnerProductSpace.isPositive_rankOne_self (x : E) :
+    (rankOne 𝕜 x x).IsPositive := by
+  simp_rw [ContinuousLinearMap.isPositive_iff, isSymmetric_rankOne_self, rankOne_apply,
+    inner_smul_left, RCLike.conj_mul, ← RCLike.ofReal_pow, RCLike.ofReal_nonneg]
+  simp
