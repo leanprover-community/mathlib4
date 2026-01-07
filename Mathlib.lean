@@ -1544,6 +1544,7 @@ public import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.CStarAlgebra.lpSpace
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.Calculus.AddTorsor.Coord
+public import Mathlib.Analysis.Calculus.ArcLengthReparametrization
 public import Mathlib.Analysis.Calculus.BumpFunction.Basic
 public import Mathlib.Analysis.Calculus.BumpFunction.Convolution
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
