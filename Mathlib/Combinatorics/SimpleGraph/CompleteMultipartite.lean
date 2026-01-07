@@ -353,7 +353,7 @@ namespace CompleteEquipartiteSubgraph
 
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
 theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
-  fun _ h₁ _ h₂ hne ↦ disjoint_left.mpr fun _ h₁' h₂' ↦
+  fun _ h₁ _ h₂ hne ↦ Finset.disjoint_left.mpr fun _ h₁' h₂' ↦
     (G.loopless _) (K.isCompleteBetween h₁ h₂ hne h₁' h₂')
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
@@ -402,7 +402,7 @@ def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSu
   by_cases ht : t = 0
   · exact ⟨∅, .inr ht, by simp, by simp⟩
   · refine ⟨univ.map ⟨fun i ↦ univ.map ⟨fun j ↦ f (i, j), fun _ _ h ↦ ?_⟩, fun i₁ i₂ h ↦ ?_⟩,
-      by simp, fun h ↦ ?_, fun _ h₁ _ h₂ hne _ h₁' _ h₂' ↦ ?_⟩
+      ?_, fun h ↦ ?_, fun _ h₁ _ h₂ hne _ h₁' _ h₂' ↦ ?_⟩
     · simpa using f.injective h
     · simp_rw [Finset.ext_iff] at h
       have : NeZero t := ⟨ht⟩
@@ -410,6 +410,7 @@ def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSu
       apply f.injective at heq
       rw [Prod.mk.injEq] at heq
       exact heq.left
+    · simp
     · simp_rw [mem_map, mem_univ, Embedding.coeFn_mk, true_and] at h
       replace ⟨_, h⟩ := h
       simp [← h]
