@@ -69,9 +69,7 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     Ideal.span ((fun x ↦ monomial x 1) '' {x | x.sum (fun _ => id) = n}) := by
   classical
   by_cases h' : Subsingleton R
-  · trans 1
-    · exact Subsingleton.eq_one _
-    symm; exact Subsingleton.eq_one _
+  · exact Subsingleton.allEq ..
   rw [not_subsingleton_iff_nontrivial] at h'
   rw [idealOfVars, Ideal.span, Submodule.span_pow]
   congr; ext p
