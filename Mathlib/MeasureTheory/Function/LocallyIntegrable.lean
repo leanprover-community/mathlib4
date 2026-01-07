@@ -487,17 +487,12 @@ theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
 theorem ContinuousOn.integrableOn_of_subset_isCompact (hf : ContinuousOn f K)
     (hK : IsCompact K) (hs : MeasurableSet s) (h's : s ⊆ K) (mus : μ s ≠ ∞) :
     IntegrableOn f s μ := by
-  constructor
-  · borelize E
-    rw [aestronglyMeasurable_iff_aemeasurable_separable]
-    refine ⟨(hf.mono h's).aemeasurable hs, f '' s, ?_, ?_⟩
-    · exact (hK.image_of_continuousOn hf).isSeparable.mono (image_mono h's)
-    · filter_upwards [ae_restrict_mem hs] with a ha using mem_image_of_mem f ha
-  · have : Fact (μ s < ∞) := ⟨mus.lt_top⟩
-    obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
-      IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
-    apply HasFiniteIntegral.of_bounded (C := C)
-    filter_upwards [ae_restrict_mem hs] with a ha using hC _ (mem_image_of_mem f (h's ha))
+  refine ⟨hf.aestronglyMeasurable_of_subset_isCompact hK hs h's, ?_⟩
+  have : Fact (μ s < ∞) := ⟨mus.lt_top⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
+    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
+  apply HasFiniteIntegral.of_bounded (C := C)
+  filter_upwards [ae_restrict_mem hs] with a ha using hC _ (mem_image_of_mem f (h's ha))
 
 variable [IsFiniteMeasureOnCompacts μ]
 
