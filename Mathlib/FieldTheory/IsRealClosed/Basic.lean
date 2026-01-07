@@ -29,7 +29,7 @@ real closed
 
 open Polynomial
 
-/-- A field `R` is real closed if
+/-- A field `R` is real closed if all the following hold:
     1. `R` is real
     2. for all `x ∈ R`, either `x` or `-x` is a square
     3. every odd-degree polynomial has a root.
