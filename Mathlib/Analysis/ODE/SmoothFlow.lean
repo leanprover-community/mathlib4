@@ -165,15 +165,17 @@ lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' 
   apply intervalIntegral.continuousOn_primitive_interval'
   · apply Continuous.intervalIntegrable
     have h1 : ContinuousOn (fun xx : E × E ↦ f' xx.1 xx.2) (range α ×ˢ univ) := by
-      apply continuousOn_prod_of_continuousOn_lipschitzOnWith'
-      /-
-      We need that `f'` is uniformly Lipschitz in the second component for every `x ∈ range α` in
-      the first component. At each `x`, `f' x` has the Lipschitz constant `‖f' x‖₊`. Since `f'` is
-      continuous in `x`, and the operator norm is continuous in the operator, `‖f' x‖₊` is
-      continuous in `x` and therefore bounded in the compact domain `range α`. The fact that the
-      operator norm is continuous in the operator is not in Mathlib.
-      -/
-      sorry
+      set K := sSup ((fun x ↦ ‖f' x‖₊) '' range α) with hK
+      apply continuousOn_prod_of_continuousOn_lipschitzOnWith' _ K
+      · intro x hx
+        rw [lipschitzOnWith_univ]
+        apply ContinuousLinearMap.lipschitz (f' x) |>.weaken
+        rw [hK]
+        apply le_csSup _ (mem_image_of_mem _ hx)
+        apply IsCompact.bddAbove_image (isCompact_range α.continuous) <|
+          Continuous.comp_continuousOn continuous_nnnorm (hf'.mono hα)
+      · intro x _
+        exact ContinuousOn.clm_apply (hf'.mono hα) continuousOn_const
     have h2 :
       (fun τ ↦ f' (α (projIcc tmin tmax (le_of_Icc t₀) τ))
         (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) =
@@ -183,30 +185,7 @@ lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' 
     apply ContinuousOn.comp_continuous h1 (by continuity)
     intro τ
     simp only [mem_prod, mem_univ, and_true]
-    apply hα
     simp
-
-    -- can use `continuousOn_prod_of_continuousOn_lipschitzOnWith` on `f'`
-    -- `hf'` gives continuity in the first component (fixing second component)
-    -- lipschitz in second component comes from `E →L[ℝ] E`, which itself is lipschitz,
-    -- while continuity of `α` and compactness of its domain `Icc` imply the lipschitz constant
-    -- is bounded, which we need for uniform lipschitz
-    -- we probably need to rewrite the definition of `rightDerivAux` to be piecewise,
-    -- conditioned on necessary hypotheses
-
-
-    -- use Continuous.comp₂ on the uncurry of f', but need to first show that uncurry f' is cont
-    have : (fun x ↦ (f' (α (projIcc tmin tmax (le_of_Icc t₀) x)))
-          (dα (projIcc tmin tmax (le_of_Icc t₀) x))) =
-        fun x ↦ curry (uncurry (fun y y' ↦ f' y y')) (α (projIcc tmin tmax (le_of_Icc t₀) x))
-          ((dα (projIcc tmin tmax (le_of_Icc t₀) x))) := by
-      rfl
-    rw [this]
-    apply Continuous.comp_continuousOn'
-    ·
-
-      sorry
-    · sorry
   · rw [Set.uIcc_of_le (le_of_Icc t₀)]
     exact Subtype.coe_prop _
 
