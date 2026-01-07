@@ -24,11 +24,11 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
 - `Algebra.QuasiFinite`: The class of quasi-finite algebras.
   We say that an `R`-algebra `S` is quasi-finite
   if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all primes `p` of `R`.
-- `Algebra.QuasiFinite.finite_specComap_preimage_singleton`:
+- `Algebra.QuasiFinite.finite_comap_preimage_singleton`:
   Quasi-finite algebras have finite fibers.
 - `Algebra.QuasiFinite.iff_of_isArtinianRing`:
   Over an artinian ring, an algebra is quasi-finite iff it is module-finite.
-- `Algebra.QuasiFinite.iff_finite_specComap_preimage_singleton`: For a finite-type `R`-algebra `S`,
+- `Algebra.QuasiFinite.iff_finite_comap_preimage_singleton`: For a finite-type `R`-algebra `S`,
   `S` is quasi-finite if and only if `Spec S → Spec R` has finite fibers.
 
 -/
@@ -55,7 +55,7 @@ This is slightly different from the
 [stacks projects definition](https://stacks.math.columbia.edu/tag/00PL),
 which requires `S` to be of finite type over `R`.
 
-Also see `Algebra.QuasiFinite.iff_finite_specComap_preimage_singleton` that
+Also see `Algebra.QuasiFinite.iff_finite_comap_preimage_singleton` that
 this is equivalent to having finite fibers for finite-type algebas.
 -/
 @[mk_iff, stacks 00PL]
@@ -72,32 +72,32 @@ attribute [instance] finite_fiber
 instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] : IsArtinianRing (P.Fiber S) :=
   .of_finite P.ResidueField _
 
-lemma finite_specComap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
-    ((algebraMap R S).specComap ⁻¹' {P}).Finite :=
+lemma finite_comap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
+    (PrimeSpectrum.comap (algebraMap R S) ⁻¹' {P}).Finite :=
   (PrimeSpectrum.preimageEquivFiber R S P).finite_iff.mpr finite_of_compact_of_discrete
 
 lemma finite_primesOver [QuasiFinite R S] (I : Ideal R) : (I.primesOver S).Finite := by
   by_cases h : I.IsPrime
-  · refine ((finite_specComap_preimage_singleton ⟨I, h⟩).image PrimeSpectrum.asIdeal).subset ?_
+  · refine ((finite_comap_preimage_singleton ⟨I, h⟩).image PrimeSpectrum.asIdeal).subset ?_
     exact fun J hJ ↦ ⟨⟨_, hJ.1⟩, PrimeSpectrum.ext hJ.2.1.symm, rfl⟩
   · convert Set.finite_empty
     by_contra!
     obtain ⟨J, h₁, ⟨rfl⟩⟩ := this
     exact h inferInstance
 
-lemma finite_specComap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :
-    ((algebraMap R S).specComap ⁻¹' s).Finite :=
-  hs.preimage' fun _ _ ↦ finite_specComap_preimage_singleton _
+lemma finite_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :
+    (PrimeSpectrum.comap (algebraMap R S) ⁻¹' s).Finite :=
+  hs.preimage' fun _ _ ↦ finite_comap_preimage_singleton _
 
-lemma isDiscrete_specComap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
-    IsDiscrete ((algebraMap R S).specComap ⁻¹' {P}) :=
+lemma isDiscrete_comap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
+    IsDiscrete (PrimeSpectrum.comap (algebraMap R S) ⁻¹' {P}) :=
   ⟨(PrimeSpectrum.preimageHomeomorphFiber R S P).symm.discreteTopology⟩
 
-lemma isDiscrete_specComap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)}
+lemma isDiscrete_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)}
     (hs : IsDiscrete s) :
-    IsDiscrete ((algebraMap R S).specComap ⁻¹' s) :=
-  hs.preimage' (PrimeSpectrum.comap _).2.continuousOn
-    fun _ ↦ isDiscrete_specComap_preimage_singleton _
+    IsDiscrete (PrimeSpectrum.comap (algebraMap R S) ⁻¹' s) :=
+  hs.preimage' (PrimeSpectrum.continuous_comap _).continuousOn
+    fun _ ↦ isDiscrete_comap_preimage_singleton _
 
 instance (priority := low) [Module.Finite R S] : QuasiFinite R S where
 
@@ -220,7 +220,7 @@ lemma of_restrictScalars [QuasiFinite R T] : QuasiFinite S T := by
     Algebra.TensorProduct.lift (Algebra.ofId _ _)
       (Algebra.TensorProduct.includeRight.restrictScalars R) fun _ _ ↦ .all _ _
   have hf : Function.Surjective f := by
-    rw [← AlgHom.coe_restrictScalars' (R := S), ← LinearMap.range_eq_top,
+    rw [← AlgHom.coe_restrictScalars' (R := S), ← AlgHom.coe_toLinearMap, ← LinearMap.range_eq_top,
       ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
     rintro _ ⟨a, b, rfl⟩
     exact ⟨a ⊗ₜ b, by simp [f]⟩
@@ -231,13 +231,13 @@ variable (R S) in
 lemma discreteTopology_primeSpectrum [DiscreteTopology (PrimeSpectrum R)] [QuasiFinite R S] :
     DiscreteTopology (PrimeSpectrum S) :=
   isDiscrete_univ_iff.mp
-    (isDiscrete_specComap_preimage (R := R) (S := S) (isDiscrete_univ_iff.mpr ‹_›))
+    (isDiscrete_comap_preimage (R := R) (S := S) (isDiscrete_univ_iff.mpr ‹_›))
 
 variable (R S) in
 lemma finite_primeSpectrum [Finite (PrimeSpectrum R)] [QuasiFinite R S] :
     Finite (PrimeSpectrum S) :=
   Set.finite_univ_iff.mp
-    (finite_specComap_preimage (Set.finite_univ (α := PrimeSpectrum R)))
+    (finite_comap_preimage (Set.finite_univ (α := PrimeSpectrum R)))
 
 omit [Algebra S T] in
 lemma of_forall_exists_mul_mem_range [QuasiFinite R S] (f : S →ₐ[R] T)
@@ -255,7 +255,7 @@ lemma of_forall_exists_mul_mem_range [QuasiFinite R S] (f : S →ₐ[R] T)
 omit [Algebra S T] in
 lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPrime]
     (h₁ : P ≤ Q) (h₂ : P.under R = Q.under R) : P = Q :=
-  congr($((isDiscrete_specComap_preimage_singleton ⟨_, inferInstance⟩).eq_of_specializes
+  congr($((isDiscrete_comap_preimage_singleton ⟨_, inferInstance⟩).eq_of_specializes
     (a := ⟨P, ‹_›⟩) (b := ⟨Q, ‹_›⟩) (by simpa [← PrimeSpectrum.le_iff_specializes]) rfl
     (PrimeSpectrum.ext h₂.symm)).1)
 
@@ -266,9 +266,9 @@ instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [
 
 section Finite
 
-lemma iff_finite_specComap_preimage_singleton [FiniteType R S] :
-    QuasiFinite R S ↔ ∀ x, ((algebraMap R S).specComap ⁻¹' {x}).Finite := by
-  refine ⟨fun H _ ↦ finite_specComap_preimage_singleton _, fun H ↦ ⟨fun P _ ↦ ?_⟩⟩
+lemma iff_finite_comap_preimage_singleton [FiniteType R S] :
+    QuasiFinite R S ↔ ∀ x, (PrimeSpectrum.comap (algebraMap R S) ⁻¹' {x}).Finite := by
+  refine ⟨fun H _ ↦ finite_comap_preimage_singleton _, fun H ↦ ⟨fun P _ ↦ ?_⟩⟩
   rw [Module.finite_iff_isArtinianRing, isArtinianRing_iff_isNoetherianRing_krullDimLE_zero]
   have : IsJacobsonRing (P.Fiber S) := isJacobsonRing_of_finiteType (A := P.ResidueField)
   have : Finite (PrimeSpectrum (P.Fiber S)) :=
@@ -278,7 +278,7 @@ lemma iff_finite_specComap_preimage_singleton [FiniteType R S] :
 
 lemma iff_finite_primesOver [FiniteType R S] :
     QuasiFinite R S ↔ ∀ I : Ideal R, I.IsPrime → (I.primesOver S).Finite := by
-  rw [iff_finite_specComap_preimage_singleton,
+  rw [iff_finite_comap_preimage_singleton,
     (PrimeSpectrum.equivSubtype R).forall_congr_left, Subtype.forall]
   refine forall₂_congr fun I hI ↦ ?_
   rw [← Set.finite_image_iff (Function.Injective.injOn fun _ _ ↦ PrimeSpectrum.ext)]
