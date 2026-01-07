@@ -76,7 +76,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
     Tendsto (fun (c : ℝ) ↦
       ∫ w : V, ((π * c) ^ (finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * c * ‖v - w‖ ^ 2)) • f w)
     atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
-  have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)
+  have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖ ^ 2 + 2 * π * I * ⟪v, w⟫)
        • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     have : Integrable (fun w ↦ 𝐞 ⟪w, v⟫ • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg

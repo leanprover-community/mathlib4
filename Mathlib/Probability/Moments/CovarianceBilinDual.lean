@@ -288,7 +288,7 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
     _ ≤ 2 * ‖c‖ ^ (p - 1 : ℝ) * ‖y‖ + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
       gcongr
       positivity
-  · calc ‖c‖ ^ (p : ℝ )
+  · calc ‖c‖ ^ (p : ℝ)
     _ = ‖c‖ ^ ((p - 1) + 1 : ℝ) := by abel_nf
     _ = ‖c‖ ^ (p - 1 : ℝ) * ‖c‖ := by rw [Real.rpow_add (by positivity), Real.rpow_one]
     _ ≤ ‖c‖ ^ (p - 1 : ℝ) * (2 * ‖y‖) := by gcongr; linarith

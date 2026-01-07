@@ -187,7 +187,7 @@ theorem integral_fourierIntegral_swap
   have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
     (hg.norm.mul_prod hf.norm).const_mul _
   apply this.mono
-  · change AEStronglyMeasurable (fun p : W × V ↦ (M (g p.1) (e (-(L p.2) p.1) • f p.2) )) _
+  · change AEStronglyMeasurable (fun p : W × V ↦ (M (g p.1) (e (-(L p.2) p.1) • f p.2))) _
     have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
       refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
       exact he.comp (hL.comp continuous_swap).neg

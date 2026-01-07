@@ -105,7 +105,7 @@ theorem integral_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
   simp_rw [Real.exp, ← RCLike.re_to_complex, Complex.ofReal_mul]
   rw [integral_re, integral_exp_mul_complex_Ioi (by simpa using ha), RCLike.re_to_complex,
     RCLike.re_to_complex, Complex.div_ofReal_re, Complex.neg_re]
-  exact integrableOn_exp_mul_complex_Ioi  (by simpa using ha) _
+  exact integrableOn_exp_mul_complex_Ioi (by simpa using ha) _
 
 theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
     ∫ x : ℝ in Set.Iic c, Real.exp (a * x) = Real.exp (a * c) / a := by
@@ -159,7 +159,7 @@ theorem integrableAtFilter_rpow_atTop_iff {s : ℝ} :
 /-- The real power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by
   intro h
-  rcases le_or_gt s (-1) with hs|hs
+  rcases le_or_gt s (-1) with hs | hs
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) 1) := h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_rpow_iff zero_lt_one] at this
     exact hs.not_gt this
@@ -218,14 +218,14 @@ theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t)
   obtain hs | hs := eq_or_lt_of_le hs
   · simp_rw [hs, zero_mul]
     exact integrableOn_zero
-  · replace hs : s.re - 1 < - 1 := by rwa [sub_lt_iff_lt_add, neg_add_cancel]
+  · replace hs : s.re - 1 < -1 := by rwa [sub_lt_iff_lt_add, neg_add_cancel]
     exact (integrableOn_Ioi_rpow_of_lt hs ht).const_mul s.re
 
 /-- The complex power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_cpow (s : ℂ) :
     ¬ IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi (0 : ℝ)) := by
   intro h
-  rcases le_or_gt s.re (-1) with hs|hs
+  rcases le_or_gt s.re (-1) with hs | hs
   · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) 1) :=
       h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_cpow_iff zero_lt_one] at this

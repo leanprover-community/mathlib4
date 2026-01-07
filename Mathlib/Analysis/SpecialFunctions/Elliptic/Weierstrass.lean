@@ -99,11 +99,11 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
 
 lemma ω₁_div_two_notMem_lattice : L.ω₁ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
-    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 1/2) (β := 0)).not.mpr (by norm_num)
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 1 / 2) (β := 0)).not.mpr (by norm_num)
 
 lemma ω₂_div_two_notMem_lattice : L.ω₂ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
-    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1/2)).not.mpr (by norm_num)
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1 / 2)).not.mpr (by norm_num)
 
 -- helper lemma to connect to the ZLattice API
 lemma lattice_eq_span_range_basis :
@@ -310,7 +310,7 @@ lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ Contin
     (((H.sub ((L.differentiableOn_weierstrassPExcept x).differentiableAt (x := x)
       (L.isOpen_compl_lattice_diff.mem_nhds (by simp))).continuousAt).add
       (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
-      (continuous_add_left x).continuousAt (add_zero _):)
+      (continuous_add_left x).continuousAt (add_zero _) :)
 
 end weierstrassP
 
@@ -423,7 +423,7 @@ private lemma weierstrassPExcept_add_coe_aux
     Set.EqOn (℘[L - l₀] <| · + l) (℘[L - (l₀ - l)] · + (1 / l₀ ^ 2 - 1 / (l₀ - ↑l) ^ 2))
       (L.lattice \ {l₀ - l})ᶜ := by
   apply IsOpen.eqOn_of_deriv_eq (𝕜 := ℂ) L.isOpen_compl_lattice_diff
-    ?_ ?_ ?_ ?_ (x := - (l / 2)) ?_ ?_
+    ?_ ?_ ?_ ?_ (x := -(l / 2)) ?_ ?_
   · refine (Set.Countable.isConnected_compl_of_one_lt_rank (by simp) ?_).2
     exact .mono sdiff_le (countable_of_Lindelof_of_discrete (X := L.lattice))
   · refine (L.differentiableOn_weierstrassPExcept l₀).comp (f := (· + l.1)) (by fun_prop) ?_
@@ -470,7 +470,7 @@ lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z
       neg_mem' {z} hz := funext fun i ↦ by conv_lhs => rw [← hz]; simp }
   have : L.lattice ≤ G.toIntSubmodule := by
     rw [lattice, Submodule.span_le]
-    rintro _ (rfl|rfl)
+    rintro _ (rfl | rfl)
     · ext i
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₁_mem_lattice⟩ L.ω₁_div_two_notMem_lattice
     · ext i
@@ -578,7 +578,7 @@ lemma derivWeierstrassP_sub_coe (z : ℂ) (l : L.lattice) :
     exact fun H ↦ L.not_continuousAt_weierstrassP x hx H.continuousAt
   · rw [← L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice,
       ← L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice,
-      L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (L.ω₁/2) (x := x) (by simp [hx])]
+      L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (L.ω₁ / 2) (x := x) (by simp [hx])]
 
 end derivWeierstrassP
 

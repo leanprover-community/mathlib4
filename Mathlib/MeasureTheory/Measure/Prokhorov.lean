@@ -71,7 +71,7 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
   apply isCompact_iff_ultrafilter_le_nhds'.2 (fun f hf ↦ ?_)
   have L (g : C_c(E, ℝ)) :
       ∃ x ∈ Icc (-C * ‖g.toBoundedContinuousFunction‖) (C * ‖g.toBoundedContinuousFunction‖),
-      Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x ∂ μ) f (𝓝 x) := by
+      Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x ∂μ) f (𝓝 x) := by
     simp only [Tendsto, ← Ultrafilter.coe_map]
     apply IsCompact.ultrafilter_le_nhds' isCompact_Icc
     simp only [neg_mul, Ultrafilter.mem_map]
@@ -469,7 +469,7 @@ lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ�
     (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   have : {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} =
-    {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩  {μ | μ.mass = C} := by ext; grind
+    {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩ {μ | μ.mass = C} := by ext; grind
   rw [this]
   apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le C hu hK h)
   exact isClosed_eq (by fun_prop) (by fun_prop)

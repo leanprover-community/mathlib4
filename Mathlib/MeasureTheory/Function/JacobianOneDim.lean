@@ -91,7 +91,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
   have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages (hf.mono diff_subset)
   let b := s₁ ∩ f ⁻¹' u
   have hb : MeasurableSet b := by
-    have : b = ⋃ z ∈ u, s₁ ∩ f⁻¹' {z} := by ext; simp [b]
+    have : b = ⋃ z ∈ u, s₁ ∩ f ⁻¹' {z} := by ext; simp [b]
     rw [this]
     apply MeasurableSet.biUnion hu (fun z hz ↦ ?_)
     obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ (s \ a) ∩ f ⁻¹' {z} = (s \ a) ∩ v :=
@@ -140,7 +140,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
       exact neBot_iff.2 hx.1.2
     · have K : HasDerivWithinAt f 0 (s ∩ Ioo x p) x := by
         have E (y) (hy : y ∈ s ∩ Ioo x p) : f y = f x := by
-          apply le_antisymm  _ (hf hx.1.1 hy.1 hy.2.1.le)
+          apply le_antisymm _ (hf hx.1.1 hy.1 hy.2.1.le)
           rw [← fpx]
           exact hf hy.1 ps₁.1 hy.2.2.le
         have : HasDerivWithinAt (fun y ↦ f x) 0 (s ∩ Ioo x p) x :=
@@ -313,7 +313,7 @@ Note that the measurability of `f '' s` is given by `MeasurableSet.image_of_anti
 theorem lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : AntitoneOn f s) (u : ℝ → ℝ≥0∞) :
     ∫⁻ x in f '' s, u x = ∫⁻ x in s, ENNReal.ofReal (-f' x) * u (f x) := by
-  let n : ℝ → ℝ := (fun x ↦ - x)
+  let n : ℝ → ℝ := (fun x ↦ -x)
   let e := n ∘ f
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
   have A : ∫⁻ x in e '' s, u (n x) = ∫⁻ x in s, ENNReal.ofReal (-f' x) * (u ∘ n) (e x) := by
@@ -340,7 +340,7 @@ function `f` is antitone and differentiable on a measurable set `s`, then a func
 theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : AntitoneOn f s) (g : ℝ → F) :
     IntegrableOn g (f '' s) ↔ IntegrableOn (fun x ↦ (-f' x) • g (f x)) s := by
-  let n : ℝ → ℝ := (fun x ↦ - x)
+  let n : ℝ → ℝ := (fun x ↦ -x)
   let e := n ∘ f
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
   have A : IntegrableOn (fun x ↦ g (n x)) (e '' s)
@@ -359,7 +359,7 @@ antitone and differentiable on a measurable set `s`, then the Bochner integral o
 theorem integral_image_eq_integral_deriv_smul_of_antitone (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : AntitoneOn f s) (g : ℝ → F) :
     ∫ x in f '' s, g x = ∫ x in s, (-f' x) • g (f x) := by
-  let n : ℝ → ℝ := (fun x ↦ - x)
+  let n : ℝ → ℝ := (fun x ↦ -x)
   let e := n ∘ f
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
   have A : ∫ x in e '' s, g (n x) = ∫ x in s, (-f' x) • (g ∘ n) (e x) := by
