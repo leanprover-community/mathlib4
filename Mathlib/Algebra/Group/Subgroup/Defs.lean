@@ -177,7 +177,8 @@ namespace SubgroupClass
 -- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
 -- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
 @[to_additive]
-theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
+theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
+    (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
   refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (· xH) (· xH)⟩
   rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
@@ -253,7 +254,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
-def inclusion {H K : S} (h : H ≤ K) : H →* K :=
+def inclusion [LE S] [IsConcreteLE S G] {H K : S} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
@@ -262,11 +263,13 @@ theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
   rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_mk {h : H ≤ K} (x : G) (hx : x ∈ H) : inclusion h ⟨x, hx⟩ = ⟨x, h hx⟩ :=
+theorem inclusion_mk [LE S] [IsConcreteLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
+    inclusion h ⟨x, hx⟩ = ⟨x, h hx⟩ :=
   rfl
 
 @[to_additive]
-theorem inclusion_right (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) : inclusion h ⟨x, hx⟩ = x := by
+theorem inclusion_right [LE S] [IsConcreteLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
+    inclusion h ⟨x, hx⟩ = x := by
   cases x
   rfl
 
