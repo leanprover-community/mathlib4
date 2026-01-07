@@ -3,10 +3,12 @@ Copyright (c) 2025 Artie Khovanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artie Khovanov
 -/
-import Mathlib.Algebra.Polynomial.Degree.Domain
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Algebra.Ring.Semireal.Defs
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Domain
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Algebra.Ring.Semireal.Defs
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Real Closed Field
