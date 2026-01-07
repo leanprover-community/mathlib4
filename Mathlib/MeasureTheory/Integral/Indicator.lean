@@ -28,7 +28,7 @@ moved out of `Mathlib/MeasureTheory/Integral/Lebesgue/Basic.lean`, and the lemma
 be moved to, e.g., `Mathlib/MeasureTheory/Constructions/BorelSpace/Metrizable.lean`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

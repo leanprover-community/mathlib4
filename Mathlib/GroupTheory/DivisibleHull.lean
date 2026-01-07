@@ -54,6 +54,8 @@ namespace DivisibleHull
 /-- Create an element `m / s`. -/
 def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
 
+noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
+
 /-- Define coercion as `m ↦ m / 1`. -/
 @[coe]
 abbrev coe (m : M) := mk m 1
