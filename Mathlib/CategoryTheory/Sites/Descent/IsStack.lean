@@ -59,7 +59,7 @@ lemma isStackFor' [F.IsStack J] {S : C} (R : Sieve S) (hR : R ∈ J S) :
   have hF := (F.isPrestackFor' _ hR).fullyFaithful
   have := hF.full
   have := hF.faithful
-  have := IsStack.essSurj_of_sieve F  _ hR
+  have := IsStack.essSurj_of_sieve F _ hR
   exact { }
 
 lemma isStackFor [F.IsStack J] {S : C} (R : Presieve S) (hR : Sieve.generate R ∈ J S) :

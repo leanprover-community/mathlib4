@@ -412,7 +412,7 @@ scoped[Convolution] notation:67 f " ⋆[" L:67 ", " μ:67 "] " g:66 => convoluti
 
 /-- The convolution of two functions with respect to a bilinear operation `L` and the volume. -/
 scoped[Convolution]
-  notation:67 f " ⋆[" L:67 "]" g:66 => convolution f g L MeasureSpace.volume
+  notation:67 f " ⋆[" L:67 "] " g:66 => convolution f g L MeasureSpace.volume
 
 /-- The convolution of two real-valued functions with respect to volume. -/
 scoped[Convolution]
