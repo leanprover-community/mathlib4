@@ -175,7 +175,7 @@ theorem inv_mul_cancel₀ (x : M₀) (h : IsUnit x) : x⁻¹ * x = 1 := by
   rw [inv_unit, Units.inv_mul]
 
 @[grind =]
-theorem isUnit_iff_mul_inv_cancel₀ (x : M₀) : IsUnit x ↔ x * x⁻¹ = 1 ∧ x⁻¹ * x = 1 := by
+theorem _root_.isUnit_iff_mul_inv_cancel (x : M₀) : IsUnit x ↔ x * x⁻¹ = 1 ∧ x⁻¹ * x = 1 := by
   refine ⟨fun h => ⟨mul_inv_cancel₀ x h, inv_mul_cancel₀ x h⟩, fun h => ?_⟩
   rw [isUnit_iff_exists]
   exact ⟨x⁻¹, h.1, h.2⟩
@@ -199,7 +199,7 @@ theorem inv₀ {a : M₀} : IsUnit a → IsUnit a⁻¹
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inv_unit u).symm⟩
 
 @[simp, grind =]
-theorem isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a :=
+theorem _root_.isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
