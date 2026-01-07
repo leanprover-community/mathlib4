@@ -249,13 +249,13 @@ lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
       (linear_inv_isBigO_right c₁ z).comp_neg_int
 
 lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simpa [pow_two] using (linear_inv_isBigO_right c₂ z).mul
     (linear_inv_isBigO_right_add c₁ 1 z)
 
 lemma summable_linear_left_mul_linear_left {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹  := by
+    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa using (linear_inv_isBigO_left c₂ hz).mul (linear_inv_isBigO_left c₁ hz)

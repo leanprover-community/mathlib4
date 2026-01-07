@@ -64,7 +64,7 @@ instance sum : Category.{max v₁ v₂} (C ⊕ D) where
     | inr X => ULift.up (𝟙 X)
   comp {X Y Z} f g :=
     match X, Y, Z, f, g with
-    | inl _, inl _, inl _, f, g => ULift.up <|f.down ≫ g.down
+    | inl _, inl _, inl _, f, g => ULift.up <| f.down ≫ g.down
     | inr _, inr _, inr _, f, g => ULift.up <| f.down ≫ g.down
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
