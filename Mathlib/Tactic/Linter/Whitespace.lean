@@ -10,9 +10,9 @@ import Lean.Parser.Syntax
 import Init.Data.String.TakeDrop
 
 /-!
-# The `commandStart` linter
+# The `whitespace` linter
 
-The `commandStart` linter emits a warning if
+The `whitespace` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
@@ -27,7 +27,7 @@ private def String.norm (s : String) : String :=
 namespace Mathlib.Linter
 
 /--
-The `commandStart` linter emits a warning if
+The `whitespace` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 
@@ -40,16 +40,22 @@ as opposed to
 example (a: Nat) {R:Type}  [Add  R] : <not linted part>
 ```
 -/
-public register_option linter.style.commandStart : Bool := {
+public register_option linter.style.whitespace : Bool := {
   defValue := false
-  descr := "enable the commandStart linter"
+  descr := "enable the whitespace linter"
 }
 
-/-- If the `linter.style.commandStart.verbose` option is `true`, the `commandStart` linter
-reports some helpful diagnostic information. -/
-public register_option linter.style.commandStart.verbose : Bool := {
+@[deprecated linter.style.whitespace (since := "2026-01-07")]
+public register_option linter.style.commandStart : Bool := {
   defValue := false
-  descr := "enable the commandStart linter"
+  descr := "enable the whitespace linter"
+}
+
+/-- If the `linter.style.whitespace.verbose` option is `true`, the `whitespace` linter
+reports some helpful diagnostic information. -/
+public register_option linter.style.whitespace.verbose : Bool := {
+  defValue := false
+  descr := "report diagnostics about the whitespace linter"
 }
 
 /-- Extract the `leading` and the `trailing` substring of a `SourceInfo`. -/
@@ -78,8 +84,8 @@ def pretty (stx : Syntax) : CommandElabM (Option String) := do
       try
         liftCoreM <| ppCategory' `command stx
       catch _ =>
-        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-          m!"The `commandStart` linter had some parsing issues: \
+        Linter.logLintIf linter.style.whitespace.verbose (stx.getHead?.getD stx)
+          m!"The `whitespace` linter had some parsing issues: \
             feel free to silence it and report this error!"
         return none
   if let some fmt := fmt then
@@ -237,9 +243,9 @@ def mex.toString {m} [Monad m] [MonadFileMap m] (ex : mex) : m String := do
   return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)} ({ex.kinds})"
 
 /--
-A structure combining the various exceptions to the `commandStart` linter.
-* `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `commandStart` linter.
-* `depth` represents how many `SyntaxNodeKind`s the `commandStart` linter climbs, in search of an
+A structure combining the various exceptions to the `whitespace` linter.
+* `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `whitespace` linter.
+* `depth` represents how many `SyntaxNodeKind`s the `whitespace` linter climbs, in search of an
   exception.
 
   A depth of `none`, means that the linter ignores nodes starting with the given `SyntaxNodeKind`
@@ -249,10 +255,10 @@ A structure combining the various exceptions to the `commandStart` linter.
   starting from the given `SyntaxNodeKind` and resumes checking for all deeper nodes.
 -/
 structure ExcludedSyntaxNodeKind where
-  /-- `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `commandStart` linter. -/
+  /-- `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `whitespace` linter. -/
   kinds : Array SyntaxNodeKind
   /--
-  `depth` represents how many `SyntaxNodeKind`s the `commandStart` linter climbs, in search of an
+  `depth` represents how many `SyntaxNodeKind`s the `whitespace` linter climbs, in search of an
   exception.
 
   A depth of `none`, means that the linter ignores nodes starting with the given `SyntaxNodeKind`
@@ -264,7 +270,7 @@ structure ExcludedSyntaxNodeKind where
   depth : Option Nat
 
 /--
-`unparseable` are the `SyntaxNodeKind`s that block the `commandStart` linter: their appearance
+`unparseable` are the `SyntaxNodeKind`s that block the `whitespace` linter: their appearance
 anywhere in the syntax tree makes the linter ignore the whole command.
 
 This is the reason their `depth` is `none`.
@@ -525,7 +531,7 @@ This part of the code\n  '{origWindow.trim}'\n\
 should be written as\n  '{expectedWindow}'\n"
 -/
 
-namespace Style.CommandStart
+namespace Style.Whitespace
 
 /--
 We think of `orig` as `orig = ...<wordLeft><whitespaceLeft>|<whitespaceRight><wordRight>...`
@@ -583,9 +589,9 @@ def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring.Raw) :
   This part of the code\n  '{origWindow.trimAscii}'\n\
   should be written as\n  '{expectedWindow}'\n"
 
-@[inherit_doc Mathlib.Linter.linter.style.commandStart]
-def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.commandStart (← getLinterOptions) do
+@[inherit_doc Mathlib.Linter.linter.style.whitespace]
+def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -629,7 +635,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         if mkWdw origAtPos != mkWdw ppAtPos mid then
           -- TODO: temporary change, hopefully reduces no-op warning spew
           if !((mkWdw origAtPos).startsWith "suffices") then
-            Linter.logLint linter.style.commandStart (.ofRange rg)
+            Linter.logLint linter.style.whitespace (.ofRange rg)
               m!"{msg}\n\n\
               This part of the code\n  '{mkWdw origAtPos}'\n\
               should be written as\n  '{mkWdw ppAtPos mid}'\n"
@@ -647,7 +653,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
               This part of the code\n  '{mkWdw origAtPos}'\n\
               should be written as\n  '{mkWdw ppAtPos mid}'\n\n{ppR.kinds}\n"
 
-initialize addLinter commandStartLinter
+initialize addLinter whitespaceLinter
 
 open Lean Elab Command in
 elab "#show_corr " cmd:command : command => do
@@ -927,7 +933,7 @@ def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
 
 open Lean Elab Command in
 elab tk:"#mex " cmd:(command)? : command => do
-  let opts ← elabSetOption (mkIdent `linter.style.commandStart) (mkAtom "false")
+  let opts ← elabSetOption (mkIdent `linter.style.whitespace) (mkAtom "false")
   withScope ({ · with opts }) do
     let tktxt := "#mex"
     if let some cmd := cmd then if let some cmdSubstring := cmd.raw.getSubstring? then
@@ -951,7 +957,7 @@ elab tk:"#mex " cmd:(command)? : command => do
       logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
           {reported.size} reported and {unreported.size} unreported."
       -- If the linter is active, then we do not need to emit the messages again.
-      if !Linter.getLinterValue linter.style.commandStart (← getLinterOptions) then
+      if !Linter.getLinterValue linter.style.whitespace (← getLinterOptions) then
         for m in reported do
           logWarningAt (.ofRange m.rg) <|
             m!"reported: {m.toLinterWarning cmdSubstring}\n\n\
@@ -961,6 +967,6 @@ elab tk:"#mex " cmd:(command)? : command => do
           m!"unreported: {m.toLinterWarning cmdSubstring}\n\n\
             {m.kinds.map MessageData.ofConstName}"
 
-end Style.CommandStart
+end Style.Whitespace
 
 end Mathlib.Linter
