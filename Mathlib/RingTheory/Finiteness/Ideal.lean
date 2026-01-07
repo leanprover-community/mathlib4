@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 Lemmas about finiteness of ideal operations.
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 open Finsupp

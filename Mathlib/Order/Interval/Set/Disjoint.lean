@@ -19,7 +19,7 @@ in this file can use definitions from `Data.Set.Lattice`, including `Disjoint`.
 We consider various intersections and unions of half infinite intervals.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -103,11 +103,11 @@ theorem Iio_disjoint_Ioi_iff [DenselyOrdered α] : Disjoint (Iio a) (Ioi b) ↔ 
 
 @[simp]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, right_mem_Iic⟩
+  iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Iic⟩
 
 @[simp]
 theorem iUnion_Ici : ⋃ a : α, Ici a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, left_mem_Ici⟩
+  iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Ici⟩
 
 @[simp]
 theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
