@@ -125,8 +125,6 @@ def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S 
   map_sInf' := restrictScalars_sInf S
   map_sSup' := restrictScalars_sSup S
 
-variable {R M}
-
 @[simp]
 lemma restrictScalars_inf (s t : Submodule R M) :
     (s ⊓ t).restrictScalars S = s.restrictScalars S ⊓ t.restrictScalars S := by

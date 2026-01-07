@@ -261,9 +261,7 @@ lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := by simp
 
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R E | S ≤ C} := by
-  rw [le_antisymm_iff]
-  refine ⟨le_sSup (lineal_le C), ?_⟩
-  intro x hx
+  refine le_antisymm (le_sSup (lineal_le C)) fun x hx => ?_
   have hC : sSup {S : Submodule R E | S ≤ C} ≤ C := by simp
   exact mem_lineal.mpr ⟨hC hx, hC (neg_mem hx : -x ∈ _)⟩
 

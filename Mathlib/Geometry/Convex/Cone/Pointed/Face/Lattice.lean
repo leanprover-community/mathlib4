@@ -47,8 +47,6 @@ variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 @[coe]
 def self (C : PointedCone R M) : Face C := ⟨C, IsFaceOf.refl _⟩
 
-instance {C : PointedCone R M} : CoeDep (PointedCone R M) C (Face C) := ⟨self C⟩
-
 /-- Converts a face of a pointed cone into a pointed cone. -/
 @[coe, simp]
 def toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
@@ -78,15 +76,15 @@ instance : Min (Face C) where
   min F₁ F₂ := ⟨F₁ ⊓ F₂, F₁.isFaceOf.inf_left F₂.isFaceOf⟩
 
 instance : InfSet (Face C) where
- sInf S :=
-  { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
-    isFaceOf := by
-      refine ⟨fun _ sm => sm.1, ?_⟩
-      simp only [Submodule.mem_inf, Submodule.mem_sInf, Set.mem_setOf_eq, forall_exists_index,
-        and_imp, forall_apply_eq_imp_iff₂]
-      intros _ _ a xc yc a0 _ h
-      simpa [xc] using fun F Fs => F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
-  }
+  sInf S :=
+    { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
+      isFaceOf := by
+        refine ⟨fun _ sm => sm.1, ?_⟩
+        simp only [Submodule.mem_inf, Submodule.mem_sInf, Set.mem_setOf_eq, forall_exists_index,
+          and_imp, forall_apply_eq_imp_iff₂]
+        intros _ _ a xc yc a0 _ h
+        simpa [xc] using fun F Fs => F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
+    }
 
 instance : SemilatticeInf (Face C) where
   inf := min
@@ -107,11 +105,7 @@ instance : CompleteSemilatticeInf (Face C) where
     simpa [LE.le] using fun _ xf s sm => fS s sm xf
 
 instance : CompleteLattice (Face C) where
-  inf := min
-  inf_le_left _ _ _ xi := xi.1
-  inf_le_right _ _ _ xi := xi.2
-  le_inf a b c alb blc := by simpa using ⟨alb, blc⟩
-  top := C
+  top := self C
   le_top F := F.isFaceOf.le
   __ := completeLatticeOfCompleteSemilatticeInf _
 
