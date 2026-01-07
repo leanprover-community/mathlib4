@@ -97,7 +97,7 @@ lemma continuous_implicitEquationAux (hf : ContinuousOn f u) (x₀ : E) (α : C(
         continuous_projIcc.continuousOn)
       intro t ht
       apply hα
-      exact Set.mem_range_self _
+      exact mem_range_self _
     · rw [Set.uIcc_of_le (le_of_Icc t₀)]
       exact Subtype.coe_prop _
   · rw [implicitEquationAux_apply_of_not_mem h]
@@ -204,12 +204,26 @@ lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' 
     exact continuous_zero
 
 variable {u} in
-open Classical in
 noncomputable def implicitEquation.rightDerivAux' {f' : E → E →L[ℝ] E}
     (hf' : ContinuousOn f' u) (x : E) (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) → C(Icc tmin tmax, E) :=
   fun dα ↦ ⟨implicitEquation.rightDerivAux u t₀ f' x α dα,
     implicitEquation.continuous_rightDerivAux t₀ hf' x α dα⟩
+
+variable {u t₀} in
+lemma implicitEquation.rightDerivAux'_def {f' : E → E →L[ℝ] E}
+    {hf' : ContinuousOn f' u} {x : E} {α : C(Icc tmin tmax, E)} :
+    implicitEquation.rightDerivAux' t₀ hf' x α =
+      fun dα ↦ ⟨implicitEquation.rightDerivAux u t₀ f' x α dα,
+        implicitEquation.continuous_rightDerivAux t₀ hf' x α dα⟩ := rfl
+
+variable {u t₀} in
+lemma implicitEquation.rightDerivAux'_eq_zero_of_not_mem {f' : E → E →L[ℝ] E}
+    {hf' : ContinuousOn f' u} {x : E} {α : C(Icc tmin tmax, E)} (hα : ¬range α ⊆ u) :
+    implicitEquation.rightDerivAux' t₀ hf' x α = 0 := by
+  rw [implicitEquation.rightDerivAux'_def]
+  simp_rw [implicitEquation.rightDerivAux, if_neg hα]
+  rfl
 
 -- map_add, map_smul for implicitEquation.rightDerivAux'
 lemma implicitEquation.rightDerivAux'_add {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
@@ -249,7 +263,35 @@ lemma implicitEquation.rightDerivAux'_smul {f' : E → E →L[ℝ] E} (hf' : Con
 
 lemma implicitEquation.continuous_rightDerivAux' {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
     (x : E) (α : C(Icc tmin tmax, E)) :
-    Continuous (implicitEquation.rightDerivAux' t₀ hf' x α) := by sorry
+    Continuous (implicitEquation.rightDerivAux' t₀ hf' x α) := by
+  by_cases hα : range α ⊆ u
+  · apply ContinuousMap.continuous_of_continuous_uncurry
+    rw [implicitEquation.rightDerivAux'_def]
+    simp_rw [implicitEquation.rightDerivAux, if_pos hα, ContinuousMap.coe_mk] -- missing lemma
+    simp_rw [Pi.add_apply, Pi.neg_apply]
+    rw [Function.uncurry_def]
+    apply continuous_eval.neg.add
+    have heq : (fun p : C(Icc tmin tmax, E) × Icc tmin tmax ↦
+      ∫ (τ : ℝ) in t₀..p.2, f' (α (projIcc tmin tmax (le_of_Icc t₀) τ))
+        (p.1 (projIcc tmin tmax (le_of_Icc t₀) τ))) = (fun p : C(Icc tmin tmax, E) × ℝ ↦
+      ∫ (τ : ℝ) in t₀..p.2, f' (α (projIcc tmin tmax (le_of_Icc t₀) τ))
+        (p.1 (projIcc tmin tmax (le_of_Icc t₀) τ))) ∘
+      (fun p : C(Icc tmin tmax, E) × Icc tmin tmax ↦ (p.1, (p.2 : ℝ))) := rfl
+    have hcont : Continuous (fun p : C(Icc tmin tmax, E) × Icc tmin tmax ↦ (p.1, (p.2 : ℝ))) :=
+      continuous_fst.prodMk <| Continuous.comp' continuous_subtype_val continuous_snd
+    rw [heq]
+    apply Continuous.comp _ hcont
+    apply intervalIntegral.continuous_parametric_primitive_of_continuous
+      (f := (fun (p1 : C(Icc tmin tmax, E)) (τ : ℝ) ↦
+        f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (p1 (projIcc tmin tmax (le_of_Icc t₀) τ))))
+    rw [Function.uncurry_def]
+    apply Continuous.clm_apply
+    · apply hf'.comp_continuous (α.continuous.comp' (continuous_projIcc.comp' continuous_snd))
+        (fun p ↦ hα (mem_range_self _)) -- extract continuity lemma
+    · apply continuous_fst.eval
+      exact continuous_projIcc.comp' continuous_snd
+  · rw [implicitEquation.rightDerivAux'_eq_zero_of_not_mem hα]
+    exact continuous_zero
 
 /-- The left (`E`) part of the first derivative of the implicit equation, valid when `x ∈ u` and
 `range α ⊆ u` -/
