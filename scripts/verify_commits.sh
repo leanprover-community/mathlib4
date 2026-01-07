@@ -57,8 +57,6 @@ usage() {
 }
 
 # --- Argument parsing ---
-JSON_OUTPUT=false
-JSON_FILE=""
 BASE_REF=""
 
 while [[ $# -gt 0 ]]; do
