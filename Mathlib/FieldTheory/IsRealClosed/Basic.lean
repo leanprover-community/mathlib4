@@ -25,6 +25,8 @@ real closed
 
 -/
 
+@[expose] public section
+
 open Polynomial
 
 /-- A field `R` is real closed if
