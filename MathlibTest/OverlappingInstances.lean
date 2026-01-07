@@ -6,7 +6,10 @@ set_option linter.overlappingInstances true
 
 namespace Lean
 
-class Bar (α : Type) where
+class SubBar (α : Type) where
+  a' : α
+
+class Bar (α : Type) extends SubBar α where
   a : α
 
 class Baz (β : Type) where
@@ -37,7 +40,9 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 /--
 warning: The declaration `Lean.foo'` has instance hypotheses which overlap on data-carrying components.
 
-`[Bar Nat]` is provided by `[Foo' Nat String]` and `[Foo Nat Bool]`.
+`[SubBar Nat]` is provided by `[Foo Nat Bool]` and `[Foo' Nat String]`.
+
+`[Bar Nat]` is provided by `[Foo Nat Bool]` and `[Foo' Nat String]`.
 -/
 #guard_msgs in
 def foo' [Foo Nat Bool] [Foo' Nat String] : Bool := by
@@ -46,6 +51,8 @@ def foo' [Foo Nat Bool] [Foo' Nat String] : Bool := by
 
 /--
 warning: The declaration `Lean.foo''` has instance hypotheses which overlap on data-carrying components.
+
+`[SubBar Nat]` is provided by `[Foo Nat Bool]` and `[Foo' Nat String]`.
 
 `[Bar Nat]` is provided by `[Foo Nat Bool]` and `[Foo' Nat String]`.
 
