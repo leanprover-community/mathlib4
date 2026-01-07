@@ -486,3 +486,64 @@ Then `f` admits a `Trivialization` over the base set `V`. -/
     convert ((open_iff i subset_rfl).mp open_V).inter open_W using 1
     refine Set.ext fun e ↦ and_right_comm.trans (and_congr_right fun ⟨hV, hU⟩ ↦ ?_)
     rw [Set.mem_preimage, dif_pos hV, inj i (inv_U i _) hU (f_inv i _)]
+
+open Set in
+/-- If `f : E → X` is a closed map between topological spaces with `E` Hausdorff, and `s` is
+a subset of `X` on which `f` has finite fibers, such that `f` restricts to a homeomorphism on
+a neighborhood of every point of `f ⁻¹' s`, then `f` is a covering map on `s`. -/
+theorem IsClosedMap.isCoveringMapOn_of_openPartialHomeomorph [T2Space E]
+    (hf : IsClosedMap f) (hs : ∀ x ∈ s, (f ⁻¹' {x}).Finite)
+    (h : ∀ e, f e ∈ s → ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
+    IsCoveringMapOn f s := by
+  cases isEmpty_or_nonempty E
+  · exact .of_isEmpty _ _
+  intro x hx
+  have : DiscreteTopology (f ⁻¹' {x}) :=
+    (IsDiscrete.of_openPartialHomeomorph f subset_rfl fun e he ↦ h e (he ▸ hx)).1
+  choose φ hφ using fun e : f ⁻¹' {x} ↦ h e (by apply e.2 ▸ hx)
+  have ⟨V, hV, disj⟩ := (hs x hx).t2_separation
+  let V' (e : f ⁻¹' {x}) := V e ∩ (φ e).source
+  have hV' e : IsOpen (V' e) := (hV e).2.inter (φ e).open_source
+  have : ⋃ e, V' e ∈ nhdsSet (f ⁻¹' {x}) :=
+    (isOpen_iUnion hV').mem_nhdsSet.2 fun e he ↦ mem_iUnion_of_mem ⟨e, he⟩ ⟨(hV e).1, (hφ _).1⟩
+  have ⟨W, hWx, hWV⟩ := isClosedMap_iff_comap_nhds_le.mp hf this
+  cases isEmpty_or_nonempty (f ⁻¹' {x})
+  · exact .of_preimage_eq_empty _ hWx (by simpa using hWV)
+  have ⟨U, hUW, hU, hxU⟩ := mem_nhds_iff.mp hWx
+  let U' := U ∩ ⋂ e : f ⁻¹' {x}, f '' (V' e)
+  have : Finite (f ⁻¹' {x}) := hs x hx
+  have hU' : IsOpen U' := hU.inter <| isOpen_iInter_of_finite fun e ↦ by
+    convert ← (φ e).isOpen_image_of_subset_source (hV' _) inter_subset_right; exact (hφ e).2
+  have hUV e : U' ⊆ f '' V' e := inter_subset_right.trans (iInter_subset ..)
+  refine .of_trivialization (t := hU'.trivializationDiscrete _ _
+    (fun e s hs ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩) (fun e ↦ ?_)
+    (fun e ↦  .mono subset_rfl (hUV e) (surjOn_image f _))
+    (pairwise_disjoint_mono disj.subtype fun e ↦ inter_subset_left)
+    ((preimage_mono (inter_subset_left.trans hUW)).trans hWV))
+    ⟨hxU, Set.mem_iInter.mpr fun e ↦ ⟨e, ⟨(hV e).1, (hφ e).1⟩, e.2⟩⟩
+  · convert ((φ e).isOpen_inter_preimage h).inter (hV e).2 using 1
+    simp_rw [(hφ e).2, V']; ac_rfl
+  · have : s ⊆ (φ e).target := hs.trans <| (hUV e).trans <| by
+      rw [← (φ e).image_source_eq_target, (hφ e).2]; exact image_mono inter_subset_right
+    rw [← (φ e).isOpen_symm_image_iff_of_subset_target this,
+      (φ e).symm_image_eq_source_inter_preimage this, (hφ e).2, inter_comm]
+    convert h using 1
+    refine inter_eq_inter_iff_left.mpr ⟨fun e' h ↦ h.2.2, fun e' h ↦ ⟨?_ , h.2⟩⟩
+    have ⟨e'', ⟨_, mem⟩, eq⟩ := mem_iInter.mp (hs h.1).2 e
+    rwa [← (φ e).injOn mem h.2 (by rwa [(hφ e).2])]
+  · convert ← (φ e).injOn.mono inter_subset_right; exact (hφ e).2
+
+/-- If `E` and `X` are Hausdorff spaces and `E` is moreover compact, `s` is a subset of `X`, and
+`f : E → X` is a continuous map that restricts to a homeomorphism on a neighborhood of every point
+of `f ⁻¹' s`, then `f` is a covering map on `s`.
+
+For example, `s` can be taken to be the set of regular values of a C¹ map `f : E → X`
+where `E` and `X` are manifolds of the same dimension with `E` compact, according to
+the inverse function theorem (see `ContDiffAt.toOpenPartialHomeomorph`). -/
+theorem IsCoveringMapOn.of_openPartialHomeomorph
+    [T2Space E] [T2Space X] [CompactSpace E] (hf : Continuous f)
+    (h : ∀ e, f e ∈ s → ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
+    IsCoveringMapOn f s :=
+  hf.isClosedMap.isCoveringMapOn_of_openPartialHomeomorph _
+    (fun _x hx ↦ (isClosed_singleton.preimage hf).isCompact.finite
+    (.of_openPartialHomeomorph f subset_rfl fun e he ↦ h e (he ▸ hx))) h
