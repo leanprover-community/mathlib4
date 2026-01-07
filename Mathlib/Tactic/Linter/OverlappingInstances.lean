@@ -116,6 +116,7 @@ def overlappingInstances : Linter where
           | _ => continue -- Ought to be unreachable. TODO: check or refactor?
         let outerRef ← getRef
         ctx.runMetaMWithMessages lctx (localInstances := localInstances) <|
+          -- TODO: better logging location
           withRef outerRef do
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or remaining type for anything,
@@ -158,7 +159,6 @@ def overlappingInstances : Linter where
                     else
                       m!"There are {direct.length} instances of {overlapType} in the local \
                         context, and it is also provided by {indirectTypes}."
-              -- TODO: better logging location
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
               logWarning <|← addMessageContextFull msg
 
