@@ -8,9 +8,9 @@ module
 public meta import Mathlib.Tactic.Linter.Header
 
 /-!
-# The `commandStart` linter
+# The `whitespace` linter
 
-The `commandStart` linter emits a warning if
+The `whitespace` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
@@ -21,8 +21,14 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
+/-- deprecated: use the `linter.style.whitespace` option instead" -/
+public register_option linter.style.commandStart : Bool := {
+  defValue := false
+  descr := "deprecated: use the `linter.style.whitespace` option instead"
+}
+
 /--
-The `commandStart` linter emits a warning if
+The `whitespace` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 
@@ -35,20 +41,20 @@ as opposed to
 example (a: Nat) {R:Type}  [Add  R] : <not linted part>
 ```
 -/
-public register_option linter.style.commandStart : Bool := {
+public register_option linter.style.whitespace : Bool := {
   defValue := false
-  descr := "enable the commandStart linter"
+  descr := "enable the whitespace linter"
 }
 
-/-- If the `linter.style.commandStart.verbose` option is `true`, the `commandStart` linter
+/-- If the `linter.style.whitespace.verbose` option is `true`, the `whitespace` linter
 reports some helpful diagnostic information. -/
-public register_option linter.style.commandStart.verbose : Bool := {
+public register_option linter.style.whitespace.verbose : Bool := {
   defValue := false
-  descr := "enable the commandStart linter"
+  descr := "report diagnostic information for the `whitespace` linter"
 }
 
 /--
-`CommandStart.endPos stx` returns the position up until the `commandStart` linter checks the
+`CommandStart.endPos stx` returns the position up until the `whitespace` linter checks the
 formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
@@ -298,9 +304,9 @@ public def mkWindow (orig : String) (start ctx : Nat) : String :=
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
-@[inherit_doc Mathlib.Linter.linter.style.commandStart]
+@[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.commandStart (← getLinterOptions) do
+  unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -310,7 +316,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some pos := stx.getPos? then
     let colStart := ((← getFileMap).toPosition pos).column
     if colStart ≠ 0 then
-      Linter.logLint linter.style.commandStart stx
+      Linter.logLint linter.style.whitespace stx
         m!"'{stx}' starts on column {colStart}, \
           but all commands should start at the beginning of the line."
   -- We skip `macro_rules`, since they cause parsing issues.
@@ -322,8 +328,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       try
         liftCoreM <| PrettyPrinter.ppCategory `command stx
       catch _ =>
-        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-          m!"The `commandStart` linter had some parsing issues: \
+        Linter.logLintIf linter.style.whitespace.verbose (stx.getHead?.getD stx)
+          m!"The `whitespace` linter had some parsing issues: \
             feel free to silence it and report this error!"
         return none
   if let some fmt := fmt then
@@ -341,9 +347,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let rg : Lean.Syntax.Range :=
         ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
       if s.msg.startsWith "Oh no" then
-        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
+        Linter.logLintIf linter.style.whitespace.verbose (.ofRange rg)
           m!"This should not have happened: please report this issue!"
-        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
+        Linter.logLintIf linter.style.whitespace.verbose (.ofRange rg)
           m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
         continue
       unless isOutside forbidden rg do
@@ -354,11 +360,11 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let ctx := 4 -- the number of characters after the mismatch that linter prints
       let srcWindow := mkWindow orig s.srcNat (ctx + s.length)
       let expectedWindow := mkWindow st s.fmtPos (ctx + (1))
-      Linter.logLint linter.style.commandStart (.ofRange rg)
+      Linter.logLint linter.style.whitespace (.ofRange rg)
         m!"{s.msg} in the source\n\n\
           This part of the code\n  '{srcWindow}'\n\
           should be written as\n  '{expectedWindow}'\n"
-      Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
+      Linter.logLintIf linter.style.whitespace.verbose (.ofRange rg)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
 initialize addLinter commandStartLinter
