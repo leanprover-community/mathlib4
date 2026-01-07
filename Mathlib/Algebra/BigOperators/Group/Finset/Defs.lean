@@ -44,8 +44,7 @@ See the documentation of `to_additive.attr` for more information.
 
 @[expose] public section
 
--- TODO
--- assert_not_exists AddCommMonoidWithOne
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 assert_not_exists IsOrderedMonoid
@@ -108,7 +107,7 @@ where `pred` is a `binderPred` like `< 2`.
 Unlike `extBinder`, `x` is a term. -/
 syntax bigOpBinder := term:max((" : "term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
-syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
+syntax bigOpBinderParenthesized := " ("bigOpBinder")"
 /-- A list of parenthesized binders -/
 syntax bigOpBinderCollection := bigOpBinderParenthesized+
 /-- A single (unparenthesized) binder, or a list of parenthesized binders -/

@@ -103,7 +103,7 @@ theorem coeFn_toLp (f : α →ᵇ E) :
 variable {𝕜}
 
 theorem range_toLp :
-    (LinearMap.range (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)).toAddSubgroup =
+    (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ).range.toAddSubgroup =
       MeasureTheory.Lp.boundedContinuousFunction E p μ :=
   range_toLpHom p μ
 
@@ -143,13 +143,13 @@ noncomputable def toLp : C(α, E) →L[𝕜] Lp E p μ :=
 variable {𝕜}
 
 theorem range_toLp :
-    (LinearMap.range (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)).toAddSubgroup =
+    (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ).range.toAddSubgroup =
       MeasureTheory.Lp.boundedContinuousFunction E p μ := by
   refine SetLike.ext' ?_
   have := (linearIsometryBoundedOfCompact α E 𝕜).surjective
   convert Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
   rw [← BoundedContinuousFunction.range_toLp p μ (𝕜 := 𝕜), Submodule.coe_toAddSubgroup,
-    LinearMap.coe_range]
+    LinearMap.coe_range, ContinuousLinearMap.coe_coe]
 
 variable {p}
 

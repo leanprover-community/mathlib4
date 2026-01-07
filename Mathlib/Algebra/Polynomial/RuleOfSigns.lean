@@ -131,7 +131,7 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] (P : Polynomial 
 theorem signVariations_neg : signVariations (-P) = signVariations P := by
   rw [signVariations, signVariations, coeffList_neg]
   simp only [List.map_map, List.filter_map]
-  have hsc : SignType.sign ∘ (fun (x:R) => -x) = (fun x => -x) ∘ SignType.sign := by
+  have hsc : SignType.sign ∘ (fun (x : R) => -x) = (fun x => -x) ∘ SignType.sign := by
     grind [Left.sign_neg]
   have h_neg_destutter (l : List SignType) :
       (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·) := by

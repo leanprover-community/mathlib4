@@ -238,7 +238,7 @@ instance : lightToProfinite.PreservesEpimorphisms where
 end LightProfinite
 
 /-- A structure containing the data of sequential limit in `Profinite` of finite sets. -/
-structure LightDiagram : Type (u+1) where
+structure LightDiagram : Type (u + 1) where
   /-- The indexing diagram. -/
   diagram : ℕᵒᵖ ⥤ FintypeCat
   /-- The limit cone. -/
