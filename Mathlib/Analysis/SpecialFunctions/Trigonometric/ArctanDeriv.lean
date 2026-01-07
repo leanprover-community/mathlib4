@@ -14,7 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 Continuity and derivatives of the tangent and arctangent functions.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

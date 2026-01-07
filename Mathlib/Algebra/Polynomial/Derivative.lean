@@ -47,11 +47,10 @@ def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>
-      simp only [add_mul, forall_const, RingHom.map_add, zero_mul, RingHom.map_zero]
+      simp only [add_mul, forall_const, map_add, zero_mul, map_zero]
   map_smul' a p := by
     dsimp; rw [sum_smul_index] <;>
-      simp only [mul_sum, ← C_mul', mul_assoc, RingHom.map_mul, forall_const, zero_mul,
-        RingHom.map_zero, sum]
+      simp only [mul_sum, ← C_mul', mul_assoc, map_mul, forall_const, zero_mul, map_zero, sum]
 
 theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) * X ^ (n - 1) :=
   rfl
@@ -389,16 +388,16 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
       refine sum_congr rfl fun k hk => ?_
       rw [mem_range] at hk
       congr
-      cutsat
+      lia
     · rw [Nat.choose_zero_right, tsub_zero]
 
 /--
 Iterated derivatives as a finite support function.
 -/
-@[simps! apply_toFun]
+@[simps! apply_apply]
 noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
-    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le_iff]
+    contrapose; simp_all [iterate_derivative_eq_zero]
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
@@ -522,7 +521,7 @@ theorem derivative_comp (p q : R[X]) :
   induction p using Polynomial.induction_on'
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,
-      zero_mul, C_eq_natCast, zero_add, RingHom.map_mul]
+      zero_mul, C_eq_natCast, zero_add, map_mul]
     ring
 
 /-- Chain rule for formal derivative of polynomials. -/
@@ -551,6 +550,11 @@ theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
   · simp [hij, Multiset.cons_erase hj]
   · simp [hij]
 
+theorem derivative_prod_finset [DecidableEq ι] {s : Finset ι} {f : ι → R[X]} :
+    derivative (∏ b ∈ s, f b) =
+      ∑ a ∈ s, (∏ b ∈ s.erase a, f b) * derivative (f a) := by
+  simpa using derivative_prod
+
 end CommSemiring
 
 section Ring
@@ -559,14 +563,14 @@ variable [Ring R]
 
 @[simp]
 theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
-  LinearMap.map_neg derivative f
+  map_neg derivative f
 
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
   iterate_map_neg derivative k f
 
 @[simp]
 theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - derivative g :=
-  LinearMap.map_sub derivative f g
+  map_sub derivative f g
 
 theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
   rw [derivative_sub, derivative_X, derivative_C, sub_zero]
@@ -627,6 +631,58 @@ theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
 theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
     derivative^[n] ((X - C c) ^ n) = n.factorial := by
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
+
+theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degree < k) :
+    derivative^[k] P = 0 := by
+  induction k generalizing P
+  case zero => exact degree_eq_bot.mp <| WithBot.lt_coe_bot.mp h
+  case succ k ind =>
+    by_cases P = 0
+    case pos hP => simp [hP]
+    case neg hP =>
+      rw [Function.iterate_add_apply, Function.iterate_one]
+      by_cases derivative P = 0
+      case pos hP' => simp [hP']
+      case neg hP' =>
+        have hP'' : P.natDegree ≠ 0 := by
+          contrapose! hP'
+          exact derivative_of_natDegree_zero hP'
+        refine ind <| (natDegree_lt_iff_degree_lt hP').mp ?_
+        linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']
+
+theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
+    derivative^[k] (∏ a ∈ S, (X - C a)) =
+    k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
+  classical
+  induction k
+  case zero => simp
+  case succ k ind =>
+    specialize ind (Nat.le_of_succ_le hk)
+    nth_rewrite 1 [add_comm]
+    rw [Function.iterate_add_apply, Function.iterate_one, ind, ← nsmul_eq_mul, derivative_smul,
+      nsmul_eq_mul, derivative_sum, Nat.factorial_succ, mul_comm (k + 1), Nat.cast_mul, mul_assoc]
+    congr 1
+    calc
+      ∑ T ∈ S.powersetCard (#S - k), derivative (∏ a ∈ T, (X - C a)) =
+      ∑ T ∈ S.powersetCard (#S - k), ∑ i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
+        congr! with T hT
+        simp_rw [derivative_prod_finset, derivative_X_sub_C, mul_one]
+      _ = ∑ (T ∈ S.powersetCard (#S - k)) (i ∈ S) with i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
+        rw [← sum_finset_product']
+        grind
+      _ = ∑ (T ∈ S.powersetCard (#S - (k + 1))) (i ∈ S) with i ∉ T, ∏ a ∈ T, (X - C a) := by
+        apply sum_bij' (fun ⟨T, i⟩ _ => ⟨T.erase i, i⟩) (fun ⟨T, i⟩ _ => ⟨insert i T, i⟩)
+        · intro r hr; dsimp at hr ⊢; congr 1; grind
+        · intro r hr; dsimp at hr ⊢; congr 1; grind
+        all_goals grind
+      _ = ∑ T ∈ S.powersetCard (#S - (k + 1)), ∑ i ∈ S \ T, ∏ a ∈ T, (X - C a) := by
+        rw [← sum_finset_product']
+        grind
+      _ = (k + 1) * ∑ T ∈ S.powersetCard (#S - (k + 1)), ∏ a ∈ T, (X - C a) := by
+        rw [mul_sum]
+        congr! 1 with T hT
+        simp [sum_const, show #(S \ T) = k + 1 by grind]
+      _ = _ := by grind
 
 end CommRing
 

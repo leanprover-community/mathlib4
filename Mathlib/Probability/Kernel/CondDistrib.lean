@@ -22,10 +22,10 @@ verifies some of the properties of a measure, but in general the fact that the `
 on `s` can prevent us from finding versions of the conditional expectation that combine into a true
 measure. The standard Borel space assumption on `Ω` allows us to do so.
 
-The case `Y = X = id` is developed in more detail in `Probability/Kernel/Condexp.lean`: here `X` is
-understood as a map from `Ω` with a sub-σ-algebra `m` to `Ω` with its default σ-algebra and the
-conditional distribution defines a kernel associated with the conditional expectation with respect
-to `m`.
+The case `Y = X = id` is developed in more detail in `Mathlib/Probability/Kernel/Condexp.lean`: here
+`X` is understood as a map from `Ω` with a sub-σ-algebra `m` to `Ω` with its default σ-algebra and
+the conditional distribution defines a kernel associated with the conditional expectation with
+respect to `m`.
 
 ## Main definitions
 
@@ -204,6 +204,7 @@ lemma condDistrib_comp_self (X : α → β) {f : β → Ω} (hf : Measurable f) 
 lemma condDistrib_self (Y : α → Ω) : condDistrib Y Y μ =ᵐ[μ.map Y] Kernel.id := by
   simpa using condDistrib_comp_self Y measurable_id
 
+set_option backward.proofsInPublic true in
 lemma condDistrib_const (X : α → β) (c : Ω) :
     condDistrib (fun _ ↦ c) X μ =ᵐ[μ.map X] Kernel.deterministic (fun _ ↦ c) (by fun_prop) := by
   have : (fun _ : α ↦ c) = (fun _ : β ↦ c) ∘ X := rfl
@@ -226,7 +227,6 @@ lemma condDistrib_fst_prod {γ : Type*} {mγ : MeasurableSpace γ}
     condDistrib (fun ω ↦ Y ω.1) (fun ω ↦ X ω.1) (μ.prod ν) =ᵐ[μ.map X] condDistrib Y X μ := by
   by_cases hX : AEMeasurable X μ
   swap; · simp [Measure.map_of_not_aemeasurable hX, Filter.EventuallyEq]
-  have : μ = (μ.prod ν).map (fun ω ↦ ω.1) := by simp [Measure.map_fst_prod]
   have h_map := condDistrib_map (X := X) (Y := Y) (f := Prod.fst (α := α) (β := γ))
       (ν := μ.prod ν) (mα := inferInstance) (mβ := inferInstance)
       (by simpa) (by simpa) (by fun_prop)
@@ -239,7 +239,6 @@ lemma condDistrib_snd_prod {γ : Type*} {mγ : MeasurableSpace γ}
     condDistrib (fun ω ↦ Y ω.2) (fun ω ↦ X ω.2) (ν.prod μ) =ᵐ[μ.map X] condDistrib Y X μ := by
   by_cases hX : AEMeasurable X μ
   swap; · simp [Measure.map_of_not_aemeasurable hX, Filter.EventuallyEq]
-  have : μ = (μ.prod ν).map (fun ω ↦ ω.1) := by simp [Measure.map_fst_prod]
   have h_map := condDistrib_map (X := X) (Y := Y) (f := Prod.snd (β := α) (α := γ))
       (ν := ν.prod μ) (mα := inferInstance) (mβ := inferInstance)
       (by simpa) (by simpa) (by fun_prop)
@@ -387,7 +386,7 @@ theorem condExp_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpace F]
 
 /-- The conditional expectation of `Y` given `X` is almost everywhere equal to the integral
 `∫ y, y ∂(condDistrib Y X μ (X a))`. -/
-theorem condExp_ae_eq_integral_condDistrib' {Ω} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
+theorem condExp_ae_eq_integral_condDistrib' {Ω : Type*} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
     [CompleteSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω] [SecondCountableTopology Ω] {Y : α → Ω}
     (hX : Measurable X) (hY_int : Integrable Y μ) :
     μ[Y|mβ.comap X] =ᵐ[μ] fun a => ∫ y, y ∂condDistrib Y X μ (X a) :=

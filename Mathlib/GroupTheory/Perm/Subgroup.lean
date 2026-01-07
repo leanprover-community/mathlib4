@@ -20,6 +20,9 @@ It also provides decidable instances on membership in these subgroups, since
 `MonoidHom.decidableMemRange` cannot be inferred without the help of a lambda.
 The presence of these instances induces a `Fintype` instance on the `QuotientGroup.Quotient` of
 these subgroups.
+
+In particular, we prove **Cayley's theorem** in `Equiv.Perm.subgroupOfMulAction`:
+every group `G` is isomorphic to a subgroup of the symmetric group acting on `G`.
 -/
 
 @[expose] public section

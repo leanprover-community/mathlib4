@@ -25,7 +25,7 @@ open CategoryTheory Category Limits ZeroObject Opposite
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 section
 

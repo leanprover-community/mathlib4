@@ -46,10 +46,9 @@ abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ 
     else if h : w ∈ p then f ⟨w, h⟩ = v
     else False
   adj_sub {v w} h := by
-    repeat' split at h
+    split_ifs at h
     · exact h ▸ h₂ ⟨v, by assumption⟩
     · exact h ▸ h₂ ⟨w, by assumption⟩ |>.symm
-    · contradiction
   edge_vert {v w} := by grind
   symm {x y} := by grind
 
