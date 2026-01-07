@@ -533,7 +533,7 @@ theorem isBigO_logb_log : logb b =O[⊤] log := by
 theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (fun x ↦ log (c * x)) =O[atTop] log := by
   obtain rfl | hc := eq_or_ne c 0
   · simpa using isLittleO_const_log_atTop.isBigO
-  · calc (log ∘ (c * ·))
+  · calc (fun x ↦ log (c * x))
       =ᶠ[atTop] (fun x => log c + log x) := by
           filter_upwards [eventually_gt_atTop 0] with a ha using log_mul hc ha.ne'
       _ =O[atTop] log :=
@@ -546,7 +546,7 @@ theorem isBigO_logb_const_mul_log_atTop (c : ℝ) : (fun x ↦ logb b (c * x)) =
   simpa [logb, div_eq_mul_inv, mul_comm]
     using (isBigO_log_const_mul_log_atTop c).const_mul_left (log b)⁻¹
 
-theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (logb b ∘ (· * c)) =O[atTop] log := by
+theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (fun x ↦ logb b (x * c)) =O[atTop] log := by
   simpa [mul_comm] using isBigO_logb_const_mul_log_atTop c
 
 end Real
