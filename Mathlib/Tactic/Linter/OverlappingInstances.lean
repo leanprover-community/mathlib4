@@ -128,50 +128,14 @@ def overlappingInstances : Linter where
                 collectedByOverlap := collectedByOverlap.alter overlap fun set? =>
                   (set?.getD ∅).insert fvar₁ |>.insert fvar₂
 
-              /- This is only updated (and then, only in the `lctx` field) in the case that we need
-              to erase the aux fvar from the lctx for pretty printing. -/
-              let mut ppCtx : MessageDataContext := {
-                env := ← getEnv
-                opts := ← getOptions
-                mctx := ← getMCtx
-                lctx := ← getLCtx }
-
-              let declMsg ←
-                -- TODO: why does lean need help with the types around here?
-                -- `MessageData.`, `: FVarId`
-                if let some decl := ctx.parentDecl? then
-                  let auxFVar? :=
-                    (← getLCtx).auxDeclToFullName.toList.find? fun ((fvarId : FVarId), name) =>
-                      name == decl
-                  -- See if the contant's type is available in the outer environment.
-                  if outerEnv.findConstVal? decl (skipRealize := true) |>.isSome then
-                    if let some (fvarId, _) := auxFVar? then
-                      /- We have to prepare the message context carefully, because currently the
-                      name `foo` may clash with an aux decl of the same name in the local context.
-                      This leads to error messages printed as e.g. `_root_.foo` or
-                      `<namespace>.foo`. To avoid this, we erase the aux decl from the local
-                      context; since the type shouldn't depend on this, we hope that nothing goes
-                      wrong as a result. -/
-                      ppCtx := { ppCtx with lctx := ppCtx.lctx.erase fvarId }
-                    pure m!"declaration `{.ofConstName decl}`"
-                  else
-                    /- See if the local context has an aux decl with this full name, in case the declaration is incomplete; this lets us show e.g. metavariables in the type. -/
-                    let auxFVar? :=
-                      (← getLCtx).auxDeclToFullName.toList.find? fun ((fvarId : FVarId), name) =>
-                        name == decl
-                    if let some (fvarId, _) := auxFVar? then
-                      pure m!"declaration `{mkFVar fvarId}`"
-                    else
-                      /- Otherwise, just don't bother with a hover, but try our best to print it
-                      nicely. We could probably do better by accounting for namespaces, but it
-                      looks like the API (`unresolveNameGlobal`) is there only for declarations
-                      which actually exist. -/
-                      pure m!"declaration `{privateToUserName decl}`"
+              -- For now, no hovers, since the name clashes with the aux decl of the same name in
+              -- the lctx. TODO: account for this.
+              let mut msg := m!"The \
+                {if let some decl := ctx.parentDecl? then
+                  m!"declaration `{privateToUserName decl}`"
                 else
-                  pure m!"current declaration"
-
-              let mut msg := m!"The {declMsg} has instance hypotheses that overlap on \
-                data-carrying components."
+                  "current declaration"} \
+                has instance hypotheses which overlap on data-carrying components."
 
               for (overlap, fvars) in collectedByOverlap do
                 let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
@@ -195,6 +159,6 @@ def overlappingInstances : Linter where
                         context, and it is also provided by {indirectTypes}."
               -- TODO: better logging location
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
-              logWarning <| msg.withContext ppCtx
+              logWarning <|← addMessageContextFull msg
 
 initialize addLinter overlappingInstances
