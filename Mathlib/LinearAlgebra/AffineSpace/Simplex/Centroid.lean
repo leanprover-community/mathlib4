@@ -242,12 +242,13 @@ theorem faceOppositeCentroid_mem_affineSpan_face [CharZero k] (s : Simplex k P n
 theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i = ((affineCombination k {i}ᶜ s.points) fun _ ↦ (↑n)⁻¹) := by
   unfold faceOppositeCentroid
-  have : s.faceOpposite i = s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le]) := by rfl
+  have : s.faceOpposite i = s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le]) := by
+    rfl -- TODO
   rw [this]
   unfold centroid
   rw [face_centroid_eq_centroid, centroid_def, centroidWeights_eq_const, card_compl]
   simp only [Fintype.card_fin, card_singleton, add_tsub_cancel_right]
-  rfl
+  rfl -- TODO
 
 /-- The vector from a vertex to the corresponding `faceOppositeCentroid` equals the average of the
  displacements to the other vertices. -/
@@ -278,7 +279,7 @@ theorem point_vsub_faceOppositeCentroid_eq_smul_sum_vsub [CharZero k] (s : Affin
     (i : Fin (n + 1)) :
     s.points i -ᵥ s.faceOppositeCentroid i = (n : k)⁻¹ • ∑ x, (s.points i -ᵥ s.points x) := by
   rw [← neg_vsub_eq_vsub_rev, faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, ← neg_smul,
-    Lean.Grind.Ring.neg_eq_mul_neg_one, ← smul_smul, smul_sum]
+    Lean.Grind.Ring.neg_eq_mul_neg_one, ← smul_smul, smul_sum] -- TODO grind lemma
   simp only [neg_smul, one_smul, neg_vsub_eq_vsub_rev]
 
 theorem smul_faceOppositeCentroid_vsub_point_eq_sum_vsub [CharZero k] (s : Affine.Simplex k P n)
@@ -351,7 +352,7 @@ theorem point_vsub_centroid_eq_smul_vsub [CharZero k] (s : Simplex k P n) (i : F
   simp_rw [mul_sub, sub_eq_iff_eq_add, neg_add_eq_sub]
   symm
   rw [sub_eq_iff_eq_add, mul_inv_cancel₀ (NeZero.ne (n : k))]
-  have : (↑n + (1 : k))⁻¹ = 1 * (↑n + (1 : k))⁻¹ := by simp
+  have : (↑n + (1 : k))⁻¹ = 1 * (↑n + (1 : k))⁻¹ := by simp -- TODO cast / use one_mul
   nth_rw 2 [this]
   rw [← add_mul, mul_inv_cancel₀ (by norm_cast)]
 
@@ -404,7 +405,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
     (s.restrict S hS).faceOppositeCentroid i = s.faceOppositeCentroid i := by
   rw [eq_comm]
   haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-  have hf : Function.Injective (S.subtype) := by
+  have hf : Function.Injective (S.subtype) := by -- TODO lemma?
     simp only [coe_subtype, Subtype.val_injective]
   exact (s.restrict S hS).faceOppositeCentroid_map S.subtype hf (i := i)
 

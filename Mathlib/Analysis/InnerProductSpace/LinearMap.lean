@@ -371,6 +371,7 @@ theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
   rw [← sub_eq_zero, ← sub_smul]
   simp only [smul_eq_zero, rankOne_eq_zero, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
+                                                -- TODO ^^^
   grind [norm_nonneg]
 
 end Normed
