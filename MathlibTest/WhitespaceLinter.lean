@@ -4,6 +4,15 @@ import Aesop.Frontend.Attribute
 import all Mathlib.Tactic.Linter.Whitespace
 import Mathlib.Tactic.Lemma
 
+-- Deprecation warnings for the old linter option.
+section
+
+/-- warning: `linter.style.commandStart` is deprecated, use `linter.style.whitespace` instead. -/
+#guard_msgs in
+set_option linter.style.commandStart true
+
+end
+
 set_option linter.style.whitespace true
 
 /--
