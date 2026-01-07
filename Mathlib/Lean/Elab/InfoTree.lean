@@ -100,6 +100,17 @@ def onHighestNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
 
 /--
+Returns the context and `info` on the outermost `.node info _` which has
+context, having merged and updated contexts appropriately.
+
+If `ctx?` is `some ctx`, `ctx` is used as an initial context. A `ctx?` of `none` should **only** be
+used when operating on the first node of the entire infotree. Otherwise, it is likely that no
+context will be found.
+-/
+def getHighestInfo? (t : InfoTree) (ctx? : Option ContextInfo) : Option (ContextInfo × Info) :=
+  t.onHighestNode? ctx? fun ctx i _ => (ctx, i)
+
+/--
 Get the `parentDecl`s of every elaborated body.
 
 This includes `let rec`/`where` definitions, but excludes decls without "bodies" (such as
@@ -129,7 +140,7 @@ def getDeclBodyInfos (t : InfoTree) : List (ContextInfo × Info) :=
       if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
         if h : 0 < body.size then
           -- See through `.context`s instead of just matching on `.node`:
-          let result? := body[0].onHighestNode? (ctx? := ctx) fun ctx i _ => (ctx, i)
+          let result? := body[0].getHighestInfo? ctx
           if let some result := result? then
             result :: acc
           else acc
