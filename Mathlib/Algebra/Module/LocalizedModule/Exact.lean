@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 -/
 
-@[expose] public section
+public section
 
 section
 

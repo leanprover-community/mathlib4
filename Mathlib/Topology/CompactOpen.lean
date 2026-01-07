@@ -391,7 +391,7 @@ theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
 theorem continuous_coev : Continuous (coev X Y) :=
   ((continuous_prodMk_const (X := Y) (Y := X) (Z := X)).comp
-    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))):)
+    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))) :)
 
 end Coev
 

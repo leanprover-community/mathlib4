@@ -585,9 +585,6 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
     (hn.symm ▸ p.getVert_length.symm)
   lia
 
-@[deprecated (since := "2025-05-23")]
-alias endpoint_not_mem_support_takeUntil := endpoint_notMem_support_takeUntil
-
 end WalkDecomp
 
 end Walk

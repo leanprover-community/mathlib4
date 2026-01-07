@@ -14,7 +14,7 @@ public import Mathlib.Order.Filter.AtTopBot.Monoid
 # Convergence to ±infinity in ordered commutative groups
 -/
 
-@[expose] public section
+public section
 
 variable {α G : Type*}
 open Set

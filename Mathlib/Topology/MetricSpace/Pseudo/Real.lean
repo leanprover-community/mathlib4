@@ -12,7 +12,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 # Lemmas about distances between points in intervals in `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology

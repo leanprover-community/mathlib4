@@ -142,6 +142,9 @@ theorem HasFTaylorSeriesUpToOn.zero_eq' (h : HasFTaylorSeriesUpToOn n f p s) {x 
   rw [← h.zero_eq x hx]
   exact (p x 0).uncurry0_curry0.symm
 
+@[simp] theorem hasFTaylorSeriesUpToOn_empty : HasFTaylorSeriesUpToOn n f p ∅ := by
+  constructor <;> simp
+
 /-- If two functions coincide on a set `s`, then a Taylor series for the first one is as well a
 Taylor series for the second one. -/
 theorem HasFTaylorSeriesUpToOn.congr (h : HasFTaylorSeriesUpToOn n f p s)
@@ -913,6 +916,12 @@ theorem norm_iteratedFDeriv_fderiv {n : ℕ} :
 theorem iteratedFDeriv_one_apply (m : Fin 1 → E) :
     iteratedFDeriv 𝕜 1 f x m = fderiv 𝕜 f x (m 0) := by
   rw [iteratedFDeriv_succ_apply_right, iteratedFDeriv_zero_apply, last_zero]
+
+@[simp]
+theorem norm_iteratedFDeriv_one (f : E → F) :
+    ‖iteratedFDeriv 𝕜 1 f x‖ = ‖fderiv 𝕜 f x‖ := by
+  rw [← iteratedFDerivWithin_univ, ← fderivWithin_univ]
+  exact norm_iteratedFDerivWithin_one f uniqueDiffWithinAt_univ
 
 lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
     iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by

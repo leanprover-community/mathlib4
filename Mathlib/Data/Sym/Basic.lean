@@ -173,8 +173,6 @@ lemma «exists» {p : Sym α n → Prop} :
 theorem notMem_nil (a : α) : a ∉ (nil : Sym α 0) :=
   Multiset.notMem_zero a
 
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
-
 @[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
   Multiset.mem_cons
@@ -549,9 +547,6 @@ theorem count_coe_fill_self_of_notMem [DecidableEq α] {a : α} {i : Fin (n + 1)
     count a (fill a i s : Multiset α) = i := by
   simp [coe_fill, coe_replicate, hx]
 
-@[deprecated (since := "2025-05-23")]
-alias count_coe_fill_self_of_not_mem := count_coe_fill_self_of_notMem
-
 theorem count_coe_fill_of_ne [DecidableEq α] {a x : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : x ≠ a) :
     count x (fill a i s : Multiset α) = count x s := by
@@ -592,9 +587,6 @@ theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h :
         (s.attach.map fun o =>
           o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h) :=
   dif_neg h
-
-@[deprecated (since := "2025-05-23")]
-alias encode_of_not_none_mem := encode_of_none_notMem
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
