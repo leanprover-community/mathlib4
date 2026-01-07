@@ -2,14 +2,22 @@ module
 
 import Aesop.Frontend.Attribute
 import all Mathlib.Tactic.Linter.Whitespace
+import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Lemma
 
 -- Deprecation warnings for the old linter option.
 section
 
-/-- warning: `linter.style.commandStart` is deprecated, use `linter.style.whitespace` instead. -/
+set_option linter.style.setOption true
+
+/--
+warning: The `linter.style.commandStart` option is deprecated, use `linter.style.whitespace` instead.
+-/
 #guard_msgs in
 set_option linter.style.commandStart true
+
+set_option linter.style.commandStart true in
+example : Nat := 0
 
 end
 
