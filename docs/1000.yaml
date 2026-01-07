@@ -2002,6 +2002,8 @@ Q2226624:
 
 Q2226625:
   title: Commandino's theorem
+  decl: Affine.Simplex.point_vsub_centroid_eq_smul_vsub
+  authors: Chu Zheng
 
 Q2226640:
   title: Cramér’s decomposition theorem
