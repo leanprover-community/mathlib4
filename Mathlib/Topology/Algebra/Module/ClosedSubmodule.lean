@@ -213,8 +213,7 @@ namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
-@[simp]
-lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
+lemma eq_closure_toSubmodule {s : ClosedSubmodule R N} : s = s.toSubmodule.closure := by
   ext; simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
@@ -294,7 +293,7 @@ instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
   le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
     Submodule.mem_iSup_of_mem ha hx
   sSup_le s a h x := by
-    rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
+    rw [ClosedSubmodule.eq_closure_toSubmodule (s := a)]
     apply closure_mono
     simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
     intro y hy

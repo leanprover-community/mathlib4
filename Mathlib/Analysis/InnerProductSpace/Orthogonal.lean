@@ -511,7 +511,7 @@ theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
 /-- The orthogonal complement of the closure of a submodule (as a `Submodule`) is equal to
 the orthogonal complement. -/
 @[simp]
-lemma orthogonal_closure (K : Submodule 𝕜 E) : K.closureᗮ = Kᗮ := by
+lemma orthogonal_closure (K : Submodule 𝕜 E) : (K.closure : Submodule 𝕜 E)ᗮ = Kᗮ := by
   rw [← Submodule.orthogonal_closure K]
   congr
 
@@ -519,7 +519,7 @@ lemma orthogonal_closure (K : Submodule 𝕜 E) : K.closureᗮ = Kᗮ := by
 the orthogonal complement. -/
 lemma orthogonal_closure' (K : Submodule 𝕜 E) : K.closureᗮ = ⟨Kᗮ, K.isClosed_orthogonal⟩ := by
   ext x
-  rw [orthogonal_closure]
+  simp
 
 /-- The orthogonal complement of the closure of a submodule (as a `ClosedSubmodule`) is equal to
 the closure of the orthogonal complement. -/
