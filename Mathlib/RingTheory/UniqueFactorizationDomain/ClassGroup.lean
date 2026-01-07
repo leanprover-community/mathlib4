@@ -23,9 +23,9 @@ open scoped nonZeroDivisors Pointwise BigOperators
 
 open IsLocalization IsFractionRing FractionalIdeal
 
-section CommRing
+section Domain
 
-variable (R : Type*) [CommRing R]
+variable (R : Type*) [CommRing R] [IsDomain R]
 
 private lemma ideal_fg_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
@@ -35,7 +35,8 @@ private lemma ideal_fg_of_isUnit_fractionalIdeal (I : Ideal R)
     (Ideal.fg_of_isUnit (S := (R⁰)) (P := FractionRing R)
       (inj := IsFractionRing.injective R (FractionRing R)) I hI)
 
-lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R} {J : Ideal R}
+private lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R}
+    {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
     (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ (K : FractionalIdeal R⁰ (FractionRing R)),
@@ -123,7 +124,7 @@ lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin 
   rcases hC1 with ⟨ℓ, hℓ, hsum⟩
   exact ⟨ℓ, hℓ, by simpa using hsum⟩
 
-lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
+private lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
     {K : FractionalIdeal R⁰ (FractionRing R)}
     (hJK : (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1)
@@ -174,18 +175,14 @@ lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : I
   have hxrr : x * r = c i * b j := hinj (by simpa [map_mul] using hmap)
   exact hxrr.symm
 
-section Domain
-
-variable [IsDomain R]
-
-lemma ideal_ne_bot_of_isUnit_fractionalIdeal {I : Ideal R}
+private lemma ideal_ne_bot_of_isUnit_fractionalIdeal {I : Ideal R}
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) : I ≠ ⊥ := by
   intro hbot
   refine (not_isUnit_zero : ¬IsUnit (0 : FractionalIdeal R⁰ (FractionRing R))) ?_
   rw [hbot] at hI
   exact hI
 
-lemma exists_ne_zero_mem_of_isUnit_fractionalIdeal {I : Ideal R}
+private lemma exists_ne_zero_mem_of_isUnit_fractionalIdeal {I : Ideal R}
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ f : R, f ∈ I ∧ f ≠ 0 := by
   have hne : I ≠ ⊥ := ideal_ne_bot_of_isUnit_fractionalIdeal (R := R) hI
@@ -237,7 +234,7 @@ lemma isPrincipal_of_num_isPrincipal
 
 end FractionalIdeal
 
-lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) :
+private lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) :
     ∃ (x : R) (_hx0 : x ≠ 0) (b : Fin n → R),
       ∀ i,
         algebraMap R (FractionRing R) (b i) =
@@ -379,10 +376,10 @@ lemma exists_relations_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n �
         hsum₁ hb
 
 /-- A family `c : Fin n → R` has “unit gcd” if every common divisor is a unit. -/
-def CommonDivisorsAreUnits {n : ℕ} (c : Fin n → R) : Prop :=
+private def CommonDivisorsAreUnits {n : ℕ} (c : Fin n → R) : Prop :=
   ∀ d : R, (∀ i : Fin n, d ∣ c i) → IsUnit d
 
-lemma ideal_eq_top_of_relations {n : ℕ} {c : Fin n → R} {J : Ideal R}
+private lemma ideal_eq_top_of_relations {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
     (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)))
     (hc : CommonDivisorsAreUnits (R := R) c) {x : R} (hx0 : x ≠ 0) {b : Fin n → R}
@@ -390,12 +387,8 @@ lemma ideal_eq_top_of_relations {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hxmem : x ∈ J * Ideal.span (Set.range b))
     (hb : ∀ j : Fin n, x ∣ b j) :
     J = ⊤ := by
-  -- Keep these hypotheses around: they are produced upstream (and are part of the sketch), but the
-  -- conclusion below only needs the explicit relations.
   have _ := hJunit
   have _ := hc
-  -- We do not use `hJunit` or `hc` here: once the relations are available, the conclusion follows
-  -- from ideal arithmetic and cancellation by a nonzero principal ideal.
   let B : Ideal R := Ideal.span (Set.range b)
   have hxmem' : x ∈ J * B := by simpa [B] using hxmem
   -- `B ≤ (x)` since all generators are divisible by `x`.
@@ -454,7 +447,7 @@ section UFD
 
 variable [UniqueFactorizationMonoid R]
 
-lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
+private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ (y : R) (n : ℕ) (_hn : 0 < n) (c : Fin n → R) (J : Ideal R),
       I = Ideal.span ({y} : Set R) * J ∧
@@ -585,7 +578,7 @@ lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
   refine ⟨y, n, hn, c, J, ?_, rfl, hJunit, hc⟩
   exact hIJ
 
-lemma dvd_of_dvd_mul_of_commonDivisorsAreUnits {n : ℕ} {c : Fin n → R}
+private lemma dvd_of_dvd_mul_of_commonDivisorsAreUnits {n : ℕ} {c : Fin n → R}
     (hc : CommonDivisorsAreUnits (R := R) c) {x b : R} (hx0 : x ≠ 0)
     (h : ∀ i : Fin n, x ∣ c i * b) : x ∣ b := by
   -- We prove the stronger statement by induction on the prime factorization of `x`.
@@ -629,7 +622,7 @@ lemma dvd_of_dvd_mul_of_commonDivisorsAreUnits {n : ℕ} {c : Fin n → R}
 
 
 /-- In a UFD, an integral ideal that is invertible as a fractional ideal is principal. -/
-theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
+private theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
   obtain ⟨y, n, hn, c, J, hIJ, hJspan, hJunit, hc⟩ :=
@@ -650,7 +643,8 @@ theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
 
 
 /-- In a UFD, every invertible fractional ideal is principal. -/
-theorem fractionalIdeal_isPrincipal_of_ufd (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
+theorem UniqueFactorizationMonoid.fractionalIdeal_isPrincipal
+  (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
   have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) := by
@@ -691,21 +685,20 @@ theorem fractionalIdeal_isPrincipal_of_ufd (I : (FractionalIdeal R⁰ (FractionR
       (I := (I : FractionalIdeal R⁰ (FractionRing R))) hJprin
 
 /-- In a UFD, every class in the ideal class group is `1`. -/
-theorem classGroup_eq_one_of_ufd (x : ClassGroup R) : x = 1 := by
+theorem UniqueFactorizationMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 := by
   refine ClassGroup.induction (R := R) (K := FractionRing R) (P := fun y => y = 1) ?_ x
   intro I
   -- `mk I = 1` iff `I` is principal as a submodule.
   refine (ClassGroup.mk_eq_one_iff (R := R) (K := FractionRing R) (I := I)).2 ?_
-  exact fractionalIdeal_isPrincipal_of_ufd (R := R) I
+  exact fractionalIdeal_isPrincipal (R := R) I
 
 /-- The ideal class group of a UFD is trivial. -/
 instance UniqueFactorizationMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) := by
   refine ⟨fun x y => ?_⟩
   calc
-    x = 1 := classGroup_eq_one_of_ufd (R := R) x
-    _ = y := (classGroup_eq_one_of_ufd (R := R) y).symm
+    x = 1 := classGroup_eq_one (R := R) x
+    _ = y := (classGroup_eq_one (R := R) y).symm
 
 end UFD
 
 end Domain
-end CommRing
