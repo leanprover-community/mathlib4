@@ -413,9 +413,9 @@ instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_isZero (isZero_zero C) n
 
 instance (n : ℤ) : t.IsGE (0 : C) n := t.isGE_of_isZero (isZero_zero C) n
 
-lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (X : C) :
+lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsLE X n₀ ↔ IsIso (((t.truncLTι n₁)).app X) := by
-  subst hn₁
+  subst h
   refine ⟨fun _ ↦ ?_,
     fun _ ↦ t.isLE_of_iso (asIso (((t.truncLTι (n₀ + 1))).app X)) n₀⟩
   obtain ⟨e, he⟩ := t.triangle_iso_exists
@@ -449,6 +449,52 @@ lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
     infer_instance
   · intro
     exact t.isGE_of_iso (asIso ((truncGEπ t n).app X)).symm n
+
+instance (X : C) (n : ℤ) [t.IsGE X n] : IsIso ((t.truncGEπ n).app X) := by
+  rw [← isGE_iff_isIso_truncGEπ_app ]
+  infer_instance
+
+lemma isGE_iff_isZero_truncLT_obj (n : ℤ) (X : C) :
+    t.IsGE X n ↔ IsZero ((t.truncLT n).obj X) := by
+  rw [t.isGE_iff_isIso_truncGEπ_app n X]
+  exact (Triangle.isZero₁_iff_isIso₂ _ (t.triangleLTGE_distinguished n X)).symm
+
+lemma isLE_iff_isZero_truncGE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsLE X n₀ ↔ IsZero ((t.truncGE n₁).obj X) := by
+  rw [t.isLE_iff_isIso_truncLTι_app n₀ n₁ h X]
+  exact (Triangle.isZero₃_iff_isIso₁ _ (t.triangleLTGE_distinguished n₁ X)).symm
+
+lemma isZero_truncGE_obj_of_isLE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) [t.IsLE X n₀] :
+    IsZero ((t.truncGE n₁).obj X) := by
+  rw [← t.isLE_iff_isZero_truncGE_obj _ _ h X]
+  infer_instance
+
+lemma from_truncGE_obj_ext {n : ℤ} {X : C} {Y : C}
+    {f₁ f₂ : (t.truncGE n).obj X ⟶ Y} (h : (t.truncGEπ n).app X ≫ f₁ = (t.truncGEπ n).app X ≫ f₂)
+    [t.IsGE Y n] :
+    f₁ = f₂ := by
+  suffices ∀ (f : (t.truncGE n).obj X ⟶ Y), (t.truncGEπ n).app X ≫ f = 0 → f = 0 by
+    rw [← sub_eq_zero, this (f₁ - f₂) (by cat_disch)]
+  intro f hf
+  obtain ⟨g, hg⟩ := Triangle.yoneda_exact₃ _
+    (t.triangleLTGE_distinguished n X) f hf
+  have hg' := t.zero_of_isLE_of_isGE g (n-2) n (by lia)
+    (by exact t.isLE_shift _ (n-1) 1 (n-2) (by lia)) inferInstance
+  rw [hg, hg', comp_zero]
+
+lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
+    {f₁ f₂ : Y ⟶ (t.truncLT n).obj X}
+    (h : f₁ ≫ (t.truncLTι n).app X = f₂ ≫ (t.truncLTι n).app X)
+    [t.IsLE Y (n - 1)] :
+    f₁ = f₂ := by
+  suffices ∀ (f : Y ⟶ (t.truncLT n).obj X) (_ : f ≫ (t.truncLTι n).app X = 0), f = 0 by
+    rw [← sub_eq_zero, this (f₁ - f₂) (by cat_disch)]
+  intro f hf
+  obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_distTriang _
+    (t.triangleLTGE_distinguished n X)) f hf
+  have hg' := t.zero_of_isLE_of_isGE g (n - 1) (n + 1) (by lia) inferInstance
+    (by dsimp; apply (t.isGE_shift _ n (-1) (n + 1) (by lia)))
+  rw [hg, hg', zero_comp]
 
 end
 
