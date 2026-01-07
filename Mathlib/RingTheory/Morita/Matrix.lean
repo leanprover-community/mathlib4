@@ -48,7 +48,7 @@ variable {ι} (M) in
 /-- The image of `Eᵢᵢ` (the elementary matrix) acting on all elements in `M`. -/
 def toModuleCatObj (i : ι) : Submodule R M :=
   LinearMap.range (τ₁₂ := .id _) <|
-    { __ := DistribMulAction.toAddMonoidHom M (single i i 1 : Matrix ι ι R)
+    { __ := DistribSMul.toAddMonoidHom M (single i i 1 : Matrix ι ι R)
       map_smul' r x := by
         dsimp
         have : Commute (diagonal fun x : ι ↦ r) (single i i 1) := by
