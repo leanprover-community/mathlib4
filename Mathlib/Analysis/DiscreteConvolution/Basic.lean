@@ -60,19 +60,10 @@ Differences (discrete ↔ MeasureTheory):
 - Associativity: `Summable` ↔ `AEStronglyMeasurable` + norm convolution conditions
 - `@[to_additive]`: Discrete supports both mul/add versions; MeasureTheory is additive only
 
-## Main Definitions
-
-* `mulFiber x`: `{(a, b) | a * b = x}` (abbreviation for `Set.mulAntidiagonal`)
-* `tripleFiber x`: `{(a, b, c) | a * b * c = x}`
-* `assocEquiv`, `leftAssocEquiv`, `rightAssocEquiv`: fiber equivalences for `convolution_assoc`
-* `convolution L f g`: `f ⋆[L] g`, with additive version `f ⋆₊[L] g` via `@[to_additive]`
-* `ringConvolution`: specialize bilinear maps to ring multiplication `f ⋆ₘ g`
-* `ConvolutionExistsAt`, `TripleConvolutionExists`: summability predicates
-
 ## Main Results
 
-* `convolution_zero`, `convolution_add`: zero and distributivity laws
-* Associativity:
+- `convolution_zero`, `convolution_add`: zero and distributivity laws
+- Associativity:
   - `convolution_assoc_at`: pointwise, uses `assocEquiv`, derives compatibility from bilinearity
   - `convolution_assoc`: applies above with triple summability
   - `ringConvolution_assoc_at`, `ringConvolution_assoc`: for ring multiplication `f ⋆ₘ g`
