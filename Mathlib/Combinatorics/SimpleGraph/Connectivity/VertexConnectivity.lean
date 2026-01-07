@@ -16,8 +16,8 @@ This file defines k-vertex connectivity for simple graphs.
 
 * `SimpleGraph.IsVertexReachable`: Two vertices are `k`-vertex-reachable if they remain reachable
   after removing strictly fewer than `k` other vertices.
-* `SimpleGraph.IsVertexConnected`: A graph is `k`-vertex-connected if it has more than `k`
-  vertices and any two vertices are `k`-vertex-reachable.
+* `SimpleGraph.IsVertexConnected`: A graph is `k`-vertex-connected if any two vertices
+  are `k`-vertex-reachable.
 -/
 
 @[expose] public section
@@ -71,18 +71,17 @@ lemma IsVertexReachable.reachable (hk : k ≠ 0) (h : G.IsVertexReachable k u v)
   apply h <;> simp [pos_of_ne_zero hk]
 
 variable (G k) in
-/-- A graph is `k`-vertex-connected if it has more than `k` vertices
-and any two vertices are `k`-vertex-reachable. -/
+/-- A graph is `k`-vertex-connected if any two vertices are `k`-vertex-reachable. -/
 def IsVertexConnected : Prop :=
-  k + 1 ≤ ENat.card V ∧ ∀ u v : V, G.IsVertexReachable k u v
+  ∀ u v : V, G.IsVertexReachable k u v
 
+/-- 0-vertex-connectivity is always true. -/
 @[simp]
-lemma isVertexConnected_zero : G.IsVertexConnected 0 ↔ Nonempty V := by
-  simp [IsVertexConnected, ENat.one_le_card_iff_nonempty]
+lemma isVertexConnected_zero : G.IsVertexConnected 0 ↔ True :=
+  iff_true_intro fun _ _ ↦ IsVertexReachable.zero
 
-/-- A nonempty graph is 0-vertex-connected. -/
-lemma IsVertexConnected.zero [Nonempty V] : G.IsVertexConnected 0 :=
-  isVertexConnected_zero.mpr ‹_›
+lemma IsVertexConnected.zero : G.IsVertexConnected 0 :=
+  isVertexConnected_zero.mpr True.intro
 
 /-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
 @[simp]
@@ -90,35 +89,34 @@ lemma isVertexReachable_one_iff : G.IsVertexReachable 1 u v ↔ G.Reachable u v 
   refine ⟨(·.reachable one_ne_zero), fun h s hs hu hv ↦ ?_⟩
   rwa [Set.encard_eq_zero.mp <| ENat.lt_one_iff_eq_zero.mp hs, isolateVerts_empty]
 
-/-- 1-vertex-connectivity is equivalent to being a connected graph with at least 2 vertices. -/
+/-- 1-vertex-connectivity is equivalent to preconnectedness. -/
 @[simp]
-lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ Nontrivial V ∧ G.Connected := by
-  rw [IsVertexConnected, ENat.add_one_le_iff ENat.one_ne_top, ENat.one_lt_card_iff_nontrivial]
-  refine ⟨fun ⟨h_nt, h_reach⟩ ↦ ⟨h_nt, ⟨fun u v ↦ ?_⟩⟩, fun ⟨h_nt, h_conn⟩ ↦ ⟨h_nt, fun u v ↦ ?_⟩⟩
-  exacts [isVertexReachable_one_iff.mp <| h_reach u v, isVertexReachable_one_iff.mpr <| h_conn u v]
+lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ G.Preconnected := by
+  simp [IsVertexConnected, isVertexReachable_one_iff, Preconnected]
 
-/-- A preconnected nontrivial graph is 1-vertex-connected. -/
-lemma Preconnected.isVertexConnected_one [Nontrivial V] (h : G.Preconnected) :
+/-- A preconnected graph is 1-vertex-connected. -/
+lemma Preconnected.isVertexConnected_one (h : G.Preconnected) :
     G.IsVertexConnected 1 :=
-  G.isVertexConnected_one.mpr ⟨‹_›, ⟨h⟩⟩
+  SimpleGraph.isVertexConnected_one.mpr h
 
 /-- Vertex connectivity is antitonic in `k`. -/
 @[gcongr]
-lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) : G.IsVertexConnected l :=
-  ⟨(add_le_add_left hkl 1).trans hc.1, fun u v ↦ (hc.2 u v).anti hkl⟩
+lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
+    G.IsVertexConnected l :=
+  fun u v ↦ (hc u v).anti hkl
 
 /-- Vertex connectivity is monotonic in the graph. -/
 @[gcongr]
-lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) : H.IsVertexConnected k :=
-  ⟨hc.1, fun u v ↦ (hc.2 u v).mono hGH⟩
+lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) :
+    H.IsVertexConnected k :=
+  fun u v ↦ (hc u v).mono hGH
 
 /-- The complete graph on `n` vertices is `(n-1)`-vertex-connected. -/
-lemma isVertexConnected_top [Fintype V] [Nonempty V] :
-    (⊤ : SimpleGraph V).IsVertexConnected (Fintype.card V - 1) := by
-  refine ⟨?_, fun u v ↦ ?_⟩
-  · rw [ENat.card_eq_coe_fintype_card]
-    exact_mod_cast Nat.sub_add_cancel Fintype.card_pos |>.le
-  · by_cases h : u = v
-    exacts [h ▸ .refl _, .of_adj _ h]
+lemma isVertexConnected_top [Fintype V] :
+    (⊤ : SimpleGraph V).IsVertexConnected (Fintype.card V - 1) :=
+  fun u v ↦ by
+    by_cases h : u = v
+    · subst h; exact .refl _
+    · exact IsVertexReachable.of_adj _ h
 
 end SimpleGraph
