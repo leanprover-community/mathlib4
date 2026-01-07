@@ -656,6 +656,9 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter whitespaceLinter
 
 open Lean Elab Command in
+/-- Show correlations between string positions and syntax nodes
+in a command `cmd`. This function is not used for the actual linter, but kept for debugging
+odd linter behaviour. -/
 elab "#show_corr " cmd:command : command => do
   elabCommand cmd
   let orig := cmd.raw.getSubstring?.getD default
@@ -932,6 +935,8 @@ def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
     (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
 
 open Lean Elab Command in
+/-- Visualise the `mex` info computed for a command `cmd`.
+This code is not used for the actual linter, hence could be removed. -/
 elab tk:"#mex " cmd:(command)? : command => do
   let opts ← elabSetOption (mkIdent `linter.style.whitespace) (mkAtom "false")
   withScope ({ · with opts }) do
