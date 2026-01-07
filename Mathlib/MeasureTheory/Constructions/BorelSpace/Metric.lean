@@ -25,7 +25,7 @@ public import Mathlib.Topology.MetricSpace.Thickening
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 

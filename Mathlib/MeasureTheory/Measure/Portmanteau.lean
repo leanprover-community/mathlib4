@@ -82,7 +82,7 @@ probability measure
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -792,7 +792,6 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
   · convert hn
     simp [accumulate_def]
-    grind
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 
 /-- Assume that, applied to all the elements of a π-system, a sequence of probability measures

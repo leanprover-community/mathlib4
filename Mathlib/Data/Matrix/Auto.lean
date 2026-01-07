@@ -26,4 +26,4 @@ TODO: These magic lemmas have been skipped for now, though the plumbing lemmas i
 They should probably be implemented as simprocs.
 -/
 
-@[expose] public section
+public section
