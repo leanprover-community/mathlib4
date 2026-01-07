@@ -25,7 +25,7 @@ error: unsolved goals
 inst✝¹ inst✝ : Add Nat
 ⊢ [Add Nat] → [Add Nat] → Bool
 ---
-warning: The declaration `foo` has instance hypotheses that overlap on data-carrying components.
+warning: The declaration `Lean.foo` has instance hypotheses which overlap on data-carrying components.
 
 There are 4 instances of `[Add Nat]`.
 -/
@@ -35,7 +35,7 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 
 /--
-warning: The declaration `foo'` has instance hypotheses that overlap on data-carrying components.
+warning: The declaration `Lean.foo'` has instance hypotheses which overlap on data-carrying components.
 
 `[Bar Nat]` is provided by `[Foo' Nat String]` and `[Foo Nat Bool]`.
 -/
@@ -45,7 +45,7 @@ def foo' [Foo Nat Bool] [Foo' Nat String] : Bool := by
 
 
 /--
-warning: The declaration `foo''` has instance hypotheses that overlap on data-carrying components.
+warning: The declaration `Lean.foo''` has instance hypotheses which overlap on data-carrying components.
 
 `[Bar Nat]` is provided by `[Foo Nat Bool]` and `[Foo' Nat String]`.
 
@@ -55,7 +55,7 @@ There are 2 instances of `[Foo Nat Bool]`.
 def foo'' [Foo Nat Bool] [Foo Nat Bool] [Foo' Nat String] : Bool := true
 
 /--
-warning: The declaration `foo'''` has instance hypotheses that overlap on data-carrying components.
+warning: The declaration `Lean.foo'''` has instance hypotheses which overlap on data-carrying components.
 
 There are 2 instances of `[Foo Nat Bool]`.
 -/
@@ -65,7 +65,7 @@ def foo''' [Foo Nat Bool] [Foo Nat Bool] : Bool := true
 /--
 error: Failed to infer type of definition `foo''''`
 ---
-warning: The declaration `foo''''` has instance hypotheses that overlap on data-carrying components.
+warning: The declaration `Lean.foo''''` has instance hypotheses which overlap on data-carrying components.
 
 There is an instance of `[Bar Nat]` in the local context, but it is also provided by `[Foo Nat Bool]`.
 
