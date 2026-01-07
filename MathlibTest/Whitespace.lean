@@ -15,7 +15,7 @@ public import Mathlib.Util.Superscript
 
 meta section
 
-open Lean Elab Command Mathlib Linter Style.CommandStart in
+open Lean Elab Command Mathlib Linter Style.Whitespace in
 elab tk:"#reformat " cmd:command : command => do
   let tktxt := "#reformat"
   if let some cmdSubstring := cmd.raw.getSubstring? then
@@ -43,7 +43,7 @@ elab tk:"#reformat " cmd:command : command => do
 end
 
 namespace Bundle
-set_option linter.style.commandStart true
+set_option linter.style.whitespace true
 scoped notation:max "π " F':max E':max => Nat.add F' E'
 
 #guard_msgs in
@@ -58,7 +58,7 @@ should be written as
   '3 (4)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example := π 3(4)
@@ -75,7 +75,7 @@ should be written as
   '3 (4)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example := π 3  (4)
@@ -89,7 +89,7 @@ should be written as
   '(π 0'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -99,7 +99,7 @@ should be written as
   '0 1)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -109,7 +109,7 @@ should be written as
   '+ (π'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -119,7 +119,7 @@ should be written as
   '(π 0'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -129,7 +129,7 @@ should be written as
   '0 1)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example := (π  0  1) + 0 +  (π  0  1)
@@ -143,7 +143,7 @@ should be written as
   '(π 0'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -153,7 +153,7 @@ should be written as
   '0 1)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -163,7 +163,7 @@ should be written as
   '(π 0'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -173,7 +173,7 @@ should be written as
   '0 1)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example := (π  0  1) + 0 -  (π  0  1)
@@ -187,7 +187,7 @@ should be written as
   '(π 0'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -197,7 +197,7 @@ should be written as
   '0 1)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -207,7 +207,7 @@ should be written as
   '(π 0'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -217,7 +217,7 @@ should be written as
   '0 1'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -227,7 +227,7 @@ should be written as
   '+ 1)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example := (π  0  1) + 0 -  (π  0  1  +  1)
@@ -263,7 +263,7 @@ should be written as
   '₊ ₀'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 #eval
@@ -280,7 +280,7 @@ should be written as
   '₁₃ +'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 #eval
@@ -290,11 +290,11 @@ end Bundle
 
 -- `meta` definitions are ignored
 #guard_msgs in
-set_option linter.style.commandStart true in
+set_option linter.style.whitespace true in
 meta def New  := 0
 
 #reformat
-set_option linter.style.commandStart true
+set_option linter.style.whitespace true
 
 #reformat
 example : True ∧ True := by
@@ -303,8 +303,8 @@ example : True ∧ True := by
   · {exact trivial}
   · apply ?_
     first | assumption | done | assumption | trivial
-set_option linter.style.commandStart false in
 
+set_option linter.style.whitespace false in
 /--
 info: Try this:
   [apply] example : True ∧
@@ -336,7 +336,7 @@ should be written as
   '· {'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -346,7 +346,7 @@ should be written as
   'apply ?_;'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove spaces in the source
 
@@ -356,7 +356,7 @@ should be written as
   '?_;'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: add space in the source
 
@@ -366,7 +366,7 @@ should be written as
   'first |'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: add space in the source
 
@@ -376,7 +376,7 @@ should be written as
   '| assumption'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: add space in the source
 
@@ -386,7 +386,7 @@ should be written as
   'assumption |'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: add space in the source
 
@@ -396,7 +396,7 @@ should be written as
   'done |'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: add space in the source
 
@@ -406,7 +406,7 @@ should be written as
   '| assumption'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -416,7 +416,7 @@ should be written as
   'assumption |'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -426,7 +426,7 @@ should be written as
   '| trivial'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example : True ∧ True := by
@@ -450,7 +450,7 @@ should be written as
   'true |'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {c : Bool} : c = c := by
@@ -466,7 +466,7 @@ should be written as
   'true |'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: add space in the source
 
@@ -476,7 +476,7 @@ should be written as
   '=> rfl'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {c : Bool} : c = c := by
@@ -599,7 +599,7 @@ should be written as
  atom.«;»]
 -/
 #guard_msgs in
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 set_option linter.unreachableTactic false in
 set_option linter.unusedTactic false in
 #mex
@@ -610,7 +610,7 @@ theorem FX(_  :Nat) : True:=     --
 
 -- The "tactic `{...}` is ignored entirely:
 -- the pretty-printer does not want a space after `{`, but wants one before `}`.
---set_option linter.style.commandStart false in
+--set_option linter.style.whitespace false in
 --#mex
 example : True := by { trivial }
 example : True := by {trivial}
@@ -625,7 +625,7 @@ should be written as
   '· rfl'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: 'done' tactic does nothing
 
@@ -638,7 +638,7 @@ example : True = True := by
     ·rfl
   done
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 -- Both `¬ False` and `¬False` are allowed.
 /--
 info: Pretty-printed syntax:
@@ -679,7 +679,7 @@ should be written as
   '(·)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -689,7 +689,7 @@ should be written as
   '(·)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {α} : α → α := by
@@ -706,7 +706,7 @@ should be written as
   '+ ·)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example : Nat → Nat → Nat := by
@@ -721,7 +721,7 @@ should be written as
   'throwError "s"'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 #eval do
@@ -738,7 +738,7 @@ should be written as
   'rcases h'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example (h : False) : False := by
@@ -753,7 +753,7 @@ should be written as
   'rcases (h)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example (h : False) : False := by
@@ -775,7 +775,7 @@ should be written as
   'let (_)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example :=
@@ -791,7 +791,7 @@ should be written as
   'let h'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example :=
@@ -803,7 +803,7 @@ example : True := by {trivial }
 #guard_msgs in
 #mex
 open Qq in
---set_option linter.style.commandStart.verbose true in
+--set_option linter.style.whitespace.verbose true in
 example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
   mul x y := q($x * $y)
 
@@ -820,7 +820,7 @@ should be written as
   '"a" /--'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 library_note "a"/-- Avoid empty doc-string -/
@@ -848,7 +848,7 @@ should be written as
   'have (h)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example : True :=
@@ -870,7 +870,7 @@ should be written as
   'replace (h)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example (h : ∀ a : Nat, a = a) : 0 = 0 := by
@@ -905,7 +905,7 @@ should be written as
   'obtain (⟨h⟩)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example (h : False) : False := by
@@ -924,7 +924,7 @@ should be written as
   'example :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example: True := trivial
@@ -953,7 +953,7 @@ should be written as
   'field1 :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure A where
@@ -969,7 +969,7 @@ should be written as
   'field2 :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure B where
@@ -985,7 +985,7 @@ should be written as
   ': Nat'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -995,7 +995,7 @@ should be written as
   'field2 :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure C where
@@ -1013,7 +1013,7 @@ should be written as
   'field1 :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -1023,7 +1023,7 @@ should be written as
   ': Nat'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: remove space in the source
 
@@ -1033,7 +1033,7 @@ should be written as
   'field2 :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure D where
@@ -1052,7 +1052,7 @@ should be written as
   'instance {R}'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 instance   {R} : Add R := sorry
@@ -1070,7 +1070,7 @@ should be written as
   'instance {R}'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 instance   {R} : Sub R := sorry
@@ -1224,12 +1224,12 @@ elab "#again " verb?:(&" verbose")? stx:command : command => do
     m!"{eq?}: reduced and pretty are {if eq? then "" else "not "}equal up to spaces\n\n\
       Syntax:\n{s}\nReduced:\n{sstring}\nPretty:\n{pretty}\n{withSpaces.regString}\nRegener↑\n{pretty == (reduceWhitespace withSpaces.regString)}"
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 #again verbose
 example := 0
 
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 #again
 inspect
 /--This    he las      -/
@@ -1269,7 +1269,7 @@ should be written as
   'F : True'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 lemma F  : True := trivial
@@ -1284,12 +1284,12 @@ local infixl:50 " ≼ " => r
 local infixl:50 " ≼ " => s
 
 /--
-warning: The `commandStart` linter had some parsing issues: feel free to silence it and report this error!
+warning: The `whitespace` linter had some parsing issues: feel free to silence it and report this error!
 
-Note: This linter can be disabled with `set_option linter.style.commandStart.verbose false`
+Note: This linter can be disabled with `set_option linter.style.whitespace.verbose false`
 -/
 #guard_msgs in
-set_option linter.style.commandStart.verbose true in
+set_option linter.style.whitespace.verbose true in
 example {a : α} (_ : a ≼ a) : 0 = 0 := rfl
 
 end List
@@ -1307,7 +1307,7 @@ should be written as
   'field1 : Nat'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure A where
@@ -1323,7 +1323,7 @@ should be written as
   'field2 : Nat'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure B where
@@ -1339,7 +1339,7 @@ should be written as
   ': Nat field2'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1349,7 +1349,7 @@ should be written as
   'field2 : Nat'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure C where
@@ -1367,7 +1367,7 @@ should be written as
   'field1 : Nat'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1377,7 +1377,7 @@ should be written as
   ': Nat field2'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1387,7 +1387,7 @@ should be written as
   'field2 : Nat'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 structure D where
@@ -1406,7 +1406,7 @@ should be written as
   'instance {R} :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 instance   {R} : Add R := sorry
@@ -1421,7 +1421,7 @@ should be written as
   'instance {R} :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 instance   {R} : Add R := sorry
@@ -1437,7 +1437,7 @@ should be written as
   'variable [h :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1447,7 +1447,7 @@ should be written as
   '[h : Add'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1457,7 +1457,7 @@ should be written as
   '[h : Add'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1467,7 +1467,7 @@ should be written as
   'Nat] [Add'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1477,7 +1477,7 @@ should be written as
   '[Add Nat]'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 variable    [ h    : Add Nat   ] [ Add Nat]
@@ -1491,7 +1491,7 @@ should be written as
   'omit [h :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1501,7 +1501,7 @@ should be written as
   'Nat] [Add'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 omit  [h : Add Nat]  [Add Nat]
@@ -1517,7 +1517,7 @@ should be written as
   'include h'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 include     h
@@ -1531,7 +1531,7 @@ should be written as
   '@[aesop (rule_sets'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 @[aesop  (rule_sets := [builtin]) safe apply] example : True := trivial
@@ -1541,7 +1541,7 @@ end misc
 /--
 warning: 'section' starts on column 1, but all commands should start at the beginning of the line.
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
  section
@@ -1555,7 +1555,7 @@ should be written as
   'example : True'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example    : True := trivial
@@ -1569,7 +1569,7 @@ should be written as
   ': True'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example :     True := trivial
@@ -1583,7 +1583,7 @@ should be written as
   'example : True'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: extra space in the source
 
@@ -1593,7 +1593,7 @@ should be written as
   ': True'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: missing space in the source
 
@@ -1603,7 +1603,7 @@ should be written as
   ':= trivial'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example  :  True :=trivial
@@ -1617,7 +1617,7 @@ should be written as
   '(a : Nat)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 variable (a: Nat)
@@ -1631,7 +1631,7 @@ should be written as
   '(_a : Nat)'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example (_a: Nat) : True := trivial
@@ -1645,7 +1645,7 @@ should be written as
   '{a : Nat}'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {a: Nat} : a = a := rfl
@@ -1666,7 +1666,7 @@ should be written as
   ': Nat}'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {a :Nat} : a = a := rfl
@@ -1680,7 +1680,7 @@ should be written as
   'example {a :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
 warning: missing space in the source
 
@@ -1690,7 +1690,7 @@ should be written as
   ': Nat}'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example  {a :Nat} : a = a := rfl
@@ -1708,7 +1708,7 @@ should be written as
   'Nat} {b :'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {a : Nat}{b : Nat} : a = a := rfl
@@ -1722,7 +1722,7 @@ should be written as
   'Nat} : a ='
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {a : Nat}  : a = a := rfl
@@ -1736,7 +1736,7 @@ should be written as
   'alpha] {a'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 example {alpha} [Neg alpha   ] {a : Nat} : a = a := rfl
@@ -1750,7 +1750,7 @@ should be written as
   'example : True'
 
 
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
 /-- Check that doc/strings do not get removed as comments. -/
@@ -1797,11 +1797,11 @@ info: #[srcNat: 4, srcPos: 4, fmtPos: 5, msg: missing space, length: 1
 -- Starting from `c` (due to the `"d ef gh".length` input), form a "window" of successive sizes
 -- `1, 2,..., 6`.  The output is trimmed and contains only full words, even partially overlapping
 -- with the given lengths.
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 1 == "cd"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 2 == "cd"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 3 == "cd ef"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 4 == "cd ef"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 5 == "cd ef"
-#guard Mathlib.Linter.Style.CommandStart.mkWindow "ab cd ef gh" "d ef gh".length 6 == "cd ef gh"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 1 == "cd"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 2 == "cd"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 3 == "cd ef"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 4 == "cd ef"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 5 == "cd ef"
+#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 6 == "cd ef gh"
 
 end internal
