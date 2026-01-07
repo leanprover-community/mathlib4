@@ -28,10 +28,10 @@ else
 fi
 
 # --- Helpers ---
-log_info()  { echo -e "${BLUE}[INFO]${NC} $*"; }
-log_ok()    { echo -e "${GREEN}[OK]${NC} $*"; }
-log_warn()  { echo -e "${YELLOW}[WARN]${NC} $*"; }
-log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
+log_info()  { echo -e "${BLUE}[INFO]${NC} $*" >&2; }
+log_ok()    { echo -e "${GREEN}[OK]${NC} $*" >&2; }
+log_warn()  { echo -e "${YELLOW}[WARN]${NC} $*" >&2; }
+log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 # Show a truncated diff stat between two trees
 show_diff_stat() {
@@ -43,10 +43,10 @@ show_diff_stat() {
   local line_count
   line_count=$(echo "$diff_output" | wc -l)
   if [[ $line_count -gt $max_lines ]]; then
-    echo "$diff_output" | head -"$max_lines"
-    echo "  ... and $((line_count - max_lines)) more lines"
+    echo "$diff_output" | head -"$max_lines" >&2
+    echo "  ... and $((line_count - max_lines)) more lines" >&2
   else
-    echo "$diff_output"
+    echo "$diff_output" >&2
   fi
 }
 
