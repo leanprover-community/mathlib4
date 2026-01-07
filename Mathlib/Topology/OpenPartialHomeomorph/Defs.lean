@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Partial homeomorphisms: definitions
@@ -177,14 +176,6 @@ protected theorem bijOn : BijOn e e.source e.target :=
 
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
-
-theorem _root_.IsDiscrete.of_openPartialHomeomorph (f : X → Y) {s : Set X} {y : Y}
-    (hsy : s ⊆ f ⁻¹' {y}) (hf : ∀ x ∈ s, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧ e = f) :
-    IsDiscrete s :=
-  isDiscrete_iff_forall_exists_isOpen.mpr fun x hx ↦ by
-    obtain ⟨e, he, rfl⟩ := hf x hx
-    exact ⟨_, e.open_source, subset_antisymm (fun x' hx' ↦ e.injOn hx'.1 he <|
-      (hsy hx'.2).trans (hsy hx).symm) <| Set.singleton_subset_iff.mpr ⟨he, hx⟩⟩
 
 end Basic
 
