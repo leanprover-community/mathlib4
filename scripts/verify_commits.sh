@@ -162,7 +162,7 @@ verify_transient() {
     EXPECTED_TREE=$(git rev-parse "$MERGE_BASE^{tree}")
   else
     # Cherry-pick non-transient commits onto base and get resulting tree
-    # Work in detached HEAD to avoid creating/deleting branches
+    log_info 'Work in detached HEAD to avoid creating/deleting branches'
     git checkout -q --detach "$MERGE_BASE"
 
     CHERRY_PICK_FAILED=false
