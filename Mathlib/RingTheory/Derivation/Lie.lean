@@ -57,6 +57,19 @@ instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
     lie_smul := fun r d e => by
       ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply] }
 
+instance : LieRingModule (Derivation R A A) A where
+  bracket := fun X a ↦ X a
+  add_lie := by simp
+  lie_add := by simp
+  leibniz_lie := fun _ _ _ ↦ Eq.symm (add_eq_of_eq_sub rfl)
+
+instance : LieModule R (Derivation R A A) A where
+  smul_lie := fun _ _ _ ↦ rfl
+  lie_smul := fun _ _ _ ↦ Derivation.map_smul_of_tower _ _ _
+
+@[simp]
+lemma bracketmul (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
+
 end LieStructures
 
 end Derivation

@@ -47,20 +47,6 @@ section instDerivationLieRinehartAlgebra
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
 
-instance : LieRingModule (Derivation R A A) A where
-bracket := fun X a ↦ X a
-add_lie := by simp
-lie_add := by simp
-leibniz_lie := fun _ _ _ ↦ Eq.symm (add_eq_of_eq_sub rfl)
-
-instance : LieModule R (Derivation R A A) A where
-smul_lie := fun _ _ _ ↦ rfl
-lie_smul := fun _ _ _ ↦ Derivation.map_smul_of_tower _ _ _
-
-@[simp]
-lemma bracketmul (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
-
-
 /-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra
 -/
 instance : (LieRinehartAlgebra R A (Derivation R A A)) := {
