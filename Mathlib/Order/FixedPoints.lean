@@ -124,6 +124,9 @@ theorem gfp_induction {p : α → Prop} (step : ∀ a, p a → f.gfp ≤ a → p
     (hInf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : p f.gfp :=
   f.dual.lfp_induction step hInf
 
+theorem lfp_le_gfp : f.lfp ≤ f.gfp :=
+  f.lfp_le_fixed f.isFixedPt_gfp
+
 end Basic
 
 section Eqn

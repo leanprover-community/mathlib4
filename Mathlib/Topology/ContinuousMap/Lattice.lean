@@ -29,12 +29,12 @@ variable {β : Type*} [TopologicalSpace β]
 
 section Lattice
 
-/-! `C(α, β)`is a lattice ordered group -/
+/-! `C(α, β)` is a lattice ordered group. -/
 
 @[to_additive]
 instance [PartialOrder β] [CommMonoid β] [IsOrderedMonoid β] [ContinuousMul β] :
     IsOrderedMonoid C(α, β) where
-  mul_le_mul_left _ _ hfg c x := mul_le_mul_left' (hfg x) (c x)
+  mul_le_mul_left _ _ hfg c x := mul_le_mul_left (hfg x) (c x)
 
 variable [Group β] [IsTopologicalGroup β] [Lattice β] [TopologicalLattice β]
 

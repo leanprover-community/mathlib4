@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
+boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x, y}`
 whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
 has boundary `M × {x, y}`.
 
@@ -454,10 +454,7 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
   · apply iff_of_false
     · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
         Icc_isInteriorPoint_interior hp
-    · rw [mem_insert_iff, mem_singleton_iff]
-      push_neg
-      constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
-      exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
+    · rintro (rfl | rfl) <;> simp at hp
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)

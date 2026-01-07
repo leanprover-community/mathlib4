@@ -186,6 +186,12 @@ theorem lift_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : �
     ((lift f g hfg).restrictScalars R).comp includeRight = g :=
   AlgHom.ext <| by simp
 
+/-- Variant with the same base that doesn't need `restrictScalars`. -/
+@[simp]
+theorem lift_comp_includeRight' (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y)) :
+    (lift f g hfg).comp includeRight = g :=
+  AlgHom.ext <| by simp
+
 /-- The universal property of the tensor product of algebras.
 
 Pairs of algebra morphisms that commute are equivalent to algebra morphisms from the tensor product.

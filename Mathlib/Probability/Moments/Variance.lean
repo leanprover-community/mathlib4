@@ -6,6 +6,9 @@ Authors: Sébastien Gouëzel, Kexing Ying
 module
 
 public import Mathlib.Probability.Moments.Covariance
+public import Mathlib.Probability.Notation
+import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+import Mathlib.Probability.Independence.Integrable
 
 /-!
 # Variance of random variables
@@ -33,7 +36,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 * `ProbabilityTheory.variance_le_sub_mul_sub`: the variance of a random variable `X` satisfying
   `a ≤ X ≤ b` almost everywhere is at most `(b - 𝔼 X) * (𝔼 X - a)`.
 * `ProbabilityTheory.variance_le_sq_of_bounded`: the variance of a random variable `X` satisfying
-  `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
+  `a ≤ X ≤ b` almost everywhere is at most `((b - a) / 2) ^ 2`.
 -/
 
 @[expose] public section
@@ -172,19 +175,23 @@ lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
   congr with x
   ring
 
-@[deprecated (since := "2025-06-25")] alias covariance_same := covariance_self
-
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
 
-theorem variance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
+theorem variance_const_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (fun ω => c * X ω) μ = c ^ 2 * variance X μ := by
   rw [variance, evariance_mul, ENNReal.toReal_mul, ENNReal.toReal_ofReal (sq_nonneg _)]
   rfl
 
+theorem variance_mul_const (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
+    variance (fun ω => X ω * c) μ = variance X μ * c ^ 2 := by
+  simp [mul_comm, variance_const_mul]
+
+@[deprecated (since := "2025-11-29")] alias variance_mul := variance_const_mul
+
 theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (c • X) μ = c ^ 2 * variance X μ :=
-  variance_mul c X μ
+  variance_const_mul c X μ
 
 theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
@@ -216,7 +223,7 @@ lemma variance_const_add [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
   simp_rw [add_comm c, variance_add_const hX c]
 
 lemma variance_fun_neg : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
-  convert variance_mul (-1) X μ
+  convert variance_const_mul (-1) X μ
   · ext; ring
   · simp
 
@@ -349,13 +356,13 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 
-set_option linter.deprecated false in
 /-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/
 theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) {c : ℝ≥0}
     (hc : c ≠ 0) : μ {ω | ↑c ≤ |X ω - μ[X]|} ≤ evariance X μ / c ^ 2 := by
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne, ENNReal.coe_eq_zero]
   have B : AEStronglyMeasurable (fun _ : Ω => μ[X]) μ := aestronglyMeasurable_const
-  convert meas_ge_le_mul_pow_eLpNorm μ two_ne_zero ENNReal.ofNat_ne_top (hX.sub B) A using 1
+  convert meas_ge_le_mul_pow_eLpNorm_enorm μ two_ne_zero ENNReal.ofNat_ne_top
+      (hX.sub B) A (by simp) using 1
   · norm_cast
   rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
   simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]

@@ -183,7 +183,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
     rw [Nat.card_eq_fintype_card] at hk
     have : k = 0 := by
       contrapose! hb
-      simp [-Quotient.eq, key, hk, hb]
+      simp [key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩

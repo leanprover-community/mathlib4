@@ -152,7 +152,7 @@ variable {X} {G}
 open scoped Classical in
 theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) :
-    IsDecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S)  := by
+    IsDecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S) := by
   intro _ ⟨aA, aB⟩
   rcases hf _ aA with ⟨γ, γ_mem, hγ⟩
   rcases hg _ aB with ⟨δ, δ_mem, hδ⟩
@@ -162,7 +162,7 @@ theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
 open scoped Classical in
 theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) (h : MapsTo f A B) :
-    IsDecompOn (g ∘ f) A (T * S)  := by
+    IsDecompOn (g ∘ f) A (T * S) := by
   rw [left_eq_inter.mpr h]
   exact hg.comp' hf
 

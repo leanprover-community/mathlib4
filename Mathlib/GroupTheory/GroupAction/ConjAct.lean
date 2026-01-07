@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.Subgroup.Centralizer
@@ -207,9 +206,9 @@ theorem orbit_eq_carrier_conjClasses (g : G) :
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
 theorem stabilizer_eq_centralizer (g : G) :
-    stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
-  le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
-    mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
+    stabilizer (ConjAct G) g = centralizer {toConjAct g} :=
+  le_antisymm (fun _ hg _ h ↦ h ▸ eq_mul_inv_iff_mul_eq.mp hg.symm) fun _ h =>
+    mul_inv_eq_of_eq_mul (h g rfl).symm
 
 theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
     Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom

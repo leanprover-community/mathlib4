@@ -135,7 +135,6 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
@@ -150,10 +149,8 @@ theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
     (∑ x ∈ s, cramer A (fun j => f j x) i) = (∑ x ∈ s, cramer A fun j => f j x) i :=
       (Finset.sum_apply i s _).symm
     _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
-      rw [sum_cramer, cramer_apply, cramer_apply]
-      simp only [updateCol]
+      rw [sum_cramer, cramer_apply]
       congr with j
-      congr
       apply Finset.sum_apply
 
 theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) :
@@ -220,7 +217,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
       rw [updateCol_self, Pi.single_eq_of_ne' h]
     rw [this]
     apply prod_eq_zero (mem_univ (σ⁻¹ i))
-    erw [apply_symm_apply σ i, updateRow_self]
+    simp only [Perm.coe_inv, apply_symm_apply, updateRow_self]
     apply Pi.single_eq_of_ne
     intro h'
     exact h ((symm_apply_eq σ).mp h')
@@ -255,7 +252,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
 
 theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
     A i k * adjugate A k j = cramer Aᵀ (Pi.single k (A i k)) j := by
-  rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← LinearMap.map_smul, ← Pi.single_smul',
+  rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← map_smul, ← Pi.single_smul',
     smul_eq_mul, mul_one]
 
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by
@@ -295,7 +292,6 @@ theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 @[simp]
@@ -458,7 +454,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     rw [RingHom.map_adjugate, f'_inv]
   have f'_g_mul : ∀ M N : Matrix n n α, f' (g M * g N) = M * N := by
     intro M N
-    rw [RingHom.map_mul, f'_inv, f'_inv]
+    rw [map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
     refine Polynomial.Monic.isRegular ?_

@@ -52,6 +52,13 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul_neg' m n := by simp only [negSucc_eq, natCast_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
+-- This instance can also be found from the `LinearOrderedCommMonoidWithZero ℤ` instance by
+-- typeclass search, but it is better practice to not rely on algebraic order theory to prove
+-- purely algebraic results on concrete types. Eg the results can be made available earlier.
+
+instance instIsAddTorsionFree : IsAddTorsionFree ℤ where
+  nsmul_right_injective _n hn _x _y := Int.eq_of_mul_eq_mul_left (by lia)
+
 /-!
 ### Extra instances to short-circuit type class resolution
 
@@ -78,7 +85,8 @@ instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
 
 end Int
 
--- TODO: Do we really need this lemma? This is just `smul_eq_mul`
+@[deprecated "use `zsmul_eq_mul`" (since := "2026-01-05")]
 lemma zsmul_int_int (a b : ℤ) : a • b = a * b := rfl
 
+@[deprecated "use `zsmul_one`" (since := "2026-01-05")]
 lemma zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := mul_one _

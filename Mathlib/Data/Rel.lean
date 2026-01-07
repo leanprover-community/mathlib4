@@ -223,8 +223,14 @@ def preimage : Set α := {a | ∃ b ∈ t, a ~[R] b}
 @[gcongr] lemma image_subset_image (hs : s₁ ⊆ s₂) : image R s₁ ⊆ image R s₂ :=
   fun _ ⟨a, ha, hab⟩ ↦ ⟨a, hs ha, hab⟩
 
+@[gcongr] lemma image_subset_image_left (hR : R₁ ⊆ R₂) : image R₁ s ⊆ image R₂ s :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ha, hR hab⟩
+
 @[gcongr] lemma preimage_subset_preimage (ht : t₁ ⊆ t₂) : preimage R t₁ ⊆ preimage R t₂ :=
   fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ht ha, hab⟩
+
+@[gcongr] lemma preimage_subset_preimage_left (hR : R₁ ⊆ R₂) : preimage R₁ t ⊆ preimage R₂ t :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ha, hR hab⟩
 
 variable (R t) in
 @[simp] lemma image_inv : R.inv.image t = preimage R t := rfl
@@ -257,8 +263,20 @@ lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := b
 
 @[deprecated (since := "2025-07-06")] alias preimage_eq_codom_of_domain_subset := image_union
 
+variable (R) in
+lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by aesop
+
+variable (R) in
+lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image R s := by aesop
+
 variable (R t₁ t₂) in
 lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by aesop
+
+variable (R) in
+lemma preimage_iUnion (t : ι → Set β) : preimage R (⋃ i, t i) = ⋃ i, preimage R (t i) := by aesop
+
+variable (R) in
+lemma preimage_sUnion (T : Set (Set β)) : preimage R (⋃₀ T) = ⋃ t ∈ T, preimage R t := by aesop
 
 variable (s) in
 @[simp] lemma image_id : image .id s = s := by aesop
@@ -363,6 +381,9 @@ instance isRefl_univ : SetRel.IsRefl (.univ : SetRel α α) where
 instance isRefl_inter [R₁.IsRefl] [R₂.IsRefl] : (R₁ ∩ R₂).IsRefl where
   refl _ := ⟨R₁.rfl, R₂.rfl⟩
 
+instance IsRefl.comp [R₁.IsRefl] [R₂.IsRefl] : (R₁.comp R₂).IsRefl where
+  refl _ := ⟨_, R₁.rfl, R₂.rfl⟩
+
 protected lemma IsRefl.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ, R.IsRefl) :
     SetRel.IsRefl (⋂₀ ℛ) where
   refl _a R hR := (hℛ R hR).refl _
@@ -385,6 +406,12 @@ lemma subset_iterate_comp [R.IsRefl] {S : SetRel α β} : ∀ {n}, S ⊆ (R ○ 
   | 0 => .rfl
   | _n + 1 => right_subset_comp.trans subset_iterate_comp
 
+lemma self_subset_image [R.IsRefl] (s : Set α) : s ⊆ R.image s :=
+  fun x hx => ⟨x, hx, R.rfl⟩
+
+lemma self_subset_preimage [R.IsRefl] (s : Set α) : s ⊆ R.preimage s :=
+  fun x hx => ⟨x, hx, R.rfl⟩
+
 lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty)
     (hst : s ×ˢ t ⊆ SetRel.id) : ∃ x, s = {x} ∧ t = {x} := by
   obtain ⟨a, ha⟩ := hs
@@ -398,7 +425,7 @@ lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht
 
 variable (R) in
 /-- A relation `R` is symmetric if `a ~[R] b ↔ b ~[R] a`. -/
-protected abbrev IsSymm : Prop := IsSymm α (· ~[R] ·)
+protected abbrev IsSymm : Prop := Std.Symm (· ~[R] ·)
 
 variable (R) in
 protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab

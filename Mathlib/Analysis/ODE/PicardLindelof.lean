@@ -690,9 +690,6 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
       ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t :=
   exists_eq_forall_mem_Icc_hasDerivWithinAt hf (mem_closedBall_self le_rfl)
 
-@[deprecated (since := "2025-06-24")] alias exists_forall_hasDerivWithinAt_Icc_eq :=
-  exists_eq_forall_mem_Icc_hasDerivWithinAt₀
-
 open Classical in
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
 existence of a local flow and that it is Lipschitz continuous in the initial point. -/
@@ -780,9 +777,6 @@ theorem exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀
   have ⟨_, hr, ε, hε, H⟩ := exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt hf t₀
   have ⟨α, hα1, hα2⟩ := H x₀ (mem_closedBall_self (le_of_lt hr))
   ⟨α, hα1, ε, hε, hα2⟩
-
-@[deprecated (since := "2025-06-24")] alias exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt :=
-  exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀
 
 open Classical in
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits a flow

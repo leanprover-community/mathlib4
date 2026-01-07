@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {I : Type*} [AddCommMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
+variable {I : Type*} [AddCommMonoid I] {C : Type*} [Category* C] [MonoidalCategory C]
 
 namespace GradedObject
 
@@ -49,14 +49,14 @@ noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ t
 variable {Y Z} in
 lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] [HasTensor Z X]
     (f : Y ⟶ Z) :
-    whiskerLeft X f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ whiskerRight f X  := by
+    whiskerLeft X f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ whiskerRight f X := by
   dsimp [braiding]
   cat_disch
 
 variable {X Y} in
 lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [HasTensor Z X]
     (f : X ⟶ Y) :
-    whiskerRight f Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ whiskerLeft Z f  := by
+    whiskerRight f Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ whiskerLeft Z f := by
   dsimp [braiding]
   cat_disch
 
@@ -96,7 +96,7 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     ← MonoidalCategory.id_tensor_comp_assoc, MonoidalCategory.tensorHom_id,
     MonoidalCategory.id_tensorHom, MonoidalCategory.whiskerLeft_comp, assoc,
     ← ιTensorObj₃_eq Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h])
-      (i₁ + i₃) (add_comm _ _ )]
+      (i₁ + i₃) (add_comm _ _)]
 
 lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasTensor Z Y] [HasTensor X Z]

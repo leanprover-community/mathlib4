@@ -14,8 +14,9 @@ public import Mathlib.MeasureTheory.Measure.Dirac
 This file is about probability mass functions or discrete probability measures:
 a function `α → ℝ≥0∞` such that the values have (infinite) sum `1`.
 
-Construction of monadic `pure` and `bind` is found in `ProbabilityMassFunction/Monad.lean`,
-other constructions of `PMF`s are found in `ProbabilityMassFunction/Constructions.lean`.
+Construction of monadic `pure` and `bind` is found in
+`Mathlib/Probability/ProbabilityMassFunction/Monad.lean`, other constructions of `PMF`s are found in
+`Mathlib/Probability/ProbabilityMassFunction/Constructions.lean`.
 
 Given `p : PMF α`, `PMF.toOuterMeasure` constructs an `OuterMeasure` on `α`,
 by assigning each set the sum of the probabilities of each of its elements.
@@ -102,9 +103,9 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
       fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha')) p.tsum_coe⟩
   suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
   classical
-  have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
-    (ENNReal.summable.tsum_ne_zero_iff.2
-      ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
+  have : 0 < ∑' b, ite (b = a) 0 (p b) := by
+    rw [pos_iff_ne_zero, ENNReal.summable.tsum_ne_zero_iff]
+    exact ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩
   calc
     1 = 1 + 0 := (add_zero 1).symm
     _ < p a + ∑' b, ite (b = a) 0 (p b) :=
@@ -119,7 +120,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
   classical
   refine hasSum_le (fun b => ?_) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
-  split_ifs with h <;> simp only [h, zero_le', le_rfl]
+  split_ifs with h <;> simp [h]
 
 theorem apply_ne_top (p : PMF α) (a : α) : p a ≠ ∞ :=
   ne_of_lt (lt_of_le_of_lt (p.coe_le_one a) ENNReal.one_lt_top)
@@ -280,8 +281,6 @@ theorem toMeasure_apply_finset (s : Finset α) : p.toMeasure s = ∑ x ∈ s, p 
 
 theorem toMeasure_apply_eq_tsum (s : Set α) : p.toMeasure s = ∑' x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply s)
-
-@[deprecated (since := "2025-06-23")] alias toMeasure_apply_of_finite := toMeasure_apply_eq_tsum
 
 @[simp]
 theorem toMeasure_apply_fintype (s : Set α) [Fintype α] : p.toMeasure s = ∑ x, s.indicator p x :=

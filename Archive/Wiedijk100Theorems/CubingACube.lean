@@ -349,7 +349,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     intro i' hi' i'_i h2i'; constructor
     · apply le_trans h2i'.1
       simp [i, hw']
-    apply lt_of_lt_of_le (add_lt_add_left (mi_strict_minimal i'_i.symm hi') _)
+    apply lt_of_lt_of_le (add_lt_add_right (mi_strict_minimal i'_i.symm hi') _)
     simp [i, bi.symm, b_le_b hi']
   let s := bcubes cs c \ {i}
   have hs : s.Nonempty := by

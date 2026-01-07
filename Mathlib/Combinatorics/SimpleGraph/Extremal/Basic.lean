@@ -59,6 +59,13 @@ theorem exists_isExtremal_free {W : Type*} {H : SimpleGraph W} (h : H ≠ ⊥) :
     ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
   (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
 
+open Classical in
+theorem IsExtremal.le_iff_eq
+    {p : SimpleGraph V → Prop} (hG : G.IsExtremal p) {H : SimpleGraph V} (hH : p H) :
+    G ≤ H ↔ G = H :=
+  ⟨fun hGH ↦ edgeFinset_inj.1 <|
+    eq_of_subset_of_card_le (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 hH), le_of_eq⟩
+
 end IsExtremal
 
 section ExtremalNumber
