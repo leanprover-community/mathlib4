@@ -717,8 +717,9 @@ theorem sumLexDualAntidistrib_symm_inr :
     (sumLexDualAntidistrib α β).symm (inr (toDual a)) = toDual (inl a) :=
   rfl
 
+/-- `Equiv.sumEmpty` as an `OrderIso` with the lexicographic sum. -/
 def sumLexEmpty (α β : Type*) [Preorder α] [IsEmpty β] [Preorder β] :
-    Lex (α ⊕ β) ≃o α := @RelIso.sumLexEmpty α β _ _ _
+    Lex (α ⊕ β) ≃o α := RelIso.sumLexEmpty ..
 
 def emptySumLex (α β : Type*) [Preorder α] [IsEmpty β] [Preorder β] :
     Lex (β ⊕ α) ≃o α := @RelIso.emptySumLex β α _ _ _
