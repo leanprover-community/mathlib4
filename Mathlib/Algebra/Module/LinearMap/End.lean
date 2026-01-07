@@ -232,11 +232,11 @@ end Module.End
 namespace DistribMulAction
 
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
-variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
+variable [Monoid S] [DistribSMul S M] [SMulCommClass S R M]
 
 /-- Each element of the monoid defines a linear map.
 
-This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+This is a stronger version of `DistribSMul.toAddMonoidHom`. -/
 @[simps]
 def toLinearMap (s : S) : M →ₗ[R] M where
   toFun := HSMul.hSMul s

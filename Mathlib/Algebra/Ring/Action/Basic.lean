@@ -69,7 +69,7 @@ instance (priority := 100) MulSemiringAction.toMulDistribMulAction
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]
 def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
-  { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
+  { MulDistribMulAction.toMonoidHom R x, DistribSMul.toAddMonoidHom R x with }
 
 theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
