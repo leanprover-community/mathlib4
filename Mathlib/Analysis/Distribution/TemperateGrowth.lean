@@ -79,7 +79,7 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
   rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
-  set F := fun x (N : Fin (n+1)) ↦ iteratedFDeriv ℝ N f x
+  set F := fun x (N : Fin (n + 1)) ↦ iteratedFDeriv ℝ N f x
   have : F =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
     simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ_iff]
     exact hk
@@ -131,7 +131,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
   set C₃ := ∑ k ∈ Finset.range (k₂ + 1), C₂ * (k₂.choose k : ℝ) * (C₁ ^ k)
   use k₁ * k₂ + k₁ * n, n ! * C₃ * (1 + C₁) ^ n
   intro x
-  have hg' : ∀ i, i ≤ n → ‖iteratedFDerivWithin ℝ i g t (f x)‖ ≤ C₃ * (1 + ‖x‖) ^ (k₁ * k₂):= by
+  have hg' : ∀ i, i ≤ n → ‖iteratedFDerivWithin ℝ i g t (f x)‖ ≤ C₃ * (1 + ‖x‖) ^ (k₁ * k₂) := by
     intro i hi
     calc _ ≤ C₂ * (1 + ‖f x‖) ^ k₂ := h₂ i hi (f x) (ht ⟨x, rfl⟩)
       _ = ∑ i ∈ Finset.range (k₂ + 1), C₂ * (‖f x‖ ^ i * (k₂.choose i)) := by
@@ -223,12 +223,12 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
   rcases hg.isBigO_uniform n with ⟨k2, h2⟩
   use k1 + k2
   have estimate (x : D) : ‖iteratedFDeriv ℝ n (fun x ↦ B (f x) (g x)) x‖ ≤
-      ‖B‖ * ∑ i ∈ Finset.range (n+1), (n.choose i) *
-        ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n-i) g x‖ :=
+      ‖B‖ * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
+        ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n - i) g x‖ :=
     (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x (mod_cast le_top)
   refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.sum fun i hi ↦ ?_) _)
   simp_rw [mul_assoc, pow_add]
-  refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
+  refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n - i) ?_).norm_left) _ <;>
   grind
 
 lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
@@ -412,7 +412,7 @@ lemma _root_.pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f :
     simp [div_eq_inv_mul, ← Real.rpow_neg_one, ← Real.rpow_mul]
     ring
   rw [this]
-  rcases le_total x 1 with h'x|h'x
+  rcases le_total x 1 with h'x | h'x
   · gcongr
     · apply (pow_le_one₀ hx h'x).trans
       apply Real.one_le_rpow_of_pos_of_le_one_of_nonpos

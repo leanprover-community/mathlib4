@@ -51,7 +51,6 @@ theorem lex_iff : Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec 
     · exact Or.inl hij
     · exact Or.inr ⟨rfl, hab⟩
   · obtain ⟨i, a⟩ := a
-    obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
@@ -108,7 +107,7 @@ instance [Std.Symm r] [∀ i, Std.Symm (s i)] : Std.Symm (Lex r s) :=
 
 attribute [local instance] Std.Asymm.isIrrefl
 
-instance [Std.Asymm r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
+instance [Std.Asymm r] [∀ i, Std.Antisymm (s i)] : Std.Antisymm (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, _, hji⟩ | ⟨_, _, hba⟩)
     · exact (asymm hij hji).elim
@@ -153,7 +152,6 @@ theorem lex_iff {a b : Σ' i, α i} :
     · exact Or.inl hij
     · exact Or.inr ⟨rfl, hab⟩
   · obtain ⟨i, a⟩ := a
-    obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
