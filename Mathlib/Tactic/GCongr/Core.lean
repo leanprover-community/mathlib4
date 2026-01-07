@@ -346,7 +346,7 @@ initialize registerBuiltinAttribute {
 
 initialize registerTraceClass `Meta.gcongr
 
-/-- `gcongr_discharger` is used by `gconger` to discharge side goals.
+/-- `gcongr_discharger` is used by `gcongr` to discharge side goals.
 
 This is an extensible tactic using [`macro_rules`](lean-manual://section/tactic-macro-extension).
 By default it calls `positivity` (after importing the `positivity` tactic).
