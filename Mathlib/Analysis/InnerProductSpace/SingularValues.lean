@@ -2,6 +2,19 @@ module
 
 public import Mathlib
 
+/-!
+# Singular values for finite-dimensional linear maps
+
+This file defines the singular values for finite-dimensional linear maps (but not the singular
+value decomposition). It is set up in a way that allows for generalization to continuous linear maps
+between possibly-infinite-dimensional normed vector spaces; please see the docstring of
+`LinearMap.singularValues`.
+
+## References
+
+* [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
+-/
+
 open NNReal
 
 namespace LinearMap
@@ -34,7 +47,7 @@ In mathematical literature, the number of singular values varies, with popular c
 - `rank(T)` singular values, all of which are positive.
 - `min(n,m)` singular values, some of which might be zero.
 - `n` singular values, some of which might be zero.
-This is the approach taken in LADR 4th edition (TODO: Check if this is accurate)
+This is the approach taken in [axler2024].
 - Countably infinitely many singular values, with, all but finitely many of them being zero.
 
 We take the last approach for the following reasons:
