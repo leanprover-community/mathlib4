@@ -8,6 +8,14 @@ module
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.BigOperators
 
+/-!
+# The class group of a Unique Factorization Domain is trivial
+This file proves that the ideal class group of a Unique Factorization Domain is trivial.
+
+## Main result
+- `UniqueFactorizationMonoid.instSubsingletonClassGroup` : the class group of a UFD is trivial.
+
+-/
 
 @[expose] public section
 
@@ -640,9 +648,6 @@ theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
   refine ⟨y, ?_⟩
   simpa [hJtop] using hIJ
 
-/-!
-### UFD implies class group is trivial
--/
 
 /-- In a UFD, every invertible fractional ideal is principal. -/
 theorem fractionalIdeal_isPrincipal_of_ufd (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
@@ -694,7 +699,7 @@ theorem classGroup_eq_one_of_ufd (x : ClassGroup R) : x = 1 := by
   exact fractionalIdeal_isPrincipal_of_ufd (R := R) I
 
 /-- The ideal class group of a UFD is trivial. -/
-instance instSubsingletonClassGroupOfUniqueFactorizationMonoid : Subsingleton (ClassGroup R) := by
+instance UniqueFactorizationMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) := by
   refine ⟨fun x y => ?_⟩
   calc
     x = 1 := classGroup_eq_one_of_ufd (R := R) x
