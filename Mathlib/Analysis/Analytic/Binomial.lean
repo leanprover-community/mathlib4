@@ -307,12 +307,15 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
   simpa using one_div_sub_sq_hasFPowerSeriesOnBall_zero (r := 1)
 
 /-- `∑ (ai + b) zⁱ = (b - a) / (1 - z) + a / (1 - z)²` -/
-theorem hasFPowerSeriesOnBall_linear_zero (a b : ℝ) :
+theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
       (.ofScalars ℝ (a * · + b)) 0 1 := by
   convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
     (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
+
+@[deprecated (since := "2025-12-28")]
+alias hasFPowerSeriesOnBall_linear_zero := hasFPowerSeriesOnBall_ofScalars_mul_add_zero
 
 end Real
