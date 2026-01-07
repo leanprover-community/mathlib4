@@ -13,7 +13,7 @@ set -euo pipefail
 
 # --- Configuration ---
 # TRANSIENT_PREFIX can be set via environment variable, defaults to "transient"
-TRANSIENT_PREFIX="${TRANSIENT_PREFIX:-transient}"
+TRANSIENT_PREFIX="${TRANSIENT_PREFIX:-transient: }"
 
 # --- Colors (disabled if not a terminal) ---
 if [[ -t 1 ]]; then
