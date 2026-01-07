@@ -164,6 +164,9 @@ end NonUnitalSubsemiring
 theorem IsSumSq.natCast {R : Type*} [NonAssocSemiring R] (n : ℕ) : IsSumSq (n : R) := by
   induction n <;> aesop
 
+@[simp]
+theorem Nat.isSumSq (n : ℕ) : IsSumSq n := IsSumSq.natCast n
+
 /--
 In a commutative (possibly non-unital) semiring,
 if `s₁` and `s₂` are sums of squares, then `s₁ * s₂` is a sum of squares.
@@ -218,6 +221,3 @@ theorem IsSumSq.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrdered
   induction hs using IsSumSq.rec' with
   | zero          => simp
   | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h
-
-@[simp]
-theorem Nat.isSumSq (n : ℕ) : IsSumSq n := by induction n <;> aesop
