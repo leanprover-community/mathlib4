@@ -135,7 +135,8 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
     · exact hf
     · exact h'f
   have B : Tendsto
-      (fun (c : ℝ) ↦ ∫ w : V, ((c ^ (1 / 2 : ℝ)) ^ finrank ℝ V * φ ((c ^ (1 / 2 : ℝ)) • (v - w))) • f w)
+      (fun (c : ℝ) ↦
+        ∫ w : V, ((c ^ (1 / 2 : ℝ)) ^ finrank ℝ V * φ ((c ^ (1 / 2 : ℝ)) • (v - w))) • f w)
       atTop (𝓝 (f v)) :=
     A.comp (tendsto_rpow_atTop (by simp))
   apply B.congr'
