@@ -66,7 +66,7 @@ These also prevent non-computable instances like `Int.instNormedCommRing` being 
 these instances non-computably.
 -/
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false
 
 instance instAddCommMonoid    : AddCommMonoid ℤ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℤ        := by infer_instance

@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Notation
 import Qq
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false
 
 open Qq
 
