@@ -70,7 +70,7 @@ theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n > 
     · rcases even with ⟨m, hm⟩
       rcases hx with ⟨s, hs⟩
       rcases isSquare_or_isSquare_neg s with (h | h) <;>
-        rcases ih m (by omega) h (by omega) with ⟨r, hr⟩ <;>
+        rcases ih m (by lia) h (by lia) with ⟨r, hr⟩ <;>
         exact ⟨r, by simp [hm, pow_add, ← hr, hs]⟩
     · exact exists_eq_pow_of_odd x odd
 
