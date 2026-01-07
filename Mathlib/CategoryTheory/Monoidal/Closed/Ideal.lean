@@ -124,7 +124,7 @@ finite chosen products. -/
 abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
     CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts
-    ({ cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
+    ({  cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
         isLimit := by
           apply isLimitOfReflects i
           apply isLimitChangeEmptyCone _ isTerminalTensorUnit
