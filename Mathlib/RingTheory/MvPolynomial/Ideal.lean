@@ -115,12 +115,22 @@ theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (
   rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
   simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, h, imp_false,
     Decidable.not_not, Set.mem_setOf_eq, forall_eq']
-  rw [← Finsupp.card_toMultiset] at h'
-  obtain ⟨y, t_le, hy⟩ := Multiset.exists_le_card_eq h'
-  use y.toFinsupp; constructor
-  · rw [Multiset.toFinsupp_sum_eq, hy]
-  simp only [Multiset.le_iff_count, count_toMultiset] at t_le
-  rwa [Multiset.toFinsupp, AddEquiv.coe_mk, Equiv.coe_fn_mk, le_def, coe_mk]
+  revert n
+  induction x using Finsupp.induction with
+  | zero => simp_all
+  | single_add a b f a_nIn b_ne ih =>
+    intro n hn
+    rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq] at hn
+    by_cases h' : n < b
+    · use single a n; constructor
+      · simp
+      simp only [single_le_iff, Finsupp.coe_add, Pi.add_apply, single_eq_same]
+      lia
+    obtain ⟨y, y_sum, hy⟩ := ih (n - b) (by lia)
+    use single a b + y; constructor
+    · rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq, y_sum]
+      lia
+    simpa
 
 theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
   by_cases h : r = 0
