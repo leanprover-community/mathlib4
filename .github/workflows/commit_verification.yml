@@ -78,7 +78,7 @@ jobs:
           REPO="${{ github.repository }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
 
-          COMMENT=$(cat verification_result.json | ./scripts/generate_pr_summary.sh "$REPO" "$PR_NUMBER")
+          COMMENT=$(cat verification_result.json | ./scripts/verify_commits_summary.sh "$REPO" "$PR_NUMBER")
 
           # Save to file (GitHub Actions has issues with multiline outputs)
           echo "$COMMENT" > comment_body.md
