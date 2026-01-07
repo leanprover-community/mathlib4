@@ -35,7 +35,7 @@ theorem IsIrrefl.swap (r) [IsIrrefl α r] : IsIrrefl α (swap r) :=
 theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
   ⟨fun _ _ _ h₁ h₂ => trans_of r h₂ h₁⟩
 
-theorem IsAntisymm.swap (r) [IsAntisymm α r] : IsAntisymm α (swap r) :=
+theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
   ⟨fun _ _ h₁ h₂ => _root_.antisymm h₂ h₁⟩
 
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
@@ -54,7 +54,7 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
   { @IsIrrefl.swap α r _, @IsTrans.swap α r _ with }
 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
-  { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
+  { @IsPreorder.swap α r _, @Std.Antisymm.swap α r _ with }
 
 theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
@@ -425,9 +425,10 @@ instance instIsEquiv [IsEquiv α r] {f : β → α} : IsEquiv β (f ⁻¹'o r) w
 instance instIsTotal [IsTotal α r] {f : β → α} : IsTotal β (f ⁻¹'o r) :=
   ⟨fun _ _ => total_of r _ _⟩
 
-theorem isAntisymm [IsAntisymm α r] {f : β → α} (hf : f.Injective) :
-    IsAntisymm β (f ⁻¹'o r) :=
+theorem antisymm [Std.Antisymm r] {f : β → α} (hf : f.Injective) : Std.Antisymm (f ⁻¹'o r) :=
   ⟨fun _ _ h₁ h₂ ↦ hf <| antisymm_of r h₁ h₂⟩
+
+@[deprecated (since := "2026-01-06")] alias isAntisymm := antisymm
 
 end Order.Preimage
 
@@ -479,9 +480,9 @@ lemma ne_of_not_superset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt s
 @[trans]
 lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
 
-lemma subset_antisymm [IsAntisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
+lemma subset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
 
-lemma superset_antisymm [IsAntisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → b = a := antisymm'
+lemma superset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → b = a := antisymm'
 
 alias Eq.trans_subset := subset_of_eq_of_subset
 
@@ -497,10 +498,11 @@ alias HasSubset.Subset.antisymm := subset_antisymm
 
 alias HasSubset.Subset.antisymm' := superset_antisymm
 
-theorem subset_antisymm_iff [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ ·)] : a = b ↔ a ⊆ b ∧ b ⊆ a :=
+theorem subset_antisymm_iff [IsRefl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] : a = b ↔ a ⊆ b ∧ b ⊆ a :=
   ⟨fun h => ⟨h.subset', h.superset⟩, fun h => h.1.antisymm h.2⟩
 
-theorem superset_antisymm_iff [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ ·)] : a = b ↔ b ⊆ a ∧ a ⊆ b :=
+theorem superset_antisymm_iff [IsRefl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
+    a = b ↔ b ⊆ a ∧ a ⊆ b :=
   ⟨fun h => ⟨h.superset, h.subset'⟩, fun h => h.1.antisymm' h.2⟩
 
 end Subset
@@ -573,22 +575,22 @@ theorem ssubset_of_subset_of_ssubset [IsTrans α (· ⊆ ·)] (h₁ : a ⊆ b) (
 theorem ssubset_of_ssubset_of_subset [IsTrans α (· ⊆ ·)] (h₁ : a ⊂ b) (h₂ : b ⊆ c) : a ⊂ c :=
   (h₁.subset.trans h₂).ssubset_of_not_subset fun h => h₁.not_subset <| h₂.trans h
 
-theorem ssubset_of_subset_of_ne [IsAntisymm α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : a ≠ b) : a ⊂ b :=
+theorem ssubset_of_subset_of_ne [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : a ≠ b) : a ⊂ b :=
   h₁.ssubset_of_not_subset <| mt h₁.antisymm h₂
 
-theorem ssubset_of_ne_of_subset [IsAntisymm α (· ⊆ ·)] (h₁ : a ≠ b) (h₂ : a ⊆ b) : a ⊂ b :=
+theorem ssubset_of_ne_of_subset [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ≠ b) (h₂ : a ⊆ b) : a ⊂ b :=
   ssubset_of_subset_of_ne h₂ h₁
 
-theorem eq_or_ssubset_of_subset [IsAntisymm α (· ⊆ ·)] (h : a ⊆ b) : a = b ∨ a ⊂ b :=
+theorem eq_or_ssubset_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a = b ∨ a ⊂ b :=
   (em (b ⊆ a)).imp h.antisymm h.ssubset_of_not_subset
 
-theorem ssubset_or_eq_of_subset [IsAntisymm α (· ⊆ ·)] (h : a ⊆ b) : a ⊂ b ∨ a = b :=
+theorem ssubset_or_eq_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a ⊂ b ∨ a = b :=
   (eq_or_ssubset_of_subset h).symm
 
-lemma eq_of_subset_of_not_ssubset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
+lemma eq_of_subset_of_not_ssubset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
   (eq_or_ssubset_of_subset hab).resolve_right hba
 
-lemma eq_of_superset_of_not_ssuperset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
+lemma eq_of_superset_of_not_ssuperset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
     b = a := ((eq_or_ssubset_of_subset hab).resolve_right hba).symm
 
 alias HasSubset.Subset.trans_ssubset := ssubset_of_subset_of_ssubset
@@ -606,10 +608,10 @@ alias HasSubset.Subset.ssubset_or_eq := ssubset_or_eq_of_subset
 alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
 alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 
-theorem ssubset_iff_subset_ne [IsAntisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
+theorem ssubset_iff_subset_ne [@Std.Antisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
   ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩
 
-theorem subset_iff_ssubset_or_eq [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ ·)] :
+theorem subset_iff_ssubset_or_eq [IsRefl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a ⊆ b ↔ a ⊂ b ∨ a = b :=
   ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
 
@@ -659,9 +661,9 @@ instance [Preorder α] : IsTrans α (· < ·) :=
 instance instAsymmLt [Preorder α] : Std.Asymm (α := α) (· < ·) :=
   ⟨@lt_asymm _ _⟩
 
-@[to_dual instIsAntisymmGt]
-instance [Preorder α] : IsAntisymm α (· < ·) :=
-  Std.Asymm.isAntisymm _
+@[to_dual instAntisymmGt]
+instance instAntisymmLt [Preorder α] : @Std.Antisymm α (· < ·) :=
+  Std.Asymm.antisymm _
 
 @[to_dual instIsStrictOrderGt]
 instance [Preorder α] : IsStrictOrder α (· < ·) where
@@ -670,8 +672,8 @@ instance [Preorder α] : IsStrictOrder α (· < ·) where
 instance [Preorder α] : IsNonstrictStrictOrder α (· ≤ ·) (· < ·) :=
   ⟨@lt_iff_le_not_ge _ _⟩
 
-@[to_dual instIsAntisymmGe]
-instance [PartialOrder α] : IsAntisymm α (· ≤ ·) :=
+@[to_dual instAntisymmGe]
+instance instAntisymmLe [PartialOrder α] : @Std.Antisymm α (· ≤ ·) :=
   ⟨@le_antisymm _ _⟩
 
 @[to_dual instIsPartialOrderGe]

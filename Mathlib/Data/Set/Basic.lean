@@ -230,8 +230,8 @@ instance : IsTrans (Set α) (· ⊆ ·) :=
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
   show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
 
-instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  show IsAntisymm (Set α) (· ≤ ·) by infer_instance
+instance : @Std.Antisymm (Set α) (· ⊆ ·) :=
+  show Std.Antisymm (· ≤ ·) by infer_instance
 
 instance : IsIrrefl (Set α) (· ⊂ ·) :=
   show IsIrrefl (Set α) (· < ·) by infer_instance
@@ -248,7 +248,7 @@ instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
   show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
-instance : Std.Asymm (α := Set α) (· ⊂ ·) :=
+instance : @Std.Asymm (Set α) (· ⊂ ·) :=
   show Std.Asymm (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
