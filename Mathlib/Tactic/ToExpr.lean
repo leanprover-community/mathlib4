@@ -31,6 +31,9 @@ deriving instance ToExpr for Substring.Raw
 deriving instance ToExpr for SourceInfo
 deriving instance ToExpr for Syntax
 
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
+
 open DataValue in
 /-- Core of a hand-written `ToExpr` handler for `MData`.
 Uses the `KVMap.set*` functions rather than going into the internals

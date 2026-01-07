@@ -29,7 +29,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 /-- The natural numbers form a local semiring. -/
 instance : IsLocalRing ℕ where
   isUnit_or_isUnit_of_add_one {a b} hab := by
-    have h : a = 1 ∨ b = 1 := by omega
+    have h : a = 1 ∨ b = 1 := by lia
     apply h.imp <;> simp +contextual
 
 open IsLocalRing Ideal

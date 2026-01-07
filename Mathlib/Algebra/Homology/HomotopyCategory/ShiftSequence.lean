@@ -27,7 +27,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category ComplexShape Limits
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 namespace CochainComplex
 
@@ -70,7 +70,7 @@ lemma shiftShortComplexFunctorIso_add'_hom_app
       (shortComplexFunctor C (ComplexShape.up ℤ) a).map
         ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) m n mn hmn).hom.app K) ≫
         (shiftShortComplexFunctorIso C n a a' ha').hom.app (K⟦m⟧) ≫
-        (shiftShortComplexFunctorIso C m a' a'' ha'' ).hom.app K := by
+        (shiftShortComplexFunctorIso C m a' a'' ha'').hom.app K := by
   ext <;> dsimp <;> simp only [← hmn, Int.negOnePow_add, shiftFunctorAdd'_hom_app_f',
     XIsoOfEq_shift, Linear.comp_units_smul, Linear.units_smul_comp,
     XIsoOfEq_hom_comp_XIsoOfEq_hom, smul_smul]
@@ -93,23 +93,12 @@ noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
 lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
-  dsimp [shiftIso]
-  rw [id_comp, id_comp]
-  -- This `erw` is required to bridge the gap between
-  -- `((shortComplexFunctor C (up ℤ) a').obj K).homology`
-  -- (the target of the first morphism)
-  -- and
-  -- `homology K a'`
-  -- (the source of the identity morphism).
-  erw [comp_id]
+  simp [shiftIso, HomologicalComplex.homology]
 
 lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
-  dsimp [shiftIso]
-  rw [id_comp, comp_id]
-  -- This `erw` is required as above in `shiftIso_hom_app`.
-  erw [comp_id]
+  simp [shiftIso, HomologicalComplex.homology]
 
 end ShiftSequence
 

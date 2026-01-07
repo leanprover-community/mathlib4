@@ -24,9 +24,9 @@ noncomputable section
 
 universe u v v' w
 
-variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-variable [Module R M] [Module R M'] [Module R M₁]
+variable {R : Type u} {M : Type v} {ι : Type w}
+variable [Semiring R] [AddCommMonoid M]
+variable [Module R M]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
@@ -56,7 +56,7 @@ theorem rank_le {n : ℕ}
 section RankZero
 
 /-- See `rank_zero_iff` for a stronger version with `NoZeroSMulDivisor R M`. -/
-lemma rank_eq_zero_iff :
+lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
   nontriviality R
   constructor
@@ -77,7 +77,7 @@ lemma rank_eq_zero_iff :
     apply ha
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
-variable [Nontrivial R]
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Nontrivial R]
 
 section
 variable [NoZeroSMulDivisors R M]
@@ -101,6 +101,12 @@ theorem rank_pos_iff_nontrivial : 0 < Module.rank R M ↔ Nontrivial M :=
 theorem rank_pos [Nontrivial M] : 0 < Module.rank R M :=
   rank_pos_iff_nontrivial.mpr ‹_›
 
+omit [Nontrivial R] in
+theorem Module.finite_of_rank_eq_zero (h : Module.rank R M = 0) : Module.Finite R M := by
+  nontriviality R
+  rw [rank_zero_iff] at h
+  infer_instance
+
 end
 
 theorem exists_mem_ne_zero_of_rank_pos {s : Submodule R M} (h : 0 < Module.rank R s) :
@@ -118,13 +124,6 @@ theorem Module.finite_of_rank_eq_nat [Module.Free R M] {n : ℕ} (h : Module.ran
   have := mk_lt_aleph0_iff.mp <|
     b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
   exact Module.Finite.of_basis b
-
-theorem Module.finite_of_rank_eq_zero [NoZeroSMulDivisors R M]
-    (h : Module.rank R M = 0) :
-    Module.Finite R M := by
-  nontriviality R
-  rw [rank_zero_iff] at h
-  infer_instance
 
 theorem Module.finite_of_rank_eq_one [Module.Free R M] (h : Module.rank R M = 1) :
     Module.Finite R M :=
@@ -240,7 +239,7 @@ theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite �
     (v : ι → M) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
 
 section
-variable [NoZeroSMulDivisors R M]
+variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
 
 theorem iSupIndep.subtype_ne_bot_le_rank [Nontrivial R]
     {V : ι → Submodule R M} (hV : iSupIndep V) :
@@ -267,7 +266,7 @@ theorem iSupIndep.subtype_ne_bot_le_finrank_aux
     _ = Cardinal.lift.{w} (finrank R M : Cardinal.{v}) := by rw [finrank_eq_rank]
     _ = Cardinal.lift.{v} (finrank R M : Cardinal.{w}) := by simp
 
-/-- If `p` is an independent family of submodules of a `R`-finite module `M`, then the
+/-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
 noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
     {p : ι → Submodule R M} (hp : iSupIndep p) :
@@ -278,7 +277,7 @@ noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
   refine lt_of_le_of_lt hp.subtype_ne_bot_le_finrank_aux ?_
   simp [Cardinal.nat_lt_aleph0]
 
-/-- If `p` is an independent family of submodules of a `R`-finite module `M`, then the
+/-- If `p` is an independent family of submodules of an `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is bounded above by the dimension of `M`.
 
 Note that the `Fintype` hypothesis required here can be provided by
@@ -289,6 +288,7 @@ theorem iSupIndep.subtype_ne_bot_le_finrank
 
 end
 
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 variable [Module.Finite R M] [StrongRankCondition R]
 
 section
@@ -357,20 +357,15 @@ theorem Module.finrank_zero_of_subsingleton [Subsingleton M] :
 lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Infinite ι] {v : ι → M}
     (hv : LinearIndependent R v) : finrank R M = 0 := toNat_eq_zero.mpr <| .inr hv.aleph0_le_rank
 
-section
-variable [NoZeroSMulDivisors R M]
-
 /-- A finite-dimensional space is nontrivial if it has positive `finrank`. -/
-theorem Module.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M :=
-  rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
+theorem Module.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M := by
+  contrapose! h; exact finrank_zero_of_subsingleton.le
 
 /-- A finite-dimensional space is nontrivial if it has `finrank` equal to the successor of a
 natural number. -/
 theorem Module.nontrivial_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R M = n.succ) : Nontrivial M :=
   nontrivial_of_finrank_pos (R := R) (by rw [hn]; exact n.succ_pos)
-
-end
 
 variable (R M)
 
@@ -382,6 +377,7 @@ end
 
 section StrongRankCondition
 
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 variable [StrongRankCondition R] [Module.Finite R M]
 
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
@@ -430,6 +426,10 @@ theorem Module.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R M = 0) :
   delta finrank
   rw [h, zero_toNat]
 
+section
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+
 theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R M] (h : Module.rank R M = 0) :
     (⊥ : Submodule R M) = ⊤ := by
   nontriviality R
@@ -458,6 +458,8 @@ lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R
     {S : Submodule R M} [Module.Finite R S] :
     1 ≤ finrank R S ↔ S ≠ ⊥ := by
   contrapose!; rw [Nat.lt_one_iff, finrank_eq_zero]
+
+end
 
 @[simp]
 theorem Set.finrank_empty [Nontrivial R] :
@@ -499,6 +501,7 @@ end FinrankZero
 
 section RankOne
 
+variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 variable [NoZeroSMulDivisors R M] [StrongRankCondition R]
 
 /-- If there is a nonzero vector and every other vector is a multiple of it,
@@ -514,20 +517,22 @@ then the module has dimension one. -/
 theorem finrank_eq_one (v : M) (n : v ≠ 0) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank R M = 1 :=
   finrank_eq_of_rank_eq (rank_eq_one v n h)
 
-/-- If every vector is a multiple of some `v : M`, then `M` has dimension at most one.
--/
-theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank R M ≤ 1 := by
-  haveI := nontrivial_of_invariantBasisNumber R
-  rcases eq_or_ne v 0 with (rfl | hn)
-  · haveI :=
-      _root_.subsingleton_of_forall_eq (0 : M) fun w => by
-        obtain ⟨c, rfl⟩ := h w
-        simp
-    rw [finrank_zero_of_subsingleton]
-    exact zero_le_one
-  · exact (finrank_eq_one v hn h).le
-
 end RankOne
+
+section
+
+variable [StrongRankCondition R]
+
+theorem rank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : Module.rank R M ≤ 1 := by
+  simpa using LinearMap.lift_rank_le_of_surjective _
+    (id h : Surjective (LinearMap.toSpanSingleton R M v))
+
+/-- If every vector is a multiple of some `v : M`, then `M` has dimension at most one. -/
+theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank R M ≤ 1 := by
+  rw [← map_one toNat, finrank]
+  exact toNat_le_toNat (rank_le_one v h) one_lt_aleph0
+
+end
 
 namespace Module
 variable {ι : Type*}
