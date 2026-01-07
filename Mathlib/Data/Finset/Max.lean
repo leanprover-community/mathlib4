@@ -565,7 +565,6 @@ theorem Multiset.exists_min_image {α R : Type*} [LinearOrder R] (f : α → R) 
     (hs : s ≠ 0) : ∃ y ∈ s, ∀ z ∈ s, f y ≤ f z :=
   @exists_max_image α Rᵒᵈ _ f s hs
 
-
 section LinearOrder
 variable [LinearOrder α] [DenselyOrdered α]
 
