@@ -93,50 +93,6 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
   refine prod_congr rfl (fun _ _ => ?_)
   rw [mapDomain_apply X_injective]
 
-theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
-    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
-  classical
-  refine ⟨fun h' => ?_, fun h' => ?_⟩
-  · rw [pow_idealOfVars_eq_span, Ideal.span, Submodule.mem_span_image_iff_exists_fun] at h'
-    rcases h' with ⟨t, t_sbst, c, hc⟩
-    by_contra! hx
-    apply congrArg (coeff x) at hc
-    simp only [univ_eq_attach, smul_eq_mul, coeff_sum, coeff_mul_monomial', mul_one, sum_ite,
-      sum_const_zero, add_zero, coeff_monomial, ↓reduceIte] at hc
-    have : filter (fun y => y.val ≤ x) t.attach = ∅ := by
-      simp only [filter_eq_empty_iff, mem_attach, forall_const, Subtype.forall]
-      intro y y_in hy
-      revert hx; rw [imp_false, not_lt]
-      simp only [Set.subset_def, SetLike.mem_coe, Set.mem_setOf_eq] at t_sbst
-      rw [← t_sbst y y_in]
-      exact sum_le_sum_index hy (by simp [Monotone]) (by simp)
-    rw [this, sum_empty] at hc
-    exact absurd hc.symm h
-  rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
-  simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, h, imp_false,
-    Decidable.not_not, Set.mem_setOf_eq, forall_eq']
-  revert n
-  induction x using Finsupp.induction with
-  | zero => simp_all
-  | single_add a b f a_nIn b_ne ih =>
-    intro n hn
-    rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq] at hn
-    by_cases h' : n < b
-    · use single a n; constructor
-      · simp
-      simp only [single_le_iff, Finsupp.coe_add, Pi.add_apply, single_eq_same]
-      lia
-    obtain ⟨y, y_sum, hy⟩ := ih (n - b) (by lia)
-    use single a b + y; constructor
-    · rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq, y_sum]
-      lia
-    simpa
-
-theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
-  by_cases h : r = 0
-  · simp [h]
-  simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
-
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ x.sum (fun _ => id) := by
   classical
@@ -161,11 +117,40 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
   refine Ideal.sum_mem _ (fun x x_in ↦ ?_)
   by_cases h' : coeff x p = 0
   · simp [h']
-  exact (monomial_mem_pow_idealOfVars_iff _ _ h').mpr (h x x_in)
+  rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
+  simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, Classical.not_imp,
+    Set.mem_setOf_eq, and_imp, forall_eq']
+  intro h''; specialize h x x_in
+  clear * - h; revert n
+  induction x using Finsupp.induction with
+  | zero => simp_all
+  | single_add a b f a_nIn b_ne ih =>
+    intro n hn
+    rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq] at hn
+    by_cases h' : n < b
+    · use single a n; constructor
+      · simp
+      simp only [single_le_iff, Finsupp.coe_add, Pi.add_apply, single_eq_same]
+      lia
+    obtain ⟨y, y_sum, hy⟩ := ih (n - b) (by lia)
+    use single a b + y; constructor
+    · rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq, y_sum]
+      lia
+    simpa
 
 theorem mem_pow_idealOfVars_iff' (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
   grind only [mem_pow_idealOfVars_iff, mem_support_iff]
+
+theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
+    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
+  classical
+  grind only [mem_pow_idealOfVars_iff, mem_support_iff, coeff_monomial]
+
+theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
+  by_cases h : r = 0
+  · simp [h]
+  simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
 
 end idealOfVars
 
