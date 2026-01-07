@@ -115,8 +115,6 @@ theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     grind only
   intro h; rw [as_sum p]
   refine Ideal.sum_mem _ (fun x x_in ↦ ?_)
-  by_cases h' : coeff x p = 0
-  · simp [h']
   rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
   simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, Classical.not_imp,
     Set.mem_setOf_eq, and_imp, forall_eq']
