@@ -730,7 +730,7 @@ lemma sumLexEmpty_apply_inl [IsEmpty β] (x : α) :
   sumLexEmpty (β := β) (toLex <| .inl x) = x := rfl
 
 @[simp]
-lemma sumLexEmpty_apply_inr [IsEmpty β] (x : α) :
+lemma emptySumLex_apply_inr [IsEmpty β] (x : α) :
   emptySumLex (β := β) (toLex <| .inr x) = x := rfl
 
 end OrderIso
