@@ -17,7 +17,12 @@ public import Mathlib.LinearAlgebra.Transvection
 Show that (among other groups), the general linear group
 and the special linear groups of `V` act on `ℙ K V`.
 
-Prove that this action is 2-transitive.
+Prove that these actions are 2-transitive.
+
+## TODO
+
+Generalize to the special linear group over a division ring.
+
 -/
 
 @[expose] public section
@@ -216,6 +221,10 @@ instance specialLinearGroup_is_two_pretransitive :
     rw [← Units.val_inj, LinearEquiv.coe_det]
     apply LinearMap.det_eq_one_of_not_module_finite hV⟩
   simp [← gD, ← gE, specialLinearGroup_smul_def, SpecialLinearGroup.toLinearEquiv_eq_coe]
+
+/-- The special linear group `SpecialLinearGroup K V` acts primitively on `ℙ K V`. -/
+instance : MulAction.IsPreprimitive (SpecialLinearGroup K V) (ℙ K V) :=
+  MulAction.isPreprimitive_of_is_two_pretransitive inferInstance
 
 end Field
 
