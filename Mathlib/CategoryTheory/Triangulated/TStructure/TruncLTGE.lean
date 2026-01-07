@@ -25,7 +25,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Limits Pretriangulated
+open Limits Pretriangulated ZeroObject
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -242,6 +242,9 @@ instance (X : C) (n : ℤ) : t.IsLE ((t.truncLT n).obj X) (n - 1) := by
   dsimp [truncLT]
   infer_instance
 
+instance (X : C) (n : ℤ) : t.IsLE ((t.truncLT (n + 1)).obj X) n :=
+  t.isLE_of_LE _ (n + 1 - 1) _ (by lia)
+
 instance (X : C) (n : ℤ) : t.IsGE ((t.truncGE n).obj X) n := by
   dsimp [truncGE]
   infer_instance
@@ -274,17 +277,17 @@ instance (X : C) (n : ℤ) : t.IsGE ((t.triangleLTGE n).obj X).obj₃ n := by
 @[reassoc (attr := simp)]
 lemma truncLTι_comp_truncGEπ_app (n : ℤ) (X : C) :
     (t.truncLTι n).app X ≫ (t.truncGEπ n).app X = 0 :=
-  comp_distTriang_mor_zero₁₂ _ ((t.triangleLTGE_distinguished n X))
+  comp_distTriang_mor_zero₁₂ _ (t.triangleLTGE_distinguished n X)
 
 @[reassoc (attr := simp)]
 lemma truncGEπ_comp_truncGEδLT_app (n : ℤ) (X : C) :
     (t.truncGEπ n).app X ≫ (t.truncGEδLT n).app X = 0 :=
-  comp_distTriang_mor_zero₂₃ _ ((t.triangleLTGE_distinguished n X))
+  comp_distTriang_mor_zero₂₃ _ (t.triangleLTGE_distinguished n X)
 
 @[reassoc (attr := simp)]
 lemma truncGEδLT_comp_truncLTι_app (n : ℤ) (X : C) :
     (t.truncGEδLT n).app X ≫ ((t.truncLTι n).app X)⟦(1 : ℤ)⟧' = 0 :=
-  comp_distTriang_mor_zero₃₁ _ ((t.triangleLTGE_distinguished n X))
+  comp_distTriang_mor_zero₃₁ _ (t.triangleLTGE_distinguished n X)
 
 @[reassoc (attr := simp)]
 lemma truncLTι_comp_truncGEπ (n : ℤ) :
@@ -399,6 +402,53 @@ lemma natTransTruncGEOfLE_trans_app (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c
     (t.natTransTruncGEOfLE a b hab).app X ≫ (t.natTransTruncGEOfLE b c hbc).app X =
       (t.natTransTruncGEOfLE a c (hab.trans hbc)).app X :=
   congr_app (t.natTransTruncGEOfLE_trans a b c hab hbc) X
+
+lemma isLE_of_isZero {X : C} (hX : IsZero X) (n : ℤ) : t.IsLE X n :=
+  t.isLE_of_iso (((t.truncLT (n + 1)).map_isZero hX).isoZero ≪≫ hX.isoZero.symm) n
+
+lemma isGE_of_isZero {X : C} (hX : IsZero X) (n : ℤ) : t.IsGE X n :=
+  t.isGE_of_iso (((t.truncGE n).map_isZero hX).isoZero ≪≫ hX.isoZero.symm) n
+
+instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_isZero (isZero_zero C) n
+
+instance (n : ℤ) : t.IsGE (0 : C) n := t.isGE_of_isZero (isZero_zero C) n
+
+lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (X : C) :
+    t.IsLE X n₀ ↔ IsIso (((t.truncLTι n₁)).app X) := by
+  subst hn₁
+  refine ⟨fun _ ↦ ?_,
+    fun _ ↦ t.isLE_of_iso (asIso (((t.truncLTι (n₀ + 1))).app X)) n₀⟩
+  obtain ⟨e, he⟩ := t.triangle_iso_exists
+    (contractible_distinguished X) (t.triangleLTGE_distinguished (n₀ + 1) X)
+    (Iso.refl X) n₀ (n₀ + 1)
+    (by dsimp; infer_instance) (by dsimp; infer_instance)
+    (by dsimp; infer_instance) (by dsimp; infer_instance)
+  have he' : e.inv.hom₂ = 𝟙 X := by
+    rw [← cancel_mono e.hom.hom₂, ← comp_hom₂, e.inv_hom_id, he]
+    simp
+  have : (t.truncLTι (n₀ + 1)).app X = e.inv.hom₁ := by
+    simpa [he'] using e.inv.comm₁
+  rw [this]
+  infer_instance
+
+lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
+    t.IsGE X n ↔ IsIso ((t.truncGEπ n).app X) := by
+  constructor
+  · intro h
+    obtain ⟨e, he⟩ := t.triangle_iso_exists
+      (inv_rot_of_distTriang _ (contractible_distinguished X))
+      (t.triangleLTGE_distinguished n X) (Iso.refl X) (n - 1) n
+      (t.isLE_of_iso (shiftFunctor C (-1 : ℤ)).mapZeroObject.symm _)
+      (by dsimp; infer_instance) (by dsimp; infer_instance) (by dsimp; infer_instance)
+    dsimp at he
+    have : (truncGEπ t n).app X = e.hom.hom₃ := by
+      have := e.hom.comm₂
+      dsimp at this
+      rw [← cancel_epi e.hom.hom₂, ← this, he]
+    rw [this]
+    infer_instance
+  · intro
+    exact t.isGE_of_iso (asIso ((truncGEπ t n).app X)).symm n
 
 end
 

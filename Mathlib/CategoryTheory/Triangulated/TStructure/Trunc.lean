@@ -132,82 +132,6 @@ lemma distinguished (n : EInt) (X : C) :
 
 end AbstractSpectralObject
 
-lemma isZero_truncLE_obj_zero (n : ℤ) : IsZero ((t.truncLE n).obj 0) := by
-  let δ := (t.truncGEδLE n (n+1) rfl).app 0
-  have : IsIso δ := by
-    have h := (t.triangleLEGE_distinguished n (n+1) rfl 0)
-    exact (Triangle.isZero₂_iff_isIso₃ _ h).1
-      ((Triangle.isZero₂_iff _ (t.triangleLEGE_distinguished n (n+1) rfl 0)).2
-        ⟨(isZero_zero C).eq_of_tgt _ _, (isZero_zero C).eq_of_src _ _⟩)
-  have : t.IsLE ((t.truncLE n ⋙ shiftFunctor C (1 : ℤ)).obj 0) (n-1) :=
-    t.isLE_shift _ n 1 (n-1) (by lia)
-  have hδ := t.zero_of_isLE_of_isGE δ (n-1) (n+1) (by lia)
-    (t.isLE_of_iso (asIso δ).symm _) (t.isGE_of_iso (asIso δ) _)
-  rw [IsZero.iff_id_eq_zero]
-  apply (shiftFunctor C (1 : ℤ)).map_injective
-  rw [Functor.map_id, Functor.map_zero, ← cancel_epi δ, comp_zero, hδ, zero_comp]
-
-lemma isZero_truncGE_obj_zero (n : ℤ) : IsZero ((t.truncGE n).obj 0) := by
-  apply (Triangle.isZero₃_iff_isIso₁ _ (t.triangleLEGE_distinguished (n-1) n (by lia) 0)).2
-  exact ⟨⟨0, (isZero_truncLE_obj_zero t (n-1)).eq_of_src _ _, (isZero_zero _).eq_of_src _ _⟩⟩
-
-instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_iso (t.isZero_truncLE_obj_zero n).isoZero n
-instance (n : ℤ) : t.IsGE (0 : C) n := t.isGE_of_iso (t.isZero_truncGE_obj_zero n).isoZero n
-
-lemma isLE_of_isZero (X : C) (hX : IsZero X) (n : ℤ) : t.IsLE X n :=
-  t.isLE_of_iso hX.isoZero.symm n
-
-lemma isGE_of_isZero (X : C) (hX : IsZero X) (n : ℤ) : t.IsGE X n :=
-  t.isGE_of_iso hX.isoZero.symm n
-
-lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
-    t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) := by
-  constructor
-  · intro
-    obtain ⟨e, he⟩ := t.triangle_iso_exists
-      (contractible_distinguished X) (t.triangleLEGT_distinguished n X)
-      (Iso.refl X) n (n + 1)
-      (by dsimp; infer_instance)
-      (by dsimp; infer_instance)
-      (by dsimp; infer_instance)
-      (by dsimp; infer_instance)
-    dsimp at he
-    have : (truncLEι t n).app X = e.inv.hom₁ := by
-      have he' : e.inv.hom₂ = 𝟙 X := by
-        rw [← cancel_mono e.hom.hom₂, ← comp_hom₂, e.inv_hom_id, he]
-        dsimp
-        rw [id_comp]
-      simpa [he'] using e.inv.comm₁
-    rw [this]
-    infer_instance
-  · intro
-    exact t.isLE_of_iso (asIso ((truncLEι t n).app X)) n
-
-lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (X : C) :
-    t.IsLE X n₀ ↔ IsIso (((t.truncLTι n₁)).app X) := by
-  rw [isLE_iff_isIso_truncLEι_app]
-  subst hn₁
-  rfl
-
-lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
-    t.IsGE X n ↔ IsIso ((t.truncGEπ n).app X) := by
-  constructor
-  · intro h
-    obtain ⟨e, he⟩ := t.triangle_iso_exists
-      (inv_rot_of_distTriang _ (contractible_distinguished X))
-      (t.triangleLTGE_distinguished n X) (Iso.refl X) (n-1) n
-      (t.isLE_of_iso (shiftFunctor C (-1 : ℤ)).mapZeroObject.symm _)
-      (by dsimp; infer_instance) (by dsimp; infer_instance) (by dsimp; infer_instance)
-    dsimp at he
-    have : (truncGEπ t n).app X = e.hom.hom₃ := by
-      have eq := e.hom.comm₂
-      dsimp at eq
-      rw [← cancel_epi e.hom.hom₂, ← eq, he]
-    rw [this]
-    infer_instance
-  · intro
-    exact t.isGE_of_iso (asIso ((truncGEπ t n).app X)).symm n
-
 instance (X : C) (n : ℤ) [t.IsLE X n] : IsIso ((t.truncLEι n).app X) := by
   rw [← isLE_iff_isIso_truncLEι_app ]
   infer_instance
@@ -626,13 +550,13 @@ lemma eTruncGE_obj_obj_isGE (n : ℤ) (i : EInt) (h : EInt.mk n ≤ i) (X : C) :
   | coe i =>
     dsimp
     exact t.isGE_of_GE  _ _ _ (by simpa using h)
-  | top => exact t.isGE_of_isZero _ (Functor.zero_obj _) _
+  | top => exact t.isGE_of_isZero (Functor.zero_obj _) _
 
 omit [IsTriangulated C] in
 lemma eTruncLT_obj_obj_isLE (n : ℤ) (i : EInt) (h : i ≤ EInt.mk (n + 1)) (X : C) :
     t.IsLE (((t.eTruncLT.obj i)).obj X) n := by
   induction i with
-  | bot => exact t.isLE_of_isZero _ (by simp) _
+  | bot => exact t.isLE_of_isZero (by simp) _
   | coe i =>
     simp only [EInt.coe_le_coe_iff] at h
     dsimp
@@ -759,7 +683,7 @@ lemma isIso_truncLTι_app_truncGELT_obj (a b : EInt) (h : a ≤ b) (X : C) :
     induction a with
     | bot => dsimp; infer_instance
     | coe a => dsimp; infer_instance
-    | top => exact t.isLE_of_isZero _ (by simp) _
+    | top => exact t.isLE_of_isZero (by simp) _
   | top =>
     simp only [abstractSpectralObject_truncLT, eTruncLT_obj_top, comp_obj, id_obj,
       AbstractSpectralObject.truncLTι_top_app]
@@ -1017,14 +941,14 @@ namespace TStructure
 instance (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
     t.IsLE ((t.eTruncLT.obj i).obj X) n := by
   induction i with
-  | bot => exact isLE_of_isZero _ _ (by simp) _
+  | bot => exact isLE_of_isZero _ (by simp) _
   | coe _ => dsimp; infer_instance
   | top => dsimp; infer_instance
 
 instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
     t.IsGE ((t.eTruncLT.obj i).obj X) n := by
   induction i with
-  | bot => exact isGE_of_isZero _ _ (by simp) _
+  | bot => exact isGE_of_isZero _ (by simp) _
   | coe _ => dsimp; infer_instance
   | top => dsimp; infer_instance
 
@@ -1033,14 +957,14 @@ instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
   induction i with
   | bot => dsimp; infer_instance
   | coe _ => dsimp; infer_instance
-  | top => exact isLE_of_isZero _ _ (by simp) _
+  | top => exact isLE_of_isZero _ (by simp) _
 
 instance (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
     t.IsGE ((t.eTruncGE.obj i).obj X) n := by
   induction i with
   | bot => dsimp; infer_instance
   | coe _ => dsimp; infer_instance
-  | top => exact isGE_of_isZero _ _ (by simp) _
+  | top => exact isGE_of_isZero _ (by simp) _
 
 end TStructure
 

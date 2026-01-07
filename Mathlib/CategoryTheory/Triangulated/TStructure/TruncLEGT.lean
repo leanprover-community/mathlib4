@@ -27,36 +27,36 @@ namespace TStructure
 
 variable (t : TStructure C)
 
-noncomputable def truncLE (n : ℤ) : C ⥤ C := t.truncLT (n+1)
+noncomputable def truncLE (n : ℤ) : C ⥤ C := t.truncLT (n + 1)
 
 instance (n : ℤ) : (t.truncLE n).Additive := by
   dsimp only [truncLE]
   infer_instance
 
 instance (n : ℤ) (X : C) : t.IsLE ((t.truncLE n).obj X) n := by
-  have : t.IsLE ((t.truncLE n).obj X) (n+1-1) := by
+  have : t.IsLE ((t.truncLE n).obj X) (n + 1 - 1) := by
     dsimp [truncLE]
     infer_instance
   exact t.isLE_of_LE _ (n+1-1) n (by lia)
 
-noncomputable def truncGT (n : ℤ) : C ⥤ C := t.truncGE (n+1)
+noncomputable def truncGT (n : ℤ) : C ⥤ C := t.truncGE (n + 1)
 
 instance (n : ℤ) : (t.truncGT n).Additive := by
   dsimp only [truncGT]
   infer_instance
 
-instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT n).obj X) (n+1) := by
+instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT n).obj X) (n + 1) := by
   dsimp [truncGT]
   infer_instance
 
-instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT (n-1)).obj X) n :=
-  t.isGE_of_GE _ n (n-1+1) (by lia)
+instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT (n - 1)).obj X) n :=
+  t.isGE_of_GE _ n (n - 1 + 1) (by lia)
 
 noncomputable def truncLEIsoTruncLT (a b : ℤ) (h : a + 1 = b) : t.truncLE a ≅ t.truncLT b :=
-  eqToIso (congr_arg t.truncLT h)
+  eqToIso (by rw [← h]; rfl)
 
 noncomputable def truncGTIsoTruncGE (a b : ℤ) (h : a + 1 = b) : t.truncGT a ≅ t.truncGE b :=
-  eqToIso (congr_arg t.truncGE h)
+  eqToIso (by rw [← h]; rfl)
 
 noncomputable def truncLEι (n : ℤ) : t.truncLE n ⟶ 𝟭 C := t.truncLTι (n + 1)
 
@@ -155,6 +155,16 @@ lemma triangleLEGT_distinguished (n : ℤ) (X : C) :
     (t.triangleLEGT n).obj X ∈ distTriang C :=
   isomorphic_distinguished _ (t.triangleLEGE_distinguished n (n+1) rfl X) _
     ((t.triangleLEGTIsoTriangleLEGE n (n+1) rfl).app X)
+
+lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
+    t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) :=
+  t.isLE_iff_isIso_truncLTι_app n (n + 1) rfl X
+
+lemma isGE_iff_isIso_truncGTπ_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (X : C) :
+    t.IsGE X n₁ ↔ IsIso ((t.truncGTπ n₀).app X) := by
+  rw [t.isGE_iff_isIso_truncGEπ_app n₁ X]
+  exact (MorphismProperty.isomorphisms _).arrow_mk_iso_iff
+    (Arrow.isoMk (Iso.refl _) ((t.truncGTIsoTruncGE _ _ hn₁).symm.app X))
 
 end TStructure
 
