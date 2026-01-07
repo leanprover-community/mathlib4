@@ -56,12 +56,12 @@ We take the last approach for the following reasons:
 converting between any two of the other definitions is more inconvenient because it involves
 multiple `Fin` types.
 - If you prefer a definition where there are `k` singular values, you can treat the singular values
-after `k` as junk values.
-Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to
-not having to prove that `y ≠ 0` when calculating `x / y`.
+  after `k` as junk values.
+  Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to
+  not having to prove that `y ≠ 0` when calculating `x / y`.
 - This API coincides with a potential future API for approximation numbers, which are a
-generalization of singular values to continuous linear maps between possibly-infinite-dimensional
-normed vector spaces.
+  generalization of singular values to continuous linear maps between possibly-infinite-dimensional
+  normed vector spaces.
 -/
 public noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
   Finsupp.embDomain Fin.valEmbedding <|
