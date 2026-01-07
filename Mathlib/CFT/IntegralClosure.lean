@@ -2,7 +2,6 @@ module
 
 public import Mathlib.CFT.IsStandardEtale
 public import Mathlib.CFT.StandardSmooth
-public import Mathlib.CFT.SymmetricPolynomial
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.RingTheory.RingHom.Etale
@@ -16,285 +15,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open Polynomial
 
-open scoped Finset nonZeroDivisors in
-theorem Polynomial.eq_zero_of_degree_lt_of_eval_eq_zero {f : R[X]}
-    (s : Finset R) (degree_f_lt : f.degree < ↑(#s)) (eval_f : ∀ x ∈ s, eval x f = 0)
-    (hs : (s : Set R).Pairwise (· - · ∈ R⁰)) : f = 0 := by
-  classical
-  nontriviality R
-  induction s using Finset.induction generalizing f with
-  | empty => simpa using degree_f_lt
-  | insert a s has IH =>
-    by_contra hf
-    have hfs : f.degree ≤ #s := by
-      simp only [degree_eq_natDegree hf, Nat.cast_lt, Nat.cast_le] at degree_f_lt ⊢
-      simpa [has, Nat.lt_add_one_iff] using degree_f_lt
-    have := IH (f := f /ₘ (X - C a)) ((degree_divByMonic_lt _ (monic_X_sub_C _) hf
-      (by simp)).trans_le hfs) (fun x hx ↦ by
-      have : (x - a) * eval x (f /ₘ (X - C a)) = 0 := by
-        simpa [eval_f a, eval_f x (Finset.mem_insert_of_mem hx)] using
-          congr($(modByMonic_add_div f (monic_X_sub_C a)).eval x)
-      exact (hs (Finset.mem_insert_of_mem hx) (Finset.mem_insert_self _ _) (by grind):).1 _ this)
-      (Set.pairwise_insert.mp (by simpa using hs)).1
-    simpa [this, eval_f a, Ne.symm hf] using modByMonic_add_div f (monic_X_sub_C a)
-
-lemma IsPrimitiveRoot.mk_of_natPrime {p : ℕ} (hp : p.Prime) {ζ : R}
-    (hζ : ζ ^ p = 1) (hζ' : ζ ≠ 1) : IsPrimitiveRoot ζ p := by
-  obtain ⟨k, hk, hζk⟩ := IsPrimitiveRoot.exists_pos hζ hp.ne_zero
-  by_cases hk1 : k = 1
-  · simpa [hk1, hζ'] using hζk.1
-  · exact (hp.dvd_iff_eq hk1).mp (hζk.2 _ hζ) ▸ hζk
-
-lemma IsPrimitiveRoot.cyclotomic_eq_of_isDomain [IsDomain R]
-    {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) :
-    ∏ i ∈ .range n with n.Coprime i, (X - C (ζ ^ i)) = cyclotomic n R := by
-  by_cases hn : n = 0; · simp [hn]
-  by_cases hn₁ : n = 1; · simp [hn₁]
-  replace hn₁ : 1 < n := by lia
-  classical
-  let s := ((Finset.range n).filter (n.Coprime ·)).image (ζ ^ ·)
-  have hs : s.card = n.totient := by
-    rw [Finset.card_image_of_injOn (hζ.injOn_pow.mono (by grind))]
-    simp [Nat.totient_eq_card_coprime]
-  rw [eq_comm]
-  apply Polynomial.eq_of_degree_sub_lt_of_eval_finset_eq s
-  · refine (degree_sub_lt ?_ ?_ ?_).trans_le ?_
-    · rw [degree_prod_of_monic _ _ fun _ _ ↦ monic_X_sub_C _]
-      simp [degree_X_sub_C, -map_pow, Nat.totient_eq_card_coprime, degree_cyclotomic]
-    · rw [ne_eq, ← degree_eq_bot]; simp [degree_cyclotomic]
-    · rw [monic_prod_of_monic _ _ fun _ _ ↦ monic_X_sub_C _, cyclotomic.monic]
-    · simp [degree_cyclotomic, hs]
-  · simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_range, map_pow, forall_exists_index,
-      and_imp, s]
-    rintro _ i hin hni rfl
-    rw [((hζ.pow_iff_coprime (Ne.bot_lt hn) _).mpr hni.symm).isRoot_cyclotomic (Ne.bot_lt hn)]
-    rw [eval_prod, Finset.prod_eq_zero (i := i) (by simpa [hin])]
-    simp
-
-open Polynomial in
-lemma cyclotomic_eq_prod_of_eval_eq_zero {R : Type*} [CommRing R]
-    {n : ℕ} {ζ : R} (hζ : eval ζ (cyclotomic n R) = 0) :
-    ∏ i ∈ .range n with n.Coprime i, (X - C (ζ ^ i)) = cyclotomic n R := by
-  obtain rfl | hn := eq_or_ne n 0
-  · simp
-  let f : AdjoinRoot (cyclotomic n ℤ) →+* R := AdjoinRoot.lift (algebraMap ℤ R) ζ
-    (by rwa [← eval_map, map_cyclotomic])
-  have : IsDomain (AdjoinRoot (cyclotomic n ℤ)) := AdjoinRoot.isDomain_of_prime
-    (cyclotomic.irreducible hn.bot_lt).prime
-  have : NoZeroSMulDivisors ℤ (AdjoinRoot (cyclotomic n ℤ)) :=
-    AdjoinRoot.noZeroSMulDivisors_of_prime_of_degree_ne_zero
-      (cyclotomic.irreducible hn.bot_lt).prime
-    (by simp [degree_cyclotomic, hn])
-  have : CharZero (AdjoinRoot (cyclotomic n ℤ)) := .of_addMonoidHom
-    (algebraMap ℤ _).toAddMonoidHom (by simp) (FaithfulSMul.algebraMap_injective _ _)
-  have : IsPrimitiveRoot (AdjoinRoot.root (cyclotomic n ℤ)) n :=
-    have : NeZero (n : AdjoinRoot (cyclotomic n ℤ)) := ⟨by simpa⟩
-    isRoot_cyclotomic_iff.mp (by
-      rw [← map_cyclotomic n (algebraMap ℤ (AdjoinRoot (cyclotomic n ℤ))), IsRoot,
-        eval_map_algebraMap]
-      simp)
-  have := congr($(this.cyclotomic_eq_of_isDomain).map f)
-  simpa [Polynomial.map_prod, f] using this
-
-lemma Polynomial.IsRoot.isUnit {p : R[X]} {x : R} (h : p.IsRoot x) (hp : IsUnit (p.coeff 0)) :
-    IsUnit x := by
-  refine isUnit_of_dvd_unit ?_ hp.neg
-  exact ⟨_, .symm <| by simpa [h.eq_zero, add_eq_zero_iff_eq_neg', modByMonic_X,
-    ← coeff_zero_eq_eval_zero] using congr($(p.modByMonic_add_div monic_X).eval x)⟩
-
-theorem isUnit_pow_sub_pow_of_isRoot_cyclotomic {p : ℕ} (hp : p.Prime) (hp' : IsUnit (p : R))
-    {ζ : R} (hζ : (cyclotomic p R).IsRoot ζ) (i j : Fin p) (hij : i ≠ j) :
-    IsUnit (ζ ^ i.1 - ζ ^ j.1) := by
-  wlog hij : i < j generalizing i j
-  · simpa using (this j i (.symm ‹_›) (lt_of_le_of_ne (le_of_not_gt hij) (.symm ‹_›))).neg
-  have := Fact.mk hp
-  have : ∏ x ∈ Finset.range p with p.Coprime x, (1 - ζ ^ x) = p := by
-    simpa [eval_prod, cyclotomic_prime] using
-      congr($(cyclotomic_eq_prod_of_eval_eq_zero hζ).eval 1)
-  rw [← Nat.sub_add_cancel (show i.1 ≤ j.1 from hij.le), ← one_mul (ζ ^ i.1), pow_add, ← sub_mul]
-  refine .mul (isUnit_of_dvd_unit ?_ (hp'.map (algebraMap R _))) (.pow _ ?_)
-  · simp only [Algebra.algebraMap_self, ← this, map_prod, RingHom.id_apply]
-    have H : ¬p ∣ j - i := Nat.not_dvd_of_pos_of_lt (by lia) (by lia)
-    exact Finset.dvd_prod_of_mem _ (by simp [Nat.sub_lt_of_lt, hp.coprime_iff_not_dvd, H])
-  · exact hζ.isUnit (by simp [cyclotomic_coeff_zero _ hp.one_lt])
-
-lemma RingHom.IsIntegralElem.map {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    {f : R →+* S} {x : S} (hx : f.IsIntegralElem x) (g : S →+* T) :
-    (g.comp f).IsIntegralElem (g x) := by
-  obtain ⟨p, hp, hx⟩ := hx
-  exact ⟨p, hp, by simp_rw [← hom_eval₂, eval₂_eq_eval_map] at hx ⊢; simp [hx]⟩
-
-lemma RingHom.IsIntegralElem.of_comp {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    {f : R →+* S} {g : S →+* T} {x : T} (hx : (g.comp f).IsIntegralElem x) :
-    g.IsIntegralElem x := by
-  obtain ⟨p, hp, hx⟩ := hx
-  exact ⟨p.map f, hp.map _, by simpa only [eval₂_eq_eval_map, Polynomial.map_map] using hx⟩
-
-open TensorProduct in
-attribute [local instance] Polynomial.algebra in
-set_option maxHeartbeats 0 in
-theorem isIntegral_coeff_of_isIntegral_aux
-    (p : ℕ) (hp : p.Prime) (hp' : IsUnit (p : R)) {f : S[X]} (hfp : f.natDegree < p)
-    (hf : IsIntegral R[X] f)
-    (n : ℕ) : IsIntegral R (f.coeff n) := by
-  classical
-  nontriviality R
-  nontriviality S
-  let R' := AdjoinRoot (cyclotomic p R)
-  have inst : Module.Finite R R' := (AdjoinRoot.powerBasis' (cyclotomic.monic p R)).finite
-  have inst : Module.Free R R' := .of_basis (AdjoinRoot.powerBasis' (cyclotomic.monic p R)).basis
-  have : Nontrivial (S ⊗[R] R') := by
-    have : Nonempty (Fin (cyclotomic p R).natDegree) :=
-      Fin.pos_iff_nonempty.mp (by simp [natDegree_cyclotomic, hp.pos])
-    have := ((AdjoinRoot.powerBasis' (cyclotomic.monic p R)).basis.baseChange S).repr
-    rw [AdjoinRoot.powerBasis'_dim] at this
-    exact this.nontrivial
-  have : Nontrivial (R' ⊗[R] S) := (Algebra.TensorProduct.comm _ _ _).nontrivial
-  let ζ : R' := .root _
-  have hζ₀ : aeval ζ (cyclotomic p R) = 0 :=
-        ((AdjoinRoot.aeval_eq (cyclotomic p R) (f := cyclotomic p R)).trans AdjoinRoot.mk_self)
-  have hζ₀' : (cyclotomic p R').IsRoot ζ := by rwa [← eval_map_algebraMap, map_cyclotomic] at hζ₀
-  let f' : (R' ⊗[R] S)[X] := f.map Algebra.TensorProduct.includeRight.toRingHom
-  let ζ' : R' ⊗[R] S := ζ ⊗ₜ 1
-  have hζ'₀ : (cyclotomic p (R' ⊗[R] S)).IsRoot ζ' := by
-    simpa using hζ₀'.map (f := algebraMap R' (R' ⊗[R] S))
-  have Hsub (i j : Fin p) (hij : i ≠ j) : IsUnit (ζ ^ i.1 - ζ ^ j.1) :=
-    isUnit_pow_sub_pow_of_isRoot_cyclotomic hp (by simpa [R'] using hp'.map (algebraMap _ _))
-      hζ₀' _ _ hij
-  have Hsub' (i j : Fin p) (hij : i ≠ j) : IsUnit (ζ' ^ i.1 - ζ' ^ j.1) :=
-    isUnit_pow_sub_pow_of_isRoot_cyclotomic hp (by simpa [R'] using hp'.map (algebraMap _ _))
-      hζ'₀ _ _ hij
-  have hζ' : IsPrimitiveRoot ζ' p := by
-    refine .mk_of_natPrime hp ?_ ?_
-    · have := aeval_eq_zero_of_dvd_aeval_eq_zero (cyclotomic.dvd_X_pow_sub_one _ _) hζ'₀
-      simpa [sub_eq_zero, ζ'] using this
-    · intro e
-      have := Fact.mk hp
-      have : (p : R' ⊗[R] S) = 0 := by simpa [e, cyclotomic_prime, R'] using hζ'₀
-      simpa [this, R'] using (hp'.map (algebraMap R (R' ⊗[R] S))).ne_zero
-  have : f' - ∑ i ∈ (Finset.range p).attach, C (f'.eval (ζ' ^ i.1)) *
-      ∏ j ∈ ((Finset.range p).erase i).attach, (X - C (ζ' ^ j.1)) *
-        C ((Hsub' ⟨i.1, by grind⟩ ⟨j.1, by grind⟩ (by grind)).unit⁻¹).1 = 0 := by
-    by_contra H
-    refine H (Polynomial.eq_zero_of_degree_lt_of_eval_eq_zero
-      ((Finset.range p).image (ζ' ^ ·)) ?_ ?_ ?_)
-    · rw [← Polynomial.natDegree_lt_iff_degree_lt H]
-      refine (natDegree_sub_le _ _).trans_lt (max_lt (natDegree_map_le.trans_lt ?_) ?_)
-      · rwa [Finset.card_image_of_injOn hζ'.injOn_pow, Finset.card_range]
-      · refine (natDegree_sum_le _ _).trans_lt ((Finset.fold_max_lt _).mpr ?_)
-        simp only [Finset.card_pos, Finset.image_nonempty, Finset.nonempty_range_iff, ne_eq,
-          hp.ne_zero, not_false_eq_true, Finset.mem_attach, Function.comp_apply,
-          forall_const, Subtype.forall, Finset.mem_range, true_and]
-        intro i hip
-        grw [natDegree_C_mul_le, natDegree_prod_le]
-        refine (Finset.sum_le_sum fun _ _ ↦ (natDegree_mul_C_le _ _).trans
-          (natDegree_X_sub_C_le _)).trans_lt ?_
-        simpa [Finset.card_image_of_injOn hζ'.injOn_pow] using
-          Finset.card_erase_lt_of_mem (Finset.mem_range.mpr hip)
-    · simp only [Finset.mem_image, Finset.mem_range, map_pow, eval_sub, eval_finset_sum, eval_mul,
-        eval_C, eval_prod, eval_X, eval_pow, sub_eq_zero, forall_exists_index, and_imp,
-        forall_apply_eq_imp_iff₂]
-      intro i hip
-      rw [Finset.sum_eq_single ⟨i, Finset.mem_range.mpr hip⟩]
-      · simp
-      · simp only [Finset.mem_attach, ne_eq, forall_const, Subtype.forall, Finset.mem_range,
-          Subtype.mk.injEq]
-        intro j hjp hji
-        rw [Finset.prod_eq_zero (Finset.mem_attach _ ⟨i, by grind⟩), mul_zero]
-        simp
-      · simp
-    · rw [Finset.coe_image, Set.InjOn.pairwise_image hζ'.injOn_pow, Finset.coe_range]
-      refine fun i hi j hj hij ↦ (Hsub' ⟨i, hi⟩ ⟨j, hj⟩ (by simpa)).mem_nonZeroDivisors
-  have hf' : IsIntegral R'[X] f' := by
-    let φ : S[X] →ₐ[R[X]] (R' ⊗[R] S)[X] :=
-      ⟨mapRingHom Algebra.TensorProduct.includeRight.toRingHom,
-        fun r ↦ by simp [Polynomial.map_map]⟩
-    have : IsScalarTower R[X] R'[X] (R' ⊗[R] S)[X] := .of_algebraMap_eq fun r ↦
-      by simp [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-    exact (hf.map φ).tower_top
-  have : IsIntegral R' (f'.coeff n) := by
-    rw [sub_eq_zero.mp this, finset_sum_coeff]
-    refine .sum _ fun i hi ↦ ?_
-    rw [coeff_C_mul]
-    refine .mul ?_ ?_
-    · refine RingHom.IsIntegralElem.of_comp (f := evalRingHom (ζ ^ i.1)) ?_
-      convert RingHom.IsIntegralElem.map hf' (evalRingHom (ζ' ^ i.1))
-      ext <;> simp [R', ζ']
-    · refine isIntegral_coeff_prod _ _ (fun ⟨j, hj⟩ _ k ↦ ?_) _
-      obtain ⟨hj₁, hj₂⟩ : j ≠ ↑i ∧ j < p := by simpa using hj
-      rw [coeff_mul_C]
-      refine .mul ?_ ?_
-      · simp only [coeff_sub, coeff_X, coeff_C]
-        split_ifs
-        · exact .sub isIntegral_one
-            (by simpa [ζ'] using isIntegral_algebraMap (A := R' ⊗[R] S) (x := ζ ^ j))
-        · simpa using isIntegral_one
-        · simpa [ζ'] using isIntegral_algebraMap (A := R' ⊗[R] S) (x := ζ ^ j)
-        · simpa using isIntegral_zero
-      · convert isIntegral_algebraMap
-          (x := (Hsub ⟨i, Finset.mem_range.mp i.2⟩ ⟨j, hj₂⟩ (by simp [hj₁.symm])).unit⁻¹.1)
-        convert_to _ = (((Hsub ⟨i, Finset.mem_range.mp i.2⟩ ⟨j, hj₂⟩
-          (by simp [hj₁.symm]))).unit.map (algebraMap R' (R' ⊗[R] S)).toMonoidHom)⁻¹.1
-        congr 2; ext; simp [ζ', sub_tmul]
-  have inst : FaithfulSMul S (S ⊗[R] R') := Module.Free.instFaithfulSMulOfNontrivial _ _
-  have : IsIntegral R (1 ⊗ₜ[R] f.coeff n : R' ⊗[R] S) := by simpa [f'] using isIntegral_trans _ this
-  exact (this.map (Algebra.TensorProduct.comm _ _ _).toAlgHom).tower_bot (A := S)
-    (FaithfulSMul.algebraMap_injective _ _)
-
-open TensorProduct in
-attribute [local instance] Polynomial.algebra in
-theorem isIntegral_coeff_of_isIntegral {f : S[X]} (hf : IsIntegral R[X] f)
-    (n : ℕ) : IsIntegral R (f.coeff n) := by
-  obtain ⟨p, hfp, hp⟩ := (f.natDegree + 1).exists_infinite_primes
-  obtain ⟨q, hpq, hq⟩ := (p + 1).exists_infinite_primes
-  have (p : ℕ) (hp : p.Prime) (hp' : f.natDegree < p) : ∃ i, IsIntegral R (p ^ i * f.coeff n) := by
-    let := (Localization.awayMap (algebraMap R S) p).toAlgebra
-    have : IsScalarTower R (Localization.Away (p : R)) (Localization.Away (algebraMap R S p)) :=
-      .of_algebraMap_eq fun r ↦ by simp [RingHom.algebraMap_toAlgebra, Localization.awayMap,
-        IsLocalization.Away.map, ← IsScalarTower.algebraMap_apply]
-    have := isIntegral_coeff_of_isIntegral_aux p hp (R := Localization.Away (p : R))
-      (by simpa using IsLocalization.Away.algebraMap_isUnit (p : R))
-      (S := Localization.Away (algebraMap R S p)) (f := f.map (algebraMap _ _))
-      (by grw [natDegree_map_le]; lia) (by
-        let φ : S[X] →ₐ[R[X]] (Localization.Away (algebraMap R S p))[X] :=
-          ⟨mapRingHom (algebraMap _ _),
-            fun r ↦ by simp [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]⟩
-        have : IsScalarTower R[X] (Localization.Away (p : R))[X]
-          (Localization.Away (algebraMap R S p))[X] :=
-          .of_algebraMap_eq fun r ↦
-          by simp [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-        exact (hf.map φ).tower_top) n
-    obtain ⟨⟨_, i, rfl⟩, hi⟩ := this.exists_multiple_integral_of_isLocalization (.powers (p : R)) _
-    obtain ⟨_, ⟨j, rfl⟩, hj⟩ := IsLocalization.exists_isIntegral_smul_of_isIntegral_map
-      (M := .powers (p : R)) (Sₘ := Localization.Away (algebraMap R S p))
-      (x := p ^ i * f.coeff n) (by simpa [Submonoid.smul_def, Algebra.smul_def] using hi)
-    exact ⟨j + i, by simpa [Algebra.smul_def, pow_add, mul_assoc] using hj⟩
-  obtain ⟨i, hi⟩ := this p hp hfp
-  obtain ⟨j, hj⟩ := this q hq (by lia)
-  have : q.Coprime p := hq.coprime_iff_not_dvd.mpr (Nat.not_dvd_of_pos_of_lt hp.pos hpq)
-  obtain ⟨a, b, e⟩ := ((this.pow_left j).pow_right i).isCoprime
-  replace e : (↑a * ↑q ^ j + ↑b * ↑p ^ i : S) = 1 := by simpa using congr(($e : S))
-  have := (hj.smul a).add (hi.smul b)
-  simpa [← mul_assoc, ← add_mul, e] using this
-
-attribute [local instance] Polynomial.algebra in
-theorem isIntegral_iff_isIntegral_coeff {f : S[X]} :
-    IsIntegral R[X] f ↔ ∀ n, IsIntegral R (f.coeff n) := by
-  refine ⟨isIntegral_coeff_of_isIntegral, fun H ↦ ?_⟩
-  rw [← f.sum_monomial_eq, Polynomial.sum]
-  simp only [← C_mul_X_pow_eq_monomial, ← map_X (algebraMap R S)]
-  exact .sum _ fun i _ ↦ ((H i).map (CAlgHom (R := R))).tower_top.mul (.pow isIntegral_algebraMap _)
-
 variable {B : Type*} [CommRing B] [Algebra R B]
-
-lemma IsIntegral.of_aeval_monic_of_isIntegral_coeff {R A : Type*} [CommRing R] [CommRing A]
-    [Algebra R A] {x : A} {p : A[X]} (monic : p.Monic) (deg : p.natDegree ≠ 0)
-    (hx : IsIntegral R (eval x p)) (hp : ∀ i, IsIntegral R (p.coeff i)) : IsIntegral R x := by
-  obtain ⟨q, hqp, hdeg, hq⟩ :=
-    lifts_and_natDegree_eq_and_monic (p := p) (f := algebraMap (integralClosure R A) _)
-    (p.lifts_iff_coeff_lifts.mpr (by simpa)) monic
-  exact isIntegral_trans _ (.of_aeval_monic hq (hdeg ▸ deg)
-    (by simpa [← eval_map_algebraMap, hqp] using hx.tower_top))
 
 attribute [local instance] Polynomial.algebra in
 /-- Let `S` be an `R`-algebra and `f : S[X]` be a monic polynomial with `R`-integral coefficients.
@@ -317,8 +38,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
   have : IsScalarTower R S B := .of_algebraMap_eq' (φ.comp CAlgHom).comp_algebraMap.symm
   have := (algebraMap S B).domain_nontrivial
   obtain ⟨y, rfl⟩ := hφ y
-  let S' := f.SplittingAlgebra
-  have hS' : (f.map (algebraMap S S')).Splits := splits_splittingAlgebra _ hf
+  obtain ⟨S', _, _, _, _, _, hS'⟩ := hf.exists_splits_map
   obtain ⟨m, hm⟩ := Polynomial.splits_iff_exists_multiset.mp hS'
   simp only [hf.map _, Monic.leadingCoeff, map_one, one_mul] at hm
   algebraize [(algebraMap S S').comp (algebraMap R S)]
@@ -363,8 +83,8 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
     refine .multiset_sum ?_
     simp only [Multiset.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     refine fun a ham ↦ .mul (.multiset_prod ?_) ?_
-    · simp only [Multiset.mem_map, isIntegral_iff_isIntegral_coeff, forall_exists_index, and_imp,
-        forall_apply_eq_imp_iff₂, coeff_sub]
+    · simp only [Multiset.mem_map, Polynomial.isIntegral_iff_isIntegral_coeff, forall_exists_index,
+        and_imp, forall_apply_eq_imp_iff₂, coeff_sub]
       exact fun b hbm n ↦ .sub (by simp [coeff_X, apply_ite, isIntegral_one, isIntegral_zero])
         (by simp [coeff_C, apply_ite, isIntegral_zero, hm' b (Multiset.mem_of_mem_erase hbm)])
     · let ψ : B →ₐ[R] S' := AlgHom.liftOfSurjective _ hφ ((aeval a).restrictScalars R) <| by
@@ -372,8 +92,9 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
         suffices (m.map (a - ·)).prod = 0 by simpa [← eval_map_algebraMap, hm, eval_multiset_prod]
         rw [Multiset.prod_eq_zero]
         simpa using ⟨a, ham, by simp⟩
-      simpa [isIntegral_iff_isIntegral_coeff, coeff_C, apply_ite, isIntegral_zero, ψ] using hy.map ψ
-  refine ⟨_, ?_, isIntegral_iff_isIntegral_coeff.mp H'⟩
+      simpa [Polynomial.isIntegral_iff_isIntegral_coeff,
+        coeff_C, apply_ite, isIntegral_zero, ψ] using hy.map ψ
+  refine ⟨_, ?_, Polynomial.isIntegral_iff_isIntegral_coeff.mp H'⟩
   rw [modByMonic_eq_sub_mul_div _ hf, map_sub, map_mul, map_mul,
     show φ f = 0 from hfx.ge (Ideal.mem_span_singleton_self _), zero_mul, sub_zero]
 
@@ -734,95 +455,6 @@ lemma RingHom.IsIntegralElem.of_comp_of_injective
     f.IsIntegralElem x := by
   obtain ⟨p, hp, hx⟩ := hx
   exact ⟨p, hp, hg <| by simp [hom_eval₂, hx]⟩
-
-lemma MvPolynomial.killCompl_map
-    {σ τ R S : Type*} [CommSemiring R] [CommSemiring S] {f : σ → τ}
-    (hf : f.Injective) (φ : R →+* S) (p : MvPolynomial _ R) :
-    (p.map φ).killCompl hf = (p.killCompl hf).map φ := by
-  simp only [← AlgHom.coe_toRingHom, ← RingHom.comp_apply]
-  congr
-  ext i n
-  · simp
-  · by_cases h : i ∈ Set.range f <;> simp [MvPolynomial.killCompl, h]
-
-@[simp]
-lemma MvPolynomial.optionEquivLeft_symm_C_C (R S₁ : Type*) [CommSemiring R] (x : R) :
-    (optionEquivLeft R S₁).symm (.C (.C x)) = .C x := by simp [optionEquivLeft]
-
-@[simp]
-lemma MvPolynomial.optionEquivLeft_symm_X (R S₁ : Type*) [CommSemiring R] :
-    (optionEquivLeft R S₁).symm .X = .X .none := by simp [optionEquivLeft]
-
-@[elab_as_elim]
-lemma Finite.induction_empty_option'.{u} {P : ∀ (α : Type u) [Finite α], Prop}
-    (of_equiv : ∀ {α β : Type u} (_ : α ≃ β) [Finite α] [Finite β], P α → P β)
-    (h_empty : P PEmpty.{u + 1}) (h_option : ∀ {α : Type u} [Fintype α],
-    P α → P (Option α)) (α : Type u) (hα : Finite α) : P α := by
-  refine Finite.induction_empty_option (P := fun α ↦ (h : Finite α) → P α) ?_ ?_ ?_ α ‹Finite α›
-  · exact fun α β e IH {_} ↦ have := Finite.of_equiv _ e.symm; of_equiv e (IH _)
-  · exact fun _ ↦ h_empty
-  · exact fun α _ IH {_} ↦ h_option (IH _)
-
-universe w in
-attribute [local instance] MvPolynomial.algebraMvPolynomial in
-attribute [-simp] AlgEquiv.symm_toRingEquiv in
-attribute [simp] MvPolynomial.optionEquivLeft_C MvPolynomial.optionEquivLeft_X_none
-  MvPolynomial.optionEquivLeft_X_some in
-theorem MvPolynomial.isIntegral_iff_isIntegral_coeff {σ : Type w} {f : MvPolynomial σ S} :
-    IsIntegral (MvPolynomial σ R) f ↔ ∀ n, IsIntegral R (f.coeff n) := by
-  classical
-  refine ⟨fun H n ↦ ?mp, fun H ↦ ?mpr⟩
-  case mpr =>
-    rw [← f.support_sum_monomial_coeff]
-    simp_rw [monomial_eq]
-    refine IsIntegral.sum _ fun n _ ↦ .mul ((H n).map (Algebra.ofId _ _)).tower_top
-      (.prod _ fun i _ ↦ .pow ?_ _)
-    convert isIntegral_algebraMap (x := MvPolynomial.X i)
-    simp only [algebraMap_def, map_X]
-  unfold IsIntegral at H
-  wlog hσ : Finite σ generalizing σ
-  · obtain ⟨g, hg⟩ := MvPolynomial.exists_rename_eq_of_vars_subset_range (τ := f.vars) f _
-      Subtype.val_injective (by simp)
-    by_cases hn : n ∈ Set.range (Finsupp.mapDomain ((↑) : f.vars → σ))
-    · obtain ⟨n, rfl⟩ := hn
-      simp_rw [← hg, coeff_rename_mapDomain _ Subtype.val_injective]
-      exact this (f := g) (RingHom.IsIntegralElem.of_comp_of_injective
-        (g := (rename ((↑) : f.vars → σ)).toRingHom) (rename_injective _ Subtype.val_injective)
-        (.of_comp (f := (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective).toRingHom) <| by
-        simp only [AlgHom.toRingHom_eq_coe, algebraMap_def, RingHom.coe_coe, hg]
-        convert H.map ((rename Subtype.val).comp
-          (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
-        · exact RingHom.ext (by simp [MvPolynomial.killCompl_map])
-        · nth_rw 1 11 [← hg]; simp)) n (.of_fintype _)
-    · rw [← hg, coeff_rename_eq_zero _ _ _ (by grind)]
-      exact isIntegral_zero
-  induction σ, hσ using Finite.induction_empty_option' with
-  | @of_equiv α β e _ _ IH =>
-    have := @IH (rename e.symm f) (.of_comp_of_injective (g := (rename e).toRingHom)
-      (rename_injective _ e.injective) <| .of_comp (f := (rename e.symm).toRingHom)
-        (by convert H <;> aesop)) (n.embDomain e.symm)
-    simpa [Finsupp.embDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective] using this
-  | h_empty =>
-    refine .of_comp_of_injective (g := (isEmptyAlgEquiv _ PEmpty).symm.toRingHom)
-      (isEmptyAlgEquiv _ PEmpty).symm.injective
-      (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
-    convert H
-    · aesop (add simp MvPolynomial.isEmptyAlgEquiv)
-    · obtain rfl := Subsingleton.elim n 0
-      have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
-      simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using
-        congr((isEmptyAlgEquiv S PEmpty.{w + 1}).symm ($this f))
-  | @h_option α hα IH =>
-    have := IH (_root_.isIntegral_coeff_of_isIntegral (R := MvPolynomial α R)
-      (f := optionEquivLeft _ _ f) (.of_comp_of_injective
-      (g := (optionEquivLeft _ _).symm.toRingHom) (optionEquivLeft _ _).symm.injective
-      (.of_comp (f := (optionEquivLeft _ _).toRingHom) (by
-        convert H
-        · ext i m
-          · aesop
-          · cases i <;> aesop
-        · aesop))) (n .none)) n.some
-    rwa [optionEquivLeft_coeff_some_coeff_none] at this
 
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :

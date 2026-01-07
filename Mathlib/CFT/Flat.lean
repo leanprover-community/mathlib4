@@ -373,14 +373,6 @@ lemma isIso_pushoutSectionToSection_of_isQuasiSeparated
 
 attribute [gcongr] Scheme.Hom.preimage_mono
 
-open AlgebraicGeometry.Scheme in
-open AlgebraicGeometry.Scheme.Opens in
-@[reassoc (attr := simp)]
-lemma _root_.AlgebraicGeometry.Scheme.Opens.toSpecΓ_SpecMap_appLE
-    {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (hUV) :
-    V.toSpecΓ ≫ Spec.map (f.appLE U V hUV) = f.resLE U V hUV ≫ U.toSpecΓ := by
-  simp [Hom.appLE, Hom.resLE]
-
 /-- Given `Y = X ×ₛ T` with `Uₜ` an affine open subset of `T` and `Uₓ` a qcqs subset of `X`.
 Suppose that `T` is flat over `S`, and `Uₜ` and `Uₓ` are contained in a common affine open `Uₛ ⊆ S`,
 then `Γ(Y, prₜ ⁻¹ Uₜ ∩ prₓ ⁻¹ Uₓ) = Γ(T, Uₜ) ⊗[Γ(S, Uₛ)] Γ(X, Uₓ)`. -/

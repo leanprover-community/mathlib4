@@ -2,7 +2,6 @@ import Mathlib
 import Mathlib.CFT.EtaleLocalization
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiFinite
 import Mathlib.CFT.Normalization
-import Mathlib.CFT.FPPF
 
 open CategoryTheory Limits
 

@@ -10,131 +10,6 @@ namespace AlgebraicGeometry
 
 universe u
 
-section
-
-variable {X Y X' Y' T : Scheme.{u}} (f : X ⟶ Y) (f₁ : X ⟶ T) (f₂ : T ⟶ Y)
-  [QuasiCompact f] [QuasiSeparated f] [IsIntegralHom f₂]
-
-noncomputable
-def Scheme.Hom.normalizationDesc (H : f = f₁ ≫ f₂) : f.normalization ⟶ T := by
-  refine colimit.desc _
-    { pt := _
-      ι.app U := Spec.map (CommRingCat.ofHom ((f₁.appLE _ _ (by simp [H])).hom.codRestrict _
-        fun x ↦ ?_)) ≫ (U.2.preimage f₂).fromSpec,
-      ι.naturality := ?_ }
-  · change (f.app U.1).hom.IsIntegralElem _
-    convert (f₂.isIntegral_app U.1 U.2 x).map (f₁.appLE (f₂ ⁻¹ᵁ U.1) (f ⁻¹ᵁ U.1) (by simp [H])).hom
-    simp only [← CommRingCat.hom_comp, Hom.app_eq_appLE, Hom.appLE_comp_appLE, ← H]
-  · intros U V i
-    dsimp
-    rw [Category.comp_id, ← Spec.map_comp_assoc, ← (V.2.preimage f₂).map_fromSpec (U.2.preimage f₂)
-      (homOfLE (f₂.preimage_mono (Scheme.AffineZariskiSite.toOpens_mono i.le))).op,
-      ← Spec.map_comp_assoc]
-    congr 2
-    ext i
-    apply Subtype.ext
-    dsimp [normalizationDiagram]
-    simp only [← CommRingCat.comp_apply, appLE_map, map_appLE]
-
-@[reassoc (attr := simp)]
-lemma Scheme.Hom.toNormalization_normalizationDesc (H : f = f₁ ≫ f₂) :
-    f.toNormalization ≫ f.normalizationDesc f₁ f₂ H = f₁ := by
-  refine Scheme.Cover.hom_ext (X.openCoverOfIsOpenCover _
-    (.comap (iSup_affineOpens_eq_top Y) f.base.hom)) _ _ fun U ↦ ?_
-  letI := (f.app U.1).hom.toAlgebra
-  refine (Scheme.Hom.ι_toNormalization_assoc ..).trans ?_
-  dsimp [normalizationOpenCover, normalizationDesc]
-  simp only [colimit.ι_desc, ← Spec.map_comp_assoc]
-  change (f ⁻¹ᵁ U.1).toSpecΓ ≫ Spec.map (f₁.appLE (f₂ ⁻¹ᵁ U.1) (f ⁻¹ᵁ U.1) (by simp [H])) ≫
-    (U.2.preimage f₂).fromSpec = _
-  simp
-  rfl
-
-@[reassoc (attr := simp)]
-lemma Scheme.Hom.normalizationDesc_comp (H : f = f₁ ≫ f₂) :
-    f.normalizationDesc f₁ f₂ H ≫ f₂ = f.fromNormalization := by
-  refine colimit.hom_ext fun U ↦ ?_
-  dsimp [normalizationDesc, fromNormalization]
-  rw [colimit.ι_desc_assoc, colimit.ι_desc, Category.assoc,
-    ← IsAffineOpen.SpecMap_appLE_fromSpec _ U.2 _ le_rfl, ← Spec.map_comp_assoc]
-  congr 2
-  ext i
-  dsimp [normalizationDiagram, normalizationDiagramMap, RingHom.algebraMap_toAlgebra]
-  rw [← CommRingCat.comp_apply, Hom.appLE_comp_appLE, app_eq_appLE]
-  simp_rw [H]
-
-instance (H : f = f₁ ≫ f₂) : IsIntegralHom (f.normalizationDesc f₁ f₂ H) := by
-  have : IsIntegralHom (f.normalizationDesc f₁ f₂ H ≫ f₂) := by
-    rw [f.normalizationDesc_comp]; infer_instance
-  exact .of_comp _ f₂
-
-/-- If `φ` is a monomorphism in `CommRingCat`, it is not true that `Spec φ` is an epimorphism.
-But the range of `f g : Spec R ⟶ X` are contained in an common affine open `U`, one can still
-cancel `Spec.map φ ≫ f = Spec.map φ ≫ g` to get `f = g`. -/
-lemma eq_of_SpecMap_comp_eq_of_isAffineOpen {R S : CommRingCat} (φ : R ⟶ S)
-    (hφ : Function.Injective φ)
-    {f g : Spec R ⟶ X} (U : X.Opens) (hU : IsAffineOpen U) (hUf : f ⁻¹ᵁ U = ⊤) (hUg : g ⁻¹ᵁ U = ⊤)
-    (H : Spec.map φ ≫ f = Spec.map φ ≫ g) : f = g := by
-  have : Mono φ := ConcreteCategory.mono_of_injective _ hφ
-  rw [← IsOpenImmersion.lift_fac U.ι f (by simpa [Set.range_subset_iff] using fun x hx ↦ hUf.ge hx),
-    ← IsOpenImmersion.lift_fac U.ι g (by simpa [Set.range_subset_iff] using fun x hx ↦ hUg.ge hx)]
-  congr 1
-  rw [← cancel_mono hU.isoSpec.hom, ← Spec.homEquiv.injective.eq_iff,
-    ← cancel_mono φ, ← Spec.map_injective.eq_iff]
-  simp [← cancel_mono U.ι, H]
-
-lemma Scheme.Hom.normalization_hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [IsAffineHom g]
-    (H₁ : f.toNormalization ≫ f₁ = f.toNormalization ≫ f₂)
-    (hf₁ : f₁ ≫ g = f.fromNormalization) (hf₂ : f₂ ≫ g = f.fromNormalization) : f₁ = f₂ := by
-  apply f.normalizationOpenCover.hom_ext _ _ fun U ↦ ?_
-  let := (f.app U.1).hom.toAlgebra
-  have : IsAffineHom f₁ := have : IsAffineHom (f₁ ≫ g) := hf₁ ▸ inferInstance; .of_comp _ g
-  have : IsAffineHom f₂ := have : IsAffineHom (f₂ ≫ g) := hf₂ ▸ inferInstance; .of_comp _ g
-  let f₀ := toNormalization f ≫ f₁
-  have hf₀ : f₀ = toNormalization f ≫ f₂ := H₁
-  refine eq_of_SpecMap_comp_eq_of_isAffineOpen
-    (CommRingCat.ofHom (integralClosure Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1)).val.toRingHom)
-    Subtype.val_injective _ (U.2.preimage g) ?_ ?_ ?_
-  · simp only [← Scheme.Hom.comp_preimage, Category.assoc, hf₁, ι_fromNormalization]; simp
-  · simp only [← Scheme.Hom.comp_preimage, Category.assoc, hf₂, ι_fromNormalization]; simp
-  · have h₁ : f ⁻¹ᵁ U.1 ≤ f₀ ⁻¹ᵁ g ⁻¹ᵁ U.1 := by
-      simp only [← Scheme.Hom.comp_preimage, f₀, Category.assoc,
-        hf₁, toNormalization_fromNormalization]; rfl
-    have h₁' : f ⁻¹ᵁ U.1 = toNormalization f ⁻¹ᵁ f₂ ⁻¹ᵁ g ⁻¹ᵁ U.1 := by
-      simp only [← Scheme.Hom.comp_preimage, hf₂, toNormalization_fromNormalization]
-    have h₂ : fromNormalization f ⁻¹ᵁ U.1 = f₁ ⁻¹ᵁ g ⁻¹ᵁ U.1 := by
-      simp only [← Scheme.Hom.comp_preimage, hf₁]
-    have h₂' : fromNormalization f ⁻¹ᵁ U.1 = f₂ ⁻¹ᵁ g ⁻¹ᵁ U.1 := by
-      simp only [← Scheme.Hom.comp_preimage, hf₂]
-    have h₃ : f ⁻¹ᵁ U.1 = toNormalization f ⁻¹ᵁ fromNormalization f ⁻¹ᵁ U.1 := by
-      simp [← Scheme.Hom.comp_preimage]
-    trans Spec.map (f₀.appLE _ _ h₁) ≫ (U.2.preimage g).fromSpec
-    · simp only [AlgHom.toRingHom_eq_coe, comp_appLE, Spec.map_comp, Category.assoc, f₀,
-        app_eq_appLE]
-      rw [IsAffineOpen.SpecMap_appLE_fromSpec _ _ ((U.2.preimage _).preimage _)]
-      have : (toNormalization f).appLE (f₁ ⁻¹ᵁ g ⁻¹ᵁ U.1) (f ⁻¹ᵁ U.1) h₁ =
-        f.normalization.presheaf.map (eqToHom h₂).op ≫
-        (toNormalization f).app (f.fromNormalization ⁻¹ᵁ U.1) ≫
-          X.presheaf.map (eqToHom h₃).op := by
-        simp [app_eq_appLE]
-      rw [this, f.toNormalization_app_preimage U]
-      simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
-        IsAffineOpen.fromSpec_top]
-    · simp only [AlgHom.toRingHom_eq_coe, hf₀, comp_appLE, Spec.map_comp, Category.assoc,
-        app_eq_appLE]
-      rw [IsAffineOpen.SpecMap_appLE_fromSpec _ _ ((U.2.preimage _).preimage _)]
-      have : (toNormalization f).appLE (f₂ ⁻¹ᵁ g ⁻¹ᵁ U.1) (f ⁻¹ᵁ U.1) h₁'.le =
-        f.normalization.presheaf.map (eqToHom h₂').op ≫
-        (toNormalization f).app (f.fromNormalization ⁻¹ᵁ U.1) ≫
-          X.presheaf.map (eqToHom h₃).op := by
-        simp [app_eq_appLE]
-      rw [this, f.toNormalization_app_preimage U]
-      simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
-        IsAffineOpen.fromSpec_top]
-
-
-end
-
 variable {X S Y : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [QuasiCompact f] [QuasiSeparated f]
 
 lemma isIso_morphismRestrict_iff_isIso_app
@@ -453,18 +328,18 @@ def Scheme.Hom.normalizationCoprodIso {U V : Scheme} (iU : U ⟶ X) (iV : V ⟶ 
     apply coprod.hom_ext <;> simp
   hom_inv_id := by
     ext
-    · refine Scheme.Hom.normalization_hom_ext _ _ _
+    · refine Scheme.Hom.normalization.hom_ext _ _ _
         (coprod.desc (iU ≫ f).fromNormalization (iV ≫ f).fromNormalization) ?_ (by simp) (by simp)
       have H : iU ≫ (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).hom = coprod.inl :=
         e.comp_coconePointUniqueUpToIso_hom (colimit.isColimit (pair U V)) ⟨.left⟩
       simp [reassoc_of% H]
-    · refine Scheme.Hom.normalization_hom_ext _ _ _
+    · refine Scheme.Hom.normalization.hom_ext _ _ _
         (coprod.desc (iU ≫ f).fromNormalization (iV ≫ f).fromNormalization) ?_ (by simp) (by simp)
       have H : iV ≫ (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).hom = coprod.inr :=
         e.comp_coconePointUniqueUpToIso_hom (colimit.isColimit (pair U V)) ⟨.right⟩
       simp [reassoc_of% H]
   inv_hom_id := by
-    refine Scheme.Hom.normalization_hom_ext _ _ _ f.fromNormalization ?_ (by simp) (by simp)
+    refine Scheme.Hom.normalization.hom_ext _ _ _ f.fromNormalization ?_ (by simp) (by simp)
     rw [← cancel_epi (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).inv]
     apply coprod.hom_ext <;> simp
 

@@ -1,12 +1,12 @@
 module
 
-public import Mathlib.CFT.HardCore
 public import Mathlib.CFT.Stuff2
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.ZariskiMain
 public import Mathlib.RingTheory.Etale.Locus
+public import Mathlib.RingTheory.Smooth.NoetherianDescent
 
 @[expose] public section
 
@@ -26,56 +26,11 @@ open nonZeroDivisors
 
 attribute [ext high] Ideal.Quotient.algHom_ext
 
-def tensorQuotAlgEquivTensorOfAlgEquiv
-    {R S A B C : Type*} [CommRing R] [CommRing S] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] [Algebra S A] [Algebra S C] [Algebra R S]
-    [IsScalarTower R S A] [IsScalarTower R S C] (e : A ⊗[R] B ≃ₐ[S] C) (I : Ideal B) (J : Ideal C)
-    (hJ : I.map (e.toRingHom.comp Algebra.TensorProduct.includeRight.toRingHom) = J) :
-    A ⊗[R] (B ⧸ I) ≃ₐ[S] (C ⧸ J) :=
-  letI F : A ⊗[R] (B ⧸ I) →ₐ[S] (C ⧸ J) :=
-    Algebra.TensorProduct.lift ((Ideal.Quotient.mkₐ _ _).comp
-      (e.toAlgHom.comp Algebra.TensorProduct.includeLeft))
-      (Ideal.quotientMapₐ _ ((e.toAlgHom.restrictScalars R).comp Algebra.TensorProduct.includeRight)
-        (Ideal.map_le_iff_le_comap.mp hJ.le)) fun _ _ ↦ .all _ _
-  .ofAlgHom F
-    (Ideal.Quotient.liftₐ _ (.comp (Algebra.TensorProduct.map (.id _ _) (Ideal.Quotient.mkₐ _ _))
-      e.symm.toAlgHom) (show J ≤ RingHom.ker _ from hJ.ge.trans (Ideal.map_le_iff_le_comap.mpr
-        (by simp +contextual [SetLike.le_def, ← Ideal.Quotient.eq_zero_iff_mem (I := I)])))) (by
-    ext x
-    obtain ⟨x, rfl⟩ := e.surjective x
-    have : F.comp (Algebra.TensorProduct.map (.id _ _) (Ideal.Quotient.mkₐ _ _)) =
-      (Ideal.Quotient.mkₐ _ _).comp e := by ext <;> simp [F, ← Algebra.TensorProduct.one_def]
-    simpa using congr($this x)) (by ext <;> simp [F])
-
-@[simp]
-lemma tensorQuotAlgEquivTensorOfAlgEquiv_tmul
-    {R S A B C : Type*} [CommRing R] [CommRing S] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] [Algebra S A] [Algebra S C] [Algebra R S]
-    [IsScalarTower R S A] [IsScalarTower R S C] (e : A ⊗[R] B ≃ₐ[S] C) (I : Ideal B) (J : Ideal C)
-    (hJ : I.map (e.toRingHom.comp Algebra.TensorProduct.includeRight.toRingHom) = J)
-    (a : A) (b : B) :
-    tensorQuotAlgEquivTensorOfAlgEquiv e I J hJ (a ⊗ₜ b) = e (a ⊗ₜ b) := by
-  simp [tensorQuotAlgEquivTensorOfAlgEquiv, ← map_mul]
-
-@[simp]
-lemma tensorQuotAlgEquivTensorOfAlgEquiv_tmul_one
-    {R S A B C : Type*} [CommRing R] [CommRing S] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] [Algebra S A] [Algebra S C] [Algebra R S]
-    [IsScalarTower R S A] [IsScalarTower R S C] (e : A ⊗[R] B ≃ₐ[S] C) (I : Ideal B) (J : Ideal C)
-    (hJ : I.map (e.toRingHom.comp Algebra.TensorProduct.includeRight.toRingHom) = J)
-    (a : A) :
-    tensorQuotAlgEquivTensorOfAlgEquiv e I J hJ (a ⊗ₜ 1) = e (a ⊗ₜ 1) := by
-  simp [tensorQuotAlgEquivTensorOfAlgEquiv]
-
-@[simp]
-lemma tensorQuotAlgEquivTensorOfAlgEquiv_symm_tmul
-    {R S A B C : Type*} [CommRing R] [CommRing S] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] [Algebra S A] [Algebra S C] [Algebra R S]
-    [IsScalarTower R S A] [IsScalarTower R S C] (e : A ⊗[R] B ≃ₐ[S] C) (I : Ideal B) (J : Ideal C)
-    (hJ : I.map (e.toRingHom.comp Algebra.TensorProduct.includeRight.toRingHom) = J) (c : C) :
-    (tensorQuotAlgEquivTensorOfAlgEquiv e I J hJ).symm c =
-      Algebra.TensorProduct.map (.id S A) (Ideal.Quotient.mkₐ R I) (e.symm c) := by
-  simp [tensorQuotAlgEquivTensorOfAlgEquiv]
+lemma Polynomial.fiberEquivQuotient_tmul {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (f : R[X] →ₐ[R] S) (hf : Function.Surjective ⇑f) (p : Ideal R) [p.IsPrime] (a b) :
+    Polynomial.fiberEquivQuotient f hf p (a ⊗ₜ f b) =
+      Ideal.Quotient.mk _ (C a * b.map (algebraMap _ _)) := by
+  simp [Polynomial.fiberEquivQuotient]; rfl
 
 theorem Algebra.FormallyEtale.isStandardEtale_of_finite_aux
     {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
@@ -84,19 +39,19 @@ theorem Algebra.FormallyEtale.isStandardEtale_of_finite_aux
       RingHom.ker (aeval (1 ⊗ₜ x : P.ResidueField ⊗[R] S)).toRingHom := by
   have hx' : Function.Surjective (aeval (R := R) x) :=
     (AlgHom.range_eq_top _).mp ((adjoin_singleton_eq_range_aeval R x).symm.trans hx)
-  set I := RingHom.ker (aeval (R := R) x).toRingHom
-  let e : P.ResidueField ⊗[R] S ≃ₐ[R]
+  set I := RingHom.ker (RingHomClass.toRingHom <| aeval (R := R) x)
+  let e : P.ResidueField ⊗[R] S ≃ₐ[P.ResidueField]
       P.ResidueField[X] ⧸ (I.map (mapRingHom (algebraMap _ P.ResidueField))) :=
-    (Algebra.TensorProduct.congr .refl (Ideal.quotientKerAlgEquivOfSurjective hx').symm).trans
-    (tensorQuotAlgEquivTensorOfAlgEquiv (polyEquivTensor R P.ResidueField).symm _ _ (by
-      congr 1; ext : 2 <;> simp [- AlgEquiv.symm_toRingEquiv]))
+    Polynomial.fiberEquivQuotient (aeval (R := R) x) hx' _
   rw [← RingHom.ker_comp_of_injective _ (f := e.toRingHom) e.injective]
   have H : (Ideal.quotientKerAlgEquivOfSurjective hx').symm x = (X : R[X]) :=
     (Ideal.quotientKerAlgEquivOfSurjective hx').symm_apply_eq.mpr (aeval_X _).symm
   convert Ideal.mk_ker.symm
   ext a
-  · simp [-Ideal.quotientKerAlgEquivOfSurjective_symm_apply, e, Algebra.smul_def]
-  · simp [-Ideal.quotientKerAlgEquivOfSurjective_symm_apply, e, Algebra.smul_def, H]
+  · dsimp [-TensorProduct.algebraMap_apply]
+    rw [aeval_C, AlgEquiv.commutes]
+    rfl
+  · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
 set_option maxHeartbeats 0 in
 set_option synthInstance.maxHeartbeats 0 in
@@ -790,7 +745,7 @@ lemma Algebra.Etale.exists_isStandardEtale
     (Q : Ideal S) [Q.IsPrime] [Algebra.Etale R S] :
     ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
   obtain ⟨A₀, B₀, _, _, hA₀, h, ⟨e⟩⟩ :=
-    Algebra.Etale.exists_subalgebra_finiteType (R := ℤ) (A := R) (B := S)
+    Algebra.Etale.exists_subalgebra_fg (R := ℤ) (A := R) (B := S)
   have : Algebra.FiniteType ℤ A₀ := ⟨(Subalgebra.fg_top _).mpr hA₀⟩
   have : IsNoetherianRing A₀ := Algebra.FiniteType.isNoetherianRing ℤ A₀
   obtain ⟨f, hf, hf'⟩ := Algebra.FormallyEtale.isStandardEtale_of_isNoetherianRing
