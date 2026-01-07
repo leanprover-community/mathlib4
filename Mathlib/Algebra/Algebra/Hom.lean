@@ -495,7 +495,7 @@ variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 /-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
-`DistribMulAction.toLinearMap`. -/
+`DistribSMul.toLinearMap`. -/
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
