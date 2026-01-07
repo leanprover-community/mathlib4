@@ -18,7 +18,7 @@ While in terms of semantics they could be in the `Basic.lean` file, importing
 
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Nat
