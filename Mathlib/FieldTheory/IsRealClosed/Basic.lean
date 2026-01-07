@@ -62,6 +62,12 @@ theorem exists_eq_pow_of_odd (x : R) {n : ℕ} (hn : Odd n) : ∃ r, x = r ^ n :
   rcases exists_isRoot_of_odd_natDegree (f := X ^ n - C x) (by simp [hn]) with ⟨r, hr⟩
   exact ⟨r, by linear_combination - (by simpa using hr : r ^ n - x = 0)⟩
 
+theorem exists_eq_zpow_of_odd (x : R) {k : ℤ} (hk : Odd k) : ∃ r, x = r ^ k := by
+  rcases k.eq_nat_or_neg with ⟨n, rfl | rfl⟩
+  · simpa using exists_eq_pow_of_odd x (by simpa using hk)
+  · rcases exists_eq_pow_of_odd x (by simpa using hk) with ⟨r, hr⟩
+    exact ⟨r⁻¹, by simpa using hr⟩
+
 theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n ≠ 0) :
     ∃ r, x = r ^ n := by
   induction n using Nat.strong_induction_on generalizing x with
@@ -73,6 +79,13 @@ theorem exists_eq_pow_of_isSquare {x : R} (hx : IsSquare x) {n : ℕ} (hn : n �
         rcases ih m (by lia) h (by lia) with ⟨r, hr⟩ <;>
         exact ⟨r, by simp [hm, pow_add, ← hr, hs]⟩
     · exact exists_eq_pow_of_odd x odd
+
+theorem exists_eq_zpow_of_isSquare {x : R} (hx : IsSquare x) {k : ℤ} (hk : k ≠ 0) :
+    ∃ r, x = r ^ k := by
+  rcases k.eq_nat_or_neg with ⟨n, rfl | rfl⟩
+  · simpa using exists_eq_pow_of_isSquare hx (by simpa using hk)
+  · rcases exists_eq_pow_of_isSquare hx (by simpa using hk) with ⟨r, hr⟩
+    exact ⟨r⁻¹, by simpa using hr⟩
 
 section LinearOrderedField
 
@@ -88,6 +101,9 @@ alias ⟨_root_.IsSquare.of_nonneg, _⟩ := nonneg_iff_isSquare
 
 theorem exists_eq_pow_of_nonneg {x : R} (hx : 0 ≤ x) {n : ℕ} (hn : n ≠ 0) : ∃ r, x = r ^ n :=
   exists_eq_pow_of_isSquare (.of_nonneg hx) hn
+
+theorem exists_eq_zpow_of_nonneg {x : R} (hx : 0 ≤ x) {k : ℤ} (hk : k ≠ 0) : ∃ r, x = r ^ k :=
+  exists_eq_zpow_of_isSquare (.of_nonneg hx) hk
 
 end LinearOrderedField
 
