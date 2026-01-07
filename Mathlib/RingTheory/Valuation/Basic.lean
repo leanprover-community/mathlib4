@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
+public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.RingTheory.Ideal.Maps
@@ -498,6 +498,20 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   rintro ⟨⟨x, hx, hx'⟩⟩
   rcases eq_or_ne x 0 with rfl | hx0 <;>
   simp_all [one_apply_of_ne_zero]
+
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid v) := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  rw [Submonoid.nontrivial_iff_exists_ne_one]
+  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueMonoid v (Set.mem_range_self x)
+  simpa [Units.ext_iff] using h1
+
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup v) := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  rw [Subgroup.nontrivial_iff_exists_ne_one]
+  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueGroup v (Set.mem_range_self x)
+  simpa [Units.ext_iff] using h1
 
 section Field
 
