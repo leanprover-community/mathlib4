@@ -136,7 +136,6 @@ instance : MulAction α (UpperSet α) :=
 instance commSemigroup : CommSemigroup (UpperSet α) :=
   { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with }
 
-set_option backward.privateInPublic true in
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
@@ -144,12 +143,10 @@ private theorem one_mul (s : UpperSet α) : 1 * s = s :=
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : CommMonoid (UpperSet α) :=
   { UpperSet.commSemigroup with
-    one_mul := one_mul
+    one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }
@@ -195,7 +192,6 @@ instance : MulAction α (LowerSet α) :=
 instance commSemigroup : CommSemigroup (LowerSet α) :=
   { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with }
 
-set_option backward.privateInPublic true in
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
@@ -203,12 +199,10 @@ private theorem one_mul (s : LowerSet α) : 1 * s = s :=
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : CommMonoid (LowerSet α) :=
   { LowerSet.commSemigroup with
-    one_mul := one_mul
+    one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }

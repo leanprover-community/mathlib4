@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Prime.Defs
   by mapping it to another integral domain and checking for irreducibility there.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
