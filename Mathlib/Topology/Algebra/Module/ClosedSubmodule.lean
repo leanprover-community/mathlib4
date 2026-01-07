@@ -74,7 +74,7 @@ instance : Coe (ClosedSubmodule R M) (Submodule R M) where
 lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s := rfl
 
 @[simp]
-lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s ↔ x ∈ s.toSubmodule := by
+lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
   rfl
 
 @[simp]
@@ -199,8 +199,7 @@ lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.
 @[simp]
 lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
   ext
-  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe,
-    ClosedSubmodule.mem_toSubmodule_iff]
+  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe]
   rw [closure_eq_iff_isClosed.mpr]
   · rfl
   · exact s.isClosed'

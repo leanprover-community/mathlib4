@@ -408,7 +408,9 @@ notation:1200 K "ᗮ" => orthogonal K
 @[simp]
 lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = (K.toSubmodule).orthogonal := rfl
 
-lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := by simp
+lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := by
+  rw [← mem_toSubmodule_iff]
+  exact Iff.of_eq rfl
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]
@@ -417,18 +419,18 @@ theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := I
 /-- When a vector is in `Kᗮ`, with the inner product the
 other way round. -/
 theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
-  simp only [mem_toSubmodule_iff, orthogonal_toSubmodule_eq]
+  simp only [mem_orthogonal]
   exact Submodule.mem_orthogonal' (K.toSubmodule) v
 
 variable {K}
 
 theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ := by
-  simp only [mem_toSubmodule_iff, orthogonal_toSubmodule_eq]
+  simp only [mem_orthogonal]
   exact Submodule.sub_mem_orthogonal_of_inner_left h
 
 theorem sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
     x - y ∈ Kᗮ := by
-  simp only [mem_toSubmodule_iff, orthogonal_toSubmodule_eq]
+  simp only [mem_orthogonal]
   exact Submodule.sub_mem_orthogonal_of_inner_right h
 
 variable (K)
@@ -448,7 +450,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
   ext
-  simpa using mem_orthogonal _ _
+  simpa using mem_orthogonal_iff _ _
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
 instance [CompleteSpace E] : CompleteSpace Kᗮ :=
