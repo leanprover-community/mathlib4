@@ -255,7 +255,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
   let _ := sInf ts
   { continuous_smul := by
       -- Porting note: needs `( :)`
-      rw [← (sInf_singleton (a := ‹TopologicalSpace M›):)]
+      rw [← (sInf_singleton (a := ‹TopologicalSpace M›) :)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht

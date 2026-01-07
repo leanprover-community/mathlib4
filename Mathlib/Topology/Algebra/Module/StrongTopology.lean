@@ -733,7 +733,7 @@ def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
     intro s hsb U hU
     rcases mem_nhds_prod_iff.mp <| continuous_smul.tendsto' (0 : 𝕜 × E) 0 (by simp) hU
       with ⟨V, hV, W, hW, hVW⟩
-    rcases (eventually_cobounded_mapsTo <|hsb hV).and (eventually_ne_cobounded 0) |>.exists
+    rcases (eventually_cobounded_mapsTo <| hsb hV).and (eventually_ne_cobounded 0) |>.exists
       with ⟨c, hc, hc₀⟩
     filter_upwards [(set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hW]
     rintro _ ⟨a, ha, rfl⟩ x hx
