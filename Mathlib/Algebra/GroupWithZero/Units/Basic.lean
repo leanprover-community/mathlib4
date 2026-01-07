@@ -152,7 +152,8 @@ open Classical in
 /-- Class expressing the fact that a type has an inverse which behaves like
   `Ring.inverse`. -/
 class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] [Inv M₀] where
-  inv_eq (x : M₀) : x⁻¹ = if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
+  inv_unit (u : M₀ˣ) : (↑u : M₀)⁻¹ = ↑(u⁻¹)
+  inv_of_not_isUnit (x : M₀) (h : ¬IsUnit x) : x⁻¹ = 0
 
 export LawfulInv (inv_eq)
 
