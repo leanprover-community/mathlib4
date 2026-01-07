@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Derivation.Lie
 
 /-!
-# Lie Rinehart algebras
+# Lie-Rinehart algebras
 This file defines Lie-Rinehart algebras and their morphisms. It also shows that the derivations of
 a commutative algebra over a commutative Ring form such a Lie-Rinehart algebra.
 Lie Rinehart algebras appear in differential geometry as section spaces of Lie algebroids and
