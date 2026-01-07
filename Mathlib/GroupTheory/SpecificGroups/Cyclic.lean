@@ -15,7 +15,6 @@ public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.Group
 
 /-!
-
 # Cyclic groups
 
 A group `G` is called cyclic if there exists an element `g : G` such that every element of `G` is of
@@ -639,6 +638,7 @@ theorem prime_card : (Nat.card α).Prime := by
 /-- A commutative simple group is a finite group. -/
 @[to_additive /-- A commutative simple group is a finite group. -/]
 theorem finite : Finite α := Nat.finite_of_card_ne_zero prime_card.ne_zero
+
 end CommSimpleGroup
 
 end IsSimpleGroup
