@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Minimal
 
