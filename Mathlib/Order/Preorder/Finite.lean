@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Minimal
 
@@ -56,6 +57,35 @@ lemma exists_le_minimal (s : Finset α) (ha : a ∈ s) : ∃ b ≤ a, Minimal (�
   exists_le_maximal (α := αᵒᵈ) s ha
 
 end Preorder
+
+section LinearOrder
+variable [LinearOrder α] [DenselyOrdered α]
+
+theorem exists_between {s t : Finset α}
+    (hs : s.Nonempty) (ht : t.Nonempty) (H : ∀ x ∈ s, ∀ y ∈ t, x < y) :
+    ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
+  convert _root_.exists_between (a₁ := s.max' hs) (a₂ := t.min' ht) (by simp_all) <;> simp
+
+theorem exists_between' (s t : Finset α) [NoMaxOrder α] [NoMinOrder α] [Nonempty α]
+    (H : ∀ x ∈ s, ∀ y ∈ t, x < y) : ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
+  by_cases hs : s.Nonempty <;> by_cases ht : t.Nonempty
+  · exact s.exists_between hs ht H
+  · exact let ⟨p, hp⟩ := exists_gt (s.max' hs); ⟨p, by simp_all⟩
+  · exact let ⟨p, hp⟩ := exists_lt (t.min' ht); ⟨p, by simp_all⟩
+  · exact Nonempty.elim ‹_› fun p ↦ ⟨p, by simp_all⟩
+
+theorem _root_.Set.Finite.exists_between {s t : Set α}
+    (hsf : s.Finite) (hs : s.Nonempty) (htf : t.Finite) (ht : t.Nonempty)
+    (H : ∀ x ∈ s, ∀ y ∈ t, x < y) : ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
+  convert Finset.exists_between (s := hsf.toFinset) (t := htf.toFinset)
+    (by simpa) (by simpa) (by simpa) using 1; simp
+
+theorem _root_.Set.Finite.exists_between' [NoMaxOrder α] [NoMinOrder α] [Nonempty α]
+    {s t : Set α} (hs : s.Finite) (ht : t.Finite)
+    (H : ∀ x ∈ s, ∀ y ∈ t, x < y) : ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
+  convert hs.toFinset.exists_between' ht.toFinset (by simpa) using 1; simp
+
+end LinearOrder
 end Finset
 
 namespace Set
