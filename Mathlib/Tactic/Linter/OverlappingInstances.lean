@@ -52,6 +52,7 @@ structure Overlap where
   fvar₂ : Expr × Bool
   /-- A type class on which `fvar₁` and `fvar₂`'s data-carrying projections overlap. -/
   overlap : Expr
+deriving Inhabited, Repr
 
 /-- Find data-carrying overlaps between the current local instances of the `MetaM` context. -/
 def findOverlappingDataInstances : MetaM (Array Overlap) := do
