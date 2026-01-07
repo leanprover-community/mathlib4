@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Sums and products from lists
@@ -100,6 +100,16 @@ theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod 
 theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)
     (h₂ : ∀ ⦃i a b⦄, r a b → r (f i * a) (g i * b)) : r (l.map f).prod (l.map g).prod :=
   List.recOn l h₁ fun a l hl => by simp only [map_cons, prod_cons, h₂ hl]
+
+@[to_additive (attr := simp)]
+theorem prod_rightpad_one (l : List M) (n : ℕ) :
+    (l.rightpad n 1).prod = l.prod := by
+  rw [rightpad, prod_append, prod_replicate, one_pow, mul_one]
+
+@[to_additive (attr := simp)]
+theorem prod_leftpad_one (l : List M) (n : ℕ) :
+    (l.leftpad n 1).prod = l.prod := by
+  rw [leftpad, prod_append, prod_replicate, one_pow, one_mul]
 
 end Monoid
 
