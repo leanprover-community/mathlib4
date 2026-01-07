@@ -29,7 +29,8 @@ C⋆-algebra into the algebra of bounded linear operators on some Hilbert space.
 ## TODO
 
 - Explicitly construct a unit norm cyclic vector ζ such that
-  a ↦ ⟨(f.gnsStarAlgHom(Unital) a) * ζ, ,ζ⟩ is a state on `A` for both unital and non-unital cases.
+  a ↦ ⟨(f.gns(NonUnital)StarAlgHom a) * ζ, ,ζ⟩ is a state on `A` for both unital and non-unital
+  cases.
 
 -/
 
@@ -166,7 +167,6 @@ lemma gnsNonUnitalStarAlgHom_apply {a : A} :
 lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.preGNS} :
     f.gnsNonUnitalStarAlgHom a b = f.leftMulMapPreGNS a b := by
   simp [gnsNonUnitalStarAlgHom_apply]
-
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A →ₚ[ℂ] ℂ)
 
