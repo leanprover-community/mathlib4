@@ -41,8 +41,9 @@ private partial def getStructureDataProjections (e : Expr) (acc : Array Expr := 
 
 /-- Stores the local instance overlaps per class. The keys are the class, and the values are local
 instances which have the class as a projection. The `Bool` value of each entry indicates whether
-its type is exactly the key class. There may be assumed to be at least two local instances per
-class. -/
+its type is exactly the key class. We use an `ExprMap Bool` here instead of e.g. an
+`Array (Expr × Bool`) to ensure that each local instance is recorded only once. There may be
+assumed to be at least two local instances per class. -/
 abbrev Overlaps := ExprMap (ExprMap Bool)
 
 /-- Inserts an overlap into `Overlaps`. -/
