@@ -63,15 +63,22 @@ def findOverlappingDataInstances : MetaM (Array Overlap) := do
     unless (← fvar₁.fvarId!.getBinderInfo).isInstImplicit do continue
     let projClasses ← forallTelescope (← inferType fvar₁) fun xs _ ↦ do
       (← getStructureDataProjections (mkAppN fvar₁ xs) |>.run' {}).mapM (mkForallFVars xs)
+    /- The fvars that are either projections of the current fvar or have projections equal to the
+    current fvar. In both cases we want to ignore further matches against these fvars.
+
+    For less verbose error reporting, we would ideally also ignore overlaps which share a parent;
+    we may eventually want a different data structure for `projClasses` for this. -/
+    let mut done : Array Expr := #[]
     for h : clsIdx in 0...projClasses.size do
       let cls := projClasses[clsIdx]
       if let some (fvar₂, isTypeOfFVar₂) := insts[cls]? then
-        overlaps := overlaps.push {
-            fvar₁ := (fvar₁, clsIdx = 0)
-            fvar₂ := (fvar₂, isTypeOfFVar₂)
-            overlap := cls }
-        if clsIdx = 0 && isTypeOfFVar₂ then
-          break -- Don't consider further projections of this local instance
+        unless done.contains fvar₂ do
+          overlaps := overlaps.push {
+              fvar₁ := (fvar₁, clsIdx = 0)
+              fvar₂ := (fvar₂, isTypeOfFVar₂)
+              overlap := cls }
+          if clsIdx = 0 || isTypeOfFVar₂ then
+            done := done.push fvar₂ -- Don't consider `fvar₂` any more
       else
         insts := insts.insert cls (fvar₁, clsIdx = 0)
   return overlaps
