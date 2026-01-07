@@ -493,7 +493,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
   out := .of_equiv
     { __ := (TensorProduct.comm R ..).toAddEquiv.trans (equiv R S R' S').toAddEquiv,
       map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by
-        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp+contextual) }
+        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp +contextual) }
     fun _ ↦ by simp [equiv_tmul]
 
 variable (R S R' S')

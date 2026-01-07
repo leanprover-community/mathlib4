@@ -101,7 +101,7 @@ include h
 zero. -/
 noncomputable abbrev commGroupWithZero : CommGroupWithZero (FractionalIdeal A⁰ K) where
   inv_zero := inv_zero' _
-  mul_inv_cancel  := isDedekindDomainInv_iff.mp h
+  mul_inv_cancel := isDedekindDomainInv_iff.mp h
   div_eq_mul_inv I J := by
     obtain rfl | hJ := eq_or_ne J 0
     · simp [inv_zero']

@@ -253,14 +253,14 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
       have ⟨s, y, y𝔪, sbyr⟩ :=
         mem_span_singleton_sup.mp <|
           mul_mem_left _ r <|
-            (isMaximal_iff.mp 𝔪_mem.right).right K (b*r)
+            (isMaximal_iff.mp 𝔪_mem.right).right K (b * r)
             le_sup_right b𝔪₀
             (mem_sup_left <| mem_span_singleton_self _)
-      have : 1 - s*b ∈ 𝔪₀ := by
+      have : 1 - s * b ∈ 𝔪₀ := by
         rw [mul_one, add_comm, ← eq_sub_iff_add_eq] at sbyr
         rw [sbyr, ← mul_assoc] at y𝔪
         simp [𝔪₀, sub_mul, y𝔪]
-      have : 1 - s*b + s*b ∈ J := by
+      have : 1 - s * b + s * b ∈ J := by
         apply add_mem (𝔪₀J this) (J.mul_mem_left _ bJ)
       simpa using this
     exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩

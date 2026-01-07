@@ -117,7 +117,7 @@ variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZer
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
   coe_injective' f g h := by
-    obtain ⟨⟨⟨_,_⟩, _⟩, _⟩ := f
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     congr
 
 instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
