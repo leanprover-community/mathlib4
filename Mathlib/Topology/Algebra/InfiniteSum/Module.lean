@@ -40,8 +40,9 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
     [T2Space α] (g : γ) :
     ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i :=
   ((Homeomorph.smul g).isClosedEmbedding.map_tsum f (g := show α ≃+ α from
-    { AddMonoidHom.smulLeft g with
-      invFun := AddMonoidHom.smulLeft g⁻¹, left_inv a := by simp, right_inv a := by simp })).symm
+    { DistribSMul.toAddMonoidHom _ g with
+      invFun := DistribSMul.toAddMonoidHom _ g⁻¹
+      left_inv a := by simp, right_inv a := by simp })).symm
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionSemiring`; no summability hypothesis. This could be made to work for a
