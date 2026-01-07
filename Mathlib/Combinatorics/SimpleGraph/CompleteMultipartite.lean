@@ -337,61 +337,94 @@ variable {V : Type*} {G : SimpleGraph V}
 /-- A complete equipartite subgraph in `r` parts each of size `t` in `G` is `r` subsets
 of vertices each of size `t` such that vertices in distinct subsets are adjacent. -/
 structure CompleteEquipartiteSubgraph (G : SimpleGraph V) (r t : ℕ) where
-  /-- The `r` parts. -/
-  parts : Fin r → Finset V
-  /-- Each part is size `t`. -/
-  card_parts (i : Fin r) : #(parts i) = t
-  /-- Vertices in distinct parts are adjacent. -/
-  isCompleteBetween : Pairwise fun ⦃i₁ i₂⦄ ↦ G.IsCompleteBetween (parts i₁) (parts i₂)
+  /-- The parts in a complete equipartite subgraph. -/
+  parts : Finset (Finset V)
+  /-- There are `r` parts or `t = 0`. -/
+  card_parts : #parts = r ∨ t = 0
+  /-- There are `t` vertices in each part. -/
+  card_mem_parts {p} : p ∈ parts → #p = t
+  /-- The vertices in distinct parts are adjacent. -/
+  isCompleteBetween : (parts : Set (Finset V)).Pairwise (G.IsCompleteBetween · ·)
 
 variable {r t : ℕ} (K : G.CompleteEquipartiteSubgraph r t)
 
 namespace CompleteEquipartiteSubgraph
 
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
-theorem pairwise_disjoint_on_parts : Pairwise (Disjoint on K.parts) :=
-  fun _ _ hne ↦ disjoint_left.mpr fun _ h₁ h₂ ↦ (G.loopless _) (K.isCompleteBetween hne h₁ h₂)
+theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
+  fun _ h₁ _ h₂ hne ↦ disjoint_left.mpr fun _ h₁' h₂' ↦
+    (G.loopless _) (K.isCompleteBetween h₁ h₂ hne h₁' h₂')
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
-abbrev verts : Finset V :=
-  univ.disjiUnion K.parts (K.pairwise_disjoint_on_parts.set_pairwise (SetLike.coe univ))
+def verts : Finset V := K.parts.disjiUnion id K.disjoint
+
+open Classical in
+/-- The finset of vertices in a complete equipartite subgraph as a `biUnion`. -/
+lemma verts_eq_biUnion : K.verts = K.parts.biUnion id := by rw [verts, disjiUnion_eq_biUnion]
 
 /-- There are `r * t` vertices in a complete equipartite subgraph with `r` parts of size `t`. -/
-theorem card_verts : #K.verts = r * t := by simp [verts, card_parts]
+theorem card_verts : #K.verts = r * t := by
+  simp_rw [verts, card_disjiUnion, id_eq, sum_congr rfl fun _ ↦ K.card_mem_parts, sum_const,
+    smul_eq_mul, mul_eq_mul_right_iff]
+  exact K.card_parts
 
 /-- A complete equipartite subgraph gives rise to a copy of a complete equipartite graph. -/
 noncomputable def toCopy : Copy (completeEquipartiteGraph r t) G := by
-  have (i : Fin r) : Nonempty (Fin t ↪ K.parts i) := by
-    rw [Embedding.nonempty_iff_card_le, Fintype.card_fin, card_coe, K.card_parts i]
-  have fᵣ (i : Fin r) : Fin t ↪ K.parts i := Classical.arbitrary (Fin t ↪ K.parts i)
-  let f : (Fin r) × (Fin t) ↪ V := by
-    use fun (i, x) ↦ fᵣ i x
-    intro (i₁, x₁) (i₂, x₂) heq
-    rw [Prod.mk.injEq]
-    contrapose! heq with hne
-    rcases eq_or_ne i₁ i₂ with heq | hne
-    · rw [heq, ← Subtype.ext_iff.ne]
-      exact (fᵣ i₂).injective.ne (hne heq)
-    · exact (K.isCompleteBetween hne (fᵣ i₁ x₁).prop (fᵣ i₂ x₂).prop).ne
-  use ⟨f, ?_⟩, f.injective
-  intro (i₁, x₁) (i₂, x₂) hne
-  exact K.isCompleteBetween hne (fᵣ i₁ x₁).prop (fᵣ i₂ x₂).prop
+  by_cases ht : t = 0
+  · rw [completeEquipartiteGraph_eq_bot_iff.mpr <| .inr ht]
+    have : IsEmpty (Fin r × Fin t) := by simp [ht, Fin.isEmpty]
+    exact Copy.bot .ofIsEmpty
+  · have : Nonempty (Fin r ↪ K.parts) := by
+      rw [Embedding.nonempty_iff_card_le,
+        Fintype.card_fin, card_coe, K.card_parts.resolve_right ht]
+    let fᵣ : Fin r ↪ K.parts := Classical.arbitrary (Fin r ↪ K.parts)
+    have (p : K.parts) : Nonempty (Fin t ↪ p) := by
+      rw [Embedding.nonempty_iff_card_le, Fintype.card_fin, card_coe, K.card_mem_parts p.prop]
+    let fₜ (p : K.parts) : Fin t ↪ p :=
+      Classical.arbitrary (Fin t ↪ p)
+    let f : (Fin r) × (Fin t) ↪ V := by
+      use fun (i, j) ↦ fₜ (fᵣ i) j
+      intro (i₁, j₁) (i₂, j₂) heq
+      rw [Prod.mk.injEq]
+      contrapose! heq with hne
+      rcases eq_or_ne i₁ i₂ with heq | hne
+      · rw [heq, ← Subtype.ext_iff.ne]
+        exact (fₜ _).injective.ne (hne heq)
+      · refine (K.isCompleteBetween (fᵣ _).prop (fᵣ _).prop ?_ (fₜ _ _).prop (fₜ _ _).prop).ne
+        exact Subtype.ext_iff.ne.mp <| fᵣ.injective.ne hne
+    refine ⟨⟨f, fun hne ↦ ?_⟩, f.injective⟩
+    refine K.isCompleteBetween (fᵣ _).prop (fᵣ _).prop ?_ (fₜ _ _).prop (fₜ _ _).prop
+    exact Subtype.ext_iff.ne.mp <| fᵣ.injective.ne hne
 
 /-- A copy of a complete equipartite graph identifies a complete equipartite subgraph. -/
-def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSubgraph r t where
-  parts i := by
-    let fᵣ (i : Fin r) : Fin t ↪ V := by
-      use fun x ↦ f (i, x)
-      intro _ _ h
-      simpa using f.injective h
-    exact univ.map (fᵣ i)
-  card_parts i := by simp
-  isCompleteBetween _ _ hne _ h₁ _ h₂ := by
-    simp_rw [mem_coe, mem_map] at h₁ h₂
-    obtain ⟨_, _, h₁⟩ := h₁
-    obtain ⟨_, _, h₂⟩ := h₂
-    rw [← h₁, ← h₂]
-    exact f.toHom.map_adj hne
+def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSubgraph r t := by
+  by_cases ht : t = 0
+  · exact ⟨∅, .inr ht, by simp, by simp⟩
+  · refine ⟨univ.map ⟨fun i ↦ univ.map ⟨fun j ↦ f (i, j), fun _ _ h ↦ ?_⟩, fun i₁ i₂ h ↦ ?_⟩,
+      by simp, fun h ↦ ?_, fun _ h₁ _ h₂ hne _ h₁' _ h₂' ↦ ?_⟩
+    · simpa using f.injective h
+    · simp_rw [Finset.ext_iff] at h
+      have : NeZero t := ⟨ht⟩
+      obtain ⟨_, heq⟩ : ∃ j, f (i₁, j) = f (i₂, 0) := by simpa using h <| f (i₂, 0)
+      apply f.injective at heq
+      rw [Prod.mk.injEq] at heq
+      exact heq.left
+    · simp_rw [mem_map, mem_univ, Embedding.coeFn_mk, true_and] at h
+      replace ⟨_, h⟩ := h
+      simp [← h]
+    · simp_rw [coe_map, Embedding.coeFn_mk, coe_univ, Set.image_univ, Set.mem_range] at h₁ h₂
+      replace ⟨_, h₁⟩ := h₁
+      replace ⟨_, h₂⟩ := h₂
+      rw [← h₁] at h₁'
+      rw [← h₂] at h₂'
+      simp_rw [coe_map, Embedding.coeFn_mk, coe_univ, Set.image_univ, Set.mem_range] at h₁' h₂'
+      replace ⟨_, h₁'⟩ := h₁'
+      replace ⟨_, h₂'⟩ := h₂'
+      rw [← h₁', ← h₂']
+      apply f.toHom.map_adj
+      simp_rw [completeEquipartiteGraph_adj]
+      contrapose! hne with heq
+      simp_rw [← h₁, ← h₂, heq]
 
 end CompleteEquipartiteSubgraph
 
@@ -401,38 +434,50 @@ theorem completeEquipartiteGraph_isContained_iff :
     completeEquipartiteGraph r t ⊑ G ↔ Nonempty (G.CompleteEquipartiteSubgraph r t) :=
   ⟨fun ⟨f⟩ ↦ ⟨CompleteEquipartiteSubgraph.ofCopy f⟩, fun ⟨K⟩ ↦ ⟨K.toCopy⟩⟩
 
-/-- Simple graphs contain a copy of a `completeEquipartiteGraph (n + 1) t` iff there exists
-`s : Finset V` of size `#s = t` and `K : G.CompleteEquipartiteSubgraph n t` such that the
+open Classical in
+/-- Simple graphs contain a copy of a `completeEquipartiteGraph (r + 1) t` iff there exists
+`s : Finset V` of size `#s = t` and `K : G.CompleteEquipartiteSubgraph r t` such that the
 vertices in `s` are adjacent to the vertices in `K`. -/
-theorem completeEquipartiteGraph_succ_isContained_iff {n : ℕ} :
-  completeEquipartiteGraph (n + 1) t ⊑ G
-    ↔ ∃ᵉ (K : G.CompleteEquipartiteSubgraph n t) (s : Finset V),
-        #s = t ∧ ∀ i, G.IsCompleteBetween (K.parts i) s := by
-  rw [completeEquipartiteGraph_isContained_iff]
-  refine ⟨fun ⟨K'⟩ ↦ ?_, fun ⟨K, s, hs, hadj⟩ ↦ ?_⟩
-  · let K : G.CompleteEquipartiteSubgraph n t := by
-      refine ⟨fun i ↦ K'.parts i.castSucc, fun i ↦ K'.card_parts i.castSucc, ?_⟩
-      intro i j hne v₁ hv₁ v₂ hv₂
-      rw [← Fin.castSucc_inj.ne] at hne
-      exact K'.isCompleteBetween hne hv₁ hv₂
-    refine ⟨K, K'.parts (Fin.last n), K'.card_parts (Fin.last n), fun i v₁ hv₁ v₂ hv₂ ↦ ?_⟩
-    have hne : i.castSucc ≠ Fin.last n := Fin.exists_castSucc_eq.mp ⟨i, rfl⟩
-    exact K'.isCompleteBetween hne hv₁ hv₂
-  · refine ⟨fun i ↦ if hi : ↑i < n then K.parts ⟨i, hi⟩ else s, fun i ↦ ?_,
-      fun i₁ i₂ hne v₁ hv₁ v₂ hv₂ ↦ ?_⟩
-    · by_cases hi : ↑i < n
-      · simp [hi, K.card_parts ⟨i, hi⟩]
-      · simp [hi, hs]
-    · by_cases hi₁ : ↑i₁ < n <;> by_cases hi₂ : ↑i₂ < n
-        <;> simp [hi₁, hi₂] at hne hv₁ hv₂ ⊢
-      · have hne : i₁.castLT hi₁ ≠ i₂.castLT hi₂ := by
-          simp [Fin.ext_iff, Fin.val_ne_of_ne hne]
-        exact K.isCompleteBetween hne hv₁ hv₂
-      · exact hadj ⟨i₁, hi₁⟩ hv₁ hv₂
-      · exact (hadj ⟨i₂, hi₂⟩ hv₂ hv₁).symm
-      · absurd hne
-        rw [Fin.ext_iff, Nat.eq_of_le_of_lt_succ (le_of_not_gt hi₁) i₁.isLt,
-          Nat.eq_of_le_of_lt_succ (le_of_not_gt hi₂) i₂.isLt]
+theorem completeEquipartiteGraph_succ_isContained_iff :
+  completeEquipartiteGraph (r + 1) t ⊑ G
+    ↔ ∃ᵉ (K : G.CompleteEquipartiteSubgraph r t) (s : Finset V),
+        #s = t ∧ ∀ p ∈ K.parts, G.IsCompleteBetween p s := by
+  by_cases ht : t = 0
+  · have (r' : ℕ) : IsEmpty (Fin r' × Fin t) := by simp [ht, Fin.isEmpty]
+    have h_bot (r' : ℕ) : completeEquipartiteGraph r' t = ⊥ :=
+      completeEquipartiteGraph_eq_bot_iff.mpr <| .inr ht
+    simp_rw [h_bot (r + 1), ht, Finset.card_eq_zero, exists_eq_left, IsCompleteBetween, mem_coe,
+      notMem_empty, IsEmpty.forall_iff, implies_true, exists_true_iff_nonempty,
+      ← completeEquipartiteGraph_isContained_iff, h_bot r]
+    exact ⟨fun _ ↦ ⟨Copy.bot .ofIsEmpty⟩, fun _ ↦ ⟨Copy.bot .ofIsEmpty⟩⟩
+  · rw [completeEquipartiteGraph_isContained_iff]
+    refine ⟨fun ⟨K'⟩ ↦ ?_, fun ⟨K, s, hs, hadj⟩ ↦ ?_⟩
+    · obtain ⟨parts, hparts_sub, hparts_card⟩ := K'.parts.exists_subset_card_eq (Nat.pred_le _)
+      let K : G.CompleteEquipartiteSubgraph r t := by
+        refine ⟨parts, ?_, fun h ↦ K'.card_mem_parts (hparts_sub h),
+          fun _ h₁ _ h₂ hne ↦ K'.isCompleteBetween (hparts_sub h₁) (hparts_sub h₂) hne⟩
+        rw [hparts_card, K'.card_parts.resolve_right ht]
+        exact .inl (Nat.pred_succ r)
+      obtain ⟨s, nhs_mem, hs⟩ : ∃ s ∉ K.parts, insert s K.parts = K'.parts := by
+        refine exists_eq_insert_iff.mpr ⟨hparts_sub, ?_⟩
+        rw [K.card_parts.resolve_right ht, K'.card_parts.resolve_right ht]
+      have hs_mem : s ∈ K'.parts := by simp [← hs]
+      exact ⟨K, s, K'.card_mem_parts hs_mem,
+        fun _ h ↦ K'.isCompleteBetween (hparts_sub h) hs_mem (ne_of_mem_of_not_mem h nhs_mem)⟩
+    · refine ⟨K.parts.cons s ?_, ?_, ?_, ?_⟩
+      · by_contra! hs_mem
+        obtain ⟨v, hv⟩ : s.Nonempty := by
+          rw [← Finset.card_pos, hs]
+          exact Nat.pos_of_ne_zero ht
+        absurd hadj s hs_mem hv hv
+        exact G.loopless v
+      · rw [Finset.card_cons, K.card_parts.resolve_right ht]
+        exact .inl rfl
+      · simp_rw [mem_cons, forall_eq_or_imp]
+        exact ⟨hs, fun p ↦ K.card_mem_parts⟩
+      · rw [coe_cons]
+        refine K.isCompleteBetween.insert_of_symmetric ?_ (fun p hp _ ↦ (hadj p hp).symm)
+        simp_rw [Symmetric, isCompleteBetween_comm, imp_self, implies_true]
 
 end CompleteEquipartiteSubgraph
 
