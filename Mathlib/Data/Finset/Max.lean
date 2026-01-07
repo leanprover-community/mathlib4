@@ -565,7 +565,7 @@ theorem Multiset.exists_min_image {α R : Type*} [LinearOrder R] (f : α → R) 
     (hs : s ≠ 0) : ∃ y ∈ s, ∀ z ∈ s, f y ≤ f z :=
   @exists_max_image α Rᵒᵈ _ f s hs
 
-section LinearOrder
+section ExistsBetween
 variable [LinearOrder α] [DenselyOrdered α]
 
 theorem Finset.exists_between {s t : Finset α}
@@ -581,15 +581,15 @@ theorem Finset.exists_between' (s t : Finset α) [NoMaxOrder α] [NoMinOrder α]
   · exact let ⟨p, hp⟩ := exists_lt (t.min' ht); ⟨p, by simp_all⟩
   · exact Nonempty.elim ‹_› fun p ↦ ⟨p, by simp_all⟩
 
-theorem _root_.Set.Finite.exists_between {s t : Set α}
+theorem Set.Finite.exists_between {s t : Set α}
     (hsf : s.Finite) (hs : s.Nonempty) (htf : t.Finite) (ht : t.Nonempty)
     (H : ∀ x ∈ s, ∀ y ∈ t, x < y) : ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
   convert Finset.exists_between (s := hsf.toFinset) (t := htf.toFinset)
     (by simpa) (by simpa) (by simpa) using 1; simp
 
-theorem _root_.Set.Finite.exists_between' [NoMaxOrder α] [NoMinOrder α] [Nonempty α]
+theorem Set.Finite.exists_between' [NoMaxOrder α] [NoMinOrder α] [Nonempty α]
     {s t : Set α} (hs : s.Finite) (ht : t.Finite)
     (H : ∀ x ∈ s, ∀ y ∈ t, x < y) : ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
   convert hs.toFinset.exists_between' ht.toFinset (by simpa) using 1; simp
 
-end LinearOrder
+end ExistsBetween
