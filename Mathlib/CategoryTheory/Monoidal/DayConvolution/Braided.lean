@@ -55,8 +55,8 @@ def braidingInvCorepresenting : G ⊠ F ⟶ tensor C ⋙ F ⊛ G where
 
 /-- The braiding isomorphism for Day convolution. -/
 def braiding : F ⊛ G ≅ G ⊛ F where
-  hom := corepresentableBy F G|>.homEquiv.symm <| braidingHomCorepresenting F G
-  inv := corepresentableBy G F|>.homEquiv.symm <| braidingInvCorepresenting F G
+  hom := corepresentableBy F G |>.homEquiv.symm <| braidingHomCorepresenting F G
+  inv := corepresentableBy G F |>.homEquiv.symm <| braidingInvCorepresenting F G
   hom_inv_id := by
     apply Functor.hom_ext_of_isLeftKanExtension (F ⊛ G) (unit F G)
     ext
