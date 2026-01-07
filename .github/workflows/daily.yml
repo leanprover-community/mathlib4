@@ -67,7 +67,6 @@ jobs:
 
       - name: Check environments using lean4checker # make sure this name is consistent with "Get job status and URLs" in the notify job
         id: lean4checker
-        continue-on-error: true
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
@@ -211,7 +210,6 @@ jobs:
 
       - name: Run mathlib_test_executable # make sure this name is consistent with "Get job status and URLs" in the notify job
         id: mathlib-test
-        continue-on-error: true
         run: |
           lake exe mathlib_test_executable
 
@@ -333,7 +331,6 @@ jobs:
 
       - name: Check Mathlib using nanoda # make sure this name is consistent with "Get job status and URLs" in the notify job
         id: nanoda
-        continue-on-error: true
         run: |
           # Clone and build lean4export
           # TODO: Once https://github.com/leanprover/lean4export/pull/11 is merged,
