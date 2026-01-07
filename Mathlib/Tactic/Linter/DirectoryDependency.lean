@@ -282,19 +282,26 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Testing, `Mathlib.Util),
 ]
 
-/-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
-should not import modules with the second prefix (except if specifically allowed in
-`overrideAllowedImportDirs`).
+/-- Read a file and filter out all lines which do not start
+with (possibly some whitespace and) the string "// ". -/
+def extractNonComments (input: String) : String :=
+  "\n".intercalate <| (input.splitOn "\n").filter fun l ↦ (!l.trimLeft.startsWith "// ")
 
-For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
-``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
-because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
-outside `Mathlib/Algebra/Notation.lean`.
--/
-def forbiddenImportDirs : NamePrefixRel := .ofArray #[
-  (`Mathlib.Algebra.Notation, `Mathlib.Algebra),
-  (`Mathlib, `Mathlib.Deprecated),
+/-- Copy-pasted from check-yaml, and added the comment filtering -/
+def readJsonFileWithComments (α) [FromJson α] (path : System.FilePath) : IO α := do
+  let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
+  liftExcept <| fromJson? <|← liftExcept <| Json.parse <| extractNonComments <| ← IO.FS.readFile path
 
+/-- Read forbiddenDirs.json and convert this to an `Array Name × Name`. -/
+def autoforbidden : IO <| Array (Name × Name) := do
+  sorry
+  -- let basic ← readJsonFileWithComments (RBMap String (Array String) compare) ("scripts" / "forbiddenDirs.json")
+  -- let mut res := #[]
+  -- for (k, l) in basic.toArray do
+  --   res := res.append <| l.map (fun n ↦ (k.toName, n.toName))
+  -- pure res
+
+def oldForbiddenImportDirs : NamePrefixRel := .ofArray #[
   -- This is used to test the linter.
   (`MathlibTest.Header, `Mathlib.Deprecated),
 
@@ -411,7 +418,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Control, `Mathlib.Topology),
   (`Mathlib.Data, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Data, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Data, `Mathlib.Analysis),
   (`Mathlib.Data, `Mathlib.Computability),
   (`Mathlib.Data, `Mathlib.Condensed),
   (`Mathlib.Data, `Mathlib.FieldTheory),
@@ -597,6 +603,20 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Topology, `Mathlib.Testing),
 ]
 
+/-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
+should not import modules with the second prefix (except if specifically allowed in
+`overrideAllowedImportDirs`).
+
+For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
+``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
+because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
+outside `Mathlib/Algebra/Notation.lean`.
+-/
+def forbiddenImportDirs : IO NamePrefixRel :=
+  -- This is used to test the linter.
+  let testing := #[(`MathlibTest.Header, `Mathlib.Deprecated)]
+  return .ofArray <| testing.append (← autoforbidden)
+
 /-- `overrideAllowedImportDirs` relates module prefixes, specifying that modules with the first
 prefix are allowed to import modules with the second prefix, even if disallowed in
 `forbiddenImportDirs`.
@@ -625,8 +645,8 @@ open DirectoryDependency
 
 /-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
 if so, return an error describing how the import transitively arises. -/
-private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
-  match forbiddenImportDirs.findAny mainModule imports with
+private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : IO <| Option MessageData := do
+  match (← forbiddenImportDirs).findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
@@ -636,11 +656,11 @@ private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Ar
           msg := msg ++ m!"which is imported by {dep},\n"
         return some (msg ++ m!"which is imported by this module. \
           (Exceptions can be added to `overrideAllowedImportDirs`.)")
-      else none
+      else return none
     else
       return some m!"Internal error in `directoryDependency` linter: this module claims to depend \
       on a module starting with {n₂} but a module with that prefix was not found in the import graph."
-  | none => none
+  | none => return none
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
@@ -654,7 +674,7 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
   let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
   if matchingPrefixes.isEmpty then
     -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
-    if let some msg := checkBlocklist env mainModule imports then return #[msg] else return #[]
+    if let some msg := ← checkBlocklist env mainModule imports then return #[msg] else return #[]
   else
     -- We always allow imports in the same directory (for each matching prefix),
     -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
