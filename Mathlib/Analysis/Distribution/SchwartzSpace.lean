@@ -774,55 +774,47 @@ variable (𝕜 F) in
 /-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
 functions. -/
 def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(E, G →L[ℝ] F) :=
-  mkCLM (fun f x ↦ (L x).smulRight (f x)) (by intros; ext; simp) (by
-    intro c g x
-    ext v
-    simpa using smul_comm ((L x) v) c (g x)) (by intro; fun_prop) (by
-    intro ⟨k, n⟩
-    use {(k + 1, n), (k, n - 1)}, 2 * ‖L‖ * (max 1 n), by positivity
-    intro f x
-    calc
-      _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
-          ‖iteratedFDeriv ℝ i L x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
-        gcongr 1
-        exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (smulRightL ℝ G F)
-          (by fun_prop) (f.smooth ⊤) x (ENat.LEInfty.out) norm_smulRightL_le
-      _ ≤ ‖x‖ ^ k *
-          (‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ + n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖) := by
-        gcongr 1
-        rw [Finset.sum_range_succ', add_comm]
-        simp only [Nat.choose_zero_right, Nat.cast_one, norm_iteratedFDeriv_zero, one_mul,
-          Nat.sub_zero, add_le_add_iff_left]
-        by_cases! h : n = 0
-        · simp only [h, Finset.range_zero, Nat.choose_zero_succ, CharP.cast_eq_zero, zero_mul,
-          Finset.sum_const_zero]
-          positivity
-        · obtain ⟨n', hn'⟩ : ∃ n', n' + 1 = n := by simpa using Nat.zero_lt_of_ne_zero h
-          have : ∑ k ∈ Finset.range n',
-              (((n' + 1).choose (k + 1 + 1)) : ℝ) * ‖iteratedFDeriv ℝ (k + 1 + 1) L x‖ *
-              ‖iteratedFDeriv ℝ (n' + 1 - (k + 1 + 1)) f x‖ = 0 := by
-            apply Finset.sum_eq_zero
-            simp [iteratedFDeriv_succ_eq_comp_right, iteratedFDeriv_succ_const]
-          rw [← hn', Finset.sum_range_succ', this]
-          simp
-      _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ +
-            ‖x‖ ^ k * n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖ := by ring
-      _ ≤ ‖L‖ * 1 * (SchwartzMap.seminorm 𝕜 (k + 1) n) f +
-            ‖L‖ * n * (SchwartzMap.seminorm 𝕜 k (n - 1) f) := by
-        apply add_le_add
-        · grw [le_opNorm, ← le_seminorm 𝕜 (k + 1) n f x]
-          ring_nf; exact le_refl _
-        · grw [← le_seminorm 𝕜 k (n - 1) f x]
-          ring_nf; exact le_refl _
-      _ ≤ ‖L‖ * max 1 n *
-          max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) +
-          ‖L‖ * max 1 n *
-          max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) := by
-        apply add_le_add <;> gcongr <;> simp
-      _ = _ := by
-        simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
-          Seminorm.coe_sup, Pi.sup_apply]
-        ring)
+  mkCLM (fun f x ↦ (L x).smulRight (f x)) (by intros; ext; simp)
+    (by intro c g x; ext v; simpa using smul_comm (L x v) c (g x))
+    (by fun_prop) <| by
+      intro ⟨k, n⟩
+      use {(k + 1, n), (k, n - 1)}, 2 * ‖L‖ * (max 1 n), by positivity
+      intro f x
+      calc
+        _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
+            ‖iteratedFDeriv ℝ i L x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
+          gcongr 1
+          exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (smulRightL ℝ G F)
+            (by fun_prop) (f.smooth ⊤) x (mod_cast le_top) norm_smulRightL_le
+        _ ≤ ‖x‖ ^ k *
+            (‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ + n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖) := by
+          gcongr 1
+          rw [Finset.sum_range_succ', add_comm]
+          cases n with
+          | zero => simp
+          | succ n =>
+            have : ∑ k ∈ Finset.range n,
+                (((n + 1).choose (k + 1 + 1)) : ℝ) * ‖iteratedFDeriv ℝ (k + 1 + 1) L x‖ *
+                ‖iteratedFDeriv ℝ (n + 1 - (k + 1 + 1)) f x‖ = 0 := by
+              apply Finset.sum_eq_zero
+              simp [iteratedFDeriv_succ_eq_comp_right, iteratedFDeriv_succ_const]
+            simp [Finset.sum_range_succ', this]
+        _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ +
+              ‖x‖ ^ k * n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖ := by ring
+        _ ≤ ‖L‖ * 1 * (SchwartzMap.seminorm 𝕜 (k + 1) n) f +
+              ‖L‖ * n * (SchwartzMap.seminorm 𝕜 k (n - 1) f) := by
+          grw [le_opNorm, ← le_seminorm 𝕜 (k + 1) n f x, ← le_seminorm 𝕜 k (n - 1) f x]
+          apply le_of_eq
+          ring
+        _ ≤ ‖L‖ * max 1 n *
+            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) +
+            ‖L‖ * max 1 n *
+            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) := by
+          gcongr <;> simp
+        _ = _ := by
+          simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
+            Seminorm.coe_sup, Pi.sup_apply]
+          ring
 
 @[simp]
 theorem smulRightCLM_apply_apply (L : E →L[ℝ] G →L[ℝ] ℝ) (f : 𝓢(E, F)) (x : E) :
