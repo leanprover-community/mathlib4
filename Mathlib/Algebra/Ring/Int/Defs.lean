@@ -81,13 +81,13 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false
 
 instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
 
-set_option linter.style.commandStart true
+set_option linter.style.whitespace true
 
 end Int

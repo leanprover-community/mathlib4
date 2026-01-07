@@ -38,7 +38,7 @@ run_elab do
 
 /-! These tests are testing delaborators -/
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false
 
 /-- info: fun x => ![0, 1] x : Fin 2 → ℕ -/
 #guard_msgs in #check fun x : Fin 2 => (![0, 1] : Fin 2 → ℕ) x
