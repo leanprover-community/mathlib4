@@ -128,28 +128,30 @@ theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0
   simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
 
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
-    p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ x.sum (fun _ => id) := by
   classical
   constructor
   · rw [pow_idealOfVars_eq_span]
-    refine Submodule.span_induction (fun u u_in x hx ↦ ?_) ?_ (fun _ _ _ _ h h' _ hx ↦ ?_)
-      (fun q r _ h s hx ↦ ?_)
+    refine Submodule.span_induction (fun u u_in x hx ↦ ?_) ?_ (fun _ _ _ _ _ _ _ h ↦ ?_)
+      (fun r p p_in h x hx ↦ ?_)
     · simp only [Set.mem_image, Set.mem_setOf_eq] at u_in
       rcases u_in with ⟨v, v_sum, hv⟩
-      rw [← hv, coeff_monomial, if_neg (by grind only)]
+      simp only [← hv, mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff,
+        Classical.not_imp] at hx
+      rw [← hx.left, v_sum]
     · simp
-    · rw [coeff_add, h _ hx, h' _ hx, zero_add]
-    rw [smul_eq_mul, coeff_mul]
-    refine sum_eq_zero (fun u u_in ↦ mul_eq_zero_of_right _ (h _ ?_))
-    exact lt_of_le_of_lt (sum_le_sum_index (antidiagonal.snd_le u_in)
-      (by simp [Monotone]) (by simp)) hx
+    · apply support_add at h
+      grind only [= mem_union]
+    rw [smul_eq_mul] at hx
+    apply support_mul at hx
+    obtain ⟨u, u_in, v, v_in, huv⟩ := mem_add.mp hx
+    rw [← huv, sum_add_index' (by simp) (by simp)]
+    grind only
   intro h; rw [as_sum p]
   refine Ideal.sum_mem _ (fun x x_in ↦ ?_)
   by_cases h' : coeff x p = 0
   · simp [h']
-  rw [monomial_mem_pow_idealOfVars_iff _ _ h']
-  revert h'; contrapose!
-  exact h x
+  exact (monomial_mem_pow_idealOfVars_iff _ _ h').mpr (h x x_in)
 
 end idealOfVars
 
