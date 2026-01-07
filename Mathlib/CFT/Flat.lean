@@ -148,22 +148,6 @@ def Under.isLimitLiftCone
     (f : X ⟶ c.pt) (hc : IsLimit c) : IsLimit (liftCone c f) :=
   isLimitOfReflects (Under.forget _) hc
 
-deriving instance Fintype for CategoryTheory.Pairwise
-deriving instance DecidableEq for CategoryTheory.Pairwise.Hom
-
-instance {α : Type*} [Fintype α] [DecidableEq α] :
-    FinCategory (CategoryTheory.Pairwise α) where
-  fintypeHom
-  | .single i, .single j => ⟨if h : i = j then {eqToHom (h ▸ rfl)} else ∅, by rintro ⟨⟩; cat_disch⟩
-  | .single i, .pair j k => ⟨∅, by rintro ⟨⟩⟩
-  | .pair i j, .single k =>
-    letI : DecidableEq (Pairwise.pair i j ⟶ Pairwise.single k) := instDecidableEqHom
-    ⟨(if h : i = k then {CategoryTheory.Pairwise.Hom.left i j ≫ eqToHom (h ▸ rfl)} else ∅) ∪
-      (if h : j = k then {CategoryTheory.Pairwise.Hom.right i j ≫ eqToHom (h ▸ rfl)} else ∅),
-        by rintro ⟨⟩ <;> cat_disch⟩
-  | .pair i j, .pair k l =>
-    ⟨if h : i = k ∧ j = l then {eqToHom (h.1 ▸ h.2 ▸ rfl)} else ∅, by rintro ⟨⟩; cat_disch⟩
-
 namespace AlgebraicGeometry
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
