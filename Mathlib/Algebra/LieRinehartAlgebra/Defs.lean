@@ -30,8 +30,8 @@ Derivation
 
 /-- A Lie-Rinehart algebra over a commutative ring `R` is a commutative `R`-algebra `A` together
 with an `A`-module `L` equipped with a Lie bracket and a Lie algebra and module homomorphism
-`ρ:L→ Der_R(A,A)` to the derivations of `A`, such that the Leibniz rule `⁅x,a•y⁆=a•⁅x,y⁆+ρ(x)(a)•y`
-is satisfied.
+`ρ : L → Der_R(A,A)` to the derivations of `A`, such that the Leibniz rule
+`⁅x,a•y⁆=a•⁅x,y⁆+ρ(x)(a)•y` is satisfied.
 In this version of the definition we are encoding the anchor implictly by a Lie action of L on A.
 The anchor is later derived as a consequence of the definition.
 -/
@@ -82,9 +82,9 @@ variable (σ : A →ₐ[R] A')
 variable (σ' : A' →ₐ[R] A'')
 
 
-/-- A homomorphism of Lie-Rinehart algebras `(A,L)`, `(A',L')` consists of an algebra map `σ:A→ A'`
-and an `A`-linear map `F: L→L'` which is also a Lie algebra homomorphism and is compatible
-with the anchors.
+/-- A homomorphism of Lie-Rinehart algebras `(A,L)`, `(A',L')` consists of an algebra map
+`σ : A → A'` and an `A`-linear map `F : L → L'` which is also a Lie algebra homomorphism and is
+compatible with the anchors.
 -/
 structure Hom (σ : A →ₐ[R] A') (L L' : Type*) [LieRing L] [Module A L] [LieAlgebra R L]
 [IsScalarTower R A L] [LieRingModule L A] [LieModule R L A] [LieRinehartAlgebra R A L] [LieRing L']
@@ -159,7 +159,7 @@ def anchor [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L]
 [LieRingModule L A] [LieModule R L A] [LieRinehartAlgebra R A L] : L →ₗ⁅AlgHom.id R A⁆
 (Derivation R A A) := {
   toFun := derivOf R
-  map_add' := fun _ _ ↦by ext a; simp
+  map_add' := fun _ _ ↦ by ext a; simp
   map_smul' := fun _ _ ↦ by ext a; simp [LieRinehartAlgebra.left_linearity R]
   map_lie' := fun _ _ ↦ by ext a; simp [Derivation.commutator_apply]
   anchorcomp := by simp
