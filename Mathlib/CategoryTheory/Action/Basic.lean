@@ -446,7 +446,7 @@ def Equivalence.mapAction {V W : Type*} [Category* V] [Category* W] (G : Type*) 
     (E : V ≌ W) : Action V G ≌ Action W G where
   functor := E.functor.mapAction G
   inverse := E.inverse.mapAction G
-  unitIso := Functor.mapActionCongr G E.unitIso  ≪≫ Functor.mapActionComp G _ _
+  unitIso := Functor.mapActionCongr G E.unitIso ≪≫ Functor.mapActionComp G _ _
   counitIso := (Functor.mapActionComp G _ _).symm ≪≫ Functor.mapActionCongr G E.counitIso
   functor_unitIso_comp X := by ext; simp
 

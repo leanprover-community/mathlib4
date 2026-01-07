@@ -53,13 +53,13 @@ instance : CompleteLattice (Subfunctor F) where
   sup F G :=
     { obj U := F.obj U ⊔ G.obj U
       map _ _ := by
-        rintro (h|h)
+        rintro (h | h)
         · exact Or.inl (F.map _ h)
         · exact Or.inr (G.map _ h) }
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
   sup_le F G H h₁ h₂ U := by
-    rintro x (h|h)
+    rintro x (h | h)
     · exact h₁ _ h
     · exact h₂ _ h
   inf S T :=

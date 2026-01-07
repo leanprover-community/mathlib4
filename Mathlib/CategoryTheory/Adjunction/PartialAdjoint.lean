@@ -181,7 +181,7 @@ noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Categ
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
     simp only [IsColimit.fac, IsColimit.fac_assoc, partialLeftAdjointHomEquiv_comp,
-      F.map_comp, assoc] )
+      F.map_comp, assoc])
 
 lemma leftAdjointObjIsDefined_of_isColimit {J : Type*} [Category* J] {R : J ⥤ C} {c : Cocone R}
     (hc : IsColimit c) [HasColimitsOfShape J D]
@@ -336,7 +336,7 @@ noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J
       right_inv := fun g ↦ hc.hom_ext (fun j ↦ by simp) }
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
-    simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc] )
+    simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc])
 
 lemma rightAdjointObjIsDefined_of_isLimit {J : Type*} [Category* J] {R : J ⥤ D} {c : Cone R}
     (hc : IsLimit c) [HasLimitsOfShape J C]

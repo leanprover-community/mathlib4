@@ -484,7 +484,7 @@ instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionObj x y := x ⊗ y
   actionHom f g := f ⊗ₘ g
   actionUnitIso x := ρ_ x
-  actionAssocIso x y z := α_ x y z|>.symm
+  actionAssocIso x y z := α_ x y z |>.symm
   actionHomLeft f x := f ▷ x
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]

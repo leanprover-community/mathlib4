@@ -235,7 +235,7 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h
     refine Cocones.ext (φ := eqToIso rfl) ?_
-    rintro ⟨(j₁|j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
+    rintro ⟨(j₁ | j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
       Category.comp_id, BinaryCofan.mk_inl, BinaryCofan.mk_inr]
 
 end Preservation

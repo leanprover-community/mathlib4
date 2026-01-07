@@ -118,7 +118,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
           ext Y x
           dsimp
           rw [← FunctorToTypes.naturality]
-          congr )
+          congr)
     simpa [e] using f.naturality e.inv
   right_inv g := by
     ext X x
@@ -410,7 +410,7 @@ instance (X : C) (Y : F.op.LeftExtension (uliftYoneda.{max w v₂}.obj X)) :
     (uliftYonedaEquiv.symm (uliftYonedaEquiv (F := F.op ⋙ Y.right) Y.hom)) (by
       ext Z ⟨f⟩
       simpa [uliftYonedaEquiv, uliftYoneda] using
-        congr_fun (Y.hom.naturality f.op).symm (ULift.up (𝟙 _)) )
+        congr_fun (Y.hom.naturality f.op).symm (ULift.up (𝟙 _)))
   uniq φ := by
     ext : 1
     apply uliftYonedaEquiv.injective

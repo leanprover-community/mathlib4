@@ -211,7 +211,7 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
     ext X
     dsimp
     simp only [Functor.commShiftIso_zero, Functor.CommShift.isoZero_inv_app,
-      SingleFunctors.shiftIso_zero_hom_app,id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
+      SingleFunctors.shiftIso_zero_hom_app, id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
       Functor.map_id, Functor.id_obj, comp_id]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
