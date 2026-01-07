@@ -166,7 +166,7 @@ abbrev derivOf (x : L) : Derivation R A A := Derivation.mk' ((LieModule.toEnd R 
 
 
 variable (R A L) in
-/-- The anchor of a given LieRinehart algebra `L` over `A` interpreted as a LieRinehart morphism to
+/-- The anchor of a given LieRinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism to
 the module of derivations of `A`.
 -/
 def anchor [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L]
