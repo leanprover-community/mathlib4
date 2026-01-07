@@ -85,7 +85,3 @@ theorem Algebra.IsUnramifiedAt.residueField
     Algebra.TensorProduct.lift (Algebra.ofId _ _) f₀ fun _ _ ↦ .all _ _
   have hf : Function.Surjective f := hf₀.forall.mpr fun x ↦ ⟨1 ⊗ₜ x, by simp [f]⟩
   exact .of_surjective _ hf
-
-lemma PrimeSpectrum.toPiLocalization_bijective {R : Type*} [CommRing R]
-    [DiscreteTopology (PrimeSpectrum R)] : Function.Bijective (PrimeSpectrum.toPiLocalization R) :=
-  PrimeSpectrum.discreteTopology_iff_toPiLocalization_bijective.mp inferInstance

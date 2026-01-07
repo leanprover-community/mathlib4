@@ -406,8 +406,8 @@ lemma ZariskiMainProperty.of_adjoin_eq_top
   by_cases Hfp : algebraMap _ _ f.leadingCoeff ∈ p
   · obtain ⟨a, ha⟩ := H.le (isIntegral_leadingCoeff_smul f x hf)
     refine IH _ ?_ (f.eraseLead + C a * X ^ m) (hm := rfl) ?_ n ?_
-    · suffices f.eraseLead.natDegree < m + 1 by compute_degree!
-      exact (eraseLead_natDegree_le ..).trans_lt (by lia)
+    · suffices f.eraseLead.natDegree ≤ m by compute_degree!
+      exact (eraseLead_natDegree_le ..).trans (by lia)
     · simp [← self_sub_monomial_natDegree_leadingCoeff, hf, hm, pow_succ', ← Algebra.smul_def,
         ← Algebra.smul_mul_assoc, ← ha]
     · suffices algebraMap R S (f.coeff n) + algebraMap R S (if n = m then a else 0) ∉ p by

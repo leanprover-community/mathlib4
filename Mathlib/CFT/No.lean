@@ -1,6 +1,5 @@
 module
 
-public import Mathlib.CFT.UniversalFactorizationRing
 public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian

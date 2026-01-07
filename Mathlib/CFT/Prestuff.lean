@@ -127,12 +127,6 @@ instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : Ideal R) [P.
 --   { __ := f₅,
 --     commutes' _ := congr($hf₅ _) }
 
-lemma Ideal.algebraMap_residueField_surjective
-    {R : Type*} [CommRing R] (I : Ideal R) [I.IsMaximal] :
-    Function.Surjective (algebraMap R I.ResidueField) := by
-  rw [IsScalarTower.algebraMap_eq R (R ⧸ I) _]
-  exact I.bijective_algebraMap_quotient_residueField.surjective.comp Ideal.Quotient.mk_surjective
-
 instance {R : Type*} [CommRing R] (I : Ideal R) [I.IsMaximal] :
     Module.Finite R I.ResidueField :=
   .of_surjective (Algebra.linearMap _ _) I.algebraMap_residueField_surjective
