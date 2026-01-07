@@ -84,6 +84,41 @@ lemma truncLEIsoTruncLT_inv_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
     (t.truncLEIsoTruncLT a b h).inv.app X ≫ (t.truncLEι a).app X = (t.truncLTι b).app X :=
   congr_app (t.truncLEIsoTruncLT_inv_ι a b h) X
 
+noncomputable def natTransTruncLEOfLE (a b : ℤ) (h : a ≤ b) :
+    t.truncLE a ⟶ t.truncLE b :=
+  t.natTransTruncLTOfLE (a+1) (b+1) (by lia)
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLEOfLE_ι_app (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (X : C) :
+    (t.natTransTruncLEOfLE n₀ n₁ h).app X ≫ (t.truncLEι n₁).app X =
+      (t.truncLEι n₀).app X :=
+  t.natTransTruncLTOfLE_ι_app _ _ _ _
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLEOfLE_ι (a b : ℤ) (h : a ≤ b) :
+    t.natTransTruncLEOfLE a b h ≫ t.truncLEι b = t.truncLEι a := by cat_disch
+
+@[simp]
+lemma natTransTruncLEOfLE_refl (a : ℤ) :
+    t.natTransTruncLEOfLE a a (by rfl) = 𝟙 _ :=
+  t.natTransTruncLTOfLE_refl _
+
+@[simp]
+lemma natTransTruncLEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
+    t.natTransTruncLEOfLE a b hab ≫ t.natTransTruncLEOfLE b c hbc =
+      t.natTransTruncLEOfLE a c (hab.trans hbc) :=
+  t.natTransTruncLTOfLE_trans _ _ _ _ _
+
+lemma natTransTruncLEOfLE_refl_app (a : ℤ) (X : C) :
+    (t.natTransTruncLEOfLE a a (by rfl)).app X = 𝟙 _ :=
+  congr_app (t.natTransTruncLEOfLE_refl a) X
+
+@[reassoc (attr := simp)]
+lemma natTransTruncLEOfLE_trans_app (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) (X : C) :
+    (t.natTransTruncLEOfLE a b hab).app X ≫ (t.natTransTruncLEOfLE b c hbc).app X =
+      (t.natTransTruncLEOfLE a c (hab.trans hbc)).app X :=
+  congr_app (t.natTransTruncLEOfLE_trans a b c hab hbc) X
+
 noncomputable def truncGTπ (n : ℤ) : 𝟭 C ⟶ t.truncGT n := t.truncGEπ (n + 1)
 
 @[reassoc (attr := simp)]
@@ -109,6 +144,7 @@ lemma π_truncGTIsoTruncGE_inv (a b : ℤ) (h : a + 1 = b) :
 lemma π_truncGTIsoTruncGE_inv_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
     (t.truncGEπ b).app X ≫ (t.truncGTIsoTruncGE a b h).inv.app X = (t.truncGTπ a).app X :=
   congr_app (t.π_truncGTIsoTruncGE_inv a b h) X
+
 
 noncomputable def truncGEδLE (a b : ℤ) (h : a + 1 = b) :
     t.truncGE b ⟶ t.truncLE a ⋙ shiftFunctor C (1 : ℤ) :=
@@ -191,6 +227,46 @@ lemma to_truncLE_obj_ext {n : ℤ} {Y : C} {X : C}
   have : t.IsLE Y (n + 1 - 1) := by simpa
   rw [← cancel_mono ((t.truncLEIsoTruncLT n (n + 1) rfl).hom.app _)]
   exact t.to_truncLT_obj_ext (by simpa)
+
+section
+
+variable {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsLE X n]
+
+lemma liftTruncLE_aux :
+    ∃ (f' : X ⟶ (t.truncLE n).obj Y), f = f' ≫ (t.truncLEι n).app Y :=
+  Triangle.coyoneda_exact₂ _ (t.triangleLEGT_distinguished n Y) f
+    (t.zero_of_isLE_of_isGE  _ n (n + 1) (by lia) inferInstance (by dsimp; infer_instance))
+
+noncomputable def liftTruncLE :
+    X ⟶ (t.truncLE n).obj Y := (t.liftTruncLE_aux f n).choose
+
+@[reassoc (attr := simp)]
+lemma liftTruncLE_ι :
+    t.liftTruncLE f n ≫ (t.truncLEι n).app Y = f :=
+  (t.liftTruncLE_aux f n).choose_spec.symm
+
+end
+
+section
+
+variable {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsGE Y n₁]
+
+include h in
+lemma descTruncGT_aux :
+  ∃ (f' : (t.truncGT n₀).obj X ⟶ Y), f = (t.truncGTπ n₀).app X ≫ f' :=
+  Triangle.yoneda_exact₂ _ (t.triangleLEGT_distinguished n₀ X) f
+    (t.zero_of_isLE_of_isGE _ n₀ n₁ (by lia) (by dsimp; infer_instance) inferInstance)
+
+noncomputable def descTruncGT :
+    (t.truncGT n₀).obj X ⟶ Y :=
+  (t.descTruncGT_aux f n₀ n₁ h).choose
+
+@[reassoc (attr := simp)]
+lemma π_descTruncGT :
+    (t.truncGTπ n₀).app X ≫ t.descTruncGT f n₀ n₁ h = f :=
+  (t.descTruncGT_aux f n₀ n₁ h).choose_spec.symm
+
+end
 
 end TStructure
 

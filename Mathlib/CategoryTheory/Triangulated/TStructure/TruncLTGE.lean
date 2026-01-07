@@ -496,6 +496,92 @@ lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
     (by dsimp; apply (t.isGE_shift _ n (-1) (n + 1) (by lia)))
   rw [hg, hg', zero_comp]
 
+section
+
+variable {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsLE X n₀]
+
+include h in
+lemma liftTruncLT_aux :
+    ∃ (f' : X ⟶ (t.truncLT n₁).obj Y), f = f' ≫ (t.truncLTι n₁).app Y :=
+  Triangle.coyoneda_exact₂ _ (t.triangleLTGE_distinguished n₁ Y) f
+    (t.zero_of_isLE_of_isGE _ n₀ n₁ (by lia) inferInstance (by dsimp; infer_instance))
+
+noncomputable def liftTruncLT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsLE X n₀] :
+    X ⟶ (t.truncLT n₁).obj Y :=
+  (t.liftTruncLT_aux f n₀ n₁ h).choose
+
+@[reassoc (attr := simp)]
+lemma liftTruncLT_ι {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsLE X n₀] :
+    t.liftTruncLT f n₀ n₁ h ≫ (t.truncLTι n₁).app Y = f :=
+  (t.liftTruncLT_aux f n₀ n₁ h).choose_spec.symm
+
+end
+
+section
+
+variable {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n]
+
+lemma descTruncGE_aux :
+  ∃ (f' : (t.truncGE n).obj X ⟶ Y), f = (t.truncGEπ n).app X ≫ f' :=
+  Triangle.yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
+    (t.zero_of_isLE_of_isGE _ (n-1)  n (by lia) (by dsimp; infer_instance) inferInstance)
+
+noncomputable def descTruncGE :
+    (t.truncGE n).obj X ⟶ Y :=
+  (t.descTruncGE_aux f n).choose
+
+@[reassoc (attr := simp)]
+lemma π_descTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n] :
+    (t.truncGEπ n).app X ≫ t.descTruncGE f n  = f :=
+  (t.descTruncGE_aux f n).choose_spec.symm
+
+end
+
+lemma isLE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsLE X n₀ ↔ ∀ (Y : C) (f : X ⟶ Y) (_ : t.IsGE Y n₁), f = 0 := by
+  refine ⟨fun _ Y f _ ↦ t.zero f n₀ n₁ (by lia), fun hX ↦ ?_⟩
+  rw [t.isLE_iff_isZero_truncGE_obj n₀ n₁ h, IsZero.iff_id_eq_zero]
+  exact t.from_truncGE_obj_ext (by simpa using hX _ _ inferInstance)
+
+lemma isGE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
+    t.IsGE X n₁ ↔ ∀ (Y : C) (f : Y ⟶ X) (_ : t.IsLE Y n₀), f = 0 := by
+  refine ⟨fun _ Y f _ ↦ t.zero f n₀ n₁ (by lia), fun hX ↦ ?_⟩
+  rw [t.isGE_iff_isZero_truncLT_obj n₁ X, IsZero.iff_id_eq_zero]
+  exact t.to_truncLT_obj_ext (by simpa using hX _ _ (by rw [← h]; infer_instance))
+
+lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsLE T.obj₁ n)
+    (h₃ : t.IsLE T.obj₃ n) : t.IsLE T.obj₂ n := by
+  rw [t.isLE_iff_orthogonal n (n+1) rfl]
+  intro Y f hY
+  obtain ⟨f', hf'⟩ := Triangle.yoneda_exact₂ _ hT f
+    (t.zero _ n (n+1) (by lia) )
+  rw [hf', t.zero f' n (n+1) (by lia), comp_zero]
+
+lemma isGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsGE T.obj₁ n)
+    (h₃ : t.IsGE T.obj₃ n) : t.IsGE T.obj₂ n := by
+  rw [t.isGE_iff_orthogonal (n-1) n (by lia)]
+  intro Y f hY
+  obtain ⟨f', hf'⟩ := Triangle.coyoneda_exact₂ _ hT f (t.zero _ (n-1) n (by lia))
+  rw [hf', t.zero f' (n-1) n (by lia), zero_comp]
+
+instance : t.minus.IsTriangulated where
+  exists_zero := ⟨0, isZero_zero C, 0, inferInstance⟩
+  toIsTriangulatedClosed₂ := .mk' (fun T hT ↦ by
+    rintro ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+    exact ⟨max i₁ i₃, t.isLE₂ T hT _ (t.isLE_of_LE _ _ _ (le_max_left i₁ i₃))
+      (t.isLE_of_LE _ _ _ (le_max_right i₁ i₃))⟩)
+
+instance : t.plus.IsTriangulated where
+  exists_zero := ⟨0, isZero_zero C, 0, inferInstance⟩
+  toIsTriangulatedClosed₂ := .mk' (fun T hT ↦ by
+    rintro ⟨i₁, hi₁⟩ ⟨i₃, hi₃⟩
+    exact ⟨min i₁ i₃, t.isGE₂ T hT _ (t.isGE_of_GE _ _ _ (min_le_left i₁ i₃))
+      (t.isGE_of_GE _ _ _ (min_le_right i₁ i₃))⟩)
+
+instance : t.bounded.IsTriangulated := by
+  dsimp [bounded]
+  infer_instance
+
 end
 
 end TStructure
