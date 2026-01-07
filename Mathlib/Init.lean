@@ -79,7 +79,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cases
   linter.style.induction
   linter.style.refine
-  linter.style.commandStart
+  linter.style.whitespace
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax

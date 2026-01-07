@@ -204,7 +204,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux ∅ src fmt
 
-namespace Style.CommandStart
+namespace Style.Whitespace
 
 /--
 `unlintedNodes` contains the `SyntaxNodeKind`s for which there is no clear formatting preference:
@@ -305,7 +305,7 @@ public def mkWindow (orig : String) (start ctx : Nat) : String :=
   s!"{headCtx}{middle.take ctx}{tail}"
 
 @[inherit_doc Mathlib.Linter.linter.style.whitespace]
-def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
@@ -367,8 +367,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLintIf linter.style.whitespace.verbose (.ofRange rg)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
-initialize addLinter commandStartLinter
+initialize addLinter whitespaceLinter
 
-end Style.CommandStart
+end Style.Whitespace
 
 end Mathlib.Linter
