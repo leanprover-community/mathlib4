@@ -147,7 +147,7 @@ variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
 
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h:= by
+  coe_injective' f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 

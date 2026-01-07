@@ -151,7 +151,7 @@ instance : AddCommSemigroup (FreeLieAlgebra R X) :=
 
 instance : AddCommGroup (FreeLieAlgebra R X) :=
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),
-    (inferInstance :  AddCommSemigroup (FreeLieAlgebra R X)) with }
+    (inferInstance : AddCommSemigroup (FreeLieAlgebra R X)) with }
 
 instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] :
     Module S (FreeLieAlgebra R X) :=

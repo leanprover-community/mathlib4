@@ -572,7 +572,7 @@ instance instAlgebra : Algebra S (Unitization R A) where
     induction x with
     | inl_add_inr =>
       change _ = inl (algebraMap S R s) * _
-      rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
+      rw [mul_add, smul_add, Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
         smul_one_mul, inl_smul, inr_smul, smul_one_smul]
 
 theorem algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=

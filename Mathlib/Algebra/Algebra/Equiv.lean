@@ -97,8 +97,8 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨f,_⟩,_⟩ := f
-    obtain ⟨⟨g,_⟩,_⟩ := g
+    obtain ⟨⟨f, _⟩, _⟩ := f
+    obtain ⟨⟨g, _⟩, _⟩ := g
     congr
 
 /-- Helper instance since the coercion is not always found. -/

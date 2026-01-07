@@ -274,7 +274,7 @@ noncomputable abbrev smulOfIsLocalization : SMul T (LocalizedModule S M) where
             simp_rw [Submonoid.smul_def, Submonoid.coe_mul, ← mul_smul]; ring_nf
           _ = a.2 • a.1 • s • p.2 • p'.1 := by rw [h]
           _ = s • (a.2 * p.2) • a.1 • p'.1 := by
-            simp_rw [Submonoid.smul_def, ← mul_smul, Submonoid.coe_mul]; ring_nf )
+            simp_rw [Submonoid.smul_def, ← mul_smul, Submonoid.coe_mul]; ring_nf)
 
 attribute [local instance] smulOfIsLocalization
 

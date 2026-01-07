@@ -63,14 +63,14 @@ variable {ι : Type v} [Small.{u} ι] (F : Discrete ι ⥤ LocallyRingedSpace.{u
 
 /-- The explicit coproduct for `F : discrete ι ⥤ LocallyRingedSpace`. -/
 noncomputable def coproduct : LocallyRingedSpace where
-  toSheafedSpace := colimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
+  toSheafedSpace := colimit (C := SheafedSpace.{u + 1, u, u} CommRingCat.{u})
     (F ⋙ forgetToSheafedSpace)
   isLocalRing x := by
     obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
     haveI : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
       (F.obj i).isLocalRing _
     exact
-      (asIso ((colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
+      (asIso ((colimit.ι (C := SheafedSpace.{u + 1, u, u} CommRingCat.{u})
         (F ⋙ forgetToSheafedSpace) i :).hom.stalkMap y)).symm.commRingCatIsoToRingEquiv.isLocalRing
 
 /-- The explicit coproduct cofan for `F : discrete ι ⥤ LocallyRingedSpace`. -/

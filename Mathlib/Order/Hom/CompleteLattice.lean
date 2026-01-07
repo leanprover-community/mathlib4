@@ -135,7 +135,7 @@ theorem map_iInf₂ [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : 
 -- See note [lower instance priority]
 instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
     [CompleteLattice β] [sSupHomClass F α β] : SupBotHomClass F α β :=
-  {  ‹sSupHomClass F α β› with
+  { ‹sSupHomClass F α β› with
     map_sup := fun f a b => by
       rw [← sSup_pair, map_sSup]
       simp only [Set.image_pair, sSup_insert, sSup_singleton]

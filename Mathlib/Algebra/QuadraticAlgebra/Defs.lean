@@ -455,9 +455,9 @@ instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
     Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
-  algebraMap.map_mul' x y:= by ext <;> simp
+  algebraMap.map_mul' x y := by ext <;> simp
   algebraMap.map_zero' := by ext <;> simp
-  algebraMap.map_add' x y:= by ext <;> simp
+  algebraMap.map_add' x y := by ext <;> simp
   commutes' s z := by ext <;> simp [Algebra.commutes]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
 

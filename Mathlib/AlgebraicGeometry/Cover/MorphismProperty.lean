@@ -168,7 +168,7 @@ nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y 
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ⟨some <| 𝒰.idx x, 𝒰.covers x⟩, ?_⟩
-    rintro (i|i) <;> simp [hf, 𝒰.map_prop]
+    rintro (i | i) <;> simp [hf, 𝒰.map_prop]
 
 @[deprecated (since := "2025-10-02")]
 alias Cover.pullbackCover := Precoverage.ZeroHypercover.pullback₁

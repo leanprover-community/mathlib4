@@ -178,7 +178,7 @@ def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+
   toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
   map_zero' := by ext; simp only [map_mk, map_zero]
   map_one' := by ext; simp only [map_mk, map_one]
-  map_add' x y:= by ext; simp only [map_mk, map_add]
+  map_add' x y := by ext; simp only [map_mk, map_add]
   map_mul' x y := by ext; simp only [map_mk, map_mul]
 
 @[simp]

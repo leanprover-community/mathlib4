@@ -390,7 +390,7 @@ def rootSystem :
     .id
     { toFun := (↑)
       inj' := by
-        intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
+        intro α β h; ext x; simpa using LinearMap.congr_fun h x }
     { toFun := coroot ∘ (↑)
       inj' := by rintro ⟨α, hα⟩ ⟨β, hβ⟩ h; simpa using h }
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)

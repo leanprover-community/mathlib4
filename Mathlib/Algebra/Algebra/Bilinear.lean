@@ -164,7 +164,7 @@ variable (R A) in
 @[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
   __ := mul' R A
   map_smul' a x := x.induction_on (by simp) (by simp +contextual [mul', smul_tmul', mul_assoc])
-    (by simp+contextual [mul_add])
+    (by simp +contextual [mul_add])
 
 end Semiring
 
