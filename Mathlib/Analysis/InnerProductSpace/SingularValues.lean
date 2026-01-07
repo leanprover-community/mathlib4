@@ -47,7 +47,7 @@ In mathematical literature, the number of singular values varies, with popular c
 - `rank(T)` singular values, all of which are positive.
 - `min(n,m)` singular values, some of which might be zero.
 - `n` singular values, some of which might be zero.
-This is the approach taken in [axler2024].
+  This is the approach taken in [axler2024].
 - Countably infinitely many singular values, with, all but finitely many of them being zero.
 
 We take the last approach for the following reasons:
