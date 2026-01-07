@@ -127,7 +127,7 @@ theorem mul_mem_center {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : 
   right_assoc (a b : M) := calc
     a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
     _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
-    _ =  a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
+    _ = a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
     _ = a * (b * (z₁ * z₂)) := by rw [hz₁.mid_assoc]
 
 @[to_additive addCenter_subset_addCentralizer]
