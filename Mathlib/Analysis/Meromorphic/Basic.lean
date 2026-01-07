@@ -365,10 +365,17 @@ section composition
 ### Composition with an analytic function
 -/
 
-variable {f : 𝕜 → E} {g : 𝕜 → 𝕜} {x : 𝕜}
+variable
+  {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  {x : 𝕜}
 
-lemma MeromorphicAt.comp_analyticAt
-    (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) : MeromorphicAt (f ∘ g) x := by
+/--
+The composition of a meromorphic and an analytic function is meromorphic.
+-/
+lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
+    (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
+    MeromorphicAt (f ∘ g) x := by
   obtain ⟨r, hr⟩ := hf
   by_cases hg' : analyticOrderAt (g · - g x) x = ⊤
   · -- trivial case: `g` is locally constant near `x`
@@ -379,14 +386,15 @@ lemma MeromorphicAt.comp_analyticAt
     obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
     obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
     set j := fun z ↦ (z - g x) ^ r • f z
-    have : AnalyticAt 𝕜 (fun z ↦ (h z)⁻¹ ^ r • j (g z)) x := by fun_prop (disch := assumption)
+    have : AnalyticAt 𝕜 (fun i ↦ (h i)⁻¹ ^ r • j (g i)) x :=
+      ((han.fun_inv hne).fun_pow r).fun_smul (hr.restrictScalars.comp' hg)
     refine ⟨n * r, this.congr ?_⟩
     filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
-    simp only [inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
-    rw [← mul_smul (h z ^ r), mul_comm, pow_mul, ← mul_pow, ← smul_eq_mul, ← hz]
+    simp only [j, inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
+    rw [hz, smul_comm, ← smul_assoc, pow_mul, smul_pow]
 
-lemma meromorphicAt_comp_iff_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0)
-    [CompleteSpace 𝕜] [CharZero 𝕜] :
+lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero 𝕜] {f : 𝕜 → E}
+    {g : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
     MeromorphicAt (f ∘ g) x ↔ MeromorphicAt f (g x) := by
   refine ⟨fun hf ↦ ?_, (MeromorphicAt.comp_analyticAt · hg)⟩
   let r := hg.hasStrictDerivAt.localInverse _ _ _ hg'
