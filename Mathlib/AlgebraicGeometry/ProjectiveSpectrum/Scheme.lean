@@ -249,13 +249,13 @@ variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 
 open Lean Meta Elab Tactic
 
-macro "mem_tac_aux" : tactic =>
+/-- `mem_tac` tries to prove goals of the form `x ∈ 𝒜 i` when `x` has the form of:
+* `y ^ n` where `i = n • j` and `y ∈ 𝒜 j`.
+* a natural number `n`.
+-/
+macro "mem_tac" : tactic =>
   `(tactic| first | exact pow_mem_graded _ (SetLike.coe_mem _) | exact natCast_mem_graded _ _ |
     exact pow_mem_graded _ f_deg)
-
-macro "mem_tac" : tactic =>
-  `(tactic| first | mem_tac_aux |
-    repeat (all_goals (apply SetLike.GradedMonoid.toGradedMul.mul_mem)); mem_tac_aux)
 
 /-- The function from `Spec A⁰_f` to `Proj|D(f)` is defined by `q ↦ {a | aᵢᵐ/fⁱ ∈ q}`, i.e. sending
 `q` a prime ideal in `A⁰_f` to the homogeneous prime relevant ideal containing only and all the
@@ -354,10 +354,10 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
               ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩ : A⁰_ f)
   rotate_left
   · rw [(_ : m * i = _)]
-    apply GradedMonoid.toGradedMul.mul_mem <;> mem_tac_aux
+    apply GradedMonoid.toGradedMul.mul_mem <;> mem_tac
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
-    apply GradedMonoid.toGradedMul.mul_mem (i := (j - m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
+    apply GradedMonoid.toGradedMul.mul_mem (i := (j - m) • i) (j := (m + m - j) • i) <;> mem_tac
     rw [← add_smul]; congr; lia
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
