@@ -704,11 +704,9 @@ lemma finite_patterns_with_support
       cases hU
       rfl
     right_inv := by intro f; rfl }
-
   -- Give a Fintype structure to the subtype via this equivalence
   haveI : Fintype { p : Pattern A G // p.support = U } :=
     Fintype.ofEquiv (U → A) e.symm
-
   -- Now prove finiteness of `{ p : Pattern A G | p.support = U }` by
   -- viewing it as the image of `univ` in that finite subtype
   let T := { p : Pattern A G // p.support = U }
