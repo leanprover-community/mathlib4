@@ -115,14 +115,21 @@ def overlappingInstances : Linter where
         let outerEnv ← getEnv
         ctx.runMetaMWithMessages lctx (localInstances := localInstances) <|
           withRef (← getRef) do
-          letI forallTelescope? expectedType? (k : Array Expr → Option Expr → MetaM Unit) :=
+          /- If there's a remaining expected type, then telescope into it in case it contains more
+          instance hypotheses. For now, we don't use the new fvars or remaining type for anything,
+          but these could be passed to `k`. -/
+          letI forallTelescope? expectedType? (k : MetaM Unit) :=
             if let some type := expectedType? then
-              forallTelescope type fun fvars ty => k fvars ty
+              forallTelescope type fun _ _ => k
             else
-              k #[] expectedType?
-          forallTelescope? remainingType? fun newFVars _ => do
+              k
+          forallTelescope? remainingType? do
             let overlaps ← findOverlappingDataInstances
             unless overlaps.isEmpty do
+              /- The fvars overlapping on a given class. For each class belonging to some overlap,
+              assign to it the fvars which have it as a projection, preserving the data as to
+              whether these fvars were instances of the class itself (as opposed to projecting to
+              it) in the `Bool`. -/
               let mut collectedByOverlap : Std.HashMap Expr (Std.HashSet (Expr × Bool)) := {}
               for { fvar₁, fvar₂, overlap } in overlaps do
                 collectedByOverlap := collectedByOverlap.alter overlap fun set? =>
