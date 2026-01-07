@@ -1,7 +1,7 @@
 module
 
 import Aesop.Frontend.Attribute
-import all Mathlib.Tactic.Linter.CommandStart
+import all Mathlib.Tactic.Linter.Whitespace
 import Mathlib.Tactic.Lemma
 
 set_option linter.style.commandStart true
