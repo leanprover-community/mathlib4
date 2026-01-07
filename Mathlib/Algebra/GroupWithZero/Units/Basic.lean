@@ -149,8 +149,8 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
     IsUnit.ringInverse⟩
 
 open Classical in
-/-- Class expressing the fact that a type has an inverse which behaves like
-  `Ring.inverse`. -/
+/-- Class expressing the fact that a type has an inverse which is equal to zero on non-invertible
+elements. -/
 class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] [Inv M₀] where
   inv_unit (u : M₀ˣ) : (u : M₀)⁻¹ = (u⁻¹ : M₀ˣ)
   inv_of_not_isUnit (x : M₀) (h : ¬IsUnit x) : x⁻¹ = 0
