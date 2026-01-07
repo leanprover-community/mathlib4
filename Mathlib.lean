@@ -4279,7 +4279,6 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
 public import Mathlib.Geometry.Manifold.WhitneyEmbedding
-public import Mathlib.Geometry.Manifold.«ContQ.old»
 public import Mathlib.Geometry.Manifold.«ExistsRiemannianMetricTangentSpace.old»
 public import Mathlib.Geometry.Manifold.«ExistsRiemannianMetricTangentSpaceA.old»
 public import Mathlib.Geometry.RingedSpace.Basic
