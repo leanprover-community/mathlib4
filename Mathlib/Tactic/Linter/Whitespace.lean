@@ -21,12 +21,6 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
-/-- deprecated: use the `linter.style.whitespace` option instead" -/
-public register_option linter.style.commandStart : Bool := {
-  defValue := false
-  descr := "deprecated: use the `linter.style.whitespace` option instead"
-}
-
 /--
 The `whitespace` linter emits a warning if
 * either a command does not start at the beginning of a line;
@@ -44,6 +38,12 @@ example (a: Nat) {R:Type}  [Add  R] : <not linted part>
 public register_option linter.style.whitespace : Bool := {
   defValue := false
   descr := "enable the whitespace linter"
+}
+
+@[deprecated linter.style.whitespace (since := "2026-01-07")]
+public register_option linter.style.commandStart : Bool := {
+  defValue := false
+  descr := "deprecated: use the `linter.style.whitespace` option instead"
 }
 
 /-- If the `linter.style.whitespace.verbose` option is `true`, the `whitespace` linter
@@ -306,8 +306,6 @@ public def mkWindow (orig : String) (start ctx : Nat) : String :=
 
 @[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  if Linter.getLinterValue linter.style.commandStart (← getLinterOptions) then
-    logWarningAt stx "`linter.style.commandStart` is deprecated, use `linter.style.whitespace` instead."
   unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
