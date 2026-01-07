@@ -29,7 +29,7 @@ Chebyshev T polynomials are orthogonal with respect to `1 / √ (1 - x ^ 2)`.
 * integral_T_real_mul_self_of_ne_zero: if `n = m ≠ 0` then the integral equals `π / 2`.
 
 -/
-@[expose] public section
+public section
 
 namespace Polynomial.Chebyshev
 
