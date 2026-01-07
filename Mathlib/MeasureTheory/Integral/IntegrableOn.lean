@@ -682,7 +682,6 @@ theorem ContinuousOn.aestronglyMeasurable_of_subset_isCompact
     [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} {s t : Set α} {μ : Measure α}
     (hf : ContinuousOn f s) (hs : IsCompact s) (ht : MeasurableSet t) (hts : t ⊆ s) :
     AEStronglyMeasurable f (μ.restrict t) := by
-  letI := pseudoMetrizableSpacePseudoMetric β
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
   refine ⟨(hf.mono hts).aemeasurable ht, f '' s, ?_, ?_⟩
