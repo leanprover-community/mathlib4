@@ -397,7 +397,7 @@ Iterated derivatives as a finite support function.
 @[simps! apply_apply]
 noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
-    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le_iff]
+    contrapose; simp_all [iterate_derivative_eq_zero]
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
@@ -652,7 +652,7 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
 
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
     derivative^[k] (∏ a ∈ S, (X - C a)) =
-    k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a):= by
+    k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
   classical
   induction k
   case zero => simp

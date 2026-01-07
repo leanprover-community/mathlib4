@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Nakayama
 ## Lemmas on idempotent finitely generated ideals
 -/
 
-@[expose] public section
+public section
 
 
 namespace Ideal

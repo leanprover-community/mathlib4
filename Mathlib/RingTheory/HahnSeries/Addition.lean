@@ -267,16 +267,12 @@ theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [Add
     exact hyne rfl
   refine lt_of_le_of_ne ?_ this
   simp only [order, ne_zero_of_eq_add_single hxy hy, ↓reduceDIte, hy]
-  have : y.support ⊆ x.support := by
-    intro g hg
-    by_cases hgx : g = x.order
-    · refine (mem_support x g).mpr ?_
-      have : x.coeff x.order ≠ 0 := coeff_order_ne_zero <| ne_zero_of_eq_add_single hxy hy
-      rwa [← hgx] at this
-    · have : x.coeff g = (y + (single x.order) x.leadingCoeff).coeff g := by rw [← hxy]
-      rw [coeff_add, coeff_single_of_ne hgx, add_zero] at this
-      simpa [this] using hg
-  exact Set.IsWF.min_le_min_of_subset this
+  refine Set.IsWF.min_le_min_of_subset fun g hg ↦ ?_
+  obtain rfl | hgx := eq_or_ne g x.order
+  · simpa using coeff_order_eq_zero.not.2 <| ne_zero_of_eq_add_single hxy hy
+  · have : x.coeff g = (y + (single x.order) x.leadingCoeff).coeff g := by rw [← hxy]
+    rw [coeff_add, coeff_single_of_ne hgx, add_zero] at this
+    simpa [this] using hg
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
