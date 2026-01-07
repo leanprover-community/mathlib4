@@ -1,6 +1,5 @@
 import Mathlib.RingTheory.Etale.Field
-import Mathlib.RingTheory.FiniteLength
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.Flat.Equalizer
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 import Mathlib.RingTheory.Smooth.Local
@@ -106,102 +105,12 @@ local notation "𝓂[" R "]" => maximalIdeal R
 variable {R S P : Type*} [CommRing R]
     [CommRing S] [Algebra R S] [CommRing P] [Algebra R P]
 
-open LinearMap in
-/--
-Diagram
-                         0
-     Q ⊗ K -> Q ⊗ M -> Q ⊗ N -> 0
-0 -> P ⊗ K -> P ⊗ M -> P ⊗ N
-     A ⊗ K -> A ⊗ M
-       0        0
--/
-lemma _root_.LinearMap.lTensor_injective_of_exact_of_flat
-    {M N A K : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    [AddCommGroup A] [AddCommGroup K] [Module R K] [Module R A] [Module.Flat R N]
-    (f : M →ₗ[R] N) (hf : Function.Surjective f) (g : K →ₗ[R] M) (hg : Function.Injective g)
-    (H : Function.Exact g f) :
-    Function.Injective (g.lTensor A) := by
-  let P := A →₀ R
-  let π : P →ₗ[R] A := Finsupp.linearCombination R fun a ↦ a
-  have hπ : Function.Surjective π := Finsupp.linearCombination_surjective _ Function.surjective_id
-  let Q := LinearMap.ker π
-  have := SnakeLemma.exact_δ'_left (Q.subtype.rTensor K) (Q.subtype.rTensor M) (Q.subtype.rTensor N)
-    (g.lTensor Q) (f.lTensor Q) (lTensor_exact _ H hf) (g.lTensor P) (f.lTensor P)
-    (lTensor_exact _ H hf) (by simp) (by simp) (K₃ := Unit) 0
-    (by simpa using Module.Flat.rTensor_preserves_injective_linearMap _ Q.subtype_injective)
-    (π.rTensor K) (rTensor_exact _ (exact_subtype_ker_map π) hπ) (π.rTensor M)
-    (rTensor_exact _ (exact_subtype_ker_map π) hπ) (lTensor_surjective Q hf)
-    (Module.Flat.lTensor_preserves_injective_linearMap _ hg) (g.lTensor A)
-    (by simp) (rTensor_surjective _ hπ)
-  rw [Subsingleton.elim (SnakeLemma.δ' ..) 0] at this
-  simpa using this
-
-def _root_.LinearMap.tensorKerEquivOfSurjective
-    {M N A : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    [AddCommGroup A] [Module R A] [Module.Flat R N]
-    (f : M →ₗ[R] N) (hf : Function.Surjective f) :
-    LinearMap.ker (f.lTensor A) ≃ₗ[R] A ⊗[R] LinearMap.ker f := by
-  refine .ofEq _ _ ?_ ≪≫ₗ (LinearEquiv.ofInjective _ (LinearMap.lTensor_injective_of_exact_of_flat
-    f hf _ (LinearMap.ker f).subtype_injective (LinearMap.exact_subtype_ker_map _))).symm
-  rw [LinearMap.exact_iff.mp (lTensor_exact _ (LinearMap.exact_subtype_ker_map _) hf)]
-
 variable [Algebra P S] [IsScalarTower R P S]
 
 variable [IsLocalRing R] [IsLocalRing S] [FormallySmooth R P]
     [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
     (h₁ : Function.Surjective (algebraMap P S)) (h₂ : (RingHom.ker (algebraMap P S)).FG)
     [Module.Flat R S] [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
-
-attribute [local instance] TensorProduct.rightAlgebra in
-def kerTensorProductEquivTensorTensorKer {A : Type*} [CommRing A] [Algebra R A] :
-    (RingHom.ker (Algebra.TensorProduct.map (.id A A)
-      (IsScalarTower.toAlgHom R P S))) ≃ₗ[A ⊗[R] P]
-      (A ⊗[R] P) ⊗[P] (RingHom.ker (algebraMap P S)) := by
-  let φ : A ⊗[R] P →ₐ[A] A ⊗[R] S :=
-    Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
-  let ePp : A ⊗[R] P ≃ₐ[P] P ⊗[R] A := { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
-  let e₃ : (RingHom.ker φ) ≃ₗ[R] A ⊗[R] (RingHom.ker (algebraMap P S)) :=
-    (LinearMap.tensorKerEquivOfSurjective (IsScalarTower.toAlgHom R P S).toLinearMap
-      h₁).restrictScalars R
-  let e₄' : (RingHom.ker φ) ≃ₗ[R] (A ⊗[R] P) ⊗[P] (RingHom.ker (algebraMap P S)) :=
-    e₃ ≪≫ₗ _root_.TensorProduct.comm _ _ _ ≪≫ₗ
-      (AlgebraTensorModule.cancelBaseChange _ _ P _ _).symm.restrictScalars R ≪≫ₗ
-      (AlgebraTensorModule.congr (.refl P _) ePp.symm.toLinearEquiv).restrictScalars R ≪≫ₗ
-      (_root_.TensorProduct.comm _ _ _).restrictScalars R
-  let e₄ : (A ⊗[R] P) ⊗[P] (RingHom.ker (algebraMap P S)) ≃ₗ[A ⊗[R] P] (RingHom.ker φ) :=
-    { __ := e₄'.symm, map_smul' r' x := by
-        dsimp
-        induction x with
-        | zero => simp only [smul_zero, LinearEquiv.map_zero]
-        | add x y _ _ => simp only [smul_add, LinearEquiv.map_add, *]
-        | tmul x y =>
-        induction x with
-        | zero => simp only [zero_tmul, smul_zero, LinearEquiv.map_zero]
-        | add x y _ _ => simp only [smul_add, add_tmul, LinearEquiv.map_add, *]
-        | tmul x z =>
-        induction r' with
-        | zero => simp only [zero_smul, LinearEquiv.map_zero]
-        | add x y _ _ => simp only [add_smul, LinearEquiv.map_add, *]
-        | tmul r s =>
-        rw [smul_tmul']
-        ext1
-        dsimp [e₄', ePp, φ]
-        change ((r * x) ⊗ₜ[R] ((s * z) * y.1)) = (r ⊗ₜ[R] s) * (x ⊗ₜ[R] (z * y.1))
-        rw [TensorProduct.tmul_mul_tmul, mul_assoc] }
-  exact e₄.symm
-
-attribute [local instance] TensorProduct.rightAlgebra in
-omit [IsLocalRing R]
-  [IsLocalRing S]
-  [FormallySmooth R P]
-  [Module.Free P Ω[P⁄R]]
-  [Module.Finite P Ω[P⁄R]]
-  [FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)] in
-@[simp]
-lemma kerTensorProductEquivTensorTensorKer_symm_apply {A : Type*} [CommRing A] [Algebra R A]
-    (x y z) :
-    ((kerTensorProductEquivTensorTensorKer (R := R) (A := A) h₁).symm ((x ⊗ₜ y) ⊗ₜ z)).1 =
-      x ⊗ₜ (y * z.1) := rfl
 
 include h₁ h₂ in
 set_option synthInstance.maxHeartbeats 0 in
@@ -245,7 +154,7 @@ lemma FormallySmooth.of_formallySmooth_fiber_aux
     (AlgebraTensorModule.congr (.refl 𝓀[S] _) e₀).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] Ω[P⁄R]).restrictScalars S
   let e₄ : (RingHom.ker φ) ≃ₗ[Pp] Pp ⊗[P] (RingHom.ker (algebraMap P S)) :=
-    kerTensorProductEquivTensorTensorKer h₁
+    kerTensorProductMapIdToAlgHomEquiv _ _ _ _ h₁
   let e₅ : 𝓀[S] ⊗[Pp] (RingHom.ker φ) ≃ₗ[S] 𝓀[S] ⊗[P] (RingHom.ker (algebraMap P S)) :=
     (AlgebraTensorModule.congr (.refl 𝓀[S] 𝓀[S]) e₄).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] _).restrictScalars S
@@ -274,7 +183,7 @@ lemma FormallySmooth.of_formallySmooth_fiber_aux
   | tmul x y =>
   dsimp [e₅, e₄, e₂, KaehlerDifferential.cotangentComplexBaseChange,
     TensorProduct.one_def, Pp, smul_tmul']
-  rw [kerTensorProductEquivTensorTensorKer_symm_apply h₁]
+  rw [kerTensorProductMapIdToAlgHomEquiv_symm_apply]
   dsimp [e₀]
   rw [KaehlerDifferential.tensorKaehlerEquiv'_symm_D_tmul]
   dsimp
