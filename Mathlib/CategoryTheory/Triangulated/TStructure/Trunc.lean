@@ -138,21 +138,7 @@ end AbstractSpectralObject
 
 variable [IsTriangulated C]
 
-lemma isIso₁_truncLE_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
-    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₃ : t.IsGE T.obj₃ n₁) :
-    IsIso ((t.truncLE n₀).map T.mor₁) := by
-  rw [isIso_truncLEmap_iff _ _ _ _ h]
-  obtain ⟨Z, g, k, mem⟩ := distinguished_cocone_triangle ((t.truncLEι n₀).app T.obj₁ ≫ T.mor₁)
-  refine ⟨_, _, _, mem, ?_⟩
-  have H := someOctahedron rfl (t.triangleLEGE_distinguished n₀ n₁ h T.obj₁) hT mem
-  exact t.isGE₂ _ H.mem n₁ (by dsimp; infer_instance) (by dsimp; infer_instance)
-
-lemma isIso₁_truncLT_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
-    (n : ℤ) (h₃ : t.IsGE T.obj₃ n) : IsIso ((t.truncLT n).map T.mor₁) := by
-  rw [← NatIso.isIso_map_iff (t.truncLEIsoTruncLT (n-1) n (by lia))]
-  exact t.isIso₁_truncLE_map_of_isGE T hT (n-1) n (by lia) h₃
-
-lemma isIso₂_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
+lemma isIso₂_truncGE_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
     IsIso ((t.truncGE n₁).map T.mor₂) := by
   rw [isIso_truncGEmap_iff _ _ _ _ h]
@@ -179,7 +165,7 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLT b).obj X) a :=
 
 instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
   rw [t.isLE_iff_isZero_truncGE_obj b (b+1) rfl]
-  have := t.isIso₂_truncGE_map_of_LE _ ((t.triangleLEGE_distinguished (a-1) a (by lia) X))
+  have := t.isIso₂_truncGE_map_of_isLE _ ((t.triangleLEGE_distinguished (a-1) a (by lia) X))
     b (b+1) rfl (by dsimp; infer_instance)
   dsimp at this
   exact IsZero.of_iso (t.isZero_truncGE_obj_of_isLE b (b+1) rfl X)
@@ -269,9 +255,9 @@ lemma eTruncLT_obj_obj_isLE (n : ℤ) (i : EInt) (h : i ≤ EInt.mk (n + 1)) (X 
 
 lemma isIso_truncGE_map_truncGEπ_app (a b : ℤ) (h : a ≤ b) (X : C) :
     IsIso ((t.truncGE b).map ((t.truncGEπ a).app X)) :=
-  t.isIso₂_truncGE_map_of_LE _
-    (t.triangleLEGE_distinguished (a-1) a (by lia) X) (b-1) b (by lia)
-      (t.isLE_of_LE ((t.truncLE (a-1)).obj X) (a-1) (b-1) (by lia))
+  t.isIso₂_truncGE_map_of_isLE _
+    (t.triangleLEGE_distinguished (a - 1) a (by lia) X) (b - 1) b (by lia)
+      (t.isLE_of_LE ((t.truncLE (a - 1)).obj X) (a - 1) (b - 1) (by lia))
 
 lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
     IsIso ((t.truncLT a).map ((t.truncLTι b).app X)) :=
@@ -279,9 +265,8 @@ lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
     (t.isGE_of_GE ((t.truncGE b).obj X) a b (by lia))
 
 lemma isIso_truncLE_map_truncLEι_app (a b : ℤ) (h : a ≤ b) (X : C) :
-    IsIso ((t.truncLE a).map ((t.truncLEι b).app X)) := by
-  apply isIso_truncLT_map_truncLTι_app
-  lia
+    IsIso ((t.truncLE a).map ((t.truncLEι b).app X)) :=
+  t.isIso_truncLT_map_truncLTι_app _ _ (by lia) _
 
 instance (X : C) (n : ℤ) : IsIso ((t.truncLE n).map ((t.truncLEι n).app X)) :=
   t.isIso_truncLE_map_truncLEι_app _ _ (by rfl) _

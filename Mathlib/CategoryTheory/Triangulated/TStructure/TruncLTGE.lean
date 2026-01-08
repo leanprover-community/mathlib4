@@ -644,6 +644,22 @@ noncomputable abbrev truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncG
 
 noncomputable abbrev truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
 
+section
+
+
+variable [IsTriangulated C]
+
+lemma isIso₁_truncLT_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n : ℤ) (h₃ : t.IsGE T.obj₃ n) :
+    IsIso ((t.truncLT n).map T.mor₁) := by
+  rw [isIso_truncLTmap_iff]
+  obtain ⟨Z, g, k, mem⟩ := distinguished_cocone_triangle ((t.truncLTι n).app T.obj₁ ≫ T.mor₁)
+  refine ⟨_, _, _, mem, ?_⟩
+  let H := someOctahedron rfl (t.triangleLTGE_distinguished n T.obj₁) hT mem
+  exact t.isGE₂ _ H.mem n (by dsimp; infer_instance) (by dsimp; infer_instance)
+
+end
+
 end
 
 end TStructure

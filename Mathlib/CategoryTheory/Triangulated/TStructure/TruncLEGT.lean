@@ -301,6 +301,18 @@ noncomputable def truncGELEIsoTruncGELT (a b b' : ℤ) (hb' : b + 1 = b') :
     t.truncGELE a b ≅ t.truncGELT a b' :=
   Functor.isoWhiskerRight (t.truncLEIsoTruncLT b b' hb') _
 
+section
+
+variable [IsTriangulated C]
+
+lemma isIso₁_truncLE_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₃ : t.IsGE T.obj₃ n₁) :
+    IsIso ((t.truncLE n₀).map T.mor₁) := by
+  subst h
+  exact t.isIso₁_truncLT_map_of_isGE _ hT _ h₃
+
+end
+
 end TStructure
 
 end Triangulated
