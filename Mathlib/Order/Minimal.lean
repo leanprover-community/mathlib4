@@ -145,10 +145,10 @@ theorem Maximal.and_left (h : Maximal P x) (hQ : Q x) : Maximal (fun x ↦ (Q x 
 @[simp] theorem maximal_eq_iff : Maximal (· = y) x ↔ x = y := by
   simp +contextual [Maximal]
 
-theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, P y ∧ y ≤ x ∧ ¬(x ≤ y) := by
+theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, P y ∧ y ≤ x ∧ ¬ (x ≤ y) := by
   simp [Minimal, hx]
 
-theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, P y ∧ x ≤ y ∧ ¬(y ≤ x) :=
+theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, P y ∧ x ≤ y ∧ ¬ (y ≤ x) :=
   not_minimal_iff (α := αᵒᵈ) hx
 
 theorem Minimal.or (h : Minimal (fun x ↦ P x ∨ Q x) x) : Minimal P x ∨ Minimal Q x := by
@@ -354,7 +354,7 @@ theorem Set.minimal_iff_forall_ssubset : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, t 
 theorem Minimal.not_prop_of_ssubset (h : Minimal P s) (ht : t ⊂ s) : ¬ P t :=
   (minimal_iff_forall_lt.1 h).2 ht
 
-theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬t ⊂ s :=
+theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
   h.not_lt ht
 
 theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
