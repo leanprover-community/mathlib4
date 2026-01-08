@@ -244,7 +244,7 @@ lemma isNowhereDense_iff_forall_notMem_nhds {s : Set X} :
     mem_interior_iff_mem_nhds]
 
 /-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
-lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y]
+lemma Topology.IsInducing.isNowhereDense_image [TopologicalSpace Y] {f : X → Y}
     (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
   rw [isNowhereDense_iff_forall_notMem_nhds, forall_mem_image] at *
   simp_rw [hf.nhds_eq_comap, hf.closure_eq_preimage_closure_image] at h
