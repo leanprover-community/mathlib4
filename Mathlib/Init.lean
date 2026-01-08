@@ -17,6 +17,7 @@ public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PrivateModule
+public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
@@ -52,7 +53,7 @@ as early as possible.
 
 All linters imported here have no bulk imports;
 **Not** imported in this file are
-- the text-based linters in `Linters/TextBased.lean`, as they can be imported later
+- the text-based linters in `Mathlib/Tactic/Linter/TextBased.lean`, as they can be imported later
 - the `haveLet` linter, as it is currently disabled by default due to crashes
 - the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
@@ -61,11 +62,11 @@ All linters imported here have no bulk imports;
 
 -/
 
-@[expose] public section
+public section
 
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 
-Projects depending on mathlib can use `set_option linter.allMathlibLinters true` to enable
+Projects depending on mathlib can use `set_option linter.mathlibStandardSet true` to enable
 all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.
 -/
 register_linter_set linter.mathlibStandardSet :=
@@ -102,7 +103,7 @@ to catch any regressions.
 -/
 register_linter_set linter.nightlyRegressionSet :=
   linter.tacticAnalysis.regressions.linarithToGrind
-  linter.tacticAnalysis.regressions.omegaToCutsat
+  linter.tacticAnalysis.regressions.omegaToLia
   linter.tacticAnalysis.regressions.ringToGrind
   linter.tacticAnalysis.regressions.tautoToGrind
 

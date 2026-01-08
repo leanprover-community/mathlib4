@@ -666,7 +666,7 @@ variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Typ
 
 @[simp]
 theorem lift_algEquiv (i : R →+* U) (x hx z) :
-    h'.lift i x hx (h.algEquiv h' z) = h.lift i x hx z := by rw [← h.map_repr z]; simp [- map_repr]
+    h'.lift i x hx (h.algEquiv h' z) = h.lift i x hx z := by rw [← h.map_repr z]; simp [-map_repr]
 
 @[deprecated (since := "2025-08-13")] alias lift_aequiv := lift_algEquiv
 

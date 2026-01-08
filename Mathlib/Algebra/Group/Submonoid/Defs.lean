@@ -127,9 +127,17 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
 namespace Submonoid
 
 @[to_additive]
+lemma toSubsemigroup_injective : (toSubsemigroup : Submonoid M → Subsemigroup M).Injective :=
+  fun ⟨s, hs⟩ ⟨t, ht⟩ ↦ by congr!
+
+@[to_additive (attr := simp)]
+lemma toSubsemigroup_inj {s t : Submonoid M} : s.toSubsemigroup = t.toSubsemigroup ↔ s = t :=
+  toSubsemigroup_injective.eq_iff
+
+@[to_additive]
 instance : SetLike (Submonoid M) M where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' := SetLike.coe_injective.comp toSubsemigroup_injective
 
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
@@ -239,6 +247,15 @@ theorem coe_top : ((⊤ : Submonoid M) : Set M) = Set.univ :=
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
   rfl
+
+@[to_additive (attr := simp)]
+lemma mk_eq_top (toSubsemigroup : Subsemigroup M) (one_mem') :
+    mk toSubsemigroup one_mem' = ⊤ ↔ toSubsemigroup = ⊤ := by simp [← SetLike.coe_set_eq]
+
+@[to_additive (attr := simp)]
+lemma mk_eq_bot (toSubsemigroup : Subsemigroup M) (one_mem') :
+    mk toSubsemigroup one_mem' = ⊥ ↔ (toSubsemigroup : Set M) = {1} := by
+  simp [← SetLike.coe_set_eq]
 
 /-- The inf of two submonoids is their intersection. -/
 @[to_additive /-- The inf of two `AddSubmonoid`s is their intersection. -/]
@@ -369,6 +386,9 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
+
+instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
+  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.1) eq)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/

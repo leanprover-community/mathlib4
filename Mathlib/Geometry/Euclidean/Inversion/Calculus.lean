@@ -25,7 +25,7 @@ space in this file.
 inversion, derivative
 -/
 
-@[expose] public section
+public section
 
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology RealInnerProductSpace
