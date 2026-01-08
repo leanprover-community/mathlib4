@@ -416,11 +416,18 @@ noncomputable def seminormOfBilinearForm {x : B}
     rw [@Real.sqrt_le_iff]
     · have : ((φ r) s) * ((φ s) r) ≤ ((φ r) r) * ((φ s) s) :=
         LinearMap.BilinForm.apply_mul_apply_le_of_forall_zero_le φ.toLinearMap₁₂ hpos r s
+      have h0 : φ (r + s) (r + s) = (φ r) r + (φ r) s + (φ s) r + (φ s) s := by
+        calc φ (r + s) (r + s) = φ (r + s) r +  φ (r + s) s :=
+          ContinuousLinearMap.map_add (φ (r + s)) r s
+        _ = φ r r + φ s r + φ (r + s) s := by rw [ContinuousLinearMap.map_add₂ φ r s r]
+        _ = φ r r + φ s r +  φ r s + φ s s := by
+          rw [ContinuousLinearMap.map_add₂ φ r s s]
+          exact Eq.symm (add_assoc ((φ r) r + (φ s) r) ((φ r) s) ((φ s) s))
+        _ = (φ r) r + (φ r) s + (φ s) r + (φ s) s :=
+          add_add_add_comm' ((φ r) r) ((φ s) r) ((φ r) s) ((φ s) s)
       have h1 : φ (r + s) (r + s) ≤ (Real.sqrt ((φ r) r) + Real.sqrt ((φ s) s)) ^ 2 :=
         calc φ (r + s) (r + s)
-          = (φ r) r + (φ r) s + (φ s) r + (φ s) s := by
-              simp
-              exact Eq.symm (add_assoc ((φ r) r + (φ r) s) ((φ s) r) ((φ s) s))
+          = (φ r) r + (φ r) s + (φ s) r + (φ s) s := h0
         _ = (φ r) r + 2 * (φ r) s + (φ s) s := by
               rw [hsymm r s]
               ring
@@ -553,13 +560,15 @@ lemma seminormOfBilinearForm_sub_comm {x : B}
   have h1 : φ (u.val - v.val) (u.val - v.val) =
          φ u.val u.val - φ u.val v.val - φ v.val u.val + φ v.val v.val := by
     rw [φ.map_sub]
-    simp
+    simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, map_sub]
     rw [@sub_add]
+    exact sub_sub_sub_comm ((φ u.val) u.val) ((φ v.val) u.val) ((φ u.val) v.val) ((φ v.val) v.val)
   have h2 : φ (v.val - u.val) (v.val - u.val) =
          φ v.val v.val - φ v.val u.val - φ u.val v.val + φ u.val u.val := by
     rw [φ.map_sub]
-    simp
+    simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, map_sub]
     rw [@sub_add]
+    exact sub_sub_sub_comm ((φ v.val) v.val) ((φ u.val) v.val) ((φ v.val) u.val) ((φ u.val) u.val)
   have h3 :  φ u.val u.val - φ u.val v.val - φ v.val u.val + φ v.val v.val =
              φ v.val v.val - φ v.val u.val - φ u.val v.val + φ u.val u.val := by ring
   have : ((φ (u.val - v.val)) (u.val - v.val)) = ((φ (v.val - u.val)) (v.val - u.val)) := by
@@ -918,7 +927,9 @@ lemma h_need' (f : SmoothPartitionOfUnity B IB B)
            ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin_2 j b).toFun v).toFun v :=
       finsum_image_eq_sum (evalAt b v v) h h_fin.toFinset h_inc
   have : ∀ j, (((f j) b • g_bilin_2 j b).toFun v).toFun v = h' j := by
-    simp
+    simp only [ContinuousLinearMap.coe_smul, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+               LinearMap.smul_apply,
+               ContinuousLinearMap.coe_coe, smul_eq_mul]
     exact fun j ↦ rfl
   intro hv
   have h_nonneg : ∀ i, 0 ≤ f.toFun i b := fun i => f.nonneg' i b
@@ -1019,7 +1030,14 @@ lemma g_bilin_1_smooth_on_chart (i : B) :
     (g_bilin_1 (EB := EB) (IB := IB) i)
     (extChartAt IB i).source := by
   unfold g_bilin_1
-  simp
+  simp only [hom_trivializationAt_target, TangentBundle.trivializationAt_baseSet,
+  hom_trivializationAt_baseSet,
+  Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, Set.inter_univ,
+  Set.inter_self, Set.mem_prod,
+  Set.mem_univ, and_true, PartialEquiv.invFun_as_coe, OpenPartialHomeomorph.coe_coe_symm,
+  dite_eq_ite, extChartAt,
+  OpenPartialHomeomorph.extend, PartialEquiv.trans_source, OpenPartialHomeomorph.toFun_eq_coe,
+  ModelWithCorners.source_eq, Set.preimage_univ]
   intro b hb
   have h0 : ((chartAt HB i).source ∩ ((chartAt HB i).source ∩ Set.univ)) ×ˢ Set.univ =
             (chartAt HB i).source ×ˢ (Set.univ : Set (EB →L[ℝ] EB →L[ℝ] ℝ)) := by
