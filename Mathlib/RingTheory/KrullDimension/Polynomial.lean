@@ -51,7 +51,7 @@ then `ht(P) = ht(p) + 1`.
 See `Polynomial.height_eq_height_add_one` for the more general version that does not assume `p` is
 maximal.
 -/
-lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] (P : Ideal R[X])
+private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] (P : Ideal R[X])
     [P.IsMaximal] [P.LiesOver p] : P.height = p.height + 1 := by
   let _ : Field (R ⧸ p) := Quotient.field p
   suffices h : (P.map (Ideal.Quotient.mk (Ideal.map (algebraMap R R[X]) p))).height = 1 by
