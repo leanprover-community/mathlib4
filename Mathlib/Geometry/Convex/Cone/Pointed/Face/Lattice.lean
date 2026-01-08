@@ -121,7 +121,8 @@ instance : OrderBot (Face C) where
   bot := ⟨_, IsFaceOf.lineal C⟩
   bot_le F := F.isFaceOf.lineal_le
 
-/-- The lineality space of a cone `C` as a face of `C`. It is contained in all faces of `C`. -/
+/-- The lineality space of a cone `C` as a face of `C`. It is contained in all faces of `C`. This is
+an abbrev for `⊥`. -/
 abbrev lineal : Face C := ⊥
 
 /-!
@@ -166,6 +167,7 @@ theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
     · exact ⟨(mem_prod.mp (G.isFaceOf.le zm)).1, (mem_prod.mp (G.isFaceOf.le yn)).2⟩
   · intro h; exact ⟨⟨x.2, h⟩, ⟨x.1, h⟩⟩
 
+@[gcongr]
 theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} :
     F₁ ≤ F₁' → F₂ ≤ F₂' → prod F₁ F₂ ≤ prod F₁' F₂' := Submodule.prod_mono
 
