@@ -18,8 +18,8 @@ C⋆-algebra into the algebra of bounded linear operators on some Hilbert space.
 
 ## Main results
 
-- `f.preGNS` : a type synonym of `A` that forgets the norm of `A` and bundles in a fixed linear
-  functional `f` so that we can construct an inner product and inner product-induced norm.
+- `f.preGNS` : a type synonym of `A` that bundles in a fixed positive linear functional `f` so that
+  we can construct an inner product and inner product-induced norm.
 - `f.GNS` : the Hilbert space completion of `f.preGNS`.
 - `f.gnsNonUnitalStarAlgHom` : The non-unital *-homomorphism from a non-unital `A` into the bounded
   linear operators on `f.GNS`.
