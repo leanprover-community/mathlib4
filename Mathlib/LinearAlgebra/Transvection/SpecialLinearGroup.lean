@@ -132,7 +132,7 @@ def fixedReduce [Module.Finite K V] (e : SpecialLinearGroup K V) :
 open Pointwise
 
 theorem mem_transvections_pow_of_toLinearEquiv {e : SpecialLinearGroup K V} {n : ℕ}
-    (he : e.toLinearEquiv ∈ LinearEquiv.transvections K V ^ n * dilatransvections K V) :
+    (he : ↑e ∈ LinearEquiv.transvections K V ^ n * dilatransvections K V) :
     e ∈ transvections K V ^ (n + 1) := by
   rw [Set.mem_mul] at he
   obtain ⟨x, hx, y, hy, he⟩ := he
@@ -145,11 +145,9 @@ theorem mem_transvections_pow_of_toLinearEquiv {e : SpecialLinearGroup K V} {n :
     simp only [List.mem_map, List.mem_finRange, Function.comp_apply, true_and] at ha
     obtain ⟨i, rfl⟩ := ha
     obtain ⟨f, v, hfv, hi⟩ := (l i).prop
-    rw [hi, LinearEquiv.transvection.det_eq_one]
+    rw [hi, transvection.det_eq_one]
   have hydet : LinearEquiv.det y = 1 := by
-    rw [← e.prop]
-    change _ = LinearEquiv.det e.toLinearEquiv
-    rw [← he, map_mul, hxdet, one_mul]
+    rw [← e.prop, ← he, map_mul, hxdet, one_mul]
   rw [pow_succ, Set.mem_mul]
   refine ⟨⟨x, hxdet⟩, ?_, ⟨y, hydet⟩, ?_, by simpa [← Subtype.coe_inj]⟩
   · rw [Set.mem_pow] at hx ⊢
@@ -166,7 +164,7 @@ theorem mem_transvections_pow_of_toLinearEquiv {e : SpecialLinearGroup K V} {n :
     refine ⟨f, v, ?_, ?_⟩
     · rw [← add_right_inj (a := 1), add_zero, ← transvection.det f v,
       ← hy, ← LinearEquiv.coe_det, hydet, Units.val_one]
-    · simp [← LinearEquiv.toLinearMap_inj, hy]
+    · simp [← toLinearMap_inj, hy]
 
 theorem mem_transvections_pow_of_notIsExceptional
     {e : SpecialLinearGroup K V} (he : ¬ IsExceptional e.toLinearEquiv) :
@@ -217,22 +215,70 @@ theorem subgroup_closure_transvections_eq_top :
 
 theorem _root_.LinearEquiv.transvection.existsBasis
     {e : V ≃ₗ[K] V} (he : e ∈ LinearEquiv.transvections K V) (he1 : e ≠ 1)
-    {ι : Type*} (hι : Nat.card ι = finrank K V) :
-    ∃ (b : Basis ι K V) (i j : ι) (hij : i ≠ j),
+    {ι : Type*} (hι : Nat.card ι = finrank K V) (i j : ι) (hij : i ≠ j) :
+    ∃ (b : Basis ι K V),
       e = LinearEquiv.transvection (f := b.coord i) (v := b j) (by
       simp_all) := by
+  obtain ⟨f, v, hfv, hg⟩ := he
+  have hf : f ≠ 0 := by contrapose he1; aesop
+  have hv : v ≠ 0 := by contrapose he1; aesop
+  have hb1 : LinearIndepOn K id {(⟨v, by simpa⟩ : ker f)} :=
+    LinearIndepOn.singleton (by simpa)
+  let θ1 := hb1.extend (Set.subset_univ _)
+  let b1 : Basis θ1 K (ker f) := Basis.extend hb1
+  have hb := b1.linearIndependent.map' _ (Submodule.ker_subtype (ker f))
+  let θ2 := Basis.sumExtendIndex hb
+  let B : Basis (θ1 ⊕ θ2) K V := Module.Basis.sumExtend hb
   sorry
 
 theorem isConj_of_mem_transvections {g g' : SpecialLinearGroup K V}
     (hg1 : g ≠ 1) (hg : g ∈ transvections K V)
     (hg'1 : g' ≠ 1) (hg' : g' ∈ transvections K V) :
     IsConj g g' := by
+  --
   obtain ⟨f, v, hfv, hg⟩ := hg
+  have : ∃ w, f w = 1 := by
+    suffices ∃ w, f w ≠ 0 by
+      obtain ⟨w, this⟩ := this
+      exact ⟨(f w)⁻¹ • w, by aesop⟩
+    contrapose hg1
+    ext x
+    simp only [ne_eq, not_exists, not_not] at hg1
+    simp [hg, LinearMap.transvection.apply, hg1]
+  obtain ⟨w, hfw⟩ := this
+  --
+  obtain ⟨f', v', hfv', hg'⟩ := hg'
+  have : ∃ w, f' w = 1 := by
+    suffices ∃ w, f' w ≠ 0 by
+      obtain ⟨w, this⟩ := this
+      exact ⟨(f' w)⁻¹ • w, by aesop⟩
+    contrapose hg'1
+    ext x
+    simp only [ne_eq, not_exists, not_not] at hg'1
+    simp [hg', LinearMap.transvection.apply, hg'1]
+  obtain ⟨w', hfw'⟩ := this
+  --
+  have : ∃ e : V ≃ₗ[K] V, e v = v' ∧ (ker f).map e.toLinearMap = (ker f') ∧ e w = w' := by
+    sorry
+  obtain ⟨e, hev, hef, hew⟩ := this
   have hf : f ≠ 0 := by contrapose hg1; aesop
   have hv : v ≠ 0 := by contrapose hg1; aesop
+  have hb1 : LinearIndepOn K id {(⟨v, by simpa⟩ : LinearMap.ker f)} :=
+    LinearIndepOn.singleton (by simpa)
+  let b := Module.Basis.extend (K := K) hb1
+  have hb := b.linearIndependent.map' _ (Submodule.ker_subtype (ker f))
+  let B := Module.Basis.sumExtend hb
+  --
   obtain ⟨f', v', hfv', hg'⟩ := hg'
   have hf' : f' ≠ 0 := by contrapose hg'1; aesop
   have hv' : v' ≠ 0 := by contrapose hg'1; aesop
+  have hb'1 : LinearIndepOn K id {(⟨v', by simpa⟩ : LinearMap.ker f')} :=
+    LinearIndepOn.singleton (by simpa)
+  let b' := Module.Basis.extend (K := K) hb'1
+  have hb' := b'.linearIndependent.map' _ (Submodule.ker_subtype (ker f'))
+  let B' := Module.Basis.sumExtend hb'
+  --
+
   -- for any nonzero `a`,
   -- there is an automorphism of `V` of determinant 1
   -- that maps `f` to `f'` and `v` to `a • v'`
