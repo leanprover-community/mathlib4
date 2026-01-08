@@ -13,13 +13,12 @@ public import Mathlib.Data.Nat.Lattice
 /-!
 # Definition of nilpotent elements
 
-This file defines the notion of a nilpotent element and proves the immediate consequences.
+This file proves basic facts about nilpotent elements.
 For results that require further theory, see `Mathlib/RingTheory/Nilpotent/Basic.lean`
 and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 ## Main definitions
 
-  * `IsNilpotent`
   * `Commute.isNilpotent_mul_left`
   * `Commute.isNilpotent_mul_right`
   * `nilpotencyClass`
