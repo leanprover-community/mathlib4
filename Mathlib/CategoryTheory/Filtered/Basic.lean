@@ -17,6 +17,12 @@ We give a simple characterisation of this condition as
    are equal, and
 3. there exists some object.
 
+An important example of filtered category is given by nonempty directed types;
+actually, filtered categories may be considered as a generalization of nonempty directed types.
+In the file `CategoryTheory.Presentable.Directed`, we show that "conversely"
+if `C` is a filtered category, there exists a final functor `α ⥤ C` from
+a nonempty directed type (`IsFiltered.isDirected`).
+
 Filtered colimits are often better behaved than arbitrary colimits.
 See `CategoryTheory/Limits/Types` for some details.
 
@@ -166,6 +172,10 @@ theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' �
 
 end AllowEmpty
 
+lemma isDirectedOrder (α : Type u) [Preorder α] [IsFiltered α] :
+    IsDirectedOrder α where
+  directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
+
 end IsFiltered
 
 namespace IsFilteredOrEmpty
@@ -245,11 +255,7 @@ theorem sup_exists :
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply coeq_condition
-      · rw [@w' _ _ mX mY f']
-        grind
+      grind [coeq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -700,12 +706,7 @@ theorem inf_exists :
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply eq_condition
-      · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        grind
+      grind [eq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h

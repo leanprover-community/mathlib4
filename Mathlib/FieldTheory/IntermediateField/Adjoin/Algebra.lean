@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.EssentialFiniteness
 This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 -/
 
-@[expose] public section
+public section
 
 open Module Polynomial
 

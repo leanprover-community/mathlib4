@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Filter ENNReal Set

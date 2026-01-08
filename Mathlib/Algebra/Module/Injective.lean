@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+
 module
 
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 
@@ -206,6 +208,7 @@ abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
 
 variable {f}
 
+set_option backward.privateInPublic true in
 private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSingleton i f y) :
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
@@ -215,11 +218,15 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
   rcases b_mem with ⟨z, eq2⟩
   exact ⟨⟨a, a_mem⟩, z, by rw [← eq1, ← eq2]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `fst` pick an arbitrary such `m`. -/
 def ExtensionOfMaxAdjoin.fst {y : N} (x : supExtensionOfMaxSingleton i f y) :
     (extensionOfMax i f).domain :=
   (extensionOfMax_adjoin.aux1 i x).choose
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `x ∈ M ⊔ ⟨y⟩`, then `x = m + r • y`, `snd` pick an arbitrary such `r`. -/
 def ExtensionOfMaxAdjoin.snd {y : N} (x : supExtensionOfMaxSingleton i f y) : R :=
   (extensionOfMax_adjoin.aux1 i x).choose_spec.choose
@@ -408,8 +415,8 @@ lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
     Module.Injective R M where
   out X Y _ _ _ _ f hf g :=
-    let eX := ULift.moduleEquiv.{_,_,v'} (R := R) (M := X)
-    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_,_,v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
+    let eX := ULift.moduleEquiv.{_, _, v'} (R := R) (M := X)
+    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_, _, v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
       (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
       (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
@@ -439,3 +446,16 @@ lemma Module.Injective.extension_property
   (Module.Baer.of_injective inj).extension_property f hf g
 
 end lifting_property
+
+
+universe w in
+instance Module.Injective.pi
+    (R : Type u) [Ring R] {ι : Type w} (M : ι → Type v) [Small.{v} R]
+    [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    [∀ i, Module.Injective R (M i)] :
+    Module.Injective R (∀ i, M i) :=
+  ⟨fun X Y _ _ _ _ f hf g ↦ by
+    choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
+    refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
+    ext i
+    exact DFunLike.congr_fun (hl i) x⟩

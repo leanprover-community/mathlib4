@@ -66,10 +66,13 @@ local prefix:100 "π " => cs.wordProd
 
 /-! ### Length -/
 
+set_option backward.privateInPublic true in
 private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
@@ -252,14 +255,14 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       lia
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
-    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
+    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by lia
     rw [this]
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
-      _ ≤ (alternatingWord i' i (M i i' - 1)).length  := cs.length_wordProd_le _
-      _ = M i i' - 1                                  := length_alternatingWord _ _ _
-      _ ≤ M i i'                                      := Nat.sub_le _ _
-      _ < M i i' + 1                                  := Nat.lt_succ_self _
+      _ ≤ (alternatingWord i' i (M i i' - 1)).length := cs.length_wordProd_le _
+      _ = M i i' - 1 := length_alternatingWord _ _ _
+      _ ≤ M i i' := Nat.sub_le _ _
+      _ < M i i' + 1 := Nat.lt_succ_self _
   | step m ih => -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
