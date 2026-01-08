@@ -47,7 +47,7 @@ open Ideal IsLocalization
 /--
 Let `p` be a maximal ideal of `A`. If `P` is a maximal ideal of `A[X]` lying above `p`,
 then `ht(P) = ht(p) + 1`.
-See `Ideal.height_eq_height_add_one` for the more general version that does not assume `p` is
+See `Polynomial.height_eq_height_add_one` for the more general version that does not assume `p` is
 maximal.
 -/
 lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] (P : Ideal R[X])
