@@ -85,5 +85,3 @@ lemma zero_of_minpoly_map_frob_is_pth_power [Algebra.IsAlgebraic k K] (hp : p.Pr
     ∃ β : K, β ^ p = α :=
   zero_of_map_frob_is_pth_power (minpoly.aeval k α) ((Algebra.isSeparable_def k K).mp hSep α) hp
     h_pth_power_coeff
-
--- #min_imports
