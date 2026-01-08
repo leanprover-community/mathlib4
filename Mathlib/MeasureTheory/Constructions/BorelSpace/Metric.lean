@@ -118,7 +118,7 @@ theorem measurable_edist_left : Measurable fun y => edist y x :=
 theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
   continuous_infEDist.measurable
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias measurable_infEdist := measurable_infEDist
 
 @[fun_prop]
@@ -126,7 +126,7 @@ protected theorem Measurable.infEDist {f : β → α} (hf : Measurable f) {s : S
     Measurable fun x => infEDist (f x) s :=
   measurable_infEDist.comp hf
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias Measurable.infEdist := Measurable.infEDist
 
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed

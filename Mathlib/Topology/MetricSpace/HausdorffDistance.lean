@@ -447,111 +447,111 @@ namespace EMetric
 
 open Metric
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 noncomputable alias infEdist := infEDist
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_empty := infEDist_empty
 
-@[deprecated (since := "2026-01-06")] alias le_infEdist := le_infEDist
-@[deprecated (since := "2026-01-06")] alias infEdist_union := infEDist_union
-@[deprecated (since := "2026-01-06")] alias infEdist_iUnion := infEDist_iUnion
-@[deprecated (since := "2026-01-06")] alias infEdist_biUnion := infEDist_biUnion
-@[deprecated (since := "2026-01-06")] alias infEdist_singleton := infEDist_singleton
-@[deprecated (since := "2026-01-06")] alias infEdist_le_edist_of_mem := infEDist_le_edist_of_mem
-@[deprecated (since := "2026-01-06")] alias infEdist_zero_of_mem := infEDist_zero_of_mem
-@[deprecated (since := "2026-01-06")] alias infEdist_anti := infEDist_anti
-@[deprecated (since := "2026-01-06")] alias infEdist_lt_iff := infEDist_lt_iff
+@[deprecated (since := "2026-01-08")] alias le_infEdist := le_infEDist
+@[deprecated (since := "2026-01-08")] alias infEdist_union := infEDist_union
+@[deprecated (since := "2026-01-08")] alias infEdist_iUnion := infEDist_iUnion
+@[deprecated (since := "2026-01-08")] alias infEdist_biUnion := infEDist_biUnion
+@[deprecated (since := "2026-01-08")] alias infEdist_singleton := infEDist_singleton
+@[deprecated (since := "2026-01-08")] alias infEdist_le_edist_of_mem := infEDist_le_edist_of_mem
+@[deprecated (since := "2026-01-08")] alias infEdist_zero_of_mem := infEDist_zero_of_mem
+@[deprecated (since := "2026-01-08")] alias infEdist_anti := infEDist_anti
+@[deprecated (since := "2026-01-08")] alias infEdist_lt_iff := infEDist_lt_iff
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_le_infEdist_add_edist := infEDist_le_infEDist_add_edist
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_le_edist_add_infEdist := infEDist_le_edist_add_infEDist
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias edist_le_infEdist_add_ediam := edist_le_infEDist_add_ediam
 
-@[deprecated (since := "2026-01-06")] alias continuous_infEdist := continuous_infEDist
-@[deprecated (since := "2026-01-06")] alias infEdist_closure := infEDist_closure
+@[deprecated (since := "2026-01-08")] alias continuous_infEdist := continuous_infEDist
+@[deprecated (since := "2026-01-08")] alias infEdist_closure := infEDist_closure
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias mem_closure_iff_infEdist_zero := mem_closure_iff_infEDist_zero
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias mem_iff_infEdist_zero_of_closed := mem_iff_infEDist_zero_of_closed
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_pos_iff_notMem_closure := infEDist_pos_iff_notMem_closure
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_closure_pos_iff_notMem_closure := infEDist_closure_pos_iff_notMem_closure
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias exists_real_pos_lt_infEdist_of_notMem_closure := exists_real_pos_lt_infEDist_of_notMem_closure
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias disjoint_closedBall_of_lt_infEdist := disjoint_closedEBall_of_lt_infEDist
 
-@[deprecated (since := "2026-01-06")] alias infEdist_image := infEDist_image
-@[deprecated (since := "2026-01-06")] alias infEdist_vadd := infEDist_vadd
-@[to_additive existing, deprecated (since := "2026-01-06")] alias infEdist_smul := infEDist_smul
+@[deprecated (since := "2026-01-08")] alias infEdist_image := infEDist_image
+@[deprecated (since := "2026-01-08")] alias infEdist_vadd := infEDist_vadd
+@[to_additive existing, deprecated (since := "2026-01-08")] alias infEdist_smul := infEDist_smul
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias _root_.IsCompact.exists_infEdist_eq_edist := _root_.IsCompact.exists_infEDist_eq_edist
 
-@[deprecated (since := "2026-01-06")] alias exists_pos_forall_lt_edist := exists_pos_forall_lt_edist
-@[deprecated (since := "2026-01-06")] alias infEdist_prod := infEDist_prod
+@[deprecated (since := "2026-01-08")] alias exists_pos_forall_lt_edist := exists_pos_forall_lt_edist
+@[deprecated (since := "2026-01-08")] alias infEdist_prod := infEDist_prod
 
-@[deprecated (since := "2026-01-06")] noncomputable alias hausdorffEdist := hausdorffEDist
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_def := hausdorffEDist_def
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_self := hausdorffEDist_self
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_comm := hausdorffEDist_comm
+@[deprecated (since := "2026-01-08")] noncomputable alias hausdorffEdist := hausdorffEDist
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_def := hausdorffEDist_def
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_self := hausdorffEDist_self
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_comm := hausdorffEDist_comm
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias hausdorffEdist_le_of_infEdist := hausdorffEDist_le_of_infEDist
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias hausdorffEdist_le_of_mem_edist := hausdorffEDist_le_of_mem_edist
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_le_hausdorffEdist_of_mem := infEDist_le_hausdorffEDist_of_mem
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias exists_edist_lt_of_hausdorffEdist_lt := exists_edist_lt_of_hausdorffEDist_lt
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_le_infEdist_add_hausdorffEdist := infEDist_le_infEDist_add_hausdorffEDist
 
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_image := hausdorffEDist_image
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_le_ediam := hausdorffEDist_le_ediam
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_triangle := hausdorffEDist_triangle
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_image := hausdorffEDist_image
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_le_ediam := hausdorffEDist_le_ediam
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_triangle := hausdorffEDist_triangle
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias hausdorffEdist_zero_iff_closure_eq_closure := hausdorffEDist_zero_iff_closure_eq_closure
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias hausdorffEdist_self_closure := hausdorffEDist_self_closure
 
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_closure₁ := hausdorffEDist_closure_left
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_closure₂ := hausdorffEDist_closure_right
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_closure := hausdorffEDist_closure
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_closure₁ := hausdorffEDist_closure_left
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_closure₂ := hausdorffEDist_closure_right
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_closure := hausdorffEDist_closure
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias hausdorffEdist_zero_iff_eq_of_closed := IsClosed.hausdorffEDist_zero_iff
 
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_empty := hausdorffEDist_empty
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_empty := hausdorffEDist_empty
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias nonempty_of_hausdorffEdist_ne_top := nonempty_of_hausdorffEDist_ne_top
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias empty_or_nonempty_of_hausdorffEdist_ne_top := empty_or_nonempty_of_hausdorffEDist_ne_top
 
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_singleton := hausdorffEDist_singleton
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_iUnion_le := hausdorffEDist_iUnion_le
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_union_le := hausdorffEDist_union_le
-@[deprecated (since := "2026-01-06")] alias hausdorffEdist_prod_le := hausdorffEDist_prod_le
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_singleton := hausdorffEDist_singleton
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_iUnion_le := hausdorffEDist_iUnion_le
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_union_le := hausdorffEDist_union_le
+@[deprecated (since := "2026-01-08")] alias hausdorffEdist_prod_le := hausdorffEDist_prod_le
 
 end EMetric
 
@@ -595,14 +595,14 @@ theorem infEDist_ne_top (h : s.Nonempty) : infEDist x s ≠ ∞ := by
   rcases h with ⟨y, hy⟩
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEDist_le_edist_of_mem hy)
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_ne_top := infEDist_ne_top
 
 @[simp]
 theorem infEDist_eq_top_iff : infEDist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEDist_ne_top]
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_eq_top_iff := infEDist_eq_top_iff
 
 /-- The minimal distance of a point to a set containing it vanishes. -/
@@ -799,7 +799,7 @@ theorem hausdorffEDist_ne_top_of_nonempty_of_bounded (hs : s.Nonempty) (ht : t.N
       exact le_trans dist_nonneg this
   exact ne_top_of_le_ne_top ENNReal.ofReal_ne_top this
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias hausdorffEdist_ne_top_of_nonempty_of_bounded := hausdorffEDist_ne_top_of_nonempty_of_bounded
 
 /-- The Hausdorff distance between a set and itself is zero. -/

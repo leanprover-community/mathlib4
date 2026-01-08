@@ -318,7 +318,7 @@ distance, with a topology defeq to the initial one. -/
   toUniformSpace := uniformSpaceOfEDistOfHasBasis d h_self h_comm h_triangle h_basis
   uniformity_edist := rfl
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias PseudoEmetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopology
 
 namespace MulOpposite

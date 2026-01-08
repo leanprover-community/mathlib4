@@ -523,7 +523,7 @@ additionally the predicate `IsRiemannianManifold I M`. -/
       (fun _ hs ↦ setOf_riemannianEDist_lt_subset_nhds' I hs)
       (fun _ hc ↦ eventually_riemannianEDist_lt I x hc))
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 noncomputable alias PseudoEmetricSpace.ofRiemannianMetric := PseudoEMetricSpace.ofRiemannianMetric
 
 /-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
@@ -546,7 +546,7 @@ additionally the predicate `IsRiemannianManifold I M`. -/
   letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
   EMetricSpace.ofT0PseudoEMetricSpace M
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 noncomputable alias EmetricSpace.ofRiemannianMetric := EMetricSpace.ofRiemannianMetric
 
 end

@@ -63,10 +63,10 @@ open EMetric
 theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist x s := by
   rw [← image_inv_eq_inv, infEDist_image isometry_inv]
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_neg_neg := infEDist_neg_neg
 
-@[to_additive existing, deprecated (since := "2026-01-07")]
+@[to_additive existing, deprecated (since := "2026-01-08")]
 alias infEdist_inv_inv := infEDist_inv_inv
 
 
@@ -74,10 +74,10 @@ alias infEdist_inv_inv := infEDist_inv_inv
 theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
   rw [← infEDist_inv_inv, inv_inv]
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-08")]
 alias infEdist_neg := infEDist_neg
 
-@[to_additive existing, deprecated (since := "2026-01-07")]
+@[to_additive existing, deprecated (since := "2026-01-08")]
 alias infEdist_inv := infEDist_inv
 
 @[to_additive]

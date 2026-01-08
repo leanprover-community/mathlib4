@@ -405,46 +405,54 @@ alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
 alias Closeds.isClosed_subsets_of_isClosed :=
   TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
   mem_hausdorffEntourage_of_hausdorffEDist_lt
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias hausdorffEdist_le_of_mem_hausdorffEntourage := hausdorffEDist_le_of_mem_hausdorffEntourage
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias continuous_infEdist_hausdorffEdist :=
   TopologicalSpace.Closeds.continuous_infEDist_hausdorffEDist
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias Closeds.edist_eq := TopologicalSpace.Closeds.edist_eq
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias Closeds.isometry_singleton := TopologicalSpace.Closeds.isometry_singleton
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 
-@[deprecated (since := "2026-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
 
 @[deprecated (since := "2025-08-20")]
 alias ToCloseds.isUniformEmbedding := TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2025-08-20")]
+alias NonemptyCompacts.ToCloseds.isUniformEmbedding :=
+  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
+
+@[deprecated (since := "2025-11-19")]
+alias NonemptyCompacts.isUniformEmbedding_toCloseds :=
+  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
+
+@[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isClosed_in_closeds :=
   TopologicalSpace.NonemptyCompacts.isClosed_in_closeds
 
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_singleton :=
   TopologicalSpace.NonemptyCompacts.isometry_singleton
 
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.lipschitz_sup :=
   TopologicalSpace.NonemptyCompacts.lipschitz_sup
 
-@[deprecated (since := "2025-01-06")]
+@[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.lipschitz_prod :=
   TopologicalSpace.NonemptyCompacts.lipschitz_prod
 
