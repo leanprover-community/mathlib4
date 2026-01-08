@@ -40,6 +40,7 @@ public import Mathlib.Tactic.NormNum.NatFactorial
 - `PeriodPair.analyticOnNhd_weierstrassP`: `℘` is analytic away from the lattice points.
 - `PeriodPair.meromorphic_weierstrassP`: `℘` is meromorphic on the whole plane.
 - `PeriodPair.order_weierstrassP`: `℘` has a pole of order 2 at each of the lattice points.
+- `PeriodPair.derivWeierstrassP_sq` : `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃`
 
 ## tags
 
@@ -1068,7 +1069,8 @@ lemma relation_eq_zero : L.relation = 0 := by
     lift w to L.lattice using hw
     simp
 
-lemma ℘'_sq (z : ℂ) (hz : z ∉ L.lattice) :
+/-- `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃` -/
+lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :
     ℘'[L] z ^ 2 = 4 * ℘[L] z ^ 3 - L.g₂ * ℘[L] z - L.g₃ := by
   rw [← sub_eq_zero]
   convert congr_fun L.relation_eq_zero z using 1
