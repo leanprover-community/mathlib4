@@ -970,30 +970,30 @@ lemma analyticAt_relation_zero_aux :
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
     iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept,
     pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
-  simp? [mul_add, Finset.sum_range_succ', L.G_eq_zero_of_odd 3 (by decide)] says
-    simp only [sumInvPow_zero, Nat.cast_ite, CharP.cast_eq_zero, mul_ite, mul_zero,
-      Finset.sum_range_succ', tsub_zero, Nat.choose_zero_right, Nat.cast_one, zero_add,
-      Nat.factorial_two, Nat.cast_ofNat, L.G_eq_zero_of_odd 3 (by decide), zero_mul, ite_self,
-      add_zero, Nat.reduceSubDiff, Nat.choose_one_right, Nat.cast_add, Nat.reduceAdd,
-      Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, sub_zero, mul_add, Finset.range_zero,
-      zero_tsub, OfNat.zero_ne_ofNat, Finset.sum_const_zero, zero_sub, mul_neg, one_mul, neg_mul,
-      weierstrassPExcept_zero, Nat.rec_zero, mul_one, Nat.choose_zero_succ, ite_mul]
+  -- The following is `simp [mul_add, Finset.sum_range_succ', L.G_eq_zero_of_odd 3 (by decide)]`:
+  simp only [sumInvPow_zero, Nat.cast_ite, CharP.cast_eq_zero, mul_ite, mul_zero,
+    Finset.sum_range_succ', tsub_zero, Nat.choose_zero_right, Nat.cast_one, zero_add,
+    Nat.factorial_two, Nat.cast_ofNat, L.G_eq_zero_of_odd 3 (by decide), zero_mul, ite_self,
+    add_zero, Nat.reduceSubDiff, Nat.choose_one_right, Nat.cast_add, Nat.reduceAdd,
+    Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, sub_zero, mul_add, Finset.range_zero,
+    zero_tsub, OfNat.zero_ne_ofNat, Finset.sum_const_zero, zero_sub, mul_neg, one_mul, neg_mul,
+    weierstrassPExcept_zero, Nat.rec_zero, mul_one, Nat.choose_zero_succ, ite_mul]
   simp +contextual only [show ∀ a, ∀ x, a - (x + 1) = 3 ↔ x = a - 4 ∧ 4 ≤ a by lia,
     show ∀ a, ∀ x, a - (x + 1) = 2 ↔ x = a - 3 ∧ 3 ≤ a by lia,
     show ∀ a, ∀ x, a - (x + 1) = 6 ↔ x = a - 7 ∧ 7 ≤ a by lia,
     show ∀ a, ∀ x ∈ Finset.range a, a - (x + 1) = 0 ↔ x = a - 1 ∧ 1 ≤ a by simp_all; lia]
-  simp? [ite_and, Finset.sum_add_distrib] says
-    simp only [ite_and, Finset.sum_ite_eq', Finset.mem_range, tsub_lt_self_iff, Nat.ofNat_pos,
-      and_true, mul_ite, mul_zero, Nat.reduceAdd, Nat.cast_ofNat, tsub_pos_iff_lt,
-      Finset.sum_add_distrib, zero_lt_one]
+  -- The following is `simp [ite_and, Finset.sum_add_distrib]`:
+  simp only [ite_and, Finset.sum_ite_eq', Finset.mem_range, tsub_lt_self_iff, Nat.ofNat_pos,
+    and_true, mul_ite, mul_zero, Nat.reduceAdd, Nat.cast_ofNat, tsub_pos_iff_lt,
+    Finset.sum_add_distrib, zero_lt_one]
   interval_cases i
   · simp; norm_num
   · simp
   · simp [Finset.sum_range_succ]
   · simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide)]
   · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
-  · -- Is `simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 5 (by decide)]`
-    -- but squeezed for performance reasons
+  · -- This is `simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 5 (by decide)]`
+    -- but squeezed for performance reasons.
     simp only [Nat.choose_succ_self_right, Nat.reduceAdd, Nat.cast_ofNat, Nat.reduceSubDiff,
       tsub_le_iff_right, le_add_iff_nonneg_right, zero_le, Nat.sub_eq_zero_of_le, zero_add,
       Nat.choose_one_right, Nat.add_one_sub_one, Nat.one_le_ofNat, ↓reduceIte,
