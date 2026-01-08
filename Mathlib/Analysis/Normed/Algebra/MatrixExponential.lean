@@ -100,7 +100,7 @@ theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m �
   (exp_conjTranspose _ _).symm.trans <| congr_arg _ h
 
 omit [T2Space 𝔸] in
-private theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] (A : Matrix m m 𝔸) (ha : IsNilpotent A)
+private theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] {A : Matrix m m 𝔸} (ha : IsNilpotent A)
     (h : ∀ (k : 𝕂) (q : ℚ) (n : ℕ) (_ : k = q), k • A ^ n = q • A ^ n) :
     (exp 𝕂 A) = IsNilpotent.exp A := by
   rw [IsNilpotent.exp, exp_eq_tsum]
@@ -119,24 +119,18 @@ end Ring
 
 theorem exp_eq_isNilpotent_exp [Fintype m] [DecidableEq m] [Field 𝕂] [DivisionRing 𝔸] [CharZero 𝔸]
     [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] [IsScalarTower ℚ 𝕂 𝔸]
-    (A : Matrix m m 𝔸) (ha : IsNilpotent A) : (exp 𝕂 A) = IsNilpotent.exp A := by
-  apply exp_eq_isNilpotent_exp' 𝕂 A ha
+    {A : Matrix m m 𝔸} (ha : IsNilpotent A) : (exp 𝕂 A) = IsNilpotent.exp A := by
+  apply exp_eq_isNilpotent_exp' 𝕂 ha
   intro k q n hkq
-  have h1 : ∀ (k : 𝕂) (q : ℚ), k = q → k • (1 : Matrix m m 𝔸) = q • (1 : Matrix m m 𝔸) := ?_
-  focus have hA : ∀ (k : 𝕂) (q : ℚ), k = q → k • A = q • A := ?_
-  rotate_left
-  repeat {
-    intro k q hkq
+  have hB (B : Matrix m m 𝔸) {k : 𝕂} {q : ℚ} (hkq: k = q) : k • B = q • B := by
     rw [hkq]
     exact Rat.cast_smul_eq_qsmul 𝕂 q _
-  }
   match n with
-  | 0 => exact h1 k q hkq
-  | Nat.succ bb => {
+  | 0 => exact (hB 1) hkq
+  | Nat.succ bb =>
     rw [← mul_pow_sub_one (by bound)]
     iterate 2 rw [← smul_mul_assoc]
-    rw [hA k q hkq]
-  }
+    rw [(hB A) hkq]
 
 section CommRing
 
