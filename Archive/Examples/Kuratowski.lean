@@ -232,12 +232,12 @@ theorem not_eq_univ_of_mem_theClosedSix_fourteenSet {s}
   rw [Ne, eq_univ_iff_forall]
   push_neg
   repeat obtain _ | ⟨_, h⟩ := h; rotate_left
-  · use 1/2; norm_num
-  · use 1/2; norm_num
-  · use 6;   norm_num
-  · use 6;   norm_num
-  · use 1/2; norm_num
-  · use 6;   norm_num
+  · use 1 / 2; norm_num
+  · use 1 / 2; norm_num
+  · use 6; norm_num
+  · use 6; norm_num
+  · use 1 / 2; norm_num
+  · use 6; norm_num
 
 /-- The fourteen different operations applied to the `fourteenSet` generate no duplicates. -/
 theorem nodup_theFourteen_fourteenSet : (theFourteen fourteenSet).Nodup :=
