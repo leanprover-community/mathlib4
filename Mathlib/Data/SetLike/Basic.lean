@@ -215,9 +215,11 @@ section default
 
 variable (A B : Type*) [SetLike A B]
 
+/-- The order induced from a `SetLike` instance by inclusion. -/
 @[reducible] def LE.ofSetLike : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
 
+/-- The partial order induced from a `SetLike` instance by inclusion. -/
 @[reducible] def PartialOrder.ofSetLike : PartialOrder A where
   __ := LE.ofSetLike A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
