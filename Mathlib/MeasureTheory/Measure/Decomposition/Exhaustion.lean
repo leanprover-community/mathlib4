@@ -102,7 +102,7 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
       refine iSup_le (fun s ↦ ?_)
       exact iSup_le (fun _ ↦ iSup_le (fun _ ↦ measure_mono (Set.subset_univ s)))
     obtain ⟨t, ht⟩ := exists_lt_of_lt_ciSup
-      (ENNReal.sub_lt_self h_lt_top.ne (ne_zero_of_lt hC_lt) (by simp) :
+      (ENNReal.sub_lt_self h_lt_top.ne hC_lt.ne_bot (by simp) :
           (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1 / n
         < ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s)
     have ht_meas : MeasurableSet t := by
@@ -118,7 +118,7 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
     exact ht.le
   · refine ⟨∅, MeasurableSet.empty, by rw [Measure.restrict_empty]; infer_instance, ?_⟩
     rw [tsub_eq_zero_of_le hC_lt]
-    exact zero_le'
+    exact zero_le _
 
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetGE ν n)` is sigma-finite and
 for `C` the supremum of `ν s` over all measurable sets `s` with `μ.restrict s` sigma-finite,
