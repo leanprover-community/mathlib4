@@ -252,8 +252,7 @@ private theorem eval_iterate_derivative_eq_sum_node {n k : ℕ} (hk : k ≤ n) (
     rw [Finset.card_range]
     grw [hP]
     simp
-  have h₂ : k ≤ P.degree := sorry
-  convert (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁ h₂ x).symm using 2
+  convert (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁ (by simp) x).symm using 2
   · exact Eq.symm (Nat.range_succ_eq_Iic n)
   · simp
 
