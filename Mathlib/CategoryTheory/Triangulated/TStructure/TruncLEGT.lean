@@ -33,11 +33,12 @@ instance (n : ℤ) : (t.truncLE n).Additive := by
   dsimp only [truncLE]
   infer_instance
 
-instance (n : ℤ) (X : C) : t.IsLE ((t.truncLE n).obj X) n := by
-  have : t.IsLE ((t.truncLE n).obj X) (n + 1 - 1) := by
-    dsimp [truncLE]
-    infer_instance
-  exact t.isLE_of_LE _ (n+1-1) n (by lia)
+lemma isLE_truncLE_obj (X : C) (a b : ℤ) (hn : a ≤ b := by lia) :
+    t.IsLE ((t.truncLE a).obj X) b :=
+  t.isLE_truncLT_obj ..
+
+instance (n : ℤ) (X : C) : t.IsLE ((t.truncLE n).obj X) n :=
+  t.isLE_truncLE_obj ..
 
 noncomputable def truncGT (n : ℤ) : C ⥤ C := t.truncGE (n + 1)
 
@@ -45,12 +46,15 @@ instance (n : ℤ) : (t.truncGT n).Additive := by
   dsimp only [truncGT]
   infer_instance
 
-instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT n).obj X) (n + 1) := by
-  dsimp [truncGT]
-  infer_instance
+lemma isGE_truncGT_obj (X : C) (a b : ℤ) (hn : b ≤ a + 1 := by lia) :
+    t.IsGE ((t.truncGT a).obj X) b :=
+  t.isGE_truncGE_obj ..
+
+instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT n).obj X) (n + 1) :=
+  t.isGE_truncGT_obj ..
 
 instance (n : ℤ) (X : C) : t.IsGE ((t.truncGT (n - 1)).obj X) n :=
-  t.isGE_of_GE _ n (n - 1 + 1) (by lia)
+  t.isGE_truncGT_obj ..
 
 noncomputable def truncLEIsoTruncLT (a b : ℤ) (h : a + 1 = b) : t.truncLE a ≅ t.truncLT b :=
   eqToIso (by rw [← h]; rfl)
@@ -267,6 +271,35 @@ lemma π_descTruncGT :
   (t.descTruncGT_aux f n₀ n₁ h).choose_spec.symm
 
 end
+
+lemma isIso_truncLEmap_iff {X Y : C} (f : X ⟶ Y) (a b : ℤ) (h : a + 1 = b) :
+    IsIso ((t.truncLE a).map f) ↔
+      ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ ((t.truncLE a).obj X)⟦1⟧)
+        (_ : Triangle.mk ((t.truncLEι a).app X ≫ f) g h ∈ distTriang _), t.IsGE Z b := by
+  subst h
+  apply isIso_truncLTmap_iff
+
+lemma isIso_truncGTmap_iff {Y Z : C} (g : Y ⟶ Z) (n : ℤ) :
+    IsIso ((t.truncGT n).map g) ↔
+      ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGT n).obj Z) ⟶ X⟦(1 : ℤ)⟧)
+        (_ : Triangle.mk f (g ≫ (t.truncGTπ n).app Z) h ∈ distTriang _), t.IsLE X n :=
+  t.isIso_truncGEmap_iff g n (n + 1) rfl
+
+instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLE a).obj X) b := by
+  dsimp [truncLE]
+  infer_instance
+
+instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGT b).obj X) a := by
+  dsimp [truncGT]
+  infer_instance
+
+noncomputable abbrev truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLE b
+
+noncomputable abbrev truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
+
+noncomputable def truncGELEIsoTruncGELT (a b b' : ℤ) (hb' : b + 1 = b') :
+    t.truncGELE a b ≅ t.truncGELT a b' :=
+  Functor.isoWhiskerRight (t.truncLEIsoTruncLT b b' hb') _
 
 end TStructure
 
