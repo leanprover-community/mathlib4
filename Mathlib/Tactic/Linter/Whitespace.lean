@@ -324,7 +324,9 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
     -- the `suffices` tactic; the pretty-printer does not take line length into account
-    ``Lean.Parser.Term.suffices,
+    -- TODO: can we keep inspecting the contents of that node?
+    ``Lean.Parser.Tactic.tacticSuffices_,
+    -- `Mathlib.Tactic.tacticSuffices_, -- XXX: is this branch ever taken?
   ]
   depth := none
 
