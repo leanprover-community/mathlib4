@@ -150,7 +150,7 @@ noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] 
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
       | ih c =>
-      have := map_coe ((f.leftMulMapPreGNS a).comp (f.leftMulMapPreGNS b)).uniformContinuous
+      have := map_coe (f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b).uniformContinuous
       simp_all [mul_assoc]
   map_star' a := by
     refine (eq_adjoint_iff (completion (f.leftMulMapPreGNS (star a)))
