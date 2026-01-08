@@ -229,6 +229,10 @@ theorem isConj_of_mem_transvections {g g' : SpecialLinearGroup K V}
   -- if `
   sorry
 
+example {G : Type*} [Group G] {x y : G} (h : IsConj x y) :
+    x * y ∈ commutatorSet G := by
+  sorry
+
 theorem mem_commutatorSet
     {g : SpecialLinearGroup K V} (hg : g ∈ transvections K V) :
     g ∈ commutatorSet (SpecialLinearGroup K V) := by
