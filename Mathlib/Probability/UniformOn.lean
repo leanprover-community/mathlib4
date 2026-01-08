@@ -83,7 +83,7 @@ theorem uniformOn_univ [Fintype Ω] {s : Set Ω} :
     uniformOn Set.univ s = Measure.count s / Fintype.card Ω := by
   simp [uniformOn, cond_apply, ← ENNReal.div_eq_inv_mul]
 
-theorem uniformOn_isProbabilityMeasure' {s : Set Ω}
+theorem isProbabilityMeasure_uniformOn' {s : Set Ω}
     (hs_fin : s.Finite) (hs_nonempty : s.Nonempty) (hs_meas : MeasurableSet s) :
     IsProbabilityMeasure (uniformOn s) := by
   apply cond_isProbabilityMeasure_of_finite
