@@ -69,3 +69,43 @@ def Lean.Name.isAuxLemma (n : Name) : Bool :=
 /-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`. -/
 def Lean.Meta.unfoldAuxLemmas (e : Expr) : MetaM Expr := do
   deltaExpand e Lean.Name.isAuxLemma
+
+/--
+Determines if the pretty-printed version of the given name would parse as an
+`ident` with an underlying name (via `getId`) equal to the original name.
+The pretty-printer usually escapes unparseable components of a name with `«»`,
+but makes exceptions for various names with special meaning, meaning that the result does not
+round trip. We therefore re-check those conditions here.
+
+This function is intended to be "safe" in that it if it returns `true`,
+the name will definitely round trip. Any deviation from this
+behavior is a bug which should be fixed.
+-/
+-- See also [Zulip](https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/Check.20if.20a.20.60Lean.2EName.60.20is.20roundtrippable/with/565735560)
+meta def Lean.Name.willRoundTrip (n : Name) : Bool :=
+  !n.isAnonymous -- anonymous names do not roundtrip
+    && !n.hasMacroScopes -- names with macroscopes do not roundtrip
+    && !maybePseudoSyntax -- names which might be "pseudo-syntax" do not roundtrip
+    && go n
+where
+  go : Lean.Name → Bool
+    | .str n s =>
+      -- names which satisfy `isInaccessibleUserName` (containing `'✝'` or having a component equal to  `"_inaccessible"`do not round trip
+      -- names with newlines may not round trip; for convenience, we consider all names with newlines to be non-roundtrippable, though technically some might
+      s != "_inaccessible"
+        && !s.contains (fun c => c == '✝' || c == '_inaccessible' || c == '\n')
+        -- names must satisfy `(Name.escapePart s).isSome` for any string component `s` can roundtrip; this reduces to `!s.any Lean.isIdEndEscape`
+        && !s.any isIdEndEscape
+        && go n
+    | .num .. => false -- names with any numeric components do not roundtrip
+    | .anonymous => true -- we check that the entire name is not anonymous at the top level
+  /-- This should be exactly the same as `toStringWithToken.maybePseudoSyntax`. -/
+  maybePseudoSyntax :=
+    if n == `_ then
+      -- output hole as is
+      true
+    else if let .str _ s := n.getRoot then
+      -- could be pseudo-syntax for loose bvar or universe mvar, output as is
+      "#".isPrefixOf s || "?".isPrefixOf s
+    else
+      false
