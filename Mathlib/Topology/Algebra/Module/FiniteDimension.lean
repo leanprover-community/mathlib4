@@ -9,7 +9,7 @@ public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.LocalRing.Basic
-public import Mathlib.Topology.Algebra.Module.Determinant
+-- public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
@@ -48,6 +48,9 @@ result follows as `continuous_equivFun_basis`.
 -/
 
 @[expose] public section
+
+assert_not_exists Matrix.cramer
+-- assert_not_exists Matrix
 
 open Filter Module Set TopologicalSpace Topology
 
@@ -324,10 +327,10 @@ theorem coe_toContinuousLinearMap_symm :
       ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
   rfl
 
-@[simp]
-theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
-    (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
-  rfl
+-- @[simp]
+-- theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
+--     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
+--   rfl
 
 @[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
 theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
@@ -473,21 +476,21 @@ namespace ContinuousLinearMap
 
 variable [T2Space E] [FiniteDimensional 𝕜 E]
 
-/-- Builds a continuous linear equivalence from a continuous linear map on a finite-dimensional
-vector space whose determinant is nonzero. -/
-def toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) : E ≃L[𝕜] E :=
-  ((f : E →ₗ[𝕜] E).equivOfDetNeZero hf).toContinuousLinearEquiv
+-- /-- Builds a continuous linear equivalence from a continuous linear map on a finite-dimensional
+-- vector space whose determinant is nonzero. -/
+-- def toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) : E ≃L[𝕜] E :=
+--   ((f : E →ₗ[𝕜] E).equivOfDetNeZero hf).toContinuousLinearEquiv
 
-@[simp]
-theorem coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
-    (f.toContinuousLinearEquivOfDetNeZero hf : E →L[𝕜] E) = f := by
-  ext x
-  rfl
+-- @[simp]
+-- theorem coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
+--     (f.toContinuousLinearEquivOfDetNeZero hf : E →L[𝕜] E) = f := by
+--   ext x
+--   rfl
 
-@[simp]
-theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.det ≠ 0) (x : E) :
-    f.toContinuousLinearEquivOfDetNeZero hf x = f x :=
-  rfl
+-- @[simp]
+-- theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.det ≠ 0) (x : E) :
+--     f.toContinuousLinearEquivOfDetNeZero hf x = f x :=
+--   rfl
 
 theorem _root_.Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
     LinearMap.toContinuousLinearMap
