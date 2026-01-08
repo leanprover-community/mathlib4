@@ -118,7 +118,7 @@ theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
   simpa [hxy] using hF.mem_of_smul_add_mem hx hy zero_lt_one
 
 theorem mem_iff_add_mem (hF : F.IsFaceOf C) {x y : M}
-    (hx : x ∈ C) (hy : y ∈ C) : x + y ∈ F ↔  x ∈ F ∧ y ∈ F := by
+    (hx : x ∈ C) (hy : y ∈ C) : x + y ∈ F ↔ x ∈ F ∧ y ∈ F := by
   refine ⟨?_, fun ⟨hx, hy⟩ => F.add_mem hx hy⟩
   exact fun h => ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
 
