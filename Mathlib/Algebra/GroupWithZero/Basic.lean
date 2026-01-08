@@ -239,6 +239,13 @@ lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
   rw [show n = n - m + m by lia, pow_add, mul_assoc, h]
   simp
 
+instance (priority := 900) isReduced_of_noZeroDivisors [NoZeroDivisors M₀] :
+    IsReduced M₀ :=
+  ⟨fun a ⟨n, ha⟩ ↦ by
+    induction n with
+    | zero => simpa using congr_arg (a * ·) ha
+    | succ n ih => rw [pow_succ, mul_eq_zero] at ha; exact ha.elim ih id⟩
+
 variable [IsReduced M₀]
 
 @[deprecated (since := "2025-10-14")] alias pow_eq_zero := eq_zero_of_pow_eq_zero
