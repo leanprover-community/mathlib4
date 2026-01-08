@@ -229,7 +229,7 @@ theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
   get_rotate l 1 k
 
 -- Allow `l[a]'b` to have a line break between `[a]'` and `b`.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 /-- A version of `List.getElem_rotate` that represents `l[k]` in terms of
 `(List.rotate l n)[⋯]`, not vice versa. Can be used instead of rewriting `List.getElem_rotate`
 from right to left. -/
