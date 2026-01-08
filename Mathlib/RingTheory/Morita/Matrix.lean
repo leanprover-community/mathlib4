@@ -118,7 +118,7 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
   right_inv x := by simp
 
 /-- The natural isomorphism showing that `toModuleCat` is the left inverse of `toMatrixModCat`. -/
-def MatrixModCat.unitIso (i : ι):
+def MatrixModCat.unitIso (i : ι) :
     ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i ≅ 𝟭 (ModuleCat R) :=
   NatIso.ofComponents (fun X ↦ (fromModuleCatToModuleCatLinearEquivtoModuleCatObj R X i ≪≫ₗ
     (fromModuleCatToModuleCatLinearEquiv R X i)).toModuleIso) <| by
