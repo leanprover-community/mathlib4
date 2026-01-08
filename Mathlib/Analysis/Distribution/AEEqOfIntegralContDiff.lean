@@ -51,7 +51,6 @@ theorem ae_eq_zero_of_integral_contMDiff_smul_eq_zero [SigmaCompactSpace M]
   have := ChartedSpace.locallyCompactSpace H M
   have := I.secondCountableTopology
   have := ChartedSpace.secondCountable_of_sigmaCompact H M
-  have := Manifold.metrizableSpace I M
   let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
   apply ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)

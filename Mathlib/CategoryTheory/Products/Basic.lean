@@ -78,6 +78,9 @@ open Prod
 theorem prod_id (X : C) (Y : D) : 𝟙 (X, Y) = 𝟙 X ×ₘ 𝟙 Y :=
   rfl
 
+theorem prod_id' (X : C) (Y : D) : 𝟙 (X, Y) = (𝟙 X, 𝟙 Y) :=
+  rfl
+
 @[simp]
 theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
     f ≫ g = f.1 ≫ g.1 ×ₘ f.2 ≫ g.2 :=

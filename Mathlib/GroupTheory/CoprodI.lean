@@ -208,10 +208,8 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
 @[elab_as_elim]
 theorem induction_on {motive : CoprodI M → Prop} (m : CoprodI M) (one : motive 1)
     (of : ∀ (i) (m : M i), motive (of m))
-    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m := by
-  induction m using CoprodI.induction_left with
-  | one => exact one
-  | mul m x hx => exact mul _ _ (of _ _) hx
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
+  induction_left m one fun {_} _ _ ↦ mul _ _ (of _ _)
 
 section Group
 
@@ -646,11 +644,7 @@ def last : ∀ {i j} (_w : NeWord M i j), M j
 
 @[simp]
 theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨i, w.head⟩ := by
-  rw [← Option.mem_def]
-  induction w
-  · rw [Option.mem_def]
-    rfl
-  · exact List.mem_head?_append_of_mem_head? (by assumption)
+  fun_induction toList with grind [head]
 
 @[simp]
 theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by

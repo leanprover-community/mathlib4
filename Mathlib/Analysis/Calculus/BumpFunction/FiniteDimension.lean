@@ -372,8 +372,6 @@ theorem y_eq_zero_of_notMem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ba
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
   simp only [lsmul_apply, smul_eq_mul, Bx, mul_zero, integral_const]
 
-@[deprecated (since := "2025-05-23")] alias y_eq_zero_of_not_mem_ball := y_eq_zero_of_notMem_ball
-
 theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
   integral_nonneg (w_mul_φ_nonneg D x)
 

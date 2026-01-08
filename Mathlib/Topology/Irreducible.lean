@@ -9,6 +9,7 @@ public import Mathlib.Order.Minimal
 public import Mathlib.Order.Zorn
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Irreducibility in topological spaces
@@ -225,6 +226,22 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
     (Subtype.preirreducibleSpace h.isPreirreducible).isPreirreducible_univ
   toNonempty := h.nonempty.to_subtype
 
+lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s := by
+  rw [← Subtype.range_coe (s := s), ← Set.image_univ]
+  refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
+  exact continuous_subtype_val.continuousOn
+
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
+  exact ⟨.of_subtype, .of_subtype⟩
+
+theorem isPreirreducible_iff_preirreducibleSpace :
+    IsPreirreducible s ↔ PreirreducibleSpace s :=
+  ⟨Subtype.preirreducibleSpace, fun _ ↦ .of_subtype⟩
+
+theorem isIrreducible_iff_irreducibleSpace :
+    IsIrreducible s ↔ IrreducibleSpace s :=
+  ⟨Subtype.irreducibleSpace, fun _ ↦ .of_subtype⟩
+
 instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
   ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
 
@@ -404,5 +421,13 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
     simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using Set.image_mono (f := f) H
 
 end
+
+lemma IsDiscrete.subsingleton_of_isPreirreducible (hs : IsDiscrete s) (hs' : IsPreirreducible s) :
+    s.Subsingleton := by
+  intro x hxs y hys
+  obtain ⟨U, hU, hUx⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs x hxs
+  obtain ⟨V, hV, hVy⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs y hys
+  obtain ⟨z, hz⟩ := hs' _ _ hU hV ⟨x, by grind⟩ ⟨y, by grind⟩
+  exact (hUx.le (by grind)).symm.trans (b := z) (hVy.le (by grind))
 
 end Preirreducible

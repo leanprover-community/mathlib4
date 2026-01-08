@@ -148,7 +148,7 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
         apply Rel'.inl_inr
     · obtain z₁ | z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
-        obtain rfl | ⟨_, _, h, h', rfl⟩  := hyz
+        obtain rfl | ⟨_, _, h, h', rfl⟩ := hyz
         · apply Rel'.inr_inl
         · obtain rfl := (mono_iff_injective f).1 inferInstance h'
           rw [h]
@@ -246,7 +246,7 @@ instance mono_inl [Mono g] : Mono (Pushout.inl f g) :=
     (PushoutCocone.flipIsColimit (Pushout.isColimitCocone f g))
 
 instance [Mono f] : Mono (pushout.inr f g) :=
-  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g):)
+  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g) :)
 
 instance [Mono g] : Mono (pushout.inl f g) :=
   pushoutCocone_inr_mono_of_isColimit

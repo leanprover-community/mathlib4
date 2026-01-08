@@ -278,7 +278,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
 
 /-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
-  Hom 𝒳 𝒴 :=  𝒳 ⥤ᵇ 𝒴
+  Hom 𝒳 𝒴 := 𝒳 ⥤ᵇ 𝒴
   id 𝒳 := 𝟭 𝒳
   comp F G := F ⋙ G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴

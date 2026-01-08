@@ -196,7 +196,7 @@ namespace Subcomplex
 variable {X : SSet.{u}}
 
 lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
-    Subfunctor.range f = ofSimplex (yonedaEquiv f) :=
+    range f = ofSimplex (yonedaEquiv f) :=
   Subfunctor.range_eq_ofSection' _
 
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
@@ -234,7 +234,6 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
         monotone' := (objEquiv x).toOrderHom.monotone }
     refine ⟨Quiver.Hom.op
       (SimplexCategory.Hom.mk ((e.symm.toOrderEmbedding.toOrderHom.comp φ))), ?_⟩
-    obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
     ext j : 1
     simpa only [Subtype.ext_iff] using e.apply_symm_apply ⟨_, hx j⟩
   · simp
@@ -277,7 +276,7 @@ lemma ofSimplex_yonedaEquiv_δ {n : ℕ} (i : Fin (n + 2)) :
 
 @[simp]
 lemma range_δ {n : ℕ} (i : Fin (n + 2)) :
-    Subfunctor.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
+    Subcomplex.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
   rw [Subcomplex.range_eq_ofSimplex]
   exact ofSimplex_yonedaEquiv_δ i
 
