@@ -53,23 +53,17 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommGroup M] [Module R M]
 variable {C C₁ C₂ F F₁ F₂ : PointedCone R M}
 
-theorem iff_mem_of_smul_add_smul_mem :
-    (F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F) ↔
-    F.IsFaceOf C := by
+theorem isFaceOf_iff_mem_of_smul_add_smul_mem : F.IsFaceOf C ↔
+    (F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F)
+    := by
   constructor <;> intro h
+  · refine ⟨h.1, fun xC yC a0 b0 hab => ?_⟩
+    exact h.2 xC (Submodule.smul_mem C ⟨_, le_of_lt b0⟩ yC) a0 hab
   · refine ⟨h.1, ?_⟩
     by_cases hc : 0 < (1 : R)
     · intros xc yc a0 haxy
       exact h.2 xc yc a0 hc (by simpa)
     · simp [(subsingleton_of_zero_eq_one (zero_le_one.eq_or_lt.resolve_right hc)).eq_zero]
-  · refine ⟨h.1, fun xC yC a0 b0 hab => ?_⟩
-    exact h.2 xC (Submodule.smul_mem C ⟨_, le_of_lt b0⟩ yC) a0 hab
-
-/-- Two faces of a cone are contained in each other if and only if one is a face of the other. -/
-theorem iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) : F₁ ≤ F₂ ↔ F₁.IsFaceOf F₂ := by
-  refine ⟨fun h => ?_, IsFaceOf.le⟩
-  rw [← iff_mem_of_smul_add_smul_mem] at ⊢ h₁
-  exact ⟨h, fun hx hy => h₁.2 (h₂.le hx) (h₂.le hy)⟩
 
 namespace IsFaceOf
 
@@ -82,13 +76,20 @@ protected theorem rfl {C : PointedCone R M} : C.IsFaceOf C := ⟨fun _ a => a, f
 /-- The face of a face of a cone is also a face of the cone. -/
 @[trans]
 theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F₂.IsFaceOf C := by
-  rw [← iff_mem_of_smul_add_smul_mem] at h₁ h₂ ⊢
+  rw [isFaceOf_iff_mem_of_smul_add_smul_mem] at h₁ h₂ ⊢
   refine ⟨h₁.1.trans h₂.1, fun hx hy a0 b0 h ↦ ?_⟩
   exact h₁.2 (h₂.2 hx hy a0 b0 (h₁.1 h)) (h₂.2 hy hx b0 a0 (by rw [add_comm]; exact h₁.1 h)) a0 b0 h
 
+/-- A face of a cone is a face of another if and only if they are contained in each other. -/
+theorem iff_le_of_isFaceOf (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
+    F₁.IsFaceOf F₂ ↔ F₁ ≤ F₂ := by
+  refine ⟨IsFaceOf.le, fun h => ?_⟩
+  rw [isFaceOf_iff_mem_of_smul_add_smul_mem] at ⊢ h₁
+  exact ⟨h, fun hx hy => h₁.2 (h₂.le hx) (h₂.le hy)⟩
+
 /-- A face of a cone is an extreme subset of the cone. -/
 theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
-  apply iff_mem_of_smul_add_smul_mem.mpr at h
+  apply isFaceOf_iff_mem_of_smul_add_smul_mem.mp at h
   refine ⟨h.1, ?_⟩
   rintro x xc y yc z zf ⟨a, b, a0, b0, -, hz⟩
   apply h.2 xc yc a0 b0
@@ -173,7 +174,7 @@ end IsFaceOf
 variable [AddCommGroup N] [Module R N] in
 /-- The image of a face of a cone under an injective linear map is a face of the
   image of the cone. -/
-theorem map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
+theorem isFaceOf_map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
     (F.map f).IsFaceOf (C.map f) ↔ F.IsFaceOf C := by
   refine ⟨?_, IsFaceOf.map _ hf⟩
   · intro ⟨sub, hF⟩
@@ -193,14 +194,14 @@ variable [Field R] [LinearOrder R] [IsOrderedRing R]
 variable [AddCommGroup M] [Module R M]
 variable {C F F₁ F₂ : PointedCone R M}
 
-theorem iff_mem_of_add_mem :
-    (F ≤ C ∧ ∀ {x y : M}, x ∈ C → y ∈ C → x + y ∈ F → x ∈ F) ↔ F.IsFaceOf C := by
+theorem isFaceOf_iff_mem_of_add_mem : F.IsFaceOf C ↔
+    (F ≤ C ∧ ∀ {x y : M}, x ∈ C → y ∈ C → x + y ∈ F → x ∈ F) := by
   constructor <;> intro h
+  · exact ⟨h.le, IsFaceOf.mem_of_add_mem h⟩
   · refine ⟨h.1, fun xC yC c0 hcxy => ?_⟩
     have cxF := h.2 (smul_mem _ (le_of_lt c0) xC) yC hcxy
     convert smul_mem _ (inv_nonneg.mpr (le_of_lt c0)) cxF
     simp [← smul_assoc, smul_eq_mul, mul_comm, Field.mul_inv_cancel _ (ne_of_lt c0).symm]
-  · exact ⟨h.le, IsFaceOf.mem_of_add_mem h⟩
 
 namespace IsFaceOf
 
@@ -218,7 +219,7 @@ theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι →
 
 /-- The lineality space of a cone is a face. -/
 lemma lineal (C : PointedCone R M) : IsFaceOf C.lineal C := by
-  rw [← iff_mem_of_add_mem]
+  rw [isFaceOf_iff_mem_of_add_mem]
   simp only [lineal_le, true_and]
   intro _ _ xc yc xyf
   simp [neg_add_rev, xc, true_and] at xyf ⊢
