@@ -642,7 +642,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
         con := con + 1
         if con % 3 == 0 then continue
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
-        -- TODO: temporary change, hopefully reduces no-op warning spew
+        -- TODO: investigate why some suggested changes are no-ops (e.g. in Data/Nat/BinaryRec:80)
         if mkWdw origAtPos != mkWdw ppAtPos mid then
           Linter.logLint linter.style.whitespace (.ofRange rg)
             m!"{msg}\n\n\
@@ -654,7 +654,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let origAtPos := {orig with startPos := origPos}
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
-        -- TODO: temporary change, hopefully reduces no-op warning spew
+        -- TODO: investigate why some suggested changes are no-ops (e.g. in Data/Nat/BinaryRec:80)
         if mkWdw origAtPos != mkWdw ppAtPos mid then
           logInfoAt (.ofRange rg)
             m!"{msg}\n\n\
