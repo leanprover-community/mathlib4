@@ -365,8 +365,7 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → 𝓢(E, F)) (x : E) :
     (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
   induction s using Finset.induction_on with
   | empty => simp
-  | insert i s his h =>
-    simp [his, h]
+  | insert i s his h => simp [his, h]
 
 variable (E F)
 
@@ -754,9 +753,8 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
 
 theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
     smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
-  ext1 f
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
-  convert (smulLeftCLM_smulLeftCLM_apply this hg f).symm using 1
+  convert (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
   simp
 
 theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
