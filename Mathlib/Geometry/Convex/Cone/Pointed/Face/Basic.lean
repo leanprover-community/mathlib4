@@ -117,14 +117,15 @@ theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
   nontriviality R using Module.subsingleton R M
   simpa [hxy] using hF.mem_of_smul_add_mem hx hy zero_lt_one
 
-theorem mem_iff_add_mem (hF : F.IsFaceOf C) {x y : M}
+theorem add_mem_iff_mem (hF : F.IsFaceOf C) {x y : M}
     (hx : x ∈ C) (hy : y ∈ C) : x + y ∈ F ↔ x ∈ F ∧ y ∈ F := by
   refine ⟨?_, fun ⟨hx, hy⟩ => F.add_mem hx hy⟩
   exact fun h => ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
 
-theorem mem_of_sum_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
-    (hsC : ∀ i, f i ∈ C) (hs : ∑ i, f i ∈ F) (i : ι) : f i ∈ F := by
+theorem sum_mem_iff_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
+    (hsC : ∀ i, f i ∈ C) : ∑ i, f i ∈ F ↔ ∀ i, f i ∈ F := by
   classical
+  refine ⟨fun hs i => ?_, fun a ↦ Submodule.sum_mem F fun c _ => a c⟩
   refine hF.mem_of_add_mem (hsC i) (sum_mem (fun j (_ : j ∈ Finset.univ.erase i) => hsC j)) ?_
   simp [hs]
 
@@ -211,7 +212,7 @@ theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι →
     (hF : F.IsFaceOf C) (hsC : ∀ i : ι, f i ∈ C) (hc : ∀ i, 0 ≤ c i) (hs : ∑ i : ι, c i • f i ∈ F)
     (i : ι) (hci : 0 < c i) : f i ∈ F := by
   classical
-  have := mem_of_sum_mem hF (fun i => C.smul_mem (hc i) (hsC i)) hs i
+  have := (sum_mem_iff_mem hF (fun i => C.smul_mem (hc i) (hsC i))).mp hs i
   convert smul_mem (C := F) (x := (c i : R) • f i) (le_of_lt (Right.inv_pos.mpr hci)) this
   rw [← smul_assoc, smul_eq_mul, mul_comm, Field.mul_inv_cancel]
   · exact (MulAction.one_smul (f i)).symm

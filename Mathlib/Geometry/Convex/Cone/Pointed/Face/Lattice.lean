@@ -47,7 +47,7 @@ variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 @[coe, simp]
 def toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
 
-instance : CoeOut (Face (C : PointedCone R M)) (PointedCone R M) := ⟨toPointedCone⟩
+instance : CoeOut (Face C) (PointedCone R M) := ⟨toPointedCone⟩
 
 instance : SetLike (Face C) M where
   coe C := C.toPointedCone
