@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.Matrix.Module
+public import Mathlib.RingTheory.Morita.Basic
 /-!
 # Morita Equivalece between `R` and `Mₙ(R)`
 
@@ -125,3 +126,81 @@ def MatrixModCat.unitIso :
     intros
     ext
     simp [fromModuleCatToModuleCatLinearEquivtoModuleCatObj]
+
+/-- The linear equiv induced by the equality `toMatrixModCat (toModuleCat M) = Mⁿ` -/
+def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) :
+    letI := Module.compHom M (Matrix.scalar (α := R) ι)
+    haveI : IsScalarTower R (Matrix ι ι R) M :=
+    { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
+        rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
+    M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R (ι := ι) M default) where
+  toFun m i := ⟨(single default i 1 : Matrix ι ι R) • m, (single default i 1 : Matrix ι ι R) • m, by
+    simp [← SemigroupAction.mul_smul]⟩
+  map_add' _ _ := by simpa using funext fun _ ↦ by rfl
+  map_smul' x m := funext fun i ↦ Subtype.ext <| by
+    letI := Module.compHom M (Matrix.scalar (α := R) ι)
+    haveI : IsScalarTower R (Matrix ι ι R) M :=
+    { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
+        rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
+    simp only [← SemigroupAction.mul_smul, RingHom.id_apply, Module.smul_apply,
+      AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
+    congr
+    ext i1 j1
+    simp only [mul_apply, smul_single, smul_eq_mul, mul_one, sum_apply]
+    rw [Finset.sum_eq_single_of_mem (a := i) (by simp) (fun b _ hb ↦ by simp [single, Ne.symm hb])]
+    simp only [single_apply, and_true, ite_mul, one_mul, zero_mul]
+    split_ifs with h <;> simp [h]
+  invFun m := ∑ i, single i (default : ι) (1 : R) • m i
+  left_inv m := by simp [← SemigroupAction.mul_smul, ← Finset.sum_smul, sum_single_one]
+  right_inv v := by
+    dsimp
+    ext i
+    simp only [Finset.smul_sum]
+    rw [Finset.sum_eq_single i (fun b _ hb ↦ by
+      simp [← SemigroupAction.mul_smul, single_mul_single_of_ne _ _ _ _ (Ne.symm hb)]) (by simp)]
+    obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).2
+    simp [← SemigroupAction.mul_smul, ← hy]
+
+/-- the natural isomorphism showing that `toMatrixModCat` is the right inverse of `toModuleCat` -/
+def MatrixModCat.counitIso :
+    MatrixModCat.toModuleCat R ι ⋙ ModuleCat.toMatrixModCat R ι ≅ 𝟭 (ModuleCat (Matrix ι ι R)) :=
+  NatIso.ofComponents (fun X ↦ ((toModuleCatFromModuleCatLinearEquiv R ι X).symm).toModuleIso) <| by
+    intros
+    ext
+    simp [toModuleCatFromModuleCatLinearEquiv]
+
+@[simps, stacks 074D]
+noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
+  functor := ModuleCat.toMatrixModCat R ι
+  inverse := MatrixModCat.toModuleCat R ι
+  unitIso := MatrixModCat.unitIso R ι |>.symm
+  counitIso := MatrixModCat.counitIso R ι
+  functor_unitIso_comp X := by
+    ext1
+    simp only [Functor.id_obj, ModuleCat.toMatrixModCat_obj_carrier,
+      ModuleCat.toMatrixModCat_obj_isAddCommGroup, ModuleCat.toMatrixModCat_obj_isModule,
+      Functor.comp_obj, Iso.symm_hom, ModuleCat.toMatrixModCat_map, toModuleCat_obj_carrier,
+      toModuleCat_obj_isAddCommGroup, toModuleCat_obj_isModule, ModuleCat.hom_comp,
+      ModuleCat.hom_ofHom, ModuleCat.hom_id]
+    ext x i
+    simp [unitIso, counitIso, toModuleCatFromModuleCatLinearEquiv,
+      fromModuleCatToModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquivtoModuleCatObj]
+
+open ModuleCat.Algebra in
+@[simps, stacks 074D]
+noncomputable def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] :
+    MoritaEquivalence R₀ R (Matrix ι ι R) where
+  eqv := moritaEquivalentToMatrix R ι
+  linear.map_smul {X Y} f r := by
+    ext (v : ι → X)
+    simp only [moritaEquivalentToMatrix_functor, ModuleCat.toMatrixModCat_obj_carrier,
+      ModuleCat.toMatrixModCat_obj_isAddCommGroup, ModuleCat.toMatrixModCat_obj_isModule,
+      ModuleCat.toMatrixModCat_map, ModuleCat.hom_smul, ModuleCat.hom_ofHom, LinearMap.smul_apply]
+    ext i
+    simp only [LinearMap.mapMatrixModule_apply, LinearMap.compLeft_apply, Function.comp_apply,
+      LinearMap.smul_apply]
+    change _ = ((algebraMap R₀ (Matrix ι ι R) r) • ((ModuleCat.Hom.hom f).mapMatrixModule ι v)) i
+    simp [Matrix.algebraMap_matrix_apply]
+
+theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] :
+    IsMoritaEquivalent R₀ R (Matrix ι ι R) := ⟨⟨moritaEquivMatrix R ι R₀⟩⟩
