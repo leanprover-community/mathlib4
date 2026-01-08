@@ -318,7 +318,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Lean.Parser.Command.grindPattern, -- `grind_pattern A => x, y` prints no space after `,`,
     -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
-    -- negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
+    -- logical negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
     ``«term¬_»,
   ]
   depth := none
@@ -333,6 +333,8 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     ``«term-_»,
     -- subtraction, the pretty-printer prefers `a-b` in every case
     ``«term_-_»,
+    -- the `suffices` tactic; the pretty-printer does not take line length into account
+    ``Lean.Parser.Term.suffices,
   ]
   depth := some 2
 
@@ -634,25 +636,22 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
         -- TODO: temporary change, hopefully reduces no-op warning spew
         if mkWdw origAtPos != mkWdw ppAtPos mid then
-          -- TODO: temporary change, hopefully reduces no-op warning spew
-          if !((mkWdw origAtPos).startsWith "suffices") then
-            Linter.logLint linter.style.whitespace (.ofRange rg)
-              m!"{msg}\n\n\
-              This part of the code\n  '{mkWdw origAtPos}'\n\
-              should be written as\n  '{mkWdw ppAtPos mid}'\n"
+          Linter.logLint linter.style.whitespace (.ofRange rg)
+            m!"{msg}\n\n\
+            This part of the code\n  '{mkWdw origAtPos}'\n\
+            should be written as\n  '{mkWdw ppAtPos mid}'\n"
 
     for (origPos, ppR) in excluded.filter (fun _ _ => false) do
       let ppPos := ppR.pos
       let origAtPos := {orig with startPos := origPos}
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
+        -- TODO: temporary change, hopefully reduces no-op warning spew
         if mkWdw origAtPos != mkWdw ppAtPos mid then
-          -- TODO: temporary change, hopefully reduces no-op warning spew
-          if !((mkWdw origAtPos).startsWith "suffices") then
-            logInfoAt (.ofRange rg)
-              m!"{msg}\n\n\
-              This part of the code\n  '{mkWdw origAtPos}'\n\
-              should be written as\n  '{mkWdw ppAtPos mid}'\n\n{ppR.kinds}\n"
+          logInfoAt (.ofRange rg)
+            m!"{msg}\n\n\
+            This part of the code\n  '{mkWdw origAtPos}'\n\
+            should be written as\n  '{mkWdw ppAtPos mid}'\n\n{ppR.kinds}\n"
 
 initialize addLinter whitespaceLinter
 
