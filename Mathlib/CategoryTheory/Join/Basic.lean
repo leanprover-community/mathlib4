@@ -222,7 +222,7 @@ def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd 
     homInduction
       (left := fun _ _ f ↦ F.map f)
       (right := fun _ _ g ↦ G.map g)
-      (edge := fun c d ↦ α.app (c,d))
+      (edge := fun c d ↦ α.app (c, d))
       f
   map_id x := by
     cases x
