@@ -503,23 +503,36 @@ theorem iterate_derivative_interpolate
 
 theorem eval_iterate_derivative_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree + 1 ≤ #s)
-    {k : ℕ} (hk : k ≤ P.degree) (x : F) :
+    {k : ℕ} (hk : k ≤ #s - 1) (x : F) :
     (derivative^[k] P).eval x = k.factorial *
       ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, ((v i) - (v j))) *
       ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
       ∏ a ∈ t, (x - v a) := by
-  lift P.degree to ℕ using (by contrapose! hk; rw [hk]; simp) with deg hdeg
-  rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
-  replace hP : deg + 1 ≤ #s := WithBot.coe_le_coe.mp hP
-  replace hk : k ≤ deg := WithBot.coe_le_coe.mp hk
   rw (occs := [1]) [eq_interpolate hvs (f := P)]
   · rw [iterate_derivative_interpolate, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul, eval_finset_sum]
     · congr! 2 with i hi
       simp_rw [eval_C_mul, eval_finset_sum, eval_prod, eval_sub, eval_X, eval_C]
     · exact hvs
     · grind
-  · rw [← hdeg]
-    exact WithBot.coe_lt_coe.mpr (by linarith)
+  · cases hd : P.degree; · simp
+    case coe d =>
+      suffices d < #s from WithBot.coe_lt_coe.mpr this
+      rw [hd, ← WithBot.coe_one, ← WithBot.coe_add, Nat.cast_withBot, WithBot.coe_le_coe] at hP
+      omega
+
+theorem coeff_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree + 1 ≤ #s) :
+    P.coeff (#s - 1) = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
+  rw (occs := [1]) [eq_interpolate (f := P) hvs]
+  · rw [interpolate_apply, finset_sum_coeff]
+    congr! with i hi
+    rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+    field_simp
+  · cases hd : P.degree; · simp
+    case coe d =>
+      suffices d < #s from WithBot.coe_lt_coe.mpr this
+      rw [hd, ← WithBot.coe_one, ← WithBot.coe_add, Nat.cast_withBot, WithBot.coe_le_coe] at hP
+      omega
 
 theorem coeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree + 1 ≤ #s) :
