@@ -5,11 +5,8 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.GaussNorm
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!
 # Gauss norm for polynomials
