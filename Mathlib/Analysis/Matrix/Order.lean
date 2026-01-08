@@ -190,10 +190,9 @@ theorem toLinearMap₂'_zero_iff [DecidableEq n]
 theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
     (CFC.sqrt A).det = √(RCLike.re A.det) := by
   rw [CFC.sqrt_eq_cfc, cfc_nnreal_eq_real _ A, hA.isHermitian.cfc_eq]
-  change (Unitary.conjStarAlgAut 𝕜 (Matrix n n 𝕜) _ _).det = _
-  simp only [Real.coe_sqrt, Real.coe_toNNReal', det_map, det_diagonal, Function.comp_apply,
-    hA.isHermitian.det_eq_prod_eigenvalues, ← RCLike.ofReal_prod, RCLike.ofReal_re,
-    Real.sqrt_prod _ fun _ _ ↦ hA.eigenvalues_nonneg _]
+  simp only [IsHermitian.cfc, Real.coe_sqrt, Real.coe_toNNReal', det_map, det_diagonal,
+    Function.comp_apply, hA.isHermitian.det_eq_prod_eigenvalues, ← RCLike.ofReal_prod,
+    RCLike.ofReal_re, Real.sqrt_prod _ fun _ _ ↦ hA.eigenvalues_nonneg _]
   grind
 
 end PosSemidef
@@ -201,8 +200,7 @@ end PosSemidef
 theorem IsHermitian.det_abs [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
     det (CFC.abs A) = ‖det A‖ := by
   rw [CFC.abs_eq_cfc_norm A, hA.cfc_eq]
-  change (Unitary.conjStarAlgAut 𝕜 (Matrix n n 𝕜) _ _).det = _
-  simp [-Unitary.conjStarAlgAut_apply, hA.det_eq_prod_eigenvalues]
+  simp [IsHermitian.cfc, -Unitary.conjStarAlgAut_apply, hA.det_eq_prod_eigenvalues]
 
 /-- A matrix is positive semidefinite if and only if it has the form `Bᴴ * B` for some `B`. -/
 @[deprecated CStarAlgebra.nonneg_iff_eq_star_mul_self (since := "2025-09-22")]
