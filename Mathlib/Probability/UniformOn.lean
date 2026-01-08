@@ -92,7 +92,7 @@ theorem isProbabilityMeasure_uniformOn' {s : Set Ω}
 
 instance instIsProbabilityMeasure_uniformOn_univ [Finite Ω] [Nonempty Ω] :
     IsProbabilityMeasure (uniformOn (.univ : Set Ω)) :=
-  uniformOn_isProbabilityMeasure' Set.finite_univ Set.univ_nonempty .univ
+  isProbabilityMeasure_uniformOn' Set.finite_univ Set.univ_nonempty .univ
 
 variable [MeasurableSingletonClass Ω]
 
