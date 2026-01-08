@@ -85,8 +85,7 @@ lemma lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl :
   have (u : Set β) : (f ⁻¹' (Iic uᶜ))ᶜ = {x | (f x ∩ u).Nonempty} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff, Set.not_subset, Set.Nonempty]
   simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, this, isOpen_iff_mem_nhds,
-    forall_swap (α := α)]
-  rfl
+    forall_swap (α := α), mem_setOf, Filter.Eventually]
 
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *upper inverse*
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends closed sets

@@ -657,7 +657,7 @@ lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Fact (0 ∈ s)]
   induction hf using NonUnitalAlgebra.adjoin_induction with
   | mem f hf =>
     simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
-    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
+    rw [star_eq_iff_star_eq] at hf
     obtain (rfl | rfl) := hf
     all_goals assumption
   | zero => exact zero
