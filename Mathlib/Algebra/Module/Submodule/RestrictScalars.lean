@@ -107,6 +107,13 @@ theorem restrictScalars_eq_top_iff {p : Submodule R M} : restrictScalars S p = �
 
 variable {R M}
 
+lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
+    (restrictScalarsEmbedding S R M).monotone
+
+@[mono]
+lemma restrictScalars_mono {s t : Submodule R M} (hst : s ≤ t) :
+    s.restrictScalars S ≤ t.restrictScalars S := restrictScalars_monotone S hst
+
 @[simp]
 lemma restrictScalars_sInf (s : Set (Submodule R M)) :
     (sInf s).restrictScalars S = sInf (restrictScalars S '' s) := by
@@ -131,7 +138,7 @@ lemma restrictScalars_iInf {ι : Sort*} (s : ι → Submodule R M) :
 
 @[simp]
 lemma restrictScalars_iSup {ι : Sort*} (s : ι → Submodule R M) :
-    (iSup s).restrictScalars S = ⨆ i, restrictScalars S (s i) :=
+    (iSup s).restrictScalars S = ⨆ i, restrictScalars S (s i) := by
   sorry
 
 @[simp]
