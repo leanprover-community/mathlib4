@@ -176,38 +176,18 @@ instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
   use S, hSfinite, f, hfsurj
 
+-- `u` is chosen as the universe as otw creates problems with other FP group def.
+-- This is fine as `PresentedGroup` is defined as having the same type as its generators.
 def IsPresentedGroup (G : Type u) [Group G] : Prop :=
-  ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
+  ∃ (α : Type u) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
+  Function.Surjective f ∧ (f.ker = normalClosure rels)
 
--- TODO shorten this.
 instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresentedGroup G := by
   rw [isFinitelyPresented_iff_finite] at h
-  obtain ⟨α, _, f, hfsurj, hfkernel⟩ := h
-  obtain ⟨S, hSfinite, hSclosure⟩ := hfkernel
-  unfold IsPresentedGroup
-  use α, S
-  let iso := (QuotientGroup.quotientKerEquivOfSurjective f hfsurj).symm
-  refine ⟨?_⟩
-  unfold PresentedGroup
-  let hSclosure_equiv := QuotientGroup.quotientMulEquivOfEq hSclosure
-  let iso' := iso.trans hSclosure_equiv.symm
-  exact iso'
+  obtain ⟨α, _, f, hfsurj, hfker⟩ := h
+  obtain ⟨S, hSfinite, hSclosure⟩ := hfker
+  exact ⟨ α, S, f, hfsurj, hSclosure.symm⟩
 
-variable {G : Type*} [Group G]
-theorem fg_of_finitelyPresented' :
-    IsFinitelyPresented (G := G) → Group.FG G := by
-  rintro ⟨n, f, hsurj, -⟩
-  let val : Fin n → G := fun i => f (FreeGroup.of i)
-  have hlift : FreeGroup.lift val = f := by ext i; simp [val]
-  have hsurj' : Function.Surjective (FreeGroup.lift val) := by
-    simpa [hlift] using hsurj
-  have hcl : Subgroup.closure (Set.range val) = ⊤ := by
-    simpa [FreeGroup.range_lift_eq_closure] using
-      (MonoidHom.range_eq_top).2 hsurj'
-  refine (Group.fg_iff).2 ?_
-  refine ⟨Set.range val, ?_, ?_⟩
-  · simpa using hcl
-  · simpa using (Set.finite_range val)
 /-   lemma fpGroup_is_fgGroup (G: Type*) [Group G] (h: IsFinitelyPresented G) : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective]
   apply isFinitelyPresented_iff at G
