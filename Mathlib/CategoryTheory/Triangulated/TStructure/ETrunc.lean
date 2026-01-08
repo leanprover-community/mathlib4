@@ -381,9 +381,33 @@ lemma eTruncLTLTIsoLT_inv_hom_id_app_eTruncLT_obj (X : C) :
 
 end
 
-def eTruncLTGEIsoLEGT (a b : EInt) :
+
+section
+
+variable (a b : EInt)
+
+noncomputable def eTruncLTGELTSelfToLTGE :
+    t.eTruncLT.obj b ⋙ t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ⟶
+      t.eTruncGE.obj a ⋙ t.eTruncLT.obj b :=
+  Functor.whiskerRight (t.eTruncLTι b) _ ≫
+    (Functor.leftUnitor _).hom
+
+noncomputable def eTruncLTGELTSelfToGELT :
+    t.eTruncLT.obj b ⋙ t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ⟶
+      t.eTruncLT.obj b ⋙ t.eTruncGE.obj a :=
+  (Functor.associator _ _ _).inv ≫ Functor.whiskerLeft _ (t.eTruncLTι b) ≫
+    (Functor.rightUnitor _).hom
+
+instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := sorry
+
+instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := sorry
+
+end
+
+
+noncomputable def eTruncLTGEIsoLEGT (a b : EInt) :
     t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b ⋙ t.eTruncGE.obj a :=
-  sorry
+  (asIso (t.eTruncLTGELTSelfToLTGE a b)).symm ≪≫ asIso (t.eTruncLTGELTSelfToGELT a b)
 
 end
 
