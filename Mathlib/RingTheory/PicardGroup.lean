@@ -711,9 +711,8 @@ the Picard group of `R`. See Lemma 2.2 in [RobertsSingh1993]. -/
 noncomputable def unitsToPicEquiv (I : (Submodule R A)ˣ) : unitsToPic R A I ≃ₗ[R] I :=
   (mk_eq_iff.mp rfl).some.symm
 
-variable (R A) in
-/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A`
-at `(Submodule R A)ˣ`. -/
+variable (R A)
+
 theorem ker_unitsToPic :
     (unitsToPic R A).ker = (Units.map (spanSingleton R).toMonoidHom).range := by
   ext I; constructor <;> intro h
@@ -732,6 +731,12 @@ theorem ker_unitsToPic :
     exact mk_eq_one_iff.mpr ⟨.symm <| (.ofInjective (LinearMap.toSpanSingleton R A x) fun _ _ eq ↦
       (faithfulSMul_iff_injective_smul_one R A).mp ‹_› <| by simpa using congr($eq * x.inv)) ≪≫ₗ
       .ofEq _ _ (by ext; simp [mem_span_singleton])⟩
+
+/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A`
+at `(Submodule R A)ˣ`. -/
+theorem mulExact_unitsMap_spanSingleton_unitsToPic :
+    Function.MulExact (Units.map (spanSingleton R).toMonoidHom) (unitsToPic R A) :=
+  MonoidHom.mulExact_iff.mpr (ker_unitsToPic R A)
 
 end Semiring
 
@@ -809,7 +814,6 @@ variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
 
 open CommRing Pic LinearMap Module.Flat
 
-/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Pic R`. -/
 theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   ext M; constructor <;> intro h
   · obtain ⟨I, rfl⟩ := h
@@ -830,13 +834,18 @@ theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   obtain ⟨a, -, eq⟩ := mem_mul_span_singleton.mp (this ▸ mem_top (x := 1))
   exact .map (spanSingleton R).toMonoidHom (.of_mul_eq_one_right _ eq)
 
+/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Pic R`. -/
+theorem Submodule.mulExact_unitsToPic_mapAlgebra :
+    Function.MulExact (unitsToPic R A) (mapAlgebra R A) :=
+  MonoidHom.mulExact_iff.mpr (range_unitsToPic R A).symm
+
 open QuotientGroup in
 /-- If `A` is a faithful `R`-algebra, the relative Picard group Pic(A/R) is isomorphic to
 the group of the invertible `R`-submodules in `A` modulo the principal submodules. -/
 @[simps!] noncomputable def Submodule.unitsQuotEquivRelPic :
     (Submodule R A)ˣ ⧸ (Units.map (spanSingleton R).toMonoidHom).range ≃* relPic R A :=
-  (congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
-    (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
+  (QuotientGroup.congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
+  (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :

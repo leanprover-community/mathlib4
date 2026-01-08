@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Exact
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 public import Mathlib.Algebra.Module.Submodule.Pointwise
@@ -738,6 +739,11 @@ theorem ker_unitsMap_spanSingleton :
     (Units.map (Submodule.spanSingleton R).toMonoidHom).ker =
     (Units.map (algebraMap R A).toMonoidHom).range := by
   ext; simpa [Units.ext_iff, eq_comm] using span_singleton_eq_one_iff
+
+theorem mulExact_unitsMap_algebraMap_spanSingleton :
+    Function.MulExact (Units.map (algebraMap R A).toMonoidHom)
+      (Units.map (Submodule.spanSingleton R).toMonoidHom) :=
+  MonoidHom.mulExact_iff.mpr ker_unitsMap_spanSingleton
 
 end FaithfulSMul
 
