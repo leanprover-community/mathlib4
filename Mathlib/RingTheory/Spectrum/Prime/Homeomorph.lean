@@ -24,7 +24,7 @@ homeomorphism, i.e. it stays a homeomorphism after arbitrary base change.
   homeomorphism for a purely inseparable field extension `K` over `k`.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

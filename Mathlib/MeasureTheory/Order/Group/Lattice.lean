@@ -17,7 +17,7 @@ public import Mathlib.MeasureTheory.Order.Lattice
 measurable function, group, lattice operation
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} [Lattice α] [Group α] [MeasurableSpace α]
   [MeasurableSpace β] {f : β → α}

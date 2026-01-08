@@ -16,7 +16,7 @@ the continuous functional calculus and develops the basic API, including the uni
 positive and negative parts.
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

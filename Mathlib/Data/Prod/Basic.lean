@@ -152,7 +152,7 @@ theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl
 instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
 
-instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Prod.Lex r s) :=
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
@@ -167,8 +167,8 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTra
     IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
-    IsAntisymm (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [Std.Antisymm s] :
+    Std.Antisymm (Prod.Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
     match x₁, x₂, h₁₂, h₂₁ with
     | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (_root_.trans hr₁ hr₂)).elim
@@ -196,13 +196,13 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
   { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
 
-instance [IsAsymm α r] [IsAsymm β s] :
-    IsAsymm (α × β) (Prod.Lex r s) where
+instance [Std.Asymm r] [Std.Asymm s] :
+    Std.Asymm (Prod.Lex r s) where
   asymm
-  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₁
-  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => IsAsymm.asymm _ _ h₁ h₁
-  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₂
-  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => IsAsymm.asymm _ _ h₁ h₂
+  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => Std.Asymm.asymm _ _ h₂ h₁
+  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => Std.Asymm.asymm _ _ h₁ h₁
+  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => Std.Asymm.asymm _ _ h₂ h₂
+  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => Std.Asymm.asymm _ _ h₁ h₂
 
 end Prod
 
