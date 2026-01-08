@@ -58,11 +58,13 @@ variable {ι : Type*} {l : Filter ι} {u : Ultrafilter ι} {F : ι → Set X}
 
 namespace Filter
 
+
 variable (G μ l F) in
 /-- A Følner sequence with respect to some group `G` acting on a measure space `X`
     is a sequence of sets `F` such that:
       1. Each `s` in `l` is eventually measurable with finite non-zero measure,
       2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
+@[mk_iff]
 structure IsFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
   eventually_meas_ne_zero : ∀ᶠ i in l, μ (F i) ≠ 0
@@ -79,9 +81,9 @@ theorem IsFoelner.univ_of_isFiniteMeasure [NeZero μ] [IsFiniteMeasure μ] :
 
 theorem IsFoelner.mono {l' : Filter ι} (hfoel : IsFoelner G μ l F) (hle : l' ≤ l) :
     IsFoelner G μ l' F where
-  eventually_measurableSet := Eventually.filter_mono hle hfoel.eventually_measurableSet
-  eventually_meas_ne_zero := Eventually.filter_mono hle hfoel.eventually_meas_ne_zero
-  eventually_meas_ne_top := Eventually.filter_mono hle hfoel.eventually_meas_ne_top
+  eventually_measurableSet := hfoel.eventually_measurableSet.filter_mono hle
+  eventually_meas_ne_zero := hfoel.eventually_meas_ne_zero.filter_mono hle
+  eventually_meas_ne_top := hfoel.eventually_meas_ne_top.filter_mono hle
   tendsto_meas_symmDiff (g : G) := Tendsto.mono_left (hfoel.tendsto_meas_symmDiff g) hle
 
 variable (μ u F) in
@@ -92,36 +94,27 @@ noncomputable def IsFoelner.mean (s : Set X) :=
 
 theorem IsFoelner.tendsto_nhds_mean (hfoel : IsFoelner G μ u F) (s : Set X) :
     Tendsto (fun i ↦ μ (s ∩ F i) / μ (F i)) u (𝓝 (IsFoelner.mean μ u F s)) := by
-  have mem_Icc : ∀ᶠ i in u, μ (s ∩ F i) / μ (F i) ∈ Icc 0 1 :=
-      Eventually.mono
-        (hfoel.eventually_meas_ne_zero.and hfoel.eventually_meas_ne_top)
-        (fun i hi ↦ by simpa [ENNReal.div_le_iff hi.1 hi.2] using μ.mono inter_subset_right)
-  obtain ⟨x, hx⟩ :=
-    isCompact_iff_ultrafilter_le_nhds'.1
-      isCompact_Icc (u.map (fun i ↦ μ (s ∩ F i) / μ (F i))) (mem_map.1 mem_Icc)
+  have mem_Icc : ∀ᶠ i in u, μ (s ∩ F i) / μ (F i) ∈ Icc 0 1 := by
+    filter_upwards [hfoel.eventually_meas_ne_zero, hfoel.eventually_meas_ne_top] with i hi hi'
+    simpa [ENNReal.div_le_iff hi hi'] using μ.mono inter_subset_right
+  obtain ⟨x, hx⟩ := isCompact_Icc.ultrafilter_le_nhds'
+    (u.map (fun i ↦ μ (s ∩ F i) / μ (F i))) (mem_map.1 mem_Icc)
   exact tendsto_nhds_limUnder (by use x; exact hx.2)
 
 theorem IsFoelner.mean_univ_eq_one (hfoel : IsFoelner G μ u F) :
     IsFoelner.mean μ u F .univ = 1 := by
-  refine limUnder_eq <| tendsto_congr' ?_|>.mp tendsto_const_nhds
-  exact Eventually.mono
-    (hfoel.eventually_meas_ne_zero.and hfoel.eventually_meas_ne_top)
-    (fun _ hi ↦ by simp [ENNReal.div_self hi.1 hi.2])
+  refine tendsto_nhds_unique_of_eventuallyEq (hfoel.tendsto_nhds_mean _) tendsto_const_nhds ?_
+  filter_upwards [hfoel.eventually_meas_ne_zero, hfoel.eventually_meas_ne_top] with i hi hi'
+  simp [ENNReal.div_self hi hi']
 
 theorem IsFoelner.mean_union_eq_add_of_disjoint (hfoel : IsFoelner G μ u F)
     (s t : Set X) (ht : MeasurableSet t) (hdisj : Disjoint s t) :
     IsFoelner.mean μ u F (s ∪ t) = IsFoelner.mean μ u F s + IsFoelner.mean μ u F t := by
-  dsimp [IsFoelner.mean]
-  rw [limUnder_eq <| IsFoelner.tendsto_nhds_mean hfoel s]
-  rw [limUnder_eq <| IsFoelner.tendsto_nhds_mean hfoel t]
-  simp_rw [union_inter_distrib_right]
-  refine limUnder_eq <| Tendsto.congr' ?_
-    (Tendsto.add (IsFoelner.tendsto_nhds_mean hfoel s) (IsFoelner.tendsto_nhds_mean hfoel t))
-  refine Eventually.mono hfoel.eventually_measurableSet ?_
-  intro i hi
-  simp_rw [← ENNReal.add_div]
-  rw [← measure_union
-    (Disjoint.mono inter_subset_left inter_subset_left hdisj) (MeasurableSet.inter ht hi)]
+  refine tendsto_nhds_unique_of_eventuallyEq
+    (hfoel.tendsto_nhds_mean _) ((hfoel.tendsto_nhds_mean _).add (hfoel.tendsto_nhds_mean _)) ?_
+  filter_upwards [hfoel.eventually_measurableSet] with i hi
+  rw [union_inter_distrib_right,
+    measure_union (hdisj.inter_left _ |>.inter_right _) (ht.inter hi), ENNReal.add_div]
 
 theorem IsFoelner.mean_smul_eq_mean [SMulInvariantMeasure G X μ]
     (hfoel : IsFoelner G μ u F) (g : G) (s : Set X) :
@@ -144,13 +137,10 @@ theorem IsFoelner.mean_smul_eq_mean [SMulInvariantMeasure G X μ]
           rw [← inter_diff_distrib_left]
           apply measure_mono
           exact inter_subset_right.trans <| by simp [symmDiff_def]) _
-  dsimp [IsFoelner.mean]
-  rw [limUnder_eq <| IsFoelner.tendsto_nhds_mean hfoel (h • s)]
-  rw [limUnder_eq <| IsFoelner.tendsto_nhds_mean hfoel (h' • s)]
   rw [← add_zero <| mean μ u F (h' • s)]
   exact le_of_tendsto_of_tendsto'
-    (IsFoelner.tendsto_nhds_mean hfoel (h • s))
-    (Tendsto.add (IsFoelner.tendsto_nhds_mean hfoel (h' • s)) tendsto₀)
+    (hfoel.tendsto_nhds_mean _)
+    ((hfoel.tendsto_nhds_mean _).add tendsto₀)
     (by simp only [← ENNReal.add_div]; exact fun i ↦ by gcongr; exact h_le_add i)
 
 /-- If there exists a non-trivial Følner filter with respect to some group `G` acting on a measure
@@ -161,9 +151,9 @@ theorem IsFoelner.amenable [SMulInvariantMeasure G X μ] [NeBot l] (hfoel : IsFo
         ∀ (g : G) (s : Set X), m (g • s) = m s := by
   use IsFoelner.mean μ (Ultrafilter.of l) F
   refine ⟨?_, ?_, ?_⟩
-  · exact IsFoelner.mean_univ_eq_one <| IsFoelner.mono hfoel (Ultrafilter.of_le l)
-  · exact IsFoelner.mean_union_eq_add_of_disjoint <| IsFoelner.mono hfoel (Ultrafilter.of_le l)
-  · exact IsFoelner.mean_smul_eq_mean <| IsFoelner.mono hfoel (Ultrafilter.of_le l)
+  · exact (hfoel.mono <| Ultrafilter.of_le l).mean_univ_eq_one
+  · exact (hfoel.mono <| Ultrafilter.of_le l).mean_union_eq_add_of_disjoint
+  · exact (hfoel.mono <| Ultrafilter.of_le l).mean_smul_eq_mean
 
 variable (G μ) in
 /-- The maximal Følner filter with respect to some group `G` acting on a
@@ -175,18 +165,7 @@ def maxFoelner : Filter (Set X) :=
 
 variable (l F) in
 theorem isFoelner_iff_tendsto : IsFoelner G μ l F ↔ Tendsto F l (maxFoelner G μ) := by
-  dsimp [maxFoelner]
-  simp only [tendsto_inf, tendsto_iInf, tendsto_principal, tendsto_comap_iff]
-  simp only [mem_setOf_eq, eventually_and]
-  constructor
-  all_goals intro h
-  · refine ⟨⟨h.eventually_measurableSet, h.eventually_meas_ne_zero, h.eventually_meas_ne_top⟩, ?_⟩
-    exact h.tendsto_meas_symmDiff
-  · exact {
-      eventually_measurableSet := h.1.1
-      eventually_meas_ne_zero := h.1.2.1
-      eventually_meas_ne_top := h.1.2.2
-      tendsto_meas_symmDiff := h.2 }
+  simp [maxFoelner, tendsto_inf, tendsto_iInf, isFoelner_iff, Function.comp_def, and_assoc]
 
 theorem amenable_of_maxFoelner_ne_bot [SMulInvariantMeasure G X μ] (h : NeBot (maxFoelner G μ)) :
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
