@@ -230,11 +230,11 @@ instance : IsTrans (Set α) (· ⊆ ·) :=
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
   show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
 
-instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  show IsAntisymm (Set α) (· ≤ ·) by infer_instance
+instance : @Std.Antisymm (Set α) (· ⊆ ·) :=
+  show Std.Antisymm (· ≤ ·) by infer_instance
 
-instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  show IsIrrefl (Set α) (· < ·) by infer_instance
+instance : @Std.Irrefl (Set α) (· ⊂ ·) :=
+  show Std.Irrefl (· < ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊂ ·) :=
   show IsTrans (Set α) (· < ·) by infer_instance
@@ -248,8 +248,8 @@ instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
   show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
-instance : IsAsymm (Set α) (· ⊂ ·) :=
-  show IsAsymm (Set α) (· < ·) by infer_instance
+instance : @Std.Asymm (Set α) (· ⊂ ·) :=
+  show Std.Asymm (· < ·) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩

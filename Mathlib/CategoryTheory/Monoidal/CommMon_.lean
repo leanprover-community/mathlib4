@@ -288,7 +288,7 @@ variable (C) in
 /-- Implementation of `CommMon.equivLaxBraidedFunctorPUnit`. -/
 @[simps]
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon C where
-  obj F := (F.mapCommMon : CommMon _ ⥤ CommMon C).obj (trivial (Discrete PUnit.{u+1}))
+  obj F := (F.mapCommMon : CommMon _ ⥤ CommMon C).obj (trivial (Discrete PUnit.{u + 1}))
   map α := ((Functor.mapCommMonFunctor (Discrete PUnit) C).map α).app _
 
 /-- Implementation of `CommMon.equivLaxBraidedFunctorPUnit`. -/

@@ -219,6 +219,8 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) = exp (p.natDegree : ℤ) := by
   rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
 
+instance : Valuation.IsNontrivial (inftyValuation Fq) := ⟨RatFunc.X, by simp⟩
+
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation Fq
