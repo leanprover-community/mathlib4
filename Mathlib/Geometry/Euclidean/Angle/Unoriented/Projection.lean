@@ -15,7 +15,7 @@ This file proves lemmas relating to angles involving orthogonal projections.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace EuclideanGeometry

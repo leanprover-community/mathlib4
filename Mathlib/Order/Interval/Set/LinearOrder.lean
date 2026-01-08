@@ -14,7 +14,7 @@ Since every pair of elements are comparable in a linear order, intervals over th
 better behaved. This file collects their properties under this assumption.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 
