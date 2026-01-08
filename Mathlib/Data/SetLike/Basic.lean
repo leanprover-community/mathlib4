@@ -25,8 +25,11 @@ is injective.
 
 In general, a type `A` is `SetLike` with elements of type `B` if it
 has an injective map to `Set B`.  This module provides standard
-boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
-`PartialOrder`, and various extensionality and simp lemmas.
+boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set,
+and various extensionality and simp lemmas. It also provides an order
+`PartialOrder.ofSetlike` induced from set inclusion, and
+an abstract class `IsConcreteLE` for orders equal to this incudes one,
+for better defeqs.
 
 A typical subobject should be declared as:
 ```
