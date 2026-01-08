@@ -85,7 +85,7 @@ variable (R S) in
 When `R` and `S` are commutative rings, this is true if and only if the inclusion
 `im (algebraMap : R → S) → S` is an effective monomorphism in the category of commutative rings. -/
 def IsEffective : Prop :=
-  Function.Exact (algebraMap R S) (TensorProduct.includeLeftSubRight R S)
+  Function.Exact (Algebra.linearMap R S) (TensorProduct.includeLeftSubRight R S)
 
 section IsEffective
 
@@ -107,9 +107,10 @@ lemma isEffective_of_section (g : S →ₐ[R] R) : IsEffective R S := by
   intro hs
   use g s
   apply (TensorProduct.lid R S).symm.injective
-  rw [TensorProduct.lid_symm_apply, TensorProduct.lid_symm_apply, ← mul_one ((algebraMap R S) _),
-    ← Algebra.smul_def, ← TensorProduct.smul_tmul, smul_eq_mul, mul_one,
-    ← AlgHom.id_apply (R := R) (1 : S), ← TensorProduct.map_tmul,
+  rw [TensorProduct.lid_symm_apply, TensorProduct.lid_symm_apply,
+    ← mul_one ((Algebra.linearMap R S) _), Algebra.coe_linearMap, ← Algebra.smul_def,
+    ← TensorProduct.smul_tmul, smul_eq_mul, mul_one, ← AlgHom.id_apply (R := R) (1 : S),
+    ← TensorProduct.map_tmul,
     sub_eq_zero.mp ((TensorProduct.includeLeftSubRight_apply s).symm.trans hs),
     TensorProduct.map_tmul, map_one, AlgHom.id_apply]
 
