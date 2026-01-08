@@ -21,8 +21,13 @@ meta section
 
 open Lean Elab Command Linter
 
+/--
+Replaces line-breaks with `⏎`.
+It also replaces the slash `/` in `/-` and `-/` with the U+29F8 Big Solidus Unicode Character `⧸`
+so that the output of `#guard_msgs` does not accidentally comment everything that follows it.
+-/
 private def String.norm (s : String) : String :=
-  s.replace "\n" "⏎"
+  ((s.replace "\n" "⏎").replace "/-" "⧸-").replace "-/" "-⧸"
 
 namespace Mathlib.Linter
 

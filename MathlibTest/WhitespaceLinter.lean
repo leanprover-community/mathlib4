@@ -692,9 +692,9 @@ declare_aesop_rule_sets [$id](default := true)
 warning: add space in the source
 
 This part of the code
-  '"a"/--'
+  '"a"⧸--'
 should be written as
-  '"a" /--'
+  '"a" ⧸--'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
