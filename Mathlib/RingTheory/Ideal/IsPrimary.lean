@@ -6,6 +6,7 @@ Authors: Kenny Lau, Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.IsPrimary
+public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -27,7 +28,7 @@ Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing
 
 namespace Ideal
 
-variable {R : Type*} [CommSemiring R]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
 /-- A proper ideal `I` is primary as a submodule. -/
 abbrev IsPrimary (I : Ideal R) : Prop :=
@@ -84,5 +85,11 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (h
     · intro x hx
       exact hs (by simp [hx])
     · rw [radical_finset_inf hy H, hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
+
+lemma IsPrimary.comap {I : Ideal S} (hI : I.IsPrimary) (φ : R →+* S) : (I.comap φ).IsPrimary := by
+  rw [isPrimary_iff] at hI ⊢
+  refine hI.imp (comap_ne_top φ) fun h ↦ ?_
+  simp only [mem_comap, map_mul, ← comap_radical]
+  exact h
 
 end Ideal
