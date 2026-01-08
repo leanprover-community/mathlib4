@@ -311,6 +311,11 @@ lemma isIso₁_truncLE_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
   subst h
   exact t.isIso₁_truncLT_map_of_isGE _ hT _ h₃
 
+lemma isIso₂_truncGT_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ : ℤ) (h₁ : t.IsLE T.obj₁ n₀) :
+    IsIso ((t.truncGT n₀).map T.mor₂) :=
+  t.isIso₂_truncGE_map_of_isLE _ hT _ _ rfl h₁
+
 end
 
 end TStructure

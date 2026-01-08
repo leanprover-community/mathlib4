@@ -658,6 +658,21 @@ lemma isIso₁_truncLT_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
   let H := someOctahedron rfl (t.triangleLTGE_distinguished n T.obj₁) hT mem
   exact t.isGE₂ _ H.mem n (by dsimp; infer_instance) (by dsimp; infer_instance)
 
+lemma isIso₂_truncGE_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
+    IsIso ((t.truncGE n₁).map T.mor₂) := by
+  rw [isIso_truncGEmap_iff _ _ _ _ h]
+  obtain ⟨X, f, k, mem⟩ := distinguished_cocone_triangle₁ (T.mor₂ ≫ (t.truncGEπ n₁).app T.obj₃)
+  refine ⟨_, _, _, mem, ?_⟩
+  subst h
+  have H := someOctahedron rfl (rot_of_distTriang _ hT)
+    (rot_of_distTriang _ (t.triangleLTGE_distinguished (n₀ + 1) T.obj₃))
+    (rot_of_distTriang _ mem)
+  have : t.IsLE (X⟦(1 : ℤ)⟧) (n₀ - 1) :=
+    t.isLE₂ _ H.mem (n₀ - 1) (t.isLE_shift T.obj₁ n₀ 1 (n₀ - 1) (by lia))
+      (t.isLE_shift ((t.truncLT (n₀ + 1)).obj T.obj₃) n₀ 1 (n₀-1) (by lia))
+  exact t.isLE_of_shift X n₀ 1 (n₀ - 1) (by lia)
+
 end
 
 end

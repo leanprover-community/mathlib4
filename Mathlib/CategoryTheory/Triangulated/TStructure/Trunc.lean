@@ -138,20 +138,6 @@ end AbstractSpectralObject
 
 variable [IsTriangulated C]
 
-lemma isIso₂_truncGE_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
-    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
-    IsIso ((t.truncGE n₁).map T.mor₂) := by
-  rw [isIso_truncGEmap_iff _ _ _ _ h]
-  obtain ⟨X, f, k, mem⟩ := distinguished_cocone_triangle₁ (T.mor₂ ≫ (t.truncGEπ n₁).app T.obj₃)
-  refine ⟨_, _, _, mem, ?_⟩
-  have H := someOctahedron rfl (rot_of_distTriang _ hT)
-    (rot_of_distTriang _ (t.triangleLEGE_distinguished n₀ n₁ h T.obj₃))
-    (rot_of_distTriang _ mem)
-  have : t.IsLE (X⟦(1 : ℤ)⟧) (n₀-1) := t.isLE₂ _ H.mem (n₀-1)
-    (t.isLE_shift T.obj₁ n₀ 1 (n₀-1) (by lia))
-    (t.isLE_shift ((t.truncLE n₀).obj T.obj₃) n₀ 1 (n₀-1) (by lia))
-  exact t.isLE_of_shift X n₀ 1 (n₀-1) (by lia)
-
 instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLE b).obj X) a := by
   rw [t.isGE_iff_isZero_truncLE_obj (a-1) a (by lia)]
   have := t.isIso₁_truncLE_map_of_isGE _ ((t.triangleLEGE_distinguished b (b+1) rfl X))
@@ -193,14 +179,6 @@ instance (X : C) (a b : ℤ) : t.IsGE ((t.truncLTGE a b).obj X) a := by
 
 instance (X : C) (a b : ℤ) : t.IsLE ((t.truncLTGE a b).obj X) (b-1) := by
   dsimp [truncLTGE]
-  infer_instance
-
-instance (a b : ℤ) : (t.truncGELT a b).Additive := by
-  dsimp only [truncGELT]
-  infer_instance
-
-instance (a b : ℤ) : (t.truncGELE a b).Additive := by
-  dsimp only [truncGELE]
   infer_instance
 
 instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
