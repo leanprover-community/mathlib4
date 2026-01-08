@@ -725,6 +725,13 @@ theorem HereditarilyLindelofSpace.isLindelof [HereditarilyLindelofSpace X] (s : 
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
 
+theorem HereditarilyLindelofSpace.of_forall_isOpen (H : ∀ s : Set X, IsOpen s → IsLindelof s) :
+    HereditarilyLindelofSpace X := by
+  refine ⟨fun s _ ↦ isLindelof_of_countable_subcover fun U U_open hU ↦ ?_⟩
+  obtain ⟨t, t_count, ht⟩ := H (⋃ i, U i) (isOpen_iUnion U_open)
+    |>.elim_countable_subcover U U_open subset_rfl
+  exact ⟨t, t_count, hU.trans ht⟩
+
 @[deprecated (since := "2026-01-07")]
 alias HereditarilyLindelof_LindelofSets := HereditarilyLindelofSpace.isLindelof
 
