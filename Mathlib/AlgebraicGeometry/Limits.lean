@@ -368,6 +368,51 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
     | .left, .right => simpa [fi] using hf.1
     | .right, .left => simpa [fi] using hf.1.symm
 
+lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') : IsPullback f coprod.inl coprod.inl (coprod.map f g) := by
+  refine IsOpenImmersion.isPullback _ _ _ _ (by simp) ?_
+  apply le_antisymm
+  · rintro x ⟨y, hxy⟩
+    obtain ⟨(x | x), rfl⟩ := (coprodMk _ _).surjective x
+    · simp
+    · simp only [coprodMk_inr, ← Scheme.Hom.comp_apply, coprod.inr_map] at hxy
+      cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).1 ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
+  · rintro _ ⟨x, rfl⟩
+    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]⟩
+
+lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') : IsPullback g coprod.inr coprod.inr (coprod.map f g) :=
+  (isPullback_inl_inl_coprodMap g f).of_iso (.refl _) (.refl _) (coprod.braiding _ _)
+    (coprod.braiding _ _) (by simp) (by simp) (by simp) (by simp)
+
+variable {X Y}
+
+/-- The sections on coproducts of schemes are the (categorical) product of the sections
+on the components -/
+noncomputable def Scheme.coprodPresheafObjIso (U : (X ⨿ Y).Opens) :
+    Γ(X ⨿ Y, U) ≅ Γ(X, coprod.inl (C := Scheme) ⁻¹ᵁ U) ⨯ Γ(Y, coprod.inr (C := Scheme) ⁻¹ᵁ U) :=
+  letI ι₁ : X ⟶ X ⨿ Y := coprod.inl
+  letI ι₂ : Y ⟶ X ⨿ Y := coprod.inr
+  haveI h₁ : ι₁ ''ᵁ ι₁ ⁻¹ᵁ U ⊔ ι₂ ''ᵁ ι₂ ⁻¹ᵁ U = U := by
+    simp_rw [Scheme.Hom.image_preimage_eq_opensRange_inf]
+    rw [← inf_sup_right, (isCompl_opensRange_inl_inr X Y).sup_eq_top, top_inf_eq]
+  haveI h₂ : ι₁ ''ᵁ ι₁ ⁻¹ᵁ U ⊓ ι₂ ''ᵁ ι₂ ⁻¹ᵁ U = ⊥ := by
+    simp_rw [Scheme.Hom.image_preimage_eq_opensRange_inf]
+    rw [← inf_inf_distrib_right, (isCompl_opensRange_inl_inr X Y).inf_eq_bot, bot_inf_eq]
+  (X ⨿ Y).presheaf.mapIso (eqToIso h₁).op ≪≫
+    ((X ⨿ Y).sheaf.isProductOfDisjoint _ _ h₂).conePointUniqueUpToIso (limit.isLimit _) ≪≫
+    prod.mapIso (ι₁.appIso _) (ι₂.appIso _)
+
+@[reassoc (attr := simp)]
+lemma Scheme.coprodPresheafObjIso_hom_fst (U : (X ⨿ Y).Opens) :
+    (coprodPresheafObjIso U).hom ≫ prod.fst = (coprod.inl (C := Scheme)).app U := by
+  simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
+
+@[reassoc (attr := simp)]
+lemma Scheme.coprodPresheafObjIso_hom_snd (U : (X ⨿ Y).Opens) :
+    (coprodPresheafObjIso U).hom ≫ prod.snd = (coprod.inr (C := Scheme)).app U := by
+  simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
+
 variable (R S : Type u) [CommRing R] [CommRing S]
 
 /-- The map `Spec R ⨿ Spec S ⟶ Spec (R × S)`.
