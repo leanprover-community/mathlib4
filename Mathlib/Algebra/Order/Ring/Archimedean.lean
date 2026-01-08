@@ -196,7 +196,7 @@ theorem exists_nat_ge_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℕ, x �
   refine ⟨n, le_of_abs_le ?_⟩
   simpa using hn
 
-theorem exists_nat_gt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℕ, x < n := by
+theorem exists_nat_gt_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℕ, x < n := by
   obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg hx
   refine ⟨n + 1, hn.trans_lt ?_⟩
   simp
@@ -205,7 +205,7 @@ theorem exists_int_ge_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, x �
   obtain ⟨n, hn⟩ := exists_nat_ge_of_mk_nonneg hx
   exact ⟨n, mod_cast hn⟩
 
-theorem exists_int_gt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, x < n := by
+theorem exists_int_gt_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, x < n := by
   obtain ⟨n, hn⟩ := exists_nat_gt_of_mk_nonneg hx
   exact ⟨n, mod_cast hn⟩
 
@@ -214,7 +214,7 @@ theorem exists_int_le_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, n �
   use -n
   simpa [neg_le]
 
-theorem exists_int_lt_of_mk_nonneg [Nontrivial R] {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, n < x := by
+theorem exists_int_lt_of_mk_nonneg {x : R} (hx : 0 ≤ mk x) : ∃ n : ℤ, n < x := by
   obtain ⟨n, hn⟩ := exists_nat_gt_of_mk_nonneg (mk_neg x ▸ hx)
   use -n
   simpa [neg_lt]
