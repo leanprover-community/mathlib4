@@ -313,18 +313,6 @@ theorem tendsto_prodAssoc_symm {h : Filter γ} :
     Tendsto (Equiv.prodAssoc α β γ).symm (f ×ˢ (g ×ˢ h)) ((f ×ˢ g) ×ˢ h) :=
   (prod_assoc_symm f g h).le
 
-theorem eventually_assoc_iff {α β γ : Type*}
-    {f : Filter α} {g : Filter β} {h : Filter γ} {p : (α × β) × γ → Prop} :
-    (∀ᶠ x : (α × β) × γ in (f ×ˢ g) ×ˢ h, p x) ↔
-      ∀ᶠ y : α × β × γ in f ×ˢ g ×ˢ h, p ((y.1, y.2.1), y.2.2) := by
-  simp [← prod_assoc]
-
-theorem eventually_assoc_iff' {α β γ : Type*}
-    {f : Filter α} {g : Filter β} {h : Filter γ} {p : α × β × γ → Prop} :
-    (∀ᶠ x : α × β × γ in f ×ˢ g ×ˢ h, p x) ↔
-      ∀ᶠ y : (α × β) × γ in (f ×ˢ g) ×ˢ h, p (y.1.1, y.1.2, y.2) := by
-  rw [eventually_assoc_iff]
-
 /-- A useful lemma when dealing with uniformities. -/
 theorem map_swap4_prod {h : Filter γ} {k : Filter δ} :
     map (fun p : (α × β) × γ × δ => ((p.1.1, p.2.1), (p.1.2, p.2.2))) ((f ×ˢ g) ×ˢ (h ×ˢ k)) =
@@ -335,12 +323,6 @@ theorem tendsto_swap4_prod {h : Filter γ} {k : Filter δ} :
     Tendsto (fun p : (α × β) × γ × δ => ((p.1.1, p.2.1), (p.1.2, p.2.2))) ((f ×ˢ g) ×ˢ (h ×ˢ k))
       ((f ×ˢ h) ×ˢ (g ×ˢ k)) :=
   map_swap4_prod.le
-
-theorem eventually_swap4_prod_iff {α β γ δ : Type*}
-    {f : Filter α} {g : Filter β} {h : Filter γ} {k : Filter δ} {p : (α × β) × γ × δ → Prop} :
-    (∀ᶠ x : (α × β) × γ × δ in (f ×ˢ g) ×ˢ h ×ˢ k, p x) ↔
-      ∀ᶠ y : (α × γ) × β × δ in (f ×ˢ h) ×ˢ g ×ˢ k, p ((y.1.1, y.2.1), y.1.2, y.2.2) := by
-  rw [← map_swap4_prod]; rfl
 
 theorem prod_map_map_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : Type w} {β₂ : Type x}
     {f₁ : Filter α₁} {f₂ : Filter α₂} {m₁ : α₁ → β₁} {m₂ : α₂ → β₂} :
