@@ -14,6 +14,7 @@ public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.Analytic.Binomial
 public import Mathlib.Analysis.Meromorphic.Order
+public meta import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 
@@ -401,6 +402,9 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
         simpa using hl)
       exact .sub (.div (by fun_prop) (by fun_prop) (by simpa)) (by fun_prop)
 
+@[simp] lemma deriv_weierstrassPExpect (l : ℂ) : deriv ℘[L - l] l = ℘'[L - l] l :=
+  L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept l (x := l) (by simp)
+
 lemma derivWeierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
     ℘'[L - l₀] (-z) = - ℘'[L - (-l₀)] z := by
   simp only [derivWeierstrassPExcept]
@@ -741,8 +745,33 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
     rw [weierstrassPExceptSeries, FormalMultilinearSeries.ofScalars_apply_eq,
       FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul]
 
+lemma hasFPowerSeriesAt_weierstrassPExcept (l : ℂ) :
+    HasFPowerSeriesAt ℘[L - l] (.ofScalars (𝕜 := ℂ) ℂ fun i : ℕ ↦
+      i.rec (℘[L - l] l) fun n _ ↦ (↑n + 2) * L.sumInvPow l (n + 3)) l := by
+  obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
+    ((L.isOpen_compl_lattice_diff (s := {l})).mem_nhds (x := l) (by simp))
+  lift r to NNReal using h₁.le
+  simpa [weierstrassPExceptSeries] using
+    (L.hasFPowerSeriesOnBall_weierstrassPExcept l l r h₁ h₂).hasFPowerSeriesAt
+
 lemma analyticOnNhd_weierstrassPExcept (l₀ : ℂ) : AnalyticOnNhd ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ :=
   (L.differentiableOn_weierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_diff
+
+@[fun_prop]
+lemma analyticAt_weierstrassPExcept (l₀ : ℂ) : AnalyticAt ℂ ℘[L - l₀] l₀ :=
+  L.analyticOnNhd_weierstrassPExcept _ _ (by simp)
+
+lemma iteratedDeriv_weierstrassPExcept (l : ℂ) {n : ℕ} :
+    iteratedDeriv n ℘[L - l] l =
+      n.rec (℘[L - l] l) fun n _ ↦ (n + 2).factorial * L.sumInvPow l (n + 3) := by
+  rw [← div_mul_cancel₀ (a := iteratedDeriv _ _ _) (b := ↑n.factorial)
+    (by simp [n.factorial_pos.ne']), ← eq_div_iff_mul_eq (by simp [n.factorial_pos.ne'])]
+  trans n.rec (℘[L - l] l) fun n _ ↦ (↑n + 2) * L.sumInvPow l (n + 3)
+  · simpa using congr($((L.analyticAt_weierstrassPExcept l).hasFPowerSeriesAt
+      |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_weierstrassPExcept l)).coeff n)
+  · obtain (_ | n) := n
+    · simp
+    · simp [Nat.factorial_succ (n + 1)]; field [(n + 1).factorial_pos.ne']
 
 end AnalyticWeierstrassPExcept
 
@@ -772,6 +801,15 @@ lemma hasFPowerSeriesOnBall_derivWeierstrassPExcept (l₀ x : ℂ) (r : NNReal) 
     simp [weierstrassPExceptSeries, derivWeierstrassPExceptSeries, mul_assoc]
   · simpa using Metric.ball_subset_closedBall
 
+lemma hasFPowerSeriesAt_derivWeierstrassPExcept (l : ℂ) :
+    HasFPowerSeriesAt ℘'[L - l]
+      (.ofScalars ℂ fun i ↦ (i + 1) * (i + 2) * L.sumInvPow l (i + 3)) l := by
+  obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
+    ((L.isOpen_compl_lattice_diff (s := {l})).mem_nhds (x := l) (by simp))
+  lift r to NNReal using h₁.le
+  simpa [derivWeierstrassPExceptSeries] using
+    (L.hasFPowerSeriesOnBall_derivWeierstrassPExcept l l r h₁ h₂).hasFPowerSeriesAt
+
 lemma analyticOnNhd_derivWeierstrassPExcept (l₀ : ℂ) :
     AnalyticOnNhd ℂ ℘'[L - l₀] (L.lattice \ {l₀})ᶜ :=
   (L.differentiableOn_derivWeierstrassPExcept l₀).analyticOnNhd L.isOpen_compl_lattice_diff
@@ -780,6 +818,21 @@ lemma analyticOnNhd_derivWeierstrassPExcept (l₀ : ℂ) :
 lemma analyticAt_derivWeierstrassPExcept (l₀ : ℂ) :
     AnalyticAt ℂ ℘'[L - l₀] l₀ :=
   L.analyticOnNhd_derivWeierstrassPExcept l₀ _ (by simp)
+
+lemma iteratedDeriv_derivWeierstrassPExcept (l : ℂ) {n : ℕ} :
+    iteratedDeriv n ℘'[L - l] l =
+      (n + 2).factorial * L.sumInvPow l (n + 3) := by
+  have : iteratedDeriv n ℘'[L - l] l / n.factorial =
+      (↑n + 1) * (↑n + 2) * L.sumInvPow l (n + 3) := by
+    simpa using congr($((L.analyticAt_derivWeierstrassPExcept l).hasFPowerSeriesAt
+      |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_derivWeierstrassPExcept l)).coeff n)
+  simp [div_eq_iff, Nat.factorial_ne_zero, Nat.factorial_succ] at this ⊢
+  linear_combination this
+
+@[simp]
+lemma deriv_derivWeierstrassPExcept_self (l : ℂ) :
+    deriv ℘'[L - l] l = 6 * L.sumInvPow l 4 := by
+  simpa using L.iteratedDeriv_derivWeierstrassPExcept l (n := 1)
 
 lemma analyticOnNhd_derivWeierstrassP : AnalyticOnNhd ℂ ℘'[L] L.latticeᶜ :=
   L.differentiableOn_derivWeierstrassP.analyticOnNhd L.isClosed_lattice.isOpen_compl
@@ -838,14 +891,9 @@ lemma hasFPowerSeriesOnBall_weierstrassP (x : ℂ) (r : NNReal) (hr0 : 0 < r)
 lemma analyticOnNhd_weierstrassP : AnalyticOnNhd ℂ ℘[L] L.latticeᶜ :=
   L.differentiableOn_weierstrassP.analyticOnNhd L.isClosed_lattice.isOpen_compl
 
-@[fun_prop]
-lemma analyticAt_weierstrassPExcept (l₀ : ℂ) :
-    AnalyticAt ℂ ℘[L - l₀] l₀ :=
-  L.analyticOnNhd_weierstrassPExcept l₀ _ (by simp)
-
 lemma ite_eq_one_sub_sq_mul_weierstrassP (l₀ : ℂ) (hl₀ : l₀ ∈ L.lattice) (z : ℂ) :
     (if z = l₀ then 1 else (z - l₀) ^ 2 * ℘[L] z) =
-      (z - l₀) ^ 2 * L.weierstrassPExcept l₀ z + 1 - (z - l₀) ^ 2 / l₀ ^ 2 := by
+      (z - l₀) ^ 2 * ℘[L - l₀] z + 1 - (z - l₀) ^ 2 / l₀ ^ 2 := by
   grind [L.weierstrassPExcept_add ⟨_, hl₀⟩]
 
 @[fun_prop]
@@ -856,6 +904,11 @@ lemma meromorphic_weierstrassP : Meromorphic ℘[L] := by
     have := (analyticOnNhd_weierstrassPExcept L x x (by simp)).meromorphicAt
     fun_prop
   · exact (L.analyticOnNhd_weierstrassP x hx).meromorphicAt
+
+@[fun_prop]
+lemma meromorphic_derivWeierstrassP : Meromorphic ℘'[L] := by
+  rw [← deriv_weierstrassP]
+  fun_prop
 
 lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
     meromorphicOrderAt ℘[L] l₀ = -2 := by
@@ -876,58 +929,6 @@ lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
 
 end Analytic
 
-open Metric NNReal Finset in
-lemma _root_.HasFPowerSeriesOnBall.exists_eq_add_mul_sub (f : ℂ → ℂ) (a : ℕ → ℂ) {x} {r : ℝ≥0}
-    (hf : HasFPowerSeriesOnBall f (.ofScalars ℂ a) x r) :
-    ∃ g : ℂ → ℂ, HasFPowerSeriesOnBall g (.ofScalars ℂ (a <| · + 1)) x r ∧ g x = a 1 ∧
-      f = (fun z ↦ a 0 + g z * (z - x)) := by
-  have H : f x = a 0 := by symm; simpa using hf.coeff_zero
-  refine ⟨fun z ↦ if z = x then a 1 else (f z - a 0) / (z - x), ?_, (by simp), ?_⟩
-  · constructor
-    · refine hf.1.trans ?_
-      unfold FormalMultilinearSeries.radius
-      simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef,
-        FormalMultilinearSeries.coeff_ofScalars, iSup_le_iff]
-      intro r' b hrb
-      by_cases hr' : r' = 0
-      · simp [hr']
-      refine le_iSup_of_le r' (le_iSup_of_le ((↑r')⁻¹ * b) (le_iSup_of_le (fun n ↦ ?_) le_rfl))
-      rw [le_inv_mul_iff₀ (by positivity), mul_comm, mul_assoc, ← pow_succ]
-      exact hrb _
-    · exact hf.2
-    · rintro y hy
-      have := (hasSum_nat_add_iff' 1).mpr (hf.3 hy)
-      simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, prod_const, card_univ,
-        Fintype.card_fin, FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, add_eq_left,
-        add_sub_cancel_left, range_one, sum_singleton, pow_zero, one_mul] at this ⊢
-      split_ifs with hy'
-      · simp only [hy', zero_pow_eq, ite_mul, one_mul, zero_mul]
-        convert hasSum_ite_eq 0 _
-        simp_all
-      · convert this.div_const y using 2 with n
-        rw [mul_comm (y ^ (n + 1)), pow_succ, ← mul_div, mul_div_cancel_right₀ _ hy', mul_comm]
-  · ext z
-    by_cases hz : x = z
-    · simp only [hz, sub_self, mul_zero]
-      simp [← hz, H]
-    · have : z - x ≠ 0 := by simp [sub_eq_zero, Ne.symm hz]
-      simp [this, Ne.symm hz]
-
-open Metric NNReal Finset in
-lemma _root_.HasFPowerSeriesOnBall.exists_eq_add_mul_sub_pow (f : ℂ → ℂ) (a : ℕ → ℂ) {x} {r : ℝ≥0}
-    (hf : HasFPowerSeriesOnBall f (.ofScalars ℂ a) x r) (k : ℕ) :
-    ∃ g : ℂ → ℂ, HasFPowerSeriesOnBall g (.ofScalars ℂ (a <| · + k)) x r ∧ g x = a k ∧
-      f = (fun z ↦ ∑ i ∈ range k, a i * (z - x) ^ i + g z * (z - x) ^ k) := by
-  induction k with
-  | zero => refine ⟨f, (by simpa using hf), by symm; simpa using hf.coeff_zero, by simp⟩
-  | succ k IH =>
-    obtain ⟨g, hg, h, rfl⟩ := IH
-    obtain ⟨g', hg', h', rfl⟩ := hg.exists_eq_add_mul_sub
-    simp_rw [add_assoc, add_comm 1] at hg'
-    refine ⟨g', hg', add_comm 1 k ▸ h', ?_⟩
-    ext z
-    simp [add_mul, pow_succ', mul_assoc, Finset.sum_range_succ, add_assoc]
-
 section Relation
 
 def G (n : ℕ) : ℂ := ∑' l : L.lattice, (l ^ n)⁻¹
@@ -945,89 +946,227 @@ def g₂ : ℂ := 60 * L.G 4
 
 def g₃ : ℂ := 140 * L.G 6
 
--- `℘(z) = z⁻² + 3G₄z² + 5G₆z⁴ + O(z⁶)`
-lemma exists_℘_expansion (k : ℕ) : ∃ g : ℂ → ℂ, AnalyticAt ℂ g 0 ∧
-      g 0 = ↑(2 * k + 3) * L.G (2 * k + 4) ∧ ∀ z, ℘[L] z = 1 / z ^ 2 + (∑ i ∈ Finset.range k,
-        ↑(2 * i + 3) * L.G (2 * i + 4) * z ^ (2 * i + 2)) + g z * z ^ (2 * k + 2) := by
-  obtain ⟨r, h₁, h₂⟩ := Metric.isOpen_iff.mp (L.isOpen_compl_lattice_diff (s := {0})) 0 (by simp)
-  lift r to NNReal using h₁.le
-  have := L.hasFPowerSeriesOnBall_weierstrassPExcept 0 0 (r / 2)
-    (div_pos h₁ (by simp)) ((Metric.closedBall_subset_ball (by norm_num; exact h₁)).trans h₂)
-  obtain ⟨g, hg, h, e⟩ := this.exists_eq_add_mul_sub_pow _ _ (2 * k + 2)
-  refine ⟨g, hg.analyticAt, ?_, fun z ↦ ?_⟩
-  · exact_mod_cast show g 0 = (2 * ↑k + 1 + 2) * L.G (2 * k + 1 + 3) by simpa using h
-  rw [← L.weierstrassPExcept_add 0]
-  suffices ∑ x ∈ Finset.range (2 * k + 2), Nat.rec 0 (fun n _ ↦ (↑n + 2) * L.G (n + 3)) x * z ^ x =
-      ∑ i ∈ Finset.range k, ↑(2 * i + 3) * L.G (2 * i + 4) * z ^ (2 * i + 2) by simp [*]; ring
-  clear h e hg
-  induction k with
-  | zero => simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide)]
-  | succ n IH =>
-    rw [show 2 * n + 2 = 2 * (n + 1) by omega] at IH
-    simp only [Finset.sum_range_succ, IH, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one,
-      add_assoc, add_right_inj]
-    simp [mul_add, L.G_eq_zero_of_odd (2 * n + 2 + 3) ⟨n + 2, by omega⟩, add_assoc,
-      show (1 : ℂ) + 2 = 3 by norm_num]
-
--- `℘(z) = -2z⁻³ + 6G₄z + 20G₆z³ + O(z⁵)`
-lemma exists_℘'_expansion (k : ℕ) : ∃ g : ℂ → ℂ, AnalyticAt ℂ g 0 ∧
-    g 0 = ↑((2 * k + 2) * (2 * k + 3)) * L.G (2 * k + 4) ∧
-      ∀ z, ℘'[L] z = - 2 / z ^ 3 + (∑ i ∈ Finset.range k, ↑((2 * i + 2) * (2 * i + 3)) *
-        L.G (2 * i + 4) * z ^ (2 * i + 1)) + g z * z ^ (2 * k + 1) := by
-  obtain ⟨r, h₁, h₂⟩ := Metric.isOpen_iff.mp (L.isOpen_compl_lattice_diff (s := {0})) 0 (by simp)
-  lift r to NNReal using h₁.le
-  have := L.hasFPowerSeriesOnBall_derivWeierstrassPExcept 0 0 (r / 2)
-    (div_pos h₁ (by simp)) ((Metric.closedBall_subset_ball (by norm_num; exact h₁)).trans h₂)
-  obtain ⟨g, hg, h, e⟩ := this.exists_eq_add_mul_sub_pow _ _ (2 * k + 1)
-  refine ⟨g, hg.analyticAt, ?_, fun z ↦ ?_⟩
-  · have : g 0 = (2 * ↑k + 1 + 1) * (2 * ↑k + 1 + 2) * L.G (2 * k + 4) := by simpa using h
-    exact_mod_cast this
-  rw [← L.derivWeierstrassPExcept_sub 0, Submodule.coe_zero, e]
-  suffices ∑ x ∈ Finset.range (2 * k + 1), (↑x + 1) * (↑x + 2) * L.G (x + 3) * z ^ x =
-      ∑ i ∈ Finset.range k, ↑((2 * i + 2) * (2 * i + 3)) * L.G (2 * i + 4) * z ^ (2 * i + 1) by
-    simp [this, sub_eq_add_neg, neg_div, add_assoc]; ring
-  clear h e hg
-  induction k with
-  | zero => simp [L.G_eq_zero_of_odd 3 (by decide)]
-  | succ n IH =>
-    rw [Finset.sum_range_succ, Finset.sum_range_succ, mul_add, Finset.sum_range_succ, IH]
-    simp [L.G_eq_zero_of_odd (2 * n + 2 + 3) ⟨n + 2, by omega⟩,]
-    grind
-
 def relation (z : ℂ) : ℂ :=
   letI := Classical.propDecidable
   if z ∈ L.lattice then 0 else ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃
 
-open scoped Topology in
+@[simp]
+lemma analytiOrderAt_id {𝕜 : Type*} [NontriviallyNormedField 𝕜] :
+    analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
+  analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
+
+@[simp]
+lemma meromorphicOrderAt_id {𝕜 : Type*} [NontriviallyNormedField 𝕜] :
+    meromorphicOrderAt (𝕜 := 𝕜) id 0 = 1 := by
+  simp [analyticAt_id.meromorphicOrderAt_eq]
+
+@[fun_prop]
+lemma meromorphic_const {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (x : E) : Meromorphic fun _ : 𝕜 ↦ x :=
+  fun _ ↦ by fun_prop
+
+@[fun_prop]
+lemma meromorphic_relation : Meromorphic L.relation := by
+  have : Meromorphic fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃ := by fun_prop
+  intro z
+  refine .congr (this _) ?_
+  refine Filter.eventuallyEq_of_mem (s := L.latticeᶜ) ?_ fun z hz ↦ by simp_all [relation]
+  refine Filter.mem_of_superset (Filter.inter_mem (mem_nhdsWithin_of_mem_nhds
+    ((L.isOpen_compl_lattice_diff (s := {z})).mem_nhds (x := z) (by simp))) self_mem_nhdsWithin) ?_
+  simp [Set.subset_def, not_imp_not]
+
+lemma ENat.map_mono {α : Type u_1} {f : ℕ → α} [Preorder α] (hf : Monotone f) :
+    Monotone (ENat.map f) := by
+  intro a b e; cases a <;> cases b <;> simp_all [hf _]
+
+lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero {𝕜 E : Type*}
+    [NontriviallyNormedField 𝕜] [CharZero 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
+    n ≤ analyticOrderAt f z₀ ↔ ∀ i < n, iteratedDeriv i f z₀ = 0 := by
+  induction n generalizing f with
+  | zero => simp
+  | succ n IH =>
+    by_cases hfz : f z₀ = 0; swap
+    · simpa [analyticOrderAt_eq_zero.mpr (.inr hfz)] using ⟨0, by simp, by simpa⟩
+    have : analyticOrderAt (deriv f) z₀ + 1 = analyticOrderAt f z₀ := by
+      simpa [hfz] using hf.analyticOrderAt_deriv_add_one
+    simp [← this, ENat.add_le_add_iff_right, IH hf.deriv, iteratedDeriv_succ',
+      -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
+
+lemma iteratedDeriv_fun_add {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*}
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {n : ℕ} {x : 𝕜} {f g : 𝕜 → F}
+    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
+    iteratedDeriv n (fun x ↦ f x + g x) x = iteratedDeriv n f x + iteratedDeriv n g x :=
+  iteratedDeriv_add hf hg
+
+lemma iteratedDeriv_fun_sub {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*}
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {n : ℕ} {x : 𝕜} {f g : 𝕜 → F}
+    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
+    iteratedDeriv n (fun x ↦ f x - g x) x = iteratedDeriv n f x - iteratedDeriv n g x :=
+  iteratedDeriv_sub hf hg
+
+open scoped Topology
+
+theorem Filter.EventuallyEq.iteratedDerivWithin_eq {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+    (hfg : f =ᶠ[𝓝[s] x] g) (hfg' : f x = g x) :
+    iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
+  congr($(hfg.iteratedFDerivWithin_eq (𝕜 := 𝕜) hfg' n) _)
+
+theorem Filter.EventuallyEq.iteratedDerivWithin_eq' {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+    (hfg : f =ᶠ[𝓝[insert x s] x] g) :
+    iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
+  Filter.EventuallyEq.iteratedDerivWithin_eq _ (hfg.filter_mono (by simp))
+    (hfg.eq_of_nhdsWithin (by simp))
+
+@[fun_prop]
+lemma _root_.ContDiffWithinAt.derivWithin {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {m n : WithTop ℕ∞} {f : 𝕜 → F} {s : Set 𝕜}
+    {x : 𝕜} (H : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s)
+    (hmn : m + 1 ≤ n) (hx : x ∈ s) :
+    ContDiffWithinAt 𝕜 m (derivWithin f s) s x := by
+  exact ContDiffWithinAt.comp _ (by fun_prop) (g := fun f ↦ f 1) (t := .univ)
+    (H.fderivWithin_right hs hmn hx) (fun _ _ ↦ trivial)
+
+/-- The scalar multiplication of two `C^n` functions within a set at a point is `C^n` within this
+set at this point. -/
+@[fun_prop]
+theorem ContDiffWithinAt.smul' {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {x : E} {n : WithTop ℕ∞} {s : Set E}
+    {f : E → 𝕜} {g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
+    (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (f • g) s x :=
+  ContDiffWithinAt.smul hf hg
+
+lemma iteratedDerivWithin_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*}
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {n : ℕ} {x : 𝕜} {f : 𝕜 → 𝕜} {g : 𝕜 → F} {s : Set 𝕜}
+    (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedDerivWithin n (f • g) s x = ∑ i ∈ .range (n + 1),
+      n.choose i • iteratedDerivWithin i f s x • iteratedDerivWithin (n - i) g s x := by
+  induction n generalizing f g with
+  | zero => simp
+  | succ n IH =>
+    obtain ⟨U, hU, H⟩ := Filter.eventually_iff_exists_mem.mp
+      ((hf.eventually (by simp)).and (hg.eventually (by simp)))
+    rw [iteratedDerivWithin_succ', Filter.EventuallyEq.iteratedDerivWithin_eq'
+        (g := f • derivWithin g s + derivWithin f s • g)]
+    · rw [Finset.sum_range_succ', iteratedDerivWithin_add hx hs, IH, Finset.sum_range_succ', IH]
+      · simp only [Nat.choose_succ_succ', add_smul, Finset.sum_add_distrib]
+        nth_rw 3 [Finset.sum_range_succ]
+        have : ∀ i ∈ Finset.range n, 1 ≤ n - i := by simp; lia
+        simp +contextual [← iteratedDerivWithin_succ', ← n.sub_sub, Nat.sub_add_cancel, this]
+        abel
+      all_goals fun_prop (discharger := simp_all)
+    · filter_upwards [hf.eventually (by simp), hg.eventually (by simp)] with y hfy hgy
+      rw [derivWithin_smul (hfy.differentiableWithinAt _) (hgy.differentiableWithinAt _)]
+      all_goals simp
+
+lemma iteratedDerivWithin_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {n : ℕ} {x : 𝕜} {f g : 𝕜 → 𝕜} {s : Set 𝕜}
+    (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedDerivWithin n (f * g) s x = ∑ i ∈ .range (n + 1),
+      n.choose i * iteratedDerivWithin i f s x * iteratedDerivWithin (n - i) g s x := by
+  convert iteratedDerivWithin_smul hf hg hs hx using 1
+  simp [mul_assoc]
+
+lemma iteratedDeriv_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {n : ℕ} {x : 𝕜} {f g : 𝕜 → 𝕜}
+    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
+    iteratedDeriv n (f * g) x = ∑ i ∈ .range (n + 1),
+      n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x := by
+  rw [← iteratedDerivWithin_univ,
+    iteratedDerivWithin_mul hf.contDiffWithinAt hg.contDiffWithinAt uniqueDiffOn_univ trivial]
+  simp [iteratedDerivWithin_univ]
+
+lemma iteratedDeriv_fun_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {n : ℕ} {x : 𝕜} {f g : 𝕜 → 𝕜}
+    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
+    iteratedDeriv n (fun x ↦ f x * g x) x = ∑ i ∈ .range (n + 1),
+      n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x :=
+  iteratedDeriv_mul hf hg
+
+lemma iteratedDeriv_fun_id {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ} {x : 𝕜} :
+    iteratedDeriv n (fun a ↦ a) x = if n = 0 then x else if n = 1 then 1 else 0 := by
+  obtain (_ | _ | n) := n
+  · simp []
+  · simp
+  · simp [iteratedDeriv_succ', iteratedDeriv_const]
+
+lemma iteratedDeriv_fun_id_zero {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ} :
+    iteratedDeriv n (fun a ↦ a) (0 : 𝕜) = if n = 1 then 1 else 0 := by
+  simp +contextual [iteratedDeriv_fun_id]
+
+lemma iteratedDeriv_fun_pow_zero {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n m : ℕ} :
+    iteratedDeriv n (· ^ m) (0 : 𝕜) = if n = m then m.factorial else 0 := by
+  induction m generalizing n with
+  | zero => simp [iteratedDeriv_const]
+  | succ m IH =>
+    obtain rfl | hn := eq_or_ne n (m + 1)
+    · simp (discharger := fun_prop) [pow_succ', iteratedDeriv_fun_mul, iteratedDeriv_fun_id_zero,
+        IH (n := m), Nat.factorial_succ]
+    · simp (discharger := fun_prop) [pow_succ', iteratedDeriv_fun_mul, iteratedDeriv_fun_id_zero,
+        IH (n := n - 1), hn]; grind
+
+lemma _root_.AnalyticAt.of_meromorphicOrderAt_pos
+    {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {f : 𝕜 → E} {x : 𝕜} (h : 0 < meromorphicOrderAt f x) (hf : f x = 0) :
+    AnalyticAt 𝕜 f x := by
+  refine (meromorphicAt_of_meromorphicOrderAt_ne_zero h.ne').analyticAt ?_
+  rw [continuousAt_iff_punctured_nhds, hf]
+  exact tendsto_zero_of_meromorphicOrderAt_pos h
+
+attribute [fun_prop] AnalyticAt.contDiffAt
+
+set_option maxHeartbeats 0 in
+lemma analyticAt_relation_zero_aux :
+    7 ≤ analyticOrderAt (fun z ↦ (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
+    (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
+    (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6) 0 := by
+  refine (natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr ?_
+  intro i hi
+  simp (discharger := fun_prop) only [iteratedDeriv_fun_add,
+    pow_succ (_ + _), pow_succ (_ - _), iteratedDeriv_fun_sub, pow_zero, one_mul]
+  simp (discharger := fun_prop) only [iteratedDeriv_fun_mul, iteratedDeriv_fun_sub,
+    iteratedDeriv_const, iteratedDeriv_fun_add, iteratedDeriv_derivWeierstrassPExcept,
+    iteratedDeriv_weierstrassPExcept, iteratedDeriv_fun_pow_zero]
+  simp? [mul_add, Finset.sum_range_succ', L.G_eq_zero_of_odd 3 (by decide)] says
+    simp only [sumInvPow_zero, Nat.cast_ite, CharP.cast_eq_zero, mul_ite, mul_zero,
+      Finset.sum_range_succ', tsub_zero, Nat.choose_zero_right, Nat.cast_one, zero_add,
+      Nat.factorial_two, Nat.cast_ofNat, L.G_eq_zero_of_odd 3 (by decide), zero_mul, ite_self,
+      add_zero, Nat.reduceSubDiff, Nat.choose_one_right, Nat.cast_add, Nat.reduceAdd,
+      Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, sub_zero, mul_add, Finset.range_zero,
+      zero_tsub, OfNat.zero_ne_ofNat, Finset.sum_const_zero, zero_sub, mul_neg, one_mul, neg_mul,
+      weierstrassPExcept_zero, Nat.rec_zero, mul_one, Nat.choose_zero_succ, ite_mul]
+  interval_cases i
+  · simp; norm_num
+  · simp
+  · simp [Finset.sum_range_succ]
+  · simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide)]
+  · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
+  · simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 5 (by decide)]
+  · simp [Finset.sum_range_succ, show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl,
+      L.G_eq_zero_of_odd 3 (by decide), g₃]; ring
+
 lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
-  obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
-    ((L.isOpen_compl_lattice_diff (s := {0})).mem_nhds (x := 0) (by simp))
-  lift r to NNReal using h₁.le
-  obtain ⟨g₁, hg₁, h₀₁, e₁⟩ : ∃ g : ℂ → ℂ, AnalyticAt ℂ g 0 ∧ g 0 = - 80 * L.G 6 ∧
-      ∀ z ≠ 0, (℘'[L] z) ^ 2 = 4 / z ^ 6 - 24 * L.G 4 / z ^ 2 + g z := by
-    obtain ⟨g, h₁, h₂, e⟩ := L.exists_℘'_expansion 1
-    exact ⟨fun z ↦ - 4 * g z + 12 * L.G 4 * z * g z * z ^ 3 + (6 * L.G 4 * z) ^ 2 +
-      (g z * z ^ 3) ^ 2, by fun_prop, by simp [h₂, ← mul_assoc]; norm_num, by simp [e]; grind⟩
-  obtain ⟨g₂, hg₂, h₀₂, e₂⟩ : ∃ g : ℂ → ℂ, AnalyticAt ℂ g 0 ∧ g 0 = 5 * L.G 6 ∧
-      ∀ z, ℘[L] z = 1 / z ^ 2 + 3 * L.G 4 * z ^ 2 + g z * z ^ 4 := by
-    simpa using L.exists_℘_expansion 1
-  obtain ⟨g₃, hg₃, h₀₃, e₃⟩ : ∃ g : ℂ → ℂ, AnalyticAt ℂ g 0 ∧ g 0 = 15 * L.G 6 ∧
-      ∀ z ≠ 0, (℘[L] z) ^ 3 = 1 / z ^ 6 + 9 * L.G 4 / z ^ 2 + g z := by
-    exact ⟨fun z ↦ (3 * L.G 4 * z ^ 2 + g₂ z * z ^ 4) ^ 3 +
-      3 * (3 * L.G 4 * z ^ 2 + g₂ z * z ^ 4) * (3 * L.G 4 + g₂ z * z ^ 2) + 3 * g₂ z, by fun_prop,
-      by simp [h₀₂, ← mul_assoc]; norm_num, fun z hz ↦ by simp only [e₂]; field⟩
-  let F (z) := z ^ 2 * L.G 4 ^ 2 * 180 + z ^ 4 * L.G 4 * g₂ z * 60 + g₁ z - g₃ z * 4 + L.G 6 * 140
-  refine (show AnalyticAt ℂ F 0 by fun_prop).congr ?_
-  refine Filter.eventuallyEq_of_mem (L.isOpen_compl_lattice_diff (s := {0}).mem_nhds (by simp)) ?_
-  intro z hz
-  by_cases hz' : z ∈ L.lattice
-  · obtain rfl : z = 0 := not_not.mp fun e ↦ hz ⟨hz', e⟩
-    simp [*, relation, F]
-    ring
-  have : z ≠ 0 := by rintro rfl; simp at hz'
-  simp only [relation, hz', ↓reduceIte]
-  simp_rw [e₁ z this, e₃ z this, e₂ z, PeriodPair.g₂, PeriodPair.g₃]
-  ring
+  refine .of_meromorphicOrderAt_pos ?_ (by simp [relation])
+  suffices 1 ≤ meromorphicOrderAt L.relation 0 from lt_of_lt_of_le (b := 0 + 1) (by simp) this
+  suffices 7 ≤ meromorphicOrderAt (L.relation * id ^ 6) 0 by
+    rw [meromorphicOrderAt_mul (by fun_prop) (by fun_prop),
+      meromorphicOrderAt_pow (by fun_prop)] at this
+    rw [← WithTop.add_le_add_iff_right (z := 6) (by simp)]
+    simpa [-LinearOrderedAddCommGroupWithTop.add_le_add_iff_left_of_ne_top] using this
+  refine (ENat.map_mono (α := ℤ) Nat.mono_cast (L.analyticAt_relation_zero_aux)).trans_eq ?_
+  rw [← AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
+  refine meromorphicOrderAt_congr (Filter.eventuallyEq_of_mem (s := L.latticeᶜ) ?_ ?_)
+  · have := (L.isOpen_compl_lattice_diff (s := {0})).mem_nhds (x := 0) (by simp)
+    convert Filter.inter_mem (nhdsWithin_le_nhds this) self_mem_nhdsWithin using 1; aesop
+  · intro z (hz : z ∉ L.lattice)
+    simp only [Pi.mul_apply, Pi.pow_apply, relation, ↓reduceIte, hz,
+      ← ZeroMemClass.coe_zero L.lattice, L.derivWeierstrassPExcept_def, L.weierstrassPExcept_def]
+    simp
+    field [show z ≠ 0 by aesop]
 
 @[simp]
 lemma relation_add_coe (x : ℂ) (l : L.lattice) :
