@@ -500,109 +500,14 @@ unif_hint (_C : Foo) where
 
 -- TODO: add tests around unary minus --- do we want to completely omit it?
 
-#mex
 /-!    -/
 
 
-/--
-info: Pretty-printed syntax:
-theorem FX (_ : Nat) : True := by trivial; done
----
-info: 6 whitespace issues found: 6 reported and 0 unreported.
----
-warning: reported: add space in the source
-
-This part of the code
-  'FX(_'
-should be written as
-  'FX (_'
-
-
-[Lean.Parser.Command.declaration, Lean.Parser.Command.theorem, Lean.Parser.Command.declId, ident.FX]
----
-warning: reported: remove space in the source
-
-This part of the code
-  'FX(_  :Nat)'
-should be written as
-  'FX(_ :Nat)'
-
-
-[Lean.Parser.Command.declaration,
- Lean.Parser.Command.theorem,
- Lean.Parser.Command.declSig,
- null,
- Lean.Parser.Term.explicitBinder,
- null,
- Lean.Parser.Term.hole,
- atom._]
----
-warning: reported: add space in the source
-
-This part of the code
-  ':Nat)'
-should be written as
-  ': Nat)'
-
-
-[Lean.Parser.Command.declaration,
- Lean.Parser.Command.theorem,
- Lean.Parser.Command.declSig,
- null,
- Lean.Parser.Term.explicitBinder,
- null,
- atom.«:»]
----
-warning: reported: add space in the source
-
-This part of the code
-  'True:='
-should be written as
-  'True :='
-
-
-[Lean.Parser.Command.declaration,
- Lean.Parser.Command.theorem,
- Lean.Parser.Command.declSig,
- Lean.Parser.Term.typeSpec,
- ident.True]
----
-warning: reported: remove space in the source
-
-This part of the code
-  'by  trivial;'
-should be written as
-  'by trivial;'
-
-
-[Lean.Parser.Command.declaration,
- Lean.Parser.Command.theorem,
- Lean.Parser.Command.declValSimple,
- Lean.Parser.Term.byTactic,
- atom.by]
----
-warning: reported: remove space in the source
-
-This part of the code
-  'trivial;  done'
-should be written as
-  'trivial; done'
-
-
-[Lean.Parser.Command.declaration,
- Lean.Parser.Command.theorem,
- Lean.Parser.Command.declValSimple,
- Lean.Parser.Term.byTactic,
- Lean.Parser.Tactic.tacticSeq,
- Lean.Parser.Tactic.tacticSeq1Indented,
- null,
- atom.«;»]
--/
 #guard_msgs in
 set_option linter.style.whitespace false in
 set_option linter.unreachableTactic false in
 set_option linter.unusedTactic false in
-#mex
+
 theorem FX(_  :Nat) : True:=     --
   by  trivial;  done
 
@@ -640,34 +545,9 @@ example : True = True := by
 
 set_option linter.style.whitespace false in
 -- Both `¬ False` and `¬False` are allowed.
-/--
-info: Pretty-printed syntax:
-example : ¬False ∨ ¬False := by simp
----
-info: 1 whitespace issue found: 0 reported and 1 unreported.
----
-info: unreported: remove space in the source
-
-This part of the code
-  '¬ False'
-should be written as
-  '¬False'
-
-
-[Lean.Parser.Command.declaration,
- Lean.Parser.Command.example,
- Lean.Parser.Command.optDeclSig,
- null,
- Lean.Parser.Term.typeSpec,
- «term_∨_»,
- «term¬_»,
- atom.«¬»]
--/
 #guard_msgs in
-#mex
 example : ¬ False ∨ ¬False := by simp
 
-#mex
 example : ¬ False ∨ ¬False := by simp
 
 /--
@@ -799,9 +679,6 @@ example :=
 
 example : True := by {trivial }
 
-/-- warning: #mex: Processing error -/
-#guard_msgs in
-#mex
 open Qq in
 --set_option linter.style.whitespace.verbose true in
 example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where

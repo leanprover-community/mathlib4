@@ -937,44 +937,6 @@ def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
   as.partition fun a =>
     (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
 
-open Lean Elab Command in
-/-- Visualise the `mex` info computed for a command `cmd`.
-This code is not used for the actual linter, hence could be removed. -/
-elab tk:"#mex " cmd:(command)? : command => do
-  let opts ← elabSetOption (mkIdent `linter.style.whitespace) (mkAtom "false")
-  withScope ({ · with opts }) do
-    let tktxt := "#mex"
-    if let some cmd := cmd then if let some cmdSubstring := cmd.raw.getSubstring? then
-    if let .error .. :=
-      captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
-    then
-      logWarningAt tk m!"{tktxt}: Parsing failed"
-      return
-    elabCommand cmd
-    --dbg_trace "here: {cmd}"
-    if (← get).messages.hasErrors then
-      logWarningAt tk m!"{tktxt}: Command has errors"
-      return
-    match ← getExceptions (verbose? := true) cmd with
-    | none => logWarning m!"{tktxt}: Processing error"
-    | some mexs =>
-      if mexs.isEmpty then
-        logInfo "No whitespace issues found!"
-        return
-      let (reported, unreported) := reportedAndUnreportedExceptions mexs
-      logInfo m!"{mexs.size} whitespace issue{if mexs.size == 1 then "" else "s"} found: \
-          {reported.size} reported and {unreported.size} unreported."
-      -- If the linter is active, then we do not need to emit the messages again.
-      if !Linter.getLinterValue linter.style.whitespace (← getLinterOptions) then
-        for m in reported do
-          logWarningAt (.ofRange m.rg) <|
-            m!"reported: {m.toLinterWarning cmdSubstring}\n\n\
-              {m.kinds.map MessageData.ofConstName}"
-      for m in unreported do
-        logInfoAt (.ofRange m.rg)
-          m!"unreported: {m.toLinterWarning cmdSubstring}\n\n\
-            {m.kinds.map MessageData.ofConstName}"
-
 end Style.Whitespace
 
 end Mathlib.Linter
