@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.GroupTheory.OrderOfElement
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Lemmas about rings of characteristic two
@@ -14,6 +16,8 @@ This file contains results about `CharP R 2`, in the `CharTwo` namespace.
 The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_char` lemmas
 elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
+
+public section
 
 assert_not_exists Algebra LinearMap
 
@@ -49,6 +53,14 @@ theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_
 @[scoped simp]
 protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_smul, add_self_eq_zero]
 
+@[scoped simp]
+protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
+  rw [← add_assoc, add_self_eq_zero, zero_add]
+
+@[scoped simp]
+protected theorem add_cancel_right (a b : R) : a + b + b = a := by
+  rw [add_assoc, add_self_eq_zero, add_zero]
+
 end Semiring
 
 section Ring
@@ -65,10 +77,6 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 @[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
-@[deprecated sub_eq_add (since := "2024-10-24")]
-theorem sub_eq_add' : HSub.hSub = (· + · : R → R → R) :=
-  funext₂ sub_eq_add
-
 theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
   rw [← sub_eq_iff_eq_add, sub_eq_add]
 
@@ -78,6 +86,9 @@ theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
 @[scoped simp]
 protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
   rw [two_zsmul, add_self_eq_zero]
+
+protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
+  rw [← CharTwo.sub_eq_add, sub_eq_iff_eq_add, zero_add]
 
 end Ring
 
@@ -110,6 +121,20 @@ theorem sum_mul_self (s : Finset ι) (f : ι → R) :
     ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
 
 end CommSemiring
+
+namespace CommRing
+
+variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
+
+theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
+  intro x y h
+  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero, CharTwo.add_eq_zero] at h
+
+@[scoped simp]
+theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
+  sq_injective.eq_iff
+
+end CommRing
 
 end CharTwo
 

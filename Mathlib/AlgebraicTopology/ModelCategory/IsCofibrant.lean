@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Instances
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Instances
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Fibrant and cofibrant objects in a model category
@@ -16,11 +18,13 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 section
 
@@ -95,6 +99,29 @@ lemma isFibrant_of_fibration [(fibrations C).IsStableUnderComposition]
   rw [isFibrant_iff] at hY ⊢
   rw [Subsingleton.elim (terminal.from X) (p ≫ terminal.from Y)]
   infer_instance
+
+section
+
+variable (X Y : C) [(fibrations C).IsStableUnderBaseChange] [HasTerminal C]
+  [HasBinaryProduct X Y]
+
+instance [hY : IsFibrant Y] :
+    Fibration (prod.fst : X ⨯ Y ⟶ X) := by
+  rw [isFibrant_iff] at hY
+  rw [fibration_iff] at hY ⊢
+  exact MorphismProperty.of_isPullback
+    (IsPullback.of_isLimit_binaryFan_of_isTerminal
+      (limit.isLimit (pair X Y)) terminalIsTerminal).flip hY
+
+instance [HasTerminal C] [HasBinaryProduct X Y] [hX : IsFibrant X] :
+    Fibration (prod.snd : X ⨯ Y ⟶ Y) := by
+  rw [isFibrant_iff] at hX
+  rw [fibration_iff] at hX ⊢
+  exact MorphismProperty.of_isPullback
+    (IsPullback.of_isLimit_binaryFan_of_isTerminal
+      (limit.isLimit (pair X Y)) terminalIsTerminal) hX
+
+end
 
 end
 

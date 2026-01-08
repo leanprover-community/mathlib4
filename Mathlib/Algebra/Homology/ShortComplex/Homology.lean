@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.RightHomology
+public import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
 /-!
 # Homology of short complexes
@@ -31,6 +32,8 @@ such a structure could be used as a basis for the *definition* of homology.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
@@ -54,7 +57,7 @@ structure HomologyData where
   iso : left.H ≅ right.H
   /-- the pentagon relation expressing the compatibility of the left
   and right homology data -/
-  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by aesop_cat
+  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by cat_disch
 
 attribute [reassoc (attr := simp)] HomologyData.comm
 
@@ -910,7 +913,7 @@ lemma homologyπ_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHom
 
 @[reassoc (attr := simp)]
 lemma homologyι_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] :
-    homologyMap φ ≫ S₂.homologyι = S₁.homologyι ≫ S₁.opcyclesMap φ  := by
+    homologyMap φ ≫ S₂.homologyι = S₁.homologyι ≫ S₁.opcyclesMap φ := by
   simp only [← cancel_epi S₁.rightHomologyIso.hom, rightHomologyIso_hom_naturality_assoc φ,
     rightHomologyIso_hom_comp_homologyι, rightHomologyι_naturality]
   simp only [homologyι, assoc, Iso.hom_inv_id_assoc]
@@ -1144,7 +1147,7 @@ lemma asIsoHomologyι_inv_comp_homologyι (hg : S.g = 0) [S.HasHomology] :
 
 @[reassoc (attr := simp)]
 lemma homologyι_comp_asIsoHomologyι_inv (hg : S.g = 0) [S.HasHomology] :
-    S.homologyι ≫ (S.asIsoHomologyι hg).inv  = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
+    S.homologyι ≫ (S.asIsoHomologyι hg).inv = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
 
 lemma mono_homologyMap_of_mono_opcyclesMap'
     [S₁.HasHomology] [S₂.HasHomology] (h : Mono (opcyclesMap φ)) :

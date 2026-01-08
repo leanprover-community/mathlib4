@@ -3,10 +3,12 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Data.ULift
 
 /-!
 
@@ -26,6 +28,8 @@ categories.
 
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -44,7 +48,7 @@ See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`. -/
 instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α where
   Hom U V := ULift (PLift (U ≤ V))
   id X := ⟨⟨le_refl X⟩⟩
-  comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
+  comp f g := ⟨⟨le_trans f.down.down g.down.down⟩⟩
 
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
   ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
@@ -57,8 +61,7 @@ open Opposite
 
 variable {X : Type u} [Preorder X]
 
-/-- Express an inequality as a morphism in the corresponding preorder category.
--/
+/-- Express an inequality as a morphism in the corresponding preorder category. -/
 def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 
@@ -74,8 +77,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
     homOfLE h ≫ homOfLE k = homOfLE (h.trans k) :=
   rfl
 
-/-- Extract the underlying inequality from a morphism in a preorder category.
--/
+/-- Extract the underlying inequality from a morphism in a preorder category. -/
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
@@ -147,8 +149,7 @@ open CategoryTheory
 
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
-/-- A monotone function between preorders induces a functor between the associated categories.
--/
+/-- A monotone function between preorders induces a functor between the associated categories. -/
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
   obj := f
   map g := CategoryTheory.homOfLE (h g.le)
@@ -171,28 +172,66 @@ def OrderIso.equivalence (e : X ≃o Y) : X ≌ Y where
 
 end
 
-namespace CategoryTheory
-
 section Preorder
 
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
-/-- A functor between preorder categories is monotone.
--/
+namespace CategoryTheory.Functor
+
+/-- A functor between preorder categories is monotone. -/
 @[mono]
-theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
+theorem monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
+
+/-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/
+@[simps!]
+def toOrderHom (F : X ⥤ Y) : X →o Y where
+  toFun := F.obj
+  monotone' := F.monotone
+
+end CategoryTheory.Functor
+
+namespace OrderHom
+
+open CategoryTheory
+
+/-- An `OrderHom` as a functor `X ⥤ Y` between preorder categories. -/
+abbrev toFunctor (f : X →o Y) : X ⥤ Y := f.monotone.functor
+
+/-- The equivalence between `X →o Y` and the type of functors `X ⥤ Y` between preorder categories
+`X` and `Y`. -/
+@[simps]
+def equivFunctor : (X →o Y) ≃ (X ⥤ Y) where
+  toFun := toFunctor
+  invFun F := F.toOrderHom
+
+/-- The categorical equivalence between the category of monotone functions `X →o Y` and the category
+of functors `X ⥤ Y`, where `X` and `Y` are preorder categories. -/
+@[simps! functor_obj_obj inverse_obj unitIso_hom_app unitIso_inv_app counitIso_inv_app_app
+  counitIso_hom_app_app]
+def equivalenceFunctor : (X →o Y) ≌ (X ⥤ Y) where
+  functor :=
+    { obj f := f.toFunctor
+      map f := { app x := homOfLE <| leOfHom f x } }
+  inverse :=
+    { obj F := F.toOrderHom
+      map f := homOfLE fun x ↦ leOfHom <| f.app x }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+end OrderHom
 
 end Preorder
 
 section PartialOrder
+
+namespace CategoryTheory
 
 variable {X : Type u} {Y : Type v} [PartialOrder X] [PartialOrder Y]
 
 theorem Iso.to_eq {x y : X} (f : x ≅ y) : x = y :=
   le_antisymm f.hom.le f.inv.le
 
-/-- A categorical equivalence between partial orders is just an order isomorphism.
--/
+/-- A categorical equivalence between partial orders is just an order isomorphism. -/
 def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y where
   toFun := e.functor.obj
   invFun := e.inverse.obj
@@ -214,9 +253,9 @@ theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
     e.toOrderIso.symm y = e.inverse.obj y :=
   rfl
 
-end PartialOrder
-
 end CategoryTheory
+
+end PartialOrder
 
 open CategoryTheory
 

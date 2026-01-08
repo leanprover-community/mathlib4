@@ -3,14 +3,18 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.MinMax
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.AtTopBot.Map
-import Mathlib.Order.Filter.AtTopBot.Monoid
+module
+
+public import Mathlib.Algebra.Order.Group.MinMax
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.AtTopBot.Map
+public import Mathlib.Order.Filter.AtTopBot.Monoid
 
 /-!
 # Convergence to ±infinity in ordered commutative groups
 -/
+
+public section
 
 variable {α G : Type*}
 open Set
@@ -59,7 +63,7 @@ theorem tendsto_atTop_mul_right_of_le (C : G) (hf : Tendsto f l atTop) (hg : ∀
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge (C : G) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
-  tendsto_atTop_mul_right_of_le (G := Gᵒᵈ) _  C hf hg
+  tendsto_atTop_mul_right_of_le (G := Gᵒᵈ) _ C hf hg
 
 @[to_additive]
 theorem tendsto_atTop_mul_const_left (C : G) (hf : Tendsto f l atTop) :
@@ -122,12 +126,12 @@ section LinearOrderedCommGroup
 variable [CommGroup G] [LinearOrder G]
 
 /-- $\lim_{x\to+\infty}|x|_m=+\infty$ -/
-@[to_additive r"$\lim_{x\to+\infty}|x|=+\infty$"]
+@[to_additive /-- $\lim_{x\to+\infty}|x|=+\infty$ -/]
 theorem tendsto_mabs_atTop_atTop : Tendsto (mabs : G → G) atTop atTop :=
   tendsto_atTop_mono le_mabs_self tendsto_id
 
 /-- $\lim_{x\to\infty^{-1}|x|_m=+\infty$ -/
-@[to_additive r"$\lim_{x\to-\infty}|x|=+\infty$"]
+@[to_additive /-- $\lim_{x\to-\infty}|x|=+\infty$ -/]
 theorem tendsto_mabs_atBot_atTop [IsOrderedMonoid G] : Tendsto (mabs : G → G) atBot atTop :=
   tendsto_atTop_mono inv_le_mabs tendsto_inv_atBot_atTop
 

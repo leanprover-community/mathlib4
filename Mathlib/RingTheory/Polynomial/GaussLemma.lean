@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.RingTheory.Localization.Integral
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Polynomial.Content
+module
+
+public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.RingTheory.Localization.Integral
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Gauss's Lemma
@@ -35,6 +37,8 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
 
 -/
 
+public section
+
 
 open scoped nonZeroDivisors Polynomial
 
@@ -53,8 +57,9 @@ variable (K : Type*) [Field K] [Algebra R K]
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
     g ∈ lifts (algebraMap (integralClosure R K) K) := by
-  have := mem_lift_of_splits_of_roots_mem_range (integralClosure R g.SplittingField)
-    ((splits_id_iff_splits _).2 <| SplittingField.splits g) (hg.map _) fun a ha =>
+  have := (SplittingField.splits g).mem_lift_of_roots_mem_range (hg.map _)
+    (algebraMap (integralClosure R g.SplittingField) g.SplittingField)
+     fun a ha =>
       (SetLike.ext_iff.mp (integralClosure R g.SplittingField).range_algebraMap _).mpr <|
         roots_mem_integralClosure hf ?_
   · rw [lifts_iff_coeff_lifts, ← RingHom.coe_range, Subalgebra.range_algebraMap] at this
@@ -71,7 +76,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
 variable [IsFractionRing R K]
 
 /-- If `K = Frac(R)` and `g : K[X]` divides a monic polynomial with coefficients in `R`, then
-    `g * (C g.leadingCoeff⁻¹)` has coefficients in `R` -/
+`g * (C g.leadingCoeff⁻¹)` has coefficients in `R` -/
 theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]} (hf : f.Monic)
     {g : K[X]} (hg : g ∣ f.map (algebraMap R K)) :
     ∃ g' : R[X], g'.map (algebraMap R K) * (C <| leadingCoeff g) = g := by
@@ -163,7 +168,6 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
   refine
     IsUnit.mul (IsUnit.map _ (Or.resolve_left (hp.isUnit_or_isUnit ?_) (show ¬IsUnit a' from ?_)))
       (isUnit_iff_exists_inv'.mpr
-        -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5073): was `rwa`
         (Exists.intro (C a.leadingCoeff) <| by rw [← C_mul, this, C_1]))
   · exact Polynomial.map_injective _ (IsFractionRing.injective R K) H
   · by_contra h_contra
@@ -172,11 +176,10 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
     exact
       IsUnit.mul (IsUnit.map _ h_contra)
         (isUnit_iff_exists_inv.mpr
-          -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5073): was `rwa`
           (Exists.intro (C b.leadingCoeff) <| by rw [← C_mul, this, C_1]))
 
 /-- Integrally closed domains are precisely the domains for in which Gauss's lemma holds
-    for monic polynomials -/
+for monic polynomials -/
 theorem isIntegrallyClosed_iff' [IsDomain R] :
     IsIntegrallyClosed R ↔
       ∀ p : R[X], p.Monic → (Irreducible p ↔ Irreducible (p.map <| algebraMap R K)) := by
@@ -189,7 +192,7 @@ theorem isIntegrallyClosed_iff' [IsDomain R] :
     rw [← Monic.degree_map (minpoly.monic hx) (algebraMap R K)]
     apply
       degree_eq_one_of_irreducible_of_root ((H _ <| minpoly.monic hx).mp (minpoly.irreducible hx))
-    rw [IsRoot, eval_map, ← aeval_def, minpoly.aeval R x]
+    rw [IsRoot, eval_map_algebraMap, minpoly.aeval R x]
 
 theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
     (hp : p.Monic) (hq : q.Monic)
@@ -212,16 +215,15 @@ open IsLocalization
 
 section NormalizedGCDMonoid
 
-variable [IsDomain R] [NormalizedGCDMonoid R]
+variable [IsDomain R]
 
-theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0 : p ≠ 0)
-    (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
+theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCDMonoid R]
+    {p : K[X]} (h0 : p ≠ 0) (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ p
   rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hc
   apply isUnit_of_mul_isUnit_right
-  rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← RingHom.map_mul,
-    isUnit_iff]
+  rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← map_mul, isUnit_iff]
   refine
     ⟨algebraMap R K ((integerNormalization R⁰ p).content * ↑u), isUnit_iff_ne_zero.2 fun con => ?_,
       by simp⟩
@@ -231,14 +233,15 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0
   · apply h0 con
   · apply Units.ne_zero _ con
 
+variable [Nonempty (NormalizedGCDMonoid R)]
+
 /-- **Gauss's Lemma** for GCD domains states that a primitive polynomial is irreducible iff it is
   irreducible in the fraction field. -/
 theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp : p.IsPrimitive) :
     Irreducible p ↔ Irreducible (p.map (algebraMap R K)) := by
-  -- Porting note: was `(IsFractionRing.injective _ _)`
   refine
     ⟨fun hi => ⟨fun h => hi.not_isUnit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
-      hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K)⟩
+      hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective _ _)⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
   obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b
   rw [Algebra.smul_def, algebraMap_apply, Subtype.coe_mk] at hc hd
@@ -249,6 +252,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _) _
     rw [Polynomial.map_mul, Polynomial.map_mul, Polynomial.map_mul, hc, hd, map_C, map_C, hab]
     ring
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
   obtain ⟨u, hu⟩ :
     Associated (c * d)
       (content (integerNormalization R⁰ a) * content (integerNormalization R⁰ b)) := by
@@ -256,9 +260,9 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
       normalize.map_mul, normalize_content, normalize_content, ←
       mul_one (normalize c * normalize d), ← hp.content_eq_one, ← content_C, ← content_C, ←
       content_mul, ← content_mul, ← content_mul, h1]
-  rw [← RingHom.map_mul, eq_comm, (integerNormalization R⁰ a).eq_C_content_mul_primPart,
+  rw [← map_mul, eq_comm, (integerNormalization R⁰ a).eq_C_content_mul_primPart,
     (integerNormalization R⁰ b).eq_C_content_mul_primPart, mul_assoc, mul_comm _ (C _ * _), ←
-    mul_assoc, ← mul_assoc, ← RingHom.map_mul, ← hu, RingHom.map_mul, mul_assoc, mul_assoc, ←
+    mul_assoc, ← mul_assoc, ← map_mul, ← hu, map_mul, mul_assoc, mul_assoc, ←
     mul_assoc (C (u : R))] at h1
   have h0 : a ≠ 0 ∧ b ≠ 0 := by
     classical
@@ -284,6 +288,7 @@ theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.Is
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _)
     rw [Polynomial.map_mul, Polynomial.map_mul, hs, hr, mul_assoc, mul_comm r]
     simp
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
   rw [← hp.dvd_primPart_iff_dvd, primPart_mul, hq.primPart_eq, Associated.dvd_iff_dvd_right] at h
   · exact h
   · symm

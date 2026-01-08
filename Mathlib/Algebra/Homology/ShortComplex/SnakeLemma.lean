@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.Algebra.Homology.ShortComplex.Limits
-import Mathlib.CategoryTheory.Abelian.Refinements
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.Algebra.Homology.ShortComplex.Limits
+public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The snake lemma
@@ -45,11 +47,13 @@ the other half by arguing in the opposite category), and the use of "refinements
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
 namespace ShortComplex
 
@@ -72,8 +76,8 @@ structure SnakeInput where
   v₁₂ : L₁ ⟶ L₂
   /-- the morphism from the second row to the third row -/
   v₂₃ : L₂ ⟶ L₃
-  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by aesop_cat
-  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by aesop_cat
+  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by cat_disch
+  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by cat_disch
   /-- `L₀` is the kernel of `v₁₂ : L₁ ⟶ L₂`. -/
   h₀ : IsLimit (KernelFork.ofι _ w₀₂)
   /-- `L₃` is the cokernel of `v₁₂ : L₁ ⟶ L₂`. -/
@@ -406,9 +410,9 @@ structure Hom where
   f₂ : S₁.L₂ ⟶ S₂.L₂
   /-- a morphism between the third lines -/
   f₃ : S₁.L₃ ⟶ S₂.L₃
-  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by aesop_cat
-  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by aesop_cat
-  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by aesop_cat
+  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by cat_disch
+  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by cat_disch
+  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by cat_disch
 
 namespace Hom
 
@@ -492,7 +496,7 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
       (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
   map_id _ := by dsimp [P]; simp
-  map_comp _ _ := by dsimp [P]; aesop_cat
+  map_comp _ _ := by dsimp [P]; cat_disch
 
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by

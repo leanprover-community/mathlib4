@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -52,6 +54,8 @@ We also provide versions of these theorems for set integrals.
 ## Tags
 integral, derivative
 -/
+
+public section
 
 
 noncomputable section
@@ -104,7 +108,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
   refine ⟨hF'_int, ?_⟩
   /- Discard the trivial case where `E` is not complete, as all integrals vanish. -/
   by_cases hE : CompleteSpace E; swap
-  · rcases subsingleton_or_nontrivial H with hH|hH
+  · rcases subsingleton_or_nontrivial H with hH | hH
     · have : Subsingleton (H →L[𝕜] E) := inferInstance
       convert hasFDerivAt_of_subsingleton _ x₀
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
@@ -268,10 +272,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (ε_pos : 0 
     ε_pos hF_meas hF_int hm h_lipsch bound_integrable h_diff
   replace hF'_int : Integrable F' μ := by
     rw [← integrable_norm_iff hm] at hF'_int
-    simpa only [L, (· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,
-      ContinuousLinearMap.comp_apply, ContinuousLinearMap.coe_restrict_scalarsL',
-      ContinuousLinearMap.norm_restrictScalars, ContinuousLinearMap.norm_smulRightL_apply] using
-      hF'_int
+    simpa [L, (· ∘ ·), integrable_norm_iff hF'_meas] using hF'_int
   refine ⟨hF'_int, ?_⟩
   by_cases hE : CompleteSpace E; swap
   · simpa [integral, hE] using hasDerivAt_const x₀ 0

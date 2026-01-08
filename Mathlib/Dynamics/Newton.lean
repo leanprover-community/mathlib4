@@ -3,11 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Oliver Nash
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Polynomial.Nilpotent
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Identities
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 # Newton-Raphson method
@@ -30,6 +31,8 @@ such as Hensel's lemma and Jordan-Chevalley decomposition.
   Jordan-Chevalley decomposition of linear endomorphims.
 
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -124,8 +127,5 @@ theorem existsUnique_nilpotent_sub_and_aeval_eq_zero
     rw [← sub_sub_sub_cancel_right r₂ r₁ x]
     refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
     exact (Commute.all _ _).isNilpotent_mul_left <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
-
-@[deprecated (since := "2024-12-17")]
-alias exists_unique_nilpotent_sub_and_aeval_eq_zero := existsUnique_nilpotent_sub_and_aeval_eq_zero
 
 end Polynomial

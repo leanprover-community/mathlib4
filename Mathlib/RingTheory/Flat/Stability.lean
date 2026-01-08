@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Flatness is stable under composition and base change
@@ -24,6 +26,8 @@ We show that flatness is stable under composition and base change.
                                           then the localization of `M` at `S` is flat as a module
                                           for the localization of `R` at `S`.
 -/
+
+@[expose] public section
 
 universe u v w t
 
@@ -63,8 +67,6 @@ theorem trans [Flat R S] [Flat S M] : Flat R M := by
     LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
   iterate 2 apply Flat.lTensor_preserves_injective_linearMap
   exact Subtype.val_injective
-
-@[deprecated (since := "2024-11-03")] alias comp := trans
 
 end Composition
 

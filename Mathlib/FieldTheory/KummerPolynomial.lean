@@ -3,8 +3,10 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.Norm.Defs
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.Norm.Defs
 /-!
 # Irreducibility of X ^ p - a
 
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Norm.Defs
   `-4` is not a 4th power.
 
 -/
+
+public section
 universe u
 
 variable {K : Type u} [Field K]
@@ -33,7 +37,7 @@ lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
 
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 := by
-  obtain (rfl|hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
+  obtain (rfl | hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
   · rw [pow_one]
     intro e
     refine mk_ne_zero_of_natDegree_lt (monic_X_sub_C a) (C_ne_zero.mpr ha) (by simp) ?_
@@ -103,7 +107,6 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
     (X_pow_sub_C_ne_zero hp.pos a) (this.trans natDegree_X_pow_sub_C.symm).ge).irreducible hg
   -- Suppose `deg g ≠ p`.
   by_contra h
-  have : Fact (Irreducible g) := ⟨hg⟩
   -- Let `r` be a root of `g`, then `N_K(r) ^ p = N_K(r ^ p) = N_K(a) = a ^ (deg g)`.
   have key : (Algebra.norm K (AdjoinRoot.root g)) ^ p = a ^ g.natDegree := by
     have := eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _ hg' (AdjoinRoot.eval₂_root g)

@@ -3,13 +3,15 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.IsConnected
-import Mathlib.CategoryTheory.Limits.Sifted
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Filtered.Flat
-import Mathlib.CategoryTheory.Grothendieck
-import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.IsConnected
+public import Mathlib.CategoryTheory.Limits.Sifted
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Filtered.Flat
+public import Mathlib.CategoryTheory.Grothendieck
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
 /-!
 # Finality of Projections in Comma Categories
@@ -29,6 +31,8 @@ and `A` and `B` are filtered.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 namespace CategoryTheory
@@ -45,7 +49,7 @@ variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
 private lemma final_fst_small [R.Final] : (fst L R).Final := by
-  rw  [Functor.final_iff_isIso_colimit_pre]
+  rw [Functor.final_iff_isIso_colimit_pre]
   intro G
   let i : colimit G ≅ colimit (fst L R ⋙ G) :=
     colimitIsoColimitGrothendieck L G ≪≫

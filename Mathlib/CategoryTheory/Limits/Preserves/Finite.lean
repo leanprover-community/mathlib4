@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Preservation of finite (co)limits.
@@ -14,12 +16,14 @@ involved are abelian, or more generally, finitely (co)complete.
 
 ## Related results
 * `CategoryTheory.Limits.preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts` :
-  see `CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`. Also provides
-  the dual version.
+  see `Mathlib/CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`.
+  Also provides the dual version.
 * `CategoryTheory.Limits.preservesFiniteLimitsIffFlat` :
-  see `CategoryTheory/Functor/Flat.lean`.
+  see `Mathlib/CategoryTheory/Functor/Flat.lean`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -68,6 +72,7 @@ instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
 arbitrary universe. -/
 lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
@@ -222,6 +227,7 @@ instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ 
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteColimits C`
 by showing that we are preserving colimits at an arbitrary universe. -/
 lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)

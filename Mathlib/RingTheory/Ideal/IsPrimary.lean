@@ -3,8 +3,10 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yakov Pechersky
 -/
-import Mathlib.RingTheory.IsPrimary
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.RingTheory.IsPrimary
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary ideals
@@ -20,6 +22,8 @@ A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical
 Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing usage.
 
 -/
+
+@[expose] public section
 
 namespace Ideal
 
@@ -69,7 +73,7 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (h
   induction s using Finset.induction_on generalizing i with
   | empty => simp at hi
   | insert a s ha IH =>
-    rcases s.eq_empty_or_nonempty with rfl|⟨y, hy⟩
+    rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
     · simp only [insert_empty_eq, mem_singleton] at hi
       simpa [hi] using hs
     simp only [inf_insert]

@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+module
+
+public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 
 /-!
 # Formal multilinear series
@@ -12,7 +14,7 @@ In this file we define `FormalMultilinearSeries 𝕜 E F` to be a family of `n`-
 all `n`, designed to model the sequence of derivatives of a function. In other files we use this
 notion to define `C^n` functions (called `contDiff` in `mathlib`) and analytic functions.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
@@ -21,6 +23,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 multilinear, formal series
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -46,14 +50,7 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E[×n]→L[𝕜] F
--- The `AddCommMonoid` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| AddCommMonoid <| ∀ n : ℕ, E[×n]→L[𝕜] F
-
-instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
-  ⟨0⟩
+deriving AddCommMonoid, Inhabited
 
 section Module
 
@@ -203,7 +200,7 @@ def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : Form
 theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
     (p.unshift z).shift = p := by
   ext1 n
-  simp [shift, unshift]
+  simp only [shift, Nat.succ_eq_add_one, unshift]
   exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
 
 end FormalMultilinearSeries
@@ -312,7 +309,7 @@ theorem mkPiRing_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
   convert (p n).toMultilinearMap.map_smul_univ y 1
-  simp only [Pi.one_apply, Algebra.id.smul_eq_mul, mul_one]
+  simp only [Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
   rw [← mkPiRing_coeff_eq p, ContinuousMultilinearMap.mkPiRing_eq_zero_iff]
@@ -379,9 +376,6 @@ theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField �
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F}
     {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
-
-@[deprecated (since := "2025-06-23")]
-alias constFormalMultilinearSeries_apply := constFormalMultilinearSeries_apply_of_nonzero
 
 @[simp]
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]

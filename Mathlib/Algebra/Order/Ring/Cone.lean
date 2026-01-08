@@ -3,8 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Group.Cone
-import Mathlib.Algebra.Ring.Subsemiring.Order
+module
+
+public import Mathlib.Algebra.Order.Group.Cone
+public import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
 # Construct ordered rings from rings with a specified positive cone.
@@ -16,6 +18,8 @@ in terms of the subset of non-negative elements.
 We also provide constructors that convert between
 cones in rings and the corresponding ordered rings.
 -/
+
+@[expose] public section
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
 class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R] : Prop
@@ -67,9 +71,11 @@ def nonneg : RingCone T where
 @[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-instance nonneg.isMaxCone {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
-    IsMaxCone (nonneg T) where
-  mem_or_neg_mem' := mem_or_neg_mem (AddGroupCone.nonneg T)
+instance nonneg.hasMemOrNegMem {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
+    HasMemOrNegMem (nonneg T) where
+  mem_or_neg_mem := mem_or_neg_mem (AddGroupCone.nonneg T)
+
+@[deprecated (since := "2025-08-21")] alias nonneg.isMaxCone := nonneg.hasMemOrNegMem
 
 end RingCone
 

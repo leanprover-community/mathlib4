@@ -3,7 +3,9 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # Polynomials supported by a set of variables
@@ -19,6 +21,8 @@ This file contains the definition and lemmas about `MvPolynomial.supported`.
 ## Tags
 variables, polynomial, vars
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -92,7 +96,7 @@ theorem supported_empty : supported R (∅ : Set σ) = ⊥ := by simp [supported
 variable {s}
 
 theorem supported_mono (st : s ⊆ t) : supported R s ≤ supported R t :=
-  Algebra.adjoin_mono (Set.image_subset _ st)
+  Algebra.adjoin_mono (Set.image_mono st)
 
 @[simp]
 theorem X_mem_supported [Nontrivial R] {i : σ} : X i ∈ supported R s ↔ i ∈ s := by

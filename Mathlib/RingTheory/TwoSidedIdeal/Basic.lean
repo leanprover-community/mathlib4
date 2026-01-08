@@ -3,11 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.RingTheory.Congruence.Opposite
 
 /-!
 # Two Sided Ideals
@@ -23,6 +24,8 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap
 
@@ -52,7 +55,7 @@ instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
 
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
-  coe_injective'  := by
+  coe_injective' := by
     rintro ⟨t₁⟩ ⟨t₂⟩ (h : {x | _} = {x | _})
     congr 1
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩

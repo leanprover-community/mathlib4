@@ -3,11 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Christian Merten, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.Ideal.GoingDown
-import Mathlib.RingTheory.Ideal.Height
-import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Nakayama
+module
+
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Ideal.GoingDown
+public import Mathlib.RingTheory.Ideal.Height
+public import Mathlib.RingTheory.Localization.Submodule
+public import Mathlib.RingTheory.Nakayama
 
 /-!
 # Krull's Height Theorem
@@ -37,6 +39,8 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   `p` has height no greater than `n` if and only if it is a minimal ideal over some ideal generated
   by no more than `n` elements.
 -/
+
+@[expose] public section
 
 section
 
@@ -246,12 +250,18 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
 
-lemma Ideal.height_le_card_of_mem_minimalPrimes {p : Ideal R} {s : Finset R}
+lemma Ideal.height_le_card_of_mem_minimalPrimes_span_finset {p : Ideal R} {s : Finset R}
     (hI : p ∈ (Ideal.span s).minimalPrimes) :
     p.height ≤ s.card := by
   trans (Cardinal.toENat (Submodule.spanRank (Ideal.span (s : Set R))))
   · exact Ideal.height_le_spanRank_toENat_of_mem_minimal_primes _ _ hI
   · simpa using Submodule.spanRank_span_le_card (s : Set R)
+
+lemma Ideal.height_le_card_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
+    (hs : s.Finite) (hI : p ∈ (Ideal.span s).minimalPrimes) :
+    p.height ≤ s.ncard := by
+  rw [s.ncard_eq_toFinset_card hs]
+  exact Ideal.height_le_card_of_mem_minimalPrimes_span_finset (by simpa)
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
@@ -338,8 +348,10 @@ variable {S : Type*} [CommRing S] [Algebra R S]
 /--
 If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
 the height of the image of `P` in `S ⧸ p S`.
-Equality holds if `S` satisfies going-down as an `R`-algebra.
+Equality holds if `S` satisfies going-down as an `R`-algebra
+(see `Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown`).
 -/
+@[stacks 00OM]
 lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) [p.IsPrime]
       (P : Ideal S) [P.IsPrime] [P.LiesOver p] :
     P.height ≤ p.height +
@@ -354,16 +366,17 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
     refine Set.SurjOn.mono subset_rfl hsP'sub fun x hx ↦ ?_
     obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
     rw [SetLike.mem_coe, Ideal.mem_quotient_iff_mem] at hx
-    use y, hx
-    rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
-  obtain ⟨o, himgo, hcardo, ho⟩ := s'.exists_image_eq_and_card_le_of_surjOn (P : Set S) this
+    · use y, hx
+    · rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
+  obtain ⟨o, ho, hinj, himgo⟩ := s'.exists_subset_injOn_image_eq_of_surjOn (P : Set S) this
   let t : Finset S := Finset.image (algebraMap R S) s ∪ o
   suffices h : P.height ≤ t.card by
     rw [← heq, ← heq']
     apply le_trans h
     norm_cast
-    exact le_trans (Finset.card_union_le _ _) (add_le_add Finset.card_image_le hcardo)
-  refine Ideal.height_le_card_of_mem_minimalPrimes ?_
+    refine le_trans (Finset.card_union_le _ _) (add_le_add Finset.card_image_le ?_)
+    rw [← himgo, Finset.card_image_of_injOn hinj]
+  refine Ideal.height_le_card_of_mem_minimalPrimes_span_finset ?_
   have : Ideal.span t = Ideal.map (algebraMap R S) (.span s) ⊔ .span o := by
     simp [t, Ideal.span_union, Ideal.map_span]
   refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
@@ -375,6 +388,7 @@ If `S` satisfies going-down as an `R`-algebra and `P` lies over `p`, the height 
 to the height of `p` plus the height of the image of `P` in `S ⧸ p S`
 (Matsumura 13.B Th. 19 (2)).
 -/
+@[stacks 00ON]
 lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S]
     [Algebra.HasGoingDown R S] (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] :
     P.height = p.height +
@@ -383,13 +397,14 @@ lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S
   obtain ⟨lp, hlp, hlenp⟩ := p.exists_ltSeries_length_eq_height
   obtain ⟨lq, hlq, hlenq⟩ :=
     (P.map (Quotient.mk (p.map (algebraMap R S)))).exists_ltSeries_length_eq_height
-  let l' : LTSeries (PrimeSpectrum S) := lq.map ((Quotient.mk (p.map (algebraMap R S))).specComap)
-    (RingHom.strictMono_specComap_of_surjective Quotient.mk_surjective)
+  let l' : LTSeries (PrimeSpectrum S) :=
+    lq.map (PrimeSpectrum.comap (Quotient.mk (p.map (algebraMap R S))))
+      (RingHom.strictMono_comap_of_surjective Quotient.mk_surjective)
   have : l'.head.asIdeal.LiesOver lp.last.asIdeal := by
     simp only [LTSeries.head_map, hlp, l']
     refine ⟨?_⟩
     refine le_antisymm ?_ ?_
-    · rw [← map_le_iff_le_comap, ← map_le_iff_le_comap]
+    · rw [← map_le_iff_le_comap, PrimeSpectrum.comap_asIdeal, ← map_le_iff_le_comap]
       simp
     · conv_rhs => rw [LiesOver.over (p := p) (P := P), under_def]
       refine comap_mono (le_trans (comap_mono (lq.head_le_last)) ?_)
