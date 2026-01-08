@@ -114,8 +114,6 @@ theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_compl := notMem_compl
-
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
   Set.ext fun _ => mem_compl
