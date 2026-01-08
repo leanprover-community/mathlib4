@@ -223,7 +223,7 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
 
 /-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
-lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y]
+lemma Topology.IsInducing.isNowhereDense_image [TopologicalSpace Y] {f : X → Y}
     (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
   rw [IsNowhereDense.eq_1] at *
   contrapose! h
