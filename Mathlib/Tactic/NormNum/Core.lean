@@ -84,7 +84,7 @@ initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums 
 def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := do
   if e.isRawNatLit then
     let lit : Q(ℕ) := e
-    return .isNat (q(instAddMonoidWithOneNat) : Q(AddMonoidWithOne ℕ))
+    return .isNat (q(Nat.instAddMonoidWithOne) : Q(AddMonoidWithOne ℕ))
       lit (q(IsNat.raw_refl $lit) : Expr)
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState

@@ -79,7 +79,7 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 @[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where eval {u α} e := do
   let .app (.const ``Int.ofNat _) (n : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Int := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let sℤ : Q(AddMonoidWithOne ℤ) := q(instAddMonoidWithOne)
   let ⟨n', p⟩ ← deriveNat n sℕ
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
@@ -111,7 +111,7 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
   let .app (.const ``Int.natAbs _) (x : Q(ℤ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Int.natAbs $x := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   match ← derive (u := .zero) x with
   | .isNat    _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_pos $p)
   | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
@@ -127,7 +127,7 @@ theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
   let sα ← inferAddMonoidWithOne α
   let .app n (a : Q(ℕ)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq n q(Nat.cast (R := $α))
-  let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
+  let ⟨na, pa⟩ ← deriveNat a q(Nat.instAddMonoidWithOne)
   haveI' : $e =Q $a := ⟨⟩
   return .isNat sα na q(isNat_natCast $a $na $pa)
 
@@ -643,7 +643,7 @@ such that `norm_num` successfully recognises `a`. -/
   guard <|← withNewMCtxDepth <| isDefEq f q(Nat.succ)
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.succ $a := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit!.succ)
   haveI' : $nc =Q ($na).succ := ⟨⟩
@@ -662,7 +662,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := ℕ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a - $b := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! - nb.natLit!)
   haveI' : Nat.sub $na $nb =Q $nc := ⟨⟩
@@ -681,7 +681,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   haveI' : $e =Q $a % $b := ⟨⟩
   -- We assert that the default instance for `HMod` is `Nat.mod` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℕ))
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! % nb.natLit!)
   haveI' : Nat.mod $na $nb =Q $nc := ⟨⟩
@@ -700,7 +700,7 @@ def evalNatDiv : NormNumExt where eval {u α} e := do
   haveI' : $e =Q $a / $b := ⟨⟩
   -- We assert that the default instance for `HDiv` is `Nat.div` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℕ))
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! / nb.natLit!)
   haveI' : Nat.div $na $nb =Q $nc := ⟨⟩
@@ -720,7 +720,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   -- We assert that the default instance for `Dvd` is `Nat.dvd` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(Dvd.dvd (α := ℕ))
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
   match nb.natLit! % na.natLit! with
   | 0 =>
