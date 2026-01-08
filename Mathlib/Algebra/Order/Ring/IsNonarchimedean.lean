@@ -195,6 +195,25 @@ lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f
     · exact .inl h₁
     · exact .inr <| le_trans h₂ hind
 
+open Finset in
+lemma apply_sum_eq_of_lt {α β F : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] {f : F} (nonarch : IsNonarchimedean f) {s : Finset β} {l : β → α}
+    {k : β} (hk : k ∈ s) (hmax : ∀ j ∈ s, j ≠ k → f (l j) < f (l k)) :
+    f (∑ i ∈ s, l i) = f (l k) := by
+  have : s.Nonempty := by use k
+  revert k
+  induction this using Nonempty.cons_induction with
+  | singleton a => simp_all
+  | cons a s _ hs _ =>
+    intro k hk hmax
+    by_cases ha : k = a
+    · rw [sum_cons, ha]
+      apply add_eq_left_of_lt nonarch
+      grw [apply_sum_le_sup_of_isNonarchimedean nonarch hs]
+      grind [sup'_lt_iff]
+    · simp only [mem_cons, false_or, forall_eq_or_imp, ha] at hk hmax
+      grind [add_eq_right_of_lt nonarch]
+
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
   `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/

@@ -6,6 +6,10 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.RingTheory.PowerSeries.GaussNorm
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Gauss norm for polynomials
@@ -123,6 +127,155 @@ lemma le_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c
   rw [← gaussNorm_coe_powerSeries _ _ hc, ← coeff_coe]
   apply PowerSeries.le_gaussNorm
   simpa using aux_bdd v p
+
+@[simp]
+lemma gaussNorm_c_eq_zero [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] :
+    p.gaussNorm v 0 = v (p.coeff 0) := by
+  have : (fun i ↦ v (p.coeff i) * 0 ^ i) = fun i ↦ if i = 0 then v (p.coeff 0) else 0 := by
+      aesop
+  rcases eq_or_ne (p.coeff 0) 0 with _ | hcoeff0
+  · simp_all [gaussNorm]
+  · have : p.support.Nonempty := by
+      use 0
+      simp [hcoeff0]
+    apply le_antisymm
+    · aesop (add norm (by simp [gaussNorm, Finset.sup'_le_iff]))
+    · grind [p.le_gaussNorm v (le_refl 0) 0]
+
+/-- There exists a minimal index `i` such that the Gauss norm of `p` at `c` is attained at `i`. -/
+lemma exists_min_eq_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (p : R[X]) (hc : 0 ≤ c) :
+    ∃ i, p.gaussNorm v c = v (p.coeff i) * c ^ i ∧
+    ∀ j, j < i →  v (p.coeff j) * c ^ j < p.gaussNorm v c := by
+  have h_nonempty : {i | gaussNorm v c p = v (p.coeff i) * c ^ i}.Nonempty := by
+    obtain ⟨i, hi⟩ := exists_eq_gaussNorm v c p
+    exact ⟨i, Set.mem_setOf.mpr hi⟩
+  refine ⟨Nat.find h_nonempty, Nat.find_spec h_nonempty, ?_⟩
+  intro j hj_lt
+  simp only [Nat.lt_find_iff, Set.mem_setOf_eq] at hj_lt
+  exact lt_of_le_of_ne (le_gaussNorm v _ hc j) fun a ↦ hj_lt j (Nat.le_refl j) a.symm
+
+/-- The Gauss Norm is nonarchimedean if `v` is nonarchimedean. -/
+theorem isNonarchimedean_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
+    (hna : IsNonarchimedean v) {c : ℝ} (hc : 0 ≤ c) : IsNonarchimedean (gaussNorm v c) := by
+  intro p q
+  rcases eq_or_ne p 0 with hp | _
+  · simp [hp]
+  rcases eq_or_ne q 0 with hq | _
+  · simp [hq]
+  rcases eq_or_ne (p + q) 0 with hpq | hpq
+  · simp [hpq, hc, gaussNorm_nonneg]
+  simp only [gaussNorm, support_nonempty, ne_eq, hpq, not_false_eq_true, ↓reduceDIte,
+    Finset.sup'_le_iff]
+  intro i _
+  calc
+  v ((p + q).coeff i) * c ^ i
+    ≤ max (v (p.coeff i)) (v (q.coeff i)) * c ^ i := by
+    rw [coeff_add]
+    gcongr
+    exact hna (p.coeff i) (q.coeff i)
+  _ = max (v (p.coeff i) * c ^ i) (v (q.coeff i) * c ^ i) := by
+    rw [max_mul_of_nonneg _ _ (pow_nonneg hc _)]
+  _ ≤ max (gaussNorm v c p) (gaussNorm v c q) := by
+    apply max_le_max <;>
+    exact le_gaussNorm v _ hc i
+
+open Finset in
+/-- The Gauss Norm is submultiplicative if `v` is nonarchimedean. -/
+theorem gaussNorm_mul_le_mul_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
+    [MulHomClass F R ℝ] (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 ≤ c) :
+    (p * q).gaussNorm v c ≤ p.gaussNorm v c * q.gaussNorm v c := by
+  rcases eq_or_ne (p * q) 0 with hpq | hpq
+  · simp [hpq, hc, gaussNorm_nonneg, mul_nonneg]
+  have h_supp_p : p.support.Nonempty := support_nonempty.mpr <| left_ne_zero_of_mul hpq
+  have h_supp_q : q.support.Nonempty := support_nonempty.mpr <| right_ne_zero_of_mul hpq
+  simp only [gaussNorm, support_nonempty, ne_eq, hpq, not_false_eq_true, ↓reduceDIte, h_supp_p,
+    h_supp_q, sup'_le_iff, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  intro i _
+  obtain ⟨j, _, _⟩ := IsNonarchimedean.finset_image_add_of_nonempty hna _ nonempty_range_add_one
+  calc
+  v (∑ j ∈ range (i + 1), p.coeff j * q.coeff (i - j)) * c ^ i
+  _ ≤ v (p.coeff j * q.coeff (i - j)) * c ^ i := by gcongr
+  _ = (v (p.coeff j) * c ^ j) * (v (q.coeff (i - j)) * c ^ (i - j)) := by
+      have : c ^ j * c ^ (i - j) = c ^ i := by simp_all [← pow_add]
+      grind
+  _ ≤ (p.support.sup' _ fun i ↦ v (p.coeff i) * c ^ i)
+    * q.support.sup' _ fun i ↦ v (q.coeff i) * c ^ i := by
+      have hp_le := p.le_gaussNorm v hc j
+      have hq_le := q.le_gaussNorm v hc (i - j)
+      have := p.gaussNorm_nonneg v hc
+      simp_all only [gaussNorm, ↓reduceDIte]
+      gcongr
+
+open Finset in
+/-- If `v` is nonarchimedean the Gauss norm of a product is at least the product of the Gauss norms.
+-/
+theorem mul_gaussNorm_le_gaussNorm_mul {R F : Type*} [Ring R] [FunLike F R ℝ] [ZeroHomClass F R ℝ]
+    [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] [AddGroupSeminormClass F R ℝ]
+    {v : F} (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 < c) :  ---set 1 ≤ c
+    p.gaussNorm v c * q.gaussNorm v c ≤ (p * q).gaussNorm v c := by
+  have hc0 : 0 ≤ c := le_of_lt hc
+  obtain ⟨i, hi_p, hlt_p⟩ := p.exists_min_eq_gaussNorm v hc0
+  obtain ⟨j, hj_q, hlt_q⟩ := q.exists_min_eq_gaussNorm v hc0
+  -- i and j are the minimal indices where the gauss norms are attained
+  wlog hvpq : v (p.coeff i) ≠ 0 ∧ v (q.coeff j) ≠ 0
+  · grind [mul_mul_mul_comm, gaussNorm_nonneg]
+  have := hvpq.1
+  have := hvpq.2
+  apply le_of_eq_of_le _ <| (p * q).le_gaussNorm v hc0 (i + j)
+  -- gaussNorm v c p * gaussNorm v c q is actually equal to v ((p * q).coeff (i + j)) * c ^ (i + j)
+  rw [hi_p, hj_q, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+    IsNonarchimedean.apply_sum_eq_of_lt hna (k := i) (by simp)]
+  · grind
+  intro x hx hneq
+  apply lt_of_mul_lt_mul_right _ <| pow_nonneg hc0 (i + j)
+  convert_to v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
+    v (p.coeff i) * v (q.coeff j) * c ^ (i + j)
+  · have : x + (i + j - x) = i + j := by simp_all
+    grind
+  · simp
+  rcases lt_or_gt_of_ne hneq
+  · calc
+    v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x))
+    _ ≤ v (p.coeff x) * c ^ x * gaussNorm v c q := by
+        gcongr
+        exact q.le_gaussNorm v hc0 (i + j - x)
+    _ = v (p.coeff x) * c ^ x * (v (q.coeff j) * c ^ j) := by
+        rw [hj_q]
+    _ < v (p.coeff i) * c ^ i * (v (q.coeff j) * c ^ j) := by
+        gcongr 1
+        grind
+    _ = v (p.coeff i) * v (q.coeff j) * c ^ (i + j) := by
+        ring
+  · calc
+    v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x))
+    _ ≤ gaussNorm v c p * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) := by
+        gcongr
+        exact p.le_gaussNorm v hc0 x
+    _ = v (p.coeff i) * c ^ i * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) := by
+        rw [hi_p]
+    _ < v (p.coeff i) * c ^ i * (v (q.coeff j) * c ^ j) := by
+        gcongr 1
+        grind
+    _ = v (p.coeff i) * v (q.coeff j) * c ^ (i + j) := by
+        ring
+
+/-- If `v` is nonarchimedean the Gauss norm of a product is the product of the Gauss norms. -/
+theorem gaussNorm_mul {R F : Type*} [Ring R] [FunLike F R ℝ] [ZeroHomClass F R ℝ]
+    [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] [AddGroupSeminormClass F R ℝ] {v : F}
+    (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 < c) :
+    (p * q).gaussNorm v c = p.gaussNorm v c * q.gaussNorm v c :=
+  le_antisymm (gaussNorm_mul_le_mul_gaussNorm v hna p q (le_of_lt hc))
+  <| mul_gaussNorm_le_gaussNorm_mul hna p q hc
+
+instance gaussNorm_isAbsoluteValue {R F : Type*} [Ring R] [FunLike F R ℝ] [ZeroHomClass F R ℝ]
+    [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] [AddGroupSeminormClass F R ℝ] {v : F}
+    (hna : IsNonarchimedean v) (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) :
+    IsAbsoluteValue (gaussNorm v c) := {
+  abv_nonneg' p := p.gaussNorm_nonneg v <| le_of_lt hc
+  abv_eq_zero' := gaussNorm_eq_zero_iff v _ h_eq_zero hc
+  abv_add' p q := by
+    grind [isNonarchimedean_gaussNorm v hna (le_of_lt hc) p q, gaussNorm_nonneg]
+  abv_mul' p q := gaussNorm_mul hna p q hc}
 
 end Polynomial
 
