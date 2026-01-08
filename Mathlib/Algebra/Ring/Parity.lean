@@ -243,12 +243,12 @@ lemma odd_sub_one : Odd (a - 1) ↔ Even a :=
   ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
 
 @[simp]
-lemma odd_add_two : Odd (a + 2) ↔ Odd a :=
-  by rw [← one_add_one_eq_two, ← add_assoc, odd_add_one, even_add_one]
+lemma odd_add_two : Odd (a + 2) ↔ Odd a := by
+  rw [← one_add_one_eq_two, ← add_assoc, odd_add_one, even_add_one]
 
 @[simp]
-lemma odd_sub_two : Odd (a - 2) ↔ Odd a :=
-  by rw [← odd_add_two (a := a - 2), add_comm_sub, sub_self, add_zero]
+lemma odd_sub_two : Odd (a - 2) ↔ Odd a := by
+  rw [← odd_add_two (a := a - 2), add_comm_sub, sub_self, add_zero]
 
 end Ring
 

@@ -37,9 +37,7 @@ instance : InfSet (Πₗ i, α i) where
 
 theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.1 i := by
-  dsimp [sInf]
-  rw [inf]
-  rfl
+  simp [sInf, inf]
 
 theorem sInf_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (he : e ∈ s) (h : ∀ j < i, e j = sInf s j) : sInf s i ≤ e i := by

@@ -63,12 +63,11 @@ lemma oreEqv_eq_r : (OreLocalization.oreEqv S M).r = r S M := by
   · rintro ⟨u, v, h₁, h₂⟩
     use u
     simp only [Submonoid.smul_def, smul_smul, h₂]
-    rw [mul_comm, mul_smul, ← h₁, mul_comm, mul_smul]
-    rfl
+    rw [mul_comm, mul_smul, ← h₁, mul_comm, mul_smul, Submonoid.smul_def]
   · rintro ⟨u, hu⟩
     use u * a.2, u * b.2
     rw [mul_smul, ← hu, mul_smul, Submonoid.coe_mul, mul_assoc, mul_assoc, mul_comm (a.2 : R)]
-    exact ⟨rfl, rfl⟩
+    simp [Submonoid.smul_def]
 
 theorem r.isEquiv : IsEquiv _ (r S M) :=
   { refl := fun ⟨m, s⟩ => ⟨1, by rw [one_smul]⟩
@@ -371,8 +370,7 @@ theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk 
 
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
   refine (OreLocalization.smul_oreDiv _ _ _).trans ?_
-  change (r • 1 : R) • m /ₒ s = _
-  rw [smul_assoc, one_smul]
+  simp
 
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
@@ -448,11 +446,13 @@ noncomputable instance (priority := 900) algebra' {A : Type*} [Semiring A] [Alge
   algebraMap := numeratorRingHom.comp (algebraMap R A)
   commutes' r x := by
     induction x using induction_on with | _ a s => _
-    change mk _ _ * mk _ _ = mk _ _ * mk _ _
+    simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      Function.comp_apply]
     rw [mk_mul_mk, mk_mul_mk, mul_comm, Algebra.commutes]
   smul_def' r x := by
     induction x using induction_on with | _ a s => _
-    change _ • mk _ _ = mk _ _ * mk _ _
+    simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      Function.comp_apply]
     rw [mk_mul_mk, smul'_mk, Algebra.smul_def, one_mul]
 
 private lemma example_oreLocalizationInstAlgebra_eq_localizedModuleAlgebra' :

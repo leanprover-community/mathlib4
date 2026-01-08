@@ -24,7 +24,7 @@ if `C` is a filtered category, there exists a final functor `α ⥤ C` from
 a nonempty directed type (`IsFiltered.isDirected`).
 
 Filtered colimits are often better behaved than arbitrary colimits.
-See `CategoryTheory/Limits/Types` for some details.
+See `Mathlib/CategoryTheory/Limits/Types/` for some details.
 
 Filtered categories are nice because colimits indexed by filtered categories tend to be
 easier to describe than general colimits (and more often preserved by functors).
@@ -49,12 +49,12 @@ All of the above API, except for the `bowtie` and the `tulip`, is also provided 
 categories.
 
 ## See also
-In `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit` we show that filtered colimits
-commute with finite limits.
+In `Mathlib/CategoryTheory/Limits/FilteredColimitCommutesFiniteLimit.lean` we show that filtered
+colimits commute with finite limits.
 
 There is another characterization of filtered categories, namely that whenever `F : J ⥤ C` is a
 functor from a finite category, there is `X : C` such that `Nonempty (limit (F.op ⋙ yoneda.obj X))`.
-This is shown in `CategoryTheory.Limits.Filtered`.
+This is shown in `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 
 -/
 

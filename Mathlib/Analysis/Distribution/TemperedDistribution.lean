@@ -94,7 +94,7 @@ set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
-    toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+  toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
 set_option backward.privateInPublic true in
 @[simp]

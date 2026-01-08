@@ -17,7 +17,7 @@ public import Mathlib.Topology.MetricSpace.MetricSeparated
 In this file we define the `d`-dimensional Hausdorff measure on an (extended) metric space `X` and
 the Hausdorff dimension of a set in an (extended) metric space. Let `μ d δ` be the maximal outer
 measure such that `μ d δ s ≤ (ediam s) ^ d` for every set of diameter less than `δ`. Then
-the Hausdorff measure `μH[d] s` of `s` is defined as `⨆ δ > 0, μ d δ s`. By Carathéodory theorem
+the Hausdorff measure `μH[d] s` of `s` is defined as `⨆ δ > 0, μ d δ s`. By Carathéodory's theorem
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, this is a Borel measure on `X`.
 
 The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
@@ -40,7 +40,7 @@ applied to `MeasureTheory.extend m`.
 
 We also define a predicate `MeasureTheory.OuterMeasure.IsMetric` which says that an outer measure
 is additive on metric separated pairs of sets: `μ (s ∪ t) = μ s + μ t` provided that
-`⨅ (x ∈ s) (y ∈ t), edist x y ≠ 0`. This is the property required for the Carathéodory theorem
+`⨅ (x ∈ s) (y ∈ t), edist x y ≠ 0`. This is the property required for Carathéodory's theorem
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, so we prove this theorem for any
 metric outer measure, then prove that outer measures constructed using `mkMetric'` are metric outer
 measures.
@@ -126,7 +126,7 @@ namespace OuterMeasure
 /-!
 ### Metric outer measures
 
-In this section we define metric outer measures and prove Carathéodory theorem: a metric outer
+In this section we define metric outer measures and prove Carathéodory's theorem: a metric outer
 measure has the Carathéodory property.
 -/
 
@@ -154,8 +154,8 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
       Metric.AreSeparated.finset_iUnion_right fun j hj =>
         hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
 
-/-- Carathéodory theorem. If `m` is a metric outer measure, then every Borel measurable set `t` is
-Carathéodory measurable: for any (not necessarily measurable) set `s` we have
+/-- **Carathéodory's theorem**. If `m` is a metric outer measure, then every Borel measurable set
+`t` is Carathéodory measurable: for any (not necessarily measurable) set `s` we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
 theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory := by
   rw [borel_eq_generateFrom_isClosed]
