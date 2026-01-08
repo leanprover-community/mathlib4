@@ -23,7 +23,7 @@ Implement a `Traversable` instance for `Tree`.
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
 
-@[expose] public section
+public section
 
 namespace Tree
 
