@@ -91,13 +91,12 @@ meta def Lean.Name.willRoundTrip (n : Name) : Bool :=
 where
   go : Lean.Name → Bool
     | .str n s =>
-      /-
-        names with newlines may not round trip; for convenience, we consider all names
-        with newlines to be non-roundtrippable, though technically some might
-      -/
-        && !s.contains (c == '\n')
+        !s.contains (fun c =>
+          /- names with newlines may not round trip; for convenience, we consider all names
+          with newlines to be non-roundtrippable, though technically some might -/
+          c == '\n'
         -- names containing the end escape character `»` do not roundtrip
-        && !s.any isIdEndEscape
+          || isIdEndEscape c)
         && go n
     | .num .. => false -- names with any numeric components do not roundtrip
     | .anonymous => true -- we check that the entire name is not anonymous at the top level
