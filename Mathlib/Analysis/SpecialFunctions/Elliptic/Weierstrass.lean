@@ -930,6 +930,7 @@ end Analytic
 
 section Relation
 
+/-- The eisenstein series associated to a lattice. This is the sum `∑ l⁻ʳ` over `l ∈ L`. -/
 def G (n : ℕ) : ℂ := ∑' l : L.lattice, (l ^ n)⁻¹
 
 @[simp]
@@ -941,10 +942,14 @@ lemma G_eq_zero_of_odd (n : ℕ) (hn : Odd n) : L.G n = 0 := by
   congr with l
   simp only [Equiv.neg_apply, NegMemClass.coe_neg, neg_inv, hn.neg_pow]
 
+/-- The lattice invariant `g₂ := 60 G₄`. -/
 def g₂ : ℂ := 60 * L.G 4
 
+/-- The lattice invariant `g₃ := 140 G₆`. -/
 def g₃ : ℂ := 140 * L.G 6
 
+/-- (Implementation detail) The relation that `℘'` and `℘` satisfies.
+We will show that this is constant zero. See `PeriodPair.relation_eq_zero` -/
 def relation (z : ℂ) : ℂ :=
   letI := Classical.propDecidable
   if z ∈ L.lattice then 0 else ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃
