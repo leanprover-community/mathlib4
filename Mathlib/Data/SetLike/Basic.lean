@@ -207,7 +207,7 @@ lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
 end SetLike
 
 /-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving. -/
-class IsConcreteLE (A B : Type*) [SetLike A B] [LE A] where
+class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
   /-- The coercion from a `SetLike` type preserves the ordering. -/
   protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
 
