@@ -31,25 +31,14 @@ lemma eq2 {α : Type*} {β : Type*} [SemilatticeSup α] [LinearOrder β] {s : Fi
 
 end
 
-
-open Set
-open scoped BigOperators
-open MeasureTheory
+open MeasureTheory Set
 
 noncomputable section
 namespace NumericalIntegration
 
-lemma T1 {A B : ℝ} : (A + B) / 2 ∈ uIcc A B := by
-  rw [mem_uIcc]
-  by_cases h : A ≤ B
-  · left
-    exact ⟨by linarith, by linarith⟩
-  · right
-    exact ⟨by linarith, by linarith⟩
-
-lemma useful {F : ℝ → ℝ} {h : ℝ} (x : ℝ) (hh : 0 < h) (hF : ContDiff ℝ 3 F) :
-    ∃ ξ1 ∈ Ioo x (x + h), F (x + h) - (F x + h * deriv F x +
-      1 / 2 * h ^ 2 * iteratedDeriv 2 F x) = iteratedDeriv 3 F ξ1 * h ^ 3 / 6 := by
+lemma useful {F : ℝ → ℝ} {h : ℝ} (x : ℝ) (hh : 0 < h) (hF : ContDiffOn ℝ 3 F (Icc x (x + h)))
+    (hx : ContDiffAt ℝ 2 F x) : ∃ ξ1 ∈ Ioo x (x + h), F (x + h) - (F x + h * deriv F x +
+    1 / 2 * h ^ 2 * iteratedDeriv 2 F x) = iteratedDeriv 3 F ξ1 * h ^ 3 / 6 := by
   have hm : x < x + h := by simpa using (half_lt_self hh)
   have hm_mem : x ∈ Icc x (x + h) := ⟨le_rfl, le_of_lt hm⟩
   have hUD : UniqueDiffOn ℝ (Icc x (x + h)) := uniqueDiffOn_Icc hm
@@ -58,17 +47,60 @@ lemma useful {F : ℝ → ℝ} {h : ℝ} (x : ℝ) (hh : 0 < h) (hF : ContDiff �
   norm_num [sub_half] at hξ1_rem
   refine ⟨ξ1, hξ1, ?_⟩
   simp only [one_div, ← hξ1_rem, sub_right_inj]
-  rw [(hF.contDiffAt.differentiableAt (by simp)).derivWithin (uniqueDiffOn_Icc hm x hm_mem),
-    iteratedDerivWithin_eq_iteratedDeriv hUD ((hF.contDiffAt).of_le (by norm_num)) hm_mem]
+  congr
+  · refine Eq.symm (DifferentiableAt.derivWithin ?_ (hUD x hm_mem))
+    exact hx.differentiableAt (by norm_num)
+  · exact Eq.symm (iteratedDerivWithin_eq_iteratedDeriv hUD hx hm_mem)
 
-theorem midpoint_aux {F : ℝ → ℝ} {h : ℝ} (hh : 0 < h) (hF : ContDiff ℝ 3 F) :
+theorem midpoint_aux {F : ℝ → ℝ} {h : ℝ} (hh : 0 < h) (hF : ContDiffOn ℝ 3 F (Icc 0 h))
+    (h0 : ContDiffAt ℝ 2 F 0) :
     ∃ ξ ∈ Ioo (0 : ℝ) h, F h - F 0 - (deriv F (h/2)) * h = (h^3 / 24) * (iteratedDeriv 3 F ξ) := by
-  have hm : h / 2 < h := by simpa using (half_lt_self hh)
-  have hH : ContDiff ℝ 3 (fun x => F (h - x)) := by fun_prop
-  obtain ⟨ξ1, hξ1, hξ1_rem⟩ := useful (h/2) (half_pos hh) hF
-  obtain ⟨ζ, hζ, hζ_rem⟩ := useful (F := fun x => F (h - x)) (h/2) (half_pos hh) (by fun_prop)
+  obtain ⟨ξ1, hξ1, hξ1_rem⟩ := useful (h/2) (half_pos hh) (hF.mono (by grind))
+    (by
+      have hcdW3 : ContDiffWithinAt ℝ 3 F (Icc (0:ℝ) h) (h / 2) :=
+        hF.contDiffWithinAt (by grind)
+      have hcdW2 : ContDiffWithinAt ℝ 2 F (Icc (0:ℝ) h) (h / 2) :=
+        hcdW3.of_le (by norm_num)
+      exact hcdW2.contDiffAt (by simpa))
+  obtain ⟨ζ, hζ, hζ_rem⟩ := useful (F := fun x => F (h - x)) (h/2) (half_pos hh)
+    (by
+      simp only [add_halves]
+      have hg : ContDiffOn ℝ 3 (fun x : ℝ => h - x) (Icc (h / 2) h) := by
+        simpa [sub_eq_add_neg] using ((contDiff_const.sub contDiff_id).contDiffOn :
+          ContDiffOn ℝ 3 (fun x : ℝ => h - x) (Icc (h / 2) h))
+      have hmaps : MapsTo (fun x : ℝ => h - x) (Icc (h / 2) h) (Icc (0 : ℝ) h) := by
+        intro x hx
+        rcases hx with ⟨hx1, hx2⟩
+        exact ⟨sub_nonneg.mpr hx2, by simpa using by linarith⟩
+      refine hF.comp ?_ ?_
+      · exact ContDiffOn.congr hg fun x ↦ congrFun rfl
+      · exact mapsTo_iff_subset_preimage.mpr hmaps)
+    (by
+      have hF3_at : ContDiffAt ℝ 3 F (h / 2) := by
+        have hF3_w : ContDiffWithinAt ℝ 3 F (Icc (0 : ℝ) h) (h / 2) :=
+          hF.contDiffWithinAt (by grind)
+        exact hF3_w.contDiffAt (Icc_mem_nhds (by linarith) hm)
+      have hF2_at : ContDiffAt ℝ 2 F (h / 2) :=
+        hF3_at.of_le (by norm_num)
+      have hg2_at : ContDiffAt ℝ 2 (fun x : ℝ => h - x) (h / 2) := by
+        fun_prop
+      refine ContDiffAt.comp (h / 2) ?_ hg2_at
+      simpa [sub_half])
   obtain ⟨ξ, hξ_mem, hy⟩ : (iteratedDeriv 3 F ξ1 + iteratedDeriv 3 F (h - ζ)) / 2 ∈
-    (iteratedDeriv 3 F) '' (uIcc ξ1 (h - ζ)) := intermediate_value_uIcc (by fun_prop) T1
+      (iteratedDeriv 3 F) '' (uIcc ξ1 (h - ζ)) :=
+    intermediate_value_uIcc
+    (by
+      have hcont : ContinuousOn (iteratedDeriv 3 F) (Icc (0 : ℝ) h) := by
+        sorry
+      have hhsub_Icc : (h - ζ) ∈ Icc (0 : ℝ) h := by grind
+      have hsubset : uIcc ξ1 (h - ζ) ⊆ Icc (0 : ℝ) h := by
+        intro y hy
+        have hy' : y ∈ Icc (min ξ1 (h - ζ)) (max ξ1 (h - ζ)) := by
+          simpa [uIcc] using hy
+        refine ⟨?_, ?_⟩
+        · sorry
+        · sorry
+      exact hcont.mono hsubset) (by grind [mem_uIcc])
   norm_num [-one_div, sub_half] at hξ1 hζ hξ1_rem hζ_rem
   have hξ0h : ξ ∈ Ioo (0:ℝ) h := by
     have : ξ ∈ Icc (min ξ1 (h - ζ)) (max ξ1 (h - ζ)) := by simpa [uIcc] using hξ_mem
@@ -102,7 +134,10 @@ theorem midpoint_rule_error {f : ℝ → ℝ} {a b : ℝ} (hab : a < b) (hf : Co
   have hFcont : ContDiff ℝ 3 F := (contDiff_succ_iff_deriv (n := 2) (f₂ := F)).2
       ⟨intervalIntegral.differentiable_integral_of_continuous hg.continuous, by simp,
       by simpa [hFderiv] using hg⟩
-  rcases midpoint_aux (F := F) (sub_pos.mpr hab) hFcont with ⟨ξ0, hξ0, hEq⟩
+  rcases midpoint_aux (F := F) (sub_pos.mpr hab) (ContDiff.contDiffOn hFcont)
+    (by
+      sorry)
+    with ⟨ξ0, hξ0, hEq⟩
   refine ⟨a + ξ0, by grind, ?_⟩
   have hDerivMid : deriv F (h / 2) = f ((a + b) / 2) := by
     simp [hFderiv, g, add_comm, hdef]
