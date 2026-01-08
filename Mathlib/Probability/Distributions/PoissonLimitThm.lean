@@ -77,29 +77,24 @@ lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 
 theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k))
     atTop (𝓝 (Real.exp (-r) * (r ^ k) / k.factorial)) := by
-  have h_one_sub_pow : Tendsto (fun n => (1 - p n) ^ (n - k)) atTop (𝓝 (Real.exp (-r))) :=
+  have h_one_sub_pow : Tendsto (fun n => (1 - p n) ^ (n - k)) atTop (𝓝 (Real.exp (-r))) := by
     have hneg : Tendsto (fun n => n * (-p n)) atTop (𝓝 (-r)) := by
       simpa [mul_neg] using hr.neg
     have hpow_n : Tendsto (fun n => (1 - p n) ^ n) atTop (𝓝 (Real.exp (-r))) := by
       simpa [sub_eq_add_neg] using Real.tendsto_one_add_pow_exp_of_tendsto hneg
     have h1 : Tendsto (fun n => 1 - p n) atTop (𝓝 1) := by
       simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
-    have hpow_k : Tendsto (fun n => (1 - p n) ^ k) atTop (𝓝 1) := by
-      simpa using h1.pow k
     have hinv_k : Tendsto (fun n => ((1 - p n) ^ k)⁻¹) atTop (𝓝 1) := by
-      simpa using (hpow_k.inv₀ (by norm_num))
+      simpa only [one_pow, inv_one] using (h1.pow k).inv₀ (by norm_num)
     have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
       (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by norm_num))
-    have hone_ne : ∀ᶠ n in atTop, (1 - p n) ≠ 0 := by
-      filter_upwards [hp_lt_half] with n hn
-      exact ne_of_gt (sub_pos.2 (lt_trans hn (by norm_num)))
     have hEq : (fun n => (1 - p n) ^ (n - k))
           =ᶠ[atTop] (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
-      filter_upwards [eventually_ge_atTop k, hone_ne] with n hn hne
-      exact pow_sub₀ (1 - p n) hne hn
+      filter_upwards [eventually_ge_atTop k, hp_lt_half] with n hn hne
+      rw [pow_sub₀ _ (by linarith) hn]
     have : Tendsto (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) atTop (𝓝 (Real.exp (-r))) := by
       simpa [mul_assoc] using (hpow_n.mul hinv_k)
-    Tendsto.congr' (EventuallyEq.symm hEq) this
+    exact Tendsto.congr' (EventuallyEq.symm hEq) this
   simpa [mul_assoc, mul_left_comm, mul_comm, div_eq_mul_inv] using
     (tendsto_choose_mul_pow_atTop k hr).mul h_one_sub_pow
 
