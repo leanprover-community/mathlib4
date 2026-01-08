@@ -146,11 +146,9 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
   sInf_le s a ha _ := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun h ↦ h a ha
+    simpa using fun h ↦ h a ha
   le_sInf s a ha b := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun a i hi ↦ ha i hi a
+    simpa using fun a i hi ↦ ha i hi a
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩

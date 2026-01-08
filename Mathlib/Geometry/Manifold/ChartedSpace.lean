@@ -187,6 +187,9 @@ instance (H : Type u) [TopologicalSpace H] :
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
+instance : PartialOrder (StructureGroupoid H) :=
+  .ofSetLike (StructureGroupoid H) (OpenPartialHomeomorph H H)
+
 instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
@@ -436,8 +439,7 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
   le_top _ _ _ := ⟨trivial, trivial⟩
 
 instance : CompleteLattice (StructureGroupoid H) :=
-  { SetLike.instPartialOrder,
-    completeLatticeOfInf _ (by
+  { completeLatticeOfInf _ (by
       exact fun s =>
       ⟨fun S Ss F hF => mem_iInter₂.mp hF S Ss,
       fun T Tl F fT => mem_iInter₂.mpr (fun i his => Tl his fT)⟩) with

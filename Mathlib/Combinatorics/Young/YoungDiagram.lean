@@ -213,7 +213,7 @@ theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose �
 -- This is effectively both directions of `transpose_le_iff` below.
 protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose ≤ ν) :
     μ ≤ ν.transpose := fun c hc => by
-  simp only [mem_cells, mem_transpose]
+  simp only [mem_transpose]
   apply h_le
   simpa
 

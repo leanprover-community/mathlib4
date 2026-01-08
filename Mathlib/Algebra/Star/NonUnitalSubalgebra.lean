@@ -907,31 +907,6 @@ variable (S : NonUnitalStarSubalgebra R A)
 
 section StarSubalgebra
 
-variable [StarRing R]
-variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
-
-lemma _root_.NonUnitalStarAlgHom.map_adjoin (f : F) (s : Set A) :
-    map f (adjoin R s) = adjoin R (f '' s) :=
-  Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalStarAlgebra.gi.gc
-    NonUnitalStarAlgebra.gi.gc fun _t => rfl
-
-@[simp]
-lemma _root_.NonUnitalStarAlgHom.map_adjoin_singleton (f : F) (x : A) :
-    map f (adjoin R {x}) = adjoin R {f x} := by
-  simp [NonUnitalStarAlgHom.map_adjoin]
-
-instance subsingleton_of_subsingleton [Subsingleton A] :
-    Subsingleton (NonUnitalStarSubalgebra R A) :=
-  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
-
-instance _root_.NonUnitalStarAlgHom.subsingleton [Subsingleton (NonUnitalStarSubalgebra R A)] :
-    Subsingleton (A →⋆ₙₐ[R] B) :=
-  ⟨fun f g => NonUnitalStarAlgHom.ext fun a =>
-    have : a ∈ (⊥ : NonUnitalStarSubalgebra R A) :=
-      Subsingleton.elim (⊤ : NonUnitalStarSubalgebra R A) ⊥ ▸ mem_top
-    (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
-
 /--
 The map `S → T` when `S` is a non-unital star subalgebra contained in the non-unital star
 algebra `T`.
@@ -970,6 +945,31 @@ theorem val_inclusion {S T : NonUnitalStarSubalgebra R A} (h : S ≤ T) (s : S) 
     (inclusion h s : A) = s :=
   rfl
 
+variable [StarRing R]
+variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
+variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+
+lemma _root_.NonUnitalStarAlgHom.map_adjoin (f : F) (s : Set A) :
+    map f (adjoin R s) = adjoin R (f '' s) :=
+  Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalStarAlgebra.gi.gc
+    NonUnitalStarAlgebra.gi.gc fun _t => rfl
+
+@[simp]
+lemma _root_.NonUnitalStarAlgHom.map_adjoin_singleton (f : F) (x : A) :
+    map f (adjoin R {x}) = adjoin R {f x} := by
+  simp [NonUnitalStarAlgHom.map_adjoin]
+
+instance subsingleton_of_subsingleton [Subsingleton A] :
+    Subsingleton (NonUnitalStarSubalgebra R A) :=
+  ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
+
+instance _root_.NonUnitalStarAlgHom.subsingleton [Subsingleton (NonUnitalStarSubalgebra R A)] :
+    Subsingleton (A →⋆ₙₐ[R] B) :=
+  ⟨fun f g => NonUnitalStarAlgHom.ext fun a =>
+    have : a ∈ (⊥ : NonUnitalStarSubalgebra R A) :=
+      Subsingleton.elim (⊤ : NonUnitalStarSubalgebra R A) ⊥ ▸ mem_top
+    (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
+
 end StarSubalgebra
 
 theorem range_val : NonUnitalStarAlgHom.range (NonUnitalStarSubalgebraClass.subtype S) = S :=
@@ -999,16 +999,16 @@ theorem mem_prod {S : NonUnitalStarSubalgebra R A} {S₁ : NonUnitalStarSubalgeb
     x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ :=
   Set.mem_prod
 
+theorem prod_mono {S T : NonUnitalStarSubalgebra R A} {S₁ T₁ : NonUnitalStarSubalgebra R B} :
+    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
+  Set.prod_mono
+
 variable [StarRing R]
 variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
 variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
 @[simp]
 theorem prod_top : (prod ⊤ ⊤ : NonUnitalStarSubalgebra R (A × B)) = ⊤ := by ext; simp
-
-theorem prod_mono {S T : NonUnitalStarSubalgebra R A} {S₁ T₁ : NonUnitalStarSubalgebra R B} :
-    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
-  Set.prod_mono
 
 @[simp]
 theorem prod_inf_prod {S T : NonUnitalStarSubalgebra R A} {S₁ T₁ : NonUnitalStarSubalgebra R B} :

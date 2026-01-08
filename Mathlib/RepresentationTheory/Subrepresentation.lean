@@ -91,8 +91,8 @@ instance : Lattice (Subrepresentation ρ) :=
 
 instance : BoundedOrder (Subrepresentation ρ) where
   top := ⟨⊤, by simp⟩
-  le_top _ _ := by simp
+  le_top _ := le_top (α := Submodule A W)
   bot := ⟨⊥, by simp⟩
-  bot_le _ _ := by simp +contextual
+  bot_le _ := bot_le (α := Submodule A W)
 
 end Subrepresentation
