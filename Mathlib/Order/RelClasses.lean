@@ -105,7 +105,7 @@ theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrd
 /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`.
   This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
   the constructive reals, and is also known as negative transitivity,
-  since the contrapositive asserts transitivity of the relation `¬a < b`. -/
+  since the contrapositive asserts transitivity of the relation `¬ a < b`. -/
 class IsOrderConnected (α : Type u) (lt : α → α → Prop) : Prop where
   /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`. -/
   conn : ∀ a b c, lt a c → lt a b ∨ lt b c
@@ -149,12 +149,12 @@ instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
   { h with }
 
 theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
-    WellFoundedRelation.rel a b → ¬WellFoundedRelation.rel b a :=
+    WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
 termination_by a
 
 theorem WellFoundedRelation.asymmetric₃ {α : Sort*} [WellFoundedRelation α] {a b c : α} :
-    WellFoundedRelation.rel a b → WellFoundedRelation.rel b c → ¬WellFoundedRelation.rel c a :=
+    WellFoundedRelation.rel a b → WellFoundedRelation.rel b c → ¬ WellFoundedRelation.rel c a :=
   fun hab hbc hca => WellFoundedRelation.asymmetric₃ hca hab hbc
 termination_by a
 
