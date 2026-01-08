@@ -65,9 +65,9 @@ def forkPushoutCoconeSelf : Fork (pushoutCoconeSelf f).inl (pushoutCoconeSelf f)
 
 /-- For a map `R ⟶ S` in `CommRingCat`, it asserts that the pair of maps `f : R → S` and
 `Algebra.TensorProduct.includeLeftSubRight : S → S ⊗[R] S` form an exact pair. -/
-def ExactIncludeLeftSubRight : Prop := by
+def IsEffective : Prop := by
   algebraize [f.hom]
-  exact Algebra.TensorProduct.ExactIncludeLeftSubRight R S
+  exact Algebra.IsEffective R S
 
 namespace Equalizer
 
@@ -89,10 +89,10 @@ lemma toEqualizerPushoutCoconeSelf_inj_of_inj (hf : Function.Injective f.hom) :
   algebraize [f.hom]
   exact Algebra.TensorProduct.toEqLocusOfInclusion_injective _ _ hf
 
-/-- If `ExactIncludeLeftSubRight f` is true for a map `f : R ⟶ S` in `CommRingCat`, then
+/-- If `IsEffective f` is true for a map `f : R ⟶ S` in `CommRingCat`, then
 `toEqualizerPushoutCoconeSelf f` is surjective. -/
-lemma toEqualizerPushoutCoconeSelf_surj_of_exactIncludeLeftSubRight
-    (hf : ExactIncludeLeftSubRight f) : Function.Surjective (toEqualizerPushoutCoconeSelf f) := by
+lemma toEqualizerPushoutCoconeSelf_surj_of_IsEffective
+    (hf : IsEffective f) : Function.Surjective (toEqualizerPushoutCoconeSelf f) := by
   algebraize [f.hom]
   exact Algebra.TensorProduct.toEqLocusOfInclusion_surjective _ _ hf
 
@@ -103,8 +103,8 @@ lemma toEqualizerPushoutCoconeSelf_bij_of_faithfullyFlat (hf : f.hom.FaithfullyF
   constructor
   · exact toEqualizerPushoutCoconeSelf_inj_of_inj _ (RingHom.FaithfullyFlat.injective hf)
   · algebraize [f.hom]
-    exact toEqualizerPushoutCoconeSelf_surj_of_exactIncludeLeftSubRight _
-      (Algebra.TensorProduct.exactIncludeLeftSubRight_of_faithfullyFlat _ _)
+    exact toEqualizerPushoutCoconeSelf_surj_of_IsEffective _
+      (Algebra.isEffective_of_faithfullyFlat _ _)
 
 end ToEqualizerPushoutCoconeSelf
 
