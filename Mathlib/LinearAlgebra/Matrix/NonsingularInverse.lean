@@ -289,6 +289,9 @@ lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x =
 lemma mul_left_inj_of_invertible [Invertible A] {x y : Matrix m n α} : x * A = y * A ↔ x = y :=
   (mul_left_injective_of_invertible A).eq_iff
 
+lemma IsSymm.inv {A : Matrix n n α} (hA : A.IsSymm) : A⁻¹.IsSymm :=
+  hA.adjugate.smul _
+
 end Inv
 
 section InjectiveMul
