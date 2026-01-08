@@ -567,8 +567,8 @@ lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsL
   rw [t.isLE_iff_orthogonal n (n+1) rfl]
   intro Y f hY
   obtain ⟨f', hf'⟩ := Triangle.yoneda_exact₂ _ hT f
-    (t.zero _ n (n+1) (by lia) )
-  rw [hf', t.zero f' n (n+1) (by lia), comp_zero]
+    (t.zero _ n (n + 1) (by lia) )
+  rw [hf', t.zero f' n (n + 1) (by lia), comp_zero]
 
 lemma isGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsGE T.obj₁ n)
     (h₃ : t.IsGE T.obj₃ n) : t.IsGE T.obj₂ n := by
@@ -644,8 +644,13 @@ noncomputable abbrev truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncG
 
 noncomputable abbrev truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
 
-section
+instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELT a b).obj X) a := by
+  dsimp; infer_instance
 
+instance (X : C) (a b : ℤ) : t.IsLE ((t.truncLTGE a b).obj X) (b - 1) := by
+  dsimp; infer_instance
+
+section
 
 variable [IsTriangulated C]
 
@@ -672,6 +677,31 @@ lemma isIso₂_truncGE_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
     t.isLE₂ _ H.mem (n₀ - 1) (t.isLE_shift T.obj₁ n₀ 1 (n₀ - 1) (by lia))
       (t.isLE_shift ((t.truncLT (n₀ + 1)).obj T.obj₃) n₀ 1 (n₀-1) (by lia))
   exact t.isLE_of_shift X n₀ 1 (n₀ - 1) (by lia)
+
+instance (X : C) (a b : ℤ) [t.IsGE X a] :
+    t.IsGE ((t.truncLT b).obj X) a := by
+  rw [t.isGE_iff_isZero_truncLT_obj]
+  have := t.isIso₁_truncLT_map_of_isGE _ ((t.triangleLTGE_distinguished b X)) a
+    (by dsimp; infer_instance)
+  dsimp at this
+  refine IsZero.of_iso ?_ (asIso ((t.truncLT a).map ((t.truncLTι b).app X)))
+  rwa [← isGE_iff_isZero_truncLT_obj]
+
+instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
+  rw [t.isLE_iff_isZero_truncGE_obj b (b + 1) rfl]
+  have := t.isIso₂_truncGE_map_of_isLE _ (t.triangleLTGE_distinguished a X) b _ rfl
+    (by dsimp; infer_instance)
+  dsimp at this
+  refine IsZero.of_iso ?_ (asIso ((t.truncGE (b + 1)).map ((t.truncGEπ a).app X))).symm
+  rwa [← isLE_iff_isZero_truncGE_obj _ _ _ rfl]
+
+instance (X : C) (a b : ℤ) :
+    t.IsLE ((t.truncGELT a b).obj X) (b - 1) := by
+  dsimp; infer_instance
+
+instance (X : C) (a b : ℤ) :
+    t.IsGE ((t.truncLTGE a b).obj X) a := by
+  dsimp; infer_instance
 
 end
 

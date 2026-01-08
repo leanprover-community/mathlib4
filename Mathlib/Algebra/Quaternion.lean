@@ -668,7 +668,7 @@ theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R
 
 instance instStarRing : StarRing ℍ[R,c₁,c₂,c₃] where
   star_involutive x := by simp [Star.star]
-  star_add a b := by ext <;> simp [add_comm] ; ring
+  star_add a b := by ext <;> simp [add_comm]; ring
   star_mul a b := by ext <;> simp <;> ring
 
 theorem self_add_star' : a + star a = ↑(2 * a.re + c₂ * a.imI) := by ext <;> simp [two_mul]; ring

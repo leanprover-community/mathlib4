@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 # Yoneda embedding of `CommMon C`
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 

@@ -162,7 +162,7 @@ section IsStrictOrder
 variable [IsStrictOrder α r] {s t : Set α}
 
 instance IsStrictOrder.subset : IsStrictOrder α fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s where
-  toIsIrrefl := ⟨fun a con => irrefl_of r a con.1⟩
+  toIrrefl := ⟨fun a con => irrefl_of r a con.1⟩
   toIsTrans := ⟨fun _ _ _ ab bc => ⟨trans_of r ab.1 bc.1, ab.2.1, bc.2.2⟩⟩
 
 theorem wellFoundedOn_iff_no_descending_seq :
@@ -338,7 +338,7 @@ protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r)
     PartiallyWellOrderedOn (insert a s) r :=
   partiallyWellOrderedOn_insert.2 h
 
-theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
+theorem partiallyWellOrderedOn_iff_finite_antichains [Std.Symm r] :
     s.PartiallyWellOrderedOn r ↔ ∀ t, t ⊆ s → IsAntichain r t → t.Finite := by
   refine ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), ?_⟩
   rw [partiallyWellOrderedOn_iff_exists_lt]

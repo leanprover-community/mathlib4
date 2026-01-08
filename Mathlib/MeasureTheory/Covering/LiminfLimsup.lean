@@ -25,7 +25,7 @@ carrying a uniformly locally doubling measure.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Metric MeasureTheory TopologicalSpace

@@ -227,8 +227,9 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
-  zero_le_one := nonneg'
-  mul_le_mul_left i j h_ij k := by simp only [← Subtype.coe_le_coe, coe_mul]; gcongr; exact nonneg k
+  zero_le x := x.2.1
+  mul_lt_mul_of_pos_left i hi j k hjk := by
+    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr; exact hi
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]

@@ -70,6 +70,9 @@ lemma eTruncLT_obj_mk (n : ℤ) : t.eTruncLT.obj (EInt.mk n) = t.truncLT n := rf
 lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
     t.eTruncLT.map (homOfLE (show EInt.mk n ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
+instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
+  induction i <;> constructor <;> cat_disch
+
 noncomputable def eTruncGE : EInt ⥤ C ⥤ C where
   obj n := by
     induction n with
@@ -109,6 +112,9 @@ lemma eTruncGE_obj_top :
 
 @[simp]
 lemma eTruncGE_obj_mk (n : ℤ) : t.eTruncGE.obj (EInt.mk n) = t.truncGE n := rfl
+
+instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
+  induction i <;> constructor <;> cat_disch
 
 noncomputable def eTruncGEδLTt :
     t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where

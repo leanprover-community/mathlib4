@@ -297,6 +297,9 @@ noncomputable abbrev truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncL
 
 noncomputable abbrev truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
+instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELE a b).obj X) a := by
+  dsimp; infer_instance
+
 noncomputable def truncGELEIsoTruncGELT (a b b' : ℤ) (hb' : b + 1 = b') :
     t.truncGELE a b ≅ t.truncGELT a b' :=
   Functor.isoWhiskerRight (t.truncLEIsoTruncLT b b' hb') _
@@ -315,6 +318,22 @@ lemma isIso₂_truncGT_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ : ℤ) (h₁ : t.IsLE T.obj₁ n₀) :
     IsIso ((t.truncGT n₀).map T.mor₂) :=
   t.isIso₂_truncGE_map_of_isLE _ hT _ _ rfl h₁
+
+instance (X : C) (a b : ℤ) [t.IsGE X a] :
+    t.IsGE ((t.truncLE b).obj X) a := by
+  dsimp [truncLE]; infer_instance
+
+instance (X : C) (a b : ℤ) [t.IsLE X b] :
+    t.IsLE ((t.truncGT a).obj X) b := by
+  dsimp [truncGT]; infer_instance
+
+instance (X : C) (a b : ℤ) [t.IsGE X a] :
+    t.IsGE ((t.truncLE b).obj X) a := by
+  dsimp [truncLE]; infer_instance
+
+instance (X : C) (a b : ℤ) :
+    t.IsLE ((t.truncGELE a b).obj X) b := by
+  dsimp; infer_instance
 
 end
 

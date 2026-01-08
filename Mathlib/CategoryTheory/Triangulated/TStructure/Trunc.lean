@@ -138,55 +138,6 @@ end AbstractSpectralObject
 
 variable [IsTriangulated C]
 
-instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLE b).obj X) a := by
-  rw [t.isGE_iff_isZero_truncLE_obj (a-1) a (by lia)]
-  have := t.isIso₁_truncLE_map_of_isGE _ ((t.triangleLEGE_distinguished b (b+1) rfl X))
-    (a-1) a (by lia) (by dsimp; infer_instance)
-  dsimp at this
-  exact IsZero.of_iso (t.isZero_truncLE_obj_of_isGE (a-1) a (by lia) X)
-    (asIso ((t.truncLE (a - 1)).map ((t.truncLEι b).app X)))
-
-instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLT b).obj X) a :=
-  t.isGE_of_iso ((t.truncLEIsoTruncLT (b-1) b (by lia)).app X) a
-
-instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
-  rw [t.isLE_iff_isZero_truncGE_obj b (b+1) rfl]
-  have := t.isIso₂_truncGE_map_of_isLE _ ((t.triangleLEGE_distinguished (a-1) a (by lia) X))
-    b (b+1) rfl (by dsimp; infer_instance)
-  dsimp at this
-  exact IsZero.of_iso (t.isZero_truncGE_obj_of_isLE b (b+1) rfl X)
-    (asIso ((t.truncGE (b+1)).map ((t.truncGEπ  a).app X))).symm
-
-instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELE a b).obj X) a := by
-  dsimp [truncGELE]
-  infer_instance
-
-instance (X : C) (a b : ℤ) : t.IsLE ((t.truncGELE a b).obj X) b := by
-  dsimp [truncGELE]
-  infer_instance
-
-instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELT a b).obj X) a := by
-  dsimp [truncGELT]
-  infer_instance
-
-instance (X : C) (a b : ℤ) : t.IsLE ((t.truncGELT a b).obj X) (b-1) := by
-  dsimp [truncGELT]
-  infer_instance
-
-instance (X : C) (a b : ℤ) : t.IsGE ((t.truncLTGE a b).obj X) a := by
-  dsimp [truncLTGE]
-  infer_instance
-
-instance (X : C) (a b : ℤ) : t.IsLE ((t.truncLTGE a b).obj X) (b-1) := by
-  dsimp [truncLTGE]
-  infer_instance
-
-instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
-  induction i <;> constructor <;> cat_disch
-
-instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
-  induction i <;> constructor <;> cat_disch
-
 omit [IsTriangulated C] in
 lemma isZero_eTruncLT_obj_obj (X : C) (n : ℤ) [t.IsGE X n] (j : EInt) (hj : j ≤ EInt.mk n) :
     IsZero ((t.eTruncLT.obj j).obj X) := by
