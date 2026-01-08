@@ -1,15 +1,36 @@
-
+/-
+Copyright (c) 2026 Dion Leijnse. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dion Leijnse
+-/
 module
 
-public import Mathlib
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+
+/-!
+
+# Polynomials with p-th power coefficients
+
+In this file we prove https://stacks.math.columbia.edu/tag/031V, which gives a criterion for a root
+of a polynomial over a field `k` of characteristic `p` to be a `p`-th power.
+
+## Main results
+- `zero_of_map_frob_is_pth_power`: let `K/k` be a separable field extension of fields of
+  characteristic `p`, let `α ∈ K` and let `P` be a separable polynomial over `k` whose coefficients
+  are `p`-th powers in `k`. Then `α` is a `p`-th power in `K`.
+
+-/
+
+@[expose] public section
 
 open Polynomial
 
--- alternative name: X_pow_p_sub_C_eq_minpoly_of_non_pth_power
+variable {k K : Type*} [Field k] [Field K] [Algebra k K]
+variable {p : ℕ}
+
 -- The minimal polynomial of a non `p`th power in a field of characteristic `p` is `X ^ p - C α`
-lemma non_pth_power_elem_minpoly {k K : Type*} [Field k] [Field K] [Algebra k K] {p : ℕ} {α : k}
-    (hp : p.Prime) [ExpChar k p] (hα : ¬∃ β : k, β ^ p = α) {ρ : K}
-    (hρ : ρ ^ p = algebraMap k K α) :
+lemma X_pow_p_sub_C_eq_minpoly_of_non_pth_power {α : k} (hα : ¬∃ β : k, β ^ p = α) {ρ : K}
+    (hρ : ρ ^ p = algebraMap k K α) (hp : p.Prime) :
     X ^ p - C α = minpoly k ρ := by
   have hIrred : Irreducible (X ^ p - C α) := by
     apply X_pow_sub_C_irreducible_of_prime hp
@@ -21,12 +42,9 @@ lemma non_pth_power_elem_minpoly {k K : Type*} [Field k] [Field K] [Algebra k K]
           Polynomial.coeff_C_ne_zero (Nat.ne_zero_of_lt <| Nat.Prime.pos hp)]
 
 @[stacks 031V "(2)"]
--- root_of_map_frob_is_pth_power
-lemma pth_power_poly_imp_pth_power {k K : Type*} [Field k] [Field K] [Algebra k K]
-    [Algebra.IsAlgebraic k K] [Algebra.IsSeparable k K] {α : K} {P : Polynomial k}
-    (hP : P.aeval α = 0) {p : ℕ} (hp : p.Prime) [CharP k p] [ExpChar k p]
-    (hQfrob_eq_P : ∃ Q : Polynomial k, P = Polynomial.map (frobenius k p) Q)
-    (hSep : P.Separable) :
+lemma zero_of_map_frob_is_pth_power [Algebra.IsAlgebraic k K] [Algebra.IsSeparable k K] {α : K}
+    {P : k[X]} (hP : P.aeval α = 0) [CharP k p] [ExpChar k p] (hSep : P.Separable) (hp : p.Prime)
+    (hQfrob_eq_P : ∃ Q : k[X], P = Polynomial.map (frobenius k p) Q) :
     ∃ β : K, β ^ p = α := by
   by_cases hα : ∃ β : K, β ^ p = α
   · assumption
@@ -44,7 +62,7 @@ lemma pth_power_poly_imp_pth_power {k K : Type*} [Field k] [Field K] [Algebra k 
             aeval_algebraMap_eq_zero_iff]
         exact hP
       have _ : ExpChar K p := ExpChar.of_injective_algebraMap' k _
-      rw [non_pth_power_elem_minpoly hp hα hρ]
+      rw [X_pow_p_sub_C_eq_minpoly_of_non_pth_power hα hρ hp]
       apply minpoly.dvd
       rw [← hRoot, mapAlg_eq_map, aeval_map_algebraMap]
     have hQSep : (mapAlg k K Q).Separable :=
@@ -61,10 +79,11 @@ lemma pth_power_poly_imp_pth_power {k K : Type*} [Field k] [Field K] [Algebra k 
     exact hInsep_iff_p_ne_zero.mpr hpzero QX_pow_p_dvd
 
 @[stacks 031V "(1)"]
-lemma pth_power_poly_imp_pth_power' {k K : Type*} [Field k] [Field K] [Algebra k K]
-    [Algebra.IsAlgebraic k K] [hSep : Algebra.IsSeparable k K] (α : K) {p : ℕ} (hp : p.Prime)
-    [ExpChar k p] [CharP k p]
-    (h_pth_power_coeff : ∃ Q : Polynomial k, ((minpoly k α)) = Polynomial.map (frobenius k p) Q) :
+lemma zero_of_minpoly_map_frob_is_pth_power [Algebra.IsAlgebraic k K] (hp : p.Prime)
+    [hSep : Algebra.IsSeparable k K] (α : K) [ExpChar k p] [CharP k p]
+    (h_pth_power_coeff : ∃ Q : k[X], ((minpoly k α)) = Polynomial.map (frobenius k p) Q) :
     ∃ β : K, β ^ p = α :=
-  pth_power_poly_imp_pth_power (minpoly.aeval k α) hp h_pth_power_coeff
-    ((Algebra.isSeparable_def k K).mp hSep α)
+  zero_of_map_frob_is_pth_power (minpoly.aeval k α) ((Algebra.isSeparable_def k K).mp hSep α) hp
+    h_pth_power_coeff
+
+-- #min_imports
