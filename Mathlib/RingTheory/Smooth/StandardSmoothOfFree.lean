@@ -36,7 +36,7 @@ coordinate ring of the circle. One can show that then `Ω[S⁄R]` is `S`-free on
 but there are no `f g : S` such that `ω = g df`.
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 

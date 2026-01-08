@@ -1139,7 +1139,7 @@ theorem withLpProdComm_symm : (withLpProdComm p α β).symm = withLpProdComm p �
 def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α × WithLp p (β × γ)) where
   toFun x := .toLp p (x.fst.fst, .toLp p (x.fst.snd, x.snd))
   invFun x := .toLp p (.toLp p (x.fst, x.snd.fst), x.snd.snd)
-  isometry_toFun _ _:= by
+  isometry_toFun _ _ := by
     rcases p.trichotomy with rfl | rfl | hp
     · absurd hp.elim; simp
     · simp [WithLp.prod_edist_eq_sup, max_assoc]
@@ -1180,28 +1180,24 @@ variable [hp : Fact (1 ≤ p)] [Semiring 𝕜]
   [SeminormedAddCommGroup α'] [Module 𝕜 α']
   [SeminormedAddCommGroup β'] [Module 𝕜 β']
 
-namespace LinearIsometry
-
-variable {𝕜 α β}
-
+variable {𝕜 α β} in
 /-- The `L^p` product of two linear isometries. -/
 @[simps! apply]
-def withLpProdMap (f : α →ₗᵢ[𝕜] α') (g : β →ₗᵢ[𝕜] β') :
+def LinearIsometry.withLpProdMap (f : α →ₗᵢ[𝕜] α') (g : β →ₗᵢ[𝕜] β') :
     WithLp p (α × β) →ₗᵢ[𝕜] WithLp p (α' × β') where
   __ := (f.toLinearMap.prodMap g.toLinearMap).withLpMap p
   norm_map' := (f.isometry.withLpProdMap p g.isometry).norm_map_of_map_zero
     ((f.toLinearMap.prodMap g.toLinearMap).withLpMap p).map_zero
 
+namespace LinearIsometryEquiv
+
+variable {𝕜 α β} in
 /-- The `L^p` product of two linear isometric equivalences. -/
 @[simps! apply symm_apply]
 def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
     WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (α' × β') where
   __ := (f.toLinearEquiv.prodCongr g.toLinearEquiv).withLpCongr p
   norm_map' := (f.toLinearIsometry.withLpProdMap p g.toLinearIsometry).norm_map
-
-end LinearIsometry
-
-namespace LinearIsometryEquiv
 
 /-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where

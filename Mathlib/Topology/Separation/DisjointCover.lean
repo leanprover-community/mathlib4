@@ -25,7 +25,7 @@ We prove various results about covering profinite spaces by disjoint clopens, in
   `S`-approximated by a function factoring through `Fin n` for some `n`.
 -/
 
-@[expose] public section
+public section
 
 open Set TopologicalSpace
 
