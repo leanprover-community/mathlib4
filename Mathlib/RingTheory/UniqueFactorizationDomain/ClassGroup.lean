@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # The class group of a Unique Factorization Domain is trivial
@@ -29,14 +30,6 @@ open IsLocalization IsFractionRing FractionalIdeal
 section CommRing
 
 variable (R : Type*) [CommRing R]
-
-private lemma ideal_fg_of_isUnit_fractionalIdeal (I : Ideal R)
-    (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
-    (I : Submodule R R).FG := by
-  -- This is exactly `Ideal.fg_of_isUnit` specialized to the fraction field.
-  simpa using
-    (Ideal.fg_of_isUnit (S := (R⁰)) (P := FractionRing R)
-      (inj := IsFractionRing.injective R (FractionRing R)) I hI)
 
 private lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R}
     {J : Ideal R}
@@ -180,20 +173,6 @@ private lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R
 
 section Domain
 variable [IsDomain R]
-
-private lemma ideal_ne_bot_of_isUnit_fractionalIdeal {I : Ideal R}
-    (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) : I ≠ ⊥ := by
-  intro hbot
-  refine (not_isUnit_zero : ¬IsUnit (0 : FractionalIdeal R⁰ (FractionRing R))) ?_
-  rw [hbot] at hI
-  exact hI
-
-private lemma exists_ne_zero_mem_of_isUnit_fractionalIdeal {I : Ideal R}
-    (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
-    ∃ f : R, f ∈ I ∧ f ≠ 0 := by
-  have hne : I ≠ ⊥ := ideal_ne_bot_of_isUnit_fractionalIdeal (R := R) hI
-  rcases Submodule.exists_mem_ne_zero_of_ne_bot hne with ⟨f, hfI, hf0⟩
-  exact ⟨f, hfI, hf0⟩
 
 namespace FractionalIdeal
 
@@ -465,8 +444,9 @@ private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
     Classical.choice (by infer_instance : Nonempty (NormalizedGCDMonoid R))
   -- Finite generation of `I` and a distinguished nonzero element of `I`.
   have hfg : (I : Submodule R R).FG :=
-    ideal_fg_of_isUnit_fractionalIdeal (R := R) (I := I) hI
-  rcases exists_ne_zero_mem_of_isUnit_fractionalIdeal (R := R) (I := I) hI with ⟨f, hfI, hf0⟩
+    (Ideal.fg_of_isUnit (IsFractionRing.injective R (FractionRing R)) I hI)
+  rcases Submodule.exists_mem_ne_zero_of_ne_bot
+    (fun a ↦ (IsUnit.ne_zero hI) (congrArg coeIdeal a)) with ⟨f, hfI, hf0⟩
   -- Choose a finite generating family for `I`, and add `f` as an extra generator to ensure
   -- nonemptiness and a nonzero element among the generators.
   obtain ⟨n₀, a₀, ha₀⟩ :=
@@ -649,7 +629,7 @@ private theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
 
 
 /-- In a UFD, every invertible fractional ideal is principal. -/
-theorem UniqueFactorizationMonoid.fractionalIdeal_isPrincipal
+theorem UniqueFactorizationMonoid.fractionalIdeal_isPrincipal_of_isUnit
   (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
@@ -696,7 +676,7 @@ theorem UniqueFactorizationMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 :
   intro I
   -- `mk I = 1` iff `I` is principal as a submodule.
   refine (ClassGroup.mk_eq_one_iff (R := R) (K := FractionRing R) (I := I)).2 ?_
-  exact fractionalIdeal_isPrincipal (R := R) I
+  exact fractionalIdeal_isPrincipal_of_isUnit (R := R) I
 
 /-- The ideal class group of a UFD is trivial. -/
 instance UniqueFactorizationMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) := by
