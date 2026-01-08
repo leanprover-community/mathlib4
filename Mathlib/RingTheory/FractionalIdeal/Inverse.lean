@@ -65,8 +65,6 @@ theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y
   mem_div_iff_of_ne_zero hI
 
 theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
-  -- Porting note: in Lean3, introducing `x` would just give `x ∈ J⁻¹ → x ∈ I⁻¹`, but
-  --  in Lean4, it goes all the way down to the subtypes
   intro x
   simp only [mem_inv_iff hJ, mem_inv_iff hI]
   exact fun h y hy => h y (hIJ hy)
