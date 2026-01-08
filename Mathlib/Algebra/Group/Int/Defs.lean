@@ -40,12 +40,12 @@ instance instAddCommGroup : AddCommGroup ℤ where
   add_zero := Int.add_zero
   zero_add := Int.zero_add
   neg_add_cancel := Int.add_left_neg
-  nsmul := (·*·)
+  nsmul := (· * ·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=
     show (n + 1 : ℤ) * x = n * x + x
     by rw [Int.add_mul, Int.one_mul]
-  zsmul := (·*·)
+  zsmul := (· * ·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
     simp only [natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
@@ -66,7 +66,7 @@ These also prevent non-computable instances like `Int.instNormedCommRing` being 
 these instances non-computably.
 -/
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false
 
 instance instAddCommMonoid    : AddCommMonoid ℤ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℤ        := by infer_instance
