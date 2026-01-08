@@ -30,9 +30,6 @@ end Rat
 
 namespace NNRat
 
-instance : Encodable NNRat :=
-  Encodable.ofEquiv ({ q : ℚ // 0 ≤ q })
-    ⟨fun ⟨q, hq⟩ => ⟨q, hq⟩, fun ⟨q, hq⟩ => ⟨q, hq⟩,
-      Eq.refl, Eq.refl⟩
+instance : Encodable NNRat := Subtype.encodable
 
 end NNRat
