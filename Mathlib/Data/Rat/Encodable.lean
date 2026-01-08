@@ -27,3 +27,12 @@ instance : Encodable ℚ :=
       fun _ => rfl, fun ⟨_, _, _, _⟩ => rfl⟩
 
 end Rat
+
+namespace NNRat
+
+instance : Encodable NNRat :=
+  Encodable.ofEquiv ({ q : ℚ // 0 ≤ q })
+    ⟨fun ⟨q, hq⟩ => ⟨q, hq⟩, fun ⟨q, hq⟩ => ⟨q, hq⟩,
+      Eq.refl, Eq.refl⟩
+
+end NNRat
