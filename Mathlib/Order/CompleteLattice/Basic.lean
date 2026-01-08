@@ -484,7 +484,9 @@ theorem Antitone.le_map_iInf₂ [CompleteSemilatticeInf α] [CompleteSemilattice
   hf.dual_left.le_map_iSup₂ _
 
 theorem Monotone.le_map_sSup [CompleteSemilatticeSup α] [CompleteSemilatticeSup β] {s : Set α}
-    {f : α → β} (hf : Monotone f) : ⨆ a ∈ s, f a ≤ f (sSup s) := by rw [sSup_eq_iSup]; exact hf.le_map_iSup₂ _
+    {f : α → β} (hf : Monotone f) : ⨆ a ∈ s, f a ≤ f (sSup s) := by
+  rw [sSup_eq_iSup]
+  exact hf.le_map_iSup₂ _
 
 theorem Antitone.le_map_sInf [CompleteSemilatticeInf α] [CompleteSemilatticeSup β] {s : Set α}
     {f : α → β} (hf : Antitone f) : ⨆ a ∈ s, f a ≤ f (sInf s) :=
