@@ -138,9 +138,9 @@ lemma isEffective_of_desc_faithfullyFlat [Ring S] [Algebra R S] [Module.Faithful
     simp only [TensorProduct.includeLeftSubRight_distribBaseChange]
     rfl
 
-/-- `ExactIncludeLeftSubRight R S` is true for any faithfully flat `R`-algebras `S`. -/
-lemma exactIncludeLeftSubRight_of_faithfullyFlat [CommRing S] [Algebra R S]
-    [Module.FaithfullyFlat R S] : IsEffective R S :=
+/-- `IsEffective R S` is true for any faithfully flat `R`-algebras `S`. -/
+lemma isEffective_of_faithfullyFlat [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S] :
+    IsEffective R S :=
   isEffective_of_desc_faithfullyFlat _ _ _ (isEffective_of_section (TensorProduct.lmul'' R))
 
 end FaithfullyFlat
