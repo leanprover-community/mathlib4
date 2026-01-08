@@ -72,7 +72,7 @@ lemma height_map_C (p : Ideal R) [p.IsMaximal] : (p.map C).height = p.height := 
 
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization
 
-/-- Let `p` be a prime ideal of `A`. If `P` is a maximal ideal of `A[X]` lying over `p`,
+/-- Let `p` be a prime ideal of `R`. If `P` is a maximal ideal of `R[X]` lying over `p`,
 `ht(P) = ht(p) + 1`. -/
 lemma height_eq_height_add_one (p : Ideal R)
     (P : Ideal R[X]) [P.IsMaximal] [P.LiesOver p] :
