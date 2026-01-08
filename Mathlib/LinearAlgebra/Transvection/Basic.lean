@@ -199,6 +199,14 @@ theorem of_right_eq_zero (f : Dual R V) :
   ext
   simp [transvection]
 
+theorem pow {f : Dual R V} {v : V} (hf : f v = 0) (n : ℕ) :
+    (transvection f v) ^ n = transvection f (n • v) := by
+  induction n with
+  | zero => simp [End.one_eq_id]
+  | succ n hind =>
+    rw [pow_succ, hind, End.mul_eq_comp, comp_of_left_eq hf]
+    simp [add_smul]
+
 theorem eq_id_of_finrank_le_one
     {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
     [Free R V] [Module.Finite R V] [StrongRankCondition R]
@@ -281,6 +289,23 @@ theorem of_right_eq_zero (f : Dual R V) (hf := f.map_zero) :
     transvection hf = LinearEquiv.refl R V := by
   ext; simp [transvection]
 
+theorem pow {f : Dual R V} {v : V} (hf : f v = 0) (n : ℕ)
+    (hfn : f (n • v) = 0 := by simp [map_smul, hf]) :
+    (transvection hf) ^ n = transvection hfn := by
+  rw [← toLinearMap_inj, ← automorphismGroup.toLinearMapMonoidHom_apply,
+    map_pow, automorphismGroup.toLinearMapMonoidHom_apply]
+  simp only [coe_toLinearMap, LinearMap.transvection.pow hf]
+
+theorem zpow {f : Dual R V} {v : V} (hf : f v = 0) (n : ℤ)
+    (hfn : f (n • v) = 0 := by simp [map_smul, hf]) :
+    (transvection hf) ^ n = transvection hfn := by
+  induction n using Int.negInduction with
+  | nat n => simp only [zpow_natCast, natCast_zsmul, pow hf n]
+  | neg hind n =>
+    simp only [zpow_neg, zpow_natCast, neg_smul, natCast_zsmul,
+      pow hf n]
+    exact toLinearMap_inj.mp rfl
+
 theorem symm_eq {f : Dual R V} {v : V}
     (hv : f v = 0) (hv' : f (-v) = 0 := by simp [hv]) :
     (transvection hv).symm = transvection hv' := by
@@ -343,6 +368,44 @@ theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
     rfl
   rw [this, LinearEquiv.transvection.symm_eq]
   apply mem_transvections
+
+example (e : V ≃ₗ[R] V) (x : V) :
+    e x = e.toLinearMap x := by
+  rw [@coe_coe]
+
+theorem toLinearMap_pow (e : V ≃ₗ[R] V) (n : ℕ) :
+    (e ^ n) = (e.toLinearMap ^ n) := by
+  induction n with
+  | zero => simp
+  | succ n hind => simp [pow_succ]
+
+@[simp]
+theorem coe_toLinearMap_pow (e : V ≃ₗ[R] V) (n : ℕ) :
+    (e ^ n : V ≃ₗ[R] V) = (e ^ n : V →ₗ[R] V) := by
+  induction n with
+  | zero => simp [End.one_eq_id]
+  | succ n hind => simp [pow_succ, hind]
+
+theorem toLinearMap_pow_apply (e : V ≃ₗ[R] V) (n : ℕ) (x : V) :
+    (e ^ n) x = (e.toLinearMap ^ n) x := by
+  simp only [← coe_coe, coe_toLinearMap_pow]
+
+theorem pow_mem_transvections {e : V ≃ₗ[R] V} {n : ℕ}
+    (he : e ∈ transvections R V) :
+    e ^ n ∈ transvections R V := by
+  obtain ⟨f, v, hfv, rfl⟩ := he
+  refine ⟨f, n • v, by simp [hfv], ?_⟩
+  rw [← toLinearMap_inj, coe_toLinearMap_pow, transvection.coe_toLinearMap,
+    transvection.coe_toLinearMap, pow hfv]
+
+theorem zpow_mem_transvections {e : V ≃ₗ[R] V} {n : ℤ}
+    (he : e ∈ transvections R V) :
+    e ^ n ∈ transvections R V := by
+  induction n using Int.negInduction with
+  | nat n => exact pow_mem_transvections he
+  | neg hind n =>
+    simp only [zpow_neg, zpow_natCast, inv_mem_transvections_iff]
+    exact hind n
 
 open Pointwise in
 theorem transvections_pow_mono :
