@@ -43,7 +43,7 @@ Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
 namespace ArchimedeanClass
 variable
   {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
-  {R : Type*} [LinearOrder R] [CommRing R] [IsOrderedRing R] [Archimedean R]
+  {R : Type*} [LinearOrder R] [CommRing R] [IsStrictOrderedRing R] [Archimedean R]
 
 /-! ### Finite residue field -/
 
