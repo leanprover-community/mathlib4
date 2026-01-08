@@ -733,8 +733,9 @@ theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f 
   simp [smulLeftCLM, hg]
 
 @[simp]
-theorem smulLeftCLM_const (c : 𝕜) (f : 𝓢(E, F)) : smulLeftCLM F (fun (_ : E) ↦ c) f = c • f := by
-  ext x
+theorem smulLeftCLM_const (c : 𝕜) :
+    smulLeftCLM F (fun (_ : E) ↦ c) = c • ContinuousLinearMap.id 𝕜 _ := by
+  ext f x
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
   simp [this]
 
@@ -757,6 +758,23 @@ theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜)
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
   convert (smulLeftCLM_smulLeftCLM_apply this hg f).symm using 1
   simp
+
+theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ + g₂) = smulLeftCLM F g₁ + smulLeftCLM F g₂ := by
+  ext f x
+  simp [hg₁, hg₂, hg₁.add hg₂, add_smul]
+
+theorem smulLeftCLM_sub {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ - g₂) = smulLeftCLM F g₁ - smulLeftCLM F g₂ := by
+  ext f x
+  simp [hg₁, hg₂, hg₁.sub hg₂, sub_smul]
+
+theorem smulLeftCLM_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (-g) = - smulLeftCLM F g := by
+  ext f x
+  simp [hg, hg.neg, neg_smul]
 
 theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
