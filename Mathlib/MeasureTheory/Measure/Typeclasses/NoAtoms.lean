@@ -22,7 +22,7 @@ Should `NoAtoms` be redefined as `∀ s, 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ 
 
 namespace MeasureTheory
 
-open Set Measure
+open Set Measure Filter TopologicalSpace
 
 variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
@@ -86,21 +86,15 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
   union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
 
-open Filter TopologicalSpace
-
-section
-
-variable {X : Type*} [EMetricSpace X] [MeasurableSpace X] {μ : Measure X} [NoAtoms μ] {E : Set X}
-
-/-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
-theorem exists_accPt_of_noAtoms (h_sep : IsSeparable E) (hE : 0 < μ E) :
+/-- If a set has positive measure under an atomless measure, then it has an accumulation point.
+-/
+theorem exists_accPt_of_noAtoms {X : Type*} [PseudoEMetricSpace X] [MeasurableSpace X]
+    {μ : Measure X} [NoAtoms μ] {E : Set X} (h_sep : IsSeparable E) (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
   haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
   exact hE.ne' <| (separableSpace_iff_countable.mp h_sep.separableSpace
     |> E.countable_coe_iff.mp).measure_zero μ
-
-end
 
 section
 
