@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 # Measurability of scalar products
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} {𝕜 : Type*} {E : Type*}
@@ -26,13 +26,13 @@ theorem Measurable.inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeas
     (hg : Measurable g) : Measurable fun t => ⟪f t, g t⟫ :=
   Continuous.measurable2 continuous_inner hf hg
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.const_inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopology E] {c : E} {f : α → E} (hf : Measurable f) :
     Measurable fun t => ⟪c, f t⟫ :=
   Measurable.inner measurable_const hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.inner_const {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopology E] {c : E} {f : α → E} (hf : Measurable f) :
     Measurable fun t => ⟪f t, c⟫ :=
@@ -44,14 +44,14 @@ theorem AEMeasurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMe
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : AEMeasurable (fun x => ⟪f x, g x⟫) μ := by
   fun_prop
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.const_inner {m : MeasurableSpace α} [MeasurableSpace E]
     [OpensMeasurableSpace E] [SecondCountableTopology E]
     {μ : MeasureTheory.Measure α} {f : α → E} {c : E} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => ⟪c, f x⟫) μ :=
   AEMeasurable.inner aemeasurable_const hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.inner_const {m : MeasurableSpace α} [MeasurableSpace E]
     [OpensMeasurableSpace E] [SecondCountableTopology E]
     {μ : MeasureTheory.Measure α} {f : α → E} {c : E} (hf : AEMeasurable f μ) :

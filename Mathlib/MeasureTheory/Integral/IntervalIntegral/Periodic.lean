@@ -36,7 +36,7 @@ open scoped MeasureTheory NNReal ENNReal
 ## Measures and integrability on ℝ and on the circle
 -/
 
-@[measurability]
+@[fun_prop]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
   Continuous.measurable <| AddCircle.continuous_mk' a
@@ -94,7 +94,7 @@ protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) :=
   measurePreserving_quotientAddGroup_mk_of_AddQuotientMeasureEqMeasurePreimage
-    volume (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
+    volume (𝓕 := Ioc t (t + T)) (isAddFundamentalDomain_Ioc' hT.out _) _
 
 lemma add_projection_respects_measure (t : ℝ) {U : Set (AddCircle T)} (meas_U : MeasurableSet U) :
     volume U = volume (QuotientAddGroup.mk ⁻¹' U ∩ (Ioc t (t + T))) :=
@@ -114,7 +114,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
     apply coe_real_preimage_closedBall_inter_eq
     simpa only [hT', Real.closedBall_eq_Icc, zero_add, zero_sub] using Ioc_subset_Icc_self
-  rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T/2))
+  rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T / 2))
     measurableSet_closedBall, (by linarith : -(T / 2) + T = T / 2), h₂]
   by_cases hε : ε < T / 2
   · simp [hε, min_eq_right (by linarith : 2 * ε ≤ T)]
@@ -208,7 +208,7 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
   linarith [hT.out]
 
 /-- The integral of a function lifted to AddCircle from an interval `(t, t + T]` to `AddCircle T`
-is equal the the intervalIntegral over the interval. -/
+is equal to the intervalIntegral over the interval. -/
 lemma integral_liftIoc_eq_intervalIntegral {t : ℝ} {f : ℝ → E} :
     ∫ a, liftIoc T t f a = ∫ a in t..t + T, f a := by
   rw [← AddCircle.intervalIntegral_preimage T t]
@@ -230,8 +230,6 @@ lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} 
   exact AddCircle.measurePreserving_equivIoc T
 
 namespace UnitAddCircle
-
-attribute [local instance] Real.fact_zero_lt_one
 
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 

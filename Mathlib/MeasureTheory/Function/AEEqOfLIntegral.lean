@@ -28,7 +28,7 @@ The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 
 -/
 
-@[expose] public section
+public section
 
 
 open Filter

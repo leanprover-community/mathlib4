@@ -13,10 +13,16 @@ public import Mathlib.Logic.Function.ULift
 /-!
 # The Yoneda embedding
 
-The Yoneda embedding as a functor `yoneda : C ⥤ (Cᵒᵖ ⥤ Type v₁)`,
-along with an instance that it is `FullyFaithful`.
+Let `C : Type u₁` be a category (with `Category.{v₁} C`). We define
+the Yoneda embedding as a fully faithful functor `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`,
+In addition to `yoneda`, we also define `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁)`
+with the additional universe parameter `w`. When `C` is locally `w`-small,
+one may also use `shrinkYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type w` from the file
+`Mathlib/CategoryTheory/ShrinkYoneda.lean`.
 
-Also the Yoneda lemma, `yonedaLemma : (yoneda_pairing C) ≅ (yoneda_evaluation C)`.
+The naturality of the bijection `yonedaEquiv` involved in the
+Yoneda lemma is also expressed as a natural isomorphism
+`yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C`.
 
 ## References
 * [Stacks: Opposite Categories and the Yoneda Lemma](https://stacks.math.columbia.edu/tag/001L)
@@ -180,8 +186,7 @@ def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
   fullyFaithful.preimageIso
     (NatIso.ofComponents (fun Z =>
       { hom := q
-        inv := p })
-    ) |>.unop
+        inv := p })) |>.unop
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
@@ -230,7 +235,7 @@ structure RepresentableBy (F : Cᵒᵖ ⥤ Type v) (Y : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj (op X)`. -/
   homEquiv {X : C} : (X ⟶ Y) ≃ F.obj (op X)
   homEquiv_comp {X X' : C} (f : X ⟶ X') (g : X' ⟶ Y) :
-    homEquiv (f ≫ g) = F.map f.op (homEquiv g)
+    homEquiv (f ≫ g) = F.map f.op (homEquiv g) := by cat_disch
 
 lemma RepresentableBy.comp_homEquiv_symm {F : Cᵒᵖ ⥤ Type v} {Y : C}
     (e : F.RepresentableBy Y) {X X' : C} (x : F.obj (op X')) (f : X ⟶ X') :
@@ -251,7 +256,7 @@ structure CorepresentableBy (F : C ⥤ Type v) (X : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj Y`. -/
   homEquiv {Y : C} : (X ⟶ Y) ≃ F.obj Y
   homEquiv_comp {Y Y' : C} (g : Y ⟶ Y') (f : X ⟶ Y) :
-    homEquiv (f ≫ g) = F.map g (homEquiv f)
+    homEquiv (f ≫ g) = F.map g (homEquiv f) := by cat_disch
 
 lemma CorepresentableBy.homEquiv_symm_comp {F : C ⥤ Type v} {X : C}
     (e : F.CorepresentableBy X) {Y Y' : C} (y : F.obj Y) (g : Y ⟶ Y') :

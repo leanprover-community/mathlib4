@@ -413,8 +413,6 @@ theorem mk_of_mem (hi : i ∈ s) : (mk s x : ∀ i, β i) i = x ⟨i, hi⟩ :=
 theorem mk_of_notMem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
   dif_neg hi
 
-@[deprecated (since := "2025-05-23")] alias mk_of_not_mem := mk_of_notMem
-
 theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := by
   intro x y H
   ext i
@@ -532,7 +530,6 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
-  ext i'
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 
 section SingleAndZipWith
@@ -861,8 +858,6 @@ theorem mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∈ f.support ↔ f i �
 theorem notMem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f i = 0 :=
   not_iff_comm.1 mem_support_iff.symm
 
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
-
 @[simp]
 theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
   ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp +contextual⟩
@@ -897,8 +892,8 @@ variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 theorem mapRange_def [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] {f : ∀ i, β₁ i → β₂ i}
     {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} :
     mapRange f hf g = mk g.support fun i => f i.1 (g i.1) := by
-  ext i
-  by_cases h : g i ≠ 0 <;> simp at h <;> simp [h, hf]
+  ext
+  simp_all
 
 @[simp]
 theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {i : ι} {b : β₁ i} :

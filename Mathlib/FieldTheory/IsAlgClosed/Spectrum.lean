@@ -11,7 +11,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 /-!
 # Spectrum mapping theorem
 
-This file develops proves the spectral mapping theorem for polynomials over algebraically closed
+This file develops and proves the spectral mapping theorem for polynomials over algebraically closed
 fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
 spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
@@ -35,7 +35,7 @@ eigenvalue.
 * `σ a` : `spectrum R a` of `a : A`
 -/
 
-@[expose] public section
+public section
 
 namespace spectrum
 
@@ -151,7 +151,7 @@ theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontriv
     [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
   have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p; rw [h_eval_p]; simp
-  rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu
+  rw [(IsAlgClosed.splits p).eq_prod_roots_of_monic h_mon] at nu
   obtain ⟨k, hk, _⟩ := exists_mem_of_not_isUnit_aeval_prod nu
   exact ⟨k, hk⟩
 
