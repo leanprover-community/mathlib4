@@ -16,22 +16,6 @@ public import Mathlib.Analysis.Analytic.Binomial
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Tactic.NormNum.NatFactorial
 
---move
-lemma IsZLattice.isCompact_range_of_periodic
-    {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] (f : E → F)
-    [TopologicalSpace F] (hf : Continuous f)
-    (hf' : ∀ z w, w ∈ L → f (z + w) = f z) : IsCompact (Set.range f) := by
-  have := ZLattice.module_free ℝ L
-  let b := Module.Free.chooseBasis ℤ L
-  convert (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
-  refine le_antisymm ?_ (Set.image_subset_range _ _)
-  rintro _ ⟨x, rfl⟩
-  let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
-    fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
-  refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩
-  simp [parallelepiped_basis_eq, x', Int.floor_le, Int.le_floor_add_one, add_comm (1 : ℝ)]
-
 /-!
 
 # Weierstrass `℘` functions
@@ -965,21 +949,6 @@ def relation (z : ℂ) : ℂ :=
   letI := Classical.propDecidable
   if z ∈ L.lattice then 0 else ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃
 
-@[simp]
-lemma analytiOrderAt_id {𝕜 : Type*} [NontriviallyNormedField 𝕜] :
-    analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
-  analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
-
-@[simp]
-lemma meromorphicOrderAt_id {𝕜 : Type*} [NontriviallyNormedField 𝕜] :
-    meromorphicOrderAt (𝕜 := 𝕜) id 0 = 1 := by
-  simp [analyticAt_id.meromorphicOrderAt_eq]
-
-@[fun_prop]
-lemma meromorphic_const {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (x : E) : Meromorphic fun _ : 𝕜 ↦ x :=
-  fun _ ↦ by fun_prop
-
 @[fun_prop]
 lemma meromorphic_relation : Meromorphic L.relation := by
   have : Meromorphic fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃ := by fun_prop
@@ -990,52 +959,17 @@ lemma meromorphic_relation : Meromorphic L.relation := by
     ((L.isOpen_compl_lattice_diff (s := {z})).mem_nhds (x := z) (by simp))) self_mem_nhdsWithin) ?_
   simp [Set.subset_def, not_imp_not]
 
-lemma ENat.map_mono {α : Type u_1} {f : ℕ → α} [Preorder α] (hf : Monotone f) :
-    Monotone (ENat.map f) := by
-  intro a b e; cases a <;> cases b <;> simp_all [hf _]
-
-lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero {𝕜 E : Type*}
-    [NontriviallyNormedField 𝕜] [CharZero 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜} (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
-    n ≤ analyticOrderAt f z₀ ↔ ∀ i < n, iteratedDeriv i f z₀ = 0 := by
-  induction n generalizing f with
-  | zero => simp
-  | succ n IH =>
-    by_cases hfz : f z₀ = 0; swap
-    · simpa [analyticOrderAt_eq_zero.mpr (.inr hfz)] using ⟨0, by simp, by simpa⟩
-    have : analyticOrderAt (deriv f) z₀ + 1 = analyticOrderAt f z₀ := by
-      simpa [hfz] using hf.analyticOrderAt_deriv_add_one
-    simp [← this, ENat.add_le_add_iff_right, IH hf.deriv, iteratedDeriv_succ',
-      -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
-
-lemma iteratedDeriv_fun_add {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {n : ℕ} {x : 𝕜} {f g : 𝕜 → F}
-    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
-    iteratedDeriv n (fun x ↦ f x + g x) x = iteratedDeriv n f x + iteratedDeriv n g x :=
-  iteratedDeriv_add hf hg
-
-lemma iteratedDeriv_fun_sub {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {n : ℕ} {x : 𝕜} {f g : 𝕜 → F}
-    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
-    iteratedDeriv n (fun x ↦ f x - g x) x = iteratedDeriv n f x - iteratedDeriv n g x :=
-  iteratedDeriv_sub hf hg
-
-open scoped Topology
-
-attribute [fun_prop] AnalyticAt.contDiffAt
-
-set_option maxHeartbeats 0 in
+attribute [local fun_prop] AnalyticAt.contDiffAt in
 lemma analyticAt_relation_zero_aux :
     7 ≤ analyticOrderAt (fun z ↦ (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
     (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
     (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6) 0 := by
   refine (natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr ?_
   intro i hi
-  simp (discharger := fun_prop) only [iteratedDeriv_fun_add,
-    pow_succ (_ + _), pow_succ (_ - _), iteratedDeriv_fun_sub, pow_zero, one_mul]
-  simp (discharger := fun_prop) only [iteratedDeriv_fun_mul, iteratedDeriv_fun_sub,
-    iteratedDeriv_const, iteratedDeriv_fun_add, iteratedDeriv_derivWeierstrassPExcept,
-    iteratedDeriv_weierstrassPExcept, iteratedDeriv_fun_pow_zero]
+  simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
+    iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
+    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept,
+    pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
   simp? [mul_add, Finset.sum_range_succ', L.G_eq_zero_of_odd 3 (by decide)] says
     simp only [sumInvPow_zero, Nat.cast_ite, CharP.cast_eq_zero, mul_ite, mul_zero,
       Finset.sum_range_succ', tsub_zero, Nat.choose_zero_right, Nat.cast_one, zero_add,
@@ -1044,13 +978,32 @@ lemma analyticAt_relation_zero_aux :
       Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, sub_zero, mul_add, Finset.range_zero,
       zero_tsub, OfNat.zero_ne_ofNat, Finset.sum_const_zero, zero_sub, mul_neg, one_mul, neg_mul,
       weierstrassPExcept_zero, Nat.rec_zero, mul_one, Nat.choose_zero_succ, ite_mul]
+  simp +contextual only [show ∀ a, ∀ x, a - (x + 1) = 3 ↔ x = a - 4 ∧ 4 ≤ a by lia,
+    show ∀ a, ∀ x, a - (x + 1) = 2 ↔ x = a - 3 ∧ 3 ≤ a by lia,
+    show ∀ a, ∀ x, a - (x + 1) = 6 ↔ x = a - 7 ∧ 7 ≤ a by lia,
+    show ∀ a, ∀ x ∈ Finset.range a, a - (x + 1) = 0 ↔ x = a - 1 ∧ 1 ≤ a by simp_all; lia]
+  simp? [ite_and, Finset.sum_add_distrib] says
+    simp only [ite_and, Finset.sum_ite_eq', Finset.mem_range, tsub_lt_self_iff, Nat.ofNat_pos,
+      and_true, mul_ite, mul_zero, Nat.reduceAdd, Nat.cast_ofNat, tsub_pos_iff_lt,
+      Finset.sum_add_distrib, zero_lt_one]
   interval_cases i
   · simp; norm_num
   · simp
   · simp [Finset.sum_range_succ]
   · simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide)]
   · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
-  · simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 5 (by decide)]
+  · -- Is `simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 5 (by decide)]`
+    -- but squeezed for performance reasons
+    simp only [Nat.choose_succ_self_right, Nat.reduceAdd, Nat.cast_ofNat, Nat.reduceSubDiff,
+      tsub_le_iff_right, le_add_iff_nonneg_right, zero_le, Nat.sub_eq_zero_of_le, zero_add,
+      Nat.choose_one_right, Nat.add_one_sub_one, Nat.one_le_ofNat, ↓reduceIte,
+      Finset.sum_range_succ, Finset.range_one, Finset.sum_singleton, lt_self_iff_false,
+      OfNat.zero_ne_ofNat, add_zero, Nat.one_lt_ofNat, tsub_zero, le_refl, sub_zero, zero_mul,
+      zero_lt_one, Nat.not_ofNat_le_one, OfNat.one_ne_ofNat, Nat.reduceLT, Nat.reduceLeDiff,
+      sub_self, mul_zero, Nat.ofNat_pos, Nat.reduceEqDiff, Nat.lt_add_one,
+      Nat.choose_self, Nat.cast_one, tsub_self, L.G_eq_zero_of_odd 5 (by decide),
+      Nat.succ_ne_self, zero_sub, mul_neg, neg_zero, OfNat.ofNat_ne_zero, Finset.range_zero,
+      not_lt_zero, Finset.sum_const_zero, add_lt_iff_neg_right, Nat.factorial_two, zero_ne_one]
   · simp [Finset.sum_range_succ, show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl,
       L.G_eq_zero_of_odd 3 (by decide), g₃]; ring
 
@@ -1062,7 +1015,7 @@ lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
       meromorphicOrderAt_pow (by fun_prop)] at this
     rw [← WithTop.add_le_add_iff_right (z := 6) (by simp)]
     simpa [-LinearOrderedAddCommGroupWithTop.add_le_add_iff_left_of_ne_top] using this
-  refine (ENat.map_mono (α := ℤ) Nat.mono_cast (L.analyticAt_relation_zero_aux)).trans_eq ?_
+  refine (ENat.monotone_map_iff.mpr Nat.mono_cast (L.analyticAt_relation_zero_aux)).trans_eq ?_
   rw [← AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
   refine meromorphicOrderAt_congr (Filter.eventuallyEq_of_mem (s := L.latticeᶜ) ?_ ?_)
   · have := (L.isOpen_compl_lattice_diff (s := {0})).mem_nhds (x := 0) (by simp)
