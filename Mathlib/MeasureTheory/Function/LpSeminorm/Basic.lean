@@ -17,7 +17,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 # Basic theorems about ℒp space
 -/
 
-@[expose] public section
+public section
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
@@ -276,14 +276,14 @@ variable {f : α → F}
 lemma eLpNorm'_mono_enorm_ae {f : α → ε} {g : α → ε'} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ := by
   simp only [eLpNorm'_eq_lintegral_enorm]
-  gcongr ?_ ^ (1/q)
+  gcongr ?_ ^ (1 / q)
   refine lintegral_mono_ae (h.mono fun x hx => ?_)
   gcongr
 
 lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ := by
   simp only [eLpNorm'_eq_lintegral_enorm]
-  gcongr ?_ ^ (1/q)
+  gcongr ?_ ^ (1 / q)
   refine lintegral_mono_ae (h.mono fun x hx => ?_)
   dsimp [enorm]
   gcongr
@@ -753,6 +753,32 @@ protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (
       simp [hx']
     rw [setLIntegral_congr_fun hs.compl h]
     exact lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_zero hp_top hg.2
+
+theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]
+    (μ : Measure α := by volume_tac) (hp' : p ≠ ∞) (hs : MeasurableSet s)
+    {f g : α → β} {c : ℝ} (hc : 0 ≤ c) (hf : ∀ x ∈ s, dist (f x) (g x) ≤ c) :
+    eLpNorm (s.indicator (f - g)) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
+  by_cases hp : p = 0
+  · simp [hp]
+  have : ∀ x, ‖s.indicator (f - g) x‖ ≤ ‖s.indicator (fun _ => c) x‖ := by
+    intro x
+    by_cases hx : x ∈ s
+    · rw [Set.indicator_of_mem hx, Set.indicator_of_mem hx, Pi.sub_apply, ← dist_eq_norm,
+        Real.norm_eq_abs, abs_of_nonneg hc]
+      exact hf x hx
+    · simp [Set.indicator_of_notMem hx]
+  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
+    Real.norm_eq_abs, abs_of_nonneg hc]
+
+theorem eLpNorm_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]
+    (μ : Measure α := by volume_tac) (hp : p ≠ ⊤) (hs : MeasurableSet s) {c : ℝ} (hc : 0 ≤ c)
+    {f g : α → β} (h : ∀ x, dist (f x) (g x) ≤ c) (hs₁ : f.support ⊆ s) (hs₂ : g.support ⊆ s) :
+    eLpNorm (f - g) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
+  have hs₃ : s.indicator (f - g) = f - g := by
+    rw [Set.indicator_eq_self]
+    exact (Function.support_sub _ _).trans (Set.union_subset hs₁ hs₂)
+  rw [← hs₃]
+  exact eLpNorm_indicator_sub_le_of_dist_bdd μ hp hs hc (fun x _ ↦ h x)
 
 end Indicator
 
@@ -1481,3 +1507,5 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
 end UnifTight
 end Lp
 end MeasureTheory
+
+set_option linter.style.longFile 1700

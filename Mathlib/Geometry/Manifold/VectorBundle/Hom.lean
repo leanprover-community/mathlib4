@@ -94,8 +94,8 @@ theorem mdifferentiableOn_continuousLinearMapCoordChange
     MDifferentiableOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂)
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂')
       (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
-  have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := 1) |>.mdifferentiableOn le_rfl
-  have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := 1) |>.mdifferentiableOn le_rfl
+  have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := 1) |>.mdifferentiableOn one_ne_zero
+  have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := 1) |>.mdifferentiableOn one_ne_zero
   refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
@@ -164,7 +164,7 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
 another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
-Note that the smoothness of `ϕ` cannot be always be stated as smoothness of a map into a manifold,
+Note that the smoothness of `ϕ` cannot always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
 globally smooth, but we want to apply this lemma with only local information. Therefore, we
 formulate it using smoothness of `ϕ` read in coordinates.
@@ -174,7 +174,7 @@ Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but n
 a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffWithinAt.clm_bundle_apply`
+`inCoordinates`, see `ContMDiffWithinAt.clm_bundle_apply`.
 -/
 lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
@@ -205,7 +205,7 @@ lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
 another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
-Note that the smoothness of `ϕ` cannot be always be stated as smoothness of a map into a manifold,
+Note that the smoothness of `ϕ` cannot always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
 globally smooth, but we want to apply this lemma with only local information. Therefore, we
 formulate it using smoothness of `ϕ` read in coordinates.
@@ -215,7 +215,7 @@ Version for `ContMDiffAt`. We also give a version for `ContMDiffWithinAt`, but n
 a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffAt.clm_bundle_apply`
+`inCoordinates`, see `ContMDiffAt.clm_bundle_apply`.
 -/
 lemma ContMDiffAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n

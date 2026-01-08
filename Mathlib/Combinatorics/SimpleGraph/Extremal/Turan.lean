@@ -105,7 +105,7 @@ theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ card V) (hG : G.IsTuranMaxi
 
 lemma exists_isTuranMaximal (hr : 0 < r) :
     ∃ H : SimpleGraph V, ∃ _ : DecidableRel H.Adj, H.IsTuranMaximal r := by
-  simpa [IsTuranMaximal, exists_isExtremal_iff_exists] using ⟨⊥, cliqueFree_bot (by cutsat)⟩
+  simpa [IsTuranMaximal, exists_isExtremal_iff_exists] using ⟨⊥, cliqueFree_bot (by lia)⟩
 
 end Defs
 
@@ -123,7 +123,7 @@ lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
   classical
   use G.replaceVertex s t, inferInstance, cf.replaceVertex s t
   have := G.card_edgeFinset_replaceVertex_of_not_adj hn
-  cutsat
+  lia
 
 /-- In a Turán-maximal graph, non-adjacency is transitive. -/
 lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj s u) :
@@ -152,7 +152,7 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
     simp_rw [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
     split_ifs <;> simp_all [adj_comm]
   have l3 : 0 < G.degree u := by rw [G.degree_pos_iff_exists_adj u]; use t, h.symm
-  cutsat
+  lia
 
 variable (h : G.IsTuranMaximal r)
 include h
@@ -187,7 +187,7 @@ lemma degree_eq_card_sub_part_card [DecidableEq V] :
     _ = #{t | G.Adj s t} := by
       simp [← card_neighborFinset_eq_degree, neighborFinset]
     _ = card V - #{t | ¬G.Adj s t} :=
-      eq_tsub_of_add_eq (filter_card_add_filter_neg_card_eq_card _)
+      eq_tsub_of_add_eq (card_filter_add_card_filter_not _)
     _ = _ := by
       congr; ext; rw [mem_filter]
       convert Finpartition.mem_part_ofSetoid_iff_rel.symm
@@ -208,11 +208,11 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   have small_eq := fp.part_eq_of_mem hs hv
   have ha : G.Adj v w := by
     by_contra hn; rw [h.not_adj_iff_part_eq, small_eq, large_eq] at hn
-    rw [hn] at ineq; omega
+    rw [hn] at ineq; lia
   rw [G.card_edgeFinset_replaceVertex_of_adj ha,
     degree_eq_card_sub_part_card h, small_eq, degree_eq_card_sub_part_card h, large_eq]
   have : #large ≤ card V := by simpa using card_le_card large.subset_univ
-  cutsat
+  lia
 
 lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
   by_contra! l
@@ -293,6 +293,36 @@ theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
     G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (card V) r) :=
   ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
 
+variable {α : Type*} [Fintype α] [Nontrivial α]
+
+lemma isExtremal_top_free_iff_isTuranMaximal :
+    G.IsExtremal (⊤ : SimpleGraph α).Free ↔ G.IsTuranMaximal (card α - 1) := by
+  simp_rw [IsTuranMaximal, IsExtremal,
+    Nat.sub_one_add_one Fintype.card_ne_zero, cliqueFree_iff_top_free]
+
+lemma isExtremal_top_free_turanGraph :
+    (turanGraph n (card α - 1)).IsExtremal (⊤ : SimpleGraph α).Free := by
+  rw [isExtremal_top_free_iff_isTuranMaximal]
+  exact isTuranMaximal_turanGraph (Nat.sub_pos_iff_lt.mpr Fintype.one_lt_card)
+
+/-- The extremal numbers of `⊤` are equal to the number of edges in `turanGraph`. -/
+theorem extremalNumber_top :
+    extremalNumber n (⊤ : SimpleGraph α) = #(turanGraph n (card α - 1)).edgeFinset := by
+  conv =>
+    enter [1, 1]
+    rw [← Fintype.card_fin n]
+  exact (card_edgeFinset_of_isExtremal_free isExtremal_top_free_turanGraph).symm
+
+/-- The `turanGraph` is, up to isomorphism, the unique extremal graph forbidding `⊤`.
+
+This is **Turán's theorem** restated in terms of the extremal numbers of `⊤`.
+See `SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph`. -/
+theorem card_edgeFinset_eq_extremalNumber_top_iff_nonempty_iso_turanGraph :
+    (⊤ : SimpleGraph α).Free G ∧ #G.edgeFinset = extremalNumber (card V) (⊤ : SimpleGraph α)
+      ↔ Nonempty (G ≃g turanGraph (card V) (card α - 1)) := by
+  rw [← isTuranMaximal_iff_nonempty_iso_turanGraph (Nat.sub_pos_iff_lt.mpr one_lt_card),
+    ← isExtremal_top_free_iff_isTuranMaximal, isExtremal_free_iff]
+
 /-! ### Number of edges in the Turán graph -/
 
 private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
@@ -300,7 +330,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
   rcases r.eq_zero_or_pos with rfl | hr; · simp
   suffices #{i ∈ range r | c % r = (n + i) % r} = 1 by
     rw [← card_filter, ← this]; apply Nat.eq_sub_of_add_eq'
-    rw [filter_card_add_filter_neg_card_eq_card, card_range]
+    rw [card_filter_add_card_filter_not, card_range]
   apply le_antisymm
   · change #{i ∈ range r | _ ≡ _ [MOD r]} ≤ 1
     rw [card_le_one_iff]; intro w x mw mx
@@ -311,7 +341,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rwa [Nat.mod_eq_of_lt mw.1, Nat.mod_eq_of_lt mx.1] at this
   · rw [one_le_card]; use ((r - 1) * n + c) % r
     simp only [mem_filter, mem_range]; refine ⟨Nat.mod_lt _ hr, ?_⟩
-    rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by cutsat,
+    rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by lia,
       Nat.mul_add_mod_self_left]
 
 lemma card_edgeFinset_turanGraph_add :
@@ -356,7 +386,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [Fintype.card_fin] at this; convert this
       rw [turanGraph_eq_top]; exact .inr h.le
     · let n' := n - r
-      have n'r : n = n' + r := by omega
+      have n'r : n = n' + r := by lia
       rw [n'r, card_edgeFinset_turanGraph_add, card_edgeFinset_turanGraph, ring₁, ring₁,
         add_rotate, ← add_assoc, Nat.add_mod_right, Nat.add_div_right _ hr]
       congr 1
@@ -368,7 +398,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [ring₂, ← add_assoc]; congr 1
       rw [← add_rotate, ← add_rotate _ _ (r.choose 2)]; congr 1
       rw [Nat.choose_two_right, Nat.div_mul_cancel rd, mul_add_one, add_mul, ← add_assoc,
-        ← add_rotate, add_comm _ (_ *_)]; congr 1
+        ← add_rotate, add_comm _ (_ * _)]; congr 1
       rw [← mul_rotate, ← add_mul, add_comm, mul_comm _ r, Nat.div_add_mod n' r]
 
 /-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in
@@ -383,7 +413,7 @@ theorem mul_card_edgeFinset_turanGraph_le :
     ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
     mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]
   gcongr ?_ * _
-  rcases r.eq_zero_or_pos with rfl | hr; · cutsat
+  rcases r.eq_zero_or_pos with rfl | hr; · lia
   rw [Nat.sub_one_mul, Nat.sub_one_mul, mul_comm]
   exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _
 
