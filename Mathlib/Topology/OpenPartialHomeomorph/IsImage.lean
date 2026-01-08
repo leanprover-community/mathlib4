@@ -269,7 +269,7 @@ theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s :=
 end restrOpen
 
 /-!
-# ofSet
+## ofSet
 
 The identity on a set `s`
 -/

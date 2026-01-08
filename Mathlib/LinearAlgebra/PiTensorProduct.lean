@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Curry
 We define the tensor product of an indexed family `s : ι → Type*` of modules over commutative
 semirings. We denote this space by `⨂[R] i, s i` and define it as `FreeAddMonoid (R × Π i, s i)`
 quotiented by the appropriate equivalence relation. The treatment follows very closely that of the
-binary tensor product in `LinearAlgebra/TensorProduct.lean`.
+binary tensor product in `Mathlib/LinearAlgebra/TensorProduct/Basic.lean`.
 
 ## Main definitions
 
@@ -322,10 +322,8 @@ lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
 /-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
 -/
 lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
-  existsi @Quotient.out _ (addConGen (PiTensorProduct.Eqv R s)).toSetoid x
-  simp only [lifts, Set.mem_setOf_eq]
-  rw [← AddCon.quot_mk_eq_coe]
-  erw [Quot.out_eq]
+  existsi Quot.out x
+  simp [lifts, ← AddCon.quot_mk_eq_coe]
 
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/
@@ -407,7 +405,7 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
   -- show _ • _ = _
   -- rw [one_smul]
-  erw [AddCon.lift_coe]
+  conv_lhs => apply AddCon.lift_coe
   simp
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
@@ -659,7 +657,7 @@ def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
   toFun := piTensorHomMapFun₂
   map_add' x y := piTensorHomMapFun₂_add x y
-  map_smul' x y :=  piTensorHomMapFun₂_smul x y
+  map_smul' x y := piTensorHomMapFun₂_smul x y
 
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
@@ -880,7 +878,7 @@ section tmulEquiv
 
 See `PiTensorProduct.tmulEquivDep` for the dependent version. -/
 def tmulEquiv :
-    (⨂[R] (_ : ι), M)  ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
+    (⨂[R] (_ : ι), M) ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
   tmulEquivDep R (fun _ ↦ M)
 
 @[simp]

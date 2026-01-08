@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Category MonoidalCategory
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [MonoidalCategory C]
 
 namespace MorphismProperty
@@ -68,7 +68,7 @@ lemma tensorHom_mem {X₁ X₂ : C} (f : X₁ ⟶ X₂) {Y₁ Y₂ : C} (g : Y�
 
 /-- The inverse image under a monoidal functor of a monoidal morphism property which respects
 isomorphisms is monoidal. -/
-instance {C' : Type*} [Category C'] [MonoidalCategory C'] (F : C' ⥤ C) [F.Monoidal]
+instance {C' : Type*} [Category* C'] [MonoidalCategory C'] (F : C' ⥤ C) [F.Monoidal]
     [W.RespectsIso] : (W.inverseImage F).IsMonoidal := .mk' _ fun f g hf hg ↦ by
   simp only [inverseImage_iff] at hf hg ⊢
   rw [Functor.Monoidal.map_tensor _ f g]
@@ -211,7 +211,7 @@ lemma leftUnitor_hom_app (Y : C) :
   rw [liftNatTrans_app]
   dsimp
   rw [assoc]
-  change _ ≫ (μ L W ε  _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
+  change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
 lemma rightUnitor_hom_app (X : C) :
@@ -222,13 +222,13 @@ lemma rightUnitor_hom_app (X : C) :
   rw [liftNatTrans_app]
   dsimp
   rw [assoc]
-  change _ ≫ (μ L W ε  _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
+  change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
 lemma associator_hom_app (X₁ X₂ X₃ : C) :
     (α_ ((L').obj X₁) ((L').obj X₂) ((L').obj X₃)).hom =
       ((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom ≫ (L').map (α_ X₁ X₂ X₃).hom ≫
-        (μ L W ε  _ _).inv ≫ (𝟙 _ ⊗ₘ (μ L W ε  _ _).inv) := by
+        (μ L W ε _ _).inv ≫ (𝟙 _ ⊗ₘ (μ L W ε _ _).inv) := by
   dsimp [monoidalCategoryStruct, associator]
   simp only [Functor.map_id, comp_id, NatTrans.id_app, id_comp]
   rw [Localization.associator_hom_app_app_app]

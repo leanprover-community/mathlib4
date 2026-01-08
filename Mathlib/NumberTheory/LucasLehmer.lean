@@ -192,14 +192,6 @@ theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p
   | zero => dsimp [s, sZMod]; simp
   | succ i ih => push_cast [s, sZMod, ih]; rfl
 
--- These next two don't make good `norm_cast` lemmas.
-theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
-  have : 1 ≤ b ^ p := Nat.one_le_pow p b w
-  norm_cast
-
-theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
-  Int.natCast_pow_pred 2 p (by decide)
-
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
   induction i <;> push_cast [← Int.coe_nat_two_pow_pred p, sMod, sZMod, *] <;> rfl
 
@@ -627,7 +619,7 @@ Lean 4 kernel, which has the capability of efficiently reducing natural number e
 With this reduction in hand, it's a simple matter of applying the lemma
 `LucasLehmer.residue_eq_zero_iff_sMod_eq_zero`.
 
-See [Archive/Examples/MersennePrimes.lean] for certifications of all Mersenne primes
+See `Archive/Examples/MersennePrimes.lean` for certifications of all Mersenne primes
 up through `mersenne 4423`.
 -/
 
@@ -747,14 +739,14 @@ end LucasLehmer
 
 /-!
 This implementation works successfully to prove `(2^4423 - 1).Prime`,
-and all the Mersenne primes up to this point appear in [Archive/Examples/MersennePrimes.lean].
+and all the Mersenne primes up to this point appear in `Archive/Examples/MersennePrimes.lean`.
 These can be calculated nearly instantly, and `(2^9689 - 1).Prime` only fails due to deep
 recursion.
 
 (Note by kmill: the following notes were for the Lean 3 version. They seem like they could still
 be useful, so I'm leaving them here.)
 
-There's still low hanging fruit available to do faster computations
+There's still low-hanging fruit available to do faster computations
 based on the formula
 ```
 n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]

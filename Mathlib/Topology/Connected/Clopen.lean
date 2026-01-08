@@ -113,14 +113,10 @@ theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
 theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = ∅ ∨ s = univ :=
   ⟨fun hs =>
     by_contradiction fun h =>
-      have h1 : s ≠ ∅ ∧ sᶜ ≠ ∅ :=
-        ⟨mt Or.inl h,
-          mt (fun h2 => Or.inr <| (by rw [← compl_compl s, h2, compl_empty] : s = univ)) h⟩
-      let ⟨_, h2, h3⟩ :=
-        nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) (nonempty_iff_ne_empty.2 h1.1)
-          (nonempty_iff_ne_empty.2 h1.2)
+      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_iff_ne_empty] using h
+      have ⟨_, h2, h3⟩ := nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) h1.1 h1.2
       h3 h2,
-    by rintro (rfl | rfl) <;> [exact isClopen_empty; exact isClopen_univ]⟩
+    by rintro (rfl | rfl); exacts [isClopen_empty, isClopen_univ]⟩
 
 theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (h : s.Nonempty) :
     s = univ :=
@@ -147,15 +143,14 @@ element. -/
 lemma subsingleton_of_disjoint_isClopen
     (h_clopen : ∀ i, IsClopen (s i)) :
     Subsingleton ι := by
-  replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
   rw [← not_nontrivial_iff_subsingleton]
   by_contra ⟨i, j, h_ne⟩
   replace h_ne : s i ∩ s j = ∅ := by
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
   rcases isClopen_iff.mp (h_clopen i) with hi | hi
-  · exact h_nonempty i hi
+  · exact (h_nonempty i).ne_empty hi
   · rw [hi, univ_inter] at h_ne
-    exact h_nonempty j h_ne
+    exact (h_nonempty j).ne_empty h_ne
 
 /-- In a preconnected space, any disjoint cover by non-empty open subsets has at most one
 element. -/
