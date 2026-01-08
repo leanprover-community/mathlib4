@@ -300,10 +300,16 @@ theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : Meas
     (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=
   ext fun t ht => by simp [*, hf ht]
 
-theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ s) = μ.restrict s :=
-  ext fun t ht => by
-    rw [restrict_apply ht, restrict_apply ht, inter_comm, measure_toMeasurable_inter ht h,
-      inter_comm]
+theorem restrict_inter_toMeasurable (h : μ s ≠ ∞) (ht : MeasurableSet t) (hst : s ⊆ t) :
+    μ.restrict (t ∩ toMeasurable μ s) = μ.restrict s := by
+  ext u hu
+  rw [restrict_apply hu, restrict_apply hu, inter_comm t, inter_comm, inter_assoc,
+    measure_toMeasurable_inter (ht.inter hu) h]
+  congr 1
+  grind
+
+theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ s) = μ.restrict s := by
+  simpa using restrict_inter_toMeasurable h MeasurableSet.univ (subset_univ _)
 
 theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ ⦃μ : Measure α⦄
     (hs : ∀ᵐ x ∂μ, x ∈ s) : μ.restrict s = μ :=
@@ -998,9 +1004,6 @@ theorem mem_map_indicator_ae_iff_of_zero_notMem [Zero β] {t : Set β} (ht : (0 
   rw [mem_map, mem_ae_iff, Set.indicator_preimage, Set.ite, Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∪ sᶜ) = 0
   simp only [ht, if_false, Set.compl_empty, Set.empty_diff, Set.inter_univ, Set.preimage_const]
-
-@[deprecated (since := "2025-05-24")]
-alias mem_map_indicator_ae_iff_of_zero_nmem := mem_map_indicator_ae_iff_of_zero_notMem
 
 theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
     Filter.map f (ae <| μ.restrict s) ≤ Filter.map (s.indicator f) (ae μ) := by

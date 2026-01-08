@@ -19,7 +19,7 @@ functions for `p < ∞`.
 This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 
@@ -32,7 +32,8 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [B
   [NormedSpace ℝ F]
   (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ]
 
-/-- For every continuous compactly supported function `f`there exists a smooth compactly supported
+set_option backward.privateInPublic true in
+/-- For every continuous compactly supported function `f` there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
 theorem exist_eLpNorm_sub_le_of_continuous {p : ℝ≥0∞} (hp : p ≠ ⊤) {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) :

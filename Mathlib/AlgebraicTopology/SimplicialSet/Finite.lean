@@ -122,4 +122,18 @@ instance finite_range {Y : SSet.{u}} (f : Y ⟶ X) [Y.Finite] :
     SSet.Finite (Subcomplex.range f) :=
   finite_of_epi (Subcomplex.toRange f)
 
+lemma finite_iSup_iff {X : SSet.{u}} {ι : Type*} [Finite ι]
+    (A : ι → X.Subcomplex) :
+    SSet.Finite (⨆ i, A i :) ↔ ∀ i, SSet.Finite (A i) := by
+  refine ⟨fun h i ↦ finite_of_mono (Subcomplex.homOfLE (le_iSup A i)), fun h ↦ ⟨?_⟩⟩
+  refine Finite.of_surjective (f := fun (⟨i, s⟩ : Σ (i : ι), (A i).toSSet.N) ↦
+    N.mk ((Subcomplex.homOfLE (le_iSup A i)).app _ s.simplex)
+      (by simpa only [nonDegenerate_iff_of_mono] using s.nonDegenerate)) ?_
+  intro s
+  obtain ⟨d, ⟨⟨s, h₁⟩, h₂⟩, rfl⟩ := s.mk_surjective
+  simp only [Subfunctor.iSup_obj, Set.mem_iUnion] at h₁
+  obtain ⟨i, hi⟩ := h₁
+  rw [Subcomplex.mem_nonDegenerate_iff] at h₂
+  exact ⟨⟨i, N.mk ⟨s, hi⟩ (by rwa [Subcomplex.mem_nonDegenerate_iff])⟩, rfl⟩
+
 end SSet

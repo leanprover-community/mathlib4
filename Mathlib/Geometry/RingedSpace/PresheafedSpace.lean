@@ -13,7 +13,7 @@ public import Mathlib.Topology.Sheaves.Presheaf
 # Presheafed spaces
 
 Introduces the category of topological spaces equipped with a presheaf (taking values in an
-arbitrary target category `C`.)
+arbitrary target category `C`).
 
 We further describe how to apply functors and natural transformations to the values of the
 presheaves.
@@ -150,7 +150,7 @@ theorem id_c_app (X : PresheafedSpace C) (U) :
   rw [id_c, map_id]
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem comp_base {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl

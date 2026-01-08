@@ -127,13 +127,13 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   have h₂ := withBotSucc_degree_eq_natDegree_add_one hep
   obtain ⟨n, hn, hn2⟩ : ∃ d, P.natDegree = P.eraseLead.natDegree + 1 + d ∧
       d = P.natDegree - P.eraseLead.degree.succ := by
-    use P.natDegree - P.eraseLead.natDegree -  1
+    use P.natDegree - P.eraseLead.natDegree - 1
     have := eraseLead_natDegree_le P
     lia
   rw [← hn2]; clear hn2
   apply List.ext_getElem?
   rintro (_ | k)
-  · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
+  · obtain ⟨w, h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
   simp only [coeffList, List.map_reverse]
   by_cases! hkd : P.natDegree + 1 ≤ k + 1

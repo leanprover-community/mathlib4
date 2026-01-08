@@ -77,9 +77,14 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
+theorem surjective_decode_getD (α : Type*) [Encodable α] (d : α) :
+    Surjective fun n => (Encodable.decode n).getD d := fun x =>
+  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]; rfl⟩
+
+@[deprecated surjective_decode_getD (since := "2026-01-05")]
 theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
-    Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
-  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
+    Surjective fun n => ((Encodable.decode n).getD default : α) :=
+  surjective_decode_getD α default
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
 best way to infer decidability. -/
@@ -475,19 +480,26 @@ section FindA
 
 variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
+set_option backward.privateInPublic true in
 private def good : Option α → Prop
   | some a => p a
   | none => False
 
+set_option backward.privateInPublic true in
 private def decidable_good : DecidablePred (good p) :=
   fun n => by
     cases n <;> unfold good <;> dsimp <;> infer_instance
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 attribute [local instance] decidable_good
 
 open Encodable
 
 variable {p}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
@@ -522,8 +534,8 @@ There is a total ordering on the elements of an encodable type, induced by the m
 def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 
-instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isAntisymm
+instance {α} [Encodable α] : Std.Antisymm (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).antisymm
 
 instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isTotal

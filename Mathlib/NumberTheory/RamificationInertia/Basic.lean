@@ -330,19 +330,22 @@ end DecEq
 
 section absNorm
 
+lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
+    [Module.Free ℤ S] [IsDedekindDomain R] [Module.Free ℤ R] [Algebra S R] [Module.Finite S R]
+    (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
+    absNorm P = absNorm p ^ (p.inertiaDeg P) := by
+  have : p.IsMaximal := hp.isMaximal hp_ne_bot
+  let _ : Field (S ⧸ p) := Quotient.field p
+  simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
+
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
-  have : (span {p}).IsMaximal :=
-    (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
-  have h : Module.Finite (ℤ ⧸ span {p}) (R ⧸ P) := module_finite_of_liesOver P (span {p})
-  let _ : Field (ℤ ⧸ span {p}) := Quotient.field (span {p})
-  rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
-    Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
-  simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+  simpa using absNorm_eq_pow_inertiaDeg_of_liesOver P (span {p})
+    (by rwa [span_singleton_prime hp.ne_zero]) (by simpa using hp.ne_zero)
 
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg P)`.
@@ -350,7 +353,7 @@ See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
 lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
-  absNorm_eq_pow_inertiaDeg P ( Nat.prime_iff_prime_int.mp hp)
+  absNorm_eq_pow_inertiaDeg P (Nat.prime_iff_prime_int.mp hp)
 
 end absNorm
 section FinrankQuotientMap

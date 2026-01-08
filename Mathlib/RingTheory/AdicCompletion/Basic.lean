@@ -88,13 +88,12 @@ theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
     simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
       Submodule.top_toAddSubmonoid]
     rw [AddSubmonoid.smul_le]
-    intro r hr m _
+    intro r hr m hm
     rw [← algebraMap_smul S r m]
-    apply AddSubmonoid.smul_mem_smul
-    · have := Ideal.mem_map_of_mem (algebraMap R S) hr
-      simp only [Ideal.map_pow] at this
-      apply Ideal.pow_right_mono (I := I.map (algebraMap R S)) hIJ n this
-    · trivial
+    apply AddSubmonoid.smul_mem_smul ?_ hm
+    have := Ideal.mem_map_of_mem (algebraMap R S) hr
+    simp only [Ideal.map_pow] at this
+    exact Ideal.pow_right_mono hIJ n this
   · exact h n
 
 variable (I) in
@@ -720,7 +719,7 @@ theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
-projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n`.
 -/
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
@@ -731,7 +730,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
-If `F : M →ₗ[R] N` makes the following diagram commutes
+If `F : M →ₗ[R] N` makes the following diagram commute
 ```
   N
   | \

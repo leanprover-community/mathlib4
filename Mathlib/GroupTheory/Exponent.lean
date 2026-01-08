@@ -498,6 +498,7 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
+set_option backward.proofsInPublic true in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by
@@ -663,23 +664,11 @@ lemma mul_notMem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
     mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
   aesop
 
-@[deprecated (since := "2025-05-23")]
-alias add_not_mem_of_addOrderOf_eq_two := add_notMem_of_addOrderOf_eq_two
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mul_not_mem_of_orderOf_eq_two := mul_notMem_of_orderOf_eq_two
-
 @[to_additive]
 lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
     (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
   mul_notMem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
-
-@[deprecated (since := "2025-05-23")]
-alias add_not_mem_of_exponent_two := add_notMem_of_exponent_two
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mul_not_mem_of_exponent_two := mul_notMem_of_exponent_two
 
 end Group
 
