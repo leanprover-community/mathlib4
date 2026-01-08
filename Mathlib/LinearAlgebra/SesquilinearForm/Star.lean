@@ -14,7 +14,7 @@ This file provides some properties about sesquilinear forms `M →ₗ⋆[R] M �
 `StarRing`.
 -/
 
-@[expose] public section
+public section
 
 open Module LinearMap
 
@@ -58,7 +58,7 @@ variable {R : Type*} [CommRing R] [StarRing R] [PartialOrder R] [Module R M]
 
 lemma LinearMap.isPosSemidef_iff_posSemidef_toMatrix :
     B.IsPosSemidef ↔ (toMatrix₂ b b B).PosSemidef := by
-  rw [isPosSemidef_def, Matrix.PosSemidef]
+  rw [isPosSemidef_def, Matrix.posSemidef_iff_dotProduct_mulVec]
   apply and_congr (B.isSymm_iff_isHermitian_toMatrix b)
   rw [isNonneg_def]
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩

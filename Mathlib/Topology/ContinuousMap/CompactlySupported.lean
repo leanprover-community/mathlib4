@@ -152,6 +152,15 @@ lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
 
+/-- A compactly supported continuous function gives rise to a bounded continuous function. -/
+@[simps] def toBoundedContinuousFunction {β : Type*} [PseudoMetricSpace β] [Zero β]
+    (f : C_c(α, β)) : BoundedContinuousFunction α β where
+  toFun := f
+  map_bounded' := by
+    have : IsCompact (Set.range f) := f.hasCompactSupport.isCompact_range f.continuous
+    rcases Metric.isBounded_iff.1 this.isBounded with ⟨C, hC⟩
+    exact ⟨C, by grind⟩
+
 end Basics
 
 /-! ### Algebraic structure
@@ -676,8 +685,8 @@ protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f�
   · ext x
     simpa [← NNReal.coe_add] using add_tsub_cancel_of_le (h x)
 
-/-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
-continuous `ℝ≥0`-valued function. -/
+/-- The nonnegative part of a continuous compactly supported `ℝ`-valued function as a
+continuous compactly supported `ℝ≥0`-valued function. -/
 noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
   toFun := Real.toNNReal.comp f.toFun
   continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous

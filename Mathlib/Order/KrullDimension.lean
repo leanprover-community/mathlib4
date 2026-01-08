@@ -466,12 +466,12 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
     obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
-    use p ⟨n, by omega⟩
+    use p ⟨n, by lia⟩
     constructor
     · rw [← hp]
       apply LTSeries.strictMono
-      simp [Fin.last]; omega
-    · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by omega⟩
+      simp [Fin.last]; lia
+    · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by lia⟩
   mpr := fun ⟨y, hyx, hy⟩ =>
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
@@ -710,7 +710,7 @@ lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l
   rcases n with - | n
   · rw [ENat.coe_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
     simp
-  · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast, Nat.lt_succ_iff]
+  · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast]
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   iSup_le fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
@@ -975,14 +975,14 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     let p' : LTSeries α := {
       length := p.length - 1
       toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by lia⟩).unbot (by
-        apply ne_bot_of_gt (a := p.head)
+        apply ne_bot_of_gt (b := p.head)
         apply p.strictMono
         exact compare_gt_iff_gt.mp rfl)
       step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by lia⟩ }
     have hlast' : p'.last = x := by
       simp only [p', RelSeries.last, WithBot.unbot_eq_iff, ← hlast, Fin.last]
       congr
-      omega
+      lia
     suffices p'.length ≤ height p'.last by
       simpa [p', hlast'] using this
     apply length_le_height_last

@@ -18,7 +18,7 @@ This file contains some results on absolute values applied to integers.
 * `AbsoluteValue.map_units_int`: an absolute value sends all units of `ℤ` to `1`
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
 

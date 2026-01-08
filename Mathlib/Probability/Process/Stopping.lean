@@ -351,7 +351,7 @@ theorem add {f : Filtration ℕ m} {τ π : Ω → WithTop ℕ}
       | coe b =>
         simp only [ENat.some_eq_coe, Nat.cast_inj, exists_eq_left', iff_and_self]
         norm_cast
-        omega
+        lia
   rw [h]
   exact MeasurableSet.iUnion fun k =>
     MeasurableSet.iUnion fun hk => (hπ.measurableSet_eq_le hk).inter (hτ.add_const_nat i)
@@ -1250,11 +1250,12 @@ theorem isStoppingTime_piecewise_const (hij : i ≤ j) (hs : MeasurableSet[𝒢 
   (isStoppingTime_const 𝒢 i).piecewise_of_le (isStoppingTime_const 𝒢 j) (fun _ => le_rfl)
     (fun _ => mod_cast hij) hs
 
-theorem stoppedValue_piecewise_const {ι' : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → ℝ} :
+theorem stoppedValue_piecewise_const {ι' α : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → α} :
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) = s.piecewise (f i) (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
 
-theorem stoppedValue_piecewise_const' {ι' : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → ℝ} :
+theorem stoppedValue_piecewise_const' {ι' α : Type*} [AddCommGroup α]
+    [Nonempty ι'] {i j : ι'} {f : ι' → Ω → α} :
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) =
     s.indicator (f i) + sᶜ.indicator (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
@@ -1311,14 +1312,10 @@ theorem condExp_min_stopping_time_ae_eq_restrict_le [SecondCountableTopology ι]
     [SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
     μ[f|(hτ.min hσ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}] μ[f|hτ.measurableSpace] := by
   have : SigmaFinite (μ.trim hτ.measurableSpace_le) :=
-    haveI h_le : (hτ.min hσ).measurableSpace ≤ hτ.measurableSpace := by
-      rw [IsStoppingTime.measurableSpace_min]
-      · exact inf_le_left
-      · simp_all only
-    sigmaFiniteTrim_mono _ h_le
+    sigmaFiniteTrim_mono _ (hτ.measurableSpace_min hσ ▸ inf_le_left)
   refine (condExp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le
     (hτ.min hσ).measurableSpace_le (hτ.measurableSet_le_stopping_time hσ) fun t => ?_).symm
-  rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_le_iff]; simp_all only
+  rw [Set.inter_comm _ t, hτ.measurableSet_inter_le_iff hσ]
 
 end Condexp
 

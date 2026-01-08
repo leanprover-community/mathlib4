@@ -208,10 +208,8 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
 @[elab_as_elim]
 theorem induction_on {motive : CoprodI M → Prop} (m : CoprodI M) (one : motive 1)
     (of : ∀ (i) (m : M i), motive (of m))
-    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m := by
-  induction m using CoprodI.induction_left with
-  | one => exact one
-  | mul m x hx => exact mul _ _ (of _ _) hx
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
+  induction_left m one fun {_} _ _ ↦ mul _ _ (of _ _)
 
 section Group
 
@@ -404,6 +402,7 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
 
 variable [DecidableEq ι] [∀ i, DecidableEq (M i)]
 
+set_option backward.privateInPublic true in
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
 /-- Given `i : ι`, any reduced word can be decomposed into a pair `p` such that `w = rcons p`. -/
@@ -418,6 +417,8 @@ private def equivPairAux (i) (w : Word M) : { p : Pair M i // rcons p = w } :=
           property := by subst ij; simp [rcons, h2] }
       else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩, by simp [rcons]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
 def equivPair (i) : Word M ≃ Pair M i where
@@ -643,11 +644,7 @@ def last : ∀ {i j} (_w : NeWord M i j), M j
 
 @[simp]
 theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨i, w.head⟩ := by
-  rw [← Option.mem_def]
-  induction w
-  · rw [Option.mem_def]
-    rfl
-  · exact List.mem_head?_append_of_mem_head? (by assumption)
+  fun_induction toList with grind [head]
 
 @[simp]
 theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
@@ -820,7 +817,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
   | @append i j k l w₁ hne w₂ hIw₁ hIw₂ =>
     calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
-        simp [MulAction.mul_smul]
+        simp [mul_smul]
       _ ⊆ lift f w₁.prod • X _ := smul_set_subset_smul_set_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 
@@ -1025,7 +1022,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           | succ n _hle hi =>
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
-              _ = a i ^ n • a i • (Y i)ᶜ := MulAction.mul_smul _ _ _
+              _ = a i ^ n • a i • (Y i)ᶜ := mul_smul _ _ _
               _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
               _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
@@ -1043,7 +1040,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           | pred n hle hi =>
             calc
               a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
-              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := MulAction.mul_smul _ _ _
+              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := mul_smul _ _ _
               _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
               _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi

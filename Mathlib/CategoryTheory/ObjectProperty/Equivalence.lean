@@ -40,7 +40,7 @@ lemma isEquivalence_ιOfLE_iff : (ιOfLE h).IsEquivalence ↔ Q ≤ P.isoClosure
 instance : (ιOfLE P.le_isoClosure).IsEquivalence := by rw [isEquivalence_ιOfLE_iff]
 
 variable (C) in
-/-- The equivalence between the fullsubcategory `⊤` of a category `C` and `C` itself. -/
+/-- The equivalence between the full subcategory `⊤` of a category `C` and `C` itself. -/
 @[simps]
 def topEquivalence : ObjectProperty.FullSubcategory (C := C) ⊤ ≌ C where
   functor := ObjectProperty.ι _
@@ -69,6 +69,7 @@ def congrFullSubcategory [Q.IsClosedUnderIsomorphisms] (h : Q.inverseImage e.fun
     (P.ι.isoWhiskerLeft e.unitIso)
   counitIso := (Q.fullyFaithfulι.whiskeringRight _).preimageIso
     (Q.ι.isoWhiskerLeft e.counitIso)
-  functor_unitIso_comp X := e.functor_unit_comp X.obj
+  functor_unitIso_comp X :=
+    ObjectProperty.hom_ext _ (e.functor_unit_comp X.obj)
 
 end CategoryTheory.Equivalence

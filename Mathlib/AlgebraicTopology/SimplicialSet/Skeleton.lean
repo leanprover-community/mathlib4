@@ -45,9 +45,9 @@ def skeleton : ℕ →o X.Subcomplex where
     simp only [iSup_le_iff]
     intro k x
     exact le_trans (by exact le_trans (by rfl) (le_iSup _ x))
-      (le_iSup _ ⟨k, by cutsat⟩)
+      (le_iSup _ ⟨k, by lia⟩)
 
-lemma mem_skeleton {i : ℕ} (x : X _⦋i⦌) {n : ℕ} (hi : i < n := by cutsat) :
+lemma mem_skeleton {i : ℕ} (x : X _⦋i⦌) {n : ℕ} (hi : i < n := by lia) :
     x ∈ (X.skeleton n).obj _ := by
   obtain ⟨j, f, _, y, rfl⟩ := X.exists_nonDegenerate x
   suffices Subcomplex.ofSimplex y.1 ≤ X.skeleton n from
@@ -71,12 +71,12 @@ lemma mem_skeleton_obj_iff_of_nonDegenerate
     x.1 ∈ (X.skeleton n).obj _ ↔ d < n := by
   refine ⟨fun h ↦ ?_, fun _ ↦ X.mem_skeleton _⟩
   obtain ⟨x, hx⟩ := x
-  simp only [skeleton, OrderHom.coe_mk, Subpresheaf.iSup_obj,
+  simp only [skeleton, OrderHom.coe_mk, Subfunctor.iSup_obj,
     Set.iUnion_coe_set, Set.mem_iUnion, exists_prop] at h
   obtain ⟨⟨i, hi⟩, y, hy, ⟨f⟩, rfl⟩ := h
   have := X.mono_of_nonDegenerate ⟨_, hx⟩ f y rfl
   have : d ≤ i := SimplexCategory.len_le_of_mono f
-  cutsat
+  lia
 
 @[simp]
 lemma skeleton_zero : X.skeleton 0 = ⊥ := by
@@ -87,8 +87,8 @@ lemma iSup_skeleton :
   le_antisymm (by simp) (by
     rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro n x _
-    simp only [Subpresheaf.iSup_obj, Set.mem_iUnion]
-    exact ⟨n + 1, mem_skeleton _ _ (by cutsat)⟩)
+    simp only [Subfunctor.iSup_obj, Set.mem_iUnion]
+    exact ⟨n + 1, mem_skeleton _ _ (by lia)⟩)
 
 lemma skeleton_succ (n : ℕ) :
     X.skeleton (n + 1) =

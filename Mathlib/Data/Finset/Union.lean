@@ -96,15 +96,20 @@ section DecidableEq
 
 variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
 
+set_option backward.privateInPublic true in
 private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
   fun x' hx y' hy hne ↦ by
     simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
       s.filter fun c ↦ f c ∈ t :=
   ext fun b => by simpa using and_comm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma disjiUnion_filter_eq_of_maps_to (h : ∀ x ∈ s, f x ∈ t) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by
   simpa [filter_eq_self]

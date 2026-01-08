@@ -884,6 +884,10 @@ lemma direction_affineSpan_pair_le_iff_exists_smul {p₁ q₁ p₂ q₂ : P} :
   rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
     Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
 
+theorem affineSpan_pair_comm {p₁ p₂ : P} :
+    line[k, p₁, p₂] = line[k, p₂, p₁] := by
+  rw [Set.pair_comm]
+
 end AffineSubspace
 
 section DivisionRing
