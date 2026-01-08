@@ -265,6 +265,14 @@ lemma isMeagre_iUnion [Countable ι'] {f : ι' → Set X} (hs : ∀ i, IsMeagre 
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
+lemma isMeagre_biUnion {I : Set ι} (c : I.Countable) {f : ι → Set X}
+    (h : ∀ i ∈ I, IsMeagre (f i)) : IsMeagre (⋃ i ∈ I, f i) := by
+  suffices IsMeagre (⋃ i : I, f i) by simpa
+  have : Countable I := c
+  apply isMeagre_iUnion
+  intro ⟨i, hi⟩
+  exact h i hi
+
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
 lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
@@ -293,11 +301,7 @@ lemma exists_of_not_isMeagre_biUnion {I : Set ι}
     (c : I.Countable) {A : ι → Set X} (h : ¬IsMeagre (⋃ i ∈ I, A i)) :
     ∃ i ∈ I, ¬IsMeagre (A i) := by
   contrapose! h
-  suffices IsMeagre (⋃ i : I, A i) by simpa
-  have : Countable I := c
-  apply isMeagre_iUnion
-  intro ⟨i, hi⟩
-  exact h i hi
+  exact isMeagre_biUnion c h
 
 /-- The image of a meagre set through an inducing map is meagre. -/
 lemma Topology.IsInducing.isMeagre_image [TopologicalSpace Y] {f : X → Y}
