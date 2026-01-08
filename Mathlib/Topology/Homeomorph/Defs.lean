@@ -443,7 +443,7 @@ theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
 
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
-  map_continuous  f := map_continuous f
+  map_continuous f := map_continuous f
 
 instance : HomeomorphClass (α ≃ₜ β) α β where
   map_continuous e := e.continuous_toFun

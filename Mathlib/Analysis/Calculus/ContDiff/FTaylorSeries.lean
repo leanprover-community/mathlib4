@@ -917,6 +917,12 @@ theorem iteratedFDeriv_one_apply (m : Fin 1 → E) :
     iteratedFDeriv 𝕜 1 f x m = fderiv 𝕜 f x (m 0) := by
   rw [iteratedFDeriv_succ_apply_right, iteratedFDeriv_zero_apply, last_zero]
 
+@[simp]
+theorem norm_iteratedFDeriv_one (f : E → F) :
+    ‖iteratedFDeriv 𝕜 1 f x‖ = ‖fderiv 𝕜 f x‖ := by
+  rw [← iteratedFDerivWithin_univ, ← fderivWithin_univ]
+  exact norm_iteratedFDerivWithin_one f uniqueDiffWithinAt_univ
+
 lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
     iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by
   simp [iteratedFDeriv_succ_apply_right, init]
