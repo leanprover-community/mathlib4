@@ -281,9 +281,8 @@ variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra R C]
 
 lemma distribBaseChange_includeLeft_lTensor_tmul (a : A) (b : B) :
-    (AlgebraTensorModule.distribBaseChange R A B C)
-      (includeLeft.toLinearMap.lTensor A (a ⊗ₜ[R] b)) =
-    includeLeft (S := R) (a ⊗ₜ[R] b) := by
+    AlgebraTensorModule.distribBaseChange R A B C (includeLeft.toLinearMap.lTensor A (a ⊗ₜ[R] b)) =
+      includeLeft (S := R) (a ⊗ₜ[R] b) := by
   simp [one_def]
 
 /-- A relation between `distribBaseChange`, `includeLeft` and `lTensor`. -/
