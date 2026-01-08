@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Closure
+public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Data.Set.Notation
+import Mathlib.Topology.Constructions
 
 /-!
 # `Gδ` sets
@@ -190,7 +193,7 @@ end residual
 
 section IsMeagre
 open Function TopologicalSpace Set
-variable {X : Type*} [TopologicalSpace X]
+variable [TopologicalSpace X]
 
 /-- A set is called **nowhere dense** iff its closure has empty interior. -/
 def IsNowhereDense (s : Set X) := interior (closure s) = ∅
@@ -199,6 +202,11 @@ def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 @[simp]
 lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
   rw [IsNowhereDense, closure_empty, interior_empty]
+
+/-- A subset of a nowhere dense set is nowhere dense. -/
+@[gcongr]
+lemma IsNowhereDense.mono {s t : Set X} (ht : t ⊆ s) (hs : IsNowhereDense s) : IsNowhereDense t :=
+  Set.eq_empty_of_subset_empty <| by grw [ht]; rw [hs]
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
@@ -220,6 +228,32 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
+
+/-- To check that `s` is nowhere dense, it suffices to check that no point of `s`
+is in the interior of `closure s`. -/
+lemma isNowhereDense_iff_disjoint {s : Set X} :
+    IsNowhereDense s ↔ Disjoint s (interior (closure s)) :=
+  ⟨fun H ↦ H ▸ disjoint_empty _, fun H ↦
+    H.closure_left isOpen_interior |>.mono_left interior_subset |>.eq_bot_of_self⟩
+
+/-- To check that `s` is nowhere dense, it suffices to check that `closure s` is not a
+neighborhood of any point of `s`. -/
+lemma isNowhereDense_iff_forall_notMem_nhds {s : Set X} :
+    IsNowhereDense s ↔ ∀ x ∈ s, closure s ∉ 𝓝 x := by
+  simp [isNowhereDense_iff_disjoint, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem,
+    mem_interior_iff_mem_nhds]
+
+/-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
+lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y]
+    (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
+  rw [isNowhereDense_iff_forall_notMem_nhds, forall_mem_image] at *
+  simp_rw [hf.nhds_eq_comap, hf.closure_eq_preimage_closure_image] at h
+  exact fun x x_mem hx ↦ h x x_mem (preimage_mem_comap hx)
+
+/-- A set is nowhere dense if it is nowhere dense in some subspace. -/
+lemma IsNowhereDense.image_val {Y : Set X} {s : Set Y}
+    (hs : IsNowhereDense s) : IsNowhereDense (s : Set X) :=
+  Topology.IsInducing.subtypeVal.isNowhereDense_image hs
 
 /-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
