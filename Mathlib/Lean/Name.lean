@@ -86,15 +86,17 @@ meta def Lean.Name.willRoundTrip (n : Name) : Bool :=
   !n.isAnonymous -- anonymous names do not roundtrip
     && !n.hasMacroScopes -- names with macroscopes do not roundtrip
     && !maybePseudoSyntax -- names which might be "pseudo-syntax" do not roundtrip
+    && !n.isInaccessibleUserName -- names which satisfy `isInaccessibleUserName` may not roundtrip
     && go n
 where
   go : Lean.Name → Bool
     | .str n s =>
-      -- names which satisfy `isInaccessibleUserName` (containing `'✝'` or having a component equal to  `"_inaccessible"`do not round trip
-      -- names with newlines may not round trip; for convenience, we consider all names with newlines to be non-roundtrippable, though technically some might
-      s != "_inaccessible"
-        && !s.contains (fun c => c == '✝' || c == '_inaccessible' || c == '\n')
-        -- names must satisfy `(Name.escapePart s).isSome` for any string component `s` can roundtrip; this reduces to `!s.any Lean.isIdEndEscape`
+      /-
+        names with newlines may not round trip; for convenience, we consider all names
+        with newlines to be non-roundtrippable, though technically some might
+      -/
+        && !s.contains (c == '\n')
+        -- names containing the end escape character `»` do not roundtrip
         && !s.any isIdEndEscape
         && go n
     | .num .. => false -- names with any numeric components do not roundtrip
