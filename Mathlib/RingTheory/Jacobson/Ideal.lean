@@ -375,18 +375,27 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
 
 end IsLocal
 
-theorem isPrimary_of_isMaximal_radical [CommRing R] {I : Ideal R} (hi : IsMaximal (radical I)) :
-    I.IsPrimary :=
-  have : radical I = jacobson I :=
-    le_antisymm (le_sInf fun _ ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
-      (sInf_le ⟨le_radical, hi⟩)
-  isPrimary_iff.mpr
-  ⟨ne_top_of_lt <| lt_of_le_of_lt le_radical (lt_top_iff_ne_top.2 hi.1.1), fun {x y} hxy =>
-    ((isLocal_of_isMaximal_radical hi).mem_jacobson_or_exists_inv y).symm.imp
-      (fun ⟨z, hz⟩ => by
-        rw [← mul_one x, ← sub_sub_cancel (z * y) 1, mul_sub, mul_left_comm]
-        exact I.sub_mem (I.mul_mem_left _ hxy) (I.mul_mem_left _ hz))
-      (this ▸ id)⟩
+theorem isPrimary_of_isMaximal_radical [CommSemiring R] {I : Ideal R} (hi : IsMaximal (radical I)) :
+    I.IsPrimary := by
+  rw [isPrimary_iff]
+  constructor
+  · rintro rfl
+    rw [radical_top] at hi
+    exact hi.ne_top rfl
+  · intro x y hxy
+    rw [or_iff_not_imp_right]
+    intro hy
+    obtain ⟨a, b, hb, ha⟩ := hi.exists_inv hy
+    rw [mem_radical_iff] at hb
+    obtain ⟨k, hk⟩ := hb
+    rw [mul_comm] at ha
+    replace ha := congr_arg (x * · ^ k) ha
+    simp only at ha
+    rw [one_pow, add_pow, Finset.sum_range_succ'] at ha
+    simp only [pow_succ', mul_assoc, ← Finset.mul_sum, pow_zero, tsub_zero, one_mul,
+      Nat.choose_zero_right, Nat.cast_one, mul_one] at ha
+    rw [← ha, mul_add, ← mul_assoc]
+    exact I.add_mem (I.mul_mem_right _ hxy) (I.mul_mem_left x hk)
 
 end Ideal
 

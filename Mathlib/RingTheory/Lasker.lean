@@ -251,27 +251,11 @@ lemma IsLocalization.foo_of_mem_minimalPrimes
     have key := hq.1.1
     exact key.ne_top rfl
 
--- todo: generalize to CommSemiring
-lemma isPrimary_component₀ {R : Type*} [CommRing R] (I : Ideal R) (p : Ideal R) [hp : p.IsPrime] (hpI : p ∈ I.minimalPrimes) :
-    (I.component p).IsPrimary := by
-  classical
-  have tada (x : R) : x ∈ I.component p ↔ ∃ y ∉ p, y * x ∈ I :=
-    IsLocalization.algebraMap_mem_map_algebraMap_iff p.primeCompl (Localization.AtPrime p) I x
-  -- can we prove this without the existence of a minimal primary decomposition?
-  apply IsPrimary.comap
-  apply isPrimary_of_isMaximal_radical
-  have h1 := IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I
-  rw [← Ideal.sInf_minimalPrimes]
-  rw [IsLocalization.foo_of_mem_minimalPrimes I p hpI (Localization.AtPrime p),
-    sInf_singleton]
-  exact IsLocalization.AtPrime.isMaximal_map p (Localization.AtPrime p)
-
 lemma isPrimary_component (I : Ideal R) (p : Ideal R) [hp : p.IsPrime] (hpI : p ∈ I.minimalPrimes) :
     (I.component p).IsPrimary := by
   classical
   have tada (x : R) : x ∈ I.component p ↔ ∃ y ∉ p, y * x ∈ I :=
     IsLocalization.algebraMap_mem_map_algebraMap_iff p.primeCompl (Localization.AtPrime p) I x
-  -- can we prove this without the existence of a minimal primary decomposition?
   apply IsPrimary.comap
   apply isPrimary_of_isMaximal_radical
   have h1 := IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I
