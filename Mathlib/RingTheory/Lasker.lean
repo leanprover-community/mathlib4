@@ -214,22 +214,79 @@ lemma component_def (I p : Ideal R) [hp : p.IsPrime]
   rw [← φ.toAlgHom.comp_algebraMap, ← map_map, ← comap_comap, comap_map_of_bijective, component]
   exact φ.bijective
 
-lemma primary_component (I : Ideal R) (p : Ideal R) [hp : p.IsPrime] (hpI : p ∈ I.minimalPrimes) :
+lemma IsPrimary.comap {R S : Type*} [CommSemiring R] [CommSemiring S] {I : Ideal S} (hI : I.IsPrimary)
+    (φ : R →+* S) : (I.comap φ).IsPrimary := by
+  rw [isPrimary_iff] at hI ⊢
+  refine ⟨comap_ne_top φ hI.1, fun h ↦ ?_⟩
+  rw [mem_comap, map_mul] at h
+  rw [← comap_radical φ I]
+  exact hI.2 h
+
+lemma IsLocalization.foo_of_mem_minimalPrimes
+    {R : Type*} [CommSemiring R] (I : Ideal R)
+    (p : Ideal R) [hp : p.IsPrime] (hp' : p ∈ I.minimalPrimes)
+    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p] :
+    (I.map (algebraMap R S)).minimalPrimes = {p.map (algebraMap R S)} := by
+  rw [IsLocalization.minimalPrimes_map p.primeCompl S I, Set.eq_singleton_iff_unique_mem]
+  constructor
+  · rwa [Set.mem_preimage, IsLocalization.comap_map_of_isPrime_disjoint p.primeCompl S p hp]
+    exact Set.compl_disjoint (p : Set R)
+  · rintro q hq
+    rw [Set.mem_preimage] at hq
+    by_contra! hqp
+    replace hqp : q.comap (algebraMap R S) ≠ p := by
+      contrapose! hqp
+      rw [← hqp, IsLocalization.map_comap p.primeCompl]
+    replace hqp : ¬ q.comap (algebraMap R S) ≤ p := by
+      contrapose! hqp
+      exact le_antisymm hqp (hp'.2 hq.1 hqp)
+    replace hqp : ¬ Disjoint (p.primeCompl : Set R) (q.comap (algebraMap R S) : Set R) := by
+      contrapose! hqp
+      rw [← Set.subset_compl_iff_disjoint_right] at hqp
+      refine Set.compl_subset_compl.mp hqp
+    rw [← IsLocalization.map_algebraMap_ne_top_iff_disjoint p.primeCompl S] at hqp
+    simp only [ne_eq, not_not] at hqp
+    rw [IsLocalization.map_comap p.primeCompl S] at hqp
+    rw [hqp, comap_top] at hq
+    have key := hq.1.1
+    exact key.ne_top rfl
+
+-- todo: generalize to CommSemiring
+lemma isPrimary_component₀ {R : Type*} [CommRing R] (I : Ideal R) (p : Ideal R) [hp : p.IsPrime] (hpI : p ∈ I.minimalPrimes) :
     (I.component p).IsPrimary := by
+  classical
   have tada (x : R) : x ∈ I.component p ↔ ∃ y ∉ p, y * x ∈ I :=
     IsLocalization.algebraMap_mem_map_algebraMap_iff p.primeCompl (Localization.AtPrime p) I x
   -- can we prove this without the existence of a minimal primary decomposition?
-  sorry
+  apply IsPrimary.comap
+  apply isPrimary_of_isMaximal_radical
+  have h1 := IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I
+  rw [← Ideal.sInf_minimalPrimes]
+  rw [IsLocalization.foo_of_mem_minimalPrimes I p hpI (Localization.AtPrime p),
+    sInf_singleton]
+  exact IsLocalization.AtPrime.isMaximal_map p (Localization.AtPrime p)
+
+lemma isPrimary_component (I : Ideal R) (p : Ideal R) [hp : p.IsPrime] (hpI : p ∈ I.minimalPrimes) :
+    (I.component p).IsPrimary := by
+  classical
+  have tada (x : R) : x ∈ I.component p ↔ ∃ y ∉ p, y * x ∈ I :=
+    IsLocalization.algebraMap_mem_map_algebraMap_iff p.primeCompl (Localization.AtPrime p) I x
+  -- can we prove this without the existence of a minimal primary decomposition?
+  apply IsPrimary.comap
+  apply isPrimary_of_isMaximal_radical
+  have h1 := IsLocalization.minimalPrimes_map p.primeCompl (Localization.AtPrime p) I
+  rw [← Ideal.sInf_minimalPrimes]
+  rw [IsLocalization.foo_of_mem_minimalPrimes I p hpI (Localization.AtPrime p),
+    sInf_singleton]
+  exact IsLocalization.AtPrime.isMaximal_map p (Localization.AtPrime p)
 
 lemma radical_component (I : Ideal R) (p : Ideal R) [hp : p.IsPrime] (hpI : p ∈ I.minimalPrimes) :
     (I.component p).radical = p := by
   suffices (I.component p).radical ≤ p from
-    le_antisymm this (hpI.2 ⟨isPrime_radical (I.primary_component p hpI),
+    le_antisymm this (hpI.2 ⟨isPrime_radical (I.isPrimary_component p hpI),
       (I.le_component p).trans le_radical⟩ this)
   conv_rhs => rw [← IsPrime.radical hp, ← component_self p]
-  apply radical_mono
-  apply component_mono
-  exact hpI.1.2
+  exact radical_mono (component_mono hpI.1.2 p)
 
 -- Preimage of `I Rₚ` under the localization map `R → Rₚ`.
 lemma IsMinimalPrimaryDecomposition.foo [DecidableEq (Ideal R)]
