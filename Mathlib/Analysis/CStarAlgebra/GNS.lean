@@ -85,7 +85,7 @@ lemma preGNS_inner_def (a b : f.preGNS) :
     ⟪a, b⟫_ℂ = f (star (f.ofPreGNS a) * f.ofPreGNS b) := rfl
 
 lemma preGNS_norm_def (a : f.preGNS) :
-    ‖a‖ = (f (star (f.ofPreGNS a) * f.ofPreGNS a)).re.sqrt := rfl
+    ‖a‖ = √(f (star (f.ofPreGNS a) * f.ofPreGNS a)).re := rfl
 
 lemma preGNS_norm_sq (a : f.preGNS) :
     ‖a‖ ^ 2 = (f (star (f.ofPreGNS a) * f.ofPreGNS a)) := by
