@@ -995,6 +995,30 @@ run_cmd
       end )
 
 def Card : Type → Nat := fun _ => 0
+
+-- TODO: the linter should not warn about these!
+/--
+warning: remove line break in the source
+
+This part of the code
+  'Type)⏎  ⧸--'
+should be written as
+  'Type)⧸--'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: remove line break in the source
+
+This part of the code
+  'N⏎  ⧸--'
+should be written as
+  'N⧸--'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+-/
+#guard_msgs in
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type)
   /-- Terminal symbols (of the same type as the language) -/
