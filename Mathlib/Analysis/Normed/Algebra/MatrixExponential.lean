@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.RingTheory.Nilpotent.Exp
 public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
@@ -98,7 +99,47 @@ theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m �
     (exp 𝕂 A).IsHermitian :=
   (exp_conjTranspose _ _).symm.trans <| congr_arg _ h
 
+omit [T2Space 𝔸] in
+theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] (A : Matrix m m 𝔸) (ha : IsNilpotent A)
+    (hA : ∀ (k : 𝕂) (q : ℚ), k = q → k • A = q • A)
+    (h1 : ∀ (k : 𝕂) (q : ℚ), k = q → k • (1 : Matrix m m 𝔸) = q • (1 : Matrix m m 𝔸)) :
+    (exp 𝕂 A) = IsNilpotent.exp A := by
+  rw [IsNilpotent.exp, exp_eq_tsum]
+  dsimp only
+  have ha' : ∀ b ∉ Finset.range (nilpotencyClass A), (b.factorial : 𝕂)⁻¹ • A ^ b = 0 := by
+    intro b hb
+    rw [Finset.mem_range, not_lt] at hb
+    rw [smul_eq_zero, inv_eq_zero]
+    right
+    have hfact : b = (b - nilpotencyClass A) + (nilpotencyClass A) := by simp [hb]
+    rw [hfact, pow_add A (b - nilpotencyClass A) (nilpotencyClass A), pow_nilpotencyClass ha]
+    norm_num
+  rw [tsum_eq_sum ha']
+  have h' (k : 𝕂) (q : ℚ) (n : ℕ) (hkq : k = q) : k • A ^ n = q • A ^ n := by
+    cases eq_zero_or_pos n
+    · rename_i hn
+      simp only [hn]
+      exact h1 k q hkq
+    · rename_i hn
+      rw [← mul_pow_sub_one (by bound : n ≠ 0)]
+      repeat rw [← smul_mul_assoc]
+      rw [hA]
+      exact hkq
+  have h'' (b : ℕ) := h' (b.factorial : 𝕂)⁻¹ (b.factorial : ℚ)⁻¹ b (by rw [Rat.cast_inv_nat])
+  apply Finset.sum_equiv (Equiv.refl _) (by simp)
+  simp [h'']
+
 end Ring
+
+theorem exp_eq_isNilpotent_exp [Fintype m] [DecidableEq m] [Field 𝕂] [DivisionRing 𝔸] [CharZero 𝔸]
+    [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] [IsScalarTower ℚ 𝕂 𝔸]
+    (A : Matrix m m 𝔸) (ha : IsNilpotent A) : (exp 𝕂 A) = IsNilpotent.exp A := by
+  apply exp_eq_isNilpotent_exp' 𝕂 A ha
+  all_goals {
+    intro k q hkq
+    rw [hkq]
+    exact Rat.cast_smul_eq_qsmul 𝕂 q _
+  }
 
 section CommRing
 
