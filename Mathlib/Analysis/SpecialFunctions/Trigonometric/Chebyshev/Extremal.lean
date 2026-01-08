@@ -24,9 +24,8 @@ public import Mathlib.Topology.Algebra.Polynomial
   for all `|x| ≤ 1` then the leading coefficient of `P` is at most `2 ^ (n-1)`
 * leadingCoeff_eq_iff_of_bounded: When `n ≥ 2`, equality holds iff `P = T_n`
 * eval_iterate_derivative_le_of_bounded: If `P` is a real polynomial of degree at most `n` and
-  `|P (x)| ≤ 1` for all `|x| ≤ 1` then for all `x ≥ 1` and all `0 < k < n`,
-  `P ^ (k) (x) ≤ T_n ^ (k)(x)`
-* eval_iterate_derivative_eq_iff_of_bounded: Equality holds iff `P = T_n`
+  `|P (x)| ≤ 1` for all `|x| ≤ 1` then for all `x ≥ 1`, `P ^ (k) (x) ≤ T_n ^ (k)(x)`
+* eval_iterate_derivative_eq_iff_of_bounded: If `0 < k ≤ n` then equality holds iff `P = T_n`
 
 ## Implementation
 
@@ -252,18 +251,30 @@ private theorem eval_iterate_derivative_eq_sum_node {n k : ℕ} (hk : k ≤ n) (
     rw [Finset.card_range]
     grw [hP]
     simp
-  convert (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁ (by simp) x).symm using 2
-  · exact Eq.symm (Nat.range_succ_eq_Iic n)
-  · simp
+  convert (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁
+    (show k ≤ _ by simp [hk]) x).symm
+  rw [Finset.mul_sum]
+  grind [Nat.range_succ_eq_Iic, Nat.card_Iic]
+
+private theorem eval_iterate_derivative_eq_sum_node_coeff_nonneg
+    {n k i : ℕ} (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
+    0 ≤ (-1) ^ i * iterateDerivativeC n k x i := by
+  rw [iterateDerivativeC, ← mul_assoc]
+  refine mul_nonneg ?_ (Finset.sum_nonneg' ?_)
+  · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
+    exact le_of_lt <| mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k)
+      (coeff_eq_sum_node_coeff_pos hi)
+  · refine fun t => Finset.prod_nonneg (fun a _ => ?_)
+    have : node n a ≤ 1 := cos_le_one _
+    linarith
 
 private theorem eval_iterate_derivative_eq_sum_node_coeff_pos
     {n k i : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
     0 < (-1) ^ i * iterateDerivativeC n k x i := by
-  rw [← mul_assoc]
+  rw [iterateDerivativeC, ← mul_assoc]
   refine mul_pos ?_ (Finset.sum_pos' ?_ ?_)
   · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
-    exact mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k)
-      (leadingCoeff_eq_sum_node_coeff_pos hi)
+    exact mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k) (coeff_eq_sum_node_coeff_pos hi)
   · refine fun t _ => Finset.prod_nonneg (fun a _ => ?_)
     have : node n a ≤ 1 := cos_le_one _
     linarith
@@ -276,23 +287,30 @@ private theorem eval_iterate_derivative_eq_sum_node_coeff_pos
     refine ⟨s, by simp [hs, hscard], Finset.prod_pos (fun a ha => ?_)⟩
     have : node n a < 1 := by
       rw [← node_eq_one (n := n)]
-      apply node_lt (Nat.zero_le _) (by grind) (by grind)
+      exact node_lt (by grind) (by grind)
     linarith
 
 theorem eval_iterate_derivative_le_of_bounded {n : ℕ} {P : ℝ[X]}
-    {k : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) {x : ℝ} (hx : 1 ≤ x)
+    {k : ℕ} {x : ℝ} (hx : 1 ≤ x)
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    (derivative^[k] P).eval x ≤ (derivative^[k] (T ℝ n)).eval x :=
-  apply_le_apply_T_real (eval_iterate_derivative_eq_sum_node hk₂ x)
-    (fun _ hi => le_of_lt <| eval_iterate_derivative_eq_sum_node_coeff_pos hk₁ hk₂ hi hx)
-    hPdeg hPbnd
+    (derivative^[k] P).eval x ≤ (derivative^[k] (T ℝ n)).eval x := by
+  wlog! hk : k ≤ n
+  · rw [iterate_derivative_eq_zero_of_degree_lt (by grw [hPdeg]; simpa),
+      iterate_derivative_eq_zero_of_degree_lt (by simp [hk])]
+  convert apply_le_apply_T_real
+    (fun i hi => eval_iterate_derivative_eq_sum_node_coeff_nonneg hi hx) hPbnd
+    using 1
+  · rw [eval_iterate_derivative_eq_sum_node hk x hPdeg]
+  · rw [eval_iterate_derivative_eq_sum_node hk x (le_of_eq (degree_T ℝ n))]
 
 theorem eval_iterate_derivative_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
     {k : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) {x : ℝ} (hx : 1 ≤ x)
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    (derivative^[k] P).eval x = (derivative^[k] (T ℝ n)).eval x ↔ P = T ℝ n :=
-  apply_eq_apply_T_real_iff (eval_iterate_derivative_eq_sum_node hk₂ x)
-    (fun _ hi => eval_iterate_derivative_eq_sum_node_coeff_pos hk₁ hk₂ hi hx)
-    hPdeg hPbnd
+    (derivative^[k] P).eval x = (derivative^[k] (T ℝ n)).eval x ↔ P = T ℝ n := by
+  convert apply_eq_apply_T_real_iff
+    (fun i hi => eval_iterate_derivative_eq_sum_node_coeff_pos hk₁ hk₂ hi hx) hPdeg hPbnd
+    using 2
+  · rw [eval_iterate_derivative_eq_sum_node hk₂ x hPdeg]
+  · rw [eval_iterate_derivative_eq_sum_node hk₂ x (le_of_eq (degree_T ℝ n))]
 
 end Polynomial.Chebyshev
