@@ -908,7 +908,7 @@ def sumPiLpEquivProdLpPiLp :
       ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
       ≪≫ₗ LinearEquiv.prodCongr (WithLp.linearEquiv p _ _).symm
         (WithLp.linearEquiv _ _ _).symm
-      ≪≫ₗ (WithLp.linearEquiv  p _ _).symm
+      ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy
     · simp [← Finset.univ_disjSum_univ, Finset.sup_disjSum, Pi.norm_def]

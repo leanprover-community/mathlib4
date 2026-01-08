@@ -166,7 +166,7 @@ lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A
 
 lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
-  rw [eq_comm, CFC.sqrt_eq_iff _ _  hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
+  rw [eq_comm, CFC.sqrt_eq_iff _ _ hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
 
 end sqrtDeprecated
@@ -195,9 +195,6 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
     PosSemidef A ↔ ∃ (B : Matrix n n 𝕜), A = Bᴴ * B := by
   classical
   exact nonneg_iff_posSemidef (A := A) |>.eq ▸ CStarAlgebra.nonneg_iff_eq_star_mul_self
-
-@[deprecated (since := "2025-05-07")]
-alias posSemidef_iff_eq_transpose_mul_self := CStarAlgebra.nonneg_iff_eq_star_mul_self
 
 theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
