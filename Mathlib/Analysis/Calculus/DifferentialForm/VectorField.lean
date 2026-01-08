@@ -17,7 +17,7 @@ If `ω` is a differentiable `k`-form and `V i` are `k + 1` differentiable vector
 
 $$
   dω(V_0(x), \dots, V_n(x)) =
-    \left(\sum_{i=0}^k (-1)^i • D_x(ω(x; V_0(x), \dots, V_k(x))) +
+    \left(\sum_{i=0}^k (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_k(x)))(V_i(x)) +
       \sum_{0 \le i < j\le k} (-1)^{i + j}
         ω(x; [V_i, V_j](x), V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)),
 $$
@@ -51,7 +51,8 @@ If `ω` is a differentiable `(n + 1)`-form and `V i` are `n + 2` differentiable 
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1} (-1)^i • D_x(ω(x; V_0(x), \dots, V_{n + 1}(x))) -
+    \left(\sum_{i=0}^{n + 1}
+      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
       \sum_{0 \le i \le j\le n} (-1)^{i + j}
         ω(x; [V_i, V_{j + 1}](x),
           V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_{j + 1}(x)}, …, V_k(x)),
@@ -64,7 +65,8 @@ In informal texts, this formula is usually written as
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1} (-1)^i • D_x(ω(x; V_0(x), \dots, V_{n + 1}(x))) +
+    \left(\sum_{i=0}^{n + 1}
+      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
       \sum_{0 \le i < j\le n + 1} (-1)^{i + j}
         ω(x; [V_i, V_j](x),
           V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)).
@@ -110,7 +112,8 @@ If `ω` is a differentiable `(n + 1)`-form and `V i` are `n + 2` differentiable 
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1} (-1)^i • D_x(ω(x; V_0(x), \dots, V_{n + 1}(x))) -
+    \left(\sum_{i=0}^{n + 1}
+      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
       \sum_{0 \le i \le j\le n} (-1)^{i + j}
         ω(x; [V_i, V_{j + 1}](x),
           V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_{j + 1}(x)}, …, V_k(x)),
@@ -123,7 +126,8 @@ In informal texts, this formula is usually written as
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1} (-1)^i • D_x(ω(x; V_0(x), \dots, V_{n + 1}(x))) +
+    \left(\sum_{i=0}^{n + 1}
+      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)) -
       \sum_{0 \le i < j\le n + 1} (-1)^{i + j}
         ω(x; [V_i, V_j](x),
           V_0(x), …, \widehat{V_i(x)}, …, \widehat{V_j(x)}, …, V_k(x)).
@@ -153,7 +157,8 @@ If `V i` pairwise commute at `x`, i.e., $$[V_i, V_j](x) = 0$$ for all `i ≠ j`,
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1} (-1)^i • D_x(ω(x; V_0(x), \dots, V_{n + 1}(x))).
+    \left(\sum_{i=0}^{n + 1}
+      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)).
 $$
 -/
 theorem extDerivWithin_apply_vectorField_of_pairwise_commute
@@ -178,7 +183,8 @@ If `V i` pairwise commute at `x`, i.e., $$[V_i, V_j](x) = 0$$ for all `i ≠ j`,
 
 $$
   dω(V_0(x), \dots, V_{n + 1}(x)) =
-    \left(\sum_{i=0}^{n + 1} (-1)^i • D_x(ω(x; V_0(x), \dots, V_{n + 1}(x))).
+    \left(\sum_{i=0}^{n + 1}
+      (-1)^i • D_x(ω(x; V_0(x), \dots, \widehat{V_i(x)}, \dots, V_{n + 1}(x)))(V_i(x)).
 $$
 -/
 theorem extDeriv_apply_vectorField_of_pairwise_commute
