@@ -358,7 +358,7 @@ theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
     HasFTaylorSeriesUpToOn n (f ∘ g)
       (fun x k => (p (g x) k).compContinuousLinearMap fun _ => g.contLinear) (g ⁻¹' s) := by
   let A : ∀ m : ℕ, (E[×m]→L[𝕜] F) → G[×m]→L[𝕜] F :=
-    fun m h => h.compContinuousLinearMap fun _ => g.contLinear
+    fun m h ↦ h.compContinuousLinearMap fun _ ↦ g.contLinear
   have hA : ∀ m, IsBoundedLinearMap 𝕜 (A m) := fun m =>
     isBoundedLinearMap_continuousMultilinearMap_comp_linear g.contLinear
   constructor

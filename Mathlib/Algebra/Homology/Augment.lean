@@ -123,17 +123,17 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-        | 0 | 1 | n+2 =>
+        | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-          | 0 | 1 | n+2 =>
+          | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   hom_inv_id := by
@@ -287,11 +287,11 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;> aesop }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> rcases i with - | i <;> aesop }
 

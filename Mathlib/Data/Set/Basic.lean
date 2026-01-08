@@ -233,8 +233,8 @@ instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ 
 instance : @Std.Antisymm (Set α) (· ⊆ ·) :=
   show Std.Antisymm (· ≤ ·) by infer_instance
 
-instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  show IsIrrefl (Set α) (· < ·) by infer_instance
+instance : @Std.Irrefl (Set α) (· ⊂ ·) :=
+  show Std.Irrefl (· < ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊂ ·) :=
   show IsTrans (Set α) (· < ·) by infer_instance

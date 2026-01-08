@@ -373,7 +373,7 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
     ext j
     dsimp
     simp only [Category.id_comp, Functor.map_comp, Category.assoc]
-    rw [pullFunctorObjHom_eq_assoc _ _ _ _ _  (p' _ ≫ f _) (p' _ ≫ q' _ ≫ p' _) (p' _) (by simp)
+    rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ (p' _ ≫ f _) (p' _ ≫ q' _ ≫ p' _) (p' _) (by simp)
         (by simp [w', reassoc_of% w]),
       map_eq_pullHom_assoc _ (p' j) (p' j) (p' _ ≫ q' _ ≫ p' _) (by simp) (by simp),
       D.pullHom_hom _ _ (p' j ≫ f _) (by simp) _ _ (by simp)
