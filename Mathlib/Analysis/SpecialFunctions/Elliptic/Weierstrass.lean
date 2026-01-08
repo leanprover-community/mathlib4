@@ -1058,15 +1058,11 @@ lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
     simp_all [relation]
 
 lemma relation_eq_zero : L.relation = 0 := by
+  ext x
   have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt
-  have := this.apply_eq_apply_of_bounded
-    (IsZLattice.isCompact_range_of_periodic L.lattice _ this.continuous ?_).isBounded
-  · ext x
-    rw [this x 0, relation]
-    simp
-  · intro z w hw
-    lift w to L.lattice using hw
-    simp
+  exact (this.apply_eq_apply_of_bounded (IsZLattice.isCompact_range_of_periodic L.lattice _
+    this.continuous fun z w hw ↦ by lift w to L.lattice using hw; simp).isBounded x 0).trans
+    (if_pos (by simp))
 
 /-- `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃` -/
 lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :
