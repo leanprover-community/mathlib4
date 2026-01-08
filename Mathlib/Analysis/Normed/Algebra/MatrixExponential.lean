@@ -101,8 +101,7 @@ theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m �
 
 omit [T2Space 𝔸] in
 private theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] (A : Matrix m m 𝔸) (ha : IsNilpotent A)
-    (hA : ∀ (k : 𝕂) (q : ℚ), k = q → k • A = q • A)
-    (h1 : ∀ (k : 𝕂) (q : ℚ), k = q → k • (1 : Matrix m m 𝔸) = q • (1 : Matrix m m 𝔸)) :
+    (h : ∀ (k : 𝕂) (q : ℚ) (n : ℕ) (_ : k = q), k • A ^ n = q • A ^ n) :
     (exp 𝕂 A) = IsNilpotent.exp A := by
   rw [IsNilpotent.exp, exp_eq_tsum]
   dsimp only
@@ -112,17 +111,9 @@ private theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] (A : Matrix m m 𝔸) 
     rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
     norm_num
   rw [tsum_eq_sum ha']
-  have h' (k : 𝕂) (q : ℚ) (n : ℕ) (hkq : k = q) : k • A ^ n = q • A ^ n := by
-    cases eq_zero_or_pos n
-    all_goals rename_i hn
-    · simp only [hn]
-      exact h1 k q hkq
-    · rw [← mul_pow_sub_one (by bound : n ≠ 0)]
-      repeat rw [← smul_mul_assoc]
-      rw [hA k q hkq]
-  have h'' (b : ℕ) := h' (b.factorial : 𝕂)⁻¹ (b.factorial : ℚ)⁻¹ b (by rw [Rat.cast_inv_nat])
+  have h' (b : ℕ) := h (b.factorial : 𝕂)⁻¹ (b.factorial : ℚ)⁻¹ b (by rw [Rat.cast_inv_nat])
   apply Finset.sum_equiv (Equiv.refl _) (by simp)
-  simp [h'']
+  simp [h']
 
 end Ring
 
@@ -130,10 +121,21 @@ theorem exp_eq_isNilpotent_exp [Fintype m] [DecidableEq m] [Field 𝕂] [Divisio
     [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] [IsScalarTower ℚ 𝕂 𝔸]
     (A : Matrix m m 𝔸) (ha : IsNilpotent A) : (exp 𝕂 A) = IsNilpotent.exp A := by
   apply exp_eq_isNilpotent_exp' 𝕂 A ha
-  all_goals {
+  intro k q n hkq
+  have h1 : ∀ (k : 𝕂) (q : ℚ), k = q → k • (1 : Matrix m m 𝔸) = q • (1 : Matrix m m 𝔸) := ?_
+  focus have hA : ∀ (k : 𝕂) (q : ℚ), k = q → k • A = q • A := ?_
+  rotate_left
+  repeat {
     intro k q hkq
     rw [hkq]
     exact Rat.cast_smul_eq_qsmul 𝕂 q _
+  }
+  match n with
+  | 0 => exact h1 k q hkq
+  | Nat.succ bb => {
+    rw [← mul_pow_sub_one (by bound)]
+    iterate 2 rw [← smul_mul_assoc]
+    rw [hA k q hkq]
   }
 
 section CommRing
