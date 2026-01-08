@@ -472,6 +472,9 @@ Note: An argument like `Archive` is treated as module, not a path.
 -/
 def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     IO <| Except String <| Array (Name × FilePath) := do
+  if argₛ.startsWith "-" then
+    -- provided option after command
+    return .error s!"Invalid argument: option must come before command {argₛ}"
   -- TODO: This could be just `FilePath.normalize` if the TODO there was addressed
   let arg : FilePath := System.mkFilePath <|
     (argₛ : FilePath).normalize.components.filter (· != "")
@@ -491,6 +494,9 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
   else
     -- provided a module
     let mod := argₛ.toName
+    if mod.isAnonymous then
+      -- provided a module name which is not a valid Lean identifier
+      return .error s!"Invalid argument: expected path or module name, not {argₛ}"
     let sourceFile ← Lean.findLean sp mod
     if ← sourceFile.pathExists then
       -- (1.) provided valid module
