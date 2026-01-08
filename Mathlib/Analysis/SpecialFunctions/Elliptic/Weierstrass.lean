@@ -1078,4 +1078,3 @@ lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :
 end Relation
 
 end PeriodPair
-#min_imports
