@@ -876,8 +876,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
   simp only [derivative_add, derivative_sub, derivative_mul, derivative_X, derivative_one,
     derivative_X_pow, derivative_intCast, C_eq_natCast, T_derivative_eq_U] at h
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
-  linear_combination (norm := (push_cast; ring_nf))
-    h
+  linear_combination (norm := (push_cast; ring_nf)) h
 
 theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
     (1 - X ^ 2) * derivative^[k + 2] (T R n) =
@@ -888,12 +887,9 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
   norm_cast at h
   rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_comm X, iterate_derivative_intCast_mul,
-    iterate_derivative_mul_X_sq', iterate_derivative_mul_X'] at h
-  linear_combination (norm := (push_cast; ring_nf))
-    h
-  cases k
-  case a.a.zero => simp
-  case a.a.succ k => grind
+    iterate_derivative_derivative_mul_X_sq, iterate_derivative_derivative_mul_X] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+  cases k <;> grind
 
 theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
     (1 - X ^ 2) * derivative^[k + 2] (U R n) =
@@ -904,13 +900,10 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
   norm_cast at h
   rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_assoc 3, ← Nat.cast_three, iterate_derivative_natCast_mul,
-    mul_comm X, iterate_derivative_intCast_mul, iterate_derivative_mul_X_sq',
-    iterate_derivative_mul_X'] at h
-  linear_combination (norm := (push_cast; ring_nf))
-    h
-  cases k
-  case a.a.zero => simp
-  case a.a.succ k => grind
+    mul_comm X, iterate_derivative_intCast_mul, iterate_derivative_derivative_mul_X_sq,
+    iterate_derivative_derivative_mul_X] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+  cases k <;> grind
 
 theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
     (1 - x ^ 2) * (derivative^[k + 2] (T R n)).eval x =
@@ -920,8 +913,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
     one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T n k
   simp only [eval_mul, eval_sub, eval_one, eval_pow,
     eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
-  linear_combination (norm := (push_cast; ring_nf))
-    h
+  linear_combination (norm := (push_cast; ring_nf)) h
 
 theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
     (1 - x ^ 2) * (derivative^[k + 2] (U R n)).eval x =
@@ -931,8 +923,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
     one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U n k
   simp only [eval_mul, eval_sub, eval_one, eval_pow,
     eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
-  linear_combination (norm := (push_cast; ring_nf))
-    h
+  linear_combination (norm := (push_cast; ring_nf)) h
 
 theorem iterate_derivative_T_eval_one_recurrence (n : ℤ) (k : ℕ) :
     (2 * k + 1) * (derivative^[k + 1] (T R n)).eval 1 =
@@ -953,16 +944,14 @@ theorem iterate_derivative_T_eval_zero_recurrence (n : ℤ) (k : ℕ) :
       -(n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 0 := by
   have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 0
   rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
-  linear_combination (norm := (push_cast; ring_nf))
-    h
+  linear_combination (norm := (push_cast; ring_nf)) h
 
 theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
     (derivative^[k + 2] (U R n)).eval 0 =
       -((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 0 := by
   have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 0
   rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
-  linear_combination (norm := (push_cast; ring_nf))
-    h
+  linear_combination (norm := (push_cast; ring_nf)) h
 
 theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
     (∏ l ∈ Finset.range k, (2 * l + 1)) * (derivative^[k] (T R n)).eval 1 =
@@ -988,8 +977,7 @@ theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
 
 theorem derivative_T_eval_one (n : ℤ) :
     (derivative (T R n)).eval 1 = n ^ 2 := by
-  rw [T_derivative_eq_U, eval_mul, eval_intCast, U_eval_one, Int.cast_sub, Int.cast_one,
-    sub_add_cancel, sq]
+  simp [T_derivative_eq_U, sq]
 
 theorem derivative_U_eval_one (n : ℤ) :
     3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
