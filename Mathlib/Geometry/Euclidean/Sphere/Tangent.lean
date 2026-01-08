@@ -197,7 +197,7 @@ lemma dist_orthogonalProjection_eq_radius_iff_isTangentAt {s : Sphere P} {as : A
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · refine ⟨?_, orthogonalProjection_mem _, fun p hp ↦ ?_⟩
     · rwa [mem_sphere']
-    · rw [SetLike.mem_coe, mem_orthRadius_iff_inner_left]
+    · rw [mem_orthRadius_iff_inner_left]
       exact orthogonalProjection_vsub_mem_direction_orthogonal as s.center _
         (vsub_orthogonalProjection_mem_direction s.center hp)
   · rw [dist_orthogonalProjection_eq_infDist, h.isTangent.infDist_eq_radius]
