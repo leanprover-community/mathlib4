@@ -1249,6 +1249,7 @@ public import Mathlib.Algebra.Vertex.VertexOperator
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.AffineSpace
 public import Mathlib.AlgebraicGeometry.AffineTransitionLimit
+public import Mathlib.AlgebraicGeometry.Artinian
 public import Mathlib.AlgebraicGeometry.Cover.Directed
 public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Cover.Open
@@ -1788,6 +1789,7 @@ public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.AddCircleMulti
 public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
+public import Mathlib.Analysis.Fourier.Convolution
 public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 public import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
 public import Mathlib.Analysis.Fourier.FourierTransform
@@ -6263,6 +6265,7 @@ public import Mathlib.RingTheory.PowerSeries.WellKnown
 public import Mathlib.RingTheory.Prime
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.ReesAlgebra
