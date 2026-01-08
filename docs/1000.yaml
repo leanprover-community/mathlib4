@@ -192,7 +192,7 @@ Q200787:
   # results:
   #   - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
   #   - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
-  url: https://formalizedformallogic.github.io/Book/
+  url: https://formalizedformallogic.github.io/Catalogue/
 
 Q203565:
   title: Solutions of a general cubic equation
