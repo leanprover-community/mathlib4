@@ -54,6 +54,7 @@ class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)
 
+-- TODO this still works if we use `∃ (α : Type*)`
 -- TODO calls to IsNormalClosureFG.map could be simplified? Like maybe using the iso functions.
   -- seems like we apply a lot of `MonoidHom.ker_comp_mulEquiv + IsNormalClosureFG.map`.
 lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
@@ -73,6 +74,26 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
     simp only [MonoidHom.ker_comp_mulEquiv]
     exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
 
+-- TODO this still works if we use `∃ (α : Type*)`
+-- TODO same code as above. Keep one?
+lemma isFinitelyPresented_iff_finite {G : Type*} [Group G] :
+    IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : FreeGroup α →* G),
+    Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
+    constructor
+    · intro ⟨n, f, hfsurj, hfker⟩
+      let iso : FreeGroup (ULift (Fin n)) ≃* FreeGroup (Fin n) :=
+      FreeGroup.freeGroupCongr Equiv.ulift
+      refine ⟨ULift (Fin n), inferInstance, f.comp iso, hfsurj.comp iso.surjective, ?_⟩
+      simp only [MonoidHom.ker_comp_mulEquiv]
+      exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+    · intro ⟨α, _, f, hfsurj, hfker⟩
+      let n := Nat.card α
+      let iso : FreeGroup (Fin (Nat.card α)) ≃* FreeGroup α :=
+        FreeGroup.freeGroupCongr (Finite.equivFin α).symm
+      refine ⟨Nat.card α, f.comp iso, hfsurj.comp iso.surjective, ?_⟩
+      simp only [MonoidHom.ker_comp_mulEquiv]
+      exact IsNormalClosureFG.map iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+
 /- lemma isFinitelyPresented_iff_set_finite {G : Type*} [Group G] :
     IsFinitelyPresented G ↔ ∃ (S : Set G), ∃ (_ : S.Finite) (f : FreeGroup S →* G),
     Function.Surjective f ∧ IsNormalClosureFG (f.ker) := by
@@ -86,17 +107,15 @@ lemma isFinitelyPresented_iff_fintype {G : Type*} [Group G] :
       sorry
     · sorry -/
 
-variable (G : Type*) [Group G] (g : G)
-
-theorem Group.fg_iff_exists_freeGroup_hom_surjective' :
+/- theorem Group.fg_iff_exists_freeGroup_hom_surjective' :
     Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite) (φ : FreeGroup S →* G), Function.Surjective φ := by
   refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeGroup.lift Subtype.val, ?_⟩, ?_⟩
   · rwa [← MonoidHom.range_eq_top, ← FreeGroup.closure_eq_range]
   · rintro ⟨S, hfin : Finite S, φ, hφ⟩
     refine fg_iff.mpr ⟨φ '' Set.range FreeGroup.of, ?_, Set.toFinite _⟩
-    simp [← MonoidHom.map_closure, hφ, FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
+    simp [← MonoidHom.map_closure, hφ, FreeGroup.closure_range_of, ← MonoidHom.range_eq_map] -/
 
-theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype {G : Type*} [Group G] :
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype_ARISTOTLE1 {G : Type*} [Group G] :
     Group.FG G ↔ ∃ (α : Type) (_ : Fintype α) (φ : FreeGroup α →* G), Function.Surjective φ := by
       constructor <;> intro h;
       · obtain ⟨S, hS⟩ : ∃ S : Set G, S.Finite ∧ Subgroup.closure S = ⊤ := by
@@ -125,24 +144,72 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype {G : Type*} [Group 
         obtain ⟨ x, rfl ⟩ := hφ g;
         induction x using FreeGroup.induction_on <;> aesop
 
-instance [h : IsFinitelyPresented G] : Group.FG G := by
-  rw [Group.fg_iff_exists_freeGroup_hom_surjective_fintype]
-  rw [isFinitelyPresented_iff_fintype] at h
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype_ARISTOTLE2 {G : Type*} [Group G] :
+    Group.FG G ↔ ∃ (α : Type*) (_ : Fintype α) (φ : FreeGroup α →* G), Function.Surjective φ := by
+      ·
+        constructor <;> intro hG
+        all_goals generalize_proofs at *;
+        · obtain ⟨ S, hS ⟩ := hG;
+          -- Let $T$ be the set of elements in $S$.
+          set T : Set G := S.toSet;
+          -- Let $α$ be the set of elements in $T$.
+          obtain ⟨α, hα⟩ : ∃ α : Type, ∃ (x : Fintype α), Nonempty (α ≃ T) := by
+            -- Since $T$ is finite, we can use the fact that any finite set is equivalent to a finite type.
+            use Fin (Finset.card S);
+            -- Since $S$ is a finset, there exists an equivalence between $Fin (Finset.card S)$ and $S$.
+            have h_equiv : Nonempty (Fin (Finset.card S) ≃ S) := by
+              exact ⟨ Fintype.equivOfCardEq <| by simp +decide ⟩;
+            exact ⟨ inferInstance, h_equiv ⟩;
+          obtain ⟨ hα, ⟨ e ⟩ ⟩ := hα;
+          -- Define the homomorphism φ by mapping each generator in α to the corresponding element in T.
+          use ULift α, inferInstance, FreeGroup.lift (fun a => (e (ULift.down a)).val);
+          intro g
+          have h_mem : g ∈ Subgroup.closure T := by
+            aesop
+          generalize_proofs at *;
+          refine' Subgroup.closure_induction _ _ _ _ h_mem;
+          · intro x hx
+            obtain ⟨ a, ha ⟩ := e.surjective ⟨ x, hx ⟩
+            use FreeGroup.of (ULift.up a)
+            simp [ha];
+          · exact ⟨ 1, map_one _ ⟩;
+          · rintro x y hx hy ⟨ a, rfl ⟩ ⟨ b, rfl ⟩ ; exact ⟨ a * b, by simp +decide ⟩ ;
+          · rintro x hx ⟨ a, rfl ⟩ ; exact ⟨ a⁻¹, by simp +decide ⟩ ;
+        · -- To prove the forward direction, assume there exists a finite type α and a surjective homomorphism φ from the free group on α to G. We can use the fact that the image of a finite set under a surjective homomorphism is finite.
+          obtain ⟨α, hα, φ, hφ⟩ := hG;
+          have h_gen : ∃ (S : Set G), S.Finite ∧ Subgroup.closure S = ⊤ := by
+            refine' ⟨ Set.range ( fun x : α => φ ( FreeGroup.of x ) ), Set.toFinite _, _ ⟩;
+            rw [ eq_top_iff ];
+            rintro g -;
+            obtain ⟨ x, rfl ⟩ := hφ g;
+            induction x using FreeGroup.induction_on <;> aesop;
+          obtain ⟨ S, hS_finite, hS_gen ⟩ := h_gen; exact ⟨ hS_finite.toFinset, by simpa [ Subgroup.closure ] using hS_gen ⟩ ;
+
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G] :
+    Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
+      · sorry
+
+instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
+  rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
+  rw [isFinitelyPresented_iff_finite] at h
   obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
   use S, hSfinite, f, hfsurj
 
+-- TODO this uses `(α : Type)` not `(α : Type*)` as was defined.
 def IsPresentedGroup (G : Type*) [Group G] : Prop :=
-  ∃ (α : Type*) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
+  ∃ (α : Type) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
 
-instance [h : IsFinitelyPresented G] : IsPresentedGroup G := by
-  obtain ⟨α, instα, f, hfsurj, hfkernel⟩ := isFinitelyPresented_iff_fintype.mp h
+instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresentedGroup G := by
+  rw [isFinitelyPresented_iff_finite] at h
+  obtain ⟨α, _, f, hfsurj, hfkernel⟩ := h
   obtain ⟨S, hSfinite, hSclosure⟩ := hfkernel
   use α, S
   let iso := (QuotientGroup.quotientKerEquivOfSurjective f hfsurj).symm
   refine ⟨?_⟩
-  convert iso
-  sorry
-
+  unfold PresentedGroup
+  let hSclosure_equiv := QuotientGroup.quotientMulEquivOfEq hSclosure
+  let iso' := iso.trans hSclosure_equiv.symm
+  exact iso'
 
 /-   lemma fpGroup_is_fgGroup (G: Type*) [Group G] (h: IsFinitelyPresented G) : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective]
