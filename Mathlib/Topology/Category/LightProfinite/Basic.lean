@@ -331,7 +331,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
       apply lightDiagramToProfinite.map_injective
       apply InducedCategory.hom_ext
       simp only [Functor.map_comp, Functor.map_preimage]
-      simp )
+      simp)
   functor_unitIso_comp _ := by simpa using lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=

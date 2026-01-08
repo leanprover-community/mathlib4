@@ -85,8 +85,8 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {s : Set H}
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming `F x₀` is
-integrable, `‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖` for `x` in a ball around `x₀` for ae `a` with
-integrable Lipschitz bound `bound` (with a ball radius independent of `a`), and `F x` is
+integrable, `‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖` for `x` in a neighborhood of `x₀` for ae `a`
+integrable Lipschitz bound `bound` (with a neighborhood independent of `a`), and `F x` is
 ae-measurable for `x` in the same ball. See `hasFDerivAt_integral_of_dominated_loc_of_lip` for a
 slightly less general but usually more useful version. -/
 theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] E} (hs : s ∈ 𝓝 x₀)
@@ -174,8 +174,8 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
     rwa [hasFDerivAt_iff_tendsto, this] at ha
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
-`F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`
-(with a ball radius independent of `a`) with integrable Lipschitz bound, and `F x` is ae-measurable
+`F x₀` is integrable, `x ↦ F x a` is locally Lipschitz in a neighborhood of `x₀` for ae `a`
+(with a neighborhood independent of `a`) with integrable Lipschitz bound, and `F x` is ae-measurable
 for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F' : α → H →L[𝕜] E}
     (hs : s ∈ 𝓝 x₀) (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ)
@@ -194,8 +194,8 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip {F' : α → H →L[𝕜] E
 
 open scoped Interval in
 /-- Differentiation under integral of `x ↦ ∫ x in a..b, F x t` at a given point `x₀ ∈ (a,b)`,
-assuming `F x₀` is integrable on `(a,b)`, that `x ↦ F x t` is Lipschitz on a ball around `x₀`
-for almost every `t` (with a ball radius independent of `t`) with integrable Lipschitz bound,
+assuming `F x₀` is integrable on `(a,b)`, that `x ↦ F x t` is Lipschitz on a neighborhoof of `x₀`
+for almost every `t` (with a neighborhood independent of `t`) with integrable Lipschitz bound,
 and `F x` is a.e.-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H] {μ : Measure ℝ}
     {F : H → ℝ → E} {F' : ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
@@ -219,9 +219,9 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H
   exact ⟨⟨H₁.1, H₂.1⟩, H₁.2.sub H₂.2⟩
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
-`F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
-derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
-and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
+`F x₀` is integrable, `x ↦ F x a` is differentiable on a neighborhood of `x₀` for ae `a` with
+derivative norm uniformly bounded by an integrable function (the neighborhood is independent
+of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L[𝕜] E} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ) (hF_int : Integrable (F x₀) μ)
     (hF'_meas : AEStronglyMeasurable (F' x₀) μ)
@@ -246,9 +246,9 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L
 
 open scoped Interval in
 /-- Differentiation under integral of `x ↦ ∫ x in a..b, F x a` at a given point `x₀`, assuming
-`F x₀` is integrable on `(a,b)`, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
-derivative norm uniformly bounded by an integrable function (the ball radius is independent of `a`),
-and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
+`F x₀` is integrable on `(a,b)`, `x ↦ F x a` is differentiable on a neighborhood of `x₀` for ae `a`
+ with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
+ of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ : Measure ℝ}
     {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))
@@ -579,8 +579,8 @@ section
 variable {F : 𝕜 → α → E} {x₀ : 𝕜} {s : Set 𝕜}
 
 /-- Derivative under integral of `x ↦ ∫ F x a` at a given point `x₀ : 𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
-assuming `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`
-(with ball radius independent of `a`) with integrable Lipschitz bound, and `F x` is
+assuming `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a neighborhood of `x₀` for ae `a`
+(with a neighborhood independent of `a`) with integrable Lipschitz bound, and `F x` is
 ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ) (hF_int : Integrable (F x₀) μ)
