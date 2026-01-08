@@ -19,6 +19,8 @@ This file defines finitely presented groups and proves their basic properties.
 ## Tags
 finitely presented group, normal closure finitely generated,
 -/
+
+universe u
 -- TODO not sure if this is the right abstraction / right name for this.
 /-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
 the homomorphism mapped by the inverse isomorphism. -/
@@ -32,7 +34,6 @@ def FinitelyPresentedGroup (n : ℕ) (rels : Set (FreeGroup (Fin n))) (_h : rels
   FreeGroup (Fin n) ⧸ Subgroup.normalClosure (rels : Set (FreeGroup (Fin n)))
 
 open Subgroup
-#check @QuotientGroup.Quotient.group
 
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG {G : Type*} [Group G] (H : Subgroup G) : Prop :=
@@ -53,8 +54,6 @@ elements whose normal closure of its kernel is finitely generated. -/
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)
-
-universe u
 
 -- TODO calls to IsNormalClosureFG.map could be simplified? Like maybe using the iso functions.
   -- seems like we apply a lot of `MonoidHom.ker_comp_mulEquiv + IsNormalClosureFG.map`.
@@ -177,7 +176,6 @@ instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
   use S, hSfinite, f, hfsurj
 
--- TODO this uses `(α : Type)` not `(α : Type*)` as was defined in `PresentedGroup.lean`.
 def IsPresentedGroup (G : Type u) [Group G] : Prop :=
   ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
 
@@ -195,7 +193,21 @@ instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresentedGroup G 
   let iso' := iso.trans hSclosure_equiv.symm
   exact iso'
 
-
+variable {G : Type*} [Group G]
+theorem fg_of_finitelyPresented' :
+    IsFinitelyPresented (G := G) → Group.FG G := by
+  rintro ⟨n, f, hsurj, -⟩
+  let val : Fin n → G := fun i => f (FreeGroup.of i)
+  have hlift : FreeGroup.lift val = f := by ext i; simp [val]
+  have hsurj' : Function.Surjective (FreeGroup.lift val) := by
+    simpa [hlift] using hsurj
+  have hcl : Subgroup.closure (Set.range val) = ⊤ := by
+    simpa [FreeGroup.range_lift_eq_closure] using
+      (MonoidHom.range_eq_top).2 hsurj'
+  refine (Group.fg_iff).2 ?_
+  refine ⟨Set.range val, ?_, ?_⟩
+  · simpa using hcl
+  · simpa using (Set.finite_range val)
 /-   lemma fpGroup_is_fgGroup (G: Type*) [Group G] (h: IsFinitelyPresented G) : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective]
   apply isFinitelyPresented_iff at G
