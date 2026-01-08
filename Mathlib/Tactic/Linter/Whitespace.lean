@@ -326,7 +326,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     -- the `suffices` tactic; the pretty-printer does not take line length into account
     -- TODO: can we keep inspecting the contents of that node?
     ``Lean.Parser.Tactic.tacticSuffices_,
-    -- `Mathlib.Tactic.tacticSuffices_, -- XXX: is this branch ever taken?
+    ``Lean.Parser.Term.suffices, -- term-mode suffices, e.g. `supportsStmt_read` in PostTuringMachine
+    -- `Mathlib.Tactic.tacticSuffices_, -- at the moment, it seems this branch is never taken
   ]
   depth := none
 
