@@ -384,16 +384,26 @@ namespace EMetric
 
 open Metric
 
-/-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
 @[deprecated (since := "2025-11-19")]
 alias isUniformEmbedding_toCloseds := TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
-/-- `NonemptyCompacts.toCloseds` is continuous (as it is an isometry) -/
 @[deprecated (since := "2025-11-19")]
 alias continuous_toCloseds := TopologicalSpace.NonemptyCompacts.continuous_toCloseds
 
 @[deprecated (since := "2025-11-19")]
-alias isClosed_subsets_of_isClosed := TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
+alias NonemptyCompacts.continuous_toCloseds :=
+  TopologicalSpace.NonemptyCompacts.continuous_toCloseds
+
+@[deprecated (since := "2025-08-20")]
+alias isClosed_subsets_of_isClosed := TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
+
+@[deprecated (since := "2025-11-19")]
+alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
+  TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
+
+@[deprecated (since := "2025-11-19")]
+alias Closeds.isClosed_subsets_of_isClosed :=
+  TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
 
 @[deprecated (since := "2026-01-06")]
 alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
