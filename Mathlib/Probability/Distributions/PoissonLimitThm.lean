@@ -57,9 +57,9 @@ lemma tendsto_zero_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (
 
 open Asymptotics in
 lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
-    Tendsto (fun n => n.choose k * (p n) ^ k) atTop (𝓝 (r ^ k / k.factorial)) := by
-  set f : ℕ → ℝ := fun n => n.choose k * (p n) ^ k with hf
-  set g : ℕ → ℝ := fun n => ((n * p n) ^ k) / k.factorial with hg
+    Tendsto (fun n => n.choose k * (p n) ^ k) atTop (𝓝 (r ^ k / k.factorial)) :=
+  let f : ℕ → ℝ := fun n => n.choose k * (p n) ^ k
+  let g : ℕ → ℝ := fun n => ((n * p n) ^ k) / k.factorial
   have hfg : f ~[atTop] g := by
     have h1 : f ~[atTop] (fun n => (n ^ k / k.factorial) * (p n) ^ k) :=
       (isEquivalent_choose k).mul IsEquivalent.refl
@@ -68,7 +68,7 @@ lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 
     simp [field, mul_pow]
   have hg : Tendsto g atTop (𝓝 (r ^ k / k.factorial)) := by
     simpa [g, div_eq_mul_inv] using (hr.pow k).mul_const ((k.factorial : ℝ)⁻¹)
-  simpa [f] using (hfg.tendsto_nhds_iff).2 hg
+  (IsEquivalent.tendsto_nhds_iff hfg).mpr hg
 
 /--
 **Poisson limit Theorem** : If `n * p n → r` as `n → ∞`. Then
