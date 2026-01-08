@@ -151,6 +151,14 @@ theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
 @[simp] lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, Circle.exp_zero]
 
+theorem toCircle_nsmul (n : ℕ) (x : AddCircle T) : (n • x).toCircle
+    = x.toCircle ^ n := by
+  induction x using QuotientAddGroup.induction_on
+  rw [← QuotientAddGroup.mk_nsmul, toCircle_apply_mk, toCircle_apply_mk, Circle.exp_nsmul,
+    nsmul_eq_mul, nsmul_eq_mul]
+  congr 1
+  ring
+
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
 

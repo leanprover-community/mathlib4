@@ -80,6 +80,7 @@ lemma coe_inv_eq_conj (z : Circle) : ↑z⁻¹ = conj (z : ℂ) := by
   rw [coe_inv, inv_def, normSq_coe, inv_one, ofReal_one, mul_one]
 
 @[simp, norm_cast] lemma coe_div (z w : Circle) : ↑(z / w) = (z : ℂ) / w := rfl
+@[simp, norm_cast] lemma coe_pow (z : Circle) (n : ℕ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl
 
 /-- The coercion `Circle → ℂ` as a monoid homomorphism. -/
 @[simps]
@@ -123,6 +124,12 @@ theorem exp_zero : exp 0 = 1 :=
 theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y :=
   Subtype.ext <| by
     simp only [coe_exp, ofReal_add, add_mul, Complex.exp_add, coe_mul]
+
+@[simp]
+theorem exp_nsmul (x : ℝ) (n : ℕ) : exp (x) ^ n = exp (n • x) :=
+  Subtype.ext <| by
+    rw [coe_pow, coe_exp, coe_exp, ← Complex.exp_nsmul, nsmul_eq_mul, nsmul_eq_mul, ofReal_mul,
+      ofReal_natCast, mul_assoc]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
