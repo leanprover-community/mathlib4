@@ -11,7 +11,7 @@ import Mathlib.Tactic.Common
 set_option autoImplicit true
 -- A few times, fields in this file are manually aligned. While there is some consensus this
 -- is not desired, it's not important enough to change right now.
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false
 
 open Lean Meta Elab Term Command Simps
 
