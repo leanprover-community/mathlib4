@@ -5,7 +5,6 @@ Authors: Yunzhou Xie, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.RingTheory.Morita.Basic
 /-!
