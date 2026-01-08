@@ -583,8 +583,8 @@ end BoundedSets
 
 section BilinearMaps
 
-variable {𝕜 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] {E F G : Type*}
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {𝕜 𝕜₂ 𝕜₃ : Type*} [Semiring 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜 E]
   [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
   [AddCommGroup G] [Module 𝕜₃ G]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
