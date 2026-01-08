@@ -15,9 +15,9 @@ In this file we prove https://stacks.math.columbia.edu/tag/031V, which gives a c
 of a polynomial over a field `k` of characteristic `p` to be a `p`-th power.
 
 ## Main results
-- `zero_of_map_frob_is_pth_power`: let `K/k` be a separable field extension of fields of
-  characteristic `p`, let `α ∈ K` and let `P` be a separable polynomial over `k` whose coefficients
-  are `p`-th powers in `k`. Then `α` is a `p`-th power in `K`.
+- `zero_of_map_frob_is_pth_power`: let `K/k` be an extension of fields of characteristic `p`, let
+  `α ∈ K` and let `P` be a separable polynomial over `k` whose coefficients are `p`-th powers in
+  `k`. Then `α` is a `p`-th power in `K`.
 
 -/
 
@@ -42,8 +42,8 @@ lemma X_pow_p_sub_C_eq_minpoly_of_non_pth_power {α : k} (hα : ¬∃ β : k, β
           Polynomial.coeff_C_ne_zero (Nat.ne_zero_of_lt <| Nat.Prime.pos hp)]
 
 @[stacks 031V "(2)"]
-lemma zero_of_map_frob_is_pth_power [Algebra.IsAlgebraic k K] [Algebra.IsSeparable k K] {α : K}
-    {P : k[X]} (hP : P.aeval α = 0) [CharP k p] [ExpChar k p] (hSep : P.Separable) (hp : p.Prime)
+lemma zero_of_map_frob_is_pth_power {α : K} {P : k[X]} (hP : P.aeval α = 0) [CharP k p]
+    [ExpChar k p] (hSep : P.Separable) (hp : p.Prime)
     (hQfrob_eq_P : ∃ Q : k[X], P = Polynomial.map (frobenius k p) Q) :
     ∃ β : K, β ^ p = α := by
   by_cases hα : ∃ β : K, β ^ p = α
@@ -79,8 +79,8 @@ lemma zero_of_map_frob_is_pth_power [Algebra.IsAlgebraic k K] [Algebra.IsSeparab
     exact hInsep_iff_p_ne_zero.mpr hpzero QX_pow_p_dvd
 
 @[stacks 031V "(1)"]
-lemma zero_of_minpoly_map_frob_is_pth_power [Algebra.IsAlgebraic k K] (hp : p.Prime)
-    [hSep : Algebra.IsSeparable k K] (α : K) [ExpChar k p] [CharP k p]
+lemma zero_of_minpoly_map_frob_is_pth_power (hp : p.Prime) [hSep : Algebra.IsSeparable k K] (α : K)
+    [ExpChar k p] [CharP k p]
     (h_pth_power_coeff : ∃ Q : k[X], ((minpoly k α)) = Polynomial.map (frobenius k p) Q) :
     ∃ β : K, β ^ p = α :=
   zero_of_map_frob_is_pth_power (minpoly.aeval k α) ((Algebra.isSeparable_def k K).mp hSep α) hp
