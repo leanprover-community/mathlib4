@@ -429,8 +429,7 @@ is a linear map whose localization at a prime ideal `p` is bijective, then there
 `g ∉ p` such that `f` is already bijective under the localization away from `g`. -/
 lemma Module.FinitePresentation.exists_notMem_bijective [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] [Module.Finite R M] [Module.FinitePresentation R N]
-    (f : M →ₗ[R] N) (p : Ideal R) [p.IsPrime] {Rₚ Mₚ Nₚ : Type*}
-    [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
+    (f : M →ₗ[R] N) (p : Ideal R) [p.IsPrime] {Mₚ Nₚ : Type*}
     [AddCommGroup Mₚ] [AddCommGroup Nₚ] [Module R Mₚ] [Module R Nₚ]
     (fM : M →ₗ[R] Mₚ) (fN : N →ₗ[R] Nₚ)
     [IsLocalizedModule p.primeCompl fM] [IsLocalizedModule p.primeCompl fN]

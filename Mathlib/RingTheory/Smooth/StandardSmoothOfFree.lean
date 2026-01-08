@@ -147,8 +147,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
     rw [this]
     exact b.repr.symm.bijective
   have : Finite κ := Module.Finite.finite_basis b
-  obtain ⟨g, hg, h⟩ := Module.FinitePresentation.exists_notMem_bijective e p l₁ l₂
-    (Rₚ := Localization.AtPrime p) heₚ
+  obtain ⟨g, hg, h⟩ := Module.FinitePresentation.exists_notMem_bijective e p l₁ l₂ heₚ
   let l₁ₜ : (κ →₀ S) →ₗ[S] (κ →₀ Localization.Away g) :=
     Finsupp.mapRange.linearMap (Algebra.linearMap S _)
   let l₂ₜ : (Ω[S⁄R]) →ₗ[S] (Ω[Localization.Away g⁄R]) :=
