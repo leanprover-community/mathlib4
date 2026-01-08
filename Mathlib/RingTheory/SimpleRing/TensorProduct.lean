@@ -42,7 +42,7 @@ variable (K A B : Type*) [Field K] [Ring A] [Algebra K A] [Ring B] [Algebra K B]
 open TensorProduct Module
 
 open TwoSidedIdeal in
-lemma TensorProduct.map_comap_eq_zero_if_zero [hA : IsSimpleRing A]
+lemma TwoSidedIdeal.eq_bot_of_map_comap_eq_bot [hA : IsSimpleRing A]
     [isCentral_A : Algebra.IsCentral K A] [IsSimpleRing B] (I : TwoSidedIdeal (A ⊗[K] B))
     (hAB : letI f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
       (I.comap f).map f = ⊥) : I = ⊥ := by
@@ -138,7 +138,7 @@ lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : 
     · exact bot_le
     rw [TwoSidedIdeal.map]
     have hI : I.comap f = ⊤ := hB.1.2 _ |>.resolve_left fun r => by
-      refine I_ne_bot <| TensorProduct.map_comap_eq_zero_if_zero (hAB := ?_)
+      refine I_ne_bot <| TwoSidedIdeal.eq_bot_of_map_comap_eq_bot (hAB := ?_)
       rw [r, TwoSidedIdeal.map_bot]
     rw [hI, TwoSidedIdeal.coe_top, TwoSidedIdeal.le_iff]
     rintro x -
