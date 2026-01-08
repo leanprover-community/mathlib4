@@ -234,8 +234,6 @@ theorem ofModule_asModule_act (g : G) (x : RestrictScalars k k[G] ρ.asModule) :
     ofModule ρ.asModule g x =
       (RestrictScalars.addEquiv _ _ _).symm
         (ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv (RestrictScalars.addEquiv _ _ _ x)))) := by
-  apply_fun RestrictScalars.addEquiv _ _ ρ.asModule using
-    (RestrictScalars.addEquiv _ _ ρ.asModule).injective
   dsimp [ofModule, RestrictScalars.lsmul_apply_apply]
   simp
 
