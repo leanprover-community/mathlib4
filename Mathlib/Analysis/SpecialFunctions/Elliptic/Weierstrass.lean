@@ -6,15 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Summable
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Analytic.Binomial
 public import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Tactic.NormNum.NatFactorial
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
-public import Mathlib.Analysis.Normed.Module.Connected
-public import Mathlib.Analysis.Analytic.Binomial
-public import Mathlib.Analysis.Meromorphic.Order
-public import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 
@@ -1079,3 +1078,4 @@ lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :
 end Relation
 
 end PeriodPair
+#min_imports
