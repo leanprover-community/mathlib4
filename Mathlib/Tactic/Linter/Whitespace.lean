@@ -323,8 +323,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Lean.Parser.Command.grindPattern, -- `grind_pattern A => x, y` prints no space after `,`,
     -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
-    -- logical negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
-    ``«term¬_»,
+    -- the `suffices` tactic; the pretty-printer does not take line length into account
+    ``Lean.Parser.Term.suffices,
   ]
   depth := none
 
@@ -338,8 +338,8 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     ``«term-_»,
     -- subtraction, the pretty-printer prefers `a-b` in every case
     ``«term_-_»,
-    -- the `suffices` tactic; the pretty-printer does not take line length into account
-    ``Lean.Parser.Term.suffices,
+    -- logical negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
+    ``«term¬_»,
   ]
   depth := some 2
 
