@@ -31,8 +31,6 @@ set_option linter.unusedSectionVars false
 
 open Bundle ContDiff Manifold
 
-@[expose] public section
-
 -- Let E be a smooth vector bundle over a manifold E
 
 variable
@@ -54,7 +52,7 @@ section
 
 variable (E) in
 /-- This is the bundle `Hom_ℝ(E, T)`, where `T` is the rank one trivial bundle over `B`. -/
-def V : (b : B) → Type _ := (fun b ↦ E b →L[ℝ] Trivial B ℝ b)
+private def V : (b : B) → Type _ := (fun b ↦ E b →L[ℝ] Trivial B ℝ b)
 
 noncomputable instance : (x : B) → TopologicalSpace (V E x) := by
   unfold V
@@ -104,7 +102,7 @@ instance (x : B) : IsTopologicalAddGroup (V E x) := by
 variable (E) in
 /-- The real vector bundle `Hom(E, Hom(E, T)) = Hom(E, V)`, whose fiber at `x` is
 (equivalent to) the space of continuous real bilinear maps `E x → E x → ℝ`. -/
-def W : (b : B) → Type _ := fun b ↦ E b →L[ℝ] V E b
+private def W : (b : B) → Type _ := fun b ↦ E b →L[ℝ] V E b
 
 noncomputable instance (x : B) : TopologicalSpace (W E x) := by
   unfold W
@@ -1215,7 +1213,10 @@ lemma riemannian_unit_ball_bounded_1 (f : SmoothPartitionOfUnity B IB B)
     rw [hy]
     exact hz b
 
-noncomputable
+/--
+Existence of a smooth Riemannian metric on a manifold.
+-/
+public noncomputable
 def riemannian_metric_exists
     (f : SmoothPartitionOfUnity B IB B)
     (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
