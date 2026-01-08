@@ -710,13 +710,12 @@ theorem count_associates_factors_eq
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
   lia
 
+open Classical in
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
-theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
-    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+theorem Ideal.count_associates_eq
     {a a₀ x : R} {n : ℕ} (hx : Prime x) (ha : ¬x ∣ a) (heq : a₀ = x ^ n * a) :
     (Associates.mk (span {x})).count (Associates.mk (span {a₀})).factors = n := by
   have hx0 : x ≠ 0 := Prime.ne_zero hx
-  classical
   rw [count_associates_factors_eq, UniqueFactorizationMonoid.count_normalizedFactors_eq]
   · exact (prime_span_singleton_iff.mpr hx).irreducible
   · exact normalize_eq _
@@ -730,9 +729,9 @@ theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
   · exact (span_singleton_prime hx0).mpr hx
   · simp only [ne_eq, span_singleton_eq_bot]; exact hx0
 
+open Classical in
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
-theorem Ideal.count_associates_eq' [DecidableEq (Associates (Ideal R))]
-    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+theorem Ideal.count_associates_eq'
     {a x : R} (hx : Prime x) {n : ℕ} (hle : x ^ n ∣ a) (hlt : ¬x ^ (n + 1) ∣ a) :
     (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
   obtain ⟨q, hq⟩ := hle
@@ -988,6 +987,7 @@ theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) 
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
   · simpa only [prime_span_singleton_iff]
 
+open Classical in
 theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
     (hr : r ≠ 0) (hX₁ : normUnit X = 1) (hX : Prime X) :
       Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
