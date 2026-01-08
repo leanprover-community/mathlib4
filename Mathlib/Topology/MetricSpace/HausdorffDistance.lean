@@ -494,7 +494,8 @@ alias exists_real_pos_lt_infEdist_of_notMem_closure := exists_real_pos_lt_infEDi
 alias disjoint_closedBall_of_lt_infEdist := disjoint_closedEBall_of_lt_infEDist
 
 @[deprecated (since := "2026-01-06")] alias infEdist_image := infEDist_image
-@[deprecated (since := "2026-01-06")] alias infEdist_smul := infEDist_smul
+@[deprecated (since := "2026-01-06")] alias infEdist_vadd := infEDist_vadd
+@[to_additive existing, deprecated (since := "2026-01-06")] alias infEdist_smul := infEDist_smul
 
 @[deprecated (since := "2026-01-06")]
 alias _root_.IsCompact.exists_infEdist_eq_edist := _root_.IsCompact.exists_infEDist_eq_edist
@@ -590,13 +591,19 @@ lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) :
     using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds]⟩
 
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
-theorem infEDist_ne_top (h : s.Nonempty) : infEDist x s ≠ ⊤ := by
+theorem infEDist_ne_top (h : s.Nonempty) : infEDist x s ≠ ∞ := by
   rcases h with ⟨y, hy⟩
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEDist_le_edist_of_mem hy)
+
+@[deprecated (since := "2026-01-07")]
+alias infEdist_ne_top := infEDist_ne_top
 
 @[simp]
 theorem infEDist_eq_top_iff : infEDist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEDist_ne_top]
+
+@[deprecated (since := "2026-01-07")]
+alias infEdist_eq_top_iff := infEDist_eq_top_iff
 
 /-- The minimal distance of a point to a set containing it vanishes. -/
 theorem infDist_zero_of_mem (h : x ∈ s) : infDist x s = 0 := by
@@ -791,6 +798,9 @@ theorem hausdorffEDist_ne_top_of_nonempty_of_bounded (hs : s.Nonempty) (ht : t.N
       rwa [edist_dist, ENNReal.ofReal_le_ofReal_iff]
       exact le_trans dist_nonneg this
   exact ne_top_of_le_ne_top ENNReal.ofReal_ne_top this
+
+@[deprecated (since := "2026-01-07")]
+alias hausdorffEdist_ne_top_of_nonempty_of_bounded := hausdorffEDist_ne_top_of_nonempty_of_bounded
 
 /-- The Hausdorff distance between a set and itself is zero. -/
 @[simp]

@@ -118,10 +118,16 @@ theorem measurable_edist_left : Measurable fun y => edist y x :=
 theorem measurable_infEDist {s : Set α} : Measurable fun x => infEDist x s :=
   continuous_infEDist.measurable
 
+@[deprecated (since := "2026-01-07")]
+alias measurable_infEdist := measurable_infEDist
+
 @[fun_prop]
 protected theorem Measurable.infEDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infEDist (f x) s :=
   measurable_infEDist.comp hf
+
+@[deprecated (since := "2026-01-07")]
+alias Measurable.infEdist := Measurable.infEDist
 
 /-- If a set has a closed thickening with finite measure, then the measure of its `r`-closed
 thickenings converges to the measure of its closure as `r` tends to `0`. -/

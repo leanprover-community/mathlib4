@@ -118,6 +118,9 @@ lemma thickenedIndicatorAux_mono_infEDist (δ : ℝ) {E : Set α} {x y : α}
   · rw [tsub_eq_zero_of_le hle, tsub_eq_zero_of_le]
     exact hle.trans (by gcongr)
 
+@[deprecated (since := "2026-01-07")]
+alias thickenedIndicatorAux_mono_infEdist := thickenedIndicatorAux_mono_infEDist
+
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise (i.e., w.r.t. the product topology on `α → ℝ≥0∞`) to the indicator function of the
 closure of E.
@@ -233,6 +236,9 @@ lemma thickenedIndicator_mono_infEDist {δ : ℝ} (δ_pos : 0 < δ) {E : Set α}
   gcongr
   · finiteness
   · exact thickenedIndicatorAux_mono_infEDist δ h
+
+@[deprecated (since := "2026-01-07")]
+alias thickenedIndicator_mono_infEdist := thickenedIndicator_mono_infEDist
 
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise to the indicator function of the closure of E.

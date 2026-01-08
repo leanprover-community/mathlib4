@@ -64,6 +64,8 @@ theorem infEDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
   · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]
     simp_rw [ENNReal.smul_def, smul_eq_mul, ENNReal.mul_iInf_of_ne this ENNReal.coe_ne_top]
 
+@[deprecated (since := "2026-01-07")] alias infEdist_smul₀ := infEDist_smul₀
+
 theorem infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     Metric.infDist (c • x) (c • s) = ‖c‖ * Metric.infDist x s := by
   simp_rw [Metric.infDist, infEDist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm,
@@ -256,6 +258,9 @@ theorem infEDist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
       infEDist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le ?_
     rw [← ofReal_add hr.le hδ.le, sub_add_cancel, ofReal_coe_nnreal]
 
+@[deprecated (since := "2026-01-07")]
+alias infEdist_thickening := infEDist_thickening
+
 @[simp]
 theorem thickening_thickening (hε : 0 < ε) (hδ : 0 < δ) (s : Set E) :
     thickening ε (thickening δ s) = thickening (ε + δ) s :=
@@ -285,6 +290,9 @@ theorem infEDist_cthickening (δ : ℝ) (s : Set E) (x : E) :
   obtain hδ | hδ := le_or_gt δ 0
   · rw [cthickening_of_nonpos hδ, infEDist_closure, ofReal_of_nonpos hδ, tsub_zero]
   · rw [← closure_thickening hδ, infEDist_closure, infEDist_thickening hδ]
+
+@[deprecated (since := "2026-01-07")]
+alias infEdist_cthickening := infEDist_cthickening
 
 @[simp]
 theorem thickening_cthickening (hε : 0 < ε) (hδ : 0 ≤ δ) (s : Set E) :

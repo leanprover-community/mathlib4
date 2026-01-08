@@ -63,9 +63,22 @@ open EMetric
 theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist x s := by
   rw [← image_inv_eq_inv, infEDist_image isometry_inv]
 
+@[deprecated (since := "2026-01-07")]
+alias infEdist_neg_neg := infEDist_neg_neg
+
+@[to_additive existing, deprecated (since := "2026-01-07")]
+alias infEdist_inv_inv := infEDist_inv_inv
+
+
 @[to_additive]
 theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
   rw [← infEDist_inv_inv, inv_inv]
+
+@[deprecated (since := "2026-01-07")]
+alias infEdist_neg := infEDist_neg
+
+@[to_additive existing, deprecated (since := "2026-01-07")]
+alias infEdist_inv := infEDist_inv
 
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
