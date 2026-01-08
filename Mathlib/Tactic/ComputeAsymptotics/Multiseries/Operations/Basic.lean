@@ -20,18 +20,12 @@ namespace ComputeAsymptotics
 
 namespace PreMS
 
-open Filter in
-lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
-    (h : PreMS.Approximates (@PreMS.nil basis_hd basis_tl) f) : Tendsto f atTop (nhds 0) := by
-  apply PreMS.Approximates_nil at h
-  exact h.tendsto
-
 /-- Multiplies all coefficient of the multiseries to `c`. -/
 def mulConst {basis : Basis} (c : ℝ) (ms : PreMS basis) : PreMS basis :=
   match basis with
-  | [] => ms.toReal * c
+  | [] => ofReal (c * ms.toReal)
   | List.cons _ _ =>
-    map id (fun coef => coef.mulConst c) ms
+    mk (ms.seq.map (fun (exp, coef) => (exp, coef.mulConst c))) (c • ms.toFun)
 
 /-- Negates all coefficient of the multiseries. -/
 def neg {basis : Basis} (ms : PreMS basis) : PreMS basis :=
@@ -44,55 +38,73 @@ instance instNeg {basis : Basis} : Neg (PreMS basis) where
 
 -------------------- theorems
 
-open Filter Asymptotics
+open Filter Asymptotics Stream'
 
 @[simp]
-theorem mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
-  @mulConst (basis_hd :: basis_tl) c nil = nil := by
+theorem mulConst_toFun {basis : Basis} {ms : PreMS basis} {c : ℝ} :
+    (ms.mulConst c).toFun = c • ms.toFun := by
+  cases basis with
+  | nil => rfl
+  | cons => rfl
+
+@[simp]
+theorem mulConst_replaceFun_seq {basis_hd basis_tl} {c : ℝ}
+    {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ} :
+    (ms.replaceFun f).mulConst c = (ms.mulConst c).replaceFun (c • f) := by
+  rfl
+
+@[simp]
+theorem mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} {f : ℝ → ℝ} :
+  @mulConst (basis_hd :: basis_tl) c (mk .nil f) = mk .nil (c • f) := by
   simp [mulConst]
 
 @[simp]
 theorem mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c exp : ℝ}
-    {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    (cons exp coef tl).mulConst c =
-    cons exp (coef.mulConst c) (tl.mulConst c) := by
+    {coef : PreMS basis_tl} {tl : Seq (ℝ × PreMS basis_tl)} {f : ℝ → ℝ} :
+    (mk (.cons (exp, coef) tl) f).mulConst c =
+    mk (basis_hd := basis_hd) (.cons (exp, coef.mulConst c)
+      ((mk (basis_hd := basis_hd) tl 0).mulConst c).seq) (c • f) := by
   simp [mulConst]
 
 @[simp]
 theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} {c : ℝ} :
-    (ms.mulConst c).leadingExp = ms.leadingExp := by
+    Seq.leadingExp (ms.mulConst c).seq = ms.leadingExp := by
   cases ms <;> simp [mulConst]
 
 @[simp]
 theorem const_mulConst {basis : Basis} {x y : ℝ} :
-    (const basis x).mulConst y = const basis (x * y) := by
+    (const basis x).mulConst y = const basis (y * x) := by
   cases basis with
   | nil => simp [mulConst, const]
   | cons =>
-    simp only [mulConst, const, map_cons, map_nil]
-    congr
-    apply const_mulConst
+    simp [mulConst, const, Seq.map_cons, Seq.map_nil, const_mulConst]
+    rfl
 
 @[simp]
 theorem mulConst_one {basis : Basis} {ms : PreMS basis} : ms.mulConst 1 = ms := by
   cases basis with
   | nil => simp [mulConst]
   | cons basis_hd basis_tl =>
-    simp only [mulConst]
-    convert map_id _
+    simp [mulConst]
+    symm
+    convert Seq.map_id _
     apply mulConst_one
 
 @[simp]
 theorem mulConst_mulConst {basis : Basis} {ms : PreMS basis} {x y : ℝ} :
     (ms.mulConst x).mulConst y = ms.mulConst (x * y) := by
   cases basis with
-  | nil => simp [mulConst, mul_assoc]
+  | nil => simp [mulConst, ofReal, toReal]; ring_nf
   | cons =>
-    simp only [mulConst, ← map_comp, CompTriple.comp_eq]
-    congr 1
-    ext1
-    simp [mulConst_mulConst]
+    simp [mulConst, ← Seq.map_comp]
+    constructor
+    · congr 1
+      ext1
+      simp [mulConst_mulConst]
+    · ext
+      simp
+      ring_nf
 
 /-- Multiplication by constant preserves well-orderedness. -/
 theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
@@ -100,17 +112,16 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    let motive (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
-      ∃ (X : PreMS (basis_hd :: basis_tl)), ms = X.mulConst c ∧ X.WellOrdered
-    apply WellOrdered.coind motive
+    simp at h_wo ⊢
+    let motive (s : Seq (ℝ × PreMS basis_tl)) : Prop :=
+      ∃ (X : PreMS (basis_hd :: basis_tl)), s = (X.mulConst c).seq ∧ Seq.WellOrdered X.seq
+    apply Seq.WellOrdered.coind motive
     · simp only [motive]
       use ms
-    · intro exp' coef' tl' ih
-      simp only [motive] at ih
-      obtain ⟨X, h_ms_eq, hX_wo⟩ := ih
+    · rintro exp' coef' tl' ⟨X, h_ms_eq, hX_wo⟩
       cases X with
       | nil => simp at h_ms_eq
-      | cons exp coef tl =>
+      | cons exp coef tl f =>
         obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         simp at h_ms_eq
         constructor
@@ -118,91 +129,115 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
           exact mulConst_WellOrdered hX_coef_wo
         constructor
         · simpa [h_ms_eq]
-        simp only [motive]
-        use tl
+        use mk tl 0
         simpa [h_ms_eq]
 
 /-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
-theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
-    (h_approx : ms.Approximates f) :
-    (ms.mulConst c).Approximates (fun t ↦ f t * c) := by
+theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ}
+    (h_approx : ms.Approximates) :
+    (ms.mulConst c).Approximates := by
   cases basis with
-  | nil =>
-    simp only [Approximates_const_iff] at *
-    apply EventuallyEq.mul h_approx
-    rfl
+  | nil => simp
   | cons basis_hd basis_tl =>
-    let motive (ms' : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) : Prop :=
-      ∃ (X : PreMS (basis_hd :: basis_tl)) (fX : ℝ → ℝ),
-        ms' = X.mulConst c ∧ f =ᶠ[atTop] (fun t ↦ fX t * c) ∧
-        X.Approximates fX
+    let motive (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
+      ∃ (X : PreMS (basis_hd :: basis_tl)),
+        ms = X.mulConst c ∧ ms.toFun = c • X.toFun ∧
+        X.Approximates
     apply Approximates.coind motive
     · simp only [motive]
-      use ms, f
-    · intro ms f ih
-      simp only [motive] at ih
-      obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
+      use ms
+      simp [h_approx]
+    · rintro ms ⟨X, rfl, hf_eq, hX_approx⟩
       cases X with
       | nil =>
         left
         apply Approximates_nil at hX_approx
-        simp only [mulConst, map_nil] at h_ms_eq
-        constructor
-        · exact h_ms_eq
-        trans
-        · exact hf_eq
-        conv =>
-          rhs
-          ext
-          rw [Pi.zero_apply, ← zero_mul c]
-        apply EventuallyEq.mul hX_approx
-        rfl
-      | cons X_exp X_coef X_tl =>
-        obtain ⟨fXC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+        simp
+        grw [hX_approx]
+        simp
+      | cons X_exp X_coef X_tl fX =>
+        obtain ⟨hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
-        simp only [mulConst, map_cons] at h_ms_eq
-        use ?_, ?_, ?_, fun t ↦ fXC t * c
-        constructor
-        · exact h_ms_eq
-        constructor
-        · exact mulConst_Approximates' hX_coef
-        constructor
-        · apply majorated_of_EventuallyEq hf_eq
-          exact mul_const_majorated hX_maj
-        simp only [motive]
-        use X_tl, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t
-        constructor
-        · rfl
-        constructor
-        · apply eventuallyEq_iff_sub.mpr
-          eta_expand
-          simp only [Pi.sub_apply, Pi.zero_apply]
-          ring_nf!
-          apply eventuallyEq_iff_sub.mp
-          conv_rhs => ext; rw [mul_comm]
-          exact hf_eq
-        · exact hX_tl
+        simp [mulConst_Approximates hX_coef, smul_majorated hX_maj]
+        use (mk X_tl (fX - basis_hd ^ X_exp * X_coef.toFun))
+        simp [mulConst, hX_tl]
+        ext t
+        simp
+        ring
 
-/-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
-theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
-    (h_approx : ms.Approximates f) :
-    (ms.mulConst c).Approximates (c • f) := by
-  convert mulConst_Approximates' h_approx using 1
-  ext t
-  rw [mul_comm]
-  rfl
+-- /-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
+-- theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
+--     (h_approx : ms.Approximates f) :
+--     (ms.mulConst c).Approximates (fun t ↦ f t * c) := by
+--   cases basis with
+--   | nil =>
+--     simp only [Approximates_const_iff] at *
+--     apply EventuallyEq.mul h_approx
+--     rfl
+--   | cons basis_hd basis_tl =>
+--     let motive (ms' : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) : Prop :=
+--       ∃ (X : PreMS (basis_hd :: basis_tl)) (fX : ℝ → ℝ),
+--         ms' = X.mulConst c ∧ f =ᶠ[atTop] (fun t ↦ fX t * c) ∧
+--         X.Approximates fX
+--     apply Approximates.coind motive
+--     · simp only [motive]
+--       use ms, f
+--     · intro ms f ih
+--       simp only [motive] at ih
+--       obtain ⟨X, fX, h_ms_eq, hf_eq, hX_approx⟩ := ih
+--       cases X with
+--       | nil =>
+--         left
+--         apply Approximates_nil at hX_approx
+--         simp only [mulConst, map_nil] at h_ms_eq
+--         constructor
+--         · exact h_ms_eq
+--         trans
+--         · exact hf_eq
+--         conv =>
+--           rhs
+--           ext
+--           rw [Pi.zero_apply, ← zero_mul c]
+--         apply EventuallyEq.mul hX_approx
+--         rfl
+--       | cons X_exp X_coef X_tl =>
+--         obtain ⟨fXC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+--         right
+--         simp only [mulConst, map_cons] at h_ms_eq
+--         use ?_, ?_, ?_, fun t ↦ fXC t * c
+--         constructor
+--         · exact h_ms_eq
+--         constructor
+--         · exact mulConst_Approximates' hX_coef
+--         constructor
+--         · apply majorated_of_EventuallyEq hf_eq
+--           exact mul_const_majorated hX_maj
+--         simp only [motive]
+--         use X_tl, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t
+--         constructor
+--         · rfl
+--         constructor
+--         · apply eventuallyEq_iff_sub.mpr
+--           eta_expand
+--           simp only [Pi.sub_apply, Pi.zero_apply]
+--           ring_nf!
+--           apply eventuallyEq_iff_sub.mp
+--           conv_rhs => ext; rw [mul_comm]
+--           exact hf_eq
+--         · exact hX_tl
 
-theorem mulConst_not_zero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zero : ms ≠ zero _)
-    (hc : c ≠ 0) : (ms.mulConst c) ≠ zero _ := by
+theorem mulConst_not_zero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zero : ¬ IsZero ms)
+    (hc : c ≠ 0) : ¬ IsZero (ms.mulConst c) := by
   contrapose! h_ne_zero
-  cases basis with
-  | nil =>
-    simp only [mulConst, zero, mul_eq_zero (a := ms.toReal)] at h_ne_zero ⊢
-    tauto
-  | cons =>
+  generalize h_ms' : ms.mulConst c = ms' at h_ne_zero
+  cases h_ne_zero with
+  | const hc =>
+    simp_all [mulConst, ofReal, toReal]
+    grind
+  | nil f =>
     cases ms
-    · rfl
-    · simp [zero] at h_ne_zero
+    · simp
+    · simp at h_ms'
 
 theorem mulConst_Trimmed {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_trimmed : ms.Trimmed)
     (hc : c ≠ 0) :
@@ -222,22 +257,24 @@ theorem mulConst_Trimmed {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_trimmed
 theorem mulConst_leadingTerm {basis : Basis} {ms : PreMS basis} {c : ℝ} :
     (ms.mulConst c).leadingTerm = ⟨ms.leadingTerm.coef * c, ms.leadingTerm.exps⟩ := by
   cases basis with
-  | nil => simp [mulConst, leadingTerm]
+  | nil =>
+    simp [mulConst, leadingTerm]
+    ring
   | cons basis_hd basis_tl =>
     cases ms
     · simp [leadingTerm]
     · simp [leadingTerm, mulConst_leadingTerm]
 
 @[simp]
-theorem neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    neg (basis := basis_hd :: basis_tl) nil = nil := by
+theorem neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} :
+    neg (basis := basis_hd :: basis_tl) (mk .nil f) = mk .nil (-f) := by
   simp [neg]
 
 @[simp]
 theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
-    {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    (cons exp coef tl).neg =
-    cons exp (coef.neg) (tl.neg) := by
+    {coef : PreMS basis_tl} {tl : Seq (ℝ × PreMS basis_tl)} {f : ℝ → ℝ} :
+    (mk (basis_hd := basis_hd) (.cons (exp, coef) tl) f).neg =
+    mk (.cons (exp, coef.neg) ((mk (basis_hd := basis_hd) tl 0).neg).seq) (-f) := by
   simp [neg]
 
 @[simp]
@@ -253,12 +290,9 @@ theorem neg_WellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) : ms.neg.WellOrdered :=
   mulConst_WellOrdered h_wo
 
-theorem neg_Approximates {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
-    (h_approx : ms.Approximates f) : ms.neg.Approximates (-f) := by
-  rw [← mul_neg_one, mul_comm]
-  eta_expand
-  simp only [Pi.one_apply, Pi.neg_apply, Pi.mul_apply]
-  apply mulConst_Approximates h_approx
+theorem neg_Approximates {basis : Basis} {ms : PreMS basis}
+    (h_approx : ms.Approximates) : ms.neg.Approximates :=
+  mulConst_Approximates h_approx
 
 theorem neg_Trimmed {basis : Basis} {ms : PreMS basis} (h_trimmed : ms.Trimmed) :
     ms.neg.Trimmed :=

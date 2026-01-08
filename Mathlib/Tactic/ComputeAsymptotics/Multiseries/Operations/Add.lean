@@ -20,6 +20,24 @@ namespace ComputeAsymptotics
 
 namespace PreMS
 
+open Stream'
+
+-- noncomputable def Seq.add {basis_tl : Basis} (X Y : Seq (ℝ × PreMS basis_tl)) : Seq (ℝ × PreMS basis_tl) :=
+--   let T := (Seq (ℝ × PreMS basis_tl)) × (Seq (ℝ × PreMS basis_tl))
+--   let g : T → Option ((ℝ × PreMS basis_tl) × T) := fun (X, Y) =>
+--     match X.destruct, Y.destruct with
+--     | none, none => none
+--     | none, some ((Y_exp, Y_coef), Y_tl) => some ((Y_exp, Y_coef), (.nil, Y_tl))
+--     | some ((X_exp, X_coef), X_tl), none => some ((X_exp, X_coef), (X_tl, .nil))
+--     | some ((X_exp, X_coef), X_tl), some ((Y_exp, Y_coef), Y_tl) =>
+--       if Y_exp < X_exp then
+--         some ((X_exp, X_coef), (X_tl, Y))
+--       else if X_exp < Y_exp then
+--         some ((Y_exp, Y_coef), (X, Y_tl))
+--       else
+--         some ((X_exp, Seq.add X_coef Y_coef), (X_tl, Y_tl))
+--   corec g (a, b)
+
 /-- Addition for multiseries. It merges multiseries `X` and `Y` maintaining the correct order of
 exponents. It is defined corecursively as following:
 * `add X [] = X`
@@ -38,20 +56,23 @@ noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
   match basis with
   | [] => a.toReal + b.toReal
   | List.cons basis_hd basis_tl =>
-    let T := (PreMS (basis_hd :: basis_tl)) × (PreMS (basis_hd :: basis_tl))
-    let g : T → Option (ℝ × PreMS basis_tl × T) := fun (X, Y) =>
-      match destruct X, destruct Y with
+    let T := (Seq (ℝ × PreMS basis_tl)) × (Seq (ℝ × PreMS basis_tl))
+    let g : T → Option ((ℝ × PreMS basis_tl) × T) := fun (X, Y) =>
+      match X.destruct, Y.destruct with
       | none, none => none
-      | none, some (Y_exp, Y_coef, Y_tl) => some (Y_exp, Y_coef, (.nil, Y_tl))
-      | some (X_exp, X_coef, X_tl), none => some (X_exp, X_coef, (X_tl, .nil))
-      | some (X_exp, X_coef, X_tl), some (Y_exp, Y_coef, Y_tl) =>
+      | none, some ((Y_exp, Y_coef), Y_tl) => some ((Y_exp, Y_coef), (.nil, Y_tl))
+      | some ((X_exp, X_coef), X_tl), none => some ((X_exp, X_coef), (X_tl, .nil))
+      | some ((X_exp, X_coef), X_tl), some ((Y_exp, Y_coef), Y_tl) =>
         if Y_exp < X_exp then
-          some (X_exp, X_coef, (X_tl, Y))
+          some ((X_exp, X_coef), (X_tl, Y))
         else if X_exp < Y_exp then
-          some (Y_exp, Y_coef, (X, Y_tl))
+          some ((Y_exp, Y_coef), (X, Y_tl))
         else
-          some (X_exp, X_coef.add Y_coef, (X_tl, Y_tl))
-    corec g (a, b)
+          some ((X_exp, X_coef.add Y_coef), (X_tl, Y_tl))
+    mk (Seq.corec g (a.seq, b.seq)) (a.toFun + b.toFun)
+
+-- noncomputable def Seq.add {basis_tl : Basis} (X Y : Seq (ℝ × PreMS basis_tl)) : Seq (ℝ × PreMS basis_tl) :=
+--   (PreMS.add (mk (basis_hd := 0) X 0) (mk Y 0)).seq
 
 /-- Subtraction for multiseries, defined as `a - b = a + (-b)`. -/
 noncomputable def sub {basis : Basis} (a b : PreMS basis) : PreMS basis :=
@@ -65,6 +86,24 @@ noncomputable instance instAdd {basis : Basis} : Add (PreMS basis) where
 theorem add_def {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :
     X + Y = add X Y := rfl
 
+-- @[simp]
+-- theorem add_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :
+--     (X + Y).seq = Seq.add X.seq Y.seq := rfl
+
+@[simp]
+theorem add_toFun {basis : Basis} {X Y : PreMS basis} : (X + Y).toFun = X.toFun + Y.toFun := by
+  cases basis <;> rfl
+
+@[simp]
+theorem add_replaceFun_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ} :
+    X.replaceFun f + Y = (X + Y).replaceFun (f + Y.toFun) :=
+  rfl
+
+@[simp]
+theorem add_replaceFun_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ} :
+    X + Y.replaceFun f = (X + Y).replaceFun (X.toFun + f) :=
+  rfl
+
 @[simp]
 theorem const_add_const (X Y : PreMS []) : X + Y = X.toReal + Y.toReal :=
   rfl
@@ -72,146 +111,166 @@ theorem const_add_const (X Y : PreMS []) : X + Y = X.toReal + Y.toReal :=
 -- theorems
 open Filter Asymptotics
 
+-- @[simp]
+-- theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ} :
+--     mk .nil f + ms = ms.replaceFun (f + ms.toFun) := by
+--   rw [ms_eq_ms_iff_mk_eq_mk]
+--   simp
+--   let motive (X Y: Seq (ℝ × PreMS basis_tl)) :=
+--     X = (mk (basis_hd := basis_hd) .nil f + (mk (basis_hd := basis_hd) Y 0)).seq
+--   apply Seq.eq_of_bisim' motive rfl
+--   rintro X Y rfl
+--   cases Y with
+--   | nil => simp [add_def, add, Seq.corec_nil]
+--   | cons Y_hd Y_tl =>
+--   obtain ⟨Y_exp, Y_coef⟩ := Y_hd
+--   right
+--   simp [add_def, add]
+--   rw [Seq.corec_cons rfl]
+--   simp [motive]
+--   rfl
+
+-- theorem Seq.nil_add {basis_tl : Basis} {Y : Seq (ℝ × PreMS basis_tl)} :
+--     Seq.add .nil Y = Y.replaceFun (0 + Y.toFun) := by
+--   rw [ms_eq_ms_iff_mk_eq_mk]
+--   simp
+--   let motive (X Y: Seq (ℝ × PreMS basis_tl)) :=
+--     X = (mk (basis_hd := 0) .nil 0 + (mk (basis_hd := 0) Y 0)).seq
+--   apply Seq.eq_of_bisim' motive rfl
+--   rintro X Y rfl
+--   cases Y with
+
 @[simp]
-theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    nil + ms = ms := by
-  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
-    X = nil + Y
-  apply eq_of_bisim motive
-  · simp only [motive]
-  · intro X Y ih
-    simp only [motive] at ih
-    subst ih
-    cases Y with
-    | nil => simp [add_def, add, corec_nil]
-    | cons Y_exp Y_coef Y_tl =>
-    · right
-      use Y_exp, Y_coef, ?_, Y_tl
-      constructor
-      · simp only [add_def, add]
-        rw [corec_cons]
-        · simp
-          rfl
-      constructor
-      · rfl
-      simp only [motive]
-      rfl
+theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ} :
+    mk .nil f + ms = ms.replaceFun (f + ms.toFun) := by
+  rw [ms_eq_ms_iff_mk_eq_mk]
+  simp
+  let motive (X Y: Seq (ℝ × PreMS basis_tl)) :=
+    X = (mk (basis_hd := basis_hd) .nil f + (mk (basis_hd := basis_hd) Y 0)).seq
+  apply Seq.eq_of_bisim' motive rfl
+  rintro X Y rfl
+  cases Y with
+  | nil => simp [add_def, add, Seq.corec_nil]
+  | cons Y_hd Y_tl =>
+  obtain ⟨Y_exp, Y_coef⟩ := Y_hd
+  right
+  simp [add_def, add]
+  rw [Seq.corec_cons rfl]
+  simp [motive]
+  rfl
 
 @[simp]
 private theorem zero_add' {basis : Basis} {ms : PreMS basis} :
-    (zero _) + ms = ms := by
+    0 + ms = ms := by
   cases basis with
-  | nil => simp [zero]
-  | cons => simp [zero]
+  | nil => simp [toReal]
+  | cons =>
+    simp [zero_def, ms_eq_ms_iff_mk_eq_mk]
+    rfl
 
 -- copypaste from above
 @[simp]
-theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    ms + nil = ms := by
-  let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
-    X = Y + nil
-  apply eq_of_bisim motive
-  · simp only [motive]
-  · intro X Y ih
-    simp only [motive] at ih
-    subst ih
-    cases Y with
-    | nil => simp [add_def, add, corec_nil]
-    | cons Y_exp Y_coef Y_tl =>
-      right
-      use Y_exp, Y_coef, ?_, Y_tl
-      constructor
-      · simp only [add_def, add]
-        rw [corec_cons]
-        · simp
-          rfl
-      constructor
-      · rfl
-      simp only [motive]
-      rfl
+theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ} :
+    ms + mk .nil f = ms.replaceFun (ms.toFun + f) := by
+  rw [ms_eq_ms_iff_mk_eq_mk]
+  simp
+  let motive (X Y : Seq (ℝ × PreMS basis_tl)) :=
+    X = (mk (basis_hd := basis_hd) Y 0 + mk .nil f).seq
+  apply Seq.eq_of_bisim' motive rfl
+  rintro X Y rfl
+  cases Y with
+  | nil => simp [add_def, add, Seq.corec_nil]
+  | cons Y_hd Y_tl =>
+    obtain ⟨Y_exp, Y_coef⟩ := Y_hd
+    right
+    simp [add_def, add]
+    rw [Seq.corec_cons rfl]
+    simp [motive]
+    rfl
 
 @[simp]
 private theorem add_zero' {basis : Basis} {ms : PreMS basis} :
-    ms + (zero _) = ms := by
+    ms + 0 = ms := by
   cases basis with
-  | nil => simp [zero]
-  | cons => simp [zero]
+  | nil => simp [toReal]
+  | cons =>
+    simp [zero_def, ms_eq_ms_iff_mk_eq_mk]
+    rfl
 
 /-- Auxillary definition. It is "unfolded" version of `add` without `corec` in body. In the
 `add_unfold` we show that `add X Y = add' X Y`. -/
 noncomputable def add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (X Y : PreMS (basis_hd :: basis_tl)) :
     (PreMS (basis_hd :: basis_tl)) :=
-  match destruct X, destruct Y with
-  | none, _ => Y
-  | _, none => X
-  | some (X_exp, X_coef, X_tl), some (Y_exp, Y_coef, Y_tl) =>
-    if Y_exp < X_exp then
-      cons X_exp X_coef (X_tl + Y)
-    else if X_exp < Y_exp then
-      cons Y_exp Y_coef (X + Y_tl)
-    else
-      cons X_exp (X_coef + Y_coef) (X_tl + Y_tl)
+  let s := match X.seq.destruct, Y.seq.destruct with
+    | none, _ => Y.seq
+    | _, none => X.seq
+    | some ((X_exp, X_coef), X_tl), some ((Y_exp, Y_coef), Y_tl) =>
+      if Y_exp < X_exp then
+        .cons (X_exp, X_coef) (mk X_tl 0 + Y).seq
+      else if X_exp < Y_exp then
+        .cons (Y_exp, Y_coef) (X + mk Y_tl 0).seq
+      else
+        .cons (X_exp, X_coef + Y_coef) (mk (basis_hd := basis_hd) X_tl 0 + mk Y_tl 0).seq
+  mk s (X.toFun + Y.toFun)
 
 theorem add_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :
     X + Y = add' X Y := by
   cases X with
   | nil => simp [add']
-  | cons X_exp X_coef X_tl =>
+  | cons X_exp X_coef X_tl fX =>
   cases Y with
   | nil => simp [add']
-  | cons Y_exp Y_coef Y_tl =>
-  simp only [add_def, add, add', destruct_cons]
+  | cons Y_exp Y_coef Y_tl fY =>
+  simp [add_def, add, add']
   split_ifs <;>
   (
-    rw [corec_cons]
-    simp only [destruct_cons]
+    rw [Seq.corec_cons]
+    simp only [Seq.destruct_cons]
     split_ifs
     rfl
   )
 
 /-- `((X_exp, X_coef) :: X_tl) + Y = (X_exp, X_coef) :: (X_tl + Y)` when `X_exp > Y.leadingExp`. -/
 theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} {X_coef : PreMS basis_tl}
-    {X_tl Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_exp) :
-    (cons X_exp X_coef X_tl) + Y =
-    cons X_exp X_coef (X_tl + Y) := by
+    {X_tl : Seq (ℝ × PreMS basis_tl)} {fX : ℝ → ℝ}
+    {Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_exp) :
+    (mk (.cons (X_exp, X_coef) X_tl) fX) + Y =
+    mk (.cons (X_exp, X_coef) (mk X_tl 0 + Y).seq) (fX + Y.toFun) := by
   rw [add_unfold, add']
   cases Y with
   | nil => simp
   | cons Y_exp Y_coef Y_tl =>
-    simp only [leadingExp_cons, WithBot.coe_lt_coe] at h_lt
-    simp only [destruct_cons]
-    split_ifs
-    · rfl
-    · linarith
+    simp at h_lt
+    simp [h_lt]
 
 /-- `X + ((Y_exp, Y_coef) :: Y_tl) = (Y_exp, Y_coef) :: (X + Y_tl)` when `Y_exp > X.leadingExp`. -/
 theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ} {Y_coef : PreMS basis_tl}
-    {Y_tl X : PreMS (basis_hd :: basis_tl)} (h_lt : X.leadingExp < Y_exp) :
-    X + (cons Y_exp Y_coef Y_tl) = cons Y_exp Y_coef (X + Y_tl) := by
+    {Y_tl : Seq (ℝ × PreMS basis_tl)} {fY : ℝ → ℝ}
+    {X : PreMS (basis_hd :: basis_tl)} (h_lt : X.leadingExp < Y_exp) :
+    X + (mk (.cons (Y_exp, Y_coef) Y_tl) fY) = mk (.cons (Y_exp, Y_coef) (X + mk Y_tl 0).seq) (X.toFun + fY) := by
   rw [add_unfold, add']
   cases X with
   | nil => simp
   | cons X_exp X_coef X_tl =>
-    simp only [leadingExp_cons, WithBot.coe_lt_coe] at h_lt
-    simp only [destruct_cons]
-    split_ifs
-    · linarith
-    · rfl
+    simp at h_lt
+    simp [h_lt]
+    intro
+    linarith
 
 theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {X_tl Y_tl : PreMS (basis_hd :: basis_tl)} {X_exp Y_exp : ℝ} {X_coef Y_coef : PreMS basis_tl} :
-    (cons X_exp X_coef X_tl) + (cons Y_exp Y_coef Y_tl) =
+    {X_tl Y_tl : Seq (ℝ × PreMS basis_tl)} {X_exp Y_exp : ℝ} {X_coef Y_coef : PreMS basis_tl}
+    (fX fY : ℝ → ℝ) :
+    (mk (basis_hd := basis_hd) (.cons (X_exp, X_coef) X_tl) fX) + (mk (basis_hd := basis_hd) (.cons (Y_exp, Y_coef) Y_tl) fY) =
     if Y_exp < X_exp then
-      cons X_exp X_coef (X_tl + (cons Y_exp Y_coef Y_tl))
+      mk (.cons (X_exp, X_coef) ((mk (basis_hd := basis_hd) X_tl 0) + (mk (.cons (Y_exp, Y_coef) Y_tl) fY)).seq) (fX + fY)
     else if X_exp < Y_exp then
-      cons Y_exp Y_coef (cons X_exp X_coef X_tl + Y_tl)
+      mk (.cons (Y_exp, Y_coef) (mk (basis_hd := basis_hd) (.cons (X_exp, X_coef) X_tl) fX + mk Y_tl 0).seq) (fX + fY)
     else
-      cons X_exp (X_coef + Y_coef) (X_tl + Y_tl) := by
+      mk (.cons (X_exp, X_coef + Y_coef) ((mk (basis_hd := basis_hd) X_tl 0) + (mk Y_tl 0)).seq) (fX + fY) := by
   rw [add_unfold, add']
-  cases Y_tl with
-  | nil => simp
-  | cons Y_tl_exp Y_tl_coef Y_tl_tl => simp
+  simp
+  split_ifs <;> simp
 
 /-- `add` commutes with `mulConst`. -/
 @[simp]
@@ -219,47 +278,39 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
     (X + Y).mulConst c = (X.mulConst c) + Y.mulConst c := by
   cases basis with
   | nil =>
-    simp only [mulConst]
+    simp only [mulConst, ofReal, toReal]
     ring_nf
   | cons basis_hd basis_tl =>
-    let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
-      ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y).mulConst c ∧
-      b = X.mulConst c + Y.mulConst c
-    apply eq_of_bisim_strong motive
-    · simp only [motive]
-      use X, Y
-    · intro a b ih
-      simp only [motive] at ih ⊢
-      obtain ⟨X, Y, ha, hb⟩ := ih
-      subst ha hb
-      cases X with
-      | nil => simp
-      | cons X_exp X_coef X_tl =>
-      cases Y with
-      | nil => simp
-      | cons Y_exp Y_coef Y_tl =>
-      right
-      rw [add_cons_cons]
-      split_ifs with h1 h2
-      · simp only [↓existsAndEq, mulConst_cons, cons_eq_cons, and_self, and_true, true_and]
-        use ?_, ?_
-        constructor
-        · rfl
-        · simp [add_cons_cons, h1]
-      · simp only [↓existsAndEq, mulConst_cons, cons_eq_cons, and_self, and_true, true_and]
-        use ?_, ?_
-        constructor
-        · rfl
-        · simp [add_cons_cons, h1, h2]
-      · have : X_exp = Y_exp := by linarith
-        subst this
-        simp only [↓existsAndEq, mulConst_cons, cons_eq_cons, and_self, and_true, true_and]
-        use ?_, ?_
-        constructor
-        · rfl
-        · simp only [add_cons_cons, lt_self_iff_false, ↓reduceIte, cons_eq_cons, and_true,
-            true_and]
-          rw [add_mulConst]
+    rw [ms_eq_ms_iff_mk_eq_mk]
+    simp
+    let motive (A B : Seq (ℝ × PreMS basis_tl)) : Prop :=
+      ∃ (X Y : PreMS (basis_hd :: basis_tl)),
+        A = ((X + Y).mulConst c).seq ∧
+        B = (X.mulConst c + Y.mulConst c).seq
+    apply Seq.eq_of_bisim_strong motive
+    · use X, Y
+    rintro _ _ ⟨X, Y, rfl, rfl⟩
+    cases X with
+    | nil => simp
+    | cons X_exp X_coef X_tl fX =>
+    cases Y with
+    | nil => simp
+    | cons Y_exp Y_coef Y_tl fY =>
+    right
+    rw [add_cons_cons]
+    split_ifs with h1 h2
+    · simp [add_cons_cons, h1]
+      refine ⟨_, _, rfl, ?_⟩
+      simp
+      rfl
+    · simp [add_cons_cons, h1, h2]
+      refine ⟨_, _, rfl, ?_⟩
+      simp
+      rfl
+    · have : X_exp = Y_exp := by linarith
+      subst this
+      simp [add_cons_cons, add_mulConst]
+      refine ⟨_, _, rfl, rfl⟩
 
 /-- Addition is commutative. -/
 private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
@@ -269,9 +320,12 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
     simp
     ring_nf
   | cons basis_hd basis_tl =>
-  let motive (a b : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y) ∧ b = Y + X
-  apply eq_of_bisim_strong motive
+  rw [ms_eq_ms_iff_mk_eq_mk]
+  simp
+  refine ⟨?_, by ring⟩
+  let motive (A B : Seq (ℝ × PreMS basis_tl)) : Prop :=
+    ∃ (X Y : PreMS (basis_hd :: basis_tl)), A = (X + Y).seq ∧ B = (Y + X).seq
+  apply Seq.eq_of_bisim_strong motive
   · simp only [motive]
     use X, Y
   · intro a b ih
@@ -286,35 +340,32 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
     rw [add_cons_cons, add_cons_cons]
     split_ifs with h1 h2
     · linarith
-    · simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, and_self_left,
-        exists_and_right, true_and, motive]
-      use ?_, ?_
-    · simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, and_self_left,
-      exists_and_right, true_and, motive]
-      use ?_, ?_
+    · simp
+      exact ⟨_, _, rfl, rfl⟩
+    · simp
+      exact ⟨_, _, rfl, rfl⟩
     · have : X_exp = Y_exp := by linarith
       subst this
-      simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, exists_eq_left', true_and]
-      constructor
-      · rw [add_comm']
-      · use ?_, ?_
+      simp [add_comm' (basis := basis_tl)]
+      exact ⟨mk X_tl 0, mk Y_tl 0, rfl, rfl⟩
 
 /-- Addition is associative. -/
 private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
     X + (Y + Z) = (X + Y) + Z := by
   cases basis with
   | nil =>
-    simp
+    simp [ofReal, toReal]
     ring_nf
   | cons basis_hd basis_tl =>
-  let motive (a b : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ (X Y Z : PreMS (basis_hd :: basis_tl)), a = X + (Y + Z) ∧ b = (X + Y) + Z
-  apply eq_of_bisim_strong motive
+  rw [ms_eq_ms_iff_mk_eq_mk]
+  simp
+  refine ⟨?_, by ring⟩
+  let motive (A B : Seq (ℝ × PreMS basis_tl)) : Prop :=
+    ∃ (X Y Z : PreMS (basis_hd :: basis_tl)), A = (X + (Y + Z)).seq ∧ B = ((X + Y) + Z).seq
+  apply Seq.eq_of_bisim_strong motive
   · simp only [motive]
     use X, Y, Z
-  · intro a b ih
-    simp only [motive] at ih ⊢
-    obtain ⟨X, Y, Z, rfl, rfl⟩ := ih
+  · rintro _ _ ⟨X, Y, Z, rfl, rfl⟩
     cases X with
     | nil => simp
     | cons X_exp X_coef X_tl =>

@@ -218,29 +218,26 @@ theorem basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
 
 /-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
 `ms : PreMS basis_tl`, then `fC` can be majorated by `basis_hd` with zero exponent. -/
-theorem PreMS.Approximates_coef_majorated_head {fC basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS basis_tl} (h_approx : ms.Approximates fC)
+theorem PreMS.Approximates_coef_majorated_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS basis_tl} (h_approx : ms.Approximates)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
-    majorated fC basis_hd 0 := by
-  intro exp' h_exp
+    majorated ms.toFun basis_hd 0 := by
   cases basis_tl with
   | nil =>
-    apply EventuallyEq.trans_isLittleO (Approximates_const_iff.mp h_approx)
-    apply isLittleO_const_left.mpr
-    right
-    apply Tendsto.comp tendsto_norm_atTop_atTop
-    apply Tendsto.comp (tendsto_rpow_atTop h_exp)
-    simpa [WellFormedBasis] using h_basis
+    simp
+    apply const_majorated
+    apply basis_tendsto_top h_basis
+    simp
   | cons basis_tl_hd basis_tl_tl =>
     cases ms with
-    | nil =>
-      apply Approximates_nil at h_approx
-      apply EventuallyEq.trans_isLittleO h_approx
-      apply isLittleO_const_left.mpr
-      left
-      rfl
-    | cons exp coef tl =>
-      obtain ⟨CC, _, h_maj, _⟩ := Approximates_cons h_approx
+    | nil f =>
+      simp at h_approx ⊢
+      apply majorated_of_EventuallyEq h_approx
+      apply zero_majorated
+    | cons exp coef tl f =>
+      obtain ⟨_, h_maj, _⟩ := Approximates_cons h_approx
+      simp
+      intro exp' h_exp
       apply Asymptotics.IsLittleO.trans <| h_maj (exp + 1) (by linarith)
       apply basis_compare
       · apply basis_head_eventually_pos (h_basis.tail)
