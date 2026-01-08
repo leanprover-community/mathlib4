@@ -25,7 +25,10 @@ open Parser.Tactic (optConfig rwRuleSeq location getConfigItems)
   passes the rw rules on to `x`. -/
 def withSimpRWRulesSeq (rwRulesSeqStx : Syntax)
     (x : (symm : Bool) → (term : Syntax) → TacticM Unit) : TacticM Unit := do
+  let lbrak := rwRulesSeqStx[0]
   let rules := rwRulesSeqStx[1].getArgs
+  -- show initial state up to (incl.) `[`
+  withTacticInfoContext lbrak (pure ())
   let numRules := (rules.size + 1) / 2
   for i in [:numRules] do
     let rule := rules[i * 2]!
