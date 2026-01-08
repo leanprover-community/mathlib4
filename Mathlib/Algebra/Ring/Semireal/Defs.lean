@@ -45,7 +45,7 @@ theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal 
 variable {R} in
 theorem isSemireal_iff_not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] :
     IsSemireal R ↔ ¬ IsSumSq (-1 : R) where
-  mp := IsSemireal.not_isSumSq_neg_one _
+  mp _ := IsSemireal.not_isSumSq_neg_one _
   mpr h := ⟨by aesop (add simp add_eq_zero_iff_neg_eq)⟩
 
 alias ⟨_, IsSemireal.of_not_isSumSq_neg_one⟩ := isSemireal_iff_not_isSumSq_neg_one
