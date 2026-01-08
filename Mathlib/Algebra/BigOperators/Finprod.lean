@@ -1080,7 +1080,7 @@ theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s
 
 @[to_additive]
 theorem finprod_prod_filter [DecidableEq α] (f : β → α) (s : Finset β) (g : β → M) :
-    ∏ᶠ x : α, ∏ y ∈ Finset.filter (fun j : β ↦ f j = x) s, g y = ∏ k ∈ s, g k := by
+    ∏ᶠ x, ∏ y ∈ s with f y = x, g y = ∏ k ∈ s, g k := by
   rw [finprod_eq_finset_prod_of_mulSupport_subset]
   · rw [Finset.prod_image']
     exact fun _ _ ↦ rfl
