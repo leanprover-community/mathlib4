@@ -402,7 +402,7 @@ lemma j_eq_zero (h : W.c₄ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff', h, zero_pow three_ne_zero]
 
 lemma j_eq_zero_iff [IsReduced R] : W.j = 0 ↔ W.c₄ = 0 := by
-  rw [j_eq_zero_iff', IsReduced.pow_eq_zero_iff three_ne_zero]
+  rw [j_eq_zero_iff', pow_eq_zero_iff three_ne_zero]
 
 section CharTwo
 
@@ -419,7 +419,7 @@ lemma j_eq_zero_of_char_two (h : W.a₁ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff_of_char_two', h, zero_pow (Nat.succ_ne_zero _)]
 
 lemma j_eq_zero_iff_of_char_two [IsReduced R] : W.j = 0 ↔ W.a₁ = 0 := by
-  rw [j_eq_zero_iff_of_char_two', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+  rw [j_eq_zero_iff_of_char_two', pow_eq_zero_iff (Nat.succ_ne_zero _)]
 
 end CharTwo
 
@@ -438,7 +438,7 @@ lemma j_eq_zero_of_char_three (h : W.b₂ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff_of_char_three', h, zero_pow (Nat.succ_ne_zero _)]
 
 lemma j_eq_zero_iff_of_char_three [IsReduced R] : W.j = 0 ↔ W.b₂ = 0 := by
-  rw [j_eq_zero_iff_of_char_three', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+  rw [j_eq_zero_iff_of_char_three', pow_eq_zero_iff (Nat.succ_ne_zero _)]
 
 end CharThree
 
