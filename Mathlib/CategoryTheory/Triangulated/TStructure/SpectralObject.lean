@@ -51,6 +51,30 @@ noncomputable def ω₁δ :
         ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoLEGT a b).hom ≫
           (associator _ _ _).inv ≫ whiskerRight (t.eTruncLTLTToLT c b) _) _
 
+attribute [local simp] Precomp.obj in
+@[reassoc]
+lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
+    (φ : mk₂ (homOfLE hab) (homOfLE hbc) ⟶ mk₂ (homOfLE hab') (homOfLE hbc')) :
+    t.ω₁.map (homMk₁ (φ.app 1) (φ.app 2)) ≫ t.ω₁δ a' b' c' hab' hbc' =
+      t.ω₁δ a b c hab hbc ≫ Functor.whiskerRight (t.ω₁.map (homMk₁ (φ.app 0) (φ.app 1))) _ := by
+  ext X
+  simp only [Nat.reduceAdd, homOfLE_leOfHom, ω₁_obj, Fin.isValue, mk₁_obj, Mk₁.obj,
+    Functor.comp_obj, ω₁_map, homMk₁_app, NatTrans.comp_app, NatTrans.hcomp_app, ω₁δ_app,
+    ← Functor.map_comp, Category.assoc, NatTrans.naturality_assoc, Functor.comp_map,
+    ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc, Functor.whiskeringRight_obj_obj,
+    Functor.whiskeringRight_obj_map, Functor.whiskerRight_app, NatTrans.naturality]
+  congr 2
+  have h₁ := t.eTruncLTGEIsoLEGT_naturality_app a b hab a' b' hab' (homMk₁ (φ.app 0) (φ.app 1))
+  dsimp at h₁
+  simp only [homOfLE_leOfHom, Fin.isValue, Functor.map_comp, Category.assoc, ← reassoc_of% h₁]
+  erw [← NatTrans.naturality]
+  dsimp
+  --??
+  have h₂ := (t.eTruncLTGEIsoLEGT a' b').hom.naturality ((t.eTruncLT.map (φ.app 2)).app X)
+  dsimp at h₂
+  have h₃ := t.eTruncLT_map_app_eTruncLTι_app (φ.app 2) X
+  sorry
+
 @[simps!]
 noncomputable def triangleω₁δ : C ⥤ Triangle C :=
   Triangle.functorMk (t.ω₁.map (twoδ₂Toδ₁' a b c hab hbc))
@@ -85,8 +109,11 @@ noncomputable def newSpectralObject (X : C) : SpectralObject C EInt where
   ω₁ := t.ω₁ ⋙ (evaluation _ _).obj X
   δ'.app D := (t.ω₁δ (D.obj 0) (D.obj 1) (D.obj 2)
     (leOfHom (D.map' 0 1)) (leOfHom (D.map' 1 2))).app X
-  δ'.naturality := by
-    sorry
+  δ'.naturality {D D'} φ := by
+    obtain ⟨a, b, c, f, g, rfl⟩ := mk₂_surjective D
+    obtain ⟨a', b', c', f', g', rfl⟩ := mk₂_surjective D'
+    exact NatTrans.congr_app (t.ω₁δ_naturality a b c (leOfHom f) (leOfHom g)
+      a' b' c' (leOfHom f') (leOfHom g') φ) X
   distinguished' D := by
     obtain ⟨a, b, c, f, g, rfl⟩ := mk₂_surjective D
     exact t.triangleω₁δ_distinguished a b c (leOfHom f) (leOfHom g) X

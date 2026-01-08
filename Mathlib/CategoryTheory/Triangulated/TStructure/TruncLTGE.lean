@@ -728,6 +728,9 @@ lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
   t.isIso₁_truncLT_map_of_isGE _ (t.triangleLTGE_distinguished b X) a
     (t.isGE_of_GE ((t.truncGE b).obj X) a b (by lia))
 
+instance (X : C) (n : ℤ) : IsIso ((t.truncLT n).map ((t.truncLTι n).app X)) :=
+  isIso_truncLT_map_truncLTι_app t _ _ (by rfl) X
+
 instance (X : C) (n : ℤ) : IsIso ((t.truncGE n).map ((t.truncGEπ n).app X)) :=
   t.isIso_truncGE_map_truncGEπ_app _ _ (by rfl) _
 
