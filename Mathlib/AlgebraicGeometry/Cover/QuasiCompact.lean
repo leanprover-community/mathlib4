@@ -47,14 +47,14 @@ lemma IsAffineOpen.isCompactOpenCovered [QuasiCompactCover 𝒰] {U : S.Opens} (
     IsCompactOpenCovered (𝒰.f ·) (U : Set S) :=
   QuasiCompactCover.isCompactOpenCovered_of_isAffineOpen hU
 
-lemma CategoryTheory.PreZeroHypercover.isCompactOpenCovered_of_isCompact [QuasiCompactCover 𝒰]
+namespace QuasiCompactCover
+
+lemma isCompactOpenCovered_of_isCompact [QuasiCompactCover 𝒰]
     {U : S.Opens} (hU : IsCompact (U : Set S)) :
     IsCompactOpenCovered (𝒰.f ·) (U : Set S) := by
   obtain ⟨Us, hUs, hUf, hUc⟩ := S.isBasis_affineOpens.exists_finite_of_isCompact hU
-  refine .of_iUnion_eq_of_finite (SetLike.coe '' Us) (by aesop) (hUf.image _) ?_
+  refine .of_biUnion_eq_of_finite (SetLike.coe '' Us) (by aesop) (hUf.image _) ?_
   simpa using fun t ht ↦ IsAffineOpen.isCompactOpenCovered 𝒰 (hUs ht)
-
-namespace QuasiCompactCover
 
 variable {𝒰 : PreZeroHypercover.{v} S} {K : Precoverage Scheme.{u}}
 
@@ -64,7 +64,7 @@ lemma exists_isAffineOpen_of_isCompact [QuasiCompactCover 𝒰] {U : S.Opens}
     ∃ (n : ℕ) (f : Fin n → 𝒰.I₀) (V : ∀ i, (𝒰.X (f i)).Opens),
       (∀ i, IsAffineOpen (V i)) ∧
       ⋃ i, 𝒰.f (f i) '' (V i) = U := by
-  obtain ⟨n, a, V, ha, heq⟩ := (𝒰.isCompactOpenCovered_of_isCompact hU).exists_mem_of_isBasis
+  obtain ⟨n, a, V, ha, heq⟩ := (isCompactOpenCovered_of_isCompact 𝒰 hU).exists_mem_of_isBasis
     (fun i ↦ (𝒰.X i).isBasis_affineOpens) (fun _ _ h ↦ h.isCompact)
   exact ⟨n, a, V, ha, heq⟩
 
@@ -129,7 +129,7 @@ instance {X : Scheme.{u}} (𝒰 : PreZeroHypercover.{w} X) [QuasiCompactCover �
   isCompactOpenCovered_of_isAffineOpen {U} hU := by
     obtain ⟨s, hs, V, hcV, hU⟩ := hU.isCompactOpenCovered 𝒰
     have (i) (hi) : IsCompactOpenCovered ((f i).f ·) (V i hi) :=
-      (f i).isCompactOpenCovered_of_isCompact (hcV i hi)
+      isCompactOpenCovered_of_isCompact (f i) (hcV i hi)
     choose t ht W hcW hV using this
     have : Finite s := hs
     have (i) (hi) : Finite (t i hi) := ht i hi
