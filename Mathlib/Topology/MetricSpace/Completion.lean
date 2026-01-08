@@ -228,4 +228,4 @@ def Isometry.mapRingHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] 
 theorem Isometry.mapRingHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
     (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
-  Completion.mapRingHom_coe h.uniformContinuous _
+  Completion.mapRingHom_coe h.uniformContinuous.continuous _

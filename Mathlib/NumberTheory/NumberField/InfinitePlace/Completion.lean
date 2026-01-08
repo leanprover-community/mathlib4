@@ -228,7 +228,11 @@ theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) 
   AddMonoidHomClass.isometry_of_norm _ fun _ ↦ WithAbs.equiv_algebraMap_apply v.1 w.1 _ ▸
     comp_of_comap_eq (comap_eq w v) _
 
-instance : Algebra v.Completion w.Completion := (isometry_algebraMap w).mapRingHom.toAlgebra
+-- Even though v.1.LiesOver v.1 does not yet exist, scoping this in case that is ever added.
+/-- If `w : InfinitePlace L` lies over `v : InfinitePlace K` then `w.Completion` is a
+`v.Completion`-algebra. This instance is `scoped` to avoid causing diamonds when `v = w`,
+use `open scoped NumberField.InfinitePlace.LiesOver` to access it. -/
+scoped instance : Algebra v.Completion w.Completion := (isometry_algebraMap w).mapRingHom.toAlgebra
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
