@@ -6,7 +6,7 @@ Authors: Boris Bilich, Alexei Piskunov, Jonathan Shneyer
 module
 
 public import Mathlib.RingTheory.ClassGroup
-public import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # The class group of a Unique Factorization Domain is trivial
@@ -15,6 +15,9 @@ This file proves that the ideal class group of a Unique Factorization Domain is 
 ## Main result
 - `UniqueFactorizationMonoid.instSubsingletonClassGroup` : the class group of a UFD is trivial.
 
+## References
+
+- [stacks-project]: The Stacks project, [tag 0BCH](https://stacks.math.columbia.edu/tag/0BCH)
 -/
 
 @[expose] public section
@@ -268,9 +271,8 @@ private lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) 
           simp [x₀, x, Submonoid.smul_def, Algebra.smul_def]
 
 
-lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
+private lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
-    --{K : FractionalIdeal R⁰ (FractionRing R)}
     {ℓ : Fin n → FractionRing R}
     (hsum :
       (Finset.univ : Finset (Fin n)).sum
@@ -356,7 +358,8 @@ lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Id
     simpa [hx_eq_sum] using hsum_mem
   simpa [B] using hxmem
 
-lemma exists_relations_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R} {J : Ideal R}
+private lemma exists_relations_of_isUnit_fractionalIdeal_of_span
+    {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
     (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ (x : R) (_hx0 : x ≠ 0) (b : Fin n → R),
