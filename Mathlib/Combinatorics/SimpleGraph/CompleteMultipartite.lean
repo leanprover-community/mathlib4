@@ -335,8 +335,13 @@ section CompleteEquipartiteSubgraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
-/-- A complete equipartite subgraph in `r` parts each of size `t` in `G` is `r` subsets
-of vertices each of size `t` such that vertices in distinct subsets are adjacent. -/
+/-- A complete equipartite subgraph in `r > 0` parts each of size `t ≠ 0` in `G` is `r` subsets
+of vertices each of size `t` such that vertices in distinct subsets are adjacent.
+
+If `r > 0` but `t = 0`, then `parts = {{}}`. If `r = 0`, then `parts = {}`. These are the two
+*distinct* "empty" complete equipartite subgraphs, that is, the complete equipartite subgraphs
+having no vertices. -/
+@[ext]
 structure CompleteEquipartiteSubgraph (G : SimpleGraph V) (r t : ℕ) where
   /-- The parts in a complete equipartite subgraph. -/
   parts : Finset (Finset V)
@@ -350,6 +355,11 @@ structure CompleteEquipartiteSubgraph (G : SimpleGraph V) (r t : ℕ) where
 variable {r t : ℕ} (K : G.CompleteEquipartiteSubgraph r t)
 
 namespace CompleteEquipartiteSubgraph
+
+/-- At least one of the "empty" complete equipartite subgraphs is contained in a simple graph. -/
+theorem nonempty_of_eq_zero_or_eq_zero (h : r = 0 ∨ t = 0) :
+    Nonempty (G.CompleteEquipartiteSubgraph r t) :=
+  ⟨{}, h.elim (fun hr ↦ by simp [hr]) (fun ht ↦ by simp [ht]), by simp, by simp⟩
 
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
 theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
@@ -449,9 +459,9 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
     have h_bot (r' : ℕ) : completeEquipartiteGraph r' t = ⊥ :=
       completeEquipartiteGraph_eq_bot_iff.mpr <| .inr ht
     simp_rw [h_bot (r + 1), ht, Finset.card_eq_zero, exists_eq_left, IsCompleteBetween, mem_coe,
-      notMem_empty, IsEmpty.forall_iff, implies_true, exists_true_iff_nonempty,
-      ← completeEquipartiteGraph_isContained_iff, h_bot r]
-    exact ⟨fun _ ↦ ⟨Copy.bot .ofIsEmpty⟩, fun _ ↦ ⟨Copy.bot .ofIsEmpty⟩⟩
+      notMem_empty, IsEmpty.forall_iff, implies_true, exists_true_iff_nonempty]
+    exact ⟨fun _ ↦ CompleteEquipartiteSubgraph.nonempty_of_eq_zero_or_eq_zero (.inr ht),
+      fun _ ↦ ⟨Copy.bot .ofIsEmpty⟩⟩
   · rw [completeEquipartiteGraph_isContained_iff]
     refine ⟨fun ⟨K'⟩ ↦ ?_, fun ⟨K, s, hs, hadj⟩ ↦ ?_⟩
     · obtain ⟨parts, hparts_sub, hparts_card⟩ := K'.parts.exists_subset_card_eq (Nat.pred_le _)
