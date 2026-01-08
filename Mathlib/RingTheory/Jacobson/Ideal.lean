@@ -380,22 +380,15 @@ theorem isPrimary_of_isMaximal_radical [CommSemiring R] {I : Ideal R} (hi : IsMa
   rw [isPrimary_iff]
   constructor
   · rintro rfl
-    rw [radical_top] at hi
-    exact hi.ne_top rfl
+    exact (radical_top R ▸ hi).ne_top rfl
   · intro x y hxy
-    rw [or_iff_not_imp_right]
-    intro hy
-    obtain ⟨a, b, hb, ha⟩ := hi.exists_inv hy
-    rw [mem_radical_iff] at hb
-    obtain ⟨k, hk⟩ := hb
-    rw [mul_comm] at ha
-    replace ha := congr_arg (x * · ^ k) ha
-    simp only at ha
-    rw [one_pow, add_pow, Finset.sum_range_succ'] at ha
-    simp only [pow_succ', mul_assoc, ← Finset.mul_sum, pow_zero, tsub_zero, one_mul,
-      Nat.choose_zero_right, Nat.cast_one, mul_one] at ha
-    rw [← ha, mul_add, ← mul_assoc]
-    exact I.add_mem (I.mul_mem_right _ hxy) (I.mul_mem_left x hk)
+    refine (em (I + span {y} = ⊤)).imp (fun h ↦ ?_) (fun h ↦ ?_)
+    · rw [← span_singleton_le_iff_mem, ← mul_top (span {x}), ← h, mul_add,
+        span_singleton_mul_span_singleton, add_le_iff, span_singleton_le_iff_mem]
+      exact ⟨mul_le_left, hxy⟩
+    · obtain ⟨m, hm, hy⟩ := exists_le_maximal (I + span {y}) h
+      rw [add_le_iff, span_singleton_le_iff_mem, ← hm.isPrime.radical_le_iff] at hy
+      exact hi.eq_of_le hm.ne_top hy.1 ▸ hy.2
 
 end Ideal
 
