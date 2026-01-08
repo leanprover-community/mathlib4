@@ -100,7 +100,7 @@ theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m �
   (exp_conjTranspose _ _).symm.trans <| congr_arg _ h
 
 omit [T2Space 𝔸] in
-theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] (A : Matrix m m 𝔸) (ha : IsNilpotent A)
+private theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] (A : Matrix m m 𝔸) (ha : IsNilpotent A)
     (hA : ∀ (k : 𝕂) (q : ℚ), k = q → k • A = q • A)
     (h1 : ∀ (k : 𝕂) (q : ℚ), k = q → k • (1 : Matrix m m 𝔸) = q • (1 : Matrix m m 𝔸)) :
     (exp 𝕂 A) = IsNilpotent.exp A := by
@@ -109,22 +109,17 @@ theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] (A : Matrix m m 𝔸) (ha : Is
   have ha' : ∀ b ∉ Finset.range (nilpotencyClass A), (b.factorial : 𝕂)⁻¹ • A ^ b = 0 := by
     intro b hb
     rw [Finset.mem_range, not_lt] at hb
-    rw [smul_eq_zero, inv_eq_zero]
-    right
-    have hfact : b = (b - nilpotencyClass A) + (nilpotencyClass A) := by simp [hb]
-    rw [hfact, pow_add A (b - nilpotencyClass A) (nilpotencyClass A), pow_nilpotencyClass ha]
+    rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
     norm_num
   rw [tsum_eq_sum ha']
   have h' (k : 𝕂) (q : ℚ) (n : ℕ) (hkq : k = q) : k • A ^ n = q • A ^ n := by
     cases eq_zero_or_pos n
-    · rename_i hn
-      simp only [hn]
+    all_goals rename_i hn
+    · simp only [hn]
       exact h1 k q hkq
-    · rename_i hn
-      rw [← mul_pow_sub_one (by bound : n ≠ 0)]
+    · rw [← mul_pow_sub_one (by bound : n ≠ 0)]
       repeat rw [← smul_mul_assoc]
-      rw [hA]
-      exact hkq
+      rw [hA k q hkq]
   have h'' (b : ℕ) := h' (b.factorial : 𝕂)⁻¹ (b.factorial : ℚ)⁻¹ b (by rw [Rat.cast_inv_nat])
   apply Finset.sum_equiv (Equiv.refl _) (by simp)
   simp [h'']
