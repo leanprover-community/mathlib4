@@ -60,7 +60,7 @@ def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
 
 variable {r : α → α → Prop}
 
-theorem cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
+theorem cutExpand_le_invImage_lex [DecidableEq α] [Std.Irrefl r] :
     CutExpand r ≤ InvImage (Finsupp.Lex (rᶜ ⊓ (· ≠ ·)) (· < ·)) toFinsupp := by
   rintro s t ⟨u, a, hr, he⟩
   replace hr := fun a' ↦ mt (hr a')
@@ -94,7 +94,7 @@ theorem cutExpand_single_add {a' a : α} (h : r a' a) (s : Multiset α) :
     CutExpand r ({a'} + s) ({a} + s) :=
   (cutExpand_add_right s).2 <| cutExpand_singleton_singleton h
 
-theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
+theorem cutExpand_iff [DecidableEq α] [Std.Irrefl r] {s' s : Multiset α} :
     CutExpand r s' s ↔
       ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.erase a + t := by
   simp_rw [CutExpand, add_singleton_eq_iff]
@@ -105,7 +105,7 @@ theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
   · rintro ⟨ht, h, rfl⟩
     exact ⟨ht, mem_add.2 (Or.inl h), (erase_add_left_pos t h).symm⟩
 
-theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
+theorem not_cutExpand_zero [Std.Irrefl r] (s) : ¬CutExpand r s 0 := by
   classical
   rw [cutExpand_iff]
   rintro ⟨_, _, _, ⟨⟩, _⟩
@@ -129,7 +129,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
     · rw [add_assoc, erase_add_right_pos _ h]
 
 /-- `CutExpand` preserves leftward-closedness under a relation. -/
-lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
+lemma cutExpand_closed [Std.Irrefl r] (p : α → Prop)
     (h : ∀ {a' a}, r a' a → p a → p a') {s' s : Multiset α} :
     CutExpand r s' s → (∀ a ∈ s, p a) → ∀ a ∈ s', p a := by
   classical
@@ -155,7 +155,7 @@ lemma cutExpand_double_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a₂ a) 
 
 /-- A multiset is accessible under `CutExpand` if all its singleton subsets are,
   assuming `r` is irreflexive. -/
-theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
+theorem acc_of_singleton [Std.Irrefl r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
   induction s using Multiset.induction with
   | empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
@@ -166,7 +166,7 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Ac
 
 /-- A singleton `{a}` is accessible under `CutExpand r` if `a` is accessible under `r`,
   assuming `r` is irreflexive. -/
-theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
+theorem _root_.Acc.cutExpand [Std.Irrefl r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
   induction hacc with | _ a h ih
   refine Acc.intro _ fun s ↦ ?_
   classical
@@ -178,7 +178,7 @@ theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (Cu
 
 /-- `CutExpand r` is well-founded when `r` is. -/
 theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
-  ⟨have := hr.isIrrefl; fun _ ↦ acc_of_singleton fun a _ ↦ (hr.apply a).cutExpand⟩
+  ⟨have := hr.irrefl; fun _ ↦ acc_of_singleton fun a _ ↦ (hr.apply a).cutExpand⟩
 
 instance [h : IsWellFounded α r] : IsWellFounded _ (CutExpand r) :=
   ⟨h.wf.cutExpand⟩

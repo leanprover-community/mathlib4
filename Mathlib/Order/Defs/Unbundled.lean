@@ -28,8 +28,8 @@ and proves some basic lemmas about them.
 
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
-class IsIrrefl (α : Sort*) (r : α → α → Prop) : Prop where
-  irrefl : ∀ a, ¬r a a
+@[deprecated Std.Irrefl (since := "2026-01-07")]
+abbrev IsIrrefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Irrefl r
 
 /-- `IsRefl X r` means the binary relation `r` on `X` is reflexive. -/
 class IsRefl (α : Sort*) (r : α → α → Prop) : Prop where
@@ -80,8 +80,8 @@ is, `IsPreorder X r` and `Std.Symm r`. -/
 class IsEquiv (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Symm r
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
-`IsIrrefl X r` and `IsTrans X r`. -/
-class IsStrictOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsIrrefl α r, IsTrans α r
+`Std.Irrefl r` and `IsTrans X r`. -/
+class IsStrictOrder (α : Sort*) (r : α → α → Prop) : Prop extends Std.Irrefl r, IsTrans α r
 
 /-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
 that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a`. -/
@@ -117,7 +117,7 @@ variable {α : Sort*} {r : α → α → Prop} {a b c : α}
 /-- Local notation for an arbitrary binary relation `r`. -/
 local infixl:50 " ≺ " => r
 
-lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
+lemma irrefl [Std.Irrefl r] (a : α) : ¬a ≺ a := Std.Irrefl.irrefl a
 lemma refl [IsRefl α r] (a : α) : a ≺ a := IsRefl.refl a
 lemma trans [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := IsTrans.trans _ _ _
 lemma symm [Std.Symm r] : a ≺ b → b ≺ a := Std.Symm.symm _ _
@@ -127,11 +127,11 @@ lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
 
-instance (priority := 90) asymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] : Std.Asymm r :=
+instance (priority := 90) asymm_of_isTrans_of_irrefl [IsTrans α r] [Std.Irrefl r] : Std.Asymm r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
-instance IsIrrefl.decide [DecidableRel r] [IsIrrefl α r] :
-    IsIrrefl α (fun a b => decide (r a b) = true) where
+instance Std.Irrefl.decide [DecidableRel r] [Std.Irrefl r] :
+    Std.Irrefl (fun a b => decide (r a b) = true) where
   irrefl := fun a => by simpa using irrefl a
 
 instance IsRefl.decide [DecidableRel r] [IsRefl α r] :
@@ -164,7 +164,7 @@ instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
 
 variable (r)
 
-@[elab_without_expected_type] lemma irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a := irrefl a
+@[elab_without_expected_type] lemma irrefl_of [Std.Irrefl r] (a : α) : ¬a ≺ a := irrefl a
 @[elab_without_expected_type] lemma refl_of [IsRefl α r] (a : α) : a ≺ a := refl a
 @[elab_without_expected_type] lemma trans_of [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := _root_.trans
 @[elab_without_expected_type] lemma symm_of [Std.Symm r] : a ≺ b → b ≺ a := symm
@@ -187,7 +187,7 @@ def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
-/-- `IsIrrefl` as a definition, suitable for use in proofs. -/
+/-- `Std.Irrefl` as a definition, suitable for use in proofs. -/
 def Irreflexive := ∀ x, ¬x ≺ x
 
 /-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
@@ -346,10 +346,12 @@ theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b
 protected theorem Std.Asymm.antisymm (r : α → α → Prop) [Std.Asymm r] : Std.Antisymm r :=
   inferInstance
 
-@[deprecated (since := "2026-01-06")] alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
+@[deprecated (since := "2026-01-06")] protected alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
 
-protected theorem Std.Asymm.isIrrefl [Std.Asymm r] : IsIrrefl α r :=
-  ⟨Std.instIrreflOfAsymm r |>.irrefl⟩
+protected theorem Std.Asymm.irrefl [Std.Asymm r] : Std.Irrefl r :=
+  inferInstance
+
+@[deprecated (since := "2026-01-07")] protected alias Std.Asymm.isIrrefl := Std.Asymm.irrefl
 
 protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
@@ -358,13 +360,13 @@ protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α 
 instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
   ⟨fun a => or_self_iff.1 <| total_of r a a⟩
 
-theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
+theorem ne_of_irrefl {r} [Std.Irrefl r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
 
-theorem ne_of_irrefl' {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → y ≠ x
+theorem ne_of_irrefl' {r} [Std.Irrefl r] : ∀ {x y : α}, r x y → y ≠ x
   | _, _, h, rfl => irrefl _ h
 
-theorem not_rel_of_subsingleton (r) [IsIrrefl α r] [Subsingleton α] (x y) : ¬r x y :=
+theorem not_rel_of_subsingleton (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] (x y) : ¬r x y :=
   Subsingleton.elim x y ▸ irrefl x
 
 theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
@@ -374,7 +376,7 @@ theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
 theorem empty_relation_apply (a b : α) : emptyRelation a b ↔ False :=
   Iff.rfl
 
-instance : IsIrrefl α emptyRelation :=
+instance : @Std.Irrefl α emptyRelation :=
   ⟨fun _ => id⟩
 
 theorem rel_congr_left [Std.Symm r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
@@ -404,7 +406,7 @@ theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : �
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
-theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
+theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [Std.Irrefl r]
     {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
   ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
     <| irrefl b

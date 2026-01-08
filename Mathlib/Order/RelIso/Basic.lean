@@ -74,11 +74,15 @@ namespace RelHomClass
 
 variable {F : Type*} [FunLike F α β]
 
-protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
+protected theorem irrefl [RelHomClass F r s] (f : F) : ∀ [Std.Irrefl s], Std.Irrefl r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
+
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelHomClass.irrefl
 
 protected theorem asymm [RelHomClass F r s] (f : F) : ∀ [Std.Asymm s], Std.Asymm r
   | ⟨H⟩ => ⟨fun _ _ h₁ h₂ => H _ _ (map_rel f h₁) (map_rel f h₂)⟩
+
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelHomClass.asymm
 
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
@@ -154,7 +158,7 @@ end RelHom
 
 /-- An increasing function is injective -/
 theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [IsTrichotomous α r]
-    [IsIrrefl β s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
+    [Std.Irrefl s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
   intro x y hxy
   rcases trichotomous_of r x y with (h | h | h)
   · have := hf h
@@ -168,7 +172,7 @@ theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop
     exact irrefl_of s (f y) this
 
 /-- An increasing function is injective -/
-theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f : r →r s) :
+theorem RelHom.injective_of_increasing [IsTrichotomous α r] [Std.Irrefl s] (f : r →r s) :
     Injective f :=
   _root_.injective_of_increasing r s f f.map_rel
 
@@ -292,8 +296,10 @@ theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   ext a b
   exact f.map_rel_iff.symm
 
-protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
+protected theorem irrefl (f : r ↪r s) [Std.Irrefl s] : Std.Irrefl r :=
   ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
+
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelEmbedding.irrefl
 
 protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
@@ -305,6 +311,8 @@ protected theorem symm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
 
 protected theorem asymm (f : r ↪r s) [Std.Asymm s] : Std.Asymm r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
+
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelEmbedding.asymm
 
 protected theorem antisymm : ∀ (_ : r ↪r s) [Std.Antisymm s], Std.Antisymm r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ h₁ h₂ => f.inj' (H _ _ (o.2 h₁) (o.2 h₂))⟩
@@ -327,7 +335,7 @@ protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLin
   | f, _ => { f.isPartialOrder, f.isTotal with }
 
 protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
-  | f, _ => { f.isIrrefl, f.isTrans with }
+  | f, _ => { f.irrefl, f.isTrans with }
 
 protected theorem isTrichotomous : ∀ (_ : r ↪r s) [IsTrichotomous β s], IsTrichotomous α r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o (or_congr f.inj'.eq_iff o)).1 (H _ _)⟩
@@ -440,7 +448,7 @@ theorem ofMapRelIff_coe (f : α → β) [Std.Antisymm r] [IsRefl β s]
   to show it is a relation embedding. -/
 def ofMonotone [IsTrichotomous α r] [Std.Asymm s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
-  haveI := @Std.Asymm.isIrrefl β s _
+  haveI := @Std.Asymm.irrefl β s _
   refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
   · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
     · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
@@ -792,8 +800,8 @@ def emptySumLex (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] :
   ⟨Equiv.emptySum _ _, by simp⟩
 
 /-- Two irreflexive relations on a unique type are isomorphic. -/
-def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
-    [IsIrrefl β s] [Unique α] [Unique β] : r ≃r s :=
+def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [Std.Irrefl r]
+    [Std.Irrefl s] [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.ofUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
       (not_rel_of_subsingleton r _ _) ⟩
 

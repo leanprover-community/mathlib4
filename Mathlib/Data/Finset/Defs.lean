@@ -214,8 +214,8 @@ instance : IsTrans (Finset α) (· ⊆ ·) :=
 instance : @Std.Antisymm (Finset α) (· ⊆ ·) :=
   inferInstanceAs <| Std.Antisymm (· ≤ ·)
 
-instance : IsIrrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsIrrefl (Finset α) (· < ·)
+instance : @Std.Irrefl (Finset α) (· ⊂ ·) :=
+  inferInstanceAs <| Std.Irrefl (· < ·)
 
 instance : IsTrans (Finset α) (· ⊂ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· < ·)

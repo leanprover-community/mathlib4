@@ -153,7 +153,7 @@ theorem refl_apply (x : α) : InitialSeg.refl r x = x :=
 theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (f a) :=
   rfl
 
-instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s]
+instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [Std.Irrefl s]
     [IsWellFounded α r] : Subsingleton (r ≼i s) where
   allEq f g := by
     ext a
@@ -269,7 +269,7 @@ instance : CoeOut (r ≺i s) (r ↪r s) :=
 instance : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
 
-theorem toRelEmbedding_injective [IsIrrefl β s] [IsTrichotomous β s] :
+theorem toRelEmbedding_injective [Std.Irrefl s] [IsTrichotomous β s] :
     Function.Injective (@toRelEmbedding α β r s) := by
   rintro ⟨f, a, hf⟩ ⟨g, b, hg⟩ rfl
   congr
@@ -277,12 +277,12 @@ theorem toRelEmbedding_injective [IsIrrefl β s] [IsTrichotomous β s] :
   rw [← hf, hg]
 
 @[simp]
-theorem toRelEmbedding_inj [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} :
+theorem toRelEmbedding_inj [Std.Irrefl s] [IsTrichotomous β s] {f g : r ≺i s} :
     f.toRelEmbedding = g.toRelEmbedding ↔ f = g :=
   toRelEmbedding_injective.eq_iff
 
 @[ext]
-theorem ext [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} (h : ∀ x, f x = g x) : f = g := by
+theorem ext [Std.Irrefl s] [IsTrichotomous β s] {f g : r ≺i s} (h : ∀ x, f x = g x) : f = g := by
   rw [← toRelEmbedding_inj]
   ext
   exact h _

@@ -268,7 +268,7 @@ theorem rel_extent_intent {x y} (hx : x ∈ c.extent) (hy : y ∈ c.intent) : r 
   exact hy hx
 
 /-- Note that if `r'` is the `≤` relation, this theorem will often not be true! -/
-theorem disjoint_extent_intent [IsIrrefl α r'] : Disjoint c'.extent c'.intent := by
+theorem disjoint_extent_intent [Std.Irrefl r'] : Disjoint c'.extent c'.intent := by
   rw [disjoint_iff_forall_ne]
   rintro x hx _ hx' rfl
   exact irrefl x (rel_extent_intent hx hx')
