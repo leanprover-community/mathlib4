@@ -193,12 +193,9 @@ instance {I : Ideal R} (p : I.minimalPrimes) : IsPrime p.1 := p.2.1.1
 def component (I p : Ideal R) [p.IsPrime] : Ideal R :=
   (I.map (algebraMap R (Localization.AtPrime p))).comap (algebraMap R (Localization.AtPrime p))
 
-lemma _root_.Set.compl_disjoint {α : Type*} (S : Set α) : Disjoint (Sᶜ) S := by
-  grind
-
 lemma component_self (p : Ideal R) [hp : p.IsPrime] : p.component p = p :=
   IsLocalization.comap_map_of_isPrime_disjoint p.primeCompl (Localization.AtPrime p)
-    p hp (Set.compl_disjoint (p : Set R))
+    p hp disjoint_compl_left
 
 def le_component (I p : Ideal R) [p.IsPrime] : I ≤ I.component p :=
   le_comap_map
@@ -214,13 +211,13 @@ lemma component_def (I p : Ideal R) [hp : p.IsPrime]
   rw [← φ.toAlgHom.comp_algebraMap, ← map_map, ← comap_comap, comap_map_of_bijective, component]
   exact φ.bijective
 
-lemma IsPrimary.comap {R S : Type*} [CommSemiring R] [CommSemiring S] {I : Ideal S} (hI : I.IsPrimary)
+lemma IsPrimary.comap
+  {R S : Type*} [CommSemiring R] [CommSemiring S] {I : Ideal S} (hI : I.IsPrimary)
     (φ : R →+* S) : (I.comap φ).IsPrimary := by
   rw [isPrimary_iff] at hI ⊢
-  refine ⟨comap_ne_top φ hI.1, fun h ↦ ?_⟩
-  rw [mem_comap, map_mul] at h
-  rw [← comap_radical φ I]
-  exact hI.2 h
+  refine hI.imp (comap_ne_top φ) fun h ↦ ?_
+  simp only [mem_comap, map_mul, ← comap_radical]
+  exact h
 
 lemma IsLocalization.foo_of_mem_minimalPrimes
     {R : Type*} [CommSemiring R] (I : Ideal R)
@@ -230,7 +227,7 @@ lemma IsLocalization.foo_of_mem_minimalPrimes
   rw [IsLocalization.minimalPrimes_map p.primeCompl S I, Set.eq_singleton_iff_unique_mem]
   constructor
   · rwa [Set.mem_preimage, IsLocalization.comap_map_of_isPrime_disjoint p.primeCompl S p hp]
-    exact Set.compl_disjoint (p : Set R)
+    exact disjoint_compl_left
   · rintro q hq
     rw [Set.mem_preimage] at hq
     by_contra! hqp
