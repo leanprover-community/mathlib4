@@ -282,15 +282,15 @@ variable [Semiring C] [Algebra R C]
 
 lemma distribBaseChange_includeLeft_lTensor_tmul (a : A) (b : B) :
     (AlgebraTensorModule.distribBaseChange R A B C)
-      ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A (a ⊗ₜ[R] b)) =
-    (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)) (a ⊗ₜ[R] b) := by
+      (includeLeft.toLinearMap.lTensor A (a ⊗ₜ[R] b)) =
+    includeLeft (S := R) (a ⊗ₜ[R] b) := by
   simp [one_def]
 
 /-- A relation between `distribBaseChange`, `includeLeft` and `lTensor`. -/
 lemma distribBaseChange_includeLeft_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
-      ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
-    (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
+      ((includeLeft (R := R) (B := C)).toLinearMap.lTensor A) =
+    (includeLeft (R := A) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
   ext; simp [one_def]
 
 lemma distribBaseChange_includeRight_lTensor_tmul (a : A) (c : C) :
