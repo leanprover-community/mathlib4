@@ -123,6 +123,13 @@ example (h : ∃ n : Nat, n > 0) : True := by
   guard_hyp hn : n > 0 + 0  -- user-specified type is preserved
   trivial
 
+-- Type annotation with wildcard
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose n (hn : n > _) using h
+  guard_hyp n : Nat
+  guard_hyp hn : n > 0
+  trivial
+
 -- Type annotation mismatch should fail (using fail_if_success)
 /--
 error: type mismatch for 'n'
