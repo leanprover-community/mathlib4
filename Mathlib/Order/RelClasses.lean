@@ -362,15 +362,16 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
   ⟨h.wf IsWellFounded.wf⟩
 
 instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) := by
-  suffices h : ∀ a, ∀ a' ≤ a, ∀ b, Acc (· < ·) (a', b) from ⟨⟨fun x => h x.1 x.1 le_rfl x.2⟩⟩
-  intro a a' ha b
-  induction a using WellFoundedLT.induction generalizing a' b with | ind a iha
-  induction b using WellFoundedLT.induction generalizing a' with | ind b ihb
-  refine Acc.intro (a', b) fun x hx => ?_
-  obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
-  · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
-  · exact ihb x.2 hb x.1 (ha'.trans ha)
+    WellFoundedLT (α × β) where
+  wf := by
+    suffices h : ∀ a, ∀ a' ≤ a, ∀ b, Acc (· < ·) (a', b) from ⟨fun x => h x.1 x.1 le_rfl x.2⟩
+    intro a a' ha b
+    induction a using WellFoundedLT.induction generalizing a' b with | ind a iha
+    induction b using WellFoundedLT.induction generalizing a' with | ind b ihb
+    refine Acc.intro (a', b) fun x hx => ?_
+    obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
+    · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
+    · exact ihb x.2 hb x.1 (ha'.trans ha)
 
 instance Prod.wellFoundedGT [Preorder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
     WellFoundedGT (α × β) :=
