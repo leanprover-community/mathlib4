@@ -6,6 +6,7 @@ Authors: Winston Yin
 module
 
 public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Analysis.Calculus.ImplicitContDiff
 
 /-!
 # Smooth dependence on initial condition
@@ -108,7 +109,11 @@ variable {f u} in
 integral curves to the vector field `f` -/
 noncomputable def implicitEquation (hf : ContinuousOn f u) :
     E × C(Icc tmin tmax, E) → C(Icc tmin tmax, E) :=
-  fun ⟨x₀, α⟩ ↦ ⟨implicitEquationAux f u t₀ ⟨x₀, α⟩, continuous_implicitEquationAux t₀ hf x₀ α⟩
+  fun p ↦ ⟨implicitEquationAux f u t₀ p, continuous_implicitEquationAux t₀ hf p.1 p.2⟩
+
+lemma implicitEquation_def {hf : ContinuousOn f u} :
+    implicitEquation t₀ hf = fun p ↦
+      ⟨implicitEquationAux f u t₀ p, continuous_implicitEquationAux t₀ hf p.1 p.2⟩ := rfl
 
 set_option linter.unusedVariables false in
 /-- The left (`E`) component of the first derivative of the implicit equation, valid when `x ∈ u`
@@ -123,6 +128,9 @@ def implicitEquation.leftDeriv (x : E) (α : C(Icc tmin tmax, E)) :
     have : Nonempty (Icc tmin tmax) := ⟨t₀.val, t₀.property⟩
     simp_rw [ContinuousMap.dist_eq_iSup, ContinuousMap.const_apply, ciSup_const]
     exact fun _ ε hε ↦ ⟨ε, hε, fun _ h ↦ h⟩
+
+lemma implicitEquation.leftDeriv_eq {x : E} {α : C(Icc tmin tmax, E)} :
+    implicitEquation.leftDeriv t₀ x α = implicitEquation.leftDeriv t₀ 0 0 := rfl
 
 /-
 Need to define the right component of the first derivative of `implicitEquation`.
@@ -295,12 +303,64 @@ lemma implicitEquation.continuous_rightDerivAux' {f' : E → E →L[ℝ] E} (hf'
 
 /-- The left (`E`) part of the first derivative of the implicit equation, valid when `x ∈ u` and
 `range α ⊆ u` -/
-noncomputable def implicitEquation.rightDeriv {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u) (x : E)
-    (α : C(Icc tmin tmax, E)) :
+noncomputable def implicitEquation.rightDerivAux'' {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
+    (x : E) (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) where
   toFun := implicitEquation.rightDerivAux' t₀ hf' x α
   map_add' _ _ := implicitEquation.rightDerivAux'_add ..
   map_smul' _ _ := implicitEquation.rightDerivAux'_smul ..
   cont := implicitEquation.continuous_rightDerivAux' u t₀ hf' x α
+
+-- think about `u`
+noncomputable def implicitEquation.rightDeriv (hu : IsOpen u) (hf : ContDiffOn ℝ 1 f u) (x : E)
+    (α : C(Icc tmin tmax, E)) : C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) :=
+  implicitEquation.rightDerivAux'' u t₀ (hf.continuousOn_fderiv_of_isOpen hu le_rfl) x α
+
+lemma implicitEquation.rightDeriv_eq {hu : IsOpen u} {hf : ContDiffOn ℝ 1 f u} {x : E}
+    {α : C(Icc tmin tmax, E)} :
+    implicitEquation.rightDeriv f u t₀ hu hf x α = implicitEquation.rightDeriv f u t₀ hu hf 0 α :=
+  rfl
+
+lemma implicitEquation.continuousOn_rightDeriv (hu : IsOpen u) (hf : ContDiffOn ℝ 1 f u) (x : E) :
+    ContinuousOn (implicitEquation.rightDeriv f u t₀ hu hf x)
+      {β : C(Icc tmin tmax, E) | MapsTo β univ u} := by
+  sorry
+
+-- probably easier to prove left and right components separately first
+lemma hasFDerivAt_implicitEquation (hu : IsOpen u) (hf : ContDiffOn ℝ 1 f u) (x : E)
+    (α : C(Icc tmin tmax, E)) :
+    HasFDerivAt (implicitEquation t₀ hf.continuousOn)
+      ((implicitEquation.leftDeriv t₀ x α).coprod (implicitEquation.rightDeriv f u t₀ hu hf x α))
+      (x, α) := by
+  sorry
+
+lemma isContDiffImplicitAt_implicitEquation (hu : IsOpen u) (hf : ContDiffOn ℝ 1 f u) {x : E}
+    (hx : x ∈ u) {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
+    IsContDiffImplicitAt 1 (implicitEquation t₀ hf.continuousOn)
+      ((implicitEquation.leftDeriv t₀ x α).coprod (implicitEquation.rightDeriv f u t₀ hu hf x α))
+      (x, α) where
+  hasFDerivAt := hasFDerivAt_implicitEquation ..
+  contDiffAt := by
+    rw [contDiffAt_one_iff]
+    use fun p ↦ ((implicitEquation.leftDeriv t₀ p.1 p.2).coprod
+      (implicitEquation.rightDeriv f u t₀ hu hf p.1 p.2))
+    have (p : E × C((Icc tmin tmax), E)) := hasFDerivAt_implicitEquation f u t₀ hu hf p.1 p.2
+    use univ ×ˢ {β : C(Icc tmin tmax, E) | MapsTo β univ u}
+    refine ⟨?_, ?_, fun p _ ↦ this p⟩
+    · apply prod_mem_nhds Filter.univ_mem
+      apply (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu).mem_nhds
+      rw [mem_setOf_eq, mapsTo_univ_iff]
+      intro t
+      apply hα
+      exact mem_range_self _
+    · apply ContinuousOn.continuousLinearMapCoprod
+      · simp_rw [implicitEquation.leftDeriv_eq]
+        exact continuousOn_const
+      · simp_rw [implicitEquation.rightDeriv_eq]
+        apply ContinuousOn.comp (t := {β : C(Icc tmin tmax, E) | MapsTo β univ u}) _
+          continuousOn_snd mapsTo_snd_prod
+        apply implicitEquation.continuousOn_rightDeriv _ _ _ hu hf
+  bijective := sorry
+  ne_zero := by simp
 
 end SmoothFlow
