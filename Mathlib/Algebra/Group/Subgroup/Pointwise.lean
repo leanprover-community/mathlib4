@@ -79,7 +79,7 @@ open scoped RightActions in
 @[to_additive (attr := simp)]
 lemma subgroupClosure_mul (hs : s.Nonempty) : closure s * s = closure s := by
   rw [← Set.iUnion_op_smul_set]
-  have h a (ha : a ∈ s) :  (closure s : Set G) <• a = closure s :=
+  have h a (ha : a ∈ s) : (closure s : Set G) <• a = closure s :=
     op_smul_coe_set <| subset_closure ha
   simp +contextual [h, hs]
 
@@ -223,19 +223,13 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
 @[to_additive]
-lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
-  | 1, _ => by simp
-  | n + 2, _ =>
-    calc
-      closure (s ^ (n + 2))
-      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
-      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
-      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
-      _ = closure s := sup_idem _
+lemma closure_pow_le : ∀ {n}, closure (s ^ n) ≤ closure s
+  | 0 => by simp_all
+  | n + 1 => by grw [pow_succ, closure_mul_le, closure_pow_le, sup_idem]
 
 @[to_additive]
 lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
-  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
+  closure_pow_le.antisymm <| by gcongr; exact subset_pow hs hn
 
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
@@ -371,7 +365,7 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
     change S.map _ = S
     simpa only [map_one] using S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f : Monoid.End G => S.map f) (MonoidHom.map_mul _ _ _)).trans
+    (congr_arg (fun f : Monoid.End G => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Subgroup.pointwiseMulAction
@@ -492,6 +486,16 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
   simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
   simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
+
+lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
+    ConjAct.toConjAct g • H = H ↔ g ∈ normalizer H := by
+  rw [← H.normalizer.inv_mem_iff]
+  simp only [Subgroup.ext_iff, mem_pointwise_smul_iff_inv_smul_mem,
+    ← ConjAct.toConjAct_inv, ConjAct.toConjAct_smul, mem_normalizer_iff, inv_inv, Iff.comm]
+
+lemma conjAct_pointwise_smul_eq_self {H : Subgroup G} {g : G} (hg : g ∈ normalizer H) :
+    ConjAct.toConjAct g • H = H :=
+  conjAct_pointwise_smul_iff.2 hg
 
 end Group
 end Subgroup

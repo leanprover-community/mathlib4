@@ -60,7 +60,7 @@ open scoped ContinuousMapZero
 open Unitization in
 /--
 This is an auxiliary definition used for constructing an instance of the non-unital continuous
-functional calculus given a instance of the unital one on the unitization.
+functional calculus given an instance of the unital one on the unitization.
 
 This is the natural non-unital star homomorphism obtained from the chain
 ```lean

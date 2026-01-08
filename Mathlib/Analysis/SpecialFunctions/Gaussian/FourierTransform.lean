@@ -161,7 +161,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
           exact differentiable_pow 2)
     simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, zero_mul, add_zero, neg_re,
       ofReal_re, add_re, mul_re, I_re, mul_zero, I_im, tsub_zero, add_im, mul_im,
-      mul_one, zero_add, Algebra.id.smul_eq_mul, ofReal_neg] using this
+      mul_one, zero_add, smul_eq_mul, ofReal_neg] using this
   simp_rw [id, ← HI₁]
   have : I₁ = fun T : ℝ => I₂ T + verticalIntegral b c T := by
     ext1 T
@@ -265,13 +265,14 @@ theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re
 
 theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
-    Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖^2 + c * ⟪w, v⟫)) := by
+    Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖ ^ 2 + c * ⟪w, v⟫)) := by
   rw [← (PiLp.volume_preserving_toLp ι).integrable_comp_emb
     (MeasurableEquiv.toLp 2 _).measurableEmbedding]
   simp only [neg_mul, Function.comp_def]
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
   simp only [EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, PiLp.inner_apply, RCLike.inner_apply,
-  conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul, Finset.sum_neg_distrib, mul_assoc]
+    conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul, Finset.sum_neg_distrib,
+    mul_assoc]
   norm_cast
   rw [sq_sqrt]
   · simp [Finset.mul_sum, mul_comm]
@@ -308,8 +309,8 @@ theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) 
 
 theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
-    ∫ v : EuclideanSpace ℝ ι, cexp (- b * ‖v‖^2 + c * ⟪w, v⟫) =
-      (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp (c ^ 2 * ‖w‖^2 / (4 * b)) := by
+    ∫ v : EuclideanSpace ℝ ι, cexp (- b * ‖v‖ ^ 2 + c * ⟪w, v⟫) =
+      (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp (c ^ 2 * ‖w‖ ^ 2 / (4 * b)) := by
   rw [← (PiLp.volume_preserving_toLp ι).integral_comp
     (MeasurableEquiv.toLp 2 _).measurableEmbedding]
   simp only [neg_mul]
@@ -319,7 +320,8 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     left
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
-  · simp [PiLp.inner_apply, Finset.mul_sum, mul_assoc]
+  · simp only [PiLp.inner_apply, RCLike.inner_apply, conj_trivial, ofReal_sum, ofReal_mul,
+      Finset.mul_sum, mul_assoc]
     simp_rw [mul_comm]
   · simp only [EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, mul_pow, ← Finset.mul_sum]
     congr

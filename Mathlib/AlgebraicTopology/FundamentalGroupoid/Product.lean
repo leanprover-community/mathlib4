@@ -181,7 +181,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
     have : Path.Homotopic.projLeft ((prodToProdTop A B).map (f₀, f₁)) = f₀ ∧
       Path.Homotopic.projRight ((prodToProdTop A B).map (f₀, f₁)) = f₁ :=
         And.intro (Path.Homotopic.projLeft_prod f₀ f₁) (Path.Homotopic.projRight_prod f₀ f₁)
-    simpa
+    cat_disch
   inv_hom_id := by
     change (projLeft A B).prod' (projRight A B) ⋙ prodToProdTop A B = 𝟭 _
     apply CategoryTheory.Functor.hext

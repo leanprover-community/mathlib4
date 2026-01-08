@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # Pushouts in `Type`
@@ -29,8 +27,6 @@ namespace CategoryTheory.Limits.Types
 
 instance : HasPushouts.{u} (Type u) :=
   hasPushouts_of_hasWidePushouts.{u} (Type u)
-
-section Pushout
 
 variable {S X₁ X₂ : Type u} (f : S ⟶ X₁) (g : S ⟶ X₂)
 
@@ -152,7 +148,7 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
         apply Rel'.inl_inr
     · obtain z₁ | z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
-        obtain rfl | ⟨_, _, h, h', rfl⟩  := hyz
+        obtain rfl | ⟨_, _, h, h', rfl⟩ := hyz
         · apply Rel'.inr_inl
         · obtain rfl := (mono_iff_injective f).1 inferInstance h'
           rw [h]
@@ -250,12 +246,135 @@ instance mono_inl [Mono g] : Mono (Pushout.inl f g) :=
     (PushoutCocone.flipIsColimit (Pushout.isColimitCocone f g))
 
 instance [Mono f] : Mono (pushout.inr f g) :=
-  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g):)
+  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g) :)
 
 instance [Mono g] : Mono (pushout.inl f g) :=
   pushoutCocone_inr_mono_of_isColimit
     (PushoutCocone.flipIsColimit (pushoutIsPushout f g))
 
-end Pushout
+section
+
+variable {X₁ X₂ X₃ X₄ X₅ : Type u} {t : X₁ ⟶ X₂} {r : X₂ ⟶ X₄}
+  {l : X₁ ⟶ X₃} {b : X₃ ⟶ X₄}
+
+lemma eq_or_eq_of_isPushout (h : IsPushout t l r b)
+    (x₄ : X₄) : (∃ x₂, r x₂ = x₄) ∨ ∃ x₃, b x₃ = x₄ := by
+  obtain ⟨j, x, rfl⟩ := jointly_surjective_of_isColimit h.isColimit x₄
+  obtain (_ | _ | _) := j
+  · exact Or.inl ⟨t x, by simp⟩
+  · exact Or.inl ⟨x, rfl⟩
+  · exact Or.inr ⟨x, rfl⟩
+
+lemma eq_or_eq_of_isPushout' (h : IsPushout t l r b)
+    (x₄ : X₄) : (∃ x₂, r x₂ = x₄) ∨ ∃ x₃, b x₃ = x₄ ∧ x₃ ∉ Set.range l := by
+  obtain h₁ | ⟨x₃, hx₃⟩ := eq_or_eq_of_isPushout h x₄
+  · exact Or.inl h₁
+  · by_cases h₂ : x₃ ∈ Set.range l
+    · obtain ⟨x₁, rfl⟩ := h₂
+      exact Or.inl ⟨t x₁, by simpa only [← hx₃] using congr_fun h.w x₁⟩
+    · exact Or.inr ⟨x₃, hx₃, h₂⟩
+
+/-- A pushout square in `Type` where the top map is injective is a pullback square.
+This is also essentially the lemma `isPullback_of_isPushout_of_mono_left`
+from the file `CategoryTheory.Adhesive` in the case of the adhesive category of types. -/
+lemma isPullback_of_isPushout (h : IsPushout t l r b) (ht : Function.Injective t) :
+    IsPullback t l r b := by
+  rw [isPullback_iff]
+  refine ⟨h.w, fun x₁ y₁ ⟨h₂, _⟩ ↦ ht h₂, fun x₂ x₃ hx ↦ ?_⟩
+  have := (pushoutCocone_inl_eq_inr_iff_of_isColimit h.isColimit ht x₂ x₃).1 hx
+  grind
+
+/-- Consider a pushout square involving types `X₁`, `X₂`, `X₃` and `X₄`:
+```
+     t
+ X₁  ⟶  X₂
+l|     |r  \
+ v   b  v   \ r'
+ X₃  ⟶  X₄   \
+  \       k\  |
+   \ b'     v v
+    \______> X₅
+```
+Let `k : X₄ ⟶ X₅`, `r' : X₂ ⟶ X₅` and `b' : X₃ ⟶ X₅` be such
+that `r ≫ k = r'` and `b ≫ k = b'`. Assume that
+the outer square is a pullback, that `r'` is a monomorphism
+and that `b'` is injective on the complement of the range of `l`,
+then `k : X₄ ⟶ X₅` is a monomorphism. -/
+lemma mono_of_isPushout_of_isPullback {k : X₄ ⟶ X₅} (h₁ : IsPushout t l r b)
+    {r' : X₂ ⟶ X₅} {b' : X₃ ⟶ X₅} (h₂ : IsPullback t l r' b')
+    (facr : r ≫ k = r') (facb : b ≫ k = b') [hr' : Mono r']
+    (H : ∀ (x₃ y₃ : X₃) (_ : x₃ ∉ Set.range l) (_ : y₃ ∉ Set.range l),
+      b' x₃ = b' y₃ → x₃ = y₃) :
+    Mono k := by
+  subst facr facb
+  have : Function.Injective l :=
+    fun x₁ y₁ h ↦ ext_of_isPullback h₂ ((mono_iff_injective _).1 hr'
+      ((congr_fun h₂.w x₁).trans (Eq.trans (by simp [h]) (congr_fun h₂.w.symm y₁)))) h
+  rw [mono_iff_injective] at hr' ⊢
+  have w := congr_fun h₁.w
+  dsimp at w
+  intro x₃ y₃ eq
+  obtain (⟨x₂, rfl⟩ | ⟨x₃, rfl, hx₃⟩) := eq_or_eq_of_isPushout' h₁ x₃ <;>
+  obtain (⟨y₂, rfl⟩ | ⟨y₃, rfl, hy₃⟩) := eq_or_eq_of_isPushout' h₁ y₃
+  · obtain rfl : x₂ = y₂ := hr' eq
+    rfl
+  · obtain ⟨x₁, rfl, rfl⟩ := exists_of_isPullback h₂ x₂ y₃ eq
+    rw [w]
+  · obtain ⟨x₁, rfl, rfl⟩ := exists_of_isPullback h₂ y₂ x₃ eq.symm
+    rw [w]
+  · obtain rfl := H x₃ y₃ hx₃ hy₃ eq
+    rfl
+
+/-- Consider a diagram where the outer square involving types `X₁`, `X₂`, `X₃` and `X₅`
+is a pullback, where the two bottom and right triangles commute:
+```
+     t
+ X₁  ⟶  X₂
+l|     |r  \
+ v   b  v   \ r'
+ X₃  ⟶  X₄   \
+  \       k\  |
+   \ b'     v v
+    \______> X₅
+```
+Assume that `r'` and `k` are monomorphisms, that `r` and `b` are jointly surjective,
+and that `b'` is injective on the complement of the range of `l`, then
+the top-left square is a pushout. -/
+lemma isPushout_of_isPullback_of_mono {k : X₄ ⟶ X₅}
+    {r' : X₂ ⟶ X₅} {b' : X₃ ⟶ X₅} (h₁ : IsPullback t l r' b')
+    (facr : r ≫ k = r') (facb : b ≫ k = b') [Mono r'] [Mono k]
+    (h₂ : Set.range r ⊔ Set.range b = Set.univ)
+    (H : ∀ (x₃ y₃ : X₃) (_ : x₃ ∉ Set.range l) (_ : y₃ ∉ Set.range l),
+      b' x₃ = b' y₃ → x₃ = y₃) :
+    IsPushout t l r b := by
+  obtain ⟨φ, hφ₁, hφ₂⟩ := pushout.exists_desc t l r b
+    (by simp only [← cancel_mono k, Category.assoc, facr, facb, h₁.w])
+  have := mono_of_isPushout_of_isPullback (IsPushout.of_hasPushout t l) h₁
+    (k := φ ≫ k) (by cat_disch) (by cat_disch) H
+  have : IsIso φ := by
+    rw [isIso_iff_bijective]
+    refine ⟨(mono_iff_injective _).1 (mono_of_mono φ k), fun x₄ ↦ ?_⟩
+    have hx₄ := Set.mem_univ x₄
+    simp only [← h₂, Set.sup_eq_union, Set.mem_union, Set.mem_range] at hx₄
+    obtain (⟨x₂, rfl⟩ | ⟨x₃, rfl⟩) := hx₄
+    · exact ⟨_, congr_fun hφ₁ x₂⟩
+    · exact ⟨_, congr_fun hφ₂ x₃⟩
+  exact IsPushout.of_iso (IsPushout.of_hasPushout t l)
+    (Iso.refl _) (Iso.refl _) (Iso.refl _) (asIso φ) (by simp) (by simp)
+    (by simpa) (by simpa)
+
+/-- Consider a pullback square of types where the right map is a monomorphism.
+If the right and bottom map are jointly surjective, and the bottom map
+is injective on the complement on the range of the left map, then the square
+is a pushout square. -/
+lemma isPushout_of_isPullback_of_mono'
+    (h₁ : IsPullback t l r b) [Mono r]
+    (h₂ : Set.range r ⊔ Set.range b = Set.univ)
+    (H : ∀ (x₃ y₃ : X₃) (_ : x₃ ∉ Set.range l) (_ : y₃ ∉ Set.range l),
+      b x₃ = b y₃ → x₃ = y₃) :
+    IsPushout t l r b :=
+  isPushout_of_isPullback_of_mono (k := 𝟙 _) h₁ (by simp) (by simp) h₂ H
+
+end
 
 end CategoryTheory.Limits.Types

@@ -91,6 +91,14 @@ noncomputable instance : CommGroup (ClassGroup R) :=
 
 noncomputable instance : Inhabited (ClassGroup R) := ⟨1⟩
 
+/-- The class group of `R` is isomorphic to the group of invertible `R`-submodules in `Frac(R)`
+modulo the principal submodules (invertible submodules are automatically fractional ideals). -/
+noncomputable def ClassGroup.mulEquivUnitsSubmoduleQuotRange :
+    ClassGroup R ≃*
+    (Submodule R (FractionRing R))ˣ ⧸ (Units.map (Submodule.spanSingleton R).toMonoidHom).range :=
+  QuotientGroup.congr _ _ unitsMulEquivSubmodule <| by
+    simp_rw [MonoidHom.range_eq_map, Subgroup.map_map]; congr; ext; simp [unitsMulEquivSubmodule]
+
 variable {R}
 
 /-- Send a nonzero fractional ideal to the corresponding class in the class group. -/
@@ -190,8 +198,7 @@ noncomputable def ClassGroup.equiv :
       · simp only [RingEquiv.toMulEquiv_eq_coe, MulEquiv.coe_toMonoidHom, coe_mapEquiv,
           RingEquiv.coe_toMulEquiv, canonicalEquiv_canonicalEquiv, canonicalEquiv_self,
           RingEquiv.refl_apply]
-  exact @QuotientGroup.congr (FractionalIdeal R⁰ (FractionRing R))ˣ _ (FractionalIdeal R⁰ K)ˣ _
-    (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range _ _
+  exact QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range (toPrincipalIdeal R K).range
     (Units.mapEquiv (FractionalIdeal.canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv) this
 
 @[simp]

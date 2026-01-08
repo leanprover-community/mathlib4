@@ -76,9 +76,16 @@ lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
+instance : MorphismProperty.IsStableUnderComposition @Surjective.{u} where
+  comp_mem _ _ hf hg := ⟨hg.1.comp hf.1⟩
+
 instance : MorphismProperty.RespectsIso @Surjective :=
   surjective_eq_topologically ▸ topologically_respectsIso _ (fun e ↦ e.surjective)
     (fun _ _ hf hg ↦ hg.comp hf)
+
+instance (P : MorphismProperty Scheme.{u}) :
+    MorphismProperty.HasOfPrecompProperty @Surjective P where
+  of_precomp f g _ _ := .of_comp f g
 
 instance surjective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Surjective := by
   have : MorphismProperty.RespectsIso @Surjective := inferInstance

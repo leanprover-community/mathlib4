@@ -18,7 +18,7 @@ of `c` (or, more generally, $f(z) - f(c)=o((z-c)^{-1})$), then it has a limit at
 function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a neighborhood of `c`.
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function
@@ -152,6 +152,6 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
       zero_smul, sub_zero]
   · refine circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => ?_
     simp only [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
-      mul_inv, Ne, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
+      mul_inv, Ne, not_false_iff, vsub_eq_sub, smul_eq_mul]
 
 end Complex

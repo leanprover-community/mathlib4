@@ -46,7 +46,8 @@ See also `Submodule.length_lt`. -/
 theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
-  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h.lt_top))
+  rw [← Quotient.nontrivial_iff] at h
+  exact Nat.lt_add_of_pos_right finrank_pos
 
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
 theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional K s]
@@ -143,7 +144,7 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
   have h₁ := f.finrank_range_add_finrank_ker
   have h₂ : finrank K (LinearMap.range f) ≤ finrank K V₂ := (LinearMap.range f).finrank_le
   suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
-  cutsat
+  lia
 
 end DivisionRing
 

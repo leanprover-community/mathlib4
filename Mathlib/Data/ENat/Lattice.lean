@@ -19,7 +19,7 @@ of `WithTop.some`.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -87,7 +87,6 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   | top => simp at hx
   | coe x =>
     contrapose! h
-    simp only [not_infinite]
     apply Finite.subset <| Finite.Set.finite_image {n : ℕ | n ≤ x} (fun (n : ℕ) => (n : ℕ∞))
     intro y hy
     specialize h y hy
@@ -229,7 +228,7 @@ lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSu
     rcases h i j with ⟨k, hk⟩
     exact le_iSup_of_le k hk
 
-lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → ℕ∞}
+lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → ℕ∞}
     (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 

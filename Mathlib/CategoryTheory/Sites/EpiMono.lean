@@ -39,11 +39,11 @@ namespace Sheaf
 
 /-- The class of locally injective morphisms of sheaves, see `Sheaf.IsLocallyInjective`. -/
 def locallyInjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallyInjective f
+  fun _ _ f => IsLocallyInjective f
 
 /-- The class of locally surjective morphisms of sheaves, see `Sheaf.IsLocallySurjective`. -/
 def locallySurjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallySurjective f
+  fun _ _ f => IsLocallySurjective f
 
 section
 

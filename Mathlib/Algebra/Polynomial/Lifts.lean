@@ -33,7 +33,7 @@ and that a monic polynomial that lifts can be lifted to a monic polynomial (of t
 
 ## Implementation details
 
-In general `R` and `S` are semiring, so `lifts` is a semiring. In the case of rings, see
+In general `R` and `S` are semirings, so `lifts` is a semiring. In the case of rings, see
 `lifts_iff_lifts_ring`.
 
 Since we do not assume `R` to be commutative, we cannot say in general that the set of polynomials
@@ -125,7 +125,7 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
   intro k
   by_cases hk : k = n
   · use 0
-    simp only [hk, RingHom.map_zero, erase_same]
+    simp only [hk, map_zero, erase_same]
   obtain ⟨i, hi⟩ := h k
   use i
   simp only [hi, hk, erase_ne, Ne, not_false_iff]

@@ -44,12 +44,10 @@ choices of `V`?
 
 open scoped ENNReal
 
-universe uK uK' uV
-
 /-- A type synonym for the given `V`, associated with the L`p` norm. Note that by default this just
 forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
 instance, on `Prod` and finite `Pi` types). -/
-structure WithLp (p : ℝ≥0∞) (V : Type uV) : Type uV where
+structure WithLp (p : ℝ≥0∞) (V : Type*) where
   /-- Converts an element of `V` to an element of `WithLp p V`. -/
   toLp (p) ::
   /-- Converts an element of `WithLp p V` to an element of `V`. -/
@@ -65,7 +63,7 @@ meta def WithLp.delabToLp : Delab := delabApp
 
 end Notation
 
-variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
+variable (p : ℝ≥0∞) (K K' : Type*) {K'' : Type*} (V : Type*) {V' V'' : Type*}
 
 namespace WithLp
 
@@ -121,6 +119,39 @@ lemma ofLp_bijective : Function.Bijective (@ofLp p V) :=
 lemma toLp_bijective : Function.Bijective (@toLp p V) :=
   ⟨toLp_injective p, toLp_surjective p⟩
 
+/-- Lift a function to `WithLp`. -/
+@[simp]
+protected def map (f : V → V') (x : WithLp p V) : WithLp p V' :=
+  toLp p (f x.ofLp)
+
+@[simp]
+theorem map_id : WithLp.map p (id (α := V)) = id :=
+  rfl
+
+theorem map_comp (f : V' → V'') (g : V → V') :
+    WithLp.map p (f ∘ g) = WithLp.map p f ∘ WithLp.map p g :=
+  rfl
+
+/-- Lift an equivalence to `WithLp`. -/
+protected def congr (f : V ≃ V') : WithLp p V ≃ WithLp p V' :=
+  (WithLp.equiv p V).trans <| f.trans <| (WithLp.equiv p V').symm
+
+@[simp]
+theorem coe_congr (f : V ≃ V') : ⇑(WithLp.congr p f) = WithLp.map p f :=
+  rfl
+
+@[simp]
+theorem congr_refl : WithLp.congr p (Equiv.refl V) = Equiv.refl _ :=
+  rfl
+
+@[simp]
+theorem congr_symm (f : V ≃ V') : (WithLp.congr p f).symm = WithLp.congr p f.symm :=
+  rfl
+
+theorem congr_trans (f : V ≃ V') (g : V' ≃ V'') :
+    WithLp.congr p (f.trans g) = (WithLp.congr p f).trans (WithLp.congr p g) :=
+  rfl
+
 section AddCommGroup
 variable [AddCommGroup V]
 
@@ -157,65 +188,6 @@ instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
   smul_comm x y z := by
     change toLp p (x • y • ofLp z) = toLp p (y • x • ofLp z)
     rw [smul_comm]
-
-section equiv
-
-@[deprecated ofLp_zero (since := "2025-06-08")]
-theorem equiv_zero [AddCommGroup V] : WithLp.equiv p V 0 = 0 :=
-  rfl
-
-@[deprecated toLp_zero (since := "2025-06-08")]
-theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
-  rfl
-
-@[deprecated toLp_eq_zero (since := "2025-06-08")]
-theorem equiv_symm_eq_zero_iff [AddCommGroup V] {x : V} :
-    (WithLp.equiv p V).symm x = 0 ↔ x = 0 := toLp_eq_zero p
-
-@[deprecated ofLp_eq_zero (since := "2025-06-08")]
-theorem equiv_eq_zero_iff [AddCommGroup V] {x : WithLp p V} :
-    WithLp.equiv p V x = 0 ↔ x = 0 := ofLp_eq_zero p
-
-@[deprecated ofLp_add (since := "2025-06-08")]
-theorem equiv_add [AddCommGroup V] (x y : WithLp p V) :
-    WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
-  rfl
-
-@[deprecated toLp_add (since := "2025-06-08")]
-theorem equiv_symm_add [AddCommGroup V] (x' y' : V) :
-    (WithLp.equiv p V).symm (x' + y') = (WithLp.equiv p V).symm x' + (WithLp.equiv p V).symm y' :=
-  rfl
-
-@[deprecated ofLp_sub (since := "2025-06-08")]
-theorem equiv_sub [AddCommGroup V] (x y : WithLp p V) :
-    WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
-  rfl
-
-@[deprecated toLp_sub (since := "2025-06-08")]
-theorem equiv_symm_sub [AddCommGroup V] (x' y' : V) :
-    (WithLp.equiv p V).symm (x' - y') = (WithLp.equiv p V).symm x' - (WithLp.equiv p V).symm y' :=
-  rfl
-
-@[deprecated ofLp_neg (since := "2025-06-08")]
-theorem equiv_neg [AddCommGroup V] (x : WithLp p V) : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
-  rfl
-
-@[deprecated toLp_neg (since := "2025-06-08")]
-theorem equiv_symm_neg [AddCommGroup V] (x' : V) :
-    (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
-  rfl
-
-@[deprecated ofLp_smul (since := "2025-06-08")]
-theorem equiv_smul [SMul K V] (c : K) (x : WithLp p V) :
-    WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
-  rfl
-
-@[deprecated toLp_smul (since := "2025-06-08")]
-theorem equiv_symm_smul [SMul K V] (c : K) (x' : V) :
-    (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
-  rfl
-
-end equiv
 
 variable (K V)
 
@@ -282,3 +254,60 @@ instance instModuleFinite
   Module.Finite.equiv (WithLp.linearEquiv p K V).symm
 
 end WithLp
+
+section
+
+variable {K K' V} [Semiring K] [Semiring K'] [Semiring K'']
+  {σ : K →+* K'} {σ' : K' →+* K} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  {τ : K' →+* K''} {τ' : K'' →+* K'} [RingHomInvPair τ τ'] [RingHomInvPair τ' τ]
+  {ρ : K →+* K''} {ρ' : K'' →+* K} [RingHomInvPair ρ ρ'] [RingHomInvPair ρ' ρ]
+  [RingHomCompTriple σ τ ρ] [RingHomCompTriple τ' σ' ρ']
+  [AddCommGroup V] [Module K V] [AddCommGroup V'] [Module K' V'] [AddCommGroup V''] [Module K'' V'']
+
+namespace LinearMap
+
+/-- Lift a (semi)linear map to `WithLp`. -/
+def withLpMap (f : V →ₛₗ[σ] V') : WithLp p V →ₛₗ[σ] WithLp p V' :=
+  (WithLp.linearEquiv p K' V').symm.toLinearMap ∘ₛₗ f ∘ₛₗ (WithLp.linearEquiv p K V).toLinearMap
+
+@[simp]
+theorem coe_withLpMap (f : V →ₛₗ[σ] V') : ⇑(withLpMap p f) = WithLp.map p f :=
+  rfl
+
+@[simp]
+theorem withLpMap_id : withLpMap p (LinearMap.id (R := K) (M := V)) = LinearMap.id :=
+  rfl
+
+@[simp]
+theorem withLpMap_comp (f : V' →ₛₗ[τ] V'') (g : V →ₛₗ[σ] V') :
+    withLpMap p (f ∘ₛₗ g) = withLpMap p f ∘ₛₗ withLpMap p g :=
+  rfl
+
+end LinearMap
+
+namespace LinearEquiv
+
+/-- Lift a (semi)linear equivalence to `WithLp`. -/
+def withLpCongr (f : V ≃ₛₗ[σ] V') : WithLp p V ≃ₛₗ[σ] WithLp p V' :=
+  (WithLp.linearEquiv p K V).trans <| f.trans <| (WithLp.linearEquiv p K' V').symm
+
+@[simp]
+theorem coe_withLpCongr (f : V ≃ₛₗ[σ] V') : ⇑(withLpCongr p f) = WithLp.map p f :=
+  rfl
+
+@[simp]
+theorem withLpCongr_symm (f : V ≃ₛₗ[σ] V') : (withLpCongr p f).symm = withLpCongr p f.symm :=
+  rfl
+
+@[simp]
+theorem withLpCongr_refl :
+    withLpCongr p (LinearEquiv.refl K V) = LinearEquiv.refl K _ :=
+  rfl
+
+theorem withLpCongr_trans (f : V ≃ₛₗ[σ] V') (g : V' ≃ₛₗ[τ] V'') :
+    withLpCongr p (f.trans g) = (withLpCongr p f).trans (withLpCongr p g) :=
+  rfl
+
+end LinearEquiv
+
+end

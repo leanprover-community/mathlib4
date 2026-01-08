@@ -276,7 +276,9 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
-@[simp]
+-- This should not be a `@[simp]` lemma,
+-- as this prevents us from using `simp` reliably in the quotient,
+-- because this might bump us back out from equality to the underlying relation.
 theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
   ⟨Quotient.exact, Quotient.sound⟩
 

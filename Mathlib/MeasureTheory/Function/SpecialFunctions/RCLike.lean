@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -24,11 +24,9 @@ namespace RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 
-@[measurability]
 theorem measurable_re : Measurable (re : 𝕜 → ℝ) :=
   continuous_re.measurable
 
-@[measurability]
 theorem measurable_im : Measurable (im : 𝕜 → ℝ) :=
   continuous_im.measurable
 
@@ -39,19 +37,19 @@ section RCLikeComposition
 variable {α 𝕜 : Type*} [RCLike 𝕜] {m : MeasurableSpace α} {f : α → 𝕜}
   {μ : MeasureTheory.Measure α}
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.re (hf : Measurable f) : Measurable fun x => RCLike.re (f x) :=
   RCLike.measurable_re.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.re (hf : AEMeasurable f μ) : AEMeasurable (fun x => RCLike.re (f x)) μ :=
   RCLike.measurable_re.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.im (hf : Measurable f) : Measurable fun x => RCLike.im (f x) :=
   RCLike.measurable_im.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.im (hf : AEMeasurable f μ) : AEMeasurable (fun x => RCLike.im (f x)) μ :=
   RCLike.measurable_im.comp_aemeasurable hf
 
@@ -61,7 +59,7 @@ section
 
 variable {α 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
-@[measurability]
+@[fun_prop]
 theorem RCLike.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=
   RCLike.continuous_ofReal.measurable
 
