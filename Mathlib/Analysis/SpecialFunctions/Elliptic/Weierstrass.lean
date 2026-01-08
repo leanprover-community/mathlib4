@@ -930,7 +930,8 @@ end Analytic
 
 section Relation
 
-/-- The eisenstein series associated to a lattice. This is the sum `∑ l⁻ʳ` over `l ∈ L`. -/
+/-- The eisenstein series as a function on lattices.
+It takes `L` to the sum `∑ l⁻ʳ` over `l ∈ L`. -/
 def G (n : ℕ) : ℂ := ∑' l : L.lattice, (l ^ n)⁻¹
 
 @[simp]
