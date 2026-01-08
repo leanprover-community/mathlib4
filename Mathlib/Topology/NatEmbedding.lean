@@ -18,7 +18,7 @@ In this file we prove several properties of infinite Hausdorff topological space
 - `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
 -/
 
-@[expose] public section
+public section
 
 open Function Filter Set Topology
 

@@ -26,7 +26,7 @@ This file contains results in number theory relating to multiplicity.
   (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
 
-@[expose] public section
+public section
 
 
 open Ideal Ideal.Quotient Finset

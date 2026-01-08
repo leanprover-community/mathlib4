@@ -47,7 +47,7 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
    `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

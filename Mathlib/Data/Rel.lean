@@ -538,12 +538,12 @@ instance isTrans_symmetrize [R.IsTrans] : R.symmetrize.IsTrans where
 
 variable (R) in
 /-- A relation `R` is irreflexive if `¬ a ~[R] a`. -/
-protected abbrev IsIrrefl : Prop := IsIrrefl α (· ~[R] ·)
+protected abbrev IsIrrefl : Prop := Std.Irrefl (· ~[R] ·)
 
 variable (R a) in
 protected lemma irrefl [R.IsIrrefl] : ¬ a ~[R] a := irrefl_of (· ~[R] ·) _
 
-instance {R : α → α → Prop} [IsIrrefl α R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
+instance {R : α → α → Prop} [Std.Irrefl R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
 
 variable (R) in
 /-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.

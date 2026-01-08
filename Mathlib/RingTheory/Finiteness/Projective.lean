@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 

@@ -170,7 +170,7 @@ theorem erase_orderedInsert_of_notMem [DecidableEq α]
   induction xs <;> grind [IsRefl]
 
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
-theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)
+theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : List α) (hx : x ∈ xs)
     (hxs : Pairwise r xs) :
     (xs.erase x).orderedInsert r x = xs := by
   induction xs generalizing x with
@@ -272,11 +272,11 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
     [a, b] <+ insertionSort r l :=
   sublist_insertionSort (pairwise_pair.mpr hab) h
 
-variable [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
+variable [Std.Antisymm r] [IsTotal α r] [IsTrans α r]
 
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
-additionally requires `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.
+additionally requires `Std.Antisymm r`, `IsTotal α r` and `IsTrans α r`.
 -/
 theorem sublist_insertionSort' {l c : List α} (hs : c.Pairwise r) (hc : c <+~ l) :
     c <+ insertionSort r l := by
@@ -321,9 +321,9 @@ section MergeSort
 
 section Correctness
 
-section IsAntisymm
+section Antisymm
 
-variable {r : α → α → Prop} [IsAntisymm α r]
+variable {r : α → α → Prop} [Std.Antisymm r]
 
 /-- Variant of `Perm.eq_of_pairwise` using relation typeclasses. -/
 theorem Perm.eq_of_pairwise' {l₁ l₂ : List α} :
@@ -341,19 +341,19 @@ theorem sublist_of_subperm_of_pairwise {l₁ l₂ : List α} (hp : l₁ <+~ l₂
 @[deprecated (since := "2025-10-11")]
 alias sublist_of_subperm_of_sorted := sublist_of_subperm_of_pairwise
 
-theorem Subset.antisymm_of_pairwise [IsIrrefl α r] {l₁ l₂ : List α}
+theorem Subset.antisymm_of_pairwise [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (hl₁₂ : l₁ ⊆ l₂) (hl₁₂' : l₂ ⊆ l₁) : l₁ = l₂ :=
   ((subperm_of_subset h₁.nodup hl₁₂).antisymm
     (subperm_of_subset h₂.nodup hl₁₂')).eq_of_pairwise' h₁ h₂
 
-theorem Pairwise.eq_of_mem_iff [IsIrrefl α r] {l₁ l₂ : List α}
+theorem Pairwise.eq_of_mem_iff [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
   Subset.antisymm_of_pairwise h₁ h₂ (by grind) (by grind)
 
 @[deprecated (since := "2025-10-11")]
 alias Sorted.eq_of_mem_iff := Pairwise.eq_of_mem_iff
 
-end IsAntisymm
+end Antisymm
 
 section TotalAndTransitive
 
@@ -379,7 +379,7 @@ theorem pairwise_mergeSort' (l : List α) : Pairwise r (mergeSort l (r · ·)) :
 
 @[deprecated (since := "2025-11-27")] alias sorted_mergeSort' := pairwise_mergeSort'
 
-variable [IsAntisymm α r]
+variable [Std.Antisymm r]
 
 theorem mergeSort_eq_self {l : List α} : Pairwise r l → mergeSort l (r · ·) = l :=
   (mergeSort_perm _ _).eq_of_pairwise' (pairwise_mergeSort' _ l)
