@@ -103,8 +103,7 @@ partial def RecurseM.run
     {α : Type} (s : IO.Ref State) (cfg : Recurse.Config) (wellBehavedDischarge : Bool)
     (eval : Expr → AtomM Simp.Result) (simp : Simp.Result → MetaM Simp.Result) (x : RecurseM α) :
     MetaM α := do
-  let ctx ← Simp.mkContext
-    { zetaDelta := cfg.zetaDelta, singlePass := true}
+  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta, singlePass := true}
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let nctx := { ctx, simp }
