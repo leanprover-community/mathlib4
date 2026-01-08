@@ -809,6 +809,36 @@ example: True := trivial
 -- Constructs that are ignored by the linter, and (former) false positives.
 section noFalsePositives
 
+-- This should not warn, because `k + k = 0` could be a very long expression!
+#guard_msgs in
+example {k : Int} (hk : k = 0) : k + k + k = 0 := by
+  suffices
+      k + k = 0 by
+    rw [this, hk, Int.add_zero]
+  simp [hk]
+
+#guard_msgs in
+example {k : Int} (hk : k = 0) : k + k + k = 0 := by
+  suffices
+      h : k + k = 0 by
+    rw [h, hk, Int.add_zero]
+  simp [hk]
+
+#guard_msgs in
+example {k : Int} (hk : k = 0) : k + k + k = 0 := by
+  suffices
+      h : k + k + k = 0
+    from h
+  simp [hk]
+
+-- TODO: ideally, we could keep linting the contents of the `suffices`
+#guard_msgs in
+example {k : Int} (hk : k = 0) : k + k + k = 0 := by
+  suffices
+      h: k + k + k = 0
+    from h
+  simp [hk]
+
 -- Explicit name literals: used to error (and the suggested replacement is invalid syntax).
 example := ``Nat
 
