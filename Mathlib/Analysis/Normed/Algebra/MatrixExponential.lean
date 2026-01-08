@@ -105,15 +105,13 @@ private theorem exp_eq_isNilpotent_exp' [Module ℚ 𝔸] {A : Matrix m m 𝔸} 
     (exp 𝕂 A) = IsNilpotent.exp A := by
   rw [IsNilpotent.exp, exp_eq_tsum]
   dsimp only
-  have ha' : ∀ b ∉ Finset.range (nilpotencyClass A), (b.factorial : 𝕂)⁻¹ • A ^ b = 0 := by
-    intro b hb
-    rw [Finset.mem_range, not_lt] at hb
-    rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
-    norm_num
-  rw [tsum_eq_sum ha']
-  have h' (b : ℕ) := h (b.factorial : 𝕂)⁻¹ (b.factorial : ℚ)⁻¹ b (by rw [Rat.cast_inv_nat])
-  apply Finset.sum_equiv (Equiv.refl _) (by simp)
-  simp [h']
+  rw [tsum_eq_sum (s := Finset.range (nilpotencyClass A))]
+  · apply Finset.sum_equiv (Equiv.refl _) (by simp)
+    simp [fun (b : ℕ) ↦ h (b.factorial : 𝕂)⁻¹ (b.factorial : ℚ)⁻¹ b]
+  intro b hb
+  rw [Finset.mem_range, not_lt] at hb
+  rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
+  norm_num
 
 end Ring
 
@@ -121,16 +119,14 @@ theorem exp_eq_isNilpotent_exp [Fintype m] [DecidableEq m] [Field 𝕂] [Divisio
     [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] [IsScalarTower ℚ 𝕂 𝔸]
     {A : Matrix m m 𝔸} (ha : IsNilpotent A) : (exp 𝕂 A) = IsNilpotent.exp A := by
   apply exp_eq_isNilpotent_exp' 𝕂 ha
-  intro k q n hkq
-  have hB (B : Matrix m m 𝔸) {k : 𝕂} {q : ℚ} (hkq: k = q) : k • B = q • B := by
-    rw [hkq]
-    exact Rat.cast_smul_eq_qsmul 𝕂 q _
+  intro k q n h
+  have h' (B : Matrix m m 𝔸) : k • B = q • B := by rw [h]; exact Rat.cast_smul_eq_qsmul 𝕂 q _
   match n with
-  | 0 => exact (hB 1) hkq
+  | 0 => exact h' 1
   | Nat.succ bb =>
     rw [← mul_pow_sub_one (by bound)]
     iterate 2 rw [← smul_mul_assoc]
-    rw [(hB A) hkq]
+    rw [h' A]
 
 section CommRing
 
