@@ -293,9 +293,7 @@ lemma exists_of_not_isMeagre_biUnion {I : Set ι}
     (c : I.Countable) {A : ι → Set X} (h : ¬IsMeagre (⋃ i ∈ I, A i)) :
     ∃ i ∈ I, ¬IsMeagre (A i) := by
   contrapose! h
-  suffices IsMeagre (⋃ i : I, A i) by
-    convert this
-    simp
+  suffices IsMeagre (⋃ i : I, A i) by simpa
   have : Countable I := c
   apply isMeagre_iUnion
   intro ⟨i, hi⟩
