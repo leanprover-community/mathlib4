@@ -23,7 +23,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * subtraction of two functions
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap

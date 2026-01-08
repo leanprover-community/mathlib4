@@ -23,7 +23,7 @@ This the definitition that `x` is integral over `I` in https://stacks.math.colum
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

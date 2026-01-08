@@ -14,7 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 Basic facts and derivatives for the complex trigonometric functions.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

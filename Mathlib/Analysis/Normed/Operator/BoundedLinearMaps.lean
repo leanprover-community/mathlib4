@@ -456,16 +456,30 @@ theorem Continuous.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F
     (hg : Continuous g) (hf : Continuous f) : Continuous fun x => (g x).comp (f x) :=
   (compL 𝕜 E F G).continuous₂.comp₂ hg hf
 
+@[fun_prop]
 theorem ContinuousOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     {s : Set X} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
     ContinuousOn (fun x => (g x).comp (f x)) s :=
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prodMk hf)
+
+@[fun_prop]
+theorem ContinuousAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+    {x : X} (hg : ContinuousAt g x) (hf : ContinuousAt f x) :
+    ContinuousAt (fun x => (g x).comp (f x)) x :=
+  (compL 𝕜 E F G).continuous₂.continuousAt.comp (hg.prodMk hf)
+
+@[fun_prop]
+theorem ContinuousWithinAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+    {s : Set X} {x : X} (hg : ContinuousWithinAt g s x) (hf : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (fun x => (g x).comp (f x)) s x :=
+  (compL 𝕜 E F G).continuous₂.continuousAt.comp_continuousWithinAt (hg.prodMk hf)
 
 @[continuity, fun_prop]
 theorem Continuous.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ f x (g x)) :=
   isBoundedBilinearMap_apply.continuous.comp₂ hf hg
 
+@[fun_prop]
 theorem ContinuousOn.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ f x (g x)) s :=
@@ -482,19 +496,37 @@ theorem ContinuousWithinAt.clm_apply {X} [TopologicalSpace X] {f : X → E →L[
     ContinuousWithinAt (fun x ↦ f x (g x)) s x :=
   isBoundedBilinearMap_apply.continuous.continuousAt.comp_continuousWithinAt (hf.prodMk hg)
 
+@[fun_prop]
+theorem ContinuousWithinAt.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X} {x : X}
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (fun x => (f x).coprod (g x)) s x := by
+  simp only [← comp_fst_add_comp_snd]
+  fun_prop
+
+@[fun_prop]
+theorem ContinuousAt.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {x : X}
+    (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
+    ContinuousAt (fun x => (f x).coprod (g x)) x := by
+  simp only [← comp_fst_add_comp_snd]
+  fun_prop
+
+@[fun_prop]
 theorem ContinuousOn.continuousLinearMapCoprod
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => (f x).coprod (g x)) s := by
   simp only [← comp_fst_add_comp_snd]
-  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
+  fun_prop
 
+@[fun_prop]
 theorem Continuous.continuousLinearMapCoprod
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x => (f x).coprod (g x)) := by
   apply continuousOn_univ.mp
-  exact hf.continuousOn.continuousLinearMapCoprod hg.continuousOn
+  fun_prop
 
 end
 
