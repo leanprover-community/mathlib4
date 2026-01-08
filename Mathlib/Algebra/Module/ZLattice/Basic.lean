@@ -158,6 +158,34 @@ theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b
   rw [← hz]
   exact congr_arg (Int.cast : ℤ → K) (Int.ceil_intCast z)
 
+theorem floor_cast_add_of_mem (m x : E) (h : m ∈ span ℤ (Set.range b)) :
+    (floor b (m + x) : E) = m + floor b x := by
+  refine b.ext_elem (fun i ↦ ?_)
+  simp only [repr_floor_apply b, map_add, Finsupp.coe_add, Pi.add_apply]
+  obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
+  rw [← hz, algebraMap_int_eq, eq_intCast, Int.floor_intCast_add, Int.cast_add]
+
+theorem ceil_cast_add_of_mem (m x : E) (h : m ∈ span ℤ (Set.range b)) :
+    (ceil b (m + x) : E) = m + ceil b x := by
+  refine b.ext_elem (fun i ↦ ?_)
+  simp only [repr_ceil_apply b, map_add, Finsupp.coe_add, Pi.add_apply]
+  obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
+  rw [← hz, algebraMap_int_eq, eq_intCast, Int.ceil_intCast_add, Int.cast_add]
+
+theorem floor_add_cast_of_mem (x m : E) (h : m ∈ span ℤ (Set.range b)) :
+    (floor b (x + m) : E) = floor b x + m := by
+  simpa [add_comm _ m] using floor_cast_add_of_mem b m x h
+
+theorem ceil_add_cast_of_mem (x m : E) (h : m ∈ span ℤ (Set.range b)) :
+    (ceil b (x + m) : E) = ceil b x + m := by
+  simpa [add_comm _ m] using ceil_cast_add_of_mem b m x h
+
+theorem floor_eq_zero (m : E) : (floor b m : E) = 0 ↔ m ∈ fundamentalDomain b := by
+  rw [Basis.ext_elem_iff b, mem_fundamentalDomain]
+  refine forall_congr' (fun i ↦ ?_)
+  rw [repr_floor_apply b m i, map_zero, Finsupp.coe_zero, Pi.zero_apply,
+    Int.cast_eq_zero, Int.floor_eq_zero_iff]
+
 /-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
 see `ZSpan.fract_mem_fundamentalDomain`, and `fractRestrict` for the map with the codomain
 restricted to `fundamentalDomain`. -/
