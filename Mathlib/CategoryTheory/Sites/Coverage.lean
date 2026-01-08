@@ -121,7 +121,7 @@ lemma isSheafFor_of_factorsThru
   refine ⟨?_, fun x hx => ?_⟩
   · intro x y₁ y₂ h₁ h₂
     refine hS.1.ext (fun Y g hg => ?_)
-    simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1 _)]
+    simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _), h₂ _ (h1 _)]
   let y : S.FamilyOfElements P := fun Y g hg => P.map (i _).op (x (e hg) (h1 _))
   have hy : y.Compatible := by
     intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h
@@ -231,7 +231,7 @@ lemma Saturate.pullback (K : Coverage C) {X Y : C} (f : Y ⟶ X) {S : Sieve X}
     (h : Saturate K X S) : Saturate K Y (S.pullback f) := by
   induction h with
   | of X S hS =>
-    obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
+    obtain ⟨R, hR1, hR2⟩ := K.pullback f S hS
     suffices Sieve.generate R ≤ (Sieve.generate S).pullback f from
       saturate_of_superset _ this (Saturate.of _ _ hR1)
     intro Z g ⟨W, i, e, h1, h2⟩

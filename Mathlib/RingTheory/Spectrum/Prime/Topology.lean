@@ -306,7 +306,7 @@ theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
     (equivSubtype R).finite_iff, ← Set.coe_setOf, Set.finite_coe_iff, Set.finite_coe_iff]
   refine ⟨fun h ↦ ⟨h.1.subset fun _ h ↦ h.isPrime, nilradical_eq_sInf R ▸ sInf_le_sInf h.2⟩,
     fun ⟨fin, le⟩ ↦ ?_⟩
-  have hpm (I : Ideal R) (hI : I.IsPrime): I.IsMaximal := by
+  have hpm (I : Ideal R) (hI : I.IsPrime) : I.IsMaximal := by
     replace le := le.trans (nilradical_le_prime I)
     rw [← fin.coe_toFinset, ← Finset.inf_id_eq_sInf, hI.inf_le'] at le
     have ⟨M, hM, hMI⟩ := le
@@ -722,6 +722,10 @@ theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Bijective (toPiLocalization R) :=
   discreteTopology_iff_toPiLocalization_surjective.trans
     (and_iff_right <| toPiLocalization_injective _).symm
+
+lemma toPiLocalization_bijective {R : Type*} [CommRing R]
+    [DiscreteTopology (PrimeSpectrum R)] : Function.Bijective (toPiLocalization R) :=
+  discreteTopology_iff_toPiLocalization_bijective.mp inferInstance
 
 end DiscreteTopology
 
@@ -1186,6 +1190,10 @@ def closedPoint : PrimeSpectrum R :=
 instance : OrderTop (PrimeSpectrum R) where
   top := closedPoint R
   le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
+
+@[simp]
+theorem PrimeSpectrum.asIdeal_top : (⊤ : PrimeSpectrum R).asIdeal = IsLocalRing.maximalIdeal R :=
+  rfl
 
 variable {R}
 

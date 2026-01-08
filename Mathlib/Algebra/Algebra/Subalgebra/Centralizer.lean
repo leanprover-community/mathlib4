@@ -24,7 +24,7 @@ Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
   then the centralizer of `1 ⊗ B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
 
-@[expose] public section
+public section
 
 namespace Subalgebra
 

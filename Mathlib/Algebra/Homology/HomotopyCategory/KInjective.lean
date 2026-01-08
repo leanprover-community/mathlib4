@@ -106,7 +106,7 @@ lemma isKInjective_of_injective_aux {K L : CochainComplex C ℤ}
   subst hnm
   let u := f.f (n + 1) - α.v (n + 1) n (by lia) ≫ L.d n (n + 1) -
     K.d (n + 1) (n + 2) ≫ α.v (n + 2) (n + 1) (by lia)
-  have hu : K.d n (n+1) ≫ u = 0 := by
+  have hu : K.d n (n + 1) ≫ u = 0 := by
     have eq := hα n n (add_zero n) (by rfl)
     simp only [δ_v (-1) 0 (neg_add_cancel 1) α n n (add_zero _) (n - 1) (n + 1)
       (by lia) (by lia), Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq

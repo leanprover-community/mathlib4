@@ -16,7 +16,7 @@ A function `f : α → R` is nonarchimedean if it satisfies the strong triangle 
 nonarchimedean functions.
 -/
 
-@[expose] public section
+public section
 
 namespace IsNonarchimedean
 
@@ -175,7 +175,7 @@ theorem finset_powerset_image_add [IsStrictOrderedRing R]
     (b : β → α) (m : ℕ) :
     ∃ u : powersetCard (s.card - m) s,
       f ((powersetCard (s.card - m) s).sum fun t : Finset β ↦
-        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β  ↦ -b i)  := by
+        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β ↦ -b i) := by
   set g := fun t : Finset β ↦ t.prod fun i : β ↦ - b i
   obtain ⟨b, hb_in, hb⟩ := hf_na.finset_image_add g (powersetCard (s.card - m) s)
   exact ⟨⟨b, hb_in (powersetCard_nonempty.mpr (Nat.sub_le s.card m))⟩, hb⟩
