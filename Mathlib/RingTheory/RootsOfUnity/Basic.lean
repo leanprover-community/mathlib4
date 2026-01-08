@@ -294,7 +294,7 @@ def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
   right_inv φ := Subtype.ext <| by
     simp only [monoidHomOfForallMemZpowers_apply_gen, IsUnit.unit_of_val_units]
   map_mul' x y := by
-    simp only [MonoidHom.mul_apply, MulMemClass.mk_mul_mk, Subtype.mk.injEq, Units.ext_iff,
+    simp only [FunLikeMul.mul_apply, MulMemClass.mk_mul_mk, Subtype.mk.injEq, Units.ext_iff,
       IsUnit.unit_spec, Units.val_mul]
 
 /-- The group of group homomorphisms from a finite cyclic group `G` of order `n` into another

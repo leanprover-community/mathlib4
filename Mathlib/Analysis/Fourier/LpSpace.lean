@@ -105,7 +105,8 @@ theorem fourier_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
   · apply isClosed_eq
     · exact ((TemperedDistribution.fourierTransformCLM E F) ∘L
         (toTemperedDistributionCLM F volume 2)).cont
-    · exact (toTemperedDistributionCLM F volume 2).cont.comp (fourierTransformₗᵢ E F).continuous
+    · exact (toTemperedDistributionCLM F (E := E) volume 2).cont.comp
+        (fourierTransformₗᵢ E F).continuous
   intro f
   simp [p, TemperedDistribution.fourierTransform_toTemperedDistributionCLM_eq]
 

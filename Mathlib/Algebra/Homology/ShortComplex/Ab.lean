@@ -65,7 +65,7 @@ def abLeftHomologyData : S.LeftHomologyData where
   wπ := by
     ext (x : S.X₁)
     dsimp
-    rw [QuotientAddGroup.eq_zero_iff, AddMonoidHom.mem_range]
+    rw [FunLikeZero.zero_apply, QuotientAddGroup.eq_zero_iff, AddMonoidHom.mem_range]
     apply exists_apply_eq_apply
   hπ := AddCommGrpCat.cokernelIsColimit (AddCommGrpCat.ofHom S.abToCycles)
 

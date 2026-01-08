@@ -715,10 +715,10 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
     (hl : ∀ x, ContinuousAt (f x) 1) (hr : ∀ y, ContinuousAt (f · y) 1) :
     Continuous (fun x : G × H ↦ f x.1 x.2) := continuous_iff_continuousAt.2 fun (x, y) => by
   simp only [ContinuousAt, nhds_prod_eq, ← map_mul_left_nhds_one x, ← map_mul_left_nhds_one y,
-    prod_map_map_eq, tendsto_map'_iff, Function.comp_def, map_mul, MonoidHom.mul_apply] at *
+    prod_map_map_eq, tendsto_map'_iff, Function.comp_def, map_mul, FunLikeMul.mul_apply] at *
   refine ((tendsto_const_nhds.mul ((hr y).comp tendsto_fst)).mul
     (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq ?_)
-  simp only [map_one, mul_one, MonoidHom.one_apply]
+  simp
 
 @[to_additive]
 lemma IsTopologicalGroup.isInducing_iff_nhds_one

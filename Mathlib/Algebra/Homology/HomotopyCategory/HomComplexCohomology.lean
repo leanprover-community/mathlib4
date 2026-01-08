@@ -191,7 +191,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
   wπ := by
     ext x
     dsimp
-    rw [CohomologyClass.mk_eq_zero_iff]
+    rw [FunLikeZero.zero_apply, CohomologyClass.mk_eq_zero_iff]
     exact ⟨n, hm, x, rfl⟩
   hπ :=
     Cofork.IsColimit.mk _
