@@ -33,7 +33,11 @@ nonnegative function with `v 0 = 0` and `c ≥ 0`.
   is nonnegative, there exists a minimal index `i` such that the Gauss norm of `p` at `c` is
   attained at `i`.
 * `Polynomial.isNonarchimedean_gaussNorm`: if `v` is a nonnegative nonarchimedean function with
-`v 0 = 0` and `c` is nonnegative, the Gauss Norm is nonarchimedean.
+  `v 0 = 0` and `c` is nonnegative, the Gauss Norm is nonarchimedean.
+* `Polynomial.gaussNorm_mul`: if `v` is a nonarchimedean absolute value, then the Gauss norm is
+  multiplicative.
+* `Polynomial.gaussNorm_isAbsoluteValue`: if `v` is a nonarchimedean absolute value, then the
+  Gauss norm is an absolute value.
 -/
 
 @[expose] public section
@@ -210,12 +214,15 @@ theorem gaussNorm_mul_le_mul_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F 
       simp_all only [gaussNorm, ↓reduceDIte]
       gcongr
 
+section AbsoluteValue
+
+variable {R : Type*} [Ring R] {v : AbsoluteValue R ℝ} (hna : IsNonarchimedean v) (hc : 0 < c)
+
 open Finset in
-/-- If `v` is nonarchimedean the Gauss norm of a product is at least the product of the Gauss norms.
--/
-theorem mul_gaussNorm_le_gaussNorm_mul {R F : Type*} [Ring R] [FunLike F R ℝ] [ZeroHomClass F R ℝ]
-    [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] [AddGroupSeminormClass F R ℝ]
-    {v : F} (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 < c) :
+include hna hc in
+/-- If `v` is a nonarchimedean absolute value, then the Gauss norm of a product is at least the
+product of the Gauss norms. -/
+theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
     p.gaussNorm v c * q.gaussNorm v c ≤ (p * q).gaussNorm v c := by
   have hc0 : 0 ≤ c := le_of_lt hc
   obtain ⟨i, hi_p, hlt_p⟩ := p.exists_min_eq_gaussNorm v hc0
@@ -262,29 +269,24 @@ theorem mul_gaussNorm_le_gaussNorm_mul {R F : Type*} [Ring R] [FunLike F R ℝ] 
         gcongr 1
         grind
 
-/-- If `v` is nonarchimedean the Gauss norm of a product is the product of the Gauss norms. -/
-theorem gaussNorm_mul {R F : Type*} [Ring R] [FunLike F R ℝ] [ZeroHomClass F R ℝ]
-    [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] [AddGroupSeminormClass F R ℝ] {v : F}
-    (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 < c) :
+include hna hc in
+/-- If `v` is a nonarchimedean absolute value, then the Gauss norm is multiplicative. -/
+theorem gaussNorm_mul (p q : R[X]) :
     (p * q).gaussNorm v c = p.gaussNorm v c * q.gaussNorm v c :=
   le_antisymm (gaussNorm_mul_le_mul_gaussNorm v hna p q (le_of_lt hc))
-  <| mul_gaussNorm_le_gaussNorm_mul hna p q hc
+  <| mul_gaussNorm_le_gaussNorm_mul hna hc p q
 
-/-- If `v` is nonarchimedean the Gauss norm is an absolute value. -/
-theorem gaussNorm_isAbsoluteValue {R F : Type*} [Ring R] [FunLike F R ℝ] [ZeroHomClass F R ℝ]
-    [NonnegHomClass F R ℝ] [MulHomClass F R ℝ] [AddGroupSeminormClass F R ℝ] {v : F}
-    (hna : IsNonarchimedean v) (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) :
+include hna hc in
+/-- If `v` is a nonarchimedean absolute value, then the Gauss norm is an absolute value. -/
+theorem gaussNorm_isAbsoluteValue :
     IsAbsoluteValue (gaussNorm v c) := {
   abv_nonneg' p := p.gaussNorm_nonneg v <| le_of_lt hc
-  abv_eq_zero' := gaussNorm_eq_zero_iff v _ h_eq_zero hc
+  abv_eq_zero' := gaussNorm_eq_zero_iff v _ (fun _ hx ↦ (AbsoluteValue.eq_zero v).mp hx) hc
   abv_add' p q := by
     grind [isNonarchimedean_gaussNorm v hna (le_of_lt hc) p q, gaussNorm_nonneg]
-  abv_mul' p q := gaussNorm_mul hna p q hc}
+  abv_mul' p q := gaussNorm_mul hna hc p q}
 
-/-- If `v` is a nonarchimedean absolute value the Gauss norm is an absolute value. -/
-theorem gaussNorm_isAbsoluteValue_of_absoluteValue {R : Type*} [Ring R] {v : AbsoluteValue R ℝ}
-    (hna : IsNonarchimedean v) (hc : 0 < c) :
-    IsAbsoluteValue (gaussNorm v c) := gaussNorm_isAbsoluteValue hna (fun _ => v.eq_zero.mp) hc
+end AbsoluteValue
 
 end Polynomial
 
