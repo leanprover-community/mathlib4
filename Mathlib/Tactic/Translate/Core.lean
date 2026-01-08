@@ -1013,9 +1013,9 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     | `(translationHint| self) => existing := true; self := true
     | `(translationHint| none) => none := true
     | _ => pure ()
-    if self && !attrs.isEmpty then
-      throwError "invalid `(attr := ...)` after `self`, \
-        as there is only one declaration for the attributes.\n\
+    if (self || none) && !attrs.isEmpty then
+      throwError "invalid `(attr := ...)` after `self` or `none`, \
+        as there is no other declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
     trace[translate_detail] "attributes: {attrs}; reorder arguments: {reorder?}"
     let doc ← doc.mapM fun
@@ -1062,7 +1062,7 @@ partial def applyAttributes (t : TranslateData) (stx : Syntax) (rawAttrs : Array
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
   -- Warn users if the original declaration has an attributee
-  if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
+  if !cfg.self && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
