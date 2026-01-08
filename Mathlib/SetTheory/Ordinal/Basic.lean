@@ -835,7 +835,7 @@ instance instAddLeftMono : AddLeftMono Ordinal.{u} where
 
 instance instAddRightMono : AddRightMono Ordinal.{u} where
   elim c a b := by
-    refine inductionOn₃ a b c fun α r _ β s _ γ t _  ⟨f⟩ ↦
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦
       (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) ?_).ordinal_type_le
     simp [f.map_rel_iff]
 
