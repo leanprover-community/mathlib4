@@ -6,8 +6,9 @@ Authors: Michael Rothgang
 module
 
 public meta import Batteries.Data.String.Matcher
-public meta import Mathlib.Data.Nat.Notation
 public meta import Lake.Util.Casing
+public import Batteries.Data.String.Basic
+public import Mathlib.Data.Nat.Notation
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.

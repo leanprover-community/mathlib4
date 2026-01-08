@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Computability.Halting
 public import Mathlib.Computability.PostTuringMachine
-public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Modelling partial recursive functions using Turing machines

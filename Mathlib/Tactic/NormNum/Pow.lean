@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public meta import Mathlib.Data.Int.Cast.Lemmas
-public meta import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 ## `norm_num` plugin for `^`.

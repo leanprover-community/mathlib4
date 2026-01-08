@@ -6,8 +6,8 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
-public meta import Mathlib.CategoryTheory.Category.Cat
 public meta import Mathlib.Util.AddRelatedDecl
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # The `to_app` attribute

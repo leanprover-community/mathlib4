@@ -9,6 +9,7 @@ public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Multiset.FinsetOps
+public import Mathlib.Util.Delaborators
 
 /-!
 # Constructing finite sets by adding one element

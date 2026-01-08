@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Finsupp.SMulWithZero
-public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Tactic.Bound
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.Order

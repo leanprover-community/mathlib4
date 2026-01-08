@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.FourierSchwartz
-public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 
 /-!
 # TemperedDistribution

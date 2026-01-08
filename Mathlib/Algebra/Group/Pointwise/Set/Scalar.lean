@@ -5,10 +5,10 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Data.Set.NAry
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Pointwise scalar operations of sets

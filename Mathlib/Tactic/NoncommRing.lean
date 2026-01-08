@@ -6,7 +6,7 @@ Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
-public meta import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Abel
 
 /-! # The `noncomm_ring` tactic
 

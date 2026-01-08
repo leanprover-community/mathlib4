@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Commutator  -- shake: keep (tactic dependency)
 public import Mathlib.Algebra.Order.Sub.Basic  -- shake: keep (tactic dependency)
-public meta import Mathlib.Tactic.Ring
 public meta import Mathlib.Tactic.FailIfNoProgress
-public meta import Mathlib.Algebra.Group.Commutator
+public import Mathlib.Tactic.Ring
 
 /-!
 # `group` tactic

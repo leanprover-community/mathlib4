@@ -6,8 +6,9 @@ Authors: Luigi Massacci, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Continuously differentiable functions with compact support

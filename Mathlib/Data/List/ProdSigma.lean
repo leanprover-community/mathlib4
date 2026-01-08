@@ -5,7 +5,9 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Lists in product and sigma types

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.Tactic.Algebraize

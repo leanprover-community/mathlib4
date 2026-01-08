@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
-public meta import Mathlib.Tactic.Conv
 
 /-!
 # The `slice` tactic

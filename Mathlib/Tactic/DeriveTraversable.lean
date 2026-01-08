@@ -5,10 +5,11 @@ Authors: Simon Hudon
 -/
 module
 
-public meta import Mathlib.Control.Traversable.Lemmas
 public meta import Lean.Elab.Match
 public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.PreDefinition.Main
+public import Mathlib.Control.Traversable.Lemmas
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Deriving handler for `Traversable` instances

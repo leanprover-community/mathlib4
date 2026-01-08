@@ -9,6 +9,7 @@ public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
 public import Aesop
 public import Mathlib.Tactic.Inhabit
+public import Batteries.Tactic.Trans
 
 /-!
 # Extra facts about `Prod`

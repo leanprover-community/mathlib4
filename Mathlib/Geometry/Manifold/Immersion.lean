@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 

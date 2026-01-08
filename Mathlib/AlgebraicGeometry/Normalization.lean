@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
 public import Mathlib.Tactic.DepRewrite
+public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 
 /-!
 # Relative Normalization

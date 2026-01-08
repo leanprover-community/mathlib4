@@ -12,6 +12,7 @@ public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.

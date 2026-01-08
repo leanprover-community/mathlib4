@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Schnirelmann density
