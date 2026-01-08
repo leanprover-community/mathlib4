@@ -91,7 +91,7 @@ theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
     Polynomial.aeval s p = 0 ↔ minpoly R s ∣ p :=
   ⟨fun hp => isIntegrallyClosed_dvd hs hp, fun hp => by
     simpa only [RingHom.mem_ker, RingHom.coe_comp, coe_evalRingHom, coe_mapRingHom,
-      Function.comp_apply, eval_map, ← aeval_def] using
+      Function.comp_apply, eval_map_algebraMap] using
       aeval_eq_zero_of_dvd_aeval_eq_zero hp (minpoly.aeval R s)⟩
 
 theorem ker_eval {s : S} (hs : IsIntegral R s) :
@@ -175,6 +175,30 @@ theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpo
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
   rw [aeval_mul] at h
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
+
+lemma _root_.IsIntegrallyClosed.minpoly_smul {r : R} (hr : r ≠ 0) {s : S} (hs : IsIntegral R s) :
+    minpoly R (r • s) = (minpoly R s).scaleRoots r := by
+  let K := FractionRing R
+  let L := FractionRing S
+  let : Algebra K L := FractionRing.liftAlgebra _ _
+  apply map_injective _ (FaithfulSMul.algebraMap_injective R K)
+  rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (hs.smul r),
+    map_scaleRoots _ _ _ (by simpa [minpoly.ne_zero_iff]),
+    ← minpoly.isIntegrallyClosed_eq_field_fractions K L hs]
+  simp_rw [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply R K L]
+  refine eq_of_monic_of_associated (minpoly.monic ?_) ?_
+    (associated_of_dvd_dvd (minpoly.dvd _ _ ?_) ?_)
+  · refine isIntegral_algebraMap.mul (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · simpa [monic_scaleRoots_iff] using minpoly.monic
+      (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
+  · rw [← Polynomial.scaleRoots_dvd_iff _ _ (r := (algebraMap R K r)⁻¹) (IsUnit.mk0 _ (by simpa)),
+      ← scaleRoots_mul, mul_inv_cancel₀ (by simpa), scaleRoots_one]
+    refine minpoly.dvd _ _ ?_
+    nth_rw 1 [← inv_mul_cancel_left₀ (b := algebraMap S L s)
+      (a := algebraMap K L (algebraMap R K r)) (by simpa), ← map_inv₀]
+    exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
 
 noncomputable section AdjoinRoot
 

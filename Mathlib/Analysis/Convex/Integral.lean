@@ -36,7 +36,7 @@ In this file we prove several forms of Jensen's inequality for integrals.
 convex, integral, center mass, average value, Jensen's inequality
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Function

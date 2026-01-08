@@ -65,7 +65,7 @@ instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdenti
 
 end ContainsIdentities
 
-instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+instance Prod.containsIdentities {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
@@ -132,8 +132,8 @@ instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsSta
   comp_mem f g hf hg := by simpa only [← F.map_comp] using P.comp_mem _ _ hf hg
 
 /-- Given `app : Π X, F₁.obj X ⟶ F₂.obj X` where `F₁` and `F₂` are two functors,
-this is the `morphism_property C` satisfied by the morphisms in `C` with respect
-to whom `app` is natural. -/
+this is the `MorphismProperty C` satisfied by the morphisms in `C` with respect
+to which `app` is natural. -/
 @[simp]
 def naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) : MorphismProperty C :=
   fun X Y f => F₁.map f ≫ app Y = app X ≫ F₂.map f
@@ -298,6 +298,16 @@ lemma multiplicativeClosure_eq_multiplicativeClosure' :
       | of _ h => exact .of _ h
       | id x => exact .id x
       | of_comp f g hf hg hr => exact W.multiplicativeClosure.comp_mem f g (.of f hf) hr
+
+lemma strictMap_multiplicativeClosure_le (F : C ⥤ D) :
+    W.multiplicativeClosure.strictMap F ≤ (W.strictMap F).multiplicativeClosure := by
+  intro _ _ f hf
+  induction hf with | map hf
+  induction hf with
+  | of f hf => exact le_multiplicativeClosure _ _ ⟨hf⟩
+  | id x => simpa using .id (F.obj x)
+  | comp_of _ _ hf hg h =>
+    simpa using multiplicativeClosure.comp_of _ _ h (strictMap.map hg)
 
 /-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever
 `g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/

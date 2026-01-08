@@ -59,7 +59,7 @@ theorem powerset_mono {s t : Finset α} : powerset s ⊆ powerset t ↔ s ⊆ t 
     mem_powerset.2 <| Subset.trans (mem_powerset.1 h) st⟩
 
 theorem powerset_injective : Injective (powerset : Finset α → Finset (Finset α)) :=
-  (injective_of_le_imp_le _) powerset_mono.1
+  .of_eq_imp_le (powerset_mono.1 ·.le)
 
 @[simp]
 theorem powerset_inj : powerset s = powerset t ↔ s = t :=
@@ -82,9 +82,6 @@ theorem notMem_of_mem_powerset_of_notMem {s t : Finset α} {a : α} (ht : t ∈ 
     (h : a ∉ s) : a ∉ t := by
   apply mt _ h
   apply mem_powerset.1 ht
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_of_mem_powerset_of_not_mem := notMem_of_mem_powerset_of_notMem
 
 theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by
@@ -212,7 +209,7 @@ theorem powersetCard_one (s : Finset α) :
 lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
   refine ⟨?_, fun h ↦ card_eq_zero.1 <| by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
   contrapose!
-  exact fun h ↦ nonempty_iff_ne_empty.1 <| (exists_subset_card_eq h).imp <| by simp
+  exact fun h ↦ (exists_subset_card_eq h).imp <| by simp
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa

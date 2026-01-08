@@ -61,7 +61,7 @@ instance : AddSubgroupClass (LieSubmodule R L M) M where
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
 instance instSMulMemClass : SMulMemClass (LieSubmodule R L M) R M where
-  smul_mem {s} c _ h := s.smul_mem'  c h
+  smul_mem {s} c _ h := s.smul_mem' c h
 
 /-- The zero module is a Lie submodule of any Lie module. -/
 instance : Zero (LieSubmodule R L M) :=
@@ -352,7 +352,7 @@ theorem coe_iInf {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 @[deprecated (since := "2025-08-31")] alias iInf_coe := coe_iInf
 
 @[simp]
-theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
+theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, coe_iInf, Set.mem_iInter]; rfl
 
 instance : Max (LieSubmodule R L M) where
@@ -461,8 +461,6 @@ variable {N N'}
   rw [← iSup_toSubmodule, ← top_toSubmodule (L := L), toSubmodule_inj]
 
 instance : Add (LieSubmodule R L M) where add := max
-
-instance : Zero (LieSubmodule R L M) where zero := ⊥
 
 instance : AddCommMonoid (LieSubmodule R L M) where
   add_assoc := sup_assoc
