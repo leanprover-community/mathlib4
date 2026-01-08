@@ -188,6 +188,10 @@ as arguments, but rather to use the `classical` tactic as needed.
 In the other direction, when `Decidable` instances do appear in the type signature,
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
+
+An exception is that for specific types where there is never an instance that could apply,
+it is allowed to use classical decidability proof, even in theorem statements.
+Examples include decidable equality on `Set α` or on `Ideal R`.
 -/
 
 export Classical (not_not)
