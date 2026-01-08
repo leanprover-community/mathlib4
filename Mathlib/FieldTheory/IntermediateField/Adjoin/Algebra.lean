@@ -115,6 +115,7 @@ lemma essFiniteType_iff {K : IntermediateField F E} :
   exact ⟨fun ⟨s, _, hs⟩ ↦ ⟨s, hs⟩, fun ⟨s, hs⟩ ↦ ⟨s, hs ▸ subset_adjoin _ _, hs⟩⟩
 
 end FG
+
 section AdjoinSimple
 
 variable (α : E)
