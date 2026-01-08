@@ -17,7 +17,7 @@ The main result `Path.Homotopy.subpathTransSubpath` shows that subpaths concaten
 In particular: following the subpath of `γ` from `t₀` to `t₁`, and then that from `t₁` to `t₂`,
 is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`.
 
-`Path.subpath` is similar in behavior to `Path.truncate`. When t₀ ≤ t₁, they are reparamterizations
+`Path.subpath` is similar in behavior to `Path.truncate`. When t₀ ≤ t₁, they are reparameterizations
 of each other (not yet proven). However, `Path.subpath` works without assuming an order on `t₀` and
 `t₁`, and is convenient for concrete manipulations (e.g., `Path.Homotopy.subpathTransSubpath`).
 
