@@ -75,26 +75,36 @@ section ToEqualizerPushoutCoconeSelf
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 
-/-- The canonical ring map from `R` to the explicit equalizer of `includeLeft : S ⟶ S ⊗[R] S` and
+/-- The canonical ring map from `R` to the (explicit) equalizer of `includeLeft : S ⟶ S ⊗[R] S` and
 `includeRight : S ⟶ S ⊗[R] S`. -/
 noncomputable def toEqualizerPushoutCoconeSelf :
     R →+* (equalizerFork (pushoutCoconeSelf f).inl (pushoutCoconeSelf f).inr).pt := by
   algebraize [f.hom]
-  exact Algebra.TensorProduct.toEqLocusOfInclusion R S
+  exact RingHom.codRestrict (algebraMap R S)
+    ((CommRingCat.pushoutCocone R S S).inl.hom.eqLocus (CommRingCat.pushoutCocone R S S).inr.hom)
+      (fun _ ↦ by simp [RingHom.eqLocus, Algebra.TensorProduct.tmul_one_eq_one_tmul])
+
+-- lemma toEqualizerPushoutCoconeSelf_apply (r : R) :
+--     (toEqualizerPushoutCoconeSelf f r).val = f.hom r := by
+--   erw [RingHom.codRestrict_apply, RingHom.algebraMap_toAlgebra]
 
 /-- If `f : R ⟶ S` is an injective map in `CommRingCat`, then `toEqualizerPushoutCoconeSelf f` is
 injective. -/
 lemma toEqualizerPushoutCoconeSelf_inj_of_inj (hf : Function.Injective f.hom) :
-    Function.Injective (toEqualizerPushoutCoconeSelf f) := by
-  algebraize [f.hom]
-  exact Algebra.TensorProduct.toEqLocusOfInclusion_injective _ _ hf
+    Function.Injective (toEqualizerPushoutCoconeSelf f) :=
+  RingHom.injective_codRestrict.mpr hf
 
 /-- If `IsEffective f` is true for a map `f : R ⟶ S` in `CommRingCat`, then
 `toEqualizerPushoutCoconeSelf f` is surjective. -/
-lemma toEqualizerPushoutCoconeSelf_surj_of_IsEffective
+lemma toEqualizerPushoutCoconeSelf_surj_of_isEffective
     (hf : IsEffective f) : Function.Surjective (toEqualizerPushoutCoconeSelf f) := by
   algebraize [f.hom]
-  exact Algebra.TensorProduct.toEqLocusOfInclusion_surjective _ _ hf
+  intro s
+  have := Set.mem_range.mp <|
+    Algebra.eqLocus_includeLeft_includeRight_of_isEffective hf ▸ SetLike.mem_coe.mpr s.property
+  use this.choose
+  apply Subtype.ext
+  erw [RingHom.codRestrict_apply, this.choose_spec]
 
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then `toEqualizerPushoutCoconeSelf f`
 is bijective. -/
@@ -103,7 +113,7 @@ lemma toEqualizerPushoutCoconeSelf_bij_of_faithfullyFlat (hf : f.hom.FaithfullyF
   constructor
   · exact toEqualizerPushoutCoconeSelf_inj_of_inj _ (RingHom.FaithfullyFlat.injective hf)
   · algebraize [f.hom]
-    exact toEqualizerPushoutCoconeSelf_surj_of_IsEffective _
+    exact toEqualizerPushoutCoconeSelf_surj_of_isEffective _
       (Algebra.isEffective_of_faithfullyFlat _ _)
 
 end ToEqualizerPushoutCoconeSelf
@@ -119,7 +129,7 @@ noncomputable def isLimitforkPushoutCoconeSelfOfFaithfullyFlat (hf : f.hom.Faith
     IsLimit (forkPushoutCoconeSelf f) :=
   (Fork.isLimitEquivOfIsos _ (equalizerFork _ _) (Iso.refl _) (Iso.refl _) (RingEquiv.ofBijective _
     (toEqualizerPushoutCoconeSelf_bij_of_faithfullyFlat _ hf)).toCommRingCatIso (by simp) (by simp)
-      rfl).symm (CommRingCat.equalizerForkIsLimit _ _)
+      (by cat_disch)).symm (CommRingCat.equalizerForkIsLimit _ _)
 
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then the fork
 ```
