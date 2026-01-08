@@ -229,15 +229,26 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
 
+/-- To check that `s` is nowhere dense, it suffices to check that no point of `s`
+is in the interior of `closure s`. -/
+lemma isNowhereDense_iff_disjoint {s : Set X} :
+    IsNowhereDense s ↔ Disjoint s (interior (closure s)) :=
+  ⟨fun H ↦ H ▸ disjoint_empty _, fun H ↦
+    H.closure_left isOpen_interior |>.mono_left interior_subset |>.eq_bot_of_self⟩
+
+/-- To check that `s` is nowhere dense, it suffices to check that `closure s` is not a
+neighborhood of any point of `s`. -/
+lemma isNowhereDense_iff_forall_notMem_nhds {s : Set X} :
+    IsNowhereDense s ↔ ∀ x ∈ s, closure s ∉ 𝓝 x := by
+  simp [isNowhereDense_iff_disjoint, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem,
+    mem_interior_iff_mem_nhds]
+
 /-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
-lemma Topology.IsInducing.isNowhereDense_image [TopologicalSpace Y] {f : X → Y}
+lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y]
     (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
-  rw [IsNowhereDense] at h ⊢
-  contrapose! h
-  rw [hf.closure_eq_preimage_closure_image]
-  obtain ⟨y, o, ⟨isOpen_o, ho⟩, y_mem_o⟩ := h
-  obtain ⟨_, hx, x, x_mem_s, rfl⟩ := mem_closure_iff.mp (ho y_mem_o) o isOpen_o y_mem_o
-  refine ⟨x, f⁻¹' o, ⟨hf.continuous.isOpen_preimage o isOpen_o, by grw [ho]⟩, hx⟩
+  rw [isNowhereDense_iff_forall_notMem_nhds, forall_mem_image] at *
+  simp_rw [hf.nhds_eq_comap, hf.closure_eq_preimage_closure_image] at h
+  exact fun x x_mem hx ↦ h x x_mem (preimage_mem_comap hx)
 
 /-- A set is nowhere dense if it is nowhere dense in some subspace. -/
 lemma IsNowhereDense.image_val {Y : Set X} {s : Set Y}
