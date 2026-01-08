@@ -542,6 +542,9 @@ lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x 
 lemma nhdsSetWithin_univ {s : Set α} : 𝓝ˢ[univ] s = 𝓝ˢ s := by
   simp [nhdsSetWithin]
 
+theorem mem_nhdsSet {s t : Set α} : s ∈ 𝓝ˢ t ↔ ∃ u ⊆ s, IsOpen u ∧ t ⊆ u := by
+  simp [← nhdsSetWithin_univ, mem_nhdsSetWithin, and_comm, and_assoc]
+
 @[simp]
 lemma nhdsSetWithin_univ' {s : Set α} : 𝓝ˢ[s] univ = 𝓟 s := by
   simp [nhdsSetWithin]
