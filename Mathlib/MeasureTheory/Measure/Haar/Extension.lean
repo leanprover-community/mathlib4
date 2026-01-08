@@ -70,7 +70,7 @@ variable [MeasurableSpace A] [BorelSpace A] (μA : Measure A) [hμA : IsHaarMeas
 theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
     ∫ a, H.pullback f (Function.invFun ψ (ψ b)) a ∂μA = ∫ a, H.pullback f b a ∂μA := by
   have h : ψ ((Function.invFun ψ (ψ b))⁻¹ * b) = 1 := by simp [Function.apply_invFun_apply]
-  rw [← ψ.mem_ker, ← H.exact] at h
+  rw [← ψ.mem_ker, H.mulExact.monoidHom_ker_eq] at h
   obtain ⟨a, ha⟩ := h
   rw [← integral_mul_left_eq_self _ a]
   simp [pullback, ha, mul_assoc]
@@ -95,7 +95,7 @@ noncomputable def pushforward :
       contrapose! hx
       refine ⟨_, hx, ?_⟩
       rw [map_mul, Function.rightInverse_invFun H.isOpenQuotientMap.surjective, mul_eq_left,
-        ← ψ.mem_ker, ← H.exact]
+        ← ψ.mem_ker, H.mulExact.monoidHom_ker_eq]
       use a
     continuous_toFun := by
       rw [← H.isOpenQuotientMap.continuous_comp_iff, Function.comp_def]
@@ -267,7 +267,7 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
       (pushforward H μA ⟨f, hf2⟩).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
         (pushforward H μA ⟨f, hf2⟩).hasCompactSupport hf0 this.ne'
     have : (Function.invFun ψ (ψ b))⁻¹ * b ∈ φ.range := by
-      simp [H.exact, Function.apply_invFun_apply]
+      simp [← H.mulExact.monoidHom_ker_eq, Function.apply_invFun_apply]
     obtain ⟨a, ha⟩ := this
     replace ha : f (Function.invFun ψ (ψ b) * φ a) ≠ 0 := by simp [ha, hf1 hb]
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
@@ -301,8 +301,8 @@ theorem inducedMeasure_lt_of_injOn (U : Set B) (hU : IsOpen U) [DiscreteTopology
   rw [← MeasureTheory.setIntegral_support]
   have key : (Function.support fun a ↦ f (b * φ a)).Subsingleton := by
     intro a ha b hb
-    simpa [H.isClosedEmbedding.injective.eq_iff] using
-      hc (hf3 (subset_tsupport _ ha)) (hf3 (subset_tsupport _ hb)) (by simp [H.apply_apply])
+    simpa [H.isClosedEmbedding.injective.eq_iff] using hc (hf3 (subset_tsupport _ ha))
+      (hf3 (subset_tsupport _ hb)) (by simp [H.mulExact.apply_apply_eq_one])
   obtain h | ⟨a, ha⟩ := key.eq_empty_or_singleton
   · simp [h]
   · rw [ha, integral_singleton, real_def, haar_singleton, smul_eq_mul, mul_le_iff_le_one_right]

@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.Algebra.Exact
 public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
@@ -29,14 +30,14 @@ structure TopologicalGroup.IsSES {A B C : Type*} [Group A] [Group B] [Group C]
     [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] (φ : A →* B) (ψ : B →* C) where
   isClosedEmbedding : Topology.IsClosedEmbedding φ
   isOpenQuotientMap : IsOpenQuotientMap ψ
-  exact : φ.range = ψ.ker
+  mulExact : Function.MulExact φ ψ
 
 /-- A predicate stating that `φ` and `ψ` define a short exact sequence of topological groups. -/
 structure TopologicalAddGroup.IsSES {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] (φ : A →+ B) (ψ : B →+ C) where
   isClosedEmbedding : Topology.IsClosedEmbedding φ
   isOpenQuotientMap : IsOpenQuotientMap ψ
-  exact : φ.range = ψ.ker
+  exact : Function.Exact φ ψ
 
 attribute [to_additive TopologicalAddGroup.IsSES] TopologicalGroup.IsSES
 
@@ -50,15 +51,10 @@ theorem ofClosedSubgroup {G : Type*} [Group G] [TopologicalSpace G] [IsTopologic
     TopologicalGroup.IsSES H.subtype (QuotientGroup.mk' H) where
   isClosedEmbedding := ⟨⟨Topology.IsInducing.subtypeVal, H.subtype_injective⟩, by simpa⟩
   isOpenQuotientMap := MulAction.isOpenQuotientMap_quotientMk
-  exact := by simp
+  mulExact := by simp [Function.MulExact]
 
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
-
-include H in
-@[to_additive]
-theorem apply_apply (a : A) : ψ (φ a) = 1 :=
-   H.exact.le ⟨a, rfl⟩
 
 end TopologicalGroup.IsSES
