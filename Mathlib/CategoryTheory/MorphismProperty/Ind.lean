@@ -134,10 +134,8 @@ lemma ind_ind (hp : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
   simpa [ind_iff_ind_underMk, underObj_ind_eq_ind_underObj,
     ObjectProperty.ind_ind.{w} this] using hf
 
-open Cardinal in
-attribute [local instance] fact_isRegular_aleph0 in
 lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C) {X Y : C} (f : X ⟶ Y)
-    [(IsCardinalAccessibleCategory.{w} (Under X) ℵ₀)] :
+    [IsFinitelyAccessibleCategory.{w} (Under X)] :
     ind.{w} P f ↔ ∀ {Z : C} (p : X ⟶ Z) (g : Z ⟶ Y),
       isFinitelyPresentable.{w} _ p → p ≫ g = f →
       ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ Y), u ≫ v = g ∧ P (p ≫ u) := by

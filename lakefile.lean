@@ -43,12 +43,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    -- Enforcing the module system's restrictions on using private declarations in public contexts
-    -- will require further API changes specific to the respective usage, so we disable these checks
-    -- for now until they can be addressed one by one.
-    ⟨`backward.privateInPublic, true⟩,
-    -- We disable the many warnings for now; this can be switched locally to work on the offenders.
-    ⟨`backward.privateInPublic.warn, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }

@@ -463,9 +463,6 @@ theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X,
     · exact ih₁
     · exact ih₂
 
-@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
-  zigzag_of_eqvGen_colimitTypeRel
-
 end Final
 
 /-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is final.
@@ -1159,8 +1156,8 @@ theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
   · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
     refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
       Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
-    · apply CostructuredArrow.homMk g₁
-    · apply CostructuredArrow.homMk g₂
+    · exact CostructuredArrow.homMk (InducedCategory.homMk g₁)
+    · exact CostructuredArrow.homMk (InducedCategory.homMk g₂)
   · exact h d hd
 
 end ObjectProperty
