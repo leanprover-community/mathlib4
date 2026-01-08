@@ -3263,7 +3263,9 @@ public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 public import Mathlib.CategoryTheory.Triangulated.TStructure.RightTExact
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact

@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 public import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
 
 /-!
@@ -137,7 +138,7 @@ end AbstractSpectralObject
 
 variable [IsTriangulated C]
 
-lemma isIso₁_truncLE_map_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
+lemma isIso₁_truncLE_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₃ : t.IsGE T.obj₃ n₁) :
     IsIso ((t.truncLE n₀).map T.mor₁) := by
   rw [isIso_truncLEmap_iff _ _ _ _ h]
@@ -146,10 +147,10 @@ lemma isIso₁_truncLE_map_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
   have H := someOctahedron rfl (t.triangleLEGE_distinguished n₀ n₁ h T.obj₁) hT mem
   exact t.isGE₂ _ H.mem n₁ (by dsimp; infer_instance) (by dsimp; infer_instance)
 
-lemma isIso₁_truncLT_map_of_GE (T : Triangle C) (hT : T ∈ distTriang C)
+lemma isIso₁_truncLT_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
     (n : ℤ) (h₃ : t.IsGE T.obj₃ n) : IsIso ((t.truncLT n).map T.mor₁) := by
   rw [← NatIso.isIso_map_iff (t.truncLEIsoTruncLT (n-1) n (by lia))]
-  exact t.isIso₁_truncLE_map_of_GE T hT (n-1) n (by lia) h₃
+  exact t.isIso₁_truncLE_map_of_isGE T hT (n-1) n (by lia) h₃
 
 lemma isIso₂_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) :
@@ -167,7 +168,7 @@ lemma isIso₂_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
 
 instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLE b).obj X) a := by
   rw [t.isGE_iff_isZero_truncLE_obj (a-1) a (by lia)]
-  have := t.isIso₁_truncLE_map_of_GE _ ((t.triangleLEGE_distinguished b (b+1) rfl X))
+  have := t.isIso₁_truncLE_map_of_isGE _ ((t.triangleLEGE_distinguished b (b+1) rfl X))
     (a-1) a (by lia) (by dsimp; infer_instance)
   dsimp at this
   exact IsZero.of_iso (t.isZero_truncLE_obj_of_isGE (a-1) a (by lia) X)
@@ -274,7 +275,7 @@ lemma isIso_truncGE_map_truncGEπ_app (a b : ℤ) (h : a ≤ b) (X : C) :
 
 lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
     IsIso ((t.truncLT a).map ((t.truncLTι b).app X)) :=
-  t.isIso₁_truncLT_map_of_GE _ (t.triangleLTGE_distinguished b X) a
+  t.isIso₁_truncLT_map_of_isGE _ (t.triangleLTGE_distinguished b X) a
     (t.isGE_of_GE ((t.truncGE b).obj X) a b (by lia))
 
 lemma isIso_truncLE_map_truncLEι_app (a b : ℤ) (h : a ≤ b) (X : C) :
@@ -468,7 +469,7 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELTTruncLTGE a b).app X) 
     have H := someOctahedron eq (t.triangleLTLTGELT_distinguished a b h X)
       (t.triangleLTGE_distinguished b X) (t.triangleLTGE_distinguished a X)
     let m₁ : (t.truncGELT a b).obj X ⟶  _ := H.m₁
-    have := t.isIso₁_truncLT_map_of_GE _ H.mem b (by dsimp; infer_instance)
+    have := t.isIso₁_truncLT_map_of_isGE _ H.mem b (by dsimp; infer_instance)
     dsimp at this
     have eq' : t.liftTruncLT m₁ (b-1) b (by lia) =
         (t.natTransTruncGELTTruncLTGE a b).app X := by
@@ -569,56 +570,6 @@ end TStructure
 
 end Triangulated
 
-namespace ObjectProperty
-
-open Triangulated
-
-/-- Constructor for `HasInducedTStructure`. -/
-lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TStructure C}
-    (h : ∀ (X : C) (_ : P X) (n : ℤ), P ((t.truncLE n).obj X) ∧
-      P ((t.truncGE n).obj X)) :
-    P.HasInducedTStructure t where
-  exists_triangle_zero_one X hX :=
-      ⟨_, _, inferInstance, inferInstance, _, _, _,
-        t.triangleLEGE_distinguished 0 1 (by omega) X,
-          P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
-
-lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
-    [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
-    (T : Triangle C) (hT : T ∈ distTriang C)
-    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) (h₂ : P T.obj₂)
-    (h₃ : t.IsGE T.obj₃ n₁) :
-    P T.obj₁ ∧ P T.obj₃ := by
-  obtain ⟨e, _⟩ := t.triangle_iso_exists hT
-    (P.ι.map_distinguished _ ((P.tStructure t).triangleLEGE_distinguished n₀ n₁ h ⟨_, h₂⟩))
-    (Iso.refl _) n₀ n₁ inferInstance inferInstance (by
-      dsimp [-ι_obj]
-      rw [← P.tStructure_isLE_iff]
-      infer_instance) (by
-      dsimp [-ι_obj]
-      rw [← P.tStructure_isGE_iff]
-      infer_instance)
-  exact ⟨(P.prop_iff_of_iso (Triangle.π₁.mapIso e)).2 (P.prop_ι_obj _),
-    (P.prop_iff_of_iso (Triangle.π₃.mapIso e)).2 (P.prop_ι_obj _)⟩
-
-instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : TStructure C)
-    [P.HasInducedTStructure t] [P'.HasInducedTStructure t]
-    [P.IsClosedUnderIsomorphisms] [P'.IsClosedUnderIsomorphisms] :
-    (P ⊓ P').HasInducedTStructure t :=
-  .mk' (by
-    rintro X ⟨hX, hX'⟩ n
-    exact
-      ⟨⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
-        (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
-      (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
-        (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
-        ⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by omega) X)
-        (n - 1) n (by omega) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
-      (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by omega) X)
-        (n - 1) n (by omega) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
-
-end ObjectProperty
-
 namespace Triangulated
 
 variable (t : TStructure C)
@@ -639,13 +590,6 @@ instance [IsTriangulated C] : t.bounded.HasInducedTStructure t := by
 
 namespace TStructure
 
-instance (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
-    t.IsLE ((t.eTruncLT.obj i).obj X) n := by
-  induction i with
-  | bot => exact isLE_of_isZero _ (by simp) _
-  | coe _ => dsimp; infer_instance
-  | top => dsimp; infer_instance
-
 instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
     t.IsGE ((t.eTruncLT.obj i).obj X) n := by
   induction i with
@@ -659,13 +603,6 @@ instance [IsTriangulated C] (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
   | bot => dsimp; infer_instance
   | coe _ => dsimp; infer_instance
   | top => exact isLE_of_isZero _ (by simp) _
-
-instance (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
-    t.IsGE ((t.eTruncGE.obj i).obj X) n := by
-  induction i with
-  | bot => dsimp; infer_instance
-  | coe _ => dsimp; infer_instance
-  | top => exact isGE_of_isZero _ (by simp) _
 
 end TStructure
 

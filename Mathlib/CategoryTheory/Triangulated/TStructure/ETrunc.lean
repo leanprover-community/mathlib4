@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Homology.SpectralSequence.EInt
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated ZeroObject Preadditive Functor
+open Category Limits Pretriangulated ZeroObject Preadditive
 
 variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -111,7 +111,7 @@ lemma eTruncGE_obj_top :
 lemma eTruncGE_obj_mk (n : ℤ) : t.eTruncGE.obj (EInt.mk n) = t.truncGE n := rfl
 
 noncomputable def eTruncGEδLTt :
-    t.eTruncGE ⟶ t.eTruncLT ⋙ ((whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
+    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
   app a := by
     induction a with
     | bot => exact 0
@@ -130,6 +130,63 @@ noncomputable def eTruncGEδLTt :
 lemma eTruncGEδLTt_mk (n : ℤ) :
     t.eTruncGEδLTt.app (EInt.mk n) = t.truncGEδLT n := rfl
 
+noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
+  t.eTruncLT.map (homOfLE (le_top))
+
+instance : IsIso (t.eTruncLTι ⊤) := by
+  dsimp [eTruncLTι]
+  infer_instance
+
+@[reassoc (attr := simp)]
+lemma eTruncLT_map_app_eTruncLTι_app {i j : EInt} (f : i ⟶ j) (X : C) :
+    (t.eTruncLT.map f).app X ≫ (t.eTruncLTι j).app X = (t.eTruncLTι i).app X := by
+  simp only [← NatTrans.comp_app, ← Functor.map_comp]
+  rfl
+
+noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 _ ⟶ t.eTruncGE.obj i :=
+  t.eTruncGE.map (homOfLE (bot_le))
+
+instance : IsIso (t.eTruncGEπ ⊥) := by
+  dsimp [eTruncGEπ]
+  infer_instance
+
+@[reassoc (attr := simp)]
+lemma eTruncGEπ_app_eTruncGE_map_app {i j : EInt} (f : i ⟶ j) (X : C) :
+    (t.eTruncGEπ i).app X ≫ (t.eTruncGE.map f).app X = (t.eTruncGEπ j).app X := by
+  simp only [← NatTrans.comp_app, ← Functor.map_comp]
+  rfl
+
+@[simps!]
+noncomputable def eTriangleLTGE : EInt ⥤ C ⥤ Triangle C where
+  obj i := Triangle.functorMk (t.eTruncLTι i) (t.eTruncGEπ i) (t.eTruncGEδLTt.app i)
+  map f := Triangle.functorHomMk _ _ (t.eTruncLT.map f) (𝟙 _) (t.eTruncGE.map f)
+
+lemma eTriangleLTGE_distinguished (i : EInt) (X : C) :
+    (t.eTriangleLTGE.obj i).obj X ∈ distTriang _ := by
+  induction i with
+  | bot =>
+    rw [Triangle.distinguished_iff_of_isZero₁ _ (Functor.zero_obj X)]
+    dsimp
+    infer_instance
+  | coe n => exact t.triangleLTGE_distinguished n X
+  | top =>
+    rw [Triangle.distinguished_iff_of_isZero₃ _ (Functor.zero_obj X)]
+    dsimp
+    infer_instance
+
+instance (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
+    t.IsLE ((t.eTruncLT.obj i).obj X) n := by
+  induction i with
+  | bot => exact isLE_of_isZero _ (by simp) _
+  | coe _ => dsimp; infer_instance
+  | top => dsimp; infer_instance
+
+instance (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
+    t.IsGE ((t.eTruncGE.obj i).obj X) n := by
+  induction i with
+  | bot => dsimp; infer_instance
+  | coe _ => dsimp; infer_instance
+  | top => exact isGE_of_isZero _ (by simp) _
 
 end TStructure
 
