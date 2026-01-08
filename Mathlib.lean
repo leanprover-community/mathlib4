@@ -13466,6 +13466,7 @@ public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Restricted
+public import Mathlib.RingTheory.PowerSeries.Schroder
 public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Trunc
 public import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
