@@ -302,7 +302,7 @@ lemma exists_of_not_isMeagre_biUnion {I : Set ι}
   exact h i hi
 
 /-- The image of a meagre set through an inducing map is meagre. -/
-lemma Topology.IsInducing.isMeagre_image {f : X → Y} [TopologicalSpace Y]
+lemma Topology.IsInducing.isMeagre_image [TopologicalSpace Y] {f : X → Y}
     (hf : Topology.IsInducing f) {s : Set X} (h : IsMeagre s) : IsMeagre (f '' s) := by
   rw [isMeagre_iff_countable_union_isNowhereDense] at *
   obtain ⟨T, isNowhereDense, countable, cover⟩ := h
