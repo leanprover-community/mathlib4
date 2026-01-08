@@ -26,9 +26,9 @@ open scoped nonZeroDivisors Pointwise BigOperators
 
 open IsLocalization IsFractionRing FractionalIdeal
 
-section Domain
+section CommRing
 
-variable (R : Type*) [CommRing R] [IsDomain R]
+variable (R : Type*) [CommRing R]
 
 private lemma ideal_fg_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
@@ -177,6 +177,9 @@ private lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R
               simp [map_mul]
   have hxrr : x * r = c i * b j := hinj (by simpa [map_mul] using hmap)
   exact hxrr.symm
+
+section Domain
+variable [IsDomain R]
 
 private lemma ideal_ne_bot_of_isUnit_fractionalIdeal {I : Ideal R}
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) : I ≠ ⊥ := by
@@ -705,3 +708,4 @@ instance UniqueFactorizationMonoid.instSubsingletonClassGroup : Subsingleton (Cl
 end UFD
 
 end Domain
+end CommRing
