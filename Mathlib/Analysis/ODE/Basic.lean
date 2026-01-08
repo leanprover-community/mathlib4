@@ -91,16 +91,9 @@ lemma isIntegralCurveAt_iff_exists_mem_nhds :
 containing `t₀`. -/
 lemma isIntegralCurveAt_iff_exists_pos :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  rw [isIntegralCurveAt_iff_exists_mem_nhds]
-  constructor
-  · intro ⟨s, hs, h⟩
-    rw [Metric.mem_nhds_iff] at hs
-    obtain ⟨ε, hε, hε'⟩ := hs
-    refine ⟨ε, hε, ?_⟩
-    intro t ht
-    exact (h t (hε' ht)).mono hε'
-  · intro ⟨ε, hε, h⟩
-    exact ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
+  rw [IsIntegralCurveAt, Metric.eventually_nhds_iff_ball]
+  congrm ∃ ε > 0, ∀ (y : ℝ) (hy : y ∈ Metric.ball t₀ ε), ?_
+  exact ⟨HasDerivAt.hasDerivWithinAt, fun h ↦ h.hasDerivAt (Metric.isOpen_ball.mem_nhds hy)⟩
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
     IsIntegralCurveAt γ v t :=
