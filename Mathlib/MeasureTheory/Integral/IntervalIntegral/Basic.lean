@@ -294,7 +294,7 @@ protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
   h.2.aestronglyMeasurable
 
 omit [PseudoMetrizableSpace ε] in
-protected theorem aestronglyMeasurable_uIoc (h : IntervalIntegrable f μ a b) :
+protected theorem aestronglyMeasurable_restrict_uIoc (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (uIoc a b)) := by
   by_cases hab : a ≤ b
   · rw [uIoc_of_le hab]; exact h.aestronglyMeasurable

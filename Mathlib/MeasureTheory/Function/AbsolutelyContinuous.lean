@@ -410,8 +410,6 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
       (totalLengthFilter ⊓ 𝓟 (disjWithin a b)) (𝓝 0) :=
     tendsto_setLIntegral_zero
     (ne_of_lt <| intervalIntegrable_iff.mp h |>.hasFiniteIntegral)
-    (s := s)
-    (l := totalLengthFilter ⊓ 𝓟 (disjWithin a b))
     (tendsto_volume_restrict_totalLengthFilter_disjWithin_nhds_zero _ _)
   -- Step 2: Use the lintegral in Step 1 to bound the sum of the distances between
   -- `∫ v in c..(E.2 i).2, f v` and `∫ v in c..(E.2 i).2, f v` that occurs in the definition
