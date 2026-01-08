@@ -33,7 +33,7 @@ polynomials, in particular Northcott's Theorem for the Mahler measure.
   polynomial.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

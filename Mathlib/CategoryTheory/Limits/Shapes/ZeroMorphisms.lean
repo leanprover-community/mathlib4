@@ -427,7 +427,7 @@ def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0
     intro i
     rw [← IsIso.hom_inv_id (0 : X ⟶ Y)]
     rw [← IsIso.inv_hom_id (0 : X ⟶ Y)]
-    simp only [comp_zero,and_self,zero_comp]
+    simp only [comp_zero, and_self, zero_comp]
   invFun h := ⟨⟨(0 : Y ⟶ X), by cat_disch⟩⟩
   left_inv := by cat_disch
   right_inv := by cat_disch
