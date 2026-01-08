@@ -80,7 +80,7 @@ noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ 
 @[simp] theorem fiberEquivGroup_self {x : X} (e : f ⁻¹' {x}) : hf.fiberEquivGroup e e = 1 :=
   (Equiv.apply_eq_iff_eq_symm_apply _).mpr <| Subtype.ext (one_smul ..).symm
 
-theorem fiberEquivGroup_smul_self {x : X} {e e' : f ⁻¹' {x}} :
+theorem fiberEquivGroup_smul_self {x : X} (e : f ⁻¹' {x}) {e' : f ⁻¹' {x}} :
     hf.fiberEquivGroup e e' • e = e'.1 :=
   congr($((hf.fiberEquivGroup e).symm_apply_apply e'))
 

@@ -418,14 +418,13 @@ theorem monodromy_trans_apply {x y z : X}
 open FundamentalGroup
 
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
-noncomputable def fundamentalGroupToPerm (x : X) : FundamentalGroup X x →* Equiv.Perm (p ⁻¹' {x}) :=
+noncomputable def monodromyPerm (x : X) : FundamentalGroup X x →* Equiv.Perm (p ⁻¹' {x}) :=
   @MulAction.toPermHom _ _ _
   { smul := cov.monodromy
     mul_smul _ _ _ := cov.monodromy_trans_apply ..
     one_smul := congr_fun cov.monodromy_refl }
 
-@[simp] theorem fundamentalGroupToPerm_apply {x γ e} :
-    cov.fundamentalGroupToPerm x γ e = cov.monodromy γ e := rfl
+@[simp] theorem coe_monodromyPerm {x γ} : cov.monodromyPerm x γ = cov.monodromy γ := rfl
 
 open CategoryTheory
 
@@ -520,17 +519,49 @@ theorem monodromy_toPermFiber {x y : X} {γ : Path.Homotopic.Quotient x y} {e} :
       on_goal 3 => ext
       all_goals apply hp.map_smul
 
-theorem commute_fundamentalGroupToPerm_toPermFiber {x : X} {γ : FundamentalGroup X x} :
-    Commute (hp.isCoveringMap.fundamentalGroupToPerm x γ) (hp.toPermFiber x g) := by
+theorem commute_monodromyPerm_toPermFiber {x : X} {γ : FundamentalGroup X x} :
+    Commute (hp.isCoveringMap.monodromyPerm x γ) (hp.toPermFiber x g) := by
   ext; exact congr($hp.monodromy_toPermFiber)
+
+theorem monodromy_ext_iff {x y : X} {γ γ' : Path.Homotopic.Quotient x y} (e) :
+    hp.isCoveringMap.monodromy γ e = hp.isCoveringMap.monodromy γ' e ↔
+    hp.isCoveringMap.monodromy γ = hp.isCoveringMap.monodromy γ' where
+  mp eq := by
+    ext e'
+    obtain ⟨g, rfl⟩ := hp.toPermFiber_transitive e e'
+    simp_rw [monodromy_toPermFiber, eq]
+  mpr := (congr_fun · _)
+
+alias ⟨monodromy_ext, _⟩ := monodromy_ext_iff
+
+variable {x : X} (e : p ⁻¹' {x}) {γ : FundamentalGroup X x}
+
+theorem monodromy_eq_id_iff :
+    hp.isCoveringMap.monodromy γ = id ↔ hp.isCoveringMap.monodromy γ e = e where
+  mp := (congr_fun · _)
+  mpr eq := (hp.monodromy_ext e (eq.trans congr($hp.isCoveringMap.monodromy_refl e).symm)).trans
+    hp.isCoveringMap.monodromy_refl
+
+theorem ker_monodromyPerm :
+    (hp.isCoveringMap.monodromyPerm x).ker =
+    (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range := by
+  ext γ; constructor <;> intro h
+  · refine ⟨(hp.isCoveringMap.liftPathQuotient γ e).cast rfl congr($h.symm e), ?_⟩
+    rw [FundamentalGroup.mapOfEq_apply,
+      Path.Homotopic.Quotient.map_cast, IsCoveringMap.map_liftPathQuotient]
+    rcases γ; rfl
+  · obtain ⟨γ, rfl⟩ := h
+    refine DFunLike.ext' <|
+      (hp.monodromy_eq_id_iff e).mpr <| hp.isCoveringMap.monodromy_eq_of_map_eq γ ?_
+    rw [FundamentalGroup.mapOfEq_apply]
+    rcases γ; rfl
 
 open MulOpposite in
 /-- Choosing an arbitrary basepoint `e ∈ f ⁻¹' {x}` induces a bijection `f ⁻¹' {x} ≃ G`, and the
 `G`-action on `f ⁻¹' {x}` corresponds to left multiplication. The monodromy action commutes
 with the `G`-action, so each monodromy must corresponds must correspond to a right multiplication.
 -/
-noncomputable def fundamentalGroupToMulOpposite {x : X} (e : p ⁻¹' {x}) :
-    FundamentalGroup X x →* Gᵐᵒᵖ where
+noncomputable def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
   toFun γ := op <| hp.fiberEquivGroup e (hp.isCoveringMap.monodromy γ e)
   map_one' := by rw [FundamentalGroup.one_def, IsCoveringMap.monodromy_refl]; simp
   map_mul' γ γ' := by
@@ -542,29 +573,30 @@ noncomputable def fundamentalGroupToMulOpposite {x : X} (e : p ⁻¹' {x}) :
     congr
     exact Subtype.ext (fiberEquivGroup_smul_self ..).symm
 
-theorem monodromy_ext {x y : X} {γ γ' : Path.Homotopic.Quotient x y} (e)
-    (eq : hp.isCoveringMap.monodromy γ e = hp.isCoveringMap.monodromy γ' e) :
-    hp.isCoveringMap.monodromy γ = hp.isCoveringMap.monodromy γ' := by
-  ext e'
-  obtain ⟨g, rfl⟩ := hp.toPermFiber_transitive e e'
-  simp_rw [monodromy_toPermFiber, eq]
+variable {e} in
+theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : Gᵐᵒᵖ} :
+    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e := by
+  rw [fundamentalGroupToMulOpposite, ← MulOpposite.unop_injective.eq_iff, iff_comm, eq_comm,
+    ← hp.fiberEquivGroup_smul_self e, hp.isCancelSMul.right_cancel']
 
-theorem monodromy_eq_id {x : X} {γ : FundamentalGroup X x} (e)
-    (eq : hp.isCoveringMap.monodromy γ e = e) : hp.isCoveringMap.monodromy γ = id :=
-  (hp.monodromy_ext e (eq.trans congr($hp.isCoveringMap.monodromy_refl e).symm)).trans
-    hp.isCoveringMap.monodromy_refl
+variable {e} in
+theorem unop_fundamentalGroupToMulOpposite_smul :
+    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ e := by
+  simp [fundamentalGroupToMulOpposite, fiberEquivGroup_smul_self]
 
-theorem ker_fundamentalGroupToPer (x : X) (e : E) (eq : p e = x) :
-    (hp.isCoveringMap.fundamentalGroupToPerm x).ker =
-    (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ eq).range := by
-  ext γ; constructor <;> intro h
-  · refine ⟨(hp.isCoveringMap.liftPathQuotient γ ⟨e, eq⟩).cast rfl congr($h.symm ⟨e, eq⟩), ?_⟩
-    rw [FundamentalGroup.mapOfEq_apply,
-      Path.Homotopic.Quotient.map_cast, IsCoveringMap.map_liftPathQuotient]
-    rcases γ; rfl
-  · obtain ⟨γ, rfl⟩ := h
-    refine DFunLike.ext' (hp.monodromy_eq_id ⟨e, eq⟩ (hp.isCoveringMap.monodromy_eq_of_map_eq γ ?_))
-    rw [FundamentalGroup.mapOfEq_apply]
-    rcases γ; rfl
+variable {e} in
+theorem fundamentalGroupToMulOpposite_eq_one_iff :
+    hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ e = e where
+  mp h := Subtype.ext <| by rw [← hp.unop_fundamentalGroupToMulOpposite_smul, h]; apply one_smul
+  mpr h := MulOpposite.unop_injective <| hp.isCancelSMul.right_cancel _ _ e.1 <| by
+    simp [fundamentalGroupToMulOpposite, h]
+
+theorem ker_fundamentalGroupToMulOpposite :
+    (hp.fundamentalGroupToMulOpposite e).ker = (hp.isCoveringMap.monodromyPerm x).ker := by
+  ext; simp [fundamentalGroupToMulOpposite_eq_one_iff, DFunLike.ext'_iff, ← hp.monodromy_eq_id_iff]
+
+theorem fundamentalGroupToMulOpposite_surjective [PathConnectedSpace E] :
+    Function.Surjective (hp.fundamentalGroupToMulOpposite e) :=
+  fun g ↦ _
 
 end IsQuotientCoveringMap

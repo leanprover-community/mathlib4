@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Covering maps involving `AddCircle`
