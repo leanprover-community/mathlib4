@@ -510,8 +510,16 @@ theorem contDiff_smul : ContDiff 𝕜 n fun p : 𝕜 × F => p.1 • p.2 :=
 set at this point. -/
 @[fun_prop]
 theorem ContDiffWithinAt.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
-    (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x => f x • g x) s x :=
+    (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (f • g) s x :=
   contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
+
+/-- The scalar multiplication of two `C^n` functions within a set at a point is `C^n` within this
+set at this point. -/
+@[fun_prop]
+theorem ContDiffWithinAt.fun_smul {s : Set E} {f : E → 𝕜} {g : E → F}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    ContDiffWithinAt 𝕜 n (fun x ↦ f x • g x) s x :=
+  ContDiffWithinAt.smul hf hg
 
 /-- The scalar multiplication of two `C^n` functions at a point is `C^n` at this point. -/
 @[fun_prop]

@@ -14,7 +14,23 @@ public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.Analytic.Binomial
 public import Mathlib.Analysis.Meromorphic.Order
-public meta import Mathlib.Tactic.NormNum.NatFactorial
+public import Mathlib.Tactic.NormNum.NatFactorial
+
+--move
+lemma IsZLattice.isCompact_range_of_periodic
+    {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] (f : E → F)
+    [TopologicalSpace F] (hf : Continuous f)
+    (hf' : ∀ z w, w ∈ L → f (z + w) = f z) : IsCompact (Set.range f) := by
+  have := ZLattice.module_free ℝ L
+  let b := Module.Free.chooseBasis ℤ L
+  convert (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
+  refine le_antisymm ?_ (Set.image_subset_range _ _)
+  rintro _ ⟨x, rfl⟩
+  let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
+    fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
+  refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩
+  simp [parallelepiped_basis_eq, x', Int.floor_le, Int.le_floor_add_one, add_comm (1 : ℝ)]
 
 /-!
 
@@ -402,7 +418,7 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
         simpa using hl)
       exact .sub (.div (by fun_prop) (by fun_prop) (by simpa)) (by fun_prop)
 
-@[simp] lemma deriv_weierstrassPExpect (l : ℂ) : deriv ℘[L - l] l = ℘'[L - l] l :=
+@[simp] lemma deriv_weierstrassPExcept (l : ℂ) : deriv ℘[L - l] l = ℘'[L - l] l :=
   L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept l (x := l) (by simp)
 
 lemma derivWeierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
@@ -820,8 +836,7 @@ lemma analyticAt_derivWeierstrassPExcept (l₀ : ℂ) :
   L.analyticOnNhd_derivWeierstrassPExcept l₀ _ (by simp)
 
 lemma iteratedDeriv_derivWeierstrassPExcept (l : ℂ) {n : ℕ} :
-    iteratedDeriv n ℘'[L - l] l =
-      (n + 2).factorial * L.sumInvPow l (n + 3) := by
+    iteratedDeriv n ℘'[L - l] l = (n + 2).factorial * L.sumInvPow l (n + 3) := by
   have : iteratedDeriv n ℘'[L - l] l / n.factorial =
       (↑n + 1) * (↑n + 2) * L.sumInvPow l (n + 3) := by
     simpa using congr($((L.analyticAt_derivWeierstrassPExcept l).hasFPowerSeriesAt
@@ -1007,116 +1022,6 @@ lemma iteratedDeriv_fun_sub {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : T
 
 open scoped Topology
 
-theorem Filter.EventuallyEq.iteratedDerivWithin_eq {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
-    (hfg : f =ᶠ[𝓝[s] x] g) (hfg' : f x = g x) :
-    iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
-  congr($(hfg.iteratedFDerivWithin_eq (𝕜 := 𝕜) hfg' n) _)
-
-theorem Filter.EventuallyEq.iteratedDerivWithin_eq' {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
-    (hfg : f =ᶠ[𝓝[insert x s] x] g) :
-    iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
-  Filter.EventuallyEq.iteratedDerivWithin_eq _ (hfg.filter_mono (by simp))
-    (hfg.eq_of_nhdsWithin (by simp))
-
-@[fun_prop]
-lemma _root_.ContDiffWithinAt.derivWithin {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {m n : WithTop ℕ∞} {f : 𝕜 → F} {s : Set 𝕜}
-    {x : 𝕜} (H : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s)
-    (hmn : m + 1 ≤ n) (hx : x ∈ s) :
-    ContDiffWithinAt 𝕜 m (derivWithin f s) s x := by
-  exact ContDiffWithinAt.comp _ (by fun_prop) (g := fun f ↦ f 1) (t := .univ)
-    (H.fderivWithin_right hs hmn hx) (fun _ _ ↦ trivial)
-
-/-- The scalar multiplication of two `C^n` functions within a set at a point is `C^n` within this
-set at this point. -/
-@[fun_prop]
-theorem ContDiffWithinAt.smul' {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {x : E} {n : WithTop ℕ∞} {s : Set E}
-    {f : E → 𝕜} {g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
-    (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (f • g) s x :=
-  ContDiffWithinAt.smul hf hg
-
-lemma iteratedDerivWithin_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {n : ℕ} {x : 𝕜} {f : 𝕜 → 𝕜} {g : 𝕜 → F} {s : Set 𝕜}
-    (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x)
-    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    iteratedDerivWithin n (f • g) s x = ∑ i ∈ .range (n + 1),
-      n.choose i • iteratedDerivWithin i f s x • iteratedDerivWithin (n - i) g s x := by
-  induction n generalizing f g with
-  | zero => simp
-  | succ n IH =>
-    obtain ⟨U, hU, H⟩ := Filter.eventually_iff_exists_mem.mp
-      ((hf.eventually (by simp)).and (hg.eventually (by simp)))
-    rw [iteratedDerivWithin_succ', Filter.EventuallyEq.iteratedDerivWithin_eq'
-        (g := f • derivWithin g s + derivWithin f s • g)]
-    · rw [Finset.sum_range_succ', iteratedDerivWithin_add hx hs, IH, Finset.sum_range_succ', IH]
-      · simp only [Nat.choose_succ_succ', add_smul, Finset.sum_add_distrib]
-        nth_rw 3 [Finset.sum_range_succ]
-        have : ∀ i ∈ Finset.range n, 1 ≤ n - i := by simp; lia
-        simp +contextual [← iteratedDerivWithin_succ', ← n.sub_sub, Nat.sub_add_cancel, this]
-        abel
-      all_goals fun_prop (discharger := simp_all)
-    · filter_upwards [hf.eventually (by simp), hg.eventually (by simp)] with y hfy hgy
-      rw [derivWithin_smul (hfy.differentiableWithinAt _) (hgy.differentiableWithinAt _)]
-      all_goals simp
-
-lemma iteratedDerivWithin_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {n : ℕ} {x : 𝕜} {f g : 𝕜 → 𝕜} {s : Set 𝕜}
-    (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x)
-    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    iteratedDerivWithin n (f * g) s x = ∑ i ∈ .range (n + 1),
-      n.choose i * iteratedDerivWithin i f s x * iteratedDerivWithin (n - i) g s x := by
-  convert iteratedDerivWithin_smul hf hg hs hx using 1
-  simp [mul_assoc]
-
-lemma iteratedDeriv_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {n : ℕ} {x : 𝕜} {f g : 𝕜 → 𝕜}
-    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
-    iteratedDeriv n (f * g) x = ∑ i ∈ .range (n + 1),
-      n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x := by
-  rw [← iteratedDerivWithin_univ,
-    iteratedDerivWithin_mul hf.contDiffWithinAt hg.contDiffWithinAt uniqueDiffOn_univ trivial]
-  simp [iteratedDerivWithin_univ]
-
-lemma iteratedDeriv_fun_mul {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {n : ℕ} {x : 𝕜} {f g : 𝕜 → 𝕜}
-    (hf : ContDiffAt 𝕜 (↑n) f x) (hg : ContDiffAt 𝕜 (↑n) g x) :
-    iteratedDeriv n (fun x ↦ f x * g x) x = ∑ i ∈ .range (n + 1),
-      n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x :=
-  iteratedDeriv_mul hf hg
-
-lemma iteratedDeriv_fun_id {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ} {x : 𝕜} :
-    iteratedDeriv n (fun a ↦ a) x = if n = 0 then x else if n = 1 then 1 else 0 := by
-  obtain (_ | _ | n) := n
-  · simp []
-  · simp
-  · simp [iteratedDeriv_succ', iteratedDeriv_const]
-
-lemma iteratedDeriv_fun_id_zero {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ} :
-    iteratedDeriv n (fun a ↦ a) (0 : 𝕜) = if n = 1 then 1 else 0 := by
-  simp +contextual [iteratedDeriv_fun_id]
-
-lemma iteratedDeriv_fun_pow_zero {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n m : ℕ} :
-    iteratedDeriv n (· ^ m) (0 : 𝕜) = if n = m then m.factorial else 0 := by
-  induction m generalizing n with
-  | zero => simp [iteratedDeriv_const]
-  | succ m IH =>
-    obtain rfl | hn := eq_or_ne n (m + 1)
-    · simp (discharger := fun_prop) [pow_succ', iteratedDeriv_fun_mul, iteratedDeriv_fun_id_zero,
-        IH (n := m), Nat.factorial_succ]
-    · simp (discharger := fun_prop) [pow_succ', iteratedDeriv_fun_mul, iteratedDeriv_fun_id_zero,
-        IH (n := n - 1), hn]; grind
-
-lemma _root_.AnalyticAt.of_meromorphicOrderAt_pos
-    {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] {f : 𝕜 → E} {x : 𝕜} (h : 0 < meromorphicOrderAt f x) (hf : f x = 0) :
-    AnalyticAt 𝕜 f x := by
-  refine (meromorphicAt_of_meromorphicOrderAt_ne_zero h.ne').analyticAt ?_
-  rw [continuousAt_iff_punctured_nhds, hf]
-  exact tendsto_zero_of_meromorphicOrderAt_pos h
-
 attribute [fun_prop] AnalyticAt.contDiffAt
 
 set_option maxHeartbeats 0 in
@@ -1198,26 +1103,6 @@ lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
       (L.isClosed_lattice.isOpen_compl.mem_nhds (by simpa)) ?_)
     intro x hx
     simp_all [relation]
-
-lemma Int.le_floor_add_one {α : Type*}
-    [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α] (a : α) :
-    a ≤ ↑⌊a⌋ + 1 :=
-  (Int.le_ceil a).trans (mod_cast Int.ceil_le_floor_add_one a)
-
-lemma IsZLattice.isCompact_range_of_periodic
-    {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] (f : E → F)
-    [TopologicalSpace F] (hf : Continuous f)
-    (hf' : ∀ z w, w ∈ L → f (z + w) = f z) : IsCompact (Set.range f) := by
-  have := ZLattice.module_free ℝ L
-  let b := Module.Free.chooseBasis ℤ L
-  convert (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
-  refine le_antisymm ?_ (Set.image_subset_range _ _)
-  rintro _ ⟨x, rfl⟩
-  let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
-    fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
-  refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩
-  simp [parallelepiped_basis_eq, x', Int.floor_le, Int.le_floor_add_one, add_comm (1 : ℝ)]
 
 lemma relation_eq_zero : L.relation = 0 := by
   have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt

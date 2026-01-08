@@ -1470,6 +1470,14 @@ theorem ContDiffOn.continuousOn_deriv_of_isOpen (h : ContDiffOn 𝕜 n f₂ s₂
   rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
   exact ((contDiffOn_succ_iff_deriv_of_isOpen hs).1 (h.of_le hn)).2.2.continuousOn
 
+@[fun_prop]
+protected lemma ContDiffWithinAt.derivWithin {x : 𝕜}
+    (H : ContDiffWithinAt 𝕜 n f₂ s₂ x) (hs : UniqueDiffOn 𝕜 s₂)
+    (hmn : m + 1 ≤ n) (hx : x ∈ s₂) :
+    ContDiffWithinAt 𝕜 m (derivWithin f₂ s₂) s₂ x := by
+  exact ContDiffWithinAt.comp _ (by fun_prop) (g := fun f ↦ f 1) (t := .univ)
+    (H.fderivWithin_right hs hmn hx) (fun _ _ ↦ trivial)
+
 /-- A function is `C^(n + 1)` if and only if it is differentiable,
   and its derivative (formulated in terms of `deriv`) is `C^n`. -/
 theorem contDiff_succ_iff_deriv :
