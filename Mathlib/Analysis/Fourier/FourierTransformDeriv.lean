@@ -233,7 +233,8 @@ theorem hasFDerivAt_fourierIntegral
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
     ae_of_all _ (fun v w' _ ↦ hasFDerivAt_fourierChar_smul L f v w')
-  exact hasFDerivAt_integral_of_dominated_of_fderiv_le one_pos h1 (h0 w) h3 h4 h5 h6
+  exact hasFDerivAt_integral_of_dominated_of_fderiv_le (Metric.ball_mem_nhds _ one_pos) h1 (h0 w)
+    h3 h4 h5 h6
 
 lemma fderiv_fourierIntegral
     [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
