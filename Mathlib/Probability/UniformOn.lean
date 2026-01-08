@@ -90,7 +90,7 @@ theorem isProbabilityMeasure_uniformOn' {s : Set Ω}
   · rwa [Measure.count_ne_zero_iff]
   · exact (Measure.count_apply_lt_top' hs_meas).2 hs_fin |>.ne
 
-instance uniformOn_univ_instIsProbabilityMeasure [Finite Ω] [Nonempty Ω] :
+instance instIsProbabilityMeasure_uniformOn_univ [Finite Ω] [Nonempty Ω] :
     IsProbabilityMeasure (uniformOn (.univ : Set Ω)) :=
   uniformOn_isProbabilityMeasure' Set.finite_univ Set.univ_nonempty .univ
 
