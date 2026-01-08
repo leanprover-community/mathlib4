@@ -66,7 +66,7 @@ lemma condVar_of_stronglyMeasurable [SigmaFinite (μ.trim hm)]
     Var[X; μ | m] = fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2 :=
   condExp_of_stronglyMeasurable _ ((hX.sub stronglyMeasurable_condExp).pow _) hXint
 
-lemma condVar_of_not_integrable (hXint : ¬ Integrable (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) μ) :
+lemma condVar_of_not_integrable (hXint : ¬ Integrable (fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2) μ) :
     Var[X; μ | m] = 0 := condExp_of_not_integrable hXint
 
 @[simp] lemma condVar_zero : Var[0; μ | m] = 0 := by simp [condVar]
