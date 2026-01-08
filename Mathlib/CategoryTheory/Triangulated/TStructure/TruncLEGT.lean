@@ -335,6 +335,17 @@ instance (X : C) (a b : ℤ) :
     t.IsLE ((t.truncGELE a b).obj X) b := by
   dsimp; infer_instance
 
+lemma isIso_truncLE_map_truncLEι_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    IsIso ((t.truncLE a).map ((t.truncLEι b).app X)) :=
+  t.isIso_truncLT_map_truncLTι_app _ _ (by lia) _
+
+lemma isIso_truncGT_map_truncGTπ_app (a b : ℤ) (h : b ≤ a) (X : C) :
+    IsIso ((t.truncGT a).map ((t.truncGTπ b).app X)) :=
+  isIso_truncGE_map_truncGEπ_app _ _ _ (by lia) _
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncLE n).map ((t.truncLEι n).app X)) :=
+  t.isIso_truncLE_map_truncLEι_app _ _ (by lia) _
+
 end
 
 end TStructure

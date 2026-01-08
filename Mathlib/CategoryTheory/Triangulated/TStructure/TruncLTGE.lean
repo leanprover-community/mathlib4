@@ -477,6 +477,11 @@ lemma isLE_iff_isZero_truncGE_obj (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C
   rw [t.isLE_iff_isIso_truncLTι_app n₀ n₁ h X]
   exact (Triangle.isZero₃_iff_isIso₁ _ (t.triangleLTGE_distinguished n₁ X)).symm
 
+lemma isZero_truncLT_obj_of_isGE (n : ℤ) (X : C) [t.IsGE X n] :
+    IsZero ((t.truncLT n).obj X) := by
+  rw [← isGE_iff_isZero_truncLT_obj]
+  infer_instance
+
 lemma isZero_truncGE_obj_of_isLE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) [t.IsLE X n₀] :
     IsZero ((t.truncGE n₁).obj X) := by
   rw [← t.isLE_iff_isZero_truncGE_obj _ _ h X]
@@ -702,6 +707,19 @@ instance (X : C) (a b : ℤ) :
 instance (X : C) (a b : ℤ) :
     t.IsGE ((t.truncLTGE a b).obj X) a := by
   dsimp; infer_instance
+
+lemma isIso_truncGE_map_truncGEπ_app (a b : ℤ) (h : b ≤ a) (X : C) :
+    IsIso ((t.truncGE a).map ((t.truncGEπ b).app X)) :=
+  t.isIso₂_truncGE_map_of_isLE _ (t.triangleLTGE_distinguished b X)
+    (a - 1) a (by lia) (t.isLE_truncLT_obj _ _ _ (by simpa))
+
+lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    IsIso ((t.truncLT a).map ((t.truncLTι b).app X)) :=
+  t.isIso₁_truncLT_map_of_isGE _ (t.triangleLTGE_distinguished b X) a
+    (t.isGE_of_GE ((t.truncGE b).obj X) a b (by lia))
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncGE n).map ((t.truncGEπ n).app X)) :=
+  t.isIso_truncGE_map_truncGEπ_app _ _ (by rfl) _
 
 end
 

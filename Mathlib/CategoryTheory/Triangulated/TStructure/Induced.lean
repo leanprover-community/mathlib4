@@ -20,12 +20,11 @@ namespace CategoryTheory
 
 open Limits Pretriangulated Triangulated
 
-namespace ObjectProperty
-
-
 variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-variable (P : ObjectProperty C) (t : TStructure C)
+  (P : ObjectProperty C) (t : TStructure C)
+
+namespace ObjectProperty
 
 class HasInducedTStructure [P.IsTriangulated] : Prop where
   exists_triangle_zero_one (A : C) (hA : P A) :
@@ -122,5 +121,26 @@ instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : T
 
 end ObjectProperty
 
+namespace Triangulated.TStructure
+
+variable [IsTriangulated C]
+
+instance : t.plus.HasInducedTStructure t :=
+  .mk' (by rintro X ⟨a, _⟩ n; exact ⟨⟨a, inferInstance⟩, ⟨a, inferInstance⟩⟩)
+
+instance : t.minus.HasInducedTStructure t :=
+  .mk' (by rintro X ⟨a, _⟩ n; exact ⟨⟨a, inferInstance⟩, ⟨a, inferInstance⟩⟩)
+
+instance : t.bounded.HasInducedTStructure t := by
+  dsimp [bounded]
+  infer_instance
+
+noncomputable abbrev onPlus : TStructure t.plus.FullSubcategory := t.plus.tStructure t
+
+noncomputable abbrev onMinus : TStructure t.minus.FullSubcategory := t.minus.tStructure t
+
+noncomputable abbrev onBounded : TStructure t.bounded.FullSubcategory := t.bounded.tStructure t
+
+end Triangulated.TStructure
 
 end CategoryTheory

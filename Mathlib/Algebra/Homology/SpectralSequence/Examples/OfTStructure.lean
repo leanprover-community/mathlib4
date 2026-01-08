@@ -80,7 +80,7 @@ instance [t.IsGE X 0] :
       (t.eTruncGE.obj i).map_zero, (H.shift n).map_zero]
   isZero₂ i j hij n hi := by
     dsimp
-    have := t.eTruncGE_obj_obj_isGE (n + 1) i (by induction i <;> simp_all)
+    have := t.isGE_eTruncGE_obj_obj (n + 1) i (by induction i <;> simp_all)
     apply H.isZero_shift_obj_of_vanishesOnGEOne t n (n+1) (by lia)
 
 noncomputable def spectralSequence : E₂CohomologicalSpectralSequence A :=
@@ -136,13 +136,11 @@ variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.
 
 instance :
     ((t.spectralObject X).mapHomologicalFunctor H).IsThirdQuadrant where
-  isZero₁ i j hij hi n := by
-    refine IsZero.of_iso ?_ ((H.shift n).mapIso (t.isZero_eTruncGE_obj_obj
-      (((t.eTruncLT).obj j).obj X) 0 i hi).isoZero)
-    rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
+  isZero₁ i j hij hi n :=
+    (H.shift n).map_isZero (t.isZero_eTruncGE_obj_obj (((t.eTruncLT).obj j).obj X) 0 i hi)
   isZero₂ i j hij n hj := by
     dsimp
-    have := t.eTruncLT_obj_obj_isLE (n - 1) j (by simpa using hj) X
+    have := t.isLE_eTruncLT_obj_obj (n - 1) j (by simpa using hj) X
     exact H.isZero_shift_obj_of_vanishesOnLESubOne t (n - 1) n (by lia) _
 
 end
