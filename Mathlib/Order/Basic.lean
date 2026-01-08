@@ -825,7 +825,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
   have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
   simp only [h, compareOfLessAndEq]
   split_ifs <;> try (first | rfl | contradiction)
-  · have : ¬f a = f b := by rename_i h; exact inj.ne h
+  · have : ¬ f a = f b := by rename_i h; exact inj.ne h
     contradiction
   · grind
 
