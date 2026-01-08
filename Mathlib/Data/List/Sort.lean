@@ -341,12 +341,12 @@ theorem sublist_of_subperm_of_pairwise {l₁ l₂ : List α} (hp : l₁ <+~ l₂
 @[deprecated (since := "2025-10-11")]
 alias sublist_of_subperm_of_sorted := sublist_of_subperm_of_pairwise
 
-theorem Subset.antisymm_of_pairwise [IsIrrefl α r] {l₁ l₂ : List α}
+theorem Subset.antisymm_of_pairwise [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (hl₁₂ : l₁ ⊆ l₂) (hl₁₂' : l₂ ⊆ l₁) : l₁ = l₂ :=
   ((subperm_of_subset h₁.nodup hl₁₂).antisymm
     (subperm_of_subset h₂.nodup hl₁₂')).eq_of_pairwise' h₁ h₂
 
-theorem Pairwise.eq_of_mem_iff [IsIrrefl α r] {l₁ l₂ : List α}
+theorem Pairwise.eq_of_mem_iff [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
   Subset.antisymm_of_pairwise h₁ h₂ (by grind) (by grind)
 
