@@ -72,7 +72,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G H V : Type*}
+variable {ι 𝕜 𝕜' D E F G H V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -358,6 +358,15 @@ section AddCommGroup
 instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
+
+open Classical in
+@[simp]
+theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → 𝓢(E, F)) (x : E) :
+    (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
+  apply Finset.induction_on (motive := fun s ↦ (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x)
+  · simp
+  · intro i s his h
+    simp [his, h]
 
 variable (E F)
 
@@ -741,6 +750,36 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
     smulLeftCLM F g₁ ∘L smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
+
+theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  ext1 f
+  have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
+  convert (smulLeftCLM_smulLeftCLM_apply this hg f).symm using 1
+  simp
+
+theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
+  ext f x
+  simp only [Function.HasTemperateGrowth.sum hg, smulLeftCLM_apply_apply,
+    ContinuousLinearMap.coe_sum', Finset.sum_apply, sum_apply, Finset.sum_smul]
+  apply Finset.sum_congr (refl _)
+  intro i hi
+  simp [hg i hi]
+
+variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F]
+
+variable (𝕜') in
+theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F (fun x ↦ RCLike.ofReal (K := 𝕜') (g x)) f = smulLeftCLM F g f := by
+  ext x
+  rw [smulLeftCLM_apply_apply (by fun_prop), smulLeftCLM_apply_apply (by fun_prop),
+    algebraMap_smul]
+
+theorem smulLeftCLM_real_smul {g : E → 𝕜'} (hg : g.HasTemperateGrowth) (c : ℝ) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  rw [RCLike.real_smul_eq_coe_smul (K := 𝕜') c, smulLeftCLM_smul hg,
+    ← RCLike.real_smul_eq_coe_smul c]
 
 end smul
 
