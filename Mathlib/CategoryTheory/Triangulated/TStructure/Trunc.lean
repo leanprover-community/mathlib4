@@ -35,7 +35,7 @@ noncomputable def abstractSpectralObject : SpectralObject.AbstractSpectralObject
   truncGE := t.eTruncGE
   truncLTObjTopIso' := Iso.refl _
   truncGEObjBotIso' := Iso.refl _
-  truncGEδLT := t.eTruncGEδLTt
+  truncGEδLT := t.eTruncGEδLT
 
 namespace AbstractSpectralObject
 

@@ -514,6 +514,16 @@ lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
     (by dsimp; apply (t.isGE_shift _ n (-1) (n + 1) (by lia)))
   rw [hg, hg', zero_comp]
 
+@[reassoc]
+lemma truncLT_map_truncLTι_app (n : ℤ) (X : C) :
+    (t.truncLT n).map ((t.truncLTι n).app X) = (t.truncLTι n).app ((t.truncLT n).obj X) :=
+  t.to_truncLT_obj_ext (by simp)
+
+@[reassoc]
+lemma truncGE_map_truncGEπ_app (n : ℤ) (X : C) :
+    (t.truncGE n).map ((t.truncGEπ n).app X) = (t.truncGEπ n).app ((t.truncGE n).obj X) :=
+  t.from_truncGE_obj_ext (by simp)
+
 section
 
 variable {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsLE X n₀]

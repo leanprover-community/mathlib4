@@ -116,7 +116,7 @@ lemma eTruncGE_obj_mk (n : ℤ) : t.eTruncGE.obj (EInt.mk n) = t.truncGE n := rf
 instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
   induction i <;> constructor <;> cat_disch
 
-noncomputable def eTruncGEδLTt :
+noncomputable def eTruncGEδLT :
     t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
   app a := by
     induction a with
@@ -133,14 +133,15 @@ noncomputable def eTruncGEδLTt :
         simp [t.truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE]
 
 @[simp]
-lemma eTruncGEδLTt_mk (n : ℤ) :
-    t.eTruncGEδLTt.app (EInt.mk n) = t.truncGEδLT n := rfl
+lemma eTruncGEδLT_mk (n : ℤ) :
+    t.eTruncGEδLT.app (EInt.mk n) = t.truncGEδLT n := rfl
 
 noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
   t.eTruncLT.map (homOfLE (le_top))
 
-@[simp]
-lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
+@[simp] lemma eTruncLT_ι_bot : t.eTruncLTι ⊥ = 0 := rfl
+@[simp] lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
+@[simp] lemma eTruncLT_ι_top : t.eTruncLTι ⊤ = 𝟙 _ := rfl
 
 instance : IsIso (t.eTruncLTι ⊤) := by
   dsimp [eTruncLTι]
@@ -152,11 +153,21 @@ lemma eTruncLT_map_app_eTruncLTι_app {i j : EInt} (f : i ⟶ j) (X : C) :
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
+@[reassoc]
+lemma eTruncLT_obj_map_eTruncLTι_app (i : EInt) (X : C) :
+    (t.eTruncLT.obj i).map ((t.eTruncLTι i).app X) =
+    (t.eTruncLTι i).app ((t.eTruncLT.obj i).obj X) := by
+  induction i with
+  | bot => simp
+  | coe n => simp [truncLT_map_truncLTι_app]
+  | top => simp
+
 noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 _ ⟶ t.eTruncGE.obj i :=
   t.eTruncGE.map (homOfLE (bot_le))
 
-@[simp]
-lemma eTruncGEπ_coe (n : ℤ) : t.eTruncGEπ n = t.truncGEπ n := rfl
+@[simp] lemma eTruncGEπ_bot : t.eTruncGEπ ⊥ = 𝟙 _ := rfl
+@[simp] lemma eTruncGEπ_coe (n : ℤ) : t.eTruncGEπ n = t.truncGEπ n := rfl
+@[simp] lemma eTruncGEπ_top : t.eTruncGEπ ⊤ = 0 := rfl
 
 instance : IsIso (t.eTruncGEπ ⊥) := by
   dsimp [eTruncGEπ]
@@ -168,9 +179,18 @@ lemma eTruncGEπ_app_eTruncGE_map_app {i j : EInt} (f : i ⟶ j) (X : C) :
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
+@[reassoc]
+lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
+    (t.eTruncGE.obj i).map ((t.eTruncGEπ i).app X) =
+    (t.eTruncGEπ i).app ((t.eTruncGE.obj i).obj X) := by
+  induction i with
+  | bot => simp
+  | coe n => simp [truncGE_map_truncGEπ_app]
+  | top => simp
+
 @[simps!]
 noncomputable def eTriangleLTGE : EInt ⥤ C ⥤ Triangle C where
-  obj i := Triangle.functorMk (t.eTruncLTι i) (t.eTruncGEπ i) (t.eTruncGEδLTt.app i)
+  obj i := Triangle.functorMk (t.eTruncLTι i) (t.eTruncGEπ i) (t.eTruncGEδLT.app i)
   map f := Triangle.functorHomMk _ _ (t.eTruncLT.map f) (𝟙 _) (t.eTruncGE.map f)
 
 lemma eTriangleLTGE_distinguished (i : EInt) (X : C) :
@@ -282,6 +302,88 @@ instance (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
   | bot => dsimp; infer_instance
   | coe _ => dsimp; infer_instance
   | top => exact isLE_of_isZero _ (by simp) _
+
+@[simps!]
+noncomputable def eTruncGEToGEGE (a b : EInt) :
+    t.eTruncGE.obj b ⟶ t.eTruncGE.obj a ⋙ t.eTruncGE.obj b :=
+  (Functor.leftUnitor _).inv ≫ Functor.whiskerRight (t.eTruncGEπ a) _
+
+lemma isIso_eTruncGEIsoGEGE (a b : EInt) (hab : a ≤ b) :
+    IsIso (t.eTruncGEToGEGE a b) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  simp only [Functor.comp_obj, eTruncGEToGEGE_app]
+  exact t.isIso_eTruncGE_obj_map_truncGEπ_app _ _ hab _
+
+section
+
+variable (a b : EInt) (hab : a ≤ b)
+
+@[simps! hom]
+noncomputable def eTruncGEIsoGEGE :
+    t.eTruncGE.obj b ≅ t.eTruncGE.obj a ⋙ t.eTruncGE.obj b :=
+  haveI := t.isIso_eTruncGEIsoGEGE a b hab
+  asIso (t.eTruncGEToGEGE a b)
+
+@[reassoc (attr := simp)]
+lemma eTruncGEIsoGEGE_hom_inv_id_app (X : C) :
+    (t.eTruncGE.obj b).map ((t.eTruncGEπ a).app X) ≫ (t.eTruncGEIsoGEGE a b hab).inv.app X =
+      𝟙 _ := by
+  simpa using (t.eTruncGEIsoGEGE a b hab).hom_inv_id_app X
+
+@[reassoc (attr := simp)]
+lemma eTruncGEIsoGEGE_inv_hom_id_app (X : C) :
+    (t.eTruncGEIsoGEGE a b hab).inv.app X ≫ (t.eTruncGE.obj b).map ((t.eTruncGEπ a).app X) =
+      𝟙 _ := by
+  simpa using (t.eTruncGEIsoGEGE a b hab).inv_hom_id_app X
+
+end
+
+@[simps!]
+noncomputable def eTruncLTLTToLT (a b : EInt) :
+    t.eTruncLT.obj a ⋙ t.eTruncLT.obj b ⟶ t.eTruncLT.obj b :=
+  Functor.whiskerRight (t.eTruncLTι a) _ ≫ (Functor.leftUnitor _).hom
+
+lemma isIso_eTruncLTLTIsoLT (a b : EInt) (hab : b ≤ a) :
+    IsIso (t.eTruncLTLTToLT a b) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  simp only [Functor.comp_obj, eTruncLTLTToLT_app]
+  exact t.isIso_eTruncLT_obj_map_truncLTπ_app _ _ hab _
+
+section
+
+variable (a b : EInt) (hab : b ≤ a)
+
+@[simps! hom]
+noncomputable def eTruncLTLTIsoLT :
+    t.eTruncLT.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b :=
+  haveI := t.isIso_eTruncLTLTIsoLT a b hab
+  asIso (t.eTruncLTLTToLT a b)
+
+@[reassoc]
+lemma eTruncLTLTIsoLT_hom_inv_id_app (X : C) :
+    (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) ≫
+      (t.eTruncLTLTIsoLT a b hab).inv.app X = 𝟙 _ := by
+  simpa using (t.eTruncLTLTIsoLT a b hab).hom_inv_id_app X
+
+@[reassoc (attr := simp)]
+lemma eTruncLTLTIsoLT_inv_hom_id_app (X : C) :
+    (t.eTruncLTLTIsoLT a b hab).inv.app X ≫
+    (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) = 𝟙 _ := by
+  simpa using (t.eTruncLTLTIsoLT a b hab).inv_hom_id_app X
+
+@[reassoc (attr := simp)]
+lemma eTruncLTLTIsoLT_inv_hom_id_app_eTruncLT_obj (X : C) :
+    (t.eTruncLTLTIsoLT a b hab).inv.app ((t.eTruncLT.obj a).obj X) ≫
+      (t.eTruncLT.obj b).map ((t.eTruncLT.obj a).map ((t.eTruncLTι a).app X)) = 𝟙 _ := by
+  sorry
+
+end
+
+def eTruncLTGEIsoLEGT (a b : EInt) :
+    t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b ⋙ t.eTruncGE.obj a :=
+  sorry
 
 end
 
