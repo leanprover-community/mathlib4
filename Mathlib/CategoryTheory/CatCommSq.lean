@@ -27,8 +27,8 @@ namespace CategoryTheory
 
 open Category Functor
 
-variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
-  [Category C₅] [Category C₆]
+variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
+  [Category* C₅] [Category* C₆]
 
 /-- `CatCommSq T L R B` expresses that there is a 2-commutative square of functors, where
 the functors `T`, `L`, `R` and `B` are respectively the left, top, right and bottom functors
@@ -107,7 +107,7 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
   iso := isoWhiskerLeft _ (L.rightUnitor.symm ≪≫ isoWhiskerLeft L B.unitIso ≪≫
       (associator _ _ _).symm ≪≫
       isoWhiskerRight (iso T.functor L R B.functor).symm B.inverse ≪≫
-      associator _ _ _  ) ≪≫ (associator _ _ _).symm ≪≫
+      associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
@@ -147,7 +147,7 @@ def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inver
       associator _ _ _ ≪≫
       isoWhiskerLeft L.inverse (iso T L.functor R.functor B).symm) R.inverse ≪≫
       associator _ _ _ ≪≫ isoWhiskerLeft _ (associator _ _ _) ≪≫
-      (associator _ _ _ ).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
+      (associator _ _ _).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
       rightUnitor _
 
 lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :

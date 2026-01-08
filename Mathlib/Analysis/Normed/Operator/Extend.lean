@@ -97,7 +97,7 @@ theorem extend_unique (h_dense : DenseRange e) (h_e : IsUniformInducing e) (g : 
 @[simp]
 theorem extend_zero (h_dense : DenseRange e) (h_e : IsUniformInducing e) :
     extend (0 : E →SL[σ₁₂] F) e = 0 :=
-  extend_unique _ h_dense h_e  _ (zero_comp _)
+  extend_unique _ h_dense h_e _ (zero_comp _)
 
 end Ring
 

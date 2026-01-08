@@ -271,7 +271,7 @@ theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
   | inr ha => simp [toENat_eq_top.2, ha]
 
 theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
-  rw [← toENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toENat_lift]
+  rw [← toENat_lift, lift_mk_eq.{_, _, v}.mpr ⟨e⟩, toENat_lift]
 
 lemma toENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
     toENat c ≤ toENat c' ↔ c ≤ c' := by

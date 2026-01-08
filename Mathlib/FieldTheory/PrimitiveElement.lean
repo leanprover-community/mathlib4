@@ -145,7 +145,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     · rw [eval_map_algebraMap, minpoly.aeval]
   have h_splits : Splits (h.map ιEE') := by
     rw [← Polynomial.gcd_map]
-    exact (SplittingField.splits _).splits_of_dvd (map_ne_zero map_g_ne_zero)
+    exact (SplittingField.splits _).of_dvd (map_ne_zero map_g_ne_zero)
       (EuclideanDomain.gcd_dvd_right _ _)
   have h_roots : ∀ x ∈ (h.map ιEE').roots, x = ιEE' β := by
     intro x hx
@@ -402,7 +402,6 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
   refine ⟨fun h ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ,
     fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
   letI : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
-  haveI := Algebra.isSeparable_tower_top_of_isSeparable F F⟮α⟯ E
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
   · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
       Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩

@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Push
 # Results about `IsRegular` and `0`
 -/
 
-@[expose] public section
+public section
 
 variable {R}
 

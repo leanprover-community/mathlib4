@@ -143,6 +143,7 @@ variable {θ : 𝓞 K} {p : ℕ} [Fact (Nat.Prime p)]
 
 attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.field
 
+set_option backward.privateInPublic true in
 open scoped Classical in
 private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
     {Q // Q ∈ normalizedFactors (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)} ≃
@@ -158,6 +159,8 @@ private theorem primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q
 
 variable [NumberField K]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 If `p` does not divide `exponent θ`, then the prime ideals above `p` in `K` are in bijection
 with the monic irreducible factors of `minpoly ℤ θ` modulo `p`.

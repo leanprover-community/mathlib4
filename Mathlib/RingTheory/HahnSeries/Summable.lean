@@ -107,7 +107,7 @@ instance : Add (SummableFamily Γ R α) :=
         (x.isPWO_iUnion_support.union y.isPWO_iUnion_support).mono
           (by
             rw [← Set.iUnion_union_distrib]
-            exact Set.iUnion_mono fun a => support_add_subset)
+            exact Set.iUnion_mono fun a => support_add_subset ..)
       finite_co_support' := fun g =>
         ((x.finite_co_support g).union (y.finite_co_support g)).subset
           (by
@@ -298,13 +298,13 @@ theorem le_hsum_support_mem {s : SummableFamily Γ R α} {g g' : Γ}
   exact hg i g' hi
 
 theorem hsum_orderTop_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
-    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
+    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀ b : α, b ≠ a → (s b).coeff g = 0) :
     s.hsum.orderTop = g :=
   orderTop_eq_of_le (ne_of_eq_of_ne (by rw [coeff_hsum, finsum_eq_single (fun i ↦ (s i).coeff g) a
     hna]) (coeff_orderTop_ne ha.symm)) fun _ hg' => le_hsum_support_mem hg hg'
 
 theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
-    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
+    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀ b : α, b ≠ a → (s b).coeff g = 0) :
     s.hsum.leadingCoeff = (s a).coeff g := by
   have := hsum_orderTop_of_le ha hg hna
   rw [orderTop] at this
@@ -504,7 +504,7 @@ instance [AddCommMonoid V] [Module R V] : Module R⟦Γ⟧ (SummableFamily Γ' V
   smul_zero _ := ext fun _ => by simp
   zero_smul _ := ext fun _ => by simp
   one_smul _ := ext fun _ => by rw [smul_apply, HahnModule.one_smul', Equiv.symm_apply_apply]
-  add_smul _ _ _  := ext fun _ => by simp [add_smul]
+  add_smul _ _ _ := ext fun _ => by simp [add_smul]
   smul_add _ _ _ := ext fun _ => by simp
   mul_smul _ _ _ := ext fun _ => by simp [HahnModule.instModule.mul_smul]
 
@@ -657,7 +657,7 @@ theorem support_pow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [IsOrder
     simp only [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
   | succ n ih =>
-    obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
+    obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
 theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
@@ -695,7 +695,7 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
       order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
   · rintro (_ | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
-    · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
+    · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
       refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
