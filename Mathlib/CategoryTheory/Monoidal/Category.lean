@@ -357,7 +357,7 @@ def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
 instance whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) :=
   (whiskerLeftIso X (asIso f)).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     inv (X ◁ f) = X ◁ inv f := by
   cat_disch
@@ -385,7 +385,7 @@ def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
 instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
   (whiskerRightIso (asIso f) Z).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
     inv (f ▷ Z) = inv f ▷ Z := by
   cat_disch
