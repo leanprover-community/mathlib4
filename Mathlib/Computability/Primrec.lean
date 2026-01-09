@@ -1542,7 +1542,4 @@ theorem vec_iff {m n f} : @Vec m n f ↔ Primrec f :=
 
 end Nat.Primrec'
 
-theorem Primrec.nat_sqrt : Primrec Nat.sqrt :=
-  Nat.Primrec'.prim_iff₁.1 Nat.Primrec'.sqrt
-
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1600
