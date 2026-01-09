@@ -366,14 +366,14 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
   ]
   depth := some 2
 
-def forceSpaceAfter' : ExcludedSyntaxNodeKind where
+def forceSpaceAfter1 : ExcludedSyntaxNodeKind where
   kinds := #[
     `atom.«have», -- `have (a)` in term mode.
     `atom.«let», -- `let (a)` in term mode.
   ]
   depth := some 1
 
-def forceSpaceAfter'' : ExcludedSyntaxNodeKind where
+def forceSpaceAfter3 : ExcludedSyntaxNodeKind where
   kinds := #[
     `Bundle.termπ__,
   ]
@@ -456,18 +456,18 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     pure (str, corr)
 
 partial
-def _root_.String.Slice.mkGroups (s : String.Slice) (n : Nat) : List String.Slice :=
-  if n == 0 || s.positions.count ≤ n then [s] else
-  s.take n :: (s.drop n).mkGroups n
+def _root_.String.Slice.mkGroups (s : String.Slice) (n : Nat) : List String :=
+  if n == 0 || s.positions.count ≤ n then [s.toString] else
+  (s.take n).toString :: (s.drop n).mkGroups n
 
 -- TODO: fix this and re-enable it!
--- def byTens (s : String) (n : Nat := 9) : String.Slice :=
---   "\n".intercalate <| ("".intercalate <| (List.range n).map (fun n => s!"{(n + 1) % 10}")) :: (s.toSlice.mkGroups n)
+def byTens (s : String) (n : Nat := 9) : String :=
+  "\n".intercalate <| ("".intercalate <| (List.range n).map (fun n => s!"{(n + 1) % 10}")) :: (s.toSlice.mkGroups n)
 
 def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
     Option (Lean.Syntax.Range × MessageData × String) := Id.run do
   let origWs := orig.takeWhile (·.isWhitespace)
-  if forceSpaceAfter.contains ks || forceSpaceAfter'.contains ks || forceSpaceAfter''.contains ks then
+  if forceSpaceAfter.contains ks || forceSpaceAfter1.contains ks || forceSpaceAfter3.contains ks then
     let space := if (pp.take 1).trim.isEmpty then "" else " "
     if origWs.isEmpty then
       return some (⟨origWs.startPos, origWs.next origWs.startPos⟩, "add space in the source", space)
@@ -679,7 +679,7 @@ elab "#show_corr " cmd:command : command => do
           --b.bracket,
         )
     -- TODO: fix `byTens` and re-enable this logging output
-    --logInfo <| .joinSep (msgs.toList.map (m!"{·}") ++ [m!"{byTens pretty (min pretty.length 100)}"]) "\n"
+    logInfo <| m!"\n".joinSep (byTens pretty (min pretty.length 100) ::"":: msgs.toList.map (m!"{·}"))
   else logWarning "Error"
 
 -- #show_corr
