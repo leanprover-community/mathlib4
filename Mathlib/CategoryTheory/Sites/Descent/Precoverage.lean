@@ -86,7 +86,7 @@ some `a`. -/
 noncomputable def idx : ι' := (exists_fac hq).choose
 
 /-- If a morphism `q : Z ⟶ X i` belongs to `sieve f f' i`, this is a choice of
-of a morphism `a : Z ⟶ X' j` for some `j` such that `a ≫ f' j = q ≫ f i`. -/
+a morphism `a : Z ⟶ X' j` for some `j` such that `a ≫ f' j = q ≫ f i`. -/
 noncomputable def a : Z ⟶ X' (idx hq) := (exists_fac hq).choose_spec.choose
 
 @[reassoc]
