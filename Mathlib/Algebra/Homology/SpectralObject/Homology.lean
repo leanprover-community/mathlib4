@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
+public import Mathlib.CategoryTheory.ComposableArrows.Four
 
 /-!
 # Homology of differentials

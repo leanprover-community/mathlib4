@@ -5,7 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralObject.Misc
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Two
 
 /-!
 # Spectral objects in abelian categories

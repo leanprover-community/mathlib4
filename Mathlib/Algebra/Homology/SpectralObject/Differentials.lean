@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Page
+public import Mathlib.CategoryTheory.ComposableArrows.Three
 public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
