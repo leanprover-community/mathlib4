@@ -209,6 +209,7 @@ open NNReal
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
   r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _

@@ -31,6 +31,7 @@ We introduce a predicate for sums of squares in a ring.
 
 variable {R : Type*}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The property of being a sum of squares is defined inductively by:
 `0 : R` is a sum of squares and if `s : R` is a sum of squares,
@@ -41,6 +42,7 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                                    : IsSumSq 0
   | sq_add (a : R) {s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Alternative induction scheme for `IsSumSq` which uses `IsSquare`. -/
 theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
     {motive : (s : R) → (h : IsSumSq s) → Prop}
@@ -205,6 +207,7 @@ theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R
     (hx : ∀ i ∈ I, IsSumSq <| x i) : IsSumSq (∏ i ∈ I, x i) := by
   simpa using prod_mem (S := Subsemiring.sumSq R) (by simpa)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`),
 sums of squares are non-negative.
