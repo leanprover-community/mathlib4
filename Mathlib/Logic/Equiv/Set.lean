@@ -390,8 +390,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
       (calc
         α ≃ s ⊕ (sᶜ : Set α) := (Set.sumCompl s).symm
         _ ≃ t ⊕ (tᶜ : Set β) := e₀.sumCongr e₁
-        _ ≃ β := Set.sumCompl t
-        )
+        _ ≃ β := Set.sumCompl t)
       fun x => by
       simp only [Sum.map_inl, trans_apply, sumCongr_apply, Set.sumCompl_apply_inl,
         Set.sumCompl_symm_apply, Trans.trans]

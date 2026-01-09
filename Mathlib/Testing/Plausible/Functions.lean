@@ -375,7 +375,7 @@ instance : Arbitrary (InjectiveFunction ℤ) where
 instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
   proxy := InjectiveFunction ℤ
   interp f := ⟨apply f, f.injective⟩
-  shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
+  shrink := { shrink := @InjectiveFunction.shrink ℤ _ }
 
 end InjectiveFunction
 
