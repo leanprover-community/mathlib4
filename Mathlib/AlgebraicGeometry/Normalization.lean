@@ -63,10 +63,10 @@ def normalizationDiagram : Y.Opensᵒᵖ ⥤ CommRingCat where
 
 /-- The inclusion from the structure presheaf of `Y` to the integral closure of `Y` in `X`. -/
 def normalizationDiagramMap : Y.presheaf ⟶ f.normalizationDiagram where
-    app U :=
-      letI := (f.app U.unop).hom.toAlgebra
-      CommRingCat.ofHom (algebraMap Γ(Y, U.unop) (integralClosure Γ(Y, U.unop) Γ(X, f ⁻¹ᵁ U.unop)))
-    naturality {U V} i := by ext x; exact Subtype.ext congr($(f.naturality i) x)
+  app U :=
+    letI := (f.app U.unop).hom.toAlgebra
+    CommRingCat.ofHom (algebraMap Γ(Y, U.unop) (integralClosure Γ(Y, U.unop) Γ(X, f ⁻¹ᵁ U.unop)))
+  naturality {U V} i := by ext x; exact Subtype.ext congr($(f.naturality i) x)
 
 variable [QuasiCompact f] [QuasiSeparated f]
 
