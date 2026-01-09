@@ -186,10 +186,12 @@ def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup (G →* Rˣ))�
     rw [OrderDual.ofDual_toDual, mem_ker, restrictHom_apply, restrict_eq_one_iff]
     simpa using forall_monoidHom_apply_eq_one_iff (G := G →* Rˣ) R Φ φ
 
+@[simp]
 theorem mem_subgroupOrderIsoSubgroupMonoidHom_iff (H : Subgroup G) (φ : G →* Rˣ) :
     φ ∈ (subgroupOrderIsoSubgroupMonoidHom G R H).ofDual ↔ ∀ g ∈ H, φ g = 1 := by
   simp [subgroupOrderIsoSubgroupMonoidHom]
 
+@[simp]
 theorem mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff (Φ : Subgroup (G →* Rˣ)) (g : G) :
     g ∈ (subgroupOrderIsoSubgroupMonoidHom G R).symm (OrderDual.toDual Φ) ↔ ∀ φ ∈ Φ, φ g = 1 := by
   simp only [subgroupOrderIsoSubgroupMonoidHom, OrderIso.symm_mk, RelIso.coe_fn_mk,
