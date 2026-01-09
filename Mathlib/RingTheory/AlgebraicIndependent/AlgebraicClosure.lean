@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
   algebraically independent over the algebraic closure.
 -/
 
-@[expose] public section
+public section
 
 open Function Algebra
 

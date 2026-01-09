@@ -79,7 +79,7 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
-instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
+instance WCovBy.stdRefl : @Std.Refl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
 
 theorem WCovBy.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
@@ -281,7 +281,7 @@ instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
   ⟨fun _ _ =>
     covBy_iff_wcovBy_and_not_le.trans <| and_congr_right fun h => h.wcovBy_iff_le.not.symm⟩
 
-instance CovBy.isIrrefl : IsIrrefl α (· ⋖ ·) :=
+instance CovBy.irrefl : @Std.Irrefl α (· ⋖ ·) :=
   ⟨fun _ ha => ha.ne rfl⟩
 
 theorem CovBy.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=

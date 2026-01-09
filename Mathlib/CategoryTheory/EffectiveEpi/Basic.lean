@@ -269,7 +269,7 @@ def EffectiveEpiFamilyStruct.reindex
     EffectiveEpiFamilyStruct X π where
   desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
   fac _ _ a := by
-    obtain ⟨a,rfl⟩ := e.surjective a
+    obtain ⟨a, rfl⟩ := e.surjective a
     apply P.fac
   uniq _ _ _ hm := P.uniq _ _ _ fun _ => hm _
 
