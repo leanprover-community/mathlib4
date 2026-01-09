@@ -261,8 +261,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       exact add_mem ih₁ ih₂
 
 lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
-    (invtSubmoduleToLieIdeal q (by exact hq) : Submodule K L) =
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
+    (invtSubmoduleToLieIdeal q hq).toSubmodule =
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
 
