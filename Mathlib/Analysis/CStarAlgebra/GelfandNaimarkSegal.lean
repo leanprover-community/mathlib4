@@ -22,15 +22,15 @@ space.
 - `f.PreGNS` : a type synonym of `A` that bundles in a fixed positive linear functional `f` so that
   we can construct an inner product and inner product-induced norm.
 - `f.GNS` : the Hilbert space completion of `f.preGNS`.
-- `f.gnsNonUnitalStarAlgHom` : The non-unital *-homomorphism from a non-unital `A` into the bounded
+- `f.gnsNonUnitalStarAlgHom` : The non-unital ⋆-homomorphism from a non-unital `A` into the bounded
   linear operators on `f.GNS`.
-- `f.gnsStarAlgHom` : The unital *-homomorphism from a unital `A` into the bounded linear operators
+- `f.gnsStarAlgHom` : The unital ⋆-homomorphism from a unital `A` into the bounded linear operators
   on `f.GNS`.
 
 ## TODO
 
 - Explicitly construct a unit norm cyclic vector ζ such that
-  a ↦ ⟨(f.gns(NonUnital)StarAlgHom a) * ζ, ,ζ⟩ is a state on `A` for both unital and non-unital
+  a ↦ ⟨(f.gns(NonUnital)StarAlgHom a) \* ζ, ,ζ⟩ is a state on `A` for both unital and non-unital
   cases.
 
 -/
@@ -107,6 +107,9 @@ abbrev GNS := UniformSpace.Completion f.PreGNS
 The continuous linear map from a C⋆-algebra `A` to the `PositiveLinearMap.preGNS` space induced by
 a positive linear functional `f : A →ₚ[ℂ] ℂ`. This map is given by left-multiplication by `a`:
 `x ↦ f.toPreGNS (a * f.ofPreGNS x)`.
+
+This map is lifted to the completion of `f.PreGNS` (i.e. `f.GNS`) in order to construct
+`gnsNonUnitalStarAlgHom`.
 -/
 @[simps!]
 noncomputable def leftMulMapPreGNS (a : A) : f.PreGNS →L[ℂ] f.PreGNS :=
