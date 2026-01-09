@@ -114,13 +114,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           JOB_NAME="check-lean4checker (${{ matrix.branch_type }})"
-          
+
           # Get URL to the specific step
           LEAN4CHECKER_URL=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\") \
             | (.url + (.steps[] | select(.name == \"Check environments using lean4checker\") \
               | \"#step:\(.number):1\"))")
-          
+
           echo "lean4checker_url=${LEAN4CHECKER_URL}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Fetch latest tags (if nightly)
@@ -233,13 +233,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           JOB_NAME="check-mathlib_test_executable (${{ matrix.branch_type }})"
-          
+
           # Get URL to the specific step
           MATHLIB_TEST_EXECUTABLE_URL=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\") \
             | (.url + (.steps[] | select(.name == \"Run mathlib_test_executable\") \
               | \"#step:\(.number):1\"))")
-          
+
           echo "mathlib_test_executable_url=${MATHLIB_TEST_EXECUTABLE_URL}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Fetch latest tags (if nightly)
@@ -363,8 +363,7 @@ jobs:
               "permitted_axioms": [
                   "propext",
                   "Classical.choice",
-                  "Quot.sound",
-                  "Lean.trustCompiler"
+                  "Quot.sound"
               ],
               "unpermitted_axiom_hard_error": false,
               "nat_extension": true,
