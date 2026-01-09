@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Elias Judin
 -/
 module
 
@@ -32,9 +32,11 @@ There is a functor `Mat_.embedding : C ⥤ Mat_ C` sending morphisms to one-by-o
 
 We show that this construction is the "additive envelope" of `C`,
 in the sense that any additive functor `F : C ⥤ D` to a category `D` with biproducts
-lifts to a functor `Mat_.lift F : Mat_ C ⥤ D`,
+lifts to a functor `Mat_.lift F : Mat_ C ⥤ D`.
 Moreover, this functor is unique (up to natural isomorphisms) amongst functors `L : Mat_ C ⥤ D`
 such that `embedding C ⋙ L ≅ F`.
+We also show that natural transformations and natural isomorphisms between additive functors
+`Mat_ C ⥤ D` are determined by their components on objects coming from `C` via `embedding C`.
 (As we don't have 2-category theory, we can't explicitly state that `Mat_ C` is
 the initial object in the 2-category of categories under `C` which have biproducts.)
 
@@ -362,14 +364,8 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
 variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
-/-
-A natural transformation between additive functors `Mat_ C ⥤ D` is determined by its
-components on the objects coming from `embedding C`.
-
-This is the categorical analogue of “a matrix morphism is determined by its entries”:
-we compare components after transporting along the canonical biproduct decomposition
-`additiveObjIsoBiproduct`.
--/
+/-- A natural transformation between additive functors `Mat_ C ⥤ D` is determined by its
+components on objects coming from `C` via `embedding C`. -/
 @[ext]
 theorem natTrans_ext
     {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
@@ -387,10 +383,8 @@ theorem natTrans_ext
       _ = F.map p ≫ θ.app ((embedding C).obj (M.X i)) := by simp [h (M.X i)]
       _ = θ.app M ≫ G.map p := θ.naturality p)
 
-/--
-A natural isomorphism between additive functors `Mat_ C ⥤ D` is determined by its
-components on the objects coming from `embedding C`.
--/
+/-- A natural isomorphism between additive functors `Mat_ C ⥤ D` is determined by its
+components on objects coming from `C` via `embedding C`. -/
 @[ext]
 theorem natIso_ext
     {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
@@ -486,10 +480,8 @@ variable {D : Type u₁} [Category.{v₁} D] [Preadditive D] [HasFiniteBiproduct
 variable (F : C ⥤ D) [Functor.Additive F]
 variable (L : Mat_ C ⥤ D) [Functor.Additive L]
 
-/--
-Uniqueness for the comparison `L ≅ lift F`: if two natural isomorphisms induce the same
-comparison on embedded objects (after composing with `embeddingLiftIso`), they are equal.
--/
+/-- Two natural isomorphisms `β γ : L ≅ lift F` are equal if, for every `X : C`, their components at
+`(embedding C).obj X` become equal after composing with `(embeddingLiftIso F).hom.app X`. -/
 theorem liftIso_ext_comp_embeddingLiftIso
     {β γ : L ≅ lift F}
     (h :
