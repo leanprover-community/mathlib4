@@ -301,6 +301,7 @@ theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by
   intro hs
   have := hs (i := 0) (j := 1) (by decide)
   rcases this with h | h <;> simp_all [G₂]
+
 end Properties
 
 end CartanMatrix
