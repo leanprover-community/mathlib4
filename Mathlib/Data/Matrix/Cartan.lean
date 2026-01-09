@@ -49,8 +49,6 @@ open Matrix
 
 /-! ### Exceptional Cartan matrices -/
 
-set_option linter.style.whitespace false -- linter does not recognise manual alignment
-
 /-- The Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
 def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
   !![ 2,  0, -1,  0,  0,  0;
@@ -170,8 +168,6 @@ theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
   ext; simp only [D, transpose_apply, of_apply]; grind
 
 /-! ### Small cases -/
-
-set_option linter.style.whitespace false -- linter does not recognise manual alignment
 
 theorem A_one : A 1 = !![2] := by decide
 
