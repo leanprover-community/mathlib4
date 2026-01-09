@@ -107,7 +107,7 @@ lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
 
 end Algebra
 
-variable [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
+variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
@@ -209,7 +209,7 @@ section NNReal
 
 open NNReal
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [HasSummableGeomSeries A] [NormOneClass A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
 
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
@@ -284,7 +284,7 @@ section resolvent
 
 open Filter Asymptotics Bornology Topology
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
@@ -323,7 +323,7 @@ variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
 radius `‖a‖₊⁻¹`. -/
-theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a : A) :
+theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
@@ -405,7 +405,7 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
+variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -437,7 +437,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -456,7 +456,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [HasSummableGeomSeries A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
@@ -652,7 +652,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     linarith [h_le.2]
 
 lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-    [HasSummableGeomSeries A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toNNReal ∈ spectrum ℝ≥0 a := by
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
@@ -662,13 +662,13 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   simpa
 
 lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-    [HasSummableGeomSeries A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a :=
   NNReal.spectralRadius_mem_spectrum ha ha'
 
 lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-    [HasSummableGeomSeries A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ spectrum ℝ a := by
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
   simp only [← hx₂, ENNReal.coe_toReal, coe_nnnorm, Real.norm_eq_abs]
@@ -694,7 +694,7 @@ end QuasispectrumRestricts
 open Filter Set Topology
 
 variable [NormedField 𝕜] [ProperSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-  [HasSummableGeomSeries A]
+  [CompleteSpace A]
 
 variable (𝕜 A) in
 lemma upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
@@ -721,7 +721,7 @@ lemma upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → 
 
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_spectrum_nnreal (A : Type*)
-    [NormedRing A] [NormedAlgebra ℝ A] [HasSummableGeomSeries A] :
+    [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
