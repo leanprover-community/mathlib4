@@ -106,12 +106,12 @@ lemma smoothSheaf.obj_eq (U : (Opens (TopCat.of M))ᵒᵖ) :
 /-- Canonical map from the stalk of `smoothSheaf IM I M N` at `x` to `N`, given by evaluating
 sections at `x`. -/
 def smoothSheaf.eval (x : M) : (smoothSheaf IM I M N).presheaf.stalk x → N :=
-  TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _) x
+  TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _).1 x
 
 /-- Canonical map from the stalk of `smoothSheaf IM I M N` at `x` to `N`, given by evaluating
 sections at `x`, considered as a morphism in the category of types. -/
 def smoothSheaf.evalHom (x : TopCat.of M) : (smoothSheaf IM I M N).presheaf.stalk x ⟶ N :=
-  TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _) x
+  TopCat.stalkToFiber (StructureGroupoid.LocalInvariantProp.localPredicate M N _).1 x
 
 open CategoryTheory Limits
 
@@ -125,7 +125,7 @@ def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
     colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M N).val) U ≫
     smoothSheaf.evalHom IM I N x =
     smoothSheaf.evalAt _ _ _ _ _ :=
-  colimit.ι_desc _ _
+  funext fun _ ↦ TopCat.stalkToFiber_germ ..
 
 /-- The `eval` map is surjective at `x`. -/
 lemma smoothSheaf.eval_surjective (x : M) : Function.Surjective (smoothSheaf.eval IM I N x) := by
@@ -141,7 +141,7 @@ variable {IM I N}
 @[simp] lemma smoothSheaf.eval_germ (U : Opens M) (x : M) (hx : x ∈ U)
     (f : (smoothSheaf IM I M N).presheaf.obj (op U)) :
     smoothSheaf.eval IM I N (x : M) ((smoothSheaf IM I M N).presheaf.germ U x hx f) = f ⟨x, hx⟩ :=
-  TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp ∞).localPredicate M N) _ _ _ _
+  TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp ∞).localPredicate M N).1 _ _ _ _
 
 lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
     (f : (smoothSheaf IM I M N).presheaf.obj U) :
