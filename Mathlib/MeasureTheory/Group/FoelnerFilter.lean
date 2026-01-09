@@ -60,11 +60,20 @@ Foelner, Følner filter, amenability, amenable group
 
 @[expose] public section
 
-open MeasureTheory Filter Set Tendsto
+open MeasureTheory Filter Set Tendsto Ultrafilter
 open scoped ENNReal Pointwise symmDiff Topology Filter
 
 variable {G X : Type*} [MeasurableSpace X] {μ : Measure X} [Group G] [MulAction G X]
 variable {ι : Type*} {l : Filter ι} {u : Ultrafilter ι} {F : ι → Set X}
+
+theorem MeasureTheory.le_measure_symmDiff {s₁ s₂ : Set X} :
+    μ s₁ - μ s₂ ≤ μ (s₁ ∆ s₂) :=
+  le_trans (le_measure_diff) (measure_mono <| by simp [symmDiff_def])
+
+variable (μ u F) in
+/-- The limit along an ultrafilter of the density of a set with respect to a sequence in `X`. -/
+noncomputable def Ultrafilter.mean (s : Set X) :=
+  limUnder u (fun i ↦ μ (s ∩ F i) / μ (F i))
 
 namespace Filter
 
@@ -95,14 +104,8 @@ theorem IsFoelner.mono {l' : Filter ι} (hfoel : IsFoelner G μ l F) (hle : l' �
   eventually_meas_ne_top := hfoel.eventually_meas_ne_top.filter_mono hle
   tendsto_meas_symmDiff (g : G) := Tendsto.mono_left (hfoel.tendsto_meas_symmDiff g) hle
 
-variable (μ u F) in
-/-- The limit along an ultrafilter of the density of a set with respect to a
-    Følner sequence in `X`. -/
-noncomputable def IsFoelner.mean (s : Set X) :=
-  limUnder u (fun i ↦ μ (s ∩ F i) / μ (F i))
-
 theorem IsFoelner.tendsto_nhds_mean (hfoel : IsFoelner G μ u F) (s : Set X) :
-    Tendsto (fun i ↦ μ (s ∩ F i) / μ (F i)) u (𝓝 (IsFoelner.mean μ u F s)) := by
+    Tendsto (fun i ↦ μ (s ∩ F i) / μ (F i)) u (𝓝 (mean μ u F s)) := by
   have mem_Icc : ∀ᶠ i in u, μ (s ∩ F i) / μ (F i) ∈ Icc 0 1 := by
     filter_upwards [hfoel.eventually_meas_ne_zero, hfoel.eventually_meas_ne_top] with i hi hi'
     simpa [ENNReal.div_le_iff hi hi'] using μ.mono inter_subset_right
@@ -111,43 +114,43 @@ theorem IsFoelner.tendsto_nhds_mean (hfoel : IsFoelner G μ u F) (s : Set X) :
   exact tendsto_nhds_limUnder (by use x; exact hx.2)
 
 theorem IsFoelner.mean_univ_eq_one (hfoel : IsFoelner G μ u F) :
-    IsFoelner.mean μ u F .univ = 1 := by
+    mean μ u F .univ = 1 := by
   refine tendsto_nhds_unique_of_eventuallyEq (hfoel.tendsto_nhds_mean _) tendsto_const_nhds ?_
   filter_upwards [hfoel.eventually_meas_ne_zero, hfoel.eventually_meas_ne_top] with i hi hi'
   simp [ENNReal.div_self hi hi']
 
 theorem IsFoelner.mean_union_eq_add_of_disjoint (hfoel : IsFoelner G μ u F)
     (s t : Set X) (ht : MeasurableSet t) (hdisj : Disjoint s t) :
-    IsFoelner.mean μ u F (s ∪ t) = IsFoelner.mean μ u F s + IsFoelner.mean μ u F t := by
+    mean μ u F (s ∪ t) = mean μ u F s + mean μ u F t := by
   refine tendsto_nhds_unique_of_eventuallyEq
     (hfoel.tendsto_nhds_mean _) ((hfoel.tendsto_nhds_mean _).add (hfoel.tendsto_nhds_mean _)) ?_
   filter_upwards [hfoel.eventually_measurableSet] with i hi
   rw [union_inter_distrib_right,
     measure_union (hdisj.inter_left _ |>.inter_right _) (ht.inter hi), ENNReal.add_div]
 
+theorem IsFoelner.mean_smul_le_mean_smul [SMulInvariantMeasure G X μ]
+    (hfoel : IsFoelner G μ u F) (g h : G) (s : Set X) :
+    mean μ u F (g • s) ≤ mean μ u F (h • s) := by
+  rw [← add_zero <| mean μ u F (h • s)]
+  have tendsto₀ : Tendsto (fun i ↦ μ ((g⁻¹ • F i) ∆ (h⁻¹ • F i)) / μ (F i)) u (𝓝 0) := by
+    simpa [← smul_smul] using hfoel.tendsto_meas_symmDiff (h * g⁻¹)
+  refine le_of_tendsto_of_tendsto
+    (hfoel.tendsto_nhds_mean _) ((hfoel.tendsto_nhds_mean _).add tendsto₀) ?_
+  filter_upwards [hfoel.eventually_meas_ne_zero] with i hi
+  rw [← tsub_le_iff_left, ← ENNReal.sub_div (fun _ _ ↦ hi)]
+  gcongr
+  refine le_trans ?_ (measure_mono (@inter_subset_right _ s _))
+  simpa [inter_symmDiff_distrib_left, ← measure_inter_inv_smul] using le_measure_symmDiff
+
+theorem IsFoelner.mean_smul_eq_mean_smul [SMulInvariantMeasure G X μ]
+    (hfoel : IsFoelner G μ u F) (g h : G) (s : Set X) :
+    mean μ u F (g • s) = mean μ u F (h • s) :=
+  le_antisymm (hfoel.mean_smul_le_mean_smul g h s) (hfoel.mean_smul_le_mean_smul h g s)
+
 theorem IsFoelner.mean_smul_eq_mean [SMulInvariantMeasure G X μ]
     (hfoel : IsFoelner G μ u F) (g : G) (s : Set X) :
-    IsFoelner.mean μ u F (g • s) = IsFoelner.mean μ u F s := by
-  suffices h_le : ∀ h h', IsFoelner.mean μ u F (h • s) ≤ IsFoelner.mean μ u F (h' • s) by
-    simpa [one_smul] using le_antisymm (h_le g 1) (h_le 1 g)
-  intro h h'
-  have tendsto₀ : Tendsto (fun i ↦ μ ((h⁻¹ • F i) ∆ (h'⁻¹ • F i)) / μ (F i)) u (𝓝 0) := by
-    simpa [← smul_smul] using hfoel.tendsto_meas_symmDiff (h' * h⁻¹)
-  have h_le_add (i : ι) : μ (h • s ∩ F i) ≤ μ (h' • s ∩ F i) + μ ((h⁻¹ • F i) ∆ (h'⁻¹ • F i)) := by
-    simp_rw [← measure_inter_inv_smul]
-    set A := s ∩ h⁻¹ • F i
-    set B := s ∩ h'⁻¹ • F i
-    calc
-      μ A ≤ μ (A ∩ B) + μ (A \ B) := measure_le_inter_add_diff _ _ _
-      _ ≤ μ B + μ (A ∆ B) := by gcongr <;> simp [symmDiff]
-      _ ≤ μ B + μ ((h⁻¹ • F i) ∆ (h'⁻¹ • F i)) := by
-        gcongr
-        simp [A, B, ← inter_symmDiff_distrib_left]
-  rw [← add_zero <| mean μ u F (h' • s)]
-  exact le_of_tendsto_of_tendsto'
-    (hfoel.tendsto_nhds_mean _)
-    ((hfoel.tendsto_nhds_mean _).add tendsto₀)
-    (by intro i; rw [← ENNReal.add_div]; gcongr; exact h_le_add i)
+    mean μ u F (g • s) = mean μ u F s := by
+  simpa using hfoel.mean_smul_eq_mean_smul g 1 s
 
 /-- If there exists a non-trivial Følner filter with respect to some group `G` acting on a measure
     space `X`, then it exists a `G`-invariant finitely additive probability measure on `X`. -/
@@ -155,7 +158,7 @@ theorem IsFoelner.amenable [SMulInvariantMeasure G X μ] [NeBot l] (hfoel : IsFo
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
       (∀ s t, MeasurableSet t → Disjoint s t → m (s ∪ t) = m s + m t) ∧
         ∀ (g : G) (s : Set X), m (g • s) = m s := by
-  use IsFoelner.mean μ (Ultrafilter.of l) F
+  use mean μ (Ultrafilter.of l) F
   refine ⟨?_, ?_, ?_⟩
   · exact (hfoel.mono <| Ultrafilter.of_le l).mean_univ_eq_one
   · exact (hfoel.mono <| Ultrafilter.of_le l).mean_union_eq_add_of_disjoint
