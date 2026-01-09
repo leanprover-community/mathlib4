@@ -235,9 +235,6 @@ instance emetricSpace : EMetricSpace (NonemptyCompacts α) where
 theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
   fun _ _ => rfl
 
-@[deprecated (since := "2025-08-20")]
-alias ToCloseds.isUniformEmbedding := TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
-
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by
@@ -385,12 +382,6 @@ namespace EMetric
 open Metric
 
 @[deprecated (since := "2025-11-19")]
-alias isUniformEmbedding_toCloseds := TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
-
-@[deprecated (since := "2025-11-19")]
-alias continuous_toCloseds := TopologicalSpace.NonemptyCompacts.continuous_toCloseds
-
-@[deprecated (since := "2025-11-19")]
 alias NonemptyCompacts.continuous_toCloseds :=
   TopologicalSpace.NonemptyCompacts.continuous_toCloseds
 
@@ -428,9 +419,6 @@ alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2025-08-20")]
-alias ToCloseds.isUniformEmbedding := TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2025-08-20")]
 alias NonemptyCompacts.ToCloseds.isUniformEmbedding :=
