@@ -68,7 +68,7 @@ def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h
   invFun β := (λ_ _).inv ≫ adj.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l ◁ β
   left_inv γ :=
     calc
-      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _:= by
+      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _ := by
         bicategory
       _ = γ ⊗≫ leftZigzag adj.unit adj.counit ▷ h ⊗≫ 𝟙 _ := by
         rw [← whisker_exchange]
@@ -507,8 +507,7 @@ lemma conjugateEquiv_whiskerRight
     leftUnitor_inv_whiskerRight, Iso.inv_hom_id, triangle_assoc_comp_right_assoc] at this
   simp [conjugateEquiv_apply, this]
 
--- TODO: is there a nice way to fix the linter?
-set_option linter.flexible false in
+set_option linter.flexible false in -- simp followed by bicategory
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
@@ -688,7 +687,7 @@ theorem mateEquiv_conjugateEquiv_vcomp
     _ = 𝟙 _ ⊗≫
           rightAdjointSquare.vcomp
             (mateEquiv adj₁ adj₂ α)
-            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _  := by
+            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _ := by
       dsimp only [conjugateEquiv_apply, rightAdjointSquareConjugate.vcomp,
         rightAdjointSquare.vcomp]
       bicategory

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.SmallRepresentatives
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
 
 /-!
 # Closure of a property of objects under colimits of bounded cardinality
@@ -36,6 +37,13 @@ of `P` under colimits of shape given by categories `J` such that
 def colimitsCardinalClosure : ObjectProperty C :=
   P.colimitsClosure (SmallCategoryCardinalLT.categoryFamily κ)
 
+lemma le_colimitsCardinalClosure : P ≤ P.colimitsCardinalClosure κ :=
+  P.le_colimitsClosure _
+
+instance : (P.colimitsCardinalClosure κ).IsClosedUnderIsomorphisms := by
+  dsimp [colimitsCardinalClosure]
+  infer_instance
+
 instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     ObjectProperty.EssentiallySmall.{w} (P.colimitsCardinalClosure κ) := by
   dsimp [colimitsCardinalClosure]
@@ -53,5 +61,27 @@ lemma isClosedUnderColimitsOfShape_colimitsCardinalClosure
   obtain ⟨S, ⟨e⟩⟩ := SmallCategoryCardinalLT.exists_equivalence κ J hJ
   rw [isClosedUnderColimitsOfShape_iff_of_equivalence _ e.symm]
   infer_instance
+
+lemma colimitsCardinalClosure_le {Q : ObjectProperty C} [Q.IsClosedUnderIsomorphisms]
+    (hQ : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
+      Q.IsClosedUnderColimitsOfShape J) (h : P ≤ Q) :
+    P.colimitsCardinalClosure κ ≤ Q := by
+  have (i : SmallCategoryCardinalLT κ) := hQ _ i.hasCardinalLT
+  exact colimitsClosure_le h
+
+section
+
+open Limits
+
+instance isStableUnderRetracts_colimitsCardinalClosure [Fact κ.IsRegular] :
+    (P.colimitsCardinalClosure κ).IsStableUnderRetracts := by
+  have := P.isClosedUnderColimitsOfShape_colimitsCardinalClosure κ
+    WalkingParallelPair (HasCardinalLT.of_le (by
+      simp only [hasCardinalLT_aleph0_iff]
+      infer_instance)
+    (Cardinal.IsRegular.aleph0_le Fact.out))
+  infer_instance
+
+end
 
 end CategoryTheory.ObjectProperty

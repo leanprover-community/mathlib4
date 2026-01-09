@@ -5,6 +5,7 @@ Authors: Kexing Ying
 -/
 module
 
+public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
 public import Mathlib.Probability.Martingale.Basic
 
@@ -26,7 +27,7 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory

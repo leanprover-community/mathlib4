@@ -38,7 +38,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - a).toNat
       omega
@@ -46,7 +46,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - a).toNat
       omega
@@ -54,7 +54,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - (a + 1)).toNat
       omega
@@ -62,10 +62,10 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
     constructor
-    · omega
+    · lia
     · intro
       use (x - (a + 1)).toNat
-      omega
+      lia
 
 variable (a b : ℤ)
 
@@ -189,12 +189,12 @@ lemma Finset.Ioc_succ_succ (m n : ℕ) :
     Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
   ext
   simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
-  omega
+  lia
 
 lemma Finset.Ioo_succ_succ (m n : ℕ) :
     Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
   ext
   simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
-  omega
+  lia
 
 end Nat

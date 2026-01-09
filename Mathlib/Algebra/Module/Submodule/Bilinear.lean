@@ -20,8 +20,8 @@ This file provides `Submodule.map₂`, which is later used to implement `Submodu
 
 ## Notes
 
-This file is quite similar to the n-ary section of `Data.Set.Basic` and to `Order.Filter.NAry`.
-Please keep them in sync.
+This file is quite similar to the n-ary section of `Mathlib/Data/Set/Basic.lean` and to
+`Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
 
 ## TODO
 

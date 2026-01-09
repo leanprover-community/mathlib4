@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
@@ -51,7 +52,7 @@ namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category C] (P : ObjectProperty C)
+variable {C : Type*} [Category* C] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -115,7 +116,7 @@ def toCostructuredArrow
     {X : C} (p : P.ColimitOfShape J X) :
     J ⥤ CostructuredArrow P.ι X where
   obj j := CostructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.ι.app j)
-  map f := CostructuredArrow.homMk (by exact p.diag.map f)
+  map f := CostructuredArrow.homMk (ObjectProperty.homMk (by exact p.diag.map f))
 
 end ColimitOfShape
 
@@ -351,6 +352,16 @@ instance [Q.IsClosedUnderLimitsOfShape Jᵒᵖ] :
   rwa [← isClosedUnderLimitsOfShape_op_iff_unop]
 
 end
+
+instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
+    P.IsStableUnderRetracts where
+  of_retract {X Y} h hY := by
+    let c : Cofork (h.r ≫ h.i) (𝟙 Y) := Cofork.ofπ h.r (by simp)
+    have hc : IsColimit c :=
+      Cofork.IsColimit.mk _ (fun s ↦ h.i ≫ s.π)
+        (fun s ↦ by simpa using s.condition)
+        (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
+    exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
 
 end ObjectProperty
 

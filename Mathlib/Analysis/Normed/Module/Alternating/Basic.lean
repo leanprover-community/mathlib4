@@ -146,7 +146,7 @@ theorem continuous_of_bound (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m,
   f.toMultilinearMap.continuous_of_bound C H
 
 /-- Construct a continuous alternating map
-from a alternating map satisfying a boundedness condition. -/
+from an alternating map satisfying a boundedness condition. -/
 def mkContinuous (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : E [⋀^ι]→L[𝕜] F :=
   { f with cont := f.continuous_of_bound C H }
 
@@ -390,14 +390,14 @@ end ContinuousAlternatingMap
 
 variable [Fintype ι]
 
-/-- If a continuous alternating map is constructed from a alternating map via the constructor
+/-- If a continuous alternating map is constructed from an alternating map via the constructor
 `mkContinuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
 theorem AlternatingMap.mkContinuous_norm_le (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ C :=
   f.toMultilinearMap.mkContinuous_norm_le hC H
 
-/-- If a continuous alternating map is constructed from a alternating map via the constructor
+/-- If a continuous alternating map is constructed from an alternating map via the constructor
 `mk_continuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
 theorem AlternatingMap.mkContinuous_norm_le' (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ}
@@ -600,7 +600,7 @@ which is a linear map from `E [⋀^ι]→L[𝕜] F` to `E' [⋀^ι]→ₗ[𝕜] 
 def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : F →L[𝕜] E [⋀^ι]→L[𝕜] G :=
   LinearMap.mkContinuous
-    { toFun x :=  (f x).mkContinuous (C * ‖x‖) <| H x
+    { toFun x := (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' x y := by ext1; simp
       map_smul' c x := by ext1; simp }
     (max C 0) fun x ↦ by
@@ -623,7 +623,7 @@ variable {ι' : Type*} [Fintype ι']
 to `ContinuousAlternatingMap`s. -/
 def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G))
     (C : ℝ) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
-    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G)  :=
+    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G) :=
   mkContinuous
     { toFun m := mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
       map_update_add' m i x y := by ext1; simp

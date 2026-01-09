@@ -404,6 +404,17 @@ theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p'
   rw [mem_sup]
   tauto
 
+variable {P : M → Prop}
+
+@[simp high]
+lemma forall_mem_sup : (∀ x ∈ p ⊔ p', P x) ↔ (∀ x₁ ∈ p, ∀ x₂ ∈ p', P (x₁ + x₂)) := by
+  simp [mem_sup]
+  aesop
+
+@[simp high]
+lemma exists_mem_sup : (∃ x ∈ p ⊔ p', P x) ↔ (∃ x₁ ∈ p, ∃ x₂ ∈ p', P (x₁ + x₂)) := by
+  simp [mem_sup]
+
 end
 
 @[simp]
@@ -431,6 +442,13 @@ theorem mem_span_singleton {y : M} : x ∈ R ∙ y ↔ ∃ a : R, a • y = x :=
 
 theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
     s ≤ R ∙ v₀ ↔ ∀ v ∈ s, ∃ r : R, r • v₀ = v := by simp_rw [SetLike.le_def, mem_span_singleton]
+
+theorem eq_span_singleton_of_surjective {s : Submodule R M}
+    {f : R →ₗ[R] s} (hf : Surjective f) : s = span R {(f 1 : M)} := by
+  refine le_antisymm (fun x hx ↦ mem_span_singleton.mpr ?_)
+    (span_le.mpr <| by rintro _ rfl; exact (f 1).2)
+  have ⟨r, eq⟩ := hf ⟨x, hx⟩
+  exact ⟨r, by rw [← coe_smul, ← map_smul, smul_eq_mul, mul_one, eq]⟩
 
 variable (R)
 
@@ -536,8 +554,6 @@ theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :
     rwa [span_singleton_le_iff_mem]
 
 theorem lt_sup_iff_notMem {I : Submodule R M} {a : M} : I < I ⊔ R ∙ a ↔ a ∉ I := by simp
-
-@[deprecated (since := "2025-05-23")] alias lt_sup_iff_not_mem := lt_sup_iff_notMem
 
 theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by

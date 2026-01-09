@@ -194,15 +194,6 @@ lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
   induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
 
-/-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
-the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
-instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
-  le_top := by simp
-  top_add' := by
-    rw [OrderDual.forall]
-    intro x
-    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
-
 /-! ### Negation -/
 
 /-- negation on `EReal` -/
@@ -751,7 +742,7 @@ lemma mul_ne_top (a b : EReal) :
   rw [ne_eq, mul_eq_top]
   -- push the negation while keeping the disjunctions, that is converting `¬(p ∧ q)` into `¬p ∨ ¬q`
   -- rather than `p → ¬q`, since we already have disjunctions in the rhs
-  set_option push_neg.use_distrib true in push_neg
+  push_neg +distrib
   rfl
 
 lemma mul_eq_bot (a b : EReal) :
@@ -763,7 +754,7 @@ lemma mul_eq_bot (a b : EReal) :
 lemma mul_ne_bot (a b : EReal) :
     a * b ≠ ⊥ ↔ (a ≠ ⊥ ∨ b ≤ 0) ∧ (a ≤ 0 ∨ b ≠ ⊥) ∧ (a ≠ ⊤ ∨ 0 ≤ b) ∧ (0 ≤ a ∨ b ≠ ⊤) := by
   rw [ne_eq, mul_eq_bot]
-  set_option push_neg.use_distrib true in push_neg
+  push_neg +distrib
   rfl
 
 /-- `EReal.toENNReal` is multiplicative. For the version with the nonnegativity
