@@ -70,7 +70,7 @@ lemma eventually_notMem_thickening_of_infEDist_pos {E : Set α} {x : α} (h : x 
 alias eventually_notMem_thickening_of_infEdist_pos :=
   eventually_notMem_thickening_of_infEDist_pos
 
-/-- The (open) thickening equals the preimage of an open interval under `EMetric.infEDist`. -/
+/-- The (open) thickening equals the preimage of an open interval under `Metric.infEDist`. -/
 theorem thickening_eq_preimage_infEDist (δ : ℝ) (E : Set α) :
     thickening δ E = (infEDist · E) ⁻¹' Iio (ENNReal.ofReal δ) :=
   rfl
