@@ -139,17 +139,17 @@ instance Lex.decidable [DecidableEq α]
   fun _ _ ↦ decidable_of_decidable_of_iff lex_def.symm
 
 @[refl]
-theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.left _ _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl r] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_left _ _⟩
 
 @[refl]
-theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [Std.Refl s] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.right _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl s] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
 
 instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Prod.Lex r s) :=

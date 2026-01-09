@@ -361,7 +361,7 @@ variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
 variable (R) in
 /-- A relation `R` is reflexive if `a ~[R] a`. -/
-protected abbrev IsRefl : Prop := IsRefl α (· ~[R] ·)
+protected abbrev IsRefl : Prop := Std.Refl (· ~[R] ·)
 
 variable (R) in
 protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a
@@ -578,6 +578,10 @@ theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
 @[simp] lemma graph_id : graph (id : α → α) = .id := by aesop
 
 theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by aesop
+
+/-- The higher-arity graph of a function. Describes α-argument functions from β to β. -/
+def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
+  { v | f (v ∘ some) = v none }
 
 end Function
 

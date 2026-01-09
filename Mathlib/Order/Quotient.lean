@@ -39,7 +39,7 @@ instance : LE (Quotient s) where
 theorem le_def {x y : α} :
     Quotient.mk s x ≤ Quotient.mk s y ↔ Relation.TransGen (fun x y ↦ x ≤ y ∨ x ≈ y) x y := .rfl
 
-instance : IsRefl (Quotient s) (· ≤ ·) where
+instance : @Std.Refl (Quotient s) (· ≤ ·) where
   refl x := by
     induction x using Quotient.inductionOn with | h x
     exact .single <| .inr (refl x)

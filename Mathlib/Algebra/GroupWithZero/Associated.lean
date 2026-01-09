@@ -42,7 +42,7 @@ protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
-instance [Monoid M] : IsRefl M Associated :=
+instance [Monoid M] : @Std.Refl M Associated :=
   ⟨Associated.refl⟩
 
 @[symm]
